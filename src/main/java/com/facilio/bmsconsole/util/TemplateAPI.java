@@ -367,21 +367,20 @@ public class TemplateAPI {
 	
 	public static void deleteTemplate(long id) throws Exception {
 		Template template = getTemplate(id);
-		
-		if (template.getWorkflowId() != -1) {
-			WorkflowUtil.deleteWorkflow(template.getWorkflowId());
-		}
-		
 		List<Long> ids = new ArrayList<>();
 		ids.add(id);
+		templatePreDelete(template, ids);
+		FacilioModule module = ModuleFactory.getTemplatesModule();
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+													.table(module.getTableName())
+													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+													.andCondition(CriteriaAPI.getIdCondition(ids, module));
+		builder.delete();
+		templatePostDelete(template);
+	}
+	
+	private static void templatePreDelete(Template template, List<Long> ids) throws Exception {
 		switch (template.getTypeEnum()) {
-			case ALARM:
-			case JSON:
-				deleteJSONTemplate((JSONTemplate)template);
-				break;
-			case EMAIL:
-				deleteTemplateFile(((EMailTemplate)template).getBodyId());
-				break;
 			case WORKORDER:
 			case PM_WORKORDER:
 				WorkorderTemplate woTemplate = (WorkorderTemplate) template;
@@ -406,13 +405,22 @@ public class TemplateAPI {
 				break;
 			default: break;
 		}
-		
-		FacilioModule module = ModuleFactory.getTemplatesModule();
-		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
-													.table(module.getTableName())
-													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-													.andCondition(CriteriaAPI.getIdCondition(ids, module));
-		builder.delete();
+	}
+	
+	private static void templatePostDelete(Template template) throws Exception {
+		if (template.getWorkflowId() != -1) {
+			WorkflowUtil.deleteWorkflow(template.getWorkflowId());
+		}
+		switch (template.getTypeEnum()) {
+			case ALARM:
+			case JSON:
+				deleteJSONTemplate((JSONTemplate)template);
+				break;
+			case EMAIL:
+				deleteTemplateFile(((EMailTemplate)template).getBodyId());
+				break;
+			default: break;
+		}
 	}
 	
 	public static void deleteTemplates(List<Long> ids) throws Exception {
