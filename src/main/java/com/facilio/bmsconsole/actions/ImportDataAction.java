@@ -6,7 +6,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -19,6 +22,7 @@ import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.DeviceAPI;
+import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
@@ -28,7 +32,6 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class ImportDataAction extends ActionSupport {
 	
-	// Upload xls , store the file and meta data(modulename/column heading/), generate importid
 	public String upload() throws Exception
 	{
 		System.out.println("-----------> checking 1----------->");
@@ -81,7 +84,8 @@ public class ImportDataAction extends ActionSupport {
 			return SUCCESS;
 		}
 		else
-		{System.out.println("code"+ this.hashCode());
+		{
+			System.out.println("code"+ this.hashCode());
 			System.out.print("IMport id "+getImportprocessid());
 		}
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
@@ -156,6 +160,65 @@ public class ImportDataAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	String pastedRawString;
+	String rawStringType;
+	
+	public String getPastedRawString() {
+		return pastedRawString;
+	}
+	public void setPastedRawString(String pastedRawString) {
+		this.pastedRawString = pastedRawString;
+	}
+	public String getRawStringType() {
+		return rawStringType;
+	}
+	public void setRawStringType(String rawStringType) {
+		this.rawStringType = rawStringType;
+	}
+	List<Map<Integer,String>> parsedData;
+	public List<Map<Integer, String>> getParsedData() {
+		return parsedData;
+	}
+	Map<Integer,String> columnMaping;
+	public void setParsedData(List<Map<Integer, String>> parsedData) {
+		this.parsedData = parsedData;
+	}
+	public String importPasteData() throws Exception {
+		
+		parsedData = ImportAPI.parseRawString(pastedRawString, rawStringType);
+		
+		return SUCCESS;
+	}
+	public String importParsedData() throws Exception {
+		
+		//
+		
+		//testdata
+		Map<Integer, String> test = new HashMap<Integer, String>();
+		parsedData = new ArrayList<>();
+		
+		test.put(1, "testasset1");
+		test.put(2, "testcat1");
+		parsedData.add(test);
+		test = new HashMap<Integer, String>();
+		
+		test.put(1, "testasset2");
+		test.put(2, "testcat2");
+		parsedData.add(test);
+		
+		columnMaping = new HashMap<>();
+		
+		columnMaping.put(1, "name");
+		columnMaping.put(2, "category");
+		
+		moduleName = "asset";
+		metainfo.setModule(moduleName);
+		//
+		
+		ImportAPI.importPasteParsedData(parsedData,columnMaping,metainfo);
+		
+		return SUCCESS;
+	}
 	
 	public String processImport() throws Exception
 	{

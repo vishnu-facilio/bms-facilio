@@ -84,20 +84,21 @@ public class ProcessXLS implements Command {
 		List<ReadingContext> readingsList = new ArrayList<ReadingContext>();
 		InputStream ins = fs.readFile(metainfo.getFileId());
 		
-		HashMap<Integer, String> colIndex = new HashMap<Integer, String>();
+		HashMap<Integer, String> headerIndex = new HashMap<Integer, String>();
 		
 		Workbook workbook = WorkbookFactory.create(ins);
 		
 		for(int i=0;i<workbook.getNumberOfSheets();i++) {
 			Sheet datatypeSheet = workbook.getSheetAt(i);
 
-			Iterator<Row> itr = datatypeSheet.iterator();
+			Iterator<Row> rowItr = datatypeSheet.iterator();
 			boolean heading=true;
 			int row_no = 0;
-			while (itr.hasNext()) {
+			while (rowItr.hasNext()) {
 				row_no++;
 				System.out.println("row_no -- "+row_no);
-				Row row = itr.next();
+				Row row = rowItr.next();
+				
 				if(row.getPhysicalNumberOfCells() <= 0) {
 					break;
 				}
@@ -109,7 +110,7 @@ public class ProcessXLS implements Command {
 					while (cellItr.hasNext()) {
 						Cell cell = cellItr.next();
 						String cellValue = cell.getStringCellValue();
-						colIndex.put(cellIndex, cellValue);
+						headerIndex.put(cellIndex, cellValue);
 						cellIndex++;
 					}
 					heading=false;
@@ -121,7 +122,7 @@ public class ProcessXLS implements Command {
 				while (cellItr.hasNext()) {
 					Cell cell = cellItr.next();
 
-					String cellName = colIndex.get(cell.getColumnIndex());
+					String cellName = headerIndex.get(cell.getColumnIndex());
 					if (cellName == null) {
 						continue;
 					}
@@ -152,120 +153,7 @@ public class ProcessXLS implements Command {
 				
 				if(metainfo.getModule().getName().equals(FacilioConstants.ContextNames.ASSET)) {
 					
-					String siteName = (String) colVal.get("site");
-					String buildingName = (String) colVal.get("building");
-					String floorName = (String) colVal.get("floor");
-					String spaceName = (String) colVal.get("spaceName");
-					
-					
-					ImportSiteAction siteMeta =new ImportSiteAction();
-					ImportBuildingAction buildingMeta =new ImportBuildingAction();
-					ImportFloorAction floorMeta =new ImportFloorAction();
-					ImportSpaceAction spaceMeta =new ImportSpaceAction();
-					
-					Long siteId = null;
-					Long buildingId = null;
-					Long floorId = null;
-					Long spaceId = null;
-					 if(siteName != null && !siteName.equals("")) {
-						 List<SiteContext> sites = SpaceAPI.getAllSites();
-						 HashMap<String, Long> siteMap = new HashMap();
-						 for(SiteContext siteContext : sites)	
-						 {
-							 siteMap.put(siteContext.getName().trim().toLowerCase(), siteContext.getId());
-						 }
-						 if(siteMap.containsKey(siteName.trim().toLowerCase()))
-						 {
-							siteId = siteMeta.getSiteId(siteName);
-						 }
-						 else
-						 {
-							 siteId = siteMeta.addSite(siteName);
-						 }
-						 if(siteId != null) {
-							 spaceId = siteId;
-						 }
-					 }
-					 
-					 if(buildingName != null && !buildingName.equals("")) {
-						 if(siteId != null) {
-							 buildingId = buildingMeta.getBuildingId(siteId,buildingName);
-						 }
-						 else {
-							 List<BuildingContext> buildings = SpaceAPI.getAllBuildings();
-							 HashMap<String, Long> buildingMap = new HashMap();
-							 for (BuildingContext buildingContext : buildings)
-							 {
-								 buildingMap.put(buildingContext.getName().trim().toLowerCase(), buildingContext.getId());
-							 }
-							 if(buildingMap.containsKey(buildingName.trim().toLowerCase()))
-							 {
-								 buildingId = buildingMeta.getBuildingId(buildingName);
-							 }
-						 }
-						 if(buildingId == null)
-						 {
-							 buildingId = buildingMeta.addBuilding(buildingName, siteId);
-						 }
-						 
-						 if(buildingId != null) {
-							 spaceId = buildingId;
-						 }
-					 }
-					 if(floorName != null && !floorName.equals("")) {
-						if(buildingId != null) {
-							floorId = floorMeta.getFloorId(buildingId,floorName);
-						}
-						else {
-							
-							 List<FloorContext> floors = SpaceAPI.getAllFloors();
-							 HashMap<String, Long> floorMap = new HashMap();
-							 for (FloorContext floorContext : floors)
-							 {
-								 floorMap.put(floorContext.getName().trim().toLowerCase(), floorContext.getId());
-							 }
-							 if(floorMap.containsKey(floorName.trim()))
-							 {
-								 floorId = floorMeta.getFloorId(floorName);
-							 }
-						}
-					    if(floorId == null)
-					    {
-					    	floorId = floorMeta.addFloor(floorName, siteId, buildingId);
-					    }
-					    if(floorId != null) {
-							 spaceId = floorId;
-						 }
-					 }
-			
-					 if(spaceName != null && !spaceName.equals("")) {
-						 spaceId = null;
-						 if(floorId != null) {
-							 spaceId = spaceMeta.getSpaceId(floorId,spaceName);
-						 }
-						 else {
-							 List<SpaceContext> spaces = SpaceAPI.getAllSpaces();
-							 HashMap<String, Long> spaceMap = new HashMap();
-							 for (SpaceContext spaceContext : spaces)
-							 {
-								 spaceMap.put(spaceContext.getName().trim().toLowerCase(), spaceContext.getId());
-							 }
-							 if(spaceMap.containsKey(spaceName.trim().toLowerCase()))
-							 {
-								 spaceId = spaceMeta.getSpaceId(spaceName);
-							 }
-						}
-						if(spaceId == null) {
-							 if (floorName == null)
-							 {
-								 spaceId = spaceMeta.addSpace(spaceName, siteId, buildingId);
-							 }
-							 else
-							 {
-							 spaceId = spaceMeta.addSpace(spaceName, siteId, buildingId, floorId);
-							 }
-						}
-					 }
+					Long spaceId = getSpaceIDforAssets(colVal);
 					 props.put("space", spaceId);
 					 props.put("resourceType", ResourceType.ASSET.getValue());
 					 
@@ -279,6 +167,7 @@ public class ProcessXLS implements Command {
 				{
 					Object cellValue=colVal.get(value);
 					boolean isfilledByLookup = false;
+					
 					if(cellValue != null && !cellValue.toString().equals("")) {
 						
 						FacilioField facilioField = metainfo.getFacilioFieldMapping(metainfo.getModule().getName()).get(key);
@@ -292,28 +181,159 @@ public class ProcessXLS implements Command {
 							}
 						}
 					}
+					
 					if(!isfilledByLookup) {
 						props.put(key, cellValue);
 					}
 				});
-				System.out.println("Loading  ReadingContext   . "+metainfo + new Date(System.currentTimeMillis()));
-				System.out.println("prpposss ----- "+props+"\n\n\n");
 				ReadingContext reading = FieldUtil.getAsBeanFromMap(props, ReadingContext.class);
 				reading.setParentId(metainfo.getAssetId());
 				readingsList.add(reading);
 				
-				System.out.println("Finished commit data  for assetid ="+metainfo.getAssetId() +" \n"+ new Date(System.currentTimeMillis()));
-
 			}
 		}
 		
+		ProcessXLS.populateDatas(metainfo, readingsList);
+		
+		workbook.close();
+	}
+	
+	public static Long getSpaceIDforAssets(HashMap<String, Object> colVal) throws Exception {
+
+		
+		String siteName = (String) colVal.get("site");
+		String buildingName = (String) colVal.get("building");
+		String floorName = (String) colVal.get("floor");
+		String spaceName = (String) colVal.get("spaceName");
+		
+		
+		ImportSiteAction siteMeta =new ImportSiteAction();
+		ImportBuildingAction buildingMeta =new ImportBuildingAction();
+		ImportFloorAction floorMeta =new ImportFloorAction();
+		ImportSpaceAction spaceMeta =new ImportSpaceAction();
+		
+		Long siteId = null;
+		Long buildingId = null;
+		Long floorId = null;
+		Long spaceId = null;
+		 if(siteName != null && !siteName.equals("")) {
+			 List<SiteContext> sites = SpaceAPI.getAllSites();
+			 HashMap<String, Long> siteMap = new HashMap();
+			 for(SiteContext siteContext : sites)	
+			 {
+				 siteMap.put(siteContext.getName().trim().toLowerCase(), siteContext.getId());
+			 }
+			 if(siteMap.containsKey(siteName.trim().toLowerCase()))
+			 {
+				siteId = siteMeta.getSiteId(siteName);
+			 }
+			 else
+			 {
+				 siteId = siteMeta.addSite(siteName);
+			 }
+			 if(siteId != null) {
+				 spaceId = siteId;
+			 }
+		 }
+		 
+		 if(buildingName != null && !buildingName.equals("")) {
+			 if(siteId != null) {
+				 buildingId = buildingMeta.getBuildingId(siteId,buildingName);
+			 }
+			 else {
+				 List<BuildingContext> buildings = SpaceAPI.getAllBuildings();
+				 HashMap<String, Long> buildingMap = new HashMap();
+				 for (BuildingContext buildingContext : buildings)
+				 {
+					 buildingMap.put(buildingContext.getName().trim().toLowerCase(), buildingContext.getId());
+				 }
+				 if(buildingMap.containsKey(buildingName.trim().toLowerCase()))
+				 {
+					 buildingId = buildingMeta.getBuildingId(buildingName);
+				 }
+			 }
+			 if(buildingId == null)
+			 {
+				 buildingId = buildingMeta.addBuilding(buildingName, siteId);
+			 }
+			 
+			 if(buildingId != null) {
+				 spaceId = buildingId;
+			 }
+		 }
+		 if(floorName != null && !floorName.equals("")) {
+			if(buildingId != null) {
+				floorId = floorMeta.getFloorId(buildingId,floorName);
+			}
+			else {
+				
+				 List<FloorContext> floors = SpaceAPI.getAllFloors();
+				 HashMap<String, Long> floorMap = new HashMap();
+				 for (FloorContext floorContext : floors)
+				 {
+					 floorMap.put(floorContext.getName().trim().toLowerCase(), floorContext.getId());
+				 }
+				 if(floorMap.containsKey(floorName.trim()))
+				 {
+					 floorId = floorMeta.getFloorId(floorName);
+				 }
+			}
+		    if(floorId == null)
+		    {
+		    	floorId = floorMeta.addFloor(floorName, siteId, buildingId);
+		    }
+		    if(floorId != null) {
+				 spaceId = floorId;
+			 }
+		 }
+
+		 if(spaceName != null && !spaceName.equals("")) {
+			 spaceId = null;
+			 if(floorId != null) {
+				 spaceId = spaceMeta.getSpaceId(floorId,spaceName);
+			 }
+			 else {
+				 List<SpaceContext> spaces = SpaceAPI.getAllSpaces();
+				 HashMap<String, Long> spaceMap = new HashMap();
+				 for (SpaceContext spaceContext : spaces)
+				 {
+					 spaceMap.put(spaceContext.getName().trim().toLowerCase(), spaceContext.getId());
+				 }
+				 if(spaceMap.containsKey(spaceName.trim().toLowerCase()))
+				 {
+					 spaceId = spaceMeta.getSpaceId(spaceName);
+				 }
+			}
+			if(spaceId == null) {
+				 if (floorName == null)
+				 {
+					 spaceId = spaceMeta.addSpace(spaceName, siteId, buildingId);
+				 }
+				 else
+				 {
+				 spaceId = spaceMeta.addSpace(spaceName, siteId, buildingId, floorId);
+				 }
+			}
+		 }
+		colVal.remove("site");
+		colVal.remove("building");
+		colVal.remove("floor");
+		colVal.remove("spaceName");
+		return spaceId;
+	
+	}
+	
+	
+	public static void populateDatas(ImportMetaInfo metainfo,List<ReadingContext> readingsList) throws Exception {
+		
 		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
 		InsertRecordBuilder<ReadingContext> readingBuilder = new InsertRecordBuilder<ReadingContext>()
 				.moduleName(metainfo.getModule().getName())
 				.fields(bean.getAllFields(metainfo.getModule().getName()))
 				.addRecords(readingsList);
+		
 		readingBuilder.save();
-		workbook.close();
 	}
 
 	public static List<Map<String, Object>> getLookupProps(LookupField lookupField,Object value) {
