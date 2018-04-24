@@ -781,6 +781,7 @@ public class DashboardAction extends ActionSupport {
 						paramMap.put("endTime", rang1e.getEndTime());
 					}
 					Object wfResult = WorkflowUtil.getResult(widgetVsWorkflowContext.getWorkflowId(), paramMap);
+					System.out.println("widgetVsWorkflowContext.getWorkflowId() --- "+widgetVsWorkflowContext.getWorkflowId() +" wfResult --  "+wfResult);
 					result.put(widgetVsWorkflowContext.getWorkflowName(), wfResult);
 				}
 			}
@@ -1831,21 +1832,24 @@ public class DashboardAction extends ActionSupport {
 					List<Long> meterIds = new ArrayList<Long>();
 					if(props != null && !props.isEmpty()) {
 						for(EnergyMeterContext energyMeterContext:props) {
+
+							energyMeterMap.put(energyMeterContext.getPurposeSpace().getId(), energyMeterContext);
+						}
+						for(EnergyMeterContext energyMeterContext:props) {
 							
-							if(energyMeterContext.isRoot()) {
-								meterIds = new ArrayList<Long>();
-								meterIds.add(energyMeterContext.getId());
+							if(energyMeterContext.isRoot() && energyMeterContext.getPurpose() != null && DashboardUtil.ENERGY_METER_PURPOSE_MAIN.equals(energyMeterContext.getPurpose().getName())) {
 								if(energyMeterMap.containsKey(energyMeterContext.getSpaceId())) {
 									energyMeterMap.removeAll(energyMeterContext.getSpaceId());
 								}
 								energyMeterMap.put(energyMeterContext.getPurposeSpace().getId(), energyMeterContext);
-								break;
 							}
-							energyMeterMap.put(energyMeterContext.getPurposeSpace().getId(), energyMeterContext);
-							meterIds.add(energyMeterContext.getId());
+						}
+						for(EnergyMeterContext em : energyMeterMap.values()) {
+							meterIds.add(em.getId());
 						}
 					}
 					System.out.println("energyMeterMap -- "+energyMeterMap);
+					System.out.println("meterIds -- "+meterIds);
 					if(!meterIds.isEmpty()) {
 						String meterIdStr = StringUtils.join(meterIds, ",");
 						energyMeterValue = meterIdStr;
@@ -2694,7 +2698,9 @@ public class DashboardAction extends ActionSupport {
 				else if (widgetType == DashboardWidgetContext.WidgetType.STATIC.getValue()) {
 					widgetContext = new WidgetStaticContext();
 					WidgetStaticContext widgetStaticContext = (WidgetStaticContext) widgetContext;
-					widgetStaticContext.setStaticKey(widget.get("staticKey").toString());
+					if(widget.get("staticKey") != null) {
+						widgetStaticContext.setStaticKey(widget.get("staticKey").toString());
+					}
 				}
 				else if (widgetType == DashboardWidgetContext.WidgetType.WEB.getValue()) {
 					widgetContext = new WidgetWebContext();
