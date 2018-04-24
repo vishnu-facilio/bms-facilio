@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +24,9 @@ public class DeleteUserCommand implements Command {
 		User user = (User) context.get(FacilioConstants.ContextNames.USER);
 		
 		if (user != null) {
-			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder().table("ORG_Users").fields(AccountConstants.getOrgUserFields())
+			List<FacilioField> fields = new ArrayList<>();
+			fields.add(AccountConstants.getOrgUserDeletedTimeField());
+			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder().table("ORG_Users").fields(fields)
 					.andCustomWhere("ORG_USERID = ? AND USERID = ?", user.getOuid(), user.getUid());
 			Map<String, Object> props = FieldUtil.getAsProperties(user);
 			props.put("deletedTime", System.currentTimeMillis());

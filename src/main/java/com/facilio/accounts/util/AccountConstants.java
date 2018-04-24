@@ -1093,17 +1093,19 @@ public class AccountConstants {
 		userType.setColumnName("USER_TYPE");
 		userType.setModule(module);
 		fields.add(userType);
-		
+	
+		return fields;
+	}
+	
+	public static FacilioField getOrgUserDeletedTimeField() {
 		FacilioField deletedTime = new FacilioField();
 		deletedTime.setName("deletedTime");
 		deletedTime.setDataType(FieldType.NUMBER);
 		deletedTime.setColumnName("DELETED_TIME");
-		deletedTime.setModule(module);
-		fields.add(deletedTime);
-
-		return fields;
+		deletedTime.setModule(getOrgUserModule());
+		return deletedTime;
 	}
-
+	
 	public static List<FacilioField> getGroupFields() {
 		FacilioModule module = getGroupModule();
 		List<FacilioField> fields = new ArrayList<>();
