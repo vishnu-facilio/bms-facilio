@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.FormLayout;
+import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -66,10 +67,45 @@ public class BuildingAction extends ActionSupport {
 	
 	public String addBuilding() throws Exception 
 	{
-		FacilioContext context = new FacilioContext();
+		FacilioContext context = new FacilioContext();	
+		LocationContext location = building.getLocation();
+		if(location != null)
+		{
+			location.setName(building.getName()+"_Location");
+			context.put(FacilioConstants.ContextNames.RECORD, location);
+			Chain addLocation = FacilioChainFactory.addLocationChain();
+			addLocation.execute(context);
+			long locationId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+			location.setId(locationId);
+		}
 		context.put(FacilioConstants.ContextNames.BUILDING, building);
-		
 		Chain addBuilding = FacilioChainFactory.getAddBuildingChain();
+		addBuilding.execute(context);
+		
+		setBuildingId(building.getId());
+		
+		return SUCCESS;
+	}
+	
+	public String updateBuilding() throws Exception 
+	{
+		FacilioContext context = new FacilioContext();	
+		LocationContext location = building.getLocation();
+		if(location != null && (location.getLat() != -1 && location.getLng() != -1))
+		{
+			//In Building Update flow, we are adding new location if the lat long params are changed. 
+			//Instead, we need to update if any previous same coordinate locations are present and add if they are not present. 
+			//This is pending work. - Suresh
+			
+			location.setName(building.getName()+"_Location");
+			context.put(FacilioConstants.ContextNames.RECORD, location);			
+			Chain addLocation = FacilioChainFactory.addLocationChain();
+			addLocation.execute(context);
+			long locationId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+			location.setId(locationId);
+		}
+		context.put(FacilioConstants.ContextNames.BUILDING, building);
+		Chain addBuilding = FacilioChainFactory.getUpdateBuildingChain();
 		addBuilding.execute(context);
 		
 		setBuildingId(building.getId());

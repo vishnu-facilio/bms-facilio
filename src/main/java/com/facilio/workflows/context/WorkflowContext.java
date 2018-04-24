@@ -28,7 +28,12 @@ public class WorkflowContext {
 	public void setVariableResultMap(Map<String, Object> variableToExpresionMap) {
 		this.variableResultMap = variableToExpresionMap;
 	}
-
+	public void addVariableResultMap(String key,Object value) {
+		if(this.variableResultMap == null) {
+			this.variableResultMap = new HashMap<>();
+		}
+		this.variableResultMap.put(key, value);
+	}
 	public Long getId() {
 		return id;
 	}
@@ -94,9 +99,9 @@ public class WorkflowContext {
 		
 		Object result = null;
 		
-		Map<String,Object> variableToExpresionMap = new HashMap<String,Object>();
+		variableResultMap = new HashMap<String,Object>();
 		for(ParameterContext parameter:parameters) {
-			variableToExpresionMap.put(parameter.getName(), parameter.getValue());
+			variableResultMap.put(parameter.getName(), parameter.getValue());
 		}
 		if (expressions != null) {
 			for(int i=0; i<expressions.size(); i++) {
@@ -104,30 +109,27 @@ public class WorkflowContext {
 				ExpressionContext expressionContext = expressions.get(i);
 				
 				expressionContext = fillParamterAndParseExpressionContext(expressionContext);
-				expressionContext.setVariableToExpresionMap(variableToExpresionMap);
-				
-				if(i==0 && getResultEvaluator() == null && isSingleExpression()) {
-					return expressionContext.executeExpression();
-				}
+				expressionContext.setVariableToExpresionMap(variableResultMap);
 				
 				Object res = expressionContext.executeExpression();
-				if(res != null) {
-					variableToExpresionMap.put(expressionContext.getName(), res);
+				if(res == null) {
+					res = "0";
 				}
-				else {
-					variableToExpresionMap.put(expressionContext.getName(), "0");
-				}
+				variableResultMap.put(expressionContext.getName(), res);
 				
 				ParameterContext parameterContext = new ParameterContext();
 				parameterContext.setName(expressionContext.getName());
-				parameterContext.setValue(variableToExpresionMap.get(expressionContext.getName()));
+				parameterContext.setValue(variableResultMap.get(expressionContext.getName()));
 				this.addParamater(parameterContext);
+				
+				if(i ==0 && getResultEvaluator() == null && isSingleExpression()) {
+					return res;
+				}
 			}
 		}
-		setVariableResultMap(variableToExpresionMap);
-		System.out.println("variableToExpresionMap --- "+variableToExpresionMap+" \n\n"+"expString --- "+getResultEvaluator());
+		System.out.println("variableToExpresionMap --- "+variableResultMap+" \n\n"+"expString --- "+getResultEvaluator());
 		
-		result =  evaluateExpression(getResultEvaluator(),variableToExpresionMap);
+		result =  evaluateExpression(getResultEvaluator(),variableResultMap);
 		System.out.println("result --- "+result);
 		return result;
 	}

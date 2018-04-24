@@ -20,7 +20,6 @@ import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.ChillerCondenserPumpContext;
 import com.facilio.bmsconsole.context.ChillerContext;
 import com.facilio.bmsconsole.context.ChillerPrimaryPumpContext;
-import com.facilio.bmsconsole.context.ChillerSecondaryPumpContext;
 import com.facilio.bmsconsole.context.CoolingTowerContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
@@ -325,6 +324,7 @@ public class FacilioConstants {
 		public static final String SUPPORT_EMAIL_LIST = "supportEmails";
 		public static final String EMAIL_SETTING = "emailSetting";
 		
+		public static final String CONFIG = "config";
 		public static final String RESULT = "result";
 		
 		public static final String COMSUMPTIONDATA_LIST = "comsumptionDataList";
@@ -436,6 +436,8 @@ public class FacilioConstants {
 		public static final String WEATHER_READING = "weather";
 		public static final String CDD_READING="cdd";
 		public static final String HDD_READING="hdd";
+		
+		public static final String WET_BULB_TEMPERATURE="wetBulbTemperature";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {

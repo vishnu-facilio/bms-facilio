@@ -85,6 +85,7 @@ public class EventRulesAPI {
 			JSONTemplate alarmTemplate = new JSONTemplate();
 			alarmTemplate.setName(eventRule.getName());
 			alarmTemplate.setContent(eventRule.getTransformTemplate().toJSONString());
+			alarmTemplate.setWorkflow(TemplateAPI.getWorkflow(alarmTemplate));
 			long alarmTemplateId = TemplateAPI.addJsonTemplate(orgId, alarmTemplate);
 			eventRule.setTransformAlertTemplateId(alarmTemplateId);
 		}
@@ -112,6 +113,7 @@ public class EventRulesAPI {
 				JSONTemplate coRelTemplate = new JSONTemplate();
 				coRelTemplate.setName(eventRule.getName());
 				coRelTemplate.setContent(eventRule.getCoRelTransformTemplate().toJSONString());
+				coRelTemplate.setWorkflow(TemplateAPI.getWorkflow(coRelTemplate));
 				long coRelTemplateId = TemplateAPI.addJsonTemplate(orgId, coRelTemplate);
 				eventRule.setCoRelTransformTemplateId(coRelTemplateId);
 			}

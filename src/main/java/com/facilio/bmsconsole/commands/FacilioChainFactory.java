@@ -192,6 +192,12 @@ public class FacilioChainFactory {
 		addCleanUpCommand(c);
 		return c;
 	}
+	public static Command getDeleteUserMobileSettingCommand() {
+		Chain c = new ChainBase();
+		c.addCommand(new RemoveUserMobileSettingCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
 	
 	public static Command getAddGroupCommand() {
 		Chain c = new ChainBase();
@@ -830,6 +836,16 @@ public class FacilioChainFactory {
 		addCleanUpCommand(c);
 		return c;
 	}
+	
+	public static Chain getUpdateBuildingChain() {
+		Chain c = new ChainBase();
+		c.addCommand(SetTableNamesCommand.getForBuilding());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new UpdateBuildingCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	
 	public static Chain getBuildingDetailsChain() {
 		Chain c = new ChainBase();

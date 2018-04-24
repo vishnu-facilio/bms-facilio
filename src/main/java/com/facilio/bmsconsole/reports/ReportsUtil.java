@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.reports;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,6 +37,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.google.gson.Gson;
 
 public class ReportsUtil 
 {
@@ -486,21 +489,33 @@ public class ReportsUtil
 		return url.toString();
 	}
 	
-	public static String getAnalyticsClientUrl(String moduleName, FileFormat fileFormat) {
-		StringBuilder url = new StringBuilder(AwsUtil.getConfig("clientapp.url")).append("/app/");
-		if (moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER)) {
-			url.append("wo");
-		}
-		else if (moduleName.equals(FacilioConstants.ContextNames.ALARM)) {
-			url.append("fa");
-		}
-		else if (moduleName.equals(FacilioConstants.ContextNames.ENERGY_DATA_READING)) {
-			url.append("em");
-		}
-		url.append("/analytics/consumption");
+	public static String getAnalyticsClientUrl(Map<String, Object> config, FileFormat fileFormat) {
+		StringBuilder url = new StringBuilder((String) config.get("path"));
 		if(fileFormat == FileFormat.IMAGE) {
 			url.append("/show");
 		}
+		String json = new Gson().toJson(config);
+		json = encodeURIComponent(json);
+		url.append("?filters=").append(json);
 		return url.toString();
 	}
+	
+	public static String encodeURIComponent(String url) {
+	    String result = null;
+	    try
+	    {
+	      result = URLEncoder.encode(url, "UTF-8")
+	                         .replaceAll("\\+", "%20")
+	                         .replaceAll("\\%21", "!")
+	                         .replaceAll("\\%27", "'")
+	                         .replaceAll("\\%28", "(")
+	                         .replaceAll("\\%29", ")")
+	                         .replaceAll("\\%7E", "~");
+	    }
+	    catch (UnsupportedEncodingException e) {
+	      result = url;
+	    }
+
+	    return result;
+	  }
 }

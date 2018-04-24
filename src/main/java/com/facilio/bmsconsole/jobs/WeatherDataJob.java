@@ -84,6 +84,9 @@ public class WeatherDataJob extends FacilioJob {
 		reading.addReading("icon", currentWeather.get("icon"));
 		reading.addReading("summary", currentWeather.get("summary"));
 		reading.addReading("humidity",currentWeather.get("humidity"));
+		reading.addReading("dewPoint", currentWeather.get("dewPoint"));
+		reading.addReading("pressure", currentWeather.get("pressure"));
+		reading.addReading("apparentTemperature", currentWeather.get("apparentTemperature"));
 		
 		return reading;
 	}

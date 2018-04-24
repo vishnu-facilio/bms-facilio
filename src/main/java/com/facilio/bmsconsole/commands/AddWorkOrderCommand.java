@@ -31,6 +31,7 @@ public class AddWorkOrderCommand implements Command {
 			workOrder.setCreatedTime(System.currentTimeMillis());
 			workOrder.setModifiedTime(workOrder.getCreatedTime());
 			workOrder.setScheduledStart(workOrder.getCreatedTime());
+			workOrder.setEstimatedStart(workOrder.getCreatedTime());
 			
 			if(workOrder.getDuration() != -1) {
 				workOrder.setDueDate(workOrder.getCreatedTime()+(workOrder.getDuration()*1000));

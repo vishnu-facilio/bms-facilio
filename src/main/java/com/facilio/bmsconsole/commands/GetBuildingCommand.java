@@ -38,12 +38,14 @@ public class GetBuildingCommand implements Command {
 					.moduleName(moduleName)
 					.beanClass(BuildingContext.class)
 					.select(fields)
+					.maxLevel(1)
 					.andCustomWhere(module.getTableName()+".ID = ?", buildingId)
 					.orderBy("ID");
 
 			List<BuildingContext> buildings = builder.get();	
 			if(buildings.size() > 0) {
 				BuildingContext building = buildings.get(0);
+				System.out.println("############ building :"+building);
 				context.put(FacilioConstants.ContextNames.BUILDING, building);
 			}
 			

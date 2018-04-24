@@ -1976,7 +1976,14 @@ public class DashboardAction extends ActionSupport {
 		
 		if (excludeWeekends) {
 			String timeZone = DateTimeUtil.getDateTime().getOffset().toString().equalsIgnoreCase("Z") ? "+00:00":DateTimeUtil.getDateTime().getOffset().toString();
-			builder.andCustomWhere("DAYOFWEEK(CONVERT_TZ(from_unixtime(floor(TTIME/1000)),@@session.time_zone,'" + timeZone + "')) <> 1 AND DAYOFWEEK(CONVERT_TZ(from_unixtime(floor(TTIME/1000)),@@session.time_zone,'" + timeZone + "')) <> 7");
+			
+			int[] weekendDays = DateTimeUtil.getWeekendDays(null);
+			if (weekendDays.length == 1) {
+				builder.andCustomWhere("DAYOFWEEK(CONVERT_TZ(from_unixtime(floor(TTIME/1000)),@@session.time_zone,'" + timeZone + "')) <> ?", weekendDays[0]);
+			}
+			else {
+				builder.andCustomWhere("DAYOFWEEK(CONVERT_TZ(from_unixtime(floor(TTIME/1000)),@@session.time_zone,'" + timeZone + "')) <> ? AND DAYOFWEEK(CONVERT_TZ(from_unixtime(floor(TTIME/1000)),@@session.time_zone,'" + timeZone + "')) <> ?", weekendDays[0], weekendDays[1]);
+			}
 		}
 		
 		List<Map<String, Object>> rs = builder.get();
@@ -1984,7 +1991,7 @@ public class DashboardAction extends ActionSupport {
 		System.out.println("builder --- "+builder);
 //		System.out.println("rs1 -- "+rs);
 		
-		Map<String, Double> violatedReadings = getViolatedReadings(report, dateFilter);
+		Map<String, Double> violatedReadings = getViolatedReadings(report, dateFilter, baseLineId);
 		
 		if(report.getGroupBy() != null) {
 			
@@ -2270,7 +2277,7 @@ public class DashboardAction extends ActionSupport {
 		this.readingAlarms = readingAlarms;
 	}
 	
-	private Map<String, Double> getViolatedReadings(ReportContext reportContext, JSONArray dateFilter) throws Exception {
+	private Map<String, Double> getViolatedReadings(ReportContext reportContext, JSONArray dateFilter, Long baseLineId) throws Exception {
 		
 		Map<String, Double> violatedReadings = new HashMap<>();
 		
@@ -2291,6 +2298,19 @@ public class DashboardAction extends ActionSupport {
 			}
 			else if (reportContext.getDateFilter() != null) {
 				timeRange.add(Long.parseLong(reportContext.getDateFilter().getOperatorId().toString()));
+			}
+			
+			if (baseLineId != -1) {
+				BaseLineContext baseLineContext = BaseLineAPI.getBaseLine(baseLineId);
+				
+				Condition condition = baseLineContext.getBaseLineCondition(reportContext.getDateFilter().getField(), new DateRange((long)timeRange.get(0), (long)timeRange.get(1)));
+				String baseLineStartValue = condition.getValue().substring(0,condition.getValue().indexOf(",")).trim();
+				String baseLineEndValue = condition.getValue().substring(condition.getValue().indexOf(",")+1, condition.getValue().length()).trim();
+				
+				List<Long> baseLineTimeRange = new ArrayList<>();
+				baseLineTimeRange.add(Long.parseLong(baseLineStartValue));
+				baseLineTimeRange.add(Long.parseLong(baseLineEndValue));
+				timeRange = baseLineTimeRange;
 			}
 			
 			List<Long> deviceList = new ArrayList<>();
@@ -2491,7 +2511,7 @@ public class DashboardAction extends ActionSupport {
 		if (reportContext.getReportChartType() == ReportContext.ReportChartType.TABULAR) {
 			getData();
 			Map<String,Object> table = ReportExportUtil.getTabularReportData(reportData, reportContext, reportColumns);
-			fileUrl = ExportUtil.exportData(FileFormat.getFileFormat(type), module, table);
+			fileUrl = ExportUtil.exportData(FileFormat.getFileFormat(type), module.getDisplayName(), table);
 		}
 		else {
 			/*FacilioContext context = new FacilioContext();
@@ -2512,7 +2532,7 @@ public class DashboardAction extends ActionSupport {
 			else {
 				getData();
 				Map<String,Object> table = ReportExportUtil.getDataInExportFormat(reportData, reportContext, baseLineComparisionDiff, reportSpaceFilterContext, dateFilter);
-				fileUrl = ExportUtil.exportData(FileFormat.getFileFormat(type), module, table);
+				fileUrl = ExportUtil.exportData(FileFormat.getFileFormat(type), module.getDisplayName(), table);
 //				fileUrl = ExportUtil.exportData(fileFormat, module, view.getFields(), records);
 			}
 		}
@@ -2524,26 +2544,32 @@ public class DashboardAction extends ActionSupport {
 		
 		FileFormat fileFormat = FileFormat.getFileFormat(type);
 		if(fileFormat == FileFormat.PDF || fileFormat == FileFormat.IMAGE) {
-			/*String url = ReportsUtil.getAnalyticsClientUrl(FacilioConstants.ContextNames.ENERGY_DATA_READING, fileFormat);
-			if(dateFilter != null && dateFilter.size() > 0) {
-				url += "?daterange=" + dateFilter.toJSONString();
-			}
-			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(),url, fileFormat);*/
+			String url = ReportsUtil.getAnalyticsClientUrl(analyticsConfig, fileFormat);
+			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(),url, fileFormat);
 		}
 		else {
-			Map<String,Object> table = ReportExportUtil.getAnalyticsData(exportDataList, dateFilter);
-			fileUrl = ExportUtil.exportData(FileFormat.getFileFormat(type), (FacilioModule) table.get("module"), table);
+			analyticsConfig.put("dateFilter", dateFilter);
+			Map<String,Object> table = ReportExportUtil.getAnalyticsData(analyticsDataList, analyticsConfig);
+			fileUrl = ExportUtil.exportData(FileFormat.getFileFormat(type), (String) analyticsConfig.get("name"), table);
 		}
 		
 		return SUCCESS;
 	}
 	
-	private List<Map<String, Object>> exportDataList;
-	public List<Map<String, Object>> getExportDataList() {
-		return exportDataList;
+	private List<Map<String, Object>> analyticsDataList;
+	public List<Map<String, Object>> getAnalyticsDataList() {
+		return analyticsDataList;
 	}
-	public void setExportDataList(List<Map<String, Object>> exportDataList) {
-		this.exportDataList = exportDataList;
+	public void setAnalyticsDataList(List<Map<String, Object>> analyticsDataList) {
+		this.analyticsDataList = analyticsDataList;
+	}
+	
+	private Map<String, Object> analyticsConfig;
+	public Map<String, Object> getAnalyticsConfig() {
+		return analyticsConfig;
+	}
+	public void setAnalyticsConfig(Map<String, Object> analyticsConfig) {
+		this.analyticsConfig = analyticsConfig;
 	}
 	
 	private List<ModuleBaseWithCustomFields> getRawData(FacilioContext context, FacilioModule module) throws Exception {
@@ -2846,28 +2872,34 @@ public class DashboardAction extends ActionSupport {
 	
 	public String sendReportMail() throws Exception {
 		
- 		FacilioModule module = getModule();
-		
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
-		/*context.put(FacilioConstants.ContextNames.CV_NAME, reportId.toString());
-		context.put(FacilioConstants.ContextNames.PARENT_VIEW, "report");*/
-		getData();
-		context.put(FacilioConstants.ContextNames.REPORT, reportData);
-		context.put(FacilioConstants.ContextNames.LIMIT_VALUE, -1);
-		
-		context.put(FacilioConstants.ContextNames.REPORT_CONTEXT, reportContext);
-		context.put(FacilioConstants.ContextNames.FILE_FORMAT, type);
-		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
-		
-		if (reportContext.getReportChartType() == ReportContext.ReportChartType.TABULAR) {
-			context.put(FacilioConstants.ContextNames.REPORT_COLUMN_LIST, reportColumns);
+		if (reportId != null) {
+			FacilioModule module = getModule();
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
+			getData();
+			
+			/*context.put(FacilioConstants.ContextNames.CV_NAME, reportId.toString());
+			context.put(FacilioConstants.ContextNames.PARENT_VIEW, "report");
+			context.put(FacilioConstants.ContextNames.LIMIT_VALUE, -1);*/
+			
+			context.put(FacilioConstants.ContextNames.REPORT, reportData);
+			context.put(FacilioConstants.ContextNames.REPORT_CONTEXT, reportContext);
+			if (reportContext.getReportChartType() == ReportContext.ReportChartType.TABULAR) {
+				context.put(FacilioConstants.ContextNames.REPORT_COLUMN_LIST, reportColumns);
+			}
+			else {
+				context.put(FacilioConstants.ContextNames.BASE_LINE, baseLineComparisionDiff);
+				context.put(FacilioConstants.ContextNames.FILTERS, reportSpaceFilterContext);
+			}
 		}
 		else {
-			context.put(FacilioConstants.ContextNames.BASE_LINE, baseLineComparisionDiff);
-			context.put(FacilioConstants.ContextNames.FILTERS, reportSpaceFilterContext);
-			context.put(FacilioConstants.ContextNames.DATE_FILTER, dateFilter);
+			analyticsConfig.put("dateFilter", dateFilter);
+			context.put(FacilioConstants.ContextNames.REPORT_LIST, analyticsDataList);
+			context.put(FacilioConstants.ContextNames.CONFIG, analyticsConfig);
 		}
+		
+		context.put(FacilioConstants.ContextNames.FILE_FORMAT, type);
+		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
 		
 		Chain mailReportChain = ReportsChainFactory.getSendMailReportChain();
 		mailReportChain.execute(context);
