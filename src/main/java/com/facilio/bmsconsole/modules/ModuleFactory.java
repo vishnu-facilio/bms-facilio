@@ -153,6 +153,14 @@ public class ModuleFactory {
 		return readingRuleModule;
 	}
 	
+	public static FacilioModule getReadingRuleInclusionsExclusionsModule() {
+		FacilioModule readingRuleInclusionsExclusions = new FacilioModule();
+		readingRuleInclusionsExclusions.setName("readingruleInclusionsExclusions");
+		readingRuleInclusionsExclusions.setDisplayName("Reading Rule Include/ Exclude list");
+		readingRuleInclusionsExclusions.setTableName("Reading_Rule_Inclusions_Exclusions");
+		return readingRuleInclusionsExclusions;
+	}
+	
 	public static FacilioModule getSLARuleModule() {
 		FacilioModule slarule = new FacilioModule();
 		slarule.setName("slarule");

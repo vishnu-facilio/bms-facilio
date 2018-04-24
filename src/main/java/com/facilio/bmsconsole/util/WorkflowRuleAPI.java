@@ -9,14 +9,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -52,11 +51,12 @@ public class WorkflowRuleAPI {
 													.fields(FieldFactory.getWorkflowRuleFields())
 													.addRecord(ruleProps);
 		insertBuilder.save();
-		
+		rule.setId((long) ruleProps.get("id"));
 		switch(rule.getRuleTypeEnum()) {
 			case READING_RULE:
 			case PM_READING_RULE:
 				addExtendedProps(ModuleFactory.getReadingRuleModule(), FieldFactory.getReadingRuleFields(), ruleProps);
+				addReadingRuleInclusionsExlusions((ReadingRuleContext) rule);
 				break;
 			case SLA_RULE:
 				addExtendedProps(ModuleFactory.getSLARuleModule(), FieldFactory.getSLARuleFields(), ruleProps);
@@ -65,7 +65,7 @@ public class WorkflowRuleAPI {
 				break;
 		}
 		
-		return (long) ruleProps.get("id");
+		return rule.getId();
 	}
 	
 	private static void addExtendedProps(FacilioModule module, List<FacilioField> fields, Map<String, Object> ruleProps) throws SQLException, RuntimeException {
@@ -74,6 +74,37 @@ public class WorkflowRuleAPI {
 				.fields(fields)
 				.addRecord(ruleProps);
 		insertBuilder.save();
+	}
+	
+	private static void addReadingRuleInclusionsExlusions(ReadingRuleContext rule) throws SQLException, RuntimeException {
+		if (rule.getAssetCategoryId() != -1) {
+			List<Map<String, Object>> inclusionExclusionList = new ArrayList<>();
+			getInclusionExclusionList(rule.getId(), rule.getIncludedResources(), true, inclusionExclusionList);
+			getInclusionExclusionList(rule.getId(), rule.getExcludedResources(), false, inclusionExclusionList);
+			
+			if (!inclusionExclusionList.isEmpty()) {
+				GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+															.table(ModuleFactory.getReadingRuleInclusionsExclusionsModule().getTableName())
+															.fields(FieldFactory.getReadingRuleInclusionsExclusionsFields())
+															.addRecords(inclusionExclusionList);
+				insertBuilder.save();
+			}
+		}
+	}
+	
+	private static void getInclusionExclusionList(long ruleId, List<Long> resources, boolean isInclude, List<Map<String, Object>> inclusionExclusionList) {
+		if (resources != null && !resources.isEmpty()) {
+			long orgId = AccountUtil.getCurrentOrg().getId();
+			for (Long resourceId : resources) {
+				Map<String, Object> prop = new HashMap<>();
+				prop.put("orgId", orgId);
+				prop.put("ruleId", ruleId);
+				prop.put("resourceId", resourceId);
+				prop.put("isInclude", isInclude);
+				
+				inclusionExclusionList.add(prop);
+			}
+		}
 	}
 	
 	private static final void updateWorkflowRuleChildIds(WorkflowRuleContext workflowRuleContext) throws Exception {
@@ -416,8 +447,16 @@ public class WorkflowRuleAPI {
 					case READING_RULE:
 						prop.putAll(typeWiseExtendedProps.get(ruleType).get((Long) prop.get("id")));
 						workflow = FieldUtil.getAsBeanFromMap(prop, ReadingRuleContext.class);
-						((ReadingRuleContext)workflow).setResource(ResourceAPI.getResource(((ReadingRuleContext)workflow).getResourceId()));
-						((ReadingRuleContext)workflow).setReadingField(modBean.getField(((ReadingRuleContext)workflow).getReadingFieldId()));
+						ReadingRuleContext readingRule = ((ReadingRuleContext)workflow);
+						readingRule.setReadingField(modBean.getField(((ReadingRuleContext)workflow).getReadingFieldId()));
+						
+						if (readingRule.getAssetCategoryId() == -1) {
+							readingRule.setResource(ResourceAPI.getResource(((ReadingRuleContext)workflow).getResourceId()));
+						}
+						else {
+							readingRule.setCategoryAssets(AssetsAPI.getAssetListOfCategory(readingRule.getAssetCategoryId()));
+							fetchInclusionsExclusions(readingRule);
+						}
 						break;
 					case SLA_RULE:
 						prop.putAll(typeWiseExtendedProps.get(ruleType).get((Long) prop.get("id")));
@@ -450,6 +489,41 @@ public class WorkflowRuleAPI {
 			return workflows;
 		}
 		return null;
+	}
+	
+	private static void fetchInclusionsExclusions (ReadingRuleContext readingRule) throws Exception {
+		FacilioModule module = ModuleFactory.getReadingRuleInclusionsExclusionsModule();
+		List<FacilioField> fields = FieldFactory.getReadingRuleInclusionsExclusionsFields();
+		FacilioField ruleId = FieldFactory.getAsMap(fields).get("ruleId");
+		
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+																.table(module.getTableName())
+																.select(fields)
+																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+																.andCondition(CriteriaAPI.getCondition(ruleId, String.valueOf(readingRule.getId()), PickListOperators.IS));
+		
+		List<Map<String, Object>> props = selectRecordBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			List<Long> includedResources = new ArrayList<>();
+			List<Long> excludedResources = new ArrayList<>();
+			
+			for (Map<String, Object> prop : props) {
+				boolean isInclude = (boolean) prop.get("isInclude");
+				if (isInclude) {
+					includedResources.add((Long) prop.get("resourceId"));
+				}
+				else {
+					excludedResources.add((Long) prop.get("resourceId"));
+				}
+			}
+			
+			if (!includedResources.isEmpty()) {
+				readingRule.setIncludedResources(includedResources);
+			}
+			if (!excludedResources.isEmpty()) {
+				readingRule.setExcludedResources(excludedResources);
+			}
+		}
 	}
 	
 	public static List<ReadingRuleContext> getReadingRules() throws Exception {

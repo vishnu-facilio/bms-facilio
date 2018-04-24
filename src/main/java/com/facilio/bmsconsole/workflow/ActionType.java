@@ -11,7 +11,6 @@ import java.util.Map;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.text.WordUtils;
-import org.apache.poi.ss.formula.functions.LinearRegressionFunction.FUNCTION;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -25,6 +24,7 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.context.NotificationContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -256,6 +256,11 @@ public enum ActionType {
 			}
 			
 			obj.put("readingMessage", getMessage(rule, range, reading));
+			obj.put("resourceId", reading.getParentId());
+			
+			String resourceName = ((ResourceContext)reading.getParent()).getName();
+			obj.put("source", resourceName);
+			obj.put("node", resourceName);
 		}
 		
 		private DateRange getRange(ReadingRuleContext rule, ReadingContext reading) {

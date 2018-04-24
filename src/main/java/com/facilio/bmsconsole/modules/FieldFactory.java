@@ -515,6 +515,7 @@ public class FieldFactory {
 		resourceId.setModule(module);
 		fields.add(resourceId);
 		
+		fields.add(getField("assetCategoryId", "ASSET_CATEGORY_ID", module, FieldType.LOOKUP));
 		fields.add(getField("baselineId", "BASELINE_ID", module, FieldType.NUMBER));
 		fields.add(getField("aggregation", "AGGREGATION", module, FieldType.STRING));
 		fields.add(getField("dateRange", "DATE_RANGE", module, FieldType.NUMBER));
@@ -528,6 +529,19 @@ public class FieldFactory {
 		fields.add(getField("maxFlapValue", "MAX_FLAP_VAL", module, FieldType.NUMBER));
 		fields.add(getField("flapFrequency", "FLAP_FREQUENCY", module, FieldType.NUMBER));
 
+		return fields;
+	}
+	
+	public static List<FacilioField> getReadingRuleInclusionsExclusionsFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getReadingRuleInclusionsExclusionsModule();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("ruleId", "RULE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("isInclude", "IS_INCLUDE", module, FieldType.BOOLEAN));
+		
 		return fields;
 	}
 

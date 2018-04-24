@@ -6,8 +6,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -59,7 +61,6 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 	}
 	
 	private long resourceId = -1;
-	
 	public long getResourceId() {
 		return resourceId;
 	}
@@ -75,6 +76,38 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		this.resource = resource;
 	}
 	
+	private long assetCategoryId = -1;
+	public long getAssetCategoryId() {
+		return assetCategoryId;
+	}
+	public void setAssetCategoryId(long assetCategoryId) {
+		this.assetCategoryId = assetCategoryId;
+	}
+	
+	private List<AssetContext> categoryAssets;
+	public List<AssetContext> getCategoryAssets() {
+		return categoryAssets;
+	}
+	public void setCategoryAssets(List<AssetContext> categoryAssets) {
+		this.categoryAssets = categoryAssets;
+	}
+
+	private List<Long> includedResources;
+	public List<Long> getIncludedResources() {
+		return includedResources;
+	}
+	public void setIncludedResources(List<Long> includedResources) {
+		this.includedResources = includedResources;
+	}
+	
+	private List<Long> excludedResources;
+	public List<Long> getExcludedResources() {
+		return excludedResources;
+	}
+	public void setExcludedResources(List<Long> excludedResources) {
+		this.excludedResources = excludedResources;
+	}
+
 	private FacilioField readingField;
 	public FacilioField getReadingField() {
 		return readingField;
@@ -232,7 +265,7 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 	public boolean evaluateMisc(String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		ReadingContext reading = (ReadingContext) record;
-		if (resourceId != reading.getParentId()) {
+		if (!checkForParentResource(reading)) {
 			return false;
 		}
 		Object currentReadingObj = FieldUtil.castOrParseValueAsPerType(readingField.getDataTypeEnum(), reading.getReading(readingField.getName()));
@@ -258,6 +291,27 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 				break;
 		}
 		return true;
+	}
+	
+	private boolean checkForParentResource(ReadingContext reading) {
+		if (assetCategoryId == -1) {
+			boolean isParent = resourceId == reading.getParentId();
+			if (isParent) {
+				reading.setParent(resource);
+			}
+			return isParent;
+		}
+		else {
+			long parentId = reading.getParentId();
+			Optional<AssetContext> parentAsset = categoryAssets.stream().filter((asset -> asset.getId() == parentId)).findFirst();
+			if (parentAsset.isPresent()) {
+				reading.setParent(parentAsset.get());
+				boolean presentInInclusion = includedResources == null || includedResources.isEmpty() || includedResources.contains(parentId);
+				boolean notPresentInExclusion = excludedResources == null || excludedResources.isEmpty() || !excludedResources.contains(parentId);
+				return presentInInclusion && notPresentInExclusion;
+			}
+			return false;
+		}
 	}
 	
 	private double calculateDiff(Object currentReadingObj, ReadingContext record, Number lastReading) throws Exception {
