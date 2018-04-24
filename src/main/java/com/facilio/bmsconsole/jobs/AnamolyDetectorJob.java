@@ -45,7 +45,7 @@ import com.google.gson.GsonBuilder;
 
 public class AnamolyDetectorJob extends FacilioJob {
 	private static long ONE_DAY = 1 * 24 * 60 * 60 * 1000L;
-	private static long SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000L;
+	private static long EIGHT_DAYS = 8 * 24 * 60 * 60 * 1000L;
 	private static long  FIFTEEN_MINUTES_IN_MILLISEC =  (15)  * 60 * 60 * 1000;
 
 	private static final Logger logger = Logger.getLogger(SessionManager.class.getName());
@@ -67,7 +67,7 @@ public class AnamolyDetectorJob extends FacilioJob {
 			
 			long now = System.currentTimeMillis();
 			long endTime = now - FIFTEEN_MINUTES_IN_MILLISEC; 
-			long startTime = endTime - SEVEN_DAYS;
+			long startTime = endTime - EIGHT_DAYS;
 			for(EnergyMeterContext energyMeter: allEnergyMeters) {
 				doEnergyMeterAnamolyDetection(energyMeter, startTime, endTime);
 			}
