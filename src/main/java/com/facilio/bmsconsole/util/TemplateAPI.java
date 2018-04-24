@@ -449,6 +449,7 @@ public class TemplateAPI {
 		addDefaultProps(template);
 		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
 		
+		template.setType(Type.EMAIL);
 		template.setBodyId(FileStoreFactory.getInstance().getFileStore(superAdmin.getId()).addFile("Email_Template_"+template.getName(), template.getMessage(), "text/plain"));
 		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
 		GenericInsertRecordBuilder userTemplateBuilder = new GenericInsertRecordBuilder()
@@ -517,6 +518,7 @@ public class TemplateAPI {
 	
 	public static long addSMSTemplate(long orgId, SMSTemplate template) throws Exception {
 		addDefaultProps(template);
+		template.setType(Type.EMAIL);
 		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
 		GenericInsertRecordBuilder userTemplateBuilder = new GenericInsertRecordBuilder()
 															.table("Templates")

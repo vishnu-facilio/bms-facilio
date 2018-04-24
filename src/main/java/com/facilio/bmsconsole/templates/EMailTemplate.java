@@ -51,7 +51,7 @@ public class EMailTemplate extends Template {
 	public JSONObject getOriginalTemplate() {
 		JSONObject obj = new JSONObject();
 		obj.put("sender", from);
-		obj.put("to", to);
+		obj.put("to", getTo(to));
 		obj.put("subject", subject);
 		obj.put("message", message);
 		

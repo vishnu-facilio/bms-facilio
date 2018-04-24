@@ -35,7 +35,7 @@ public class SMSTemplate extends Template {
 	@Override
 	public JSONObject getOriginalTemplate() {
 		JSONObject obj = new JSONObject();
-		obj.put("to", to);
+		obj.put("to", getTo(to));
 		obj.put("message", message);
 		
 		return obj;
