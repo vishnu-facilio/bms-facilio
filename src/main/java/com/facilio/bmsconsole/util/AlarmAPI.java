@@ -12,10 +12,14 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AlarmSeverityContext;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
+import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
+import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -252,5 +256,35 @@ public class AlarmAPI {
 																		.beanClass(AlarmSeverityContext.class);
 		
 		return selectBuilder.get();
+	}
+	
+	public static AlarmType getAlarmTypeFromResource(long resourceId) throws Exception {
+		if (resourceId != -1) {
+			ResourceContext resource = ResourceAPI.getExtendedResource(resourceId);
+			if (resource != null && resource.getResourceTypeEnum() == ResourceType.ASSET) {
+				AssetContext asset = (AssetContext) resource;
+				if (asset.getCategory() != null && asset.getCategory().getId() != -1) {
+					return getAlarmTypeFromAssetCategory(asset.getCategory().getId());
+				}
+			}
+		}
+		return null;
+	}
+	
+	public static AlarmType getAlarmTypeFromAssetCategory(long categoryId) throws Exception {
+		AssetCategoryContext category = AssetsAPI.getCategoryForAsset(categoryId);
+		
+		switch (category.getTypeEnum()) {
+			case ENERGY:
+				return AlarmType.ENERGY;
+			case FIRE:
+				return AlarmType.FIRE;
+			case HVAC:
+				return AlarmType.HVAC;
+			case MISC:
+				return AlarmType.MAINTENANCE;
+			default:
+				return null;
+		}
 	}
 }

@@ -34,6 +34,9 @@ public class AssetCategoryContext extends ModuleBaseWithCustomFields {
 		}
 		return null;
 	}
+	public AssetCategoryType getTypeEnum() {
+		return type;
+	}
 	
 	private long parentCategoryId;
 	public long getParentCategoryId() {

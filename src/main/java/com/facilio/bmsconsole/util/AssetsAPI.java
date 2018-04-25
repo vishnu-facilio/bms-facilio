@@ -94,7 +94,7 @@ public class AssetsAPI {
 																.beanClass(AssetContext.class)
 																.select(modBean.getAllFields(module.getName()))
 																.table(module.getTableName())
-																.andCustomWhere("ID = ?", assetId);
+																.andCondition(CriteriaAPI.getIdCondition(assetId, module));
 		
 		List<AssetContext> assets = selectBuilder.get();
 		if(assets != null && !assets.isEmpty()) {
@@ -265,7 +265,10 @@ public class AssetsAPI {
 																		.beanClass(AssetCategoryContext.class)
 																		.andCondition(CriteriaAPI.getIdCondition(categoryId, modBean.getModule(FacilioConstants.ContextNames.ASSET_CATEGORY)));
 		List<AssetCategoryContext> assetList = selectBuilder.get();
-		return assetList.get(0);
+		if (assetList != null && !assetList.isEmpty()) {
+			return assetList.get(0);
+		}
+		return null;
 	}
 	
 }

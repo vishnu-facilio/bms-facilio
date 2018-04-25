@@ -110,21 +110,21 @@ public class UpdateAlarmCommand implements Command {
 			JSONObject record = new JSONObject();
 			record.put("id", recordIds.get(0));
 			
-			WmsEvent event = new WmsEvent();
-			event.setNamespace("alarm");
-			event.setAction("newAlarm");
-			event.setEventType(WmsEvent.WmsEventType.RECORD_UPDATE);
-			event.addData("record", record);
 			if(ActivityType.UPDATED_ALARM_SEVERITY.equals(context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE))) {
+				WmsEvent event = new WmsEvent();
+				event.setNamespace("alarm");
+				event.setAction("newAlarm");
+				event.setEventType(WmsEvent.WmsEventType.RECORD_UPDATE);
+				event.addData("record", record);
 				event.addData("sound", true);
+				
+				List<User> users = AccountUtil.getOrgBean().getOrgUsers(AccountUtil.getCurrentOrg().getId(), true);
+				List<Long> recipients = new ArrayList<>();
+				for (User user : users) {
+					recipients.add(user.getId());
+				}
+				WmsApi.sendEvent(recipients, event);
 			}
-			
-			List<User> users = AccountUtil.getOrgBean().getOrgUsers(AccountUtil.getCurrentOrg().getId(), true);
-			List<Long> recipients = new ArrayList<>();
-			for (User user : users) {
-				recipients.add(user.getId());
-			}
-			WmsApi.sendEvent(recipients, event);
 		}
 		return false;
 	}

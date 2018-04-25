@@ -218,14 +218,10 @@ public enum ActionType {
 //			System.out.println(">>>>>>>>>>>>>>> jsonobject : "+obj.toJSONString());
 			if(obj != null) {
 				try {
-					if(obj.containsKey("alarmType")) {
-						obj.remove("alarmType");
-					}
 					if(obj.containsKey("subject")) {
 						String subject = (String) obj.get("subject");
 						obj.put("message", subject);
 					}
-					obj.put("alarmType", 5);
 					
 					if (currentRule instanceof ReadingRuleContext) {
 						addReadingAlarmProps(obj, (ReadingRuleContext) currentRule, (ReadingContext) currentRecord);

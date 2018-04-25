@@ -14,12 +14,19 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.AlarmAPI;
+import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
@@ -184,6 +191,13 @@ public class EventToAlarmCommand implements Command {
 			json.putAll(additionalInfo);
 		}
 
+		if (json.get("alarmType") == null) {
+			AlarmType alarmType = AlarmAPI.getAlarmTypeFromResource(event.getResourceId());
+			if (alarmType != null) {
+				json.put("alarmType", alarmType.getIntVal());
+			}
+		}
+		
 		JSONObject content = new JSONObject();
 		content.put("alarmInfo", json);
 
@@ -199,5 +213,4 @@ public class EventToAlarmCommand implements Command {
 		event.setAlarmId((long) res.get("alarmId"));
 		event.setEventState(EventState.ALARM_CREATED);
 	}
-
 }
