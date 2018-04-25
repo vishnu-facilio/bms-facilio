@@ -62,6 +62,15 @@ import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class DashboardUtil {
 	
+	public static String WEATHER_WIDGET_WORKFLOW_STRING = "<workflow> 		<parameter name=\"parentId\" type = \"Number\"/> 		<expression name=\"a\"> 				<module name=\"weather\"/> 				<criteria pattern=\"1\"> 						<condition sequence=\"1\">parentId`=`${parentId}</condition> 				</criteria> 				<orderBy name=\"ttime\" sort=\"desc\"/> 				<limit>1</limit> 		</expression> </workflow>";
+	public static String CARBON_EMISSION_CARD = "<workflow> 		<parameter name=\"parentId\" type=\"Number\"/> 		<expression name=\"mainMeter\"> 		 		 				<function>default.getMainEnergyMeter(parentId)</function>	 		</expression>	<expression name=\"a\"> 				<module name=\"energydata\"/> 				<criteria pattern=\"1 and 2\"> 						<condition sequence=\"1\">parentId`=`${mainMeter}</condition> 						<condition sequence=\"2\">ttime`Current Month`</condition> 				</criteria> 				<field name=\"totalEnergyConsumptionDelta\" aggregate = \"sum\"/> 		</expression> 		<expression name=\"carbonConstant\"> 				<constant>0.44</constant> 		</expression> 	<result>a*carbonConstant</result> </workflow>";
+	
+	
+	public static String STATIC_WIDGET_WEATHER_CARD = "weathercard";
+	public static String STATIC_WIDGET_ENERGY_COST_CARD = "energycost";
+	public static String STATIC_WIDGET_ENERGY_CARD = "energycard";
+	public static String STATIC_WIDGET_PROFILE_CARD = "profilecard";
+	
 	public static final String ENERGY_METER_PURPOSE_MAIN = "Main";
 	public static List<String> workOrderXaxisOmitFields = new ArrayList<String>();
 	public static List<String> workOrderYaxisOmitFields = new ArrayList<String>();
@@ -245,6 +254,23 @@ public class DashboardUtil {
 		workRequestGroupByOmitFields.add("requester");
 		workRequestGroupByOmitFields.add("createdTime");
 		workRequestGroupByOmitFields.add("assignedBy");
+	}
+	
+	public static boolean addWidgetVsWorkflowContext(WidgetVsWorkflowContext widgetVsWorkflowContext) throws Exception {
+		if (widgetVsWorkflowContext != null) {
+			
+			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+					.table(ModuleFactory.getWidgetVsWorkflowModule().getTableName())
+					.fields(FieldFactory.getWidgetVsWorkflowFields());
+			
+			Map<String, Object> props = FieldUtil.getAsProperties(widgetVsWorkflowContext);
+			insertBuilder.addRecord(props);
+			insertBuilder.save();
+			
+			widgetVsWorkflowContext.setId((Long) props.get("id"));
+			return true;
+		}
+		return false;
 	}
 	
 	public static List<EnergyMeterContext> getMainEnergyMeter(String spaceList) throws Exception {

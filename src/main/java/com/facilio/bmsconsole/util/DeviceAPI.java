@@ -174,7 +174,7 @@ public class DeviceAPI
 	
 	public static EnergyMeterPurposeContext getEnergyMetersOfPurpose(String purposeName) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER);
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER_PURPOSE);
 
 		SelectRecordsBuilder<EnergyMeterPurposeContext> selectBuilder = new SelectRecordsBuilder<EnergyMeterPurposeContext>()
 				.select(modBean.getAllFields(module.getName()))

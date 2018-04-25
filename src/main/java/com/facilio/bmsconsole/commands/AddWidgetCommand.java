@@ -11,13 +11,16 @@ import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetListViewContext;
 import com.facilio.bmsconsole.context.WidgetStaticContext;
+import com.facilio.bmsconsole.context.WidgetVsWorkflowContext;
 import com.facilio.bmsconsole.context.WidgetWebContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericInsertRecordBuilder;
+import com.facilio.workflows.util.WorkflowUtil;
 
 public class AddWidgetCommand implements Command {
 
@@ -47,6 +50,24 @@ public class AddWidgetCommand implements Command {
 				props = FieldUtil.getAsProperties(widgetStaticContext);
 				insertBuilder.addRecord(props);
 				insertBuilder.save();
+				
+				if(widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD)) {
+					Long workflowId = WorkflowUtil.addWorkflow(DashboardUtil.WEATHER_WIDGET_WORKFLOW_STRING);
+					WidgetVsWorkflowContext widgetVsWorkflowContext = new WidgetVsWorkflowContext();
+					
+					widgetVsWorkflowContext.setWidgetId(widget.getId());
+					widgetVsWorkflowContext.setWorkflowId(workflowId);
+					widgetVsWorkflowContext.setWorkflowName("weather");
+					DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
+					
+					workflowId = WorkflowUtil.addWorkflow(DashboardUtil.CARBON_EMISSION_CARD);
+					widgetVsWorkflowContext = new WidgetVsWorkflowContext();
+					
+					widgetVsWorkflowContext.setWidgetId(widget.getId());
+					widgetVsWorkflowContext.setWorkflowId(workflowId);
+					widgetVsWorkflowContext.setWorkflowName("carbonEmission");
+					DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
+				}
 			}
 			else if(context.get(FacilioConstants.ContextNames.WIDGET_TYPE).equals(WidgetType.WEB)) {
 				WidgetWebContext widgetWebContext = (WidgetWebContext) widget;

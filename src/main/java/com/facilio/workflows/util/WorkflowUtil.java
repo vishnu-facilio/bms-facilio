@@ -172,10 +172,11 @@ public class WorkflowUtil {
 		insertBuilder.save();
 
 		workflowContext.setId((Long) props.get("id"));
-		
 		insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getWorkflowFieldModule().getTableName())
 				.fields(FieldFactory.getWorkflowFieldsFields());
+		
+		workflowContext = WorkflowUtil.getWorkflowContext(workflowContext.getId(), true);
 		for(ExpressionContext expression :workflowContext.getExpressions()) {
 			
 			String fieldName = expression.getFieldName();
@@ -241,7 +242,7 @@ public class WorkflowUtil {
 		if (props != null && !props.isEmpty()) {
 			workflowContext = FieldUtil.getAsBeanFromMap(props.get(0), WorkflowContext.class);
 		}
-		workflowContext = parseStringToWorkflowObject(workflowContext.getWorkflowString());
+		workflowContext = parseStringToWorkflowObject(workflowContext.getWorkflowString(),workflowContext);
 		
 		if(isWithExpParsed) {
 			List<ExpressionContext> temp= new ArrayList<>();
@@ -657,10 +658,13 @@ public class WorkflowUtil {
 		}
 		return condition;
 	}
-	
 	public static WorkflowContext parseStringToWorkflowObject(String workflow) throws Exception {
-    	
-		WorkflowContext workflowContext = new WorkflowContext();
+		return parseStringToWorkflowObject(workflow,null);
+	}
+	public static WorkflowContext parseStringToWorkflowObject(String workflow,WorkflowContext workflowContext) throws Exception {
+    	if(workflowContext == null) {
+    		workflowContext = new WorkflowContext();
+    	}
 		workflowContext.setWorkflowString(workflow);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		

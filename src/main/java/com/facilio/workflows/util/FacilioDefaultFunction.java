@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.workflow.exceptions.FunctionParamException;
 
 public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
@@ -32,6 +34,36 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 //			else if(!(objects[0] instanceof List)) {
 //				throw new FunctionParamException("Required Object is not of type List");
 //			}
+		}
+	},
+	GET_MAIN_ENERGY_METER(1,"getMainEnergyMeter") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			Long spaceId = (Long) objects[0];
+			List<EnergyMeterContext> energyMeterContexts = DashboardUtil.getMainEnergyMeter(spaceId+"");
+			
+			if(energyMeterContexts.size() < 0 || energyMeterContexts.get(0) == null) {
+				return null;
+			}
+
+			System.out.println("spaceId --  "+spaceId+"  allEqual --- "+energyMeterContexts.get(0).getId());
+			
+			return energyMeterContexts.get(0).getId();
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+			if(objects[0] == null) {
+				throw new FunctionParamException("Required Object is null");
+			}
+			else if(!(objects[0] instanceof Long)) {
+				throw new FunctionParamException("Required Object is not of type List");
+			}
 		}
 	};
 	
