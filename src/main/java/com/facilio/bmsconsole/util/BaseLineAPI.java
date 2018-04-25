@@ -10,10 +10,12 @@ import java.util.Map;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.BaseLineContext;
+import com.facilio.bmsconsole.context.BaseLineContext.RangeType;
 import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -112,6 +114,24 @@ public class BaseLineAPI {
 														.table(module.getTableName())
 														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getIdCondition(id, module))
+														;
+		
+		List<BaseLineContext> baseLines = getBaseLinesFromMap(selectBuilder.get());
+		if (baseLines != null && !baseLines.isEmpty()) {
+			return baseLines.get(0);
+		}
+		return null;
+	}
+	
+	public static BaseLineContext getBaseLine(RangeType rangeType) throws Exception {
+		FacilioModule module = ModuleFactory.getBaseLineModule();
+		List<FacilioField> fields = FieldFactory.getBaseLineFields();
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(fields)
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCondition("RANGE_TYPE", "RANGE_TYPE", rangeType.getVal()+"", NumberOperators.EQUALS))
 														;
 		
 		List<BaseLineContext> baseLines = getBaseLinesFromMap(selectBuilder.get());

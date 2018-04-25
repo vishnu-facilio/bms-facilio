@@ -6,6 +6,8 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.context.BaseLineContext;
+import com.facilio.bmsconsole.context.BaseLineContext.RangeType;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
 import com.facilio.bmsconsole.context.WidgetChartContext;
@@ -17,6 +19,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -66,6 +69,42 @@ public class AddWidgetCommand implements Command {
 					widgetVsWorkflowContext.setWidgetId(widget.getId());
 					widgetVsWorkflowContext.setWorkflowId(workflowId);
 					widgetVsWorkflowContext.setWorkflowName("carbonEmission");
+					DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
+				}
+				else if(widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_ENERGY_COST_CARD)) {
+					Long workflowId = WorkflowUtil.addWorkflow(DashboardUtil.ENERGY_COST_THIS_MONTH_CONSUMPTION_WORKFLOW);
+					WidgetVsWorkflowContext widgetVsWorkflowContext = new WidgetVsWorkflowContext();
+					
+					widgetVsWorkflowContext.setWidgetId(widget.getId());
+					widgetVsWorkflowContext.setWorkflowId(workflowId);
+					widgetVsWorkflowContext.setWorkflowName("currentMonth");
+					DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
+					
+					workflowId = WorkflowUtil.addWorkflow(DashboardUtil.ENERGY_COST_LAST_MONTH_CONSUMPTION_WORKFLOW);
+					widgetVsWorkflowContext = new WidgetVsWorkflowContext();
+					
+					widgetVsWorkflowContext.setWidgetId(widget.getId());
+					widgetVsWorkflowContext.setWorkflowId(workflowId);
+					widgetVsWorkflowContext.setWorkflowName("lastMonth");
+					DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
+					
+					BaseLineContext baseline = BaseLineAPI.getBaseLine(RangeType.PREVIOUS_MONTH);
+					String energyCostLastMonth = DashboardUtil.ENERGY_COST_LAST_MONTH_THIS_DATE_CONSUMPTION_WORKFLOW.replaceAll("\\$\\$BASELINE_ID\\$\\$", baseline.getId()+"");
+					workflowId = WorkflowUtil.addWorkflow(energyCostLastMonth);
+					widgetVsWorkflowContext = new WidgetVsWorkflowContext();
+					
+					widgetVsWorkflowContext.setWidgetId(widget.getId());
+					widgetVsWorkflowContext.setWorkflowId(workflowId);
+					widgetVsWorkflowContext.setWorkflowName("lastMonthThisDate");
+					DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
+					
+					energyCostLastMonth = DashboardUtil.LAST_MONTH_THIS_DATE.replaceAll("\\$\\$BASELINE_ID\\$\\$", baseline.getId()+"");
+					workflowId = WorkflowUtil.addWorkflow(energyCostLastMonth);
+					widgetVsWorkflowContext = new WidgetVsWorkflowContext();
+					
+					widgetVsWorkflowContext.setWidgetId(widget.getId());
+					widgetVsWorkflowContext.setWorkflowId(workflowId);
+					widgetVsWorkflowContext.setWorkflowName("lastMonthDate");
 					DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
 				}
 			}
