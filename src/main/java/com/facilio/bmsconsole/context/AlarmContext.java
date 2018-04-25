@@ -317,13 +317,18 @@ public class AlarmContext extends TicketContext {
 			return null;
 		}
 		else {
-			return AwsUtil.getConfig("clientapp.url")+"/app/firealarm/alarms";
+			if (clearedTime != -1) {
+				return AwsUtil.getConfig("clientapp.url")+"/app/fa/alarms/active/summary/"+super.getId();
+			}
+			else {
+				return AwsUtil.getConfig("clientapp.url")+"/app/fa/alarms/cleared/summary/"+super.getId();
+			}
 		}
 	}
 	
 	public String getMobileUrl() {
 		if(super.getId() != -1) {
-			return AwsUtil.getConfig("clientapp.url")+"/mobile/firealarm/summary/"+getId();
+			return AwsUtil.getConfig("clientapp.url")+"/mobile/alarms/summary/"+getId();
 		}
 		else {
 			return null;
