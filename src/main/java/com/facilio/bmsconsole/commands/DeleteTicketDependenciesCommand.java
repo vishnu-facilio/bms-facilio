@@ -37,7 +37,7 @@ public class DeleteTicketDependenciesCommand implements Command {
 			
 			if (taskIds != null && !taskIds.isEmpty()) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TICKET);
+				FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TASK);
 				TicketAPI.deleteTickets(module, taskIds);
 			}
 		}

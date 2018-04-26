@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -28,6 +27,7 @@ import com.facilio.bmsconsole.context.TicketTypeContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.DeleteRecordBuilder;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -37,7 +37,6 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
@@ -51,12 +50,18 @@ public class TicketAPI {
 		return AttachmentsAPI.getAttachments(FacilioConstants.ContextNames.TICKET_ATTACHMENTS, ticketId);
 	}
 	
-	public static int deleteTickets(FacilioModule module, Collection<Long> recordIds) throws SQLException {
-		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
-													.table(module.getTableName())
-													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-													.andCondition(CriteriaAPI.getIdCondition(recordIds, module));
-
+	public static int deleteTickets(FacilioModule module, Collection<Long> recordIds) throws Exception {
+		return deleteTickets(module, recordIds, -1);
+	}
+	
+	public static int deleteTickets(FacilioModule module, Collection<Long> recordIds, int level) throws Exception {
+		DeleteRecordBuilder<TicketContext> builder = new DeleteRecordBuilder<TicketContext>()
+															.module(module)
+															.andCondition(CriteriaAPI.getIdCondition(recordIds, module));
+															;
+		if (level != -1) {
+			builder.level(level);
+		}
 		return builder.delete();
 	}
 	

@@ -37,14 +37,13 @@ public class DeleteTicketCommand implements Command {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
 			
-			context.put(FacilioConstants.ContextNames.RECORD_LIST, getRecords(module, recordIds));
+			context.put(FacilioConstants.ContextNames.RECORD_LIST, getRecords(module, ids));
 			int rowsUpdated = 0;
 			if(recordIds != null && !recordIds.isEmpty()) {
-				FacilioModule ticketModule = modBean.getModule(FacilioConstants.ContextNames.TICKET);
-				rowsUpdated += TicketAPI.deleteTickets(ticketModule, recordIds);
+				rowsUpdated += TicketAPI.deleteTickets(module, recordIds);
 			}
 			if (dependentIds != null && !dependentIds.isEmpty()) {
-				rowsUpdated += TicketAPI.deleteTickets(module, dependentIds);
+				rowsUpdated += TicketAPI.deleteTickets(module, dependentIds, 2);
 			}
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
 		}
