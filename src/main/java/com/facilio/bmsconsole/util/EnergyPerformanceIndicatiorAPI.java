@@ -31,9 +31,10 @@ public class EnergyPerformanceIndicatiorAPI {
 	public static long getStartTimeForHistoricalCalculation(EnergyPerformanceIndicatorContext enpi) {
 		switch (enpi.getFrequencyEnum()) {
 			case DAILY:
+				return DateTimeUtil.getDayStartTime(-90, true);
 			case WEEKLY:
 			case MONTHLY:
-				return DateTimeUtil.getMonthStartTime(-60, true);
+				return DateTimeUtil.getMonthStartTime(-12, true);
 			case HALF_YEARLY:
 			case QUARTERTLY:
 				return DateTimeUtil.getYearStartTime(-1, true);
