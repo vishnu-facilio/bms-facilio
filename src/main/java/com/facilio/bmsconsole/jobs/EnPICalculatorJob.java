@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.jobs;
 
 import java.time.Month;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -35,7 +36,7 @@ public class EnPICalculatorJob extends FacilioJob {
 			List<Long> calculatedFieldIds = new ArrayList<>();
 			
 			if (enPIs != null && !enPIs.isEmpty()) {
-				long endTime = DateTimeUtil.getDayStartTime() - 1;
+				long endTime = DateTimeUtil.getHourStartTime() - 1;
 				while (!enPIs.isEmpty()) {
 					Iterator<EnergyPerformanceIndicatorContext> it = enPIs.iterator();
 					while (it.hasNext()) {
@@ -43,7 +44,9 @@ public class EnPICalculatorJob extends FacilioJob {
 						if(isCalculatable(enpi, calculatedFieldIds)) {
 							try {
 								Map<String, Object> lastReading = ReadingsAPI.getLastReading(enpi.getSpaceId(), enpi.getReadingFieldId());
-								long startTime = (long) lastReading.get("ttime") + 1;
+								long lastReadingTime = (long) lastReading.get("ttime");
+								ZonedDateTime zdt = DateTimeUtil.getDateTime(lastReadingTime).plusHours(1).truncatedTo(ChronoUnit.HOURS);
+								long startTime = DateTimeUtil.getMillis(zdt, true);
 								
 								ReadingContext reading = EnergyPerformanceIndicatiorAPI.calculateENPI(enpi, startTime, endTime);
 								
@@ -85,28 +88,31 @@ public class EnPICalculatorJob extends FacilioJob {
 	
 	private List<Integer> getFrequencyTypesToBeFetched() {
 		List<Integer> types = new ArrayList<Integer>();
-		types.add(FacilioFrequency.DAILY.getValue());
+		types.add(FacilioFrequency.HOURLY.getValue());
 		
 		ZonedDateTime zdt = DateTimeUtil.getDateTime();
 		
-		if (zdt.getDayOfWeek() == DateTimeUtil.getWeekFields().getFirstDayOfWeek()) {
-			types.add(FacilioFrequency.WEEKLY.getValue());
-		}
-		
-		if (zdt.getDayOfMonth() == 1) {
-			types.add(FacilioFrequency.MONTHLY.getValue());
+		if (zdt.getHour() == 0) {
+			types.add(FacilioFrequency.DAILY.getValue());
+			if (zdt.getDayOfWeek() == DateTimeUtil.getWeekFields().getFirstDayOfWeek()) {
+				types.add(FacilioFrequency.WEEKLY.getValue());
+			}
 			
-			if (zdt.getMonth() == Month.JANUARY) {
-				types.add(FacilioFrequency.QUARTERTLY.getValue());
-				types.add(FacilioFrequency.HALF_YEARLY.getValue());
-				types.add(FacilioFrequency.ANNUALLY.getValue());
-			}
-			else if (zdt.getMonth() == Month.JULY) {
-				types.add(FacilioFrequency.QUARTERTLY.getValue());
-				types.add(FacilioFrequency.HALF_YEARLY.getValue());
-			}
-			else if (zdt.getMonth() == Month.APRIL || zdt.getMonth() == Month.OCTOBER) {
-				types.add(FacilioFrequency.QUARTERTLY.getValue());
+			if (zdt.getDayOfMonth() == 1) {
+				types.add(FacilioFrequency.MONTHLY.getValue());
+				
+				if (zdt.getMonth() == Month.JANUARY) {
+					types.add(FacilioFrequency.QUARTERTLY.getValue());
+					types.add(FacilioFrequency.HALF_YEARLY.getValue());
+					types.add(FacilioFrequency.ANNUALLY.getValue());
+				}
+				else if (zdt.getMonth() == Month.JULY) {
+					types.add(FacilioFrequency.QUARTERTLY.getValue());
+					types.add(FacilioFrequency.HALF_YEARLY.getValue());
+				}
+				else if (zdt.getMonth() == Month.APRIL || zdt.getMonth() == Month.OCTOBER) {
+					types.add(FacilioFrequency.QUARTERTLY.getValue());
+				}
 			}
 		}
 		return types;

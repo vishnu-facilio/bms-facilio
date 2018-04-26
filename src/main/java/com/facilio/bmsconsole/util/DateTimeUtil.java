@@ -39,7 +39,8 @@ public class DateTimeUtil
 				return ZoneId.of(zone);
 			}
 		}
-		return ZoneId.of("Z");
+		return ZoneId.systemDefault();
+//		return ZoneId.of("Z");
 	}
 	
 	private static Locale getLocale()
@@ -77,7 +78,7 @@ public class DateTimeUtil
 		return LocalDate.now(zoneId).with(TemporalAdjusters.firstDayOfYear());
 	}
 	
-	private static long getMillis(ZonedDateTime ldTime, boolean resetMillis )
+	public static long getMillis(ZonedDateTime ldTime, boolean resetMillis )
 	{	
 		if(resetMillis)
 		{
@@ -87,7 +88,7 @@ public class DateTimeUtil
 		return ldTime.toInstant().toEpochMilli();
 	}
 	
-	private static long getSeconds(ZonedDateTime ldTime)
+	public static long getSeconds(ZonedDateTime ldTime)
 	{	
 		return ldTime.toEpochSecond();
 	}
