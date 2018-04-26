@@ -164,17 +164,17 @@ public class WorkflowContext {
 
 	public Object evaluateExpression(String exp,Map<String,Object> variablesMap) {
 
-		System.out.println("EXPRESSION STRING IS -- "+exp);
+		System.out.println("EXPRESSION STRING IS -- "+exp+" variablesMap -- "+variablesMap);
 		if(exp == null) {
 			return null;
 		}
 		Expression expression = new Expression(exp);
 		for(String key : variablesMap.keySet()) {
-			String value = null;
+			String value = "0";
 			if(variablesMap.get(key) != null) {
 				value = variablesMap.get(key).toString();
 			}
-			expression.with(""+key, value);
+			expression.with(key, value);
 		}
 		BigDecimal result = expression.eval();
 		return result.doubleValue();
