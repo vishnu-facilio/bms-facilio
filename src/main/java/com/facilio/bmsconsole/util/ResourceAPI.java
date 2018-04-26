@@ -36,6 +36,23 @@ public class ResourceAPI {
 		return null;									
 	}
 	
+	public static List<ResourceContext> getResources (List<Long> ids, boolean fetchDeleted) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
+		
+		SelectRecordsBuilder<ResourceContext> selectBuilder = new SelectRecordsBuilder<ResourceContext>()
+																		.select(fields)
+																		.module(module)
+																		.beanClass(ResourceContext.class)
+																		.andCondition(CriteriaAPI.getIdCondition(ids, module));
+		
+		if (fetchDeleted) {
+			selectBuilder.fetchDeleted();
+		}
+		return selectBuilder.get();
+	}
+	
 	public static ResourceContext getExtendedResource(long id) throws Exception {
 		ResourceContext resource = getResource(id);
 		if (resource != null) {
@@ -78,23 +95,8 @@ public class ResourceAPI {
 		return selectBuilder.getAsMap();
 	}
 	
-	public static Map<Long, ResourceContext> getExtendedResourcesAsMapFromIds (List<Long> resourceIds, boolean fetchDeleted) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
-		
-		SelectRecordsBuilder<ResourceContext> selectBuilder = new SelectRecordsBuilder<ResourceContext>()
-																		.select(fields)
-																		.module(module)
-																		.beanClass(ResourceContext.class)
-																		.andCondition(CriteriaAPI.getIdCondition(resourceIds, module));
-		
-		if (fetchDeleted) {
-			selectBuilder.fetchDeleted();
-		}
-		
-		List<ResourceContext> resources = selectBuilder.get();
-		Map<Long, ResourceContext> resourceMap = new HashMap<>();
+	public static List<ResourceContext> getExtendedResources (List<Long> resourceIds, boolean fetchDeleted) throws Exception {
+		List<ResourceContext> resources = getResources(resourceIds, fetchDeleted);
 		if(resources != null && !resources.isEmpty()) {
 			List<Long> spaceIds = new ArrayList<Long>();
 			List<Long> assetIds = new ArrayList<Long>();
@@ -112,28 +114,36 @@ public class ResourceAPI {
 						break;
 				}
 			}
-			
 			Map<Long, BaseSpaceContext> spaceMap = getSpaces(spaceIds, fetchDeleted);
 			Map<Long, AssetContext> assetMap = getAssets(assetIds, fetchDeleted);
 			
-			for(ResourceContext resource : resources) {
+			for(int i = 0; i < resources.size(); i++) {
+				ResourceContext resource = resources.get(i);
 				switch (resource.getResourceTypeEnum()) {
 					case SPACE:
 						BaseSpaceContext space = spaceMap.get(resource.getId());
-						if (space != null) {
-							resourceMap.put(space.getId(), space);
-						}
+						resources.set(i, space);
 						break;
 					case ASSET:
 						AssetContext asset = assetMap.get(resource.getId());
-						if(asset != null) {
-							if(asset.getSpaceId() != -1) {
-								asset.setSpace(spaceMap.get(asset.getSpaceId()));
-							}
-							resourceMap.put(asset.getId(), asset);
+						if(asset.getSpaceId() != -1) {
+							asset.setSpace(spaceMap.get(asset.getSpaceId()));
 						}
+						resources.set(i, asset);
 						break;
 				}
+			}
+			return resources;
+		}
+		return null;
+	}
+	
+	public static Map<Long, ResourceContext> getExtendedResourcesAsMapFromIds (List<Long> resourceIds, boolean fetchDeleted) throws Exception {
+		List<ResourceContext> resources = getExtendedResources(resourceIds, fetchDeleted);
+		Map<Long, ResourceContext> resourceMap = new HashMap<>();
+		if(resources != null && !resources.isEmpty()) {
+			for (ResourceContext resource : resources) {
+				resourceMap.put(resource.getId(), resource);
 			}
 		}
 		return resourceMap;

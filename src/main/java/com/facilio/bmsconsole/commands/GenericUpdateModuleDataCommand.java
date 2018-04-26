@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -30,17 +31,10 @@ public class GenericUpdateModuleDataCommand implements Command {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-			
-			String ids = StringUtils.join(recordIds, ",");
-			Condition idCondition = new Condition();
-			idCondition.setField(FieldFactory.getIdField(module));
-			idCondition.setOperator(NumberOperators.EQUALS);
-			idCondition.setValue(ids);
-			
 			UpdateRecordBuilder<ModuleBaseWithCustomFields> updateBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
 																					.module(module)
 																					.fields(fields)
-																					.andCondition(idCondition);
+																					.andCondition(CriteriaAPI.getIdCondition(recordIds, module));
 			
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, updateBuilder.update(record));
 		}

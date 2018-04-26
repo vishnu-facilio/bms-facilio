@@ -1126,8 +1126,7 @@ public class FacilioChainFactory {
 	public static Chain getDeleteAssetChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(SetTableNamesCommand.getForAsset());
-		c.addCommand(new LoadAllFieldsCommand());
-		c.addCommand(new GenericUpdateModuleDataCommand());
+		c.addCommand(new DeleteResourceCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
 		addCleanUpCommand(c);
 		return c;
