@@ -10,7 +10,6 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AlarmSeverityContext;
-import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;

@@ -1,11 +1,9 @@
 package com.facilio.bmsconsole.util;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import com.facilio.beans.ModuleBean;
@@ -16,7 +14,6 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.wms.endpoints.SessionManager;
 
 
 public class AnamolySchedulerUtil {

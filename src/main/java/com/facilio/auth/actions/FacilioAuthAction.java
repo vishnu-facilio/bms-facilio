@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.chain.Chain;
 import org.apache.struts2.ServletActionContext;
@@ -31,24 +32,6 @@ import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
-import org.apache.commons.chain.Chain;
-import org.apache.struts2.ServletActionContext;
-import org.json.simple.JSONObject;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class FacilioAuthAction extends ActionSupport {
 

@@ -1,7 +1,5 @@
 package com.facilio.filters;
 
-import com.facilio.aws.util.AwsUtil;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,6 +12,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.facilio.aws.util.AwsUtil;
 
 public class FacilioCorsFilter implements Filter {
 

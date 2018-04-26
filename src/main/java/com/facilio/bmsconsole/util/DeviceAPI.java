@@ -19,7 +19,6 @@ import com.facilio.bmsconsole.context.ControllerSettingsContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.context.FormulaContext.StringAggregateOperator;
 import com.facilio.bmsconsole.criteria.BuildingOperator;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
