@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.jobs;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -94,6 +95,14 @@ public class HistoricalENPICalculatorJob extends FacilioJob {
 		ScheduleInfo schedule = null;
 		List<Integer> values = null;
 		switch (frequency) {
+			case HOURLY:
+					schedule = new ScheduleInfo();
+					for (int i = 0; i < 24; i++) {
+						LocalTime time = LocalTime.of(i, 00);
+						schedule.addTime(time);
+					}
+					schedule.setFrequencyType(FrequencyType.DAILY);
+					return schedule;
 		    case DAILY:
 					schedule = new ScheduleInfo();
 					schedule.addTime("00:00");
