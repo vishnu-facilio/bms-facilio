@@ -1669,13 +1669,10 @@ public enum DateOperators implements Operator<String> {
 	private static String greaterOrLessThan(String columnName, String operator, String value) {
 		if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
 			StringBuilder builder = new StringBuilder();
-			builder.append("FLOOR(")
-					.append(columnName)
-					.append("/1000)")
+			builder.append(columnName)
 					.append(operator)
-					.append("FLOOR(")
 					.append(value)
-					.append("/1000)");
+					;
 			
 			return builder.toString();
 		}
@@ -1689,20 +1686,14 @@ public enum DateOperators implements Operator<String> {
 			
 			if(values != null && values.length > 1) {
 			StringBuilder builder = new StringBuilder();
-				builder.append("FLOOR(")
-						.append(columnName)
-						.append("/1000)");
+				builder.append(columnName);
 				if(isNot) {
 					builder.append(" NOT ");
 				}
 				builder.append(" BETWEEN ")
-						.append("FLOOR(")
 						.append(values[0])
-						.append("/1000)")
 						.append(" AND ")
-						.append("FLOOR(")
-						.append(values[1])
-						.append("/1000)");
+						.append(values[1]);
 				return builder.toString();
 			}
 		}
