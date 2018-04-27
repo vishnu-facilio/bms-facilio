@@ -11,17 +11,25 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.chain.Chain;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.AnalyticsAnamolyContext;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.AnamolySchedulerUtil;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
+import com.facilio.bmsconsole.view.ReadingRuleContext;
+import com.facilio.events.constants.EventConstants;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
@@ -209,6 +217,30 @@ public class AnamolyDetectorJob extends FacilioJob {
 				.fields(FieldFactory.getAnamolyIDInsertFields())
 				.addRecords(props);
 		insertRecordBuilder.save();
+		
+		triggerAlarm(props);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void triggerAlarm(List<Map<String, Object>> props) throws Exception {
+		for (Map<String, Object> prop : props)
+		{
+			AnamolyIDInsertRow anamolyIDInsertRow = FieldUtil.getAsBeanFromMap(prop, AnamolyIDInsertRow.class);
+			AssetContext asset = AssetsAPI.getAssetInfo(anamolyIDInsertRow.getMeterId());
+			JSONObject obj = new JSONObject();
+			obj.put("message", "Anamoly Detected");
+			obj.put("source", asset.getName());
+			obj.put("node", asset.getName());
+			obj.put("resourceId", anamolyIDInsertRow.getMeterId());
+			obj.put("severity", "Minor");
+			obj.put("time", anamolyIDInsertRow.getTtime());
+			obj.put("consumption", anamolyIDInsertRow.getEnergyDelta());
+			
+			FacilioContext addEventContext = new FacilioContext();
+			addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, obj);
+			Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
+			getAddEventChain.execute(addEventContext);
+		}
 	}
 	
 	private Set<Long> convertStringToAnamolyIDs(String idList) {
