@@ -60,8 +60,9 @@ public class EventProcessor implements IRecordProcessor {
             e.printStackTrace();
         }
         for (Record record : processRecordsInput.getRecords()) {
+            String data = "";
             try {
-                String data = decoder.decode(record.getData()).toString();
+                data = decoder.decode(record.getData()).toString();
                 JSONParser parser = new JSONParser();
                 JSONObject object = (JSONObject) parser.parse(data);
                 if(object.containsKey(DATA_TYPE)){
@@ -80,7 +81,7 @@ public class EventProcessor implements IRecordProcessor {
                 }
             } catch (Exception e) {
             		CommonCommandUtil.emailException("Error in processing records : "
-            			+record.getSequenceNumber()+ " in EventProcessor ", e);
+            			+record.getSequenceNumber()+ " in EventProcessor ", e, data);
             		e.printStackTrace();
             }
         }

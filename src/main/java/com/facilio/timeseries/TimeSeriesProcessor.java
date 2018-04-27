@@ -43,12 +43,16 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 	public void processRecords(ProcessRecordsInput processRecordsInput) {
 
 		for (Record record : processRecordsInput.getRecords()) {
+			String data = "";
 			try {
-				String data = decoder.decode(record.getData()).toString();
+				data = decoder.decode(record.getData()).toString();
+				if(data.isEmpty()){
+					continue;
+				}
 				JSONParser parser = new JSONParser();
 				JSONObject payLoad = (JSONObject) parser.parse(data);
 				String dataType = (String)payLoad.remove(EventProcessor.DATA_TYPE);
-				
+
 				if(dataType!=null && "timeseries".equals(dataType)) {
 					long timeStamp=	record.getApproximateArrivalTimestamp().getTime();
 					TimeSeriesAPI.processPayLoad(timeStamp, payLoad);
@@ -58,7 +62,7 @@ public class TimeSeriesProcessor implements IRecordProcessor {
             catch (Exception e) {
             	
             		CommonCommandUtil.emailException("Error in processing records : "
-            		+record.getSequenceNumber()+ " in TimeSeries ", e);
+            		+record.getSequenceNumber()+ " in TimeSeries ", e, data);
                  e.printStackTrace();
             }
 		}

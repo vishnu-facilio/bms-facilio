@@ -212,12 +212,12 @@ public class CommonCommandUtil {
 			json.put("sender", "error@facilio.com");
 			json.put("to", "error@facilio.com");
 			StringBuilder subject = new StringBuilder();
-			
-			if(AwsUtil.getConfig("app.url").contains("localhost")) {
+			String environment = AwsUtil.getConfig("environment");
+			if(environment == null) {
 				subject.append("Local - ");
 			}
 			else {
-				subject.append("Prod - ");
+				subject.append(environment);
 			}
 			
 			if (msg != null) {
