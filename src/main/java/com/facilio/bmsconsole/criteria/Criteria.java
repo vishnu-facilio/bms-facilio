@@ -283,4 +283,10 @@ public class Criteria extends ExpressionEvaluator<Predicate> {
 		}
 		return pattern.isEmpty();
 	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return "ID : "+criteriaId+"\nPattern : "+pattern+"\nConditions : "+conditions;
+	}
 }

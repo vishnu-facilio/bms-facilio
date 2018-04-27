@@ -258,4 +258,10 @@ public class WorkflowRuleContext {
 			}
 		}
 	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return id+"::"+name;
+	}
 }
