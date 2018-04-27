@@ -735,7 +735,7 @@
 			<param name="permission">READ</param>
 			<param name="assetId">{1}</param>
 			<result name="success" type="json">
-				<param name="root">asset</param>
+				<param name="includeProperties">^asset.*</param>
 			</result>
 		</action>
 	</package>
