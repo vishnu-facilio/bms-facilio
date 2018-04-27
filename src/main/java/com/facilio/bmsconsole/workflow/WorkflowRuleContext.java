@@ -177,7 +177,7 @@ public class WorkflowRuleContext {
 	
 	public boolean evaluateWorkflowExpression (String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
 		boolean workflowFlag = true;
-		if (workflow != null && workflow.isBooleanReturnWorkflow()) {
+		if (workflow != null) {
 			double result = (double) WorkflowUtil.getWorkflowExpressionResult(workflow.getWorkflowString(), placeHolders);
 			workflowFlag = result == 1;
 		}

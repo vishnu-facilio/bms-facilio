@@ -17,6 +17,10 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			
 			checkParam(objects);
 			
+			if(objects[0] == null) {
+				return false;
+			}
+			
 			List<Object> list = (List<Object>) objects[0];
 			boolean allEqual = list.isEmpty() || list.stream().allMatch(list.get(0)::equals);
 
@@ -26,9 +30,6 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 		
 		public void checkParam(Object... objects) throws Exception {
 			if(objects.length <= 0) {
-				throw new FunctionParamException("Required Object is null");
-			}
-			if(objects[0] == null) {
 				throw new FunctionParamException("Required Object is null");
 			}
 //			else if(!(objects[0] instanceof List)) {
