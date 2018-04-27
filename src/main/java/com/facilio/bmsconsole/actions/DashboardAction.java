@@ -24,6 +24,7 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReportsChainFactory;
 import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardContext.DashboardPublishStatus;
 import com.facilio.bmsconsole.context.DashboardSharingContext;
@@ -1110,19 +1111,17 @@ public class DashboardAction extends ActionSupport {
 			}
 		}
 		
+		Multimap<Long, Long> buildingResourceMap = ArrayListMultimap.create();
 		
 		if(xAxisField.getName().equals("resource")) {
-			if(reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.SITE.getValue())) {
-				builder.innerJoin(modBean.getModule("basespace").getTableName())
-				.on(modBean.getModule("basespace").getTableName()+".SITE_ID = Tickets.RESOURCE_ID");
-			}
-			else if(reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.BUILDING.getValue())) {
-				builder.innerJoin(modBean.getModule("basespace").getTableName())
-				.on(modBean.getModule("basespace").getTableName()+".BUILDING_ID = Tickets.RESOURCE_ID");
-			}
-			else if(reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.FLOOR.getValue())) {
-				builder.innerJoin(modBean.getModule("basespace").getTableName())
-				.on(modBean.getModule("basespace").getTableName()+".FLOOR_ID = Tickets.RESOURCE_ID");
+			if(reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.BUILDING.getValue())) {
+				
+				for(BuildingContext building:SpaceAPI.getAllBuildings()) {
+					List<Long> resourceList = DashboardUtil.getAllResources(building.getId());
+					buildingResourceMap.putAll(building.getId(), resourceList);
+				}
+				report.getxAxisField().getField().setDisplayName("Building");
+				report.getxAxisField().getField().setName("building");
 			}
 		}
 		
@@ -1172,19 +1171,6 @@ public class DashboardAction extends ActionSupport {
 				
 				xAxisField = xAggregateOpperator.getSelectField(xAxisField);
 				
-				if(xAggregateOpperator instanceof SpaceAggregateOperator) {
-					
-					FacilioModule baseSpaceModule = modBean.getModule("basespace");
-					
-					builder.innerJoin(baseSpaceModule.getTableName())
-					.on(baseSpaceModule.getTableName()+".ID=Tickets.RESOURCE_ID");
-					
-					if(xAggregateOpperator.equals(SpaceAggregateOperator.BUILDING)) {
-						
-						report.getxAxisField().getField().setDisplayName("Building");
-						report.getxAxisField().getField().setName("building");
-					}
-				}
 			}
 		}
 
@@ -1208,10 +1194,6 @@ public class DashboardAction extends ActionSupport {
 		
 		report.setY1AxisField(reportY1AxisField);
 
-//		if ("WorkOrders".equals(module.getTableName())) {
-//			builder.leftJoin("PM_To_WO").on("WorkOrders.ID=WO_ID");
-//		}
-		
 		if(userFilterValues != null && report.getReportUserFilters() != null) {
 			for(ReportUserFilterContext userFilter : report.getReportUserFilters()) {
 				if(userFilterValues.containsKey(userFilter.getId().toString())) {
@@ -1296,25 +1278,13 @@ public class DashboardAction extends ActionSupport {
 		if(report.getReportSpaceFilterContext() != null) {
 			if(report.getReportSpaceFilterContext().getBuildingId() != null) {
 				
-				List<Long> resourceList = new ArrayList<>();
-				
 				Long buildingId = report.getReportSpaceFilterContext().getBuildingId();
 				
-				List<Long> buildingList = new ArrayList<>();
-				buildingList.add(buildingId);
+				List<Long> resourceList = DashboardUtil.getAllResources(buildingId);
 				
-				List<BaseSpaceContext> baseSpaceContexts = SpaceAPI.getBaseSpaceWithChildren(buildingList);
-				for(BaseSpaceContext baseSpaceContext :baseSpaceContexts) {
-					resourceList.add(baseSpaceContext.getId());
-				}
+				Condition spaceCondition = CriteriaAPI.getCondition("RESOURCE_ID", "resourceId",  StringUtils.join(resourceList, ","), NumberOperators.EQUALS);
 				
-				List<Long> assets = AssetsAPI.getAssetIdsFromBaseSpaceIds(resourceList);
-				
-				resourceList.addAll(assets);
-				
-				Condition condition = CriteriaAPI.getCondition("RESOURCE_ID", "resourceId",  StringUtils.join(resourceList, ","), NumberOperators.EQUALS);
-				
-				builder.andCondition(condition);
+				builder.andCondition(spaceCondition);
 			}
 		}
 		
@@ -1331,29 +1301,79 @@ public class DashboardAction extends ActionSupport {
 			
 			Multimap<Object, JSONObject> res = ArrayListMultimap.create();
 			HashMap<String, Object> labelMapping = new HashMap<>();
-			
-			for(int i=0;i<rs.size();i++) {
-	 			Map<String, Object> thisMap = rs.get(i);
-	 			if(thisMap!=null) {
-	 				
-	 					String strLabel = (thisMap.get("label") != null) ? thisMap.get("label").toString() : "Unknown";
-	 					JSONObject value = new JSONObject();
-		 				value.put("label", thisMap.get("groupBy"));
-		 				value.put("value", thisMap.get("value"));
+			HashMap<Long, JSONObject> buildingRes = new HashMap<>();
+			if(reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.BUILDING.getValue())) {
+				for(int i=0;i<rs.size();i++) {
+					Map<String, Object> thisMap = rs.get(i);
+					if(thisMap.get("label") != null) {
+						Long spaceId = (Long) thisMap.get("label");
+						String groupBy = (String) thisMap.get("groupBy");
+						Long value = (Long) thisMap.get("value");
+						
+						for(Long buildingId : buildingResourceMap.keySet()) {
+							
+							if(buildingResourceMap.get(buildingId).contains(spaceId)) {
+								
+								if(buildingRes.get(buildingId) != null) {
+									JSONObject map = (JSONObject) buildingRes.get(buildingId);
+									if(map.containsKey(groupBy)) {
+										Long value1 = (Long) map.get(groupBy);
+										value1 = value1 +value;
+										map.put(groupBy, value1);
+									}
+									else {
+										map.put(groupBy, value);
+									}
+									buildingRes.put(buildingId, map);
+								}
+								else {
+									JSONObject map = new JSONObject();
+									map.put(groupBy, value);
+									buildingRes.put(buildingId, map);
+								}
+								break;
+							}
+						}
+					}
+				}
+				for(Long buildingId :buildingRes.keySet()) {
+					JSONObject json = buildingRes.get(buildingId);
+					if(json != null) {
+						for(Object jsonKey : json.keySet()) {
+							
+							JSONObject value = new JSONObject();
+							value.put("label", jsonKey);
+			 				value.put("value", json.get(jsonKey));
+			 				
+			 				res.put(buildingId, value);
+						}
+ 					}
+				}
+			}
+			else {
+				for(int i=0;i<rs.size();i++) {
+		 			Map<String, Object> thisMap = rs.get(i);
+		 			if(thisMap!=null) {
 		 				
-		 				Object xlabel = thisMap.get("label");
-		 				if(thisMap.get("dummyField") != null) {
-		 					xlabel = thisMap.get("dummyField");
-		 				}
-		 				if (labelMapping.containsKey(strLabel)) {
-		 					xlabel = labelMapping.get(strLabel);
-		 				}
-		 				else {
-		 					labelMapping.put(strLabel, xlabel);
-		 				}
-		 				res.put(xlabel, value);
-	 			}
-		 	}
+		 					String strLabel = (thisMap.get("label") != null) ? thisMap.get("label").toString() : "Unknown";
+		 					JSONObject value = new JSONObject();
+			 				value.put("label", thisMap.get("groupBy"));
+			 				value.put("value", thisMap.get("value"));
+			 				
+			 				Object xlabel = thisMap.get("label");
+			 				if(thisMap.get("dummyField") != null) {
+			 					xlabel = thisMap.get("dummyField");
+			 				}
+			 				if (labelMapping.containsKey(strLabel)) {
+			 					xlabel = labelMapping.get(strLabel);
+			 				}
+			 				else {
+			 					labelMapping.put(strLabel, xlabel);
+			 				}
+			 				res.put(xlabel, value);
+		 			}
+			 	}
+			}
 			JSONArray finalres = new JSONArray();
 			for(Object key : res.keySet()) {
 				JSONObject j1 = new JSONObject();
@@ -1366,12 +1386,28 @@ public class DashboardAction extends ActionSupport {
 		else {
 			variance = DashboardUtil.getStandardVariance(rs);
 			JSONArray res = new JSONArray();
-			
+			Map<Long, Long> buildingResult = new HashMap<>();
 			for(int i=0;i<rs.size();i++) {
 
 				Map<String, Object> thisMap = rs.get(i);
-	 			JSONObject component = new JSONObject();
-	 			if(module.getName().equals(FacilioConstants.ContextNames.WORK_ORDER_REQUEST) && xAxisField.getColumnName().equals("URGENCY")) {
+				JSONObject component = new JSONObject();
+				if(reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.BUILDING.getValue())) {
+					
+					Object label = thisMap.get("label");
+					Object value = thisMap.get("value");
+					for(Long buildingId : buildingResourceMap.keySet()) {
+						
+						if(buildingResourceMap.get(buildingId).contains(label)) {
+							Long buildingValue = buildingResult.get(buildingId);
+							
+							buildingValue = buildingValue != null ? buildingValue += (Long)value:(Long)value;
+							
+							buildingResult.put(buildingId, buildingValue);
+							break;
+						}
+					}
+				}
+	 			else if(module.getName().equals(FacilioConstants.ContextNames.WORK_ORDER_REQUEST) && xAxisField.getColumnName().equals("URGENCY")) {
 	 				if(thisMap!=null) {
 	 					
 	 					Object label = thisMap.get("label");
@@ -1401,6 +1437,12 @@ public class DashboardAction extends ActionSupport {
 		 			}
 	 			}
 		 	}
+			for( Long key:buildingResult.keySet()) {
+				JSONObject component = new JSONObject();
+				component.put("label", key);
+				component.put("value", buildingResult.get(key));
+				res.add(component);
+			}
 			System.out.println("res -- "+res);
 			ticketData = res;
 		}
@@ -1441,7 +1483,7 @@ public class DashboardAction extends ActionSupport {
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
 				;
 		
-		builder.orderBy("TTIME");
+//		builder.orderBy("TTIME");
 		
 		if(module.getExtendModule() != null) {
 			builder.innerJoin(module.getExtendModule().getTableName())

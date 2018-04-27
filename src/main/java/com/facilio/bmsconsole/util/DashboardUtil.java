@@ -15,6 +15,7 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardSharingContext;
 import com.facilio.bmsconsole.context.DashboardSharingContext.SharingType;
@@ -260,6 +261,25 @@ public class DashboardUtil {
 		workRequestGroupByOmitFields.add("requester");
 		workRequestGroupByOmitFields.add("createdTime");
 		workRequestGroupByOmitFields.add("assignedBy");
+	}
+	
+	public static List<Long> getAllResources(Long spaceID) throws Exception {
+		
+		List<Long> resourceList = new ArrayList<>();
+		
+		List<Long> buildingList = new ArrayList<>();
+		buildingList.add(spaceID);
+		
+		List<BaseSpaceContext> baseSpaceContexts = SpaceAPI.getBaseSpaceWithChildren(buildingList);
+		for(BaseSpaceContext baseSpaceContext :baseSpaceContexts) {
+			resourceList.add(baseSpaceContext.getId());
+		}
+		
+		List<Long> assets = AssetsAPI.getAssetIdsFromBaseSpaceIds(resourceList);
+		
+		resourceList.addAll(assets);
+		
+		return resourceList;
 	}
 	
 	public static boolean addWidgetVsWorkflowContext(WidgetVsWorkflowContext widgetVsWorkflowContext) throws Exception {

@@ -284,13 +284,13 @@ public class FormulaContext {
 			this.columnName = columnName;
 		}
 		public FacilioField getSelectField(FacilioField field) throws Exception {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule baseSpaceModule = modBean.getModule("basespace");
-			
-			field.setColumnName(getcolumnName());
-			field.setModule(baseSpaceModule);
-			
-			field.setExtendedModule(null);
+//			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+//			FacilioModule baseSpaceModule = modBean.getModule("basespace");
+//			
+//			field.setColumnName(getcolumnName());
+//			field.setModule(baseSpaceModule);
+//			
+//			field.setExtendedModule(null);
 			
 			return field;
 		}
