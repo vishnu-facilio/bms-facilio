@@ -145,6 +145,22 @@ public class ProcessXLS implements Command {
 					colVal.put(cellName, val);
 
 				}
+				
+				if(colVal.values() == null || colVal.values().isEmpty()) {
+					break;
+				}
+				else {
+					boolean isAllNull = true;
+					for( Object value:colVal.values()) {
+						if(value != null) {
+							isAllNull = false;
+							break;
+						}
+					}
+					if(isAllNull) {
+						break;
+					}
+				}
 				System.out.println("Finished loading data from file  "+row_no +" rows . "+metainfo+" \n" + new Date(System.currentTimeMillis()));
 				
 				System.out.println("colVal ---= "+colVal);
@@ -196,6 +212,8 @@ public class ProcessXLS implements Command {
 		ProcessXLS.populateDatas(metainfo, readingsList);
 		
 		workbook.close();
+		
+		System.out.println("IMPORT DONE");
 	}
 	
 	public static Long getSpaceIDforAssets(HashMap<String, Object> colVal) throws Exception {
