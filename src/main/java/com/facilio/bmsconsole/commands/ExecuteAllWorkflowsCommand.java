@@ -66,9 +66,18 @@ public class ExecuteAllWorkflowsCommand implements Command
 					Criteria parentCriteria = new Criteria();
 					parentCriteria.addAndCondition(CriteriaAPI.getCondition(parentRule, CommonOperators.IS_EMPTY));
 					parentCriteria.addAndCondition(CriteriaAPI.getCondition(onSuccess, CommonOperators.IS_EMPTY));
+					if (moduleName.equals("fcureading")) {
+						System.out.println("Criteria : "+parentCriteria);
+					}
 					List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(moduleId, activities, parentCriteria, ruleTypes);
 					while (workflowRules != null && !workflowRules.isEmpty()) {
+						if (moduleName.equals("fcureading")) {
+							System.out.println("Rules : "+workflowRules);
+						}
 						Criteria childCriteria = executeWorkflows(workflowRules, moduleName, new LinkedList<>(entry.getValue()), (FacilioContext) context);
+						if (moduleName.equals("fcureading")) {
+							System.out.println("Criteria : "+childCriteria);
+						}
 						if (childCriteria == null) {
 							break;
 						}
