@@ -26,6 +26,7 @@ import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.CommonOperators;
+import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -684,5 +685,34 @@ public class PreventiveMaintenanceAPI {
 		
 		recordBuilder.save();
 		return (long) props.get("id");
+	}
+	
+	public static long getPMCount(List<FacilioField> conditionFields, List<Condition> conditions) throws Exception {
+		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
+		FacilioModule woTemplateModule = ModuleFactory.getWorkOrderTemplateModule();
+		FacilioField countField = FieldFactory.getField("count", "COUNT(*)", FieldType.NUMBER);
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(countField);
+		fields.addAll(FieldFactory.getWorkOrderTemplateFields());
+		if (conditionFields != null) {
+			fields.addAll(conditionFields);
+		}
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+												.select(fields)
+												.table(module.getTableName())
+												.innerJoin(woTemplateModule.getTableName())
+												.on(module.getTableName()+".TEMPLATE_ID = "+woTemplateModule.getTableName()+".ID");
+		
+		if (conditions != null && !conditions.isEmpty()) {
+			conditions.forEach(condition -> builder.andCondition(condition));
+		}
+		List<Map<String, Object>> rs = builder.get();
+		if (rs == null || rs.isEmpty()) {
+			return 0;
+		}
+		else {
+			return (Long) rs.get(0).get("count");
+		}
 	}
 }
