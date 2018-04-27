@@ -225,16 +225,15 @@ public class AnamolyDetectorJob extends FacilioJob {
 	private void triggerAlarm(List<Map<String, Object>> props) throws Exception {
 		for (Map<String, Object> prop : props)
 		{
-			AnamolyIDInsertRow anamolyIDInsertRow = FieldUtil.getAsBeanFromMap(prop, AnamolyIDInsertRow.class);
-			AssetContext asset = AssetsAPI.getAssetInfo(anamolyIDInsertRow.getMeterId());
+			AssetContext asset = AssetsAPI.getAssetInfo((long) prop.get("meterId"));
 			JSONObject obj = new JSONObject();
 			obj.put("message", "Anamoly Detected");
 			obj.put("source", asset.getName());
 			obj.put("node", asset.getName());
-			obj.put("resourceId", anamolyIDInsertRow.getMeterId());
+			obj.put("resourceId", (long) prop.get("meterId"));
 			obj.put("severity", "Minor");
-			obj.put("time", anamolyIDInsertRow.getTtime());
-			obj.put("consumption", anamolyIDInsertRow.getEnergyDelta());
+			obj.put("time", (long) prop.get("ttime"));
+			obj.put("consumption", (double) prop.get("energyDelta"));
 			
 			FacilioContext addEventContext = new FacilioContext();
 			addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, obj);
