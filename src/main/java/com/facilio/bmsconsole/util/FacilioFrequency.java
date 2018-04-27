@@ -8,7 +8,8 @@ public enum FacilioFrequency {
 	QUARTERTLY,
 	HALF_YEARLY,
 	ANNUALLY,
-	CUSTOM
+	CUSTOM,
+	HOURLY
 	;
 	public int getValue() {
 		return ordinal();

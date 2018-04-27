@@ -7,7 +7,6 @@ import org.apache.commons.chain.Chain;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
-import com.facilio.bmsconsole.context.DashboardSharingContext;
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.context.ViewSharingContext;
 import com.facilio.bmsconsole.view.FacilioView;

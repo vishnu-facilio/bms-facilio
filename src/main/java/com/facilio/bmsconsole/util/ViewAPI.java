@@ -10,7 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.DashboardSharingContext;
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.context.ViewSharingContext;
 import com.facilio.bmsconsole.context.ViewSharingContext.SharingType;

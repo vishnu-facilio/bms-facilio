@@ -16,6 +16,7 @@ import com.amazonaws.services.kinesis.clientlibrary.types.ProcessRecordsInput;
 import com.amazonaws.services.kinesis.clientlibrary.types.ShutdownInput;
 import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.events.context.EventRule;
 import com.facilio.events.util.EventAPI;
 import com.facilio.events.util.EventRulesAPI;
@@ -78,7 +79,9 @@ public class EventProcessor implements IRecordProcessor {
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+            		CommonCommandUtil.emailException("Error in processing records : "
+            			+record.getSequenceNumber()+ " in EventProcessor ", e);
+            		e.printStackTrace();
             }
         }
     }

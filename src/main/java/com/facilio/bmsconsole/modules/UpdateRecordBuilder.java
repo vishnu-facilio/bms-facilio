@@ -67,8 +67,8 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	}
 
 	@Override
-	public UpdateRecordBuilder<E> andCustomWhere(String where, Object... values) {
-		this.where.andCustomWhere(where, values);
+	public UpdateRecordBuilder<E> andCustomWhere(String whereCondition, Object... values) {
+		this.where.andCustomWhere(whereCondition, values);
 		return this;
 	}
 	

@@ -12,6 +12,7 @@ import com.amazonaws.services.kinesis.clientlibrary.types.ProcessRecordsInput;
 import com.amazonaws.services.kinesis.clientlibrary.types.ShutdownInput;
 import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.events.tasker.tasks.EventProcessor;
 
 public class TimeSeriesProcessor implements IRecordProcessor {
@@ -55,7 +56,10 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 				}
             }
             catch (Exception e) {
-                e.printStackTrace();
+            	
+            		CommonCommandUtil.emailException("Error in processing records : "
+            		+record.getSequenceNumber()+ " in TimeSeries ", e);
+                 e.printStackTrace();
             }
 		}
 	}

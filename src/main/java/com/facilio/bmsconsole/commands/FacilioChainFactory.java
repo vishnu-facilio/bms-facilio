@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
+import com.facilio.aws.util.AwsUtil;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -1126,8 +1127,7 @@ public class FacilioChainFactory {
 	public static Chain getDeleteAssetChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(SetTableNamesCommand.getForAsset());
-		c.addCommand(new LoadAllFieldsCommand());
-		c.addCommand(new GenericUpdateModuleDataCommand());
+		c.addCommand(new DeleteResourceCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -2072,15 +2072,16 @@ public class FacilioChainFactory {
 	
 }
 
-class TransactionChain extends ChainBase
-{
-	private  final static boolean  ENABLE_JTA = false;
-	public boolean execute(Context context)
-            throws Exception
-            {
+class TransactionChain extends ChainBase {
+	private boolean enableTransaction = false;
+	public boolean execute(Context context) throws Exception {
 		boolean istransaction = false;
+		String jtaEnabled = AwsUtil.getConfig("enable.transaction");
+		if(jtaEnabled != null) {
+			enableTransaction = Boolean.parseBoolean(jtaEnabled);
+		}
 		try {
-			if (ENABLE_JTA) {
+			if (enableTransaction) {
 				TransactionManager tm = FacilioTransactionManager.INSTANCE.getTransactionManager();
 				Transaction currenttrans = tm.getTransaction();
 				if (currenttrans == null) {
@@ -2090,19 +2091,19 @@ class TransactionChain extends ChainBase
 					//LOGGER.info("joining parent transaction for " + method.getName());
 				} 
 			}
-				boolean status = super.execute(context);
-				if (ENABLE_JTA) {
-					if (istransaction) {
-					//	LOGGER.info("commit transaction for " + method.getName());
-						FacilioTransactionManager.INSTANCE.getTransactionManager().commit();
-					} 
+			boolean status = super.execute(context);
+			if (enableTransaction) {
+				if (istransaction) {
+				//	LOGGER.info("commit transaction for " + method.getName());
+					FacilioTransactionManager.INSTANCE.getTransactionManager().commit();
 				}
+			}
 				
-return status;
+			return status;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			if (ENABLE_JTA) {
+			if (enableTransaction) {
 				if (istransaction) {
 					FacilioTransactionManager.INSTANCE.getTransactionManager().rollback();
 					//LOGGER.info("rollback transaction for " + method.getName());
@@ -2110,5 +2111,5 @@ return status;
 			}
 			throw e;
 		}
-            }
+	}
 }
