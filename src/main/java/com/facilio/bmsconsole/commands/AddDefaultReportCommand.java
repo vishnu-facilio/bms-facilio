@@ -40,6 +40,18 @@ public class AddDefaultReportCommand implements Command {
 					paramValues.put(module.getName()+"_"+field.getName(), String.valueOf(field.getId()));
 				}
 			}
+			
+			module = modBean.getModule(ContextNames.ALARM);
+			
+			paramValues.put("alarmModuleId", String.valueOf(module.getModuleId()));
+			
+			fields = modBean.getAllFields(module.getName());
+			if(fields != null) {
+				for(FacilioField field:fields) {
+					paramValues.put(module.getName()+"_"+field.getName(), String.valueOf(field.getId()));
+				}
+			}
+			
 			System.out.println(paramValues);
 			SQLScriptRunner scriptRunner = new SQLScriptRunner(INSERT_REPORTS_SQL, true, paramValues);
 			scriptRunner.runScript();

@@ -1280,6 +1280,13 @@ public class DashboardAction extends ActionSupport {
 				
 				Long buildingId = report.getReportSpaceFilterContext().getBuildingId();
 				
+				if(buildingId.equals(-1)) {
+					List<BuildingContext> buildings = SpaceAPI.getAllBuildings();
+					if(buildings != null && !buildings.isEmpty()) {
+						buildingId = buildings.get(0).getId();
+					}
+				}
+				
 				List<Long> resourceList = DashboardUtil.getAllResources(buildingId);
 				
 				Condition spaceCondition = CriteriaAPI.getCondition("RESOURCE_ID", "resourceId",  StringUtils.join(resourceList, ","), NumberOperators.EQUALS);
