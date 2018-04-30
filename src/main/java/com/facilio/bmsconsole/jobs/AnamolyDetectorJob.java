@@ -239,7 +239,7 @@ public class AnamolyDetectorJob extends FacilioJob {
 			obj.put("severity", "Minor");
 			obj.put("time", context.getTtime());
 			obj.put("consumption", context.getEnergyDelta());
-			
+
 			FacilioContext addEventContext = new FacilioContext();
 			addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, obj);
 			Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();

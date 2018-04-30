@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -12,10 +13,13 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
@@ -43,9 +47,16 @@ public class GetAssetReportCards implements Command {
 			faCount.put("label", "Alarms");
 			faCount.put("data", getFireAlarmsCount(assetId));
 			
+			JSONObject pmCount = new JSONObject();
+			pmCount.put("type", "count");
+			pmCount.put("name", "pm");
+			pmCount.put("label", "Preventive Maintenance");
+			pmCount.put("data", getPMCount(assetId));
+			
 			JSONArray reportCards = new JSONArray();
 			reportCards.add(woCount);
 			reportCards.add(faCount);
+			reportCards.add(pmCount);
 			
 			context.put(FacilioConstants.ContextNames.REPORTS, reports);
 			context.put(FacilioConstants.ContextNames.REPORT_CARDS, reportCards);
@@ -135,5 +146,14 @@ public class GetAssetReportCards implements Command {
 		else {
 			return (Long) rs.get(0).get("count");
 		}
+	}
+	
+	private static long getPMCount(long assetId) throws Exception {
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getWorkOrderTemplateFields());
+		FacilioField assetField = fieldMap.get("resourceId");
+		Condition condition = CriteriaAPI.getCondition(assetField, String.valueOf(assetId), NumberOperators.EQUALS);
+		return PreventiveMaintenanceAPI.getPMCount(Collections.singletonList(assetField), Collections.singletonList(condition));
+		
 	}
 }

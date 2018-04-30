@@ -134,7 +134,7 @@ public class ModuleAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
 
 		List<FacilioField> fields = new ArrayList();
-		if(resourceType!= null && getAssetId() != -1 && getCategoryId() != -1)
+		if(resourceType!= null && getCategoryId() != -1)
 		{
 			FacilioModule module = null;
 			if(resourceType.equalsIgnoreCase("asset"))
@@ -148,7 +148,7 @@ public class ModuleAction extends ActionSupport {
 			context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, module);
 			context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, getCategoryId());
 			context.put(FacilioConstants.ContextNames.LIMIT_VALUE, -1);
-			context.put(FacilioConstants.ContextNames.PARENT_ID, getAssetId());
+//			context.put(FacilioConstants.ContextNames.PARENT_ID, getAssetId());
 			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			

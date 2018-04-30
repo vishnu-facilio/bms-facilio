@@ -184,10 +184,10 @@ public class WorkflowRuleContext {
 		return workflowFlag;
 	}
 	
-	public Map<String, Object> getPlaceHolders(String moduleName, Object record, Map<String, Object> rulePlaceHolders, FacilioContext context) throws Exception {
-		Map<String, Object> recordPlaceHolders = new HashMap<>(rulePlaceHolders);
-		CommonCommandUtil.appendModuleNameInKey(moduleName, moduleName, FieldUtil.getAsProperties(record), recordPlaceHolders);
-		return recordPlaceHolders;
+	public Map<String, Object> constructPlaceHolders(String moduleName, Object record, Map<String, Object> recordPlaceHolders, FacilioContext context) throws Exception {
+		Map<String, Object> rulePlaceHolders = new HashMap<>(recordPlaceHolders);
+		CommonCommandUtil.appendModuleNameInKey(null, "rule", FieldUtil.getAsProperties(this), rulePlaceHolders);
+		return rulePlaceHolders;
 	}
 	
 	private static final RuleType[] RULE_TYPES = RuleType.values();

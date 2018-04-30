@@ -44,7 +44,7 @@ public class AddPMReminderCommand implements Command {
 								case BEFORE_EXECUTION: action.setDefaultTemplateId(10);break;
 								case AFTER_EXECUTION: action.setDefaultTemplateId(11);break;
 								case BEFORE_DUE: action.setDefaultTemplateId(11);break;
-								case AFTER_DUE: action.setDefaultTemplateId(60);break;
+								case AFTER_DUE: action.setDefaultTemplateId(57);break;
 							}
 							reminder.setAction(action);
 						}

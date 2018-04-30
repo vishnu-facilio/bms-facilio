@@ -66,22 +66,26 @@ public class ExecuteAllWorkflowsCommand implements Command
 					Criteria parentCriteria = new Criteria();
 					parentCriteria.addAndCondition(CriteriaAPI.getCondition(parentRule, CommonOperators.IS_EMPTY));
 					parentCriteria.addAndCondition(CriteriaAPI.getCondition(onSuccess, CommonOperators.IS_EMPTY));
-					if (moduleName.equals("fcureading")) {
-						System.out.println("Criteria : "+parentCriteria);
-					}
 					List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(moduleId, activities, parentCriteria, ruleTypes);
-					while (workflowRules != null && !workflowRules.isEmpty()) {
-						if (moduleName.equals("fcureading")) {
-							System.out.println("Rules : "+workflowRules);
+					if (workflowRules != null && !workflowRules.isEmpty()) {
+						Map<String, Object> placeHolders = new HashMap<>();
+						CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeHolders);
+						CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeHolders);
+						
+						List records = new LinkedList<>(entry.getValue());
+						Iterator it = records.iterator();
+						while (it.hasNext()) {
+							Object record = it.next();
+							Map<String, Object> recordPlaceHolders = new HashMap<>(placeHolders);
+							CommonCommandUtil.appendModuleNameInKey(moduleName, moduleName, FieldUtil.getAsProperties(record), recordPlaceHolders);
+							while (workflowRules != null && !workflowRules.isEmpty()) {
+								Criteria childCriteria = executeWorkflows(workflowRules, moduleName, record, it, recordPlaceHolders, (FacilioContext) context);
+								if (childCriteria == null) {
+									break;
+								}
+								workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(moduleId, activities, childCriteria, ruleTypes);
+							}
 						}
-						Criteria childCriteria = executeWorkflows(workflowRules, moduleName, new LinkedList<>(entry.getValue()), (FacilioContext) context);
-						if (moduleName.equals("fcureading")) {
-							System.out.println("Criteria : "+childCriteria);
-						}
-						if (childCriteria == null) {
-							break;
-						}
-						workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(moduleId, activities, childCriteria, ruleTypes);
 					}
 				}
 			}
@@ -89,46 +93,36 @@ public class ExecuteAllWorkflowsCommand implements Command
 		return false;
 	}
 	
-	private Criteria executeWorkflows(List<WorkflowRuleContext> workflowRules, String moduleName, List records, FacilioContext context) throws Exception {
+	private Criteria executeWorkflows(List<WorkflowRuleContext> workflowRules, String moduleName, Object record, Iterator itr, Map<String, Object> recordPlaceHolders, FacilioContext context) throws Exception {
 		if(workflowRules != null && !workflowRules.isEmpty()) {
 			Map<String, FacilioField> fields = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleFields());
 			FacilioField parentRule = fields.get("parentRuleId");
 			FacilioField onSuccess = fields.get("onSuccess");
 			Criteria criteria = new Criteria();
 			
-			Map<String, Object> placeHolders = new HashMap<>();
-			CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeHolders);
-			CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeHolders);
-			
 			for(WorkflowRuleContext workflowRule : workflowRules) {
-				Map<String, Object> rulePlaceHolders = new HashMap<>(placeHolders);
-				CommonCommandUtil.appendModuleNameInKey(null, "rule", FieldUtil.getAsProperties(workflowRule), rulePlaceHolders);
-				Iterator it = records.iterator();
-				while (it.hasNext()) {
-					Object record = it.next();
-					Map<String, Object> recordPlaceHolders = workflowRule.getPlaceHolders(moduleName, record, rulePlaceHolders, (FacilioContext) context);
-					boolean miscFlag = false, criteriaFlag = false, workflowFlag = false;
-					miscFlag = workflowRule.evaluateMisc(moduleName, record, recordPlaceHolders, (FacilioContext) context);
-					if (miscFlag) {
-						criteriaFlag = workflowRule.evaluateCriteria(moduleName, record, recordPlaceHolders, (FacilioContext) context);
-						if (criteriaFlag) {
-							workflowFlag = workflowRule.evaluateWorkflowExpression(moduleName, record, recordPlaceHolders, (FacilioContext) context);
-						}
+				Map<String, Object> rulePlaceHolders = workflowRule.constructPlaceHolders(moduleName, record, recordPlaceHolders, (FacilioContext) context);
+				boolean miscFlag = false, criteriaFlag = false, workflowFlag = false;
+				miscFlag = workflowRule.evaluateMisc(moduleName, record, rulePlaceHolders, (FacilioContext) context);
+				if (miscFlag) {
+					criteriaFlag = workflowRule.evaluateCriteria(moduleName, record, rulePlaceHolders, (FacilioContext) context);
+					if (criteriaFlag) {
+						workflowFlag = workflowRule.evaluateWorkflowExpression(moduleName, record, rulePlaceHolders, (FacilioContext) context);
 					}
-					
-					boolean result = criteriaFlag && workflowFlag && miscFlag;
-					if(result) {
-						executeWorkflowActions(workflowRule, record, context, recordPlaceHolders);
-						if(workflowRule.getRuleTypeEnum().stopFurtherRuleExecution()) {
-							it.remove();
-						}
-					}
-					
-					Criteria currentCriteria = new Criteria();
-					currentCriteria.addAndCondition(CriteriaAPI.getCondition(parentRule, String.valueOf(workflowRule.getId()), NumberOperators.EQUALS));
-					currentCriteria.addAndCondition(CriteriaAPI.getCondition(onSuccess, String.valueOf(result), BooleanOperators.IS));
-					criteria.orCriteria(currentCriteria);
 				}
+				
+				boolean result = criteriaFlag && workflowFlag && miscFlag;
+				if(result) {
+					executeWorkflowActions(workflowRule, record, context, rulePlaceHolders);
+					if(workflowRule.getRuleTypeEnum().stopFurtherRuleExecution()) {
+						itr.remove();
+					}
+				}
+				
+				Criteria currentCriteria = new Criteria();
+				currentCriteria.addAndCondition(CriteriaAPI.getCondition(parentRule, String.valueOf(workflowRule.getId()), NumberOperators.EQUALS));
+				currentCriteria.addAndCondition(CriteriaAPI.getCondition(onSuccess, String.valueOf(result), BooleanOperators.IS));
+				criteria.orCriteria(currentCriteria);
 			}
 			return criteria;
 		}

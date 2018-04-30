@@ -59,7 +59,7 @@ public class EnPICalculatorJob extends FacilioJob {
 							}
 							catch (Exception e) {
 								e.printStackTrace();
-								CommonCommandUtil.emailException("EnPI Calculation failed for : "+enpi.getId(), e);
+								CommonCommandUtil.emailException("EnPI Calculation failed for : "+enpi.getId()+" in org : "+jc.getOrgId(), e);
 							}
 							calculatedFieldIds.add(enpi.getReadingFieldId());
 							it.remove();
