@@ -277,7 +277,9 @@ public class DashboardUtil {
 		
 		List<Long> assets = AssetsAPI.getAssetIdsFromBaseSpaceIds(resourceList);
 		
-		resourceList.addAll(assets);
+		if(assets != null) {
+			resourceList.addAll(assets);
+		}
 		
 		return resourceList;
 	}

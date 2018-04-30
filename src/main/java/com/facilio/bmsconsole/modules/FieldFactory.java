@@ -3476,7 +3476,7 @@ public class FieldFactory {
 		fields.add(getOrgIdField(module));
 		fields.add(getModuleIdField(module));
 		fields.add(getField("id", "ID", module, FieldType.NUMBER));
-		fields.add(getField("energyDelta", "TOTAL_ENERGY_CONSUMPTION_DELTA", module, FieldType.NUMBER));
+		fields.add(getField("energyDelta", "TOTAL_ENERGY_CONSUMPTION_DELTA", module, FieldType.DECIMAL));
 		fields.add(getField("meterId", "PARENT_METER_ID", module, FieldType.NUMBER));
 		
 		fields.add(getField("ttime", "TTIME", module, FieldType.NUMBER));
