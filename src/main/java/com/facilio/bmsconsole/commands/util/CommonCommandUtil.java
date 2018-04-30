@@ -217,7 +217,8 @@ public class CommonCommandUtil {
 				subject.append("Local - ");
 			}
 			else {
-				subject.append(environment);
+				subject.append(environment)
+						.append(" - ");
 			}
 			
 			if (msg != null) {
