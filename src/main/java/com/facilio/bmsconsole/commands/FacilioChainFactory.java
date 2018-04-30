@@ -1241,7 +1241,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getVirtualMeterChildrenChain() {
-		Chain c = new TransactionChain();
+		Chain c = new ChainBase();
 		c.addCommand(new GetVirtualMeterChildrenCommand());
 		addCleanUpCommand(c);
 		return c;
