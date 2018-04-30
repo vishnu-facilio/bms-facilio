@@ -425,14 +425,16 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 	}
 	
 	@Override
-	public Map<String, Object> constructPlaceHolders(String moduleName, Object record, Map<String, Object> rulePlaceHolders, FacilioContext context) throws Exception {
+	public Map<String, Object> constructPlaceHolders(String moduleName, Object record, Map<String, Object> recordPlaceHolders, FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
-		Map<String, Object> recordPlaceHolders = super.constructPlaceHolders(moduleName, record, rulePlaceHolders, context);
+		Map<String, Object> rulePlaceHolders = super.constructPlaceHolders(moduleName, record, recordPlaceHolders, context);
 		Map<String, Map<String,Object>> lastReadingMap =(Map<String, Map<String,Object>>)context.get(FacilioConstants.ContextNames.LAST_READINGS);
 		Map<String, Object> lastValue = lastReadingMap.get(((ReadingContext)record).getParentId()+"_"+readingField.getName());
 		if (lastValue != null) {
-			recordPlaceHolders.put("previousValue", FieldUtil.castOrParseValueAsPerType(readingField.getDataTypeEnum(), lastValue.get("value")));
+			rulePlaceHolders.put("previousValue", FieldUtil.castOrParseValueAsPerType(readingField.getDataTypeEnum(), lastValue.get("value")));
 		}
-		return recordPlaceHolders;
+		rulePlaceHolders.put("resourceId", ((ReadingContext)record).getParentId());
+		
+		return rulePlaceHolders;
 	}
 }
