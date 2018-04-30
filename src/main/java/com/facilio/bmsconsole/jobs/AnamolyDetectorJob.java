@@ -2,12 +2,10 @@ package com.facilio.bmsconsole.jobs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,7 +26,6 @@ import com.facilio.bmsconsole.util.AnamolySchedulerUtil;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
-import com.facilio.bmsconsole.view.ReadingRuleContext;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.tasker.job.FacilioJob;
@@ -38,9 +35,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.GsonBuilder;
 
 public class AnamolyDetectorJob extends FacilioJob {
-	private static long ONE_DAY = 1 * 24 * 60 * 60 * 1000L;
-	private static long EIGHT_DAYS = 8 * 24 * 60 * 60 * 1000L;
-	private static long  FIFTEEN_MINUTES_IN_MILLISEC =  (15)  * 60 * 60 * 1000;
+	private static long SEVEN_DAYS_IN_MILLISEC = 7 * 24 * 60 * 60 * 1000L;
+	private static long FIFTEEN_MINUTES_IN_MILLISEC = 15 * 60 * 60 * 1000;
 
 	private static final Logger logger = Logger.getLogger(SessionManager.class.getName());
 	
@@ -56,12 +52,9 @@ public class AnamolyDetectorJob extends FacilioJob {
 			// get the list of all sub meters
 			List<EnergyMeterContext> allEnergyMeters=DeviceAPI.getAllEnergyMeters();
 			
-			// get the list of all meters
-			List<ReadingContext> readings= new ArrayList<ReadingContext>();
-			
 			long now = System.currentTimeMillis();
 			long endTime = now - FIFTEEN_MINUTES_IN_MILLISEC; 
-			long startTime = endTime - EIGHT_DAYS;
+			long startTime = endTime - SEVEN_DAYS_IN_MILLISEC;
 			for(EnergyMeterContext energyMeter: allEnergyMeters) {
 				doEnergyMeterAnamolyDetection(energyMeter, startTime, endTime);
 			}
@@ -71,6 +64,7 @@ public class AnamolyDetectorJob extends FacilioJob {
 		}
 	}
 	
+	// internal class f
 	class AnamolyList {
 		Long[] anamolyIDs;
 		
@@ -94,31 +88,32 @@ public class AnamolyDetectorJob extends FacilioJob {
 			if(meterReadings.size() > 0) {
 				logger.log(Level.INFO, "received readings for ID " + energyMeterContext.getId() + " startTime = " + startTime + " endTime = " + endTime);
 			}else {
-				logger.log(Level.INFO, "NOT received readings for ID " + energyMeterContext.getId() + " startTime = " + startTime + " endTime = " + endTime);
+				logger.log(Level.SEVERE, "NOT received readings for ID " + energyMeterContext.getId() + " startTime = " + startTime + " endTime = " + endTime);
 			}
 				
 			String jsonInString = mapper.writeValueAsString(meterReadings);
 			String result=AwsUtil.doHttpPost(url, null, null, jsonInString);
 			
 			AnamolyList anamolyList = new GsonBuilder().create().fromJson(result, AnamolyList.class);
-			logger.log(Level.INFO, "received result " + result);
-			
+
+			if(anamolyList.getAnamolyIDs().length == 0) {
+				// No Anamoly is Detected by our algorithm
+				return;
+			}
+
 			String idList = Arrays.toString(anamolyList.getAnamolyIDs());
 			idList = "(" + idList.substring(1, idList.length() - 1) + ")";
 			
 			LinkedHashSet<Long> anamolyIDs=new LinkedHashSet<>(Arrays.asList(anamolyList.getAnamolyIDs()));
 			LinkedHashSet<Long> existingAnamolyIds=AnamolySchedulerUtil.getExistingAnamolyIDs(moduleName, idList);
 			
-			LinkedHashSet<Long> insertIDs= (LinkedHashSet)anamolyIDs.clone();	
-			insertIDs.removeAll(existingAnamolyIds);
+			anamolyIDs.removeAll(existingAnamolyIds);
 		
-			long currentTimeInMillisec=DateTimeUtil.getCurrenTime();
-			
-			if(!insertIDs.isEmpty()) {
-				insertAnamolyIDs(insertIDs, meterReadings, currentTimeInMillisec, endTime);
+			if(!anamolyIDs.isEmpty()) {
+				insertAnamolyIDs(anamolyIDs, meterReadings, DateTimeUtil.getCurrenTime(), endTime);
 			}else {
-				logger.info("No IDs found as anamoly");
-				
+				// No anamoly detected
+				//logger.info("No IDs found as anamoly");
 			}
 		}catch(Exception e) {
 			logger.log(Level.SEVERE, e.getMessage(), e);
@@ -134,6 +129,9 @@ public class AnamolyDetectorJob extends FacilioJob {
 		private double energyDelta;
 		private long createdTime;
 				
+		public AnamolyIDInsertRow() {
+		}
+		
 		public AnamolyIDInsertRow(long id, long orgId, long moduleId, long meterId ,long ttime, double energyDelta, long createdTime) {
 			this.id=id;
 			this.orgId=orgId;
@@ -148,6 +146,7 @@ public class AnamolyDetectorJob extends FacilioJob {
 			return id;
 		}
 		public void setId(long id) {
+			
 			this.id = id;
 		}
 		
@@ -198,17 +197,19 @@ public class AnamolyDetectorJob extends FacilioJob {
 	private void insertAnamolyIDs(LinkedHashSet<Long> insertIDs, List<AnalyticsAnamolyContext> anamolyContext, long currentTimeInMillisec, long endTimeOfWindow) throws Exception {
 		LinkedHashSet<Long> impactedIDs =(LinkedHashSet<Long>) insertIDs.clone();
 		List<Map<String, Object>> props = new ArrayList<>();
+		ArrayList<AnalyticsAnamolyContext> impactedContexts = new ArrayList<>();
 	
 		Iterator<AnalyticsAnamolyContext> iterator = anamolyContext.iterator();
 		while (iterator.hasNext() && (!impactedIDs.isEmpty())) {
 			AnalyticsAnamolyContext anamolyObject = iterator.next();
 			
-			if(impactedIDs.contains(anamolyObject.getId())  && (anamolyObject.getTtime() >  endTimeOfWindow - ONE_DAY))  {
+			if(impactedIDs.contains(anamolyObject.getId()) && (anamolyObject.getTtime() >= endTimeOfWindow - FIFTEEN_MINUTES_IN_MILLISEC))  {
 				AnamolyIDInsertRow newAnamolyId = new AnamolyIDInsertRow(anamolyObject.getId(), anamolyObject.getOrgId(), 
 								anamolyObject.getModuleId(), anamolyObject.getMeterId(), anamolyObject.getTtime(), anamolyObject.getEnergyDelta(), currentTimeInMillisec);
 				
 				props.add(FieldUtil.getAsProperties(newAnamolyId));
 				impactedIDs.remove(anamolyObject.getId());
+				impactedContexts.add(anamolyObject); 
 			}
 		}
 		
@@ -218,33 +219,31 @@ public class AnamolyDetectorJob extends FacilioJob {
 				.addRecords(props);
 		insertRecordBuilder.save();
 		
-		triggerAlarm(props);
+		triggerAlarm(impactedContexts);
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void triggerAlarm(List<Map<String, Object>> props) throws Exception {
-		for (Map<String, Object> prop : props)
+	private void triggerAlarm(List<AnalyticsAnamolyContext> impactedContexts) throws Exception {
+		
+		for(AnalyticsAnamolyContext context: impactedContexts)
 		{
-			AnamolyIDInsertRow anamolyIDInsertRow = FieldUtil.getAsBeanFromMap(prop, AnamolyIDInsertRow.class);
-			AssetContext asset = AssetsAPI.getAssetInfo(anamolyIDInsertRow.getMeterId());
+			long meterId = context.getMeterId();	
+			AssetContext asset = AssetsAPI.getAssetInfo(meterId);
+			String assetName = asset.getName();
+		
 			JSONObject obj = new JSONObject();
 			obj.put("message", "Anamoly Detected");
-			obj.put("source", asset.getName());
-			obj.put("node", asset.getName());
-			obj.put("resourceId", anamolyIDInsertRow.getMeterId());
+			obj.put("source", assetName);
+			obj.put("node", assetName);
+			obj.put("resourceId", meterId);
 			obj.put("severity", "Minor");
-			obj.put("time", anamolyIDInsertRow.getTtime());
-			obj.put("consumption", anamolyIDInsertRow.getEnergyDelta());
+			obj.put("time", context.getTtime());
+			obj.put("consumption", context.getEnergyDelta());
 			
 			FacilioContext addEventContext = new FacilioContext();
 			addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, obj);
 			Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
 			getAddEventChain.execute(addEventContext);
 		}
-	}
-	
-	private Set<Long> convertStringToAnamolyIDs(String idList) {
-		Long splitLongs[] = Arrays.asList(idList.split(",")).stream().map(Long::valueOf).toArray(Long[]::new);
-		return new HashSet<Long>(Arrays.asList(splitLongs));
 	}
 }
