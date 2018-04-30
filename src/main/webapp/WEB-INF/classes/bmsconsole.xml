@@ -3582,6 +3582,15 @@
 			<result name="success">/jsps/baseSpaceListPopup.jsp</result>
 		</action>
 	</package>
+	
+	<package name="widget" namespace="/api/widget" extends="home">
+		<action name="getUserCardData" class="com.facilio.bmsconsole.actions.WidgetAction" method="getUserCardData">
+			<result name="success" type="json">
+				<param name="includeProperties">^user.*,^result.*</param>
+			</result>
+		</action>
+	</package>
+	
 	<package name="dashboard" namespace="/api/dashboard" extends="home">
 		<action name="populateDefaultReports" class="com.facilio.bmsconsole.actions.DashboardAction" method="populateDefaultReports">
 		</action>
