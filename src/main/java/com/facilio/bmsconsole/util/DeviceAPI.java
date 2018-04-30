@@ -15,7 +15,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
-import com.facilio.bmsconsole.context.ControllerSettingsContext;
+import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -45,7 +45,7 @@ public class DeviceAPI
 	
 	public static final int VM_HISTORICAL_DATA_CALCULATION_INTERVAL = -3;
 
-	public static List<ControllerSettingsContext> getAllControllers() throws Exception {
+	public static List<ControllerContext> getAllControllers() throws Exception {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.table(ModuleFactory.getControllerModule().getTableName())
 				.select(FieldFactory.getControllerFields())
@@ -53,9 +53,9 @@ public class DeviceAPI
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if(props != null && !props.isEmpty()) {
-			List<ControllerSettingsContext> controllers = new ArrayList<>();
+			List<ControllerContext> controllers = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
-				controllers.add(FieldUtil.getAsBeanFromMap(prop, ControllerSettingsContext.class));
+				controllers.add(FieldUtil.getAsBeanFromMap(prop, ControllerContext.class));
 			}
 			return controllers;
 		}

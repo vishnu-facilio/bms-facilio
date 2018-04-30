@@ -8,7 +8,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.ControllerSettingsContext;
+import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -28,9 +28,9 @@ public class LoadControllerSettingsCommand implements Command {
 		List<Map<String, Object>> settings = builder.get();
 		
 		if(settings != null && !settings.isEmpty()) {
-			List<ControllerSettingsContext> controllercontext = new ArrayList<>();
+			List<ControllerContext> controllercontext = new ArrayList<>();
 			for(Map<String, Object> rule : settings) {
-				ControllerSettingsContext controlcontext = FieldUtil.getAsBeanFromMap(rule, ControllerSettingsContext.class);
+				ControllerContext controlcontext = FieldUtil.getAsBeanFromMap(rule, ControllerContext.class);
 				controllercontext.add(controlcontext);
 			}
 			context.put(FacilioConstants.ContextNames.CONTROLLER_SETTINGS, controllercontext);
