@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.websocket.EncodeException;
 
 import org.apache.struts2.ServletActionContext;
@@ -79,15 +80,17 @@ public class AdminAction extends ActionSupport
 		}
 	}
 	
-	public String clearCache()
+	public String clearCache() throws IOException
 	{
 		LRUCache.getFieldsCache().purgeCache();
 		LRUCache.getModuleFieldsCache().purgeCache();
 		System.out.println("Clear cache called");
-		return SUCCESS;
+		
+		
+		return SUCCESS ;
 	}
 	
-	public String reloadBrowser()
+	public String reloadBrowser() throws IOException
 	{
 		Message message = new Message(MessageType.SYSTEM);
 		
@@ -110,6 +113,8 @@ public class AdminAction extends ActionSupport
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		
 		return SUCCESS;
 	}
 	

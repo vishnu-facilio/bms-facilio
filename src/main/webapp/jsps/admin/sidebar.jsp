@@ -1,5 +1,7 @@
 <%@taglib uri="/struts-tags" prefix="s" %>
 <%@taglib uri="facilio-tags" prefix="f" %>
+<%@page import="java.util.Properties, org.apache.struts2.ServletActionContext" %>
+<%Properties buildinfo = (Properties)ServletActionContext.getServletContext().getAttribute("buildinfo");%>
 <div >
 <div class="navbar-default sidebar " role="navigation">
     <div class="sidebar-nav navbar-collapse">
@@ -44,7 +46,8 @@
         
       <div class="nav  sidebar-footer-btn  ">
         <div class="col-lg-12 col-centered" style="margin-bottom:30px">
-		<a href="#" data-toggle="tooltip" data-placement="bottom" title="Build Version" > April 22 2018 (V17)</a>
+		<a href="#" data-toggle="tooltip" data-placement="bottom" title="Build Version" > Build Date: <%= buildinfo.get("build.date") %> </a>
+		<br> <a href="#" data-toggle="tooltip" data-placement="bottom" title="Build Version" > Version: <%= buildinfo.get("version") %></a>
 			
         </div>
         </div>

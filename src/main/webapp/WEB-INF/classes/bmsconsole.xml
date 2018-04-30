@@ -1000,11 +1000,21 @@
 			<result name="success">/jsps/admin/showCache.jsp</result>
 		</action>
 		<action name="clearcache" class="com.facilio.bmsconsole.actions.AdminAction" method="clearCache">
-			<result name="success">/jsps/admin/showCache.jsp</result>
+			<result name="success" type="redirect">
+				<param name="location">buildInfo?showcache=true</param>
+			</result>
 		</action>
 		<action name="reloadbrowser" class="com.facilio.bmsconsole.actions.AdminAction" method="reloadBrowser">
-			<result name="success">/jsps/admin/showCache.jsp</result>
+			<result name="success" type="redirect">
+			<param name="location">buildInfo</param>
+			</result>
 		</action>
+		<action name="adminpage" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result name="success">/jsps/admin/adminlayout.jsp</result>
+		</action>
+		<action name="buildInfo" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result type="tiles">adminpage/buildinfo.jsp</result>
+			</action>
 	</package>
 
 	<package name="setup" namespace="/app/setup" extends="home">
