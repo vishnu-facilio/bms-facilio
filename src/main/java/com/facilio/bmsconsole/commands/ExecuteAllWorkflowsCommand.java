@@ -66,9 +66,6 @@ public class ExecuteAllWorkflowsCommand implements Command
 					Criteria parentCriteria = new Criteria();
 					parentCriteria.addAndCondition(CriteriaAPI.getCondition(parentRule, CommonOperators.IS_EMPTY));
 					parentCriteria.addAndCondition(CriteriaAPI.getCondition(onSuccess, CommonOperators.IS_EMPTY));
-					if (moduleName.equals("fcureading")) {
-						System.out.println("Criteria : "+parentCriteria);
-					}
 					List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(moduleId, activities, parentCriteria, ruleTypes);
 					if (workflowRules != null && !workflowRules.isEmpty()) {
 						Map<String, Object> placeHolders = new HashMap<>();
@@ -82,13 +79,7 @@ public class ExecuteAllWorkflowsCommand implements Command
 							Map<String, Object> recordPlaceHolders = new HashMap<>(placeHolders);
 							CommonCommandUtil.appendModuleNameInKey(moduleName, moduleName, FieldUtil.getAsProperties(record), recordPlaceHolders);
 							while (workflowRules != null && !workflowRules.isEmpty()) {
-								if (moduleName.equals("fcureading")) {
-									System.out.println("Rules : "+workflowRules);
-								}
 								Criteria childCriteria = executeWorkflows(workflowRules, moduleName, record, it, recordPlaceHolders, (FacilioContext) context);
-								if (moduleName.equals("fcureading")) {
-									System.out.println("Criteria : "+childCriteria);
-								}
 								if (childCriteria == null) {
 									break;
 								}
