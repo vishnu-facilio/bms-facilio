@@ -1314,7 +1314,7 @@ public class DashboardAction extends ActionSupport {
 					Map<String, Object> thisMap = rs.get(i);
 					if(thisMap.get("label") != null) {
 						Long spaceId = (Long) thisMap.get("label");
-						String groupBy = (String) thisMap.get("groupBy");
+						Object groupBy = thisMap.get("groupBy");;
 						Long value = (Long) thisMap.get("value");
 						
 						for(Long buildingId : buildingResourceMap.keySet()) {
