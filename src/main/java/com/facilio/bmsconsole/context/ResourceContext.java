@@ -61,6 +61,14 @@ public class ResourceContext extends ModuleBaseWithCustomFields {
 		}
 		return null;
 	}
+	
+	private long controllerId = -1;
+	public long getControllerId() {
+		return controllerId;
+	}
+	public void setControllerId(long controllerId) {
+		this.controllerId = controllerId;
+	}
 
 	public static enum ResourceType {
 		SPACE,

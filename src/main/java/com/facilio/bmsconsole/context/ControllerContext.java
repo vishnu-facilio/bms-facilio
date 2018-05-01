@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.context;
 
-public class ControllerSettingsContext {
+public class ControllerContext {
 	private long id = -1;
 	public long getId() {
 		return id;
@@ -25,14 +25,6 @@ public class ControllerSettingsContext {
 		this.name = name;
 	}
 	
-	private long spaceId = -1;
-	public long getSpaceId() {
-		return spaceId;
-	}
-	public void setSpaceId(long spaceId) {
-		this.spaceId = spaceId;
-	}
-	
 	private String macAddr;
 	public String getMacAddr() {
 		return macAddr;
@@ -41,10 +33,18 @@ public class ControllerSettingsContext {
 		this.macAddr = macAddr;
 	}
 	
+	private long dataInterval = -1; //In minutes
+	public long getDataInterval() {
+		return dataInterval;
+	}
+	public void setDataInterval(long dataInterval) {
+		this.dataInterval = dataInterval;
+	}
+	
 	@Override
 	 public String toString() {
 		return "ControllerSettingsContext [id=" + id + ", orgId=" + orgId + ", name=" + name + ","
-				+ " spaceId =" +spaceId+",macAddr=" + macAddr +"]";
+				+ " ,macAddr=" + macAddr +"]";
 	}
 	public boolean isEmpty() {
 		// TODO Auto-generated method stub

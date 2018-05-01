@@ -1315,7 +1315,7 @@ public class DashboardAction extends ActionSupport {
 					if(thisMap.get("label") != null) {
 						Long spaceId = (Long) thisMap.get("label");
 						Object groupBy = thisMap.get("groupBy");;
-						Long value = (Long) thisMap.get("value");
+						Double value = Double.parseDouble(thisMap.get("value").toString());
 						
 						for(Long buildingId : buildingResourceMap.keySet()) {
 							
@@ -1324,8 +1324,8 @@ public class DashboardAction extends ActionSupport {
 								if(buildingRes.get(buildingId) != null) {
 									JSONObject map = (JSONObject) buildingRes.get(buildingId);
 									if(map.containsKey(groupBy)) {
-										Long value1 = (Long) map.get(groupBy);
-										value1 = value1 +value;
+										Double value1 = (Double) map.get(groupBy);
+										value1 = value1 + value;
 										map.put(groupBy, value1);
 									}
 									else {
