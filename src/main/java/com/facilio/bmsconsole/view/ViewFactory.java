@@ -114,8 +114,7 @@ public class ViewFactory {
 		views.put("energy", getTypeAlarms("energy", "Energy Alarms", AlarmType.ENERGY).setOrder(order++));
 		views.put("hvac", getTypeAlarms("hvac", "HVAC Alarms", AlarmType.HVAC).setOrder(order++));
 		views.put("cleared", getSeverityAlarms("cleared", "Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true).setOrder(order++));
-		views.put("myalarms", getMyAlarms().setOrder(order++));
-		views.put("unassigned", getUnassignedAlarms().setOrder(order++));
+		views.put("all", getAllAlarms().setOrder(order++));
 		views.put("report", getReportView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.ALARM, views);
 		
@@ -983,6 +982,15 @@ public class ViewFactory {
 		unassignedWOView.setCriteria(unassignedWOCriteria);
 		
 		return unassignedWOView;
+	}
+	
+	private static FacilioView getAllAlarms() {
+		
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Alarms");
+		
+		return allView;
 	}
 	
 	private static FacilioView getAllWorkOrders() {
