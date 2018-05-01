@@ -267,7 +267,7 @@ public class FacilioAuthAction extends ActionSupport {
                 LOGGER.info("#################### facilio.in::: " + request.getServerName());
                 response.addCookie(authmodel);
                 
-                long uid = AccountUtil.getUserBean().getUser(username).getUid();
+                long uid = AccountUtil.getUserBean().getFacilioUser(getUsername()).getUid();
 				String userAgent = request.getHeader("User-Agent");
 				userAgent = userAgent != null ? userAgent : "";
 				AccountUtil.getUserBean().startUserSession(uid, jwt, request.getRemoteAddr(), userAgent);

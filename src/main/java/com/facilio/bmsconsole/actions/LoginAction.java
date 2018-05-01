@@ -201,8 +201,19 @@ public class LoginAction extends ActionSupport{
 		
 		HttpServletRequest request = ServletActionContext.getRequest();
 		HttpServletResponse response = ServletActionContext.getResponse();
-		HttpSession session = request.getSession();
 		
+		// end user session
+		try {
+			String facilioToken = LoginUtil.getUserCookie(request, "fc.idToken.facilio");
+			if (facilioToken != null) {
+				AccountUtil.getUserBean().endUserSession(AccountUtil.getCurrentUser().getUid(), facilioToken);
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		HttpSession session = request.getSession();
 		session.invalidate();
 		
 		LoginUtil.eraseUserCookie(request, response, "fc.idToken.facilio", null);
