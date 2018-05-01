@@ -224,6 +224,11 @@ state = PORTAL-yogendrababu
 		authmodel.setDomain(parentdomain);
 				System.out.println("#################### facilio.in::: " + request.getServerName());
 				response.addCookie(authmodel);
+				
+				long uid = AccountUtil.getUserBean().getUser(username).getUid();
+				String userAgent = request.getHeader("User-Agent");
+				userAgent = userAgent != null ? userAgent : "";
+				AccountUtil.getUserBean().startUserSession(uid, jwt, request.getRemoteAddr(), userAgent);
 			} catch (Exception e) {
 				e.printStackTrace();
 				setJsonresponse("message", "Error while validating user name and password");

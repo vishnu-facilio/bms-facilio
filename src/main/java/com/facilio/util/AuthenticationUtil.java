@@ -29,7 +29,7 @@ public class AuthenticationUtil {
             }
 
 
-            CognitoUtil.CognitoUser cognitoUser = (facilioToken != null) ? CognitoUtil.verifiyFacilioToken(facilioToken) : CognitoUtil.verifyIDToken(headerToken);
+            CognitoUtil.CognitoUser cognitoUser = (facilioToken != null) ? CognitoUtil.verifiyFacilioToken(facilioToken, isPortaluser) : CognitoUtil.verifyIDToken(headerToken);
             return cognitoUser;
         }
         return  null;

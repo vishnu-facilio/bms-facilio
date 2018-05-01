@@ -64,4 +64,14 @@ public interface UserBean {
     public User getFacilioUser(String email, String orgDomain) throws Exception;
 
     public User getPortalUser(String email, long portalId) throws Exception;
+    
+    public long startUserSession(long uid, String token, String ipAddress, String userAgent) throws Exception;
+    
+    public boolean endUserSession(long uid, String token) throws Exception;
+    
+    public void clearUserSession(long uid, String token) throws Exception;
+    
+    public void clearAllUserSessions(long uid) throws Exception;
+    
+    public boolean verifyUserSession(String email, String token) throws Exception;
 }

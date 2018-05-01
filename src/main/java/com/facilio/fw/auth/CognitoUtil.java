@@ -3,6 +3,7 @@ package com.facilio.fw.auth;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -32,6 +33,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.constants.FacilioConstants;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -243,7 +245,11 @@ public class CognitoUtil {
 	}
 	
 	
-	public static CognitoUser verifiyFacilioToken(String idToken)
+	public static CognitoUser verifiyFacilioToken(String idToken) {
+		return verifiyFacilioToken(idToken, false);
+	}
+	
+	public static CognitoUser verifiyFacilioToken(String idToken, boolean isPortalUser)
 	{
 		System.out.println("verifiyFacilioToken() :idToken :"+idToken);
 		try {
@@ -252,6 +258,22 @@ public class CognitoUtil {
 			faciliouser.setEmail(decodedjwt.getSubject());
 			faciliouser.setFacilioauth(true);
 			faciliouser.setPortaluser(decodedjwt.getClaim("portaluser").asBoolean());
+			
+			if (!isPortalUser) {
+				String email = faciliouser.getEmail();
+				String sessionVerify = AwsUtil.getConfig("enable.sessionverify");
+				if (sessionVerify != null) {
+					if (Arrays.asList(sessionVerify.split(",")).contains(email)) {
+						if (AccountUtil.getUserBean().verifyUserSession(faciliouser.getEmail(), idToken)) {
+							return faciliouser;
+						}
+						else {
+							// invalid session
+							return null;
+						}
+					}
+				}
+			}
 			return faciliouser;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
