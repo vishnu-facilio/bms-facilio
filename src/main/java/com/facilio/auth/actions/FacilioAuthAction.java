@@ -270,7 +270,7 @@ public class FacilioAuthAction extends ActionSupport {
                 long uid = AccountUtil.getUserBean().getFacilioUser(getUsername()).getUid();
 				String userAgent = request.getHeader("User-Agent");
 				userAgent = userAgent != null ? userAgent : "";
-				AccountUtil.getUserBean().startUserSession(uid, jwt, request.getRemoteAddr(), userAgent);
+				AccountUtil.getUserBean().startUserSession(uid, getUsername(), jwt, request.getRemoteAddr(), userAgent);
             } catch (Exception e) {
                 LOGGER.log(Level.INFO, "Exception while validating password, ", e);
                 setJsonresponse("message", "Error while validating user name and password");

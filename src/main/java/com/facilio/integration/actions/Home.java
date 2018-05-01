@@ -228,7 +228,7 @@ state = PORTAL-yogendrababu
 				long uid = AccountUtil.getUserBean().getFacilioUser(username).getUid();
 				String userAgent = request.getHeader("User-Agent");
 				userAgent = userAgent != null ? userAgent : "";
-				AccountUtil.getUserBean().startUserSession(uid, jwt, request.getRemoteAddr(), userAgent);
+				AccountUtil.getUserBean().startUserSession(uid, username, jwt, request.getRemoteAddr(), userAgent);
 			} catch (Exception e) {
 				e.printStackTrace();
 				setJsonresponse("message", "Error while validating user name and password");

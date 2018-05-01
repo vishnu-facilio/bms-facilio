@@ -84,6 +84,7 @@ public class AdminAction extends ActionSupport
 	{
 		LRUCache.getFieldsCache().purgeCache();
 		LRUCache.getModuleFieldsCache().purgeCache();
+		LRUCache.getUserSessionCache().purgeCache();
 		System.out.println("Clear cache called");
 		
 		

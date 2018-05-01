@@ -206,7 +206,7 @@ public class LoginAction extends ActionSupport{
 		try {
 			String facilioToken = LoginUtil.getUserCookie(request, "fc.idToken.facilio");
 			if (facilioToken != null) {
-				AccountUtil.getUserBean().endUserSession(AccountUtil.getCurrentUser().getUid(), facilioToken);
+				AccountUtil.getUserBean().endUserSession(AccountUtil.getCurrentUser().getUid(), AccountUtil.getCurrentUser().getEmail(), facilioToken);
 			}
 		}
 		catch (Exception e) {
@@ -293,7 +293,7 @@ public class LoginAction extends ActionSupport{
 		try {
 			String facilioToken = LoginUtil.getUserCookie(httpReq, "fc.idToken.facilio");
 			if (facilioToken != null) {
-				AccountUtil.getUserBean().endUserSession(AccountUtil.getCurrentUser().getUid(), facilioToken);
+				AccountUtil.getUserBean().endUserSession(AccountUtil.getCurrentUser().getUid(), AccountUtil.getCurrentUser().getEmail(), facilioToken);
 			}
 		}
 		catch (Exception e) {
