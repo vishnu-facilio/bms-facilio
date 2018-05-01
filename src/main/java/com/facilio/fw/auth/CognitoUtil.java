@@ -70,7 +70,8 @@ public class CognitoUtil {
 		try {
 		    Algorithm algorithm = Algorithm.HMAC256("secret");
 		    
-		    JWTCreator.Builder builder = JWT.create().withSubject(subject)
+		    String key = subject + "_" + System.currentTimeMillis();
+		    JWTCreator.Builder builder = JWT.create().withSubject(key)
 	        .withIssuer(issuer);
 		    builder = builder.withClaim("portaluser", isPortalUser);
 		    
@@ -255,7 +256,7 @@ public class CognitoUtil {
 		try {
 			DecodedJWT decodedjwt = validateJWT(idToken, "auth0");
 			CognitoUser faciliouser = new CognitoUser();
-			faciliouser.setEmail(decodedjwt.getSubject());
+			faciliouser.setEmail(decodedjwt.getSubject().split("_")[0]);
 			faciliouser.setFacilioauth(true);
 			faciliouser.setPortaluser(decodedjwt.getClaim("portaluser").asBoolean());
 			
