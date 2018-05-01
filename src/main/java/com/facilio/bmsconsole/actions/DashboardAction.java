@@ -389,7 +389,7 @@ public class DashboardAction extends ActionSupport {
 				reportContext.setParentFolderId(defaultFolder.getId());
 			}
 		}
-		if(reportContext.getModuleId() == -1) {
+		if(reportContext.getModuleId() == -1l) {
 			reportContext.setModuleName(moduleName);
 		}
 		DashboardUtil.addReport(reportContext);
@@ -1280,7 +1280,7 @@ public class DashboardAction extends ActionSupport {
 				
 				Long buildingId = report.getReportSpaceFilterContext().getBuildingId();
 				
-				if(buildingId.equals(-1)) {
+				if(buildingId.equals(-1l)) {
 					List<BuildingContext> buildings = SpaceAPI.getAllBuildings();
 					if(buildings != null && !buildings.isEmpty()) {
 						buildingId = buildings.get(0).getId();
@@ -2741,8 +2741,9 @@ public class DashboardAction extends ActionSupport {
 				else if (widgetType == DashboardWidgetContext.WidgetType.LIST_VIEW.getValue()) {
 					widgetContext = new WidgetListViewContext();
 					WidgetListViewContext WidgetListViewContext1 = (WidgetListViewContext) widgetContext;
-					WidgetListViewContext1.setViewName(widget.get("viewName").toString());
-					WidgetListViewContext1.setModuleName(widget.get("moduleName").toString());
+					
+					WidgetListViewContext1.setViewName(widget.get("viewName") != null ? widget.get("viewName").toString() : null);
+					WidgetListViewContext1.setModuleName(widget.get("moduleName") != null ? widget.get("moduleName").toString() : null);
 				}
 				else if (widgetType == DashboardWidgetContext.WidgetType.STATIC.getValue()) {
 					widgetContext = new WidgetStaticContext();
