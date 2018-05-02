@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -14,6 +16,7 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, Object>> {
+	private static final Logger LOGGER = Logger.getLogger(GenericUpdateRecordBuilder.class.getName());
 	private List<FacilioField> fields;
 	private Map<String, FacilioField> fieldMap;
 	private String tableName;
@@ -141,7 +144,7 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 				}
 			}
 			catch(SQLException e) {
-				e.printStackTrace();
+				LOGGER.log(Level.SEVERE, "Update failed ", e);
 				throw e;
 			}
 			finally {
@@ -150,7 +153,7 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 						pstmt.close();
 					} catch (SQLException e) {
 						// TODO Auto-generated catch block
-						e.printStackTrace();
+						LOGGER.log(Level.SEVERE, "Exception while closing resource ", e);
 					}
 				}
 			}

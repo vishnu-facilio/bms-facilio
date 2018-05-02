@@ -12,12 +12,16 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.lang3.text.StrSubstitutor;
 
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class SQLScriptRunner {
+
+	private static final Logger LOGGER = Logger.getLogger(DBUtil.class.getName());
 
 	private static final String DELIMITER = ";";
 	
@@ -51,7 +55,7 @@ public class SQLScriptRunner {
 					fileReader.close();
 				}
 				catch(IOException e) {
-					e.printStackTrace();
+					LOGGER.log(Level.SEVERE, "Exception while closing resource ", e);
 				}
 			}
 		}

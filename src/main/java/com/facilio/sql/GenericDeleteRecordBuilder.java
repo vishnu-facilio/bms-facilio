@@ -6,12 +6,15 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
 import java.util.StringJoiner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class GenericDeleteRecordBuilder implements DeleteBuilderIfc<Map<String, Object>> {
+	private static final Logger LOGGER = Logger.getLogger(GenericDeleteRecordBuilder.class.getName());
 	private String tableName;
 	private WhereBuilder where = new WhereBuilder();
 	private StringBuilder joinBuilder = new StringBuilder();
@@ -118,7 +121,7 @@ public class GenericDeleteRecordBuilder implements DeleteBuilderIfc<Map<String, 
 			return rowCount;
 		}
 		catch(SQLException e) {
-			e.printStackTrace();
+			LOGGER.log(Level.SEVERE, "Deletion failed ", e);
 			throw e;
 		}
 		finally {
@@ -127,7 +130,7 @@ public class GenericDeleteRecordBuilder implements DeleteBuilderIfc<Map<String, 
 					pstmt.close();
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					LOGGER.log(Level.SEVERE, "Exception while closing resource ", e);
 				}
 			}
 		}

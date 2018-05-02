@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -16,6 +18,8 @@ import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, Object>> {
+	private static final Logger LOGGER = Logger.getLogger(GenericSelectRecordBuilder.class.getName());
+
 	private List<FacilioField> selectFields;
 	private String tableName;
 	private StringBuilder joinBuilder = new StringBuilder();
@@ -196,8 +200,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 			return records;
 		}
 		catch(SQLException e) {
-			e.printStackTrace();
-			
+			LOGGER.log(Level.SEVERE, "Exception " ,e);
 			throw e;
 		}
 		finally {

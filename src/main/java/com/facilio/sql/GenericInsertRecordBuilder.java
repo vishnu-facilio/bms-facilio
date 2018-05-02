@@ -8,6 +8,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -15,6 +17,8 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, Object>> {
+	private static final Logger LOGGER = Logger.getLogger(GenericInsertRecordBuilder.class.getName());
+
 	private List<FacilioField> fields;
 	private String tableName;
 	private List<Map<String, Object>> values = new ArrayList<>();
@@ -106,7 +110,7 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 					.append("\nProps : \n")
 					.append(values);
 			CommonCommandUtil.emailException("Insertion failed - ", e, builder.toString());
-			e.printStackTrace();
+			LOGGER.log(Level.SEVERE, "Insertion failed ", e);
 			throw e;
 		}
 		finally {
