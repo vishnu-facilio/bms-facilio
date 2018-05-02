@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.interceptors;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -42,7 +44,8 @@ public class AuthInterceptor extends AbstractInterceptor {
 					currentAccount = LoginUtil.getAccount(cognitoUser, true);
 					//ActionContext.getContext().getSession().put("CURRENT_ACCOUNT", currentAccount);
 				} catch (Exception e){
-					e.printStackTrace();
+					logger.log(Level.SEVERE, "Invalid users", e);
+
 					currentAccount = null;
 				}
 			}
@@ -66,7 +69,8 @@ public class AuthInterceptor extends AbstractInterceptor {
 				} else {
 					localeObj = new Locale(lang);
 				}
-				System.out.println("### LOCALE: " + localeObj);
+				
+				logger.fine("### LOCALE: " + localeObj);
 
 				String timezone = currentAccount.getUser().getTimezone();
 				TimeZone timezoneObj = null;
@@ -85,7 +89,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.log(Level.SEVERE, "error in auth interceptor", e);
 			return Action.LOGIN;
 		}
 
@@ -98,6 +102,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 
 		return result;
 	}
+	private static Logger logger = Logger.getLogger(AuthInterceptor.class.getName());
 
 	private boolean isAuthorizedAccess(String moduleName, String permissions) throws Exception {
 
