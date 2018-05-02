@@ -6,13 +6,14 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import com.facilio.transaction.FacilioConnectionPool;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.apache.log4j.Level;
 
 public class DBUtil {
-	private static final Logger LOGGER = Logger.getLogger(DBUtil.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(DBUtil.class.getName());
 
 	public static void closeAll(Connection conn, Statement stmt, ResultSet rs) {
 		if(rs != null) {
@@ -20,7 +21,7 @@ public class DBUtil {
 				rs.close();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
-				LOGGER.log(Level.SEVERE, "Exception while closing resource ", e);
+				LOGGER.log(Level.ERROR, "Exception while closing resource ", e);
 			}
 		}
 		closeAll(conn, stmt);
@@ -32,7 +33,7 @@ public class DBUtil {
 				stmt.close();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
-				LOGGER.log(Level.SEVERE, "Exception while closing resource ", e);
+				LOGGER.log(Level.ERROR, "Exception while closing resource ", e);
 			}
 		}
 		if(conn != null) {
@@ -40,7 +41,7 @@ public class DBUtil {
 				conn.close();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
-				LOGGER.log(Level.SEVERE, "Exception while closing resource ", e);
+				LOGGER.log(Level.ERROR, "Exception while closing resource ", e);
 			}
 		}
 	}
@@ -51,7 +52,7 @@ public class DBUtil {
 				rs.close();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
-				LOGGER.log(Level.SEVERE, "Exception while closing resource ", e);
+				LOGGER.log(Level.ERROR, "Exception while closing resource ", e);
 			}
 		}
 		
@@ -60,7 +61,7 @@ public class DBUtil {
 				stmt.close();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
-				LOGGER.log(Level.SEVERE, "Exception while closing resource ", e);
+				LOGGER.log(Level.ERROR, "Exception while closing resource ", e);
 			}
 		}
 	}
@@ -86,7 +87,7 @@ public class DBUtil {
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			LOGGER.log(Level.SEVERE, "Exception while getting record ", e);
+			LOGGER.log(Level.ERROR, "Exception while getting record ", e);
 			throw e;
 		}
 		finally

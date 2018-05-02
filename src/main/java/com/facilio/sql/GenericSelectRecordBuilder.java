@@ -8,17 +8,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.transaction.FacilioConnectionPool;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.apache.log4j.Level;
 
 public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, Object>> {
-	private static final Logger LOGGER = Logger.getLogger(GenericSelectRecordBuilder.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(GenericSelectRecordBuilder.class.getName());
 
 	private List<FacilioField> selectFields;
 	private String tableName;
@@ -200,7 +201,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 			return records;
 		}
 		catch(SQLException e) {
-			LOGGER.log(Level.SEVERE, "Exception " ,e);
+			LOGGER.log(Level.ERROR, "Exception " ,e);
 			throw e;
 		}
 		finally {
