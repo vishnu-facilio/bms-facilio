@@ -18,6 +18,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -1490,7 +1491,9 @@ public class DashboardAction extends ActionSupport {
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
 				;
 		
-		builder.orderBy("TTIME");
+		if(!"development".equals(AwsUtil.getConfig("environment"))) {
+			builder.orderBy("TTIME");
+		}
 		
 		if(module.getExtendModule() != null) {
 			builder.innerJoin(module.getExtendModule().getTableName())
@@ -2351,7 +2354,11 @@ public class DashboardAction extends ActionSupport {
 				timeRange.add((Long) dateFilter.get(1));
 			}
 			else if (reportContext.getDateFilter() != null) {
-				timeRange.add(Long.parseLong(reportContext.getDateFilter().getOperatorId().toString()));
+				DateOperators operator = (DateOperators) Operator.OPERATOR_MAP.get(reportContext.getDateFilter().getOperatorId());
+				
+				DateRange range = operator.getRange(reportContext.getDateFilter().getValue());
+				timeRange.add(range.getStartTime());
+				timeRange.add(range.getEndTime());
 			}
 			
 			if (baseLineId != -1) {

@@ -59,6 +59,7 @@ public class FTransactionManager implements TransactionManager {
 	@Override
 	public void rollback() throws IllegalStateException, SecurityException, SystemException {
 		getTransaction().rollback();
+		currentTransaction.remove();
 	}
 
 	@Override
