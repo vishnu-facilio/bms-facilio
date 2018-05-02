@@ -97,10 +97,10 @@ public class ExecuteAllWorkflowsCommand implements Command
 							while (currentWorkflows != null && !currentWorkflows.isEmpty()) {
 								
 								if(moduleName.equals("fcureading")) {
-									System.out.println("Workflows Rules : "+workflowRules);
+									System.out.println("Workflows Rules : "+currentWorkflows);
 								}
 								
-								Criteria childCriteria = executeWorkflows(workflowRules, moduleName, record, it, recordPlaceHolders, (FacilioContext) context);
+								Criteria childCriteria = executeWorkflows(currentWorkflows, moduleName, record, it, recordPlaceHolders, (FacilioContext) context);
 								if (childCriteria == null) {
 									break;
 								}
