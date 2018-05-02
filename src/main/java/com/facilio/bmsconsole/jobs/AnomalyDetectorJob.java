@@ -86,15 +86,14 @@ public class AnomalyDetectorJob extends FacilioJob {
 		try {
 			List<AnalyticsAnomalyContext> meterReadings = AnomalySchedulerUtil.getAllReadings(moduleName,startTime, endTime, energyMeterContext.getId(), energyMeterContext.getOrgId());
 
-			if(meterReadings.size() > 0) {
-				logger.log(Level.INFO, "received readings for ID " + energyMeterContext.getId() + " startTime = " + startTime + " endTime = " + endTime);
-			}else {
+			if(meterReadings.size() == 0) {
 				logger.log(Level.SEVERE, "NOT received readings for ID " + energyMeterContext.getId() + " startTime = " + startTime + " endTime = " + endTime);
 				return;
 			}
 				
 			String jsonInString = mapper.writeValueAsString(meterReadings);
 			String result=AwsUtil.doHttpPost(url, null, null, jsonInString);
+			logger.log(Level.INFO, "ID=" + energyMeterContext.getId() + " startTime=" + startTime + " endTime=" + endTime + " anomaly=" + (result == null ? "NA" : result));
 			
 			AnomalyList anomalyList = new GsonBuilder().create().fromJson(result, AnomalyList.class);
 
@@ -102,10 +101,6 @@ public class AnomalyDetectorJob extends FacilioJob {
 				// No Anomaly is Detected by our algorithm
 				return;
 			}
-			
-			//if(result.length() >= 0) {
-			//	logger.log(Level.INFO, "received anomaly " + result);
-			//}
 			
 			String idList = Arrays.toString(anomalyList.getAnomalyIDs());
 			idList = "(" + idList.substring(1, idList.length() - 1) + ")";

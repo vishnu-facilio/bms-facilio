@@ -57,7 +57,6 @@ public class AnomalySchedulerUtil {
 		if (props != null && !props.isEmpty()) {
 			
 			for(Map<String, Object> prop:props) {
-				logger.info("Query generated: " + prop);
 				AnalyticsAnomalyContext context = FieldUtil.getAsBeanFromMap(prop, AnalyticsAnomalyContext.class);
 				setOfAnomalyIDs.add(context.getId());
 			}
