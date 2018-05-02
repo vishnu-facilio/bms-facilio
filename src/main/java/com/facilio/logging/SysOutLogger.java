@@ -3,43 +3,19 @@ package com.facilio.logging;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 
 import java.io.*;
-import java.util.Locale;
-import java.util.Properties;
 
 public class SysOutLogger extends PrintStream {
 
-    private static final Logger LOGGER = LogManager.getLogger(SysOutLogger.class.getName());
+    private String loggerName = "facilio";
+    private Logger logger = LogManager.getLogger(loggerName);
 
-    public SysOutLogger(OutputStream out) {
-        super(out);
+    public SysOutLogger(String loggerName) throws FileNotFoundException {
+        super(loggerName);
+        this.loggerName = loggerName;
     }
 
-    public SysOutLogger(OutputStream out, boolean autoFlush) {
-        super(out, autoFlush);
-    }
-
-    public SysOutLogger(OutputStream out, boolean autoFlush, String encoding) throws UnsupportedEncodingException {
-        super(out, autoFlush, encoding);
-    }
-
-    public SysOutLogger(String fileName) throws FileNotFoundException {
-        super(fileName);
-    }
-
-    public SysOutLogger(String fileName, String csn) throws FileNotFoundException, UnsupportedEncodingException {
-        super(fileName, csn);
-    }
-
-    public SysOutLogger(File file) throws FileNotFoundException {
-        super(file);
-    }
-
-    public SysOutLogger(File file, String csn) throws FileNotFoundException, UnsupportedEncodingException {
-        super(file, csn);
-    }
 
     public void print(boolean b) {
         println(b);
@@ -110,7 +86,7 @@ public class SysOutLogger extends PrintStream {
     }
 
     public void println(String x) {
-        LOGGER.log(Level.INFO, x);
+        logger.log(Level.INFO, x);
     }
 
     public void println(Object x) {
