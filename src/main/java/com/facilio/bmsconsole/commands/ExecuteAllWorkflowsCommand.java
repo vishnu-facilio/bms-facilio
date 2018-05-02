@@ -15,6 +15,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -74,8 +75,14 @@ public class ExecuteAllWorkflowsCommand implements Command
 						
 						List records = new LinkedList<>(entry.getValue());
 						Iterator it = records.iterator();
+						int count = 0;
 						while (it.hasNext()) {
+							count++;
 							Object record = it.next();
+							System.out.println("Record Number : "+count);
+							if (record instanceof ReadingContext) {
+								System.out.println("Resource ID : "+((ReadingContext)record));
+							}
 							Map<String, Object> recordPlaceHolders = new HashMap<>(placeHolders);
 							CommonCommandUtil.appendModuleNameInKey(moduleName, moduleName, FieldUtil.getAsProperties(record), recordPlaceHolders);
 							List<WorkflowRuleContext> currentWorkflows = workflowRules;
