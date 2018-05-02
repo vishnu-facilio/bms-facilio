@@ -2,6 +2,8 @@ package com.facilio.tasker.job;
 
 import java.sql.SQLException;
 import java.time.Instant;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -55,7 +57,7 @@ public abstract class FacilioJob implements Runnable {
 		catch(Exception e) {
 			executor.removeJob(jc);
 			System.out.println("Exception occurred during execution of job : "+jc);
-			e.printStackTrace();
+			logger.log(Level.SEVERE,"Error",e);
 			CommonCommandUtil.emailException("Job execution failed", e);
 			reschedule();
 		}
@@ -94,11 +96,14 @@ public abstract class FacilioJob implements Runnable {
 				JobStore.setInActive(jc.getJobId(), jc.getJobName());
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.log(Level.SEVERE,"Error",e);
+
 			}
 		}
 	}
-	
+	private static Logger logger = Logger.getLogger("ReportsUtil");
+
 	public abstract void execute(JobContext jc);
 	
 	@Override

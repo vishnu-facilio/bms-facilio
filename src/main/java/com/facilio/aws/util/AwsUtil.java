@@ -96,6 +96,7 @@ import com.amazonaws.services.simpleemail.model.SendRawEmailRequest;
 
 public class AwsUtil 
 {
+
 	private static Logger logger = Logger.getLogger(AwsUtil.class.getName());
 	
 	private static final String AWS_PROPERTY_FILE = "conf/awsprops.properties";
@@ -507,7 +508,7 @@ public class AwsUtil
 			CreatePolicyVersionResult versionResult = client.createPolicyVersion(versionRequest);
 			logger.info("Policy updated for " + policyName + ", with " + versionResult.getPolicyDocument() + ", status: " + versionResult.getSdkHttpMetadata().getHttpStatusCode());
 		} catch (Exception e){
-    		e.printStackTrace();
+    		logger.log(Level.SEVERE,"Error",e);
 		}
 	}
 
