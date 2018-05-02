@@ -201,6 +201,7 @@ public class UserBeanImpl implements UserBean {
 	public long inviteUser(long orgId, User user) throws Exception {
 		
 		User orgUser = getFacilioUser(orgId, user.getEmail());
+		// System.out.println("----------------->>>>"+orgUser.getEmail());
 		if (orgUser != null) {
 			if (orgUser.getUserType() == AccountConstants.UserType.REQUESTER.getValue()) {
 				orgUser.setUserType(AccountConstants.UserType.USER.getValue());
@@ -214,6 +215,8 @@ public class UserBeanImpl implements UserBean {
 		
 		long uid = getUid(user.getEmail());
 		if (uid == -1) {
+			user.setTimezone(AccountUtil.getCurrentOrg().getTimezone());
+			user.setLanguage(AccountUtil.getCurrentUser().getLanguage());
 			uid = addUserEntry(user, false);
 			user.setUid(uid);
 			addFacilioUser(user);
@@ -224,6 +227,7 @@ public class UserBeanImpl implements UserBean {
 		user.setInviteAcceptStatus(false);
 		user.setInvitedTime(System.currentTimeMillis());
 		user.setUserType(AccountConstants.UserType.USER.getValue());
+		
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(AccountConstants.getOrgUserModule().getTableName())

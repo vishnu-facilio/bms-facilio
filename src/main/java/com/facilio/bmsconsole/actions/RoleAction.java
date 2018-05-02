@@ -65,6 +65,7 @@ public class RoleAction extends ActionSupport {
 			role.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 			
 			FacilioContext context = new FacilioContext();
+			role.setCreatedTime(System.currentTimeMillis());
 			context.put(FacilioConstants.ContextNames.ROLE, getRole());
 			context.put(FacilioConstants.ContextNames.PERMISSIONS, getPermissions());
 			
