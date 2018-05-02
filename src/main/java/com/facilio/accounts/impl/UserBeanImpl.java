@@ -28,6 +28,7 @@ import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.EncryptionUtil;
+import com.facilio.fw.LRUCache;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -988,4 +989,99 @@ public class UserBeanImpl implements UserBean {
 
 	}
 
+	@Override
+	public long startUserSession(long uid, String email, String token, String ipAddress, String userAgent) throws Exception {
+
+		List<FacilioField> fields = AccountConstants.getUserSessionFields();
+
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(AccountConstants.getUserSessionModule().getTableName())
+				.fields(fields);
+
+		Map<String, Object> props = new HashMap<>();
+		props.put("uid", uid);
+		props.put("token", token);
+		props.put("startTime", System.currentTimeMillis());
+		props.put("isActive", true);
+		props.put("ipAddress", ipAddress);
+		props.put("userAgent", userAgent);
+
+		insertBuilder.addRecord(props);
+		insertBuilder.save();
+		long sessionId = (Long) props.get("id");
+		return sessionId;
+	}
+
+	@Override
+	public boolean endUserSession(long uid, String email, String token) throws Exception {
+
+		List<FacilioField> fields = AccountConstants.getUserSessionFields();
+
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(AccountConstants.getUserSessionModule().getTableName())
+				.fields(fields)
+				.andCustomWhere("USERID = ? AND TOKEN = ?", uid, token);
+
+		Map<String, Object> props = new HashMap<>();
+		props.put("endTime", System.currentTimeMillis());
+		props.put("isActive", false);
+
+		int updatedRows = updateBuilder.update(props);
+		if (updatedRows > 0) {
+			LRUCache.getUserSessionCache().remove(email);
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean verifyUserSession(String email, String token) throws Exception {
+		
+		List sessions = (List) LRUCache.getUserSessionCache().get(email);
+		if (sessions == null) {
+			sessions = new ArrayList<>();
+		}
+		if (sessions.contains(token)) {
+			return true;
+		}
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(AccountConstants.getUserSessionFields())
+				.table("Users")
+				.innerJoin("UserSessions")
+				.on("Users.USERID = UserSessions.USERID")
+				.andCustomWhere("Users.EMAIL = ? AND UserSessions.TOKEN = ? AND UserSessions.IS_ACTIVE = ?", email, token, true);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			sessions.add(token);
+			LRUCache.getUserSessionCache().put(email, sessions);
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public void clearUserSession(long uid, String email, String token) throws Exception {
+
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+				.table(AccountConstants.getUserSessionModule().getTableName())
+				.andCustomWhere("USERID = ? AND TOKEN = ?", uid, token);
+
+		builder.delete();
+		
+		LRUCache.getUserSessionCache().remove(email);
+	}
+
+	@Override
+	public void clearAllUserSessions(long uid, String email) throws Exception {
+
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+				.table(AccountConstants.getUserSessionModule().getTableName())
+				.andCustomWhere("USERID = ?", uid);
+
+		builder.delete();
+		
+		LRUCache.getUserSessionCache().remove(email);
+	}
 }

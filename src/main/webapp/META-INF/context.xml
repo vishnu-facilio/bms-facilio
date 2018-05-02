@@ -30,7 +30,7 @@
     	  validationInterval="34000"
     	  testOnBorrow="true"
     	  removeAbandoned="true"
-    	  removeAbandonedTimeout="55"
+    	  removeAbandonedTimeout="550"
     	  username="root"
     	  user="root"
     	  password=""

@@ -1903,19 +1903,14 @@ public class FieldFactory {
 		name.setModule(module);
 		fields.add(name);
 
-		FacilioField spaceId = new FacilioField();
-		spaceId.setName("spaceId");
-		spaceId.setDataType(FieldType.NUMBER);
-		spaceId.setColumnName("SPACE_ID");
-		spaceId.setModule(module);
-		fields.add(spaceId);
-
 		FacilioField macAddr = new FacilioField();
 		macAddr.setName("macAddr");
 		macAddr.setDataType(FieldType.STRING);
 		macAddr.setColumnName("MAC_ADDR");
 		macAddr.setModule(module);
 		fields.add(macAddr);
+		
+		fields.add(getField("dataInterval", "DATA_INTERVAL", module, FieldType.NUMBER));
 
 		return fields;
 	}

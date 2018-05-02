@@ -12,9 +12,10 @@
 <br>Fields Cache = <textarea  rows="8" cols="150"><%out.println(com.facilio.fw.LRUCache.getFieldsCache()); %></textarea>
 
 <br><a href="clearcache"> Clear Cache</a>
+<br><a href="reloadBrowser"> Reload all users</a>
 
-<br><a href="reloadbrowser"> ReLoad all users</a>
 
 
 </body>
 </html>
+

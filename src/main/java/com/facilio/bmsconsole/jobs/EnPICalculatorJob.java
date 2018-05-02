@@ -71,7 +71,7 @@ public class EnPICalculatorJob extends FacilioJob {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			CommonCommandUtil.emailException("EnPI Calculation job failed", e);
+			CommonCommandUtil.emailException("EnPI Calculation job failed for orgid : "+jc.getOrgId(), e);
 		}
 	}
 	

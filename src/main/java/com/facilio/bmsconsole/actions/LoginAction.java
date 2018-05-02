@@ -201,8 +201,19 @@ public class LoginAction extends ActionSupport{
 		
 		HttpServletRequest request = ServletActionContext.getRequest();
 		HttpServletResponse response = ServletActionContext.getResponse();
-		HttpSession session = request.getSession();
 		
+		// end user session
+		try {
+			String facilioToken = LoginUtil.getUserCookie(request, "fc.idToken.facilio");
+			if (facilioToken != null) {
+				AccountUtil.getUserBean().endUserSession(AccountUtil.getCurrentUser().getUid(), AccountUtil.getCurrentUser().getEmail(), facilioToken);
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		HttpSession session = request.getSession();
 		session.invalidate();
 		
 		LoginUtil.eraseUserCookie(request, response, "fc.idToken.facilio", null);
@@ -277,6 +288,17 @@ public class LoginAction extends ActionSupport{
 		System.out.println("Logout called");
 		HttpServletRequest httpReq = ServletActionContext.getRequest();
 		HttpServletResponse httpResp = ServletActionContext.getResponse();
+		
+		// end user session
+		try {
+			String facilioToken = LoginUtil.getUserCookie(httpReq, "fc.idToken.facilio");
+			if (facilioToken != null) {
+				AccountUtil.getUserBean().endUserSession(AccountUtil.getCurrentUser().getUid(), AccountUtil.getCurrentUser().getEmail(), facilioToken);
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 		LoginUtil.eraseUserCookie(httpReq, httpResp, LoginUtil.IDTOKEN_COOKIE_NAME, HOSTNAME);
 		

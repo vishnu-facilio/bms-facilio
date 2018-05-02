@@ -27,7 +27,7 @@ import com.facilio.tasker.job.JobContext;
 
 public class WorkOrderRequestEmailParser extends FacilioJob {
 
-	public static final String S3_BUCKET_NAME = "ses-support-mail-parser";
+	public static final String S3_BUCKET_NAME = "ses-facilio-support";
 	
 	private Map<String, Object> updateIsProcessed = new HashMap<>();
 	

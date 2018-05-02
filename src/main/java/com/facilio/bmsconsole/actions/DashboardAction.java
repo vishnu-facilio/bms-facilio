@@ -389,7 +389,7 @@ public class DashboardAction extends ActionSupport {
 				reportContext.setParentFolderId(defaultFolder.getId());
 			}
 		}
-		if(reportContext.getModuleId() == -1) {
+		if(reportContext.getModuleId() == -1l) {
 			reportContext.setModuleName(moduleName);
 		}
 		DashboardUtil.addReport(reportContext);
@@ -1280,7 +1280,7 @@ public class DashboardAction extends ActionSupport {
 				
 				Long buildingId = report.getReportSpaceFilterContext().getBuildingId();
 				
-				if(buildingId.equals(-1)) {
+				if(buildingId.equals(-1l)) {
 					List<BuildingContext> buildings = SpaceAPI.getAllBuildings();
 					if(buildings != null && !buildings.isEmpty()) {
 						buildingId = buildings.get(0).getId();
@@ -1314,8 +1314,8 @@ public class DashboardAction extends ActionSupport {
 					Map<String, Object> thisMap = rs.get(i);
 					if(thisMap.get("label") != null) {
 						Long spaceId = (Long) thisMap.get("label");
-						String groupBy = (String) thisMap.get("groupBy");
-						Long value = (Long) thisMap.get("value");
+						Object groupBy = thisMap.get("groupBy");;
+						Double value = Double.parseDouble(thisMap.get("value").toString());
 						
 						for(Long buildingId : buildingResourceMap.keySet()) {
 							
@@ -1324,8 +1324,8 @@ public class DashboardAction extends ActionSupport {
 								if(buildingRes.get(buildingId) != null) {
 									JSONObject map = (JSONObject) buildingRes.get(buildingId);
 									if(map.containsKey(groupBy)) {
-										Long value1 = (Long) map.get(groupBy);
-										value1 = value1 +value;
+										Double value1 = (Double) map.get(groupBy);
+										value1 = value1 + value;
 										map.put(groupBy, value1);
 									}
 									else {
@@ -1490,7 +1490,7 @@ public class DashboardAction extends ActionSupport {
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
 				;
 		
-//		builder.orderBy("TTIME");
+		builder.orderBy("TTIME");
 		
 		if(module.getExtendModule() != null) {
 			builder.innerJoin(module.getExtendModule().getTableName())
@@ -2175,12 +2175,13 @@ public class DashboardAction extends ActionSupport {
 	 					Double violatedValue = violatedReadings.get(thisMap.get("label").toString());
 	 					Double d = (Double) thisMap.get("value");
 	 					if (d != null) {
-	 						Double newValue = d - violatedValue;
-	 						if (newValue < 0) {
-	 							newValue = 0d;
-	 						}
-	 						thisMap.put("value", newValue);
+//	 						Double newValue = d - violatedValue;
+//	 						if (newValue < 0) {
+//	 							newValue = 0d;
+//	 						}
+	 						thisMap.put("value", 0d);
 	 						component.put("violated_value", d);
+	 						component.put("marked_value", violatedValue);
 	 					}
 	 				}
 	 				
@@ -2741,8 +2742,9 @@ public class DashboardAction extends ActionSupport {
 				else if (widgetType == DashboardWidgetContext.WidgetType.LIST_VIEW.getValue()) {
 					widgetContext = new WidgetListViewContext();
 					WidgetListViewContext WidgetListViewContext1 = (WidgetListViewContext) widgetContext;
-					WidgetListViewContext1.setViewName(widget.get("viewName").toString());
-					WidgetListViewContext1.setModuleName(widget.get("moduleName").toString());
+					
+					WidgetListViewContext1.setViewName(widget.get("viewName") != null ? widget.get("viewName").toString() : null);
+					WidgetListViewContext1.setModuleName(widget.get("moduleName") != null ? widget.get("moduleName").toString() : null);
 				}
 				else if (widgetType == DashboardWidgetContext.WidgetType.STATIC.getValue()) {
 					widgetContext = new WidgetStaticContext();

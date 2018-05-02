@@ -8,7 +8,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
 //import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.ControllerSettingsContext;
+import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -20,7 +20,7 @@ public class AddControllerCommand implements Command {
 	@SuppressWarnings("unchecked")
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		ControllerSettingsContext controllerSettings = (ControllerSettingsContext) context.get(FacilioConstants.ContextNames.CONTROLLER_SETTINGS);
+		ControllerContext controllerSettings = (ControllerContext) context.get(FacilioConstants.ContextNames.CONTROLLER_SETTINGS);
 		
 		if(controllerSettings != null) {
 			controllerSettings.setOrgId(AccountUtil.getCurrentOrg().getOrgId());

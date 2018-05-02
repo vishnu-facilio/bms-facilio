@@ -626,6 +626,15 @@ public class AccountConstants {
 
 		return orgModule;
 	}
+	
+	public static FacilioModule getUserSessionModule() {
+		FacilioModule userSession = new FacilioModule();
+		userSession.setName("usersession");
+		userSession.setDisplayName("User Sessions");
+		userSession.setTableName("UserSessions");
+
+		return userSession;
+	}
 
 	public static FacilioModule getOrgInfoModule() {
 		FacilioModule orgModule = new FacilioModule();
@@ -1095,6 +1104,62 @@ public class AccountConstants {
 		userType.setColumnName("USER_TYPE");
 		userType.setModule(module);
 		fields.add(userType);
+	
+		return fields;
+	}
+	
+	public static List<FacilioField> getUserSessionFields() {
+		FacilioModule module = getUserSessionModule();
+		List<FacilioField> fields = new ArrayList<>();
+
+		FacilioField uid = new FacilioField();
+		uid.setName("uid");
+		uid.setDataType(FieldType.NUMBER);
+		uid.setColumnName("USERID");
+		uid.setModule(module);
+		fields.add(uid);
+		
+		FacilioField token = new FacilioField();
+		token.setName("token");
+		token.setDataType(FieldType.STRING);
+		token.setColumnName("TOKEN");
+		token.setModule(module);
+		fields.add(token);
+
+		FacilioField startTime = new FacilioField();
+		startTime.setName("startTime");
+		startTime.setDataType(FieldType.NUMBER);
+		startTime.setColumnName("START_TIME");
+		startTime.setModule(module);
+		fields.add(startTime);
+		
+		FacilioField endTime = new FacilioField();
+		endTime.setName("endTime");
+		endTime.setDataType(FieldType.NUMBER);
+		endTime.setColumnName("END_TIME");
+		endTime.setModule(module);
+		fields.add(endTime);
+		
+		FacilioField isActive = new FacilioField();
+		isActive.setName("isActive");
+		isActive.setDataType(FieldType.BOOLEAN);
+		isActive.setColumnName("IS_ACTIVE");
+		isActive.setModule(module);
+		fields.add(isActive);
+
+		FacilioField ipAddress = new FacilioField();
+		ipAddress.setName("ipAddress");
+		ipAddress.setDataType(FieldType.STRING);
+		ipAddress.setColumnName("IPADDRESS");
+		ipAddress.setModule(module);
+		fields.add(ipAddress);
+		
+		FacilioField userAgent = new FacilioField();
+		userAgent.setName("userAgent");
+		userAgent.setDataType(FieldType.STRING);
+		userAgent.setColumnName("USER_AGENT");
+		userAgent.setModule(module);
+		fields.add(userAgent);
 	
 		return fields;
 	}

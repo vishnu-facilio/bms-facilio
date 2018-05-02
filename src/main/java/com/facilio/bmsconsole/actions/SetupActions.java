@@ -13,7 +13,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
 import com.facilio.bmsconsole.context.CalendarColorContext;
-import com.facilio.bmsconsole.context.ControllerSettingsContext;
+import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.EmailSettingContext;
 import com.facilio.bmsconsole.context.SetupLayout;
 import com.facilio.bmsconsole.context.SupportEmailContext;
@@ -217,7 +217,7 @@ public String importData() throws Exception {
 		
     	setSetup(SetupLayout.getControllerSettingsLayout());
     	
-    	List<ControllerSettingsContext> rules= ControllerAPI.getControllerSettings(AccountUtil.getCurrentOrg().getOrgId());
+    	List<ControllerContext> rules= ControllerAPI.getControllerSettings(AccountUtil.getCurrentOrg().getOrgId());
 		ActionContext.getContext().getValueStack().set("controllerSettings", rules);
 //    	setControllerSettings((ControllerSettingsContext) context.get(FacilioConstants.ContextNames.CONTROLLER_SETTINGS));
 		return SUCCESS;    	
@@ -269,11 +269,11 @@ public String importData() throws Exception {
 		return result;
 	}
 	
-	private ControllerSettingsContext controllerSettings;
-	public ControllerSettingsContext getcontrollerSettings() {
+	private ControllerContext controllerSettings;
+	public ControllerContext getcontrollerSettings() {
 		return controllerSettings;
 	}
-	public void setControllerSettings(ControllerSettingsContext controllerSettings) {
+	public void setControllerSettings(ControllerContext controllerSettings) {
 		this.controllerSettings = controllerSettings;
 	}
 	

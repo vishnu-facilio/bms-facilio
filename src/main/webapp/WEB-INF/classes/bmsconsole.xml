@@ -1000,11 +1000,21 @@
 			<result name="success">/jsps/admin/showCache.jsp</result>
 		</action>
 		<action name="clearcache" class="com.facilio.bmsconsole.actions.AdminAction" method="clearCache">
-			<result name="success">/jsps/admin/showCache.jsp</result>
+			<result name="success" type="redirect">
+				<param name="location">buildInfo?showcache=true</param>
+			</result>
 		</action>
 		<action name="reloadbrowser" class="com.facilio.bmsconsole.actions.AdminAction" method="reloadBrowser">
-			<result name="success">/jsps/admin/showCache.jsp</result>
+			<result name="success" type="redirect">
+			<param name="location">buildInfo</param>
+			</result>
 		</action>
+		<action name="adminpage" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result name="success">/jsps/admin/adminlayout.jsp</result>
+		</action>
+		<action name="buildInfo" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result type="tiles">adminpage/buildinfo.jsp</result>
+			</action>
 	</package>
 
 	<package name="setup" namespace="/app/setup" extends="home">
@@ -3582,6 +3592,15 @@
 			<result name="success">/jsps/baseSpaceListPopup.jsp</result>
 		</action>
 	</package>
+	
+	<package name="widget" namespace="/api/widget" extends="home">
+		<action name="getUserCardData" class="com.facilio.bmsconsole.actions.WidgetAction" method="getUserCardData">
+			<result name="success" type="json">
+				<param name="includeProperties">^user.*,^result.*</param>
+			</result>
+		</action>
+	</package>
+	
 	<package name="dashboard" namespace="/api/dashboard" extends="home">
 		<action name="populateDefaultReports" class="com.facilio.bmsconsole.actions.DashboardAction" method="populateDefaultReports">
 		</action>
