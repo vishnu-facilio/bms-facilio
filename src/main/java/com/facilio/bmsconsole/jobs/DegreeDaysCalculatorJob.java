@@ -110,7 +110,7 @@ public class DegreeDaysCalculatorJob extends FacilioJob {
 		for(SiteContext site: sites) {
 
 			Long siteId=site.getId();
-			Double wddBaseTemp=getWddBaseTemperature();//site.getWddBaseTemperature();
+			Double wddBaseTemp=site.getWddBaseTemperature();
 			List<Map<String,Object>> weatherReadings=siteVsReadings.get(siteId);
 			
 			if(wddBaseTemp>0) {
@@ -120,11 +120,6 @@ public class DegreeDaysCalculatorJob extends FacilioJob {
 			}
 		}
 		return moduleVsReading;
-	}
-
-	private Double getWddBaseTemperature() {
-		//temporary method 4 d time being till we add this column in site.
-		return 15.5;
 	}
 
 	private void addReading(Map<String, List<ReadingContext>> moduleVsReading, String moduleName, ReadingContext reading) {

@@ -84,6 +84,15 @@ public class SiteContext extends BaseSpaceContext {
 		this.hddBaseTemperature = hddBaseTemperature;
 	}
 
+	private double wddBaseTemperature;
+	public double getWddBaseTemperature() {
+		return wddBaseTemperature;
+	}
+	public void setWddBaseTemperature(double wddBaseTemperature) {
+		this.wddBaseTemperature = wddBaseTemperature;
+	}
+	
+	
 	public enum SiteType {
 		COMMON(1, "Common"),
 		HOSPITAL(2, "Hospital"),
