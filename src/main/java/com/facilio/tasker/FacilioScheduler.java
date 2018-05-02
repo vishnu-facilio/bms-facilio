@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -50,17 +52,21 @@ public class FacilioScheduler {
 						JOBS_MAP.put(name, (Class<? extends FacilioJob>) Class.forName(className));
 					}
 					catch(Exception e) {
-						System.err.println("The folowing error occurred while parsing job name : "+name);
-						e.printStackTrace();
+						
+						logger.log(Level.SEVERE, "The folowing error occurred while parsing job name : "+name, e);
+						
 					}
 				}
 				else {
-					System.err.println("Invalid job configuration : "+jobConf);
+					
+					logger.log(Level.SEVERE, "Invalid job configuration : "+jobConf);
+
 				}
 			}
 		}
 	}
-	
+	private static Logger logger = Logger.getLogger("FacilioScheduler");
+
 	private static void startExecutors() throws JAXBException {
 		ClassLoader classLoader = FacilioScheduler.class.getClassLoader();
 		File executorsXml = new File(classLoader.getResource("conf/" + AwsUtil.getConfig("scheduleexecutorsfile") + ".xml").getFile());

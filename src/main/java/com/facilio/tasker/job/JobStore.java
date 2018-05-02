@@ -10,6 +10,8 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.json.simple.parser.ParseException;
 
@@ -322,11 +324,13 @@ public class JobStore {
 		}
 		catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log(Level.SEVERE,"Error",e);
+
 			throw e;
 		}
 	}
-	
+	private static Logger logger = Logger.getLogger("JobStore");
+
 	private static PreparedStatement getPStmt(Connection conn, long jobId, String jobName) throws SQLException {
 		String sql = "SELECT * FROM Jobs WHERE JOBID = ? AND JOBNAME = ?";
 		PreparedStatement pstmt = conn.prepareStatement(sql);
