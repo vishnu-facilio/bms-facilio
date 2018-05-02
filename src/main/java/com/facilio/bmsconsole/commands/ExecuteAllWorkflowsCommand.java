@@ -79,9 +79,12 @@ public class ExecuteAllWorkflowsCommand implements Command
 						while (it.hasNext()) {
 							count++;
 							Object record = it.next();
-							System.out.println("Record Number : "+count);
-							if (record instanceof ReadingContext) {
-								System.out.println("Resource ID : "+((ReadingContext)record));
+							
+							if (AccountUtil.getCurrentOrg().getId() == 88) {
+								System.out.println("Record Number : "+count);
+								if (record instanceof ReadingContext) {
+									System.out.println("Resource ID : "+((ReadingContext)record));
+								}
 							}
 							Map<String, Object> recordPlaceHolders = new HashMap<>(placeHolders);
 							CommonCommandUtil.appendModuleNameInKey(moduleName, moduleName, FieldUtil.getAsProperties(record), recordPlaceHolders);
