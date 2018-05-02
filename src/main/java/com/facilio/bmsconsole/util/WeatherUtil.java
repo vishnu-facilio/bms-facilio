@@ -79,7 +79,7 @@ public class WeatherUtil {
 		}
 		return response;
 	}
-	
+
 	
 	public static  HttpURLConnection getHttpURLConnection (String requestURL) throws Exception{
 		
@@ -158,14 +158,22 @@ public class WeatherUtil {
 	
 	
 	public static Map<Long,List<Map<String,Object>>> getWeatherReadings() throws Exception {
+		return getReadings(FacilioConstants.ContextNames.WEATHER_READING,"temperature");
+	}
+	
+	public static Map<Long,List<Map<String,Object>>> getWetBulbReadings() throws Exception {
+		return getReadings(FacilioConstants.ContextNames.PSYCHROMETRIC_READING ,"wetBulbTemperature");
+	}
+	
+public static Map<Long,List<Map<String,Object>>> getReadings(String moduleName, String fieldName) throws Exception {
 		
 		
 		ModuleBean modBean= (ModuleBean) BeanFactory.lookup("ModuleBean");
-		Map<String,FacilioField>	fieldMap=FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.ContextNames.WEATHER_READING));
+		Map<String,FacilioField>	fieldMap=FieldFactory.getAsMap(modBean.getAllFields(moduleName));
 		
 		FacilioField parentId = fieldMap.get("parentId");
 		FacilioField timeFld = fieldMap.get("ttime");
-		FacilioField temperatureFld = fieldMap.get("temperature");
+		FacilioField temperatureFld = fieldMap.get(fieldName);
 
 		List<FacilioField> fields = new ArrayList<FacilioField>();
 		fields.add(parentId);
@@ -174,7 +182,7 @@ public class WeatherUtil {
 		
 		SelectRecordsBuilder<ReadingContext> builder = new SelectRecordsBuilder<ReadingContext>()
 				.select(fields)
-				.moduleName(FacilioConstants.ContextNames.WEATHER_READING)
+				.moduleName(moduleName)
 				.beanClass(ReadingContext.class)
 				.andCondition(CriteriaAPI.getCondition("TTIME", "ttime",null, DateOperators.YESTERDAY));
 		List<Map<String,Object>> weatherReadings= builder.getAsProps();
@@ -192,6 +200,9 @@ public class WeatherUtil {
 		}
 		return siteVsWeatherData;
 	}
+	
+	
+
 	
 	
 	public static Double getCDD(Double cddBaseTemp, List<Map<String,Object>> weatherReadings) {
@@ -225,6 +236,23 @@ public class WeatherUtil {
 		Double hdd=totalTemp/count;
 		return hdd;
 
+	}
+	
+	
+	public static Double getWDD(Double wddBaseTemp, List<Map<String,Object>> weatherReadings) {
+		
+		int count= weatherReadings.size();
+		Double totalTemp= new Double(0);
+		for(Map<String,Object> reading: weatherReadings){
+			
+			Double temperature=(Double)reading.get("wetBulbTemperature");
+			if(temperature==null || temperature < wddBaseTemp) {
+				continue;
+			}
+			totalTemp+=(temperature - wddBaseTemp);
+		}
+		Double wdd=totalTemp/count;
+		return wdd;
 	}
 	
 	public static void main (String args[]) {

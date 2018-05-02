@@ -37,14 +37,23 @@ public class DegreeDaysCalculatorJob extends FacilioJob {
 			{
 				return;
 			}
-
+			Map<String, List<ReadingContext>> moduleVsReading =new HashMap<String,List<ReadingContext>> ();
+		
+			//cdd n hdd calculations..
 			Map<Long,List<Map<String,Object>>> siteVsReadings=WeatherUtil.getWeatherReadings();
 			Set<Long> siteIds= siteVsReadings.keySet();
-			if (siteIds==null || siteIds.isEmpty()) {
-				return;
+			if (siteIds!=null && !siteIds.isEmpty()) {
+				 moduleVsReading = getWeatherReadings(siteVsReadings, siteIds);
 			}
-			Map<String, List<ReadingContext>> moduleVsReading = getModuleReadings(siteVsReadings, siteIds);
+			
+			//wet  bulb calculation..
+			siteVsReadings=WeatherUtil.getWetBulbReadings();
+			siteIds= siteVsReadings.keySet();
+			if (siteIds!=null && !siteIds.isEmpty()) {
+				moduleVsReading.putAll(getWetBulbReadings(siteVsReadings, siteIds));
+			}
 			persistReading(moduleVsReading);
+			
 		}
 		catch (Exception e) {
 			logger.log(Level.SEVERE, e.getMessage(), e);
@@ -52,6 +61,10 @@ public class DegreeDaysCalculatorJob extends FacilioJob {
 	}
 
 	private void persistReading(Map<String, List<ReadingContext>> moduleVsReading) throws Exception {
+		
+		if(moduleVsReading.isEmpty()) {
+			return;
+		}
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.READINGS_MAP,moduleVsReading);
 		Chain addDataChain = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
@@ -59,9 +72,8 @@ public class DegreeDaysCalculatorJob extends FacilioJob {
 	}
 
 
-	private Map<String, List<ReadingContext>> getModuleReadings( Map<Long, List<Map<String, Object>>> siteVsReadings,
+	private Map<String, List<ReadingContext>> getWeatherReadings( Map<Long, List<Map<String, Object>>> siteVsReadings,
 			Set<Long> siteIds) throws Exception {
-		
 		
 		List<SiteContext> sites= SpaceAPI.getSiteSpace(StringUtils.join(siteIds, ","));
 		Map<String,List<ReadingContext>> moduleVsReading = new HashMap<String,List<ReadingContext>> ();
@@ -86,6 +98,33 @@ public class DegreeDaysCalculatorJob extends FacilioJob {
 			}
 		}
 		return moduleVsReading;
+	}
+	
+	
+	private Map<String, List<ReadingContext>> getWetBulbReadings( Map<Long, List<Map<String, Object>>> siteVsReadings,
+			Set<Long> siteIds) throws Exception {
+		
+		List<SiteContext> sites= SpaceAPI.getSiteSpace(StringUtils.join(siteIds, ","));
+		Map<String,List<ReadingContext>> moduleVsReading = new HashMap<String,List<ReadingContext>> ();
+
+		for(SiteContext site: sites) {
+
+			Long siteId=site.getId();
+			Double wddBaseTemp=getWddBaseTemperature();//site.getWddBaseTemperature();
+			List<Map<String,Object>> weatherReadings=siteVsReadings.get(siteId);
+			
+			if(wddBaseTemp>0) {
+				Double wdd=WeatherUtil.getWDD(wddBaseTemp, weatherReadings);
+				ReadingContext wReading= getReading(siteId,"wdd",wdd);
+				addReading(moduleVsReading,FacilioConstants.ContextNames.WDD_READING, wReading);
+			}
+		}
+		return moduleVsReading;
+	}
+
+	private Double getWddBaseTemperature() {
+		//temporary method 4 d time being till we add this column in site.
+		return 15.5;
 	}
 
 	private void addReading(Map<String, List<ReadingContext>> moduleVsReading, String moduleName, ReadingContext reading) {
