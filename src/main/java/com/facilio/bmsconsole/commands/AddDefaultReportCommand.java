@@ -9,6 +9,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -55,6 +56,8 @@ public class AddDefaultReportCommand implements Command {
 			System.out.println(paramValues);
 			SQLScriptRunner scriptRunner = new SQLScriptRunner(INSERT_REPORTS_SQL, true, paramValues);
 			scriptRunner.runScript();
+			
+//			CommonCommandUtil.insertOrgInfo(orgId, "newdashboard", "wo,fa");
 		}
 		catch (Exception e) {
 			e.printStackTrace();
