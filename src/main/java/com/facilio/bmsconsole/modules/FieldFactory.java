@@ -3469,8 +3469,8 @@ public class FieldFactory {
 		return getField(name, colName, null, type);
 	}
 	
-	public static List<FacilioField> getAnamolySchedulerFields() {
-		FacilioModule module = ModuleFactory.getAnalyticsAnamolyModule();
+	public static List<FacilioField> getAnomalySchedulerFields() {
+		FacilioModule module = ModuleFactory.getAnalyticsAnomalyModule();
 		List<FacilioField> fields = new ArrayList<>();
 
 		fields.add(getOrgIdField(module));
@@ -3483,15 +3483,15 @@ public class FieldFactory {
 		return fields;
 	}
 	
-	public static List<FacilioField> getAnamolyIDFields() {
-		FacilioModule module = ModuleFactory.getAnalyticsAnamolyIDListModule();
+	public static List<FacilioField> getAnomalyIDFields() {
+		FacilioModule module = ModuleFactory.getAnalyticsAnomalyIDListModule();
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(getField("id", "ID", module, FieldType.NUMBER));
 		return fields;
 	}
 	
-	public static List<FacilioField> getAnamolyIDInsertFields() {
-		FacilioModule module = ModuleFactory.getAnalyticsAnamolyIDListModule();
+	public static List<FacilioField> getAnomalyIDInsertFields() {
+		FacilioModule module = ModuleFactory.getAnalyticsAnomalyIDListModule();
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(getOrgIdField(module));
 		fields.add(getModuleIdField(module));

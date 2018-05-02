@@ -3,7 +3,7 @@ package com.facilio.bmsconsole.context;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 
-public class AnalyticsAnamolyContext extends ModuleBaseWithCustomFields {
+public class AnalyticsAnomalyContext extends ModuleBaseWithCustomFields {
 	private long ttime;
 	private double energyDelta;
 	private long meterId;

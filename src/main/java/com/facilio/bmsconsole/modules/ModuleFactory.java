@@ -52,7 +52,7 @@ public class ModuleFactory {
 		moduleMap.put("singledaybusinesshour", getSingleDayBusinessHourModule());
 		moduleMap.put("businesshours", getBusinessHoursModule());
 		moduleMap.put("files", getFilesModule());
-		moduleMap.put("anamolyScheduler", getAnalyticsAnamolyModule());	
+		moduleMap.put("anomalyScheduler", getAnalyticsAnomalyModule());	
 		return moduleMap;
 	}
 			
@@ -914,22 +914,22 @@ public class ModuleFactory {
 		return dashboardSharing;
 	}
 
-	public static FacilioModule getAnalyticsAnamolyModule() {
-		FacilioModule analyticsAnamolyJob = new FacilioModule();
-		analyticsAnamolyJob.setName("anamolyScheduler");
-		analyticsAnamolyJob.setDisplayName("Analytics Scheduler");
-		analyticsAnamolyJob.setTableName("Energy_Data");
+	public static FacilioModule getAnalyticsAnomalyModule() {
+		FacilioModule analyticsAnomalyJob = new FacilioModule();
+		analyticsAnomalyJob.setName("anomalyScheduler");
+		analyticsAnomalyJob.setDisplayName("Analytics Scheduler");
+		analyticsAnomalyJob.setTableName("Energy_Data");
 		
-		return analyticsAnamolyJob;
+		return analyticsAnomalyJob;
 	}
 	
-	public static FacilioModule getAnalyticsAnamolyIDListModule() {
-		FacilioModule analyticsAnamolyIDListJob = new FacilioModule();
-		analyticsAnamolyIDListJob.setName("anamolyIDList");
-		analyticsAnamolyIDListJob.setDisplayName("Anamoly List");
-		analyticsAnamolyIDListJob.setTableName("Time_Series_Anamoly");
+	public static FacilioModule getAnalyticsAnomalyIDListModule() {
+		FacilioModule analyticsAnomalyIDListJob = new FacilioModule();
+		analyticsAnomalyIDListJob.setName("anomalyIDList");
+		analyticsAnomalyIDListJob.setDisplayName("Anomaly List");
+		analyticsAnomalyIDListJob.setTableName("Time_Series_Anomaly");
 		
-		return analyticsAnamolyIDListJob;
+		return analyticsAnomalyIDListJob;
 	}
 	
 }
