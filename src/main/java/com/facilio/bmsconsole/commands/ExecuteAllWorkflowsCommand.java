@@ -78,12 +78,13 @@ public class ExecuteAllWorkflowsCommand implements Command
 							Object record = it.next();
 							Map<String, Object> recordPlaceHolders = new HashMap<>(placeHolders);
 							CommonCommandUtil.appendModuleNameInKey(moduleName, moduleName, FieldUtil.getAsProperties(record), recordPlaceHolders);
-							while (workflowRules != null && !workflowRules.isEmpty()) {
+							List<WorkflowRuleContext> currentWorkflows = workflowRules;
+							while (currentWorkflows != null && !currentWorkflows.isEmpty()) {
 								Criteria childCriteria = executeWorkflows(workflowRules, moduleName, record, it, recordPlaceHolders, (FacilioContext) context);
 								if (childCriteria == null) {
 									break;
 								}
-								workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(moduleId, activities, childCriteria, ruleTypes);
+								currentWorkflows = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(moduleId, activities, childCriteria, ruleTypes);
 							}
 						}
 					}
