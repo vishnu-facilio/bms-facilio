@@ -2175,12 +2175,13 @@ public class DashboardAction extends ActionSupport {
 	 					Double violatedValue = violatedReadings.get(thisMap.get("label").toString());
 	 					Double d = (Double) thisMap.get("value");
 	 					if (d != null) {
-	 						Double newValue = d - violatedValue;
-	 						if (newValue < 0) {
-	 							newValue = 0d;
-	 						}
-	 						thisMap.put("value", newValue);
+//	 						Double newValue = d - violatedValue;
+//	 						if (newValue < 0) {
+//	 							newValue = 0d;
+//	 						}
+	 						thisMap.put("value", 0d);
 	 						component.put("violated_value", d);
+	 						component.put("marked_value", violatedValue);
 	 					}
 	 				}
 	 				
