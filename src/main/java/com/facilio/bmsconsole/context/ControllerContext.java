@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.time.SecondsChronoUnit;
+
 public class ControllerContext {
 	private long id = -1;
 	public long getId() {
@@ -39,6 +41,15 @@ public class ControllerContext {
 	}
 	public void setDataInterval(long dataInterval) {
 		this.dataInterval = dataInterval;
+		this.dateIntervalUnit = new SecondsChronoUnit(dataInterval * 60);
+	}
+	
+	private SecondsChronoUnit dateIntervalUnit;
+	public SecondsChronoUnit getDateIntervalUnit() {
+		return dateIntervalUnit;
+	}
+	public void setDateIntervalUnit(SecondsChronoUnit dateIntervalUnit) {
+		this.dateIntervalUnit = dateIntervalUnit;
 	}
 	
 	@Override

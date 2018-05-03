@@ -9,7 +9,7 @@ public class SecondsChronoUnit implements TemporalUnit {
 
 	private final Duration duration;
 	
-	public SecondsChronoUnit(int durationInSeconds) {
+	public SecondsChronoUnit(long durationInSeconds) {
 		// TODO Auto-generated constructor stub
 		duration = Duration.ofSeconds(durationInSeconds);
 	}

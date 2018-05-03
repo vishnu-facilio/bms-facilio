@@ -669,7 +669,7 @@ public class LoginAction extends ActionSupport{
 		data.put("roles", roles);
 		data.put("orgs", orgs);
 		
-		data.put("orgInfo", CommonCommandUtil.getOrgInfo(AccountUtil.getCurrentOrg().getOrgId()));
+		data.put("orgInfo", CommonCommandUtil.getOrgInfo());
 		
 		data.put("ticketCategory", TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId()));
 		data.put("ticketPriority", TicketAPI.getPriorties(AccountUtil.getCurrentOrg().getOrgId()));

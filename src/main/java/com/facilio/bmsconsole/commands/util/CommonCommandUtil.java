@@ -23,8 +23,10 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.LookupField;
@@ -313,14 +315,14 @@ public class CommonCommandUtil {
 		return null;		
 	}
     
-    public static JSONObject getOrgInfo(long orgId) throws Exception {
+    public static JSONObject getOrgInfo() throws Exception {
     	
     	JSONObject result = new JSONObject();
-    	
+    	FacilioModule module = AccountConstants.getOrgInfoModule();
     	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(AccountConstants.getOrgInfoFields())
-				.table(AccountConstants.getOrgInfoModule().getTableName())
-				.andCustomWhere("ORGID = ?", orgId);
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -329,6 +331,32 @@ public class CommonCommandUtil {
 			}
 		}
 		return result;		
+	}
+    
+    public static Map<String, String> getOrgInfo(String... names) throws Exception {
+    	
+    	if (names != null && names.length > 0) {
+	    	Map<String, String> result = new HashMap<>();
+	    	FacilioModule module = AccountConstants.getOrgInfoModule();
+	    	List<FacilioField> fields = AccountConstants.getOrgInfoFields();
+	    	FacilioField name = FieldFactory.getAsMap(fields).get("name");
+	    	
+	    	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+					.select(fields)
+					.table(module.getTableName())
+					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+					.andCondition(CriteriaAPI.getCondition(name, String.join(",", names), StringOperators.IS))
+					;
+			
+			List<Map<String, Object>> props = selectBuilder.get();
+			if (props != null && !props.isEmpty()) {
+				for (Map<String, Object> prop : props) {
+					result.put((String) prop.get("name"), (String) prop.get("value"));
+				}
+			}
+			return result;	
+    	}
+    	return null;
 	}
     
     public static Map<String, List<ReadingContext>> getReadingMap(FacilioContext context) {

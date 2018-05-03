@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
@@ -34,14 +35,7 @@ public class GetLatestCategoryReadingValuesCommand implements Command {
 					count = 1;
 				}
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				List<FacilioField> fields = new ArrayList<>();
-				FacilioField ttime = new FacilioField();
-				ttime.setName("ttime");
-				ttime.setDisplayName("Timestamp");
-				ttime.setDataType(FieldType.DATE_TIME);
-				ttime.setColumnName("TTIME");
-				ttime.setModule(module);
-				fields.add(ttime);
+				List<FacilioField> fields = FieldFactory.getDefaultReadingFields(module);
 				
 				Condition idCondition = new Condition();
 				idCondition.setField(modBean.getField("parentId", module.getName()));

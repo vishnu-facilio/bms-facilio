@@ -53,7 +53,7 @@ public class HistoricalENPICalculatorJob extends FacilioJob {
 				catch (Exception e) {
 					logger.log(Level.SEVERE, e.getMessage(), e);
 					if (e == null || !e.getMessage().contains("Division by zero") || !e.getMessage().contains("Division undefined")  || !e.getMessage().contains("/ by zero")) {
-						CommonCommandUtil.emailException("EnPI calculation failed for : "+jc.getJobId()+" between "+startTime+" and "+endTime, e);
+						CommonCommandUtil.emailException("Historical EnPI calculation failed for : "+jc.getJobId()+" between "+startTime+" and "+endTime, e);
 					}
 				}
 				startTime = endTime;

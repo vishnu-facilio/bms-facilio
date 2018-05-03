@@ -1,28 +1,41 @@
 package com.facilio.bmsconsole.commands;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.util.DateTimeUtil;
+import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.time.SecondsChronoUnit;
 
 public class AddOrUpdateReadingValuesCommand implements Command {
 
+	private SecondsChronoUnit defaultAdjustUnit = null;
+	private Map<Long, ControllerContext> controllers = null;
+	private Map<Long, ResourceContext> resources = null;
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -33,33 +46,19 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 		if (updateLastReading == null) {
 			updateLastReading = true;
 		}
-		System.err.println( Thread.currentThread().getName()+"Inside AddorUpdateCommand#######  "+readingMap);
-
+//		System.err.println( Thread.currentThread().getName()+"Inside AddorUpdateCommand#######  "+readingMap);
+		
 		Map<String, Map<String,Object>> lastReadingMap =(Map<String, Map<String,Object>>)context.get(FacilioConstants.ContextNames.LAST_READINGS);
 		if (readingMap != null && !readingMap.isEmpty()) {
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			boolean useControllerDataInterval = useControllerDataInterval(readingMap);
+			
 			for (Map.Entry<String, List<ReadingContext>> entry : readingMap.entrySet()) {
 				String moduleName = entry.getKey();
 				List<ReadingContext> readings = entry.getValue();
 				List<FacilioField> fields= bean.getAllFields(moduleName);
 				FacilioModule module = bean.getModule(moduleName);
-		
-				List<ReadingContext> readingsToBeAdded = new ArrayList<>();
-				for(ReadingContext reading : readings) {
-					if(reading.getTtime() == -1) {
-						reading.setTtime(System.currentTimeMillis());
-					}
-					if(reading.getParentId() == -1) {
-						throw new IllegalArgumentException("Invalid parent id for readings of module : "+moduleName);
-					}
-		
-					if(reading.getId() == -1) {
-						readingsToBeAdded.add(reading);
-					}
-					else {
-						updateReading(module, fields, reading,lastReadingMap, updateLastReading);
-					}
-				}
+				List<ReadingContext> readingsToBeAdded = addDefaultPropsAndGetReadingsToBeAdded(module, fields, readings, lastReadingMap, useControllerDataInterval, updateLastReading);
 				addReadings(module, fields, readingsToBeAdded,lastReadingMap, updateLastReading);
 			}
 		}
@@ -68,10 +67,86 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 		return false;
 	}
 	
+	private List<ReadingContext> addDefaultPropsAndGetReadingsToBeAdded(FacilioModule module, List<FacilioField> fields, List<ReadingContext> readings, Map<String, Map<String,Object>> lastReadingMap, boolean useControllerDataInterval, boolean updateLastReading) throws Exception {
+		List<ReadingContext> readingsToBeAdded = new ArrayList<>();
+		for(ReadingContext reading : readings) {
+			if(reading.getTtime() == -1) {
+				reading.setTtime(System.currentTimeMillis());
+			}
+			if(reading.getParentId() == -1) {
+				throw new IllegalArgumentException("Invalid parent id for readings of module : "+module.getName());
+			}
+			adjustTtime(reading, useControllerDataInterval);
+			if(reading.getId() == -1) {
+				readingsToBeAdded.add(reading);
+			}
+			else {
+				updateReading(module, fields, reading,lastReadingMap, updateLastReading);
+			}
+		}
+		return readingsToBeAdded;
+	}
+	
+	private void adjustTtime(ReadingContext reading, boolean useControllerDataInterval) {
+		reading.setActualTtime(reading.getTtime());
+		ZonedDateTime zdt = DateTimeUtil.getDateTime(reading.getTtime());
+		if (useControllerDataInterval) {
+			ResourceContext parent = resources.get(reading.getParentId());
+			if (parent.getControllerId() != -1) {
+				ControllerContext controller = controllers.get(parent.getControllerId());
+				if (controller.getDateIntervalUnit() != null) {
+					zdt = zdt.truncatedTo(controller.getDateIntervalUnit());
+				}
+				else {
+					zdt = zdt.truncatedTo(defaultAdjustUnit);
+				}
+			}
+			else {
+				zdt = zdt.truncatedTo(defaultAdjustUnit);
+			}
+		}
+		else {
+			zdt = zdt.truncatedTo(defaultAdjustUnit);
+		}
+		reading.setTtime(DateTimeUtil.getMillis(zdt, true));
+	}
+	
+	private boolean useControllerDataInterval(Map<String, List<ReadingContext>> readingMap) throws Exception {
+		Map<String, String> orgInfo = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.DEFAULT_DATA_INTERVAL, FacilioConstants.OrgInfoKeys.USE_CONTROLLER_DATA_INTERVAL);
+		String defaultIntervalProp = orgInfo.get(FacilioConstants.OrgInfoKeys.DEFAULT_DATA_INTERVAL);
+		if (defaultIntervalProp == null || defaultIntervalProp.isEmpty()) {
+			defaultAdjustUnit = ReadingsAPI.DEFAULT_DATA_INTERVAL_UNIT;
+		}
+		else {
+			defaultAdjustUnit = new SecondsChronoUnit(Long.parseLong(defaultIntervalProp) * 60);
+		}
+		
+		boolean useControllerDataInterval = Boolean.valueOf(orgInfo.get(FacilioConstants.OrgInfoKeys.USE_CONTROLLER_DATA_INTERVAL));
+		if (useControllerDataInterval) {
+			fetchControllerAndResources(readingMap);
+		}
+		return useControllerDataInterval;
+	}
+	
+	private void fetchControllerAndResources (Map<String, List<ReadingContext>> readingMap) throws Exception {
+		controllers = DeviceAPI.getAllControllersAsMap();
+		
+		Set<Long> resourceIds = new HashSet<>();
+		for (Map.Entry<String, List<ReadingContext>> entry : readingMap.entrySet()) {
+			List<ReadingContext> readings = entry.getValue();
+			if (readings != null) {
+				for (ReadingContext reading : readings) {
+					resourceIds.add(reading.getParentId());
+				}
+			}
+		}
+		resources = ResourceAPI.getResourceAsMapFromIds(resourceIds);
+	}
+	
 	private void addReadings(FacilioModule module, List<FacilioField> fields, List<ReadingContext> readings,
 			Map<String, Map<String,Object>> lastReadingMap, boolean isUpdateLastReading) throws Exception {
 		
-		System.err.println( Thread.currentThread().getName()+"Inside addReadings in  AddorUpdateCommand#######  "+readings);
+//		System.err.println( Thread.currentThread().getName()+"Inside addReadings in  AddorUpdateCommand#######  "+readings);
 
 		InsertRecordBuilder<ReadingContext> readingBuilder = new InsertRecordBuilder<ReadingContext>()
 																	.module(module)
@@ -81,7 +156,7 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 		if (isUpdateLastReading) {
 			ReadingsAPI.updateLastReading(fields,readings,lastReadingMap);
 		}
-		System.err.println( Thread.currentThread().getName()+"Exiting addReadings in  AddorUpdateCommand#######  ");
+//		System.err.println( Thread.currentThread().getName()+"Exiting addReadings in  AddorUpdateCommand#######  ");
 
 	}
 	

@@ -1,9 +1,11 @@
 package com.facilio.bmsconsole.util;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
@@ -82,7 +84,7 @@ public class ResourceAPI {
 		return resources;									
 	}
 	
-	public static Map<Long, ResourceContext> getResourceAsMapFromIds (List<Long> resourceIds) throws Exception {
+	public static Map<Long, ResourceContext> getResourceAsMapFromIds (Collection<Long> resourceIds) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
@@ -98,8 +100,8 @@ public class ResourceAPI {
 	public static List<ResourceContext> getExtendedResources (List<Long> resourceIds, boolean fetchDeleted) throws Exception {
 		List<ResourceContext> resources = getResources(resourceIds, fetchDeleted);
 		if(resources != null && !resources.isEmpty()) {
-			List<Long> spaceIds = new ArrayList<Long>();
-			List<Long> assetIds = new ArrayList<Long>();
+			Set<Long> spaceIds = new HashSet<Long>();
+			Set<Long> assetIds = new HashSet<Long>();
 			
 			for(ResourceContext resource : resources) {
 				switch (resource.getResourceTypeEnum()) {
@@ -149,7 +151,7 @@ public class ResourceAPI {
 		return resourceMap;
 	}
 	
-	private static Map<Long, BaseSpaceContext> getSpaces(List<Long> spaceIds, boolean fetchDeleted) throws Exception {
+	private static Map<Long, BaseSpaceContext> getSpaces(Set<Long> spaceIds, boolean fetchDeleted) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE);
@@ -165,7 +167,7 @@ public class ResourceAPI {
 		return selectBuilder.getAsMap();
 	}
 	
-	private static Map<Long, AssetContext> getAssets(List<Long> assetIds, boolean fetchDeleted) throws Exception {
+	private static Map<Long, AssetContext> getAssets(Set<Long> assetIds, boolean fetchDeleted) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);

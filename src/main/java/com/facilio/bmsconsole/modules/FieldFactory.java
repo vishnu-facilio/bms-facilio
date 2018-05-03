@@ -1613,6 +1613,8 @@ public class FieldFactory {
 
 		List<FacilioField> fields = new ArrayList<>();
 
+		fields.add(getField("actualTtime", "Actual Timestamp", "ACTUAL_TTIME", module, FieldType.DATE_TIME));
+		
 		FacilioField ttime = new FacilioField();
 		ttime.setName("ttime");
 		ttime.setDisplayName("Timestamp");
@@ -3497,8 +3499,12 @@ public class FieldFactory {
 		
 		return fields;
 	}
-		
+	
 	public static FacilioField getField(String name, String colName, FacilioModule module, FieldType type) {
+		return getField(name, null, colName, module, type);
+	}
+		
+	public static FacilioField getField(String name, String displayName, String colName, FacilioModule module, FieldType type) {
 		FacilioField columnFld = null;
 		switch (type) {
 			case NUMBER:
@@ -3513,6 +3519,10 @@ public class FieldFactory {
 				break;
 		}
 		columnFld.setName(name);
+		if (displayName != null) {
+			columnFld.setDisplayName(displayName);
+		}
+		
 		columnFld.setColumnName(colName);
 		columnFld.setDataType(type);
 		if(module != null) {

@@ -497,6 +497,11 @@ public class FacilioConstants {
 		}
 	}
 	
+	public static class OrgInfoKeys {
+		public static final String USE_CONTROLLER_DATA_INTERVAL = "useControllerDataInterval";
+		public static final String DEFAULT_DATA_INTERVAL = "defaultDataInterval";
+	}
+	
 	public static class Alarm {
 		public static final String CLEAR_SEVERITY = "Clear";
 		public static final String INFO_SEVERITY = "Info";

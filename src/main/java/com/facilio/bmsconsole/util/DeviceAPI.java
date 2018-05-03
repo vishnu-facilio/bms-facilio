@@ -46,16 +46,38 @@ public class DeviceAPI
 	public static final int VM_HISTORICAL_DATA_CALCULATION_INTERVAL = -3;
 
 	public static List<ControllerContext> getAllControllers() throws Exception {
+		FacilioModule module = ModuleFactory.getControllerModule();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.table(ModuleFactory.getControllerModule().getTableName())
+				.table(module.getTableName())
 				.select(FieldFactory.getControllerFields())
-				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId());
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				;
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if(props != null && !props.isEmpty()) {
 			List<ControllerContext> controllers = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
 				controllers.add(FieldUtil.getAsBeanFromMap(prop, ControllerContext.class));
+			}
+			return controllers;
+		}
+		return null;
+	}
+	
+	public static Map<Long, ControllerContext> getAllControllersAsMap() throws Exception {
+		FacilioModule module = ModuleFactory.getControllerModule();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.table(module.getTableName())
+				.select(FieldFactory.getControllerFields())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				;
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if(props != null && !props.isEmpty()) {
+			Map<Long, ControllerContext> controllers = new HashMap<>();
+			for(Map<String, Object> prop : props) {
+				ControllerContext controller = FieldUtil.getAsBeanFromMap(prop, ControllerContext.class); 
+				controllers.put(controller.getId(), controller);
 			}
 			return controllers;
 		}

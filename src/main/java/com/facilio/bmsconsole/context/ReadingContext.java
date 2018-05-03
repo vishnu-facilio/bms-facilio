@@ -10,6 +10,14 @@ import com.facilio.bmsconsole.util.DateTimeUtil;
 
 public class ReadingContext extends ModuleBaseWithCustomFields {
 
+	private long actualTtime = -1;
+	public long getActualTtime() {
+		return actualTtime;
+	}
+	public void setActualTtime(long actualTtime) {
+		this.actualTtime = actualTtime;
+	}
+
 	private long ttime = -1;
 	private ZonedDateTime zdt;
 	public long getTtime() {

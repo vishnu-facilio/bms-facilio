@@ -33,9 +33,13 @@ import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.time.SecondsChronoUnit;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class ReadingsAPI {
+	
+	public static final int DEFAULT_DATA_INTERVAL = 15; //In Minutes
+	public static final SecondsChronoUnit DEFAULT_DATA_INTERVAL_UNIT = new SecondsChronoUnit(DEFAULT_DATA_INTERVAL * 60); 
 	
 	public static Object getLastReadingValue(Long resourceId,FacilioField field) throws Exception {
 		FacilioModule module = ModuleFactory.getLastReadingModule();
@@ -297,5 +301,5 @@ public class ReadingsAPI {
 	public static List<FacilioField> excludeDefaultReadingFields(List<FacilioField> fields) {
 		return fields.stream().filter(field -> !DEFAULT_READING_FIELDS.contains(field.getName())).collect(Collectors.toList());
 	}
-
+	
 }
