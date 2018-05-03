@@ -64,6 +64,7 @@ public class PreventiveMaintenanceAPI {
 		List<PMJobsContext> pmJobs = new ArrayList<>();
 		while (nextExecutionTime <= endTime && (pm.getMaxCount() == -1 || currentCount < pm.getMaxCount()) && (pm.getEndTime() == -1 || nextExecutionTime <= pm.getEndTime())) {
 			PMJobsContext pmJob = new PMJobsContext();
+			pmJob.setPmId(pm.getId());
 			pmJob.setPmTriggerId(pmTrigger.getId());
 			pmJob.setNextExecutionTime(nextExecutionTime);
 			pmJob.setProjected(!addToDb);
@@ -90,6 +91,7 @@ public class PreventiveMaintenanceAPI {
 		int currentCount = pm.getCurrentExecutionCount();
 		if((pm.getMaxCount() == -1 || currentCount < pm.getMaxCount()) && (pm.getEndTime() == -1 || nextExecutionTime <= pm.getEndTime())) {
 			PMJobsContext pmJob = new PMJobsContext();
+			pmJob.setPmId(pm.getId());
 			pmJob.setPmTriggerId(pmTrigger.getId());
 			pmJob.setNextExecutionTime(nextExecutionTime);
 			pmJob.setStatus(PMJobsStatus.ACTIVE);
@@ -110,6 +112,7 @@ public class PreventiveMaintenanceAPI {
 		List<PMJobsContext> pmJobs = new ArrayList<>();
 		while (jobCount < count && (pm.getMaxCount() == -1 || currentCount < pm.getMaxCount()) && (pm.getEndTime() == -1 || nextExecutionTime <= pm.getEndTime())) {
 			PMJobsContext pmJob = new PMJobsContext();
+			pmJob.setPmId(pm.getId());
 			pmJob.setPmTriggerId(pmTrigger.getId());
 			pmJob.setNextExecutionTime(nextExecutionTime);
 			pmJob.setStatus(PMJobsStatus.ACTIVE);

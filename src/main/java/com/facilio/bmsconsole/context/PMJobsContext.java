@@ -11,6 +11,14 @@ public class PMJobsContext {
 		this.id = id;
 	}
 	
+	private long pmId = -1;
+	public long getPmId() {
+		return pmId;
+	}
+	public void setPmId(long pmId) {
+		this.pmId = pmId;
+	}
+	
 	private long pmTriggerId = -1;
 	public long getPmTriggerId() {
 		return pmTriggerId;
