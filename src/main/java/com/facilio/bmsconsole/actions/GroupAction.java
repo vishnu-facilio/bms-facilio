@@ -137,6 +137,8 @@ public class GroupAction extends ActionSupport {
 		
 		return SUCCESS;
 	}
+	
+	
 	public String changeTeamStatus() throws Exception {
 		
 		FacilioContext context = new FacilioContext();

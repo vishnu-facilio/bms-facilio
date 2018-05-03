@@ -1,6 +1,7 @@
 package com.facilio.fw.listener;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -29,6 +30,7 @@ import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.cache.RedisManager;
 import com.facilio.fw.BeanFactory;
 import com.facilio.kinesis.KinesisProcessor;
+import com.facilio.logging.SysOutLogger;
 import com.facilio.serviceportal.actions.PortalAuthInterceptor;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.SQLScriptRunner;
@@ -45,6 +47,18 @@ public class FacilioContextListener implements ServletContextListener {
 	}
 
 	public void contextInitialized(ServletContextEvent event) {
+		try {
+			System.setOut(new SysOutLogger("SysOut"));
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		try {
+			System.setErr(new SysOutLogger("SysErr"));
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		// TODO Auto-generated method stub
 		initDBConnectionPool();
 		Operator test = Operator.OPERATOR_MAP.get(1);

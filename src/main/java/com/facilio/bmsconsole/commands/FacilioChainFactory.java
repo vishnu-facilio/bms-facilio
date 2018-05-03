@@ -240,6 +240,12 @@ public class FacilioChainFactory {
 		addCleanUpCommand(c);
 		return c;
 	}
+	public static Command getDeleteRoleCommand() {
+		Chain c = new ChainBase();
+		c.addCommand(new DeleteRoleCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
 
 	private static void addCleanUpCommand(Chain c)
 	{

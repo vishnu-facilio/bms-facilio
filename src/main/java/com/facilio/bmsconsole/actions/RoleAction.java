@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Command;
 
@@ -43,7 +45,7 @@ public class RoleAction extends ActionSupport {
 		ActionContext.getContext().getValueStack().set("roles", getRoles());
 		return SUCCESS;
 	}
-	
+	private Map roleresponse = new HashMap();
 	private Role role;
 	public Role getRole() {
 		return role;
@@ -63,8 +65,12 @@ public class RoleAction extends ActionSupport {
 	public String addRole() throws Exception {
 			// setting necessary fields
 			role.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-			
-			FacilioContext context = new FacilioContext();
+			if (role.getName() == null)
+			{
+				setRoleResponse("message","Role Name Cannot be Null");
+				return ERROR;
+			}
+ 			FacilioContext context = new FacilioContext();
 			role.setCreatedTime(System.currentTimeMillis());
 			context.put(FacilioConstants.ContextNames.ROLE, getRole());
 			context.put(FacilioConstants.ContextNames.PERMISSIONS, getPermissions());
@@ -76,6 +82,22 @@ public class RoleAction extends ActionSupport {
 			return SUCCESS;
 	}
 	
+	  public Map<String, Object> getRoleResponse() {
+	        return roleresponse;
+	    }
+	  public void setRoleResponse(String key, Object roleresponse) {
+	        this.roleresponse.put(key, roleresponse);
+	    }
+		public String deleteRole() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ROLE_ID, getRoleId());
+
+		Command deleteRole = FacilioChainFactory.getDeleteRoleCommand();
+		deleteRole.execute(context);
+		
+		return SUCCESS;
+	}
 	public String updateRole() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
