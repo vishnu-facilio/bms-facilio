@@ -3068,6 +3068,7 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 		
 		fields.add(getIdField(module));
+		fields.add(getField("pmId", "PM_ID", module, FieldType.NUMBER));
 		fields.add(getField("pmTriggerId", "PM_TRIGGER_ID", module, FieldType.NUMBER));
 		fields.add(getField("nextExecutionTime", "NEXT_EXECUTION_TIME", module, FieldType.NUMBER));
 		fields.add(getField("templateId", "TEMPLATE_ID",  module, FieldType.NUMBER));
