@@ -75,7 +75,13 @@ public class FieldUtil {
 						pstmt.setBoolean(paramIndex, (boolean) value);
 					}
 					else {
-						pstmt.setBoolean(paramIndex, Boolean.parseBoolean(value.toString()));
+						String val = value.toString();
+						if (val == "1") {
+							pstmt.setBoolean(paramIndex, true);
+						}
+						else {
+							pstmt.setBoolean(paramIndex, Boolean.valueOf(val));
+						}
 					}
 				}
 				else {
