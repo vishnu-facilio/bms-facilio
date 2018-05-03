@@ -104,11 +104,7 @@ public class AwsUtil
 	private static final String AWS_ACCESS_KEY_ID = "accessKeyId";
 	private static final String AWS_SECRET_KEY_ID = "secretKeyId";
 
-	private static final String NEW_AWS_ACCESS_KEY_ID = "new.accessKeyId";
-	private static final String NEW_AWS_SECRET_KEY_ID = "new.secretKeyId";
-	
 	private static final String AWS_IOT_SERVICE_NAME = "iotdata";
-	public static final String AWS_IOT_DYNAMODB_TABLE_NAME = "IotData";
 
 	private static final String KINESIS_PARTITION_KEY = "${clientid()}";
 	private static final String IAM_ARN_PREFIX = "arn:aws:iam::";
@@ -129,8 +125,6 @@ public class AwsUtil
 	private static final Object LOCK = new Object();
 	
 	private static final String SERVERNAME = getConfig("servername");
-	private static AWSCredentials newBasicCredentials = null;
-	private static AWSCredentialsProvider newCredentialsProvider = null;
 
 
 	public static String getConfig(String name)
@@ -416,28 +410,6 @@ public class AwsUtil
 			}
 		}
 		return credentialsProvider;
-	}
-
-	private static AWSCredentials getNewBasicAwsCredentials() {
-		if(newBasicCredentials == null) {
-			synchronized (LOCK) {
-				if (newBasicCredentials == null) {
-					newBasicCredentials = new BasicAWSCredentials(AwsUtil.getConfig(NEW_AWS_ACCESS_KEY_ID), AwsUtil.getConfig(NEW_AWS_SECRET_KEY_ID));
-				}
-			}
-		}
-		return newBasicCredentials;
-	}
-
-	public static AWSCredentialsProvider getNewAWSCredentialsProvider() {
-		if(newCredentialsProvider == null){
-			synchronized (LOCK) {
-				if(newCredentialsProvider == null){
-					newCredentialsProvider = new AWSStaticCredentialsProvider(getBasicAwsCredentials());
-				}
-			}
-		}
-		return newCredentialsProvider;
 	}
 
 	public static String getRegion() {
