@@ -28,6 +28,7 @@
     	
     	<!-- Bootstrap Core CSS -->
 	   <!--   <link href="<%=staticURL%>/css/home/bootstrap.min.css" rel="stylesheet"> -->
+	    
 	     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
  
@@ -67,12 +68,7 @@
     	<!-- scroll bar -->
     	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.perfect-scrollbar/0.7.0/css/perfect-scrollbar.min.css" />
     	
-    	
-    	
-    
-		
-		
-	    <!-- Bootstrap Core JavaScript -->
+    	 <!-- Bootstrap Core JavaScript -->
 	    <script src="<%=staticURL%>/js/home/bootstrap.min.js"></script>
 	
 	    <!-- Metis Menu Plugin JavaScript -->

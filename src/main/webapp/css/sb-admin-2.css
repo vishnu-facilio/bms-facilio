@@ -176,11 +176,7 @@ width: 25px;
 .sidebar.active {
   background-color:  #1F2224 !important;
   color:white;
-
-  
 }
-
-
 
 .nav>li>a:focus, .nav>li>a:hover{
 	   background: #1F2224;
