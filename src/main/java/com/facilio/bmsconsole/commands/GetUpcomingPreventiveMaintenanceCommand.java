@@ -132,7 +132,7 @@ public class GetUpcomingPreventiveMaintenanceCommand implements Command {
 					}
 				}
 			}
-			sortPMs(pmJobList);
+//			sortPMs(pmJobList);
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST, pmMap);
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_JOBS_LIST, pmJobList);
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_TRIGGERS_LIST, pmTriggerMap);
@@ -144,10 +144,7 @@ public class GetUpcomingPreventiveMaintenanceCommand implements Command {
 	
 	private void sortPMs(List<PMJobsContext> pmJobs) {
 		pmJobs.sort(Comparator.comparing(PMJobsContext::getNextExecutionTime, (s1, s2) -> {
-			if(s1 == s2){
-		         return 0;
-		    }
-		    return s1 < s2 ? -1 : 1;
+			return Long.compare(s1, s2);
 		}));
 	}
 
