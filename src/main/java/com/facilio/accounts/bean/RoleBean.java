@@ -14,6 +14,8 @@ public interface RoleBean {
 	public boolean updateRole(long roleId, Role role) throws Exception;
 
 	public boolean deleteRole(long roleId) throws Exception;
+	
+	public boolean deleteRolePermission(long roleId) throws Exception;
 
 	public Role getRole(long roleId) throws Exception;
 	

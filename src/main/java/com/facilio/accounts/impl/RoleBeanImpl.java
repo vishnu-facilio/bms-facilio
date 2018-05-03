@@ -108,6 +108,21 @@ public class RoleBeanImpl implements RoleBean {
 		}
 		return false;
 	}
+	
+	@Override
+	public boolean deleteRolePermission(long roleId) throws Exception {
+		
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+				.table(AccountConstants.getPermissionModule().getTableName())
+				.andCustomWhere("ROLE_ID = ?", roleId);
+		
+		int deletedRows = builder.delete();
+		if (deletedRows == 1) {
+			return true;
+		}
+		return false;
+	}
+
 
 	@Override
 	public Role getRole(long roleId) throws Exception {

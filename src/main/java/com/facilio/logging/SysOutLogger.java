@@ -14,6 +14,7 @@ public class SysOutLogger extends PrintStream {
     public SysOutLogger(String loggerName) throws FileNotFoundException {
         super(loggerName);
         this.loggerName = loggerName;
+        this.logger = LogManager.getLogger(loggerName);
     }
 
 
