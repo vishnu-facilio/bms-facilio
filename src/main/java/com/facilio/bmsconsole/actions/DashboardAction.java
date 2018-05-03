@@ -1158,7 +1158,7 @@ public class DashboardAction extends ActionSupport {
 						xAggregateOpperator = FormulaContext.DateAggregateOperator.WEEKDAY;
 					}
 				}
-				else if (oprId == DateOperators.CURRENT_MONTH.getOperatorId() || oprId == DateOperators.LAST_MONTH.getOperatorId() || oprId == DateOperators.CURRENT_MONTH_UPTO_NOW.getOperatorId()) {
+				else if (oprId == DateOperators.CURRENT_MONTH.getOperatorId() || oprId == DateOperators.LAST_MONTH.getOperatorId() || oprId == DateOperators.CURRENT_MONTH_UPTO_NOW.getOperatorId() || oprId == DateOperators.LAST_N_DAYS.getOperatorId()) {
 					xAggregateOpperator = FormulaContext.DateAggregateOperator.FULLDATE;
 					if(report.getIsComparisionReport()) {
 						xAggregateOpperator = FormulaContext.DateAggregateOperator.DAYSOFMONTH;
