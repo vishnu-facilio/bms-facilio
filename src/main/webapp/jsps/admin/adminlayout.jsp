@@ -27,8 +27,9 @@
     	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
     	
     	<!-- Bootstrap Core CSS -->
-	    <link href="<%=staticURL%>/css/home/bootstrap.min.css" rel="stylesheet">
-	    
+	   <!--   <link href="<%=staticURL%>/css/home/bootstrap.min.css" rel="stylesheet"> -->
+	     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
  
 	    <link rel="stylesheet" href="http://xilinus.com/jquery-addresspicker/demos/themes/base/jquery.ui.all.css">
 	
@@ -36,19 +37,19 @@
     	<link href="<%=staticURL%>/vendor/bootstrap-social/bootstrap-social.css" rel="stylesheet">
     	
 	    <!-- MetisMenu CSS -->
-	    <link href="<%=staticURL%>/vendor/metisMenu/metisMenu.min.css" rel="stylesheet"> 
+	  <!--   <link href="<%=staticURL%>/vendor/metisMenu/metisMenu.min.css" rel="stylesheet"> -->
 	
 	    <!-- Morris Charts CSS -->
-	    <link href="<%=staticURL%>/vendor/morrisjs/morris.css" rel="stylesheet"> 
+	   <!--   <link href="<%=staticURL%>/vendor/morrisjs/morris.css" rel="stylesheet"> -->
 	
 	    <!-- Custom Fonts -->
-	    <link href="<%=staticURL%>/css/home/font-awesome.min.css" rel="stylesheet" type="text/css">
-	    
+	  <!--   <link href="<%=staticURL%>/css/home/font-awesome.min.css" rel="stylesheet" type="text/css"> --> 
+	       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 	    <!-- DataTables CSS -->
     	<link href="<%=staticURL%>/vendor/datatables-plugins/dataTables.bootstrap.css" rel="stylesheet">
 
     	<!-- DataTables Responsive CSS -->
-    	<link href="<%=staticURL%>/vendor/datatables-responsive/dataTables.responsive.css" rel="stylesheet">
+    	<!--  <link href="<%=staticURL%>/vendor/datatables-responsive/dataTables.responsive.css" rel="stylesheet"> -->
     	
     	 <!-- date picker 4.17 -->
 	    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" /></head>
@@ -144,11 +145,15 @@
 		<%@ include file="sidebar.jsp" %>
 
 
+
 	 <div id="page-wrapper" >
+	 
             <tiles:insertAttribute name="body" />  
+            
       </div>
       
-        
-            <%@ include file="footer.jsp" %> 
+         <%@ include file="footer.jsp" %> 
+
 </body>
+
 </html>
