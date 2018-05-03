@@ -37,7 +37,7 @@ import com.google.gson.GsonBuilder;
 
 public class AnomalyDetectorJob extends FacilioJob {
 	private static long SEVEN_DAYS_IN_MILLISEC = 7 * 24 * 60 * 60 * 1000L;
-	private static long FIFTEEN_MINUTES_IN_MILLISEC = 15 * 60 * 60 * 1000;
+	private static long FIFTEEN_MINUTES_IN_MILLISEC = 15 * 60 * 1000L;
 
 	private static final Logger logger = Logger.getLogger(SessionManager.class.getName());
 	
