@@ -51,6 +51,7 @@ import com.facilio.bmsconsole.context.ReportSpaceFilterContext;
 import com.facilio.bmsconsole.context.ReportThreshold;
 import com.facilio.bmsconsole.context.ReportUserFilterContext;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetListViewContext;
 import com.facilio.bmsconsole.context.WidgetStaticContext;
@@ -1926,7 +1927,46 @@ public class DashboardAction extends ActionSupport {
 				else {
 					// get Only Meter org purpose 'Main'
 					List<EnergyMeterContext> meters = DeviceAPI.getMainEnergyMeter(report.getReportSpaceFilterContext().getBuildingId()+"");
-					//List<EnergyMeterContext> meters = DashboardUtil.getMainEnergyMeter(report.getReportSpaceFilterContext().getBuildingId()+"");
+//					List<EnergyMeterContext> meters = DashboardUtil.getMainEnergyMeter(report.getReportSpaceFilterContext().getBuildingId()+"");
+					if (meters != null && meters.size() > 0) {
+						List<Long> meterIds = new ArrayList<Long>();
+						for (EnergyMeterContext meter : meters) {
+							meterIds.add(meter.getId());
+						}
+						
+						String meterIdStr = StringUtils.join(meterIds, ",");
+						energyMeterValue = meterIdStr;
+						buildingCondition = CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", meterIdStr, NumberOperators.EQUALS);
+					}
+				}
+			}
+			else if (report.getReportSpaceFilterContext() != null && report.getReportSpaceFilterContext().getSiteId() != null) {
+				
+				if(report.getReportSpaceFilterContext().getSiteId().equals(-1l)) {
+					
+					List<SiteContext> sites = SpaceAPI.getAllSites();
+					if(sites != null && !sites.isEmpty()) {
+						Long siteId = sites.get(0).getId();
+						
+						List<EnergyMeterContext> meters = DashboardUtil.getMainEnergyMeter(siteId+"");
+						
+						if (meters != null && meters.size() > 0) {
+							List<Long> meterIds = new ArrayList<Long>();
+							for (EnergyMeterContext meter : meters) {
+								meterIds.add(meter.getId());
+							}
+							
+							String meterIdStr = StringUtils.join(meterIds, ",");
+							energyMeterValue = meterIdStr;
+							buildingCondition = CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", meterIdStr, NumberOperators.EQUALS);
+						}
+					}
+				}
+				else {
+					Long siteId = report.getReportSpaceFilterContext().getSiteId();
+					
+					List<EnergyMeterContext> meters = DashboardUtil.getMainEnergyMeter(siteId+"");
+					
 					if (meters != null && meters.size() > 0) {
 						List<Long> meterIds = new ArrayList<Long>();
 						for (EnergyMeterContext meter : meters) {
