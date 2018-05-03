@@ -29,7 +29,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 public class JobStore {
-	
+
 	public static void addJob(JobContext job) throws Exception {
 		if(job != null) {
 			
@@ -153,6 +153,7 @@ public class JobStore {
 			return pstmt.executeUpdate();
 		}
 		catch(SQLException e) {
+			logger.log(Level.SEVERE,"Transaction error ",e);
 			throw e;
 		}
 		finally {
