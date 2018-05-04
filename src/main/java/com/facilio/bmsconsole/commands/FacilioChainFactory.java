@@ -2076,6 +2076,16 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getAddAlarmSeverityChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(SetTableNamesCommand.getForAlarmSeverity());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenericAddModuleDataCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 }
 
 class TransactionChain extends ChainBase {
