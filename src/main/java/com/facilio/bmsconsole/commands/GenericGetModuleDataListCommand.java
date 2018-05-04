@@ -9,6 +9,7 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
@@ -41,6 +42,11 @@ public class GenericGetModuleDataListCommand implements Command {
 		Integer maxLevel = (Integer) context.get(FacilioConstants.ContextNames.MAX_LEVEL);
 		if(maxLevel != null && maxLevel != -1) {
 			builder.maxLevel(maxLevel);
+		}
+		
+		List<Long> idsToSelect = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
+		if (idsToSelect != null && !idsToSelect.isEmpty()) {
+			builder.andCondition(CriteriaAPI.getIdCondition(idsToSelect, module));
 		}
 		
 		JSONObject filters = (JSONObject) context.get(FacilioConstants.ContextNames.FILTERS);
@@ -76,18 +82,6 @@ public class GenericGetModuleDataListCommand implements Command {
 			builder.offset(offset);
 			builder.limit(perPage);
 		}
-		
-		/*if(view != null) {
-			Criteria criteria = view.getCriteria();
-			builder.andCriteria(criteria);
-		}
-		
-		List<Condition> conditionList = (List<Condition>) context.get(FacilioConstants.ContextNames.FILTER_CONDITIONS);
-		if(conditionList != null && !conditionList.isEmpty()) {
-			for(Condition condition : conditionList) {
-				builder.andCondition(condition);
-			}
-		}*/
 		
 		List<? extends ModuleBaseWithCustomFields> records = builder.get();
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, records);

@@ -83,6 +83,7 @@ public class WorkOrderRequestAction extends ActionSupport {
 		workorderrequest.setRequestStatus(WorkOrderRequestContext.RequestStatus.REJECTED);
 		FacilioContext context = new FacilioContext();
 		//set Event
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.REJECT_WORK_ORDER_REQUEST);
 		return updateWorkOrderRequest(context);
 	}
 	

@@ -12,7 +12,7 @@ public class DeleteActionTemplateCommand implements Command{
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		Long templateId = (Long) context.get(FacilioConstants.Workflow.TEMPLATE_ID);
-		if(templateId!=null){
+		if(templateId!=null && templateId != -1){
 			TemplateAPI.deleteTemplate(templateId);
 		}
 		return false;

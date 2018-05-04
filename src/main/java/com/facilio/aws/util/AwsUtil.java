@@ -328,7 +328,7 @@ public class AwsUtil
 			}
 		}
 		if(sendEmail) {
-			Destination destination = new Destination().withToAddresses(new String[]{toAddress});
+			Destination destination = new Destination().withToAddresses(toAddress.split("\\s*,\\s*"));
 			Content subjectContent = new Content().withData((String) mailJson.get("subject"));
 			Content bodyContent = new Content().withData((String) mailJson.get("message"));
 			Body body = new Body().withText(bodyContent);

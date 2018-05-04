@@ -1,15 +1,19 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Map;
+
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.templates.PushNotificationTemplate;
 import com.facilio.bmsconsole.templates.SMSTemplate;
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.WebNotificationTemplate;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.workflows.context.WorkflowContext;
 
 public class CreateActionTemplateForWorkflowCommand implements Command {
 
@@ -29,6 +33,8 @@ public class CreateActionTemplateForWorkflowCommand implements Command {
 					emailTemplate.setFrom((String) templateContent.get("from"));
 					emailTemplate.setTo((String) templateContent.get("to"));
 					emailTemplate.setName((String) templateContent.get("name"));
+					WorkflowContext workflowContext = FieldUtil.getAsBeanFromMap((Map<String, Object>)templateContent.get("workflow"), WorkflowContext.class);
+					emailTemplate.setWorkflow(workflowContext);
 					context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
 					break;
 				case SMS:
@@ -36,6 +42,7 @@ public class CreateActionTemplateForWorkflowCommand implements Command {
 					smsTemplate.setTo((String) templateContent.get("to"));
 					smsTemplate.setMessage((String) templateContent.get("message"));
 					smsTemplate.setName((String) templateContent.get("name"));
+					smsTemplate.setWorkflow((WorkflowContext) templateContent.get("workflow"));
 					context.put(FacilioConstants.Workflow.TEMPLATE, smsTemplate);
 					break;
 				case PUSH_NOTIFICATION:
@@ -45,6 +52,7 @@ public class CreateActionTemplateForWorkflowCommand implements Command {
 					pushNotificationTemplate.setName((String) templateContent.get("name"));
 					pushNotificationTemplate.setTitle((String) templateContent.get("title"));
 					pushNotificationTemplate.setUrl((String) templateContent.get("URL"));
+					pushNotificationTemplate.setWorkflow((WorkflowContext) templateContent.get("workflow"));
 					context.put(FacilioConstants.Workflow.TEMPLATE, pushNotificationTemplate);
 					break;
 				case WEB_NOTIFICATION:
@@ -54,6 +62,7 @@ public class CreateActionTemplateForWorkflowCommand implements Command {
 					webNotificationTemplate.setName((String) templateContent.get("name"));
 					webNotificationTemplate.setUrl((String) templateContent.get("URL"));
 					webNotificationTemplate.setTitle((String) templateContent.get("title"));
+					webNotificationTemplate.setWorkflow((WorkflowContext) templateContent.get("workflow"));
 					context.put(FacilioConstants.Workflow.TEMPLATE, webNotificationTemplate);
 					break;
 			}

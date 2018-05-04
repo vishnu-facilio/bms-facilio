@@ -119,6 +119,15 @@ public class WorkOrderRequestContext extends TicketContext {
 		}
 	}
 	
+	public String getUrl() {
+		if(super.getId() != -1) {
+			return AwsUtil.getConfig("clientapp.url")+"/app/wo/requests/all/summary/"+getId();
+		}
+		else {
+			return null;
+		}
+	}
+	
 	public String getMobileUrl() {
 		if(super.getId() != -1) {
 			return   AwsUtil.getConfig("clientapp.url")+"/mobile/workrequest/summary/"+getId();

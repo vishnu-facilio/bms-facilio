@@ -101,6 +101,8 @@ public class TemplateAPI {
 					
 					WorkflowContext defaultWorkflow = defaultWorkflows.get(templateId);
 					if (defaultWorkflow != null) {
+						defaultWorkflow = WorkflowUtil.parseStringToWorkflowObject(defaultWorkflow.getWorkflowString());
+						WorkflowUtil.parseExpression(defaultWorkflow);
 						defaultTemplate.setWorkflow(defaultWorkflow);
 					}
 					else {

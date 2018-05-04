@@ -245,17 +245,21 @@ public class WorkflowUtil {
 		workflowContext = parseStringToWorkflowObject(workflowContext.getWorkflowString(),workflowContext);
 		
 		if(isWithExpParsed) {
-			List<ExpressionContext> temp= new ArrayList<>();
-			if(workflowContext.getExpressions() != null) {
-				for(ExpressionContext expressionContext:workflowContext.getExpressions()) {
-					expressionContext = getExpressionContextFromExpressionString(expressionContext.getExpressionString());
-					temp.add(expressionContext);
-				}
-				workflowContext.setExpressions(temp);
-			}
+			parseExpression(workflowContext);
 		}
 		
 		return workflowContext;
+	}
+	
+	public static void parseExpression(WorkflowContext workflowContext) throws Exception {
+		List<ExpressionContext> temp= new ArrayList<>();
+		if(workflowContext != null && workflowContext.getExpressions() != null) {
+			for(ExpressionContext expressionContext:workflowContext.getExpressions()) {
+				expressionContext = getExpressionContextFromExpressionString(expressionContext.getExpressionString());
+				temp.add(expressionContext);
+			}
+			workflowContext.setExpressions(temp);
+		}
 	}
 	
 	public static Object getResult(Long workflowId,Map<String,Object> paramMap)  throws Exception  {
