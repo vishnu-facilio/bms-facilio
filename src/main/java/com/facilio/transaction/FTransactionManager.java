@@ -1,5 +1,7 @@
 package com.facilio.transaction;
 
+import com.facilio.aws.util.AwsUtil;
+
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.InvalidTransactionException;
@@ -25,7 +27,7 @@ public class FTransactionManager implements TransactionManager {
 	@Override
 	public void begin() throws NotSupportedException, SystemException {
         FacilioTransaction currenttrans = currentTransaction.get();
-		if(currenttrans == null) {
+		if("true".equals(AwsUtil.getConfig("enable.transaction")) && currenttrans == null) {
 			currenttrans =  new FacilioTransaction();
 			currentTransaction.set(currenttrans);
 		}
@@ -34,9 +36,12 @@ public class FTransactionManager implements TransactionManager {
 	@Override
 	public void commit() throws RollbackException, HeuristicMixedException, HeuristicRollbackException,
 			SecurityException, IllegalStateException, SystemException {
-		
-		currentTransaction.get().commit();
-		currentTransaction.remove();
+
+		FacilioTransaction currenttrans = currentTransaction.get();
+		if(currenttrans != null) {
+			currenttrans.commit();
+			currentTransaction.remove();
+		}
 
 	}
 
@@ -58,8 +63,11 @@ public class FTransactionManager implements TransactionManager {
 
 	@Override
 	public void rollback() throws IllegalStateException, SecurityException, SystemException {
-		getTransaction().rollback();
-		currentTransaction.remove();
+		FacilioTransaction currenttrans = currentTransaction.get();
+		if(currenttrans != null) {
+			currenttrans.rollback();
+			currentTransaction.remove();
+		}
 	}
 
 	@Override
