@@ -8,8 +8,8 @@ import java.io.*;
 
 public class SysOutLogger extends PrintStream {
 
-    private String loggerName = "facilio";
-    private Logger logger = LogManager.getLogger(loggerName);
+    private String loggerName;
+    private Logger logger;
 
     public SysOutLogger(String loggerName) throws FileNotFoundException {
         super(loggerName);

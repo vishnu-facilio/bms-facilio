@@ -78,9 +78,15 @@ public class FacilioCorsFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         String corsRequestType = getCorsRequestType(request);
         
-        if(customdomains==null)
-        {
+        if(customdomains==null) {
         	customdomains = (HashMap)(request.getServletContext()).getAttribute("customdomains");
+        }
+
+        String forwardedProtocol = request.getHeader("X-Forwarded-Proto");
+        if(forwardedProtocol != null) {
+            if ("stage".equals(AwsUtil.getConfig("environment")) && "http".equalsIgnoreCase(forwardedProtocol)){
+                response.sendRedirect("https://"+request.getServerName()+request.getRequestURI());
+            }
         }
 
         switch (corsRequestType) {
