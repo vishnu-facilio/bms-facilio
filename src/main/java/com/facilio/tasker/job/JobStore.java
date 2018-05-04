@@ -178,6 +178,7 @@ public class JobStore {
 			return pstmt.executeUpdate();
 		}
 		catch(SQLException e) {
+			logger.log(Level.SEVERE,"Error for job id "+jobId+ " : Jobname : "+jobName);
 			throw e;
 		}
 		finally {
