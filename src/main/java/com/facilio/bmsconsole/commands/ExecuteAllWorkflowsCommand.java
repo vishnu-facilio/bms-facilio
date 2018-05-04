@@ -15,7 +15,6 @@ import org.apache.commons.chain.Context;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -75,40 +74,16 @@ public class ExecuteAllWorkflowsCommand implements Command
 						
 						List records = new LinkedList<>(entry.getValue());
 						Iterator it = records.iterator();
-						int count = 0;
 						while (it.hasNext()) {
-							count++;
 							Object record = it.next();
-							
-							if (AccountUtil.getCurrentOrg().getId() == 88) {
-								System.out.println("Record Number : "+count);
-								if (record instanceof ReadingContext) {
-									System.out.println("Resource ID : "+((ReadingContext)record));
-								}
-							}
 							Map<String, Object> recordPlaceHolders = new HashMap<>(placeHolders);
 							CommonCommandUtil.appendModuleNameInKey(moduleName, moduleName, FieldUtil.getAsProperties(record), recordPlaceHolders);
 							List<WorkflowRuleContext> currentWorkflows = workflowRules;
-							
-							if(moduleName.equals("fcureading")) {
-								System.out.println("Criteria : "+parentCriteria);
-							}
-							
 							while (currentWorkflows != null && !currentWorkflows.isEmpty()) {
-								
-								if(moduleName.equals("fcureading")) {
-									System.out.println("Workflows Rules : "+currentWorkflows);
-								}
-								
 								Criteria childCriteria = executeWorkflows(currentWorkflows, moduleName, record, it, recordPlaceHolders, (FacilioContext) context);
 								if (childCriteria == null) {
 									break;
 								}
-								
-								if(moduleName.equals("fcureading")) {
-									System.out.println("Criteria : "+childCriteria);
-								}
-								
 								currentWorkflows = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(moduleId, activities, childCriteria, ruleTypes);
 							}
 						}
