@@ -142,6 +142,7 @@ public class ExecuteAllWorkflowsCommand implements Command
 					executeWorkflowActions(workflowRule, record, context, rulePlaceHolders);
 					if(workflowRule.getRuleTypeEnum().stopFurtherRuleExecution()) {
 						itr.remove();
+						break;
 					}
 				}
 				

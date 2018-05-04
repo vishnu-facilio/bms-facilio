@@ -16,38 +16,29 @@
     	<title>Admin Console</title>  
     	
     	<!-- jQuery -->
-	    <script src="<%=staticURL%>/js/home/jquery.js"></script>
+	    <script src="${pageContext.request.contextPath}/js/home/jquery.js"></script>
 				
 		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 		
 		<script src="http://maps.google.com/maps/api/js?sensor=false&key=AIzaSyBRto3e31_woKTGsOMqgIjZtWUbX7ILyuw"></script>
 		
-		<script src="http://xilinus.com/jquery-addresspicker/src/jquery.ui.addresspicker.js"></script> 	
-    
     	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
     	
     	<!-- Bootstrap Core CSS -->
-	   <!--   <link href="<%=staticURL%>/css/home/bootstrap.min.css" rel="stylesheet"> -->
+	   <link href="${pageContext.request.contextPath}/css/home/bootstrap.min.css" rel="stylesheet"> 
 	    
-	     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-	     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
- 
-	    <link rel="stylesheet" href="http://xilinus.com/jquery-addresspicker/demos/themes/base/jquery.ui.all.css">
-	
-		<!-- Social Buttons CSS -->
-    	<link href="<%=staticURL%>/vendor/bootstrap-social/bootstrap-social.css" rel="stylesheet">
-    	
-	    <!-- MetisMenu CSS -->
+	     
+		    <!-- MetisMenu CSS -->
 	  <!--   <link href="<%=staticURL%>/vendor/metisMenu/metisMenu.min.css" rel="stylesheet"> -->
 	
 	    <!-- Morris Charts CSS -->
 	   <!--   <link href="<%=staticURL%>/vendor/morrisjs/morris.css" rel="stylesheet"> -->
 	
 	    <!-- Custom Fonts -->
-	  <!--   <link href="<%=staticURL%>/css/home/font-awesome.min.css" rel="stylesheet" type="text/css"> --> 
-	       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+	    <link href="${pageContext.request.contextPath}/css/home/font-awesome.min.css" rel="stylesheet" type="text/css"> 
+	      
 	    <!-- DataTables CSS -->
-    	<link href="<%=staticURL%>/vendor/datatables-plugins/dataTables.bootstrap.css" rel="stylesheet">
+    <!-- 	<link href="<%=staticURL%>/vendor/datatables-plugins/dataTables.bootstrap.css" rel="stylesheet">  -->
 
     	<!-- DataTables Responsive CSS -->
     	<!--  <link href="<%=staticURL%>/vendor/datatables-responsive/dataTables.responsive.css" rel="stylesheet"> -->
@@ -60,7 +51,7 @@
 	  	   
     	
     <!-- 	FullCalendar CSS -->
-    	 <link href="<%=staticURL%>/vendor/fullcalendar/fullcalendar.min.css" rel="stylesheet"> 
+    
     	  <link href="${pageContext.request.contextPath}/js/scheduler.min.css" rel="stylesheet"> 
     	  <link href="${pageContext.request.contextPath}/css/sb-admin-2.css" rel="stylesheet"> 
     	     	<link href="${pageContext.request.contextPath}/js/c3/c3.min.css" rel="stylesheet"> 
@@ -69,22 +60,22 @@
     	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.perfect-scrollbar/0.7.0/css/perfect-scrollbar.min.css" />
     	
     	 <!-- Bootstrap Core JavaScript -->
-	    <script src="<%=staticURL%>/js/home/bootstrap.min.js"></script>
+	    <script src="${pageContext.request.contextPath}/js/home/bootstrap.min.js"></script>
 	
 	    <!-- Metis Menu Plugin JavaScript -->
-	    <script src="<%=staticURL%>/vendor/metisMenu/metisMenu.min.js"></script>  
+	  <!--   <script src="<%=staticURL%>/vendor/metisMenu/metisMenu.min.js"></script>   -->
 	
 	    <!-- Morris Charts JavaScript -->
-	    <script src="<%=staticURL%>/vendor/raphael/raphael.min.js"></script>  
-	     <script src="<%=staticURL%>/vendor/morrisjs/morris.min.js"></script>   
+	  <!--   <script src="<%=staticURL%>/vendor/raphael/raphael.min.js"></script>   -->
+	    <!--  <script src="<%=staticURL%>/vendor/morrisjs/morris.min.js"></script>    -->
 	    
 	    <!-- DataTables JavaScript -->
-	   <script src="<%=staticURL%>/vendor/datatables/js/jquery.dataTables.min.js"></script> 
-	     <script src="<%=staticURL%>/vendor/datatables-plugins/dataTables.bootstrap.min.js"></script> 
-	     <script src="<%=staticURL%>/vendor/datatables-responsive/dataTables.responsive.js"></script> 
+	 <!--  <script src="<%=staticURL%>/vendor/datatables/js/jquery.dataTables.min.js"></script>  --> 
+	   <!--    <script src="<%=staticURL%>/vendor/datatables-plugins/dataTables.bootstrap.min.js"></script>  --> 
+	  <!--    <script src="<%=staticURL%>/vendor/datatables-responsive/dataTables.responsive.js"></script>  --> 
 	    
-	   <script src="<%=staticURL%>/vendor/moment/moment.min.js"></script> 
-	   <script src="<%=staticURL%>/vendor/fullcalendar/fullcalendar.min.js"></script> 
+	<!--    <script src="<%=staticURL%>/vendor/moment/moment.min.js"></script>  -->
+	 <!--   <script src="<%=staticURL%>/vendor/fullcalendar/fullcalendar.min.js"></script>  -->
 	    <script src="${pageContext.request.contextPath}/js/scheduler.min.js"></script> 
 	     <script src="https://d3js.org/d3.v3.min.js"></script> 
 		<script src="${pageContext.request.contextPath}/js/c3/c3.min.js"></script> 
@@ -114,8 +105,6 @@
 		<!-- country code js -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"></script>
 		
-		<script src="<%=staticURL%>/vendor/amazon-cognito-identity-js/aws-cognito-sdk.min.js"></script>
-    	<script src="<%=staticURL%>/vendor/amazon-cognito-identity-js/amazon-cognito-identity.min.js"></script>
     	<script src="${pageContext.request.contextPath}/js/cognitoutil.js"></script>
 		
 		<script src="${pageContext.request.contextPath}/js/sb-admin-2.js"></script>
