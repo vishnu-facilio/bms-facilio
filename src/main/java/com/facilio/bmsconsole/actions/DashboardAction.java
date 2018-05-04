@@ -2334,7 +2334,7 @@ public class DashboardAction extends ActionSupport {
 			if (dateCondition != null) {
 				JSONObject startTimeJson = new JSONObject();
 				startTimeJson.put("operatorId", DateOperators.BETWEEN.getOperatorId());
-				if(dateCondition.getValue() != null) {
+				if(dateCondition.getValue() != null && dateCondition.getValue().contains(",")) {
 					value = new JSONArray();
 					for(String s:dateCondition.getValue().split(",")) {
 						value.add(s);
@@ -2343,7 +2343,7 @@ public class DashboardAction extends ActionSupport {
 				}
 				else if(dateCondition.getOperator() instanceof DateOperators) {
 					DateOperators dateOperator = (DateOperators) dateCondition.getOperator();
-					DateRange range = dateOperator.getRange(null);
+					DateRange range = dateOperator.getRange(reportContext.getDateFilter().getValue());
 					value = new JSONArray();
 					value.add(""+range.getStartTime());
 					value.add(""+range.getEndTime());

@@ -1851,6 +1851,7 @@ public class DashboardUtil {
 				if(module.getName().equals("energydata") && toValue > DateTimeUtil.getCurrenTime()) {
 					toValue = DateTimeUtil.getCurrenTime();
 				}
+				// wrong here need to chenge
 				dateCondition.setValue(fromValue+","+toValue);
 			}
 		}
