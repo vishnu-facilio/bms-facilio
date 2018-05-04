@@ -209,6 +209,7 @@ public class ReadingsAPI {
 		if(readingList==null || readingList.isEmpty()) {
 			return 0;
 		}
+		String sql = null;
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
 			Map<String,FacilioField>  fieldMap = FieldFactory.getAsMap(fieldsList);
 			Set<Long> resources= new HashSet<Long>();
@@ -251,7 +252,7 @@ public class ReadingsAPI {
 			}
 			String resourceList=StringUtils.join(resources, ",");
 			String fieldList=StringUtils.join(fields, ",");
-			String sql = "UPDATE Last_Reading SET TTIME= CASE "+timeBuilder.toString()+ " END , "
+			sql = "UPDATE Last_Reading SET TTIME= CASE "+timeBuilder.toString()+ " END , "
 					+ "VALUE= CASE "+valueBuilder.toString()
 					+" END WHERE ORGID="+orgId+" AND RESOURCE_ID IN ("+resourceList+") AND FIELD_ID IN ("+fieldList+")";
 			if(sql != null && !sql.isEmpty()) {
@@ -264,7 +265,7 @@ public class ReadingsAPI {
 		}
 		catch(SQLException e) {
 			e.printStackTrace();
-			throw e;
+			throw new SQLException("Query failed : "+sql, e);
 		}
 
 		return 0;
