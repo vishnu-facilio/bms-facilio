@@ -28,6 +28,12 @@ public class AddNoteCommand implements Command {
 		if(note != null)
 		{
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+			if (moduleName.equals(FacilioConstants.ContextNames.TICKET_NOTES)) {
+				String ticketModule = (String) context.get(FacilioConstants.ContextNames.TICKET_MODULE);
+				if (ticketModule == null || ticketModule.isEmpty()) {
+					throw new IllegalArgumentException("Module name for ticket notes should be specified");
+				}
+			}
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);

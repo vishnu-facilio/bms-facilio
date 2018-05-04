@@ -135,6 +135,7 @@ public class FacilioConstants {
 		
 		public static final String TICKET = "ticket";
 		public static final String TICKET_LIST = "tickets";
+		public static final String TICKET_MODULE = "ticketmodule";
 		public static final String ASSIGNED_TO_ID = "assignedTo";
 		
 		public static final String WORK_ORDER = "workorder";

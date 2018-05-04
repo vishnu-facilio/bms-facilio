@@ -40,6 +40,7 @@ public class NoteAction extends ActionSupport {
 	{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.TICKET_MODULE, ticketModuleName);
 		context.put(FacilioConstants.ContextNames.NOTE, note);
 
 		Chain addNote = FacilioChainFactory.getAddNoteChain();
@@ -56,6 +57,14 @@ public class NoteAction extends ActionSupport {
 	}
 	public void setModule(String module) {
 		this.module = module;
+	}
+	
+	private String ticketModuleName;
+	public String getTicketModuleName() {
+		return ticketModuleName;
+	}
+	public void setTicketModuleName(String ticketModuleName) {
+		this.ticketModuleName = ticketModuleName;
 	}
 
 	private NoteContext note;

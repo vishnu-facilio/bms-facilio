@@ -23,22 +23,18 @@
 		"sender": "support@${org.domain}.facilio.com",
 		"subject": "New Comment added",
 		"to": "${workorder.assignedTo.email:-}",
-		"message": "${comment.user} has  added a new comment in your workorder ${workorder.subject} . Please view the workorder here - ${workorder.url} to reply/view the comments.\n\nRegards,\nTeam Facilio."
+		"message": "${comment.createdBy.name} has  added a new comment in your workorder ${workorder.subject} . Please view the workorder here - ${workorder.url} to reply/view the comments.\n\nRegards,\nTeam Facilio."
 	},
 	"5": {
 		"name": "ALARM_CREATION_EMAIL",
 		"sender": "support@${org.domain}.facilio.com",
 		"subject": "New Alarm raised",
-		"to": [
-			"${org.superAdmin.email:-}"
-		],
+		"to": "",
 		"message": "A new Alarm has been raised in the system. \n\nReason : ${alarm.subject}\nDetails: ${alarm.description}\nStatus: ${alarm.status}\n\nPlease view the alarm here - ${alarm.url} and acknowledge it as soon as possible.\n\nRegards,\nTeam Facilio."
 	},
 	"6": {
 		"name": "ALARM_CREATION_SMS",
-		"to": [
-			"${user.phone:-}"
-		],
+		"to": "",
 		"message": "[${alarm.modifiedTimeString}] [NEW Alarm:#ID${alarm.id}] \"${alarm.severity.severity}\" Alarm reported for source \"${alarm.source}\". Alarm message: \"${alarm.subject}\". State: ${alarm.state}.\n\n - Team Facilio."
 	},
 	"7": {
@@ -346,7 +342,7 @@
 	"42": {
 		"name": "TASK_COMMENT_SMS",
 		"to": "${workorder.assignedTo.phone:-}",
-		"message": "${comment.user} has  added a new comment in your workorder ${workorder.subject}. Please view the workorder here - ${workorder.url} to reply/view the comments.\n\n - Team Facilio."
+		"message": "${comment.createdBy.name} has  added a new comment in your workorder ${workorder.subject}. Please view the workorder here - ${workorder.url} to reply/view the comments.\n\n - Team Facilio."
 	},
 	"43": {
 		"name": "TASK_COMMENT_PUSH"
@@ -354,7 +350,7 @@
 	"44": {
 		"name": "TASK_COMMENT_WEB",
 		"notification": {
-		    "text": "${comment.user} has  added a new comment in your workorder ${workorder.subject} . Please view the workorder here - ${workorder.url} to reply/view the comments.\n - Team Facilio.",
+		    "text": "${comment.createdBy.name} has  added a new comment in your workorder ${workorder.subject} . Please view the workorder here - ${workorder.url} to reply/view the comments.\n - Team Facilio.",
 			"click_action": "WORKORDER_SUMMARY",
 			"title": "New Comment"
 		},

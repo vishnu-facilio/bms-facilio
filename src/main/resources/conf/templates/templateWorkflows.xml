@@ -74,7 +74,7 @@
 			<parameter name="workorder.assignedTo.email" type="String" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.url" type="String" />
-			<parameter name="comment.user"  type="String" />
+			<parameter name="comment.createdBy.name"  type="String" />
 			<expression name="org.domain">
 				<constant>${org.domain}</constant>
 			</expression>
@@ -87,8 +87,8 @@
 			<expression name="workorder.url">
 				<constant>${workorder.url}</constant>
 			</expression>
-			<expression name="comment.createdBy">
-				<constant>${comment.createdBy}</constant>
+			<expression name="comment.createdBy.name">
+				<constant>${comment.createdBy.name}</constant>
 			</expression>
 		</workflow>
 	</template>
@@ -99,6 +99,7 @@
 			<parameter name="alarm.description" type="String" />
 			<parameter name="alarm.url" type="String" />
 			<parameter name="alarm.subject" type="String" />
+			<parameter name="alarm.node" type="String" />
 			<expression name="org.domain">
 				<constant>${org.domain}</constant>
 			</expression>
@@ -114,6 +115,9 @@
 			<expression name="alarm.subject">
 				<constant>${alarm.subject}</constant>
 			</expression>
+			<expression name="alarm.node">
+				<constant>${alarm.node}</constant>
+			</expression>
 		</workflow>
 	</template>
 	<template id="6">
@@ -125,6 +129,7 @@
 			<parameter name="alarm.source" type="String" />
 			<parameter name="alarm.subject" type="String" />
 			<parameter name="alarm.state" type="String" />
+			<parameter name="alarm.node" type="String" />
 			<expression name="user.phone">
 				<constant>${user.phone}</constant>
 			</expression>
@@ -145,6 +150,9 @@
 			</expression>
 			<expression name="alarm.state">
 				<constant>${alarm.state}</constant>
+			</expression>
+			<expression name="alarm.node">
+				<constant>${alarm.node}</constant>
 			</expression>
 		</workflow>
 	</template>
@@ -983,7 +991,7 @@
 			<parameter name="workorder.assignedTo.phone" type="String" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.url" type="String" />
-			<parameter name="comment.user"  type="String" />
+			<parameter name="comment.createdBy.name"  type="String" />
 			<expression name="org.domain">
 				<constant>${org.domain}</constant>
 			</expression>
@@ -996,8 +1004,8 @@
 			<expression name="workorder.url">
 				<constant>${workorder.url}</constant>
 			</expression>
-			<expression name="comment.createdBy">
-				<constant>${comment.createdBy}</constant>
+			<expression name="comment.createdBy.name">
+				<constant>${comment.createdBy.name}</constant>
 			</expression>
 		</workflow>
 	</template>
@@ -1009,7 +1017,7 @@
 		<workflow>
 			<parameter name="workorder.id" type="Number" />
 			<parameter name="workorder.assignedTo.id" type="Number" />
-			<parameter name="comment.user"  type="String" />
+			<parameter name="comment.createdBy.name"  type="String" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.url" type="String" />
 			<expression name="workorder.id">
@@ -1018,8 +1026,8 @@
 			<expression name="workorder.assignedTo.id">
 				<constant>${workorder.assignedTo.id}</constant>
 			</expression>
-			<expression name="comment.createdBy">
-				<constant>${comment.createdBy}</constant>
+			<expression name="comment.createdBy.name">
+				<constant>${comment.createdBy.name}</constant>
 			</expression>
 			<expression name="workorder.subject">
 				<constant>${workorder.subject}</constant>

@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -21,7 +20,7 @@ public class AddWorkOrderCommand implements Command {
 		// TODO Auto-generated method stub
 		WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
 		if(workOrder != null) {
-			if(workOrder.getRequester() == null || StringUtils.isBlank(workOrder.getRequester().getEmail()))
+			if(workOrder.getRequester() == null || workOrder.getRequester().getId() == -1)
 			{
 				workOrder.setRequester(null);
 			}
