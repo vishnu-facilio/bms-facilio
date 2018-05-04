@@ -5,6 +5,8 @@ import java.time.Instant;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.transaction.SystemException;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.tasker.executor.Executor;
@@ -35,6 +37,7 @@ public abstract class FacilioJob implements Runnable {
 			if(jc.getTransactionTimeout() != -1) {
 				FacilioTransactionManager.INSTANCE.getTransactionManager().setTransactionTimeout(jc.getTransactionTimeout());
 			}
+			FacilioTransactionManager.INSTANCE.getTransactionManager().begin();
 			
 			long orgId = jc.getOrgId();
 			if(orgId != -1) {
@@ -53,8 +56,15 @@ public abstract class FacilioJob implements Runnable {
 			}
 			
 			executor.removeJob(jc);
+			FacilioTransactionManager.INSTANCE.getTransactionManager().commit();
 		}
 		catch(Exception e) {
+			try {
+				FacilioTransactionManager.INSTANCE.getTransactionManager().rollback();
+			} catch (IllegalStateException | SecurityException | SystemException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			executor.removeJob(jc);
 			System.out.println("Exception occurred during execution of job : "+jc);
 			logger.log(Level.SEVERE," Job execution failed JobID :"+jc.getJobId()+" : "+ jc.getJobName(),e);
