@@ -52,6 +52,10 @@ public class SetTableNamesCommand implements Command {
 		return new SetTableNamesCommand("assettype", "AssetType");
 	}
 	
+	public static SetTableNamesCommand getForAlarmSeverity() {
+		return new SetTableNamesCommand("assetseverity", "AlarmSeverity");
+	}
+	
 	public static SetTableNamesCommand getForTicket() {
 		return new SetTableNamesCommand("ticket", "Tickets");
 	}

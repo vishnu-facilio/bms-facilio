@@ -301,6 +301,10 @@ public class FacilioConnection implements Connection {
 		return physicalConnection.getNetworkTimeout();
 	}
 	
+	public void setFree(boolean free) {
+		this.free = free;
+	}
+
 	private boolean free = false;
 	
 	public boolean isFree() {

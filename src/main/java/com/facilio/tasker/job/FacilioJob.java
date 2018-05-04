@@ -57,8 +57,8 @@ public abstract class FacilioJob implements Runnable {
 		catch(Exception e) {
 			executor.removeJob(jc);
 			System.out.println("Exception occurred during execution of job : "+jc);
-			logger.log(Level.SEVERE,"Error",e);
-			CommonCommandUtil.emailException("Job execution failed", e);
+			logger.log(Level.SEVERE," Job execution failed JobID :"+jc.getJobId()+" : "+ jc.getJobName(),e);
+			CommonCommandUtil.emailException("Job execution failed JobID :"+jc.getJobId()+" : "+ jc.getJobName(), e);
 			reschedule();
 		}
 	}

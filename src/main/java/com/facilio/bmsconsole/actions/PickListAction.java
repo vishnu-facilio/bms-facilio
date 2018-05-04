@@ -7,6 +7,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.context.AlarmSeverityContext;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetDepartmentContext;
 import com.facilio.bmsconsole.context.AssetTypeContext;
@@ -154,6 +155,23 @@ public class PickListAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.RECORD, getAssetType());
 		Chain addAssetTypeChain = FacilioChainFactory.getAddAssetTypeChain();
 		addAssetTypeChain.execute(context);
+		
+		return SUCCESS;
+	}
+	
+	AlarmSeverityContext assetSeverity;
+	public AlarmSeverityContext getAssetSeverity() {
+		return assetSeverity;
+	}
+	public void setAssetSeverity(AlarmSeverityContext assetSeverity) {
+		this.assetSeverity = assetSeverity;
+	}
+
+	public String addAlarmSeverity() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, getAssetSeverity());
+		Chain addAlarmSeverityChain = FacilioChainFactory.getAddAlarmSeverityChain();
+		addAlarmSeverityChain.execute(context);
 		
 		return SUCCESS;
 	}

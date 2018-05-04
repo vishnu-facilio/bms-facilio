@@ -35,6 +35,7 @@ public class FacilioTransaction implements Transaction {
 			FacilioConnection fc = (FacilioConnection)connections.get(i);
 			if(fc.isFree())
 			{
+				fc.setFree(false);
 				return fc;
 			}
 			
