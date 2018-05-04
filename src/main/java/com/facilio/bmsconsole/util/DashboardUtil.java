@@ -353,6 +353,10 @@ public class DashboardUtil {
 			ZonedDateTime dateTime = DateTimeUtil.getDateTime(timeValue);
 			return dateTime.getMonth().getValue();
 		}
+		else if(aggregateOperator.getValue().equals(18)) {
+			ZonedDateTime dateTime = DateTimeUtil.getDateTime(timeValue);
+			return dateTime.getDayOfMonth();
+		}
 		return null;
 	}
 	
