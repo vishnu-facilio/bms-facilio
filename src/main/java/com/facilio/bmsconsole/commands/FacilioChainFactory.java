@@ -2116,7 +2116,7 @@ class TransactionChain extends ChainBase {
 			}
 				
 			return status;
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			if (enableTransaction) {
