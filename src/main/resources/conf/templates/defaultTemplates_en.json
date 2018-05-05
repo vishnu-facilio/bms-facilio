@@ -30,7 +30,7 @@
 		"sender": "support@${org.domain}.facilio.com",
 		"subject": "New Alarm raised",
 		"to": "",
-		"message": "A new Alarm has been raised in the system. \n\nReason : ${alarm.subject}\nDetails: ${alarm.description}\nStatus: ${alarm.status}\n\nPlease view the alarm here - ${alarm.url} and acknowledge it as soon as possible.\n\nRegards,\nTeam Facilio."
+		"message": "A new Alarm has been raised in the system. \n\nReason : ${alarm.subject}\nDetails: ${alarm.description}\nStatus: ${alarm.state}\n\nPlease view the alarm here - ${alarm.url} and acknowledge it as soon as possible.\n\nRegards,\nTeam Facilio."
 	},
 	"6": {
 		"name": "ALARM_CREATION_SMS",
@@ -499,6 +499,6 @@
 		"sender": "support@${org.domain}.facilio.com",
 		"subject": "Alarm Cleared",
 		"to": "",
-		"message": "The following Alarm has been cleared. \n\nReason : ${alarm.subject}\nDetails: ${alarm.description}\nStatus: ${alarm.status.status}\n\nPlease view the alarm here - ${alarm.url} and acknowledge it as soon as possible.\n\nRegards,\nTeam Facilio."
+		"message": "The following Alarm has been cleared. \n\nReason : ${alarm.subject}\nDetails: ${alarm.description}\nStatus: ${alarm.state}\n\nPlease view the alarm here - ${alarm.url} and acknowledge it as soon as possible.\n\nRegards,\nTeam Facilio."
 	}
 }
