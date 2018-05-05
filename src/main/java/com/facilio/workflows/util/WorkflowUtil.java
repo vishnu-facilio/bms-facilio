@@ -265,6 +265,7 @@ public class WorkflowUtil {
 				WorkflowContext workflow = getWorkflowFromProp(prop, isWithExpParsed);
 				workflows.put(workflow.getId(), workflow);
 			}
+			return workflows;
 		}
 		return null;
 	}

@@ -39,9 +39,7 @@
 	},
 	"7": {
 		"name": "ALARM_UPDATION_SMS",
-		"to": [
-			"${user.phone:-}"
-		],
+		"to": "",
 		"message": "[${alarm.modifiedTimeString}] [UPDATED Alarm:#ID${alarm.id}] \"${alarm.previousSeverity.severity}\" Alarm updated to \"${alarm.severity.severity}\" for source \"${alarm.source}\". Alarm message: \"${alarm.subject}\". State: ${alarm.state}.\n\n - Team Facilio."
 	},
 	"8": {
@@ -495,5 +493,12 @@
 			"priority": "high"
 		},
 		"id": "${workorder.requester.id:-}"
+	},
+	"62": {
+		"name": "ALARM_CLEAR_UPDATE_EMAIL",
+		"sender": "support@${org.domain}.facilio.com",
+		"subject": "Alarm Cleared",
+		"to": "",
+		"message": "The following Alarm has been cleared. \n\nReason : ${alarm.subject}\nDetails: ${alarm.description}\nStatus: ${alarm.status.status}\n\nPlease view the alarm here - ${alarm.url} and acknowledge it as soon as possible.\n\nRegards,\nTeam Facilio."
 	}
 }
