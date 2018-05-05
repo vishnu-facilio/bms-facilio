@@ -133,6 +133,7 @@ public class EventToAlarmCommand implements Command {
 		ids.add(alarmId);
 		alarm.put("severityString", event.getSeverity());
 		alarm.put("orgId", event.getOrgId());
+		alarm.put("modifiedTime", event.getCreatedTime());
 		
 		if (event.getAdditionInfo() != null) {
 			Long sourceType = (Long) FieldUtil.castOrParseValueAsPerType(FieldType.NUMBER, event.getAdditionInfo().get("sourceType"));
@@ -169,6 +170,7 @@ public class EventToAlarmCommand implements Command {
 		json.put("alarmPriority", event.getPriority());
 		json.put("alarmClass", event.getAlarmClass());
 		json.put("state", event.getState());
+		json.put("createdTime", event.getCreatedTime());
 		if(entityId != -1)
 		{
 			json.put("entityId", entityId);

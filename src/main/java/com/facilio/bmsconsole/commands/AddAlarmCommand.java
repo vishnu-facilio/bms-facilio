@@ -30,7 +30,10 @@ public class AddAlarmCommand implements Command {
 		// TODO Auto-generated method stub
 		AlarmContext alarm = (AlarmContext) context.get(FacilioConstants.ContextNames.ALARM);
 		if(alarm != null) {
-			alarm.setCreatedTime(System.currentTimeMillis());
+			
+			if (alarm.getCreatedTime() == -1) {
+				alarm.setCreatedTime(System.currentTimeMillis());
+			}
 			alarm.setModifiedTime(alarm.getCreatedTime());
 			
 			if(alarm.getEntityId() == -1)

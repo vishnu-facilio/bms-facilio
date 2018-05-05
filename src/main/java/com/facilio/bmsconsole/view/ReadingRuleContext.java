@@ -279,9 +279,12 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 				Map<String, Object> lastValMap = lastReadingMap.get(reading.getParentId()+"_"+readingField.getName());
 				Object lastReading = FieldUtil.castOrParseValueAsPerType(readingField.getDataTypeEnum(), lastValMap.get("value"));
 				if (currentReadingObj instanceof Number) {
-					double diff = calculateDiff(currentReadingObj, reading, (Number) lastReading);
-					double flapRange = Math.abs(maxFlapValue - minFlapValue);
-					singleFlap = diff >= flapRange;
+					double prevVal = Double.valueOf(lastReading.toString());
+					double currentVal = Double.valueOf(currentReadingObj.toString());
+					double minVal = Math.min(prevVal, currentVal);
+					double maxVal = Math.max(prevVal, currentVal);
+					
+					singleFlap = minVal <= minFlapValue && maxVal >= maxFlapValue;
 				}
 				else if (currentReadingObj instanceof Boolean) {
 					singleFlap = currentReadingObj != (Boolean) lastReading;
@@ -312,31 +315,6 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 			}
 			return false;
 		}
-	}
-	
-	private double calculateDiff(Object currentReadingObj, ReadingContext record, Number lastReading) throws Exception {
-		double diff = -1;
-		if (lastReading == null) {
-			return 0;
-		}
-		if (currentReadingObj instanceof Double) {
-			double lastVal =  (double)lastReading;
-			if (lastVal == -1) {
-				return 0;
-			}
-			diff = Math.abs((double) currentReadingObj - lastVal);
-		}
-		else if (currentReadingObj instanceof Long) {
-			long lastVal = (long) lastReading;
-			if (lastVal == -1) {
-				return 0;
-			}
-			diff = Math.abs((int) currentReadingObj - lastVal);
-		}
-		else {
-			throw new IllegalArgumentException("Flapping is supported only for Number/ Decimal data types");
-		}
-		return diff;
 	}
 	
 	private boolean isFlappedNTimes(ReadingContext record) throws Exception {
