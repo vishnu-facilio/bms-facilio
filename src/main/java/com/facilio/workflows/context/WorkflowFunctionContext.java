@@ -1,19 +1,15 @@
 package com.facilio.workflows.context;
 
-import java.util.Arrays;
-import java.util.List;
-
 public class WorkflowFunctionContext {
 
 	private String nameSpace;
 	private String functionName;
 	private String params;
 	
-	public List<String> getParamList() {
+	public String[] getParamList() {
 		if(params != null && !params.equals("")) {
-			params.split("\\s*,\\s*");
-			List<String> paramList = Arrays.asList(params);  
-			return paramList;
+			String[] paramArray = params.split("\\s*,\\s*");
+			return paramArray;
 		}
 		return null;
 	}

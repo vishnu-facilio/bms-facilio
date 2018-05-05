@@ -37,7 +37,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 //			}
 		}
 	},
-	GET_MAIN_ENERGY_METER(1,"getMainEnergyMeter") {
+	GET_MAIN_ENERGY_METER(2,"getMainEnergyMeter") {
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			
@@ -66,7 +66,32 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 				throw new FunctionParamException("Required Object is not of type List");
 			}
 		}
-	};
+	},
+	STRING_EQUALS(3,"stringEquals") {
+
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			if (objects.length < 2) {
+				return false;
+			}
+			return (objects[0] == null ? objects[1] == null : objects[0].toString().equals(objects[1].toString()));
+		}
+		
+	},
+	STRING_CONTAINS(4,"stringContains") {
+
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			if (objects.length < 2) {
+				return false;
+			}
+			return (objects[0] == null ? objects[1] == null : objects[0].toString().contains(objects[1].toString()));
+		}
+		
+	}
+	;
 	
 	private Integer value;
 	private String functionName;

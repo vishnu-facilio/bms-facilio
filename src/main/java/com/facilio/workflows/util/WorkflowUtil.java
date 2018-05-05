@@ -747,13 +747,13 @@ public class WorkflowUtil {
 				
 			FacilioDefaultFunction defaultFunctions = FacilioDefaultFunction.getFacilioDefaultFunction(workflowFunctionContext.getFunctionName());
 			
-			List<String> paramList = workflowFunctionContext.getParamList();
+			String[] paramList = workflowFunctionContext.getParamList();
 			Object[] objects = null;
 
 			int objectIndex = 0;
-			if(paramList != null && !paramList.isEmpty()) {
+			if(paramList != null && paramList.length > 0) {
 				
-				objects = new Object[paramList.size()];
+				objects = new Object[paramList.length];
 				
 				for(String param:paramList) {
 					Object obj = variableToExpresionMap.get(param);
