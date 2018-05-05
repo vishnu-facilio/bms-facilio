@@ -94,6 +94,20 @@ public class WorkflowContext {
 	public void setResultEvaluator(String resultEvaluator) {
 		this.resultEvaluator = resultEvaluator;
 	}
+	
+	private Boolean showXml;
+	public Boolean getShowXml() {
+		return showXml;
+	}
+	public void setShowXml(Boolean showXml) {
+		this.showXml = showXml;
+	}
+	public Boolean isShowXml() {
+		if(showXml != null) {
+			return showXml.booleanValue();
+		}
+		return false;
+	}
 
 	public Object executeWorkflow() throws Exception {
 		

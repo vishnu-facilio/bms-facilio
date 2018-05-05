@@ -156,6 +156,8 @@ public class WorkflowUtil {
 			workflow.setWorkflowString(workflowContext.getWorkflowString());
 		}
 		
+		workflow.setShowXml(workflowContext.isShowXml());
+		
 		workflow.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		
 		System.out.println("ADDING WORKFLOW STRING--- "+workflowContext.getWorkflowString());

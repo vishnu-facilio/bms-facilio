@@ -2917,6 +2917,8 @@ public class FieldFactory {
 		selectFieldId.setColumnName("WORKFLOW_XML_STRING");
 		selectFieldId.setModule(module);
 		fields.add(selectFieldId);
+		
+		fields.add(getField("showXml", "SHOW_XML", module, FieldType.BOOLEAN));
 
 		return fields;
 	}
