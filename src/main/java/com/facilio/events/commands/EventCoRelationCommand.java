@@ -37,7 +37,7 @@ public class EventCoRelationCommand implements Command {
 								case TRANSFORM:
 									long coRelTransformTemplateId = rule.getCoRelTransformTemplateId();
 									JSONTemplate template = (JSONTemplate) TemplateAPI.getTemplate(coRelTransformTemplateId);
-									event = EventAPI.transformEvent(event, template);
+//									event = EventAPI.transformEvent(event, template);
 									break;
 							}
 						}

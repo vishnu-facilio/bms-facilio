@@ -3,6 +3,7 @@ package com.facilio.workflows.util;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -234,21 +235,48 @@ public class WorkflowUtil {
 				.select(FieldFactory.getWorkflowFields())
 				.table(module.getTableName())
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCustomWhere(ModuleFactory.getWorkflowModule().getTableName()+".ID = ?", workflowId);
+				.andCondition(CriteriaAPI.getIdCondition(workflowId, module));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		
 		WorkflowContext workflowContext = null;
 		if (props != null && !props.isEmpty()) {
-			workflowContext = FieldUtil.getAsBeanFromMap(props.get(0), WorkflowContext.class);
+			workflowContext = getWorkflowFromProp(props.get(0), isWithExpParsed);
 		}
-		workflowContext = parseStringToWorkflowObject(workflowContext.getWorkflowString(),workflowContext);
+		return workflowContext;
+	}
+	
+	public static Map<Long, WorkflowContext> getWorkflowsAsMap(Collection<Long> ids) throws Exception {
+		return getWorkflowsAsMap(ids, false);
+	}
+	
+	public static Map<Long, WorkflowContext> getWorkflowsAsMap(Collection<Long> ids, boolean isWithExpParsed) throws Exception {
+		FacilioModule module = ModuleFactory.getWorkflowModule(); 
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getWorkflowFields())
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getIdCondition(ids, module));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			Map<Long, WorkflowContext> workflows = new HashMap<>();
+			for (Map<String, Object> prop : props) {
+				WorkflowContext workflow = getWorkflowFromProp(prop, isWithExpParsed);
+				workflows.put(workflow.getId(), workflow);
+			}
+		}
+		return null;
+	}
+	
+	private static WorkflowContext getWorkflowFromProp(Map<String, Object> prop, boolean isWithExpParsed) throws Exception {
+		WorkflowContext workflow = FieldUtil.getAsBeanFromMap(prop, WorkflowContext.class);
+		workflow = parseStringToWorkflowObject(workflow.getWorkflowString(),workflow);
 		
 		if(isWithExpParsed) {
-			parseExpression(workflowContext);
+			parseExpression(workflow);
 		}
-		
-		return workflowContext;
+		return workflow;
 	}
 	
 	public static void parseExpression(WorkflowContext workflowContext) throws Exception {

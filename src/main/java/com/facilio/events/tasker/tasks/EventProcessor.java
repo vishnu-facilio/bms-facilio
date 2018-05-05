@@ -17,14 +17,15 @@ import com.amazonaws.services.kinesis.clientlibrary.types.ShutdownInput;
 import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.events.context.EventRule;
+import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.util.EventAPI;
 import com.facilio.events.util.EventRulesAPI;
 
 public class EventProcessor implements IRecordProcessor {
 
     public static final String DATA_TYPE = "PUBLISH_TYPE";
-    private List<EventRule> eventRules = new ArrayList<>();
+//    private List<EventRule> eventRules = new ArrayList<>();
+    private List<EventRuleContext> eventRules = new ArrayList<>();
     private Map<String, Integer> eventCountMap = new HashMap<>();
     private long orgId;
     private long lastEventTime = System.currentTimeMillis();
@@ -52,7 +53,7 @@ public class EventProcessor implements IRecordProcessor {
     @Override
     public void processRecords(ProcessRecordsInput processRecordsInput) {
         try {
-            List<EventRule> ruleList = EventRulesAPI.getEventRules(orgId);
+            List<EventRuleContext> ruleList = EventRulesAPI.getActiveEventRules();
             if(ruleList != null){
                 eventRules = ruleList;
             }

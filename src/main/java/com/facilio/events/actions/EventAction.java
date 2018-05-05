@@ -13,6 +13,7 @@ import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.events.context.EventProperty;
 import com.facilio.events.context.EventRule;
+import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.util.EventAPI;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -109,14 +110,22 @@ public class EventAction extends ActionSupport {
 		this.eventProperty = eventProperty;
 	}
 	
-	private List<EventRule> eventRules;
-	public List<EventRule> getEventRules() {
+//	private List<EventRule> eventRules;
+//	public List<EventRule> getEventRules() {
+//		return eventRules;
+//	}
+//	public void setEventRules(List<EventRule> eventRules) {
+//		this.eventRules = eventRules;
+//	}
+	
+	private List<EventRuleContext> eventRules;
+	public List<EventRuleContext> getEventRules() {
 		return eventRules;
 	}
-	public void setEventRules(List<EventRule> eventRules) {
+	public void setEventRules(List<EventRuleContext> eventRules) {
 		this.eventRules = eventRules;
 	}
-	
+
 	private String viewName = null;
 	public String getViewName() {
 		return viewName;
@@ -129,24 +138,31 @@ public class EventAction extends ActionSupport {
 	public String eventRules() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
-		Chain eventRulesChain = EventConstants.EventChainFactory.getEventRulesChain();
+		Chain eventRulesChain = EventConstants.EventChainFactory.getActiveEventRuleChain();
 		eventRulesChain.execute(context);
 		
-		setEventRules((List<EventRule>) context.get(EventConstants.EventContextNames.EVENT_RULE_LIST));
+		setEventRules((List<EventRuleContext>) context.get(EventConstants.EventContextNames.EVENT_RULE_LIST));
 		
 		return SUCCESS;
 	}
 	
-	private EventRule eventRule;
-	public EventRule getEventRule() 
-	{
+//	private EventRule eventRule;
+//	public EventRule getEventRule() 
+//	{
+//		return eventRule;
+//	}
+//	public void setEventRule(EventRule eventRule) 
+//	{
+//		this.eventRule = eventRule;
+//	}
+	private EventRuleContext eventRule;
+	public EventRuleContext getEventRule() {
 		return eventRule;
 	}
-	public void setEventRule(EventRule eventRule) 
-	{
+	public void setEventRule(EventRuleContext eventRule) {
 		this.eventRule = eventRule;
 	}
-	
+
 	private long id = -1;
 	public long getId() {
 		return id;
@@ -162,7 +178,7 @@ public class EventAction extends ActionSupport {
 		Chain getEventRuleChain = EventConstants.EventChainFactory.getEventRuleChain();
 		getEventRuleChain.execute(context);
 		
-		eventRule = (EventRule) context.get(EventConstants.EventContextNames.EVENT_RULE);
+		eventRule = (EventRuleContext) context.get(EventConstants.EventContextNames.EVENT_RULE);
 		
 		return SUCCESS;
 	}
@@ -182,8 +198,19 @@ public class EventAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(EventConstants.EventContextNames.EVENT_RULE, eventRule);
 		
-		Chain updateEventRule = EventConstants.EventChainFactory.updateEventRulesChain();
+		Chain updateEventRule = EventConstants.EventChainFactory.updateEventRuleChain();
 		updateEventRule.execute(context);
+		
+		return SUCCESS;
+	}
+	
+	public String deleteEventRule() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID, id);
+		
+		Chain deleteEventRule = EventConstants.EventChainFactory.deleteEventRuleChain();
+		deleteEventRule.execute(context);
+		eventRule = (EventRuleContext) context.get(EventConstants.EventContextNames.EVENT_RULE);
 		
 		return SUCCESS;
 	}

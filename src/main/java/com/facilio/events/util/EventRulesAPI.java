@@ -1,26 +1,156 @@
 package com.facilio.events.util;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.criteria.BooleanOperators;
+import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventProperty;
 import com.facilio.events.context.EventRule;
+import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.context.EventToAlarmFieldMapping;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class EventRulesAPI {
+	
+	public static final EventRuleContext getEventRule(long id) throws Exception {
+		return getEventRule(id, true);
+	}
+	
+	public static final EventRuleContext getEventRule(long id, boolean fetchChildren) throws Exception {
+		FacilioModule module = EventConstants.EventModuleFactory.getEventRulesModule();
+		List<FacilioField> fields = EventConstants.EventFieldFactory.getEventRulesFields();
+		
+		GenericSelectRecordBuilder rulebuilder = new GenericSelectRecordBuilder()
+													.select(fields)
+													.table(module.getTableName())
+													.orderBy("EXECUTION_ORDER")
+													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+													.andCondition(CriteriaAPI.getIdCondition(id, module))
+													;
+
+		List<Map<String, Object>> eventRulesProps = rulebuilder.get();
+		List<EventRuleContext> rules = getEventRulesFromProps(eventRulesProps, fetchChildren);
+		if (rules != null && !rules.isEmpty()) {
+			return rules.get(0);
+		}
+		return null;
+	}
+	
+	public static final List<EventRuleContext> getActiveEventRules() throws Exception {
+		FacilioModule module = EventConstants.EventModuleFactory.getEventRulesModule();
+		List<FacilioField> fields = EventConstants.EventFieldFactory.getEventRulesFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioField active = fieldMap.get("active");
+		
+		GenericSelectRecordBuilder rulebuilder = new GenericSelectRecordBuilder()
+													.select(fields)
+													.table(module.getTableName())
+													.orderBy("EXECUTION_ORDER")
+													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+													.andCondition(CriteriaAPI.getCondition(active, String.valueOf(true), BooleanOperators.IS))
+													;
+
+		List<Map<String, Object>> eventRulesProps = rulebuilder.get();
+		return getEventRulesFromProps(eventRulesProps, true);
+	}
+	
+	private static final List<EventRuleContext> getEventRulesFromProps(List<Map<String, Object>> eventRulesProps, boolean fetchChildren) throws Exception {
+		if(eventRulesProps != null && !eventRulesProps.isEmpty()) {
+			List<EventRuleContext> eventRules = new ArrayList<>();
+			Set<Long> criteriaIds = new HashSet<>();
+			Set<Long> workflowIds = new HashSet<>();
+			for(Map<String, Object> eventRuleProp : eventRulesProps) {
+				EventRuleContext rule = FieldUtil.getAsBeanFromMap(eventRuleProp, EventRuleContext.class);
+				eventRules.add(rule);
+				
+				if (fetchChildren) {
+					if (rule.getCriteriaId() != -1) {
+						criteriaIds.add(rule.getCriteriaId());
+					}
+					if (rule.getWorkflowId() != -1) {
+						workflowIds.add(rule.getWorkflowId());
+					}
+					if (rule.getTransformTemplateId() != -1) {
+						rule.setTransformTemplate((JSONTemplate) TemplateAPI.getTemplate(rule.getTransformTemplateId()));
+					}
+				}
+			}
+			
+			if (fetchChildren) {
+				Map<Long, Criteria> criteriaMap = null;
+				if (!criteriaIds.isEmpty()) {
+					criteriaMap = CriteriaAPI.getCriteriaAsMap(criteriaIds);
+				}
+				
+				Map<Long, WorkflowContext> workflowMap = null;
+				if (!workflowIds.isEmpty()) {
+					workflowMap = WorkflowUtil.getWorkflowsAsMap(workflowIds, true);
+				}
+				
+				for (EventRuleContext rule : eventRules) {
+					if (rule.getCriteriaId() != -1) {
+						rule.setCriteria(criteriaMap.get(rule.getCriteriaId()));
+					}
+					if (rule.getWorkflowId() != -1) {
+						rule.setWorkflow(workflowMap.get(rule.getWorkflowId()));
+					}
+				}
+			}
+			
+			return eventRules;
+		}
+		return null;
+	}
+	
+	public static void updateChildIds (EventRuleContext rule, EventRuleContext oldRule) throws Exception {
+		if (rule.getCriteria() != null) {
+			if(oldRule != null && oldRule.getCriteriaId() != -1) {
+				CriteriaAPI.deleteCriteria(oldRule.getCriteriaId());
+			}
+			long criteriaId = CriteriaAPI.addCriteria(rule.getCriteria(), AccountUtil.getCurrentOrg().getId());
+			rule.setCriteriaId(criteriaId);
+		}
+		
+		if (rule.getWorkflow() != null) {
+			if(oldRule != null && oldRule.getWorkflowId() != -1) {
+				WorkflowUtil.deleteWorkflow(oldRule.getWorkflowId());
+			}
+			long workflowId = WorkflowUtil.addWorkflow(rule.getWorkflow());
+			rule.setWorkflowId(workflowId);
+		}
+		
+		if (rule.getTransformJson() != null) {
+			if(oldRule != null && oldRule.getTransformTemplateId() != -1) {
+				TemplateAPI.deleteTemplate(oldRule.getTransformTemplateId());
+			}
+			JSONTemplate template = new JSONTemplate();
+			template.setName(rule.getName());
+			template.setContent(rule.getTransformJson().toJSONString());
+			template.setWorkflow(TemplateAPI.getWorkflow(template));
+			long templateId = TemplateAPI.addJsonTemplate(AccountUtil.getCurrentOrg().getId(), template);
+			rule.setTransformTemplateId(templateId);
+		}
+	}
+	
+	//Old Code
 	public static final EventRule getEventRule(long orgId, long eventRuleId) throws Exception {
 		GenericSelectRecordBuilder rulebuilder = new GenericSelectRecordBuilder()
 												.select(EventConstants.EventFieldFactory.getEventRuleFields())

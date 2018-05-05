@@ -111,18 +111,23 @@ public class CriteriaAPI {
 		deleteBuilder.delete();
 	}
 	
-	public static Criteria getCriteria(long orgId, long criteriaId) throws Exception {
+	public static Criteria getCriteria(long orgId, long id) throws Exception {
 		
-		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(FieldFactory.getCriteriaFields());
+		FacilioModule criteriaModule = ModuleFactory.getCriteriaModule();
+		FacilioModule conditionModule = ModuleFactory.getConditionsModule();
+		
+		List<FacilioField> fields = FieldFactory.getCriteriaFields();
+		FacilioField criteriaId = FieldFactory.getAsMap(fields).get("criteriaId");
 		fields.addAll(FieldFactory.getConditionFields());
 		
 		GenericSelectRecordBuilder criteriaBuilder = new GenericSelectRecordBuilder()
 															.select(fields)
-															.table("Conditions")
-															.innerJoin("Criteria")
-															.on("Conditions.PARENT_CRITERIA_ID = Criteria.CRITERIAID")
-															.andCustomWhere("orgId = ? AND criteriaId = ?", orgId, criteriaId);
+															.table(conditionModule.getTableName())
+															.innerJoin(criteriaModule.getTableName())
+															.on(conditionModule.getTableName()+".PARENT_CRITERIA_ID = "+criteriaModule.getTableName()+".CRITERIAID")
+															.andCondition(getCurrentOrgIdCondition(criteriaModule))
+															.andCondition(getCondition(criteriaId, String.valueOf(id), PickListOperators.IS))
+															;
 		
 		List<Map<String, Object>> criteriaProps = criteriaBuilder.get();
 		
@@ -139,6 +144,53 @@ public class CriteriaAPI {
 			}
 		}
 		return criteria;
+	}
+	
+	public static Map<Long, Criteria> getCriteriaAsMap(Collection<Long> ids) throws Exception {
+		
+		FacilioModule criteriaModule = ModuleFactory.getCriteriaModule();
+		FacilioModule conditionModule = ModuleFactory.getConditionsModule();
+		
+		List<FacilioField> fields = FieldFactory.getCriteriaFields();
+		FacilioField criteriaId = FieldFactory.getAsMap(fields).get("criteriaId");
+		fields.addAll(FieldFactory.getConditionFields());
+		
+		GenericSelectRecordBuilder criteriaBuilder = new GenericSelectRecordBuilder()
+															.select(fields)
+															.table(conditionModule.getTableName())
+															.innerJoin(criteriaModule.getTableName())
+															.on(conditionModule.getTableName()+".PARENT_CRITERIA_ID = "+criteriaModule.getTableName()+".CRITERIAID")
+															.andCondition(getCurrentOrgIdCondition(criteriaModule))
+															.andCondition(getCondition(criteriaId, ids, PickListOperators.IS))
+															;
+		
+		List<Map<String, Object>> criteriaProps = criteriaBuilder.get();
+		if (criteriaProps != null && !criteriaProps.isEmpty()) {
+			Map<Long, Criteria> criteriaMap = new HashMap<>();
+			for(Map<String, Object> props : criteriaProps) {
+				Condition condition = FieldUtil.getAsBeanFromMap(props, Condition.class);
+				
+				Criteria parentCriteria = criteriaMap.get(condition.getParentCriteriaId());
+				if (parentCriteria == null) {
+					parentCriteria = FieldUtil.getAsBeanFromMap(props, Criteria.class);
+					parentCriteria.setConditions(new HashMap<>());
+					
+					criteriaMap.put(parentCriteria.getCriteriaId(), parentCriteria);
+				}
+				parentCriteria.getConditions().put(condition.getSequence(), condition);
+			}
+			return criteriaMap;
+		}
+		return null;
+	}
+	
+	public static Condition getOrgIdCondition(long orgId, FacilioModule module) {
+		Condition idCondition = new Condition();
+		idCondition.setField(FieldFactory.getOrgIdField(module));
+		idCondition.setOperator(NumberOperators.EQUALS);
+		idCondition.setValue(String.valueOf(orgId));
+		
+		return idCondition;
 	}
 	
 	public static Condition getCurrentOrgIdCondition(FacilioModule module) {
@@ -184,7 +236,7 @@ public class CriteriaAPI {
 		return condition;
 	}
 	
-	public static Condition getCondition( FacilioField field,List<Long> values,Operator operator) {
+	public static Condition getCondition( FacilioField field,Collection<Long> values,Operator operator) {
 		String val = StringUtils.join(values, ",");
 		return getCondition(field, val, operator);
 	}

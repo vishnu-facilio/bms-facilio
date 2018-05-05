@@ -30,7 +30,7 @@ public class EventTransformCommand implements Command {
 					boolean isMatched = criteria.computePredicate().evaluate(event);
 					if(isMatched) {
 						JSONTemplate template = (JSONTemplate) TemplateAPI.getTemplate(rule.getTransformAlertTemplateId());
-						event = EventAPI.transformEvent(event, template);
+//						event = EventAPI.transformEvent(event, template);
 					}
 				}
 				event.setInternalState(EventInternalState.TRANSFORMED);

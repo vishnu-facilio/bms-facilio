@@ -21,28 +21,44 @@ import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.events.context.EventContext.EventInternalState;
 import com.facilio.events.context.EventContext.EventState;
-import com.facilio.events.context.EventRule;
+import com.facilio.events.context.EventRuleContext;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class EventAPI {
-	 public static long processEvents(long timestamp, JSONObject object, List<EventRule> eventRules, Map<String, Integer> eventCountMap, long lastEventTime) throws Exception {
-    	FacilioContext context = new FacilioContext();
+//	 public static long processEvents(long timestamp, JSONObject object, List<EventRule> eventRules, Map<String, Integer> eventCountMap, long lastEventTime) throws Exception {
+//    	FacilioContext context = new FacilioContext();
+//    	context.put(EventConstants.EventContextNames.EVENT_RULE_LIST, eventRules);
+//    	context.put(EventConstants.EventContextNames.EVENT_TIMESTAMP, timestamp);
+//    	context.put(EventConstants.EventContextNames.EVENT_PAYLOAD, object);
+//    	context.put(EventConstants.EventContextNames.EVENT_LAST_TIMESTAMP, lastEventTime);
+//    	context.put(EventConstants.EventContextNames.EVENT_COUNT_MAP, eventCountMap);
+//    	
+//    	Chain processEventChain = EventConstants.EventChainFactory.processEventChain();
+//    	processEventChain.execute(context);
+//        return (long) context.get(EventConstants.EventContextNames.EVENT_LAST_TIMESTAMP);
+//    }
+	
+	public static void populateProcessEventParams(FacilioContext context, long timestamp, JSONObject object, List<EventRuleContext> eventRules, Map<String, Integer> eventCountMap, long lastEventTime) {
     	context.put(EventConstants.EventContextNames.EVENT_RULE_LIST, eventRules);
     	context.put(EventConstants.EventContextNames.EVENT_TIMESTAMP, timestamp);
     	context.put(EventConstants.EventContextNames.EVENT_PAYLOAD, object);
     	context.put(EventConstants.EventContextNames.EVENT_LAST_TIMESTAMP, lastEventTime);
     	context.put(EventConstants.EventContextNames.EVENT_COUNT_MAP, eventCountMap);
-    	
-    	Chain processEventChain = EventConstants.EventChainFactory.processEventChain();
-    	processEventChain.execute(context);
-        return (long) context.get(EventConstants.EventContextNames.EVENT_LAST_TIMESTAMP);
-    }
+	}
 	 
-	public static EventContext transformEvent(EventContext event, JSONTemplate template) throws Exception {
+	 public static long processEvents(long timestamp, JSONObject object, List<EventRuleContext> eventRules, Map<String, Integer> eventCountMap, long lastEventTime) throws Exception {
+		FacilioContext context = new FacilioContext();
+		populateProcessEventParams(context, timestamp, object, eventRules, eventCountMap, lastEventTime);
+		Chain processEventChain = EventConstants.EventChainFactory.processEventChain();
+	    processEventChain.execute(context);
+	    return (long) context.get(EventConstants.EventContextNames.EVENT_LAST_TIMESTAMP);
+	 } 
+	 
+	public static EventContext transformEvent(EventContext event, JSONTemplate template, Map<String, Object> placeHolders) throws Exception {
 		Map<String, Object> eventProp = FieldUtil.getAsProperties(event);
-		JSONObject content = template.getTemplate(eventProp);
+		JSONObject content = template.getTemplate(placeHolders);
 		eventProp.putAll(FieldUtil.getAsProperties(content));
 		event = FieldUtil.getAsBeanFromMap(eventProp, EventContext.class);
 		event.setMessageKey(null);

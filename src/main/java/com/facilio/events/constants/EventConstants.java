@@ -11,13 +11,9 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.events.commands.AddEventCommand;
+import com.facilio.events.commands.ProcessEventCommand;
 import com.facilio.events.commands.AddEventRuleCommand;
-import com.facilio.events.commands.EvalEventBaseCriteriaCommand;
-import com.facilio.events.commands.EventCoRelationCommand;
-import com.facilio.events.commands.EventThresholdCommand;
 import com.facilio.events.commands.EventToAlarmCommand;
-import com.facilio.events.commands.EventTransformCommand;
 import com.facilio.events.commands.GetEventDetailCommand;
 import com.facilio.events.commands.GetEventListCommand;
 import com.facilio.events.commands.GetEventRulesCommand;
@@ -51,10 +47,11 @@ public class EventConstants {
 		public static Chain processEventChain() {
 			Chain c = new ChainBase();
 			c.addCommand(new InsertEventCommand());
-			c.addCommand(new EvalEventBaseCriteriaCommand());
-			c.addCommand(new EventTransformCommand());
-			c.addCommand(new EventThresholdCommand());
-			c.addCommand(new EventCoRelationCommand());
+//			c.addCommand(new EvalEventBaseCriteriaCommand());
+//			c.addCommand(new EventTransformCommand());
+//			c.addCommand(new EventThresholdCommand());
+//			c.addCommand(new EventCoRelationCommand());
+			c.addCommand(new ExecuteEventRulesCommand());
 			c.addCommand(new EventToAlarmCommand());
 			c.addCommand(new UpdateEventCommand());
 			addCleanUpCommand(c);
@@ -63,7 +60,8 @@ public class EventConstants {
 		
 		public static Chain getAddEventChain() {
 			Chain c = new ChainBase();
-			c.addCommand(new AddEventCommand());
+			c.addCommand(new ProcessEventCommand());
+			c.addCommand(processEventChain());
 			addCleanUpCommand(c);
 			return c;
 		}
@@ -75,30 +73,65 @@ public class EventConstants {
 			return c;
 		}
 		
-		public static Chain getEventRulesChain() {
+//		public static Chain getEventRulesChain() {
+//			Chain c = new ChainBase();
+//			c.addCommand(new GetEventRulesCommand());
+//			addCleanUpCommand(c);
+//			return c;
+//		}
+//		
+//		public static Chain getEventRuleChain() {
+//			Chain c = new ChainBase();
+//			c.addCommand(new GetEventRuleCommand());
+//			addCleanUpCommand(c);
+//			return c;
+//		}
+//		
+//		public static Chain addEventRuleChain() {
+//			Chain c = new ChainBase();
+//			c.addCommand(new AddEventRuleCommand());
+//			addCleanUpCommand(c);
+//			return c;
+//		}
+//		
+//		public static Chain updateEventRulesChain() {
+//			Chain c = new ChainBase();
+//			c.addCommand(new UpdateEventRulesCommand());
+//			addCleanUpCommand(c);
+//			return c;
+//		}
+		
+		public static Chain getActiveEventRuleChain() {
 			Chain c = new ChainBase();
-			c.addCommand(new GetEventRulesCommand());
+			c.addCommand(new GetActiveEventRulesCommand());
 			addCleanUpCommand(c);
 			return c;
 		}
 		
 		public static Chain getEventRuleChain() {
 			Chain c = new ChainBase();
-			c.addCommand(new GetEventRuleCommand());
+			c.addCommand(new GetNewEventRuleCommand());
 			addCleanUpCommand(c);
 			return c;
 		}
 		
 		public static Chain addEventRuleChain() {
 			Chain c = new ChainBase();
-			c.addCommand(new AddEventRuleCommand());
+			c.addCommand(new AddNewEventRuleCommand());
 			addCleanUpCommand(c);
 			return c;
 		}
 		
-		public static Chain updateEventRulesChain() {
+		public static Chain updateEventRuleChain() {
 			Chain c = new ChainBase();
-			c.addCommand(new UpdateEventRulesCommand());
+			c.addCommand(new UpdateNewEventRuleCommand());
+			addCleanUpCommand(c);
+			return c;
+		}
+		
+		public static Chain deleteEventRuleChain() {
+			Chain c = new ChainBase();
+			c.addCommand(new DeleteNewEventRuleCommand());
 			addCleanUpCommand(c);
 			return c;
 		}
@@ -148,6 +181,14 @@ public class EventConstants {
 			eventrule.setDisplayName("Event Rule");
 			eventrule.setTableName("Event_Rule");
 			return eventrule;
+		}
+		
+		public static FacilioModule getEventRulesModule() {
+			FacilioModule eventRules = new FacilioModule();
+			eventRules.setName("eventrule");
+			eventRules.setDisplayName("Event Rules");
+			eventRules.setTableName("Event_Rules");
+			return eventRules;
 		}
 		
 		public static FacilioModule getEventToAlarmFieldMappingModule() {
@@ -327,6 +368,24 @@ public class EventConstants {
 			eventTopicName.setColumnName("EVENTS_TOPIC_NAME");
 			eventTopicName.setModule(module);
 			fields.add(eventTopicName);
+			
+			return fields;
+		}
+		
+		public static List<FacilioField> getEventRulesFields() {
+			FacilioModule module = EventModuleFactory.getEventRulesModule();
+			
+			List<FacilioField> fields = new ArrayList<>();
+			fields.add(FieldFactory.getIdField(module));
+			fields.add(FieldFactory.getOrgIdField(module));
+			fields.add(FieldFactory.getNameField(module));
+			fields.add(FieldFactory.getField("description", "DESCRIPTION", module, FieldType.STRING));
+			fields.add(FieldFactory.getField("criteriaId", "CRITERIA_ID", module, FieldType.LOOKUP));
+			fields.add(FieldFactory.getField("workflowId", "WORKFLOW_ID", module, FieldType.LOOKUP));
+			fields.add(FieldFactory.getField("executionOrder", "EXECUTION_ORDER", module, FieldType.NUMBER));
+			fields.add(FieldFactory.getField("successAction", "SUCCESS_ACTION", module, FieldType.NUMBER));
+			fields.add(FieldFactory.getField("transformTemplateId", "TRANSFORM_TEMPLATE_ID", module, FieldType.LOOKUP));
+			fields.add(FieldFactory.getField("active", "IS_ACTIVE", module, FieldType.BOOLEAN));
 			
 			return fields;
 		}
