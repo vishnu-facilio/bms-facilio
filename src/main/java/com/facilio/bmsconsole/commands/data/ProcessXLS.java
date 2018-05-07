@@ -28,6 +28,7 @@ import com.facilio.bmsconsole.actions.ImportFloorAction;
 import com.facilio.bmsconsole.actions.ImportMetaInfo;
 import com.facilio.bmsconsole.actions.ImportSiteAction;
 import com.facilio.bmsconsole.actions.ImportSpaceAction;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -383,6 +384,9 @@ public class ProcessXLS implements Command {
 				insertProps.put("orgId", AccountUtil.getCurrentOrg().getId());
 				insertProps.put("moduleId", lookupField.getLookupModule().getModuleId());
 				
+				if(lookupField.getLookupModule().getName().equals(FacilioConstants.ContextNames.ASSET_CATEGORY)) {
+					insertProps.put("type", AssetCategoryContext.AssetCategoryType.MISC.getIntVal());
+				}
 				GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
 						.table(lookupField.getLookupModule().getTableName())
 						.fields(fieldsList);
