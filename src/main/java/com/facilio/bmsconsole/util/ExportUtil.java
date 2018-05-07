@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -17,7 +18,6 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
-import com.facilio.bmsconsole.commands.SetTableNamesCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -441,7 +441,6 @@ public class ExportUtil {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.CV_NAME, viewName);
-		SetTableNamesCommand.setForModule(context, moduleName);
 		
 		Chain moduleListChain = FacilioChainFactory.getModuleListChain();
 		moduleListChain.execute(context);
@@ -450,7 +449,32 @@ public class ExportUtil {
 		FacilioView view= (FacilioView)context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		return exportData(fileFormat, modBean.getModule(moduleName), view.getFields(), records);
+		
+		List<ViewField> viewFields = view.getFields();
+		
+		if(moduleName.equals("alarm")) {
+			Iterator<ViewField> it = viewFields.iterator();
+	        while (it.hasNext()) {
+	        	ViewField field = it.next();
+	            if (field.getName().equals("modifiedTime")) {
+	                it.remove();
+	            }
+	        }
+	        
+			ViewField createdTime = new ViewField("createdTime", "Created Time");
+			createdTime.setField(modBean.getField("createdTime", moduleName));
+			viewFields.add(createdTime);
+			ViewField modifiedTime = new ViewField("modifiedTime", "Modified Update");
+			modifiedTime.setField(modBean.getField("modifiedTime", moduleName));
+			viewFields.add(modifiedTime);
+			ViewField acknowledgedTime = new ViewField("acknowledgedTime", "Acknowledged Time");
+			acknowledgedTime.setField(modBean.getField("acknowledgedTime", moduleName));
+			viewFields.add(acknowledgedTime);
+			ViewField noOfEvents = new ViewField("noOfEvents", "No Of Events");
+			noOfEvents.setField(modBean.getField("noOfEvents", moduleName));
+			viewFields.add(noOfEvents);
+		}
+		return exportData(fileFormat, modBean.getModule(moduleName), viewFields, records);
 	}
 	
 }
