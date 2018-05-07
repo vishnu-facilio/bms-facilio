@@ -76,7 +76,7 @@ public class FieldUtil {
 					}
 					else {
 						String val = value.toString();
-						if (val.trim() == "1") {
+						if (val.trim().equals("1")) {
 							pstmt.setBoolean(paramIndex, true);
 						}
 						else {
@@ -156,7 +156,7 @@ public class FieldUtil {
 				}
 				else {
 					String booleanValStr = value.toString();
-					if (booleanValStr.trim() == "1") {
+					if (booleanValStr.trim().equals("1")) {
 						booleanVal = true;
 					}
 					else {
