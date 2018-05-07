@@ -2420,6 +2420,9 @@ public class DashboardAction extends ActionSupport {
 					deviceList.add(Long.parseLong(meterId));
 				}
 			}
+			if (parentId >= 0) {
+				deviceList.add(parentId);
+			}
 			
 			List<Long> moduleList = new ArrayList<>();
 			moduleList.add(reportContext.getModuleId());
