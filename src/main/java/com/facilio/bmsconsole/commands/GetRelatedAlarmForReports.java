@@ -35,8 +35,8 @@ public class GetRelatedAlarmForReports implements Command{
 		FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
 		String dateFilter = (String) context.get(FacilioConstants.ContextNames.REPORT_DATE_FILTER);
 		
-		if (reportContext.getReportCriteriaContexts() != null) {
-			Criteria criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), reportContext.getReportCriteriaContexts().get(0).getCriteriaId());
+		if (reportContext.getCriteria() != null) {
+			Criteria criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), reportContext.getCriteria().getCriteriaId());
 			if(module.getName().equals("energydata") && criteria != null) {
 				Map<Integer, Condition> conditions = criteria.getConditions();
 				for(Condition condition:conditions.values()) {

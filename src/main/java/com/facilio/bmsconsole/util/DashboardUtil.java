@@ -28,7 +28,6 @@ import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.ReportColumnContext;
 import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.ReportContext.ReportChartType;
-import com.facilio.bmsconsole.context.ReportCriteriaContext;
 import com.facilio.bmsconsole.context.ReportDateFilterContext;
 import com.facilio.bmsconsole.context.ReportEnergyMeterContext;
 import com.facilio.bmsconsole.context.ReportFieldContext;
@@ -988,14 +987,10 @@ public class DashboardUtil {
 				}
 			}
 			
-			for(Map<String, Object> prop:props) {
-				if(prop.get("criteriaId") != null) {
-					ReportCriteriaContext reportCriteriaContext = FieldUtil.getAsBeanFromMap(prop, ReportCriteriaContext.class);
-					
-					Criteria criteria = CriteriaAPI.getCriteria(reportContext.getOrgId(), reportCriteriaContext.getCriteriaId());
-					reportContext.setCriteria(criteria);
-					reportContext.addReportCriteriaContext(reportCriteriaContext);
-				}
+			Map<String, Object> prop = props.get(0);
+			if(prop.get("criteriaId") != null) {
+				Criteria criteria = CriteriaAPI.getCriteria(reportContext.getOrgId(), (Long) prop.get("criteriaId"));
+				reportContext.setCriteria(criteria);
 			}
 			selectBuilder = new GenericSelectRecordBuilder()
 					.select(FieldFactory.getReportThresholdFields())
@@ -1848,10 +1843,6 @@ public class DashboardUtil {
 				dateCondition.setOperator(DateOperators.BETWEEN);
 				long fromValue = reportContext.getDateFilter().getStartTime();
 				long toValue = reportContext.getDateFilter().getEndTime();
-				if(module.getName().equals("energydata") && toValue > DateTimeUtil.getCurrenTime()) {
-					toValue = DateTimeUtil.getCurrenTime();
-				}
-				// wrong here need to chenge
 				dateCondition.setValue(fromValue+","+toValue);
 			}
 		}
@@ -1983,16 +1974,18 @@ public class DashboardUtil {
 			
 
 			GenericInsertRecordBuilder insertBuilder;
+			
+			if(oldReport.getCriteria() != null) {
+				
+				GenericDeleteRecordBuilder delete = new GenericDeleteRecordBuilder();
+				delete.table(ModuleFactory.getReportCriteria().getTableName())
+				.andCustomWhere(ModuleFactory.getReportCriteria().getTableName()+".REPORT_ID = ?", oldReport.getId());
+				
+				delete.delete();
+				CriteriaAPI.deleteCriteria(oldReport.getCriteria().getCriteriaId());
+			}
+			
 			if(reportContext.getCriteria() != null) {
-				if(oldReport.getReportCriteriaContexts() != null && oldReport.getReportCriteriaContexts().get(0) != null) {
-					
-					GenericDeleteRecordBuilder delete = new GenericDeleteRecordBuilder();
-					delete.table(ModuleFactory.getReportCriteria().getTableName())
-					.andCustomWhere(ModuleFactory.getReportCriteria().getTableName()+".REPORT_ID = ?", oldReport.getId());
-					
-					delete.delete();
-					CriteriaAPI.deleteCriteria(oldReport.getReportCriteriaContexts().get(0).getCriteriaId());
-				}
 				
 				Long criteriaId = CriteriaAPI.addCriteria(reportContext.getCriteria(), AccountUtil.getCurrentOrg().getId());
 				

@@ -58,8 +58,8 @@ public class GetReportUnderlyingDataCommand implements Command {
 		builder.select(fields);
 		Criteria criteria = null;
 		
-		if (reportContext.getReportCriteriaContexts() != null) {
-			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), reportContext.getReportCriteriaContexts().get(0).getCriteriaId());
+		if (reportContext.getCriteria() != null) {
+			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), reportContext.getCriteria().getCriteriaId());
 			builder.andCriteria(criteria);
 		}
 		if (reportContext.getDateFilter() != null) {
