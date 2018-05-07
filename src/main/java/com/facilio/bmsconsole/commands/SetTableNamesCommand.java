@@ -9,6 +9,8 @@ public class SetTableNamesCommand implements Command {
 
 	private String moduleName, tableName;
 	
+	public SetTableNamesCommand() {}
+	
 	public SetTableNamesCommand(String moduleName, String tableName) {
 		// TODO Auto-generated constructor stub
 		this.moduleName = moduleName;
@@ -18,8 +20,14 @@ public class SetTableNamesCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-		context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, tableName);
+		if (moduleName == null && context.containsKey(FacilioConstants.ContextNames.MODULE_NAME)) {
+			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+			setForModule(context, moduleName);
+		}
+		else {
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+			context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, tableName);
+		}
 		
 		return false;
 	}
@@ -130,5 +138,20 @@ public class SetTableNamesCommand implements Command {
 	}
 	public static SetTableNamesCommand getForTicketAttachment(){
 		return new SetTableNamesCommand("ticketattachments","Ticket_Attachments");
+	}
+	
+		
+	public static void setForModule (Context context, String moduleName) {
+		//TODO handle all module and get from map
+		String tableName = "";
+		switch(moduleName) {
+			case FacilioConstants.ContextNames.WORK_ORDER: 
+				tableName = "WorkOrders";
+				break;
+			case FacilioConstants.ContextNames.ALARM:
+				tableName = "Alarms";
+				break;
+		}
+		context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, tableName);
 	}
 }

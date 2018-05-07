@@ -3,12 +3,12 @@ package com.facilio.bmsconsole.commands;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
-import com.facilio.aws.util.AwsUtil;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.chain.impl.ChainBase;
 
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
 import com.facilio.leed.commands.AddConsumptionForLeed;
 import com.facilio.leed.commands.AddEnergyMeterCommand;
@@ -2083,6 +2083,20 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenericAddModuleDataCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getModuleListChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new SetTableNamesCommand());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GenerateSortingQueryCommand());
+		c.addCommand(new GenericGetModuleDataListCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

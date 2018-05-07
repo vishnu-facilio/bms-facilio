@@ -228,6 +228,12 @@
 				<param name="includeProperties">result</param>
 			</result>
 		</action>
+		<action name="exportModule" class="com.facilio.bmsconsole.actions.CommonAction"
+			method="exportModule">
+			<result name="success" type="json">
+				<param name="includeProperties">fileUrl</param>
+			</result>
+		</action>
 		<action name="readingalarm" class="com.facilio.bmsconsole.actions.AlarmAction"
 			method="fetchReadingAlarms">
 			<param name="moduleName">alarm</param>
