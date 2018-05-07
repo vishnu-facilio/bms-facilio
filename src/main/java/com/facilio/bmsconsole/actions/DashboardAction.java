@@ -1046,6 +1046,7 @@ public class DashboardAction extends ActionSupport {
 	
 	private JSONArray getDataForTickets(ReportContext report, FacilioModule module, JSONArray dateFilter, JSONObject userFilterValues, long baseLineId, long criteriaId, ReportEnergyMeterContext energyMeterFilter) throws Exception {
 		JSONArray ticketData = null;
+		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
@@ -1153,26 +1154,15 @@ public class DashboardAction extends ActionSupport {
 					xAggregateOpperator = FormulaContext.DateAggregateOperator.HOURSOFDAY;
 				}
 				else if (oprId == DateOperators.CURRENT_WEEK.getOperatorId() || oprId == DateOperators.LAST_WEEK.getOperatorId() || oprId == DateOperators.CURRENT_WEEK_UPTO_NOW.getOperatorId()) {
-					xAggregateOpperator = FormulaContext.DateAggregateOperator.FULLDATE;
-					if(report.getIsComparisionReport()) {
-						xAggregateOpperator = FormulaContext.DateAggregateOperator.WEEKDAY;
-					}
+					xAggregateOpperator = FormulaContext.DateAggregateOperator.WEEKDAY;
 				}
 				else if (oprId == DateOperators.CURRENT_MONTH.getOperatorId() || oprId == DateOperators.LAST_MONTH.getOperatorId() || oprId == DateOperators.CURRENT_MONTH_UPTO_NOW.getOperatorId() || oprId == DateOperators.LAST_N_DAYS.getOperatorId()) {
-					xAggregateOpperator = FormulaContext.DateAggregateOperator.FULLDATE;
-					if(report.getIsComparisionReport()) {
-						xAggregateOpperator = FormulaContext.DateAggregateOperator.DAYSOFMONTH;
-					}
+					xAggregateOpperator = FormulaContext.DateAggregateOperator.DAYSOFMONTH;
 				}
 				else if (oprId == DateOperators.CURRENT_YEAR.getOperatorId() || oprId == DateOperators.LAST_YEAR.getOperatorId() || oprId == DateOperators.CURRENT_YEAR_UPTO_NOW.getOperatorId()) {
 					xAggregateOpperator = FormulaContext.DateAggregateOperator.MONTHANDYEAR;
 				}
 				report.setxAxisaggregateFunction(xAggregateOpperator.getValue());
-			}
-			if (getIsHeatMap() || (reportContext.getChartType() != null && reportContext.getChartType().equals(ReportChartType.HEATMAP.getValue())) || !report.getIsHighResolutionReport()) {
-				
-				xAxisField = xAggregateOpperator.getSelectField(xAxisField);
-				
 			}
 		}
 
@@ -1251,7 +1241,7 @@ public class DashboardAction extends ActionSupport {
 				dateRange = new DateRange((long)dateFilter.get(0), (long)dateFilter.get(1));
 			}
 			else {
-				dateRange = report.getDateFilter().getOperator().getRange(null);
+				dateRange = report.getDateFilter().getOperator().getRange(report.getDateFilter().getValue());
 			}
 			System.out.println("start -- "+dateRange.getStartTime() +" end -- "+dateRange.getEndTime());
 			Condition condition = baseLineContext.getBaseLineCondition(report.getDateFilter().getField(), dateRange);
@@ -1267,9 +1257,6 @@ public class DashboardAction extends ActionSupport {
 		
 		if(criteriaId != -1) {
 			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), criteriaId);
-		}
-		else if(report.getReportCriteriaContexts() != null) {
-			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), report.getReportCriteriaContexts().get(0).getCriteriaId());
 		}
 		if(criteria != null) {
 			builder.andCriteria(criteria);
@@ -1718,7 +1705,7 @@ public class DashboardAction extends ActionSupport {
 				dateRange = new DateRange((long)dateFilter.get(0), (long)dateFilter.get(1));
 			}
 			else {
-				dateRange = report.getDateFilter().getOperator().getRange(null);
+				dateRange = report.getDateFilter().getOperator().getRange(report.getDateFilter().getValue());
 			}
 			System.out.println("start -- "+dateRange.getStartTime() +" end -- "+dateRange.getEndTime());
 			Condition condition = baseLineContext.getBaseLineCondition(report.getDateFilter().getField(), dateRange);
@@ -1734,9 +1721,6 @@ public class DashboardAction extends ActionSupport {
 		
 		if(criteriaId != -1) {
 			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), criteriaId);
-		}
-		else if(report.getReportCriteriaContexts() != null) {
-			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), report.getReportCriteriaContexts().get(0).getCriteriaId());
 		}
 		if(criteria != null) {
 			builder.andCriteria(criteria);
@@ -2081,8 +2065,15 @@ public class DashboardAction extends ActionSupport {
 				builder.andCustomWhere("DAYOFWEEK(CONVERT_TZ(from_unixtime(floor(TTIME/1000)),@@session.time_zone,'" + timeZone + "')) <> ? AND DAYOFWEEK(CONVERT_TZ(from_unixtime(floor(TTIME/1000)),@@session.time_zone,'" + timeZone + "')) <> ?", weekendDays[0], weekendDays[1]);
 			}
 		}
+		List<Map<String, Object>> rs = null;
+		if((report.getEnergyMeter() != null || subBuilder != null) && buildingCondition == null) {
+//			dont query return null;
+			rs  = new ArrayList<>();
+		}
+		else {
+			rs = builder.get();
+		}
 		
-		List<Map<String, Object>> rs = builder.get();
 		System.out.println("builder --- "+reportContext.getId() +"   "+baseLineId);
 		System.out.println("builder --- "+builder);
 //		System.out.println("rs1 -- "+rs);
@@ -2283,22 +2274,14 @@ public class DashboardAction extends ActionSupport {
 			readingData = res;
 		}
 		
-		if (report.getReportCriteriaContexts() != null) {
-			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), report.getReportCriteriaContexts().get(0).getCriteriaId());
+		if (report.getCriteria() != null) {
+			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), report.getCriteria().getCriteriaId());
 			if(criteria != null) {
 				Map<Integer, Condition> conditions = criteria.getConditions();
 				for(Condition condition:conditions.values()) {
 					if(condition.getFieldName().equals("parentId")) {
 						energyMeterValue = energyMeterValue + condition.getValue() +",";
 					}
-				}
-			}
-		}
-		if(report.getCriteria() != null) {
-			Map<Integer, Condition> conditions = report.getCriteria().getConditions();
-			for(Condition condition:conditions.values()) {
-				if(condition.getFieldName().equals("parentId")) {
-					energyMeterValue = energyMeterValue + condition.getValue() +",";
 				}
 			}
 		}

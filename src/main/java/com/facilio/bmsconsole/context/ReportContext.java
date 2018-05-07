@@ -199,7 +199,6 @@ public class ReportContext extends ModuleBaseWithCustomFields {
 		return null;
 	}
 
-	List<ReportCriteriaContext> reportCriteriaContexts;
 	List<ReportUserFilterContext> reportUserFilters;
 	List<Long> reportCriteriaIds;
 	public Criteria getCriteria() {
@@ -209,8 +208,6 @@ public class ReportContext extends ModuleBaseWithCustomFields {
 	public void setCriteria(Criteria criteria) {
 		this.criteria = criteria;
 	}
-
-
 	Criteria criteria;
 	
 	List<ReportThreshold> reportThresholds;
@@ -492,23 +489,6 @@ public class ReportContext extends ModuleBaseWithCustomFields {
 
 	public void setxAxisLegend(String xAxisLegend) {
 		this.xAxisLegend = xAxisLegend;
-	}
-
-
-	public List<ReportCriteriaContext> getReportCriteriaContexts() {
-		return reportCriteriaContexts;
-	}
-
-
-	public void setReportCriteriaContexts(List<ReportCriteriaContext> reportCriteriaContexts) {
-		this.reportCriteriaContexts = reportCriteriaContexts;
-	}
-	
-	public void addReportCriteriaContext(ReportCriteriaContext reportCriteriaContext) {
-		if(this.reportCriteriaContexts == null) {
-			this.reportCriteriaContexts = new ArrayList<>(); 
-		}
-		this.reportCriteriaContexts.add(reportCriteriaContext);
 	}
 	
 	public enum OrderByFunction {
