@@ -426,6 +426,19 @@ public class WorkOrderAction extends ActionSupport {
 		return updateWorkOrder(context);
 	}
 	
+	public String resolveWorkOrder() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.SOLVE_WORK_ORDER);
+		
+		workorder = new WorkOrderContext();
+		workorder.setStatus(TicketAPI.getStatus("Resolved")); //We shouldn't allow resolve to be edited
+		if (actualWorkDuration != -1) {
+			workorder.setActualWorkDuration(actualWorkDuration);
+		}
+		
+		return updateWorkOrder(context);
+	}
+	
 	public String deleteWorkOrder() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.DELETE);

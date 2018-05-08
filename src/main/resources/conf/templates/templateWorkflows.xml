@@ -582,7 +582,7 @@
 			<parameter name="workorder.description" type="String" />
 			<parameter name="workorder.url" type="String" />
 			<parameter name="workorder.assignedTo.name" type="String" />
-			<parameter name="workorder.status" type="String" />		
+			<parameter name="workorder.status.status" type="String" />		
 			<expression name="org.domain">
 				<constant>${org.domain}</constant>
 			</expression>
@@ -601,8 +601,8 @@
 			<expression name="workorder.assignedTo.name">
 				<constant>${workorder.assignedTo.name}</constant>
 			</expression>
-			<expression name="workorder.status">
-				<constant>${workorder.status}</constant>
+			<expression name="workorder.status.status">
+				<constant>${workorder.status.status}</constant>
 			</expression>
 		</workflow>
 	</template>
@@ -613,7 +613,7 @@
 			<parameter name="workorder.description" type="String" />
 			<parameter name="workorder.url" type="String" />
 			<parameter name="workorder.assignedTo.name" type="String" />
-			<parameter name="workorder.status" type="String" />					
+			<parameter name="workorder.status.status" type="String" />					
 			<expression name="workorder.assignedBy.phone">
 				<constant>${workorder.assignedBy.phone}</constant>
 			</expression>
@@ -629,8 +629,8 @@
 			<expression name="workorder.assignedTo.phone">
 				<constant>${workorder.assignedTo.phone}</constant>
 			</expression>
-			<expression name="workorder.status">
-				<constant>${workorder.status}</constant>
+			<expression name="workorder.status.status">
+				<constant>${workorder.status.status}</constant>
 			</expression>
 		</workflow>
 	</template>
@@ -646,7 +646,7 @@
 			<parameter name="workorder.id" type="Number" />
 			<parameter name="workorder.assignedTo.id" type="Number" />
 			<parameter name="workorder.assignedTo.name" type="String" />
-			<parameter name="workorder.status" type="String" />											
+			<parameter name="workorder.status.status" type="String" />											
 			<expression name="workorder.subject">
 				<constant>${workorder.subject}</constant>
 			</expression>
@@ -665,8 +665,8 @@
 			<expression name="workorder.assignedTo.name">
 				<constant>${workorder.assignedTo.name}</constant>
 			</expression>
-			<expression name="workorder.status">
-				<constant>${workorder.status}</constant>
+			<expression name="workorder.status.status">
+				<constant>${workorder.status.status}</constant>
 			</expression>
 		</workflow>
 	</template>
@@ -678,7 +678,7 @@
 			<parameter name="workorder.description" type="String" />
 			<parameter name="workorder.url" type="String" />
 			<parameter name="workorder.assignedBy.name" type="String" />
-			<parameter name="workorder.status" type="String" />			
+			<parameter name="workorder.status.status" type="String" />			
 			<expression name="org.domain">
 				<constant>${org.domain}</constant>
 			</expression>
@@ -697,8 +697,8 @@
 			<expression name="workorder.assignedBy.name">
 				<constant>${workorder.assignedBy.name}</constant>
 			</expression>
-			<expression name="workorder.status">
-				<constant>${workorder.status}</constant>
+			<expression name="workorder.status.status">
+				<constant>${workorder.status.status}</constant>
 			</expression>
 		</workflow>
 	</template>
@@ -709,7 +709,7 @@
 			<parameter name="workorder.description" type="String" />
 			<parameter name="workorder.url" type="String" />
 			<parameter name="workorder.assignedBy.name" type="String" />
-			<parameter name="workorder.status" type="String" />		
+			<parameter name="workorder.status.status" type="String" />		
 			<expression name="workorder.assignedTo.phone">
 				<constant>${workorder.assignedTo.phone}</constant>
 			</expression>
@@ -725,8 +725,8 @@
 			<expression name="workorder.assignedBy.name">
 				<constant>${workorder.assignedBy.name}</constant>
 			</expression>
-			<expression name="workorder.status">
-				<constant>${workorder.status}</constant>
+			<expression name="workorder.status.status">
+				<constant>${workorder.status.status}</constant>
 			</expression>
 		</workflow>
 	</template>
@@ -742,7 +742,7 @@
 			<parameter name="workorder.id" type="Number" />
 			<parameter name="workorder.assignedBy.name" type="String" />			
 			<parameter name="workorder.assignedTo.id" type="Number" />
-			<parameter name="workorder.status" type="String" />		
+			<parameter name="workorder.status.status" type="String" />		
 			<expression name="workorder.subject">
 				<constant>${workorder.subject}</constant>
 			</expression>
@@ -761,8 +761,8 @@
 			<expression name="workorder.assignedBy.name">
 				<constant>${workorder.assignedBy.name}</constant>
 			</expression>
-			<expression name="workorder.status">
-				<constant>${workorder.status}</constant>
+			<expression name="workorder.status.status">
+				<constant>${workorder.status.status}</constant>
 			</expression>
 		</workflow>
 	</template>
@@ -1273,7 +1273,7 @@
 			<parameter name="workorder.description" type="String" />
 			<parameter name="workorder.url" type="String" />
 			<parameter name="workorder.assignedBy.name" type="String" />
-			<parameter name="workorder.status" type="String" />			
+			<parameter name="workorder.status.status" type="String" />			
 			<expression name="org.domain">
 				<constant>${org.domain}</constant>
 			</expression>
@@ -1292,8 +1292,8 @@
 			<expression name="workorder.assignedBy.name">
 				<constant>${workorder.assignedBy.name}</constant>
 			</expression>
-			<expression name="workorder.status">
-				<constant>${workorder.status}</constant>
+			<expression name="workorder.status.status">
+				<constant>${workorder.status.status}</constant>
 			</expression>
 		</workflow>
 	</template>
@@ -1304,7 +1304,7 @@
 			<parameter name="workorder.description" type="String" />
 			<parameter name="workorder.url" type="String" />
 			<parameter name="workorder.assignedBy.name" type="String" />
-			<parameter name="workorder.status" type="String" />		
+			<parameter name="workorder.status.status" type="String" />		
 			<expression name="workorder.requester.phone">
 				<constant>${workorder.requester.phone}</constant>
 			</expression>
@@ -1320,8 +1320,8 @@
 			<expression name="workorder.assignedBy.name">
 				<constant>${workorder.assignedBy.name}</constant>
 			</expression>
-			<expression name="workorder.status">
-				<constant>${workorder.status}</constant>
+			<expression name="workorder.status.status">
+				<constant>${workorder.status.status}</constant>
 			</expression>
 		</workflow>
 	</template>
@@ -1337,7 +1337,7 @@
 			<parameter name="workorder.id" type="Number" />
 			<parameter name="workorder.assignedBy.name" type="String" />			
 			<parameter name="workorder.requester.id" type="Number" />
-			<parameter name="workorder.status" type="String" />		
+			<parameter name="workorder.status.status" type="String" />		
 			<expression name="workorder.subject">
 				<constant>${workorder.subject}</constant>
 			</expression>
@@ -1356,8 +1356,8 @@
 			<expression name="workorder.assignedBy.name">
 				<constant>${workorder.assignedBy.name}</constant>
 			</expression>
-			<expression name="workorder.status">
-				<constant>${workorder.status}</constant>
+			<expression name="workorder.status.status">
+				<constant>${workorder.status.status}</constant>
 			</expression>
 		</workflow>
 	</template>

@@ -21,7 +21,7 @@ public class AddNewEventRuleCommand implements Command {
 			long orgId = AccountUtil.getCurrentOrg().getOrgId();
 			eventRule.setOrgId(orgId);
 			eventRule.setActive(true);
-			EventRulesAPI.updateChildIds(eventRule, null);
+			EventRulesAPI.updateChildIds(eventRule);
 			
 			Map<String, Object> prop = FieldUtil.getAsProperties(eventRule);
 			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()

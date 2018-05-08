@@ -120,27 +120,18 @@ public class EventRulesAPI {
 		return null;
 	}
 	
-	public static void updateChildIds (EventRuleContext rule, EventRuleContext oldRule) throws Exception {
+	public static void updateChildIds (EventRuleContext rule) throws Exception {
 		if (rule.getCriteria() != null) {
-			if(oldRule != null && oldRule.getCriteriaId() != -1) {
-				CriteriaAPI.deleteCriteria(oldRule.getCriteriaId());
-			}
 			long criteriaId = CriteriaAPI.addCriteria(rule.getCriteria(), AccountUtil.getCurrentOrg().getId());
 			rule.setCriteriaId(criteriaId);
 		}
 		
 		if (rule.getWorkflow() != null) {
-			if(oldRule != null && oldRule.getWorkflowId() != -1) {
-				WorkflowUtil.deleteWorkflow(oldRule.getWorkflowId());
-			}
 			long workflowId = WorkflowUtil.addWorkflow(rule.getWorkflow());
 			rule.setWorkflowId(workflowId);
 		}
 		
 		if (rule.getTransformJson() != null) {
-			if(oldRule != null && oldRule.getTransformTemplateId() != -1) {
-				TemplateAPI.deleteTemplate(oldRule.getTransformTemplateId());
-			}
 			JSONTemplate template = new JSONTemplate();
 			template.setName(rule.getName());
 			template.setContent(rule.getTransformJson().toJSONString());
@@ -198,6 +189,20 @@ public class EventRulesAPI {
 			return eventTransformMappings;
 		}
 		return null;
+	}
+	
+	public static void deleteChildIds(EventRuleContext oldRule, EventRuleContext newRule) throws Exception {
+		if((newRule == null || newRule.getCriteria() != null) && oldRule.getCriteriaId() != -1) {
+			CriteriaAPI.deleteCriteria(oldRule.getCriteriaId());
+		}
+		
+		if((newRule == null || newRule.getWorkflow() != null) && oldRule.getWorkflowId() != -1) {
+			WorkflowUtil.deleteWorkflow(oldRule.getWorkflowId());
+		}
+		
+		if((newRule == null || newRule.getTransformJson() != null) && oldRule.getTransformTemplateId() != -1) {
+			TemplateAPI.deleteTemplate(oldRule.getTransformTemplateId());
+		}
 	}
 	
 	public static final void updateEventRuleChildIds(EventRule eventRule, long orgId) throws Exception {

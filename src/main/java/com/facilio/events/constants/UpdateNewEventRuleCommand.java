@@ -18,17 +18,18 @@ public class UpdateNewEventRuleCommand implements Command {
 		EventRuleContext eventRule = (EventRuleContext) context.get(EventConstants.EventContextNames.EVENT_RULE);
 		if(eventRule != null && eventRule.getId() != -1) {
 			EventRuleContext oldRule = EventRulesAPI.getEventRule(eventRule.getId(), false);
-			EventRulesAPI.updateChildIds(eventRule, oldRule);
+			EventRulesAPI.updateChildIds(eventRule);
 			
-			FacilioModule module = EventConstants.EventModuleFactory.getEventRuleModule();
+			FacilioModule module = EventConstants.EventModuleFactory.getEventRulesModule();
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 															.table(module.getTableName())
-															.fields(EventConstants.EventFieldFactory.getEventRuleFields())
+															.fields(EventConstants.EventFieldFactory.getEventRulesFields())
 															.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 															.andCondition(CriteriaAPI.getIdCondition(eventRule.getId(), module))
 															;
 			
 			updateBuilder.update(FieldUtil.getAsProperties(eventRule));
+			EventRulesAPI.deleteChildIds(oldRule, eventRule);
 		}
 		return false;
 	}

@@ -416,6 +416,10 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 			return strVal;
 		}
 		
+		public static SourceType getType(int val) {
+			return typeMap.get(val);
+		}
+		
 		private static final Map<Integer, SourceType> typeMap = Collections.unmodifiableMap(initTypeMap());
 		private static Map<Integer, SourceType> initTypeMap() {
 			Map<Integer, SourceType> typeMap = new HashMap<>();

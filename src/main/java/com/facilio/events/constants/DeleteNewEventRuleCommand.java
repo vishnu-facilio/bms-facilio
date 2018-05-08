@@ -5,12 +5,10 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.util.EventRulesAPI;
 import com.facilio.sql.GenericDeleteRecordBuilder;
-import com.facilio.workflows.util.WorkflowUtil;
 
 public class DeleteNewEventRuleCommand implements Command {
 
@@ -30,23 +28,9 @@ public class DeleteNewEventRuleCommand implements Command {
 																.andCondition(CriteriaAPI.getIdCondition(id, module))
 																;
 				deleteBuilder.delete();
-				deleteChildIds(oldRule);
+				EventRulesAPI.deleteChildIds(oldRule, null);
 			}
 		}
 		return false;
-	}
-
-	private void deleteChildIds(EventRuleContext oldRule) throws Exception {
-		if(oldRule.getCriteriaId() != -1) {
-			CriteriaAPI.deleteCriteria(oldRule.getCriteriaId());
-		}
-		
-		if(oldRule.getWorkflowId() != -1) {
-			WorkflowUtil.deleteWorkflow(oldRule.getWorkflowId());
-		}
-		
-		if(oldRule.getTransformTemplateId() != -1) {
-			TemplateAPI.deleteTemplate(oldRule.getTransformTemplateId());
-		}
 	}
 }

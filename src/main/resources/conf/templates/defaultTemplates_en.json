@@ -199,12 +199,12 @@
 		"sender": "support@${org.domain}.facilio.com",
 		"subject": "Work order resolved",
 		"to": "${workorder.assignedBy.email:-}",
-		"message": "The workorder ${workorder.subject} has been resolved by Technician ${workorder.assignedTo.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status}\n\nPlease verify/close the workorder here - ${workorder.url}\n\nRegards,\nTeam Facilio."
+		"message": "The workorder ${workorder.subject} has been resolved by Technician ${workorder.assignedTo.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status.status}\n\nPlease verify/close the workorder here - ${workorder.url}\n\nRegards,\nTeam Facilio."
 	},
 	"25": {
 		"name": "TECH_SOLVE_WO_SMS",
 		"to": "${workorder.assignedBy.phone:-}",
-		"message": "The workorder ${workorder.subject} has been resolved by Technician ${workorder.assignedTo.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status}\n\nPlease verify/close the workorder here - ${workorder.url}\n\n - Team Facilio."
+		"message": "The workorder ${workorder.subject} has been resolved by Technician ${workorder.assignedTo.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status.status}\n\nPlease verify/close the workorder here - ${workorder.url}\n\n - Team Facilio."
 	},
 	"26": {
 		"name": "TECH_SOLVE_WO_WEB"
@@ -212,7 +212,7 @@
 	"27": {
 		"name": "TECH_SOLVE_WO_PUSH",
 		"notification": {
-		    "text": "The workorder ${workorder.subject} has been resolved by Technician ${workorder.assignedTo.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status}\n\nPlease verify/close the workorder here - ${workorder.url}\n\n - Team Facilio.",
+		    "text": "The workorder ${workorder.subject} has been resolved by Technician ${workorder.assignedTo.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status.status}\n\nPlease verify/close the workorder here - ${workorder.url}\n\n - Team Facilio.",
 			"click_action": "WORKORDER_SUMMARY",
 			"title": "Work order completed"
 		},
@@ -424,16 +424,16 @@
 		"id": "${workorder.assignedTo.id:-}"
 	},
 	"53": {
-		"name": "TASK_RESOLVED_EMAIL",
+		"name": "WO_RESOLVED_EMAIL",
 		"sender": "support@${org.domain}.facilio.com",
-		"subject": "Task closed",
+		"subject": "Workorder resolved",
 		"to": "${workorder.assignedTo.email:-}",
-		"message": "A Task has been resolved in your WorkOrder ${workorder.subject}.Please view the resolved task here - ${workorder.url}\n\nRegards\nTeam Facilio."
+		"message": "The following work order ${workorder.subject} has been resolved. Please view the resolved workorder here - ${workorder.url}\n\nRegards\nTeam Facilio."
 	},
 	"54": {
 		"name": "TASK_RESOLVED_SMS",
 		"to": "${workorder.assignedTo.phone:-}",
-		"message": "A Task has been resolved in your WorkOrder ${workorder.subject}.Please view the resolved task here - ${workorder.url}\n\n - Team Facilio."
+		"message": "The following work order ${workorder.subject} has been resolved. Please view the resolved workorder here - ${workorder.url}\n\n - Team Facilio."
 	},
 	"55": {
 		"name": "TASK_RESOLVED_WEB"
@@ -441,7 +441,7 @@
 	"56": {
 		"name": "TASK_RESOLVED_PUSH",
 		"notification": {
-		    "text": "A Task has been resolved in your WorkOrder ${workorder.subject}.Please view the resolved task here - ${workorder.url}\n\n - Team Facilio.",
+		    "text": "The following work order ${workorder.subject} has been resolved. Please view the resolved workorder here - ${workorder.url}\n\n - Team Facilio.",
 			"click_action": "WORKORDER_SUMMARY",
 			"title": "Task closed"
 		},
@@ -468,12 +468,12 @@
 		"sender": "support@${org.domain}.facilio.com",
 		"subject": "Work order closed",
 		"to": "${workorder.requester.email:-}",
-		"message": "The following work order ${workorder.subject} has been verified and closed by ${workorder.assignedBy.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status}\n\nPlease view the closed work order here - ${workorder.url}\n\nRegards,\nTeam Facilio."
+		"message": "The following work order ${workorder.subject} has been verified and closed by ${workorder.assignedBy.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status.status}\n\nPlease view the closed work order here - ${workorder.url}\n\nRegards,\nTeam Facilio."
 	},
 	"59": {
 		"name": "TECH_CLOSE_WOREQ_SMS",
 		"to": "${workorder.requester.phone:-}",
-		"message": "The following work order ${workorder.subject} has been verified and closed by ${workorder.assignedBy.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status}\n\nPlease view the closed work order here - ${workorder.url}\n\n - Team Facilio."
+		"message": "The following work order ${workorder.subject} has been verified and closed by ${workorder.assignedBy.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status.status}\n\nPlease view the closed work order here - ${workorder.url}\n\n - Team Facilio."
 	},
 	"60": {
 		"name": "TECH_CLOSE_WOREQ_WEB"
@@ -481,7 +481,7 @@
 	"61": {
 		"name": "TECH_CLOSE_WOREQ_PUSH",
 		"notification": {
-		    "text": "The following work order ${workorder.subject} has been verified and closed by ${workorder.assignedBy.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status}\n\nPlease view the closed work order here - ${workorder.url}\n\n - Team Facilio.",
+		    "text": "The following work order ${workorder.subject} has been verified and closed by ${workorder.assignedBy.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status.status}\n\nPlease view the closed work order here - ${workorder.url}\n\n - Team Facilio.",
 			"click_action": "WORKORDER_SUMMARY",
 			"title": "Work order closed"
 		},

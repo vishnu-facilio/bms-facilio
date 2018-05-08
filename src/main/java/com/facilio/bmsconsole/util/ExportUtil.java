@@ -14,11 +14,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
+import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -103,7 +107,8 @@ public class ExportUtil {
 			}
 			rowCount++;
 		}
-
+		autoSizeColumns(sheet);
+		
 		String fileName = facilioModule.getDisplayName() + ".xls";
 		FileOutputStream fileOut = new FileOutputStream(fileName);
 		workbook.write(fileOut);
@@ -178,6 +183,8 @@ public class ExportUtil {
 			
 			rowCount++;
 		}
+		
+		autoSizeColumns(sheet);
 	
 		String fileName = name + ".xls";
 		FileOutputStream fileOut = new FileOutputStream(fileName);
@@ -188,6 +195,25 @@ public class ExportUtil {
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
 		long fileId = fs.addFile(file.getPath(), file, "application/xls");
 		return fs.getPrivateUrl(fileId);
+	}
+	
+	private static void autoSizeColumns(HSSFSheet sheet) {
+		if (sheet.getPhysicalNumberOfRows() > 0) {
+			HSSFRow row = sheet.getRow(0);
+			Iterator<Cell> cellIterator = row.cellIterator();
+			while (cellIterator.hasNext()) {
+				Cell cell = cellIterator.next();
+				int columnIndex = cell.getColumnIndex();
+				sheet.autoSizeColumn(columnIndex);
+				int maxWidth = 10000;
+				if (sheet.getColumnWidth(columnIndex) > maxWidth) {
+					CellStyle style = cell.getCellStyle();
+					style.setWrapText(true); 
+					cell.setCellStyle(style);
+					sheet.setColumnWidth(columnIndex, maxWidth);
+				}
+			}
+		}
 	}
 	
 	public static String exportDataAsCSV(FacilioModule facilioModule, List<ViewField> fields, List<? extends ModuleBaseWithCustomFields> records) throws Exception
@@ -357,7 +383,10 @@ public class ExportUtil {
 		case DATE_TIME:{
 			return DateTimeUtil.getFormattedTime((long)value);
 		}
-		case BOOLEAN:case DECIMAL:case MISC:case NUMBER:case STRING:
+		case NUMBER: {
+			return getValueFromEnum(field, value);
+		}
+		case BOOLEAN:case DECIMAL:case MISC:case STRING:
 			break;
 		}
 		return null;
@@ -437,6 +466,16 @@ public class ExportUtil {
 		return value;
 	}
 	
+	private static String getValueFromEnum(FacilioField field, Object value) {
+		switch(field.getName()) {
+			case "alarmType": 
+				return AlarmType.getType((int)value).getStringVal();
+			case "sourceType":
+				return SourceType.getType((int)value).getStringVal();
+		}
+		return null;
+	}
+	
 	public static String exportModule(FileFormat fileFormat, String moduleName, String viewName) throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
@@ -456,7 +495,7 @@ public class ExportUtil {
 			Iterator<ViewField> it = viewFields.iterator();
 	        while (it.hasNext()) {
 	        	ViewField field = it.next();
-	            if (field.getName().equals("modifiedTime")) {
+	            if (field.getField().getName().equals("modifiedTime")) {
 	                it.remove();
 	            }
 	        }
