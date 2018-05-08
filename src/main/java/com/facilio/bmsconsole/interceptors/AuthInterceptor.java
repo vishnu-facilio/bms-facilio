@@ -41,7 +41,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 			Account currentAccount = null;
 			if (! AuthenticationUtil.checkIfSameUser(currentAccount, cognitoUser)) {
 				try {
-					currentAccount = LoginUtil.getAccount(cognitoUser, true);
+					currentAccount = LoginUtil.getAccount(cognitoUser, false);
 					//ActionContext.getContext().getSession().put("CURRENT_ACCOUNT", currentAccount);
 				} catch (Exception e){
 					logger.log(Level.SEVERE, "Invalid users", e);

@@ -167,6 +167,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		try {
 			
 			String sql = constructSelectStatement();
+			System.out.println("########### sql : "+ sql);
 			pstmt = conn.prepareStatement(sql);
 			
 			Object[] whereValues = where.getValues();

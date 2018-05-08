@@ -973,7 +973,7 @@ public class AccountConstants {
         portalInfoModule.setTableName("PortalInfo");
         return portalInfoModule;
     }
-
+	
 	public static List<FacilioField> getPortalUserFields() {
 		FacilioModule module = getPortalUserModule();
 		List<FacilioField> fields = new ArrayList<>();

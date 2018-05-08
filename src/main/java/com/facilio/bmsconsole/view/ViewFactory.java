@@ -315,7 +315,7 @@ public class ViewFactory {
 		return criteria;
 	}
 	
-	private static Criteria getOpenStatusCriteria() {
+	public static Criteria getOpenStatusCriteria() {
 		FacilioField statusTypeField = new FacilioField();
 		statusTypeField.setName("typeCode");
 		statusTypeField.setColumnName("STATUS_TYPE");
@@ -333,7 +333,7 @@ public class ViewFactory {
 		return criteria;
 	}
 	
-	private static Condition getOpenStatusCondition(FacilioModule module) {
+	public static Condition getOpenStatusCondition(FacilioModule module) {
 		LookupField statusField = new LookupField();
 		statusField.setName("status");
 		statusField.setColumnName("STATUS_ID");
@@ -616,7 +616,7 @@ public class ViewFactory {
 		return overdueView;
 	}
 	
-	private static FacilioView getAllOverdueWorkOrders() {
+	public static Criteria getAllOverdueWorkOrdersCriteria() {
 		FacilioField dueField = new FacilioField();
 		dueField.setName("dueDate");
 		dueField.setColumnName("DUE_DATE");
@@ -632,10 +632,15 @@ public class ViewFactory {
 		criteria.addAndCondition(overdue);
 		criteria.addAndCondition(getOpenStatusCondition(ModuleFactory.getWorkOrdersModule()));
 		
+		return criteria;
+	}
+	
+	private static FacilioView getAllOverdueWorkOrders(){
+	
 		FacilioView overdueView = new FacilioView();
 		overdueView.setName("overdue");
 		overdueView.setDisplayName("Overdue");
-		overdueView.setCriteria(criteria);
+		overdueView.setCriteria(getAllOverdueWorkOrdersCriteria());
 		return overdueView;
 	}
 	

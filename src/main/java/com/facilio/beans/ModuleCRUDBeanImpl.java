@@ -2,9 +2,11 @@ package com.facilio.beans;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
@@ -19,20 +21,26 @@ import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
+import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -244,6 +252,115 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 														;
 		
 		updateBuilder.update(FieldUtil.getAsProperties(updatePm));
+	}
+	
+	@Override
+	public WorkOrderContext CloseAllWorkOrder() throws Exception
+	{
+		List<WorkOrderContext> workOrders = new ArrayList<WorkOrderContext>();
+		List<TicketStatusContext> ticketStatus = new ArrayList<TicketStatusContext>();
+		List<TaskContext> tasks = new ArrayList<TaskContext>();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", AccountUtil.getCurrentOrg().getId());
+		FacilioModule module = modBean.getModule("workorder");
+		 
+		
+		SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
+				.table(module.getTableName())
+				.moduleName(FacilioConstants.ContextNames.WORK_ORDER)
+				.select(modBean.getAllFields(module.getName()))
+				.beanClass(WorkOrderContext.class)
+				.andCriteria(ViewFactory.getAllOverdueWorkOrdersCriteria());
+		
+		workOrders = builder.get();
+		
+		System.out.println("___________>>>>>>>>>>Number of workorders OverDue: "+workOrders.size());
+		
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(ModuleFactory.getTicketStatusIdField());
+		
+		SelectRecordsBuilder<TicketStatusContext> builder1 = new SelectRecordsBuilder<TicketStatusContext>()
+				.table("TicketStatus")
+				.moduleName(FacilioConstants.ContextNames.TICKET_STATUS)
+				.select(fields)
+				.beanClass(TicketStatusContext.class)
+				.andCustomWhere(ModuleFactory.getTicketStatusModule().getTableName()+".ORGID = ? AND STATUS = ?", AccountUtil.getCurrentOrg().getId(), "closed");
+		
+		ticketStatus = builder1.get();
+		
+		long tsid = ticketStatus.get(0).getId();
+		
+			
+			
+		System.out.println("@@@@@@@@@@@@@@@@@@@@@ Ticket Status Id"+ticketStatus.get(0).getId());
+		
+		for (WorkOrderContext workOrder : workOrders)
+		{
+			SelectRecordsBuilder<TaskContext> taskbuilder = new SelectRecordsBuilder<TaskContext>()
+				.table("Tasks")
+				.moduleName(FacilioConstants.ContextNames.TASK)
+				.beanClass(TaskContext.class)
+				.select(modBean.getAllFields(FacilioConstants.ContextNames.TASK))
+				.andCustomWhere("Tasks.PARENT_TICKET_ID = ?", workOrder.getId());
+		
+		
+		
+			tasks = taskbuilder.get();
+		
+			// System.out.println("===============LLLLLLLLL FL "+modBean.getAllFields(FacilioConstants.ContextNames.TICKET));
+			
+			
+			if (tasks != null)
+			{
+				StringJoiner taskids = new StringJoiner(",");
+				List<Long> taskIdList = new ArrayList<>();
+				System.out.println("@@@@@@@@@@@@@@@@@@@@@Number of Tasks in the Workorder: "+tasks.size()+ "for Workorder"+workOrder.getId());
+				String questMark = "";
+				int idx = 0;
+				for (TaskContext task : tasks) 
+				{
+					taskIdList.add(task.getId());
+					if (idx == 0) {
+						questMark += "?";
+					}
+					else {
+						questMark += ", ?";
+					}
+					idx ++;
+				}
+				System.out.println("===============LLLLLLLLLTask ID's"+taskIdList);
+				System.out.println("===============LLLLLLLLL"+questMark);
+				
+					UpdateRecordBuilder<TaskContext> updateTaskBuilder = new UpdateRecordBuilder<TaskContext>()
+					.moduleName(FacilioConstants.ContextNames.TASK)
+					.fields(modBean.getAllFields(FacilioConstants.ContextNames.TASK))
+					.andCustomWhere(" Tickets.ID in ( "+questMark+" )", taskIdList.toArray());
+					
+			
+					TaskContext ts = new TaskContext();
+					ts.setStatus(ticketStatus.get(0));
+			
+					updateTaskBuilder.update(ts);
+				
+		
+		}
+		System.out.println("===============LLLLLLLLL WO"+workOrder.getId());
+		
+		
+		
+			UpdateRecordBuilder<WorkOrderContext> updateWOBuilder = new UpdateRecordBuilder<WorkOrderContext>()
+				.moduleName(FacilioConstants.ContextNames.WORK_ORDER)
+				.fields(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER))
+				.andCustomWhere("Tickets.ID = ?", workOrder.getId());
+		
+			WorkOrderContext wo = new WorkOrderContext();
+			wo.setStatus(ticketStatus.get(0));
+		
+			updateWOBuilder.update(wo);
+		
+		}
+		
+		return null;
+		
 	}
 	
 	@Override

@@ -21,6 +21,11 @@ public class WorkOrderContext extends TicketContext {
 	public long getCreatedTime() {
 		return createdTime;
 	}
+	
+	public String toString(){
+		return this.getId()+"";
+		
+	}
 	@TypeConversion(converter = "java.lang.String", value = "java.lang.String")
 	public void setCreatedTime(String createdTime) {
 		if(createdTime != null && !createdTime.isEmpty()) {

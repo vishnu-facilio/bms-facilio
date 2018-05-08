@@ -1,7 +1,9 @@
 package com.facilio.bmsconsole.modules;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.facilio.constants.FacilioConstants;
@@ -362,6 +364,19 @@ public class ModuleFactory {
 		usersModule.setTableName("Users");
 		return usersModule;
 	}
+	
+	public static FacilioField getTicketStatusIdField() {
+		FacilioModule module = getTicketStatusModule();
+		FacilioField idField = new FacilioField();
+		idField.setName("id");
+		idField.setDataType(FieldType.NUMBER);
+		idField.setColumnName("ID");
+		idField.setModule(module);
+		
+		return idField;
+	}
+	
+	
 	
 	public static FacilioModule getTicketStatusModule() {
 		FacilioModule ticketStatusModule = new FacilioModule();

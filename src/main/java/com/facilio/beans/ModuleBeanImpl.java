@@ -51,6 +51,7 @@ public class ModuleBeanImpl implements ModuleBean {
 	@Override
 	public long getOrgId() {
 		return AccountUtil.getCurrentOrg().getOrgId();
+//		 return 75L;
 	}
 	
 	private FacilioModule getModuleFromRS(ResultSet rs) throws SQLException {
@@ -402,6 +403,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		}
 		
 		FacilioModule module = getMod(moduleName);
+		System.out.println(">>>>>><<<<<<<"+ module);
 		Map<Long, FacilioModule> moduleMap = splitModules(module);
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getSelectFieldFields())

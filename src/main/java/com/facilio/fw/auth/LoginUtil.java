@@ -57,9 +57,9 @@ public class LoginUtil {
 				createUser.setUserStatus(true);
 				createUser.setInvitedTime(System.currentTimeMillis());
 				
-				long ouid = AccountUtil.getUserBean().createUser(org.getOrgId(), createUser);
+				// long ouid = AccountUtil.getUserBean().createUser(org.getOrgId(), createUser);
 				
-				user = AccountUtil.getUserBean().getUser(ouid);
+				// user = AccountUtil.getUserBean().getUser(ouid);
 			}
 		} else {
 			org = AccountUtil.getOrgBean().getOrg(user.getOrgId());

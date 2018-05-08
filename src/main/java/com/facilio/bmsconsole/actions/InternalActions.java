@@ -27,11 +27,19 @@ public class InternalActions extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public static String CloseAllWorkOrder(long orgId) throws Exception {
+		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+	    bean.CloseAllWorkOrder();
+		return SUCCESS;
+	}
+	
 	public String updateAlarmResource() throws Exception {
 		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
 		rowsUpdated = bean.updateAlarmResource(resourceId, node);
 		return SUCCESS;
 	}
+	
+	
 	
 	public String deleteAlarm() throws Exception {
 		
@@ -45,6 +53,8 @@ public class InternalActions extends ActionSupport {
 		rowsUpdated = bean.updateAlarmFromJson(alarmInfo, id);
 		return SUCCESS;
 	}
+	
+	
 	
 	private List<Long> id;
 	public List<Long> getId() {

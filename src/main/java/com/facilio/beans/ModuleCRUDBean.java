@@ -18,6 +18,8 @@ public interface ModuleCRUDBean {
 	
 	public int deleteAlarm(List<Long> id) throws Exception;
 	
+	public WorkOrderContext CloseAllWorkOrder() throws Exception;
+	
 	public int updateAlarm(AlarmContext alarm, List<Long> ids) throws Exception;
 	
 	public int updateAlarmFromJson(JSONObject alarmInfo, List<Long> ids) throws Exception;
