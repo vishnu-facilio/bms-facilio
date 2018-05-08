@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.Timer;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -18,6 +19,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import com.facilio.transaction.TransactionMonitor;
 import org.flywaydb.core.Flyway;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -39,6 +41,8 @@ import com.facilio.transaction.FacilioConnectionPool;
 
 public class FacilioContextListener implements ServletContextListener {
 
+	private Timer timer = new Timer();
+
 	public void contextDestroyed(ServletContextEvent event) {
 		// TODO Auto-generated method stub
 //		System.out.println("Listener Destroyed");
@@ -59,6 +63,11 @@ public class FacilioContextListener implements ServletContextListener {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		if("true".equals(AwsUtil.getConfig("enable.transaction")) && false) {
+			timer.schedule(new TransactionMonitor(), 0L, 3000L);
+		}
+
+
 		// TODO Auto-generated method stub
 		initDBConnectionPool();
 		Operator test = Operator.OPERATOR_MAP.get(1);

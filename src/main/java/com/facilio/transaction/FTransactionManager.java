@@ -10,6 +10,7 @@ import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class FTransactionManager implements TransactionManager {
 	
@@ -24,12 +25,19 @@ public class FTransactionManager implements TransactionManager {
 
 	private static ThreadLocal<FacilioTransaction> currentTransaction = new ThreadLocal<FacilioTransaction>();
 
+	public static ConcurrentHashMap<FacilioTransaction, Long> getTransactionTimeoutMap() {
+		return TRANSACTION_TIMEOUT_MAP;
+	}
+
+	private static final ConcurrentHashMap<FacilioTransaction, Long> TRANSACTION_TIMEOUT_MAP = new ConcurrentHashMap<>();
+
 	@Override
 	public void begin() throws NotSupportedException, SystemException {
         FacilioTransaction currenttrans = currentTransaction.get();
 		if("true".equals(AwsUtil.getConfig("enable.transaction")) && currenttrans == null) {
 			currenttrans =  new FacilioTransaction();
 			currentTransaction.set(currenttrans);
+			TRANSACTION_TIMEOUT_MAP.put(currenttrans, System.currentTimeMillis());
 		}
 	}
 
@@ -41,6 +49,7 @@ public class FTransactionManager implements TransactionManager {
 		if(currenttrans != null) {
 			currenttrans.commit();
 			currentTransaction.remove();
+			TRANSACTION_TIMEOUT_MAP.remove(currenttrans);
 		}
 
 	}
@@ -67,6 +76,7 @@ public class FTransactionManager implements TransactionManager {
 		if(currenttrans != null) {
 			currenttrans.rollback();
 			currentTransaction.remove();
+			TRANSACTION_TIMEOUT_MAP.remove(currenttrans);
 		}
 	}
 
@@ -77,7 +87,10 @@ public class FTransactionManager implements TransactionManager {
 
 	@Override
 	public void setTransactionTimeout(int arg0) throws SystemException {
-		//currentTransaction.get().
+		FacilioTransaction currenttrans = currentTransaction.get();
+		if(currenttrans != null) {
+			currenttrans.setTransactionTimeout(arg0);
+		}
 	}
 
 	@Override

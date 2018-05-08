@@ -16,6 +16,7 @@ import javax.transaction.xa.XAResource;
 public class FacilioTransaction implements Transaction {
 
 	private int status=Status.STATUS_ACTIVE;
+	private long transactionTimeout = 60L;
 
 	private ArrayList<Connection> connections = new ArrayList<Connection>();
 	
@@ -117,4 +118,12 @@ public class FacilioTransaction implements Transaction {
 		this.status =Status.STATUS_MARKED_ROLLBACK;
 	}
 
+	public void setTransactionTimeout(long transactionTimeout){
+		this.transactionTimeout = transactionTimeout;
+	}
+
+
+	public long getTransactionTimeout(){
+		return transactionTimeout;
+	}
 }

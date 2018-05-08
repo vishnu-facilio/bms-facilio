@@ -19,7 +19,7 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "pre_production" ]; then
     sed -i'' "s%schedulerServer=.*%schedulerServer=true%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%enable.transaction=.*%enable.transaction=true%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%enable.kinesis=.*%enable.kinesis=true%g" $CONF_DIR/awsprops.properties
-    sed -i'' "s%s3.bucket.name=.*%s3.bucket.name=facilio-in-data%g" $CONF_DIR/awsprops.properties
+    sed -i'' "s%s3.bucket.name=.*%s3.bucket.name=facilio-stage-data%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%enableeventjob=.*%enableeventjob=false%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%servername=.*%servername=stage-330328973.us-west-2.elb.amazonaws.com%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%api.servername=.*%api.servername=api.facilio.in%g" $CONF_DIR/awsprops.properties
