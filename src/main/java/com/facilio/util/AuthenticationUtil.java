@@ -16,9 +16,20 @@ public class AuthenticationUtil {
         } else {
         	facilioToken = LoginUtil.getUserCookie(request, "fc.idToken.facilio");
         }
+        String headerToken = request.getHeader("Authorization");
 
-        if (facilioToken != null) {
-        	CognitoUtil.CognitoUser cognitoUser = CognitoUtil.verifiyFacilioToken(facilioToken, isPortaluser);
+        if (facilioToken != null || headerToken != null) {
+
+            if (headerToken != null) {
+                if (headerToken.startsWith("Bearer facilio ")) {
+                    facilioToken = headerToken.replace("Bearer facilio ", "");
+                } else {
+                    headerToken = request.getHeader("Authorization").replace("Bearer ", "");
+                }
+            }
+
+
+            CognitoUtil.CognitoUser cognitoUser =  CognitoUtil.verifiyFacilioToken(facilioToken, isPortaluser);
             return cognitoUser;
         }
         return  null;
