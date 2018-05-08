@@ -1163,6 +1163,12 @@ public class DashboardAction extends ActionSupport {
 					xAggregateOpperator = FormulaContext.DateAggregateOperator.MONTHANDYEAR;
 				}
 				report.setxAxisaggregateFunction(xAggregateOpperator.getValue());
+				
+				if (getIsHeatMap() || (reportContext.getChartType() != null && reportContext.getChartType().equals(ReportChartType.HEATMAP.getValue())) || !report.getIsHighResolutionReport()) {
+					
+					xAxisField = xAggregateOpperator.getSelectField(xAxisField);
+					
+				}
 			}
 		}
 
