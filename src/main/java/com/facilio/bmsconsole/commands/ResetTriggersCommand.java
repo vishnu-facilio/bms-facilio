@@ -39,7 +39,9 @@ public class ResetTriggersCommand implements Command {
 		List<PreventiveMaintenance> pms = (List<PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST);
 		if(pms == null) {
 			PreventiveMaintenance pm = (PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
-			pms = Collections.singletonList(pm);
+			if (pm != null) {
+				pms = Collections.singletonList(pm);
+			}
 		}
 		
 		if(pms != null && !pms.isEmpty()) {
