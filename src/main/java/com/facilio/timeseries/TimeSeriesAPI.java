@@ -9,6 +9,8 @@ import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
+import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
+import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -26,13 +28,22 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class TimeSeriesAPI {
 
-	
 	public static void processPayLoad(long ttime, JSONObject payLoad) throws Exception {
+		processPayLoad(ttime, payLoad, null, null);
+	}
+	
+	public static void processPayLoad(long ttime, JSONObject payLoad, Record record, IRecordProcessorCheckpointer checkpointer) throws Exception {
 		
 		long timeStamp = getTimeStamp(ttime, payLoad);
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TIMESTAMP , timeStamp);
 		context.put(FacilioConstants.ContextNames.PAY_LOAD , payLoad);
+		//Temp code. To be removed later *START*
+		if (record != null) {
+			context.put(FacilioConstants.ContextNames.KINESIS_RECORD, record);
+			context.put(FacilioConstants.ContextNames.KINESIS_CHECK_POINTER, checkpointer);
+		}
+		//Temp code. To be removed later *END*
 		Chain processDataChain = FacilioChainFactory.getProcessDataChain();
 		processDataChain.execute(context);
 	}

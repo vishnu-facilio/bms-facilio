@@ -55,8 +55,9 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 
 				if(dataType!=null && "timeseries".equals(dataType)) {
 					long timeStamp=	record.getApproximateArrivalTimestamp().getTime();
-					TimeSeriesAPI.processPayLoad(timeStamp, payLoad);
-					processRecordsInput.getCheckpointer().checkpoint(record);
+					TimeSeriesAPI.processPayLoad(timeStamp, payLoad, record, processRecordsInput.getCheckpointer());
+//					Temp fix
+//					processRecordsInput.getCheckpointer().checkpoint(record);
 				}
             }
             catch (Exception e) {
