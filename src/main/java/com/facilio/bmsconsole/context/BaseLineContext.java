@@ -112,7 +112,10 @@ public class BaseLineContext {
 	}
 	
 	private RangeType getDynamicPreviousType(ZonedDateTime dataStartZdt, ZonedDateTime dataEndZdt) {
-		if (DateTimeUtil.isSameDay(dataStartZdt, dataEndZdt)) {
+		if (DateTimeUtil.isSameHour(dataStartZdt, dataEndZdt)) {
+			return RangeType.PREVIOUS_HOUR;
+		}
+		else if (DateTimeUtil.isSameDay(dataStartZdt, dataEndZdt)) {
 			return RangeType.PREVIOUS_DAY;
 		}
 		else if (DateTimeUtil.isSameWeek(dataStartZdt, dataEndZdt)) {
@@ -134,6 +137,10 @@ public class BaseLineContext {
 		switch (type) {
 			case PREVIOUS:
 				throw new RuntimeException("Shouldn't be here!!");
+			case PREVIOUS_HOUR:
+				blStartZdt = dataStartZdt.minusHours(1).withMinute(0);
+				blEndZdt = dataStartZdt.withMinute(59);
+				break;
 			case PREVIOUS_DAY:
 				blStartZdt = dataStartZdt.minusDays(1);
 				blEndZdt = DateTimeUtil.getDayEndTimeOf(blStartZdt);
@@ -179,6 +186,16 @@ public class BaseLineContext {
 			if(adjust) {
 				WeekFields weekFields = DateTimeUtil.getWeekFields();
 				switch (type) {
+					case PREVIOUS_HOUR:
+					{
+						blStartZdt = adjustStartMinute(dataStartZdt, blStartZdt);
+						blEndZdt = blStartZdt.plus(dataDuration);
+					}break;
+					case ANY_HOUR:
+					{
+						blStartZdt = adjustStartMinute(dataStartZdt, blStartZdt);
+						blEndZdt = adjustEndMinute(dataEndZdt, blEndZdt);
+					}break;
 					case PREVIOUS_DAY:
 					{
 						blStartZdt = adjustStartTime(dataStartZdt, blStartZdt);
@@ -297,12 +314,27 @@ public class BaseLineContext {
 		return blEndZdt;
 	}
 	
+	private ZonedDateTime adjustStartMinute(ZonedDateTime dataStartZdt, ZonedDateTime blStartZdt) {
+		if(dataStartZdt.getMinute() > blStartZdt.getMinute()) {
+			return blStartZdt.withMinute(dataStartZdt.getMinute());
+		}
+		return blStartZdt; 
+	}
+	private ZonedDateTime adjustEndMinute(ZonedDateTime dataEndZdt, ZonedDateTime blEndZdt) {
+		if(dataEndZdt.toLocalTime().isBefore(blEndZdt.toLocalTime())) {
+			return blEndZdt.withMinute(dataEndZdt.getMinute());
+		} 
+		return blEndZdt;
+	}
+	
 	public static enum RangeType {
 		PREVIOUS,
+		PREVIOUS_HOUR,
 		PREVIOUS_DAY,
 		PREVIOUS_WEEK,
 		PREVIOUS_MONTH,
 		PREVIOUS_YEAR,
+		ANY_HOUR,
 		ANY_DAY,
 		ANY_WEEK,
 		ANY_MONTH,

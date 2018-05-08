@@ -2240,7 +2240,8 @@ INSERT INTO Permission (ROLE_ID, MODULE_NAME, PERMISSION) VALUES (@ADD_ROLE_ID, 
 INSERT INTO Permission (ROLE_ID, MODULE_NAME, PERMISSION) VALUES (@ADD_ROLE_ID, 'alarm', 512);
 
 INSERT INTO BaseLines (ORGID, NAME, RANGE_TYPE) VALUES (${orgId}, 'Previous Period', 1);
-INSERT INTO BaseLines (ORGID, NAME, RANGE_TYPE) VALUES (${orgId}, 'Previous Day', 2);
-INSERT INTO BaseLines (ORGID, NAME, RANGE_TYPE) VALUES (${orgId}, 'Previous Week', 3);
-INSERT INTO BaseLines (ORGID, NAME, RANGE_TYPE) VALUES (${orgId}, 'Previous Month', 4);
-INSERT INTO BaseLines (ORGID, NAME, RANGE_TYPE) VALUES (${orgId}, 'Previous Year', 5);
+INSERT INTO BaseLines (ORGID, NAME, RANGE_TYPE) VALUES (${orgId}, 'Previous Hour', 2);
+INSERT INTO BaseLines (ORGID, NAME, RANGE_TYPE) VALUES (${orgId}, 'Previous Day', 3);
+INSERT INTO BaseLines (ORGID, NAME, RANGE_TYPE) VALUES (${orgId}, 'Previous Week', 4);
+INSERT INTO BaseLines (ORGID, NAME, RANGE_TYPE) VALUES (${orgId}, 'Previous Month', 5);
+INSERT INTO BaseLines (ORGID, NAME, RANGE_TYPE) VALUES (${orgId}, 'Previous Year', 6);

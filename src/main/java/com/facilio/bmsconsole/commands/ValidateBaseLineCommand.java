@@ -19,6 +19,12 @@ public class ValidateBaseLineCommand implements Command {
 			}
 			
 			switch (baseLine.getRangeTypeEnum()) {
+				case ANY_HOUR:
+					checkForNull(baseLine);
+					if (!DateTimeUtil.isSameHour(baseLine.getStartTime(), baseLine.getEndTime())) {
+						throw new IllegalArgumentException("Start and End time should be in same hour for range type "+baseLine.getRangeTypeEnum().toString());
+					}
+					break;
 				case ANY_DAY:
 					checkForNull(baseLine);
 					if (!DateTimeUtil.isSameDay(baseLine.getStartTime(), baseLine.getEndTime())) {
