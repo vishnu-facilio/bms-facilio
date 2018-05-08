@@ -12,7 +12,11 @@ public class ColumnFactory {
 	
 	private static Map<String, List<ViewField>> columns = Collections.unmodifiableMap(initColumns());
 	public static List<ViewField> getColumns (String moduleName, String viewName) {
-		return new ArrayList(columns.get(moduleName + "-" +viewName));
+		String name = moduleName + "-" +viewName;
+		if (columns.containsKey(name)) {
+			return new ArrayList(columns.get(name));
+		}
+		return null;
 	}
 	
 	private static Map<String, List<ViewField>> initColumns() {
