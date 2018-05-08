@@ -2275,8 +2275,11 @@ public class DashboardAction extends ActionSupport {
 		}
 		
 		if (report.getCriteria() != null) {
-			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), report.getCriteria().getCriteriaId());
-			if(criteria != null) {
+			criteria = report.getCriteria();
+			if(report.getCriteria().getCriteriaId() != -1) {
+				criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), report.getCriteria().getCriteriaId());
+			}
+			if(criteria != null && criteria.getConditions() != null) {
 				Map<Integer, Condition> conditions = criteria.getConditions();
 				for(Condition condition:conditions.values()) {
 					if(condition.getFieldName().equals("parentId")) {
