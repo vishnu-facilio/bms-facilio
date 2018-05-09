@@ -16,6 +16,7 @@ import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardSharingContext;
 import com.facilio.bmsconsole.context.DashboardSharingContext.SharingType;
@@ -36,6 +37,7 @@ import com.facilio.bmsconsole.context.ReportFormulaFieldContext;
 import com.facilio.bmsconsole.context.ReportSpaceFilterContext;
 import com.facilio.bmsconsole.context.ReportThreshold;
 import com.facilio.bmsconsole.context.ReportUserFilterContext;
+import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetVsWorkflowContext;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -1078,6 +1080,7 @@ public class DashboardUtil {
 			List<Map<String, Object>> spaceFilterProps = selectBuilder.get();
 			if (spaceFilterProps != null && !spaceFilterProps.isEmpty()) {
 				ReportSpaceFilterContext spaceFilterContext = FieldUtil.getAsBeanFromMap(spaceFilterProps.get(0), ReportSpaceFilterContext.class);
+				fillFirstSpaceForEmptySpace(spaceFilterContext);
 				reportContext.setReportSpaceFilterContext(spaceFilterContext);
 			}
 			
@@ -1086,6 +1089,28 @@ public class DashboardUtil {
 		}
 		return null;
 	}
+	private static void fillFirstSpaceForEmptySpace(ReportSpaceFilterContext spaceFilterContext) throws Exception {
+		
+		boolean isSiteFilter =  spaceFilterContext.getSiteId() != null ? true : false; 
+		boolean isBuildingFilter =  spaceFilterContext.getBuildingId() != null ? true : false; 
+		
+		if(isSiteFilter && spaceFilterContext.getSiteId().equals(-1l)) {
+			
+			List<SiteContext> sites = SpaceAPI.getAllSites();
+			if(sites != null && !sites.isEmpty()) {
+				spaceFilterContext.setSiteId(sites.get(0).getId());
+			}
+		}
+		else if (isBuildingFilter  && spaceFilterContext.getBuildingId().equals(-1l)) {
+			
+			List<BuildingContext> buildings = SpaceAPI.getAllBuildings();
+			if(buildings != null && !buildings.isEmpty()) {
+				spaceFilterContext.setBuildingId(buildings.get(0).getId());
+			}
+		}
+		
+	}
+
 	public static ReportFieldContext getReportField(ReportFieldContext reportField) throws Exception {
 		
 		if (reportField.getId() == null) {
@@ -1398,7 +1423,20 @@ public class DashboardUtil {
 				insertBuilder.addRecord(prop).save();
 			}
 			if(reportContext.getReportSpaceFilterContext() != null) {
-				Map<String, Object> prop = FieldUtil.getAsProperties(reportContext.getReportSpaceFilterContext());
+				
+				Map<String, Object> prop = FieldUtil.getAsProperties(reportContext.getEnergyMeter());
+				if(prop == null) {
+					prop = new HashMap<>();
+				}
+				prop.put("reportId", reportContext.getId());
+
+				insertBuilder = new GenericInsertRecordBuilder()
+						.table(ModuleFactory.getReportEnergyMeter().getTableName())
+						.fields(FieldFactory.getReportEnergyMeterFields());
+				
+				insertBuilder.addRecord(prop).save();
+				
+				prop = FieldUtil.getAsProperties(reportContext.getReportSpaceFilterContext());
 				prop.put("reportId", reportContext.getId());
 				
 				insertBuilder = new GenericInsertRecordBuilder()
