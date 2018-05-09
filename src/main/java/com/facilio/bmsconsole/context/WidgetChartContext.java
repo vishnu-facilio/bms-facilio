@@ -56,11 +56,13 @@ public class WidgetChartContext extends DashboardWidgetContext {
 		resultJson.put("header", headerJson);
 		
 		JSONObject dataOptionsJson = new JSONObject();
-//		dataOptionsJson.put("type", getWidgetChartType().getName());
+		if(chartType != null && chartType > 0) {
+			dataOptionsJson.put("chartType", ReportContext.ReportChartType.getWidgetChartType(chartType).getName());
+		}
 		dataOptionsJson.put("dataurl", "/dashboard/getData?reportId="+getReportId());
 		dataOptionsJson.put("name", "dummy");
 		dataOptionsJson.put("reportId", getReportId());
-		dataOptionsJson.put("chartType", chartType);
+		dataOptionsJson.put("chartTypeInt", chartType);
 		dataOptionsJson.put("dateFilter", dateFilterId);
 		dataOptionsJson.put("refresh_interval", getDataRefreshIntervel());
 		
