@@ -11,6 +11,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.bmsconsole.templates.SMSTemplate;
@@ -23,6 +24,7 @@ import com.facilio.bmsconsole.workflow.ActionContext;
 import com.facilio.bmsconsole.workflow.ActionType;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.workflows.context.WorkflowContext;
 
 public class AddActionsForWorkflowRule implements Command {
 
@@ -69,7 +71,7 @@ public class AddActionsForWorkflowRule implements Command {
 		EMailTemplate emailTemplate = new EMailTemplate();
 		emailTemplate.setFrom("support@${org.orgDomain}.facilio.com");
 		String toAdresses = action.getTemplateJson().get("to").toString();
-		toAdresses = toAdresses.substring(1, toAdresses.length()-1);
+//		toAdresses = toAdresses.substring(1, toAdresses.length()-1);
 		
 		if(toAdresses.contains(",")) {
 			action.setActionType(ActionType.BULK_EMAIL_NOTIFICATION);
@@ -77,15 +79,21 @@ public class AddActionsForWorkflowRule implements Command {
 		
 		emailTemplate.setTo(toAdresses);
 		emailTemplate.setSubject((String) action.getTemplateJson().get("subject"));
-		emailTemplate.setMessage((String) action.getTemplateJson().get("body"));
+		emailTemplate.setMessage((String) action.getTemplateJson().get("message"));
 		emailTemplate.setType(Type.EMAIL);
 		action.setTemplate(emailTemplate);
+		
+		if (action.getTemplateJson().containsKey("workflow")) {
+			Map<String, Object> workflow = (Map<String, Object>) action.getTemplateJson().get("workflow");
+			WorkflowContext workflowContext = FieldUtil.getAsBeanFromMap(workflow, WorkflowContext.class);
+			emailTemplate.setWorkflow(workflowContext);
+		}
 	}
 	
 	private void setSMSTemplate(ActionContext action) {
 		SMSTemplate smsTemplate = new SMSTemplate();
 		String toPhones = action.getTemplateJson().get("to").toString();
-		toPhones = toPhones.substring(1, toPhones.length()-1);
+//		toPhones = toPhones.substring(1, toPhones.length()-1);
 		
 		if(toPhones.contains(",")) {
 			action.setActionType(ActionType.BULK_SMS_NOTIFICATION);
@@ -95,6 +103,12 @@ public class AddActionsForWorkflowRule implements Command {
 		smsTemplate.setMessage((String) action.getTemplateJson().get("body"));
 		smsTemplate.setType(Type.SMS);
 		action.setTemplate(smsTemplate);
+		
+		if (action.getTemplateJson().containsKey("workflow")) {
+			Map<String, Object> workflow = (Map<String, Object>) action.getTemplateJson().get("workflow");
+			WorkflowContext workflowContext = FieldUtil.getAsBeanFromMap(workflow, WorkflowContext.class);
+			smsTemplate.setWorkflow(workflowContext);
+		}
 	}
 	
 	private void setAlarmTempalte(ActionContext action, WorkflowRuleContext rule) throws Exception {

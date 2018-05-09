@@ -51,6 +51,13 @@
 				<param name="root">readingRules</param>
 			</result>
 		</action>
+		<action name="addWorkflowRule" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="addWorkflowRule">
+			<!-- <param name="moduleName">setup</param>
+			<param name="permission">ORG_ACCESS_ADMINISTER</param> -->
+			<result name="success" type="json">
+				<param name="root">rule</param>
+			</result>
+		</action>
 		<action name="deleteRule" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="deleteWorkflowRule">
 			<!-- <param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param> -->

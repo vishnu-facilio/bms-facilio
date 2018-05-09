@@ -240,6 +240,13 @@ public class WorkflowRuleContext {
 				// TODO Auto-generated method stub
 				return false;
 			}
+		},
+		CUSTOM_ALARM_NOTIFICATION_RULE {
+			@Override
+			public boolean stopFurtherRuleExecution() {
+				// TODO Auto-generated method stub
+				return false;
+			}
 		}
 		;
 		
