@@ -4,12 +4,14 @@ import java.io.File;
 import java.io.InputStream;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
@@ -28,6 +30,8 @@ import com.facilio.bmsconsole.actions.ImportFloorAction;
 import com.facilio.bmsconsole.actions.ImportMetaInfo;
 import com.facilio.bmsconsole.actions.ImportSiteAction;
 import com.facilio.bmsconsole.actions.ImportSpaceAction;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.FloorContext;
@@ -37,6 +41,7 @@ import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -210,7 +215,7 @@ public class ProcessXLS implements Command {
 			}
 		}
 		
-		ProcessXLS.populateDatas(metainfo, readingsList);
+		ProcessXLS.populateData(metainfo, readingsList);
 		
 		workbook.close();
 		
@@ -343,16 +348,27 @@ public class ProcessXLS implements Command {
 	}
 	
 	
-	public static void populateDatas(ImportMetaInfo metainfo,List<ReadingContext> readingsList) throws Exception {
+	public static void populateData(ImportMetaInfo metainfo,List<ReadingContext> readingsList) throws Exception {
 		
-		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
-		InsertRecordBuilder<ReadingContext> readingBuilder = new InsertRecordBuilder<ReadingContext>()
-				.moduleName(metainfo.getModule().getName())
-				.fields(bean.getAllFields(metainfo.getModule().getName()))
-				.addRecords(readingsList);
-		
-		readingBuilder.save();
+		String moduleName=metainfo.getModule().getName();
+		if(metainfo.getModule().getTypeEnum() == ModuleType.READING) {
+			
+			Map<String, List<ReadingContext>> readingMap= Collections.singletonMap(moduleName, readingsList);
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.HISTORY_READINGS,true);
+			context.put(FacilioConstants.ContextNames.READINGS_MAP , readingMap);
+			Chain importDataChain = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
+			importDataChain.execute(context);	
+		}
+		else {
+			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			
+			InsertRecordBuilder<ReadingContext> readingBuilder = new InsertRecordBuilder<ReadingContext>()
+					.moduleName(moduleName)
+					.fields(bean.getAllFields(moduleName))
+					.addRecords(readingsList);
+			readingBuilder.save();
+		}
 	}
 
 	public static List<Map<String, Object>> getLookupProps(LookupField lookupField,Object value) {
