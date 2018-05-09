@@ -16,6 +16,8 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.fs.FileStore;
+import com.facilio.fs.FileStoreFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
@@ -98,7 +100,7 @@ public class OrgBeanImpl implements OrgBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			return FieldUtil.getAsBeanFromMap(props.get(0), Organization.class);
+			return createOrgFromProps(props.get(0));
 		}
 		return null;
 	}
@@ -113,7 +115,7 @@ public class OrgBeanImpl implements OrgBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			return FieldUtil.getAsBeanFromMap(props.get(0), Organization.class);
+			return createOrgFromProps(props.get(0));
 		}
 		return null;
 	}
@@ -140,7 +142,16 @@ public class OrgBeanImpl implements OrgBean {
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			org = FieldUtil.getAsBeanFromMap(props.get(0), Organization.class);
+			org = createOrgFromProps(props.get(0));
+		}
+		return org;
+	}
+	
+	private Organization createOrgFromProps(Map<String, Object> prop) throws Exception {
+		Organization org = FieldUtil.getAsBeanFromMap(prop, Organization.class);
+		if (org.getLogoId() > 0) {
+			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			org.setLogoUrl(fs.getPrivateUrl(org.getLogoId()));
 		}
 		return org;
 	}
