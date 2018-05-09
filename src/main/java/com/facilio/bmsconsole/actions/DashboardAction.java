@@ -912,7 +912,8 @@ public class DashboardAction extends ActionSupport {
 		
 		// chart setting overide for widget starts
 		if(chartType != null) {
-			reportContext.setChartType(Integer.parseInt(chartType));
+			int reportType = ReportContext.ReportChartType.getWidgetChartType(chartType).getValue();
+			reportContext.setChartType(reportType);
 		}
 		
 		if(dateFilterId != null) {
@@ -1542,7 +1543,8 @@ public class DashboardAction extends ActionSupport {
 			else if ((dateFilter != null || report.getDateFilter() != null) && xAxisField.getDataTypeEnum().equals(FieldType.DATE_TIME)) {
 				
 				int oprId =  dateFilter != null ? DashboardUtil.predictDateOpperator(dateFilter) : report.getDateFilter().getOperatorId();
-				if(getIsHeatMap() || (reportContext.getChartType() != null && reportContext.getChartType().equals(ReportChartType.HEATMAP.getValue())) ) {
+				
+				if(getIsHeatMap() || (reportContext.getChartType() != null && reportContext.getChartType().equals(ReportChartType.HEATMAP.getValue()))) {
 					xAggregateOpperator = FormulaContext.DateAggregateOperator.HOURSOFDAYONLY;
 					report.setChartType(ReportChartType.HEATMAP.getValue());
 				}
