@@ -3184,7 +3184,7 @@ public class FieldFactory {
 		
 		fields.add(getField("id", "BASE_LINE_ID", module, FieldType.NUMBER));
 		fields.add(getField("reportId", "REPORT_ID", module, FieldType.NUMBER));
-		fields.add(getField("isAdjust", "IS_ADJUST", module, FieldType.BOOLEAN));
+		fields.add(getField("adjustType", "ADJUST_TYPE", module, FieldType.NUMBER));
 		
 		return fields;
 	}

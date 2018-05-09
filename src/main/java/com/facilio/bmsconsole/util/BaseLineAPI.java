@@ -54,7 +54,7 @@ public class BaseLineAPI {
 			Map<String, Object> prop = new HashMap<>();
 			prop.put("id", baseLine.getId());
 			prop.put("reportId", reportId);
-			prop.put("isAdjust", baseLine.isAdjust());
+			prop.put("adjustType", baseLine.getAdjustType());
 			
 			relBuilder.addRecord(prop);
 		}

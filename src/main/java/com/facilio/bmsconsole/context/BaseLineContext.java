@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.context;
 
 import java.time.Duration;
 import java.time.ZonedDateTime;
+import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -89,22 +90,25 @@ public class BaseLineContext {
 		this.reportId = reportId;
 	}
 	
-	private Boolean isAdjust;
-	public Boolean getIsAdjust() {
-		return isAdjust;
+	private AdjustType adjustType;
+	public AdjustType getAdjustTypeEnum() {
+		return adjustType;
 	}
-	public void setIsAdjust(boolean isAdjust) {
-		this.isAdjust = isAdjust;
+	public void setAdjustType(AdjustType adjustType) {
+		this.adjustType = adjustType;
 	}
-	public boolean isAdjust() {
-		if (isAdjust != null) {
-			return isAdjust.booleanValue();
+	public int getAdjustType() {
+		if (adjustType != null) {
+			return adjustType.getValue();
 		}
-		return true;
+		return -1;
+	}
+	public void setAdjustType(int adjustType) {
+		this.adjustType = AdjustType.valueOf(adjustType);
 	}
 	
 	public Condition getBaseLineCondition(FacilioField field, DateRange range) {
-		String blRange = calculateRange(range.getStartTime(), range.getEndTime(), isAdjust());
+		String blRange = calculateRange(range.getStartTime(), range.getEndTime(), adjustType);
 		if (blRange != null && !blRange.isEmpty()) {
 			return CriteriaAPI.getCondition(field, blRange, DateOperators.BETWEEN);
 		}
@@ -164,7 +168,7 @@ public class BaseLineContext {
 		return new ImmutablePair<ZonedDateTime, ZonedDateTime>(blStartZdt, blEndZdt);
 	}
 	
-	private String calculateRange(long dataStartTime, long dataEndTime, boolean adjust) {
+	private String calculateRange(long dataStartTime, long dataEndTime, AdjustType adjustType) {
 		ZonedDateTime dataStartZdt = DateTimeUtil.getDateTime(dataStartTime);
 		ZonedDateTime dataEndZdt = DateTimeUtil.getDateTime(dataEndTime);
 		
@@ -183,80 +187,30 @@ public class BaseLineContext {
 			Pair<ZonedDateTime, ZonedDateTime> zdtPair = populateStartAndEndTimes(type, dataStartZdt, dataEndZdt);
 			ZonedDateTime blStartZdt = zdtPair.getLeft(), blEndZdt = zdtPair.getRight();
 			
-			if(adjust) {
-				WeekFields weekFields = DateTimeUtil.getWeekFields();
-				switch (type) {
-					case PREVIOUS_HOUR:
-					{
-						blStartZdt = adjustStartMinute(dataStartZdt, blStartZdt);
-						blEndZdt = blStartZdt.plus(dataDuration);
-					}break;
-					case ANY_HOUR:
-					{
-						blStartZdt = adjustStartMinute(dataStartZdt, blStartZdt);
-						blEndZdt = adjustEndMinute(dataEndZdt, blEndZdt);
-					}break;
-					case PREVIOUS_DAY:
-					{
-						blStartZdt = adjustStartTime(dataStartZdt, blStartZdt);
-						blEndZdt = blStartZdt.plus(dataDuration);
-					}break;
-					case ANY_DAY:
-					{
-						blStartZdt = adjustStartTime(dataStartZdt, blStartZdt);
-						blEndZdt = adjustEndTime(dataEndZdt, blEndZdt);
-					}break;
-					case PREVIOUS_WEEK:
-					{
-						blStartZdt = adjustStartOfWeek(weekFields, dataStartZdt, blStartZdt);
-						blEndZdt = blStartZdt.plus(dataDuration);
-					}break;
-					case ANY_WEEK:
-					{
-						blStartZdt = adjustStartOfWeek(weekFields, dataStartZdt, blStartZdt);
-						if (DateTimeUtil.isSameWeek(dataStartZdt, dataEndZdt)) {
-							blEndZdt = adjustEndOfWeek(weekFields, dataEndZdt, blEndZdt);
-						}
-					}break;
-					case PREVIOUS_MONTH:
-					{
-						blStartZdt = adjustStartOfMonth(weekFields, dataStartZdt, blStartZdt);
-						blEndZdt = blStartZdt.plus(dataDuration);
-					}break;
-					case ANY_MONTH:
-					{
-						blStartZdt = adjustStartOfMonth(weekFields, dataStartZdt, blStartZdt);
-						if(DateTimeUtil.isSameMonth(dataStartZdt, dataEndZdt)) {
-							blEndZdt = adjustEndOfMonth(weekFields, dataEndZdt, blEndZdt);
-						}
-					}break;
-					case PREVIOUS_YEAR:
-					{
-						blStartZdt = adjustStartOfYear(weekFields, dataStartZdt, blStartZdt);
-						blEndZdt = blStartZdt.plus(dataDuration);
-					}break;
-					case ANY_YEAR:
-					{
-						blStartZdt = adjustStartOfYear(weekFields, dataStartZdt, blStartZdt);
-						if (DateTimeUtil.isSameYear(dataStartZdt, dataEndZdt)) {
-							blEndZdt = adjustEndOfYear(weekFields, dataEndZdt, blEndZdt);
-						}
-					}break;
-					case CUSTOM:
-					{
-						Duration blDuration = Duration.between(blStartZdt, blEndZdt);
-						blStartZdt = adjustStartOfWeek(weekFields, dataStartZdt, blStartZdt);
-						if (dataDuration.compareTo(blDuration) < 0) {
-							blEndZdt = blStartZdt.plus(dataDuration);
-						}
-					}break;
-					case PREVIOUS:
-						throw new RuntimeException("Cannot be here!!");
+			if(adjustType != null && adjustType != AdjustType.NONE) {
+				Pair<ZonedDateTime, ZonedDateTime> baseLineRange = null;
+				switch (adjustType) {
+					case WEEK:
+						baseLineRange = weeklyAdjustment(type, blStartZdt, blEndZdt, dataStartZdt, dataEndZdt, dataDuration);
+						break;
+					case DATE:
+						baseLineRange = dateAdjustment(type, blStartZdt, blEndZdt, dataStartZdt, dataEndZdt, dataDuration);
+						break;
+					case MONTH_AND_DATE:
+						baseLineRange = monthAndDateAdjustment(type, blStartZdt, blEndZdt, dataStartZdt, dataEndZdt, dataDuration);
+						break;
+					default:
+						break;
 				}
+				blStartZdt = baseLineRange.getLeft();
+				blEndZdt = baseLineRange.getRight();
 			}
 			else {
 				Duration blDuration = Duration.between(blStartZdt, blEndZdt);
-				blStartZdt = adjustStartTime(dataStartZdt, blStartZdt);
+				
+				if (type != RangeType.PREVIOUS_HOUR && type != RangeType.ANY_HOUR) {
+					blStartZdt = adjustStartTime(dataStartZdt, blStartZdt);
+				}
 				if (dataDuration.compareTo(blDuration) < 0) {
 					blEndZdt = blStartZdt.plus(dataDuration);
 				}
@@ -266,6 +220,132 @@ public class BaseLineContext {
 			return blStartZdt.toInstant().toEpochMilli()+", "+blEndZdt.toInstant().toEpochMilli();
 		}
 		return null;
+	}
+	
+	private Pair<ZonedDateTime, ZonedDateTime> monthAndDateAdjustment(RangeType type, ZonedDateTime blStartZdt, ZonedDateTime blEndZdt, ZonedDateTime dataStartZdt, ZonedDateTime dataEndZdt, Duration dataDuration) {
+		switch (type) {
+			case PREVIOUS:
+				throw new RuntimeException("Cannot be here!!");
+			case PREVIOUS_YEAR:
+				blStartZdt = blStartZdt.withMonth(dataStartZdt.getMonthValue());
+				blStartZdt = withDate(blStartZdt, dataStartZdt.getDayOfMonth());
+				blStartZdt = adjustStartTime(dataStartZdt, blStartZdt);
+				blEndZdt = blStartZdt.plusYears(dataEndZdt.getYear() - dataStartZdt.getYear());
+				blEndZdt = blEndZdt.withMonth(dataEndZdt.getMonthValue());
+				blEndZdt = withDate(blEndZdt, dataEndZdt.getDayOfMonth());
+				blEndZdt = adjustEndTime(dataEndZdt, blEndZdt);
+			case ANY_YEAR:
+				blStartZdt = blStartZdt.withMonth(dataStartZdt.getMonthValue());
+				blStartZdt = withDate(blStartZdt, dataStartZdt.getDayOfMonth());
+				blStartZdt = adjustStartTime(dataStartZdt, blStartZdt);
+				if (DateTimeUtil.isSameYear(dataStartZdt, dataEndZdt)) {
+					blEndZdt = blEndZdt.withMonth(dataEndZdt.getMonthValue());
+					blEndZdt = withDate(blEndZdt, dataEndZdt.getDayOfMonth());
+				}
+				blEndZdt = adjustEndTime(dataEndZdt, blEndZdt);
+				break;
+			default:
+				throw new IllegalArgumentException("Unsupported adjust type for base line : "+id);
+		}
+		return Pair.of(blStartZdt, blEndZdt);
+	}
+	
+	private Pair<ZonedDateTime, ZonedDateTime> dateAdjustment(RangeType type, ZonedDateTime blStartZdt, ZonedDateTime blEndZdt, ZonedDateTime dataStartZdt, ZonedDateTime dataEndZdt, Duration dataDuration) {
+		switch (type) {
+			case PREVIOUS:
+				throw new RuntimeException("Cannot be here!!");
+			case PREVIOUS_MONTH:
+				blStartZdt = withDate(blStartZdt, dataStartZdt.getDayOfMonth());
+				blStartZdt = adjustStartTime(dataStartZdt, blStartZdt);
+				blEndZdt = blStartZdt.plusMonths(dataEndZdt.getMonthValue() - dataStartZdt.getMonthValue());
+				blEndZdt = withDate(blEndZdt, dataEndZdt.getDayOfMonth());
+				blEndZdt = adjustEndTime(dataEndZdt, blEndZdt);
+				break;
+			case ANY_MONTH:
+				blStartZdt = withDate(blStartZdt, dataStartZdt.getDayOfMonth());
+				blStartZdt = adjustStartTime(dataStartZdt, blStartZdt);
+				if (DateTimeUtil.isSameMonth(dataStartZdt, dataEndZdt)) {
+					blEndZdt = withDate(blEndZdt, dataEndZdt.getDayOfMonth());
+				}
+				blEndZdt = adjustEndTime(dataEndZdt, blEndZdt);
+				break;
+			default:
+				throw new IllegalArgumentException("Unsupported adjust type for base line : "+id);
+		}
+		return Pair.of(blStartZdt, blEndZdt);
+	}
+	
+	private Pair<ZonedDateTime, ZonedDateTime> weeklyAdjustment(RangeType type, ZonedDateTime blStartZdt, ZonedDateTime blEndZdt, ZonedDateTime dataStartZdt, ZonedDateTime dataEndZdt, Duration dataDuration) {
+		WeekFields weekFields = DateTimeUtil.getWeekFields();
+		switch (type) {
+			case PREVIOUS_HOUR:
+			{
+				blStartZdt = adjustStartMinute(dataStartZdt, blStartZdt);
+				blEndZdt = blStartZdt.plus(dataDuration);
+			}break;
+			case ANY_HOUR:
+			{
+				blStartZdt = adjustStartMinute(dataStartZdt, blStartZdt);
+				blEndZdt = adjustEndMinute(dataEndZdt, blStartZdt, blEndZdt, dataDuration);
+			}break;
+			case PREVIOUS_DAY:
+			{
+				blStartZdt = adjustStartTime(dataStartZdt, blStartZdt);
+				blEndZdt = blStartZdt.plus(dataDuration);
+			}break;
+			case ANY_DAY:
+			{
+				blStartZdt = adjustStartTime(dataStartZdt, blStartZdt);
+				blEndZdt = adjustEndTime(dataEndZdt, blEndZdt);
+			}break;
+			case PREVIOUS_WEEK:
+			{
+				blStartZdt = adjustStartOfWeek(weekFields, dataStartZdt, blStartZdt);
+				blEndZdt = blStartZdt.plus(dataDuration);
+			}break;
+			case ANY_WEEK:
+			{
+				blStartZdt = adjustStartOfWeek(weekFields, dataStartZdt, blStartZdt);
+				if (DateTimeUtil.isSameWeek(dataStartZdt, dataEndZdt)) {
+					blEndZdt = adjustEndOfWeek(weekFields, dataEndZdt, blEndZdt);
+				}
+			}break;
+			case PREVIOUS_MONTH:
+			{
+				blStartZdt = adjustStartOfMonth(weekFields, dataStartZdt, blStartZdt);
+				blEndZdt = blStartZdt.plus(dataDuration);
+			}break;
+			case ANY_MONTH:
+			{
+				blStartZdt = adjustStartOfMonth(weekFields, dataStartZdt, blStartZdt);
+				if(DateTimeUtil.isSameMonth(dataStartZdt, dataEndZdt)) {
+					blEndZdt = adjustEndOfMonth(weekFields, dataEndZdt, blEndZdt);
+				}
+			}break;
+			case PREVIOUS_YEAR:
+			{
+				blStartZdt = adjustStartOfYear(weekFields, dataStartZdt, blStartZdt);
+				blEndZdt = blStartZdt.plus(dataDuration);
+			}break;
+			case ANY_YEAR:
+			{
+				blStartZdt = adjustStartOfYear(weekFields, dataStartZdt, blStartZdt);
+				if (DateTimeUtil.isSameYear(dataStartZdt, dataEndZdt)) {
+					blEndZdt = adjustEndOfYear(weekFields, dataEndZdt, blEndZdt);
+				}
+			}break;
+			case CUSTOM:
+			{
+				Duration blDuration = Duration.between(blStartZdt, blEndZdt);
+				blStartZdt = adjustStartOfWeek(weekFields, dataStartZdt, blStartZdt);
+				if (dataDuration.compareTo(blDuration) < 0) {
+					blEndZdt = blStartZdt.plus(dataDuration);
+				}
+			}break;
+			case PREVIOUS:
+				throw new RuntimeException("Cannot be here!!");
+		}
+		return Pair.of(blStartZdt, blEndZdt);
 	}
 	
 	private ZonedDateTime adjustStartOfYear(WeekFields weekFields, ZonedDateTime dataStartZdt, ZonedDateTime blStartZdt) {
@@ -320,11 +400,20 @@ public class BaseLineContext {
 		}
 		return blStartZdt; 
 	}
-	private ZonedDateTime adjustEndMinute(ZonedDateTime dataEndZdt, ZonedDateTime blEndZdt) {
-		if(dataEndZdt.toLocalTime().isBefore(blEndZdt.toLocalTime())) {
+	private ZonedDateTime adjustEndMinute(ZonedDateTime dataEndZdt,ZonedDateTime blStartZdt, ZonedDateTime blEndZdt, Duration dataDuration) {
+		Duration blDuration = Duration.between(blStartZdt, blEndZdt);
+		if (dataDuration.compareTo(blDuration) < 0) {
 			return blEndZdt.withMinute(dataEndZdt.getMinute());
 		} 
 		return blEndZdt;
+	}
+	
+	private ZonedDateTime withDate(ZonedDateTime zdt, int monthVal) {
+		ZonedDateTime lastDayZdt = zdt.with(TemporalAdjusters.lastDayOfMonth());
+		if (monthVal > lastDayZdt.getDayOfMonth()) {
+			return zdt.with(TemporalAdjusters.lastDayOfMonth());
+		}
+		return zdt.withDayOfMonth(monthVal);
 	}
 	
 	public static enum RangeType {
@@ -353,5 +442,23 @@ public class BaseLineContext {
 			return null;
 		}
 	}
-
+	
+	public static enum AdjustType {
+		NONE,
+		WEEK,
+		DATE,
+		MONTH_AND_DATE
+		;
+		
+		public int getValue() {
+			return ordinal();
+		}
+		
+		public static AdjustType valueOf (int value) {
+			if(value >= 0 && value < values().length) {
+				return values()[value];
+			}
+			return null;
+		}
+	}
 }

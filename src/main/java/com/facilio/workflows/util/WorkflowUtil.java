@@ -23,6 +23,7 @@ import org.w3c.dom.ls.LSSerializer;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseLineContext;
+import com.facilio.bmsconsole.context.BaseLineContext.AdjustType;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -663,9 +664,10 @@ public class WorkflowUtil {
 					BaseLineContext baseLine = BaseLineAPI.getBaseLine(Long.parseLong(matcher.group(4)));
 					if(matcher.group(6) != null && !matcher.group(6).equals("")) {
 						Integer isAdjust = Integer.parseInt(matcher.group(6));
-						if(isAdjust.equals(0)) {
-							baseLine.setIsAdjust(false);
-						}
+						baseLine.setAdjustType(isAdjust);
+					}
+					else {
+						baseLine.setAdjustType(AdjustType.WEEK);
 					}
 					condition = baseLine.getBaseLineCondition(field, ((DateOperators)operator).getRange(conditionValue));
 					if(sequence != null) {
