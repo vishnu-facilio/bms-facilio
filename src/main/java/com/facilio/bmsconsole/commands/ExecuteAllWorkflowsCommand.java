@@ -44,7 +44,11 @@ public class ExecuteAllWorkflowsCommand implements Command
 	
 	@Override
 	public boolean execute(Context context) throws Exception {
-		// TODO Auto-generated method stub
+		
+		Boolean historyReading = (Boolean) context.get(FacilioConstants.ContextNames.HISTORY_READINGS);
+		if (historyReading != null && historyReading==true) {
+			return false;
+		}
 		Map<String, List> recordMap = getRecordMap((FacilioContext) context);
 		if(recordMap != null && !recordMap.isEmpty()) {
 			for (Map.Entry<String, List> entry : recordMap.entrySet()) {
