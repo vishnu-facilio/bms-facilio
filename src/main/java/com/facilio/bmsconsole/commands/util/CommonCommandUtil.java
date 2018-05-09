@@ -32,6 +32,7 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.FacilioTablePrinter;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -260,15 +261,27 @@ public class CommonCommandUtil {
 	}
 	
 	private static void checkDB(String msg, StringBuilder body) {
-		if (msg != null && msg.toLowerCase().contains("deadlock")) {
-			String sql = "show engine innodb status";
-			try (Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql);ResultSet rs = pstmt.executeQuery()) {
-				rs.first();
-				body.append("\n\nInno DB Status : \n------------\n\n")
-					.append(rs.getString("Status"));
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		if (msg != null) {
+			if(msg.toLowerCase().contains("deadlock")) {
+				String sql = "show engine innodb status";
+				try (Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql);ResultSet rs = pstmt.executeQuery()) {
+					rs.first();
+					body.append("\n\nInno DB Status : \n------------\n\n")
+						.append(rs.getString("Status"));
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			if(msg.toLowerCase().contains("timeout")) {
+				String sql = "show processlist";
+				try (Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql);ResultSet rs = pstmt.executeQuery()) {
+					body.append("\n\nProcess List : \n------------\n\n")
+						.append(FacilioTablePrinter.getResultSetData(rs));
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 	}
