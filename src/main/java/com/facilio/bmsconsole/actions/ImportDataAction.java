@@ -40,7 +40,7 @@ public class ImportDataAction extends ActionSupport {
 
 		if(getImportprocessid()!=0)
 		{
-			System.out.println("secondtime code"+ this.hashCode());
+			System.out.println("secondtime code"+ this.hashCode() +" id -- "+getImportprocessid());
 			metainfo= ImportMetaInfo.getInstance(getImportprocessid());
 			
 			//Here: We are checking whether the field mapping exists for the same column headings..

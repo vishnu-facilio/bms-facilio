@@ -356,6 +356,7 @@ public class ProcessXLS implements Command {
 			Map<String, List<ReadingContext>> readingMap= Collections.singletonMap(moduleName, readingsList);
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.HISTORY_READINGS,true);
+			context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS,false);
 			context.put(FacilioConstants.ContextNames.READINGS_MAP , readingMap);
 			Chain importDataChain = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
 			importDataChain.execute(context);	

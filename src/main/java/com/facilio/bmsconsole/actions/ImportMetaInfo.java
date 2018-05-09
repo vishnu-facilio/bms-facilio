@@ -61,7 +61,10 @@ public class ImportMetaInfo
 		try {
 			 c = FacilioConnectionPool.getInstance().getConnection();
 			 s = c.createStatement();
-			 rs = s.executeQuery("select * from ImportProcess where IMPORTID_ID="+processid);
+			 String sql = "select * from ImportProcess where IMPORTID_ID="+processid;
+			 System.out.println("sql----"+sql);
+			 rs = s.executeQuery(sql);
+			 System.out.println("rs ---"+rs);
 			if(rs.next())
 			{
 				System.out.println("-----------> checking getsites5----------->");
