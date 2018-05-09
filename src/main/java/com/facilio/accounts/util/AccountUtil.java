@@ -11,6 +11,8 @@ import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
+import com.facilio.fs.FileStore;
+import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -19,8 +21,12 @@ public class AccountUtil {
 
 	private static ThreadLocal<Account> currentAccount = new ThreadLocal<Account>();
 	
-	public static void setCurrentAccount(Account account) {
+	public static void setCurrentAccount(Account account) throws Exception {
 		currentAccount.set(account);
+		if (account.getOrg().getLogoId() > 0) {
+			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			account.getOrg().setLogoUrl(fs.getPrivateUrl(account.getOrg().getLogoId()));
+		}
 	}
 	
 	public static void setCurrentAccount(long orgId) throws Exception {

@@ -149,10 +149,6 @@ public class OrgBeanImpl implements OrgBean {
 	
 	private Organization createOrgFromProps(Map<String, Object> prop) throws Exception {
 		Organization org = FieldUtil.getAsBeanFromMap(prop, Organization.class);
-		if (org.getLogoId() > 0) {
-			FileStore fs = FileStoreFactory.getInstance().getFileStore();
-			org.setLogoUrl(fs.getPrivateUrl(org.getLogoId()));
-		}
 		return org;
 	}
 
