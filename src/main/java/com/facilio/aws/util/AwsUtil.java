@@ -338,9 +338,8 @@ public class AwsUtil
 			try {
 				SendEmailRequest request = new SendEmailRequest().withSource((String) mailJson.get("sender"))
 						.withDestination(destination).withMessage(message);
-				BasicAWSCredentials awsCreds = new BasicAWSCredentials("AKIAID24IU7XN4ECH6WQ", "knoJS3Och3B4Qt53cOlI2vskfvZQbvGUz78G2Hs2");
 				AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
-						.withRegion(Regions.US_WEST_2).withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
+						.withRegion(Regions.US_WEST_2).withCredentials(getAWSCredentialsProvider()).build();
 				client.sendEmail(request);
 				System.out.println("Email sent!");
 			} catch (Exception ex) {
@@ -377,9 +376,8 @@ public class AwsUtil
 				RawMessage rawMessage = new RawMessage(ByteBuffer.wrap(outputStream.toByteArray()));
 				SendRawEmailRequest request = new SendRawEmailRequest(rawMessage);
 
-				BasicAWSCredentials awsCreds = new BasicAWSCredentials("AKIAID24IU7XN4ECH6WQ", "knoJS3Och3B4Qt53cOlI2vskfvZQbvGUz78G2Hs2");
 				AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
-						.withRegion(Regions.US_WEST_2).withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
+						.withRegion(Regions.US_WEST_2).withCredentials(getAWSCredentialsProvider()).build();
 				client.sendRawEmail(request);
 				System.out.println("Email sent!");
 			} catch (Exception ex) {
