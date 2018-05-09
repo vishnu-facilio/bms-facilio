@@ -68,7 +68,7 @@ public class ImportAPI {
 			reading.setParentId(metainfo.getAssetId());
 			readingsList.add(reading);
 		}
-		ProcessXLS.populateDatas(metainfo, readingsList);
+		ProcessXLS.populateData(metainfo, readingsList);
 	}
 	public static List<Map<Integer,String>> parseRawString(String rawString,String rawStringType) throws Exception {
 		
