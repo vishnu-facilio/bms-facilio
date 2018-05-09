@@ -2443,7 +2443,7 @@ public class FieldFactory {
 		
 		FacilioField isComparisionReport = new FacilioField();
 		isComparisionReport.setName("isComparisionReport");
-		isComparisionReport.setDataType(FieldType.NUMBER);
+		isComparisionReport.setDataType(FieldType.BOOLEAN);
 		isComparisionReport.setColumnName("IS_COMPARISION_REPORT");
 		isComparisionReport.setModule(module);
 		fields.add(isComparisionReport);
