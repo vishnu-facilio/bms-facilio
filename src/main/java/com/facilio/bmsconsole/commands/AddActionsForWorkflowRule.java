@@ -36,14 +36,20 @@ public class AddActionsForWorkflowRule implements Command {
 		if (actions != null && !actions.isEmpty()) {
 			for(ActionContext action:actions) {
 				System.out.println(action.getTemplateJson());
-				if(action.getActionTypeEnum().equals(ActionType.EMAIL_NOTIFICATION)) {
-					setEmailTemplate(action);
-				}
-				else if(action.getActionTypeEnum().equals(ActionType.SMS_NOTIFICATION)) {
-					setSMSTemplate(action);
-				}
-				else if(action.getActionTypeEnum().equals(ActionType.ADD_ALARM)) {
-					setAlarmTempalte(action, rule);
+				switch (action.getActionTypeEnum()) {
+					case EMAIL_NOTIFICATION:
+					case BULK_EMAIL_NOTIFICATION:
+						setEmailTemplate(action);
+						break;
+					case SMS_NOTIFICATION:
+					case BULK_SMS_NOTIFICATION:
+						setSMSTemplate(action);
+						break;
+					case ADD_ALARM:
+						setAlarmTempalte(action, rule);
+						break;
+					default:
+						break;
 				}
 				addTemplate(action);
 			}
@@ -69,7 +75,7 @@ public class AddActionsForWorkflowRule implements Command {
 	
 	private void setEmailTemplate(ActionContext action) {
 		EMailTemplate emailTemplate = new EMailTemplate();
-		emailTemplate.setFrom("support@${org.orgDomain}.facilio.com");
+		emailTemplate.setFrom("support@${org.domain}.facilio.com");
 		String toAdresses = action.getTemplateJson().get("to").toString();
 //		toAdresses = toAdresses.substring(1, toAdresses.length()-1);
 		
@@ -83,11 +89,7 @@ public class AddActionsForWorkflowRule implements Command {
 		emailTemplate.setType(Type.EMAIL);
 		action.setTemplate(emailTemplate);
 		
-		if (action.getTemplateJson().containsKey("workflow")) {
-			Map<String, Object> workflow = (Map<String, Object>) action.getTemplateJson().get("workflow");
-			WorkflowContext workflowContext = FieldUtil.getAsBeanFromMap(workflow, WorkflowContext.class);
-			emailTemplate.setWorkflow(workflowContext);
-		}
+		checkAndSetWorkflow(action.getTemplateJson(), emailTemplate);
 	}
 	
 	private void setSMSTemplate(ActionContext action) {
@@ -103,11 +105,14 @@ public class AddActionsForWorkflowRule implements Command {
 		smsTemplate.setMessage((String) action.getTemplateJson().get("body"));
 		smsTemplate.setType(Type.SMS);
 		action.setTemplate(smsTemplate);
-		
-		if (action.getTemplateJson().containsKey("workflow")) {
-			Map<String, Object> workflow = (Map<String, Object>) action.getTemplateJson().get("workflow");
+		checkAndSetWorkflow(action.getTemplateJson(), smsTemplate);
+	}
+	
+	private void checkAndSetWorkflow(JSONObject templateJson, Template template) {
+		if (templateJson.containsKey("workflow")) {
+			Map<String, Object> workflow = (Map<String, Object>) templateJson.get("workflow");
 			WorkflowContext workflowContext = FieldUtil.getAsBeanFromMap(workflow, WorkflowContext.class);
-			smsTemplate.setWorkflow(workflowContext);
+			template.setWorkflow(workflowContext);
 		}
 	}
 	
@@ -139,5 +144,7 @@ public class AddActionsForWorkflowRule implements Command {
 		alarmTemplate.setContent(content.toJSONString());
 		alarmTemplate.setType(Type.ALARM);
 		action.setTemplate(alarmTemplate);
+		
+		checkAndSetWorkflow(action.getTemplateJson(), alarmTemplate);
 	}
 }
