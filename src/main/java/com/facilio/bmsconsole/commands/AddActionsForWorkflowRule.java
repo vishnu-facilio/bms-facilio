@@ -84,6 +84,7 @@ public class AddActionsForWorkflowRule implements Command {
 		}
 		
 		emailTemplate.setTo(toAdresses);
+		emailTemplate.setName((String) action.getTemplateJson().get("name"));
 		emailTemplate.setSubject((String) action.getTemplateJson().get("subject"));
 		emailTemplate.setMessage((String) action.getTemplateJson().get("message"));
 		emailTemplate.setType(Type.EMAIL);
@@ -100,7 +101,7 @@ public class AddActionsForWorkflowRule implements Command {
 		if(toPhones.contains(",")) {
 			action.setActionType(ActionType.BULK_SMS_NOTIFICATION);
 		}
-		
+		smsTemplate.setName((String) action.getTemplateJson().get("name"));
 		smsTemplate.setTo(toPhones);
 		smsTemplate.setMessage((String) action.getTemplateJson().get("body"));
 		smsTemplate.setType(Type.SMS);
