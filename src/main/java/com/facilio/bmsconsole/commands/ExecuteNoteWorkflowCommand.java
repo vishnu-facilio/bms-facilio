@@ -57,11 +57,7 @@ public class ExecuteNoteWorkflowCommand implements Command {
 								CommonCommandUtil.appendModuleNameInKey(null, "comment", FieldUtil.getAsProperties(note), placeHolders);
 								for(ActionContext action : actions)
 								{
-									Template template = action.getTemplate();
-									if(template != null) {
-										JSONObject actionObj = template.getTemplate(placeHolders);
-										action.getActionType().performAction(actionObj, context, workflowRule, ticket);
-									}
+									action.executeAction(placeHolders, context, workflowRule, ticket);
 								}
 							}
 						}

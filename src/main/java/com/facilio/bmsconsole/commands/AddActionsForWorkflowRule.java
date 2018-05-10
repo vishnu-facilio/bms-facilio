@@ -36,13 +36,13 @@ public class AddActionsForWorkflowRule implements Command {
 		if (actions != null && !actions.isEmpty()) {
 			for(ActionContext action:actions) {
 				System.out.println(action.getTemplateJson());
-				if(action.getActionType().equals(ActionType.EMAIL_NOTIFICATION)) {
+				if(action.getActionTypeEnum().equals(ActionType.EMAIL_NOTIFICATION)) {
 					setEmailTemplate(action);
 				}
-				else if(action.getActionType().equals(ActionType.SMS_NOTIFICATION)) {
+				else if(action.getActionTypeEnum().equals(ActionType.SMS_NOTIFICATION)) {
 					setSMSTemplate(action);
 				}
-				else if(action.getActionType().equals(ActionType.ADD_ALARM)) {
+				else if(action.getActionTypeEnum().equals(ActionType.ADD_ALARM)) {
 					setAlarmTempalte(action, rule);
 				}
 				addTemplate(action);

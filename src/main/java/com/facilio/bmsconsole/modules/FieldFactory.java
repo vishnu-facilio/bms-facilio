@@ -564,7 +564,7 @@ public class FieldFactory {
 		fields.add(getIdField(module));
 
 		FacilioField actionType = new FacilioField();
-		actionType.setName("actionTypeVal");
+		actionType.setName("actionType");
 		actionType.setDataType(FieldType.NUMBER);
 		actionType.setColumnName("ACTION_TYPE");
 		actionType.setModule(module);

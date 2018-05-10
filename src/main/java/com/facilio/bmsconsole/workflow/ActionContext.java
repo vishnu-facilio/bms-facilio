@@ -26,22 +26,8 @@ public class ActionContext {
 		this.orgId = orgId;
 	}
 	
-	public int getActionTypeVal() {
-		if(actionType != null) {
-			return actionType.getVal();
-		}
-		return -1;
-	}
-	public void setActionTypeVal(int actionTypeVal) {
-		this.actionType = ActionType.getActionType(actionTypeVal);
-		
-		if(this.actionType == null) {
-			throw new IllegalArgumentException("Invalid action type val. No ActionType exists for value : "+actionTypeVal);
-		}
-	}
-	
 	private ActionType actionType;
-	public ActionType getActionType() {
+	public ActionType getActionTypeEnum() {
 		return actionType;
 	}
 	public void setActionType(ActionType actionType) {
@@ -49,6 +35,15 @@ public class ActionContext {
 	}
 	public void setActionType(int actionTypeVal) {
 		this.actionType = ActionType.getActionType(actionTypeVal);
+		if(this.actionType == null) {
+			throw new IllegalArgumentException("Invalid action type val. No ActionType exists for value : "+actionTypeVal);
+		}
+	}
+	public int getActionType() {
+		if (actionType != null) {
+			return actionType.getVal();
+		}
+		return -1;
 	}
 	
 	private int defaultTemplateId = -1;
