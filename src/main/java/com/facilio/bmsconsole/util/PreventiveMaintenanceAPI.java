@@ -82,6 +82,27 @@ public class PreventiveMaintenanceAPI {
 		return pmJobs;
 	}
 	
+	public static List<Map<String, Object>> createProjectedPMJobs (PreventiveMaintenance pm, PMTriggerContext pmTrigger, long startTime, long endTime) throws Exception { //Both in seconds
+		long nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(startTime);
+		int currentCount = pm.getCurrentExecutionCount();
+		List<Map<String, Object>> pmJobs = new ArrayList<>();
+		while (nextExecutionTime <= endTime && (pm.getMaxCount() == -1 || currentCount < pm.getMaxCount()) && (pm.getEndTime() == -1 || nextExecutionTime <= pm.getEndTime())) {
+			Map<String, Object> pmJob = new HashMap<>();
+			pmJob.put("pmId", pm.getId());
+			pmJob.put("pmTriggerId", pmTrigger.getId());
+			pmJob.put("nextExecutionTime", nextExecutionTime);
+			pmJob.put("projected", true);
+			pmJob.put("status", PMJobsStatus.ACTIVE);
+			pmJobs.add(pmJob);
+			nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(nextExecutionTime);
+			currentCount++;
+			if(pmTrigger.getSchedule().getFrequencyTypeEnum() == FrequencyType.DO_NOT_REPEAT) {
+				break;
+			}
+		}
+		return pmJobs;
+	}
+	
 	public static PMJobsContext createPMJobOnce(PreventiveMaintenance pm, PMTriggerContext pmTrigger, long startTime) throws Exception {
 		return createPMJobOnce(pm, pmTrigger, startTime, true);
 	}
@@ -239,7 +260,7 @@ public class PreventiveMaintenanceAPI {
 		return null;
 	}
 	
-	public static Map<Long, List<PMJobsContext>> getPMJobsFromTriggerIds(List<Long> triggerIds, long startTime, long endTime) throws Exception {
+	public static Map<Long, List<Map<String, Object>>> getPMJobsFromTriggerIds(List<Long> triggerIds, long startTime, long endTime) throws Exception {
 		FacilioModule pmJobsModule = ModuleFactory.getPMJobsModule();
 		List<FacilioField> fields = FieldFactory.getPMJobFields();
 		Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
@@ -257,16 +278,18 @@ public class PreventiveMaintenanceAPI {
 		
 		
 		List<Map<String, Object>> jobProps = selectBuilder.get();
-		Map<Long, List<PMJobsContext>> pmJobs = new HashMap<>();
+		Map<Long, List<Map<String, Object>>> pmJobs = new HashMap<>();
 		if(jobProps != null && !jobProps.isEmpty()) {
 			for (Map<String, Object> prop : jobProps) {
-				List<PMJobsContext> pmJobList = new ArrayList<>();
-				PMJobsContext pmJob = FieldUtil.getAsBeanFromMap(prop, PMJobsContext.class);
-				if (pmJobs.containsKey(pmJob.getPmTriggerId())) {
-					pmJobList = pmJobs.get(pmJob.getPmTriggerId());
+				// List<PMJobsContext> pmJobList = new ArrayList<>();
+				// PMJobsContext pmJob = FieldUtil.getAsBeanFromMap(prop, PMJobsContext.class);
+				
+				List<Map<String, Object>> pmJobList = pmJobs.get(prop.get("pmTriggerId"));
+				if (pmJobList == null) {
+					pmJobList = new ArrayList<>();
+					pmJobs.put((Long) prop.get("pmTriggerId"), pmJobList);
 				}
-				pmJobList.add(pmJob);
-				pmJobs.put(pmJob.getPmTriggerId(), pmJobList);
+				pmJobList.add(prop);
 			}
 		}
 		return pmJobs;

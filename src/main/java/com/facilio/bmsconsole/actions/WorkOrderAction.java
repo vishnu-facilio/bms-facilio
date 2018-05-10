@@ -337,6 +337,15 @@ public class WorkOrderAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	private List<Map<String, Object>> pmJobList;
+	public List<Map<String, Object>> getPmJobList() {
+		return pmJobList;
+	}
+	public void setPmJobList(List<Map<String, Object>> pmJobList) {
+		this.pmJobList = pmJobList;
+	}
+	
+	
 	public String getPMJobs() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
@@ -355,7 +364,7 @@ public class WorkOrderAction extends ActionSupport {
 		getPmchain.execute(context);
 		
 		setPmMap((Map<Long,PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST));
-		setPmJobs((List<PMJobsContext>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_JOBS_LIST));
+		setPmJobList((List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_JOBS_LIST));
 		setPmTriggerMap((Map<Long, PMTriggerContext>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_TRIGGERS_LIST));
 		setPmResourcesMap((Map<Long, ResourceContext>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_RESOURCES));
 		
