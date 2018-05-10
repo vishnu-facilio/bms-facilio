@@ -239,6 +239,39 @@ public class PreventiveMaintenanceAPI {
 		return null;
 	}
 	
+	public static Map<Long, List<PMJobsContext>> getPMJobsFromTriggerIds(List<Long> triggerIds, long startTime, long endTime) throws Exception {
+		FacilioModule pmJobsModule = ModuleFactory.getPMJobsModule();
+		List<FacilioField> fields = FieldFactory.getPMJobFields();
+		Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+		FacilioField pmTriggerField = fieldsMap.get("pmTriggerId");
+		FacilioField nextExecutionField = fieldsMap.get("nextExecutionTime");
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(fields)
+														.table(pmJobsModule.getTableName())
+														.andCondition(CriteriaAPI.getCondition(pmTriggerField,triggerIds, NumberOperators.EQUALS))
+														.andCondition(CriteriaAPI.getCondition(nextExecutionField, String.valueOf(startTime), NumberOperators.GREATER_THAN_EQUAL))
+														.andCondition(CriteriaAPI.getCondition(nextExecutionField, String.valueOf(endTime), NumberOperators.LESS_THAN))
+														.orderBy("nextExecutionTime")
+														;
+		
+		
+		List<Map<String, Object>> jobProps = selectBuilder.get();
+		Map<Long, List<PMJobsContext>> pmJobs = new HashMap<>();
+		if(jobProps != null && !jobProps.isEmpty()) {
+			for (Map<String, Object> prop : jobProps) {
+				List<PMJobsContext> pmJobList = new ArrayList<>();
+				PMJobsContext pmJob = FieldUtil.getAsBeanFromMap(prop, PMJobsContext.class);
+				if (pmJobs.containsKey(pmJob.getPmTriggerId())) {
+					pmJobList = pmJobs.get(pmJob.getPmTriggerId());
+				}
+				pmJobList.add(pmJob);
+				pmJobs.put(pmJob.getPmTriggerId(), pmJobList);
+			}
+		}
+		return pmJobs;
+	}
+	
 	public static List<PMJobsContext> getPMJobs(List<Long> triggerIds, boolean hasOnlyNonEmptyTemlplates) throws Exception {
 		FacilioModule pmJobsModule = ModuleFactory.getPMJobsModule();
 		List<FacilioField> fields = FieldFactory.getPMJobFields();

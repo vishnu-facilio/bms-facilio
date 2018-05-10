@@ -1486,6 +1486,14 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getGetPMJobListChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GetPMJobsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getGetPreventiveMaintenanceListChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new LoadViewCommand());
