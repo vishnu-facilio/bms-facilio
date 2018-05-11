@@ -1,11 +1,11 @@
 package com.facilio.bmsconsole.jobs;
 
 import java.util.List;
-import java.util.Map;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
@@ -32,8 +32,8 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 			FacilioField deltaField= modBean.getField("totalEnergyConsumptionDelta", FacilioConstants.ContextNames.ENERGY_DATA_READING);
 			for(EnergyMeterContext meter:virtualMeters) {
 				try {
-					Map<String, Object> props = (Map<String, Object>)ReadingsAPI.getLastReading(meter.getId(), deltaField.getFieldId());
-					long startTime=(long)props.get("ttime")+1;
+					ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(meter.getId(), deltaField);
+					long startTime = meta.getTtime()+1;
 					DeviceAPI.insertVirtualMeterReadings(meter, startTime,endTime,minutesInterval, true);
 				}
 				catch (Exception e) {

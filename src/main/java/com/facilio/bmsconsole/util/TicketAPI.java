@@ -15,6 +15,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.CalendarColorContext;
 import com.facilio.bmsconsole.context.NoteContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
@@ -246,7 +247,8 @@ public class TicketAPI {
 		for(TaskContext task: tasks) {
 			if (task.getLastReading() == null && task.getInputTypeEnum() == InputType.READING && task.getResource() != null) {
 				FacilioField readingField = modBean.getField(task.getReadingFieldId());
-				task.setLastReading(ReadingsAPI.getLastReadingValue(task.getResource().getId(), readingField));
+				ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(task.getResource().getId(), readingField);
+				task.setLastReading(meta.getValue());
 			}
 		}
 		return tasks;

@@ -11,6 +11,7 @@ import java.util.Optional;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -275,11 +276,11 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		switch (thresholdType) {
 			case FLAPPING:
 				boolean singleFlap = false;
-				Map<String, Map<String,Object>> lastReadingMap =(Map<String, Map<String,Object>>)context.get(FacilioConstants.ContextNames.LAST_READINGS);
-				Map<String, Object> lastValMap = lastReadingMap.get(reading.getParentId()+"_"+readingField.getName());
-				Object lastReading = FieldUtil.castOrParseValueAsPerType(readingField.getDataTypeEnum(), lastValMap.get("value"));
+				Map<String, ReadingDataMeta> metaMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.READING_DATA_META);
+				ReadingDataMeta meta = metaMap.get(reading.getParentId()+"_"+readingField.getName());
+				Object prevValue = meta.getValue();
 				if (currentReadingObj instanceof Number) {
-					double prevVal = Double.valueOf(lastReading.toString());
+					double prevVal = Double.valueOf(prevValue.toString());
 					double currentVal = Double.valueOf(currentReadingObj.toString());
 					double minVal = Math.min(prevVal, currentVal);
 					double maxVal = Math.max(prevVal, currentVal);
@@ -287,7 +288,7 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 					singleFlap = minVal <= minFlapValue && maxVal >= maxFlapValue;
 				}
 				else if (currentReadingObj instanceof Boolean) {
-					singleFlap = currentReadingObj != (Boolean) lastReading;
+					singleFlap = currentReadingObj != (Boolean) prevValue;
 				}
 				return singleFlap && isFlappedNTimes(reading);
 			default:
@@ -406,10 +407,11 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 	public Map<String, Object> constructPlaceHolders(String moduleName, Object record, Map<String, Object> recordPlaceHolders, FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		Map<String, Object> rulePlaceHolders = super.constructPlaceHolders(moduleName, record, recordPlaceHolders, context);
-		Map<String, Map<String,Object>> lastReadingMap =(Map<String, Map<String,Object>>)context.get(FacilioConstants.ContextNames.LAST_READINGS);
-		Map<String, Object> lastValue = lastReadingMap.get(((ReadingContext)record).getParentId()+"_"+readingField.getName());
-		if (lastValue != null) {
-			rulePlaceHolders.put("previousValue", FieldUtil.castOrParseValueAsPerType(readingField.getDataTypeEnum(), lastValue.get("value")));
+		Map<String, ReadingDataMeta> metaMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.READING_DATA_META);
+		ReadingDataMeta meta = metaMap.get(((ReadingContext)record).getParentId()+"_"+readingField.getName());
+		if (meta != null) {
+			Object prevValue = meta.getValue();
+			rulePlaceHolders.put("previousValue", FieldUtil.castOrParseValueAsPerType(readingField.getDataTypeEnum(), prevValue));
 		}
 		rulePlaceHolders.put("resourceId", ((ReadingContext)record).getParentId());
 		

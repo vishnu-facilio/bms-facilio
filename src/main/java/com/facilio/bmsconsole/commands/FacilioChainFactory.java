@@ -988,7 +988,7 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddSpaceCommand());
 		c.addCommand(getCategoryReadingsChain());
-		c.addCommand(new InsertLastReadingForResourceCommand());
+		c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -1077,7 +1077,7 @@ public class FacilioChainFactory {
 		c.addCommand(new GenericAddModuleDataCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
 		c.addCommand(getCategoryReadingsChain());
-		c.addCommand(new InsertLastReadingForResourceCommand());
+		c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -1188,7 +1188,7 @@ public class FacilioChainFactory {
 		c.addCommand(new AddVirtualMeterRelCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
 		c.addCommand(getCategoryReadingsChain());
-		c.addCommand(new InsertLastReadingForResourceCommand());
+		c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -1747,7 +1747,7 @@ public class FacilioChainFactory {
 		c.addCommand(getAddReadingChain());
 		c.addCommand(new AddCategoryReadingRelCommand());
 		c.addCommand(new GetCategoryResourcesCommand());
-		c.addCommand(new InsertLastReadingForNewReadingCommand());
+		c.addCommand(new InsertReadingDataMetaForNewReadingCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -1756,7 +1756,7 @@ public class FacilioChainFactory {
 		Chain c = new TransactionChain();
 		c.addCommand(getAddReadingChain());
 		c.addCommand(new AddSpaceReadingRelCommand());
-		c.addCommand(new InsertLastReadingForNewReadingCommand());
+		c.addCommand(new InsertReadingDataMetaForNewReadingCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -1806,7 +1806,7 @@ public class FacilioChainFactory {
 	
 	public static Chain getAddOrUpdateReadingValuesChain() {
 		Chain c = new TransactionChain();
-		c.addCommand(new GetLastReadingCommand());
+		c.addCommand(new GetReadingDataMetaCommand());
 		c.addCommand(new DeltaCalculationCommand());
 		c.addCommand(new AddOrUpdateReadingValuesCommand());
 		c.addCommand(new AddMarkedReadingValuesCommand());

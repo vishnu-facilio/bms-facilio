@@ -10,6 +10,7 @@ import com.amazonaws.services.kms.model.UnsupportedOperationException;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.TicketStatusContext;
@@ -62,8 +63,8 @@ public class ValidateAndCreateValuesForInputTaskCommand implements Command {
 								reading.addReading(field.getName(), task.getInputValue());
 								reading.setTtime(task.getInputTime());
 								if (completeRecord.getLastReading() == null) {
-									Object lastreading = ReadingsAPI.getLastReadingValue(completeRecord.getResource().getId(), field);
-									task.setLastReading(lastreading != null ? lastreading : -1);
+									ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(completeRecord.getResource().getId(), field);
+									task.setLastReading(meta.getValue() != null ? meta.getValue() : -1);
 								}
 								context.put(FacilioConstants.ContextNames.MODULE_NAME, readingModule.getName());
 								context.put(FacilioConstants.ContextNames.READING, reading);

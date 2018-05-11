@@ -1,21 +1,22 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericInsertRecordBuilder;
 
-public class InsertLastReadingForResourceCommand implements Command {
+public class InsertReadingDataMetaForNewResourceCommand implements Command {
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -31,24 +32,20 @@ public class InsertLastReadingForResourceCommand implements Command {
 		}
 
 		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-				.table(ModuleFactory.getLastReadingModule().getTableName())
-				.fields(FieldFactory.getLastReadingFields());
+				.table(ModuleFactory.getReadingDataMetaModule().getTableName())
+				.fields(FieldFactory.getReadingDataMetaFields());
 		
 		for(FacilioModule module : readingModules) {
 			List<FacilioField> fieldsList= module.getFields();
 			for(FacilioField field : fieldsList) {
-
-				long fieldId=field.getFieldId();
-				Map<String, Object> lastReading = new HashMap<String,Object>();
-				lastReading.put("orgId", orgId);
-				lastReading.put("resourceId", resourceId);
-				lastReading.put("fieldId", fieldId);
-				lastReading.put("ttime", timestamp);
-				lastReading.put("value", "-1");
-
-				builder.addRecord(lastReading);
-				//orgid, fieldid, assetid, timestamp, value
-
+				ReadingDataMeta dataMeta = new ReadingDataMeta();
+				dataMeta.setOrgId(orgId);
+				dataMeta.setResourceId(resourceId);
+				dataMeta.setFieldId(field.getFieldId());
+				dataMeta.setTtime(timestamp);
+				dataMeta.setValue("-1");
+				dataMeta.setInputType(ReadingInputType.WEB);
+				builder.addRecord(FieldUtil.getAsProperties(dataMeta));
 			}
 		}
 		builder.save();
