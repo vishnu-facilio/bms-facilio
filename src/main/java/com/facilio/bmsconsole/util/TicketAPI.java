@@ -168,6 +168,27 @@ public class TicketAPI {
 		}
 	}
 	
+	public static TicketCategoryContext getCategory(long orgId, long id) throws Exception
+	{
+		try
+		{
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			SelectRecordsBuilder<TicketCategoryContext> builder = new SelectRecordsBuilder<TicketCategoryContext>()
+																.table("TicketCategory")
+																.moduleName(FacilioConstants.ContextNames.TICKET_CATEGORY)
+																.beanClass(TicketCategoryContext.class)
+																.select(modBean.getAllFields(FacilioConstants.ContextNames.TICKET_CATEGORY))
+																.andCustomWhere("ORGID = ? AND ID = ?", orgId, id);
+																
+			List<TicketCategoryContext> categories = builder.get();
+			return categories.get(0);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	
 	public static TicketPriorityContext getPriority(long orgId, String priority) throws Exception
 	{
 		try

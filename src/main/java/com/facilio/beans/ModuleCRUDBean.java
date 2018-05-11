@@ -1,6 +1,7 @@
 package com.facilio.beans;
 
 import java.util.List;
+import java.util.Map;
 
 import org.json.simple.JSONObject;
 
@@ -19,6 +20,10 @@ public interface ModuleCRUDBean {
 	public int deleteAlarm(List<Long> id) throws Exception;
 	
 	public WorkOrderContext CloseAllWorkOrder() throws Exception;
+	
+	public List<Map<String, Object>> CopyPlannedMaintenance() throws Exception;
+	
+	public PreventiveMaintenance CopyWritePlannedMaintenance(List<Map<String, Object>> props) throws Exception;
 	
 	public int updateAlarm(AlarmContext alarm, List<Long> ids) throws Exception;
 	

@@ -266,7 +266,18 @@ public class UserBeanImpl implements UserBean {
 
 	private String getUserLink(User user, String url) {
 		String inviteToken = getEncodedToken(user);
-		return AwsUtil.getConfig("clientapp.url") + url + inviteToken;
+		String hostname = "";
+		if(user.isPortalUser())
+		{
+			hostname = "https://facilstack.com";
+			inviteToken = inviteToken +"&portalid="+user.getPortalId();
+		}
+		else
+		{
+			hostname=AwsUtil.getConfig("clientapp.url");
+		//return AwsUtil.getConfig("clientapp.url") + url + inviteToken;
+		}
+		return hostname + url + inviteToken;
 	}
 	
 	private void sendInvitation(long ouid, User user) throws Exception {

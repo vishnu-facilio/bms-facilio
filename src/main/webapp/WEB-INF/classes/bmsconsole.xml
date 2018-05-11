@@ -1027,6 +1027,12 @@
 		<action name="buildInfo" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/buildinfo.jsp</result>
 			</action>
+			<action name="copypm" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result type="tiles">adminpage/copypm.jsp</result>
+			</action>
+			<action name="closewo" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result type="tiles">adminpage/closewo.jsp</result>
+			</action>
 	</package>
 
 	<package name="setup" namespace="/app/setup" extends="home">

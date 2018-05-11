@@ -243,6 +243,14 @@ public class User {
 		return portalId;
 	}
 
+	public boolean isPortalUser()
+	{
+		if(portalId>0)
+		{
+			return true;
+		}
+		return false;
+	}
 	public void setPortalId(long portalId) {
 		this.portalId = portalId;
 	}

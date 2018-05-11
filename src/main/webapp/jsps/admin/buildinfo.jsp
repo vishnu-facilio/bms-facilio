@@ -1,11 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
- <%
- String closeWoMessage = "";
- if (request.getParameter("orgId") != null && request.getParameter("orgId").trim().length() > 0) {
-	 closeWoMessage = com.facilio.bmsconsole.actions.InternalActions.CloseAllWorkOrder(Long.parseLong(request.getParameter("orgId").trim()));
- }
- %>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -31,11 +26,7 @@ function init() {
 	if (window.location.search.indexOf('showcache') != -1) {
 		toggle();
 	} 
-	
-	var message = "<%= closeWoMessage %>";
-	if (message != null && message != '') {
-		alert(message);
-	}
+
 }
 
 </script>
@@ -50,15 +41,6 @@ function init() {
 <div id="tg" style="display:none; margin-top:30px;">
 <br>Module Cache =  <textarea style="width: 600px;height:1500px;overflow-y:auto;"><%out.println(com.facilio.fw.LRUCache.getModuleFieldsCache()); %></textarea>
 <br>Fields Cache = <textarea  style="width: 600px;height:150px;overflow-y:auto; margin-bottom:20px"><%out.println(com.facilio.fw.LRUCache.getFieldsCache()); %></textarea>
-
-</div>
-
-<div id="tg">
-<form action = "" method ="GET">
-<h3>Close Workorder:</h3>
-Please enter the OrgID:<input type = "text" name = "orgId" id="orgId" placeholder="orgId"/>
-<input type = "submit" value = "submit"> 
-</form>
 </div>
 
 <div style="margin-top:30px;">

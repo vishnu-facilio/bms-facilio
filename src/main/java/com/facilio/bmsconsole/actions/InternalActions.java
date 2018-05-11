@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import java.util.List;
+import java.util.Map;
 
 import org.json.simple.JSONObject;
 
@@ -31,6 +32,20 @@ public class InternalActions extends ActionSupport {
 		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
 	    bean.CloseAllWorkOrder();
 		return SUCCESS;
+	}
+	
+	public static String CopyWritePlannedMaintenance(long newOrgId, List<Map<String, Object>> props) throws Exception {
+		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", newOrgId);
+	    bean.CopyWritePlannedMaintenance(props);
+	    
+		return SUCCESS;
+	}
+	public static String CopyPlannedMaintenance(long orgId, long newOrgId) throws Exception {
+		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+		List<Map<String, Object>> props =  bean.CopyPlannedMaintenance();
+	    CopyWritePlannedMaintenance(newOrgId, props);
+		
+	    return SUCCESS;
 	}
 	
 	public String updateAlarmResource() throws Exception {

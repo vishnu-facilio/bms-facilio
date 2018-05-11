@@ -28,7 +28,7 @@
                </a>
            </li>
                        <li >
-               <a href="#">
+               <a href="buildInfo">
                <span class="nav-icon">
                <i class=" sidebar-icon fa fa-info-circle fa-fw "></i> </span>
                <span class="nav-title ">Build Info</span>
@@ -39,6 +39,20 @@
                <span class="nav-icon">
                <i class=" sidebar-icon fa fa-terminal  fa-fw "></i> </span>
                <span class="nav-title">SQL Console</span>
+               </a>
+           </li>
+           <li>
+               <a href="copypm">
+               <span class="nav-icon">
+              <i class=" sidebar-icon fa fa-info-circle fa-fw "></i> </span>
+               <span class="nav-title">Copy PM</span>
+               </a>
+           </li>
+           <li>
+               <a href="closewo">
+               <span class="nav-icon">
+              <i class=" sidebar-icon fa fa-info-circle fa-fw "></i> </span>
+               <span class="nav-title">Close WorkOrder</span>
                </a>
            </li>
            
