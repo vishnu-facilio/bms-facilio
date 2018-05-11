@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.MarkedReadingContext;
 import com.facilio.bmsconsole.context.MarkedReadingContext.MarkType;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
@@ -31,11 +32,11 @@ public class DeltaCalculationCommand implements Command {
 			return false;
 		}
 
-		Map<String, Map<String,Object>> lastReadingsMap = (Map<String, Map<String,Object>>) context.get(FacilioConstants.ContextNames.LAST_READINGS);
-		if(lastReadingsMap==null || lastReadingsMap.isEmpty()) {
+		Map<String, ReadingDataMeta> metaMap = (Map<String, ReadingDataMeta>) context.get(FacilioConstants.ContextNames.READING_DATA_META);
+		if(metaMap==null || metaMap.isEmpty()) {
 			return false;
 		}
-		System.err.println( Thread.currentThread().getName()+"Inside DeltaCommand####### lastReadingMap "+lastReadingsMap);
+		System.err.println( Thread.currentThread().getName()+"Inside DeltaCommand####### lastReadingMap "+metaMap);
 
 		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
 		
@@ -52,10 +53,10 @@ public class DeltaCalculationCommand implements Command {
 				long moduleId=bean.getModule(moduleName).getModuleId();
 				Map<String,FacilioField>  fieldMap = FieldFactory.getAsMap(allFields);
 				for(ReadingContext reading:readings) {
-					setDelta(fieldMap,"totalEnergyConsumption",moduleId, reading,lastReadingsMap,markedList);
-					setDelta(fieldMap,"phaseEnergyR",moduleId,reading,lastReadingsMap,markedList);
-					setDelta(fieldMap,"phaseEnergyY",moduleId,reading,lastReadingsMap,markedList);
-					setDelta(fieldMap,"phaseEnergyB",moduleId,reading,lastReadingsMap,markedList);
+					setDelta(fieldMap,"totalEnergyConsumption",moduleId, reading,metaMap,markedList);
+					setDelta(fieldMap,"phaseEnergyR",moduleId,reading,metaMap,markedList);
+					setDelta(fieldMap,"phaseEnergyY",moduleId,reading,metaMap,markedList);
+					setDelta(fieldMap,"phaseEnergyB",moduleId,reading,metaMap,markedList);
 				}
 			}
 			context.put(FacilioConstants.ContextNames.MARKED_READINGS, markedList);
@@ -69,7 +70,7 @@ public class DeltaCalculationCommand implements Command {
 
 
 	private void setDelta(Map<String,FacilioField>  fieldMap, String fieldName,long moduleId, ReadingContext reading,Map<String, 
-			Map<String,Object>> lastReadingsMap,List<MarkedReadingContext> markedList ) {
+			ReadingDataMeta> metaMap,List<MarkedReadingContext> markedList ) {
 			
 			FacilioField readingField=fieldMap.get(fieldName);
 			FieldType dataType=readingField.getDataTypeEnum();
@@ -82,52 +83,48 @@ public class DeltaCalculationCommand implements Command {
 			long currentTimestamp=reading.getTtime();
 			long resourceId=reading.getParentId();
 			
-			Map<String,Object> oldStats=lastReadingsMap.get(resourceId+"_"+fieldName);
-			if(oldStats==null) {
+			ReadingDataMeta consumptionMeta = metaMap.get(resourceId+"_"+fieldName);
+			if(consumptionMeta == null) {
 				return;
 			}
 			
-			String lastReadingVal=(String)oldStats.get("value");
-			Long lastTimestamp=(Long)oldStats.get("ttime");
-			if(lastReadingVal==null || lastTimestamp==null) {
+			Double lastReading = (Double) consumptionMeta.getValue(); 
+			Long lastTimestamp = consumptionMeta.getTtime();
+			if(lastReading == null || lastTimestamp == null) {
 				return;
 			}
 			
-			if(currentTimestamp<lastTimestamp)  {
+			if(currentTimestamp < lastTimestamp)  {
 				//timestamp check .. for ignoring historical data..
 				return;
 			}
-			Map<String,Object> oldDeltaStats=lastReadingsMap.get(resourceId+"_"+fieldName+"Delta");
-			String lastDeltaReadingVal=null;
-			Long lastDeltaTimestamp=null;
-			
-			if(oldDeltaStats!=null) {
-				lastDeltaReadingVal=(String)oldDeltaStats.get("value");
-				lastDeltaTimestamp=(Long)oldStats.get("ttime");
+			ReadingDataMeta deltaMeta = metaMap.get(resourceId+"_"+fieldName+"Delta");
+			Double lastDeltaReading = null;
+			Long lastDeltaTimestamp = null;
+			if(deltaMeta != null) {
+				lastDeltaReading = (Double) deltaMeta.getValue();
+				lastDeltaTimestamp = deltaMeta.getTtime();
 			}
 			
-			double lastReading =(double)FieldUtil.castOrParseValueAsPerType(dataType, lastReadingVal);
-			Double lastDeltaReading =(Double)FieldUtil.castOrParseValueAsPerType(dataType, lastDeltaReadingVal);
-			double delta=0;
-			if(lastReading==-1 && readingVal!=null) {
+			double delta = 0;
+			if(lastReading == -1 && readingVal != null) {
 				//lastReading  check.. for very first reading 
 				reading.addReading(fieldName+"Delta", delta);
 				return;
 			}
-			double lastDelta=0;
-			if(lastDeltaReading!=null) {
-				
-				lastDelta=lastDeltaReading;
-				lastDelta=ReportsUtil.roundOff(lastDelta, 4);
+			double lastDelta = 0;
+			if(lastDeltaReading != null) {
+				lastDelta = lastDeltaReading;
+				lastDelta = ReportsUtil.roundOff(lastDelta, 4);
 			}
-			long dataInterval=15*60*1000;//this we should get from jace interval from org settings in future
-			long rearmInterval=1*60*1000;//this is an adjuster to consider little above than the given range..
-			double leastMargin=50;// this is the least value above which the delta rule can be considered..
-			MarkType type= MarkType.DECREMENTAL_VALUE;
+			long dataInterval = 15 * 60 * 1000;//this we should get from jace interval from org settings in future
+			long rearmInterval = 1 * 60 * 1000;//this is an adjuster to consider little above than the given range..
+			double leastMargin = 50;// this is the least value above which the delta rule can be considered..
+			MarkType type = MarkType.DECREMENTAL_VALUE;
 			
-			Double currentReading=(Double) FieldUtil.castOrParseValueAsPerType(dataType, readingVal);
-			if(currentReading==null) {
-				currentReading=new Double(0);//if the reading is null.. setting the reading as zero, to set the delta properly..
+			Double currentReading = (Double) FieldUtil.castOrParseValueAsPerType(dataType, readingVal);
+			if(currentReading == null) {
+				currentReading = new Double(0);//if the reading is null.. setting the reading as zero, to set the delta properly..
 			}
 			
 			if(currentReading>=lastReading) { // this check ensures incremental & same reading scenario
@@ -160,8 +157,8 @@ public class DeltaCalculationCommand implements Command {
 					else {
 						//this means missing reading scenario..i.e reading coming after long interval.. 
 
-						if (delta >= 2*lastDelta) {
-							if(timeDiff<=86400000) { 
+						if (delta >= 2 * lastDelta) {
+							if(timeDiff <= 86400000) { 
 								//missing records for 24 hrs or less..
 								//then this reading spike need not be considered for per day graphs i.e hourly plots for a day..
 								type=MarkType.HIGH_VALUE_HOURLY_VIOLATION;
@@ -180,7 +177,7 @@ public class DeltaCalculationCommand implements Command {
 			else {//here current reading equals zero or lesser than last reading scenario..
 
 				reading.addReading(fieldName, lastReading);
-				if(currentReading==0) {
+				if(currentReading == 0) {
 					type=MarkType.ZERO_VALUE;
 				}
 				else if(currentReading<0) {

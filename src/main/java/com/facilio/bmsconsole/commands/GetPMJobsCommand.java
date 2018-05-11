@@ -65,11 +65,11 @@ public class GetPMJobsCommand implements Command {
 			long startTime = (Long) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_STARTTIME);
 			long endTime = (Long) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_ENDTIME);
 			
-			Map<Long, List<PMJobsContext>> pmJobsMap = PreventiveMaintenanceAPI.getPMJobsFromTriggerIds(new ArrayList<>(pmTriggersMap.keySet()), startTime, endTime);
+			Map<Long, List<Map<String, Object>>> pmJobsMap = PreventiveMaintenanceAPI.getPMJobsFromTriggerIds(new ArrayList<>(pmTriggersMap.keySet()), startTime, endTime);
 			
 			Map<Long, PMTriggerContext> pmTriggerMap = new HashMap<>();
 			List<Long> resourceIds = new ArrayList<>();
-			List<PMJobsContext> pmJobList = new ArrayList<>();
+			List<Map<String, Object>> pmJobList = new ArrayList<>();
 			for(PreventiveMaintenance pm : pms) 
 			{
 				List<PMTriggerContext> pmTrigggers = pmTriggersMap.get(pm.getId());
@@ -84,8 +84,7 @@ public class GetPMJobsCommand implements Command {
 						if(trigger.getSchedule().getFrequencyTypeEnum() == ScheduleInfo.FrequencyType.DO_NOT_REPEAT) {
 							if(trigger.getStartTime() > startTime && trigger.getStartTime() <= endTime) {
 								// PMJobsContext pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger.getId(), startTime, false);
-								PMJobsContext pmJob = pmJobsMap.get(trigger.getId()).get(0);
-								Pair<PMJobsContext, PreventiveMaintenance> pair = new ImmutablePair<PMJobsContext, PreventiveMaintenance>(pmJob, pm);
+								Map<String, Object> pmJob = pmJobsMap.get(trigger.getId()).get(0);
 								pmJobList.add(pmJob);
 							}
 						}
@@ -94,13 +93,13 @@ public class GetPMJobsCommand implements Command {
 							switch(pm.getTriggerTypeEnum()) {
 								case ONLY_SCHEDULE_TRIGGER: 
 									// List<PMJobsContext> pmJobs = PreventiveMaintenanceAPI.getNextPMJobs(trigger, startTime, endTime);
-									List<PMJobsContext> pmJobs = pmJobsMap.get(trigger.getId());
+									List<Map<String, Object>> pmJobs = pmJobsMap.get(trigger.getId());
 									if(pmJobs != null && !pmJobs.isEmpty()) {
-										for(PMJobsContext pmJob : pmJobs) {
-											if(pmJob.getTemplateId() != -1)
+										for(Map<String, Object> pmJob : pmJobs) {
+											if(pmJob.get("templateId") != null && (long) pmJob.get("templateId") != -1)
 											{
-												WorkorderTemplate template = (WorkorderTemplate) TemplateAPI.getTemplate(pmJob.getTemplateId());
-												pmJob.setTemplate(template);
+												WorkorderTemplate template = (WorkorderTemplate) TemplateAPI.getTemplate((long) pmJob.get("templateId"));
+												pmJob.put("template", template);
 											}
 											pmJobList.add(pmJob);
 										}
@@ -117,13 +116,13 @@ public class GetPMJobsCommand implements Command {
 								case FIXED:
 								case FLOATING:
 									// PMJobsContext pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger.getId(), startTime, false);
-									PMJobsContext pmJob = pmJobsMap.get(trigger.getId()).get(0);
-									if(pmJob.getNextExecutionTime() > endTime) {
+									Map<String, Object> pmJob = pmJobsMap.get(trigger.getId()).get(0);
+									if((long) pmJob.get("nextExecutionTime") > endTime) {
 										virtualJobsStartTime = -1;
 									}
-									else if(pmJob.getNextExecutionTime() > startTime) {
+									else if((long) pmJob.get("nextExecutionTime") > startTime) {
 										pmJobList.add(pmJob);
-										virtualJobsStartTime = pmJob.getNextExecutionTime();
+										virtualJobsStartTime = (long) pmJob.get("nextExecutionTime");
 									}
 									else {
 										virtualJobsStartTime = startTime;
@@ -131,7 +130,7 @@ public class GetPMJobsCommand implements Command {
 									break;
 							}
 							if(virtualJobsStartTime != -1) {
-								List<PMJobsContext> pmJobs = PreventiveMaintenanceAPI.createPMJobs(pm, trigger, virtualJobsStartTime, endTime, false);
+								List<Map<String, Object>> pmJobs = PreventiveMaintenanceAPI.createProjectedPMJobs(pm, trigger, virtualJobsStartTime, endTime);
 								pmJobList.addAll(pmJobs);
 							}
 						}

@@ -27,7 +27,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportBuildingAction;
 import com.facilio.bmsconsole.actions.ImportFloorAction;
-import com.facilio.bmsconsole.actions.ImportMetaInfo;
+import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.actions.ImportSiteAction;
 import com.facilio.bmsconsole.actions.ImportSpaceAction;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -47,6 +47,7 @@ import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.modules.LookupField;
+import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
@@ -81,14 +82,14 @@ public class ProcessXLS implements Command {
 	    return true;
 	} 
 	
-	public static void processImport(ImportMetaInfo metainfo) throws Exception
+	public static void processImport(ImportProcessContext importProcessContext) throws Exception
 	{
-		System.out.println("All set for importing "+metainfo+" \n" + new Date(System.currentTimeMillis()));
+		System.out.println("All set for importing "+importProcessContext+" \n" + new Date(System.currentTimeMillis()));
 		
-		HashMap<String, String> fieldMapping = metainfo.getFieldMapping();			
+		HashMap<String, String> fieldMapping = importProcessContext.getFieldMapping();			
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
 		List<ReadingContext> readingsList = new ArrayList<ReadingContext>();
-		InputStream ins = fs.readFile(metainfo.getFileId());
+		InputStream ins = fs.readFile(importProcessContext.getFileId());
 		
 		HashMap<Integer, String> headerIndex = new HashMap<Integer, String>();
 		
@@ -167,15 +168,14 @@ public class ProcessXLS implements Command {
 						break;
 					}
 				}
-				System.out.println("Finished loading data from file  "+row_no +" rows . "+metainfo+" \n" + new Date(System.currentTimeMillis()));
 				
-				System.out.println("colVal ---= "+colVal);
+				System.out.println("row -- "+row_no+" colVal --- "+colVal);
 
 				HashMap <String, Object> props = new LinkedHashMap<String,Object>();
 				
-				if(metainfo.getModule().getName().equals(FacilioConstants.ContextNames.ASSET)) {
+				if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET)) {
 					
-					Long spaceId = getSpaceIDforAssets(colVal);
+					Long spaceId = ImportAPI.getSpaceIDforAssets(colVal);
 					 props.put("space", spaceId);
 					 props.put("resourceType", ResourceType.ASSET.getValue());
 					 
@@ -192,7 +192,13 @@ public class ProcessXLS implements Command {
 					
 					if(cellValue != null && !cellValue.toString().equals("")) {
 						
-						FacilioField facilioField = metainfo.getFacilioFieldMapping(metainfo.getModule().getName()).get(key);
+						FacilioField facilioField = null;
+						try {
+							facilioField = importProcessContext.getFacilioFieldMapping().get(key);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 						if(facilioField.getDataTypeEnum().equals(FieldType.LOOKUP)) {
 							LookupField lookupField = (LookupField) facilioField;
 							List<Map<String, Object>> lookupPropsList = getLookupProps(lookupField,cellValue);
@@ -208,150 +214,25 @@ public class ProcessXLS implements Command {
 						props.put(key, cellValue);
 					}
 				});
+				System.out.println("props -- "+props);
 				ReadingContext reading = FieldUtil.getAsBeanFromMap(props, ReadingContext.class);
-				reading.setParentId(metainfo.getAssetId());
+				reading.setParentId(importProcessContext.getAssetId());
 				readingsList.add(reading);
 				
 			}
 		}
 		
-		ProcessXLS.populateData(metainfo, readingsList);
+		ProcessXLS.populateData(importProcessContext, readingsList);
 		
 		workbook.close();
 		
 		System.out.println("IMPORT DONE");
 	}
 	
-	public static Long getSpaceIDforAssets(HashMap<String, Object> colVal) throws Exception {
-
+	public static void populateData(ImportProcessContext importProcessContext,List<ReadingContext> readingsList) throws Exception {
 		
-		String siteName = (String) colVal.get("site");
-		String buildingName = (String) colVal.get("building");
-		String floorName = (String) colVal.get("floor");
-		String spaceName = (String) colVal.get("spaceName");
-		
-		
-		ImportSiteAction siteMeta =new ImportSiteAction();
-		ImportBuildingAction buildingMeta =new ImportBuildingAction();
-		ImportFloorAction floorMeta =new ImportFloorAction();
-		ImportSpaceAction spaceMeta =new ImportSpaceAction();
-		
-		Long siteId = null;
-		Long buildingId = null;
-		Long floorId = null;
-		Long spaceId = null;
-		 if(siteName != null && !siteName.equals("")) {
-			 List<SiteContext> sites = SpaceAPI.getAllSites();
-			 HashMap<String, Long> siteMap = new HashMap();
-			 for(SiteContext siteContext : sites)	
-			 {
-				 siteMap.put(siteContext.getName().trim().toLowerCase(), siteContext.getId());
-			 }
-			 if(siteMap.containsKey(siteName.trim().toLowerCase()))
-			 {
-				siteId = siteMeta.getSiteId(siteName);
-			 }
-			 else
-			 {
-				 siteId = siteMeta.addSite(siteName);
-			 }
-			 if(siteId != null) {
-				 spaceId = siteId;
-			 }
-		 }
-		 
-		 if(buildingName != null && !buildingName.equals("")) {
-			 if(siteId != null) {
-				 buildingId = buildingMeta.getBuildingId(siteId,buildingName);
-			 }
-			 else {
-				 List<BuildingContext> buildings = SpaceAPI.getAllBuildings();
-				 HashMap<String, Long> buildingMap = new HashMap();
-				 for (BuildingContext buildingContext : buildings)
-				 {
-					 buildingMap.put(buildingContext.getName().trim().toLowerCase(), buildingContext.getId());
-				 }
-				 if(buildingMap.containsKey(buildingName.trim().toLowerCase()))
-				 {
-					 buildingId = buildingMeta.getBuildingId(buildingName);
-				 }
-			 }
-			 if(buildingId == null)
-			 {
-				 buildingId = buildingMeta.addBuilding(buildingName, siteId);
-			 }
-			 
-			 if(buildingId != null) {
-				 spaceId = buildingId;
-			 }
-		 }
-		 if(floorName != null && !floorName.equals("")) {
-			if(buildingId != null) {
-				floorId = floorMeta.getFloorId(buildingId,floorName);
-			}
-			else {
-				
-				 List<FloorContext> floors = SpaceAPI.getAllFloors();
-				 HashMap<String, Long> floorMap = new HashMap();
-				 for (FloorContext floorContext : floors)
-				 {
-					 floorMap.put(floorContext.getName().trim().toLowerCase(), floorContext.getId());
-				 }
-				 if(floorMap.containsKey(floorName.trim()))
-				 {
-					 floorId = floorMeta.getFloorId(floorName);
-				 }
-			}
-		    if(floorId == null)
-		    {
-		    	floorId = floorMeta.addFloor(floorName, siteId, buildingId);
-		    }
-		    if(floorId != null) {
-				 spaceId = floorId;
-			 }
-		 }
-
-		 if(spaceName != null && !spaceName.equals("")) {
-			 spaceId = null;
-			 if(floorId != null) {
-				 spaceId = spaceMeta.getSpaceId(floorId,spaceName);
-			 }
-			 else {
-				 List<SpaceContext> spaces = SpaceAPI.getAllSpaces();
-				 HashMap<String, Long> spaceMap = new HashMap();
-				 for (SpaceContext spaceContext : spaces)
-				 {
-					 spaceMap.put(spaceContext.getName().trim().toLowerCase(), spaceContext.getId());
-				 }
-				 if(spaceMap.containsKey(spaceName.trim().toLowerCase()))
-				 {
-					 spaceId = spaceMeta.getSpaceId(spaceName);
-				 }
-			}
-			if(spaceId == null) {
-				 if (floorName == null)
-				 {
-					 spaceId = spaceMeta.addSpace(spaceName, siteId, buildingId);
-				 }
-				 else
-				 {
-				 spaceId = spaceMeta.addSpace(spaceName, siteId, buildingId, floorId);
-				 }
-			}
-		 }
-		colVal.remove("site");
-		colVal.remove("building");
-		colVal.remove("floor");
-		colVal.remove("spaceName");
-		return spaceId;
-	
-	}
-	
-	
-	public static void populateData(ImportMetaInfo metainfo,List<ReadingContext> readingsList) throws Exception {
-		
-		String moduleName=metainfo.getModule().getName();
-		if(metainfo.getModule().getTypeEnum() == ModuleType.READING) {
+		String moduleName=importProcessContext.getModule().getName();
+		if(importProcessContext.getModule().getTypeEnum() == ModuleType.READING) {
 			
 			Map<String, List<ReadingContext>> readingMap= Collections.singletonMap(moduleName, readingsList);
 			FacilioContext context = new FacilioContext();
@@ -427,30 +308,6 @@ public class ProcessXLS implements Command {
 		}
 		return null;
 	}
-	public static JSONArray getColumnHeadings(File excelfile) throws Exception
-	{
-		JSONArray columnheadings = new JSONArray();
-		
-        Workbook workbook = WorkbookFactory.create(excelfile);
-        Sheet datatypeSheet = workbook.getSheetAt(0);
-        
-        Iterator<Row> itr = datatypeSheet.iterator();
-        while (itr.hasNext()) {
-        	Row row = itr.next();
-        	Iterator<Cell> cellItr = row.cellIterator();
-        	while (cellItr.hasNext()) {
-        		Cell cell = cellItr.next();
-        		String cellValue = cell.getStringCellValue();
-        		columnheadings.add(cellValue);
-        	}
-        	break;
-        }
-		workbook.close();
-		
-		return columnheadings;
-	}
-	
-	
 	
 }
 

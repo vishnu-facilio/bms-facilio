@@ -636,6 +636,10 @@ public class DashboardAction extends ActionSupport {
 	public String getReadingReportData() throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioField readingField = modBean.getFieldFromDB(readingFieldId);
+		
+		String parentName = ResourceAPI.getResource(this.parentId).getName();
+		this.entityName = parentName + " ("+readingField.getDisplayName()+")";
+		
 		FacilioModule module = readingField.getModule();
 		reportContext = constructReportObjectForReadingReport(module, readingField);
 		reportModule = module;
@@ -676,6 +680,9 @@ public class DashboardAction extends ActionSupport {
 		readingReport.setxAxisLabel(xAxis.getFieldLabel());
 		if(xAggr != -1) {
 			readingReport.setxAxisaggregateFunction(xAggr);
+		}
+		if (xAggr == 0) {
+			readingReport.setIsHighResolutionReport(true);
 		}
 		
 		ReportFieldContext yAxis = new ReportFieldContext();
@@ -966,6 +973,16 @@ public class DashboardAction extends ActionSupport {
 	
 	public String[] getMeterIds() {
 		return this.meterIds;
+	}
+	
+	private String entityName;
+	
+	public void setEntityName(String entityName) {
+		this.entityName = entityName;
+	}
+	
+	public String getEntityName() {
+		return this.entityName;
 	}
 	
 	private boolean excludeViolatedReadings = false;
@@ -1536,7 +1553,7 @@ public class DashboardAction extends ActionSupport {
 		AggregateOperator xAggregateOpperator = report.getXAxisAggregateOpperator();
 		boolean isGroupBySpace = false;
 		if(!xAggregateOpperator.getValue().equals(NumberAggregateOperator.COUNT.getValue())) {
-			if (xAggr != -1) {
+			if (xAggr > 0) {
 				xAggregateOpperator = AggregateOperator.getAggregateOperator(xAggr);
 				report.setxAxisaggregateFunction(xAggr);
 			}
@@ -1569,7 +1586,7 @@ public class DashboardAction extends ActionSupport {
 				report.setxAxisaggregateFunction(xAggregateOpperator.getValue());
 			}
 			
-			if (getIsHeatMap() || (reportContext.getChartType() != null && reportContext.getChartType().equals(ReportChartType.HEATMAP.getValue())) || !report.getIsHighResolutionReport()) {
+			if (getIsHeatMap() || (reportContext.getChartType() != null && reportContext.getChartType().equals(ReportChartType.HEATMAP.getValue())) || (!report.getIsHighResolutionReport() && xAggr != 0)) {
 				
 				if(xAggregateOpperator instanceof SpaceAggregateOperator) {
 					isGroupBySpace = true;
@@ -1705,8 +1722,10 @@ public class DashboardAction extends ActionSupport {
 		
 		Condition dateCondition = null;
 		Criteria criteria = null;
+		String baseLineName = null;
 		if(baseLineId != -1) {
 			BaseLineContext baseLineContext = BaseLineAPI.getBaseLine(baseLineId);
+			baseLineName = baseLineContext.getName();;
 			DateRange dateRange;
 			if(dateFilter != null) {
 				System.out.println("dateFilter --- "+dateFilter);
@@ -2299,6 +2318,13 @@ public class DashboardAction extends ActionSupport {
 		
 		if (energyMeterValue != null && !"".equalsIgnoreCase(energyMeterValue.trim())) {
 			this.meterIds = energyMeterValue.split(",");
+			EnergyMeterContext meter = DeviceAPI.getEnergyMeter(Long.parseLong(this.meterIds[0]));
+			if (meter != null) {
+				this.entityName = meter.getName();
+			}
+		}
+		if (this.entityName != null && baseLineName != null) {
+			this.entityName += " - " + baseLineName;
 		}
 		
 		if(energyMeterValue != null && !"".equalsIgnoreCase(energyMeterValue.trim()) && isEnergyDataWithTimeFrame && !report.getIsComparisionReport() && report.getY1AxisField() != null) {

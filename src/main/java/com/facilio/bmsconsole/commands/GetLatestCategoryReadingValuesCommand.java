@@ -35,7 +35,10 @@ public class GetLatestCategoryReadingValuesCommand implements Command {
 					count = 1;
 				}
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				List<FacilioField> fields = FieldFactory.getDefaultReadingFields(module);
+				List<FacilioField> fields = new ArrayList<>();
+				Map<String, FacilioField> defaultFieldMap = FieldFactory.getAsMap(FieldFactory.getDefaultReadingFields(module));
+				fields.add(defaultFieldMap.get("ttime"));
+				fields.add(defaultFieldMap.get("actualTtime"));
 				
 				Condition idCondition = new Condition();
 				idCondition.setField(modBean.getField("parentId", module.getName()));

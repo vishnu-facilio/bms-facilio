@@ -812,12 +812,12 @@ public class ModuleFactory {
 		return relModule;
 	}
 	
-	public static FacilioModule getLastReadingModule() {
-		FacilioModule lastReading = new FacilioModule();
-		lastReading.setName("lastReading");
-		lastReading.setDisplayName("Last Reading");
-		lastReading.setTableName("Last_Reading");
-		return lastReading;
+	public static FacilioModule getReadingDataMetaModule() {
+		FacilioModule readingDataMeta = new FacilioModule();
+		readingDataMeta.setName("readingdatameta");
+		readingDataMeta.setDisplayName("Reading Data Meta");
+		readingDataMeta.setTableName("Reading_Data_Meta");
+		return readingDataMeta;
 	}
 	
 	public static FacilioModule getReportVsBaseLine() {
@@ -926,6 +926,14 @@ public class ModuleFactory {
 		dashboardSharing.setName("widgetVsWorkflow");
 		dashboardSharing.setDisplayName("Widget Vs Workflow");
 		dashboardSharing.setTableName("Widget_Vs_Workflow");
+		return dashboardSharing;
+	}
+	
+	public static FacilioModule getImportProcessModule() {
+		FacilioModule dashboardSharing = new FacilioModule();
+		dashboardSharing.setName("importProcess");
+		dashboardSharing.setDisplayName("Import Process");
+		dashboardSharing.setTableName("ImportProcess");
 		return dashboardSharing;
 	}
 

@@ -71,7 +71,7 @@ public class HistoricalENPICalculatorJob extends FacilioJob {
 			if (!readings.isEmpty()) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				List<FacilioField> fieldsList = modBean.getAllFields(enpi.getReadingField().getModule().getName());
-				ReadingsAPI.updateLastReading(fieldsList, Collections.singletonList(readings.get(readings.size() - 1)), null);
+				ReadingsAPI.updateReadingDataMeta(fieldsList, Collections.singletonList(readings.get(readings.size() - 1)), null);
 			}
 			
 			List<EnergyPerformanceIndicatorContext> allEnPIs = EnergyPerformanceIndicatiorAPI.getAllENPIs();

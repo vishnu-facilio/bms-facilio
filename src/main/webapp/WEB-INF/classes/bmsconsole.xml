@@ -1862,7 +1862,7 @@
 			<param name="moduleName">planned</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
-				<param name="includeProperties">pmJobs,pmJobs\[\d+\],pmJobs\[\d+\].*,^pmTriggerMap.*,^pmResourcesMap.*, ^pmMap.*</param>
+				<param name="includeProperties">pmJobList,pmJobList\[\d+\],pmJobList\[\d+\].*,^pmTriggerMap.*,^pmResourcesMap.*, ^pmMap.*</param>
 			</result>
 		</action>
 
@@ -3384,7 +3384,7 @@
 				<!--  <param name="moduleName">setup</param> -->
 				<param name="permission">DATA_ADMINISTRATION</param>
 				<result name="success" type="json">
-				<param name="includeProperties">metainfo.*</param>
+				<param name="includeProperties">importProcessContext.*</param>
 			</result>
 		</action>
 		<action name="processImport" class="com.facilio.bmsconsole.actions.ImportDataAction"
@@ -3664,7 +3664,7 @@
 		<action name="getData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getData">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
-				<param name="includeProperties">^reportData.*,^reportContext.*,^baseLineComparisionDiff.*,^meterIds.*,^readingAlarms.*,^reportColumns.*,^reportFieldLabelMap.*,^variance.*</param>
+				<param name="includeProperties">^reportData.*,^reportContext.*,^baseLineComparisionDiff.*,^entityName.*,^meterIds.*,^readingAlarms.*,^reportColumns.*,^reportFieldLabelMap.*,^variance.*</param>
 			</result>
 		</action>
 		<action name="getReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="getReport">
@@ -3686,7 +3686,7 @@
 		<action name="getReadingReportData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getReadingReportData">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
-				<param name="includeProperties">^reportData.*,^reportContext.*,^baseLineComparisionDiff.*,^readingAlarms.*</param>
+				<param name="includeProperties">^reportData.*,^reportContext.*,^baseLineComparisionDiff.*,^entityName.*,^readingAlarms.*</param>
 			</result>
 		</action>
 		<action name="getTabularData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getTabularData">

@@ -404,7 +404,17 @@ public class ReportContext extends ModuleBaseWithCustomFields {
 	public Integer getSecChartType() {
 		return secChartType;
 	}
-
+	
+	private String chartTypeString;
+	
+	public void setChartTypeString(String chartTypeString) {
+		this.chartTypeString = chartTypeString;
+		this.chartType = ReportChartType.getWidgetChartType(chartTypeString).getValue();
+	}
+	
+	public String getChartTypeString() {
+		return this.chartTypeString;
+	}
 
 	public void setSecChartType(Integer secChartType) {
 		this.secChartType = secChartType;
@@ -550,7 +560,9 @@ public class ReportContext extends ModuleBaseWithCustomFields {
 		TIMESERIES (12,"timeseries",1,1),
 		MATRIX (13,"matrix",1,1),
 		TABULAR (14,"tabular",1,1),
-		SCATTER (15,"scatter",1,1);
+		SCATTER (15,"scatter",1,1),
+		REGRESSION (16,"regression",1,1),
+		TREEMAP (17,"treemap",1,1);
 		
 		private int value;
 		private String name;
