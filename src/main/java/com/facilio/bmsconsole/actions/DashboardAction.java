@@ -1631,10 +1631,12 @@ public class DashboardAction extends ActionSupport {
 			}
 		}
 		
+		String yAxisFieldName = null;
 		if(report.getY1Axis() != null || report.getY1AxisField() != null) {
 			reportY1AxisField = DashboardUtil.getReportField(report.getY1AxisField());
 			AggregateOperator y1AggregateOpperator = report.getY1AxisAggregateOpperator();
 			y1AxisField = reportY1AxisField.getField();
+			yAxisFieldName = y1AxisField.getDisplayName();
 			if(y1AggregateOpperator != null) {
 				y1AxisField = y1AggregateOpperator.getSelectField(y1AxisField);
 			}
@@ -2322,9 +2324,12 @@ public class DashboardAction extends ActionSupport {
 		
 		if (energyMeterValue != null && !"".equalsIgnoreCase(energyMeterValue.trim())) {
 			this.meterIds = energyMeterValue.split(",");
-			EnergyMeterContext meter = DeviceAPI.getEnergyMeter(Long.parseLong(this.meterIds[0]));
-			if (meter != null) {
-				this.entityName = meter.getName();
+			ResourceContext res = ResourceAPI.getResource(Long.parseLong(this.meterIds[0]));
+			if (res != null) {
+				this.entityName = res.getName();
+			}
+			if (yAxisFieldName != null) {
+				this.entityName = yAxisFieldName + " ("+this.entityName+")";
 			}
 		}
 		if (this.entityName != null && baseLineName != null) {
