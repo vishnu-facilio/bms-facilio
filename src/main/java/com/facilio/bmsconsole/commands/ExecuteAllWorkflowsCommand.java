@@ -23,6 +23,7 @@ import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.ActionContext;
@@ -106,29 +107,38 @@ public class ExecuteAllWorkflowsCommand implements Command
 			Criteria criteria = new Criteria();
 			
 			for(WorkflowRuleContext workflowRule : workflowRules) {
-				Map<String, Object> rulePlaceHolders = workflowRule.constructPlaceHolders(moduleName, record, recordPlaceHolders, (FacilioContext) context);
-				boolean miscFlag = false, criteriaFlag = false, workflowFlag = false;
-				miscFlag = workflowRule.evaluateMisc(moduleName, record, rulePlaceHolders, (FacilioContext) context);
-				if (miscFlag) {
-					criteriaFlag = workflowRule.evaluateCriteria(moduleName, record, rulePlaceHolders, (FacilioContext) context);
-					if (criteriaFlag) {
-						workflowFlag = workflowRule.evaluateWorkflowExpression(moduleName, record, rulePlaceHolders, (FacilioContext) context);
+				try {
+					Map<String, Object> rulePlaceHolders = workflowRule.constructPlaceHolders(moduleName, record, recordPlaceHolders, (FacilioContext) context);
+					boolean miscFlag = false, criteriaFlag = false, workflowFlag = false;
+					miscFlag = workflowRule.evaluateMisc(moduleName, record, rulePlaceHolders, (FacilioContext) context);
+					if (miscFlag) {
+						criteriaFlag = workflowRule.evaluateCriteria(moduleName, record, rulePlaceHolders, (FacilioContext) context);
+						if (criteriaFlag) {
+							workflowFlag = workflowRule.evaluateWorkflowExpression(moduleName, record, rulePlaceHolders, (FacilioContext) context);
+						}
 					}
-				}
-				
-				boolean result = criteriaFlag && workflowFlag && miscFlag;
-				if(result) {
-					executeWorkflowActions(workflowRule, record, context, rulePlaceHolders);
-					if(workflowRule.getRuleTypeEnum().stopFurtherRuleExecution()) {
-						itr.remove();
-						break;
+					
+					boolean result = criteriaFlag && workflowFlag && miscFlag;
+					if(result) {
+						executeWorkflowActions(workflowRule, record, context, rulePlaceHolders);
+						if(workflowRule.getRuleTypeEnum().stopFurtherRuleExecution()) {
+							itr.remove();
+							break;
+						}
 					}
+					
+					Criteria currentCriteria = new Criteria();
+					currentCriteria.addAndCondition(CriteriaAPI.getCondition(parentRule, String.valueOf(workflowRule.getId()), NumberOperators.EQUALS));
+					currentCriteria.addAndCondition(CriteriaAPI.getCondition(onSuccess, String.valueOf(result), BooleanOperators.IS));
+					criteria.orCriteria(currentCriteria);
 				}
-				
-				Criteria currentCriteria = new Criteria();
-				currentCriteria.addAndCondition(CriteriaAPI.getCondition(parentRule, String.valueOf(workflowRule.getId()), NumberOperators.EQUALS));
-				currentCriteria.addAndCondition(CriteriaAPI.getCondition(onSuccess, String.valueOf(result), BooleanOperators.IS));
-				criteria.orCriteria(currentCriteria);
+				catch (Exception e) {
+					System.out.println("Error during execution of rule : "+workflowRule.getId());
+					if (record instanceof ModuleBaseWithCustomFields) {
+						System.out.println("For Record : "+((ModuleBaseWithCustomFields)record).getId()+" of module : "+moduleName);
+					}
+					throw e;
+				}
 			}
 			return criteria;
 		}
