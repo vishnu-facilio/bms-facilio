@@ -636,6 +636,10 @@ public class DashboardAction extends ActionSupport {
 	public String getReadingReportData() throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioField readingField = modBean.getFieldFromDB(readingFieldId);
+		
+		String parentName = ResourceAPI.getResource(this.parentId).getName();
+		this.entityName = parentName + " ("+readingField.getDisplayName()+")";
+		
 		FacilioModule module = readingField.getModule();
 		reportContext = constructReportObjectForReadingReport(module, readingField);
 		reportModule = module;
@@ -966,6 +970,16 @@ public class DashboardAction extends ActionSupport {
 	
 	public String[] getMeterIds() {
 		return this.meterIds;
+	}
+	
+	private String entityName;
+	
+	public void setEntityName(String entityName) {
+		this.entityName = entityName;
+	}
+	
+	public String getEntityName() {
+		return this.entityName;
 	}
 	
 	private boolean excludeViolatedReadings = false;
@@ -1705,8 +1719,10 @@ public class DashboardAction extends ActionSupport {
 		
 		Condition dateCondition = null;
 		Criteria criteria = null;
+		String baseLineName = null;
 		if(baseLineId != -1) {
 			BaseLineContext baseLineContext = BaseLineAPI.getBaseLine(baseLineId);
+			baseLineName = baseLineContext.getName();;
 			DateRange dateRange;
 			if(dateFilter != null) {
 				System.out.println("dateFilter --- "+dateFilter);
@@ -2299,6 +2315,13 @@ public class DashboardAction extends ActionSupport {
 		
 		if (energyMeterValue != null && !"".equalsIgnoreCase(energyMeterValue.trim())) {
 			this.meterIds = energyMeterValue.split(",");
+			EnergyMeterContext meter = DeviceAPI.getEnergyMeter(Long.parseLong(this.meterIds[0]));
+			if (meter != null) {
+				this.entityName = meter.getName();
+			}
+		}
+		if (this.entityName != null && baseLineName != null) {
+			this.entityName += " - " + baseLineName;
 		}
 		
 		if(energyMeterValue != null && !"".equalsIgnoreCase(energyMeterValue.trim()) && isEnergyDataWithTimeFrame && !report.getIsComparisionReport() && report.getY1AxisField() != null) {
