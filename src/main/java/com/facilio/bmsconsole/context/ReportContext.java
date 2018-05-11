@@ -404,7 +404,17 @@ public class ReportContext extends ModuleBaseWithCustomFields {
 	public Integer getSecChartType() {
 		return secChartType;
 	}
-
+	
+	private String chartTypeString;
+	
+	public void setChartTypeString(String chartTypeString) {
+		this.chartTypeString = chartTypeString;
+		this.chartType = ReportChartType.getWidgetChartType(chartTypeString).getValue();
+	}
+	
+	public String getChartTypeString() {
+		return this.chartTypeString;
+	}
 
 	public void setSecChartType(Integer secChartType) {
 		this.secChartType = secChartType;

@@ -681,6 +681,9 @@ public class DashboardAction extends ActionSupport {
 		if(xAggr != -1) {
 			readingReport.setxAxisaggregateFunction(xAggr);
 		}
+		if (xAggr == 0) {
+			readingReport.setIsHighResolutionReport(true);
+		}
 		
 		ReportFieldContext yAxis = new ReportFieldContext();
 		yAxis.setModuleField(readingField);
@@ -1550,7 +1553,7 @@ public class DashboardAction extends ActionSupport {
 		AggregateOperator xAggregateOpperator = report.getXAxisAggregateOpperator();
 		boolean isGroupBySpace = false;
 		if(!xAggregateOpperator.getValue().equals(NumberAggregateOperator.COUNT.getValue())) {
-			if (xAggr != -1) {
+			if (xAggr > 0) {
 				xAggregateOpperator = AggregateOperator.getAggregateOperator(xAggr);
 				report.setxAxisaggregateFunction(xAggr);
 			}
@@ -1583,7 +1586,7 @@ public class DashboardAction extends ActionSupport {
 				report.setxAxisaggregateFunction(xAggregateOpperator.getValue());
 			}
 			
-			if (getIsHeatMap() || (reportContext.getChartType() != null && reportContext.getChartType().equals(ReportChartType.HEATMAP.getValue())) || !report.getIsHighResolutionReport()) {
+			if (getIsHeatMap() || (reportContext.getChartType() != null && reportContext.getChartType().equals(ReportChartType.HEATMAP.getValue())) || (!report.getIsHighResolutionReport() && xAggr != 0)) {
 				
 				if(xAggregateOpperator instanceof SpaceAggregateOperator) {
 					isGroupBySpace = true;
