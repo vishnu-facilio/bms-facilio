@@ -812,12 +812,12 @@ public class ModuleFactory {
 		return relModule;
 	}
 	
-	public static FacilioModule getLastReadingModule() {
-		FacilioModule lastReading = new FacilioModule();
-		lastReading.setName("lastReading");
-		lastReading.setDisplayName("Last Reading");
-		lastReading.setTableName("Last_Reading");
-		return lastReading;
+	public static FacilioModule getReadingDataMetaModule() {
+		FacilioModule readingDataMeta = new FacilioModule();
+		readingDataMeta.setName("readingdatameta");
+		readingDataMeta.setDisplayName("Reading Data Meta");
+		readingDataMeta.setTableName("Reading_Data_Meta");
+		return readingDataMeta;
 	}
 	
 	public static FacilioModule getReportVsBaseLine() {

@@ -449,7 +449,7 @@ public class DeviceAPI
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 //				FacilioField deltaField= modBean.getField("totalEnergyConsumptionDelta", FacilioConstants.ContextNames.ENERGY_DATA_READING);
 				List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ENERGY_DATA_READING);
-				ReadingsAPI.updateLastReading(fields, Collections.singletonList(lastReading), null);
+				ReadingsAPI.updateReadingDataMeta(fields, Collections.singletonList(lastReading), null);
 			}
 		}
 	}

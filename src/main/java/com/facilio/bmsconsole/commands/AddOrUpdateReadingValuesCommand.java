@@ -17,6 +17,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -50,7 +51,7 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 		}
 //		System.err.println( Thread.currentThread().getName()+"Inside AddorUpdateCommand#######  "+readingMap);
 		
-		Map<String, Map<String,Object>> lastReadingMap =(Map<String, Map<String,Object>>)context.get(FacilioConstants.ContextNames.LAST_READINGS);
+		Map<String, ReadingDataMeta> lastReadingMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.READING_DATA_META);
 		if (readingMap != null && !readingMap.isEmpty()) {
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			boolean useControllerDataInterval = useControllerDataInterval(readingMap);
@@ -77,7 +78,7 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 		return false;
 	}
 	
-	private List<ReadingContext> addDefaultPropsAndGetReadingsToBeAdded(FacilioModule module, List<FacilioField> fields, List<ReadingContext> readings, Map<String, Map<String,Object>> lastReadingMap, boolean useControllerDataInterval, boolean updateLastReading) throws Exception {
+	private List<ReadingContext> addDefaultPropsAndGetReadingsToBeAdded(FacilioModule module, List<FacilioField> fields, List<ReadingContext> readings, Map<String, ReadingDataMeta> metaMap, boolean useControllerDataInterval, boolean updateLastReading) throws Exception {
 		List<ReadingContext> readingsToBeAdded = new ArrayList<>();
 		for(ReadingContext reading : readings) {
 			if(reading.getTtime() == -1) {
@@ -91,7 +92,7 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 				readingsToBeAdded.add(reading);
 			}
 			else {
-				updateReading(module, fields, reading,lastReadingMap, updateLastReading);
+				updateReading(module, fields, reading, metaMap, updateLastReading);
 			}
 		}
 		return readingsToBeAdded;
@@ -154,7 +155,7 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 	}
 	
 	private void addReadings(FacilioModule module, List<FacilioField> fields, List<ReadingContext> readings,
-			Map<String, Map<String,Object>> lastReadingMap, boolean isUpdateLastReading) throws Exception {
+			Map<String, ReadingDataMeta> metaMap, boolean isUpdateLastReading) throws Exception {
 		
 //		System.err.println( Thread.currentThread().getName()+"Inside addReadings in  AddorUpdateCommand#######  "+readings);
 
@@ -164,14 +165,14 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 																	.addRecords(readings);
 		readingBuilder.save();
 		if (isUpdateLastReading) {
-			ReadingsAPI.updateLastReading(fields,readings,lastReadingMap);
+			ReadingsAPI.updateReadingDataMeta(fields,readings,metaMap);
 		}
 //		System.err.println( Thread.currentThread().getName()+"Exiting addReadings in  AddorUpdateCommand#######  ");
 
 	}
 	
 	private void updateReading(FacilioModule module, List<FacilioField> fields, ReadingContext reading,
-			Map<String, Map<String,Object>> lastReadingMap, boolean isUpdateLastReading) throws Exception {
+			Map<String, ReadingDataMeta> metaMap, boolean isUpdateLastReading) throws Exception {
 		System.err.println( Thread.currentThread().getName()+"Inside updateReadings in  AddorUpdateCommand#######  "+reading);
 
 		UpdateRecordBuilder<ReadingContext> updateBuilder = new UpdateRecordBuilder<ReadingContext>()
@@ -180,7 +181,7 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 																	.andCondition(CriteriaAPI.getIdCondition(reading.getId(), module));
 		updateBuilder.update(reading);
 		if (isUpdateLastReading) {
-			ReadingsAPI.updateLastReading(fields,Collections.singletonList(reading),lastReadingMap);
+			ReadingsAPI.updateReadingDataMeta(fields,Collections.singletonList(reading),metaMap);
 		}
 		
 		System.err.println( Thread.currentThread().getName()+"Exiting updateReadings in  AddorUpdateCommand#######  ");

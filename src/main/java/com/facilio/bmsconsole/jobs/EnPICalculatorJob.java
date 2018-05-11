@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.EnergyPerformanceIndicatorContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.bmsconsole.util.DateTimeUtil;
@@ -43,8 +44,8 @@ public class EnPICalculatorJob extends FacilioJob {
 						EnergyPerformanceIndicatorContext enpi = it.next();
 						if(isCalculatable(enpi, calculatedFieldIds)) {
 							try {
-								Map<String, Object> lastReading = ReadingsAPI.getLastReading(enpi.getSpaceId(), enpi.getReadingFieldId());
-								long lastReadingTime = (long) lastReading.get("ttime");
+								ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(enpi.getSpaceId(), enpi.getReadingField());
+								long lastReadingTime = meta.getTtime();
 								ZonedDateTime zdt = DateTimeUtil.getDateTime(lastReadingTime).plusHours(1).truncatedTo(ChronoUnit.HOURS);
 								long startTime = DateTimeUtil.getMillis(zdt, true);
 								

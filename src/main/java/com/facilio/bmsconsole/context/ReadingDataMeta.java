@@ -1,0 +1,110 @@
+package com.facilio.bmsconsole.context;
+
+import com.facilio.bmsconsole.modules.FacilioField;
+
+public class ReadingDataMeta {
+	private long orgId = -1;
+	public long getOrgId() {
+		return orgId;
+	}
+	public void setOrgId(long orgId) {
+		this.orgId = orgId;
+	}
+	
+	private long resourceId = -1;
+	public long getResourceId() {
+		return resourceId;
+	}
+	public void setResourceId(long resourceId) {
+		this.resourceId = resourceId;
+	}
+	
+	private long fieldId = -1;
+	public long getFieldId() {
+		return fieldId;
+	}
+	public void setFieldId(long fieldId) {
+		this.fieldId = fieldId;
+	}
+	
+	private FacilioField field;
+	public FacilioField getField() {
+		return field;
+	}
+	public void setField(FacilioField field) {
+		this.field = field;
+	}
+
+	private long ttime = -1;
+	public long getTtime() {
+		return ttime;
+	}
+	public void setTtime(long ttime) {
+		this.ttime = ttime;
+	}
+	
+	private Object value;
+	public Object getValue() {
+		return value;
+	}
+	public void setValue(Object value) {
+		this.value = value;
+	}
+
+	private long readingDataId = -1;
+	public long getReadingDataId() {
+		return readingDataId;
+	}
+	public void setReadingDataId(long readingDataId) {
+		this.readingDataId = readingDataId;
+	}
+	
+	private ReadingInputType inputType;
+	public ReadingInputType getInputTypeEnum() {
+		return inputType;
+	}
+	public void setInputType(ReadingInputType inputType) {
+		this.inputType = inputType;
+	}
+	public int getInputType() {
+		if (inputType != null) {
+			return inputType.getValue();
+		}
+		return -1;
+	}
+	public void setInputType(int inputType) {
+		this.inputType = ReadingInputType.valueOf(inputType);
+	}
+
+	public static enum ReadingInputType {
+		WEB,
+		TASK,
+		CONTROLLER,
+		FORMULA_FIELD
+		;
+		
+		public int getValue() {
+			return ordinal()+1;
+		}
+		public static ReadingInputType valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		StringBuilder builder =  new StringBuilder()
+										.append(", Org Id : ").append(orgId)
+										.append(", Resource ID : ").append(resourceId)
+										.append(", Field ID : ").append(fieldId)
+										.append(", Ttime : ").append(ttime)
+										.append(", Value : ").append(value)
+										.append(", Reading Data ID : ").append(readingDataId)
+										.append(", Input Type : "+inputType);
+		return builder.toString();
+	}
+}

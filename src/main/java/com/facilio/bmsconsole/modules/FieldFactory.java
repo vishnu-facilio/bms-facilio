@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.modules;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -3189,14 +3190,16 @@ public class FieldFactory {
 		return fields;
 	}
 
-	public static List<FacilioField> getLastReadingFields() {
-		FacilioModule module = ModuleFactory.getLastReadingModule();
+	public static List<FacilioField> getReadingDataMetaFields() {
+		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(getOrgIdField(module));
 		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.NUMBER));
 		fields.add(getField("fieldId", "FIELD_ID", module, FieldType.NUMBER));
 		fields.add(getField("ttime", "TTIME", module, FieldType.NUMBER));
 		fields.add(getField("value", "VALUE", module, FieldType.STRING));
+		fields.add(getField("readingDataId", "READING_DATA_ID", module, FieldType.NUMBER));
+		fields.add(getField("inputType", "INPUT_TYPE", module, FieldType.NUMBER));
 		return fields;
 	}
 	
@@ -3534,10 +3537,22 @@ public class FieldFactory {
 		return columnFld;
 	}
 	
-	public static Map<String, FacilioField> getAsMap(List<FacilioField> fields) {
+	public static Map<String, FacilioField> getAsMap(Collection<FacilioField> fields) {
 		return fields.stream()
 				.collect(
 						Collectors.toMap(FacilioField::getName, 
+										Function.identity(), 
+										(prevValue, curValue) -> {
+											return prevValue;
+										}
+									)
+						);
+	}
+	
+	public static Map<Long, FacilioField> getAsIdMap(Collection<FacilioField> fields) {
+		return fields.stream()
+				.collect(
+						Collectors.toMap(FacilioField::getFieldId, 
 										Function.identity(), 
 										(prevValue, curValue) -> {
 											return prevValue;
