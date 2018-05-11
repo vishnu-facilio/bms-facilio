@@ -1561,7 +1561,11 @@ public class DashboardAction extends ActionSupport {
 				
 				int oprId =  dateFilter != null ? DashboardUtil.predictDateOpperator(dateFilter) : report.getDateFilter().getOperatorId();
 				
-				if(getIsHeatMap() || (reportContext.getChartType() != null && reportContext.getChartType().equals(ReportChartType.HEATMAP.getValue()))) {
+				boolean isRegression = (reportContext.getChartType() != null && reportContext.getChartType().equals(ReportChartType.REGRESSION.getValue()));
+				if (isRegression) {
+					xAggregateOpperator = FormulaContext.DateAggregateOperator.FULLDATE;
+				}
+				else if(getIsHeatMap() || (reportContext.getChartType() != null && reportContext.getChartType().equals(ReportChartType.HEATMAP.getValue()))) {
 					xAggregateOpperator = FormulaContext.DateAggregateOperator.HOURSOFDAYONLY;
 					report.setChartType(ReportChartType.HEATMAP.getValue());
 				}
@@ -1586,7 +1590,7 @@ public class DashboardAction extends ActionSupport {
 				report.setxAxisaggregateFunction(xAggregateOpperator.getValue());
 			}
 			
-			if (getIsHeatMap() || (reportContext.getChartType() != null && reportContext.getChartType().equals(ReportChartType.HEATMAP.getValue())) || (!report.getIsHighResolutionReport() && xAggr != 0)) {
+			if (getIsHeatMap() || (reportContext.getChartType() != null && reportContext.getChartType().equals(ReportChartType.HEATMAP.getValue())) || (!report.getIsHighResolutionReport() && xAggr != 0 && (reportContext.getChartType() != null))) {
 				
 				if(xAggregateOpperator instanceof SpaceAggregateOperator) {
 					isGroupBySpace = true;
