@@ -3378,7 +3378,7 @@
 				<!--  <param name="moduleName">setup</param> -->
 				<param name="permission">DATA_ADMINISTRATION</param>
 				<result name="success" type="json">
-				<param name="includeProperties">metainfo.*</param>
+				<param name="includeProperties">importProcessContext.*</param>
 			</result>
 		</action>
 		<action name="processImport" class="com.facilio.bmsconsole.actions.ImportDataAction"

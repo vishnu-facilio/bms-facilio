@@ -3506,6 +3506,25 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	public static List<FacilioField> getImportProcessFields() {
+		FacilioModule module = ModuleFactory.getImportProcessModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getField("id", "ID", module, FieldType.NUMBER));
+		fields.add(getOrgIdField(module));
+		fields.add(getModuleIdField(module));
+		fields.add(getField("status", "STATUS", module, FieldType.NUMBER));
+		fields.add(getField("columnHeadingString", "COLUMN_HEADING", module, FieldType.STRING));
+		fields.add(getField("filePath", "FILE_PATH", module, FieldType.STRING));
+		fields.add(getField("fileId", "FILEID", module, FieldType.NUMBER));
+		fields.add(getField("filePathFailed", "FILE_PATH_FAILED", module, FieldType.STRING));
+		fields.add(getField("fieldMappingString", "FIELD_MAPPING", module, FieldType.STRING));
+		fields.add(getField("importTime", "IMPORT_TIME", module, FieldType.NUMBER));
+		fields.add(getField("importType", "IMPORT_TYPE", module, FieldType.NUMBER));
+		
+		return fields;
+	}
+	
 	public static FacilioField getField(String name, String colName, FacilioModule module, FieldType type) {
 		return getField(name, null, colName, module, type);
 	}

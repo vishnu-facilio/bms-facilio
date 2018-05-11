@@ -928,6 +928,14 @@ public class ModuleFactory {
 		dashboardSharing.setTableName("Widget_Vs_Workflow");
 		return dashboardSharing;
 	}
+	
+	public static FacilioModule getImportProcessModule() {
+		FacilioModule dashboardSharing = new FacilioModule();
+		dashboardSharing.setName("importProcess");
+		dashboardSharing.setDisplayName("Import Process");
+		dashboardSharing.setTableName("ImportProcess");
+		return dashboardSharing;
+	}
 
 	public static FacilioModule getAnalyticsAnomalyModule() {
 		FacilioModule analyticsAnomalyJob = new FacilioModule();
