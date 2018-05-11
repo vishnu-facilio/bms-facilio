@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
@@ -17,6 +18,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TaskContext;
@@ -45,7 +47,11 @@ import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
+import com.facilio.sql.GenericInsertRecordBuilder;
+import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
+
+import freemarker.template.TemplateModelWithAPISupport;
 
 public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
@@ -254,6 +260,109 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		updateBuilder.update(FieldUtil.getAsProperties(updatePm));
 	}
 	
+	public List<Map<String, Object>> CopyPlannedMaintenance() throws Exception
+	{
+		System.out.println("___________>>>>>>>>>>OrgID: "+AccountUtil.getCurrentOrg().getId());
+		
+		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
+		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
+		
+		Map<String, FacilioField> pmFieldsMap = FieldFactory.getAsMap(fields);
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(fields)
+														.table(module.getTableName())
+														.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getId());
+						
+	// selectBuilder.limit(1);													
+	List<Map<String, Object>> props = selectBuilder.get();
+	
+	if(props != null && !props.isEmpty())
+	{
+	System.out.println("Number of Pm's in the Org:"+props.size());
+	for (Map<String, Object> prop : props) {
+		long templateId = (Long)prop.get("templateId");
+		WorkorderTemplate woTemplate = (WorkorderTemplate) TemplateAPI.getTemplate(templateId);
+		WorkorderTemplate woNewTemplate = new WorkorderTemplate();
+		// prop.put("categoryName", TicketAPI.getCategory(AccountUtil.getCurrentOrg().getId(), (Long)prop.get("categoryId")).getName());
+		woNewTemplate.setName(woTemplate.getName());
+		woNewTemplate.setTasks(woTemplate.getTasks());
+		prop.put("template", woNewTemplate);
+		
+		
+		
+		/*	Map<String, List<TaskContext>> taskMap = woTemplate.getTasks();
+		
+		Iterator itr = taskMap.keySet().iterator();
+		while (itr.hasNext()) {
+			String section = (String) itr.next();
+			for (TaskContext tc : woTemplate.getTasks().get(section)) {
+				System.out.println("Number of Pm in the Org: ["+section+"] "+ FieldUtil.getAsJSON(tc));
+			}
+		}*/
+		
+//		for(String key : prop.keySet()){
+//			System.out.println(key + " : "+prop.get(key));
+//			/*long templateId = (Long)prop.get("templateId");
+//			WorkorderTemplate woTemplate = (WorkorderTemplate) TemplateAPI.getTemplate(templateId);
+//			woTemplate.setOrgId(newOrgId);
+//			TemplateAPI.addPMWorkOrderTemplate(woTemplate);
+//		*/
+//		}
+	}
+												
+	return props;
+	}
+	return null;
+	}
+	
+	@Override
+	public PreventiveMaintenance CopyWritePlannedMaintenance(List<Map<String, Object>> props) throws Exception
+	{
+		
+		System.out.println("___________>>>>>>>>>>New OrgID: "+AccountUtil.getCurrentOrg().getId());
+		for (Map<String, Object> prop : props) {
+			// System.out.println("$$$$$$$$$$woTemplate:"+prop.get("template"));
+			
+			WorkorderTemplate woTemplate = (WorkorderTemplate) prop.get("template");
+			// String category = (String) prop.get("categoryName");
+			long orgId = AccountUtil.getCurrentOrg().getId();
+			// long categoryId = TicketAPI.getCategory(orgId, category).getId();
+			// woTemplate.getOriginalTemplate();
+			// System.out.println("+++++++++++++++++" +FieldUtil.getAsJSON(woTemplate));
+			// woTemplate.setCategoryId(categoryId);
+			woTemplate.setOrgId(orgId);
+			long tempId = TemplateAPI.addPMWorkOrderTemplate(woTemplate);
+			System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<" +tempId);
+			
+			PreventiveMaintenance newPm = new PreventiveMaintenance();
+			
+			newPm.setTitle((String) prop.get("title"));
+			newPm.setTemplateId(tempId);
+			newPm.setCreatedById(AccountUtil.getOrgBean().getSuperAdmin(orgId).getId());
+			newPm.setOrgId(orgId);
+			newPm.setCreatedTime(System.currentTimeMillis());
+			newPm.setStatus(false);
+			newPm.setTriggerType(4);
+			
+			Map<String, Object> pmProps = FieldUtil.getAsProperties(newPm);
+
+			GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+					.table(ModuleFactory.getPreventiveMaintenancetModule().getTableName())
+					.fields(FieldFactory.getPreventiveMaintenanceFields()).addRecord(pmProps);
+			builder.save();
+			long id = (long) pmProps.get("id");
+			
+			System.out.println(">>>>>>>>>>>>>>>>>>>> PM ID: "+id);
+//			for(String key : prop.keySet()){
+////		long templateId = (Long)prop.get("template");
+////		WorkorderTemplate woTemplate = (WorkorderTemplate) TemplateAPI.getTemplate(templateId);
+//		
+//			}
+		}
+		
+		return null;
+	}
+	
 	@Override
 	public WorkOrderContext CloseAllWorkOrder() throws Exception
 	{
@@ -309,7 +418,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			// System.out.println("===============LLLLLLLLL FL "+modBean.getAllFields(FacilioConstants.ContextNames.TICKET));
 			
 			
-			if (tasks != null)
+			if (tasks != null && !tasks.isEmpty())
 			{
 				StringJoiner taskids = new StringJoiner(",");
 				List<Long> taskIdList = new ArrayList<>();
