@@ -3,10 +3,8 @@ package com.facilio.bmsconsole.util;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import org.apache.commons.chain.Chain;
@@ -406,8 +404,8 @@ public class DeviceAPI
 		for(Map<String, Object> childProp : childProps) {
 			childMeterIds.add((Long) childProp.get("childMeterId"));
 		}
-		Set<ReadingContext> completeReadings = getChildMeterReadings(childMeterIds, startTime, endTime, minutesInterval);
-		if(completeReadings == null || completeReadings.isEmpty()) {
+		List<ReadingContext> completeReadings = getChildMeterReadings(childMeterIds, startTime, endTime, minutesInterval);
+		if(completeReadings.isEmpty()) {
 			return;
 		}
 		List<ReadingContext> vmReadings = new ArrayList<ReadingContext>();
@@ -426,7 +424,7 @@ public class DeviceAPI
 				}
 			}
 			ReadingContext virtualMeterReading = calculateVMReading(meter,intervalReadings, childMeterIds);
-			completeReadings.removeAll(intervalReadings);
+//			completeReadings.removeAll(intervalReadings);
 			if(virtualMeterReading != null) {
 				vmReadings.add(virtualMeterReading);
 				intervalReadings=new ArrayList<ReadingContext>();
@@ -456,7 +454,7 @@ public class DeviceAPI
 		}
 	}
 
-	private static Set<ReadingContext> getChildMeterReadings(List<Long> childIds, long startTime, long endTime, int minutesInterval) throws Exception{
+	private static List<ReadingContext> getChildMeterReadings(List<Long> childIds, long startTime, long endTime, int minutesInterval) throws Exception{
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioField meterField=modBean.getField("parentId", FacilioConstants.ContextNames.ENERGY_DATA_READING);
@@ -489,16 +487,7 @@ public class DeviceAPI
 				.groupBy("PARENT_METER_ID,TTIME/"+timeInterval)
 				.orderBy("ttime");
 
-		List<ReadingContext> readings = getReadings.get();
-		
-		if (readings != null && !readings.isEmpty()) {
-			Set<ReadingContext> readingSet = new LinkedHashSet<>();
-			for (ReadingContext reading : readings) {
-				readingSet.add(reading);
-			}
-			return readingSet;
-		}
-		return null;
+		return getReadings.get();
 
 	}
 	
