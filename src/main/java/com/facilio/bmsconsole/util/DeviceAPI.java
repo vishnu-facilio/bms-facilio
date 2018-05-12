@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.util;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -404,7 +406,7 @@ public class DeviceAPI
 		for(Map<String, Object> childProp : childProps) {
 			childMeterIds.add((Long) childProp.get("childMeterId"));
 		}
-		List<ReadingContext> completeReadings = getChildMeterReadings(childMeterIds, startTime, endTime, minutesInterval);
+		List<ReadingContext> completeReadings = new LinkedList<>(getChildMeterReadings(childMeterIds, startTime, endTime, minutesInterval));
 		if(completeReadings.isEmpty()) {
 			return;
 		}
@@ -413,11 +415,14 @@ public class DeviceAPI
 		for(Map.Entry<Long, Long> map:intervalMap.entrySet()) {
 			double iStartTime = Math.floor(map.getKey()/1000);
 			double iEndTime = Math.floor(map.getValue()/1000);
-			for(ReadingContext reading:completeReadings) {
-
+			
+			Iterator<ReadingContext> itr = completeReadings.iterator();
+			while (itr.hasNext()) {
+				ReadingContext reading= itr.next();
 				double ttime = Math.floor(reading.getTtime()/1000); //Checking only in second level
 				if(ttime >= iStartTime && ttime <= iEndTime) {
 					intervalReadings.add(reading);
+					itr.remove();
 				}
 				else {
 					break;
@@ -425,10 +430,10 @@ public class DeviceAPI
 			}
 			ReadingContext virtualMeterReading = calculateVMReading(meter,intervalReadings, childMeterIds);
 			System.out.println("Vm : ");
-			System.out.println(intervalReadings);
+			System.out.println(intervalReadings.size());
 			System.out.println(virtualMeterReading);
 			System.out.println(completeReadings.size());
-			completeReadings.removeAll(intervalReadings);
+//			completeReadings.removeAll(intervalReadings);
 			if(virtualMeterReading != null) {
 				vmReadings.add(virtualMeterReading);
 				intervalReadings=new ArrayList<ReadingContext>();
