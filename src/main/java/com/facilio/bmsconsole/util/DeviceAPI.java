@@ -3,8 +3,10 @@ package com.facilio.bmsconsole.util;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.apache.commons.chain.Chain;
@@ -404,7 +406,7 @@ public class DeviceAPI
 		for(Map<String, Object> childProp : childProps) {
 			childMeterIds.add((Long) childProp.get("childMeterId"));
 		}
-		List<ReadingContext> completeReadings = getChildMeterReadings(childMeterIds, startTime, endTime, minutesInterval);
+		Set<ReadingContext> completeReadings = new LinkedHashSet<>(getChildMeterReadings(childMeterIds, startTime, endTime, minutesInterval));
 		if(completeReadings.isEmpty()) {
 			return;
 		}
