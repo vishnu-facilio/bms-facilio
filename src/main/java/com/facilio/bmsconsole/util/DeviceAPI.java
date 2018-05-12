@@ -411,12 +411,12 @@ public class DeviceAPI
 		List<ReadingContext> vmReadings = new ArrayList<ReadingContext>();
 		List<ReadingContext> intervalReadings=new ArrayList<ReadingContext>();
 		for(Map.Entry<Long, Long> map:intervalMap.entrySet()) {
-			long iStartTime=map.getKey();
-			long iEndTime=map.getValue();
+			double iStartTime = Math.floor(map.getKey()/1000);
+			double iEndTime = Math.floor(map.getValue()/1000);
 			for(ReadingContext reading:completeReadings) {
 
 				double ttime = Math.floor(reading.getTtime()/1000); //Checking only in second level
-				if(ttime >= Math.floor(iStartTime/1000) && ttime <= Math.floor(iEndTime/1000)) {
+				if(ttime >= iStartTime && ttime <= iEndTime) {
 					intervalReadings.add(reading);
 				}
 				else {
@@ -425,6 +425,7 @@ public class DeviceAPI
 			}
 			ReadingContext virtualMeterReading = calculateVMReading(meter,intervalReadings, childMeterIds);
 			System.out.println("Vm : ");
+			System.out.println(intervalReadings);
 			System.out.println(virtualMeterReading);
 			System.out.println(completeReadings.size());
 //			completeReadings.removeAll(intervalReadings);
