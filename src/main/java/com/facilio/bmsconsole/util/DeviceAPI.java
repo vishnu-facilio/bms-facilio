@@ -428,7 +428,7 @@ public class DeviceAPI
 			System.out.println(intervalReadings);
 			System.out.println(virtualMeterReading);
 			System.out.println(completeReadings.size());
-//			completeReadings.removeAll(intervalReadings);
+			completeReadings.removeAll(intervalReadings);
 			if(virtualMeterReading != null) {
 				vmReadings.add(virtualMeterReading);
 				intervalReadings=new ArrayList<ReadingContext>();
