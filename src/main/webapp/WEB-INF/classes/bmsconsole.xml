@@ -3376,7 +3376,7 @@
 				<param name="moduleName">setup</param>
 				<param name="permission">DATA_ADMINISTRATION</param>
 				<result name="success" type="json">
-				<param name="includeProperties">energyMeters,energyMeters\[\d+\],energyMeters\[\d+\].*</param>
+				<param name="includeProperties">energyMeters,energyMeters\[\d+\],energyMeters\[\d+\].*,chillerAssets,chillerAssets\[\d+\],chillerAssets\[\d+\].*</param>
 			</result>
 		</action>
 		<action name="upload" class="com.facilio.bmsconsole.actions.ImportDataAction"

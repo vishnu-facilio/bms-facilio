@@ -19,12 +19,15 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext.ImportStatus;
 import com.facilio.bmsconsole.commands.data.ProcessSpaceXLS;
 import com.facilio.bmsconsole.commands.data.ProcessXLS;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.ChillerContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.ImportAPI;
@@ -82,6 +85,12 @@ public class ImportDataAction extends ActionSupport {
 		case "Energy" : 
 			this.energyMeters=DeviceAPI.getAllEnergyMeters();
 		
+		}
+		try {
+			this.chillerAssets = AssetsAPI.getAssetListOfCategory(AssetsAPI.getCategory("Chiller").getId());
+		}
+		catch (Exception e) {
+			e.printStackTrace();
 		}
 		return SUCCESS;
 	}
@@ -248,4 +257,10 @@ public class ImportDataAction extends ActionSupport {
 	}
 	private long assetId;
 	private String moduleName="Energy";
+	
+	
+	private List<AssetContext> chillerAssets;
+	public List<AssetContext> getChillerAssets() {
+		return chillerAssets;
+	}
 }
