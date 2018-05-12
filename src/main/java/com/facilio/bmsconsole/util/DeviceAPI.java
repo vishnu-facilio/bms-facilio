@@ -406,7 +406,8 @@ public class DeviceAPI
 		for(Map<String, Object> childProp : childProps) {
 			childMeterIds.add((Long) childProp.get("childMeterId"));
 		}
-		Set<ReadingContext> completeReadings = new LinkedHashSet<>(getChildMeterReadings(childMeterIds, startTime, endTime, minutesInterval));
+		Set<ReadingContext> completeReadings = new LinkedHashSet<>();
+		completeReadings.addAll(getChildMeterReadings(childMeterIds, startTime, endTime, minutesInterval));
 		if(completeReadings.isEmpty()) {
 			return;
 		}
