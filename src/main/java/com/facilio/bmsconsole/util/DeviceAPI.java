@@ -406,9 +406,8 @@ public class DeviceAPI
 		for(Map<String, Object> childProp : childProps) {
 			childMeterIds.add((Long) childProp.get("childMeterId"));
 		}
-		Set<ReadingContext> completeReadings = new LinkedHashSet<>();
-		completeReadings.addAll(getChildMeterReadings(childMeterIds, startTime, endTime, minutesInterval));
-		if(completeReadings.isEmpty()) {
+		Set<ReadingContext> completeReadings = getChildMeterReadings(childMeterIds, startTime, endTime, minutesInterval);
+		if(completeReadings == null || completeReadings.isEmpty()) {
 			return;
 		}
 		List<ReadingContext> vmReadings = new ArrayList<ReadingContext>();
@@ -457,7 +456,7 @@ public class DeviceAPI
 		}
 	}
 
-	private static List<ReadingContext> getChildMeterReadings(List<Long> childIds, long startTime, long endTime, int minutesInterval) throws Exception{
+	private static Set<ReadingContext> getChildMeterReadings(List<Long> childIds, long startTime, long endTime, int minutesInterval) throws Exception{
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioField meterField=modBean.getField("parentId", FacilioConstants.ContextNames.ENERGY_DATA_READING);
@@ -490,7 +489,16 @@ public class DeviceAPI
 				.groupBy("PARENT_METER_ID,TTIME/"+timeInterval)
 				.orderBy("ttime");
 
-		return getReadings.get();
+		List<ReadingContext> readings = getReadings.get();
+		
+		if (readings != null && !readings.isEmpty()) {
+			Set<ReadingContext> readingSet = new LinkedHashSet<>();
+			for (ReadingContext reading : readings) {
+				readingSet.add(reading);
+			}
+			return readingSet;
+		}
+		return null;
 
 	}
 	
