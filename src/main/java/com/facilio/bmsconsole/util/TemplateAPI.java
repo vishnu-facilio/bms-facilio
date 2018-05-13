@@ -936,7 +936,10 @@ public class TemplateAPI {
 			Matcher matcher = pattern.matcher(templateString.toJSONString());
 			JSONArray templatePlaceholder = new JSONArray();
 			while (matcher.find()) {
-				templatePlaceholder.add(matcher.group(2));
+				String placeHolder = matcher.group(2);
+				if (!templatePlaceholder.contains(placeHolder)) {
+					templatePlaceholder.add(placeHolder);
+				}
 			}
 			return templatePlaceholder;
 		}

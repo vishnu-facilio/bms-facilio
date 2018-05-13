@@ -2,6 +2,8 @@ package com.facilio.bmsconsole.templates;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -43,10 +45,19 @@ public class PushNotificationTemplate extends Template{
 	@Override
 	public JSONObject getOriginalTemplate() {
 		JSONObject obj = new JSONObject();
-		obj.put("to", to);
-		obj.put("body", body);
-		obj.put("URL", url);
-		obj.put("title", title);
+		if (body != null) {
+			JSONParser parser = new JSONParser();
+	 		try {
+	 			obj = (JSONObject) parser.parse(body);
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+//		obj.put("to", to);
+//		obj.put("body", body);
+//		obj.put("URL", url);
+//		obj.put("title", title);
 		
 		return obj;
 	}

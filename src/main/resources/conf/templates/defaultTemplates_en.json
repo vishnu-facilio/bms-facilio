@@ -56,7 +56,7 @@
 			"module_name": "alarm",
 			"priority": "high"
 		},
-		"id": "${user.id:-}"
+		"id": ""
 	},
 	"9": {
 		"name": "ALARM_UPDATION_PUSH",
@@ -72,7 +72,7 @@
 			"module_name": "alarm",
 			"priority": "high"
 		},
-		"id": "${user.id:-}"
+		"id": ""
 	},
 	"10": {
 		"name": "PM_EMAIL_PRE_REMINDER",
