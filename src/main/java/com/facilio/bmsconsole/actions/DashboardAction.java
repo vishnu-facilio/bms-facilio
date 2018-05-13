@@ -1590,8 +1590,7 @@ public class DashboardAction extends ActionSupport {
 				report.setxAxisaggregateFunction(xAggregateOpperator.getValue());
 			}
 			
-			if (getIsHeatMap() || (reportContext.getChartType() != null && reportContext.getChartType().equals(ReportChartType.HEATMAP.getValue())) || (!report.getIsHighResolutionReport() && xAggr != 0 && (reportContext.getChartType() != null))) {
-				
+			if (getIsHeatMap() || (reportContext.getChartType() != null && reportContext.getChartType().equals(ReportChartType.HEATMAP.getValue())) || (!report.getIsHighResolutionReport() && xAggr != 0)) {
 				if(xAggregateOpperator instanceof SpaceAggregateOperator) {
 					isGroupBySpace = true;
 					FacilioModule baseSpaceModule = modBean.getModule("basespace");
