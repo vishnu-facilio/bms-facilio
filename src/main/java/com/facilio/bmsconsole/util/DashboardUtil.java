@@ -704,6 +704,11 @@ public class DashboardUtil {
 			Map<Long, DashboardContext> dashboardMap = new HashMap<Long, DashboardContext>();
 			for (Map<String, Object> prop : props) {
 				DashboardContext dashboard = FieldUtil.getAsBeanFromMap(prop, DashboardContext.class);
+				if(dashboard.getLinkName().equals("buildingdashboard") && dashboard.getOrgId() == 58l) {
+					List<Long> s = new ArrayList<>();
+					s.add(382l);
+					dashboard.setBuildingExcludeList(s);
+				}
 				dashboardMap.put(dashboard.getId(), dashboard);
 				dashboardIds.add(dashboard.getId());
 			}

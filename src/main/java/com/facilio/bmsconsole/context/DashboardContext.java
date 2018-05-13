@@ -25,6 +25,14 @@ public class DashboardContext extends ModuleBaseWithCustomFields {
 		this.dashboardName = dashboardName;
 	}
 	
+	public List<Long> buildingExcludeList;
+	public List<Long> getBuildingExcludeList() {
+		return buildingExcludeList;
+	}
+	public void setBuildingExcludeList(List<Long> buildingExcludeList) {
+		this.buildingExcludeList = buildingExcludeList;
+	}
+
 	private String linkName;
 	
 	private Integer displayOrder;
