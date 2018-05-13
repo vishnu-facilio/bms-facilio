@@ -2327,7 +2327,7 @@ public class DashboardAction extends ActionSupport {
 			if (res != null) {
 				this.entityName = res.getName();
 			}
-			if (yAxisFieldName != null) {
+			if (yAxisFieldName != null && reportContext.getId() <= 0) {
 				this.entityName = yAxisFieldName + " ("+this.entityName+")";
 			}
 		}
