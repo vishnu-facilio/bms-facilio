@@ -662,7 +662,12 @@ public class ReportContext extends ModuleBaseWithCustomFields {
 		dataOptionsJson.put("dataurl", "/dashboard/getData?reportId="+getId());
 		dataOptionsJson.put("name", "dummy");
 		dataOptionsJson.put("reportId", getId());
-		dataOptionsJson.put("type", getReportChartType().getName());
+		if(getReportChartType() != null) {
+			dataOptionsJson.put("type", getReportChartType().getName());
+		}
+		else {
+			dataOptionsJson.put("type", ReportChartType.PIE.getName());
+		}
 		dataOptionsJson.put("refresh_interval", 100);
 		
 		resultJson.put("dataOptions", dataOptionsJson);
