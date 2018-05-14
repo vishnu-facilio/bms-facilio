@@ -98,7 +98,7 @@ public class ReadingDataMeta {
 	public String toString() {
 		// TODO Auto-generated method stub
 		StringBuilder builder =  new StringBuilder()
-										.append(", Org Id : ").append(orgId)
+										.append("Org Id : ").append(orgId)
 										.append(", Resource ID : ").append(resourceId)
 										.append(", Field ID : ").append(fieldId)
 										.append(", Ttime : ").append(ttime)
