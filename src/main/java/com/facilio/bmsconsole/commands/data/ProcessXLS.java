@@ -84,7 +84,7 @@ public class ProcessXLS implements Command {
 	
 	public static void processImport(ImportProcessContext importProcessContext) throws Exception
 	{
-		System.out.println("All set for importing "+importProcessContext+" \n" + new Date(System.currentTimeMillis()));
+		
 		
 		HashMap<String, String> fieldMapping = importProcessContext.getFieldMapping();			
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();

@@ -49,4 +49,17 @@ public class ReportSpaceFilterContext {
 	public void setGroupBy(String groupBy) {
 		this.groupBy = groupBy;
 	}
+	
+	public Long getSpaceFilterId() {
+		if(siteId != null) {
+			return siteId;
+		}
+		else if (buildingId != null) {
+			return buildingId;
+		}
+		else if (floorId != null) {
+			return floorId;
+		}
+		return null;
+	}
 }
