@@ -22,6 +22,7 @@ import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -33,6 +34,8 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.InsertRecordBuilder;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
@@ -283,7 +286,14 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		long templateId = (Long)prop.get("templateId");
 		WorkorderTemplate woTemplate = (WorkorderTemplate) TemplateAPI.getTemplate(templateId);
 		WorkorderTemplate woNewTemplate = new WorkorderTemplate();
-		// prop.put("categoryName", TicketAPI.getCategory(AccountUtil.getCurrentOrg().getId(), (Long)prop.get("categoryId")).getName());
+		Long categoryId = (Long)prop.get("categoryId");
+		if (categoryId != null)
+		{
+			prop.put("categoryName", TicketAPI.getCategory(AccountUtil.getCurrentOrg().getId(), categoryId).getName());
+		}
+		else {
+			prop.put("categoryName", null);
+		}
 		woNewTemplate.setName(woTemplate.getName());
 		woNewTemplate.setTasks(woTemplate.getTasks());
 		prop.put("template", woNewTemplate);
@@ -324,12 +334,34 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			// System.out.println("$$$$$$$$$$woTemplate:"+prop.get("template"));
 			
 			WorkorderTemplate woTemplate = (WorkorderTemplate) prop.get("template");
-			// String category = (String) prop.get("categoryName");
 			long orgId = AccountUtil.getCurrentOrg().getId();
-			// long categoryId = TicketAPI.getCategory(orgId, category).getId();
-			// woTemplate.getOriginalTemplate();
+			String category = (String) prop.get("categoryName");
+			if (category != null)
+			{
+			
+			TicketCategoryContext categoryId = TicketAPI.getCategory(orgId, category);
+			
+			if (categoryId != null)
+			{
 			// System.out.println("+++++++++++++++++" +FieldUtil.getAsJSON(woTemplate));
-			// woTemplate.setCategoryId(categoryId);
+			 woTemplate.setCategoryId(categoryId.getId());
+			}
+			else
+			{
+				TicketCategoryContext record = new TicketCategoryContext();
+				record.setName(category);
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule module = modBean.getModule("ticketcategory");
+				
+				InsertRecordBuilder<ModuleBaseWithCustomFields> insertRecordBuilder = new InsertRecordBuilder<ModuleBaseWithCustomFields>()
+																							.module(module)
+																							.fields(modBean.getAllFields("ticketcategory"));
+				
+				long id = insertRecordBuilder.insert(record);
+				
+				woTemplate.setCategoryId(id);
+			}
+			}
 			woTemplate.setOrgId(orgId);
 			long tempId = TemplateAPI.addPMWorkOrderTemplate(woTemplate);
 			System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<" +tempId);

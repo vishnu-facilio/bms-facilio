@@ -41,9 +41,6 @@ Please enter the OrgID:<input type = "text" name = "orgId" id="orgId" placeholde
 </form>
 </div>
 
-
-
-	
 </body>
 </html>
 
