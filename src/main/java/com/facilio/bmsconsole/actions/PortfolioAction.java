@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.reports.ReportsUtil;
@@ -61,7 +62,22 @@ public class PortfolioAction extends ActionSupport {
 		long endTime=DateTimeUtil.getCurrenTime();
 		long previousEndTime=prevStartTime+(endTime-currentStartTime);
 		
-		List<Map<String, Object>> prevResult= ReportsUtil.fetchMeterData(deviceList,prevStartTime,previousEndTime-1,true);
+		System.out.println("deviceList --- "+deviceList);
+		
+		List<Map<String, Object>> prevResult = null;
+		if(AccountUtil.getCurrentOrg().getId() == 58l) {
+			prevResult= ReportsUtil.fetchMeterData("1256",prevStartTime,previousEndTime-1,true);
+			
+			previousEndTime=prevStartTime+(1525545000000l - currentStartTime);		// may 6th value
+			
+			List<Map<String, Object>> prevResult1= ReportsUtil.fetchMeterData("14001,14011,14032,14020,14038",prevStartTime,previousEndTime-1,true);
+			
+			prevResult.addAll(prevResult1);
+		}
+		else {
+			prevResult = ReportsUtil.fetchMeterData(deviceList,prevStartTime,previousEndTime-1,true);
+		}
+		
 		Map<Long,Double> prevMeterVsConsumption=ReportsUtil.getMeterVsConsumption(prevResult);
 		//going for two queries.. so that it will be easy while going for separate queries in case of caching url..
 		List<Map<String, Object>> currentResult= ReportsUtil.fetchMeterData(deviceList,currentStartTime,endTime,true);
