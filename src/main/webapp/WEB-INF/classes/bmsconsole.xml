@@ -1043,17 +1043,6 @@
 			<action name="closewo" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/closewo.jsp</result>
 			</action>
-	
-
-	<action name="usermanagement" class="com.facilio.bmsconsole.actions.AdminAction">
-			<result type="tiles">adminpage/usermanagement.jsp</result>
-			</action>
-			<action name="users" class="com.facilio.bmsconsole.actions.AdminAction" method="users">
-			<result name="success" type="redirect"><param name="location">usermanagement</param></result>
-		</action>
-			<action name="sqlconsole" class="com.facilio.bmsconsole.actions.AdminAction">
-			<result type="tiles">adminpage/sqlconsole.jsp</result>
-			</action>
 			</package>
 
 

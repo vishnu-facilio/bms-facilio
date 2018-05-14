@@ -36,7 +36,7 @@
            </li>
                       
            <li>
-               <a href="${pageContext.request.contextPath}/app/admin/sqlconsole">
+               <a href="sqlconsole">
                <span class="nav-icon">
                <i class=" sidebar-icon fa fa-terminal  fa-fw "></i> </span>
                <span class="nav-title ">SQL Console</span>

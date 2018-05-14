@@ -31,8 +31,7 @@
       <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
       <input id="email" type="text" value="<%= email == null ? "" : email %>" class="form-control" name="email" placeholder="superadmin_id@example.com" required/>
     </div>
-   
-      <div style="margin-top:30px;">
+    <div style="margin-top:30px;">
 <button  id="show" type="submit"  >Submit</button>
 </div> 
 <div >
