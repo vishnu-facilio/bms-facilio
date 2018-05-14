@@ -306,7 +306,7 @@ public class DashboardUtil {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER);
 		
-		EnergyMeterPurposeContext energyMeterPurpose = DeviceAPI.getEnergyMetersOfPurpose(ENERGY_METER_PURPOSE_MAIN);
+		EnergyMeterPurposeContext energyMeterPurpose = DeviceAPI.getEnergyMetersPurposeByName(ENERGY_METER_PURPOSE_MAIN);
 		SelectRecordsBuilder<EnergyMeterContext> selectBuilder = 
 				new SelectRecordsBuilder<EnergyMeterContext>()
 				.select(modBean.getAllFields(module.getName()))

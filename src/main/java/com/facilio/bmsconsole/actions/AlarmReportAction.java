@@ -303,11 +303,9 @@ public class AlarmReportAction extends ActionSupport {
 				for(BuildingContext building : buildings) {
 					
 					JSONObject buildingObj = ReportsUtil.getBuildingData(building);
-					List<BaseSpaceContext> allSpaces = SpaceAPI.getBaseSpaceWithChildren(building.getId());
-					if(allSpaces!=null)
-					{
-						buildingObj.put("stats", getBuildingAlarmTypeStats(allSpaces));
-					}
+					
+					buildingObj.put("stats", getBuildingAlarmTypeStats(building.getId()));
+					
 					alarmTypeStats.add(buildingObj);
 				}
 			}
@@ -327,7 +325,7 @@ public class AlarmReportAction extends ActionSupport {
 		this.alarmTypeStats = alarmTypeStats;
 	}
 
-	private JSONObject getBuildingAlarmTypeStats(List<BaseSpaceContext> spaces) throws Exception {
+	private JSONObject getBuildingAlarmTypeStats(long buildingId) throws Exception {
 		JSONObject statsObj = new JSONObject();
 		
 		FacilioField countFld = new FacilioField();
@@ -344,21 +342,6 @@ public class AlarmReportAction extends ActionSupport {
 		fields.add(countFld);
 		fields.add(typeField);
 		
-		StringBuilder where = new StringBuilder();
-		where.append("Alarms.ORGID = ? AND Alarm_Severity.SEVERITY != ? AND Tickets.RESOURCE_ID IN (");
-		
-		boolean isFirst = true;
-		for(BaseSpaceContext space : spaces) {
-			if(isFirst) {
-				isFirst = false;
-			}
-			else {
-				where.append(", ");
-			}
-			where.append(space.getId());
-		}
-		where.append(")");
-		
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
@@ -368,7 +351,21 @@ public class AlarmReportAction extends ActionSupport {
 				.innerJoin("Alarm_Severity")
 				.on("Alarms.SEVERITY=Alarm_Severity.ID")
 				.groupBy("Alarm_Severity.SEVERITY")
-				.andCustomWhere(where.toString(), orgId, FacilioConstants.Alarm.CLEAR_SEVERITY);
+				.andCustomWhere("Alarms.ORGID = ? AND Alarm_Severity.SEVERITY != ?", orgId, FacilioConstants.Alarm.CLEAR_SEVERITY);
+		
+		FacilioField resourceIdFld = new FacilioField();
+		resourceIdFld.setName("resourceId");
+		resourceIdFld.setColumnName("RESOURCE_ID");
+		resourceIdFld.setModule(ModuleFactory.getTicketsModule());
+		resourceIdFld.setDataType(FieldType.NUMBER);
+
+		Condition spaceCond = new Condition();
+		spaceCond.setField(resourceIdFld);
+		spaceCond.setOperator(BuildingOperator.BUILDING_IS);
+		spaceCond.setValue(buildingId+"");
+		
+		builder.andCondition(spaceCond);
+		
 		List<Map<String, Object>> stats = builder.get();
 		
 		if(stats != null && !stats.isEmpty()) {
