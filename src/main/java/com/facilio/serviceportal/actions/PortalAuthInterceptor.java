@@ -89,7 +89,7 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 	
 	}
 
-	public static String PORTALDOMAIN = "facilstack.com";
+	public static String PORTALDOMAIN = null;
 	private String intercept0(){
         HttpServletRequest request = ServletActionContext.getRequest();
 		CognitoUtil.CognitoUser cognitoUser = null;
@@ -103,7 +103,7 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 			} else {
 				String domainName = request.getHeader("Origin");
 				
-				// Check if this is custom domain
+				System.out.println("Authenticating for "+ domainName);
 				
 				if(customdomains!=null)
 				{
