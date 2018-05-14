@@ -85,15 +85,21 @@ public class DegreeDaysCalculatorJob extends FacilioJob {
 			Double hddBaseTemp=site.getHddBaseTemperature();
 			List<Map<String,Object>> weatherReadings=siteVsReadings.get(siteId);
 
+		    logger.log(Level.INFO,"CDD Base Temp for orgid: "+AccountUtil.getCurrentOrg().getOrgId()+" : "+cddBaseTemp);
+		    logger.log(Level.INFO,"HDD Base Temp for orgid: "+AccountUtil.getCurrentOrg().getOrgId()+" : "+hddBaseTemp);
+
+
 			if(cddBaseTemp>0) {
 				Double cdd=WeatherUtil.getCDD(cddBaseTemp, weatherReadings);
 				ReadingContext cReading= getReading(siteId,"cdd",cdd);
+			    logger.log(Level.INFO,"CDD Reading for orgid: "+AccountUtil.getCurrentOrg().getOrgId()+" : "+cReading);
 				addReading(moduleVsReading,FacilioConstants.ContextNames.CDD_READING, cReading);
 			}
 
 			if(hddBaseTemp>0) {
 				Double hdd=WeatherUtil.getHDD(hddBaseTemp, weatherReadings);
 				ReadingContext hReading= getReading(siteId,"hdd",hdd);
+			    logger.log(Level.INFO,"HDD Reading for orgid: "+AccountUtil.getCurrentOrg().getOrgId()+" : "+hReading);
 				addReading(moduleVsReading,FacilioConstants.ContextNames.HDD_READING, hReading);
 			}
 		}
@@ -112,10 +118,11 @@ public class DegreeDaysCalculatorJob extends FacilioJob {
 			Long siteId=site.getId();
 			Double wddBaseTemp=site.getWddBaseTemperature();
 			List<Map<String,Object>> weatherReadings=siteVsReadings.get(siteId);
-			
+		    logger.log(Level.INFO,"WDD Base Temp for orgid: "+AccountUtil.getCurrentOrg().getOrgId()+" : "+wddBaseTemp);
 			if(wddBaseTemp>0) {
 				Double wdd=WeatherUtil.getWDD(wddBaseTemp, weatherReadings);
 				ReadingContext wReading= getReading(siteId,"wdd",wdd);
+			    logger.log(Level.INFO,"WDD Reading for orgid: "+AccountUtil.getCurrentOrg().getOrgId()+" : "+wReading);
 				addReading(moduleVsReading,FacilioConstants.ContextNames.WDD_READING, wReading);
 			}
 		}

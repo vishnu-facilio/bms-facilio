@@ -33,6 +33,7 @@ public class WeatherDataJob extends FacilioJob {
 			{
 				return;
 			}
+		    logger.log(Level.INFO,"The weather data feature enabled for orgid: "+AccountUtil.getCurrentOrg().getOrgId());
 			List<SiteContext> sites=SpaceAPI.getAllSites(1);
 			List<ReadingContext> readings= new ArrayList<ReadingContext>();
 			
@@ -40,6 +41,7 @@ public class WeatherDataJob extends FacilioJob {
 			for(SiteContext site:sites) {
 				
 				Map<String,Object> weatherData=WeatherUtil.getWeatherData(site);
+			    logger.log(Level.INFO,"The weather data for orgid: "+AccountUtil.getCurrentOrg().getOrgId()+" : "+weatherData);
 				if(weatherData==null || weatherData.isEmpty()) {
 					continue;
 				}
@@ -54,6 +56,8 @@ public class WeatherDataJob extends FacilioJob {
 				if(psychrometricReading == null) {
 					continue;
 				}
+			    logger.log(Level.INFO,"The psychometric data for orgid: "+AccountUtil.getCurrentOrg().getOrgId()+" : "+psychrometricReading);
+
 				psychrometricReadings.add(psychrometricReading);
 			}
 			
