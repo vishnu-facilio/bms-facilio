@@ -36,6 +36,7 @@ import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SpaceContext;
@@ -243,6 +244,12 @@ public class ProcessXLS implements Command {
 			importDataChain.execute(context);	
 		}
 		else {
+			
+			if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ENERGY_METER)) {
+				for(ReadingContext reading :readingsList) {
+					reading.addReading("resourceType", ResourceContext.ResourceType.ASSET.getValue());
+				}
+			}
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			
 			InsertRecordBuilder<ReadingContext> readingBuilder = new InsertRecordBuilder<ReadingContext>()
