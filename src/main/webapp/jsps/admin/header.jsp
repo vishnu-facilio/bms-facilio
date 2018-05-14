@@ -4,7 +4,7 @@
     <div class="navbar-header">
        
     
-        <a class="navbar-brand" href="#">Admin Console</a>
+        <a class="navbar-brand" href="">Admin Console</a>
     </div>
     <!-- /.navbar-header -->
 

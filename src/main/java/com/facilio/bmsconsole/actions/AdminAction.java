@@ -118,6 +118,5 @@ public class AdminAction extends ActionSupport
 		
 		return SUCCESS;
 	}
-	
 }
 

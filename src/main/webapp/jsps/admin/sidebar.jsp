@@ -19,26 +19,27 @@
                
             </li>
             -->
-
-             <li>
-               <a href="#dashboard">
-               <span class="nav-icon">
-               <i class=" sidebar-icon fa fa-user fa-fw "></i> </span>
-               <span class="nav-title">User Management</span>
-               </a>
-           </li>
-                       <li >
+ <li >
                <a href="buildInfo">
                <span class="nav-icon">
                <i class=" sidebar-icon fa fa-info-circle fa-fw "></i> </span>
                <span class="nav-title ">Build Info</span>
                </a>
            </li>
+           
+             <li>
+               <a href="usermanagement">
+                <span class="nav-icon">
+               <i class=" sidebar-icon fa fa-user fa-fw "></i> </span>
+               <span class="nav-title ">User Management</span>
+               </a>
+           </li>
+                      
            <li>
-               <a href="#dashboard">
+               <a href="${pageContext.request.contextPath}/app/admin/sqlconsole">
                <span class="nav-icon">
                <i class=" sidebar-icon fa fa-terminal  fa-fw "></i> </span>
-               <span class="nav-title">SQL Console</span>
+               <span class="nav-title ">SQL Console</span>
                </a>
            </li>
            <li>
@@ -77,6 +78,7 @@
 $(document).ready(function(){
     $('[data-toggle="tooltip"]').tooltip();   
 });
+
 </script>
         
   

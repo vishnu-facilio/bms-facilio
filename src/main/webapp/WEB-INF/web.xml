@@ -95,6 +95,15 @@
     </filter-mapping>
     
 
+<servlet>
+        <servlet-name>clientapp</servlet-name>
+        <jsp-file>/index.html</jsp-file>                        
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>clientapp</servlet-name>
+        <url-pattern>/app/*</url-pattern>
+    </servlet-mapping>
+    
     <welcome-file-list>
         <welcome-file>home.jsp</welcome-file>
     </welcome-file-list>

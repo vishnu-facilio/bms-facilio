@@ -618,6 +618,7 @@ i.sidebar-icon{
     text-align: center;
     transition: all .4s;
     z-index: 3000;
+    line-height:1.5;
 }
 .nav.sidebar-footer-btn:HOVER {
     color:#ffff00;

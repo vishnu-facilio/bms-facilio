@@ -6,11 +6,6 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Insert title here</title>	
-<style>
-.bttn{
-background-color:#f1f1f1;
-}
-</style>
 <script>
 function toggle() {
 	var ele = document.getElementById("tg");
