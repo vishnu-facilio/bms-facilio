@@ -19,21 +19,21 @@ import com.facilio.bmsconsole.util.WeatherUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
-import com.facilio.wms.endpoints.SessionManager;
 
 public class WeatherDataJob extends FacilioJob {
-	private static final Logger logger = Logger.getLogger(SessionManager.class.getName());
+	private static final Logger logger = Logger.getLogger(WeatherDataJob.class.getName());
 	
 	
 
 	@Override
 	public void execute(JobContext jc) {
 		try {
+			logger.log(Level.INFO,"The weather data feature enabled for orgid: "+AccountUtil.getCurrentOrg().getOrgId());
+		    System.out.println("The weather data feature enabled for orgid: "+AccountUtil.getCurrentOrg().getOrgId());
 			if (!AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_WEATHER_INTEGRATION))
 			{
 				return;
 			}
-		    logger.log(Level.INFO,"The weather data feature enabled for orgid: "+AccountUtil.getCurrentOrg().getOrgId());
 			List<SiteContext> sites=SpaceAPI.getAllSites(1);
 			List<ReadingContext> readings= new ArrayList<ReadingContext>();
 			
@@ -42,6 +42,7 @@ public class WeatherDataJob extends FacilioJob {
 				
 				Map<String,Object> weatherData=WeatherUtil.getWeatherData(site);
 			    logger.log(Level.INFO,"The weather data for orgid: "+AccountUtil.getCurrentOrg().getOrgId()+" : "+weatherData);
+			    System.out.println("The weather data for orgid: "+AccountUtil.getCurrentOrg().getOrgId()+" : "+weatherData);
 				if(weatherData==null || weatherData.isEmpty()) {
 					continue;
 				}
@@ -57,7 +58,7 @@ public class WeatherDataJob extends FacilioJob {
 					continue;
 				}
 			    logger.log(Level.INFO,"The psychometric data for orgid: "+AccountUtil.getCurrentOrg().getOrgId()+" : "+psychrometricReading);
-
+			    System.out.println("The psychometric data for orgid: "+AccountUtil.getCurrentOrg().getOrgId()+" : "+psychrometricReading);
 				psychrometricReadings.add(psychrometricReading);
 			}
 			
