@@ -215,6 +215,11 @@ public class UserBeanImpl implements UserBean {
 		}
 		
 		long uid = getUid(user.getEmail());
+		if(user.getRoleId() == 0){
+			System.out.println("#####################RoleId is Null");	
+			
+			throw new AccountException(AccountException.ErrorCode.ROLE_ID_IS_NULL, "RoleID is Null " + user.getEmail());
+		}
 		if (uid == -1) {
 			user.setTimezone(AccountUtil.getCurrentOrg().getTimezone());
 			user.setLanguage(AccountUtil.getCurrentUser().getLanguage());
