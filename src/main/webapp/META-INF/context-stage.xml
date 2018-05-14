@@ -29,6 +29,7 @@
     	  testOnBorrow="true"
     	  removeAbandoned="true"
     	  removeAbandonedTimeout="40"
+    	  logAbandoned="true"
     	  username="root"
     	  user="root"
     	  password="zxcv1212"

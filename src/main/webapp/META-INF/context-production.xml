@@ -30,6 +30,7 @@
     	  testOnBorrow="true"
     	  removeAbandoned="true"
     	  removeAbandonedTimeout="55"
+    	  logAbandoned="true"
     	  username="faciliouser"
     	  user="faciliouser"
     	  password="facilio96"
