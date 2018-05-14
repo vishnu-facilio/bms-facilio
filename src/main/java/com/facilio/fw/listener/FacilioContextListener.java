@@ -143,18 +143,8 @@ public class FacilioContextListener implements ServletContextListener {
 				e.printStackTrace();
 			}
 
-PortalAuthInterceptor.PORTALDOMAIN = event.getServletContext().getInitParameter("SERVICEPORTAL_DOMAIN");
-//			FacilioTimer.schedulePeriodicJob(2, "suresh", 30, 300, "system");
-			
-//			ScheduleInfo schedule = new ScheduleInfo();
-//			schedule.setFrequencyType(FrequencyType.WEEKLY);
-//			schedule.setFrequency(2);
-//			schedule.addTime(LocalTime.of(16, 53));
-//			schedule.addValue(DayOfWeek.THURSDAY.getValue());
-////			schedule.setWeekFrequency(3);
-//			
-//			FacilioTimer.scheduleCalendarJob(2, "suresh", 30, schedule, "priority", 21);
-			
+PortalAuthInterceptor.PORTALDOMAIN = com.facilio.aws.util.AwsUtil.getConfig("portal.domain");// event.getServletContext().getInitParameter("SERVICEPORTAL_DOMAIN");
+			System.out.println("Loading the domain name as ######"+PortalAuthInterceptor.PORTALDOMAIN );
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
