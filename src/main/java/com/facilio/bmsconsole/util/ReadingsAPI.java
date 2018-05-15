@@ -379,10 +379,9 @@ public class ReadingsAPI {
 
 	private static long getParentCategoryId(long assetId) throws Exception {
 
-		AssetContext asset= AssetsAPI.getAssetInfo(assetId);
+		AssetContext asset= AssetsAPI.getAssetInfo(assetId, true);
 		AssetCategoryContext category= asset.getCategory();
 		if(category!=null) {
-			
 			return category.getId();
 		}
 		return -1;
