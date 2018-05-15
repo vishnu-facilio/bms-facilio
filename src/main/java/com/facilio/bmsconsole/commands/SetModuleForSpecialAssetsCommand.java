@@ -63,6 +63,11 @@ public class SetModuleForSpecialAssetsCommand implements Command{
 				context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.FCU);
 				context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "FCU");
 			}
+			else if(assetCategoryName.trim().equalsIgnoreCase("Heat Pump"))
+			{
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.HEAT_PUMP);
+				context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Heat_Pump");
+			}
 			else
 			{
 				context.put(FacilioConstants.ContextNames.MODULE_NAME, "asset");
