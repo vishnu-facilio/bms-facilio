@@ -37,6 +37,7 @@ public class AddCampusCommand implements Command {
 			site.setId(id);
 			SpaceAPI.updateHelperFields(site);
 			context.put(FacilioConstants.ContextNames.RECORD_ID, id);
+			context.put(FacilioConstants.ContextNames.PARENT_ID, id);
 		}
 		else 
 		{

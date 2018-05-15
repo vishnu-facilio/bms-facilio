@@ -43,6 +43,8 @@ public class ModeledDataCommand implements Command {
 					//need to decide whether  Nan can be ignored..
 					continue;
 				}
+				
+			//	PRI_PUMP  -- PP1_R  
 				Long assetId= (Long) stat.get("assetId");
 				Long fieldId= (Long) stat.get("fieldId");
 				
@@ -50,10 +52,11 @@ public class ModeledDataCommand implements Command {
 					ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					FacilioField field =bean.getField(fieldId);
 					String moduleName=field.getModule().getName();
-					ReadingContext reading=iModuleVsReading.get(moduleName);
-					if(reading==null) {
+					String readingKey=moduleName+"|"+assetId;
+					ReadingContext reading=iModuleVsReading.get(readingKey);
+					if(reading == null) {
 						reading = new ReadingContext();
-						iModuleVsReading.put(moduleName, reading);
+						iModuleVsReading.put(readingKey, reading);
 					}
 					reading.addReading(field.getName(), instanceVal);
 					reading.setParentId(assetId);
@@ -64,7 +67,8 @@ public class ModeledDataCommand implements Command {
 			}
 			
 			for(Map.Entry<String, ReadingContext> iMap:iModuleVsReading.entrySet()) {
-				String moduleName=iMap.getKey();
+				String key=iMap.getKey();
+				String moduleName=key.substring(0, key.indexOf("|"));
 				ReadingContext reading=iMap.getValue();
 				List<ReadingContext> readings=moduleVsReading.get(moduleName);
 				if(readings==null) {

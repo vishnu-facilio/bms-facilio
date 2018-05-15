@@ -84,6 +84,19 @@ public class ResourceAPI {
 		return resources;									
 	}
 	
+	public static List<ResourceContext> getAllResources() throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
+		SelectRecordsBuilder<ResourceContext> resourceBuilder = new SelectRecordsBuilder<ResourceContext>()
+																		.select(fields)
+																		.module(module)
+																		.beanClass(ResourceContext.class);
+		
+		List<ResourceContext> resources = resourceBuilder.get();
+		return resources;									
+	}
+	
 	public static Map<Long, ResourceContext> getResourceAsMapFromIds (Collection<Long> resourceIds) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);

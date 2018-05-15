@@ -25,7 +25,7 @@ import com.facilio.tasker.job.JobContext;
 import com.facilio.wms.endpoints.SessionManager;
 
 public class DegreeDaysCalculatorJob extends FacilioJob {
-	private static final Logger logger = Logger.getLogger(SessionManager.class.getName());
+	private static final Logger logger = Logger.getLogger(DegreeDaysCalculatorJob.class.getName());
 	
 	
 

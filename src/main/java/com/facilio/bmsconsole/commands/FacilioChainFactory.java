@@ -786,6 +786,8 @@ public class FacilioChainFactory {
 		c.addCommand(SetTableNamesCommand.getForSite());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddCampusCommand());
+		c.addCommand(getSpaceReadingsChain());
+		c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -841,6 +843,8 @@ public class FacilioChainFactory {
 		c.addCommand(SetTableNamesCommand.getForBuilding());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddBuildingCommand());
+		c.addCommand(getSpaceReadingsChain());
+		c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -930,6 +934,8 @@ public class FacilioChainFactory {
 		c.addCommand(SetTableNamesCommand.getForFloor());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddFloorCommand());
+		c.addCommand(getSpaceReadingsChain());
+		c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

@@ -38,6 +38,7 @@ public class AddBuildingCommand implements Command {
 			building.setId(id);
 			SpaceAPI.updateHelperFields(building);
 			context.put(FacilioConstants.ContextNames.RECORD_ID, id);
+			context.put(FacilioConstants.ContextNames.PARENT_ID, id);
 		}
 		else 
 		{

@@ -21,6 +21,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.opensymphony.xwork2.ActionSupport;
@@ -152,6 +153,13 @@ public class ReadingAction extends ActionSupport {
 		fields = modBean.getAllFields(moduleName);
 		return SUCCESS;
 	}
+	
+	public String updateReadingDataMeta() throws Exception{
+		ReadingsAPI.updateReadingDataMeta();
+		result = "success";
+		return SUCCESS;
+	}
+	
 	
 	public List getFormlayout()
 	{

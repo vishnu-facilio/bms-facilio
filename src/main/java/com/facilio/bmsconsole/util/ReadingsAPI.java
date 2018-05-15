@@ -14,13 +14,20 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.StringOperators;
@@ -33,6 +40,7 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.time.SecondsChronoUnit;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -299,4 +307,84 @@ public class ReadingsAPI {
 		return fields.stream().filter(field -> !DEFAULT_READING_FIELDS.contains(field.getName())).collect(Collectors.toList());
 	}
 	
+	public static void updateReadingDataMeta() throws Exception {
+
+		List<ResourceContext> resourcesList= ResourceAPI.getAllResources();
+		long orgId=AccountUtil.getCurrentOrg().getOrgId();
+		
+		
+		Map<Long,List<FacilioModule>> categoryVsModule= new HashMap<Long,List<FacilioModule>>();
+		
+		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getReadingDataMetaModule().getTableName())
+				.fields(FieldFactory.getReadingDataMetaFields());
+		
+		for(ResourceContext resource:resourcesList) {
+			List<FacilioModule>	moduleList=null;
+			int resourceType=	resource.getResourceType();
+			long resourceId=resource.getId();
+			FacilioContext context = new FacilioContext();
+			
+			if(resourceType==ResourceContext.ResourceType.SPACE.getValue()) {
+				context.put(FacilioConstants.ContextNames.PARENT_ID, resourceId);
+				Chain getSpaceSpecifcReadingsChain = FacilioChainFactory.getSpaceReadingsChain();
+				getSpaceSpecifcReadingsChain.execute(context);
+				moduleList = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
+				
+				
+			}
+			else if(resourceType==ResourceContext.ResourceType.ASSET.getValue()) {
+				
+				
+				long category=getParentCategoryId(resource.getId());
+				moduleList= categoryVsModule.get(category);
+				
+				if(moduleList==null) {
+					context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
+					context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, category);
+					Chain getCategoryReadingChain = FacilioChainFactory.getCategoryReadingsChain();
+					getCategoryReadingChain.execute(context);
+					moduleList = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
+					categoryVsModule.put(category, moduleList);
+				}
+				
+			}
+			if(moduleList==null || moduleList.isEmpty()) {
+				continue;
+			}
+			
+			
+			for(FacilioModule module:moduleList) {
+				
+				List<FacilioField> fieldList= module.getFields();
+				for(FacilioField field:fieldList) {
+					
+					ReadingDataMeta oldRdm=  getReadingDataMeta(resourceId,field);
+					if(oldRdm!=null) {
+						continue;
+					}
+					ReadingDataMeta rdm= new ReadingDataMeta();
+					rdm.setOrgId(orgId);
+					rdm.setFieldId(field.getFieldId());
+					rdm.setValue("-1");
+					rdm.setResourceId(resourceId);
+					rdm.setTtime(System.currentTimeMillis());
+					rdm.setInputType(ReadingInputType.WEB);
+					builder.addRecord(FieldUtil.getAsProperties(rdm));
+				}
+			}
+		}
+		builder.save();
+	}
+
+	private static long getParentCategoryId(long assetId) throws Exception {
+
+		AssetContext asset= AssetsAPI.getAssetInfo(assetId);
+		AssetCategoryContext category= asset.getCategory();
+		if(category!=null) {
+			
+			return category.getId();
+		}
+		return -1;
+	}
 }
