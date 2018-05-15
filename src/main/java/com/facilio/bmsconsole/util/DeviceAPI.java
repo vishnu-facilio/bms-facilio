@@ -429,10 +429,10 @@ public class DeviceAPI
 				}
 			}
 			ReadingContext virtualMeterReading = calculateVMReading(meter,intervalReadings, childMeterIds);
-			System.out.println("Vm : ");
-			System.out.println(intervalReadings.size());
-			System.out.println(virtualMeterReading);
-			System.out.println(completeReadings.size());
+//			System.out.println("Vm : ");
+//			System.out.println(intervalReadings.size());
+//			System.out.println(virtualMeterReading);
+//			System.out.println(completeReadings.size());
 //			completeReadings.removeAll(intervalReadings);
 			if(virtualMeterReading != null) {
 				vmReadings.add(virtualMeterReading);
