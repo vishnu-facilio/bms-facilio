@@ -23,6 +23,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReportsChainFactory;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
@@ -2235,7 +2236,6 @@ public class DashboardAction extends ActionSupport {
 				finalres.add(j1);
 			}
 				
-//			System.out.println("finalres -- "+finalres);
 			readingData = finalres;
 			}
 		}
@@ -2278,6 +2278,13 @@ public class DashboardAction extends ActionSupport {
 	 							purposeIndexMapping.put(lbl, res.size());
 	 							newPurpose = true;
 	 						}
+	 					}
+	 					else if(report.getId() == 1963l && xAxisField != null && xAxisField.getColumnName().equals("PARENT_METER_ID") && report.getCriteria() != null) {
+	 						AssetContext context = AssetsAPI.getAssetInfo((Long) lbl);
+	 						if(context != null) {
+	 							lbl = context.getName();
+	 						}
+	 						xAxisField.setDataType(1);
 	 					}
 	 					component.put("label", lbl);
 	 				}
