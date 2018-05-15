@@ -98,10 +98,7 @@ public class ImportAPI {
 		update.fields(FieldFactory.getImportProcessFields());
 		update.andCustomWhere(ModuleFactory.getImportProcessModule().getTableName()+".ID = ?", importProcessContext.getId());
 		
-		Map<String, Object> props = new HashMap<>();
-		
-		props.put("status", ImportProcessContext.ImportStatus.FIELDS_MAPED.getValue());
-		props.put("fieldMappingString", importProcessContext.getFieldMappingJSON().toJSONString());
+		Map<String, Object> props = FieldUtil.getAsProperties(importProcessContext);
 		
 		update.update(props);	
 		

@@ -36,6 +36,7 @@ import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
+import com.facilio.tasker.FacilioTimer;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -153,14 +154,18 @@ public class ImportDataAction extends ActionSupport {
 	
 	public String processImport() throws Exception
 	{
+		if(assetId > 0) {
+			importProcessContext.setAssetId(assetId);
+			
+			JSONObject scheduleInfo = new JSONObject();
+			scheduleInfo.put("assetId", assetId);
+			
+			importProcessContext.setImportJobMeta(scheduleInfo.toJSONString());
+		}
+		importProcessContext.setStatus(ImportProcessContext.ImportStatus.FIELDS_MAPED.getValue());
 		
 		ImportAPI.updateImportProcess(getImportProcessContext());
 		
-		importProcessContext = ImportAPI.getImportProcessContext(getImportProcessContext().getId());
-		
-		if(assetId > 0) {
-			importProcessContext.setAssetId(assetId);
-		}
 		
 		if (importProcessContext.getModule().getName().equals("space") || importProcessContext.getModule().getName().equals("Space"))
 		{
@@ -168,9 +173,8 @@ public class ImportDataAction extends ActionSupport {
 		}
 		else
 		{
-			ProcessXLS.processImport(importProcessContext);
+			FacilioTimer.scheduleOneTimeJob(importProcessContext.getId(), "importData", 5, "priority");
 		}
-		ImportAPI.updateImportProcess(getImportProcessContext(),ImportStatus.IMPORTED);
 		return SUCCESS;
 	}
 	

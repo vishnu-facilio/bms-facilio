@@ -87,8 +87,8 @@ public class FacilioTimer {
 		JobStore.addJob(jc);
 	}
 	
-	public static void scheduleOneTimeJob(long jobId, String jobName, int delay, String executorName) throws Exception {
-		long nextExecutionTime = (System.currentTimeMillis()/1000)+delay;
+	public static void scheduleOneTimeJob(long jobId, String jobName, int delayInSec, String executorName) throws Exception {
+		long nextExecutionTime = (System.currentTimeMillis()/1000)+delayInSec;
 		scheduleOneTimeJob(jobId, jobName, nextExecutionTime, executorName);
 	}
 	

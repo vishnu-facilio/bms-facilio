@@ -26,10 +26,31 @@ public class ImportProcessContext
 	Long id,orgId,moduleId,fileId;
 	Integer status,importType;
 	Long importTime;
-	String columnHeadingString,filePath,filePathFailed,fieldMappingString;
+	String columnHeadingString,filePath,filePathFailed,fieldMappingString,importJobMeta;
 	
 	public Long getId() {
 		return id;
+	}
+
+	public String getImportJobMeta() {
+		return importJobMeta;
+	}
+
+	public void setImportJobMeta(String importJobMeta) {
+		this.importJobMeta = importJobMeta;
+	}
+	
+	public JSONObject getImportJobMetaJson() throws ParseException {
+		if(importJobMeta != null) {
+			JSONParser parser = new JSONParser();
+			JSONObject metaJson = (JSONObject) parser.parse(importJobMeta);
+			return metaJson;
+		}
+		return null;
+	}
+
+	public void setFieldMappingJSON(JSONObject fieldMappingJSON) {
+		this.fieldMappingJSON = fieldMappingJSON;
 	}
 
 	public void setId(Long id) {

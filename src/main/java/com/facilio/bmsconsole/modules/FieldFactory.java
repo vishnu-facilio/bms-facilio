@@ -3521,6 +3521,7 @@ public class FieldFactory {
 		fields.add(getField("fieldMappingString", "FIELD_MAPPING", module, FieldType.STRING));
 		fields.add(getField("importTime", "IMPORT_TIME", module, FieldType.NUMBER));
 		fields.add(getField("importType", "IMPORT_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("importJobMeta", "IMPORT_JOB_META", module, FieldType.STRING));
 		
 		return fields;
 	}
