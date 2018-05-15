@@ -25,6 +25,7 @@ import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.FCUContext;
 import com.facilio.bmsconsole.context.FloorContext;
+import com.facilio.bmsconsole.context.HeatPumpContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
@@ -290,6 +291,7 @@ public class FacilioConstants {
 		public static final String AHU = "ahu";
 		public static final String COOLING_TOWER = "coolingtower";
 		public static final String FCU = "fcu";
+		public static final String HEAT_PUMP = "heatpump";
 		public static final String ENERGY_METER_PURPOSE = "energymeterpurpose";
 		
 		public static final String CURRENT_OCCUPANCY_READING = "currentoccupancyreading";
@@ -485,6 +487,7 @@ public class FacilioConstants {
 			classMap.put(AHU, AHUContext.class);
 			classMap.put(COOLING_TOWER, CoolingTowerContext.class);
 			classMap.put(FCU, FCUContext.class);
+			classMap.put(HEAT_PUMP, HeatPumpContext.class);
 			classMap.put(ENERGY_DATA_READING, ReadingContext.class);
 			classMap.put(ENERGY_METER_PURPOSE, EnergyMeterPurposeContext.class);
 			classMap.put(WEATHER_READING, ReadingContext.class);
