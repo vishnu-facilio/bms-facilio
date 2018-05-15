@@ -28,6 +28,7 @@ import com.facilio.bmsconsole.context.FormulaContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.ReportColumnContext;
 import com.facilio.bmsconsole.context.ReportContext;
+import com.facilio.bmsconsole.context.ReportContext.LegendMode;
 import com.facilio.bmsconsole.context.ReportContext.ReportChartType;
 import com.facilio.bmsconsole.context.ReportDateFilterContext;
 import com.facilio.bmsconsole.context.ReportEnergyMeterContext;
@@ -1066,8 +1067,32 @@ public class DashboardUtil {
 				
 				List<Map<String, Object>> compReportProps = selectBuilder.get();
 				if (compReportProps != null && !compReportProps.isEmpty()) {
+					
+					Map<String, Boolean> yAxisFields = new HashMap<>();
+					if (reportContext.getY1AxisField() != null) {
+						yAxisFields.put(reportContext.getY1AxisField().getId()+"", true);
+					}
+					
 					for(Map<String, Object> compReportProp:compReportProps) {
 						ReportContext compReportContext = FieldUtil.getAsBeanFromMap(compReportProp, ReportContext.class);
+						if (compReportContext.getY1AxisField() != null) {
+							yAxisFields.put(compReportContext.getY1AxisField().getId()+"", true);
+						}
+					}
+					LegendMode legendMode = LegendMode.RESOURCE_NAME;
+					if (yAxisFields.size() > 1) {
+						if (yAxisFields.size() == (compReportProps.size() + 1)) {
+							legendMode = LegendMode.READING_NAME;
+						}
+						else {
+							legendMode = LegendMode.RESOURCE_WITH_READING_NAME;
+						}
+					}
+					reportContext.setLegendMode(legendMode);
+					
+					for(Map<String, Object> compReportProp:compReportProps) {
+						ReportContext compReportContext = FieldUtil.getAsBeanFromMap(compReportProp, ReportContext.class);
+						compReportContext.setLegendMode(legendMode);
 						reportContext.addComparingReportContext(compReportContext);
 					}
 				}

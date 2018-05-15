@@ -41,6 +41,7 @@ import com.facilio.bmsconsole.context.MarkedReadingContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ReportColumnContext;
 import com.facilio.bmsconsole.context.ReportContext;
+import com.facilio.bmsconsole.context.ReportContext.LegendMode;
 import com.facilio.bmsconsole.context.ReportContext.ReportChartType;
 import com.facilio.bmsconsole.context.ReportDateFilterContext;
 import com.facilio.bmsconsole.context.ReportEnergyMeterContext;
@@ -983,6 +984,16 @@ public class DashboardAction extends ActionSupport {
 	
 	public String getEntityName() {
 		return this.entityName;
+	}
+	
+	private String legendMode;
+	
+	public void setLegendMode(String legendMode) {
+		this.legendMode = legendMode;
+	}
+	
+	public String getLegendMode() {
+		return this.legendMode;
 	}
 	
 	private boolean excludeViolatedReadings = false;
@@ -2323,12 +2334,33 @@ public class DashboardAction extends ActionSupport {
 		
 		if (energyMeterValue != null && !"".equalsIgnoreCase(energyMeterValue.trim())) {
 			this.meterIds = energyMeterValue.split(",");
+			
+			LegendMode legendMode = (this.legendMode != null && !this.legendMode.trim().equals("")) ? LegendMode.valueOf(this.legendMode) : reportContext.getLegendMode();
+			if (legendMode == null) {
+				legendMode = LegendMode.RESOURCE_WITH_READING_NAME;
+			}
+			
+			String resourceName = null;
+			String readingName = null;
 			ResourceContext res = ResourceAPI.getResource(Long.parseLong(this.meterIds[0]));
 			if (res != null) {
-				this.entityName = res.getName();
+				resourceName = res.getName();
 			}
-			if (yAxisFieldName != null && reportContext.getId() <= 0) {
-				this.entityName = yAxisFieldName + " ("+this.entityName+")";
+			if (yAxisFieldName != null) {
+				readingName = yAxisFieldName; 
+			}
+			
+			if (legendMode == LegendMode.READING_NAME && readingName != null) {
+				this.entityName = readingName;
+			}
+			else if (legendMode == LegendMode.RESOURCE_NAME && resourceName != null) {
+				this.entityName = resourceName;
+			}
+			else {
+				this.entityName = resourceName;
+				if (readingName != null) {
+					this.entityName = readingName + (this.entityName != null ? " ("+this.entityName+")" : "");
+				}
 			}
 		}
 		if (this.entityName != null && baseLineName != null) {

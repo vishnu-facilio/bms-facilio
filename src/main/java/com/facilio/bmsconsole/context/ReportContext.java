@@ -60,6 +60,16 @@ public class ReportContext extends ModuleBaseWithCustomFields {
 	Long reportEntityId;
 	List<ReportContext> comparingReportContexts;
 	
+	private LegendMode legendMode;
+	
+	public void setLegendMode(LegendMode legendMode) {
+		this.legendMode = legendMode;
+	}
+	
+	public LegendMode getLegendMode() {
+		return this.legendMode;
+	}
+	
 	public Long getReportEntityId() {
 		return reportEntityId;
 	}
@@ -769,5 +779,21 @@ public class ReportContext extends ModuleBaseWithCustomFields {
 	}
 	public void setBaseLineId(long baseLineId) {
 		this.baseLineId = baseLineId;
+	}
+	
+	public enum LegendMode {
+		RESOURCE_NAME (1),
+		READING_NAME (2),
+		RESOURCE_WITH_READING_NAME (3);
+		
+		private int value;
+		
+		LegendMode(int value) {
+			this.value = value;
+		}
+		
+		public int getValue() {
+			return this.value;
+		}
 	}
 }
