@@ -1656,7 +1656,9 @@ public class DashboardAction extends ActionSupport {
 			reportY1AxisField = new ReportFieldContext();
 			reportY1AxisField.setModuleField(y1AxisField);
 		}
-		
+		if(y1AxisField!= null && y1AxisField.getColumnName() != null && report.getIsHighResolutionReport() || xAggr == 0) {
+			builder.andCustomWhere(y1AxisField.getColumnName()+" is not null");
+		}
 		JSONObject reportFieldLabelMap = new JSONObject();
 		reportFieldLabelMap.put("label", xAxisField.getName());
 		reportFieldLabelMap.put("value", y1AxisField.getName());
