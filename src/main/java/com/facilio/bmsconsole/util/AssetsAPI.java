@@ -86,6 +86,11 @@ public class AssetsAPI {
 	
 	public static AssetContext getAssetInfo(long assetId) throws Exception
 	{
+		return getAssetInfo(assetId, false);
+	}
+	
+	public static AssetContext getAssetInfo(long assetId, boolean fetchDeleted) throws Exception
+	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
 		
@@ -95,6 +100,10 @@ public class AssetsAPI {
 																.select(modBean.getAllFields(module.getName()))
 																.table(module.getTableName())
 																.andCondition(CriteriaAPI.getIdCondition(assetId, module));
+		
+		if (fetchDeleted) {
+			selectBuilder.fetchDeleted();
+		}
 		
 		List<AssetContext> assets = selectBuilder.get();
 		if(assets != null && !assets.isEmpty()) {
