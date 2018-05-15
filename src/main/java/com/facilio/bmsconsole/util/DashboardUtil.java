@@ -1065,6 +1065,8 @@ public class DashboardUtil {
 						.andCustomWhere(ModuleFactory.getReport().getTableName()+".REPORT_FOLDER_ID IS NULL")
 						.orderBy("REPORT_ORDER");
 				
+				LegendMode legendMode = LegendMode.READING_NAME;
+				
 				List<Map<String, Object>> compReportProps = selectBuilder.get();
 				if (compReportProps != null && !compReportProps.isEmpty()) {
 					
@@ -1079,7 +1081,7 @@ public class DashboardUtil {
 							yAxisFields.put(compReportContext.getY1AxisField().getId()+"", true);
 						}
 					}
-					LegendMode legendMode = LegendMode.RESOURCE_NAME;
+					
 					if (yAxisFields.size() > 1) {
 						if (yAxisFields.size() == (compReportProps.size() + 1)) {
 							legendMode = LegendMode.READING_NAME;
@@ -1088,7 +1090,9 @@ public class DashboardUtil {
 							legendMode = LegendMode.RESOURCE_WITH_READING_NAME;
 						}
 					}
-					reportContext.setLegendMode(legendMode);
+					else {
+						legendMode = LegendMode.RESOURCE_NAME;
+					}
 					
 					for(Map<String, Object> compReportProp:compReportProps) {
 						ReportContext compReportContext = FieldUtil.getAsBeanFromMap(compReportProp, ReportContext.class);
@@ -1096,6 +1100,7 @@ public class DashboardUtil {
 						reportContext.addComparingReportContext(compReportContext);
 					}
 				}
+				reportContext.setLegendMode(legendMode);
 				
 				if (reportContext.getReportChartType() == ReportChartType.TABULAR) {
 					reportContext.setReportColumns(getReportColumns(reportContext.getReportEntityId()));
