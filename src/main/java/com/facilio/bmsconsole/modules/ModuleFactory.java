@@ -820,11 +820,6 @@ public class ModuleFactory {
 		return readingDataMeta;
 	}
 	
-	public static FacilioModule getReportVsBaseLine() {
-		FacilioModule reportFieldModule = new FacilioModule();
-		reportFieldModule.setTableName("Report_BaseLine_Rel");
-		return reportFieldModule;
-	}
 	public static FacilioModule getWorkOrderTemplateModule() {
 		FacilioModule workOrderTemplate = new FacilioModule();
 		workOrderTemplate.setName("workordertemplate");

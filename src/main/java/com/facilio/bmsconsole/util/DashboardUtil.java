@@ -1261,7 +1261,7 @@ public class DashboardUtil {
 		deleteRecordBuilder.delete();
 		
 		deleteRecordBuilder = new GenericDeleteRecordBuilder();
-		deleteRecordBuilder.table(ModuleFactory.getReportVsBaseLine().getTableName())
+		deleteRecordBuilder.table(ModuleFactory.getBaseLineReportRelModule().getTableName())
 		.andCustomWhere("REPORT_ID = ?", reportId);
 		deleteRecordBuilder.delete();
 		
@@ -1483,13 +1483,13 @@ public class DashboardUtil {
 			if(reportContext.getBaseLineId() != -1) {
 				
 				insertBuilder = new GenericInsertRecordBuilder()
-						.table(ModuleFactory.getReportVsBaseLine().getTableName())
-						.fields(FieldFactory.getReportVsBaselineFields());
+						.table(ModuleFactory.getBaseLineReportRelModule().getTableName())
+						.fields(FieldFactory.getBaseLineReportsRelFields());
 				
 				Map<String, Object> prop = new HashMap<>();
 				prop.put("reportId", reportContext.getId());
 				prop.put("baseLineId", reportContext.getBaseLineId());
-				prop.put("isAdjust", false);
+				prop.put("adjustType", 0);
 				
 				insertBuilder.addRecord(prop).save();
 			}
