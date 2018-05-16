@@ -449,10 +449,12 @@ public class AlarmAPI {
 		String value = null;
 		if (rule.getWorkflow() != null) {
 			ExpressionContext expr = rule.getWorkflow().getExpressions().get(0);
-			Condition aggrCondition = expr.getAggregateCondition().get(0);
-			value = aggrCondition.getValue();
+			if (expr.getAggregateCondition() != null && !expr.getAggregateCondition().isEmpty()) {
+				Condition aggrCondition = expr.getAggregateCondition().get(0);
+				value = aggrCondition.getValue();
+			}
 		}
-		else {
+		if (value == null) {
 			value = rule.getPercentage();
 		}
 		
