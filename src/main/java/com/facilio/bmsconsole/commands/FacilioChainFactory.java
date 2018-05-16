@@ -542,6 +542,7 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddTaskCommand());
 		c.addCommand(new AddTaskOptionsCommand());
+		c.addCommand(new UpdateReadingDataMetaCommand());
 		c.addCommand(new AddTaskTicketActivityCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -555,6 +556,7 @@ public class FacilioChainFactory {
 		c.addCommand(new AddTaskSectionsCommand());
 		c.addCommand(new AddTasksCommand());
 		c.addCommand(new AddTaskOptionsCommand());
+		c.addCommand(new UpdateReadingDataMetaCommand());
 		c.addCommand(new AddTaskTicketActivityCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -1417,6 +1419,7 @@ public class FacilioChainFactory {
 		c.addCommand(new AddPreventiveMaintenanceCommand());
 		c.addCommand(new AddAndSchedulePMTriggerCommand());
 		c.addCommand(new AddPMReminderCommand());
+		c.addCommand(new UpdateReadingDataMetaCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -1450,6 +1453,7 @@ public class FacilioChainFactory {
 		c.addCommand(new AddAndSchedulePMTriggerCommand());
 //		c.addCommand(new DeletePMRemindersCommand());
 		c.addCommand(new AddPMReminderCommand());
+		c.addCommand(new UpdateReadingDataMetaCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

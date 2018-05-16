@@ -26,10 +26,12 @@ import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
-import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -42,6 +44,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.time.SecondsChronoUnit;
 import com.facilio.transaction.FacilioConnectionPool;
 
@@ -49,6 +52,49 @@ public class ReadingsAPI {
 	
 	public static final int DEFAULT_DATA_INTERVAL = 15; //In Minutes
 	public static final SecondsChronoUnit DEFAULT_DATA_INTERVAL_UNIT = new SecondsChronoUnit(DEFAULT_DATA_INTERVAL * 60); 
+	
+	public static int updateReadingDataMetaInputType (long resourceId, long fieldId, ReadingDataMeta.ReadingInputType type) throws SQLException {
+		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
+		List<FacilioField> fields = FieldFactory.getReadingDataMetaFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioField resourceIdField = fieldMap.get("resourceId");
+		FacilioField fieldIdField = fieldMap.get("fieldId");
+		
+		Map<String, Object> prop = Collections.singletonMap("inputType", type.getValue());
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+														.table(module.getTableName())
+														.fields(fields)
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCondition(resourceIdField, String.valueOf(resourceId), PickListOperators.IS))
+														.andCondition(CriteriaAPI.getCondition(fieldIdField, String.valueOf(fieldId), PickListOperators.IS))
+														;
+		return updateBuilder.update(prop);
+	}
+	
+	public static int updateReadingDataMetaInputType (List<ReadingDataMeta> metaList, ReadingDataMeta.ReadingInputType type) throws SQLException {
+		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
+		List<FacilioField> fields = FieldFactory.getReadingDataMetaFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioField resourceIdField = fieldMap.get("resourceId");
+		FacilioField fieldIdField = fieldMap.get("fieldId");
+		
+		Criteria pkCriteriaList = new Criteria();
+		for (ReadingDataMeta meta : metaList) {
+			Criteria pkCriteria = new Criteria();
+			pkCriteria.addAndCondition(CriteriaAPI.getCondition(resourceIdField, String.valueOf(meta.getResourceId()), PickListOperators.IS));
+			pkCriteria.addAndCondition(CriteriaAPI.getCondition(fieldIdField, String.valueOf(meta.getFieldId()), PickListOperators.IS));
+			pkCriteriaList.orCriteria(pkCriteria);
+		}
+		
+		Map<String, Object> prop = Collections.singletonMap("inputType", type.getValue());
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+														.table(module.getTableName())
+														.fields(fields)
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCriteria(pkCriteriaList);
+														
+		return updateBuilder.update(prop);
+	}
 	
 	public static ReadingDataMeta getReadingDataMeta(long resourceId,FacilioField field) throws Exception {
 		FacilioModule module = ModuleFactory.getReadingDataMetaModule();

@@ -79,7 +79,7 @@ public class ReadingDataMeta {
 	public static enum ReadingInputType {
 		WEB,
 		TASK,
-		CONTROLLER,
+		CONTROLLER_MAPPED,
 		FORMULA_FIELD
 		;
 		

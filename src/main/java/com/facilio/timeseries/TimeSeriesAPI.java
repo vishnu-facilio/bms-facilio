@@ -1,9 +1,12 @@
 package com.facilio.timeseries;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
@@ -12,8 +15,11 @@ import org.json.simple.JSONObject;
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
 import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -22,7 +28,9 @@ import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
@@ -97,24 +105,55 @@ public class TimeSeriesAPI {
 		return deviceInstanceMap;
 	}
 	
+	private static List<ReadingDataMeta> getMetaList(long assetId, Map<String,Long> instanceFieldMap) throws Exception {
+		List<FacilioField> fields = new ArrayList<>();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		for (Map.Entry<String, Long> entry : instanceFieldMap.entrySet()) {
+			long fieldId = entry.getValue();
+			FacilioField field = modBean.getField(fieldId);
+			if (field == null) {
+				throw new IllegalArgumentException("Invalid fieldId during Instance to asset mapping");
+			}
+			fields.add(field);
+		}
+		return ReadingsAPI.getReadingDataMetaList(Collections.singletonList(assetId), fields);
+	}
+	
+	private static void checkForInputType(long assetId, long fieldId, String instanceName, Map<String, ReadingDataMeta> metaMap) throws Exception {
+		ReadingDataMeta meta = metaMap.get(assetId+"|"+fieldId);
+		switch (meta.getInputTypeEnum()) {
+			case CONTROLLER_MAPPED:
+				throw new IllegalArgumentException("Field with ID "+fieldId+" for instance "+instanceName+" is already mapped");
+			case FORMULA_FIELD:
+				throw new IllegalArgumentException("Field with ID "+fieldId+" is formula field and therefore cannot be mapped");
+			default:
+				break;
+		}
+	}
+	
 	public static void insertInstanceAssetMapping(String deviceName, long assetId, Map<String,Long> instanceFieldMap) throws Exception {
+		List<ReadingDataMeta> metaList = getMetaList(assetId, instanceFieldMap);
+		Map<String, ReadingDataMeta> metaMap = metaList.stream().collect(Collectors.toMap(meta -> meta.getResourceId()+"|"+meta.getFieldId(), Function.identity()));
 		List<Map<String, Object>> records = new ArrayList<>();
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
-		instanceFieldMap.forEach((instaceName, fieldId) -> {
+		for (Map.Entry<String, Long> entry : instanceFieldMap.entrySet()) {
+			String instanceName = entry.getKey();
+			long fieldId = entry.getValue();
+			checkForInputType(assetId, fieldId, instanceName, metaMap);
 			Map<String, Object> record = new HashMap<String,Object>();
 			record.put("orgId", orgId);
 			record.put("device", deviceName);
 			record.put("assetId", assetId);
-			record.put("instance", instaceName);
+			record.put("instance", instanceName);
 			record.put("fieldId", fieldId);
 			records.add(record);
-		});
-		
+		};
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.fields(FieldFactory.getInstanceMappingFields())
 				.table("Instance_To_Asset_Mapping")
 				.addRecords(records);
 		insertBuilder.save();
+		ReadingsAPI.updateReadingDataMetaInputType(metaList, ReadingInputType.CONTROLLER_MAPPED);
 	}
 	
 	public static Map<String, Long> getDefaultInstanceFieldMap() throws Exception {

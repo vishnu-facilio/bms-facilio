@@ -8,8 +8,12 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 
 public class ValidateTasksCommand implements Command {
 
@@ -35,6 +39,8 @@ public class ValidateTasksCommand implements Command {
 		}
 		
 		if (tasks != null && !tasks.isEmpty()) {
+			List<ReadingDataMeta> metaList = new ArrayList<>();
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			for(TaskContext task : tasks) {
 				if (task.getInputTypeEnum() == null) {
 					task.setInputType(TaskContext.InputType.NONE);
@@ -48,6 +54,15 @@ public class ValidateTasksCommand implements Command {
 							if(task.getReadingFieldId() == -1) {
 								throw new IllegalArgumentException("Reading ID cannot be null when reading is enabled for task");
 							}
+							ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(task.getResource().getId(), modBean.getField(task.getReadingFieldId()));
+							switch (meta.getInputTypeEnum()) {
+								case CONTROLLER_MAPPED:
+								case FORMULA_FIELD: 
+									throw new IllegalArgumentException("Readings that are mapped with controller cannot be used.");
+								default:
+									metaList.add(meta);
+									break;
+							}
 							break;
 						case CHECKBOX:
 						case RADIO:
@@ -59,6 +74,10 @@ public class ValidateTasksCommand implements Command {
 							break;
 					}
 				}
+			}
+			if (!metaList.isEmpty()) {
+				context.put(FacilioConstants.ContextNames.READING_DATA_META_LIST, metaList);
+				context.put(FacilioConstants.ContextNames.READING_DATA_META_TYPE, ReadingDataMeta.ReadingInputType.TASK);
 			}
 		}
 		return false;
