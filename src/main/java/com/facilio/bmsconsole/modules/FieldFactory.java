@@ -2755,6 +2755,7 @@ public class FieldFactory {
 
 		return fields;
 	}
+
 	public static List<FacilioField> getReportThresholdFields() {
 		
 		List<FacilioField> fields = new ArrayList<>();
