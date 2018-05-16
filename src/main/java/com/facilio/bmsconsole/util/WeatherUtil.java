@@ -81,7 +81,7 @@ public class WeatherUtil {
 	}
 
 	
-	public static  HttpURLConnection getHttpURLConnection (String requestURL) throws Exception{
+	public static synchronized HttpURLConnection getHttpURLConnection (String requestURL) throws Exception{
 		
 
 		URL request = new URL(requestURL);

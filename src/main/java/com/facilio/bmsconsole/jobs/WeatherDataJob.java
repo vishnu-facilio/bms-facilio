@@ -11,6 +11,7 @@ import org.apache.commons.chain.Chain;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.PsychrometricUtil;
@@ -77,10 +78,12 @@ public class WeatherDataJob extends FacilioJob {
 			}
 			catch (Exception e) {
 				logger.log(Level.SEVERE, e.getMessage(), e);
+				CommonCommandUtil.emailException("Adding Psychrometric Reading Failed", e);
 			}
 		}
 		catch (Exception e) {
 			logger.log(Level.SEVERE, e.getMessage(), e);
+			CommonCommandUtil.emailException("Adding Weather Reading Failed", e);
 		}
 	}
 	

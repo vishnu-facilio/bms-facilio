@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.DateTimeUtil;
@@ -57,6 +58,7 @@ public class DegreeDaysCalculatorJob extends FacilioJob {
 		}
 		catch (Exception e) {
 			logger.log(Level.SEVERE, e.getMessage(), e);
+			CommonCommandUtil.emailException("Exception in calculating Degree Days", e);
 		}
 	}
 

@@ -27,7 +27,7 @@ public class ModeledDataCommand implements Command {
 		Long timeStamp=(Long)context.get(FacilioConstants.ContextNames.TIMESTAMP);
 		
 		Map<String,List<ReadingContext>> moduleVsReading = new HashMap<String,List<ReadingContext>> ();
-		Map<String,ReadingContext> iModuleAssetReading = new HashMap<String,ReadingContext> ();
+		Map<String,ReadingContext> iModuleVsReading = new HashMap<String,ReadingContext> ();
 		
 		System.err.println( Thread.currentThread().getName()+"Inside ModeledDataCommand####### deviceData: "+deviceData);
 		for(Map.Entry<String, Map<String,String>> data:deviceData.entrySet()) {
@@ -54,10 +54,10 @@ public class ModeledDataCommand implements Command {
 					FacilioField field =bean.getField(fieldId);
 					String moduleName=field.getModule().getName();
 					String readingKey=moduleName+"|"+assetId;
-					ReadingContext reading=iModuleAssetReading.get(readingKey);
+					ReadingContext reading=iModuleVsReading.get(readingKey);
 					if(reading == null) {
 						reading = new ReadingContext();
-						iModuleAssetReading.put(readingKey, reading);
+						iModuleVsReading.put(readingKey, reading);
 					}
 					reading.addReading(field.getName(), instanceVal);
 					reading.setParentId(assetId);
@@ -69,7 +69,7 @@ public class ModeledDataCommand implements Command {
 			
 			
 		}
-		for(Map.Entry<String, ReadingContext> iMap:iModuleAssetReading.entrySet()) {
+		for(Map.Entry<String, ReadingContext> iMap:iModuleVsReading.entrySet()) {
 			String key=iMap.getKey();
 			String moduleName=key.substring(0, key.indexOf("|"));
 			ReadingContext reading=iMap.getValue();
