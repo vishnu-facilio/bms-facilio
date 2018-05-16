@@ -6,9 +6,11 @@ import java.util.Properties;
 
 import com.amazonaws.services.kinesis.AmazonKinesis;
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.v2.IRecordProcessorFactory;
+import com.amazonaws.services.kinesis.model.LimitExceededException;
 import com.amazonaws.services.kinesis.model.ResourceNotFoundException;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.events.tasker.tasks.EventProcessorFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -38,7 +40,17 @@ public class KinesisProcessor {
             for (Map<String, Object> prop : props) {
                 Long orgId = (Long) prop.get("orgId");
                 String orgDomainName = (String) prop.get("domain");
-                startProcessor(orgId, orgDomainName);
+                try {
+                    startProcessor(orgId, orgDomainName);
+                } catch (Exception e) {
+                    try {
+                        Thread.sleep(10000L);
+                        startProcessor(orgId, orgDomainName);
+                    } catch (InterruptedException | LimitExceededException interrupted) {
+                        interrupted.printStackTrace();
+                        CommonCommandUtil.emailException("Exception while starting stream " + orgDomainName, interrupted);
+                    }
+                }
             }
         } catch (Exception e){
             e.printStackTrace();

@@ -123,7 +123,7 @@ public class FacilioContextListener implements ServletContextListener {
 			
 			try {
 				if(("true".equalsIgnoreCase(AwsUtil.getConfig("enable.kinesis"))) && "true".equalsIgnoreCase(AwsUtil.getConfig("schedulerServer"))) {
-					KinesisProcessor.startProcessor();
+					new Thread(KinesisProcessor::startProcessor).start();
 				}
 			} catch (Exception e){
 				e.printStackTrace();
