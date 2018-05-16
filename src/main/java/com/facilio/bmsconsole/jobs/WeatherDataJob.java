@@ -30,7 +30,6 @@ public class WeatherDataJob extends FacilioJob {
 	public void execute(JobContext jc) {
 		try {
 			logger.log(Level.INFO,"The weather data feature enabled for orgid: "+AccountUtil.getCurrentOrg().getOrgId());
-		    System.out.println("The weather data feature enabled for orgid: "+AccountUtil.getCurrentOrg().getOrgId());
 			if (!AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_WEATHER_INTEGRATION))
 			{
 				return;
@@ -40,51 +39,46 @@ public class WeatherDataJob extends FacilioJob {
 			
 			List<ReadingContext> psychrometricReadings= new ArrayList<ReadingContext>();
 			for(SiteContext site:sites) {
-				
+
 				Map<String,Object> weatherData=WeatherUtil.getWeatherData(site);
-			    logger.log(Level.INFO,"The weather data for orgid: "+AccountUtil.getCurrentOrg().getOrgId()+" : "+weatherData);
-			    System.out.println("The weather data for orgid: "+AccountUtil.getCurrentOrg().getOrgId()+" : "+weatherData);
+				logger.log(Level.INFO,"The weather data for orgid: "+AccountUtil.getCurrentOrg().getOrgId()+" : "+weatherData);
 				if(weatherData==null || weatherData.isEmpty()) {
 					continue;
 				}
 				long siteId=site.getId();
-				 ReadingContext reading=getReading(siteId,weatherData);
-				 if(reading==null) {
-					 continue;
-				 }
+				ReadingContext reading=getReading(siteId,weatherData);
+				if(reading==null) {
+					continue;
+				}
 				readings.add(reading);
-				
 				ReadingContext psychrometricReading = getPsychrometricReading(siteId, weatherData);
 				if(psychrometricReading == null) {
 					continue;
 				}
-			    logger.log(Level.INFO,"The psychometric data for orgid: "+AccountUtil.getCurrentOrg().getOrgId()+" : "+psychrometricReading);
-			    System.out.println("The psychometric data for orgid: "+AccountUtil.getCurrentOrg().getOrgId()+" : "+psychrometricReading);
+				logger.log(Level.INFO,"The psychometric data for orgid: "+AccountUtil.getCurrentOrg().getOrgId()+" : "+psychrometricReading);
 				psychrometricReadings.add(psychrometricReading);
 			}
+				addReading(FacilioConstants.ContextNames.WEATHER_READING,readings);	
+				addReading(FacilioConstants.ContextNames.PSYCHROMETRIC_READING ,psychrometricReadings);
 			
-			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WEATHER_READING);
-			context.put(FacilioConstants.ContextNames.READINGS, readings);
-			Chain addReading = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
-			addReading.execute(context);
-			
-			try {
-				context = new FacilioContext();
-				context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.PSYCHROMETRIC_READING);
-				context.put(FacilioConstants.ContextNames.READINGS, psychrometricReadings);
-				Chain addPsychrometricReading = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
-				addPsychrometricReading.execute(context);
-			}
-			catch (Exception e) {
-				logger.log(Level.SEVERE, e.getMessage(), e);
-				CommonCommandUtil.emailException("Adding Psychrometric Reading Failed", e);
-			}
 		}
 		catch (Exception e) {
 			logger.log(Level.SEVERE, e.getMessage(), e);
-			CommonCommandUtil.emailException("Adding Weather Reading Failed", e);
+			CommonCommandUtil.emailException("Exception in Weather Data job ", e);
 		}
+	}
+	
+	
+	private void addReading(String moduleName,List<ReadingContext> readings) throws Exception {
+		
+		if(readings==null || readings.isEmpty()) {
+			return;
+		}
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.READINGS, readings);
+		Chain addReading = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
+		addReading.execute(context);
 	}
 	
 	private ReadingContext getPsychrometricReading(long siteId, Map<String,Object> weatherData) {
