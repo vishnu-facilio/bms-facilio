@@ -61,4 +61,12 @@ public class ReadingAlarmContext extends AlarmContext {
 	public void setReadingMessage(String readingMessage) {
 		this.readingMessage = readingMessage;
 	}
+	
+	private long ruleId = -1;
+	public long getRuleId() {
+		return ruleId;
+	}
+	public void setRuleId(long ruleId) {
+		this.ruleId = ruleId;
+	}
 }

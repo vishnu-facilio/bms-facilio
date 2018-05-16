@@ -302,7 +302,7 @@ public class AlarmAPI {
 	
 	public static void addReadingAlarmProps(JSONObject obj, ReadingRuleContext rule, ReadingContext reading) throws Exception {
 		obj.put("readingFieldId", rule.getReadingFieldId());
-		
+		obj.put("ruleId", rule.getId());
 		if (rule.getBaselineId() != -1) {
 			obj.put("baselineId", rule.getBaselineId());
 		}
