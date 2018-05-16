@@ -1,5 +1,6 @@
 package com.facilio.kinesis;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -7,6 +8,7 @@ import java.util.Properties;
 import com.amazonaws.services.kinesis.AmazonKinesis;
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.v2.IRecordProcessorFactory;
 import com.amazonaws.services.kinesis.model.LimitExceededException;
+import com.amazonaws.services.kinesis.model.ListStreamsResult;
 import com.amazonaws.services.kinesis.model.ResourceNotFoundException;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.aws.util.AwsUtil;
@@ -18,12 +20,31 @@ import com.facilio.timeseries.TimeSeriesProcessorFactory;
 
 public class KinesisProcessor {
 
+    private static final HashSet<String> STREAMS = new HashSet<>();
+
     private static Properties getLoggingProps(){
         Properties properties = new Properties();
         properties.put("log4j.rootLogger", "ERROR,stdout");
         properties.put("log4j.appender.stdout", "org.apache.log4j.ConsoleAppender" );
         properties.put("log4j.appender.stdout.layout", "org.apache.log4j.PatternLayout");
         return properties;
+    }
+
+    static {
+        updateStream();
+    }
+
+    private static void updateStream() {
+        try {
+            AmazonKinesis kinesis = AwsUtil.getKinesisClient();
+            ListStreamsResult streamList = kinesis.listStreams();
+            List<String> streamNames = streamList.getStreamNames();
+            if (streamNames != null) {
+                STREAMS.addAll(streamNames);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public static void startProcessor() {
@@ -59,13 +80,12 @@ public class KinesisProcessor {
     }
 
     public static void startProcessor(long orgId, String orgDomainName) {
-        AmazonKinesis kinesis = AwsUtil.getKinesisClient();
         try {
-            if(orgDomainName != null) {
-                kinesis.describeStream(orgDomainName);
+            if(orgDomainName != null && STREAMS.contains(orgDomainName)) {
                 System.out.println("Starting kinesis processor for org : " + orgDomainName + " id " + orgId);
                 initiateProcessFactory(orgId, orgDomainName, "event");
-                initiateProcessFactory(orgId, orgDomainName, "timeSeries");            }
+                initiateProcessFactory(orgId, orgDomainName, "timeSeries");
+            }
         } catch (ResourceNotFoundException e){
             System.out.println("Kinesis stream not found for org : " + orgDomainName +" id "+ orgId);
         } catch (Exception e){
@@ -75,9 +95,7 @@ public class KinesisProcessor {
     
     
     private static void initiateProcessFactory(long orgId, String orgDomainName, String type) {
-
     	try {
-
     		new Thread(() -> StreamProcessor.run(orgId, orgDomainName, type, getProcessorFactory(orgId,orgDomainName,type))).start();
     	}
     	catch (Exception e){
@@ -86,7 +104,7 @@ public class KinesisProcessor {
 
     }
 
-    private static IRecordProcessorFactory getProcessorFactory(long orgId, String orgDomainName,String type) {
+    private static IRecordProcessorFactory getProcessorFactory(long orgId, String orgDomainName, String type) {
 
     	switch(type){
 
