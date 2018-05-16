@@ -2774,9 +2774,9 @@ public class FieldFactory {
 		fields.add(baseLineId);
 		
 		FacilioField isAdjust = new FacilioField();
-		isAdjust.setName("isAdjust");
-		isAdjust.setDataType(FieldType.BOOLEAN);
-		isAdjust.setColumnName("IS_ADJUST");
+		isAdjust.setName("adjustType");
+		isAdjust.setDataType(FieldType.NUMBER);
+		isAdjust.setColumnName("ADJUST_TYPE");
 		isAdjust.setModule(module);
 		fields.add(isAdjust);
 

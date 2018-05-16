@@ -15,6 +15,7 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.DashboardContext;
@@ -1489,7 +1490,7 @@ public class DashboardUtil {
 				Map<String, Object> prop = new HashMap<>();
 				prop.put("reportId", reportContext.getId());
 				prop.put("baseLineId", reportContext.getBaseLineId());
-				prop.put("isAdjust", false);
+				prop.put("adjustType", BaseLineContext.AdjustType.NONE.getValue());
 				
 				insertBuilder.addRecord(prop).save();
 			}
