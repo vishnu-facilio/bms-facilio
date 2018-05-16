@@ -4,6 +4,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -80,7 +81,9 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 	
 	private List<ReadingContext> addDefaultPropsAndGetReadingsToBeAdded(FacilioModule module, List<FacilioField> fields, List<ReadingContext> readings, Map<String, ReadingDataMeta> metaMap, boolean useControllerDataInterval, boolean updateLastReading) throws Exception {
 		List<ReadingContext> readingsToBeAdded = new ArrayList<>();
-		for(ReadingContext reading : readings) {
+		Iterator<ReadingContext> itr = readings.iterator();
+		while (itr.hasNext()) {
+			ReadingContext reading = itr.next();
 			if(reading.getTtime() == -1) {
 				reading.setTtime(System.currentTimeMillis());
 			}
@@ -88,11 +91,17 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 				throw new IllegalArgumentException("Invalid parent id for readings of module : "+module.getName());
 			}
 			adjustTtime(reading, useControllerDataInterval);
-			if(reading.getId() == -1) {
-				readingsToBeAdded.add(reading);
+			
+			if (reading.getReadings() != null && !reading.getReadings().isEmpty()) {
+				if(reading.getId() == -1) {
+					readingsToBeAdded.add(reading);
+				}
+				else {
+					updateReading(module, fields, reading, metaMap, updateLastReading);
+				}
 			}
 			else {
-				updateReading(module, fields, reading, metaMap, updateLastReading);
+				itr.remove();
 			}
 		}
 		return readingsToBeAdded;
