@@ -13,11 +13,7 @@
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Insert title here</title>	
-<style>
-.bttn{
-background-color:#f1f1f1;
-}
-</style>
+
 <script>
 
 function init() {
@@ -32,18 +28,22 @@ function init() {
 
 </head>
 <body onload="init()">
- <div class="row">
-</div>
-
-
-<div id="tg">
 <form action = "" method ="GET">
-<h3>Copy Planned Maintenance:</h3>
-<br>Please Enter the Source OrgID:<input type = "text" name = "orgId" id="orgId" placeholder="orgId"/>
-<br>Please Enter the Destination OrgID:<input type = "text" name = "newOrgId" id="newOrgId" placeholder="newOrgId"/><br>
-<br><input type = "submit" value = "submit"> 
-</form>
+<h2> Copy Planned Maintenance:</h2>
+<div >
+<div style="margin-top:30px">
+Please Enter the Source OrgID:  <input style="margin-left: 10px" type = "number" name = "orgId" id="orgId" placeholder="orgId"/>
+
 </div>
+<div style="margin-top:30px">
+Please Enter the Destination OrgID: <input  style="margin-left: 10px"  type = "number" name = "newOrgId" id="newOrgId" placeholder="newOrgId"/>
+</div>
+<div style="margin-top:30px">
+<input type = "submit" value = "submit"> 
+</div>
+</div>
+</form>
+
 
 
 

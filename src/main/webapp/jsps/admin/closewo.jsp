@@ -11,11 +11,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Insert title here</title>	
-<style>
-.bttn{
-background-color:#f1f1f1;
-}
-</style>
+
 <script>
 
 function init() {
@@ -33,14 +29,19 @@ function init() {
  <div class="row">
 </div>
 
-<div id="tg">
+<div >
 <form action = "" method ="GET">
-<h3>Close WorkOrder:</h3>
-Please enter the OrgID:<input type = "text" name = "orgId" id="orgId" placeholder="orgId"/>
-<input type = "submit" value = "submit"> 
-</form>
+<h2>Close Work Orders:</h2>
+<div style="margin-top:30px">
+Please enter the OrgID: <input style="margin-left: 10px"  type = "text" name = "orgId" id="orgId" placeholder="orgId"/>
 </div>
 
+<div style="margin-top:30px">
+<input type = "submit" value = "submit"> 
+</div>
+</form>
+
+</div>
 </body>
 </html>
 

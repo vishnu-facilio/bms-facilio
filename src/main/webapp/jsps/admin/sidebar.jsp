@@ -45,7 +45,7 @@
            <li>
                <a href="copypm">
                <span class="nav-icon">
-              <i class=" sidebar-icon fa fa-info-circle fa-fw "></i> </span>
+              <i class=" sidebar-icon fa fa-copy fa-fw "></i> </span>
                <span class="nav-title">Copy PM</span>
                </a>
            </li>

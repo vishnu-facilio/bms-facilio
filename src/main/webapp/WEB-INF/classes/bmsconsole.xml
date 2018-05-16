@@ -1030,9 +1030,7 @@
 			<action name="usermanagement" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/usermanagement.jsp</result>
 			</action>
-			<action name="users" class="com.facilio.bmsconsole.actions.AdminAction" method="users">
-			<result name="success" type="redirect"><param name="location">usermanagement</param></result>
-		</action>
+		
 			<action name="sqlconsole" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/sqlconsole.jsp</result>
 			</action>
@@ -1588,13 +1586,6 @@
 			<param name="permission">ENERGY_ANALYTICS</param>
 			<result name="success" type="json">
 				<param name="root">enpiList</param>
-			</result>
-		</action>
-		
-		<action name="updateRDM" class="com.facilio.bmsconsole.actions.ReadingAction"
-			method="updateReadingDataMeta">
-			<result name="success" type="json">
-				<param name="includeProperties">result</param>
 			</result>
 		</action>
 	</package>

@@ -24,8 +24,8 @@
 </head>
 <body onload="init()">
  <form action="" method="GET">
- <h2>User Management</h2>
- <div class="container col-lg-8 col-md-8">
+ <h2><i class=" fa fa-user fa-fw "></i>User Management</h2>
+ <div class=" col-lg-8 col-md-8">
  
     <div style="margin-top:40px;" class="input-group col-lg-8 col-md-8 col-sm-8	">
       <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
