@@ -7,6 +7,8 @@ import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.actions.ImportProcessContext.ImportStatus;
 import com.facilio.bmsconsole.commands.data.ProcessXLS;
 import com.facilio.bmsconsole.util.ImportAPI;
+import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 
@@ -27,6 +29,10 @@ public class ImportDataJob extends FacilioJob {
 			}
 			
 			ProcessXLS.processImport(importProcessContext);
+			
+			if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) || importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ENERGY_METER)) {
+				ReadingsAPI.updateReadingDataMeta();
+			}
 			
 			ImportAPI.updateImportProcess(importProcessContext,ImportStatus.IMPORTED);
 		}
