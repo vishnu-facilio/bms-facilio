@@ -1,7 +1,9 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.json.simple.JSONObject;
@@ -12,6 +14,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.events.context.EventContext;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
 public class AlarmContext extends TicketContext {
@@ -328,5 +331,19 @@ public class AlarmContext extends TicketContext {
 		else {
 			return null;
 		}
+	}
+	
+	List<EventContext> relatedEvents;
+	public List<EventContext> getRelatedEvents() {
+		return relatedEvents;
+	}
+	public void setRelatedEvents(List<EventContext> relatedEvents) {
+		this.relatedEvents = relatedEvents;
+	}
+	public void addrelatedEvent(EventContext relatedEvent) {
+		if(this.relatedEvents == null) {
+			this.relatedEvents = new ArrayList<>();
+		}
+		relatedEvents.add(relatedEvent);
 	}
 }
