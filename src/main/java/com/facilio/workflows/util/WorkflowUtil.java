@@ -104,27 +104,27 @@ public class WorkflowUtil {
 	static final String SEQUENCE_STRING =  "sequence";
 	static final String RESULT_STRING =  "result";
 	
-	
 	public static Object getWorkflowExpressionResult(String workflowString,Map<String,Object> paramMap) throws Exception {
-		
+		return getWorkflowExpressionResult(workflowString, paramMap, true);
+	}
+	
+	public static Object getWorkflowExpressionResult(String workflowString,Map<String,Object> paramMap, boolean ignoreNullExpressions) throws Exception {
 		WorkflowContext workflowContext = parseStringToWorkflowObject(workflowString);
 		List<ParameterContext> parameterContexts = validateAndGetParameters(workflowContext.getParameters(),paramMap);
 		workflowContext.setParameters(parameterContexts);
-		return workflowContext.executeWorkflow();
+		return workflowContext.executeWorkflow(ignoreNullExpressions);
 	}
 	
 	public static Map<String, Object> getExpressionResultMap(String workflowString,Map<String,Object> paramMap) throws Exception {
-		
 		WorkflowContext workflowContext = parseStringToWorkflowObject(workflowString);
 		List<ParameterContext> parameterContexts = validateAndGetParameters(workflowContext.getParameters(),paramMap);
 		workflowContext.setParameters(parameterContexts);
-		workflowContext.executeWorkflow();
+		workflowContext.executeWorkflow(true);
 		return workflowContext.getVariableResultMap();
 	}
 	
 	public static Map<String, Object> getExpressionResultMap(Long workflowId,Map<String,Object> paramMap)  throws Exception  {
-		
-		 WorkflowContext workflowContext = getWorkflowContext(workflowId);
+		WorkflowContext workflowContext = getWorkflowContext(workflowId);
 		return getExpressionResultMap(workflowContext.getWorkflowString(),paramMap);
 	}
 	
@@ -295,10 +295,12 @@ public class WorkflowUtil {
 	}
 	
 	public static Object getResult(Long workflowId,Map<String,Object> paramMap)  throws Exception  {
-		
+		return getResult(workflowId, paramMap, true);
+	}
+	public static Object getResult(Long workflowId,Map<String,Object> paramMap, boolean ignoreNullExpressions)  throws Exception  {
 		System.out.println("getResult() -- workflowid - "+workflowId+" params -- "+paramMap);
-		 WorkflowContext workflowContext = getWorkflowContext(workflowId);
-		return getWorkflowExpressionResult(workflowContext.getWorkflowString(),paramMap);
+		WorkflowContext workflowContext = getWorkflowContext(workflowId);
+		return getWorkflowExpressionResult(workflowContext.getWorkflowString(),paramMap, ignoreNullExpressions);
 	}
 	
 	public static List<ParameterContext> validateAndGetParameters(List<ParameterContext> paramterContexts,Map<String,Object> paramMap) throws Exception {

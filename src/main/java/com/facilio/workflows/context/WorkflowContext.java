@@ -109,7 +109,7 @@ public class WorkflowContext {
 		return false;
 	}
 
-	public Object executeWorkflow() throws Exception {
+	public Object executeWorkflow(boolean ignoreNullValues) throws Exception {
 		
 		Object result = null;
 		
@@ -140,7 +140,7 @@ public class WorkflowContext {
 		}
 		System.out.println("variableToExpresionMap --- "+variableResultMap+" \n\n"+"expString --- "+getResultEvaluator());
 		
-		result =  evaluateExpression(getResultEvaluator(),variableResultMap);
+		result =  evaluateExpression(getResultEvaluator(),variableResultMap, ignoreNullValues);
 		System.out.println("result --- "+result);
 		return result;
 	}
@@ -172,8 +172,8 @@ public class WorkflowContext {
 		
 		return expressionContext;
 	}
-
-	public Object evaluateExpression(String exp,Map<String,Object> variablesMap) {
+	
+	private Object evaluateExpression(String exp,Map<String,Object> variablesMap, boolean ignoreNullValues) {
 
 		System.out.println("EXPRESSION STRING IS -- "+exp+" variablesMap -- "+variablesMap);
 		if(exp == null) {

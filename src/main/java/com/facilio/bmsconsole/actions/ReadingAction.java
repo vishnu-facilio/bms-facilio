@@ -24,6 +24,7 @@ import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.workflows.context.WorkflowContext;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class ReadingAction extends ActionSupport {
@@ -601,5 +602,58 @@ public class ReadingAction extends ActionSupport {
 		enpiList = (List<EnergyPerformanceIndicatorContext>) context.get(FacilioConstants.ContextNames.ENPI_LIST);
 		
 		return SUCCESS;
+	}
+	
+	public String calculateFormulField() throws Exception {
+		readingValues = ReadingsAPI.calculateFormulaReadings(resourceId, fieldName, startTime, endTime, minuteInterval, workflow);
+		return SUCCESS;
+	}
+	
+	private String fieldName;
+	public String getFieldName() {
+		return fieldName;
+	}
+	public void setFieldName(String fieldName) {
+		this.fieldName = fieldName;
+	}
+
+	private long resourceId = -1;
+	public long getResourceId() {
+		return resourceId;
+	}
+	public void setResourceId(long resourceId) {
+		this.resourceId = resourceId;
+	}
+	
+	private long startTime = -1;
+	public long getStartTime() {
+		return startTime;
+	}
+	public void setStartTime(long startTime) {
+		this.startTime = startTime;
+	}
+	
+	private long endTime = -1;
+	public long getEndTime() {
+		return endTime;
+	}
+	public void setEndTime(long endTime) {
+		this.endTime = endTime;
+	}
+	
+	private int minuteInterval = -1;
+	public int getMinuteInterval() {
+		return minuteInterval;
+	}
+	public void setMinuteInterval(int minuteInterval) {
+		this.minuteInterval = minuteInterval;
+	}
+	
+	private WorkflowContext workflow;
+	public WorkflowContext getWorkflow() {
+		return workflow;
+	}
+	public void setWorkflow(WorkflowContext workflow) {
+		this.workflow = workflow;
 	}
  }
