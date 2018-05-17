@@ -78,39 +78,18 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 			}
 		}
 		
-		Template template = TemplateAPI.getTemplate(pm.getTemplateId());
-		WorkOrderContext workorder = null;
-		Map<String, List<TaskContext>> taskMap = null;
+		WorkorderTemplate template = (WorkorderTemplate) TemplateAPI.getTemplate(pm.getTemplateId());
 		
-		if(template instanceof JSONTemplate) {
-			JSONObject templateContent = template.getTemplate(new HashMap<String, Object>());
-			JSONObject woContent = (JSONObject) templateContent.get(FacilioConstants.ContextNames.WORK_ORDER);
-			workorder = FieldUtil.getAsBeanFromJson(woContent, WorkOrderContext.class);
-			
-			JSONObject taskContent = (JSONObject) templateContent.get(FacilioConstants.ContextNames.TASK_MAP);
-			if(taskContent != null) {
-				taskMap = PreventiveMaintenanceAPI.getTaskMapFromJson(taskContent);
-			}
-			else {
-				JSONArray taskJson = (JSONArray) templateContent.get(FacilioConstants.ContextNames.TASK_LIST);
-				if (taskJson != null) {
-					List<TaskContext> tasks = FieldUtil.getAsBeanListFromJsonArray(taskJson, TaskContext.class);
-					if(tasks != null && !tasks.isEmpty()) {
-						taskMap = new HashMap<>();
-						taskMap.put(FacilioConstants.ContextNames.DEFAULT_TASK_SECTION, tasks);
-					}
-				}
-			}
-		}
-		else {
-			workorder = ((WorkorderTemplate)template).getWorkorder();
-			taskMap = ((WorkorderTemplate)template).getTasks();
-		}
+		WorkOrderContext workorder = template.getWorkorder();
+		Map<String, List<TaskContext>> taskMap = template.getTasks();
+		
 		
 		TicketAPI.loadTicketLookups(Arrays.asList(workorder));
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.TASK_MAP, taskMap);
+		context.put(FacilioConstants.ContextNames.TASK_LIST, template.getTaskTemplates());
+		context.put(FacilioConstants.ContextNames.TASK_SECTIONS, template.getSectionTemplates());
 		PreventiveMaintenanceAPI.updateResourceDetails(workorder, taskMap);
 		if(taskMap != null && !taskMap.isEmpty()) {
 			for (Entry<String, List<TaskContext>> entry : taskMap.entrySet()) {

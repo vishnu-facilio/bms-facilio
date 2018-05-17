@@ -27,6 +27,8 @@ import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.templates.JSONTemplate;
+import com.facilio.bmsconsole.templates.TaskSectionTemplate;
+import com.facilio.bmsconsole.templates.TaskTemplate;
 import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.TemplateAPI;
@@ -36,6 +38,7 @@ import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.bmsconsole.workflow.TicketActivity;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.leed.context.PMTriggerContext;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class WorkOrderAction extends ActionSupport {
@@ -251,6 +254,8 @@ public class WorkOrderAction extends ActionSupport {
 		setPreventivemaintenance((PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE));
 		setWorkorder((WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER));
 		setTaskList((Map<Long, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP));
+		setTaskTemplates((List<TaskTemplate>) context.get(FacilioConstants.ContextNames.TASK_LIST));
+		setSectionTemplates((List<TaskSectionTemplate>) context.get(FacilioConstants.ContextNames.TASK_SECTIONS));
 		setReminders((List<PMReminder>) context.get(FacilioConstants.ContextNames.PM_REMINDERS));
 		
 		return SUCCESS;
@@ -617,6 +622,22 @@ public class WorkOrderAction extends ActionSupport {
 	}
 	public void setTaskList(Map<Long, List<TaskContext>> taskList) {
 		this.taskList = taskList;
+	}
+	
+	private List<TaskTemplate> taskTemplates;
+	public List<TaskTemplate> getTaskTemplates() {
+		return taskTemplates;
+	}
+	public void setTaskTemplates(List<TaskTemplate> taskTemplates) {
+		this.taskTemplates = taskTemplates;
+	}
+	
+	private List<TaskSectionTemplate> sectionTemplates;
+	public List<TaskSectionTemplate> getSectionTemplates() {
+		return sectionTemplates;
+	}
+	public void setSectionTemplates(List<TaskSectionTemplate> sectionTemplates) {
+		this.sectionTemplates = sectionTemplates;
 	}
 	
 	private Map<Long, TaskSectionContext> sections;

@@ -1844,7 +1844,7 @@
 			<param name="moduleName">planned</param>
 			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 			<result name="success" type="json">
-				<param name="includeProperties">^preventivemaintenance.*,^workorder.*,taskList.*,sections.*,^reminders.*</param>
+				<param name="includeProperties">^preventivemaintenance.*,^workorder.*,taskList.*,sections.*,^reminders.*,^taskTemplates.*,^sectionTemplates.*</param>
 			</result>
 		</action>
 

@@ -686,14 +686,15 @@ public class TemplateAPI {
 				TaskContext task = template.getTask();
 				
 				String sectionName = null;
+				long sectionId = -1;
 				if (template.getSectionId() == -1) {
 					sectionName = FacilioConstants.ContextNames.DEFAULT_TASK_SECTION;
 				}
 				else {
 					TaskSectionTemplate sectionTemplate = sectionMap.get(template.getSectionId());
 					sectionName = sectionTemplate.getName();
+					sectionId = sectionTemplate.getId();
 				}
-				
 				List<TaskContext> tasks = taskMap.get(sectionName);
 				if (tasks == null) {
 					tasks = new ArrayList<>();
