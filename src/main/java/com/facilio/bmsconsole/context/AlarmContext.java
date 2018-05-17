@@ -317,12 +317,7 @@ public class AlarmContext extends TicketContext {
 			return null;
 		}
 		else {
-			if (clearedTime != -1) {
-				return AwsUtil.getConfig("clientapp.url")+"/app/fa/alarms/cleared/summary/"+super.getId();
-			}
-			else {
-				return AwsUtil.getConfig("clientapp.url")+"/app/fa/alarms/active/summary/"+super.getId();
-			}
+			return AwsUtil.getConfig("clientapp.url")+"/app/fa/alarms/summary/"+super.getId();
 		}
 	}
 	
