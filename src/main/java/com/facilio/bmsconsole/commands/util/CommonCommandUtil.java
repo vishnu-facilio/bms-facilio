@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
@@ -390,5 +391,14 @@ public class CommonCommandUtil {
 			}
     	}
     	return readingMap;
+    }
+    
+    public static String getStackTraceString(StackTraceElement[] traces) {
+    	StringJoiner joiner = new StringJoiner("\n");
+    	for (StackTraceElement trace : traces) {
+    		joiner.add(trace.toString());
+    	}
+    	joiner.add("###################################################");
+    	return joiner.toString();
     }
 }

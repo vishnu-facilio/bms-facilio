@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.context;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ResourceContext extends ModuleBaseWithCustomFields {
 	private String name;
@@ -54,14 +55,19 @@ public class ResourceContext extends ModuleBaseWithCustomFields {
 		this.resourceType = resourceType;
 	}
 	
+	private String avatarUrl;
+	@JsonIgnore
 	public String getAvatarUrl() throws Exception {
-		if (this.photoId > 0) {
+		if (avatarUrl == null && this.photoId > 0) {
 			FileStore fs = FileStoreFactory.getInstance().getFileStore();
-			return fs.getPrivateUrl(this.photoId);
+			avatarUrl = fs.getPrivateUrl(this.photoId);
 		}
-		return null;
+		return avatarUrl;
 	}
-	
+	public void setAvatarUrl(String avatarUrl) {
+		this.avatarUrl = avatarUrl;
+	}
+
 	private long controllerId = -1;
 	public long getControllerId() {
 		return controllerId;
