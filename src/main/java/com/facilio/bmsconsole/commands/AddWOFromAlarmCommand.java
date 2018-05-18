@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -14,6 +13,8 @@ import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.AlarmAPI;
+import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -44,42 +45,14 @@ public class AddWOFromAlarmCommand implements Command {
 			List<WorkOrderContext> workorders = new ArrayList<>();
 			if(alarms != null && !alarms.isEmpty()) {
 				for(AlarmContext alarm : alarms) {
-					workorders.add(addWorkOrder(alarm));
+					WorkOrderContext wo = WorkOrderAPI.getWorkOrder(alarm.getId()); 
+					if( wo == null) {
+						workorders.add(AlarmAPI.getNewWOForAlarm(alarm));
+					}
 				}
 				context.put(FacilioConstants.ContextNames.WORK_ORDER_LIST, workorders);
 			}
 		}
 		return false;
 	}
-	
-	private WorkOrderContext addWorkOrder(AlarmContext alarm) throws Exception {
-		WorkOrderContext wo = getWorkOrderFromTicketId(alarm.getId()); 
-		
-		if( wo == null) {
-			wo = new WorkOrderContext();
-			BeanUtils.copyProperties(wo, alarm);
-			wo.setCreatedTime(System.currentTimeMillis());
-			return wo;
-		}
-		return null;
-	}
-	
-	private WorkOrderContext getWorkOrderFromTicketId(long ticketId) throws Exception {
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
-		SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
-														.table("WorkOrders")
-														.moduleName(FacilioConstants.ContextNames.WORK_ORDER)
-														.beanClass(WorkOrderContext.class)
-														.select(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER))
-														.andCustomWhere(module.getTableName()+".ID = ?", ticketId);
-		
-		List<WorkOrderContext> workOrders = builder.get();
-		if(workOrders != null && !workOrders.isEmpty()) {
-			return workOrders.get(0);
-		}
-		return null;
-	}
-
 }

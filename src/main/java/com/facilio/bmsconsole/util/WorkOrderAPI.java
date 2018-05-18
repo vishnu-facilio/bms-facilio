@@ -16,6 +16,24 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
 public class WorkOrderAPI {
+	
+	public static WorkOrderContext getWorkOrder(long ticketId) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+		SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
+														.module(module)
+														.beanClass(WorkOrderContext.class)
+														.select(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER))
+														.andCondition(CriteriaAPI.getIdCondition(ticketId, module))
+														;
+		
+		List<WorkOrderContext> workOrders = builder.get();
+		if(workOrders != null && !workOrders.isEmpty()) {
+			return workOrders.get(0);
+		}
+		return null;
+	}
 
 	public static List<WorkOrderContext> getOpenWorkOrderForUser(Long ouid) throws Exception {
 		

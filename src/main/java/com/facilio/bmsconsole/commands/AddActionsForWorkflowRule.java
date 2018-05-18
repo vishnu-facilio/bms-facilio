@@ -4,21 +4,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.bmsconsole.templates.SMSTemplate;
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.Template.Type;
+import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.util.AlarmAPI;
+import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.ActionContext;
 import com.facilio.bmsconsole.workflow.ActionType;
@@ -46,12 +47,15 @@ public class AddActionsForWorkflowRule implements Command {
 						setSMSTemplate(action);
 						break;
 					case ADD_ALARM:
-						setAlarmTempalte(action, rule);
+						setAlarmTemplate(action, rule);
+						break;
+					case CREATE_WO_FROM_ALARM:
+						setWorkorderTemplate(action, rule);
 						break;
 					default:
 						break;
 				}
-				addTemplate(action);
+				action.setTemplateId(TemplateAPI.addTemplate(action.getTemplate()));
 			}
 			ActionAPI.addActions(actions);
 			
@@ -60,17 +64,6 @@ public class AddActionsForWorkflowRule implements Command {
 			}
 		}
 		return false;
-	}
-	
-	private void addTemplate(ActionContext action) throws Exception {
-		FacilioContext templateContext = new FacilioContext();
-		templateContext.put(FacilioConstants.Workflow.TEMPLATE, action.getTemplate());
-		
-		Chain addTemplate = FacilioChainFactory.getAddTemplateChain();
-		addTemplate.execute(templateContext);
-		action.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-		Template userTemplate = (Template)action.getTemplate();
-		action.setTemplateId(userTemplate.getId());
 	}
 	
 	private void setEmailTemplate(ActionContext action) {
@@ -117,14 +110,12 @@ public class AddActionsForWorkflowRule implements Command {
 		}
 	}
 	
-	private void setAlarmTempalte(ActionContext action, WorkflowRuleContext rule) throws Exception {
+	private void setAlarmTemplate(ActionContext action, WorkflowRuleContext rule) throws Exception {
 		List<Map> alarmFieldMatcher = (ArrayList) action.getTemplateJson().get("fieldMatcher");
-		
 		JSONObject content = new JSONObject();
 		for(Map alarmField:alarmFieldMatcher) {
 			content.put(alarmField.get("field").toString(), alarmField.get("value").toString());
 		}
-		
 		if (rule instanceof ReadingRuleContext) {
 			ReadingRuleContext readingRule = (ReadingRuleContext) rule;
 			
@@ -139,13 +130,23 @@ public class AddActionsForWorkflowRule implements Command {
 				content.put("alarmType", alarmType.getIntVal());
 			}
 		}
-		
 		JSONTemplate alarmTemplate = new JSONTemplate();
 		alarmTemplate.setName(rule.getName()+"_alarm_template");
 		alarmTemplate.setContent(content.toJSONString());
 		alarmTemplate.setType(Type.ALARM);
 		action.setTemplate(alarmTemplate);
-		
 		checkAndSetWorkflow(action.getTemplateJson(), alarmTemplate);
 	}
+	
+	private void setWorkorderTemplate(ActionContext action, WorkflowRuleContext rule) throws Exception {
+		JSONObject woJson = action.getTemplateJson();
+		WorkorderTemplate woTemplate = new WorkorderTemplate();
+		woTemplate.setWorkorder(FieldUtil.getAsBeanFromJson(woJson, WorkOrderContext.class));
+		if (woTemplate.getName() == null || woTemplate.getName().isEmpty()) {
+			woTemplate.setName(rule.getName()+"_WO_Template");
+		}
+		action.setTemplate(woTemplate);
+		checkAndSetWorkflow(action.getTemplateJson(), woTemplate);
+	}
+	
 }
