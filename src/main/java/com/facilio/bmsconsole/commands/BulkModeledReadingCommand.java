@@ -37,15 +37,17 @@ public class BulkModeledReadingCommand implements Command {
 		
 		Map<String,List<ReadingContext>> moduleVsReading = new HashMap<String,List<ReadingContext>> ();
 		
+		
 		for(Map.Entry<String,Map<Long,Map<String, String>>> historicalData:historicalDataMap.entrySet())
 		{
 
 			String deviceName=historicalData.getKey();
+			Map<String,ReadingContext> iModuleVsReading = new HashMap<String,ReadingContext> ();
 			Map<Long,Map<String, String>> deviceData=historicalData.getValue();
 
 			for(Map.Entry<Long, Map<String,String>> data:deviceData.entrySet()) {
 
-				Map<String,ReadingContext> iModuleVsReading = new HashMap<String,ReadingContext> ();
+				
 				Long timeStamp=data.getKey();
 				Map<String,String> instanceMap= data.getValue();
 				Map<String,Map<String,Object>> instanceMapping=  deviceMapping.get(deviceName);
@@ -68,10 +70,12 @@ public class BulkModeledReadingCommand implements Command {
 						ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 						FacilioField field =bean.getField(fieldId);
 						String moduleName=field.getModule().getName();
-						ReadingContext reading=iModuleVsReading.get(moduleName);
+						String readingKey=moduleName+"|"+assetId;
+						
+						ReadingContext reading=iModuleVsReading.get(readingKey);
 						if(reading==null) {
 							reading = new ReadingContext();
-							iModuleVsReading.put(moduleName, reading);
+							iModuleVsReading.put(readingKey, reading);
 						}
 						reading.addReading(field.getName(), instanceVal);
 						reading.setParentId(assetId);
@@ -81,16 +85,19 @@ public class BulkModeledReadingCommand implements Command {
 					}
 				}
 
-				for(Map.Entry<String, ReadingContext> iMap:iModuleVsReading.entrySet()) {
-					String moduleName=iMap.getKey();
-					ReadingContext reading=iMap.getValue();
-					List<ReadingContext> readings=moduleVsReading.get(moduleName);
-					if(readings==null) {
-						readings= new ArrayList<ReadingContext>();
-						moduleVsReading.put(moduleName, readings);
-					}
-					readings.add(reading);
+				
+			}
+			
+			for(Map.Entry<String, ReadingContext> iMap:iModuleVsReading.entrySet()) {
+				String key=iMap.getKey();
+				String moduleName=key.substring(0, key.indexOf("|"));
+				ReadingContext reading=iMap.getValue();
+				List<ReadingContext> readings=moduleVsReading.get(moduleName);
+				if(readings==null) {
+					readings= new ArrayList<ReadingContext>();
+					moduleVsReading.put(moduleName, readings);
 				}
+				readings.add(reading);
 			}
 		}
 		
