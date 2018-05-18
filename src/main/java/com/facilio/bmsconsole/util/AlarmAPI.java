@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.json.simple.JSONObject;
 
@@ -23,6 +24,7 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -574,5 +576,32 @@ public class AlarmAPI {
 			msgBuilder.append(percentage)
 						.append("% ");
 		}
+	}
+	
+	public static AlarmContext getAlarm(long id) throws Exception {
+		String moduleName = FacilioConstants.ContextNames.ALARM;
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		List<FacilioField> fields = modBean.getAllFields(moduleName);
+		SelectRecordsBuilder<AlarmContext> builder = new SelectRecordsBuilder<AlarmContext>()
+													.module(module)
+													.beanClass(AlarmContext.class)
+													.select(fields)
+													.andCondition(CriteriaAPI.getIdCondition(id, module))
+													;
+		
+		List<AlarmContext> alarms = builder.get();
+		
+		if (alarms != null && !alarms.isEmpty()) {
+			return alarms.get(0);
+		}
+		return null;
+	}
+	
+	public static WorkOrderContext getNewWOForAlarm (AlarmContext alarm) throws Exception {
+		WorkOrderContext wo = new WorkOrderContext();
+		BeanUtils.copyProperties(wo, alarm);
+		wo.setCreatedTime(System.currentTimeMillis());
+		return wo;
 	}
 }

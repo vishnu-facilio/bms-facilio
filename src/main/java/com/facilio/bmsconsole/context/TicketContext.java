@@ -398,7 +398,8 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		PREVENTIVE_MAINTENANCE(5, "Preventive Maintenance"),
 		THRESHOLD_ALARM(6, "Threshold Alarm"),
 		WEB_REQUEST(7, "Web Request"),
-		TASK(8, "Task")
+		TASK(8, "Task"),
+		ALARM_AUTO(9, "Auto created from Alarm")
 		;
 		
 		private int intVal;

@@ -128,6 +128,42 @@ public class TemplateAPI {
 		return DEFAULT_TEMPLATES.get(getLang()).get(id);
 	}
 	
+	public static int addTemplate(Template template) throws Exception {
+		long id = -1;
+		if(template instanceof EMailTemplate) {
+			id = TemplateAPI.addEmailTemplate(AccountUtil.getCurrentOrg().getOrgId(), (EMailTemplate) template);
+			template.setId(id);
+		}
+		else if(template instanceof SMSTemplate) {
+			id = TemplateAPI.addSMSTemplate(AccountUtil.getCurrentOrg().getOrgId(), (SMSTemplate) template);
+			template.setId(id);
+		}
+		else if(template instanceof PushNotificationTemplate) {
+			id = TemplateAPI.addPushNotificationTemplate(AccountUtil.getCurrentOrg().getOrgId(), (PushNotificationTemplate) template);
+			template.setId(id);
+		}
+		else if(template instanceof WebNotificationTemplate) {
+			id = TemplateAPI.addWebNotificationTemplate(AccountUtil.getCurrentOrg().getOrgId(), (WebNotificationTemplate) template);
+			template.setId(id);
+		}
+		else if(template instanceof JSONTemplate) {
+			id = TemplateAPI.addJsonTemplate(AccountUtil.getCurrentOrg().getOrgId(), (JSONTemplate) template);
+			template.setId(id);
+		}
+		else if (template instanceof AssignmentTemplate) {
+			id = TemplateAPI.addAssignmentTemplate(AccountUtil.getCurrentOrg().getOrgId(), (AssignmentTemplate) template);
+			template.setId(id);
+		}
+		else if (template instanceof SLATemplate) {
+			id = TemplateAPI.addSlaTemplate(AccountUtil.getCurrentOrg().getOrgId(), (SLATemplate) template);
+			template.setId(id);
+		}
+		else if (template instanceof WorkorderTemplate) {
+			id = TemplateAPI.addWorkOrderTemplate((WorkorderTemplate) template);
+		}
+		return -1;
+	}
+	
 	public static List<Template> getTemplatesOfType(Type type) throws Exception {
 		FacilioModule module = ModuleFactory.getTemplatesModule();
 		List<FacilioField> fields = FieldFactory.getTemplateFields();

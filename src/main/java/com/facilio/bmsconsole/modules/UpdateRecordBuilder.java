@@ -177,7 +177,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		for(FacilioField field : fields) {
 			if(field.getDataTypeEnum() == FieldType.LOOKUP) {
 				Map<String, Object> lookupProps = (Map<String, Object>) moduleProps.get(field.getName()); 
-				if(lookupProps != null) {
+				if(lookupProps != null && !lookupProps.isEmpty()) {
 					if(lookupProps.get("id") != null) {
 						moduleProps.put(field.getName(), lookupProps.get("id"));
 					}
@@ -200,6 +200,9 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 						}
 						moduleProps.remove(field.getName());
 					}*/
+				}
+				else {
+					moduleProps.remove(field.getName());
 				}
 			}
 		}
