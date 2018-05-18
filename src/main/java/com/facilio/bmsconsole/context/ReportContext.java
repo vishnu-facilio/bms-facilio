@@ -182,6 +182,7 @@ public class ReportContext extends ModuleBaseWithCustomFields {
 
 	Boolean isComparisionReport;
 	Boolean isHighResolutionReport;
+	Boolean isCombinationReport;
 	String xAxisLegend;
 	List<BaseLineContext> baseLineContexts;
 	public List<BaseLineContext> getBaseLineContexts() {
@@ -500,6 +501,17 @@ public class ReportContext extends ModuleBaseWithCustomFields {
 	public void setIsHighResolutionReport(Boolean isHighResolutionReport) {
 		this.isHighResolutionReport = isHighResolutionReport;
 	}
+	
+	public Boolean getIsCombinationReport() {
+		if (isCombinationReport != null) {
+			return isCombinationReport;
+		}
+		return Boolean.FALSE;
+	}
+
+	public void setIsCombinationReport(Boolean isCombinationReport) {
+		this.isCombinationReport = isCombinationReport;
+	}
 
 
 	public String getxAxisLegend() {
@@ -779,6 +791,16 @@ public class ReportContext extends ModuleBaseWithCustomFields {
 	}
 	public void setBaseLineId(long baseLineId) {
 		this.baseLineId = baseLineId;
+	}
+	
+	private String reportColor;
+	
+	public String getReportColor() {
+		return this.reportColor;
+	}
+	
+	public void setReportColor(String reportColor) {
+		this.reportColor = reportColor;
 	}
 	
 	public enum LegendMode {

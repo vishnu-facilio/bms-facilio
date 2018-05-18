@@ -2456,6 +2456,13 @@ public class FieldFactory {
 		isHighResolutionReport.setModule(module);
 		fields.add(isHighResolutionReport);
 		
+		FacilioField isCombinationReport = new FacilioField();
+		isCombinationReport.setName("isCombinationReport");
+		isCombinationReport.setDataType(FieldType.BOOLEAN);
+		isCombinationReport.setColumnName("IS_COMBINATION_REPORT");
+		isCombinationReport.setModule(module);
+		fields.add(isCombinationReport);
+		
 		FacilioField xAxisLegend = new FacilioField();
 		xAxisLegend.setName("xAxisLegend");
 		xAxisLegend.setDataType(FieldType.STRING);
@@ -2525,6 +2532,13 @@ public class FieldFactory {
 		reportOrder.setColumnName("REPORT_ORDER");
 		reportOrder.setModule(module);
 		fields.add(reportOrder);
+		
+		FacilioField reportColor = new FacilioField();
+		reportColor.setName("reportColor");
+		reportColor.setDataType(FieldType.STRING);
+		reportColor.setColumnName("REPORT_COLOR");
+		reportColor.setModule(module);
+		fields.add(reportColor);
 		
 		return fields;
 	}

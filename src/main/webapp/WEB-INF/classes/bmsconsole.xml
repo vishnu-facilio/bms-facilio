@@ -3772,6 +3772,11 @@
 				<param name="includeProperties">^reportContext.*</param>
 			</result>
 		</action>
+		<action name="updateComboChart" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateComboChart">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportContext.*</param>
+			</result>
+		</action>
 		<action name="sendReportMail" class="com.facilio.bmsconsole.actions.DashboardAction" method="sendReportMail">
 			<result name="success" type="json">
 				<param name="includeProperties">reportId</param>

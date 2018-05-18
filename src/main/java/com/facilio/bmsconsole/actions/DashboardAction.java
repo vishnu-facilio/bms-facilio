@@ -516,7 +516,19 @@ public class DashboardAction extends ActionSupport {
 	public String updateChartType() throws Exception {
 		
 		if (reportId > 0) {
-			if(isReportUpdateFromDashboard && widgetId != null) {
+			
+			if ("combo".equalsIgnoreCase(chartType)) {
+				GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+						.table(ModuleFactory.getWidgetChartModule().getTableName())
+						.fields(FieldFactory.getWidgetChartFields())
+						.andCustomWhere("ID = ?", widgetId);
+
+				Map<String, Object> props = new HashMap<String, Object>();
+				props.put("isCombinationReport", true);
+				
+				updateBuilder.update(props);
+			}
+			else if(isReportUpdateFromDashboard && widgetId != null) {
 				GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 						.table(ModuleFactory.getWidgetChartModule().getTableName())
 						.fields(FieldFactory.getWidgetChartFields())
@@ -524,6 +536,7 @@ public class DashboardAction extends ActionSupport {
 
 				Map<String, Object> props = new HashMap<String, Object>();
 				props.put("chartType", ReportContext.ReportChartType.getWidgetChartType(chartType).getValue());
+				props.put("isCombinationReport", false);
 				if (secChartType != null) {
 					props.put("secChartType", ReportContext.ReportChartType.getWidgetChartType(secChartType).getValue());
 				}
@@ -538,8 +551,44 @@ public class DashboardAction extends ActionSupport {
 
 				Map<String, Object> props = new HashMap<String, Object>();
 				props.put("chartType", ReportContext.ReportChartType.getWidgetChartType(chartType).getValue());
+				props.put("isCombinationReport", false);
 				if (secChartType != null) {
 					props.put("secChartType", ReportContext.ReportChartType.getWidgetChartType(secChartType).getValue());
+				}
+				
+				updateBuilder.update(props);
+			}
+		}
+		
+		return SUCCESS;
+	}
+	
+	private JSONArray comboChartList;
+	
+	public void setComboChartList(JSONArray comboChartList) {
+		this.comboChartList = comboChartList;
+	}
+	
+	public JSONArray getComboChartList() {
+		return this.comboChartList;
+	}
+	
+	public String updateComboChart() throws Exception {
+		
+		if (getComboChartList() != null && getComboChartList().size() > 0) {
+			for (int i=0; i < getComboChartList().size(); i++) {
+				JSONObject comboChart = (JSONObject) getComboChartList().get(i);
+				Long rid = (Long) comboChart.get("id");
+				
+				GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+						.table(ModuleFactory.getReport().getTableName())
+						.fields(FieldFactory.getReportFields())
+						.andCustomWhere("ID = ?", rid);
+
+				Map<String, Object> props = new HashMap<String, Object>();
+				props.put("chartType", ReportContext.ReportChartType.getWidgetChartType((String) comboChart.get("chartType")).getValue());
+				if (comboChart.get("reportColor") != null) {
+					props.put("reportColor", (String) comboChart.get("reportColor"));
 				}
 				
 				updateBuilder.update(props);
