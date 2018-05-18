@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.util;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -260,6 +261,19 @@ public class AlarmAPI {
 			return severities.get(0);
 		}
 		return null;
+	}
+	
+	public static Map<Long, AlarmSeverityContext> getAlarmSeverityMap(Collection<Long> ids) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ALARM_SEVERITY);
+		SelectRecordsBuilder<AlarmSeverityContext> selectBuilder = new SelectRecordsBuilder<AlarmSeverityContext>()
+																		.select(modBean.getAllFields(FacilioConstants.ContextNames.ALARM_SEVERITY))
+																		.module(module)
+																		.beanClass(AlarmSeverityContext.class)
+																		.andCondition(CriteriaAPI.getIdCondition(ids, module))
+																		;
+		
+		return selectBuilder.getAsMap();
 	}
 	
 	public static List<AlarmSeverityContext> getAlarmSeverityList() throws Exception {

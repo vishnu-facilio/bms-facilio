@@ -22,6 +22,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.AlarmSeverityContext;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.NotificationContext;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -466,8 +467,9 @@ public enum ActionType {
 					addWorkOrder.execute(woContext);
 				} else {
 					AlarmContext alarm = AlarmAPI.getAlarm(wo.getId());
+					fetchSeverities(alarm);
 					NoteContext note = new NoteContext();
-					note.setBody("Alarm severity updated at "+alarm.getModifiedTimeString());
+					note.setBody("Alarm associated with this automated work order updated from "+alarm.getPreviousSeverity().getSeverity()+" to "+alarm.getSeverity().getSeverity()+" at "+alarm.getModifiedTimeString());
 					note.setParentId(wo.getId());
 					
 					FacilioContext noteContext = new FacilioContext();
@@ -491,12 +493,23 @@ public enum ActionType {
 			List<FacilioField> fields = modBean.getAllFields(module.getName());
 			woJson.remove("subject");
 			woJson.put("sourceType", TicketContext.SourceType.ALARM_AUTO.getIntVal());
+			woJson.put("isWoCreated", true);
 			UpdateRecordBuilder<WorkOrderContext> updateBuilder = new UpdateRecordBuilder<WorkOrderContext>()
 																		.module(module)
 																		.fields(fields)
 																		.andCondition(CriteriaAPI.getIdCondition(id, module))
 																		;
 			updateBuilder.update(woJson);
+		}
+		
+		private void fetchSeverities(AlarmContext alarm) throws Exception {
+			List<Long> ids = new ArrayList<>();
+			ids.add(alarm.getPreviousSeverity().getId());
+			ids.add(alarm.getSeverity().getId());
+			Map<Long, AlarmSeverityContext> severityMap = AlarmAPI.getAlarmSeverityMap(ids);
+			
+			alarm.setPreviousSeverity(severityMap.get(alarm.getPreviousSeverity().getId()));
+			alarm.setSeverity(severityMap.get(alarm.getSeverity().getId()));
 		}
 
 	};
