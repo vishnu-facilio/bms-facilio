@@ -35,6 +35,7 @@ public class CreateAccountCommand implements Command {
 			String orgDomain = (String) signupInfo.get("domainname");
 			String timezone = (String) signupInfo.get("timezone");
 			String password = (String) signupInfo.get("password");
+			String serverName = (String) signupInfo.get("servername");
 			
 			HttpServletRequest request = ServletActionContext.getRequest();
 			Locale locale = request.getLocale();
@@ -78,6 +79,7 @@ public class CreateAccountCommand implements Command {
 			user.setUserStatus(true);
 			user.setInvitedTime(System.currentTimeMillis());
 			user.setPassword(password);
+			user.setServerName(serverName);
 			long ouid = AccountUtil.getUserBean().createUser(orgId, user);
 			
 			context.put("orgId", orgId);

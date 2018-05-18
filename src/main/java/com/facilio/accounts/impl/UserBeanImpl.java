@@ -28,6 +28,7 @@ import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.EncryptionUtil;
+import com.facilio.bmsconsole.util.SMSUtil;
 import com.facilio.fw.LRUCache;
 import com.facilio.serviceportal.actions.PortalAuthInterceptor;
 import com.facilio.sql.GenericDeleteRecordBuilder;
@@ -115,10 +116,13 @@ public class UserBeanImpl implements UserBean {
 		PreparedStatement pstmt = null;
 		try {
 			conn = FacilioConnectionPool.getInstance().getConnection();
-			pstmt = conn.prepareStatement("INSERT INTO faciliousers(username, email, password, USERID) VALUES(?,?,?,?)");
+			pstmt = conn.prepareStatement("INSERT INTO faciliousers(username, email, mobile, USERID) VALUES(?,?,?,?)");
 			pstmt.setString(1, user.getEmail());
 			pstmt.setString(2, user.getEmail());
-			pstmt.setString(3, user.getPassword());
+			if (user.getMobile() == null || user.getMobile().isEmpty()){
+				user.setMobile(String.valueOf(user.getUid()));
+			}
+ 			pstmt.setString(3, user.getMobile());
 			pstmt.setLong(4, user.getUid());
 			pstmt.executeUpdate();
 		} catch (Exception e){
@@ -234,7 +238,6 @@ public class UserBeanImpl implements UserBean {
 		user.setInvitedTime(System.currentTimeMillis());
 		user.setUserType(AccountConstants.UserType.USER.getValue());
 		
-		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(AccountConstants.getOrgUserModule().getTableName())
 				.fields(AccountConstants.getOrgUserFields());
@@ -281,8 +284,8 @@ public class UserBeanImpl implements UserBean {
 		}
 		else
 		{
-			hostname=AwsUtil.getConfig("clientapp.url");
-		//return AwsUtil.getConfig("clientapp.url") + url + inviteToken;
+		//	hostname="https://app."+user.getServerName();
+		 return AwsUtil.getConfig("clientapp.url") + url + inviteToken;
 		}
 		return hostname + url + inviteToken;
 	}
@@ -295,8 +298,13 @@ public class UserBeanImpl implements UserBean {
 		CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeholders);
 		CommonCommandUtil.appendModuleNameInKey(null, "inviter", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeholders);
 		placeholders.put("invitelink", inviteLink);
-		
-		AccountEmailTemplate.INVITE_USER.send(placeholders);
+		if (user.getEmail().equals(user.getMobile())) {
+			
+			System.out.println("@@@@@@@@@@@@@@@@@@@@@@ SMS invite Sent");
+			SMSUtil.sendUserLink(user, inviteLink);
+		} else {
+			AccountEmailTemplate.INVITE_USER.send(placeholders);
+		}
 	}
 	
 	public boolean sendResetPasswordLink(User user) throws Exception {
@@ -315,7 +323,7 @@ public class UserBeanImpl implements UserBean {
 		Map<String, Object> placeholders = new HashMap<>();
 		CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(user), placeholders);
 		placeholders.put("invitelink", inviteLink);
-
+		
 		AccountEmailTemplate.EMAIL_VERIFICATION.send(placeholders);
 	}
 
@@ -700,14 +708,16 @@ public class UserBeanImpl implements UserBean {
 				.on("Users.USERID = faciliousers.USERID")
 				.innerJoin("ORG_Users")
 				.on("Users.USERID = ORG_Users.USERID")
-				.andCustomWhere("faciliousers.email = ? AND USER_STATUS = 1 AND DELETED_TIME = -1 and ISDEFAULT = ?", email, true);
+				.andCustomWhere("(faciliousers.email = ? or faciliousers.mobile = ?) AND USER_STATUS = 1 AND DELETED_TIME = -1 and ISDEFAULT = ?", email, email, true);
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			User user =  FieldUtil.getAsBeanFromMap(props.get(0), User.class);
 			user.setAccessibleSpace(getAccessibleSpaceList(user.getOuid()));
+		System.out.println(user.getEmail()+"$$$$$$$$$$$$$$$$$$$$$"+ user.getMobile());
 			return user;
 		}
+		
 		return null;
 	}
 	
@@ -727,7 +737,7 @@ public class UserBeanImpl implements UserBean {
 				.on("Users.USERID = ORG_Users.USERID")
 				.innerJoin("Organizations")
 				.on("ORG_Users.ORGID=Organizations.ORGID")
-				.andCustomWhere("faciliousers.email = ? AND ORG_Users.DELETED_TIME = -1 AND Organizations.DELETED_TIME = -1 AND Organizations.FACILIODOMAINNAME = ?", email, orgDomain);
+				.andCustomWhere("(faciliousers.email = ? or faciliousers.mobile = ? ) AND ORG_Users.DELETED_TIME = -1 AND Organizations.DELETED_TIME = -1 AND Organizations.FACILIODOMAINNAME = ?", email, email, orgDomain);
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -808,7 +818,7 @@ public class UserBeanImpl implements UserBean {
 				.on("Users.USERID = faciliousers.USERID")
 				.innerJoin("ORG_Users")
 				.on("Users.USERID = ORG_Users.USERID")
-				.andCustomWhere("ORGID = ? AND faciliousers.email = ? AND DELETED_TIME = -1", orgId, email);
+				.andCustomWhere("ORGID = ? AND (faciliousers.email = ? or faciliousers.mobile = ?) AND DELETED_TIME = -1", orgId, email, email);
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {

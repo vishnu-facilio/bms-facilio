@@ -656,7 +656,8 @@ public class LoginAction extends ActionSupport{
 		account = new HashMap<>();
 		account.put("org", AccountUtil.getCurrentOrg());
 		account.put("user", AccountUtil.getCurrentUser());
-		
+		System.out.println(AccountUtil.getCurrentUser().getEmail()+"))(()()()(((((())))))");
+		System.out.println(AccountUtil.getCurrentAccount().getOrg().getDomain()+"$$$$$$$$$$$$$$$$$$$$$");
 		List<User> users = AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId());
 //		List<Group> groups = AccountUtil.getGroupBean().getMyGroups(AccountUtil.getCurrentUser().getId());
 		List<Group> groups = AccountUtil.getGroupBean().getOrgGroups(AccountUtil.getCurrentOrg().getId(), true);

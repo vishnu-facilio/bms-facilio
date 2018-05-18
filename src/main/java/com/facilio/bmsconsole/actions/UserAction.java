@@ -146,6 +146,9 @@ public class UserAction extends ActionSupport {
 		
 		// setting necessary fields
 		user.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+		if(user.getEmail() == null || user.getEmail().isEmpty()) {
+			user.setEmail(user.getMobile());
+		}
 
 		HttpServletRequest request = ServletActionContext.getRequest();
 		String value = LoginUtil.getUserCookie(request, "fc.authtype");

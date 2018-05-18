@@ -36,6 +36,7 @@ public class User {
 	private int userType;
 	private boolean facilioAuth;
 	private long portalId;
+	private String serverName;
 
 	public long getUid() {
 		return uid;
@@ -317,5 +318,11 @@ public class User {
 			criteria.addAndCondition(condition);
 		}
 		return criteria;
+	}
+	public String getServerName() {
+		return serverName;
+	}
+	public void setServerName(String serverName) {
+		this.serverName = serverName;
 	}
 }

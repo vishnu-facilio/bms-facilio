@@ -109,6 +109,9 @@ public class FacilioAuthAction extends ActionSupport {
         if(emailaddress != null) {
             return emailaddress;
         } else {
+        	if(username == null) {
+        		return null;
+        	}
             return getUsername();
         }
     }
@@ -197,7 +200,7 @@ public class FacilioAuthAction extends ActionSupport {
             setJsonresponse("message", "Org Domain Name already exists");
             return ERROR;
         }
-
+        HttpServletRequest request = ServletActionContext.getRequest();
         LOGGER.info("### addFacilioUser() :"+emailaddress);
 
         JSONObject signupInfo = new JSONObject();
@@ -209,7 +212,7 @@ public class FacilioAuthAction extends ActionSupport {
         signupInfo.put("domainname", getDomainname());
         signupInfo.put("isFacilioAuth", true);
         signupInfo.put("timezone", getTimezone());
-
+        signupInfo.put("servername", request.getServerName());
         signupInfo.put("password", password);
         FacilioContext signupContext = new FacilioContext();
         signupContext.put(FacilioConstants.ContextNames.SIGNUP_INFO, signupInfo);
@@ -289,9 +292,9 @@ public class FacilioAuthAction extends ActionSupport {
         ResultSet rs;
         try {
             conn = FacilioConnectionPool.INSTANCE.getConnection();
-            pstmt = conn.prepareStatement("SELECT Users.password FROM Users inner join faciliousers on Users.USERID=faciliousers.USERID WHERE faciliousers.email = ? and Users.password=? and USER_VERIFIED=1");
+            pstmt = conn.prepareStatement("SELECT Users.password FROM Users inner join faciliousers on Users.USERID=faciliousers.USERID WHERE (faciliousers.email = ? or faciliousers.mobile = ?) and USER_VERIFIED=1");
             pstmt.setString(1, emailaddress);
-            pstmt.setString(2, password);
+            pstmt.setString(2, emailaddress);
             rs = pstmt.executeQuery();
             if(rs.next()) {
                 String storedPass = rs.getString("password");
@@ -310,7 +313,7 @@ public class FacilioAuthAction extends ActionSupport {
 
         return passwordValid;
     }
-
+    
     public long portalId() {
         if(AccountUtil.getCurrentOrg() != null) {
             return AccountUtil.getCurrentOrg().getPortalId();

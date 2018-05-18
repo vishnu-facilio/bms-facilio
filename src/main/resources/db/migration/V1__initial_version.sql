@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS `faciliousers` (
 `id` int( 11 ) NOT NULL AUTO_INCREMENT ,
 `username` varchar( 30 ) NOT NULL ,
 `email` varchar( 50 ) NOT NULL ,
+`mobile` char(20) DEFAULT NULL,
 `password` varchar( 128 ),
 USERID BIGINT NOT NULL,
 PRIMARY KEY ( `id` ) ,

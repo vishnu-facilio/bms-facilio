@@ -52,7 +52,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 			if(AuthenticationUtil.checkIfSameUser(currentAccount, cognitoUser)) {
 				AccountUtil.cleanCurrentAccount();
 				AccountUtil.setCurrentAccount(currentAccount);
-
+				System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"+AccountUtil.getCurrentUser().getEmail());
 				request.setAttribute("ORGID", currentAccount.getOrg().getOrgId());
 				request.setAttribute("USERID", currentAccount.getUser().getOuid());
 
@@ -82,6 +82,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 				}
 				ActionContext.getContext().getSession().put("TIMEZONE", timezoneObj);
 			} else {
+				System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"+AccountUtil.getCurrentAccount().getOrg().getDomain());
 				String authRequired = ActionContext.getContext().getParameters().get("auth").getValue();
 				if (authRequired == null || "".equalsIgnoreCase(authRequired.trim()) || "true".equalsIgnoreCase(authRequired)) {
 					return Action.LOGIN;

@@ -263,9 +263,11 @@ Pragma: no-cache
 		try
 		{
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT password FROM Users WHERE email = ? and password=? and USER_VERIFIED=1");
+			pstmt = conn.prepareStatement("SELECT password FROM Users WHERE ( email = ? or username=? ) and password=? and USER_VERIFIED=1");
 			pstmt.setString(1, emailaddress);
-			pstmt.setString(2, password);			
+			pstmt.setString(2, emailaddress);
+
+			pstmt.setString(3, password);			
 			rs = pstmt.executeQuery();
 			if(rs.next())
 			{

@@ -36,7 +36,11 @@ public class AuthenticationUtil {
     }
 
     public static boolean checkIfSameUser(Account currentAccount, CognitoUtil.CognitoUser cognitoUser){
-        return currentAccount != null && cognitoUser != null && currentAccount.getUser() != null && (currentAccount.getUser().getEmail().equalsIgnoreCase(cognitoUser.getEmail()));
+    	if( currentAccount != null && cognitoUser != null && currentAccount.getUser() != null) {
+    		System.out.println(currentAccount.getUser().getEmail() + " mobile "+ currentAccount.getUser().getMobile() + " cognito "+ cognitoUser.getEmail());
+    		return (currentAccount.getUser().getEmail().equalsIgnoreCase(cognitoUser.getEmail()) || currentAccount.getUser().getMobile().equals(cognitoUser.getEmail()));
+    	}
+    	return false;
     }
 
 }
