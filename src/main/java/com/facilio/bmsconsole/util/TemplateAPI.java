@@ -128,7 +128,7 @@ public class TemplateAPI {
 		return DEFAULT_TEMPLATES.get(getLang()).get(id);
 	}
 	
-	public static int addTemplate(Template template) throws Exception {
+	public static long addTemplate(Template template) throws Exception {
 		long id = -1;
 		if(template instanceof EMailTemplate) {
 			id = TemplateAPI.addEmailTemplate(AccountUtil.getCurrentOrg().getOrgId(), (EMailTemplate) template);
@@ -161,7 +161,7 @@ public class TemplateAPI {
 		else if (template instanceof WorkorderTemplate) {
 			id = TemplateAPI.addWorkOrderTemplate((WorkorderTemplate) template);
 		}
-		return -1;
+		return id;
 	}
 	
 	public static List<Template> getTemplatesOfType(Type type) throws Exception {
