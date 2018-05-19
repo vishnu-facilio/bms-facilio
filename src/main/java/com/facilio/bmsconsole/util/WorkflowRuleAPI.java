@@ -255,12 +255,19 @@ public class WorkflowRuleAPI {
 	}
 	
 	public static List<WorkflowRuleContext> getWorkflowRulesOfType(RuleType type) throws Exception{
+		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
+		fields.addAll(FieldFactory.getWorkflowEventFields());
+		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
+		FacilioModule eventModule = ModuleFactory.getWorkflowEventModule();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getWorkflowRuleFields())
-				.table("Workflow_Rule")
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getWorkflowRuleModule()))
+				.table(module.getTableName())
+				.select(fields)
+				.innerJoin(eventModule.getTableName())
+				.on(module.getTableName()+".EVENT_ID = "+ eventModule.getTableName() +".ID")
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCustomWhere("RULE_TYPE = ?", type.getIntVal());
-		return getWorkFlowsFromMapList(builder.get(), false);
+		
+		return getWorkFlowsFromMapList(builder.get(), true);
 	}
 	
 	public static List<WorkflowRuleContext> getActiveWorkflowRulesFromActivityAndRuleType(long moduleId, List<ActivityType> activityTypes,Criteria criteria, RuleType... ruleTypes) throws Exception {
