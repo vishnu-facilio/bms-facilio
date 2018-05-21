@@ -492,7 +492,6 @@ public enum ActionType {
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ALARM);
 			List<FacilioField> fields = modBean.getAllFields(module.getName());
 			woJson.remove("subject");
-			woJson.put("sourceType", TicketContext.SourceType.ALARM_AUTO.getIntVal());
 			woJson.put("isWoCreated", true);
 			UpdateRecordBuilder<WorkOrderContext> updateBuilder = new UpdateRecordBuilder<WorkOrderContext>()
 																		.module(module)
