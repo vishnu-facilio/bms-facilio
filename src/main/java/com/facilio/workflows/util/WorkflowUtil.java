@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -224,6 +225,35 @@ public class WorkflowUtil {
 				workflowFields.add(FieldUtil.getAsBeanFromMap(prop, WorkflowFieldContext.class));
 			}
 			return workflowFields;
+		}
+		return null;
+	}
+	
+	public static Map<Long, List<Long>> getDependentFieldsIdsAsMap(Collection<Long> workflowIds) throws Exception {
+		FacilioModule module = ModuleFactory.getWorkflowFieldModule();
+		List<FacilioField> fields = FieldFactory.getWorkflowFieldsFields();
+		FacilioField workflowIdField = FieldFactory.getAsMap(fields).get("workflowId");
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.table(module.getTableName())
+														.select(fields)
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCondition(workflowIdField, StringUtils.join(workflowIds), PickListOperators.IS))
+														;
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			Map<Long, List<Long>> dependentFields = new HashMap<>();
+			for (Map<String, Object> prop : props) {
+				Long fieldId = (long) prop.get("fieldId");
+				Long workflowId = (long) prop.get("workflowId");
+				
+				List<Long> dependents = dependentFields.get(workflowId);
+				if (dependents == null) {
+					dependents = new ArrayList<>();
+					dependentFields.put(workflowId, dependents);
+				}
+				dependents.add(fieldId);
+			}
+			return dependentFields;
 		}
 		return null;
 	}

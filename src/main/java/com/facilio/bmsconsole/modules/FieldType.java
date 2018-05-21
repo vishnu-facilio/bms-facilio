@@ -19,7 +19,9 @@ public enum FieldType {
 	BOOLEAN(4, "Boolean", new String[] {"BOOLEAN_CF1", "BOOLEAN_CF2", "BOOLEAN_CF3", "BOOLEAN_CF4", "BOOLEAN_CF5"}, BooleanOperators.getAllOperators()),
 	DATE(5, "Date", new String[] {"DATE_CF1", "DATE_CF2", "DATE_CF3", "DATE_CF4", "DATE_CF5"}, DateOperators.getAllOperators()),
 	DATE_TIME(6, "DateTime", new String[] {"DATETIME_CF1", "DATETIME_CF2", "DATETIME_CF3", "DATETIME_CF4", "DATETIME_CF5"}, DateOperators.getAllOperators()),
-	LOOKUP(7, "Lookup", null, LookupOperator.getAllOperators());
+	LOOKUP(7, "Lookup", null, LookupOperator.getAllOperators()),
+	FORMULA_FIELD(8, "Formula Fields", null, null);
+	;
 	
 	private int value;
 	private String typeString;

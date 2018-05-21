@@ -20,6 +20,14 @@ public class WorkflowContext {
 	List<ExpressionContext> expressions;
 	Map<String,Object> variableResultMap;
 	String resultEvaluator;
+	
+	private List<Long> dependentFields;
+	public List<Long> getDependentFields() {
+		return dependentFields;
+	}
+	public void setDependentFields(List<Long> dependentFields) {
+		this.dependentFields = dependentFields;
+	}
 
 	public Map<String, Object> getVariableResultMap() {
 		return variableResultMap;

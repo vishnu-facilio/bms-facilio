@@ -1,6 +1,7 @@
 package com.facilio.beans;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.json.simple.JSONObject;
@@ -8,6 +9,7 @@ import org.json.simple.JSONObject;
 import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FormulaField;
 
 public interface ModuleBean extends RootBean {
 
@@ -35,6 +37,8 @@ public interface ModuleBean extends RootBean {
 	
 	public FacilioField getField(String fieldName, String moduleName) throws Exception;
 	
+	public List<FormulaField> getFormulaFields (Collection<Long> dependentFields) throws Exception;
+	
 	public long addField(FacilioField field) throws Exception;
 	
 	public int updateField(FacilioField field) throws Exception;
@@ -52,6 +56,4 @@ public interface ModuleBean extends RootBean {
 	public ServicePortalInfo getServicePortalInfo() throws Exception;
 	
 	public JSONObject getStateFlow(String module) throws  Exception;
-	
-
 }

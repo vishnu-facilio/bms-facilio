@@ -32,7 +32,7 @@ public class GetReadingDataMetaCommand implements Command {
 		
 		if (readingMap != null && !readingMap.isEmpty()) {
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			Map<String, ReadingDataMeta> readingDataMeta= new HashMap<> ();
+			Map<String, ReadingDataMeta> readingDataMeta = new HashMap<> ();
 			
 			for (Map.Entry<String, List<ReadingContext>> entry : readingMap.entrySet()) {
 				String moduleName = entry.getKey();

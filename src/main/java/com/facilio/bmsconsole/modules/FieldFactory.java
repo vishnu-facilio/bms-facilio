@@ -63,6 +63,20 @@ public class FieldFactory {
 		
 		return fields;
 	}
+	
+	public static List<FacilioField> getFormulaFieldFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getNumberFieldModule();
+		
+		fields.add(getField("fieldId", "FIELDID", module, FieldType.NUMBER));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.NUMBER));
+		fields.add(getField("interval", "INTERVAL", module, FieldType.NUMBER));
+		fields.add(getField("resultDataType", "RESULT_DATA_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("formulaFieldType", "FORMULA_FIELD_TYPE", module, FieldType.NUMBER));
+		
+		return fields;
+	}
 
 	public static List<FacilioField> getAddFieldFields() {
 		List<FacilioField> fields = new ArrayList<>();

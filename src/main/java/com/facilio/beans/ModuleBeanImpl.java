@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,13 +22,16 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
 import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.FormulaField;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.NumberField;
@@ -39,6 +43,8 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
+import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.util.WorkflowUtil;
 
 public class ModuleBeanImpl implements ModuleBean {
 
@@ -325,6 +331,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			Map<FieldType, Map<Long, Map<String, Object>>> extendedPropsMap = getTypeWiseExtendedProps(extendedIds);
 			
 			ArrayList<FacilioField> fields = new ArrayList<>();
+			List<Long> workflowIds = new ArrayList<>();
 			for (Map<String, Object> prop : props) {
 				Long extendedModuleId = (Long) prop.get("extendedModuleId");
 				if(extendedModuleId != null) {
@@ -350,14 +357,24 @@ public class ModuleBeanImpl implements ModuleBean {
 							FacilioModule lookupModule = getMod(lookupModuleId);
 							prop.put("lookupModule", lookupModule);
 						}
-						
 						fields.add(FieldUtil.getAsBeanFromMap(prop, LookupField.class));
+						break;
+					case FORMULA_FIELD:
+						prop.putAll(extendedPropsMap.get(type).get((Long) prop.get("fieldId")));
+						FormulaField field = FieldUtil.getAsBeanFromMap(prop, FormulaField.class);
+						fields.add(field);
+						workflowIds.add(field.getWorkflowId());
 						break;
 					default:
 						fields.add(FieldUtil.getAsBeanFromMap(prop, FacilioField.class));
 						break;
 				}
 			}
+			
+			if (!workflowIds.isEmpty()) {
+				populateWorkflows(workflowIds, fields);
+			}
+			
 			return fields;
 		}
 		return null;
@@ -374,6 +391,9 @@ public class ModuleBeanImpl implements ModuleBean {
 				case LOOKUP:
 					extendedProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getLookupFieldsModule(), FieldFactory.getLookupFieldFields(), entry.getValue()));
 					break;
+				case FORMULA_FIELD:
+					extendedProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getFormulaFieldsModule(), FieldFactory.getFormulaFieldFields(), entry.getValue()));
+					break;	
 				default:
 					break;
 			}
@@ -456,6 +476,54 @@ public class ModuleBeanImpl implements ModuleBean {
 		}
 		return null;
 	}
+	
+	@Override
+	public List<FormulaField> getFormulaFields(Collection<Long> dependentFields) throws Exception {
+		// TODO Auto-generated method stub
+		FacilioModule fieldsModule = ModuleFactory.getFieldsModule();
+		List<FacilioField> fields = FieldFactory.getSelectFieldFields();
+		FacilioModule formuleModule = ModuleFactory.getFormulaFieldsModule();
+		fields.addAll(FieldFactory.getFormulaFieldFields());
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(FieldFactory.getSelectFieldFields())
+														.table(fieldsModule.getTableName())
+														.innerJoin(formuleModule.getTableName())
+														.on(fieldsModule.getTableName()+".FIELDID = "+formuleModule.getTableName()+".FIELDID")
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(fieldsModule))
+														.andCustomWhere("WORKFLOW_ID IN (SELECT WORKFLOW_ID FROM Workflow_Field WHERE ORGID = ? AND FIELD_ID IN ("+StringUtils.join(dependentFields)+"))", AccountUtil.getCurrentOrg().getId())
+														;
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			List<FormulaField> formulaFields = new ArrayList<>();
+			List<Long> workflowIds = new ArrayList<>();
+			for (Map<String, Object> prop : props) {
+				FormulaField field = FieldUtil.getAsBeanFromMap(prop, FormulaField.class);
+				formulaFields.add(field);
+				workflowIds.add(field.getWorkflowId());
+			}
+			populateWorkflows(workflowIds, formulaFields);
+			return formulaFields;
+		}
+		return null;
+	}
+	
+	private void populateWorkflows (Collection<Long> workflowIds, List<? extends FacilioField> fields) throws Exception {
+		Map<Long, WorkflowContext> workflowMap = WorkflowUtil.getWorkflowsAsMap(workflowIds, true);
+		Map<Long, List<Long>> dependentFieldMap = WorkflowUtil.getDependentFieldsIdsAsMap(workflowIds);
+		for (FacilioField field : fields) {
+			switch (field.getDataTypeEnum()) {
+				case FORMULA_FIELD:
+					FormulaField formulaField = (FormulaField) field;
+					WorkflowContext workflow = workflowMap.get(formulaField.getWorkflowId());
+					workflow.setDependentFields(dependentFieldMap.get(workflow.getId()));
+					formulaField.setWorkflow(workflow);
+					break;
+				default:
+					break;
+			}
+		}
+	}
 
 	@Override
 	public long addField(FacilioField field) throws Exception {
@@ -478,6 +546,13 @@ public class ModuleBeanImpl implements ModuleBean {
 					break;
 				case LOOKUP:
 					addExtendedProps(ModuleFactory.getLookupFieldsModule(), FieldFactory.getLookupFieldFields(), fieldProps);
+					break;
+				case FORMULA_FIELD:
+					if (((FormulaField) field).getResultDataTypeEnum() == FieldType.FORMULA_FIELD || ((FormulaField) field).getResultDataTypeEnum() == FieldType.LOOKUP) {
+						throw new IllegalArgumentException("Result Data Type of formula field cannot be of type Formula/ Lookup");
+					}
+					fieldProps.put("workflowId", WorkflowUtil.addWorkflow(((FormulaField)field).getWorkflow()));
+					addExtendedProps(ModuleFactory.getFormulaFieldsModule(), FieldFactory.getFormulaFieldFields(), fieldProps);
 					break;
 				default:
 					break;
