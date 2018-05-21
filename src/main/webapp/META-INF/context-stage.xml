@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context>
 	<!-- This has to be tuned as per need. Manthosh just copy/ pasted it from tomcat site. -->
-	<Resource 
+<!-- 	<Resource 
     	name="jdbc/BmsXA"
 		auth="Container"
 		type="com.mysql.jdbc.jdbc2.optional.MysqlXADataSource"
@@ -40,7 +40,24 @@
 			org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer"
 		  defaultTransactionIsolation="READ_COMMITTED" 
      />
-
+ -->
+<Resource auth="Container"
+             closeMethod="close"
+             driverClassName="com.mysql.jdbc.Driver"
+             factory="com.zaxxer.hikari.HikariJNDIFactory"
+             maximumPoolSize="100"
+             connectionTimeout="30000"
+             LeakDetectionThreshold="55000"
+             dataSource.implicitCachingEnabled="true"
+             username="root"
+             password="zxcv1212"
+             poolName="faciliohikari"
+             name="jdbc/pcmDB"
+             jdbcUrl="jdbc:mysql://stage.cojqex4akzz6.us-west-2.rds.amazonaws.com:3306/bmsstage"
+             type="javax.sql.DataSource"
+             transactionIsolation="TRANSACTION_READ_COMMITTED"
+             />  
+  
        
     <!-- Transaction Configuration 
 	<Transaction factory="org.jboss.narayana.tomcat.jta.UserTransactionFactory"/>
