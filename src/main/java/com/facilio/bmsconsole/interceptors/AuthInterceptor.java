@@ -82,7 +82,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 				}
 				ActionContext.getContext().getSession().put("TIMEZONE", timezoneObj);
 			} else {
-				System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"+AccountUtil.getCurrentAccount().getOrg().getDomain());
+			//	System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"+AccountUtil.getCurrentAccount().getOrg().getDomain());
 				String authRequired = ActionContext.getContext().getParameters().get("auth").getValue();
 				if (authRequired == null || "".equalsIgnoreCase(authRequired.trim()) || "true".equalsIgnoreCase(authRequired)) {
 					return Action.LOGIN;

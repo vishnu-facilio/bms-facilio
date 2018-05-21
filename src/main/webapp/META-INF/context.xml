@@ -2,14 +2,13 @@
 <Context>
 
 	<!--https://tomcat.apache.org/tomcat-8.0-doc/jdbc-pool.html-->
-
+<!-- 
 	<Resource 
     	name="jdbc/BmsXA"
 		auth="Container"
 		type="com.mysql.jdbc.jdbc2.optional.MysqlXADataSource"
 		factory="com.mysql.jdbc.jdbc2.optional.MysqlDataSourceFactory"
 		user="root" 
-		password=""
 		explicitUrl="true"
         url="jdbc:mysql://localhost:3306/bms"
 		/>
@@ -42,6 +41,23 @@
 			org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer"
 		  defaultTransactionIsolation="READ_COMMITTED" 
      />
+      -->
+    
+  <Resource auth="Container"
+             closeMethod="close"
+             driverClassName="com.mysql.jdbc.Driver"
+             factory="com.zaxxer.hikari.HikariJNDIFactory"
+             maximumPoolSize="30"
+             connectionTimeout="30000"
+             dataSource.implicitCachingEnabled="true"
+             username="root"
+             password=""
+             poolName="faciliohikari"
+             name="jdbc/pcmDB"
+             jdbcUrl="jdbc:mysql://localhost:3306/bms"
+             type="javax.sql.DataSource"
+             transactionIsolation="TRANSACTION_READ_COMMITTED"
+             />  
     
     <!-- Transaction Configuration 
 	<Transaction factory="org.jboss.narayana.tomcat.jta.UserTransactionFactory"/>

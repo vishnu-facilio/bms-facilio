@@ -94,7 +94,7 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 			LOGGER.log(Level.INFO, "getSubModules result from DB for module: "+moduleId);
 		}
 		else {
-			LOGGER.log(Level.INFO, "getSubModules result from CACHE for module: "+moduleId);
+			//LOGGER.log(Level.INFO, "getSubModules result from CACHE for module: "+moduleId);
 		}
 		return modules;
 	}
@@ -113,7 +113,7 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 			//LOGGER.log(Level.INFO, "getSubModules result from DB for module: "+moduleName);
 		}
 		else {
-			LOGGER.log(Level.INFO, "getSubModules result from CACHE for module: "+moduleName);
+			//LOGGER.log(Level.INFO, "getSubModules result from CACHE for module: "+moduleName);
 		}
 		return modules;
 	}
@@ -151,7 +151,7 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 			LOGGER.log(Level.INFO, "getPrimaryField result from DB for module: "+moduleName);
 		}
 		else {
-			LOGGER.log(Level.INFO, "getPrimaryField result from CACHE for module: "+moduleName);
+			//LOGGER.log(Level.INFO, "getPrimaryField result from CACHE for module: "+moduleName);
 		}
 		return fieldObj;
 	}
@@ -173,10 +173,10 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 			CacheUtil.set(CacheUtil.FIELDS_KEY(getOrgId(), moduleName), fields);
 			cache.put(key, fields);
 			
-			LOGGER.log(Level.INFO, "getAllFields result from DB for module: "+moduleName +"\n Time taken"+ (System.currentTimeMillis()-begintime));
+			//LOGGER.log(Level.INFO, "getAllFields result from DB for module: "+moduleName +"\n Time taken"+ (System.currentTimeMillis()-begintime));
 		}
 		else {
-			LOGGER.log(Level.INFO, "getAllFields result from CACHE for module: "+moduleName +"\n Time taken"+ (System.currentTimeMillis()-begintime));
+			//LOGGER.log(Level.INFO, "getAllFields result from CACHE for module: "+moduleName +"\n Time taken"+ (System.currentTimeMillis()-begintime));
 		}
 		return fields;
 	}
