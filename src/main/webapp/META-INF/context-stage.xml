@@ -47,7 +47,7 @@
              factory="com.zaxxer.hikari.HikariJNDIFactory"
              maximumPoolSize="100"
              connectionTimeout="30000"
-             LeakDetectionThreshold="55000"
+             leakDetectionThreshold="55000"
              dataSource.implicitCachingEnabled="true"
              username="root"
              password="zxcv1212"
