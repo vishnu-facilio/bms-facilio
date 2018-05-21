@@ -1489,7 +1489,7 @@ public class DashboardUtil {
 				
 				Map<String, Object> prop = new HashMap<>();
 				prop.put("reportId", reportContext.getId());
-				prop.put("baseLineId", reportContext.getBaseLineId());
+				prop.put("id", reportContext.getBaseLineId());
 				prop.put("adjustType", BaseLineContext.AdjustType.NONE.getValue());
 				insertBuilder.addRecord(prop).save();
 			}

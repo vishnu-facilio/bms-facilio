@@ -198,10 +198,15 @@ public class ViewAPI {
 				.andCustomWhere("VIEWID = ?", viewId);
 		deleteBuilder.delete();
 		
+		if (viewSharingList == null) {
+			return;
+		}
+		
 		List<Map<String, Object>> viewSharingProps = new ArrayList<>();
 		long orgId = AccountUtil.getCurrentOrg().getId();
 		for(ViewSharingContext viewSharing : viewSharingList) {
 			viewSharing.setOrgId(orgId);
+			viewSharing.setViewId(viewId);
 			viewSharingProps.add(FieldUtil.getAsProperties(viewSharing));
 		}
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
