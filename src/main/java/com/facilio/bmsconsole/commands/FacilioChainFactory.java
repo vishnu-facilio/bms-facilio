@@ -1090,14 +1090,14 @@ public class FacilioChainFactory {
 		return c;
 	}
 	public static Chain getWorkflowRulesChain() {
-		Chain c = new TransactionChain();
+		Chain c = new ChainBase();
 		c.addCommand(new GetWorkflowRulesCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain getWorkflowRuleOfTypeChain() {
-		Chain c = new TransactionChain();
+		Chain c = new ChainBase();
 		c.addCommand(new GetWorkFlowOfRuleTypeCommand());
 		c.addCommand(new GetActionListForWorkflowRulesCommand());
 		addCleanUpCommand(c);
@@ -1105,7 +1105,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getThresholdRulesChain() {
-		Chain c = new TransactionChain();
+		Chain c = new ChainBase();
 		c.addCommand(new GetWorkFlowOfRuleTypeCommand());
 		c.addCommand(new GetActionListForWorkflowRulesCommand());
 		addCleanUpCommand(c);
@@ -1596,7 +1596,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getViewListChain() {
-		Chain c = new TransactionChain();
+		Chain c = new ChainBase();
 		c.addCommand(new GetViewListCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -1669,7 +1669,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getGetFieldsChain() {
-		Chain c = new TransactionChain();
+		Chain c = new ChainBase();
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		addCleanUpCommand(c);
@@ -1772,7 +1772,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getSpaceReadingsChain() {
-		Chain c = new TransactionChain();
+		Chain c = new ChainBase();
 		c.addCommand(new GetSpaceSpecifcReadingsCommand());
 		c.addCommand(new GetCategoryReadingsCommand());
 		c.addCommand(new GetReadingFieldsCommand());
@@ -1797,7 +1797,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getAllCategoryReadingsChain() {
-		Chain c = new TransactionChain();
+		Chain c = new ChainBase();
 		c.addCommand(new GetAllCategoryReadingsCommand());
 		c.addCommand(new GetReadingFieldsCommand());
 		addCleanUpCommand(c);
@@ -1963,14 +1963,14 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getBaseLinesOfSpaceChain() {
-		Chain c = new TransactionChain();
+		Chain c = new ChainBase();
 		c.addCommand(new GetBaseLinesForSpaceCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain getAllBaseLinesChain() {
-		Chain c = new TransactionChain();
+		Chain c = new ChainBase();
 		c.addCommand(new GetAllBaseLinesCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -2000,7 +2000,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getAllEnPIsChain() {
-		Chain c = new TransactionChain();
+		Chain c = new ChainBase();
 		c.addCommand(new GetAllEnPIsCommand());
 		addCleanUpCommand(c);
 		return c;
