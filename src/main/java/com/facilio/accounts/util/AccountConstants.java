@@ -1058,7 +1058,7 @@ public class AccountConstants {
 		orgId.setModule(module);
 		fields.add(orgId);
 		
-		FacilioField otp = new FacilioField();
+	/*	FacilioField otp = new FacilioField();
 		otp.setName("otp");
 		otp.setDataType(FieldType.STRING);
 		otp.setColumnName("OTP");
@@ -1070,7 +1070,7 @@ public class AccountConstants {
 		otp_time.setDataType(FieldType.NUMBER);
 		otp_time.setColumnName("OTP_TIME");
 		otp_time.setModule(module);
-		fields.add(otp_time);
+		fields.add(otp_time);*/
 
 		FacilioField invitedTime = new FacilioField();
 		invitedTime.setName("invitedTime");
