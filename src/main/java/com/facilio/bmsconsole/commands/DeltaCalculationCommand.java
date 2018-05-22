@@ -76,6 +76,7 @@ public class DeltaCalculationCommand implements Command {
 			FieldType dataType=readingField.getDataTypeEnum();
 			Object readingVal=reading.getReading(fieldName);
 			Object deltaVal=reading.getReading(fieldName+"Delta");
+			FacilioField deltaField = fieldMap.get(fieldName+"Delta");
 			if( deltaVal!=null) {// delta already set in reading
 				return;
 			}
@@ -83,7 +84,7 @@ public class DeltaCalculationCommand implements Command {
 			long currentTimestamp=reading.getTtime();
 			long resourceId=reading.getParentId();
 			
-			ReadingDataMeta consumptionMeta = metaMap.get(resourceId+"_"+fieldName);
+			ReadingDataMeta consumptionMeta = metaMap.get(resourceId+"_"+readingField.getFieldId());
 			if(consumptionMeta == null) {
 				return;
 			}
@@ -98,7 +99,7 @@ public class DeltaCalculationCommand implements Command {
 				//timestamp check .. for ignoring historical data..
 				return;
 			}
-			ReadingDataMeta deltaMeta = metaMap.get(resourceId+"_"+fieldName+"Delta");
+			ReadingDataMeta deltaMeta = metaMap.get(resourceId+"_"+deltaField.getFieldId());
 			Double lastDeltaReading = null;
 			Long lastDeltaTimestamp = null;
 			if(deltaMeta != null) {

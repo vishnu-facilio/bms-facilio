@@ -277,7 +277,7 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 			case FLAPPING:
 				boolean singleFlap = false;
 				Map<String, ReadingDataMeta> metaMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.READING_DATA_META);
-				ReadingDataMeta meta = metaMap.get(reading.getParentId()+"_"+readingField.getName());
+				ReadingDataMeta meta = metaMap.get(reading.getParentId()+"_"+readingField.getFieldId());
 				Object prevValue = meta.getValue();
 				if (currentReadingObj instanceof Number) {
 					double prevVal = Double.valueOf(prevValue.toString());
@@ -408,7 +408,7 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		// TODO Auto-generated method stub
 		Map<String, Object> rulePlaceHolders = super.constructPlaceHolders(moduleName, record, recordPlaceHolders, context);
 		Map<String, ReadingDataMeta> metaMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.READING_DATA_META);
-		ReadingDataMeta meta = metaMap.get(((ReadingContext)record).getParentId()+"_"+readingField.getName());
+		ReadingDataMeta meta = metaMap.get(((ReadingContext)record).getParentId()+"_"+readingField.getFieldId());
 		if (meta != null) {
 			Object prevValue = meta.getValue();
 			rulePlaceHolders.put("previousValue", FieldUtil.castOrParseValueAsPerType(readingField.getDataTypeEnum(), prevValue));
