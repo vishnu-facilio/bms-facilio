@@ -3690,6 +3690,11 @@
 				<param name="includeProperties">^reportContext.*</param>
 			</result>
 		</action>
+		<action name="getReportMetaForAlarms" class="com.facilio.bmsconsole.actions.DashboardAction" method="getReportMetaForAlarms">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportMeta.*</param>
+			</result>
+		</action>
 		<action name="updateReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateReport">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportContext.*</param>

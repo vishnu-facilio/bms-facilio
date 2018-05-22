@@ -24,6 +24,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReportsChainFactory;
+import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
@@ -33,6 +34,7 @@ import com.facilio.bmsconsole.context.DashboardContext.DashboardPublishStatus;
 import com.facilio.bmsconsole.context.DashboardSharingContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.FormulaContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
@@ -82,6 +84,7 @@ import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.reports.ReportExportUtil;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.templates.EMailTemplate;
+import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.bmsconsole.util.DashboardUtil;
@@ -90,6 +93,8 @@ import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.ExportUtil;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.view.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo.FileFormat;
@@ -708,6 +713,47 @@ public class DashboardAction extends ActionSupport {
 		ReportContext readingReport = constructReportObjectForReadingReport(module, readingField);
 		this.reportContext = readingReport;
 		return addReport();
+	}
+	
+	Long alarmId;
+	
+	public Long getAlarmId() {
+		return alarmId;
+	}
+	public void setAlarmId(Long alarmId) {
+		this.alarmId = alarmId;
+	}
+	JSONObject reportMeta;
+	
+	public JSONObject getReportMeta() {
+		return reportMeta;
+	}
+	public void setReportMeta(JSONObject reportMeta) {
+		this.reportMeta = reportMeta;
+	}
+	public String getReportMetaForAlarms() throws Exception {
+		
+		AlarmContext alarm = AlarmAPI.getAlarm(alarmId);
+		
+		ReadingAlarmContext readingAlarmContext = AlarmAPI.getReadingAlarmContext(alarmId);
+		
+		ZonedDateTime startTime = DateTimeUtil.getDayStartTimeOf(DateTimeUtil.getZonedDateTime(readingAlarmContext.getStartTime()));
+		ZonedDateTime endTime = DateTimeUtil.getDayEndTimeOf(DateTimeUtil.getZonedDateTime(readingAlarmContext.getEndTime()));
+		
+		ReadingRuleContext readingruleContext = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(readingAlarmContext.getRuleId());
+		
+		reportMeta = new JSONObject();
+		
+		reportMeta.put("readingFieldId", readingruleContext.getReadingFieldId());
+		reportMeta.put("yAggr", "0");
+		reportMeta.put("parentId", readingruleContext.getResourceId());
+		
+		JSONArray datefilter = new JSONArray();
+		datefilter.add(startTime.toInstant().toEpochMilli());
+		datefilter.add(endTime.toInstant().toEpochMilli());
+		reportMeta.put("dateFilter", datefilter);
+		
+		return SUCCESS;
 	}
 	
 	private ReportContext constructReportObjectForReadingReport(FacilioModule module, FacilioField readingField) throws Exception {

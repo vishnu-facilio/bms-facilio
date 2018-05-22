@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.jobs;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
+import java.util.logging.Logger;
 
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.actions.ImportProcessContext.ImportStatus;
@@ -14,9 +13,11 @@ import com.facilio.tasker.job.JobContext;
 
 public class ImportDataJob extends FacilioJob {
 
+	private static final Logger LOGGER = Logger.getLogger(ImportDataJob.class.getName());
 	@Override
 	public void execute(JobContext jc) {
 		
+		LOGGER.severe("IMPORT DATA JOB CALLED");
 		try {
 			long jobId = jc.getJobId();
 			
