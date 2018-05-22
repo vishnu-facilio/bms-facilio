@@ -12,12 +12,11 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.exception.AccountException;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
@@ -141,7 +140,7 @@ public class OrgBeanImpl implements OrgBean {
 			if(result.get("customDomain") != null) {
 				org.setDomain((String)result.get("customDomain"));
 			} else {
-				org.setDomain((String)result.get("domain")+".facilstack.com");
+				org.setDomain((String)result.get("domain")+"."+ AwsUtil.getConfig("portal.domain"));
 			}
 			
 		}
