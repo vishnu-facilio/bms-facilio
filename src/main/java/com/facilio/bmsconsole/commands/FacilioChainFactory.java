@@ -1821,6 +1821,7 @@ public class FacilioChainFactory {
 		c.addCommand(new AddOrUpdateReadingValuesCommand());
 		c.addCommand(new AddMarkedReadingValuesCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.READING_RULE, RuleType.PM_READING_RULE));
+//		c.addCommand(new CalculateFormulaFieldsCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -1932,13 +1933,6 @@ public class FacilioChainFactory {
 //		addCleanUpCommand(c);
 //		return c;
 //	}
-	
-	public static Chain getRelatedAlarmForReports() {
-		Chain c = new TransactionChain();
-		c.addCommand(new GetRelatedAlarmForReports());
-		addCleanUpCommand(c);
-		return c;
-	}
 	
 	public static Chain getAddWidgetChain() {
 		Chain c = new TransactionChain();
