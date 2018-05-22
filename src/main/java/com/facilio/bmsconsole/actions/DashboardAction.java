@@ -1893,7 +1893,7 @@ public class DashboardAction extends ActionSupport {
 			}
 		}
 		
-		if (report.getEnergyMeter() != null) {
+		if (buildingCondition == null && report.getEnergyMeter() != null) {
 			if (report.getEnergyMeter().getSubMeterId() != null) {
 				energyMeterValue = report.getEnergyMeter().getSubMeterId() + "";
 				buildingCondition = CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", report.getEnergyMeter().getSubMeterId()+"", NumberOperators.EQUALS);
