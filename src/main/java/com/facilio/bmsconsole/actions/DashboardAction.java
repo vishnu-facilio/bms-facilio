@@ -755,6 +755,10 @@ public class DashboardAction extends ActionSupport {
 			reportMeta.put("yAggr", "0");
 			reportMeta.put("xAggr", "0");
 			reportMeta.put("parentId", alarm.getResource().getId());
+			
+			if(readingruleContext.getBaselineId() != -1) {
+				reportMeta.put("baselineId", readingruleContext.getBaselineId());
+			}
 		
 			JSONArray datefilter = new JSONArray();
 			datefilter.add(startTime.toInstant().toEpochMilli());
