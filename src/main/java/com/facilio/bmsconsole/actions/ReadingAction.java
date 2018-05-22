@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.EnergyPerformanceIndicatorContext;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -538,6 +539,7 @@ public class ReadingAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD, enpi.getReadingField());
 		context.put(FacilioConstants.ContextNames.PARENT_ID, enpi.getSpaceId());
 		context.put(FacilioConstants.ContextNames.ENPI, enpi);
+		context.put(FacilioConstants.ContextNames.READING_DATA_META_TYPE, ReadingDataMeta.ReadingInputType.FORMULA_FIELD);
 		
 		Chain addEnpiChain = FacilioChainFactory.addEnPIChain();
 		addEnpiChain.execute(context);

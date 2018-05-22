@@ -35,6 +35,10 @@ public class InsertReadingDataMetaForNewReadingCommand implements Command {
 			long parentId = (long) context.get(FacilioConstants.ContextNames.PARENT_ID);
 			parentIds = Collections.singletonList(parentId);
 		}
+		ReadingInputType type = (ReadingInputType) context.get(FacilioConstants.ContextNames.READING_DATA_META_TYPE);
+		if (type == null) {
+			type = ReadingInputType.WEB;
+		}
 		
 		long orgId=AccountUtil.getCurrentOrg().getOrgId();
 		long timestamp=System.currentTimeMillis();
@@ -50,7 +54,7 @@ public class InsertReadingDataMetaForNewReadingCommand implements Command {
 				dataMeta.setFieldId(field.getFieldId());
 				dataMeta.setTtime(timestamp);
 				dataMeta.setValue("-1");
-				dataMeta.setInputType(ReadingInputType.WEB);
+				dataMeta.setInputType(type);
 				builder.addRecord(FieldUtil.getAsProperties(dataMeta));
 			}
 		}

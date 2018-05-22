@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericInsertRecordBuilder;
 
@@ -36,6 +37,14 @@ public class InsertReadingDataMetaForNewResourceCommand implements Command {
 				.fields(FieldFactory.getReadingDataMetaFields());
 		
 		for(FacilioModule module : readingModules) {
+			ReadingInputType type = null;
+			if (module.getTypeEnum() == ModuleType.ENPI) {
+				type = ReadingInputType.FORMULA_FIELD;
+			}
+			else {
+				type = ReadingInputType.WEB;
+			}
+			
 			List<FacilioField> fieldsList= module.getFields();
 			for(FacilioField field : fieldsList) {
 				ReadingDataMeta dataMeta = new ReadingDataMeta();
@@ -44,7 +53,7 @@ public class InsertReadingDataMetaForNewResourceCommand implements Command {
 				dataMeta.setFieldId(field.getFieldId());
 				dataMeta.setTtime(timestamp);
 				dataMeta.setValue("-1");
-				dataMeta.setInputType(ReadingInputType.WEB);
+				dataMeta.setInputType(type);
 				builder.addRecord(FieldUtil.getAsProperties(dataMeta));
 			}
 		}
