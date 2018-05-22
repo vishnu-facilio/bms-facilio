@@ -1484,6 +1484,9 @@ public class FacilioChainFactory {
 	public static Chain getChangePreventiveMaintenanceStatusChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(new ChangePreventiveMaintenanceStatusCommand());
+		c.addCommand(new DeletePMAndDependenciesCommand(false, true));
+		c.addCommand(new AddAndSchedulePMTriggerCommand(true));
+		c.addCommand(new AddPMReminderCommand(true));
 		addCleanUpCommand(c);
 		return c;
 	}

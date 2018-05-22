@@ -25,14 +25,34 @@ import com.facilio.leed.context.PMTriggerContext;
 import com.facilio.sql.GenericInsertRecordBuilder;
 
 public class AddAndSchedulePMTriggerCommand implements Command {
+	
+	private boolean isBulkUpdate = false;
+	
+	public AddAndSchedulePMTriggerCommand() {}
+	
+	public AddAndSchedulePMTriggerCommand(boolean isBulkUpdate) {
+		this.isBulkUpdate = isBulkUpdate;
+	}
 
 	@Override
 	public boolean execute(Context context) throws Exception {
+		List<PreventiveMaintenance> pms;
+		if (isBulkUpdate) {
+			pms = (List<PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST);
+		}
+		else {
+			pms = Collections.singletonList((PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE));
+		}
 		
-		PreventiveMaintenance pm = (PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
-		if (pm.getTriggers() != null) {
-			addTriggersAndReadings(pm);
-			schedulePM(pm, context);
+		if (pms == null) {
+			return false;
+		}
+		
+		for(PreventiveMaintenance pm: pms) {
+			if (pm.getTriggers() != null && pm.isActive()) {
+				addTriggersAndReadings(pm);
+				schedulePM(pm, context);
+			}
 		}
 		return false;
 	}

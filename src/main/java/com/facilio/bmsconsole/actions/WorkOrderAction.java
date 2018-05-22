@@ -136,8 +136,9 @@ public class WorkOrderAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		
 		workorder.setRequester(null);
+		preventivemaintenance.setReminders(reminders);
+		
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, preventivemaintenance);
-		context.put(FacilioConstants.ContextNames.PM_REMINDERS, reminders);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
 		context.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
@@ -199,9 +200,10 @@ public class WorkOrderAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		
 		workorder.setRequester(null);
+		preventivemaintenance.setReminders(reminders);
+		
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, preventivemaintenance);
-		context.put(FacilioConstants.ContextNames.PM_REMINDERS, reminders);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
 		context.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);

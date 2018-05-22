@@ -313,6 +313,14 @@ public class PreventiveMaintenance {
 		}
 		return false;
 	}
+	
+	private List<PMReminder> reminders;
+	public List<PMReminder> getReminders() {
+		return reminders;
+	}
+	public void setReminders(List<PMReminder> reminders) {
+		this.reminders = reminders;
+	}
 
 	private static final TriggerType[] TRIGGER_TYPES = TriggerType.values();
 	public static enum TriggerType {

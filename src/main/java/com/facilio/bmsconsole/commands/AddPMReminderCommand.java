@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -23,51 +24,71 @@ import com.facilio.leed.context.PMTriggerContext;
 import com.facilio.sql.GenericInsertRecordBuilder;
 
 public class AddPMReminderCommand implements Command {
+	
+	private boolean isBulkUpdate = false;
+	
+	public AddPMReminderCommand() {}
+	
+	public AddPMReminderCommand(boolean isBulkUpdate) {
+		this.isBulkUpdate = isBulkUpdate;
+	}
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		// TODO Auto-generated method stub
-		List<PMReminder> reminders = (List<PMReminder>) context.get(FacilioConstants.ContextNames.PM_REMINDERS);
-		if(reminders != null && !reminders.isEmpty()) {
-			PreventiveMaintenance pm = (PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
-			if(pm != null && pm.getId() != -1) {
-				List<ActionContext> actions = new ArrayList<>();
-				for(PMReminder reminder : reminders) {
-					if(reminder.getDuration() != -1) {
-						reminder.setPmId(pm.getId());
-						ActionContext action = reminder.getAction();
-						if(action == null) {
-							action = new ActionContext();
-							action.setActionType(ActionType.BULK_EMAIL_NOTIFICATION);
-							
-							switch(reminder.getTypeEnum()) {
-								case BEFORE_EXECUTION: action.setDefaultTemplateId(10);break;
-								case AFTER_EXECUTION: action.setDefaultTemplateId(11);break;
-								case BEFORE_DUE: action.setDefaultTemplateId(11);break;
-								case AFTER_DUE: action.setDefaultTemplateId(57);break;
+		List<PreventiveMaintenance> pms;
+		if (isBulkUpdate) {
+			pms = (List<PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST);
+		}
+		else {
+			pms = Collections.singletonList((PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE));
+		}
+		
+		if (pms == null) {
+			return false;
+		}
+		
+		for(PreventiveMaintenance pm: pms) {
+			List<PMReminder> reminders = pm.getReminders();
+			if(reminders != null && !reminders.isEmpty()) {
+				if(pm != null && pm.getId() != -1) {
+					List<ActionContext> actions = new ArrayList<>();
+					for(PMReminder reminder : reminders) {
+						if(reminder.getDuration() != -1) {
+							reminder.setPmId(pm.getId());
+							ActionContext action = reminder.getAction();
+							if(action == null) {
+								action = new ActionContext();
+								action.setActionType(ActionType.BULK_EMAIL_NOTIFICATION);
+								
+								switch(reminder.getTypeEnum()) {
+									case BEFORE_EXECUTION: action.setDefaultTemplateId(10);break;
+									case AFTER_EXECUTION: action.setDefaultTemplateId(11);break;
+									case BEFORE_DUE: action.setDefaultTemplateId(11);break;
+									case AFTER_DUE: action.setDefaultTemplateId(57);break;
+								}
+								reminder.setAction(action);
 							}
-							reminder.setAction(action);
+							actions.add(action);
 						}
-						actions.add(action);
 					}
+					ActionAPI.addActions(actions);
+					
+					GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+																	.fields(FieldFactory.getPMReminderFields())
+																	.table(ModuleFactory.getPMReminderModule().getTableName());
+					List<Map<String, Object>> reminderProps = new ArrayList<>();
+					for(PMReminder reminder : reminders) {
+						reminder.setOrgId(AccountUtil.getCurrentOrg().getId());
+						reminder.setActionId(reminder.getAction().getId());
+						Map<String, Object> reminderProp = FieldUtil.getAsProperties(reminder);
+						insertBuilder.addRecord(reminderProp);
+						reminderProps.add(reminderProp);
+					}
+					insertBuilder.save();
+					
+					Map<Long, Long> nextExecutionTimes = (Map<Long, Long>) context.get(FacilioConstants.ContextNames.NEXT_EXECUTION_TIMES);
+					scheduleBeforePMReminders(pm, reminders, reminderProps, nextExecutionTimes);
 				}
-				ActionAPI.addActions(actions);
-				
-				GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-																.fields(FieldFactory.getPMReminderFields())
-																.table(ModuleFactory.getPMReminderModule().getTableName());
-				List<Map<String, Object>> reminderProps = new ArrayList<>();
-				for(PMReminder reminder : reminders) {
-					reminder.setOrgId(AccountUtil.getCurrentOrg().getId());
-					reminder.setActionId(reminder.getAction().getId());
-					Map<String, Object> reminderProp = FieldUtil.getAsProperties(reminder);
-					insertBuilder.addRecord(reminderProp);
-					reminderProps.add(reminderProp);
-				}
-				insertBuilder.save();
-				
-				Map<Long, Long> nextExecutionTimes = (Map<Long, Long>) context.get(FacilioConstants.ContextNames.NEXT_EXECUTION_TIMES);
-				scheduleBeforePMReminders(pm, reminders, reminderProps, nextExecutionTimes);
 			}
 		}
 		return false;

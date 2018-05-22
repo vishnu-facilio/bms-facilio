@@ -49,6 +49,7 @@ public class UpdatePreventiveMaintenanceCommand implements Command{
 
 		pm.setModifiedById(AccountUtil.getCurrentUser().getId());
 		pm.setLastModifiedTime(System.currentTimeMillis());
+		pm.setStatus(true);
 		
 		/*pm.setResourceId(workorder.getResource() != null ? workorder.getResource().getId() : -1);
 		pm.setAssignedToid(workorder.getAssignedTo() != null ? workorder.getAssignedTo().getId() : -1);

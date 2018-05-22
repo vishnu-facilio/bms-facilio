@@ -26,8 +26,12 @@ import com.facilio.sql.GenericDeleteRecordBuilder;
 public class DeletePMAndDependenciesCommand implements Command{
 	
 	private boolean isPMDelete;
-	public DeletePMAndDependenciesCommand(boolean isDelete) {
+	private boolean isStatusUpdate = false;
+	public DeletePMAndDependenciesCommand(boolean isDelete, boolean... isStatusUpdate) {
 		this.isPMDelete = isDelete;
+		if (isStatusUpdate != null && isStatusUpdate.length > 0) {
+			this.isStatusUpdate = isStatusUpdate[0];
+		}
 	}
 
 	@Override
@@ -39,26 +43,31 @@ public class DeletePMAndDependenciesCommand implements Command{
 		List<Long> triggerPMIds = new ArrayList<>();
 		
 		PreventiveMaintenance newPm = (PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
+		boolean deleteOnStatusUpdate = isStatusUpdate && newPm != null && newPm.isActive();
 		
 		List<PreventiveMaintenance> oldPms = ((List<PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST));
-		for(PreventiveMaintenance oldPm: oldPms) {
-			pmIds.add(oldPm.getId());
-			templateIds.add(oldPm.getTemplateId());
-			
-			if(oldPm.hasTriggers() && (isPMDelete || newPm.getTriggers() != null)) {
-				List<Long> triggerIds = new ArrayList<>();
-				oldPm.getTriggers().forEach(trigger -> {
-					if(trigger.getReadingRuleId() != -1) {
-						ruleIds.add(trigger.getReadingRuleId());
-					}
-					triggerIds.add(trigger.getId());
-				});
+		if (oldPms != null) {
+			for(PreventiveMaintenance oldPm: oldPms) {
+				pmIds.add(oldPm.getId());
+				if (!isStatusUpdate) {
+					templateIds.add(oldPm.getTemplateId());
+				}
 				
-				List<PMJobsContext> pmJobs = PreventiveMaintenanceAPI.getPMJobs(triggerIds,true);
-				templateIds.addAll(pmJobs.stream().map(PMJobsContext::getTemplateId).collect(Collectors.toList()));
-				
-				triggerPMIds.add(oldPm.getId());
-				
+				if(oldPm.hasTriggers() && oldPm.getTriggers() != null && (isPMDelete || newPm.getTriggers() != null || deleteOnStatusUpdate)) {
+					List<Long> triggerIds = new ArrayList<>();
+					oldPm.getTriggers().forEach(trigger -> {
+						if(trigger.getReadingRuleId() != -1) {
+							ruleIds.add(trigger.getReadingRuleId());
+						}
+						triggerIds.add(trigger.getId());
+					});
+					
+					List<PMJobsContext> pmJobs = PreventiveMaintenanceAPI.getPMJobs(triggerIds,true);
+					templateIds.addAll(pmJobs.stream().map(PMJobsContext::getTemplateId).collect(Collectors.toList()));
+					
+					triggerPMIds.add(oldPm.getId());
+					
+				}
 			}
 		}
 		
@@ -68,15 +77,14 @@ public class DeletePMAndDependenciesCommand implements Command{
 		
 		deleteTriggers(triggerPMIds);
 		
-		List<PMReminder> newReminders = (List<PMReminder>) context.get(FacilioConstants.ContextNames.PM_REMINDERS);
-		if(isPMDelete || (newPm != null && newPm.getId() != -1 && newReminders != null)) {
+		if(isPMDelete || deleteOnStatusUpdate || (newPm != null && newPm.getId() != -1 && newPm.getReminders() != null)) {
 			
 			List<PMReminder> reminders = PreventiveMaintenanceAPI.getPMReminders(pmIds);
-			
-			List<Long> actionIds = new ArrayList<>();
-			actionIds.addAll(reminders.stream().map(PMReminder::getActionId).collect(Collectors.toList()));
-			ActionAPI.deleteActions(actionIds);
-
+			if (reminders != null) {
+				List<Long> actionIds = new ArrayList<>();
+				actionIds.addAll(reminders.stream().map(PMReminder::getActionId).collect(Collectors.toList()));
+				ActionAPI.deleteActions(actionIds);
+			}
 		}
 		
 		if(isPMDelete) {

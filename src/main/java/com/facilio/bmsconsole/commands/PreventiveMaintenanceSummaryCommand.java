@@ -74,6 +74,7 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 					trigger.setReadingFieldId(rule.getReadingFieldId());
 					trigger.setReadingInterval(rule.getInterval());
 					trigger.setStartReading(rule.getStartValue());
+					trigger.setReadingRule(rule);
 				}
 			}
 		}
