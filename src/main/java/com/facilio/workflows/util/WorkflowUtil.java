@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,6 +50,8 @@ import com.facilio.workflows.context.WorkflowFieldContext;
 import com.facilio.workflows.context.WorkflowFunctionContext;
 
 public class WorkflowUtil {
+	
+	private static final Logger LOGGER = Logger.getLogger(WorkflowUtil.class.getName());
 
 	static final List<String> COMPARISION_OPPERATORS = new ArrayList<>();
 	static final List<String> ARITHMETIC_OPPERATORS = new ArrayList<>();
@@ -162,9 +165,9 @@ public class WorkflowUtil {
 		
 		workflow.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		
-		System.out.println("ADDING WORKFLOW STRING--- "+workflowContext.getWorkflowString());
+		LOGGER.severe("ADDING WORKFLOW STRING--- "+workflowContext.getWorkflowString());
 		
-		System.out.println("ADDING WORKFLOW STRING--- "+workflowContext.getWorkflowString());
+		LOGGER.severe("ADDING WORKFLOW STRING--- "+workflowContext.getWorkflowString());
 		
 		workflowContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		
@@ -188,7 +191,7 @@ public class WorkflowUtil {
 			String moduleName = expression.getModuleName();
 			
 			if(moduleName != null && fieldName != null) {
-				System.out.println("moduleName -- "+moduleName +" fieldName -- "+fieldName);
+				LOGGER.severe("moduleName -- "+moduleName +" fieldName -- "+fieldName);
 				FacilioModule module = modBean.getModule(moduleName);
 				FacilioField field = modBean.getField(fieldName, moduleName);
 				if(field != null) {
@@ -200,7 +203,7 @@ public class WorkflowUtil {
 					workflowFieldContext.setWorkflowId(workflowContext.getId());
 					props = FieldUtil.getAsProperties(workflowFieldContext);
 					insertBuilder.addRecord(props);
-					System.out.println("ADDED WORKFLOW FIELD ID --- "+(Long) props.get("id"));
+					LOGGER.severe("ADDED WORKFLOW FIELD ID --- "+(Long) props.get("id"));
 				}
 			}
 		}
@@ -328,7 +331,7 @@ public class WorkflowUtil {
 		return getResult(workflowId, paramMap, true);
 	}
 	public static Object getResult(Long workflowId,Map<String,Object> paramMap, boolean ignoreNullExpressions)  throws Exception  {
-		System.out.println("getResult() -- workflowid - "+workflowId+" params -- "+paramMap);
+		LOGGER.severe("getResult() -- workflowid - "+workflowId+" params -- "+paramMap);
 		WorkflowContext workflowContext = getWorkflowContext(workflowId);
 		return getWorkflowExpressionResult(workflowContext.getWorkflowString(),paramMap, ignoreNullExpressions);
 	}
@@ -501,7 +504,7 @@ public class WorkflowUtil {
 		 LSSerializer lsSerializer = domImplementation.createLSSerializer();
 		 
 		 String result = lsSerializer.writeToString(doc);
-		 System.out.println("result -- "+result);
+		 LOGGER.severe("result -- "+result);
 		 return result;
 	}
 	public static List<ParameterContext> getParameterListFromWorkflowString(String workflow) throws Exception {

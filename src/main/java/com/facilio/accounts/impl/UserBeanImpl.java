@@ -278,9 +278,15 @@ public class UserBeanImpl implements UserBean {
 		String hostname = "";
 		if(user.isPortalUser())
 		{
+			try {
+				Organization org = AccountUtil.getOrgBean().getPortalOrg(user.getPortalId());
+				hostname = "https://"+org.getDomain();
+				inviteToken = inviteToken +"&portalid="+user.getPortalId();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
-			hostname = "https://"+AwsUtil.getConfig("portal.domain");
-			inviteToken = inviteToken +"&portalid="+user.getPortalId();
 		}
 		else
 		{

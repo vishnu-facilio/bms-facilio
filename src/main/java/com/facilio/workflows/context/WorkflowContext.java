@@ -5,11 +5,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import com.facilio.workflows.util.WorkflowUtil;
 import com.udojava.evalex.Expression;
 
 public class WorkflowContext {
+	
+	private static final Logger LOGGER = Logger.getLogger(WorkflowContext.class.getName());
 	
 	public static String VARIABLE_PLACE_HOLDER = "\\$\\{.+\\}";
 
@@ -146,17 +149,17 @@ public class WorkflowContext {
 				}
 			}
 		}
-		System.out.println("variableToExpresionMap --- "+variableResultMap+" \n\n"+"expString --- "+getResultEvaluator());
+		LOGGER.severe("variableToExpresionMap --- "+variableResultMap+" \n\n"+"expString --- "+getResultEvaluator());
 		
 		result =  evaluateExpression(getResultEvaluator(),variableResultMap, ignoreNullValues);
-		System.out.println("result --- "+result);
+		LOGGER.severe("result --- "+result);
 		return result;
 	}
 	
 	private ExpressionContext fillParamterAndParseExpressionContext(ExpressionContext expressionContext) throws Exception {
 		
 		String expressionString = expressionContext.getExpressionString();
-		System.out.println("BEFORE STRING --- "+expressionString);
+		LOGGER.severe("BEFORE STRING --- "+expressionString);
 		
 		if(expressionContext.getExpressionString().split(VARIABLE_PLACE_HOLDER).length > 1) {
 			for(ParameterContext parameter :parameters) {
@@ -175,7 +178,7 @@ public class WorkflowContext {
 				}
 			}
 		}
-		System.out.println("AFTER STRING --- "+expressionString);
+		LOGGER.severe("AFTER STRING --- "+expressionString);
 		expressionContext = WorkflowUtil.getExpressionContextFromExpressionString(expressionString);
 		
 		return expressionContext;
@@ -183,7 +186,7 @@ public class WorkflowContext {
 	
 	private Object evaluateExpression(String exp,Map<String,Object> variablesMap, boolean ignoreNullValues) {
 
-		System.out.println("EXPRESSION STRING IS -- "+exp+" variablesMap -- "+variablesMap);
+		LOGGER.severe("EXPRESSION STRING IS -- "+exp+" variablesMap -- "+variablesMap);
 		if(exp == null) {
 			return null;
 		}

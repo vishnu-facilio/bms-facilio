@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
@@ -24,6 +25,8 @@ import com.facilio.workflows.util.ExpressionAggregateOperator;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class ExpressionContext {
+	
+	private static final Logger LOGGER = Logger.getLogger(WorkflowUtil.class.getName());
 	
 	String expressionString;
 	String name;
@@ -298,8 +301,8 @@ public class ExpressionContext {
 				}
 			}
 		}
-		System.out.println("selectBuilder -- "+selectBuilder);
-		System.out.println("selectBuilder result -- "+props);
+		LOGGER.severe("selectBuilder -- "+selectBuilder);
+		LOGGER.severe("selectBuilder result -- "+props);
 		if(props != null && !props.isEmpty()) {
 			
 			if(isManualAggregateQuery()) {
@@ -358,7 +361,7 @@ public class ExpressionContext {
 				exprResult = props.get(0).get(name);
 			}
 		}
-		System.out.println("EXP -- "+toString()+" RESULT -- "+exprResult);
+		LOGGER.severe("EXP -- "+toString()+" RESULT -- "+exprResult);
 		return exprResult;
 	}
 	

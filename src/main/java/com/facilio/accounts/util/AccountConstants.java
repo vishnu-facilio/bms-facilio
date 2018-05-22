@@ -1001,6 +1001,28 @@ public class AccountConstants {
 
 		return fields;
 	}
+	
+	
+	public static List<FacilioField> getPortalCustomDomainFields() {
+		FacilioModule module = getPortalInfoModule();
+		List<FacilioField> fields = new ArrayList<>();
+
+		FacilioField portalId = new FacilioField();
+		portalId.setName("portalId");
+		portalId.setDataType(FieldType.NUMBER);
+		portalId.setColumnName("PORTALID");
+		portalId.setModule(module);
+		fields.add(portalId);
+
+		FacilioField name = new FacilioField();
+		name.setName("customDomain");
+		name.setDataType(FieldType.STRING);
+		name.setColumnName("CUSTOM_DOMAIN");
+		name.setModule(module);
+		fields.add(name);
+
+		return fields;
+	}
 
 	public static List<FacilioField> getUserMobileSettingFields() {
 		FacilioModule module = getUserMobileSettingModule();
