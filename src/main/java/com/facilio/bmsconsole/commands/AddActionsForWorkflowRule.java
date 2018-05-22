@@ -62,6 +62,7 @@ public class AddActionsForWorkflowRule implements Command {
 			if(rule != null) {
 				ActionAPI.addWorkflowRuleActionRel(rule.getId(), actions);
 			}
+			rule.setActions(actions);
 		}
 		return false;
 	}
