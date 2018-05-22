@@ -121,18 +121,17 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		List<Long> ids = getIds();
 		
 		if (ids != null && !ids.isEmpty()) {
-			deleteBuilder.table(module.getTableName());
 			FacilioModule currentModule = module;
 			FacilioModule extendedModule = module.getExtendModule();
 			int currentLevel = maxLevel();
 			while(extendedModule != null && level < currentLevel) {
-				deleteBuilder.innerJoin(extendedModule.getTableName(), true)
-						.on(currentModule.getTableName()+".ID = "+extendedModule.getTableName()+".ID");
+//				deleteBuilder.innerJoin(extendedModule.getTableName(), true)
+//						.on(currentModule.getTableName()+".ID = "+extendedModule.getTableName()+".ID");
 				currentModule = extendedModule;
 				extendedModule = extendedModule.getExtendModule();
 				currentLevel--;
 			}
-			
+			deleteBuilder.table(currentModule.getTableName());
 			WhereBuilder orgWhere = getWhereWithOrgIdAndModuleId(currentModule);
 			deleteBuilder.andCustomWhere(orgWhere.getWhereClause(), orgWhere.getValues())
 							.andCondition(CriteriaAPI.getIdCondition(ids, currentModule));
