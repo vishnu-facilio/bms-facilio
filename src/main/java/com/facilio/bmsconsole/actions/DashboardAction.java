@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
@@ -106,6 +107,8 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class DashboardAction extends ActionSupport {
 
+	private static final Logger LOGGER = Logger.getLogger(DashboardAction.class.getName());
+	
 	Long baseLineComparisionDiff;
 	
 	Long reportEntityId;
@@ -341,7 +344,7 @@ public class DashboardAction extends ActionSupport {
 	}
 	public String populateDefaultReports() throws Exception {
 		
-		System.out.println("From here");
+		LOGGER.severe("From here");
 		FacilioContext context = new FacilioContext();
 		context.put("orgId", AccountUtil.getCurrentOrg().getId());
 		Chain adddefaultReportChain = FacilioChainFactory.addDefaultReportChain();
@@ -842,11 +845,11 @@ public class DashboardAction extends ActionSupport {
 						paramMap.put("endTime", rang1e.getEndTime());
 					}
 					Object wfResult = WorkflowUtil.getResult(widgetVsWorkflowContext.getWorkflowId(), paramMap);
-					System.out.println("widgetVsWorkflowContext.getWorkflowId() --- "+widgetVsWorkflowContext.getWorkflowId() +" wfResult --  "+wfResult);
+					LOGGER.severe("widgetVsWorkflowContext.getWorkflowId() --- "+widgetVsWorkflowContext.getWorkflowId() +" wfResult --  "+wfResult);
 					result.put(widgetVsWorkflowContext.getWorkflowName(), wfResult);
 				}
 			}
-			System.out.println("result --- "+result);
+			LOGGER.severe("result --- "+result);
 			setCardResult(result);
 		}
 		return SUCCESS;
@@ -876,7 +879,7 @@ public class DashboardAction extends ActionSupport {
 			else {
 				column.setData(getDataForReadings(column.getReport(), module, dateFilter, null, column.getBaseLineId(), -1));
 			}
-			System.out.println(column.getReportId()+"  ----  "+column.getData());
+			LOGGER.severe(column.getReportId()+"  ----  "+column.getData());
 		}
 		Multimap<Integer, Object> resultMap = ArrayListMultimap.create();
 		Map<Integer,Long> dateMap = new HashMap<>();
@@ -900,7 +903,7 @@ public class DashboardAction extends ActionSupport {
 		}
 		List<Integer> keys = new ArrayList<>(dateMap.keySet());
 		Collections.sort(keys);
-		System.out.println("keys --- "+ keys);
+		LOGGER.severe("keys --- "+ keys);
 		 for(Integer key:keys){
 			 Collection<Object> d = resultMap.get(key);
 			 JSONArray data = new JSONArray();
@@ -914,7 +917,7 @@ public class DashboardAction extends ActionSupport {
 				dataJsonArray.add(data);
 		 }
 
-		 System.out.println("datas --- "+dataJsonArray);
+		 LOGGER.severe("datas --- "+dataJsonArray);
 		
 		reportData = dataJsonArray;
 		
@@ -1322,17 +1325,17 @@ public class DashboardAction extends ActionSupport {
 			BaseLineContext baseLineContext = BaseLineAPI.getBaseLine(baseLineId);
 			DateRange dateRange;
 			if(dateFilter != null) {
-				System.out.println("dateFilter --- "+dateFilter);
+				LOGGER.severe("dateFilter --- "+dateFilter);
 				dateRange = new DateRange((long)dateFilter.get(0), (long)dateFilter.get(1));
 			}
 			else {
 				dateRange = report.getDateFilter().getOperator().getRange(report.getDateFilter().getValue());
 			}
-			System.out.println("start -- "+dateRange.getStartTime() +" end -- "+dateRange.getEndTime());
+			LOGGER.severe("start -- "+dateRange.getStartTime() +" end -- "+dateRange.getEndTime());
 			Condition condition = baseLineContext.getBaseLineCondition(report.getDateFilter().getField(), dateRange);
 			String baseLineStartValue = condition.getValue().substring(0,condition.getValue().indexOf(","));
 			this.baseLineComparisionDiff = dateRange.getStartTime() - Long.parseLong(baseLineStartValue);
-			System.out.println(condition);
+			LOGGER.severe(""+condition);
 			builder.andCondition(condition);
 		}
 		else if(report.getDateFilter() != null) {
@@ -1373,10 +1376,10 @@ public class DashboardAction extends ActionSupport {
 		fields.add(xAxisField);
 		builder.select(fields);
 		List<Map<String, Object>> rs = builder.get();
-		System.out.println("builder --- "+reportContext.getId() +"   "+baseLineId);
-		System.out.println("builder --- "+builder);
+		LOGGER.severe("builder --- "+reportContext.getId() +"   "+baseLineId);
+		LOGGER.severe("builder --- "+builder);
 		
-		System.out.println("res 1-- "+rs);
+		LOGGER.severe("res 1-- "+rs);
 		
 		if(report.getGroupBy() != null) {
 			
@@ -1524,7 +1527,7 @@ public class DashboardAction extends ActionSupport {
 				component.put("value", buildingResult.get(key));
 				res.add(component);
 			}
-			System.out.println("res -- "+res);
+			LOGGER.severe("res -- "+res);
 			ticketData = res;
 		}
 		this.reportFieldLabelMap = reportFieldLabelMap; 
@@ -1709,6 +1712,7 @@ public class DashboardAction extends ActionSupport {
 		if(y1AxisField!= null && y1AxisField.getColumnName() != null && report.getIsHighResolutionReport() || xAggr == 0) {
 			builder.andCustomWhere(y1AxisField.getColumnName()+" is not null");
 		}
+		
 		JSONObject reportFieldLabelMap = new JSONObject();
 		reportFieldLabelMap.put("label", xAxisField.getName());
 		reportFieldLabelMap.put("value", y1AxisField.getName());
@@ -1796,17 +1800,17 @@ public class DashboardAction extends ActionSupport {
 			baseLineName = baseLineContext.getName();;
 			DateRange dateRange;
 			if(dateFilter != null) {
-				System.out.println("dateFilter --- "+dateFilter);
+				LOGGER.severe("dateFilter --- "+dateFilter);
 				dateRange = new DateRange((long)dateFilter.get(0), (long)dateFilter.get(1));
 			}
 			else {
 				dateRange = report.getDateFilter().getOperator().getRange(report.getDateFilter().getValue());
 			}
-			System.out.println("start -- "+dateRange.getStartTime() +" end -- "+dateRange.getEndTime());
+			LOGGER.severe("start -- "+dateRange.getStartTime() +" end -- "+dateRange.getEndTime());
 			Condition condition = baseLineContext.getBaseLineCondition(report.getDateFilter().getField(), dateRange);
 			String baseLineStartValue = condition.getValue().substring(0,condition.getValue().indexOf(","));
 			this.baseLineComparisionDiff = dateRange.getStartTime() - Long.parseLong(baseLineStartValue);
-			System.out.println(condition);
+			LOGGER.severe(""+condition);
 			builder.andCondition(condition);
 		}
 		else if(report.getDateFilter() != null) {
@@ -1856,7 +1860,7 @@ public class DashboardAction extends ActionSupport {
 			subBuilder.select(subFields);
 			
 			List<Map<String, Object>> props = subBuilder.get();
-			System.out.println("subBuilder -- "+subBuilder);
+			LOGGER.severe("subBuilder -- "+subBuilder);
 			if(props != null && !props.isEmpty()) {
 				
 				List<Long> meterIds = new ArrayList<Long>();
@@ -1879,9 +1883,9 @@ public class DashboardAction extends ActionSupport {
 				}
 				if(isGroupBySpace) {
 					String buildingList = StringUtils.join(buildingVsMeter.values(),",");
-					System.out.println("buildingList -- "+buildingList);
+					LOGGER.severe("buildingList -- "+buildingList);
 					buildingVsArea = ReportsUtil.getMapping(SpaceAPI.getBuildingArea(buildingList), "ID", "AREA");
-					System.out.println("buildingVsArea -- "+buildingVsArea);
+					LOGGER.severe("buildingVsArea -- "+buildingVsArea);
 				}
 				
 				String meterIdStr = StringUtils.join(meterIds, ",");
@@ -1917,7 +1921,7 @@ public class DashboardAction extends ActionSupport {
 				if ("service".equalsIgnoreCase(report.getEnergyMeter().getGroupBy())) {
 					
 					List<EnergyMeterContext> meters = DeviceAPI.getRootServiceMeters(report.getReportSpaceFilterContext().getBuildingId()+"");
-					System.out.println("meters --- "+meters);
+					LOGGER.severe("meters --- "+meters);
 					if (meters != null && meters.size() > 0) {
 						List<Long> meterIds = new ArrayList<Long>();
 						for (EnergyMeterContext meter : meters) {
@@ -1980,8 +1984,8 @@ public class DashboardAction extends ActionSupport {
 							meterIds.add(em.getId());
 						}
 					}
-					System.out.println("energyMeterMap -- "+energyMeterMap);
-					System.out.println("meterIds -- "+meterIds);
+					LOGGER.severe("energyMeterMap -- "+energyMeterMap);
+					LOGGER.severe("meterIds -- "+meterIds);
 					if(!meterIds.isEmpty()) {
 						String meterIdStr = StringUtils.join(meterIds, ",");
 						energyMeterValue = meterIdStr;
@@ -2169,9 +2173,9 @@ public class DashboardAction extends ActionSupport {
 			rs = builder.get();
 		}
 		
-		System.out.println("builder --- "+reportContext.getId() +"   "+baseLineId);
-		System.out.println("builder --- "+builder);
-//		System.out.println("rs1 -- "+rs);
+		LOGGER.severe("builder --- "+reportContext.getId() +"   "+baseLineId);
+		LOGGER.severe("builder --- "+builder);
+//		LOGGER.severe("rs1 -- "+rs);
 		
 		Map<String, Double> violatedReadings = getViolatedReadings(report, dateFilter, baseLineId);
 		
@@ -2186,7 +2190,7 @@ public class DashboardAction extends ActionSupport {
 			if (report.getEnergyMeter() != null && report.getEnergyMeter().getGroupBy() != null && report.getReportSpaceFilterContext() != null && report.getReportSpaceFilterContext().getBuildingId() != null && "floor".equalsIgnoreCase(report.getEnergyMeter().getGroupBy())) {
 				List<String> lables = getDistinctLabel(rs);
 				JSONArray totalconsumptionBySpace = new JSONArray();
-				System.out.println("lables -- "+lables);
+				LOGGER.severe("lables -- "+lables);
 				if(!energyMeterMap.isEmpty()) {
 					for(String label:lables) {
 						JSONArray temp = new JSONArray();
@@ -2207,7 +2211,7 @@ public class DashboardAction extends ActionSupport {
 							value.put("label", resource.getName());
 							value.put("value", sumValue);
 							temp.add(value);
-							System.out.println(temp);
+							LOGGER.severe(""+temp);
 						}
 						JSONObject temp1 = new JSONObject();
 						temp1.put("label", labelDummyValue);
@@ -2215,7 +2219,7 @@ public class DashboardAction extends ActionSupport {
 						totalconsumptionBySpace.add(temp1);
 					}
 				}
-				System.out.println("totalconsumptionBySpace -- "+totalconsumptionBySpace);
+				LOGGER.severe("totalconsumptionBySpace -- "+totalconsumptionBySpace);
 				readingData = totalconsumptionBySpace;
 			}
 			else {
@@ -2359,7 +2363,7 @@ public class DashboardAction extends ActionSupport {
 	 					}
 	 					else if ("eui".equalsIgnoreCase(report.getY1AxisUnit())) {
 	 						Double d = (Double) thisMap.get("value");
-	 						System.out.println("(Long) component.get -- "+(Long) component.get("label"));
+	 						LOGGER.severe("(Long) component.get -- "+(Long) component.get("label"));
 	 						Double buildingArea = buildingVsArea.get((Long) component.get("label"));
 	 						double eui = ReportsUtil.getEUI(d, buildingArea);
 	 						component.put("value", eui);
@@ -2472,7 +2476,7 @@ public class DashboardAction extends ActionSupport {
 			}
 			
 			AlarmAction alarmAction = new AlarmAction();
-			System.out.println("filterJson.toJSONString() -- "+filterJson.toJSONString());
+			LOGGER.severe("filterJson.toJSONString() -- "+filterJson.toJSONString());
 			alarmAction.setFilters(filterJson.toJSONString());
 			
 			alarmAction.fetchReadingAlarms();
