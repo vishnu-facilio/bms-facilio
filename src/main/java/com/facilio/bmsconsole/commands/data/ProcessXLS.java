@@ -1,8 +1,6 @@
 package com.facilio.bmsconsole.commands.data;
 
-import java.io.File;
 import java.io.InputStream;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -10,6 +8,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
@@ -21,25 +20,16 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.json.simple.JSONArray;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.actions.ImportBuildingAction;
-import com.facilio.bmsconsole.actions.ImportFloorAction;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
-import com.facilio.bmsconsole.actions.ImportSiteAction;
-import com.facilio.bmsconsole.actions.ImportSpaceAction;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
-import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
-import com.facilio.bmsconsole.context.SiteContext;
-import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
@@ -49,7 +39,6 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.util.ImportAPI;
-import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
@@ -59,6 +48,7 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class ProcessXLS implements Command {
 
+	private static final Logger LOGGER = Logger.getLogger(ProcessXLS.class.getName());
 	
 	public boolean execute(Context context) throws Exception {
 		
@@ -104,7 +94,7 @@ public class ProcessXLS implements Command {
 			int row_no = 0;
 			while (rowItr.hasNext()) {
 				row_no++;
-				System.out.println("row_no -- "+row_no);
+				LOGGER.severe("row_no -- "+row_no);
 				Row row = rowItr.next();
 				
 				if(row.getPhysicalNumberOfCells() <= 0) {
@@ -170,7 +160,7 @@ public class ProcessXLS implements Command {
 					}
 				}
 				
-				System.out.println("row -- "+row_no+" colVal --- "+colVal);
+				LOGGER.severe("row -- "+row_no+" colVal --- "+colVal);
 
 				HashMap <String, Object> props = new LinkedHashMap<String,Object>();
 				
@@ -215,7 +205,7 @@ public class ProcessXLS implements Command {
 						props.put(key, cellValue);
 					}
 				});
-				System.out.println("props -- "+props);
+				LOGGER.severe("props -- "+props);
 				ReadingContext reading = FieldUtil.getAsBeanFromMap(props, ReadingContext.class);
 				reading.setParentId(importProcessContext.getAssetId());
 				readingsList.add(reading);
@@ -227,7 +217,7 @@ public class ProcessXLS implements Command {
 		
 		workbook.close();
 		
-		System.out.println("IMPORT DONE");
+		LOGGER.severe("IMPORT DONE");
 	}
 	
 	public static void populateData(ImportProcessContext importProcessContext,List<ReadingContext> readingsList) throws Exception {
@@ -263,7 +253,7 @@ public class ProcessXLS implements Command {
 	public static List<Map<String, Object>> getLookupProps(LookupField lookupField,Object value) {
 		
 		try {
-			System.out.println("getLookupProps -- "+lookupField.getColumnName() +" facilioField.getModule() - "+lookupField.getLookupModule().getTableName() +" with value -- "+value);
+			LOGGER.severe("getLookupProps -- "+lookupField.getColumnName() +" facilioField.getModule() - "+lookupField.getLookupModule().getTableName() +" with value -- "+value);
 			
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			ArrayList<FacilioField> fieldsList = new ArrayList<FacilioField>();
@@ -300,11 +290,11 @@ public class ProcessXLS implements Command {
 				insertRecordBuilder.addRecord(insertProps);
 				
 				insertRecordBuilder.save();
-				System.out.println("insertProps --- "+insertProps);
+				LOGGER.severe("insertProps --- "+insertProps);
 				Long id = (Long) insertProps.get("id");
 				
 				if(id != null) {
-					System.out.println("inserted with ID --"+id);
+					LOGGER.severe("inserted with ID --"+id);
 					props.add(insertProps);
 				}
 			}

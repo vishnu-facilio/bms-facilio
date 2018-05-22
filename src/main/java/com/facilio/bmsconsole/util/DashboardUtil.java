@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
@@ -65,6 +66,8 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class DashboardUtil {
+	
+	private static final Logger LOGGER = Logger.getLogger(DashboardUtil.class.getName());
 	
 	public static String WEATHER_WIDGET_WORKFLOW_STRING = "<workflow> 		<parameter name=\"parentId\" type = \"Number\"/> 		<expression name=\"a\"> 				<module name=\"weather\"/> 				<criteria pattern=\"1\"> 						<condition sequence=\"1\">parentId`=`${parentId}</condition> 				</criteria> 				<orderBy name=\"ttime\" sort=\"desc\"/> 				<limit>1</limit> 		</expression> </workflow>";
 	public static String CARBON_EMISSION_CARD = "<workflow> 		<parameter name=\"parentId\" type=\"Number\"/> 		<expression name=\"mainMeter\"> 		 		 				<function>default.getMainEnergyMeter(parentId)</function>	 		</expression>	<expression name=\"a\"> 				<module name=\"energydata\"/> 				<criteria pattern=\"1 and 2\"> 						<condition sequence=\"1\">parentId`=`${mainMeter}</condition> 						<condition sequence=\"2\">ttime`Current Month`</condition> 				</criteria> 				<field name=\"totalEnergyConsumptionDelta\" aggregate = \"sum\"/> 		</expression> 		<expression name=\"carbonConstant\"> 				<constant>0.44</constant> 		</expression> 	<result>a*carbonConstant</result> </workflow>";
@@ -529,7 +532,7 @@ public class DashboardUtil {
 				.andCustomWhere(ModuleFactory.getWidgetChartModule().getTableName()+".ID = ?", reportId);
 		
 		List<Map<String, Object>> props = selectBuilder.get();
-		System.out.println("111."+props);
+		LOGGER.severe("111."+props);
 		if (props != null && !props.isEmpty()) {
 			WidgetChartContext widgetReportContext = FieldUtil.getAsBeanFromMap(props.get(0), WidgetChartContext.class);
 			return widgetReportContext;
@@ -1437,7 +1440,7 @@ public class DashboardUtil {
 				
 				insertBuilder.addRecord(prop).save();
 				
-				System.out.println("sssssaaaa --- "+prop);
+				LOGGER.severe("sssssaaaa --- "+prop);
 			}
 			if(reportContext.getEnergyMeter() != null) {
 				Map<String, Object> prop = FieldUtil.getAsProperties(reportContext.getEnergyMeter());
@@ -1451,7 +1454,7 @@ public class DashboardUtil {
 				
 				prop = FieldUtil.getAsProperties(reportContext.getEnergyMeter());
 				prop.put("reportId", reportContext.getId());
-				System.out.println("getReportSpaceFilterModule -- "+prop);
+				LOGGER.severe("getReportSpaceFilterModule -- "+prop);
 				insertBuilder = new GenericInsertRecordBuilder()
 						.table(ModuleFactory.getReportSpaceFilterModule().getTableName())
 						.fields(FieldFactory.getReportSpaceFilterFields());

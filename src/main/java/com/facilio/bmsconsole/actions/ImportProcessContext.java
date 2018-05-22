@@ -3,9 +3,9 @@ package com.facilio.bmsconsole.actions;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -13,15 +13,14 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ReportContext.ReportChartType;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.fw.BeanFactory;
-import com.fasterxml.jackson.core.JsonParser;
 
 public class ImportProcessContext
 {
+	private static final Logger LOGGER = Logger.getLogger(ImportProcessContext.class.getName());
 	
 	Long id,orgId,moduleId,fileId;
 	Integer status,importType;

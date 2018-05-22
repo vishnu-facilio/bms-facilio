@@ -1,32 +1,21 @@
 package com.facilio.bmsconsole.actions;
 
 import java.io.File;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.actions.ImportProcessContext.ImportStatus;
 import com.facilio.bmsconsole.commands.data.ProcessSpaceXLS;
-import com.facilio.bmsconsole.commands.data.ProcessXLS;
 import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.ChillerContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
@@ -35,12 +24,12 @@ import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
-import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
-import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class ImportDataAction extends ActionSupport {
+	
+	private static final Logger LOGGER = Logger.getLogger(ImportDataAction.class.getName());
 	
 	public String upload() throws Exception {
 		
@@ -187,11 +176,11 @@ public class ImportDataAction extends ActionSupport {
 			String name=site.getName();
 			result.put(siteId,name);
 		}
-		System.out.println("The list of Sites available is "+result);
+		LOGGER.severe("The list of Sites available is "+result);
 	}
 	public String showformupload()
 	{
-		System.out.println("Displaying formupload");
+		LOGGER.severe("Displaying formupload");
 		return SUCCESS;
 	}
 
@@ -222,7 +211,7 @@ public class ImportDataAction extends ActionSupport {
 		return importprocessid;
 	}
 	public void setImportprocessid(long importprocessid) {
-		System.out.println("setting the id "+importprocessid);
+		LOGGER.severe("setting the id "+importprocessid);
 		this.importprocessid = importprocessid;
 	}
 
@@ -243,7 +232,7 @@ public class ImportDataAction extends ActionSupport {
 	
 	public void setModuleName(String module)
 	{
-		System.out.println("Setting module : " + module);
+		LOGGER.severe("Setting module : " + module);
 		this.moduleName=module;
 	}
 	
