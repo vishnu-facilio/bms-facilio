@@ -279,7 +279,7 @@ public class ReadingsAPI {
 					FacilioField fField=fieldMap.get(reading.getKey());
 					long fieldId=fField.getFieldId();
 					if (metaMap != null) {
-						ReadingDataMeta meta = metaMap.get(resourceId+"_"+fField.getName());
+						ReadingDataMeta meta = metaMap.get(resourceId+"_"+fField.getFieldId());
 						if(meta != null)
 						{
 							Object lastReading = meta.getValue();

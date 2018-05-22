@@ -45,8 +45,8 @@ public class GetReadingDataMetaCommand implements Command {
 				List<ReadingDataMeta> metaList = ReadingsAPI.getReadingDataMetaList( resourceList, allFields) ;
 				for(ReadingDataMeta meta : metaList) {
 					long resourceId = meta.getResourceId();
-					String fieldName = meta.getField().getName();
-					readingDataMeta.put(resourceId+"_"+fieldName, meta);
+					long fieldId = meta.getField().getFieldId();
+					readingDataMeta.put(resourceId+"_"+fieldId, meta);
 				}
 			}
 			context.put(FacilioConstants.ContextNames.READING_DATA_META, readingDataMeta);
