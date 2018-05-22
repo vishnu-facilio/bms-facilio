@@ -121,6 +121,34 @@ public class OrgBeanImpl implements OrgBean {
 	}
 
 	@Override
+	public Organization getPortalOrg(Long portalId) throws Exception {
+		Organization org = null;
+		FacilioModule portalInfoModule = AccountConstants.getPortalInfoModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.addAll(AccountConstants.getOrgFields());
+		fields.addAll(AccountConstants.getPortalCustomDomainFields());
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(AccountConstants.getOrgModule().getTableName())
+				.innerJoin(portalInfoModule.getTableName())
+				.on(AccountConstants.getOrgModule().getTableName()+".ORGID = PortalInfo.ORGID")
+				.andCustomWhere("PORTALID = ? AND DELETED_TIME = -1", portalId);
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			Map<String, Object> result = props.get(0); 
+			org = createOrgFromProps(result);
+			if(result.get("customDomain") != null) {
+				org.setDomain((String)result.get("customDomain"));
+			} else {
+				org.setDomain((String)result.get("domain")+".facilstack.com");
+			}
+			
+		}
+		return org;
+	}
+	
+	@Override
 	public Organization getPortalOrg(String orgDomain) throws Exception {
 		Organization org = null;
 		FacilioModule portalInfoModule = AccountConstants.getPortalInfoModule();
