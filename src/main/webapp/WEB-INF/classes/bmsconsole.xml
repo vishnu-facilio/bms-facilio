@@ -1909,6 +1909,15 @@
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
+		
+		<action name="resolve" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="resolveWorkOrder">
+			<param name="moduleName">workorder</param>
+			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
 
 		<action name="delete" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="deleteWorkOrder">
