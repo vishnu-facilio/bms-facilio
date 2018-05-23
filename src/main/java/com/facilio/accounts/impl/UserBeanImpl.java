@@ -280,7 +280,7 @@ public class UserBeanImpl implements UserBean {
 		{
 			try {
 				Organization org = AccountUtil.getOrgBean().getPortalOrg(user.getPortalId());
-				hostname = "https://"+org.getDomain();
+				hostname = "https://"+org.getDomain()+"/service";
 				inviteToken = inviteToken +"&portalid="+user.getPortalId();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -291,14 +291,14 @@ public class UserBeanImpl implements UserBean {
 		else
 		{
 		//	hostname="https://app."+user.getServerName();
-		 return AwsUtil.getConfig("clientapp.url") + url + inviteToken;
+		 return AwsUtil.getConfig("clientapp.url") +"/app"+ url + inviteToken;
 		}
 		return hostname + url + inviteToken;
 	}
 	
 	private void sendInvitation(long ouid, User user) throws Exception {
 		user.setOuid(ouid);
-		String inviteLink = getUserLink(user,"/app/invitation/");
+		String inviteLink = getUserLink(user,"/invitation/");
 		Map<String, Object> placeholders = new HashMap<>();
 		CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(user), placeholders);
 		CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeholders);
@@ -315,7 +315,7 @@ public class UserBeanImpl implements UserBean {
 	
 	public boolean sendResetPasswordLink(User user) throws Exception {
 
-		String inviteLink = getUserLink(user, "/app/fconfirm_reset_password/");
+		String inviteLink = getUserLink(user, "/fconfirm_reset_password/");
 		Map<String, Object> placeholders = new HashMap<>();
 		CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(user), placeholders);
 		placeholders.put("invitelink", inviteLink);
@@ -325,7 +325,7 @@ public class UserBeanImpl implements UserBean {
 	}
 	
 	private void sendEmailRegistration(User user) throws Exception {
-		String inviteLink = getUserLink(user, "/app/emailregistration/");
+		String inviteLink = getUserLink(user, "/emailregistration/");
 		Map<String, Object> placeholders = new HashMap<>();
 		CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(user), placeholders);
 		placeholders.put("invitelink", inviteLink);
