@@ -210,9 +210,7 @@ public class ExpressionContext {
 		
 		GenericSelectRecordBuilder selectBuilder = null;
 		if(isCustomFunctionResultEvaluator) {
-			if(isCustomFunctionResultEvaluator) {
-				return WorkflowUtil.evalCustomFunctions(defaultFunctionContext,variableToExpresionMap);
-			}
+			return WorkflowUtil.evalCustomFunctions(defaultFunctionContext,variableToExpresionMap);
 		}
 		if(getConstant() != null) {
 			return getConstant();

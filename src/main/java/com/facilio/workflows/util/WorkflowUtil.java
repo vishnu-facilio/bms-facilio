@@ -781,30 +781,42 @@ public class WorkflowUtil {
 	
 	public static Object evalCustomFunctions(WorkflowFunctionContext workflowFunctionContext,Map<String,Object> variableToExpresionMap) throws Exception {
 		
+		FacilioWorkflowFunctionInterface defaultFunctions = getFacilioFunction(workflowFunctionContext.getNameSpace(),workflowFunctionContext.getFunctionName());
 		
-		if(workflowFunctionContext.getNameSpace().equals("default")) {
-				
-			FacilioDefaultFunction defaultFunctions = FacilioDefaultFunction.getFacilioDefaultFunction(workflowFunctionContext.getFunctionName());
-			
-			String[] paramList = workflowFunctionContext.getParamList();
-			Object[] objects = null;
+		String[] paramList = workflowFunctionContext.getParamList();
+		Object[] objects = null;
 
-			int objectIndex = 0;
-			if(paramList != null && paramList.length > 0) {
-				
-				objects = new Object[paramList.length];
-				
-				for(String param:paramList) {
-					Object obj = variableToExpresionMap.get(param);
-					objects[objectIndex++] = obj;
-				}
-			}
+		int objectIndex = 0;
+		if(paramList != null && paramList.length > 0) {
 			
-			return defaultFunctions.execute(objects);
+			objects = new Object[paramList.length];
+			
+			for(String param:paramList) {
+				Object obj = variableToExpresionMap.get(param);
+				objects[objectIndex++] = obj;
+			}
 		}
 		
-		return null;
+		return defaultFunctions.execute(objects);
 		
 	}
 	
+	
+	public static FacilioWorkflowFunctionInterface getFacilioFunction(String nameSpace,String functionName) {
+		
+		FacilioWorkflowFunctionInterface facilioWorkflowFunction = null;
+		
+		switch(nameSpace) {
+		case "default":
+
+			facilioWorkflowFunction = FacilioDefaultFunction.getFacilioDefaultFunction(functionName);
+			break;
+		case "math" :
+			
+			facilioWorkflowFunction = FacilioMathFunction.getFacilioMathFunction(functionName);
+			break;
+		}
+		
+		return facilioWorkflowFunction;
+	}
 }
