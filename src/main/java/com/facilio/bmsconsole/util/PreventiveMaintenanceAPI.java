@@ -261,17 +261,17 @@ public class PreventiveMaintenanceAPI {
 		return null;
 	}
 	
-	public static Map<Long, List<Map<String, Object>>> getPMJobsFromTriggerIds(List<Long> triggerIds, long startTime, long endTime) throws Exception {
+	public static Map<Long, List<Map<String, Object>>> getPMJobsFromPMIds(List<Long> pmIds, long startTime, long endTime) throws Exception {
 		FacilioModule pmJobsModule = ModuleFactory.getPMJobsModule();
 		List<FacilioField> fields = FieldFactory.getPMJobFields();
 		Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
-		FacilioField pmTriggerField = fieldsMap.get("pmTriggerId");
+		FacilioField pmIdField = fieldsMap.get("pmId");
 		FacilioField nextExecutionField = fieldsMap.get("nextExecutionTime");
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(pmJobsModule.getTableName())
-														.andCondition(CriteriaAPI.getCondition(pmTriggerField,triggerIds, NumberOperators.EQUALS))
+														.andCondition(CriteriaAPI.getCondition(pmIdField,pmIds, NumberOperators.EQUALS))
 														.andCondition(CriteriaAPI.getCondition(nextExecutionField, String.valueOf(startTime), NumberOperators.GREATER_THAN_EQUAL))
 														.andCondition(CriteriaAPI.getCondition(nextExecutionField, String.valueOf(endTime), NumberOperators.LESS_THAN))
 														.orderBy("nextExecutionTime")

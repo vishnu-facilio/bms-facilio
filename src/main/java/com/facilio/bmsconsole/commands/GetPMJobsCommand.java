@@ -65,7 +65,7 @@ public class GetPMJobsCommand implements Command {
 			long startTime = (Long) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_STARTTIME);
 			long endTime = (Long) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_ENDTIME);
 			
-			Map<Long, List<Map<String, Object>>> pmJobsMap = PreventiveMaintenanceAPI.getPMJobsFromTriggerIds(new ArrayList<>(pmTriggersMap.keySet()), startTime, endTime);
+			Map<Long, List<Map<String, Object>>> pmJobsMap = PreventiveMaintenanceAPI.getPMJobsFromPMIds(new ArrayList<>(pmTriggersMap.keySet()), startTime, endTime);
 			
 			Map<Long, PMTriggerContext> pmTriggerMap = new HashMap<>();
 			List<Long> resourceIds = new ArrayList<>();

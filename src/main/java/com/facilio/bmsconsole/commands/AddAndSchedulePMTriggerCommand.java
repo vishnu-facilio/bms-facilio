@@ -76,6 +76,9 @@ public class AddAndSchedulePMTriggerCommand implements Command {
 				ActionAPI.addActions(actions);
 				ActionAPI.addWorkflowRuleActionRel(ruleId, actions);
 			}
+			else if (trigger.getStartTime() < System.currentTimeMillis()) {
+				trigger.setStartTime(System.currentTimeMillis());
+			}
 			insertBuilder.addRecord(FieldUtil.getAsProperties(trigger));
 		}
 		insertBuilder.save();
