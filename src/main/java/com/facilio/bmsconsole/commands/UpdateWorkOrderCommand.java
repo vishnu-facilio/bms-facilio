@@ -86,8 +86,8 @@ public class UpdateWorkOrderCommand implements Command {
 			}
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
 			
-			
-			if(ActivityType.ASSIGN_TICKET == (ActivityType)context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE) || ActivityType.CLOSE_WORK_ORDER == (ActivityType)context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE)) {
+			ActivityType activityType = (ActivityType)context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
+			if(ActivityType.ASSIGN_TICKET == activityType || ActivityType.CLOSE_WORK_ORDER == activityType || ActivityType.SOLVE_WORK_ORDER == activityType) {
 				SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
 						.moduleName(moduleName)
 						.beanClass(WorkOrderContext.class)

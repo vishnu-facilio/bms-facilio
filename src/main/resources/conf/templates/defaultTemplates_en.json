@@ -230,12 +230,12 @@
 		"sender": "support@${org.domain}.facilio.com",
 		"subject": "Work order closed",
 		"to": "${workorder.assignedTo.email:-}",
-		"message": "The following work order ${workorder.subject} has been verified and closed by ${workorder.assignedBy.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status}\n\nPlease view the closed work order here - ${workorder.url}\n\nRegards,\nTeam Facilio."
+		"message": "The following work order ${workorder.subject} has been verified and closed by ${workorder.assignedBy.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status.status}\n\nPlease view the closed work order here - ${workorder.url}\n\nRegards,\nTeam Facilio."
 	},
 	"29": {
 		"name": "TECH_CLOSE_WO_SMS",
 		"to": "${workorder.assignedTo.phone:-}",
-		"message": "The following work order ${workorder.subject} has been verified and closed by ${workorder.assignedBy.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status}\n\nPlease view the closed work order here - ${workorder.url}\n\n - Team Facilio."
+		"message": "The following work order ${workorder.subject} has been verified and closed by ${workorder.assignedBy.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status.status}\n\nPlease view the closed work order here - ${workorder.url}\n\n - Team Facilio."
 	},
 	"30": {
 		"name": "TECH_CLOSE_WO_WEB"
@@ -243,7 +243,7 @@
 	"31": {
 		"name": "TECH_CLOSE_WO_PUSH",
 		"notification": {
-		    "text": "The following work order ${workorder.subject} has been verified and closed by ${workorder.assignedBy.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status}\n\nPlease view the closed work order here - ${workorder.url}\n\n - Team Facilio.",
+		    "text": "The following work order ${workorder.subject} has been verified and closed by ${workorder.assignedBy.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status.status}\n\nPlease view the closed work order here - ${workorder.url}\n\n - Team Facilio.",
 			"click_action": "WORKORDER_SUMMARY",
 			"title": "Work order closed"
 		},
