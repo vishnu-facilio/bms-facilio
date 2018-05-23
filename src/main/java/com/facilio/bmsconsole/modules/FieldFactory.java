@@ -3528,6 +3528,19 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	public static List<FacilioField> getDerivationFields () {
+		FacilioModule module = ModuleFactory.getDerivationsModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField());
+		fields.add(getOrgIdField(module));
+		fields.add(getField("name", "NAME", module, FieldType.STRING));
+		fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.NUMBER));
+		fields.add(getField("analyticsType", "ANALYTICS_TYPE", module, FieldType.NUMBER));
+		
+		return fields;
+	}
+	
 	public static FacilioField getField(String name, String colName, FacilioModule module, FieldType type) {
 		return getField(name, null, colName, module, type);
 	}

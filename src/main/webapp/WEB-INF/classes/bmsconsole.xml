@@ -3829,6 +3829,16 @@
 				<param name="includeProperties">dashboards</param>
 			</result>
 		</action>
+		<action name="addDerivation" class="com.facilio.bmsconsole.actions.DashboardAction" method="addDerivation">
+			<result name="success" type="json">
+				<param name="includeProperties">^derivation.*</param>
+			</result>
+		</action>
+		<action name="derivationList" class="com.facilio.bmsconsole.actions.DashboardAction" method="derivationList">
+			<result name="success" type="json">
+				<param name="includeProperties">^derivations.*</param>
+			</result>
+		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.DashboardAction" method="viewDashboard">
 			<param name="linkName">{1}</param>
 			<result name="success" type="json">

@@ -1,9 +1,7 @@
 package com.facilio.bmsconsole.modules;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.facilio.constants.FacilioConstants;
@@ -959,4 +957,11 @@ public class ModuleFactory {
 		return analyticsAnomalyIDListJob;
 	}
 	
+	public static FacilioModule getDerivationsModule() {
+		FacilioModule taskSection = new FacilioModule();
+		taskSection.setName("derivations");
+		taskSection.setDisplayName("Derivations");
+		taskSection.setTableName("Derivations");
+		return taskSection;
+	}
 }

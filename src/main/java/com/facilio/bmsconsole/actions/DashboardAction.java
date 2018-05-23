@@ -33,8 +33,8 @@ import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardContext.DashboardPublishStatus;
 import com.facilio.bmsconsole.context.DashboardSharingContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
+import com.facilio.bmsconsole.context.DerivationContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
-import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.FormulaContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
@@ -89,6 +89,7 @@ import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
+import com.facilio.bmsconsole.util.DerivationAPI;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.ExportUtil;
 import com.facilio.bmsconsole.util.ResourceAPI;
@@ -3316,6 +3317,35 @@ public class DashboardAction extends ActionSupport {
 	}
 	public void setRowsUpdated(int rowsUpdated) {
 		this.rowsUpdated = rowsUpdated;
+	}
+	
+	private DerivationContext derivation;
+	public DerivationContext getDerivation() {
+		return derivation;
+	}
+	public void setDerivation(DerivationContext derivation) {
+		this.derivation = derivation;
+	}
+	public String addDerivation() throws Exception {
+		
+		long id = DerivationAPI.addDerivation(derivation);
+		derivation.setId(id);
+		
+		return SUCCESS;
+	}
+	
+	private List<DerivationContext> derivations;
+	public List<DerivationContext> getDerivations() {
+		return derivations;
+	}
+	public void setDerivations(List<DerivationContext> derivations) {
+		this.derivations = derivations;
+	}
+	public String derivationList() throws Exception {
+		
+		setDerivations(DerivationAPI.getDerivationList(type));
+		
+		return SUCCESS;
 	}
 	
 }
