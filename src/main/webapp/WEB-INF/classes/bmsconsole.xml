@@ -960,7 +960,25 @@
 		<action name="addAssetCategory" class="com.facilio.bmsconsole.actions.PickListAction"
 			method="addAssetCategory">
 			<result name="success" type="json">
+				<param name="ignoreHierarchy">false</param>
 				<param name="root">assetCategory</param>
+			</result>
+		</action>
+		<action name="updateAssetCategory" class="com.facilio.bmsconsole.actions.PickListAction"
+			method="updateAssetCategory">
+			<result name="success" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="root">assetCategory</param>
+			</result> 
+		</action>
+		<action name="deleteAssetCategory" class="com.facilio.bmsconsole.actions.PickListAction"
+			method="deleteAssetCategory">
+			<result name="success" type="json">
+				<param name="includeProperties">result</param>
+			</result> 
+			<result name="error" type="json">
+				<param name="statusCode">400</param>
+				<param name="includeProperties">^relatedModules.*</param>
 			</result>
 		</action>
 		<action name="addAssetDepartment" class="com.facilio.bmsconsole.actions.PickListAction"

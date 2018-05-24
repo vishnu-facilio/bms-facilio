@@ -2093,6 +2093,28 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getUpdateAssetCategoryChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(SetTableNamesCommand.getForAssetCategory());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenericUpdateModuleDataCommand());
+		addCleanUpCommand(c);
+		
+		return c;
+	}
+	
+	public static Chain getDeleteAssetCategoryChain() {		
+		Chain c = new TransactionChain();
+		c.addCommand(new ValidateAssetCategoryDeletion());
+		c.addCommand(SetTableNamesCommand.getForAssetCategory());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenericDeleteModuleDataCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getAddAssetDepartmentChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(SetTableNamesCommand.getForAssetDepartment());

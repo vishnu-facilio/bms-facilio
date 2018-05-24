@@ -448,6 +448,7 @@ public class FacilioConstants {
 		
 		public static final String PSYCHROMETRIC_READING = "psychrometric";
 		public static final String WET_BULB_TEMPERATURE="wetBulbTemperature";
+		public static final String MODULE_NAMES = "moduleNames";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {

@@ -1,8 +1,13 @@
 package com.facilio.bmsconsole.actions;
 
+import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -74,6 +79,7 @@ public class PickListAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	
 	TicketPriorityContext ticketPriority;
 	public TicketPriorityContext getTicketPriority() {
 		return ticketPriority;
@@ -115,13 +121,63 @@ public class PickListAction extends ActionSupport {
 	public void setAssetCategory(AssetCategoryContext assetCategory) {
 		this.assetCategory = assetCategory;
 	}
-
+	
+	private long assetCategoryID;
+	public long getAssetCategoryID() {
+		return assetCategoryID;
+	}
+	public void setAssetCategoryID(long assetCategoryID) {
+		this.assetCategoryID = assetCategoryID;
+	}
+	
 	public String addAssetCategory() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, getAssetCategory());
 		Chain addAssetCategoryChain = FacilioChainFactory.getAddAssetCategoryChain();
 		addAssetCategoryChain.execute(context);
 		
+		return SUCCESS;
+	}
+	
+	public String updateAssetCategory() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, getAssetCategory());
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(this.assetCategory.getId()));
+		Chain updateAssetCategoryChain = FacilioChainFactory.getUpdateAssetCategoryChain();
+		updateAssetCategoryChain.execute(context);
+		
+		return SUCCESS;
+	}
+	
+	
+	private String result;
+	public String getResult() {
+		return result;
+	}
+	public void setResult(String result) {
+		this.result = result;
+	}
+	
+	private List<String> relatedModules;
+	public List<String> getRelatedModules() {
+		return relatedModules;
+	}
+	public void setRelatedModules(List<String> relatedModules) {
+		this.relatedModules = relatedModules;
+	}
+	
+	public String deleteAssetCategory() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID, this.getAssetCategoryID());
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(this.getAssetCategoryID()));
+		Command deleteLocation = FacilioChainFactory.getDeleteAssetCategoryChain();
+		deleteLocation.execute(context);
+		
+		this.relatedModules = (List<String>) context.get(FacilioConstants.ContextNames.MODULE_NAMES);
+		if (!this.relatedModules.isEmpty()) {
+			return ERROR;
+		}
+		this.result = "success";
 		return SUCCESS;
 	}
 	

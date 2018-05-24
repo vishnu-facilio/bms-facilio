@@ -10,6 +10,27 @@ import java.util.stream.Collectors;
 import com.facilio.constants.FacilioConstants;
 
 public class FieldFactory {
+	
+	public static List<FacilioField> getAssetCategoryReadingRelFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getAssetCategoryReadingRelModule();
+		
+		FacilioField parentCategoryId = new FacilioField();
+		parentCategoryId.setName("parentCategoryId");
+		parentCategoryId.setDataType(FieldType.NUMBER);
+		parentCategoryId.setColumnName("PARENT_CATEGORY_ID");
+		parentCategoryId.setModule(module);
+		fields.add(parentCategoryId);
+		
+		FacilioField readingModuleId = new FacilioField();
+		readingModuleId.setName("readingModuleId");
+		readingModuleId.setDataType(FieldType.NUMBER);
+		readingModuleId.setColumnName("READING_MODULE_ID");
+		readingModuleId.setModule(module);
+		fields.add(readingModuleId);
+		
+		return fields;
+	}
 
 	public static List<FacilioField> getLookupFieldFields() {
 		List<FacilioField> fields = new ArrayList<>();
