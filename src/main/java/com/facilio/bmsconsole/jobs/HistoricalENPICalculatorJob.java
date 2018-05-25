@@ -1,9 +1,9 @@
 package com.facilio.bmsconsole.jobs;
 
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -13,17 +13,21 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.EnergyPerformanceIndicatorContext;
+import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.PickListOperators;
+import com.facilio.bmsconsole.modules.DeleteRecordBuilder;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.util.DateTimeUtil;
-import com.facilio.bmsconsole.util.EnergyPerformanceIndicatiorAPI;
-import com.facilio.bmsconsole.util.FacilioFrequency;
+import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.tasker.ScheduleInfo;
-import com.facilio.tasker.ScheduleInfo.FrequencyType;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.wms.endpoints.SessionManager;
@@ -35,51 +39,49 @@ public class HistoricalENPICalculatorJob extends FacilioJob {
 		// TODO Auto-generated method stub
 		try {
 			long enpiId = jc.getJobId();
-			EnergyPerformanceIndicatorContext enpi = EnergyPerformanceIndicatiorAPI.getENPI(enpiId);
+			FormulaFieldContext enpi = FormulaFieldAPI.getENPI(enpiId);
 			
 			logger.log(Level.INFO, "Calculating EnPI for "+enpi.getName());
 			
-			long currentTime = DateTimeUtil.getCurrenTime(true);
-			long startTime = EnergyPerformanceIndicatiorAPI.getStartTimeForHistoricalCalculation(enpi);
-			ScheduleInfo schedule = getSchedule(enpi.getFrequencyEnum());
-			long endTime = schedule.nextExecutionTime(startTime);
+			long currentTime = DateTimeUtil.getCurrenTime();
+			long startTime = FormulaFieldAPI.getStartTimeForHistoricalCalculation(enpi);
+			ScheduleInfo schedule = FormulaFieldAPI.getSchedule(enpi.getFrequencyEnum());
+			Map<Long, Long> intervals = DateTimeUtil.getTimeIntervals(startTime, currentTime, schedule);
 			
-			List<ReadingContext> readings = new ArrayList<>();
-			while (endTime <= currentTime) {
-				try {
-					ReadingContext reading = EnergyPerformanceIndicatiorAPI.calculateENPI(enpi, startTime*1000, (endTime*1000)-1);
-					readings.add(reading);
-				}
-				catch (Exception e) {
-					logger.log(Level.SEVERE, e.getMessage(), e);
-					if (e.getMessage() == null || !(e.getMessage().contains("Division by zero") || e.getMessage().contains("Division undefined")  || e.getMessage().contains("/ by zero"))) {
-						CommonCommandUtil.emailException("Historical EnPI calculation failed for : "+jc.getJobId()+" between "+startTime+" and "+endTime, e);
+			if (intervals != null && !intervals.isEmpty()) {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				List<ReadingContext> readings = new ArrayList<>();
+				List<ReadingContext> lastReadings = new ArrayList<>();
+				for (Long resourceId : enpi.getMatchedResources()) {
+					List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(resourceId, enpi.getReadingField().getName(), intervals, enpi.getWorkflow());
+					if (currentReadings != null) {
+						readings.addAll(currentReadings);
+						lastReadings.add(readings.get(readings.size() - 1));
 					}
 				}
-				startTime = endTime;
-				endTime = schedule.nextExecutionTime(startTime);
-			}
-			
-			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.MODULE_NAME, enpi.getReadingField().getModule().getName());
-			context.put(FacilioConstants.ContextNames.READINGS, readings);
-			context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS, false);
-			
-			Chain addReadingChain = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
-			addReadingChain.execute(context);
-			
-			if (!readings.isEmpty()) {
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				List<FacilioField> fieldsList = modBean.getAllFields(enpi.getReadingField().getModule().getName());
-				ReadingsAPI.updateReadingDataMeta(fieldsList, Collections.singletonList(readings.get(readings.size() - 1)), null);
-			}
-			
-			List<EnergyPerformanceIndicatorContext> allEnPIs = EnergyPerformanceIndicatiorAPI.getAllENPIs();
-			for (EnergyPerformanceIndicatorContext currentEnPI : allEnPIs) {
-				if (currentEnPI.getId() != enpi.getId()) {
-					List<FacilioField> dependentFields = currentEnPI.getDependentFields();
-					if (dependentFields.contains(enpi.getReadingField())) {
-						EnergyPerformanceIndicatiorAPI.recalculateHistoricalData(currentEnPI, currentEnPI.getReadingField());
+				
+				if (!readings.isEmpty()) {
+					deleteOlderData(startTime, currentTime, enpi.getMatchedResources(), enpi.getReadingField().getModule().getName());
+					
+					FacilioContext context = new FacilioContext();
+					context.put(FacilioConstants.ContextNames.MODULE_NAME, enpi.getReadingField().getModule().getName());
+					context.put(FacilioConstants.ContextNames.READINGS, readings);
+					context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS, false);
+					
+					Chain addReadingChain = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
+					addReadingChain.execute(context);
+				
+					List<FacilioField> fieldsList = modBean.getAllFields(enpi.getReadingField().getModule().getName());
+					ReadingsAPI.updateReadingDataMeta(fieldsList, lastReadings, null);
+					
+					List<FormulaFieldContext> allEnPIs = FormulaFieldAPI.getAllENPIs();
+					for (FormulaFieldContext currentEnPI : allEnPIs) {
+						if (currentEnPI.getId() != enpi.getId()) {
+							List<Long> dependentFieldIds = currentEnPI.getWorkflow().getDependentFieldIds();
+							if (dependentFieldIds.contains(enpi.getReadingField().getFieldId())) {
+								FormulaFieldAPI.recalculateHistoricalData(currentEnPI, currentEnPI.getReadingField());
+							}
+						}
 					}
 				}
 			}
@@ -91,73 +93,17 @@ public class HistoricalENPICalculatorJob extends FacilioJob {
 		}
 	}
 	
-	private ScheduleInfo getSchedule (FacilioFrequency frequency) {
-		ScheduleInfo schedule = null;
-		List<Integer> values = null;
-		switch (frequency) {
-			case HOURLY:
-					schedule = new ScheduleInfo();
-					for (int i = 0; i < 24; i++) {
-						LocalTime time = LocalTime.of(i, 00);
-						schedule.addTime(time);
-					}
-					schedule.setFrequencyType(FrequencyType.DAILY);
-					return schedule;
-		    case DAILY:
-					schedule = new ScheduleInfo();
-					schedule.addTime("00:00");
-					schedule.setFrequencyType(FrequencyType.DAILY);
-					return schedule;
-			case WEEKLY:
-					schedule = new ScheduleInfo();
-					schedule.addTime("00:00");
-					schedule.setFrequencyType(FrequencyType.WEEKLY);
-					values = new ArrayList<>();
-					values.add(DateTimeUtil.getWeekFields().getFirstDayOfWeek().getValue());
-					schedule.setValues(values);
-					return schedule;
-			case MONTHLY:
-					schedule = new ScheduleInfo();
-					schedule.addTime("00:00");
-					schedule.setFrequencyType(FrequencyType.MONTHLY_DAY);
-					values = new ArrayList<>();
-					values.add(1);
-					schedule.setValues(values);
-					return schedule;
-			case QUARTERTLY:
-					schedule = new ScheduleInfo();
-					schedule.addTime("00:00");
-					schedule.setFrequencyType(FrequencyType.YEARLY);
-					schedule.setYearlyDayValue(1);
-					values = new ArrayList<>();
-					values.add(1);
-					values.add(4);
-					values.add(7);
-					values.add(10);
-					schedule.setValues(values);
-					return schedule;
-			case HALF_YEARLY:
-					schedule = new ScheduleInfo();
-					schedule.addTime("00:00");
-					schedule.setFrequencyType(FrequencyType.YEARLY);
-					schedule.setYearlyDayValue(1);
-					values = new ArrayList<>();
-					values.add(1);
-					values.add(7);
-					schedule.setValues(values);
-					return schedule;
-			case ANNUALLY:
-					schedule = new ScheduleInfo();
-					schedule.addTime("00:00");
-					schedule.setFrequencyType(FrequencyType.YEARLY);
-					schedule.setYearlyDayValue(1);
-					values = new ArrayList<>();
-					values.add(1);
-					schedule.setValues(values);
-					return schedule;
-			default:
-					return null;
-		}
+	private int deleteOlderData(long startTime, long endTime, List<Long> parentIds, String moduleName) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(moduleName));
+		FacilioField parentId = fieldMap.get("parentId");
+		FacilioField ttime = fieldMap.get("ttime");
+		DeleteRecordBuilder<ReadingContext> deleteBuilder = new DeleteRecordBuilder<ReadingContext>()
+																.module(module)
+																.andCondition(CriteriaAPI.getCondition(parentId, parentIds, PickListOperators.IS))
+																.andCondition(CriteriaAPI.getCondition(ttime, startTime+","+endTime, DateOperators.BETWEEN))
+																;
+		return deleteBuilder.delete();
 	}
-
 }

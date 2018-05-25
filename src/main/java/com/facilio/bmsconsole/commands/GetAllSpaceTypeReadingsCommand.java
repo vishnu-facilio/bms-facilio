@@ -99,14 +99,14 @@ public class GetAllSpaceTypeReadingsCommand implements Command {
 			spaceType = SpaceType.FLOOR;
 		} 
 		
-		List<FacilioField> fields = FieldFactory.getBasespaceReadingsFields();
-		FacilioField spaceField = FieldFactory.getAsMap(fields).get("spaceId");
-		FacilioModule module = ModuleFactory.getBasespaceReadingsModule();
+		List<FacilioField> fields = FieldFactory.getResourceReadingsFields();
+		FacilioField resourceField = FieldFactory.getAsMap(fields).get("resourceId");
+		FacilioModule module = ModuleFactory.getResourceReadingsModule();
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(module.getTableName())
-														.andCondition(CriteriaAPI.getCondition(spaceField, StringUtils.join(ids,","), PickListOperators.IS));
+														.andCondition(CriteriaAPI.getCondition(resourceField, StringUtils.join(ids,","), PickListOperators.IS));
 			
 			List<Map<String, Object>> props = selectBuilder.get();
 			
@@ -120,7 +120,7 @@ public class GetAllSpaceTypeReadingsCommand implements Command {
 					Long readingId = (Long) prop.get("readingId");
 					FacilioModule readingModule = modBean.getModule(readingId);
 					readings.add(readingModule);
-					Long spaceId = (Long)prop.get("spaceId");
+					Long spaceId = (Long)prop.get("resourceId");
 					BaseSpaceContext baseSpace = spaces.get(spaceId);
 					//String name = baseSpace.getName();
 					Long id = baseSpace.getId();
@@ -133,7 +133,7 @@ public class GetAllSpaceTypeReadingsCommand implements Command {
 					modList.add(readingModule);
 				}
 			}
-			List<FacilioModule> defaultReadings = SpaceAPI.getDefaultReadings(spaceType);
+			List<FacilioModule> defaultReadings = SpaceAPI.getDefaultReadings(spaceType, true);
 			if (defaultReadings != null) {
 				//moduleMap.put("All", defaultReadings);
 				moduleMap.put(-1L, defaultReadings);

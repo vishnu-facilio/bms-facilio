@@ -28,6 +28,11 @@ public class GetCategoryReadingsCommand implements Command {
 			return false;
 		}
 		
+		Boolean onlyReading = (Boolean) context.get(FacilioConstants.ContextNames.ONLY_READING);
+		if (onlyReading == null) {
+			onlyReading = false;
+		}
+		
 		long parentCategoryId = (long) context.get(FacilioConstants.ContextNames.PARENT_CATEGORY_ID);
 		List<FacilioField> fields = FieldFactory.getCategoryReadingsFields(categoryReadingRelModule);
 		
@@ -41,7 +46,7 @@ public class GetCategoryReadingsCommand implements Command {
 			
 			List<FacilioModule> readings = null;
 			if(categoryReadingRelModule.getName().equals("spacecategoryreading")) {
-				readings = SpaceAPI.getDefaultReadings(SpaceType.SPACE);
+				readings = SpaceAPI.getDefaultReadings(SpaceType.SPACE, onlyReading);
 			}
 			else {
 				readings = new ArrayList<>();
@@ -56,7 +61,7 @@ public class GetCategoryReadingsCommand implements Command {
 			context.put(FacilioConstants.ContextNames.MODULE_LIST, readings);
 		}
 		else if(categoryReadingRelModule.getName().equals("spacecategoryreading")) {
-			context.put(FacilioConstants.ContextNames.MODULE_LIST, SpaceAPI.getDefaultReadings(SpaceType.SPACE));
+			context.put(FacilioConstants.ContextNames.MODULE_LIST, SpaceAPI.getDefaultReadings(SpaceType.SPACE, onlyReading));
 		}
 		
 		return false;

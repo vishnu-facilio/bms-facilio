@@ -206,6 +206,7 @@ public class FacilioConstants {
 		public static final String PHOTO_ID = "photoId";
 		public static final String PHOTO_TEXTS = "photoTexts";
 		public static final String PREVIOUS_VALUE = "previousValue";
+		public static final String ONLY_READING = "onylyReading";
 		
 		public static final String DASHBOARD = "dashboard";
 		public static final String DASHBOARD_ID = "dashboardId";
@@ -430,7 +431,7 @@ public class FacilioConstants {
 		public static final String READING_DATA_META = "readingDataMeta";
 		public static final String READING_DATA_META_LIST = "readingDataMetaList";
 		public static final String READING_DATA_META_TYPE = "readingDataMetaType";
-		public static final String ENPI = "energyPerformanceIndicator";
+		public static final String FORMULA_FIELD = "formulaField";
 		public static final String ENPI_LIST = "energyPerformanceIndicatorList";
 		public static final String HISTORY_READINGS = "historyReadings";
 		public static final String ANALYTICS_ANAMOLY = "analyticsAnamoly";

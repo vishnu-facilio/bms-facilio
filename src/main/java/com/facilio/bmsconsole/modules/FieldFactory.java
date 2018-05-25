@@ -64,20 +64,6 @@ public class FieldFactory {
 		return fields;
 	}
 	
-	public static List<FacilioField> getFormulaFieldFields() {
-		List<FacilioField> fields = new ArrayList<>();
-		FacilioModule module = ModuleFactory.getNumberFieldModule();
-		
-		fields.add(getField("fieldId", "FIELDID", module, FieldType.NUMBER));
-		fields.add(getOrgIdField(module));
-		fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.NUMBER));
-		fields.add(getField("interval", "INTERVAL", module, FieldType.NUMBER));
-		fields.add(getField("resultDataType", "RESULT_DATA_TYPE", module, FieldType.NUMBER));
-		fields.add(getField("formulaFieldType", "FORMULA_FIELD_TYPE", module, FieldType.NUMBER));
-		
-		return fields;
-	}
-
 	public static List<FacilioField> getAddFieldFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getFieldsModule();
@@ -3280,29 +3266,46 @@ public class FieldFactory {
 		return fields;
 	}
 	
-	public static List<FacilioField> getBasespaceReadingsFields() {
-		FacilioModule module = ModuleFactory.getBasespaceReadingsModule();
+	public static List<FacilioField> getResourceReadingsFields() {
+		FacilioModule module = ModuleFactory.getResourceReadingsModule();
 		List<FacilioField> fields = new ArrayList<>();
 		
-		fields.add(getField("spaceId", "SPACE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.LOOKUP));
 		fields.add(getField("readingId", "READING_ID", module, FieldType.LOOKUP));
 		
 		return fields;
 	}
 	
-	public static List<FacilioField> getEnPIFields() {
-		FacilioModule module = ModuleFactory.getEnPIModule();
+	public static List<FacilioField> getFormulaFieldFields() {
+		FacilioModule module = ModuleFactory.getFormulaFieldModule();
 		List<FacilioField> fields = new ArrayList<>();
 		
 		fields.add(getIdField(module));
 		fields.add(getOrgIdField(module));
 		fields.add(getNameField(module));
 		fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
+		fields.add(getField("formulaFieldType", "FORMULA_FIELD_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.LOOKUP));
+		fields.add(getField("triggerType", "TRIGGER_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("frequency", "FREQUENCY_TYPE", module, FieldType.NUMBER));
-		fields.add(getField("scheduleJson", "SCHEDULE_INFO", module, FieldType.STRING));
+		fields.add(getField("interval", "DATA_INTERVAL", module, FieldType.NUMBER));
 		fields.add(getField("readingFieldId", "READING_FIELD_ID", module, FieldType.LOOKUP));
-		fields.add(getField("spaceId", "SPACE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("resourceType", "RESOURCE_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("assetCategoryId", "ASSET_CATEGORY_ID", module, FieldType.LOOKUP));
+		fields.add(getField("spaceCategoryId", "SPACE_CATEGORY_ID", module, FieldType.LOOKUP));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getFormulaFieldInclusionsFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getFormulaFieldInclusionsModule();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("formulaId", "FORMULA_FIELD_ID", module, FieldType.LOOKUP));
+		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.LOOKUP));
 		
 		return fields;
 	}

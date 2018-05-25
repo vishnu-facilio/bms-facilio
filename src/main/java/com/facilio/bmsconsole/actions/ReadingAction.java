@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,16 +13,16 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.EnergyPerformanceIndicatorContext;
 import com.facilio.bmsconsole.context.FormLayout;
+import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.DateTimeUtil;
+import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -97,7 +98,7 @@ public class ReadingAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.READING_NAME, getReadingName());
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
 		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, categoryReadingModule);
-		context.put(FacilioConstants.ContextNames.PARENT_ID, getParentCategoryId());
+		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, getParentCategoryId());
 		
 		Chain addReadingChain = FacilioChainFactory.getAddCategoryReadingChain();
 		addReadingChain.execute(context);
@@ -518,28 +519,17 @@ public class ReadingAction extends ActionSupport {
 		this.moduleMap = moduleMap;
 	}
 	
-	private EnergyPerformanceIndicatorContext enpi;
-	public EnergyPerformanceIndicatorContext getEnpi() {
+	private FormulaFieldContext enpi;
+	public FormulaFieldContext getEnpi() {
 		return enpi;
 	}
-	public void setEnpi(EnergyPerformanceIndicatorContext enpi) {
+	public void setEnpi(FormulaFieldContext enpi) {
 		this.enpi = enpi;
 	}
 
 	public String addENPI() throws Exception {
-		FacilioField field = new FacilioField();
-		field.setDisplayName(enpi.getName());
-		field.setDataType(FieldType.DECIMAL);
-		field.setDisplayType(FacilioField.FieldDisplayType.ENPI);
-		enpi.setReadingField(field);
-		
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.READING_NAME, enpi.getName());
-		context.put(FacilioConstants.ContextNames.MODULE_TYPE, FacilioModule.ModuleType.ENPI);
-		context.put(FacilioConstants.ContextNames.MODULE_FIELD, enpi.getReadingField());
-		context.put(FacilioConstants.ContextNames.PARENT_ID, enpi.getSpaceId());
-		context.put(FacilioConstants.ContextNames.ENPI, enpi);
-		context.put(FacilioConstants.ContextNames.READING_DATA_META_TYPE, ReadingDataMeta.ReadingInputType.FORMULA_FIELD);
+		context.put(FacilioConstants.ContextNames.FORMULA_FIELD, enpi);
 		
 		Chain addEnpiChain = FacilioChainFactory.addEnPIChain();
 		addEnpiChain.execute(context);
@@ -549,7 +539,7 @@ public class ReadingAction extends ActionSupport {
 	
 	public String editEnPI() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ENPI, enpi);
+		context.put(FacilioConstants.ContextNames.FORMULA_FIELD, enpi);
 		
 		Chain updateEnPIChain = FacilioChainFactory.updateEnPIChain();
 		updateEnPIChain.execute(context);
@@ -587,11 +577,11 @@ public class ReadingAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	private List<EnergyPerformanceIndicatorContext> enpiList;
-	public List<EnergyPerformanceIndicatorContext> getEnpiList() {
+	private List<FormulaFieldContext> enpiList;
+	public List<FormulaFieldContext> getEnpiList() {
 		return enpiList;
 	}
-	public void setEnpiList(List<EnergyPerformanceIndicatorContext> enpiList) {
+	public void setEnpiList(List<FormulaFieldContext> enpiList) {
 		this.enpiList = enpiList;
 	}
 
@@ -601,13 +591,14 @@ public class ReadingAction extends ActionSupport {
 		Chain getAllENPIsChain = FacilioChainFactory.getAllEnPIsChain();
 		getAllENPIsChain.execute(context);
 		
-		enpiList = (List<EnergyPerformanceIndicatorContext>) context.get(FacilioConstants.ContextNames.ENPI_LIST);
+		enpiList = (List<FormulaFieldContext>) context.get(FacilioConstants.ContextNames.ENPI_LIST);
 		
 		return SUCCESS;
 	}
 	
 	public String calculateFormulField() throws Exception {
-		readingValues = ReadingsAPI.calculateFormulaReadings(resourceId, fieldName, startTime, endTime, minuteInterval, workflow);
+		HashMap<Long,Long> intervalMap= DateTimeUtil.getTimeIntervals(startTime, endTime, minuteInterval);
+		readingValues = FormulaFieldAPI.calculateFormulaReadings(resourceId, fieldName, intervalMap, workflow);
 		return SUCCESS;
 	}
 	

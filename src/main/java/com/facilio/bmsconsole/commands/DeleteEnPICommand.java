@@ -5,11 +5,11 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.beans.ModuleCRUDBean;
-import com.facilio.bmsconsole.context.EnergyPerformanceIndicatorContext;
+import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.util.EnergyPerformanceIndicatiorAPI;
+import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
@@ -23,11 +23,11 @@ public class DeleteEnPICommand implements Command {
 		long id = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 		
 		if ( id != -1) {
-			EnergyPerformanceIndicatorContext oldEnPI = EnergyPerformanceIndicatiorAPI.getENPI(id);
+			FormulaFieldContext oldEnPI = FormulaFieldAPI.getENPI(id);
 			
 			ModuleCRUDBean crudBean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD");
 			crudBean.deleteAllData(oldEnPI.getReadingField().getModule().getName());
-			FacilioModule module = ModuleFactory.getEnPIModule();
+			FacilioModule module = ModuleFactory.getFormulaFieldModule();
 			GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 															.table(module.getTableName())
 															.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))

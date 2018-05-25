@@ -434,34 +434,4 @@ public class ReadingsAPI {
 		}
 		return -1;
 	}
-	
-	public static List<ReadingContext> calculateFormulaReadings(long resourceId, String fieldName, long startTime, long endTime, int minutesInterval, WorkflowContext workflow) throws Exception {
-		HashMap<Long,Long> intervalMap= DateTimeUtil.getTimeIntervals(startTime, endTime, minutesInterval);
-		if (intervalMap != null && !intervalMap.isEmpty()) {
-			List<ReadingContext> readings = new ArrayList<>();
-			for(Map.Entry<Long, Long> map:intervalMap.entrySet()) {
-				long iStartTime = map.getKey();
-				long iEndTime = map.getValue();
-				
-				Map<String, Object> params = new HashMap<>();
-				params.put("startTime", iStartTime);
-				params.put("endTime", iEndTime);
-				params.put("resourceId", resourceId);
-				
-				if (workflow.getWorkflowString() == null) {
-					workflow.setWorkflowString(WorkflowUtil.getXmlStringFromWorkflow(workflow));
-				}
-				Double resultVal = (Double) WorkflowUtil.getWorkflowExpressionResult(workflow.getWorkflowString(), params, false);
-				
-				if (resultVal != null) {
-					ReadingContext reading = new ReadingContext();
-					reading.setParentId(resourceId);
-					reading.addReading(fieldName, resultVal);
-					reading.setTtime(startTime);
-				}
-			}
-			return readings;
-		}
-		return null;
-	}
 }

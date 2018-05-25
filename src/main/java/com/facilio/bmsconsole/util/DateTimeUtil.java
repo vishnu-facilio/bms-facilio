@@ -20,10 +20,12 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.tasker.ScheduleInfo;
 
 
 public class DateTimeUtil 
@@ -611,6 +613,20 @@ public class DateTimeUtil
 			intervalMap.put(startTime+1,endTime);
 		}
 		return intervalMap;
+	}
+	
+	public static Map<Long, Long> getTimeIntervals(long startTime, long endTime, ScheduleInfo schedule) {
+		Map<Long, Long> intervals = new LinkedHashMap<>();
+		startTime = startTime/1000;
+		endTime = endTime/1000;
+		
+		long currentEndTime = schedule.nextExecutionTime(startTime);
+		while (currentEndTime <= endTime) {
+			intervals.put(startTime*1000, (currentEndTime*1000)-1);
+			startTime = currentEndTime;
+			currentEndTime = schedule.nextExecutionTime(startTime);
+		}
+		return intervals;
 	}
 	
 	private static Long removeMillisPrecision(long time, boolean floor) {

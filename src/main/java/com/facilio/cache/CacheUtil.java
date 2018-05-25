@@ -1,8 +1,12 @@
 package com.facilio.cache;
 
 import java.io.Serializable;
+import java.util.StringJoiner;
 
 import org.apache.commons.lang3.SerializationUtils;
+
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 
 import redis.clients.jedis.Jedis;
 
@@ -42,12 +46,12 @@ public class CacheUtil {
 		return ORG_KEY(orgId) + KEY_SEPARATOR + SUB_MODULES + KEY_SEPARATOR + moduleId;
 	}
 	
-	public static String SUB_MODULE_KEY(long orgId, String moduleName, int type) {
-		return ORG_KEY(orgId) + KEY_SEPARATOR + SUB_MODULES + KEY_SEPARATOR + type + KEY_SEPARATOR  + moduleName;
+	public static String SUB_MODULE_KEY(long orgId, String moduleName, ModuleType... types) {
+		return ORG_KEY(orgId) + KEY_SEPARATOR + SUB_MODULES + KEY_SEPARATOR + getModuleTypes(types) + KEY_SEPARATOR  + moduleName;
 	}
 	
-	public static String SUB_MODULE_KEY(long orgId, long moduleId, int type) {
-		return ORG_KEY(orgId) + KEY_SEPARATOR + SUB_MODULES + KEY_SEPARATOR + type + KEY_SEPARATOR  + moduleId;
+	public static String SUB_MODULE_KEY(long orgId, long moduleId, ModuleType... types) {
+		return ORG_KEY(orgId) + KEY_SEPARATOR + SUB_MODULES + KEY_SEPARATOR + getModuleTypes(types) + KEY_SEPARATOR  + moduleId;
 	}
 	
 	public static String FIELDS_KEY(long orgId, String moduleName) {
@@ -92,6 +96,14 @@ public class CacheUtil {
 			}
 		}
 		return false;
+	}
+	
+	private static String getModuleTypes(FacilioModule.ModuleType... types) {
+		StringJoiner joiner = new StringJoiner(",");
+		for (ModuleType type : types) {
+			joiner.add(String.valueOf(type.getValue()));
+		}
+		return "("+joiner.toString()+")";
 	}
 	
 	public static Serializable get(String key) {
