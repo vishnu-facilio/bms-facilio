@@ -756,9 +756,12 @@ public class DashboardAction extends ActionSupport {
 			
 			JSONObject dataPoint = new JSONObject();
 			dataPoint.put("readingFieldId", readingruleContext.getReadingFieldId());
+			dataPoint.put("readingField", readingruleContext.getReadingField());
 			dataPoint.put("yAggr", "0");
 			dataPoint.put("name", resource.getName());
 			dataPoint.put("parentId", resource.getId());
+			dataPoint.put("parent", resource);
+			dataPoint.put("parentType", resource.getResourceType() == 1 ? "space": "asset");
 			
 			if(readingruleContext.getBaselineId() != -1) {
 				reportMeta.put("baselineId", readingruleContext.getBaselineId());
