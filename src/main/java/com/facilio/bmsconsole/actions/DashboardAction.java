@@ -740,7 +740,7 @@ public class DashboardAction extends ActionSupport {
 		
 		ZonedDateTime startTime = DateTimeUtil.getDayStartTimeOf(DateTimeUtil.getZonedDateTime(readingAlarmContext.getStartTime()));
 		ZonedDateTime endTime = null;
-		if(readingAlarmContext.getEndTime() != -1) {
+		if(readingAlarmContext.getEndTime() > 0) {
 			endTime = DateTimeUtil.getDayEndTimeOf(DateTimeUtil.getZonedDateTime(readingAlarmContext.getEndTime()));
 		}
 		else {
@@ -750,21 +750,30 @@ public class DashboardAction extends ActionSupport {
 		ReadingRuleContext readingruleContext = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(readingAlarmContext.getRuleId());
 		
 		if(readingruleContext != null) {
+			ResourceContext resource = ResourceAPI.getResource(alarm.getResource().getId());
+			
 			reportMeta = new JSONObject();
 			
-			reportMeta.put("readingFieldId", readingruleContext.getReadingFieldId());
-			reportMeta.put("yAggr", "0");
-			reportMeta.put("xAggr", "0");
-			reportMeta.put("parentId", alarm.getResource().getId());
+			JSONObject dataPoint = new JSONObject();
+			dataPoint.put("readingFieldId", readingruleContext.getReadingFieldId());
+			dataPoint.put("yAggr", "0");
+			dataPoint.put("name", resource.getName());
+			dataPoint.put("parentId", resource.getId());
 			
 			if(readingruleContext.getBaselineId() != -1) {
 				reportMeta.put("baselineId", readingruleContext.getBaselineId());
 			}
-		
-			JSONArray datefilter = new JSONArray();
-			datefilter.add(startTime.toInstant().toEpochMilli());
-			datefilter.add(endTime.toInstant().toEpochMilli());
+			JSONObject datefilter = new JSONObject();
+			JSONArray time = new JSONArray();
+			time.add(startTime.toInstant().toEpochMilli());
+			time.add(endTime.toInstant().toEpochMilli());
+			datefilter.put("time", time);
+			datefilter.put("filter", "D");
 			reportMeta.put("dateFilter", datefilter);
+			
+			JSONArray dataPoints = new JSONArray();
+			dataPoints.add(dataPoint);
+			reportMeta.put("dataPoints", dataPoints);
 		}
 		return SUCCESS;
 	}
