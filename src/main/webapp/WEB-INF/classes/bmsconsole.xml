@@ -1801,6 +1801,15 @@
 				<param name="includeProperties">^workorder.*</param>
 			</result>
 		</action>
+		
+		<action name="addBulkPreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="addBulkPreventiveMaintenance">
+			<param name="moduleName">planned</param>
+			<param name="permission">CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^workorder.*</param>
+			</result>
+		</action>
 
 		<action name="updatePreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="updatePreventiveMaintenance">

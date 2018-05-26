@@ -532,7 +532,7 @@ public class PreventiveMaintenanceAPI {
 					}
 				}
 			}
-			Map<Long, ResourceContext> resourceMap = ResourceAPI.getResourceAsMapFromIds(resourceIds);
+			Map<Long, ResourceContext> resourceMap = ResourceAPI.getExtendedResourcesAsMapFromIds(resourceIds, false);
 			for(PreventiveMaintenance pm : pms) {
 				pm.getWoTemplate().setResource(resourceMap.get(pm.getWoTemplate().getResourceId()));
 			}
@@ -670,6 +670,12 @@ public class PreventiveMaintenanceAPI {
 		else if (ticket.getSpace() != null && ticket.getSpace().getId() != -1){
 			ticket.setResource(ticket.getSpace());
 		}
+	}
+	
+	public static List<PMReminder> getPMReminders(Long pmId) throws Exception {
+		List<Long> pmids = new ArrayList<>();
+		pmids.add(pmId);
+		return getPMReminders(pmids);
 	}
 	
 	public static List<PMReminder> getPMReminders(List<Long> pmIds) throws Exception {
