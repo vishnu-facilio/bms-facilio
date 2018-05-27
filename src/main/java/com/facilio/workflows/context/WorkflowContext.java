@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.udojava.evalex.Expression;
 

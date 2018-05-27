@@ -1,6 +1,6 @@
 package com.facilio.transaction;
 
-import com.facilio.aws.util.AwsUtil;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
@@ -10,7 +10,8 @@ import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
-import java.util.concurrent.ConcurrentHashMap;
+
+import com.facilio.aws.util.AwsUtil;
 
 public class FTransactionManager implements TransactionManager {
 	

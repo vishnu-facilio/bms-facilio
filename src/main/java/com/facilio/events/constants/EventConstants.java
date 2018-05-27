@@ -11,17 +11,14 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.events.commands.ProcessEventCommand;
-import com.facilio.events.commands.AddEventRuleCommand;
 import com.facilio.events.commands.EventToAlarmCommand;
 import com.facilio.events.commands.GetEventDetailCommand;
 import com.facilio.events.commands.GetEventListCommand;
-import com.facilio.events.commands.GetEventRulesCommand;
 import com.facilio.events.commands.InsertEventCommand;
+import com.facilio.events.commands.ProcessEventCommand;
 import com.facilio.events.commands.UpdateAlarmAssetMappingCommand;
 import com.facilio.events.commands.UpdateEventCommand;
 import com.facilio.events.commands.UpdateEventResourcesMappingCommand;
-import com.facilio.events.commands.UpdateEventRulesCommand;
 import com.facilio.events.commands.UpdateNodeToResourceMappingCommand;
 
 public class EventConstants {

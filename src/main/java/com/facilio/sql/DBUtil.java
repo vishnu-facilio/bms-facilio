@@ -7,10 +7,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 
-import com.facilio.transaction.FacilioConnectionPool;
+import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.log4j.Level;
+
+import com.facilio.transaction.FacilioConnectionPool;
 
 public class DBUtil {
 	private static final Logger LOGGER = LogManager.getLogger(DBUtil.class.getName());

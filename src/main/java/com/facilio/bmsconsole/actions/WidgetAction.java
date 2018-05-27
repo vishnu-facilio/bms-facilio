@@ -5,7 +5,6 @@ import java.util.List;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.User;
-import com.facilio.accounts.impl.UserBeanImpl;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.WorkOrderAPI;

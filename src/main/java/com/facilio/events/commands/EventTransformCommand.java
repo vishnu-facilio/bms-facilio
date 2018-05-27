@@ -13,7 +13,6 @@ import com.facilio.events.context.EventContext;
 import com.facilio.events.context.EventContext.EventInternalState;
 import com.facilio.events.context.EventContext.EventState;
 import com.facilio.events.context.EventRule;
-import com.facilio.events.util.EventAPI;
 
 public class EventTransformCommand implements Command {
 

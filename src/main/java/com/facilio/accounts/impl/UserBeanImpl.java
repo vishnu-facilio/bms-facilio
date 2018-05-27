@@ -30,7 +30,6 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.EncryptionUtil;
 import com.facilio.bmsconsole.util.SMSUtil;
 import com.facilio.fw.LRUCache;
-import com.facilio.serviceportal.actions.PortalAuthInterceptor;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
