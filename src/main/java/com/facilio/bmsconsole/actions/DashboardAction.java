@@ -768,10 +768,12 @@ public class DashboardAction extends ActionSupport {
 							
 							dataPoint.put("yAggr", "0");
 							dataPoint.put("xAggr", "0");
+							
+							FacilioField readingField = null;
 							if(exp.getFieldName() != null ) {
-								FacilioField field = DashboardUtil.getField(exp.getModuleName(), exp.getFieldName());
-								dataPoint.put("readingFieldId", field.getFieldId());
-								dataPoint.put("readingField", field);
+								readingField = DashboardUtil.getField(exp.getModuleName(), exp.getFieldName());
+								dataPoint.put("readingFieldId", readingField.getFieldId());
+								dataPoint.put("readingField", readingField);
 							}
 							if(exp.getCriteria() != null) {
 								Map<Integer, Condition> conditions = exp.getCriteria().getConditions();
@@ -789,7 +791,11 @@ public class DashboardAction extends ActionSupport {
 									}
 								}
 							}
-							dataPoint.put("name", resource.getName());
+							String name = resource.getName();
+							if (readingField != null) {
+								name += " (" + readingField.getDisplayName() + ")";
+							}
+							dataPoint.put("name", name);
 							dataPoint.put("parent", resource);
 							dataPoint.put("parentType", resource.getResourceType() == 1 ? "space": "asset");
 							
@@ -804,7 +810,11 @@ public class DashboardAction extends ActionSupport {
 				dataPoint.put("readingFieldId", readingruleContext.getReadingFieldId());
 				dataPoint.put("readingField", readingruleContext.getReadingField());
 				dataPoint.put("yAggr", "0");
-				dataPoint.put("name", resource.getName());
+				String name = resource.getName();
+				if (readingruleContext.getReadingField() != null) {
+					name += " (" + readingruleContext.getReadingField().getDisplayName() + ")";
+				}
+				dataPoint.put("name", name);
 				dataPoint.put("parentId", resource.getId());
 				dataPoint.put("parent", resource);
 				dataPoint.put("parentType", resource.getResourceType() == 1 ? "space": "asset");
