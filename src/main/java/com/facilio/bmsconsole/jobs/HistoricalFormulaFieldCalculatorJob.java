@@ -53,7 +53,7 @@ public class HistoricalFormulaFieldCalculatorJob extends FacilioJob {
 				List<ReadingContext> lastReadings = new ArrayList<>();
 				for (Long resourceId : enpi.getMatchedResources()) {
 					List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(resourceId, enpi.getReadingField().getName(), intervals, enpi.getWorkflow());
-					if (currentReadings != null) {
+					if (currentReadings != null && !currentReadings.isEmpty()) {
 						readings.addAll(currentReadings);
 						lastReadings.add(readings.get(readings.size() - 1));
 					}

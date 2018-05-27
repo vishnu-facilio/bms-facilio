@@ -58,7 +58,7 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 									ScheduleInfo schedule = FormulaFieldAPI.getSchedule(enpi.getFrequencyEnum());
 									Map<Long, Long> intervals = DateTimeUtil.getTimeIntervals(startTime, endTime, schedule);
 									List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(resourceId, enpi.getReadingField().getName(), intervals, enpi.getWorkflow());
-									if (currentReadings != null) {
+									if (currentReadings != null && !currentReadings.isEmpty()) {
 										readings.addAll(currentReadings);
 										lastReadings.add(readings.get(readings.size() - 1));
 									}
