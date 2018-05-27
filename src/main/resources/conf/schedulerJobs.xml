@@ -14,8 +14,8 @@
 	 <job name='PostPMReminder' classname = 'com.facilio.bmsconsole.jobs.PostPMReminderJob' />
 	 <job name='TestVMCalculation' classname = 'com.facilio.bmsconsole.jobs.DummyVMCalculator' />
 	 <job name='ReportScheduler' classname = 'com.facilio.bmsconsole.jobs.ReportScheduler' />
-	 <job name='EnPICalculator' classname = 'com.facilio.bmsconsole.jobs.EnPICalculatorJob' />
-	 <job name='HistoricalENPICalculator' classname = 'com.facilio.bmsconsole.jobs.HistoricalENPICalculatorJob' />
+	 <job name='ScheduledFormulaCalculator' classname = 'com.facilio.bmsconsole.jobs.ScheduledFormulaCalculatorJob' />
+	 <job name='HistoricalFormulaFieldCalculator' classname = 'com.facilio.bmsconsole.jobs.HistoricalFormulaFieldCalculatorJob' />
 	 <job name='WeatherData' classname = 'com.facilio.bmsconsole.jobs.WeatherDataJob' />
 	 <job name='DegreeDaysCalculator' classname = 'com.facilio.bmsconsole.jobs.DegreeDaysCalculatorJob' />
 	 <job name='AnomalyDetector' classname = 'com.facilio.bmsconsole.jobs.AnomalyDetectorJob' />

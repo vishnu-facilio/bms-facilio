@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.jobs;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -32,7 +31,7 @@ import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.wms.endpoints.SessionManager;
 
-public class HistoricalENPICalculatorJob extends FacilioJob {
+public class HistoricalFormulaFieldCalculatorJob extends FacilioJob {
 	private static final Logger logger = Logger.getLogger(SessionManager.class.getName());
 	@Override
 	public void execute(JobContext jc) {

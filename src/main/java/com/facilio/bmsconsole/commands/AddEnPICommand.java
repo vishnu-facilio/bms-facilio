@@ -18,7 +18,7 @@ public class AddEnPICommand implements Command {
 			throw new IllegalArgumentException("EnPI cannot be null during addition");
 		}
 		long enpiId = FormulaFieldAPI.addEnPI(enpi);
-		FacilioTimer.scheduleOneTimeJob(enpiId, "HistoricalENPICalculator", 30, "priority");
+		FacilioTimer.scheduleOneTimeJob(enpiId, "HistoricalFormulaFieldCalculator", 30, "priority");
 		return false;
 	}
 }

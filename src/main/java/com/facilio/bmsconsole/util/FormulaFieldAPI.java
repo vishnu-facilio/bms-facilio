@@ -242,8 +242,8 @@ public class FormulaFieldAPI {
 		ModuleCRUDBean crudBean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD");
 		crudBean.deleteAllData(enpiField.getModule().getName());
 		
-		FacilioTimer.deleteJob(enpi.getId(), "HistoricalENPICalculator");
-		FacilioTimer.scheduleOneTimeJob(enpi.getId(), "HistoricalENPICalculator", 30, "priority");
+		FacilioTimer.deleteJob(enpi.getId(), "HistoricalFormulaFieldCalculator");
+		FacilioTimer.scheduleOneTimeJob(enpi.getId(), "HistoricalFormulaFieldCalculator", 30, "priority");
 	}
 	
 	private static List<FormulaFieldContext> getFormulaFieldsFromProps (List<Map<String, Object>> props) throws Exception {
