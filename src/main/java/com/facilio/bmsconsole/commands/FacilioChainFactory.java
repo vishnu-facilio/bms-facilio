@@ -1774,6 +1774,15 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getAssetReadingsChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new GetAssetSpecifcReadingsCommand());
+		c.addCommand(new GetCategoryReadingsCommand());
+		c.addCommand(new GetReadingFieldsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getSpaceReadingsChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new GetSpaceSpecifcReadingsCommand());

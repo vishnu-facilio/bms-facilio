@@ -32,39 +32,44 @@ public class InsertReadingDataMetaForNewReadingCommand implements Command {
 		
 		List<Long> parentIds = (List<Long>) context.get(FacilioConstants.ContextNames.PARENT_ID_LIST);
 		if (parentIds == null) {
-			long parentId = (long) context.get(FacilioConstants.ContextNames.PARENT_ID);
-			parentIds = Collections.singletonList(parentId);
-		}
-		ReadingInputType type = null;
-		switch (module.getTypeEnum()) {
-			case SCHEDULED_FORMULA:
-			case LIVE_FORMULA:
-				type = ReadingInputType.FORMULA_FIELD;
-				break;
-			default:
-				type = ReadingInputType.WEB;
-				break;
-		}
-		
-		long orgId=AccountUtil.getCurrentOrg().getOrgId();
-		long timestamp=System.currentTimeMillis();
-		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-				.table(ModuleFactory.getReadingDataMetaModule().getTableName())
-				.fields(FieldFactory.getReadingDataMetaFields());
-
-		for(Long parentId: parentIds) {
-			for(FacilioField field : fields) {
-				ReadingDataMeta dataMeta = new ReadingDataMeta();
-				dataMeta.setOrgId(orgId);
-				dataMeta.setResourceId(parentId);
-				dataMeta.setFieldId(field.getFieldId());
-				dataMeta.setTtime(timestamp);
-				dataMeta.setValue("-1");
-				dataMeta.setInputType(type);
-				builder.addRecord(FieldUtil.getAsProperties(dataMeta));
+			Long parentId = (Long) context.get(FacilioConstants.ContextNames.PARENT_ID);
+			if (parentId != null) {
+				parentIds = Collections.singletonList(parentId);
 			}
 		}
-		builder.save();
+
+		if (parentIds != null && !parentIds.isEmpty()) {
+			ReadingInputType type = null;
+			switch (module.getTypeEnum()) {
+				case SCHEDULED_FORMULA:
+				case LIVE_FORMULA:
+					type = ReadingInputType.FORMULA_FIELD;
+					break;
+				default:
+					type = ReadingInputType.WEB;
+					break;
+			}
+			
+			long orgId=AccountUtil.getCurrentOrg().getOrgId();
+			long timestamp=System.currentTimeMillis();
+			GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+					.table(ModuleFactory.getReadingDataMetaModule().getTableName())
+					.fields(FieldFactory.getReadingDataMetaFields());
+			
+			for(Long parentId: parentIds) {
+				for(FacilioField field : fields) {
+					ReadingDataMeta dataMeta = new ReadingDataMeta();
+					dataMeta.setOrgId(orgId);
+					dataMeta.setResourceId(parentId);
+					dataMeta.setFieldId(field.getFieldId());
+					dataMeta.setTtime(timestamp);
+					dataMeta.setValue("-1");
+					dataMeta.setInputType(type);
+					builder.addRecord(FieldUtil.getAsProperties(dataMeta));
+				}
+			}
+			builder.save();
+		}
 		
 		// TODO Auto-generated method stub
 		return false;

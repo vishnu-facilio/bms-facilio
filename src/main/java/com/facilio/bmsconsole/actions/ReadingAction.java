@@ -134,6 +134,17 @@ public class ReadingAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String getAssetSpecificReadings() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.PARENT_ID, getParentId());
+		
+		Chain getSpaceSpecifcReadingsChain = FacilioChainFactory.getAssetReadingsChain();
+		getSpaceSpecifcReadingsChain.execute(context);
+		
+		readings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
+		return SUCCESS;
+	}
+	
 	public String getSpaceSpecificLatestReadingData() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.LIMIT_VALUE, count);

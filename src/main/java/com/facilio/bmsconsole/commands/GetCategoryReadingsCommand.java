@@ -45,12 +45,7 @@ public class GetCategoryReadingsCommand implements Command {
 			List<Map<String, Object>> props = selectBuilder.get();
 			
 			List<FacilioModule> readings = null;
-			if(categoryReadingRelModule.getName().equals("spacecategoryreading")) {
-				readings = SpaceAPI.getDefaultReadings(SpaceType.SPACE, onlyReading);
-			}
-			else {
-				readings = new ArrayList<>();
-			}
+			readings = new ArrayList<>();
 			
 			if(props != null && !props.isEmpty()) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -58,12 +53,15 @@ public class GetCategoryReadingsCommand implements Command {
 					readings.add(modBean.getModule((long) prop.get("readingModuleId")));
 				}
 			}
-			context.put(FacilioConstants.ContextNames.MODULE_LIST, readings);
+			
+			List<FacilioModule> existingReadings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
+			if (existingReadings == null) {
+				context.put(FacilioConstants.ContextNames.MODULE_LIST, readings);
+			}
+			else {
+				existingReadings.addAll(readings);
+			}
 		}
-		else if(categoryReadingRelModule.getName().equals("spacecategoryreading")) {
-			context.put(FacilioConstants.ContextNames.MODULE_LIST, SpaceAPI.getDefaultReadings(SpaceType.SPACE, onlyReading));
-		}
-		
 		return false;
 	}
 	

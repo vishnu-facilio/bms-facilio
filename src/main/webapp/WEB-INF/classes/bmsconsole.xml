@@ -1459,6 +1459,14 @@
 				<param name="root">readings</param>
 			</result>
 		</action>
+		
+		<action name="getassetspecificreadings" class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="getAssetSpecificReadings">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="root">readings</param>
+			</result>
+		</action>
 
 		<action name="getallassetreadings" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="getAllAssetReadings">

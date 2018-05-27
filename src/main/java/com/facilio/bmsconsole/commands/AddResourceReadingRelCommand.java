@@ -22,8 +22,10 @@ public class AddResourceReadingRelCommand implements Command {
 		FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
 		List<Long> parentIds = (List<Long>) context.get(FacilioConstants.ContextNames.PARENT_ID_LIST);
 		if (parentIds == null) {
-			long parentId = (long) context.get(FacilioConstants.ContextNames.PARENT_ID);
-			parentIds = Collections.singletonList(parentId);
+			Long parentId = (Long) context.get(FacilioConstants.ContextNames.PARENT_ID);
+			if (parentId != null) {
+				parentIds = Collections.singletonList(parentId);
+			}
 		}
 		
 		if (parentIds != null && !parentIds.isEmpty()) {

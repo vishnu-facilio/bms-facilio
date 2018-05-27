@@ -20,7 +20,6 @@ public class GetSpaceSpecifcReadingsCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		long parentId = (long) context.get(FacilioConstants.ContextNames.PARENT_ID);
-		
 		if (parentId != -1) {
 			Boolean onlyReading = (Boolean) context.get(FacilioConstants.ContextNames.ONLY_READING);
 			if (onlyReading == null) {
@@ -28,9 +27,6 @@ public class GetSpaceSpecifcReadingsCommand implements Command {
 			}
 			
 			SpaceType type = getSpaceType(parentId, context);
-			if (type == SpaceType.SPACE) {
-				return false;
-			}
 			List<FacilioModule> readings = ResourceAPI.getResourceSpecificReadings(parentId);
 			if (readings == null) {
 				readings = SpaceAPI.getDefaultReadings(type, onlyReading); 
@@ -44,7 +40,7 @@ public class GetSpaceSpecifcReadingsCommand implements Command {
 			context.put(FacilioConstants.ContextNames.MODULE_LIST, readings);
 		}
 		else {
-			throw new IllegalArgumentException("Parent ID cannot be null during addition of reading for category");
+			throw new IllegalArgumentException("Parent ID cannot be null when getting readings for Space");
 		}
 		
 		return false;

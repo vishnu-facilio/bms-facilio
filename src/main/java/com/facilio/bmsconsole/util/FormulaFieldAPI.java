@@ -51,7 +51,7 @@ public class FormulaFieldAPI {
 	
 	public static long addFormulaField (FormulaFieldContext formula) throws Exception {
 		updateChildIds(formula);
-		validateFormula(formula);
+		validateFormula(formula, true);
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getFormulaFieldModule().getTableName())
 				.fields(FieldFactory.getFormulaFieldFields())
@@ -91,15 +91,12 @@ public class FormulaFieldAPI {
 		return props;
 	}
 	
-	private static void validateFormula (FormulaFieldContext field) throws Exception {
+	public static void validateFormula (FormulaFieldContext field, boolean checkChildIds) throws Exception {
 		if (field.getTriggerTypeEnum() == null) {
 			throw new IllegalArgumentException("Trigger type cannot be null for FormulaFIeld");
 		}
 		if (field.getFormulaFieldTypeEnum() == null) {
 			throw new IllegalArgumentException("Formula Field type cannot be null for FormulaFIeld");
-		}
-		if (field.getWorkflowId() == -1) {
-			throw new IllegalArgumentException("Workflow ID cannot be null for FormulaField");
 		}
 		if (field.getResourceTypeEnum() == null) {
 			throw new IllegalArgumentException("Resource Type cannot be null for FormulaField");
@@ -125,10 +122,6 @@ public class FormulaFieldAPI {
 				break;
 		}
 		
-		if (field.getAssetCategoryId() == -1 && field.getResourceId() == -1) {
-			throw new IllegalArgumentException("Both Cateogry and Resource cannot be null for Formula Field");
-		}
-		
 		switch (field.getTriggerTypeEnum()) {
 			case LIVE_READING:
 				if (field.getInterval() == -1) {
@@ -140,6 +133,12 @@ public class FormulaFieldAPI {
 					throw new IllegalArgumentException("Frequency type cannot be empty for 'FREQUENCY' trigger type"); 
 				}
 				break;
+		}
+		
+		if (checkChildIds) {
+			if (field.getWorkflowId() == -1) {
+				throw new IllegalArgumentException("Workflow ID cannot be null for FormulaField");
+			}
 		}
 	}
 	
