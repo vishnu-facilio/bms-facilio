@@ -35,7 +35,6 @@ import com.facilio.bmsconsole.context.DashboardSharingContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.DerivationContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
-import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.FormulaContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
@@ -782,12 +781,10 @@ public class DashboardAction extends ActionSupport {
 									Condition condition = conditions.get(key);
 									
 									if(condition.getFieldName().equals("parentId")) {
-										if(condition.getValue().equals("${resourceId}")) {
-											dataPoint.put("parentId", alarm.getResource().getId());
+										if(!condition.getValue().equals("${resourceId}")) {
+											resource = ResourceAPI.getResource(Long.parseLong(condition.getValue()));
 										}
-										else {
-											dataPoint.put("parentId", condition.getValue());
-										}
+										dataPoint.put("parentId", resource.getId());
 										break;
 									}
 								}
