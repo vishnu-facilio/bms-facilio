@@ -775,6 +775,13 @@ public class AccountConstants {
 		timezone.setColumnName("TIMEZONE");
 		timezone.setModule(module);
 		fields.add(timezone);
+		
+		FacilioField currency = new FacilioField();
+		currency.setName("currency");
+		currency.setDataType(FieldType.STRING);
+		currency.setColumnName("CURRENCY");
+		currency.setModule(module);
+		fields.add(currency);
 
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("createdTime");

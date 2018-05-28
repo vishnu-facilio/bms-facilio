@@ -596,7 +596,7 @@ public class DashboardAction extends ActionSupport {
 		
 		if (getComboChartList() != null && getComboChartList().size() > 0) {
 			for (int i=0; i < getComboChartList().size(); i++) {
-				JSONObject comboChart = (JSONObject) getComboChartList().get(i);
+				HashMap comboChart = (HashMap) getComboChartList().get(i);
 				Long rid = (Long) comboChart.get("id");
 				
 				GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
