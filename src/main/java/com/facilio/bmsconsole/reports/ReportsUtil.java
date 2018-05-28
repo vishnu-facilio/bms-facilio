@@ -18,10 +18,12 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.ReportFolderContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -257,6 +259,22 @@ public class ReportsUtil
 		buildingData.put("id", building.getId());
 		buildingData.put("area", building.getGrossFloorArea());
 		buildingData.put("floors", building.getNoOfFloors());
+		
+		try {
+			if(building.getPhotoId() <= 0) {
+				
+				List<PhotosContext> photos = SpaceAPI.getBaseSpacePhotos(building.getId());
+				
+				if(photos != null && !photos.isEmpty()) {
+					building.setPhotoId(photos.get(0).getPhotoId());
+				}
+			}
+			
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		
 		buildingData.put("photoid", building.getPhotoId());
 		if(!fetchLocation)
 		{

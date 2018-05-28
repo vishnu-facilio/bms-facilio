@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
@@ -39,6 +40,27 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 public class SpaceAPI {
 	
 	private static Logger logger = Logger.getLogger(SpaceAPI.class.getName());
+	
+	public static List<PhotosContext> getBaseSpacePhotos(Long baseSpaceId) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE_PHOTOS);
+		
+		ArrayList<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE_PHOTOS);
+		
+		SelectRecordsBuilder<PhotosContext> builder = new SelectRecordsBuilder<PhotosContext>()
+				.select(fields)
+				.table(module.getTableName())
+				.moduleName(module.getName())
+				.beanClass(PhotosContext.class)
+				.module(module)
+				.andCondition(CriteriaAPI.getCondition(module.getTableName()+".PARENT_SPACE", "basespaceId", baseSpaceId+"", NumberOperators.EQUALS));
+		
+		List<PhotosContext> photos = builder.get();
+		
+		return photos;
+	}
 	
 	public static List<FacilioModule> getDefaultReadings(SpaceType type, boolean onlyReading) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
