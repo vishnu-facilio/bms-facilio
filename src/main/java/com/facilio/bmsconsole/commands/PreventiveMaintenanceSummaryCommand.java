@@ -76,7 +76,10 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 		}
 		
 		WorkorderTemplate template = (WorkorderTemplate) TemplateAPI.getTemplate(pm.getTemplateId());
-		List<TaskContext> listOfTasks = template.getTaskTemplates().stream().map(taskTemplate -> taskTemplate.getTask()).collect(Collectors.toList());
+		List<TaskContext> listOfTasks = null;
+		if ( template.getTaskTemplates() != null) {
+			listOfTasks = template.getTaskTemplates().stream().map(taskTemplate -> taskTemplate.getTask()).collect(Collectors.toList());
+		}
 		
 		
 		WorkOrderContext workorder = template.getWorkorder();
