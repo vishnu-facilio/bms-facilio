@@ -196,19 +196,29 @@ public class WorkOrderAction extends ActionSupport {
 			assetLists = assetids;	
 		}
 		System.out.printf("addBulkPreventiveMaintenance" + assetLists.size());
-		for (Long assetid : assetLists) {
+		for (Long assetId : assetLists) {
 			pm.setId(-1);
 			WorkOrderContext wo = pm.getWoTemplate().getWorkorder();
 			wo.setId(-1);
 			ResourceContext resourceContext = wo.getResource();
-			resourceContext.setId(assetid);
+			long oldAssetId = resourceContext.getId();
+			resourceContext.setId(assetId);
 			wo.setResource(resourceContext);
-			Map<Long, List<TaskContext>> taskPm = pm.getWoTemplate().getWorkorder().getTasks();
-			if (taskPm != null) {
-				for (Long key : taskPm.keySet()) {
-				    TaskContext taskContext = (TaskContext) taskPm.get(key);
-				    taskContext.setId(-1);
-				    taskContext.setSectionId(-1);
+			
+			Map<String, List<TaskContext>> taskPm1 = pm.getWoTemplate().getTasks();
+			
+			if (taskPm1 != null) {
+				for (String key : taskPm1.keySet()) {
+					List<TaskContext> taskContexts =  taskPm1.get(key);
+					for(TaskContext taskContext :taskContexts) {
+						ResourceContext taskResourceCOntext = taskContext.getResource();
+						if (oldAssetId == taskResourceCOntext.getId())
+						{
+							taskResourceCOntext.setId(assetId);
+						}
+						taskContext.setId(-1);
+					    taskContext.setSectionId(-1);
+					}
 				}
 			}
 			List<PMTriggerContext> pmTriggers = pm.getTriggers();
@@ -244,7 +254,7 @@ public class WorkOrderAction extends ActionSupport {
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 			context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
-			context.put(FacilioConstants.ContextNames.TASK_MAP, taskPm);
+			context.put(FacilioConstants.ContextNames.TASK_MAP, taskPm1);
 			context.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
 			Chain addTemplate = FacilioChainFactory.getAddPreventiveMaintenanceChain();
 			addTemplate.execute(context);
