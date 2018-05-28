@@ -200,6 +200,13 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Command getGetTasksOfTicketCommand() {
+		Chain c = new ChainBase();
+		c.addCommand(new GetTasksOfTicketCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Command getAddGroupCommand() {
 		Chain c = new ChainBase();
 		c.addCommand(new ValidateWorkOrderFieldsCommand());

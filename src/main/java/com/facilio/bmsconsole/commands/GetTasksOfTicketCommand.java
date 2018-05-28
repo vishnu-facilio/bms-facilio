@@ -29,7 +29,7 @@ public class GetTasksOfTicketCommand implements Command {
 					.moduleName(moduleName)
 					.beanClass(TaskContext.class)
 					.select(fields)
-					.andCustomWhere("parent = ?", ticketId)
+					.andCustomWhere("PARENT_TICKET_ID = ?", ticketId)
 					.orderBy("id");
 
 			List<TaskContext> tasks = builder.get();

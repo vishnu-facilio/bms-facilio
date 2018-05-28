@@ -10,9 +10,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -2716,9 +2719,11 @@ public class DashboardAction extends ActionSupport {
 	}
 	
 	
-	public void getAswaqData() throws Exception {
+	public String getAswaqData() throws Exception {
 		
-		int tcompliance = 0,tnonCompliance = 0,trepeatFinding = 0,tnotApplicable = 0,total = 0;
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		int tcompliance = 0,tnonCompliance = 0,trepeatFinding = 0,total = 0;
 		
 		List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
 		
@@ -2727,10 +2732,27 @@ public class DashboardAction extends ActionSupport {
 			
 			List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrders(category.getId());
 			
+			if(workorders.isEmpty()) {
+				continue;
+			}
+			
 			int compliance = 0,nonCompliance = 0,repeatFinding = 0,notApplicable = 0;
 			for(WorkOrderContext workorder:workorders) {
 				
-				Map<Long, List<TaskContext>> taskMap = workorder.getTasks();
+				if(AccountUtil.getCurrentOrg().getOrgId() == 108l) {
+					compliance = 0;nonCompliance = 0;repeatFinding = 0;notApplicable = 0;
+				}
+				
+				Command chain = FacilioChainFactory.getGetTasksOfTicketCommand();
+				FacilioContext context = new FacilioContext();
+				
+				context.put(FacilioConstants.ContextNames.ID, workorder.getId());
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
+				context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME,"Tasks");
+				context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(FacilioConstants.ContextNames.TASK));
+				chain.execute(context);
+				
+				Map<Long, List<TaskContext>> taskMap = (Map<Long, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
 				
 				for(Long key : taskMap.keySet()) {
 					List<TaskContext> tasks = taskMap.get(key);
@@ -2741,11 +2763,11 @@ public class DashboardAction extends ActionSupport {
 							
 							Integer value = Integer.parseInt(task.getInputValue());
 							
-							if(subject.endsWith("Compliance")) {
-								compliance += value;
-							}
-							else if (subject.endsWith("Non Compliance")) {
+							if (subject.endsWith("Non Compliance")) {
 								nonCompliance += value;
+							}
+							else if(subject.endsWith("Compliance")) {
+								compliance += value;
 							}
 							else if (subject.endsWith("Repeat Finding")) {
 								repeatFinding += value;
@@ -2766,6 +2788,11 @@ public class DashboardAction extends ActionSupport {
 					jsonObject.put("totalPointsEarned", compliance + nonCompliance + repeatFinding);
 					
 					reportData.add(jsonObject);
+					
+					tcompliance += compliance;
+					tnonCompliance += nonCompliance;
+					trepeatFinding += repeatFinding;
+					total += (compliance + nonCompliance + repeatFinding);
 				}
 			}
 			if(AccountUtil.getCurrentOrg().getOrgId() == 113l) {
@@ -2778,12 +2805,13 @@ public class DashboardAction extends ActionSupport {
 				jsonObject.put("totalPointsEarned", compliance + nonCompliance + repeatFinding);
 				
 				reportData.add(jsonObject);
+				
+				tcompliance += compliance;
+				tnonCompliance += nonCompliance;
+				trepeatFinding += repeatFinding;
+				total += (compliance + nonCompliance + repeatFinding);
 			}
 			
-			tcompliance += compliance;
-			tnonCompliance += nonCompliance;
-			trepeatFinding += repeatFinding;
-			total += (compliance + nonCompliance + repeatFinding);
 		}
 		JSONObject finalres = new JSONObject();
 		
@@ -2795,18 +2823,27 @@ public class DashboardAction extends ActionSupport {
 		
 		reportData.add(finalres);
 		
-		overallRating = (double) ((total/tcompliance ) * 100);
+		resultJSON = new JSONObject();
 		
+		Double overallRating = (double)total/tcompliance;
+		
+		overallRating = overallRating * 100;
+		
+		resultJSON.put("tableData", reportData);
+		resultJSON.put("overallRating", overallRating);
+		
+		return SUCCESS;
+	}
+	public JSONObject resultJSON;
+	
+	public JSONObject getResultJSON() {
+		return resultJSON;
+	}
+	public void setResultJSON(JSONObject resultJSON) {
+		this.resultJSON = resultJSON;
 	}
 	
-	Double overallRating;
 	
-	public Double getOverallRating() {
-		return overallRating;
-	}
-	public void setOverallRating(Double overallRating) {
-		this.overallRating = overallRating;
-	}
 	private List<String> getDistinctLabel(List<Map<String, Object>> rs) {
 		List<String> labels = new ArrayList<>();
 		for(Map<String, Object> prop:rs) {
