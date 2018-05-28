@@ -208,6 +208,7 @@ public class TaskTemplate extends Template {
 			if (inputType != null) {
 				taskProp.put("inputType", inputType.getVal());
 			}
+			taskProp.put("sectionId", sectionId);
 			if (additionInfo != null) {
 				taskProp.putAll(additionInfo);
 			}

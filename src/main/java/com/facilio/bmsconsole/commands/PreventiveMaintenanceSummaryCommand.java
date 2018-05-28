@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -80,6 +81,8 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 		}
 		
 		WorkorderTemplate template = (WorkorderTemplate) TemplateAPI.getTemplate(pm.getTemplateId());
+		List<TaskContext> listOfTasks = template.getTaskTemplates().stream().map(taskTemplate -> taskTemplate.getTask()).collect(Collectors.toList());
+		
 		
 		WorkOrderContext workorder = template.getWorkorder();
 		Map<String, List<TaskContext>> taskMap = template.getTasks();
@@ -89,7 +92,7 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.TASK_MAP, taskMap);
-		context.put(FacilioConstants.ContextNames.TASK_LIST, template.getTaskTemplates());
+		context.put(FacilioConstants.ContextNames.TASK_LIST, listOfTasks);
 		context.put(FacilioConstants.ContextNames.TASK_SECTIONS, template.getSectionTemplates());
 		PreventiveMaintenanceAPI.updateResourceDetails(workorder, taskMap);
 		if(taskMap != null && !taskMap.isEmpty()) {

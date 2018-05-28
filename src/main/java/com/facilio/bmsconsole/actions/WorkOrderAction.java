@@ -256,7 +256,7 @@ public class WorkOrderAction extends ActionSupport {
 		setPreventivemaintenance((PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE));
 		setWorkorder((WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER));
 		setTaskList((Map<Long, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP));
-		setTaskTemplates((List<TaskTemplate>) context.get(FacilioConstants.ContextNames.TASK_LIST));
+		setListOfTasks((List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST));
 		setSectionTemplates((List<TaskSectionTemplate>) context.get(FacilioConstants.ContextNames.TASK_SECTIONS));
 		setReminders((List<PMReminder>) context.get(FacilioConstants.ContextNames.PM_REMINDERS));
 		
@@ -626,12 +626,12 @@ public class WorkOrderAction extends ActionSupport {
 		this.taskList = taskList;
 	}
 	
-	private List<TaskTemplate> taskTemplates;
-	public List<TaskTemplate> getTaskTemplates() {
-		return taskTemplates;
+	private List<TaskContext> listOfTasks;
+	public List<TaskContext> getListOfTasks() {
+		return listOfTasks;
 	}
-	public void setTaskTemplates(List<TaskTemplate> taskTemplates) {
-		this.taskTemplates = taskTemplates;
+	public void setListOfTasks(List<TaskContext> taskTemplates) {
+		this.listOfTasks = taskTemplates;
 	}
 	
 	private List<TaskSectionTemplate> sectionTemplates;
