@@ -15,6 +15,7 @@ public class Organization {
 	private String zip;
 	private String country;
 	private String timezone;
+	private String currency;
 	private long createdTime;
 	private long portalId;
 	
@@ -146,5 +147,11 @@ public class Organization {
 				.append("\nCreated Time : ").append(createdTime)
 				.append("\nPortal ID : ").append(portalId);
 		return orgInfo.toString();
+	}
+	public String getCurrency() {
+		return currency;
+	}
+	public void setCurrency(String currency) {
+		this.currency = currency;
 	}
 }
