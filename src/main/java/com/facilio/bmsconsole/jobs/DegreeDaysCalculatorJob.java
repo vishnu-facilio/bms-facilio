@@ -23,7 +23,6 @@ import com.facilio.bmsconsole.util.WeatherUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
-import com.facilio.wms.endpoints.SessionManager;
 
 public class DegreeDaysCalculatorJob extends FacilioJob {
 	private static final Logger logger = Logger.getLogger(DegreeDaysCalculatorJob.class.getName());

@@ -1,26 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.SpaceContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.PickListOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
-import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class GetSpaceSpecifcReadingsCommand implements Command {
 
@@ -28,18 +20,19 @@ public class GetSpaceSpecifcReadingsCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		long parentId = (long) context.get(FacilioConstants.ContextNames.PARENT_ID);
-		
 		if (parentId != -1) {
-			SpaceType type = getSpaceType(parentId, context);
-			if (type == SpaceType.SPACE) {
-				return false;
+			Boolean onlyReading = (Boolean) context.get(FacilioConstants.ContextNames.ONLY_READING);
+			if (onlyReading == null) {
+				onlyReading = false;
 			}
-			List<FacilioModule> readings = getSpecificReadings(parentId);
+			
+			SpaceType type = getSpaceType(parentId, context);
+			List<FacilioModule> readings = ResourceAPI.getResourceSpecificReadings(parentId);
 			if (readings == null) {
-				readings = SpaceAPI.getDefaultReadings(type); 
+				readings = SpaceAPI.getDefaultReadings(type, onlyReading); 
 			}
 			else {
-				List<FacilioModule> moduleReadings = SpaceAPI.getDefaultReadings(type);
+				List<FacilioModule> moduleReadings = SpaceAPI.getDefaultReadings(type, onlyReading);
 				if (moduleReadings != null) {
 					readings.addAll(moduleReadings);
 				}
@@ -47,33 +40,10 @@ public class GetSpaceSpecifcReadingsCommand implements Command {
 			context.put(FacilioConstants.ContextNames.MODULE_LIST, readings);
 		}
 		else {
-			throw new IllegalArgumentException("Parent ID cannot be null during addition of reading for category");
+			throw new IllegalArgumentException("Parent ID cannot be null when getting readings for Space");
 		}
 		
 		return false;
-	}
-	
-	private List<FacilioModule> getSpecificReadings(long parentId) throws Exception {
-		List<FacilioField> fields = FieldFactory.getBasespaceReadingsFields();
-		FacilioField spaceField = FieldFactory.getAsMap(fields).get("spaceId");
-		FacilioModule module = ModuleFactory.getBasespaceReadingsModule();
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-														.select(fields)
-														.table(module.getTableName())
-														.andCondition(CriteriaAPI.getCondition(spaceField, String.valueOf(parentId), PickListOperators.IS));
-
-		List<Map<String, Object>> props = selectBuilder.get();
-		
-		if(props != null && !props.isEmpty()) {
-			List<FacilioModule> readings = new ArrayList<>();
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			for(Map<String, Object> prop : props) {
-				readings.add(modBean.getModule((long) prop.get("readingId")));
-			}
-			return readings;
-		}
-		return null;
 	}
 	
 	private SpaceType getSpaceType(long parentId, Context context) throws Exception {

@@ -109,7 +109,8 @@ public class FacilioModule implements Serializable {
 		PHOTOS,
 		NOTES,
 		ATTACHMENTS,
-		ENPI
+		SCHEDULED_FORMULA,
+		LIVE_FORMULA
 		;
 		
 		public int getValue() {

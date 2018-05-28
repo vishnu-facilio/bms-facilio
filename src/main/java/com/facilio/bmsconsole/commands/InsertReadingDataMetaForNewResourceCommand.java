@@ -13,7 +13,6 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericInsertRecordBuilder;
 
@@ -38,11 +37,14 @@ public class InsertReadingDataMetaForNewResourceCommand implements Command {
 		
 		for(FacilioModule module : readingModules) {
 			ReadingInputType type = null;
-			if (module.getTypeEnum() == ModuleType.ENPI) {
-				type = ReadingInputType.FORMULA_FIELD;
-			}
-			else {
-				type = ReadingInputType.WEB;
+			switch (module.getTypeEnum()) {
+				case SCHEDULED_FORMULA:
+				case LIVE_FORMULA:
+					type = ReadingInputType.FORMULA_FIELD;
+					break;
+				default:
+					type = ReadingInputType.WEB;
+					break;
 			}
 			
 			List<FacilioField> fieldsList= module.getFields();

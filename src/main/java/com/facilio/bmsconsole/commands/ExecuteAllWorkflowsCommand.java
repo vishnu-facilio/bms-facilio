@@ -6,11 +6,12 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -32,11 +33,10 @@ import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.wms.endpoints.SessionManager;
 
 public class ExecuteAllWorkflowsCommand implements Command 
 {
-	private static final Logger logger = Logger.getLogger(SessionManager.class.getName());
+	private static final Logger logger = LogManager.getLogger(ExecuteAllWorkflowsCommand.class.getName());
 	RuleType[] ruleTypes;
 	public ExecuteAllWorkflowsCommand(RuleType... ruleTypes) {
 		// TODO Auto-generated constructor stub
@@ -55,7 +55,7 @@ public class ExecuteAllWorkflowsCommand implements Command
 			for (Map.Entry<String, List> entry : recordMap.entrySet()) {
 				String moduleName = entry.getKey();
 				if (moduleName == null || moduleName.isEmpty() || entry.getValue() == null || entry.getValue().isEmpty()) {
-					logger.log(Level.WARNING, "Module Name / Records is null/ empty ==> "+moduleName+"==>"+entry.getValue());
+					logger.log(Level.WARN, "Module Name / Records is null/ empty ==> "+moduleName+"==>"+entry.getValue());
 					continue;
 				}
 				
@@ -133,10 +133,15 @@ public class ExecuteAllWorkflowsCommand implements Command
 					criteria.orCriteria(currentCriteria);
 				}
 				catch (Exception e) {
-					System.out.println("Error during execution of rule : "+workflowRule.getId());
+					StringBuilder builder = new StringBuilder("Error during execution of rule : ");
+					builder.append(workflowRule.getId());
 					if (record instanceof ModuleBaseWithCustomFields) {
-						System.out.println("For Record : "+((ModuleBaseWithCustomFields)record).getId()+" of module : "+moduleName);
+						builder.append(" for Record : ")
+								.append(((ModuleBaseWithCustomFields)record).getId())
+								.append(" of module : ")
+								.append(moduleName);
 					}
+					logger.log(Level.ERROR, builder.toString(), e);
 					throw e;
 				}
 			}
@@ -168,7 +173,7 @@ public class ExecuteAllWorkflowsCommand implements Command
 			}
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			if (moduleName == null || moduleName.isEmpty() || records == null || records.isEmpty()) {
-				logger.log(Level.WARNING, "Module Name / Records is null/ empty ==> "+moduleName+"==>"+records);
+				logger.log(Level.WARN, "Module Name / Records is null/ empty ==> "+moduleName+"==>"+records);
 				return null;
 			}
 			

@@ -240,7 +240,7 @@ public class WorkflowUtil {
 														.table(module.getTableName())
 														.select(fields)
 														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-														.andCondition(CriteriaAPI.getCondition(workflowIdField, StringUtils.join(workflowIds), PickListOperators.IS))
+														.andCondition(CriteriaAPI.getCondition(workflowIdField, StringUtils.join(workflowIds, ","), PickListOperators.IS))
 														;
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {

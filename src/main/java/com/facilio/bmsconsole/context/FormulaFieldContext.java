@@ -1,0 +1,265 @@
+package com.facilio.bmsconsole.context;
+
+import java.util.List;
+
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.util.FacilioFrequency;
+import com.facilio.workflows.context.WorkflowContext;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+public class FormulaFieldContext {
+	private long id = -1;
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
+	
+	private long orgId = -1;
+	public long getOrgId() {
+		return orgId;
+	}
+	public void setOrgId(long orgId) {
+		this.orgId = orgId;
+	}
+	
+	private String name;
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	private String description;
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	
+	private FormulaFieldType formulaFieldType;
+	public FormulaFieldType getFormulaFieldTypeEnum() {
+		return formulaFieldType;
+	}
+	public void setFormulaFieldType(FormulaFieldType formulaFieldType) {
+		this.formulaFieldType = formulaFieldType;
+	}
+	public int getFormulaFieldType() {
+		if (formulaFieldType != null) {
+			return formulaFieldType.getValue();
+		}
+		return -1;
+	}
+	public void setFormulaFieldType(int formulaFieldType) {
+		this.formulaFieldType = FormulaFieldType.valueOf(formulaFieldType);
+	}
+
+	private long workflowId = -1;
+	public long getWorkflowId() {
+		return workflowId;
+	}
+	public void setWorkflowId(long workflowId) {
+		this.workflowId = workflowId;
+	}
+	
+	private WorkflowContext workflow;
+	@JsonIgnore
+	public WorkflowContext getWorkflow() {
+		return workflow;
+	}
+	public void setWorkflow(WorkflowContext workflow) {
+		this.workflow = workflow;
+	}
+	
+	private TriggerType triggerType;
+	public TriggerType getTriggerTypeEnum() {
+		return triggerType;
+	}
+	public void setTriggerType(TriggerType triggerType) {
+		this.triggerType = triggerType;
+	}
+	public int getTriggerType() {
+		if (triggerType != null) {
+			return triggerType.getValue();
+		}
+		return -1;
+	}
+	public void setTriggerType(int triggerType) {
+		this.triggerType = TriggerType.valueOf(triggerType);
+	}
+
+	private FacilioFrequency frequency;
+	public int getFrequency() {
+		if (frequency != null) {
+			return frequency.getValue();
+		}
+		return -1;
+	}
+	public void setFrequency(int frequency) {
+		this.frequency = FacilioFrequency.valueOf(frequency);
+	}
+	public void setFrequency(FacilioFrequency frequency) {
+		this.frequency = frequency;
+	}
+	public FacilioFrequency getFrequencyEnum() {
+		return frequency;
+	}
+	
+	private int interval = -1; //In minutes
+	public int getInterval() {
+		return interval;
+	}
+	public void setInterval(int interval) {
+		this.interval = interval;
+	}
+
+	private long readingFieldId = -1;
+	public long getReadingFieldId() {
+		return readingFieldId;
+	}
+	public void setReadingFieldId(long readingFieldId) {
+		this.readingFieldId = readingFieldId;
+	}
+	
+	private FacilioField readingField;
+	public FacilioField getReadingField() {
+		return readingField;
+	}
+	public void setReadingField(FacilioField readingField) {
+		this.readingField = readingField;
+	}
+	
+	private ResourceType resourceType;
+	public ResourceType getResourceTypeEnum() {
+		return resourceType;
+	}
+	public void setResourceType(ResourceType resourceType) {
+		this.resourceType = resourceType;
+	}
+	public int getResourceType() {
+		if (resourceType != null) {
+			return resourceType.getValue();
+		}
+		return -1;
+	}
+	public void setResourceType(int resourceType) {
+		this.resourceType = ResourceType.valueOf(resourceType);
+	}
+
+	private long resourceId = -1;
+	public long getResourceId() {
+		return resourceId;
+	}
+	public void setResourceId(long resourceId) {
+		this.resourceId = resourceId;
+	}
+	
+	private long assetCategoryId = -1;
+	public long getAssetCategoryId() {
+		return assetCategoryId;
+	}
+	public void setAssetCategoryId(long assetCategoryId) {
+		this.assetCategoryId = assetCategoryId;
+	}
+	
+	private long spaceCategoryId = -1;
+	public long getSpaceCategoryId() {
+		return spaceCategoryId;
+	}
+	public void setSpaceCategoryId(long spaceCategoryId) {
+		this.spaceCategoryId = spaceCategoryId;
+	}
+
+	private List<Long> includedResources;
+	public List<Long> getIncludedResources() {
+		return includedResources;
+	}
+	public void setIncludedResources(List<Long> includedResources) {
+		this.includedResources = includedResources;
+	}
+	
+	private List<Long> matchedResources;
+	public List<Long> getMatchedResources() {
+		return matchedResources;
+	}
+	public void setMatchedResources(List<Long> matchedResources) {
+		this.matchedResources = matchedResources;
+	}
+
+	private FieldType resultDataType;
+	public FieldType getResultDataTypeEnum() {
+		return resultDataType;
+	}
+	public void setResultDataType(FieldType resultDataType) {
+		this.resultDataType = resultDataType;
+	}
+	public int getResultDataType() {
+		if (resultDataType != null) {
+			return resultDataType.getTypeAsInt();
+		}
+		return -1;
+	}
+	public void setResultDataType(int resultDataType) {
+		this.resultDataType = FieldType.getCFType(resultDataType);
+	}
+	
+	public enum TriggerType {
+		SCHEDULE,
+		LIVE_READING
+		;
+		
+		public int getValue() {
+			return ordinal() + 1;
+		}
+		
+		public static TriggerType valueOf (int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+	}
+
+	public enum FormulaFieldType {
+		ENPI,
+		BEFORE_READING_FORMULA,
+		AFTER_READING_FORMULA
+		;
+		
+		public int getValue() {
+			return ordinal() + 1;
+		}
+		
+		public static FormulaFieldType valueOf (int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+	}
+	
+	public enum ResourceType {
+		ONE_RESOURCE,
+		ALL_SITES,
+		ALL_BUILDINGS,
+		ALL_FLOORS,
+		SPACE_CATEGORY,
+		ASSET_CATEGORY
+		;
+		
+		public int getValue() {
+			return ordinal() + 1;
+		}
+		
+		public static ResourceType valueOf (int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+	}
+}

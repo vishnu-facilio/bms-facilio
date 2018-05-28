@@ -9,14 +9,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.transaction.FacilioConnectionPool;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.apache.log4j.Level;
 
 public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, Object>> {
 	private static final Logger LOGGER = LogManager.getLogger(GenericSelectRecordBuilder.class.getName());

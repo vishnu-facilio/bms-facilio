@@ -1768,8 +1768,17 @@ public class FacilioChainFactory {
 	public static Chain addSpaceReadingChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(getAddReadingChain());
-		c.addCommand(new AddSpaceReadingRelCommand());
+		c.addCommand(new AddResourceReadingRelCommand());
 		c.addCommand(new InsertReadingDataMetaForNewReadingCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAssetReadingsChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new GetAssetSpecifcReadingsCommand());
+		c.addCommand(new GetCategoryReadingsCommand());
+		c.addCommand(new GetReadingFieldsCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -1990,7 +1999,12 @@ public class FacilioChainFactory {
 	
 	public static Chain addEnPIChain() {
 		Chain c = new TransactionChain();
-		c.addCommand(addSpaceReadingChain());
+		c.addCommand(new CreateFormulaFieldDependenciesCommand());
+		c.addCommand(getAddReadingChain());
+		c.addCommand(new AddResourceReadingRelCommand());
+		c.addCommand(new AddCategoryReadingRelCommand());
+		c.addCommand(new GetCategoryResourcesCommand());
+		c.addCommand(new InsertReadingDataMetaForNewReadingCommand());
 		c.addCommand(new AddEnPICommand());
 		addCleanUpCommand(c);
 		return c;

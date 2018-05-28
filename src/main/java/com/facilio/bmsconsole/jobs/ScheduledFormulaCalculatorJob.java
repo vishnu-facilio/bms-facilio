@@ -10,53 +10,72 @@ import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.EnergyPerformanceIndicatorContext;
+import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.bmsconsole.util.DateTimeUtil;
-import com.facilio.bmsconsole.util.EnergyPerformanceIndicatiorAPI;
 import com.facilio.bmsconsole.util.FacilioFrequency;
+import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.tasker.ScheduleInfo;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 
-public class EnPICalculatorJob extends FacilioJob {
+public class ScheduledFormulaCalculatorJob extends FacilioJob {
 
 	@Override
 	public void execute(JobContext jc) {
 		// TODO Auto-generated method stub
 		try {
 			List<Integer> types = getFrequencyTypesToBeFetched();
-			List<EnergyPerformanceIndicatorContext> enPIs = EnergyPerformanceIndicatiorAPI.getEnPIsOfType(types);
+			List<FormulaFieldContext> enPIs = FormulaFieldAPI.getScheduledFormulasOfFrequencyType(types);
 			List<Long> calculatedFieldIds = new ArrayList<>();
 			
 			if (enPIs != null && !enPIs.isEmpty()) {
-				long endTime = DateTimeUtil.getHourStartTime() - 1;
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				long endTime = DateTimeUtil.getHourStartTime();
 				while (!enPIs.isEmpty()) {
-					Iterator<EnergyPerformanceIndicatorContext> it = enPIs.iterator();
+					Iterator<FormulaFieldContext> it = enPIs.iterator();
 					while (it.hasNext()) {
-						EnergyPerformanceIndicatorContext enpi = it.next();
+						FormulaFieldContext enpi = it.next();
 						if(isCalculatable(enpi, calculatedFieldIds)) {
 							try {
-								ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(enpi.getSpaceId(), enpi.getReadingField());
-								long lastReadingTime = meta.getTtime();
-								ZonedDateTime zdt = DateTimeUtil.getDateTime(lastReadingTime).plusHours(1).truncatedTo(ChronoUnit.HOURS);
-								long startTime = DateTimeUtil.getMillis(zdt, true);
+								List<ReadingContext> readings = new ArrayList<>();
+								List<ReadingContext> lastReadings = new ArrayList<>();
+								for (Long resourceId : enpi.getMatchedResources()) {
+									ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(resourceId, enpi.getReadingField());
+									long lastReadingTime = meta.getTtime();
+									ZonedDateTime zdt = DateTimeUtil.getDateTime(lastReadingTime).plusHours(1).truncatedTo(ChronoUnit.HOURS);
+									long startTime = DateTimeUtil.getMillis(zdt, true);
+									ScheduleInfo schedule = FormulaFieldAPI.getSchedule(enpi.getFrequencyEnum());
+									Map<Long, Long> intervals = DateTimeUtil.getTimeIntervals(startTime, endTime, schedule);
+									List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(resourceId, enpi.getReadingField().getName(), intervals, enpi.getWorkflow());
+									if (currentReadings != null && !currentReadings.isEmpty()) {
+										readings.addAll(currentReadings);
+										lastReadings.add(readings.get(readings.size() - 1));
+									}
+								}
 								
-								ReadingContext reading = EnergyPerformanceIndicatiorAPI.calculateENPI(enpi, startTime, endTime);
-								
-								FacilioContext context = new FacilioContext();
-								context.put(FacilioConstants.ContextNames.MODULE_NAME, enpi.getReadingField().getModule().getName());
-								context.put(FacilioConstants.ContextNames.READING, reading);
-								
-								Chain addReadingChain = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
-								addReadingChain.execute(context);
+								if (!readings.isEmpty()) {
+									FacilioContext context = new FacilioContext();
+									context.put(FacilioConstants.ContextNames.MODULE_NAME, enpi.getReadingField().getModule().getName());
+									context.put(FacilioConstants.ContextNames.READINGS, readings);
+									context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS, false);
+									
+									Chain addReadingChain = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
+									addReadingChain.execute(context);
+									
+									List<FacilioField> fieldsList = modBean.getAllFields(enpi.getReadingField().getModule().getName());
+									ReadingsAPI.updateReadingDataMeta(fieldsList, lastReadings, null);
+								}
 							}
 							catch (Exception e) {
 								e.printStackTrace();
@@ -76,10 +95,12 @@ public class EnPICalculatorJob extends FacilioJob {
 		}
 	}
 	
-	private boolean isCalculatable(EnergyPerformanceIndicatorContext enpi, List<Long> calculatedFieldIds) {
-		if (enpi.getDependentFields() != null && !enpi.getDependentFields().isEmpty()) {
-			for(FacilioField field : enpi.getDependentFields()) {
-				if (field.getModule().getTypeEnum() == ModuleType.ENPI && !calculatedFieldIds.contains(field.getFieldId())) {
+	private boolean isCalculatable(FormulaFieldContext enpi, List<Long> calculatedFieldIds) throws Exception {
+		if (enpi.getWorkflow().getDependentFieldIds() != null && !enpi.getWorkflow().getDependentFieldIds().isEmpty()) {
+			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			for(Long fieldId : enpi.getWorkflow().getDependentFieldIds()) {
+				FacilioField field = bean.getField(fieldId);
+				if (field.getModule().getTypeEnum() == ModuleType.SCHEDULED_FORMULA && !calculatedFieldIds.contains(field.getFieldId())) {
 					return false;
 				}
 			}

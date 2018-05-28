@@ -1459,6 +1459,14 @@
 				<param name="root">readings</param>
 			</result>
 		</action>
+		
+		<action name="getassetspecificreadings" class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="getAssetSpecificReadings">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="root">readings</param>
+			</result>
+		</action>
 
 		<action name="getallassetreadings" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="getAllAssetReadings">
@@ -1795,6 +1803,15 @@
 
 		<action name="addPreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="addPreventiveMaintenance">
+			<param name="moduleName">planned</param>
+			<param name="permission">CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^workorder.*</param>
+			</result>
+		</action>
+		
+		<action name="addBulkPreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="addBulkPreventiveMaintenance">
 			<param name="moduleName">planned</param>
 			<param name="permission">CREATE</param>
 			<result name="success" type="json">
@@ -3827,6 +3844,16 @@
 		<action name="updateDashboardOrder" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboardOrder">
 			<result name="success" type="json">
 				<param name="includeProperties">dashboards</param>
+			</result>
+		</action>
+		<action name="addDerivation" class="com.facilio.bmsconsole.actions.DashboardAction" method="addDerivation">
+			<result name="success" type="json">
+				<param name="includeProperties">^derivation.*</param>
+			</result>
+		</action>
+		<action name="derivationList" class="com.facilio.bmsconsole.actions.DashboardAction" method="derivationList">
+			<result name="success" type="json">
+				<param name="includeProperties">^derivations.*</param>
 			</result>
 		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.DashboardAction" method="viewDashboard">

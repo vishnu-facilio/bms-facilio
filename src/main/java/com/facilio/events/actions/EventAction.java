@@ -12,7 +12,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.events.context.EventProperty;
-import com.facilio.events.context.EventRule;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.util.EventAPI;
 import com.opensymphony.xwork2.ActionSupport;

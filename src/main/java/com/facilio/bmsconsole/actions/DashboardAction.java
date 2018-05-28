@@ -33,8 +33,8 @@ import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardContext.DashboardPublishStatus;
 import com.facilio.bmsconsole.context.DashboardSharingContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
+import com.facilio.bmsconsole.context.DerivationContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
-import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.FormulaContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
@@ -89,6 +89,7 @@ import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
+import com.facilio.bmsconsole.util.DerivationAPI;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.ExportUtil;
 import com.facilio.bmsconsole.util.ResourceAPI;
@@ -105,6 +106,8 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.timeseries.TimeSeriesAPI;
+import com.facilio.workflows.context.ExpressionContext;
+import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -737,33 +740,110 @@ public class DashboardAction extends ActionSupport {
 		
 		ReadingAlarmContext readingAlarmContext = AlarmAPI.getReadingAlarmContext(alarmId);
 		
-		ZonedDateTime startTime = DateTimeUtil.getDayStartTimeOf(DateTimeUtil.getZonedDateTime(readingAlarmContext.getStartTime()));
-		ZonedDateTime endTime = null;
-		if(readingAlarmContext.getEndTime() != -1) {
-			endTime = DateTimeUtil.getDayEndTimeOf(DateTimeUtil.getZonedDateTime(readingAlarmContext.getEndTime()));
-		}
-		else {
-			endTime = DateTimeUtil.getDayEndTimeOf(startTime);
-		}
-		
 		ReadingRuleContext readingruleContext = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(readingAlarmContext.getRuleId());
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		JSONArray dataPoints = new JSONArray();
 		
 		if(readingruleContext != null) {
+			ResourceContext resource = ResourceAPI.getResource(alarm.getResource().getId());
+			
 			reportMeta = new JSONObject();
 			
-			reportMeta.put("readingFieldId", readingruleContext.getReadingFieldId());
-			reportMeta.put("yAggr", "0");
-			reportMeta.put("xAggr", "0");
-			reportMeta.put("parentId", alarm.getResource().getId());
+			if(readingruleContext.getThresholdType() == ReadingRuleContext.ThresholdType.ADVANCED.getValue()) {
+				
+				if(readingruleContext.getWorkflowId() > 0) {
+					WorkflowContext workflow = WorkflowUtil.getWorkflowContext(readingruleContext.getWorkflowId(), true);
+					
+					for(ExpressionContext exp:workflow.getExpressions()) {
+						
+						if(exp.getModuleName() != null) {
+							
+							JSONObject dataPoint = new JSONObject();
+							
+							FacilioModule expModule = modBean.getModule(exp.getModuleName());
+							
+							dataPoint.put("module", exp.getModuleName());
+							
+							dataPoint.put("yAggr", "0");
+							dataPoint.put("xAggr", "0");
+							
+							FacilioField readingField = null;
+							if(exp.getFieldName() != null ) {
+								readingField = DashboardUtil.getField(exp.getModuleName(), exp.getFieldName());
+								dataPoint.put("readingFieldId", readingField.getFieldId());
+								dataPoint.put("readingField", readingField);
+							}
+							if(exp.getCriteria() != null) {
+								Map<Integer, Condition> conditions = exp.getCriteria().getConditions();
+								
+								for(Integer key : conditions.keySet()) {
+									
+									Condition condition = conditions.get(key);
+									
+									if(condition.getFieldName().equals("parentId")) {
+										if(!condition.getValue().equals("${resourceId}")) {
+											resource = ResourceAPI.getResource(Long.parseLong(condition.getValue()));
+										}
+										dataPoint.put("parentId", resource.getId());
+										break;
+									}
+								}
+							}
+							String name = resource.getName();
+							if (readingField != null) {
+								name += " (" + readingField.getDisplayName() + ")";
+							}
+							dataPoint.put("name", name);
+							dataPoint.put("parent", resource);
+							dataPoint.put("parentType", resource.getResourceType() == 1 ? "space": "asset");
+							
+							dataPoints.add(dataPoint);
+						}
+					}
+				}
+			}
+			else {
+				JSONObject dataPoint = new JSONObject();
+				
+				dataPoint.put("readingFieldId", readingruleContext.getReadingFieldId());
+				dataPoint.put("readingField", readingruleContext.getReadingField());
+				dataPoint.put("yAggr", "0");
+				String name = resource.getName();
+				if (readingruleContext.getReadingField() != null) {
+					name += " (" + readingruleContext.getReadingField().getDisplayName() + ")";
+				}
+				dataPoint.put("name", name);
+				dataPoint.put("parentId", resource.getId());
+				dataPoint.put("parent", resource);
+				dataPoint.put("parentType", resource.getResourceType() == 1 ? "space": "asset");
+				
+				dataPoints.add(dataPoint);
+			}
 			
 			if(readingruleContext.getBaselineId() != -1) {
 				reportMeta.put("baselineId", readingruleContext.getBaselineId());
 			}
-		
-			JSONArray datefilter = new JSONArray();
-			datefilter.add(startTime.toInstant().toEpochMilli());
-			datefilter.add(endTime.toInstant().toEpochMilli());
+			JSONObject datefilter = new JSONObject();
+			
+			ZonedDateTime startTime = DateTimeUtil.getDayStartTimeOf(DateTimeUtil.getZonedDateTime(readingAlarmContext.getStartTime()));
+			ZonedDateTime endTime = null;
+			if(readingAlarmContext.getEndTime() > 0) {
+				endTime = DateTimeUtil.getDayEndTimeOf(DateTimeUtil.getZonedDateTime(readingAlarmContext.getEndTime()));
+			}
+			else {
+				endTime = DateTimeUtil.getDayEndTimeOf(startTime);
+			}
+			
+			JSONArray time = new JSONArray();
+			time.add(startTime.toInstant().toEpochMilli());
+			time.add(endTime.toInstant().toEpochMilli());
+			datefilter.put("time", time);
+			datefilter.put("filter", "D");
 			reportMeta.put("dateFilter", datefilter);
+			
+			reportMeta.put("dataPoints", dataPoints);
 		}
 		return SUCCESS;
 	}
@@ -3316,6 +3396,35 @@ public class DashboardAction extends ActionSupport {
 	}
 	public void setRowsUpdated(int rowsUpdated) {
 		this.rowsUpdated = rowsUpdated;
+	}
+	
+	private DerivationContext derivation;
+	public DerivationContext getDerivation() {
+		return derivation;
+	}
+	public void setDerivation(DerivationContext derivation) {
+		this.derivation = derivation;
+	}
+	public String addDerivation() throws Exception {
+		
+		long id = DerivationAPI.addDerivation(derivation);
+		derivation.setId(id);
+		
+		return SUCCESS;
+	}
+	
+	private List<DerivationContext> derivations;
+	public List<DerivationContext> getDerivations() {
+		return derivations;
+	}
+	public void setDerivations(List<DerivationContext> derivations) {
+		this.derivations = derivations;
+	}
+	public String derivationList() throws Exception {
+		
+		setDerivations(DerivationAPI.getDerivationList(type));
+		
+		return SUCCESS;
 	}
 	
 }

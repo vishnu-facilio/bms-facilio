@@ -19,7 +19,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import com.facilio.transaction.TransactionMonitor;
 import org.flywaydb.core.Flyway;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -38,6 +37,7 @@ import com.facilio.sql.DBUtil;
 import com.facilio.sql.SQLScriptRunner;
 import com.facilio.tasker.FacilioScheduler;
 import com.facilio.transaction.FacilioConnectionPool;
+import com.facilio.transaction.TransactionMonitor;
 
 public class FacilioContextListener implements ServletContextListener {
 

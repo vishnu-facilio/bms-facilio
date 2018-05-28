@@ -58,7 +58,7 @@ public class GetAllCategoryReadingsCommand implements Command {
 				}
 			}
 			if(categoryReadingRelModule.getName().equals("spacecategoryreading")) {
-				List<FacilioModule> defaultReadings = SpaceAPI.getDefaultReadings(SpaceType.SPACE);
+				List<FacilioModule> defaultReadings = SpaceAPI.getDefaultReadings(SpaceType.SPACE, true);
 				readings.addAll(defaultReadings);
 				moduleMap.put(-1l, defaultReadings);
 			}
@@ -67,7 +67,7 @@ public class GetAllCategoryReadingsCommand implements Command {
 			context.put(FacilioConstants.ContextNames.MODULE_MAP, moduleMap);
 		}
 		else if(categoryReadingRelModule.getName().equals("spacecategoryreading")) {
-			context.put(FacilioConstants.ContextNames.MODULE_LIST, SpaceAPI.getDefaultReadings(SpaceType.SPACE));
+			context.put(FacilioConstants.ContextNames.MODULE_LIST, SpaceAPI.getDefaultReadings(SpaceType.SPACE, true));
 		}
 		
 		return false;

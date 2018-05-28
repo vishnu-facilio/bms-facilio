@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.criteria;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;

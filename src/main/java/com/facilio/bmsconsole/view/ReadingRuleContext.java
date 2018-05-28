@@ -305,7 +305,7 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 			}
 			return isParent;
 		}
-		else {
+		else if (categoryAssets != null && !categoryAssets.isEmpty()) {
 			long parentId = reading.getParentId();
 			Optional<AssetContext> parentAsset = categoryAssets.stream().filter((asset -> asset.getId() == parentId)).findFirst();
 			if (parentAsset.isPresent()) {
@@ -316,6 +316,7 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 			}
 			return false;
 		}
+		return false;
 	}
 	
 	private boolean isFlappedNTimes(ReadingContext record) throws Exception {

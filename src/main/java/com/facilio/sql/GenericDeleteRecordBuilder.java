@@ -7,12 +7,13 @@ import java.sql.Statement;
 import java.util.Map;
 import java.util.StringJoiner;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.transaction.FacilioConnectionPool;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.apache.log4j.Level;
 
 public class GenericDeleteRecordBuilder implements DeleteBuilderIfc<Map<String, Object>> {
 	private static final Logger LOGGER = LogManager.getLogger(GenericDeleteRecordBuilder.class.getName());

@@ -269,6 +269,20 @@ public class DashboardUtil {
 		workRequestGroupByOmitFields.add("assignedBy");
 	}
 	
+	
+	public static FacilioField getField(String moduleName,String fieldName) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		for(FacilioField field : modBean.getAllFields(moduleName)) {
+			
+			if(field.getName().equals(fieldName)) {
+				
+				return field;
+			}
+		}
+		return null;
+	}
+	
 	public static List<Long> getAllResources(Long spaceID) throws Exception {
 		
 		List<Long> resourceList = new ArrayList<>();

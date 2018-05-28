@@ -8,11 +8,9 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -28,6 +26,11 @@ public class GetCategoryReadingsCommand implements Command {
 			return false;
 		}
 		
+		Boolean onlyReading = (Boolean) context.get(FacilioConstants.ContextNames.ONLY_READING);
+		if (onlyReading == null) {
+			onlyReading = false;
+		}
+		
 		long parentCategoryId = (long) context.get(FacilioConstants.ContextNames.PARENT_CATEGORY_ID);
 		List<FacilioField> fields = FieldFactory.getCategoryReadingsFields(categoryReadingRelModule);
 		
@@ -40,12 +43,7 @@ public class GetCategoryReadingsCommand implements Command {
 			List<Map<String, Object>> props = selectBuilder.get();
 			
 			List<FacilioModule> readings = null;
-			if(categoryReadingRelModule.getName().equals("spacecategoryreading")) {
-				readings = SpaceAPI.getDefaultReadings(SpaceType.SPACE);
-			}
-			else {
-				readings = new ArrayList<>();
-			}
+			readings = new ArrayList<>();
 			
 			if(props != null && !props.isEmpty()) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -53,12 +51,15 @@ public class GetCategoryReadingsCommand implements Command {
 					readings.add(modBean.getModule((long) prop.get("readingModuleId")));
 				}
 			}
-			context.put(FacilioConstants.ContextNames.MODULE_LIST, readings);
+			
+			List<FacilioModule> existingReadings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
+			if (existingReadings == null) {
+				context.put(FacilioConstants.ContextNames.MODULE_LIST, readings);
+			}
+			else {
+				existingReadings.addAll(readings);
+			}
 		}
-		else if(categoryReadingRelModule.getName().equals("spacecategoryreading")) {
-			context.put(FacilioConstants.ContextNames.MODULE_LIST, SpaceAPI.getDefaultReadings(SpaceType.SPACE));
-		}
-		
 		return false;
 	}
 	

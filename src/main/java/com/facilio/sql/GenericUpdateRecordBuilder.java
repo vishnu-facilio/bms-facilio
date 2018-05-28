@@ -6,15 +6,16 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.transaction.FacilioConnectionPool;
-import org.apache.log4j.Logger;
 
 public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, Object>> {
 	private static final Logger LOGGER = LogManager.getLogger(GenericUpdateRecordBuilder.class.getName());

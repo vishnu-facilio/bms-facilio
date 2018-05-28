@@ -1,9 +1,7 @@
 package com.facilio.bmsconsole.modules;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.facilio.constants.FacilioConstants;
@@ -83,15 +81,6 @@ public class ModuleFactory {
 		numberModule.setTableName("NumberFields");
 		numberModule.setExtendModule(getFieldsModule());
 		return numberModule;
-	}
-	
-	public static FacilioModule getFormulaFieldsModule() {
-		FacilioModule fieldModule = new FacilioModule();
-		fieldModule.setName("formulaField");
-		fieldModule.setDisplayName("Formula Fields");
-		fieldModule.setTableName("FormulaFields");
-		fieldModule.setExtendModule(getFieldsModule());
-		return fieldModule;
 	}
 	
 	public static FacilioModule getSpaceCategoryReadingRelModule() {
@@ -688,11 +677,6 @@ public class ModuleFactory {
 		reportThresholdModule.setTableName("Report_User_Filter");
 		return reportThresholdModule;
 	}
-	public static FacilioModule getAlarmVsEnergyData() {
-		FacilioModule alarmVsEnergyData = new FacilioModule();
-		alarmVsEnergyData.setTableName("Alarm_vs_Energy_Data");
-		return alarmVsEnergyData;
-	}
 	public static FacilioModule getPMReminderModule() {
 		FacilioModule reminderModule = new FacilioModule();
 		reminderModule.setName("pmreminder");
@@ -853,20 +837,28 @@ public class ModuleFactory {
 		return taskTemplate;
 	}
 	
-	public static FacilioModule getBasespaceReadingsModule() {
+	public static FacilioModule getResourceReadingsModule() {
 		FacilioModule baseSpaceReadings = new FacilioModule();
-		baseSpaceReadings.setName("basespacereadings");
-		baseSpaceReadings.setDisplayName("Basespace Readings");
-		baseSpaceReadings.setTableName("BaseSpace_Readings");
+		baseSpaceReadings.setName("resourcereadings");
+		baseSpaceReadings.setDisplayName("Resource Readings");
+		baseSpaceReadings.setTableName("Resource_Readings");
 		return baseSpaceReadings;
 	}
 	
-	public static FacilioModule getEnPIModule() {
+	public static FacilioModule getFormulaFieldModule() {
 		FacilioModule enpi = new FacilioModule();
-		enpi.setName("energyperformanceindicator");
-		enpi.setDisplayName("Energy Performance Indicators");
-		enpi.setTableName("EnergyPerformanceIndicator");
+		enpi.setName("formulaField");
+		enpi.setDisplayName("Formula Field");
+		enpi.setTableName("Formula_Field");
 		return enpi;
+	}
+	
+	public static FacilioModule getFormulaFieldInclusionsModule() {
+		FacilioModule readingRuleInclusionsExclusions = new FacilioModule();
+		readingRuleInclusionsExclusions.setName("formulaFieldInclusions");
+		readingRuleInclusionsExclusions.setDisplayName("Formula Field Include list");
+		readingRuleInclusionsExclusions.setTableName("Formula_Field_Inclusions");
+		return readingRuleInclusionsExclusions;
 	}
 	
 	public static FacilioModule getReadingRuleFlapsModule() {
@@ -959,4 +951,11 @@ public class ModuleFactory {
 		return analyticsAnomalyIDListJob;
 	}
 	
+	public static FacilioModule getDerivationsModule() {
+		FacilioModule taskSection = new FacilioModule();
+		taskSection.setName("derivations");
+		taskSection.setDisplayName("Derivations");
+		taskSection.setTableName("Derivations");
+		return taskSection;
+	}
 }

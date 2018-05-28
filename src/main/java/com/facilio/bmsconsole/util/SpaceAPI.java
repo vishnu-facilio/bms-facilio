@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
@@ -25,6 +26,7 @@ import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
@@ -39,7 +41,28 @@ public class SpaceAPI {
 	
 	private static Logger logger = Logger.getLogger(SpaceAPI.class.getName());
 	
-	public static List<FacilioModule> getDefaultReadings(SpaceType type) throws Exception {
+	public static List<PhotosContext> getBaseSpacePhotos(Long baseSpaceId) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE_PHOTOS);
+		
+		ArrayList<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE_PHOTOS);
+		
+		SelectRecordsBuilder<PhotosContext> builder = new SelectRecordsBuilder<PhotosContext>()
+				.select(fields)
+				.table(module.getTableName())
+				.moduleName(module.getName())
+				.beanClass(PhotosContext.class)
+				.module(module)
+				.andCondition(CriteriaAPI.getCondition(module.getTableName()+".PARENT_SPACE", "basespaceId", baseSpaceId+"", NumberOperators.EQUALS));
+		
+		List<PhotosContext> photos = builder.get();
+		
+		return photos;
+	}
+	
+	public static List<FacilioModule> getDefaultReadings(SpaceType type, boolean onlyReading) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		String moduleName = null;
 		switch(type) {
@@ -59,7 +82,14 @@ public class SpaceAPI {
 				moduleName = FacilioConstants.ContextNames.ZONE;
 				break;
 		}
-		List<FacilioModule> readings = modBean.getSubModules(moduleName, FacilioModule.ModuleType.READING);
+		
+		List<FacilioModule> readings = null;
+		if (onlyReading) {
+			readings = modBean.getSubModules(moduleName, ModuleType.READING);
+		}
+		else {
+			readings = modBean.getSubModules(moduleName, ModuleType.READING, ModuleType.LIVE_FORMULA, ModuleType.SCHEDULED_FORMULA);
+		}
 		return readings;
 	}
 	

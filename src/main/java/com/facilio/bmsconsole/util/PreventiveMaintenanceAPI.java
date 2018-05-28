@@ -261,17 +261,17 @@ public class PreventiveMaintenanceAPI {
 		return null;
 	}
 	
-	public static Map<Long, List<Map<String, Object>>> getPMJobsFromTriggerIds(List<Long> triggerIds, long startTime, long endTime) throws Exception {
+	public static Map<Long, List<Map<String, Object>>> getPMJobsFromPMIds(List<Long> pmIds, long startTime, long endTime) throws Exception {
 		FacilioModule pmJobsModule = ModuleFactory.getPMJobsModule();
 		List<FacilioField> fields = FieldFactory.getPMJobFields();
 		Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
-		FacilioField pmTriggerField = fieldsMap.get("pmTriggerId");
+		FacilioField pmIdField = fieldsMap.get("pmId");
 		FacilioField nextExecutionField = fieldsMap.get("nextExecutionTime");
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(pmJobsModule.getTableName())
-														.andCondition(CriteriaAPI.getCondition(pmTriggerField,triggerIds, NumberOperators.EQUALS))
+														.andCondition(CriteriaAPI.getCondition(pmIdField,pmIds, NumberOperators.EQUALS))
 														.andCondition(CriteriaAPI.getCondition(nextExecutionField, String.valueOf(startTime), NumberOperators.GREATER_THAN_EQUAL))
 														.andCondition(CriteriaAPI.getCondition(nextExecutionField, String.valueOf(endTime), NumberOperators.LESS_THAN))
 														.orderBy("nextExecutionTime")
@@ -532,7 +532,7 @@ public class PreventiveMaintenanceAPI {
 					}
 				}
 			}
-			Map<Long, ResourceContext> resourceMap = ResourceAPI.getResourceAsMapFromIds(resourceIds);
+			Map<Long, ResourceContext> resourceMap = ResourceAPI.getExtendedResourcesAsMapFromIds(resourceIds, false);
 			for(PreventiveMaintenance pm : pms) {
 				pm.getWoTemplate().setResource(resourceMap.get(pm.getWoTemplate().getResourceId()));
 			}
@@ -670,6 +670,12 @@ public class PreventiveMaintenanceAPI {
 		else if (ticket.getSpace() != null && ticket.getSpace().getId() != -1){
 			ticket.setResource(ticket.getSpace());
 		}
+	}
+	
+	public static List<PMReminder> getPMReminders(Long pmId) throws Exception {
+		List<Long> pmids = new ArrayList<>();
+		pmids.add(pmId);
+		return getPMReminders(pmids);
 	}
 	
 	public static List<PMReminder> getPMReminders(List<Long> pmIds) throws Exception {

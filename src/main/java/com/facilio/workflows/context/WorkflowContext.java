@@ -24,14 +24,14 @@ public class WorkflowContext {
 	Map<String,Object> variableResultMap;
 	String resultEvaluator;
 	
-	private List<Long> dependentFields;
-	public List<Long> getDependentFields() {
-		return dependentFields;
+	private List<Long> dependentFieldIds;
+	public List<Long> getDependentFieldIds() {
+		return dependentFieldIds;
 	}
-	public void setDependentFields(List<Long> dependentFields) {
-		this.dependentFields = dependentFields;
+	public void setDependentFieldIds(List<Long> dependentFieldIds) {
+		this.dependentFieldIds = dependentFieldIds;
 	}
-
+	
 	public Map<String, Object> getVariableResultMap() {
 		return variableResultMap;
 	}

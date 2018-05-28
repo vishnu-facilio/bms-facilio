@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,12 +14,15 @@ import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class ResourceAPI {
 	public static ResourceContext getResource(long id) throws Exception {
@@ -194,5 +198,28 @@ public class ResourceAPI {
 			selectBuilder.fetchDeleted();
 		}
 		return selectBuilder.getAsMap();
+	}
+	
+	public static List<FacilioModule> getResourceSpecificReadings(long parentId) throws Exception {
+		List<FacilioField> fields = FieldFactory.getResourceReadingsFields();
+		FacilioField resourceField = FieldFactory.getAsMap(fields).get("resourceId");
+		FacilioModule module = ModuleFactory.getResourceReadingsModule();
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(fields)
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCondition(resourceField, String.valueOf(parentId), PickListOperators.IS));
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		if(props != null && !props.isEmpty()) {
+			List<FacilioModule> readings = new ArrayList<>();
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			for(Map<String, Object> prop : props) {
+				readings.add(modBean.getModule((long) prop.get("readingId")));
+			}
+			return readings;
+		}
+		return null;
 	}
 }
