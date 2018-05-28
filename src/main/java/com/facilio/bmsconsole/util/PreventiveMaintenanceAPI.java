@@ -30,6 +30,7 @@ import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -450,17 +451,18 @@ public class PreventiveMaintenanceAPI {
 		
 		filterCriteria.addAndCondition(CriteriaAPI.getCondition(pmFieldsMap.get("status"), String.valueOf(true), BooleanOperators.IS));
 		
-		return getPMs(ids, filterCriteria);
+		return getPMs(ids, filterCriteria, null);
 
 	}
 	
 	public static List<PreventiveMaintenance> getPMsDetails(List<Long> ids, Criteria... criteria) throws Exception {
-		return getPMs(ids, criteria != null && criteria.length == 1 ? criteria[0] : null, true, true);
+		return getPMs(ids, criteria != null && criteria.length == 1 ? criteria[0] : null, null, true, true);
 	}
 	
-	public static List<PreventiveMaintenance> getPMs(List<Long> ids, Criteria criteria, Boolean...fetchDependencies) throws Exception {
+	public static List<PreventiveMaintenance> getPMs(List<Long> ids, Criteria criteria,String searchQuery,  Boolean...fetchDependencies) throws Exception {
 		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
 		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
+		FacilioField pmSubjectField = FieldFactory.getAsMap(fields).get("title");
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(module.getTableName())
@@ -474,6 +476,9 @@ public class PreventiveMaintenanceAPI {
 		
 		if(criteria != null) {
 			selectBuilder.andCriteria(criteria);
+		}
+		if (searchQuery!= null) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(pmSubjectField, searchQuery, StringOperators.CONTAINS));
 		}
 		
 		boolean fetchDependency = false;

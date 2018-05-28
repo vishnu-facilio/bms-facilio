@@ -30,9 +30,14 @@ import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
@@ -48,6 +53,7 @@ import com.facilio.bmsconsole.workflow.TicketActivity;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.leed.context.PMTriggerContext;
+import com.facilio.sql.GenericSelectRecordBuilder;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class WorkOrderAction extends ActionSupport {
@@ -576,6 +582,11 @@ public class WorkOrderAction extends ActionSupport {
 			JSONObject json = (JSONObject) parser.parse(getFilters());
 			context.put(FacilioConstants.ContextNames.FILTERS, json);
 			context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
+		}
+		if (getSearch() != null) {
+			JSONObject searchObj = new JSONObject();
+			searchObj.put("query", getSearch());
+			context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
 		}
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 
