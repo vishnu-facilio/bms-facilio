@@ -2710,6 +2710,98 @@ public class DashboardAction extends ActionSupport {
 		return violatedReadings; 
 	}
 	
+	
+	public void getAswaqData() throws Exception {
+		
+		int tcompliance = 0,tnonCompliance = 0,trepeatFinding = 0,tnotApplicable = 0,total = 0;
+		
+		List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
+		
+		reportData = new JSONArray();
+		for(TicketCategoryContext category:categories) {
+			
+			List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrders(category.getId());
+			
+			int compliance = 0,nonCompliance = 0,repeatFinding = 0,notApplicable = 0;
+			for(WorkOrderContext workorder:workorders) {
+				
+				Map<Long, List<TaskContext>> taskMap = workorder.getTasks();
+				
+				for(Long key : taskMap.keySet()) {
+					List<TaskContext> tasks = taskMap.get(key);
+					
+					for(TaskContext task :tasks) {
+						String subject = task.getSubject().trim();
+						if(task.getInputValue() != null) {
+							
+							Integer value = Integer.parseInt(task.getInputValue());
+							
+							if(subject.endsWith("Compliance")) {
+								compliance += value;
+							}
+							else if (subject.endsWith("Non Compliance")) {
+								nonCompliance += value;
+							}
+							else if (subject.endsWith("Repeat Finding")) {
+								repeatFinding += value;
+							}
+							else if (subject.endsWith("Not Applicable")) {
+								notApplicable += value;
+							}
+						}
+					}
+				}
+				if(AccountUtil.getCurrentOrg().getOrgId() == 108l) {
+					JSONObject jsonObject = new JSONObject();
+					
+					jsonObject.put("area", workorder.getSubject());
+					jsonObject.put("fullScore", compliance);
+					jsonObject.put("nonCompliance", nonCompliance);
+					jsonObject.put("repeatFinding", repeatFinding);
+					jsonObject.put("totalPointsEarned", compliance + nonCompliance + repeatFinding);
+					
+					reportData.add(jsonObject);
+				}
+			}
+			if(AccountUtil.getCurrentOrg().getOrgId() == 113l) {
+				JSONObject jsonObject = new JSONObject();
+				
+				jsonObject.put("area", category.getName());
+				jsonObject.put("fullScore", compliance);
+				jsonObject.put("nonCompliance", nonCompliance);
+				jsonObject.put("repeatFinding", repeatFinding);
+				jsonObject.put("totalPointsEarned", compliance + nonCompliance + repeatFinding);
+				
+				reportData.add(jsonObject);
+			}
+			
+			tcompliance += compliance;
+			tnonCompliance += nonCompliance;
+			trepeatFinding += repeatFinding;
+			total += (compliance + nonCompliance + repeatFinding);
+		}
+		JSONObject finalres = new JSONObject();
+		
+		finalres.put("area", "Total");
+		finalres.put("fullScore", tcompliance);
+		finalres.put("nonCompliance", tnonCompliance);
+		finalres.put("repeatFinding", trepeatFinding);
+		finalres.put("totalPointsEarned", total);
+		
+		reportData.add(finalres);
+		
+		overallRating = (double) ((total/tcompliance ) * 100);
+		
+	}
+	
+	Double overallRating;
+	
+	public Double getOverallRating() {
+		return overallRating;
+	}
+	public void setOverallRating(Double overallRating) {
+		this.overallRating = overallRating;
+	}
 	private List<String> getDistinctLabel(List<Map<String, Object>> rs) {
 		List<String> labels = new ArrayList<>();
 		for(Map<String, Object> prop:rs) {

@@ -34,6 +34,21 @@ public class WorkOrderAPI {
 		}
 		return null;
 	}
+	
+public static List<WorkOrderContext> getWorkOrders(long categoryId) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+		SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
+														.module(module)
+														.beanClass(WorkOrderContext.class)
+														.select(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER))
+														.andCondition(CriteriaAPI.getCondition("CATEGORY_ID", "categoryId", categoryId+"", NumberOperators.EQUALS))
+														;
+		
+		List<WorkOrderContext> workOrders = builder.get();
+		return workOrders;
+	}
 
 	public static List<WorkOrderContext> getOpenWorkOrderForUser(Long ouid) throws Exception {
 		
