@@ -3713,7 +3713,7 @@
 		<action name="getAswaqData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getAswaqData">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
-				<param name="includeProperties">^reportData.*,^overallRating.*</param>
+				<param name="includeProperties">^resultJSON.*</param>
 			</result>
 		</action>
 		<action name="getReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="getReport">
