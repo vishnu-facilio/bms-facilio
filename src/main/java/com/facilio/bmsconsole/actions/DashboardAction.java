@@ -10,12 +10,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -2825,7 +2823,10 @@ public class DashboardAction extends ActionSupport {
 		
 		resultJSON = new JSONObject();
 		
-		Double overallRating = (double)total/tcompliance;
+		double overallRating = 0;
+		if (tcompliance != 0) {
+			overallRating = (double)total/tcompliance;
+		}
 		
 		overallRating = overallRating * 100;
 		
