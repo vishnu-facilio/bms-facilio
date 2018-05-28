@@ -984,15 +984,55 @@
 		<action name="addAssetDepartment" class="com.facilio.bmsconsole.actions.PickListAction"
 			method="addAssetDepartment">
 			<result name="success" type="json">
+				<param name="ignoreHierarchy">false</param>
 				<param name="root">assetDepartment</param>
 			</result>
 		</action>
+		<action name="updateAssetDepartment" class="com.facilio.bmsconsole.actions.PickListAction"
+			method="updateAssetDepartment">
+			<result name="success" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="root">assetDepartment</param>
+			</result>
+		</action>
+		<action name="deleteAssetDepartment" class="com.facilio.bmsconsole.actions.PickListAction"
+			method="deleteAssetDepartment">
+			<result name="success" type="json">
+				<param name="includeProperties">result</param>
+			</result> 
+			<result name="error" type="json">
+				<param name="statusCode">400</param>
+				<param name="includeProperties">^relatedModules.*</param>
+			</result>
+		</action>
+		
 		<action name="addAssetType" class="com.facilio.bmsconsole.actions.PickListAction"
 			method="addAssetType">
 			<result name="success" type="json">
+				<param name="ignoreHierarchy">false</param>
 				<param name="root">assetType</param>
 			</result>
 		</action>
+		
+		<action name="updateAssetType" class="com.facilio.bmsconsole.actions.PickListAction"
+			method="updateAssetType">
+			<result name="success" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="root">assetType</param>
+			</result>
+		</action>
+		
+		<action name="deleteAssetType" class="com.facilio.bmsconsole.actions.PickListAction"
+			method="deleteAssetType">
+			<result name="success" type="json">
+				<param name="includeProperties">result</param>
+			</result> 
+			<result name="error" type="json">
+				<param name="statusCode">400</param>
+				<param name="includeProperties">^relatedModules.*</param>
+			</result>
+		</action>
+		
 		<action name="addAlarmSeverity" class="com.facilio.bmsconsole.actions.PickListAction"
 			method="addAlarmSeverity">
 			<result name="success" type="json">

@@ -2125,12 +2125,54 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getUpdateAssetDepartmentChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(SetTableNamesCommand.getForAssetDepartment());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenericUpdateModuleDataCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getDeleteAssetDepartmentChain() {		
+		Chain c = new TransactionChain();
+		c.addCommand(new ValidateAssetDepartmentDeletion());
+		c.addCommand(SetTableNamesCommand.getForAssetDepartment());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenericDeleteModuleDataCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getAddAssetTypeChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(SetTableNamesCommand.getForAssetType());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenericAddModuleDataCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getUpdateAssetTypeChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(SetTableNamesCommand.getForAssetType());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenericUpdateModuleDataCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getDeleteAssetTypeChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new ValidateAssetTypeDeletion());
+		c.addCommand(SetTableNamesCommand.getForAssetType());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenericDeleteModuleDataCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

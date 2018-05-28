@@ -170,8 +170,8 @@ public class PickListAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, this.getAssetCategoryID());
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(this.getAssetCategoryID()));
-		Command deleteLocation = FacilioChainFactory.getDeleteAssetCategoryChain();
-		deleteLocation.execute(context);
+		Command deleteAssetCategory = FacilioChainFactory.getDeleteAssetCategoryChain();
+		deleteAssetCategory.execute(context);
 		
 		this.relatedModules = (List<String>) context.get(FacilioConstants.ContextNames.MODULE_NAMES);
 		if (!this.relatedModules.isEmpty()) {
@@ -198,6 +198,41 @@ public class PickListAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String updateAssetDepartment() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, getAssetDepartment());
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(this.assetDepartment.getId()));
+		Chain updateAssetDepartmentChain = FacilioChainFactory.getUpdateAssetDepartmentChain();
+		updateAssetDepartmentChain.execute(context);
+		
+		return SUCCESS;
+	}
+	
+	private long assetDepartmentID;
+	
+	
+	public long getAssetDepartmentID() {
+		return assetDepartmentID;
+	}
+	public void setAssetDepartmentID(long assetDepartmentID) {
+		this.assetDepartmentID = assetDepartmentID;
+	}
+	
+	public String deleteAssetDepartment() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID, this.getAssetDepartmentID());
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(this.getAssetDepartmentID()));
+		Command deleteAssetDepartment = FacilioChainFactory.getDeleteAssetDepartmentChain();
+		deleteAssetDepartment.execute(context);
+		
+		this.relatedModules = (List<String>) context.get(FacilioConstants.ContextNames.MODULE_NAMES);
+		if (!this.relatedModules.isEmpty()) {
+			return ERROR;
+		}
+		this.result = "success";
+		return SUCCESS;
+	}
+	
 	AssetTypeContext assetType;
 	public AssetTypeContext getAssetType() {
 		return assetType;
@@ -212,6 +247,40 @@ public class PickListAction extends ActionSupport {
 		Chain addAssetTypeChain = FacilioChainFactory.getAddAssetTypeChain();
 		addAssetTypeChain.execute(context);
 		
+		return SUCCESS;
+	}
+	
+	public String updateAssetType() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, getAssetType());
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(this.getAssetType().getId()));
+		Chain updateAssetTypeChain = FacilioChainFactory.getUpdateAssetTypeChain();
+		updateAssetTypeChain.execute(context);
+		
+		return SUCCESS;
+	}
+
+	private long assetTypeID;
+	
+	public long getAssetTypeID() {
+		return assetTypeID;
+	}
+	public void setAssetTypeID(long assetTypeID) {
+		this.assetTypeID = assetTypeID;
+	}
+	
+	public String deleteAssetType() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID, this.getAssetTypeID());
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(this.getAssetTypeID()));
+		Command deleteAssetDepartment = FacilioChainFactory.getDeleteAssetTypeChain();
+		deleteAssetDepartment.execute(context);
+		
+		this.relatedModules = (List<String>) context.get(FacilioConstants.ContextNames.MODULE_NAMES);
+		if (!this.relatedModules.isEmpty()) {
+			return ERROR;
+		}
+		this.result = "success";
 		return SUCCESS;
 	}
 	
