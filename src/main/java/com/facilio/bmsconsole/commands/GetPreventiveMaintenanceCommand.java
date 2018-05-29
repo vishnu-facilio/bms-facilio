@@ -24,7 +24,7 @@ public class GetPreventiveMaintenanceCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		Criteria criteria = null;
+		Criteria criteria = new Criteria();
 		
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		JSONObject filters = (JSONObject) context.get(FacilioConstants.ContextNames.FILTERS);
@@ -32,16 +32,11 @@ public class GetPreventiveMaintenanceCommand implements Command {
 		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
 		Boolean includeParentCriteria = (Boolean) context.get(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA);
 		if (filterCriteria != null) {
-			criteria = filterCriteria;
+			criteria.andCriteria(filterCriteria);
 		}
 		if (( filters == null || includeParentCriteria) && view != null) {
 			Criteria viewCriteria = view.getCriteria();
-			if (criteria == null) {
-				criteria = viewCriteria;
-			}
-			else if(viewCriteria != null){
-				criteria.andCriteria(viewCriteria);
-			}
+			criteria.andCriteria(viewCriteria);
 		}
 		String query = null;
 		if (( serachQuery != null)) {
@@ -58,22 +53,12 @@ public class GetPreventiveMaintenanceCommand implements Command {
 		
 		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria("planned");
 		if(scopeCriteria != null) {
-			if (criteria == null) {
-				criteria = scopeCriteria;
-			}
-			else {
-				criteria.andCriteria(scopeCriteria);
-			}
+			criteria.andCriteria(scopeCriteria);
 		}
 		
 		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria("planned","read");
 		if(permissionCriteria != null) {
-			if (criteria == null) {
-				criteria = permissionCriteria;
-			}
-			else {
-				criteria.andCriteria(permissionCriteria);
-			}
+			criteria.andCriteria(permissionCriteria);
 		}
 		
 		List<Long> idsToSelect = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);

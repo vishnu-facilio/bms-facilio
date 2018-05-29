@@ -477,7 +477,7 @@ public class PreventiveMaintenanceAPI {
 			selectBuilder.andCondition(CriteriaAPI.getIdCondition(ids, module));
 		}
 		
-		if(criteria != null) {
+		if(criteria != null && !criteria.isEmpty()) {
 			selectBuilder.andCriteria(criteria);
 		}
 		LOGGER.log(Level.SEVERE,"searchQuery ---- "+searchQuery);
