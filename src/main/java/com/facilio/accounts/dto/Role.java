@@ -2,6 +2,8 @@ package com.facilio.accounts.dto;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -12,9 +14,12 @@ import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.PickListOperators;
+import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.constants.FacilioConstants;
 
 public class Role {
+	
+	private static final Logger LOGGER = Logger.getLogger(Role.class.getName());
 
 	private long roleId;
 	private long orgId;
@@ -91,6 +96,7 @@ public class Role {
 	
 	public Criteria permissionCriteria(String moduleName, String action)
 	{
+		LOGGER.log(Level.SEVERE, "ROLE PERMISSION::::::" + getPermissions());
 		Criteria criteria = null;
 		if(getPermissions() == null) {
 			return null;

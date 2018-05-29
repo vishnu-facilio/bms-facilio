@@ -69,7 +69,7 @@ public class GetPreventiveMaintenanceCommand implements Command {
 		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria("planned","read");
 		if(permissionCriteria != null) {
 			if (criteria == null) {
-				criteria = scopeCriteria;
+				criteria = permissionCriteria;
 			}
 			else {
 				criteria.andCriteria(permissionCriteria);
