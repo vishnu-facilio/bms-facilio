@@ -38,6 +38,7 @@ import com.facilio.bmsconsole.context.DashboardSharingContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.DerivationContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.FormulaContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
@@ -119,6 +120,7 @@ import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.google.gson.JsonObject;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class DashboardAction extends ActionSupport {
@@ -1716,14 +1718,12 @@ public class DashboardAction extends ActionSupport {
 		if(!"development".equals(AwsUtil.getConfig("environment"))) {
 			builder.orderBy("TTIME");
 		}
-		
 		if(module.getExtendModule() != null) {
 			builder.innerJoin(module.getExtendModule().getTableName())
 				.on(module.getTableName()+".Id="+module.getExtendModule().getTableName()+".Id");
 		}
 		
-		ReportFieldContext reportXAxisField = DashboardUtil.getReportField(report.getxAxisField());
-		report.setxAxisField(reportXAxisField);
+		ReportFieldContext reportXAxisField = report.getxAxisField();
 		FacilioField xAxisField = reportXAxisField.getField();
 		
 		GenericSelectRecordBuilder subBuilder = null;
@@ -1758,8 +1758,6 @@ public class DashboardAction extends ActionSupport {
 			fields.add(dummyField);
 		}
 		
-		FacilioField y1AxisField = null;
-		ReportFieldContext reportY1AxisField;
 		AggregateOperator xAggregateOpperator = report.getXAxisAggregateOpperator();
 		boolean isGroupBySpace = false;
 		if(!xAggregateOpperator.getValue().equals(NumberAggregateOperator.COUNT.getValue())) {
@@ -1840,9 +1838,11 @@ public class DashboardAction extends ActionSupport {
 			}
 		}
 		
+		FacilioField y1AxisField = null;
+		ReportFieldContext reportY1AxisField;
 		String yAxisFieldName = null;
 		if(report.getY1Axis() != null || report.getY1AxisField() != null) {
-			reportY1AxisField = DashboardUtil.getReportField(report.getY1AxisField());
+			reportY1AxisField = report.getY1AxisField();
 			AggregateOperator y1AggregateOpperator = report.getY1AxisAggregateOpperator();
 			y1AxisField = reportY1AxisField.getField();
 			yAxisFieldName = y1AxisField.getDisplayName();
@@ -1855,10 +1855,10 @@ public class DashboardAction extends ActionSupport {
 			reportY1AxisField = new ReportFieldContext();
 			reportY1AxisField.setModuleField(y1AxisField);
 		}
+
 		if(y1AxisField!= null && y1AxisField.getColumnName() != null && report.getIsHighResolutionReport() || xAggr == 0) {
 			builder.andCustomWhere(y1AxisField.getColumnName()+" is not null");
 		}
-		
 		JSONObject reportFieldLabelMap = new JSONObject();
 		reportFieldLabelMap.put("label", xAxisField.getName());
 		reportFieldLabelMap.put("value", y1AxisField.getName());
@@ -1883,40 +1883,10 @@ public class DashboardAction extends ActionSupport {
 		}
 		String groupByString = "label";
 		if(report.getGroupBy() != null) {
-			ReportFieldContext reportGroupByField = DashboardUtil.getReportField(report.getGroupByField());
-			report.setGroupByField(reportGroupByField);
+			ReportFieldContext reportGroupByField = report.getGroupByField();
 			FacilioField groupByField = reportGroupByField.getField();
 			reportFieldLabelMap.put("groupBy", groupByField.getName());
 			groupByField.setName("groupBy");
-			
-			if(!groupByField.getModule().getName().equals(module.getName())) {
-				
-				groupByField.setColumnName("PARENT_METER_ID");
-				groupByField.setModule(module);
-				
-				subBuilder = new GenericSelectRecordBuilder();
-				subBuilder.table(energyMeterModule.getTableName());
-				
-				if(report.getGroupByAggregateOpperator() instanceof SpaceAggregateOperator) {
-					
-					isGroupBySpace = true;
-					
-					FacilioModule baseSpaceModule = modBean.getModule("basespace");
-					
-					subBuilder.innerJoin(baseSpaceModule.getTableName())
-					.on(baseSpaceModule.getTableName()+".ID=Energy_Meter.PURPOSE_SPACE_ID")
-					.andCustomWhere(baseSpaceModule.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId());
-					
-					if(report.getGroupByAggregateOpperator().equals(SpaceAggregateOperator.BUILDING)) {
-						
-						subBuilder.andCustomWhere(baseSpaceModule.getTableName()+".SPACE_TYPE = " + BaseSpaceContext.SpaceType.BUILDING.getIntVal());
-						subBuilder.andCustomWhere("Energy_Meter.PURPOSE_ID = "+"(SELECT ID FROM bms.Energy_Meter_Purpose where ORGID = "+AccountUtil.getCurrentOrg().getOrgId()+" and Name=\"Main\")");
-						subBuilder.andCustomWhere("Energy_Meter.IS_ROOT = 1");
-						
-						report.getGroupByField().setFieldLabel("Building");
-					}
-				}
-			}
 			
 			fields.add(groupByField);
 			groupByString = groupByString + ",groupBy";
@@ -1946,7 +1916,7 @@ public class DashboardAction extends ActionSupport {
 			if(baseLineContext.getAdjustType() <= 0) {
 				baseLineContext.setAdjustType(1);
 			}
-			baseLineName = baseLineContext.getName();;
+			baseLineName = baseLineContext.getName();
 			DateRange dateRange;
 			if(dateFilter != null) {
 				LOGGER.severe("dateFilter --- "+dateFilter);
