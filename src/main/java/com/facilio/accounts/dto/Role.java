@@ -96,7 +96,6 @@ public class Role {
 	
 	public Criteria permissionCriteria(String moduleName, String action)
 	{
-		LOGGER.log(Level.SEVERE, "ROLE PERMISSION::::::" + getPermissions());
 		Criteria criteria = null;
 		if(getPermissions() == null) {
 			return null;
