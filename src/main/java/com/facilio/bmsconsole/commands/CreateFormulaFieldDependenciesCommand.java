@@ -32,10 +32,47 @@ public class CreateFormulaFieldDependenciesCommand implements Command {
 			
 			context.put(FacilioConstants.ContextNames.READING_NAME, formulaField.getName());
 			context.put(FacilioConstants.ContextNames.MODULE_FIELD, formulaField.getReadingField());
+			context.put(FacilioConstants.ContextNames.MODULE_DATA_INTERVAL, getDataInterval(formulaField));
 			setModuleType(formulaField, context);
 			setReadingParent(formulaField, context);
 		}
 		return false;
+	}
+	
+	private int getDataInterval(FormulaFieldContext formula) {
+		switch (formula.getTriggerTypeEnum()) {
+			case SCHEDULE:
+				switch (formula.getFrequencyEnum()) {
+					case HOURLY:
+						return 60;
+					case DAILY:
+					case WEEKLY:
+					case MONTHLY:
+					case QUARTERTLY:
+					case HALF_YEARLY:
+					case ANNUALLY:
+						return 24 * 60;
+					default:
+						return -1;
+				}
+			case LIVE_READING:
+				if (formula.getInterval() > (24 * 60)) {
+					return 24 * 60;
+				}
+				return formula.getInterval();
+		}
+		return -1;
+	}
+	
+	private void setModuleType(FormulaFieldContext formulaField, Context context) {
+		switch (formulaField.getTriggerTypeEnum()) {
+			case SCHEDULE:
+				context.put(FacilioConstants.ContextNames.MODULE_TYPE, FacilioModule.ModuleType.SCHEDULED_FORMULA);
+				break;
+			case LIVE_READING:
+				context.put(FacilioConstants.ContextNames.MODULE_TYPE, FacilioModule.ModuleType.LIVE_FORMULA);
+				break;
+		}
 	}
 	
 	private void setReadingParent(FormulaFieldContext formulaField, Context context) throws Exception {
@@ -85,17 +122,6 @@ public class CreateFormulaFieldDependenciesCommand implements Command {
 		
 		if (spaces != null && !spaces.isEmpty()) {
 			context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, spaces.stream().map(BaseSpaceContext::getId).collect(Collectors.toList()));
-		}
-	}
-	
-	private void setModuleType(FormulaFieldContext formulaField, Context context) {
-		switch (formulaField.getTriggerTypeEnum()) {
-			case SCHEDULE:
-				context.put(FacilioConstants.ContextNames.MODULE_TYPE, FacilioModule.ModuleType.SCHEDULED_FORMULA);
-				break;
-			case LIVE_READING:
-				context.put(FacilioConstants.ContextNames.MODULE_TYPE, FacilioModule.ModuleType.LIVE_FORMULA);
-				break;
 		}
 	}
 }

@@ -3,6 +3,8 @@
 import java.io.Serializable;
 import java.util.List;
 
+import com.facilio.time.SecondsChronoUnit;
+
 public class FacilioModule implements Serializable {
 	
 	private long moduleId = -1;
@@ -90,6 +92,20 @@ public class FacilioModule implements Serializable {
 			return trashEnabled.booleanValue();
 		}
 		return false;
+	}
+	
+	private int dataInterval = -1;
+	public int getDataInterval() {
+		return dataInterval;
+	}
+	public void setDataInterval(int dataInterval) {
+		this.dataInterval = dataInterval;
+		this.dateIntervalUnit = new SecondsChronoUnit(dataInterval * 60);
+	}
+	
+	private SecondsChronoUnit dateIntervalUnit;
+	public SecondsChronoUnit getDateIntervalUnit() {
+		return dateIntervalUnit;
 	}
 	
 	

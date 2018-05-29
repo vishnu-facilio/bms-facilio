@@ -48,9 +48,6 @@ public class ControllerContext {
 	public SecondsChronoUnit getDateIntervalUnit() {
 		return dateIntervalUnit;
 	}
-	public void setDateIntervalUnit(SecondsChronoUnit dateIntervalUnit) {
-		this.dateIntervalUnit = dateIntervalUnit;
-	}
 	
 	@Override
 	 public String toString() {
