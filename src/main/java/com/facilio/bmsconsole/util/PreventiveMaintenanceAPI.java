@@ -481,9 +481,9 @@ public class PreventiveMaintenanceAPI {
 			selectBuilder.andCriteria(criteria);
 		}
 		LOGGER.log(Level.SEVERE,"searchQuery ---- "+searchQuery);
-//		if (searchQuery!= null) {
-//			 selectBuilder.andCondition(CriteriaAPI.getCondition(pmSubjectField, searchQuery, StringOperators.CONTAINS));
-//		}
+		if (searchQuery!= null) {
+			 selectBuilder.andCondition(CriteriaAPI.getCondition(pmSubjectField, searchQuery, StringOperators.CONTAINS));
+		}
 		
 		boolean fetchDependency = false;
 		boolean setTriggers = false;
@@ -499,6 +499,8 @@ public class PreventiveMaintenanceAPI {
 		}
 		
 		List<Map<String, Object>> pmProps = selectBuilder.get();
+		
+		LOGGER.log(Level.SEVERE,"selectBuilder ---- "+selectBuilder);
 		
 		List<Long> resourceIds = new ArrayList<>();
 		if(pmProps != null && !pmProps.isEmpty()) {
