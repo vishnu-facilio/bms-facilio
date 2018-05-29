@@ -8,6 +8,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.json.simple.JSONArray;
@@ -54,6 +56,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class PreventiveMaintenanceAPI {
 	
+	private static final Logger LOGGER = Logger.getLogger(PreventiveMaintenanceAPI.class.getName());
 	public static final int PM_CALCULATION_DAYS = 62;
 	
 	public static List<PMJobsContext> createPMJobs (PreventiveMaintenance pm, PMTriggerContext pmTrigger, long startTime, long endTime) throws Exception { //Both in seconds
@@ -477,9 +480,10 @@ public class PreventiveMaintenanceAPI {
 		if(criteria != null) {
 			selectBuilder.andCriteria(criteria);
 		}
-		if (searchQuery!= null) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition(pmSubjectField, searchQuery, StringOperators.CONTAINS));
-		}
+		LOGGER.log(Level.SEVERE,"searchQuery ---- "+searchQuery);
+//		if (searchQuery!= null) {
+//			 selectBuilder.andCondition(CriteriaAPI.getCondition(pmSubjectField, searchQuery, StringOperators.CONTAINS));
+//		}
 		
 		boolean fetchDependency = false;
 		boolean setTriggers = false;
