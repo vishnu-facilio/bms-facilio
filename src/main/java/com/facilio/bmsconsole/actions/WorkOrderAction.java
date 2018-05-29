@@ -30,18 +30,12 @@ import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
-import com.facilio.bmsconsole.templates.TaskTemplate;
 import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
@@ -53,7 +47,6 @@ import com.facilio.bmsconsole.workflow.TicketActivity;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.leed.context.PMTriggerContext;
-import com.facilio.sql.GenericSelectRecordBuilder;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class WorkOrderAction extends ActionSupport {
@@ -218,9 +211,11 @@ public class WorkOrderAction extends ActionSupport {
 					List<TaskContext> taskContexts =  taskPm1.get(key);
 					for(TaskContext taskContext :taskContexts) {
 						ResourceContext taskResourceCOntext = taskContext.getResource();
-						if (oldAssetId == taskResourceCOntext.getId())
-						{
-							taskResourceCOntext.setId(assetId);
+						if (taskResourceCOntext != null) {
+							if (oldAssetId == taskResourceCOntext.getId())
+							{
+								taskResourceCOntext.setId(assetId);
+							}
 						}
 						taskContext.setId(-1);
 					    taskContext.setSectionId(-1);
