@@ -2788,7 +2788,7 @@ public class DashboardAction extends ActionSupport {
 							else if(subject.endsWith("Compliance")) {
 								compliance += value;
 							}
-							else if (subject.endsWith("Repeat Finding")) {
+							else if (subject.endsWith("Repeat Findings")) {
 								repeatFinding += value;
 							}
 							else if (subject.endsWith("Not Applicable")) {
