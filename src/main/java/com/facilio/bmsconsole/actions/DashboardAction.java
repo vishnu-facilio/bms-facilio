@@ -2747,7 +2747,9 @@ public class DashboardAction extends ActionSupport {
 			for(WorkOrderContext workorder:workorders) {
 				
 				LOGGER.log(Level.SEVERE, "buildingId --- "+buildingId);
-				LOGGER.log(Level.SEVERE, "workorder.getResource().getId() --- "+workorder.getResource().getId());
+				if(workorder.getResource() != null) {
+					LOGGER.log(Level.SEVERE, "workorder.getResource().getId() --- "+workorder.getResource().getId());
+				}
 				if(buildingId != null && workorder.getResource() != null && workorder.getResource().getId() != buildingId) {
 					continue;
 				}
