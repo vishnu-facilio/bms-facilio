@@ -1942,6 +1942,9 @@ public class DashboardAction extends ActionSupport {
 		String baseLineName = null;
 		if(baseLineId != -1) {
 			BaseLineContext baseLineContext = BaseLineAPI.getBaseLine(baseLineId);
+			if(baseLineContext.getAdjustType() <= 0) {
+				baseLineContext.setAdjustType(1);
+			}
 			baseLineName = baseLineContext.getName();;
 			DateRange dateRange;
 			if(dateFilter != null) {
