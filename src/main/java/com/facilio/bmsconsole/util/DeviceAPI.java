@@ -549,28 +549,36 @@ public class DeviceAPI
 			}
 			ReadingContext aggregatedReading = new ReadingContext();
 			
-			List<Double> totalConsumptions = new ArrayList<Double>();
+			double sum = 0d;
 			for(ReadingContext reading : readings) {
-				totalConsumptions.add((Double) reading.getReading("totalEnergyConsumptionDelta"));
+			    if(reading.getReading("totalEnergyConsumptionDelta") != null) {
+                    double value = (Double) reading.getReading("totalEnergyConsumptionDelta");
+                    sum += value;
+                }
 			}
-			aggregatedReading.addReading("totalEnergyConsumptionDelta", StatUtils.sum(totalConsumptions.stream().mapToDouble(Double::doubleValue).toArray()));
+			aggregatedReading.addReading("totalEnergyConsumptionDelta", sum);
 			return aggregatedReading;
 		}
 
 		@Override
-		public ReadingContext applyOp(String operator, ReadingContext rightOperand, ReadingContext leftOperand) {
+		public ReadingContext applyOp(String operator, ReadingContext rightOperand, ReadingContext leftOperand)  {
 			// TODO Auto-generated method stub
-			if(operator.equals("+")) {
-				ReadingContext reading = new ReadingContext();
-				reading.addReading("totalEnergyConsumptionDelta", ((Double)leftOperand.getReading("totalEnergyConsumptionDelta") + (Double)rightOperand.getReading("totalEnergyConsumptionDelta")));
-				return reading;
+			if(operator == null || rightOperand == null || leftOperand == null) {
+			    logger.info("opertor " + operator + "  left operand " + leftOperand +" right operand " + rightOperand );
+				return null;
 			}
-			else if(operator.equals("-")) {
-				ReadingContext reading = new ReadingContext();
-				reading.addReading("totalEnergyConsumptionDelta", ((Double)leftOperand.getReading("totalEnergyConsumptionDelta") - (Double)rightOperand.getReading("totalEnergyConsumptionDelta")));
-				return reading;
+			ReadingContext reading = new ReadingContext();
+			double left = (Double)leftOperand.getReading("totalEnergyConsumptionDelta");
+			double right =(Double)rightOperand.getReading("totalEnergyConsumptionDelta");
+			double total = 0d;
+			if("+".equals(operator)) {
+				total = left + right;
+
+			} else if("-".equals(operator)) {
+				total = left - right;
 			}
-			return null;
+			reading.addReading("totalEnergyConsumptionDelta", total);
+			return reading;
 		}
 		
 	}
