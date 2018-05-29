@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.chain.Chain;
@@ -2745,9 +2746,13 @@ public class DashboardAction extends ActionSupport {
 			int compliance = 0,nonCompliance = 0,repeatFinding = 0,notApplicable = 0;
 			for(WorkOrderContext workorder:workorders) {
 				
-				if(buildingId != null && workorder.getResource().getId() != buildingId) {
+				LOGGER.log(Level.SEVERE, "buildingId --- "+buildingId);
+				LOGGER.log(Level.SEVERE, "workorder.getResource().getId() --- "+workorder.getResource().getId());
+				if(buildingId != null && workorder.getResource() != null && workorder.getResource().getId() != buildingId) {
 					continue;
 				}
+				LOGGER.log(Level.SEVERE, "dateFilter --- "+dateFilter);
+				LOGGER.log(Level.SEVERE, "workorder.getResource().getId() --- "+workorder.getCreatedTime());
 				if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
 					continue;
 				}
