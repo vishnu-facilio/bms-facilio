@@ -535,6 +535,7 @@ public class DeviceAPI
     private static class EnergyDataEvaluator extends ExpressionEvaluator<ReadingContext> {
 
 		private Map<Long, List<ReadingContext>> readingMap;
+		private static final String TOTAL_ENERGY_CONSUMPTION_DELTA = "totalEnergyConsumptionDelta";
 		public EnergyDataEvaluator(Map<Long, List<ReadingContext>> readingMap) {
 			super.setRegEx(EnergyMeterContext.EXP_FORMAT);
 			this.readingMap = readingMap;
@@ -551,12 +552,12 @@ public class DeviceAPI
 			
 			double sum = 0d;
 			for(ReadingContext reading : readings) {
-			    if(reading.getReading("totalEnergyConsumptionDelta") != null) {
-                    double value = (Double) reading.getReading("totalEnergyConsumptionDelta");
+			    if(reading.getReading(TOTAL_ENERGY_CONSUMPTION_DELTA) != null) {
+                    Double value = (Double) reading.getReading(TOTAL_ENERGY_CONSUMPTION_DELTA);
                     sum += value;
                 }
 			}
-			aggregatedReading.addReading("totalEnergyConsumptionDelta", sum);
+			aggregatedReading.addReading(TOTAL_ENERGY_CONSUMPTION_DELTA, sum);
 			return aggregatedReading;
 		}
 
@@ -568,16 +569,18 @@ public class DeviceAPI
 				return null;
 			}
 			ReadingContext reading = new ReadingContext();
-			double left = (Double)leftOperand.getReading("totalEnergyConsumptionDelta");
-			double right =(Double)rightOperand.getReading("totalEnergyConsumptionDelta");
+			Double left = (Double)leftOperand.getReading(TOTAL_ENERGY_CONSUMPTION_DELTA);
+			Double right =(Double)rightOperand.getReading(TOTAL_ENERGY_CONSUMPTION_DELTA);
+			if(left == null || right == null) {
+			    return null;
+            }
 			double total = 0d;
 			if("+".equals(operator)) {
 				total = left + right;
-
 			} else if("-".equals(operator)) {
 				total = left - right;
 			}
-			reading.addReading("totalEnergyConsumptionDelta", total);
+			reading.addReading(TOTAL_ENERGY_CONSUMPTION_DELTA, total);
 			return reading;
 		}
 		
