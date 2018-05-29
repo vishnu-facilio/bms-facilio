@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
@@ -2829,9 +2830,9 @@ public class DashboardAction extends ActionSupport {
 		}
 		
 		overallRating = overallRating * 100;
-		
+		DecimalFormat df = new DecimalFormat(".##");
 		resultJSON.put("tableData", reportData);
-		resultJSON.put("overallRating", overallRating);
+		resultJSON.put("overallRating", df.format(overallRating));
 		
 		return SUCCESS;
 	}
