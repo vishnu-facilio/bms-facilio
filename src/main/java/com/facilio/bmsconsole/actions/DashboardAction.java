@@ -2730,6 +2730,10 @@ public class DashboardAction extends ActionSupport {
 		List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
 		
 		reportData = new JSONArray();
+		if(reportSpaceFilterContext != null) {
+			buildingId = reportSpaceFilterContext.getBuildingId();
+		}
+		
 		for(TicketCategoryContext category:categories) {
 			
 			List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrders(category.getId());
@@ -2741,6 +2745,12 @@ public class DashboardAction extends ActionSupport {
 			int compliance = 0,nonCompliance = 0,repeatFinding = 0,notApplicable = 0;
 			for(WorkOrderContext workorder:workorders) {
 				
+				if(buildingId != null && workorder.getResource().getId() != buildingId) {
+					continue;
+				}
+				if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
+					continue;
+				}
 				if(AccountUtil.getCurrentOrg().getOrgId() == 108l) {
 					compliance = 0;nonCompliance = 0;repeatFinding = 0;notApplicable = 0;
 				}
