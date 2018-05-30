@@ -860,16 +860,14 @@ public class DashboardAction extends ActionSupport {
 	
 	private ReportContext constructReportObjectForReadingReport(FacilioModule module, FacilioField readingField) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		List<FacilioField> fields = modBean.getAllFields(module.getName());
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		
+		LOGGER.log(Level.SEVERE,"module.getName() -- "+module.getName());
 		ReportContext readingReport = new ReportContext();
 		
 		readingReport.setModuleId(module.getModuleId());
 		readingReport.setOrgId(AccountUtil.getCurrentOrg().getId());
 		
 		ReportFieldContext xAxis = new ReportFieldContext();
-		xAxis.setModuleField(fieldMap.get("ttime"));
+		xAxis.setModuleField(modBean.getField("ttime", module.getName()));
 		xAxis.setModuleFieldId(xAxis.getModuleField().getId());
 		if(xLabel != null && !xLabel.isEmpty()) {
 			xAxis.setFieldLabel(xLabel);
@@ -910,11 +908,11 @@ public class DashboardAction extends ActionSupport {
 			readingReport.setY1AxisaggregateFunction(yAggr);
 		}
 		Criteria criteria = new Criteria();
-		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(parentId), PickListOperators.IS));
+		criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("parentId", module.getName()), String.valueOf(parentId), PickListOperators.IS));
 		readingReport.setCriteria(criteria);
 		
 		ReportDateFilterContext dateFilter = new ReportDateFilterContext();
-		dateFilter.setField(fieldMap.get("ttime"));
+		dateFilter.setField(modBean.getField("ttime", module.getName()));
 		dateFilter.setFieldId(dateFilter.getField().getId());
 		dateFilter.setOperatorId(DateOperators.TODAY_UPTO_NOW.getOperatorId());
 		readingReport.setDateFilter(dateFilter);
