@@ -2379,7 +2379,10 @@ public class DashboardAction extends ActionSupport {
 			 				value.put("label", buildingVsMeter.containsKey(thisMap.get("groupBy")) ? buildingVsMeter.get(thisMap.get("groupBy")) : thisMap.get("groupBy"));
 			 				if ("cost".equalsIgnoreCase(report.getY1AxisUnit())) {
 			 					Double d = (Double) thisMap.get("value");
-			 					value.put("value", d*  ReportsUtil.getUnitCost(AccountUtil.getCurrentOrg().getOrgId()));
+			 					if(d == null) {
+			 						d = 0d;
+			 					}
+			 					value.put("value", d *  ReportsUtil.getUnitCost(AccountUtil.getCurrentOrg().getOrgId()));
 			 					value.put("orig_value", d);
 			 				}
 			 				else {
