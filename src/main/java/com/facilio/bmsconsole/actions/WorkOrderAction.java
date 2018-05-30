@@ -578,11 +578,20 @@ public class WorkOrderAction extends ActionSupport {
 			context.put(FacilioConstants.ContextNames.FILTERS, json);
 			context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
 		}
+
 		if (getSearch() != null) {
 			JSONObject searchObj = new JSONObject();
 			searchObj.put("query", getSearch());
 			context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
 		}
+		
+		if (getPage() != 0) {
+			JSONObject pagination = new JSONObject();
+			pagination.put("page", getPage());
+			pagination.put("perPage", getPerPage());
+			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+		}
+		
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 
 		Chain getPmchain = FacilioChainFactory.getGetPreventiveMaintenanceListChain();
