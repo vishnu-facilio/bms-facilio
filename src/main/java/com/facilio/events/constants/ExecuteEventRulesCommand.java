@@ -47,7 +47,7 @@ public class ExecuteEventRulesCommand implements Command {
 				}
 				catch (Exception e) {
 					String errorMsg = "Error occurred during execution of event Rule : "+eventRule.getId();
-					CommonCommandUtil.emailException(errorMsg, e);
+//					CommonCommandUtil.emailException(errorMsg, e);
 					logger.log(Level.ERROR, errorMsg, e);
 					throw e;
 				}
