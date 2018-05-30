@@ -348,7 +348,7 @@ public class WorkflowUtil {
 			for(ParameterContext parameterContext:paramterContexts) {
 				Object value = paramMap.get(parameterContext.getName());
 				
-				checkType(parameterContext,value);
+//				checkType(parameterContext,value);
 				
 				parameterContext.setValue(value);
 			}
