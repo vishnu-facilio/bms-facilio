@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 import com.facilio.bmsconsole.commands.ExecuteAllWorkflowsCommand;
 
 public class LRUCache<K, V>{
-	private static final Logger logger = LogManager.getLogger(ExecuteAllWorkflowsCommand.class.getName());
+	private static final Logger logger = LogManager.getLogger(LRUCache.class.getName());
 	public static LRUCache<String, Object> getModuleFieldsCache() {
 		return modulefieldCache;
 	}
