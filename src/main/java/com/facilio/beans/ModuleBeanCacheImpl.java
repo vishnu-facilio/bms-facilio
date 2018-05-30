@@ -190,7 +190,7 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 	
 	@Override
 	public FacilioField getField(long fieldId) throws Exception {
-		
+		try {
 		LRUCache cache = 	LRUCache.getFieldsCache();
 
 		String key = CacheUtil.FIELD_KEY(getOrgId(), fieldId);
@@ -209,6 +209,11 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 			//System.out.println("getField result from CACHE for Id: "+fieldId);
 		}
 		return field;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
 	}
 	
 	@Override
