@@ -94,10 +94,10 @@ public class FormulaFieldAPI {
 	
 	public static void validateFormula (FormulaFieldContext field, boolean checkChildIds) throws Exception {
 		if (field.getTriggerTypeEnum() == null) {
-			throw new IllegalArgumentException("Trigger type cannot be null for FormulaFIeld");
+			throw new IllegalArgumentException("Trigger type cannot be null for FormulaField");
 		}
 		if (field.getFormulaFieldTypeEnum() == null) {
-			throw new IllegalArgumentException("Formula Field type cannot be null for FormulaFIeld");
+			throw new IllegalArgumentException("Formula Field type cannot be null for FormulaField");
 		}
 		if (field.getResourceTypeEnum() == null) {
 			throw new IllegalArgumentException("Resource Type cannot be null for FormulaField");
@@ -255,7 +255,7 @@ public class FormulaFieldAPI {
 													.table(module.getTableName())
 													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCondition(CriteriaAPI.getCondition(triggerTypeField, String.valueOf(triggerType.getValue()), NumberOperators.EQUALS))
-													.andCustomWhere("WORKFLOW_ID IN (SELECT WORKFLOW_ID FROM Workflow_Field WHERE ORGID = ? AND FIELD_ID IN ("+StringUtils.join(fieldIds, ",")+")", AccountUtil.getCurrentOrg().getId())
+													.andCustomWhere("WORKFLOW_ID IN (SELECT WORKFLOW_ID FROM Workflow_Field WHERE ORGID = ? AND FIELD_ID IN ("+StringUtils.join(fieldIds, ",")+"))", AccountUtil.getCurrentOrg().getId())
 													;
 
 		return getFormulaFieldsFromProps(selectBuilder.get());

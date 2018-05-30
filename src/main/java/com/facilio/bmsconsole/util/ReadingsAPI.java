@@ -127,8 +127,9 @@ public class ReadingsAPI {
 		for (Pair<Long, FacilioField> pair : rdmPairs) {
 			Criteria pkCriteria = new Criteria();
 			pkCriteria.addAndCondition(CriteriaAPI.getCondition(resourceIdField, String.valueOf(pair.getLeft()), PickListOperators.IS));
-			pkCriteria.addAndCondition(CriteriaAPI.getCondition(fieldIdField, String.valueOf(pair.getRight()), PickListOperators.IS));
+			pkCriteria.addAndCondition(CriteriaAPI.getCondition(fieldIdField, String.valueOf(pair.getRight().getFieldId()), PickListOperators.IS));
 			pkCriteriaList.orCriteria(pkCriteria);
+			fieldIdMap.put(pair.getRight().getFieldId(), pair.getRight());
 		}
 		
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
