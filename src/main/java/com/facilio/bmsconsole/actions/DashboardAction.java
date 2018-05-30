@@ -1145,7 +1145,7 @@ public class DashboardAction extends ActionSupport {
 			module = modBean.getModule(reportContext.getModuleId());
 		}
 		
-		if(reportSpaceFilterContext != null) {
+		if(reportContext.getReportSpaceFilterContext() != null && reportSpaceFilterContext != null) {
 			reportContext.setReportSpaceFilterContext(reportSpaceFilterContext);
 		}
 		else if(buildingId != null) {
@@ -1779,61 +1779,67 @@ public class DashboardAction extends ActionSupport {
 					xAggregateOpperator = FormulaContext.DateAggregateOperator.HOURSOFDAY;
 				}
 				else if (oprId == DateOperators.CURRENT_WEEK.getOperatorId() || oprId == DateOperators.LAST_WEEK.getOperatorId() || oprId == DateOperators.CURRENT_WEEK_UPTO_NOW.getOperatorId()) {
-					xAggregateOpperator = FormulaContext.DateAggregateOperator.FULLDATE;
-					if(report.getIsComparisionReport()) {
+					if(!(xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.WEEKDAY) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.FULLDATE))) {
 						xAggregateOpperator = FormulaContext.DateAggregateOperator.WEEKDAY;
 					}
 				}
 				else if (oprId == DateOperators.CURRENT_MONTH.getOperatorId() || oprId == DateOperators.LAST_MONTH.getOperatorId() || oprId == DateOperators.CURRENT_MONTH_UPTO_NOW.getOperatorId() || oprId == DateOperators.LAST_N_DAYS.getOperatorId()) {
-					xAggregateOpperator = FormulaContext.DateAggregateOperator.FULLDATE;
-					if(report.getIsComparisionReport()) {
+					
+					if(!(xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.WEEK) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.WEEKANDYEAR) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.WEEKDAY) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.DAYSOFMONTH) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.FULLDATE))) {
 						xAggregateOpperator = FormulaContext.DateAggregateOperator.DAYSOFMONTH;
 					}
 				}
 				else if (oprId == DateOperators.CURRENT_YEAR.getOperatorId() || oprId == DateOperators.LAST_YEAR.getOperatorId() || oprId == DateOperators.CURRENT_YEAR_UPTO_NOW.getOperatorId()) {
-					xAggregateOpperator = FormulaContext.DateAggregateOperator.MONTHANDYEAR;
+					
+					if(!(xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.MONTH) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.WEEK) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.MONTHANDYEAR) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.WEEKANDYEAR) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.WEEKDAY) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.DAYSOFMONTH) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.FULLDATE))) {
+						xAggregateOpperator = FormulaContext.DateAggregateOperator.MONTHANDYEAR;
+					}
 				}
 				report.setxAxisaggregateFunction(xAggregateOpperator.getValue());
 			}
+		}
 			
-			if (getIsHeatMap() || (reportContext.getChartType() != null && reportContext.getChartType().equals(ReportChartType.HEATMAP.getValue())) || (!report.getIsHighResolutionReport() && xAggr != 0)) {
-				if(xAggregateOpperator instanceof SpaceAggregateOperator) {
-					isGroupBySpace = true;
-					FacilioModule baseSpaceModule = modBean.getModule("basespace");
-					
-					subBuilder.innerJoin(baseSpaceModule.getTableName())
-					.on(baseSpaceModule.getTableName()+".ID=Energy_Meter.PURPOSE_SPACE_ID")
-					.andCustomWhere(baseSpaceModule.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId());
-					
-					if(xAggregateOpperator.equals(SpaceAggregateOperator.BUILDING)) {
-						
-						subBuilder.andCustomWhere(baseSpaceModule.getTableName()+".SPACE_TYPE = " + BaseSpaceContext.SpaceType.BUILDING.getIntVal());
-						subBuilder.andCustomWhere("Energy_Meter.PURPOSE_ID = "+"(SELECT ID FROM bms.Energy_Meter_Purpose where ORGID = "+AccountUtil.getCurrentOrg().getOrgId()+" and Name=\"Main\")");
-						subBuilder.andCustomWhere("Energy_Meter.IS_ROOT = 1 ");
-						
-						report.getxAxisField().getField().setDisplayName("Building");
-						report.getxAxisField().getField().setName("building");
-					}
-				}
-				else if(xAggregateOpperator instanceof EnergyPurposeAggregateOperator) {
-					
-					FacilioModule energyMeterPurposeModule = modBean.getModule("energymeterpurpose");
-					
-					subBuilder.innerJoin(energyMeterPurposeModule.getTableName())
-					.on(energyMeterPurposeModule.getTableName()+".ID=Energy_Meter.PURPOSE_ID")
-					.andCustomWhere(energyMeterPurposeModule.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId())
-					.andCustomWhere("Energy_Meter.IS_ROOT = 1 ")
-					.andCustomWhere(energyMeterPurposeModule.getTableName()+".Name!=\"Main\"");
-					if(reportContext.getReportSpaceFilterContext() != null && reportContext.getReportSpaceFilterContext().getBuildingId() != null) {
-						subBuilder.andCustomWhere(energyMeterModule.getTableName()+".PURPOSE_SPACE_ID="+reportContext.getReportSpaceFilterContext().getBuildingId());
-					}
-					report.getxAxisField().getField().setDisplayName("Service");
-					report.getxAxisField().getField().setName("Service");
-				}
-				else {
-					xAxisField = xAggregateOpperator.getSelectField(xAxisField);
-				}
+		if(xAggregateOpperator instanceof SpaceAggregateOperator) {
+			isGroupBySpace = true;
+			FacilioModule baseSpaceModule = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
+			FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+			
+			subBuilder.innerJoin(baseSpaceModule.getTableName())
+			.on(baseSpaceModule.getTableName()+".ID=Energy_Meter.PURPOSE_SPACE_ID")
+			.andCustomWhere(baseSpaceModule.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId());
+			
+			if(xAggregateOpperator.equals(SpaceAggregateOperator.BUILDING) || xAggregateOpperator.equals(SpaceAggregateOperator.SITE)) {
+				
+				subBuilder.innerJoin(assetModule.getTableName())
+				.on(assetModule.getTableName()+".ID = Energy_Meter.ID");
+
+				subBuilder.andCustomWhere(baseSpaceModule.getTableName()+".SPACE_TYPE = " + BaseSpaceContext.SpaceType.BUILDING.getIntVal());
+				EnergyMeterPurposeContext energyMeterPurpose = DeviceAPI.getEnergyMetersPurposeByName(DashboardUtil.ENERGY_METER_PURPOSE_MAIN);
+				subBuilder.andCustomWhere("Energy_Meter.PURPOSE_ID = "+energyMeterPurpose.getId());
+				subBuilder.andCustomWhere("Energy_Meter.IS_ROOT = 1");
+				subBuilder.andCustomWhere("Assets.PARENT_ASSET_ID is null");
+										
+				report.getxAxisField().getField().setDisplayName("Building");
+				report.getxAxisField().getField().setName("building");
 			}
+		}
+		else if(xAggregateOpperator instanceof EnergyPurposeAggregateOperator) {
+			
+			FacilioModule energyMeterPurposeModule = modBean.getModule("energymeterpurpose");
+			
+			subBuilder.innerJoin(energyMeterPurposeModule.getTableName())
+			.on(energyMeterPurposeModule.getTableName()+".ID=Energy_Meter.PURPOSE_ID")
+			.andCustomWhere(energyMeterPurposeModule.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId())
+			.andCustomWhere("Energy_Meter.IS_ROOT = 1")
+			.andCustomWhere(energyMeterPurposeModule.getTableName()+".Name!=\"Main\"");
+			if(reportContext.getReportSpaceFilterContext() != null && reportContext.getReportSpaceFilterContext().getSpaceFilterId() != null) {
+				subBuilder.andCustomWhere(energyMeterModule.getTableName()+".PURPOSE_SPACE_ID="+reportContext.getReportSpaceFilterContext().getSpaceFilterId());
+			}
+			report.getxAxisField().getField().setDisplayName("Service");
+			report.getxAxisField().getField().setName("Service");
+		}
+		else if(!report.getIsHighResolutionReport() && xAggr != 0 && !xAggregateOpperator.getValue().equals(NumberAggregateOperator.COUNT.getValue())) {
+			xAxisField = xAggregateOpperator.getSelectField(xAxisField);
 		}
 		
 		FacilioField y1AxisField = null;
@@ -2010,7 +2016,8 @@ public class DashboardAction extends ActionSupport {
 			}
 		}
 		
-		if (buildingCondition == null && report.getEnergyMeter() != null) {
+		if (buildingCondition == null && (report.getEnergyMeter() != null || report.getReportSpaceFilterContext() != null)) {
+
 //			if (report.getEnergyMeter().getSubMeterId() != null) {
 //				energyMeterValue = report.getEnergyMeter().getSubMeterId() + "";
 //				buildingCondition = CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", report.getEnergyMeter().getSubMeterId()+"", NumberOperators.EQUALS);
@@ -2034,11 +2041,10 @@ public class DashboardAction extends ActionSupport {
 //					buildingCondition = CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", meterIdStr, NumberOperators.EQUALS);
 //				}
 //			}
-			if (report.getReportSpaceFilterContext() != null && report.getReportSpaceFilterContext().getBuildingId() != null) {
-				if ("service".equalsIgnoreCase(report.getEnergyMeter().getGroupBy())) {
+			if (report.getReportSpaceFilterContext().getBuildingId() != null) {
+				if ((report.getEnergyMeter() != null && "service".equalsIgnoreCase(report.getEnergyMeter().getGroupBy())) || "service".equalsIgnoreCase(report.getReportSpaceFilterContext().getGroupBy())) {
 					
 					List<EnergyMeterContext> meters = DeviceAPI.getRootServiceMeters(report.getReportSpaceFilterContext().getBuildingId()+"");
-					LOGGER.severe("meters --- "+meters);
 					if (meters != null && meters.size() > 0) {
 						List<Long> meterIds = new ArrayList<Long>();
 						for (EnergyMeterContext meter : meters) {
@@ -2067,7 +2073,7 @@ public class DashboardAction extends ActionSupport {
 					
 					report.setGroupBy(-1L);
 				}
-				else if ("floor".equalsIgnoreCase(report.getEnergyMeter().getGroupBy())) {
+				else if ((report.getEnergyMeter() != null && "floor".equalsIgnoreCase(report.getEnergyMeter().getGroupBy())) || "floor".equalsIgnoreCase(report.getReportSpaceFilterContext().getGroupBy())) {
 					SelectRecordsBuilder<EnergyMeterContext> builder12 = new SelectRecordsBuilder<EnergyMeterContext>()
 							.table(modBean.getModule("energymeter").getTableName())
 							.moduleName("energymeter")
@@ -2125,9 +2131,8 @@ public class DashboardAction extends ActionSupport {
 					report.setGroupBy(-1L);
 				}
 				else {
-					// get Only Meter org purpose 'Main'
-					List<EnergyMeterContext> meters = DeviceAPI.getMainEnergyMeter(report.getReportSpaceFilterContext().getBuildingId()+"");
-//					List<EnergyMeterContext> meters = DashboardUtil.getMainEnergyMeter(report.getReportSpaceFilterContext().getBuildingId()+"");
+//					List<EnergyMeterContext> meters = DeviceAPI.getMainEnergyMeter(report.getReportSpaceFilterContext().getBuildingId()+"");
+					List<EnergyMeterContext> meters = DashboardUtil.getMainEnergyMeter(report.getReportSpaceFilterContext().getBuildingId()+"");
 					if (meters != null && meters.size() > 0) {
 						List<Long> meterIds = new ArrayList<Long>();
 						for (EnergyMeterContext meter : meters) {
@@ -2282,7 +2287,7 @@ public class DashboardAction extends ActionSupport {
 			}
 		}
 		List<Map<String, Object>> rs = null;
-		if((report.getEnergyMeter() != null || subBuilder != null) && buildingCondition == null) {
+		if((report.getEnergyMeter() != null || subBuilder != null || report.getReportSpaceFilterContext() != null) && buildingCondition == null) {
 //			dont query return null;
 			rs  = new ArrayList<>();
 		}
