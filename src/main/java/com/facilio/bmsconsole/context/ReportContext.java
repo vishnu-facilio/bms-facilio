@@ -420,7 +420,9 @@ public class ReportContext extends ModuleBaseWithCustomFields {
 	
 	public void setChartTypeString(String chartTypeString) {
 		this.chartTypeString = chartTypeString;
-		this.chartType = ReportChartType.getWidgetChartType(chartTypeString).getValue();
+		if(chartTypeString != null) {
+			this.chartType = ReportChartType.getWidgetChartType(chartTypeString).getValue();
+		}
 	}
 	
 	public String getChartTypeString() {
