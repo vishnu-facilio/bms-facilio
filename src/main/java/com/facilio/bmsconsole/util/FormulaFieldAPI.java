@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.util;
 import java.sql.SQLException;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -125,12 +126,18 @@ public class FormulaFieldAPI {
 		switch (field.getTriggerTypeEnum()) {
 			case LIVE_READING:
 				if (field.getInterval() == -1) {
-					throw new IllegalArgumentException("Interval cannot be empty for 'READING' trigger type");
+					throw new IllegalArgumentException("Interval cannot be empty for 'LIVE_READING' trigger type");
+				}
+				if (field.getInterval() > (24 * 60)) {
+					throw new IllegalArgumentException("Interval cannot be more than 1440 minutes (1 day) for 'LIVE_READING' trigger type");
 				}
 				break;
 			case SCHEDULE:
 				if (field.getFrequencyEnum() == null) {
 					throw new IllegalArgumentException("Frequency type cannot be empty for 'FREQUENCY' trigger type"); 
+				}
+				else if (field.getFrequencyEnum() == FacilioFrequency.DO_NOT_REPEAT || field.getFrequencyEnum() == FacilioFrequency.CUSTOM) {
+					throw new IllegalArgumentException("Invalid Frequency for 'SCHEDULE' trigger type");
 				}
 				break;
 		}
@@ -149,7 +156,7 @@ public class FormulaFieldAPI {
 		enpi.setReadingFieldId(enpi.getReadingField().getId());
 	}
 	
-	public static FormulaFieldContext getENPI(long enpiId) throws Exception {
+	public static FormulaFieldContext getFormulaField(long enpiId) throws Exception {
 		FacilioModule module = ModuleFactory.getFormulaFieldModule();
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -203,7 +210,7 @@ public class FormulaFieldAPI {
 		return null;
 	}
 	
-	public static List<FormulaFieldContext> getAllENPIs() throws Exception {
+	public static List<FormulaFieldContext> getAllFormulaFieldsOfType(FormulaFieldType type) throws Exception {
 		FacilioModule module = ModuleFactory.getFormulaFieldModule();
 		List<FacilioField> fields = FieldFactory.getFormulaFieldFields();
 		FacilioField formulaType = FieldFactory.getAsMap(fields).get("formulaFieldType");
@@ -211,7 +218,7 @@ public class FormulaFieldAPI {
 														.select(fields)
 														.table(module.getTableName())
 														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-														.andCondition(CriteriaAPI.getCondition(formulaType, String.valueOf(FormulaFieldType.ENPI.getValue()), NumberOperators.EQUALS))
+														.andCondition(CriteriaAPI.getCondition(formulaType, String.valueOf(type.getValue()), NumberOperators.EQUALS))
 														;
 		
 		return getFormulaFieldsFromProps(selectBuilder.get());
@@ -235,6 +242,23 @@ public class FormulaFieldAPI {
 		
 		return getFormulaFieldsFromProps(selectBuilder.get());
 		
+	}
+	
+	public static List<FormulaFieldContext> getFormulasDependingOnFields (TriggerType triggerType, Collection<Long> fieldIds) throws Exception {
+		FacilioModule module = ModuleFactory.getFormulaFieldModule();
+		List<FacilioField> fields = FieldFactory.getFormulaFieldFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioField triggerTypeField = fieldMap.get("triggerType");
+				
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+													.select(fields)
+													.table(module.getTableName())
+													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+													.andCondition(CriteriaAPI.getCondition(triggerTypeField, String.valueOf(triggerType.getValue()), NumberOperators.EQUALS))
+													.andCustomWhere("WORKFLOW_ID IN (SELECT WORKFLOW_ID FROM Workflow_Field WHERE ORGID = ? AND FIELD_ID IN ("+StringUtils.join(fieldIds, ",")+")", AccountUtil.getCurrentOrg().getId())
+													;
+
+		return getFormulaFieldsFromProps(selectBuilder.get());
 	}
 	
 	public static void recalculateHistoricalData(FormulaFieldContext enpi, FacilioField enpiField) throws Exception {

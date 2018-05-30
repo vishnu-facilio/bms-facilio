@@ -23,7 +23,7 @@ public class DeleteEnPICommand implements Command {
 		long id = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 		
 		if ( id != -1) {
-			FormulaFieldContext oldEnPI = FormulaFieldAPI.getENPI(id);
+			FormulaFieldContext oldEnPI = FormulaFieldAPI.getFormulaField(id);
 			
 			ModuleCRUDBean crudBean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD");
 			crudBean.deleteAllData(oldEnPI.getReadingField().getModule().getName());

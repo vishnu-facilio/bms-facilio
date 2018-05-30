@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -114,14 +115,39 @@ public class ReadingsAPI {
 		return null;
 	}
 	
-	public static List<ReadingDataMeta> getReadingDataMetaList(Iterable<Long> resourceList, Collection<FacilioField> fieldList) throws Exception {
+	public static List<ReadingDataMeta> getReadingDataMetaList(List<Pair<Long, FacilioField>> rdmPairs) throws Exception {
+		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
+		List<FacilioField> fields = FieldFactory.getReadingDataMetaFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioField resourceIdField = fieldMap.get("resourceId");
+		FacilioField fieldIdField = fieldMap.get("fieldId");
+		
+		Map<Long, FacilioField> fieldIdMap = new HashMap<>();
+		Criteria pkCriteriaList = new Criteria();
+		for (Pair<Long, FacilioField> pair : rdmPairs) {
+			Criteria pkCriteria = new Criteria();
+			pkCriteria.addAndCondition(CriteriaAPI.getCondition(resourceIdField, String.valueOf(pair.getLeft()), PickListOperators.IS));
+			pkCriteria.addAndCondition(CriteriaAPI.getCondition(fieldIdField, String.valueOf(pair.getRight()), PickListOperators.IS));
+			pkCriteriaList.orCriteria(pkCriteria);
+		}
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+													.select(fields)
+													.table(module.getTableName())
+													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+													.andCriteria(pkCriteriaList);
+		List<Map<String, Object>> stats = builder.get();	
+		return getReadingDataFromProps(stats, fieldIdMap);
+	}
+	
+	public static List<ReadingDataMeta> getReadingDataMetaList(Long resourceId, Collection<FacilioField> fieldList) throws Exception {
 		Map<Long, FacilioField> fieldMap = FieldFactory.getAsIdMap(fieldList);
 		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getReadingDataMetaFields())
 				.table(module.getTableName())
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resourceId", StringUtils.join(resourceList, ","), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resourceId", String.valueOf(resourceId), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition("FIELD_ID", "fieldId", StringUtils.join(fieldMap.keySet(), ","), NumberOperators.EQUALS));
 		List<Map<String, Object>> stats = builder.get();	
 		return getReadingDataFromProps(stats, fieldMap);

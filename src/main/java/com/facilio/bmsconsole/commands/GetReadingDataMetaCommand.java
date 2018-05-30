@@ -7,12 +7,14 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.tuple.Pair;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -38,11 +40,18 @@ public class GetReadingDataMetaCommand implements Command {
 				String moduleName = entry.getKey();
 				List<ReadingContext> readings = entry.getValue();
 				List<FacilioField> allFields= bean.getAllFields(moduleName);
-				List<Long> resourceList=new ArrayList<Long>();
+				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
+				List<Pair<Long, FacilioField>> rdmPairs = new ArrayList<>();
 				for(ReadingContext reading : readings) {
-					resourceList.add(reading.getParentId());
+					Map<String, Object> readingData = reading.getData();
+					if (readingData != null && !readingData.isEmpty()) {
+						for (String fieldName : readingData.keySet()) {
+							Pair<Long, FacilioField> pair = Pair.of(reading.getParentId(), fieldMap.get(fieldName));
+							rdmPairs.add(pair);
+						}		
+					}
 				}
-				List<ReadingDataMeta> metaList = ReadingsAPI.getReadingDataMetaList( resourceList, allFields) ;
+				List<ReadingDataMeta> metaList = ReadingsAPI.getReadingDataMetaList(rdmPairs) ;
 				for(ReadingDataMeta meta : metaList) {
 					long resourceId = meta.getResourceId();
 					long fieldId = meta.getField().getFieldId();

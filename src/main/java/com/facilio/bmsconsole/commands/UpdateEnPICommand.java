@@ -24,7 +24,7 @@ public class UpdateEnPICommand implements Command {
 		// TODO Auto-generated method stub
 		FormulaFieldContext newEnPI = (FormulaFieldContext) context.get(FacilioConstants.ContextNames.FORMULA_FIELD);
 		if (newEnPI != null) {
-			FormulaFieldContext oldEnPI = FormulaFieldAPI.getENPI(newEnPI.getId());
+			FormulaFieldContext oldEnPI = FormulaFieldAPI.getFormulaField(newEnPI.getId());
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			if (newEnPI.getName() != null && !newEnPI.getName().isEmpty()) {
 				FacilioField field = new FacilioField();
@@ -40,6 +40,7 @@ public class UpdateEnPICommand implements Command {
 			
 			newEnPI.setResourceId(-1);
 			newEnPI.setAssetCategoryId(-1);
+			newEnPI.setSpaceCategoryId(-1);
 			newEnPI.setIncludedResources(null);
 			newEnPI.setFrequency(null);
 			
