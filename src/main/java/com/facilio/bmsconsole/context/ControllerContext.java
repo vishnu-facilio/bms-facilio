@@ -1,6 +1,9 @@
 package com.facilio.bmsconsole.context;
 
+import org.apache.struts2.json.annotations.JSON;
+
 import com.facilio.time.SecondsChronoUnit;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ControllerContext {
 	private long id = -1;
@@ -45,6 +48,9 @@ public class ControllerContext {
 	}
 	
 	private SecondsChronoUnit dateIntervalUnit;
+	
+	@JsonIgnore
+	@JSON(serialize=false)
 	public SecondsChronoUnit getDateIntervalUnit() {
 		return dateIntervalUnit;
 	}
