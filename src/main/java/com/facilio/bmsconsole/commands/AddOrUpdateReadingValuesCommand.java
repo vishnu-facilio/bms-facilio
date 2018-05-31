@@ -90,7 +90,7 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 			if(reading.getParentId() == -1) {
 				throw new IllegalArgumentException("Invalid parent id for readings of module : "+module.getName());
 			}
-			adjustTtime(reading, useControllerDataInterval);
+			adjustTtime(module, reading, useControllerDataInterval);
 			
 			if (reading.getReadings() != null && !reading.getReadings().isEmpty()) {
 				if(reading.getId() == -1) {
@@ -107,15 +107,24 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 		return readingsToBeAdded;
 	}
 	
-	private void adjustTtime(ReadingContext reading, boolean useControllerDataInterval) {
+	private void adjustTtime(FacilioModule module, ReadingContext reading, boolean useControllerDataInterval) {
 		reading.setActualTtime(reading.getTtime());
 		ZonedDateTime zdt = DateTimeUtil.getDateTime(reading.getTtime());
-		if (useControllerDataInterval) {
-			ResourceContext parent = resources.get(reading.getParentId());
-			if (parent.getControllerId() != -1) {
-				ControllerContext controller = controllers.get(parent.getControllerId());
-				if (controller.getDateIntervalUnit() != null) {
-					zdt = zdt.truncatedTo(controller.getDateIntervalUnit());
+		
+		if (module.getDateIntervalUnit() != null) {
+			zdt = zdt.truncatedTo(module.getDateIntervalUnit());
+		}
+		else {
+			if (useControllerDataInterval) {
+				ResourceContext parent = resources.get(reading.getParentId());
+				if (parent.getControllerId() != -1) {
+					ControllerContext controller = controllers.get(parent.getControllerId());
+					if (controller.getDateIntervalUnit() != null) {
+						zdt = zdt.truncatedTo(controller.getDateIntervalUnit());
+					}
+					else {
+						zdt = zdt.truncatedTo(defaultAdjustUnit);
+					}
 				}
 				else {
 					zdt = zdt.truncatedTo(defaultAdjustUnit);
@@ -124,9 +133,6 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 			else {
 				zdt = zdt.truncatedTo(defaultAdjustUnit);
 			}
-		}
-		else {
-			zdt = zdt.truncatedTo(defaultAdjustUnit);
 		}
 		reading.setTtime(DateTimeUtil.getMillis(zdt, true));
 	}

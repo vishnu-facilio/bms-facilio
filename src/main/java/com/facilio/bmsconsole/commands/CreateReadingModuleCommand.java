@@ -38,6 +38,11 @@ public class CreateReadingModuleCommand implements Command {
 			if (module.getTypeEnum() == null) {
 				module.setType(ModuleType.READING);
 			}
+			
+			Integer dataInterval = (Integer) context.get(FacilioConstants.ContextNames.MODULE_DATA_INTERVAL);
+			if (dataInterval != null) {
+				module.setDataInterval(dataInterval);
+			}
 			context.put(FacilioConstants.ContextNames.MODULE, module);
 			fields.addAll(FieldFactory.getDefaultReadingFields(module));
 		}

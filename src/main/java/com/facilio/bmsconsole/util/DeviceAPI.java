@@ -527,6 +527,9 @@ public class DeviceAPI
 		EnergyDataEvaluator evaluator = new EnergyDataEvaluator(readingMap);
 		String expression = meter.getChildMeterExpression();
 		ReadingContext virtualMeterReading = evaluator.evaluateExpression(expression);
+		if(virtualMeterReading==null) {
+			return null;
+		}
 		virtualMeterReading.setTtime(((Double)StatUtils.max(timestamps.stream().mapToDouble(Long::doubleValue).toArray())).longValue());
 		virtualMeterReading.setParentId(meter.getId());
 		return virtualMeterReading;
@@ -535,6 +538,7 @@ public class DeviceAPI
     private static class EnergyDataEvaluator extends ExpressionEvaluator<ReadingContext> {
 
 		private Map<Long, List<ReadingContext>> readingMap;
+		private static final String TOTAL_ENERGY_CONSUMPTION_DELTA = "totalEnergyConsumptionDelta";
 		public EnergyDataEvaluator(Map<Long, List<ReadingContext>> readingMap) {
 			super.setRegEx(EnergyMeterContext.EXP_FORMAT);
 			this.readingMap = readingMap;
@@ -549,28 +553,38 @@ public class DeviceAPI
 			}
 			ReadingContext aggregatedReading = new ReadingContext();
 			
-			List<Double> totalConsumptions = new ArrayList<Double>();
+			double sum = 0d;
 			for(ReadingContext reading : readings) {
-				totalConsumptions.add((Double) reading.getReading("totalEnergyConsumptionDelta"));
+			    if(reading.getReading(TOTAL_ENERGY_CONSUMPTION_DELTA) != null) {
+                    Double value = (Double) reading.getReading(TOTAL_ENERGY_CONSUMPTION_DELTA);
+                    sum += value;
+                }
 			}
-			aggregatedReading.addReading("totalEnergyConsumptionDelta", StatUtils.sum(totalConsumptions.stream().mapToDouble(Double::doubleValue).toArray()));
+			aggregatedReading.addReading(TOTAL_ENERGY_CONSUMPTION_DELTA, sum);
 			return aggregatedReading;
 		}
 
 		@Override
-		public ReadingContext applyOp(String operator, ReadingContext rightOperand, ReadingContext leftOperand) {
+		public ReadingContext applyOp(String operator, ReadingContext rightOperand, ReadingContext leftOperand)  {
 			// TODO Auto-generated method stub
-			if(operator.equals("+")) {
-				ReadingContext reading = new ReadingContext();
-				reading.addReading("totalEnergyConsumptionDelta", ((Double)leftOperand.getReading("totalEnergyConsumptionDelta") + (Double)rightOperand.getReading("totalEnergyConsumptionDelta")));
-				return reading;
+			if(operator == null || rightOperand == null || leftOperand == null) {
+			    logger.info("opertor " + operator + "  left operand " + leftOperand +" right operand " + rightOperand );
+				return null;
 			}
-			else if(operator.equals("-")) {
-				ReadingContext reading = new ReadingContext();
-				reading.addReading("totalEnergyConsumptionDelta", ((Double)leftOperand.getReading("totalEnergyConsumptionDelta") - (Double)rightOperand.getReading("totalEnergyConsumptionDelta")));
-				return reading;
+			ReadingContext reading = new ReadingContext();
+			Double left = (Double)leftOperand.getReading(TOTAL_ENERGY_CONSUMPTION_DELTA);
+			Double right =(Double)rightOperand.getReading(TOTAL_ENERGY_CONSUMPTION_DELTA);
+			if(left == null || right == null) {
+			    return null;
+            }
+			double total = 0d;
+			if("+".equals(operator)) {
+				total = left + right;
+			} else if("-".equals(operator)) {
+				total = left - right;
 			}
-			return null;
+			reading.addReading(TOTAL_ENERGY_CONSUMPTION_DELTA, total);
+			return reading;
 		}
 		
 	}

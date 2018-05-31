@@ -66,21 +66,16 @@ public class GetReportUnderlyingDataCommand implements Command {
 			Condition dateCondition = DashboardUtil.getDateCondition(reportContext, dateFilter, module);
 			builder.andCondition(dateCondition);
 		}
-		if (reportContext.getEnergyMeter() != null) {
-			if (reportContext.getEnergyMeter().getSubMeterId() != null) {
-				builder.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", reportContext.getEnergyMeter().getSubMeterId()+"", NumberOperators.EQUALS));
-			}
-			else if (reportContext.getReportSpaceFilterContext() != null && reportContext.getReportSpaceFilterContext().getBuildingId() != null) {
-				List<EnergyMeterContext> meters = DeviceAPI.getMainEnergyMeter(reportContext.getReportSpaceFilterContext().getBuildingId()+"");
-				if (meters != null && meters.size() > 0) {
-					List<Long> meterIds = new ArrayList<Long>();
-					for (EnergyMeterContext meter : meters) {
-						meterIds.add(meter.getId());
-					}
-					
-					String meterIdStr = StringUtils.join(meterIds, ",");
-					builder.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", meterIdStr, NumberOperators.EQUALS));
+		if (reportContext.getReportSpaceFilterContext() != null && reportContext.getReportSpaceFilterContext().getBuildingId() != null) {
+			List<EnergyMeterContext> meters = DeviceAPI.getMainEnergyMeter(reportContext.getReportSpaceFilterContext().getBuildingId()+"");
+			if (meters != null && meters.size() > 0) {
+				List<Long> meterIds = new ArrayList<Long>();
+				for (EnergyMeterContext meter : meters) {
+					meterIds.add(meter.getId());
 				}
+				
+				String meterIdStr = StringUtils.join(meterIds, ",");
+				builder.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", meterIdStr, NumberOperators.EQUALS));
 			}
 		}
 		

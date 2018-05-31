@@ -262,4 +262,17 @@ public class FormulaFieldContext {
 			return null;
 		}
 	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		StringBuilder builder = new StringBuilder("Formula Field::")
+									.append(orgId)
+									.append("::")
+									.append(id)
+									.append("::")
+									.append(name)
+									;
+		return builder.toString();
+	}
 }

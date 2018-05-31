@@ -64,6 +64,18 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 	}
 	
 	@Override
+	public int updateModule(FacilioModule module) throws Exception {
+		// TODO Auto-generated method stub
+		int row =  super.updateModule(module);
+		if (row > 0) {
+			FacilioModule newModule = super.getModule(module.getModuleId());
+			CacheUtil.delete(CacheUtil.MODULE_KEY(getOrgId(), newModule.getModuleId()));
+			CacheUtil.delete(CacheUtil.MODULE_KEY(getOrgId(), newModule.getName()));
+		}
+		return row;
+	}
+	
+	@Override
 	public List<FacilioModule> getAllSubModules(String moduleName) throws Exception {
 		
 		ArrayList<FacilioModule> modules = (ArrayList<FacilioModule>) CacheUtil.get(CacheUtil.SUB_MODULE_KEY(getOrgId(), moduleName));
@@ -190,7 +202,7 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 	
 	@Override
 	public FacilioField getField(long fieldId) throws Exception {
-		
+		try {
 		LRUCache cache = 	LRUCache.getFieldsCache();
 
 		String key = CacheUtil.FIELD_KEY(getOrgId(), fieldId);
@@ -209,6 +221,11 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 			//System.out.println("getField result from CACHE for Id: "+fieldId);
 		}
 		return field;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
 	}
 	
 	@Override
@@ -240,4 +257,22 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 		}
 		return fieldId;
 	}
+	
+	@Override
+	public int updateField(FacilioField field) throws Exception {
+		// TODO Auto-generated method stub
+		int rows = super.updateField(field);
+//		if (rows > 0) {
+//			FacilioField newField = super.getField(field.getId());
+//			
+//			LRUCache cache = 	LRUCache.getModuleFieldsCache();
+//			cache.remove(CacheUtil.FIELDS_KEY(getOrgId(), newField.getModule().getName()));
+//			
+//			cache = LRUCache.getFieldsCache();
+//			cache.remove(CacheUtil.FIELD_KEY(getOrgId(), newField.getFieldId()));
+//		}
+		return rows;
+	}
+	
+	
 }

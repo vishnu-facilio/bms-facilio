@@ -271,7 +271,7 @@ public class Criteria extends ExpressionEvaluator<Predicate> {
 			}
 			else {
 				pattern = newPattern;
-				conditions = newConditions;
+				conditions = new HashMap<>(newConditions); 
 			}
 		}
 	}

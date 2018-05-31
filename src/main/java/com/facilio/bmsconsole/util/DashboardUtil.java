@@ -1456,40 +1456,40 @@ public class DashboardUtil {
 				
 				LOGGER.severe("sssssaaaa --- "+prop);
 			}
-			if(reportContext.getEnergyMeter() != null) {
-				Map<String, Object> prop = FieldUtil.getAsProperties(reportContext.getEnergyMeter());
-				prop.put("reportId", reportContext.getId());
-
-				insertBuilder = new GenericInsertRecordBuilder()
-						.table(ModuleFactory.getReportEnergyMeter().getTableName())
-						.fields(FieldFactory.getReportEnergyMeterFields());
-				
-				insertBuilder.addRecord(prop).save();
-				
-				prop = FieldUtil.getAsProperties(reportContext.getEnergyMeter());
-				prop.put("reportId", reportContext.getId());
-				LOGGER.severe("getReportSpaceFilterModule -- "+prop);
-				insertBuilder = new GenericInsertRecordBuilder()
-						.table(ModuleFactory.getReportSpaceFilterModule().getTableName())
-						.fields(FieldFactory.getReportSpaceFilterFields());
-				
-				insertBuilder.addRecord(prop).save();
-			}
+//			if(reportContext.getEnergyMeter() != null) {
+//				Map<String, Object> prop = FieldUtil.getAsProperties(reportContext.getEnergyMeter());
+//				prop.put("reportId", reportContext.getId());
+//
+//				insertBuilder = new GenericInsertRecordBuilder()
+//						.table(ModuleFactory.getReportEnergyMeter().getTableName())
+//						.fields(FieldFactory.getReportEnergyMeterFields());
+//				
+//				insertBuilder.addRecord(prop).save();
+//				
+//				prop = FieldUtil.getAsProperties(reportContext.getEnergyMeter());
+//				prop.put("reportId", reportContext.getId());
+//				LOGGER.severe("getReportSpaceFilterModule -- "+prop);
+//				insertBuilder = new GenericInsertRecordBuilder()
+//						.table(ModuleFactory.getReportSpaceFilterModule().getTableName())
+//						.fields(FieldFactory.getReportSpaceFilterFields());
+//				
+//				insertBuilder.addRecord(prop).save();
+//			}
 			if(reportContext.getReportSpaceFilterContext() != null) {
 				
-				Map<String, Object> prop = FieldUtil.getAsProperties(reportContext.getEnergyMeter());
-				if(prop == null) {
-					prop = new HashMap<>();
-				}
-				prop.put("reportId", reportContext.getId());
-
-				insertBuilder = new GenericInsertRecordBuilder()
-						.table(ModuleFactory.getReportEnergyMeter().getTableName())
-						.fields(FieldFactory.getReportEnergyMeterFields());
+//				Map<String, Object> prop = FieldUtil.getAsProperties(reportContext.getEnergyMeter());
+//				if(prop == null) {
+//					prop = new HashMap<>();
+//				}
+//				prop.put("reportId", reportContext.getId());
+//
+//				insertBuilder = new GenericInsertRecordBuilder()
+//						.table(ModuleFactory.getReportEnergyMeter().getTableName())
+//						.fields(FieldFactory.getReportEnergyMeterFields());
+//				
+//				insertBuilder.addRecord(prop).save();
 				
-				insertBuilder.addRecord(prop).save();
-				
-				prop = FieldUtil.getAsProperties(reportContext.getReportSpaceFilterContext());
+				Map<String, Object> prop = FieldUtil.getAsProperties(reportContext.getReportSpaceFilterContext());
 				prop.put("reportId", reportContext.getId());
 				
 				insertBuilder = new GenericInsertRecordBuilder()

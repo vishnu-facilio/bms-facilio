@@ -3,7 +3,6 @@ package com.facilio.accounts.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.facilio.accounts.bean.RoleBean;
@@ -131,7 +130,6 @@ public class RoleBeanImpl implements RoleBean {
 	@Override
 	public Role getRole(long roleId) throws Exception {
 		
-		LOGGER.log(Level.SEVERE, "ROLE PERMISSION ROLEID::::::" + roleId);
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(AccountConstants.getRoleFields())
 				.table(AccountConstants.getRoleModule().getTableName())
@@ -139,7 +137,6 @@ public class RoleBeanImpl implements RoleBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			LOGGER.log(Level.SEVERE, "ROLE PERMISSION PROPS::::::" + props.get(0));
 			Role roleObj = FieldUtil.getAsBeanFromMap(props.get(0), Role.class);
 			List<Permissions> permissions = getPermissions(roleObj.getId());
 			roleObj.setPermissions(permissions);
@@ -201,7 +198,6 @@ public class RoleBeanImpl implements RoleBean {
 		List<Map<String, Object>> props = selectBuilder.get();
 		if(props != null && !props.isEmpty()) {
 			List<Permissions> permissions = new ArrayList<>();
-			LOGGER.log(Level.SEVERE, "ROLE PERMISSION PERMISSION::::::" + props);
 			for(Map<String, Object> prop : props) {
 				permissions.add(FieldUtil.getAsBeanFromMap(prop, Permissions.class));
 			}

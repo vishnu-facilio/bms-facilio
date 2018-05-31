@@ -186,6 +186,7 @@ public class FacilioConstants {
 		public static final String MODULE_DATA_TABLE_NAME = "moduleDataTable";
 		public static final String MODULE_ATTACHMENT_TABLE_NAME = "moduleAttachmentTable";
 		public static final String MODULE_TYPE = "moduleType";
+		public static final String MODULE_DATA_INTERVAL = "moduleDataInterval";
 		public static final String PARENT_MODULE = "parentModule";
 		public static final String READING_NAME = "readingName";
 		public static final String MODULE = "module";
@@ -432,7 +433,8 @@ public class FacilioConstants {
 		public static final String READING_DATA_META_LIST = "readingDataMetaList";
 		public static final String READING_DATA_META_TYPE = "readingDataMetaType";
 		public static final String FORMULA_FIELD = "formulaField";
-		public static final String ENPI_LIST = "energyPerformanceIndicatorList";
+		public static final String FORMULA_FIELD_TYPE = "formulaFieldType";
+		public static final String FORMULA_LIST = "formulaList";
 		public static final String HISTORY_READINGS = "historyReadings";
 		public static final String ANALYTICS_ANAMOLY = "analyticsAnamoly";
 		

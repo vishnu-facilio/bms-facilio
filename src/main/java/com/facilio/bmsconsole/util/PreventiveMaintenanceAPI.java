@@ -454,15 +454,15 @@ public class PreventiveMaintenanceAPI {
 		
 		filterCriteria.addAndCondition(CriteriaAPI.getCondition(pmFieldsMap.get("status"), String.valueOf(true), BooleanOperators.IS));
 		
-		return getPMs(ids, filterCriteria, null);
+		return getPMs(ids, filterCriteria,null, null);
 
 	}
 	
 	public static List<PreventiveMaintenance> getPMsDetails(List<Long> ids, Criteria... criteria) throws Exception {
-		return getPMs(ids, criteria != null && criteria.length == 1 ? criteria[0] : null, null, true, true);
+		return getPMs(ids, criteria != null && criteria.length == 1 ? criteria[0] : null, null, null, true, true);
 	}
 	
-	public static List<PreventiveMaintenance> getPMs(List<Long> ids, Criteria criteria,String searchQuery,  Boolean...fetchDependencies) throws Exception {
+	public static List<PreventiveMaintenance> getPMs(List<Long> ids, Criteria criteria, String searchQuery, JSONObject pagination, Boolean...fetchDependencies) throws Exception {
 		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
 		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
 		FacilioField pmSubjectField = FieldFactory.getAsMap(fields).get("title");
@@ -472,6 +472,19 @@ public class PreventiveMaintenanceAPI {
 														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.orderBy("Preventive_Maintenance.CREATION_TIME DESC")
 														;
+		
+		if (pagination != null) {
+			int page = (int) pagination.get("page");
+			int perPage = (int) pagination.get("perPage");
+			
+			int offset = ((page-1) * perPage);
+			if (offset < 0) {
+				offset = 0;
+			}
+			
+			selectBuilder.offset(offset);
+			selectBuilder.limit(perPage);
+		}
 		
 		if(ids != null && !ids.isEmpty()) {
 			selectBuilder.andCondition(CriteriaAPI.getIdCondition(ids, module));

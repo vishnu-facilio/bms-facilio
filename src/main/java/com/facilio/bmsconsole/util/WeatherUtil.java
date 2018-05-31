@@ -33,9 +33,12 @@ import com.facilio.fw.BeanFactory;
 
 public class WeatherUtil {
 	
-	private static String weatherURL=AwsUtil.getConfig("weather.url")+AwsUtil.getConfig("weather.key")+"/";
+	private static String weatherURL=AwsUtil.getConfig("weather.url");
 	private static String weatherParams="?units=si&exclude=flags,daily,hourly,alerts";
 	
+	private static String[] apiKeys=AwsUtil.getConfig("weather.key").trim().split(",");
+	
+	private static int currentKey=0;
 	private static int apiCallCount=0;
 	
 	public static String getResponse (HttpURLConnection connection) throws Exception {
@@ -113,6 +116,15 @@ public class WeatherUtil {
 		return iStream;
 	}
 	
+	private static String getAPIKey() {
+
+		if (apiCallCount>960) {
+			int temp=currentKey+1;
+			currentKey=(temp<apiKeys.length)?temp:0;
+		}
+		return apiKeys[currentKey];
+	}
+	
 	public static String getForecastURL(double lat, double longitude) {
 		
 		return getForecastURL(lat,longitude,null);
@@ -122,7 +134,11 @@ public class WeatherUtil {
 	public static String getForecastURL(double lat, double longitude,Long time) {
 
 		StringBuilder url = new StringBuilder(weatherURL);
-		url.append(lat+","+longitude);
+		url.append(getAPIKey());
+		url.append("/");
+		url.append(lat);
+		url.append(",");
+		url.append(longitude);
 		if(time!=null) {
 			url.append(","+time);
 		}

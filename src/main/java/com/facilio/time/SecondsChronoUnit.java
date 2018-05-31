@@ -7,7 +7,10 @@ import java.time.temporal.TemporalUnit;
 
 public class SecondsChronoUnit implements TemporalUnit {
 
-	private final Duration duration;
+	private Duration duration;
+	public SecondsChronoUnit() {
+		
+	}
 	
 	public SecondsChronoUnit(long durationInSeconds) {
 		// TODO Auto-generated constructor stub

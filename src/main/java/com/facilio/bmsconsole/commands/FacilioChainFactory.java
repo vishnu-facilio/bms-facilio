@@ -1840,7 +1840,7 @@ public class FacilioChainFactory {
 		c.addCommand(new AddOrUpdateReadingValuesCommand());
 		c.addCommand(new AddMarkedReadingValuesCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.READING_RULE, RuleType.PM_READING_RULE));
-//		c.addCommand(new CalculateFormulaFieldsCommand());
+		c.addCommand(new CalculateFormulaFieldsCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -2004,7 +2004,7 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain addEnPIChain() {
+	public static Chain addFormulaFieldChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(new CreateFormulaFieldDependenciesCommand());
 		c.addCommand(getAddReadingChain());
@@ -2012,28 +2012,28 @@ public class FacilioChainFactory {
 		c.addCommand(new AddCategoryReadingRelCommand());
 		c.addCommand(new GetCategoryResourcesCommand());
 		c.addCommand(new InsertReadingDataMetaForNewReadingCommand());
-		c.addCommand(new AddEnPICommand());
+		c.addCommand(new AddFormulaFieldCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
 	
-	public static Chain getAllEnPIsChain() {
+	public static Chain getAllFormulasOfTypeChain() {
 		Chain c = new ChainBase();
-		c.addCommand(new GetAllEnPIsCommand());
+		c.addCommand(new GetAllFormulasOfTypeCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
 	
-	public static Chain updateEnPIChain() {
+	public static Chain updateFormulaChain() {
 		Chain c = new TransactionChain();
-		c.addCommand(new UpdateEnPICommand());
+		c.addCommand(new UpdateFormulaCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
 	
-	public static Chain deleteEnPIChain() {
+	public static Chain deleteFormulaChain() {
 		Chain c = new TransactionChain();
-		c.addCommand(new DeleteEnPICommand());
+		c.addCommand(new DeleteFormulaCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

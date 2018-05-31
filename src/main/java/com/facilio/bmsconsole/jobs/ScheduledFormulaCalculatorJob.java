@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -30,15 +33,16 @@ import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 
 public class ScheduledFormulaCalculatorJob extends FacilioJob {
-
+	private static final Logger logger = LogManager.getLogger(ScheduledFormulaCalculatorJob.class.getName());
 	@Override
 	public void execute(JobContext jc) {
 		// TODO Auto-generated method stub
 		try {
 			List<Integer> types = getFrequencyTypesToBeFetched();
+			logger.log(Level.INFO, "Frequencies to be fetched for Scheduled Formula Calculation : ");
 			List<FormulaFieldContext> enPIs = FormulaFieldAPI.getScheduledFormulasOfFrequencyType(types);
+			logger.log(Level.INFO, "Formulas to be calculate : "+enPIs);
 			List<Long> calculatedFieldIds = new ArrayList<>();
-			
 			if (enPIs != null && !enPIs.isEmpty()) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				long endTime = DateTimeUtil.getHourStartTime();

@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.jobs;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -13,6 +14,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
+import com.facilio.bmsconsole.context.FormulaFieldContext.TriggerType;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
@@ -37,8 +39,8 @@ public class HistoricalFormulaFieldCalculatorJob extends FacilioJob {
 	public void execute(JobContext jc) {
 		// TODO Auto-generated method stub
 		try {
-			long enpiId = jc.getJobId();
-			FormulaFieldContext enpi = FormulaFieldAPI.getENPI(enpiId);
+			long formulaId = jc.getJobId();
+			FormulaFieldContext enpi = FormulaFieldAPI.getFormulaField(formulaId);
 			
 			logger.log(Level.INFO, "Calculating EnPI for "+enpi.getName());
 			
@@ -73,12 +75,12 @@ public class HistoricalFormulaFieldCalculatorJob extends FacilioJob {
 					List<FacilioField> fieldsList = modBean.getAllFields(enpi.getReadingField().getModule().getName());
 					ReadingsAPI.updateReadingDataMeta(fieldsList, lastReadings, null);
 					
-					List<FormulaFieldContext> allEnPIs = FormulaFieldAPI.getAllENPIs();
-					for (FormulaFieldContext currentEnPI : allEnPIs) {
-						if (currentEnPI.getId() != enpi.getId()) {
-							List<Long> dependentFieldIds = currentEnPI.getWorkflow().getDependentFieldIds();
+					List<FormulaFieldContext> dependentFormulas = FormulaFieldAPI.getFormulasDependingOnFields(TriggerType.SCHEDULE, Collections.singletonList(enpi.getReadingField().getId()));
+					if (dependentFormulas != null && !dependentFormulas.isEmpty()) {
+						for (FormulaFieldContext currentFormula : dependentFormulas) {
+							List<Long> dependentFieldIds = currentFormula.getWorkflow().getDependentFieldIds();
 							if (dependentFieldIds.contains(enpi.getReadingField().getFieldId())) {
-								FormulaFieldAPI.recalculateHistoricalData(currentEnPI, currentEnPI.getReadingField());
+								FormulaFieldAPI.recalculateHistoricalData(currentFormula, currentFormula.getReadingField());
 							}
 						}
 					}

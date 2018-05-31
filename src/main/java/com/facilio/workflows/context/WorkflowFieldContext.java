@@ -1,5 +1,7 @@
 package com.facilio.workflows.context;
 
+import com.facilio.bmsconsole.modules.FacilioField;
+
 public class WorkflowFieldContext {
 
 	private long orgId = -1;
@@ -32,5 +34,13 @@ public class WorkflowFieldContext {
 	}
 	public void setFieldId(long fieldId) {
 		this.fieldId = fieldId;
+	}
+	
+	private FacilioField field;
+	public FacilioField getField() {
+		return field;
+	}
+	public void setField(FacilioField field) {
+		this.field = field;
 	}
 }

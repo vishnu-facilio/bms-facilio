@@ -1,7 +1,6 @@
 package com.facilio.timeseries;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -116,7 +115,7 @@ public class TimeSeriesAPI {
 			}
 			fields.add(field);
 		}
-		return ReadingsAPI.getReadingDataMetaList(Collections.singletonList(assetId), fields);
+		return ReadingsAPI.getReadingDataMetaList(assetId, fields);
 	}
 	
 	private static void checkForInputType(long assetId, long fieldId, String instanceName, Map<String, ReadingDataMeta> metaMap) throws Exception {

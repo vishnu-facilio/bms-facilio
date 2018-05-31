@@ -6,6 +6,9 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -19,7 +22,7 @@ import com.facilio.workflows.util.WorkflowUtil;
 public class ExecuteEventRulesCommand implements Command {
 
 	private static final boolean IS_CASCADING = false;
-	
+	private static final Logger logger = LogManager.getLogger(ExecuteEventRulesCommand.class.getName());
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -31,14 +34,22 @@ public class ExecuteEventRulesCommand implements Command {
 			CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeHolders);
 			CommonCommandUtil.appendModuleNameInKey(null, "event", FieldUtil.getAsProperties(event), placeHolders);
 			for (EventRuleContext eventRule : eventRules) {
-				Map<String, Object> rulePlaceHolders = new HashMap<>(placeHolders);
-				CommonCommandUtil.appendModuleNameInKey(null, "event", FieldUtil.getAsProperties(event), placeHolders);
-				if (isRulePassed(event, eventRule, rulePlaceHolders)) {
-					event = executeRule(event, eventRule, rulePlaceHolders);
-					context.put(EventConstants.EventContextNames.EVENT, event);
-					if (!IS_CASCADING) {
-						break;
+				try {
+					Map<String, Object> rulePlaceHolders = new HashMap<>(placeHolders);
+					CommonCommandUtil.appendModuleNameInKey(null, "event", FieldUtil.getAsProperties(event), placeHolders);
+					if (isRulePassed(event, eventRule, rulePlaceHolders)) {
+						event = executeRule(event, eventRule, rulePlaceHolders);
+						context.put(EventConstants.EventContextNames.EVENT, event);
+						if (!IS_CASCADING) {
+							break;
+						}
 					}
+				}
+				catch (Exception e) {
+					String errorMsg = "Error occurred during execution of event Rule : "+eventRule.getId();
+//					CommonCommandUtil.emailException(errorMsg, e);
+					logger.log(Level.ERROR, errorMsg, e);
+					throw e;
 				}
 			}
 		}

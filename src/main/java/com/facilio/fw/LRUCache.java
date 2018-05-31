@@ -2,8 +2,12 @@ package com.facilio.fw;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-public class LRUCache<K, V>{
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
+public class LRUCache<K, V>{
+	private static final Logger logger = LogManager.getLogger(LRUCache.class.getName());
 	public static LRUCache<String, Object> getModuleFieldsCache() {
 		return modulefieldCache;
 	}
@@ -114,10 +118,10 @@ public class LRUCache<K, V>{
     }
 
     public void put(K key, V value){
-     	System.out.println("PUT ###############adding data to cache "+key);
+     	logger.log(Level.INFO,"PUT ###############adding data to cache "+key);
 
         if (cache.containsKey(key)){
-         	System.out.println("PUT ############### data already exist cache "+key);
+        	logger.log(Level.INFO,"PUT ############### data already exist cache "+key);
 
             return;
         }

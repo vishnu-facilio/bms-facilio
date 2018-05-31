@@ -9,8 +9,8 @@ import org.apache.commons.chain.Context;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
@@ -26,16 +26,42 @@ public class CreateFormulaFieldDependenciesCommand implements Command {
 			
 			FormulaFieldAPI.validateFormula(formulaField, false);
 			
-			FacilioField field = FieldFactory.getField(null, formulaField.getName(), null, null, formulaField.getResultDataTypeEnum());
+			FacilioField field = FieldFactory.getField(null, formulaField.getName(), null, null, formulaField.getResultDataTypeEnum() == null? FieldType.DECIMAL : formulaField.getResultDataTypeEnum());
 			field.setDisplayType(FacilioField.FieldDisplayType.ENPI);
 			formulaField.setReadingField(field);
 			
 			context.put(FacilioConstants.ContextNames.READING_NAME, formulaField.getName());
 			context.put(FacilioConstants.ContextNames.MODULE_FIELD, formulaField.getReadingField());
-			setModuleType(formulaField, context);
+			context.put(FacilioConstants.ContextNames.MODULE_DATA_INTERVAL, getDataInterval(formulaField));
+			context.put(FacilioConstants.ContextNames.MODULE_TYPE, FormulaFieldAPI.getModuleTypeFromTrigger(formulaField.getTriggerTypeEnum()));
 			setReadingParent(formulaField, context);
 		}
 		return false;
+	}
+	
+	private int getDataInterval(FormulaFieldContext formula) {
+		switch (formula.getTriggerTypeEnum()) {
+			case SCHEDULE:
+				switch (formula.getFrequencyEnum()) {
+					case HOURLY:
+						return 60;
+					case DAILY:
+					case WEEKLY:
+					case MONTHLY:
+					case QUARTERTLY:
+					case HALF_YEARLY:
+					case ANNUALLY:
+						return 24 * 60;
+					default:
+						return -1;
+				}
+			case LIVE_READING:
+				if (formula.getInterval() > (24 * 60)) {
+					return 24 * 60;
+				}
+				return formula.getInterval();
+		}
+		return -1;
 	}
 	
 	private void setReadingParent(FormulaFieldContext formulaField, Context context) throws Exception {
@@ -85,17 +111,6 @@ public class CreateFormulaFieldDependenciesCommand implements Command {
 		
 		if (spaces != null && !spaces.isEmpty()) {
 			context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, spaces.stream().map(BaseSpaceContext::getId).collect(Collectors.toList()));
-		}
-	}
-	
-	private void setModuleType(FormulaFieldContext formulaField, Context context) {
-		switch (formulaField.getTriggerTypeEnum()) {
-			case SCHEDULE:
-				context.put(FacilioConstants.ContextNames.MODULE_TYPE, FacilioModule.ModuleType.SCHEDULED_FORMULA);
-				break;
-			case LIVE_READING:
-				context.put(FacilioConstants.ContextNames.MODULE_TYPE, FacilioModule.ModuleType.LIVE_FORMULA);
-				break;
 		}
 	}
 }

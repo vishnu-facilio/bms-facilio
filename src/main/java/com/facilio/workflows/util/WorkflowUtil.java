@@ -211,6 +211,43 @@ public class WorkflowUtil {
 		return workflowContext.getId();
 	}
 	
+	public static List<WorkflowFieldContext>  getWorkflowField(WorkflowContext workflowContext) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		List<WorkflowFieldContext> workflowFieldList = null;
+		for(ExpressionContext expression :workflowContext.getExpressions()) {
+			
+			String fieldName = expression.getFieldName();
+			String moduleName = expression.getModuleName();
+			
+			if(moduleName != null && fieldName != null) {
+				LOGGER.severe("moduleName -- "+moduleName +" fieldName -- "+fieldName);
+				FacilioModule module = modBean.getModule(moduleName);
+				FacilioField field = modBean.getField(fieldName, moduleName);
+				if(field != null) {
+					
+					if(workflowFieldList == null) {
+						workflowFieldList = new ArrayList<>();
+					}
+					
+					WorkflowFieldContext workflowFieldContext = new WorkflowFieldContext();
+					
+					workflowFieldContext.setOrgId(module.getOrgId());
+					workflowFieldContext.setModuleId(module.getModuleId());
+					workflowFieldContext.setFieldId(field.getId());
+					workflowFieldContext.setField(field);
+					if (workflowContext.getId() != null) {
+						workflowFieldContext.setWorkflowId(workflowContext.getId());
+					}
+					
+					workflowFieldList.add(workflowFieldContext);
+				}
+			}
+		}
+		return workflowFieldList;
+	}
+	
 	public static List<WorkflowFieldContext> getWorkflowFields(long workflowId) throws Exception {
 		FacilioModule module = ModuleFactory.getWorkflowFieldModule();
 		List<FacilioField> fields = FieldFactory.getWorkflowFieldsFields();
@@ -348,7 +385,7 @@ public class WorkflowUtil {
 			for(ParameterContext parameterContext:paramterContexts) {
 				Object value = paramMap.get(parameterContext.getName());
 				
-				checkType(parameterContext,value);
+//				checkType(parameterContext,value);
 				
 				parameterContext.setValue(value);
 			}

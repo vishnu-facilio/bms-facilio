@@ -3,6 +3,11 @@
 import java.io.Serializable;
 import java.util.List;
 
+import org.apache.struts2.json.annotations.JSON;
+
+import com.facilio.time.SecondsChronoUnit;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class FacilioModule implements Serializable {
 	
 	private long moduleId = -1;
@@ -90,6 +95,23 @@ public class FacilioModule implements Serializable {
 			return trashEnabled.booleanValue();
 		}
 		return false;
+	}
+	
+	private int dataInterval = -1;
+	public int getDataInterval() {
+		return dataInterval;
+	}
+	public void setDataInterval(int dataInterval) {
+		this.dataInterval = dataInterval;
+		this.dateIntervalUnit = new SecondsChronoUnit(dataInterval * 60);
+	}
+	
+	private SecondsChronoUnit dateIntervalUnit;
+	
+	@JsonIgnore
+	@JSON(serialize=false)
+	public SecondsChronoUnit getDateIntervalUnit() {
+		return dateIntervalUnit;
 	}
 	
 	

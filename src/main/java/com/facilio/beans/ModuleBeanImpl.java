@@ -1,6 +1,5 @@
 package com.facilio.beans;
 
-import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -73,6 +72,10 @@ public class ModuleBeanImpl implements ModuleBean {
 				prevModule.setExtendModule(currentModule);
 			}
 			prevModule = currentModule;
+			int dataInterval = rs.getInt("DATA_INTERVAL"); 
+			if (dataInterval != 0) {
+				currentModule.setDataInterval(dataInterval);
+			}
 			
 			if(isFirst) {
 				module = currentModule;
@@ -90,7 +93,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		ResultSet rs = null;
 		try {
 			 conn = getConnection();
-			pstmt = conn.prepareStatement("SELECT m.MODULEID, m.ORGID, m.NAME, m.DISPLAY_NAME, m.TABLE_NAME, m.MODULE_TYPE, m.IS_TRASH_ENABLED, @em:=m.EXTENDS_ID AS EXTENDS_ID FROM (SELECT * FROM Modules ORDER BY MODULEID DESC) m JOIN (SELECT @em:=MODULEID FROM Modules WHERE ORGID = ? AND MODULEID = ?) tmp WHERE m.MODULEID=@em;");
+			pstmt = conn.prepareStatement("SELECT m.MODULEID, m.ORGID, m.NAME, m.DISPLAY_NAME, m.TABLE_NAME, m.MODULE_TYPE, m.IS_TRASH_ENABLED, m.DATA_INTERVAL, @em:=m.EXTENDS_ID AS EXTENDS_ID FROM (SELECT * FROM Modules ORDER BY MODULEID DESC) m JOIN (SELECT @em:=MODULEID FROM Modules WHERE ORGID = ? AND MODULEID = ?) tmp WHERE m.MODULEID=@em;");
 			pstmt.setLong(1, getOrgId());
 			pstmt.setLong(2, moduleId);
 			
@@ -120,7 +123,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		try {
 			 conn = getConnection();
 			 
-			pstmt = conn.prepareStatement("SELECT m.MODULEID, m.ORGID, m.NAME, m.DISPLAY_NAME, m.TABLE_NAME, m.MODULE_TYPE, m.IS_TRASH_ENABLED, @em:=m.EXTENDS_ID AS EXTENDS_ID FROM (SELECT * FROM Modules ORDER BY MODULEID DESC) m JOIN (SELECT @em:=MODULEID FROM Modules WHERE ORGID = ? AND NAME = ?) tmp WHERE m.MODULEID=@em");
+			pstmt = conn.prepareStatement("SELECT m.MODULEID, m.ORGID, m.NAME, m.DISPLAY_NAME, m.TABLE_NAME, m.MODULE_TYPE, m.IS_TRASH_ENABLED, m.DATA_INTERVAL, @em:=m.EXTENDS_ID AS EXTENDS_ID FROM (SELECT * FROM Modules ORDER BY MODULEID DESC) m JOIN (SELECT @em:=MODULEID FROM Modules WHERE ORGID = ? AND NAME = ?) tmp WHERE m.MODULEID=@em");
 
 			pstmt.setLong(1, getOrgId());
 			pstmt.setString(2, moduleName);
@@ -323,6 +326,54 @@ public class ModuleBeanImpl implements ModuleBean {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
+	public int updateModule (FacilioModule module) throws Exception {
+		if (module == null) {
+			throw new IllegalArgumentException("Module cannot be null for updation");
+		}
+		if (module.getModuleId() == -1) {
+			throw new IllegalArgumentException("Invalid ID for updatuon of Module");
+		}
+		if ((module.getName() != null && !module.getName().isEmpty()) || (module.getTableName() != null && !module.getTableName().isEmpty()) || module.getExtendModule() != null || module.getTypeEnum() != null) {
+			throw new IllegalArgumentException("Some of the specified fields cannot be updated");
+		}
+		StringJoiner joiner = new StringJoiner(",");
+		List params = new ArrayList<>();
+		if (module.getDisplayName() != null && !module.getDisplayName().isEmpty()) {
+			joiner.add("DISPLAY_NAME = ?");
+			params.add(module.getDisplayName());
+		}
+		if (module.getDataInterval() != -1) {
+			joiner.add("DATA_INTERVAL = ?");
+			params.add(module.getDataInterval());
+		}
+		if (module.getTrashEnabled() != null) {
+			joiner.add("IS_TRASH_ENABLED = ?");
+			params.add(module.getTrashEnabled());
+		}
+		
+		if (!params.isEmpty()) {
+			StringBuilder sql = new StringBuilder("UPDATE Modules SET ")
+										.append(joiner.toString())
+										.append("WHERE ORGID = ? AND MODULEID = ?");
+			params.add(getOrgId());
+			params.add(module.getModuleId());
+			try (Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS)) {
+				for(int i = 0; i < params.size(); i++) {
+					pstmt.setObject(i + 1, params.get(i));
+				}
+				return pstmt.executeUpdate();
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				throw e;
+			}
+		}
+		else {
+			return -1;
+		}
+	}
+	
 	private ArrayList<FacilioField> getFieldFromPropList(List<Map<String, Object>> props, Map<Long, FacilioModule> moduleMap) throws Exception {
 		
 		if(props != null && !props.isEmpty()) {
@@ -513,7 +564,7 @@ public class ModuleBeanImpl implements ModuleBean {
 	}
 	
 	@Override
-	public int updateField(FacilioField field) throws SQLException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+	public int updateField(FacilioField field) throws Exception {
 		if(field != null && field.getFieldId() != -1) {
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 															.table("Fields")
@@ -606,13 +657,13 @@ public class ModuleBeanImpl implements ModuleBean {
 			throw new IllegalArgumentException("Module Type cannot be null during addition of modules");
 		}
 		
-		String sql = "INSERT INTO Modules (ORGID, NAME, DISPLAY_NAME, TABLE_NAME, EXTENDS_ID, MODULE_TYPE) VALUES (?,?,?,?,?,?)";
+		String sql = "INSERT INTO Modules (ORGID, NAME, DISPLAY_NAME, TABLE_NAME, EXTENDS_ID, MODULE_TYPE, DATA_INTERVAL) VALUES (?, ?, ?, ?, ?, ?, ?)";
 		ResultSet rs = null;
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+		try (Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 			pstmt.setLong(1, getOrgId());
 			pstmt.setString(2, module.getName());
 			
-			if(module.getDisplayName() != null && !module.getDisplayName().isEmpty()) {
+			if (module.getDisplayName() != null && !module.getDisplayName().isEmpty()) {
 				pstmt.setString(3, module.getDisplayName());
 			}
 			else {
@@ -621,7 +672,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			
 			pstmt.setString(4, module.getTableName());
 			
-			if(module.getExtendModule() != null) {
+			if (module.getExtendModule() != null) {
 				pstmt.setLong(5, module.getExtendModule().getModuleId());
 			}
 			else {
@@ -629,6 +680,13 @@ public class ModuleBeanImpl implements ModuleBean {
 			}
 			
 			pstmt.setInt(6, module.getType());
+			
+			if (module.getDataInterval() != -1) {
+				pstmt.setInt(7, module.getDataInterval());
+			}
+			else {
+				pstmt.setNull(7, Types.INTEGER);
+			}
 			
 			if (pstmt.executeUpdate() < 1) {
 				throw new Exception("Unable to add Module");
