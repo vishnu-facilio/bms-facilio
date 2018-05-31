@@ -33,6 +33,7 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "production_deployment" ]; then
     echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/ubuntu/deployment.log
     cp $META_INF_DIR/context-production.xml $META_INF_DIR/context.xml
     sed -i'' "s%schedulerServer=.*%schedulerServer=false%g" $CONF_DIR/awsprops.properties
+    sed -i'' "s%enable.transaction=.*%enable.transaction=true%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%enable.kinesis=.*%enable.kinesis=false%g" $CONF_DIR/awsprops.properties
     sed -i -e 's/localhost:9090/app.facilio.ae/g' $CONF_DIR/awsprops.properties
     sed -i -e 's/localhost:8080/facilio.ae/g' $CONF_DIR/awsprops.properties
