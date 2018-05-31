@@ -1,6 +1,5 @@
 package com.facilio.beans;
 
-import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
