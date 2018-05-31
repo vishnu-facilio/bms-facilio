@@ -472,7 +472,12 @@
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
-		
+		<action name="closeAllTask" class="com.facilio.bmsconsole.actions.TaskAction" method="closeAllTask">
+			<param name="permission">TASK_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
 		<action name="addorupdatetaskinput" class="com.facilio.bmsconsole.actions.TaskAction"
 			method="addTaskInput">
 			<param name="moduleName">workorder</param>

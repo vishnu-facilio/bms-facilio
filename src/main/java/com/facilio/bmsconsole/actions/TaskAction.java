@@ -13,12 +13,15 @@ import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskSectionContext;
+import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
+import com.twilio.sdk.resource.taskrouter.v1.workspace.Task;
 
 public class TaskAction extends ActionSupport {
 	
@@ -145,7 +148,6 @@ public class TaskAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
 		return updateTask(context);
 	}
-	
 	public String addTaskInput() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.ADD_TASK_INPUT);
@@ -160,6 +162,38 @@ public class TaskAction extends ActionSupport {
 		updateTask.execute(context);
 		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 		
+		return SUCCESS;
+	}
+	
+	List<Long> taskIdList;
+
+	public List<Long> getTaskIdList() {
+		return taskIdList;
+	}
+	public void setTaskIdList(List<Long> taskIdList) {
+		this.taskIdList = taskIdList;
+	}
+
+	Long parentTicketId;
+	public Long getParentTicketId() {
+		return parentTicketId;
+	}
+	public void setParentTicketId(Long parentTicketId) {
+		this.parentTicketId = parentTicketId;
+	}
+	public String closeAllTask() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
+		if (taskIdList != null) {
+			TaskContext defaultClosedTaskObj = new TaskContext();
+			defaultClosedTaskObj.setParentTicketId(parentTicketId);
+			defaultClosedTaskObj.setStatus(TicketAPI.getStatus("Closed"));
+			context.put(FacilioConstants.ContextNames.TASK, defaultClosedTaskObj);
+			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, taskIdList);
+			Chain updateTask = FacilioChainFactory.getUpdateTaskChain();
+			updateTask.execute(context);
+			rowsUpdated += (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
+		}
 		return SUCCESS;
 	}
 	
