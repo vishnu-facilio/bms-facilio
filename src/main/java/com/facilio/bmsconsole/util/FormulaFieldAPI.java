@@ -30,6 +30,7 @@ import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
@@ -45,11 +46,6 @@ import com.mysql.jdbc.ResultSetImpl;
 
 public class FormulaFieldAPI {
 	private static final Logger logger = LogManager.getLogger(ResultSetImpl.class.getName());
-	public static long addEnPI (FormulaFieldContext enpi) throws Exception {
-		enpi.setFormulaFieldType(FormulaFieldType.ENPI);
-		return addFormulaField(enpi);
-	}
-	
 	public static long addFormulaField (FormulaFieldContext formula) throws Exception {
 		updateChildIds(formula);
 		validateFormula(formula, true);
@@ -173,6 +169,24 @@ public class FormulaFieldAPI {
 		return null;
 	}
 	
+	public static FormulaFieldContext getFormulaField (FacilioField readingField) throws Exception {
+		FacilioModule module = ModuleFactory.getFormulaFieldModule();
+		List<FacilioField> fields = FieldFactory.getFormulaFieldFields();
+		FacilioField readingFieldId = FieldFactory.getAsMap(fields).get("readingFieldId");
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(fields)
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCondition(readingFieldId, String.valueOf(readingField.getFieldId()), PickListOperators.IS))
+														;
+		
+		List<FormulaFieldContext> enpiList = getFormulaFieldsFromProps(selectBuilder.get());
+		if (enpiList != null && !enpiList.isEmpty()) {
+			return enpiList.get(0);
+		}
+		return null;
+	}
+	
 	public static List<ReadingContext> calculateFormulaReadings(long resourceId, String fieldName, Map<Long, Long> intervalMap, WorkflowContext workflow) throws Exception {
 		if (intervalMap != null && !intervalMap.isEmpty()) {
 			List<ReadingContext> readings = new ArrayList<>();
@@ -222,7 +236,6 @@ public class FormulaFieldAPI {
 														;
 		
 		return getFormulaFieldsFromProps(selectBuilder.get());
-		
 	}
 	
 	public static List<FormulaFieldContext> getScheduledFormulasOfFrequencyType(List<Integer> types) throws Exception {
@@ -443,6 +456,17 @@ public class FormulaFieldAPI {
 				return DateTimeUtil.getYearStartTime(-1);
 			default:
 				return -1;
+		}
+	}
+	
+	public static ModuleType getModuleTypeFromTrigger(TriggerType type) {
+		switch (type) {
+			case SCHEDULE:
+				return ModuleType.SCHEDULED_FORMULA;
+			case LIVE_READING:
+				return ModuleType.LIVE_FORMULA;
+			default:
+				return null;
 		}
 	}
 

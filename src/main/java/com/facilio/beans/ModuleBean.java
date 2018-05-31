@@ -25,6 +25,8 @@ public interface ModuleBean extends RootBean {
 	
 	public FacilioModule getParentModule(long moduleId) throws Exception;
 	
+	public int updateModule (FacilioModule module) throws Exception;
+	
 	public FacilioField getPrimaryField(String moduleName) throws Exception;
 	
 	public ArrayList<FacilioField> getAllFields(String moduleName) throws Exception;

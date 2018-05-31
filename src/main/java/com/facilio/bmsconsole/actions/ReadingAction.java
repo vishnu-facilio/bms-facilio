@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
+import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -530,29 +531,29 @@ public class ReadingAction extends ActionSupport {
 		this.moduleMap = moduleMap;
 	}
 	
-	private FormulaFieldContext enpi;
-	public FormulaFieldContext getEnpi() {
-		return enpi;
+	private FormulaFieldContext formula;
+	public FormulaFieldContext getFormula() {
+		return formula;
 	}
-	public void setEnpi(FormulaFieldContext enpi) {
-		this.enpi = enpi;
+	public void setFormula(FormulaFieldContext formula) {
+		this.formula = formula;
 	}
 
-	public String addENPI() throws Exception {
+	public String addFormulaField() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.FORMULA_FIELD, enpi);
+		context.put(FacilioConstants.ContextNames.FORMULA_FIELD, formula);
 		
-		Chain addEnpiChain = FacilioChainFactory.addEnPIChain();
+		Chain addEnpiChain = FacilioChainFactory.addFormulaFieldChain();
 		addEnpiChain.execute(context);
 		
 		return SUCCESS;
 	}
 	
-	public String editEnPI() throws Exception {
+	public String editFormula() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.FORMULA_FIELD, enpi);
+		context.put(FacilioConstants.ContextNames.FORMULA_FIELD, formula);
 		
-		Chain updateEnPIChain = FacilioChainFactory.updateEnPIChain();
+		Chain updateEnPIChain = FacilioChainFactory.updateFormulaChain();
 		updateEnPIChain.execute(context);
 		
 		result = (String) context.get(FacilioConstants.ContextNames.RESULT);
@@ -576,11 +577,11 @@ public class ReadingAction extends ActionSupport {
 		this.result = result;
 	}
 
-	public String deleteEnPI() throws Exception {
+	public String deleteFormula() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, id);
 		
-		Chain deleteEnPIChain = FacilioChainFactory.deleteEnPIChain();
+		Chain deleteEnPIChain = FacilioChainFactory.deleteFormulaChain();
 		deleteEnPIChain.execute(context);
 		
 		result = (String) context.get(FacilioConstants.ContextNames.RESULT);
@@ -588,21 +589,34 @@ public class ReadingAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	private List<FormulaFieldContext> enpiList;
-	public List<FormulaFieldContext> getEnpiList() {
-		return enpiList;
-	}
-	public void setEnpiList(List<FormulaFieldContext> enpiList) {
-		this.enpiList = enpiList;
+	private List<FormulaFieldContext> formulaList;
+	public List<FormulaFieldContext> getFormulaList() {
+		return formulaList;
 	}
 
-	public String allENPIs() throws Exception {
+	public void setFormulaList(List<FormulaFieldContext> formulaList) {
+		this.formulaList = formulaList;
+	}
+	
+	private FormulaFieldType type;
+	public int getType() {
+		if (type != null) {
+			return type.getValue();
+		}
+		return -1;
+	}
+	public void setType(int type) {
+		this.type = FormulaFieldType.valueOf(type);
+	}
+
+	public String allFormulasOfType() throws Exception {
 		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.FORMULA_FIELD_TYPE, type);
 		
-		Chain getAllENPIsChain = FacilioChainFactory.getAllEnPIsChain();
+		Chain getAllENPIsChain = FacilioChainFactory.getAllFormulasOfTypeChain();
 		getAllENPIsChain.execute(context);
 		
-		enpiList = (List<FormulaFieldContext>) context.get(FacilioConstants.ContextNames.ENPI_LIST);
+		formulaList = (List<FormulaFieldContext>) context.get(FacilioConstants.ContextNames.FORMULA_LIST);
 		
 		return SUCCESS;
 	}

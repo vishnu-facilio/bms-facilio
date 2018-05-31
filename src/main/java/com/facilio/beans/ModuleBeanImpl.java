@@ -327,6 +327,54 @@ public class ModuleBeanImpl implements ModuleBean {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
+	public int updateModule (FacilioModule module) throws Exception {
+		if (module == null) {
+			throw new IllegalArgumentException("Module cannot be null for updation");
+		}
+		if (module.getModuleId() == -1) {
+			throw new IllegalArgumentException("Invalid ID for updatuon of Module");
+		}
+		if ((module.getName() != null && !module.getName().isEmpty()) || (module.getTableName() != null && !module.getTableName().isEmpty()) || module.getExtendModule() != null || module.getTypeEnum() != null) {
+			throw new IllegalArgumentException("Some of the specified fields cannot be updated");
+		}
+		StringJoiner joiner = new StringJoiner(",");
+		List params = new ArrayList<>();
+		if (module.getDisplayName() != null && !module.getDisplayName().isEmpty()) {
+			joiner.add("DISPLAY_NAME = ?");
+			params.add(module.getDisplayName());
+		}
+		if (module.getDataInterval() != -1) {
+			joiner.add("DATA_INTERVAL = ?");
+			params.add(module.getDataInterval());
+		}
+		if (module.getTrashEnabled() != null) {
+			joiner.add("IS_TRASH_ENABLED = ?");
+			params.add(module.getTrashEnabled());
+		}
+		
+		if (!params.isEmpty()) {
+			StringBuilder sql = new StringBuilder("UPDATE Modules SET ")
+										.append(joiner.toString())
+										.append("WHERE ORGID = ? AND MODULEID = ?");
+			params.add(getOrgId());
+			params.add(module.getModuleId());
+			try (Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS)) {
+				for(int i = 0; i < params.size(); i++) {
+					pstmt.setObject(i + 1, params.get(i));
+				}
+				return pstmt.executeUpdate();
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				throw e;
+			}
+		}
+		else {
+			return -1;
+		}
+	}
+	
 	private ArrayList<FacilioField> getFieldFromPropList(List<Map<String, Object>> props, Map<Long, FacilioModule> moduleMap) throws Exception {
 		
 		if(props != null && !props.isEmpty()) {
@@ -517,7 +565,7 @@ public class ModuleBeanImpl implements ModuleBean {
 	}
 	
 	@Override
-	public int updateField(FacilioField field) throws SQLException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+	public int updateField(FacilioField field) throws Exception {
 		if(field != null && field.getFieldId() != -1) {
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 															.table("Fields")

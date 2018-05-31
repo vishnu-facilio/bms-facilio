@@ -236,7 +236,10 @@ public class WorkflowUtil {
 					workflowFieldContext.setOrgId(module.getOrgId());
 					workflowFieldContext.setModuleId(module.getModuleId());
 					workflowFieldContext.setFieldId(field.getId());
-					workflowFieldContext.setWorkflowId(workflowContext.getId());
+					workflowFieldContext.setField(field);
+					if (workflowContext.getId() != null) {
+						workflowFieldContext.setWorkflowId(workflowContext.getId());
+					}
 					
 					workflowFieldList.add(workflowFieldContext);
 				}

@@ -15,7 +15,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.workflows.util.WorkflowUtil;
 
-public class DeleteEnPICommand implements Command {
+public class DeleteFormulaCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -23,10 +23,10 @@ public class DeleteEnPICommand implements Command {
 		long id = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 		
 		if ( id != -1) {
-			FormulaFieldContext oldEnPI = FormulaFieldAPI.getFormulaField(id);
+			FormulaFieldContext oldFormula = FormulaFieldAPI.getFormulaField(id);
 			
 			ModuleCRUDBean crudBean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD");
-			crudBean.deleteAllData(oldEnPI.getReadingField().getModule().getName());
+			crudBean.deleteAllData(oldFormula.getReadingField().getModule().getName());
 			FacilioModule module = ModuleFactory.getFormulaFieldModule();
 			GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 															.table(module.getTableName())
@@ -35,14 +35,14 @@ public class DeleteEnPICommand implements Command {
 			
 			deleteBuilder.delete();
 			
-			WorkflowUtil.deleteWorkflow(oldEnPI.getWorkflowId());
+			WorkflowUtil.deleteWorkflow(oldFormula.getWorkflowId());
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			modBean.deleteModule(oldEnPI.getReadingField().getModule().getName());
+			modBean.deleteModule(oldFormula.getReadingField().getModule().getName());
 			
 			context.put(FacilioConstants.ContextNames.RESULT, "success");
 		}
 		else {
-			throw new IllegalArgumentException("EnPI ID cannot be null");
+			throw new IllegalArgumentException("Formula ID cannot be null during deletion");
 		}
 		
 		return false;
