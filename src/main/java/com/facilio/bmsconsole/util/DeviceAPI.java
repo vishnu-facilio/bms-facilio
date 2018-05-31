@@ -527,6 +527,9 @@ public class DeviceAPI
 		EnergyDataEvaluator evaluator = new EnergyDataEvaluator(readingMap);
 		String expression = meter.getChildMeterExpression();
 		ReadingContext virtualMeterReading = evaluator.evaluateExpression(expression);
+		if(virtualMeterReading==null) {
+			return null;
+		}
 		virtualMeterReading.setTtime(((Double)StatUtils.max(timestamps.stream().mapToDouble(Long::doubleValue).toArray())).longValue());
 		virtualMeterReading.setParentId(meter.getId());
 		return virtualMeterReading;
