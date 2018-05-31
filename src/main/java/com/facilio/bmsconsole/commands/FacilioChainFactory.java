@@ -1841,6 +1841,7 @@ public class FacilioChainFactory {
 		c.addCommand(new AddMarkedReadingValuesCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.READING_RULE, RuleType.PM_READING_RULE));
 		c.addCommand(new CalculateFormulaFieldsCommand());
+		c.addCommand(new SpaceBudIntegrationCommand());	//For RMZ-SpaceBud Integration
 		addCleanUpCommand(c);
 		return c;
 	}
