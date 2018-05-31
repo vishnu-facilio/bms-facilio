@@ -718,9 +718,9 @@ public class ReportContext extends ModuleBaseWithCustomFields {
 		this.energyMeter = energyMeter;
 	}
 	
-	public ReportEnergyMeterContext getEnergyMeter() {
-		return this.energyMeter;
-	}
+//	public ReportEnergyMeterContext getEnergyMeter() {
+//		return this.energyMeter;
+//	}
 
 	public String getxAxisLabel() throws Exception {
 		if (this.xAxisLabel == null && this.getxAxisField() != null && this.getxAxisField().getField() != null) {
