@@ -6,14 +6,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.events.constants.EventConstants;
+import com.facilio.events.util.EventAPI;
 import com.facilio.fw.BeanFactory;
 
 public class ModeledDataCommand implements Command {
@@ -40,12 +44,10 @@ public class ModeledDataCommand implements Command {
 				String instanceName=instanceList.next();
 				String instanceVal=instanceMap.get(instanceName);
 				Map<String, Object> stat = ReadingsAPI.getInstanceMapping(deviceName, instanceName);
-				if(stat==null || instanceVal.equalsIgnoreCase("NaN"))  {
-					//need to decide whether  Nan can be ignored..
+				if(stat==null)  {
 					continue;
 				}
 				
-			//	PRI_PUMP  -- PP1_R  
 				Long assetId= (Long) stat.get("assetId");
 				Long fieldId= (Long) stat.get("fieldId");
 				
@@ -53,6 +55,18 @@ public class ModeledDataCommand implements Command {
 					ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					FacilioField field =bean.getField(fieldId);
 					String moduleName=field.getModule().getName();
+					if(instanceVal!=null && instanceVal.equalsIgnoreCase("NaN")) {
+						JSONObject json= new JSONObject();
+						json.put("resourceId", assetId);
+						json.put("message", "Invalid value received for "+field.getDisplayName());
+						json.put("timestamp", timeStamp);
+						FacilioContext addEventContext = new FacilioContext();
+						addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, json);
+						Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
+						getAddEventChain.execute(addEventContext);
+						//Generate event with resourceId : assetId & 
+						continue;
+					}
 					String readingKey=moduleName+"|"+assetId;
 					ReadingContext reading=iModuleVsReading.get(readingKey);
 					if(reading == null) {
