@@ -7,6 +7,22 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 public class LRUCache<K, V>{
+	
+    public static void main(String args [])
+    {
+    	LRUCache testcache =  	new LRUCache<String,Object>(7);
+    	String arrya[] = {"yoge","babu","test" ,"ram","manthosh","shivaraj","test2","magesh","vivek"};
+    	for(int i=0;i<arrya.length;i++)
+    	{
+      	testcache.put(arrya[i], arrya[i]);
+    	}
+    	for(int i=0;i<arrya.length;i++)
+    	{
+      	testcache.put(arrya[i], arrya[i]);
+    	}
+    	System.out.println("testcache --" +testcache);
+    }
+	
 	private static final Logger logger = LogManager.getLogger(LRUCache.class.getName());
 	public static LRUCache<String, Object> getModuleFieldsCache() {
 		return modulefieldCache;
@@ -20,7 +36,7 @@ public class LRUCache<K, V>{
 	public String toString() {
 		double hitc =  ((hitcount*100)/(hitcount+misscount) );
 
-		 return (" The current size "+currentSize+"\n hitcount "+hitcount+"\n Cache Hit Ratio= "+ hitc +"\n\n"+cache);
+		 return (" The current size "+currentSize+"\n hitcount "+hitcount+"\n Cache Hit Ratio= "+ hitc +"\n\n"+cache+"\nLeast used=" + leastRecentlyUsed +"\nMost used="+mostRecentlyUsed);
 	}
 	private static LRUCache<String,Object> fieldCache = new LRUCache<String,Object>(300);
 	private static LRUCache<String,Object> modulefieldCache = new LRUCache<String,Object>(300);
@@ -134,9 +150,15 @@ public class LRUCache<K, V>{
 
         // Delete the left-most entry and update the LRU pointer
         if (currentSize == maxSize){
-            cache.remove(leastRecentlyUsed.key);
-            leastRecentlyUsed = leastRecentlyUsed.next;
-            leastRecentlyUsed.previous = null;
+            try {
+				cache.remove(leastRecentlyUsed.key);
+				leastRecentlyUsed = leastRecentlyUsed.next;
+				leastRecentlyUsed.previous = null;
+			} catch (Throwable e) {
+				// TODO Auto-generated catch block
+	        	logger.log(Level.INFO,"Exception in PUT "+this);
+             throw e;
+			}
         }
 
         // Update cache size, for the first added entry update the LRU pointer
@@ -184,4 +206,5 @@ public class LRUCache<K, V>{
           return ;
 
     }
+
 }
