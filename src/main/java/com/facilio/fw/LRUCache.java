@@ -7,7 +7,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 public class LRUCache<K, V>{
-	
+
     public static void main(String args [])
     {
     	LRUCache testcache =  	new LRUCache<String,Object>(7);
@@ -22,7 +22,7 @@ public class LRUCache<K, V>{
     	}
     	System.out.println("testcache --" +testcache);
     }
-	
+
 	private static final Logger logger = LogManager.getLogger(LRUCache.class.getName());
 	public static LRUCache<String, Object> getModuleFieldsCache() {
 		return modulefieldCache;
@@ -38,8 +38,8 @@ public class LRUCache<K, V>{
 
 		 return (" The current size "+currentSize+"\n hitcount "+hitcount+"\n Cache Hit Ratio= "+ hitc +"\n\n"+cache+"\nLeast used=" + leastRecentlyUsed +"\nMost used="+mostRecentlyUsed);
 	}
-	private static LRUCache<String,Object> fieldCache = new LRUCache<String,Object>(300);
-	private static LRUCache<String,Object> modulefieldCache = new LRUCache<String,Object>(300);
+	private static LRUCache<String,Object> fieldCache = new LRUCache<String,Object>(1000);
+	private static LRUCache<String,Object> modulefieldCache = new LRUCache<String,Object>(1000);
 	private static LRUCache<String,Object> userSessionCache = new LRUCache<String,Object>(300);
     private long hitcount = 0;
     private long misscount = 1;
@@ -68,7 +68,8 @@ public class LRUCache<K, V>{
     private Node<K, V> mostRecentlyUsed;
     private int maxSize;
     private int currentSize;
-    
+    private int tenPercent;
+
 
     public void purgeCache()
     {
@@ -81,6 +82,7 @@ public class LRUCache<K, V>{
     public LRUCache(int maxSize){
         this.maxSize = maxSize;
         this.currentSize = 0;
+        this.tenPercent = (maxSize/10);
         leastRecentlyUsed = new Node<K, V>(null, null, null, null);
         mostRecentlyUsed = leastRecentlyUsed;
         cache = new ConcurrentHashMap<K, Node<K, V>>();
@@ -150,21 +152,26 @@ public class LRUCache<K, V>{
 
         // Delete the left-most entry and update the LRU pointer
         if (currentSize == maxSize){
-            try {
-				cache.remove(leastRecentlyUsed.key);
-				leastRecentlyUsed = leastRecentlyUsed.next;
-				leastRecentlyUsed.previous = null;
-			} catch (Throwable e) {
-				// TODO Auto-generated catch block
-	        	logger.log(Level.INFO,"Exception in PUT "+this);
-             throw e;
-			}
+            synchronized (cache) {
+                try {
+                    for(int i = 0; i < tenPercent; i++ ) {
+                        cache.remove(leastRecentlyUsed.key);
+                        leastRecentlyUsed = leastRecentlyUsed.next;
+                        leastRecentlyUsed.previous = null;
+                        currentSize = currentSize - tenPercent;
+                    }
+                } catch (Exception e) {
+                    logger.log(Level.INFO, "Error in put " + this , e);
+                    throw e;
+                }
+            }
         }
 
         // Update cache size, for the first added entry update the LRU pointer
         else if (currentSize < maxSize){
             if (currentSize == 0){
                 leastRecentlyUsed = myNode;
+                mostRecentlyUsed.previous = null;
             }
             currentSize++;
         }
