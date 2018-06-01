@@ -14,6 +14,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.reports.ReportsUtil;
+import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
@@ -100,6 +101,12 @@ public class PortfolioAction extends ActionSupport {
 			buildingData.put("currentVal", thisMonthData);
 			double variance= ReportsUtil.getVariance(thisMonthKwh, lastMonthKwh);
 			buildingData.put("variance", variance);
+			
+			List<EnergyMeterContext> mainMeter = DashboardUtil.getMainEnergyMeter(building.getId()+"");
+			if(mainMeter != null && !mainMeter.isEmpty()) {
+				buildingData.put("rootMeter", mainMeter.get(0));
+			}
+			
 			buildingArray.add(buildingData);
 		}
 		result.put("buildingDetails", buildingArray);
