@@ -190,7 +190,7 @@ public class FacilioCorsFilter implements Filter {
             return true;
         }
 
-        return ALLOWED_HEADERS.contains(header.toLowerCase());
+        return ALLOWED_HEADERS.contains(header.trim().toLowerCase());
     }
 
     private boolean isRequestedMethodAllowed(String requestedMethod) {
