@@ -17,6 +17,20 @@ public enum Unit {
 	CELSIUS(4,"Celsius",Metric.TEMPRATURE),
 	FAHRENHEIT(5,"Fahrenheit",Metric.TEMPRATURE,"(si*1.8)+32","(this-32)/1.8"),
 	KELWIN(6,"Kelwin",Metric.TEMPRATURE,"si+273.15","this-273.15"),
+	
+	METER(7,"Meter",Metric.LENGTH),
+	DECIMETER(8,"Decimetre",Metric.LENGTH,"si*10","this/10"),
+	CENTIMETER(9,"Centimetre",Metric.LENGTH,"si*100","this/100"),
+	MILLIMETER(10,"Millimeter",Metric.LENGTH,"si*1000","this/1000"),
+	DECAMETER(11,"Decameter",Metric.LENGTH,"si/10","this*10"),
+	HECTOMETER(12,"Hectometer",Metric.LENGTH,"si/100","this*100"),
+	KILOMETER(13,"kilometer",Metric.LENGTH,"si/1000","this*1000"),
+	MILE(14,"Mile",Metric.LENGTH,"si/1609.34","this*1609.34"),
+	YARD(15,"Yard",Metric.LENGTH,"si*1.0936132983","this*0.9144"),
+	FEET(16,"Feet",Metric.LENGTH,"si*3.280839895","this*0.3048"),
+	INCH(17,"Inch",Metric.LENGTH,"si*39.3700787402","this*0.0254"),
+	
+	
 	;
 	
 	int unitId;

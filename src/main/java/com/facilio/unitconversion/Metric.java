@@ -8,6 +8,10 @@ public enum Metric {
 
 	ENERGY(1,"Energy",Unit.WH),
 	TEMPRATURE(2,"Temprature",Unit.CELSIUS),
+	LENGTH(3,"Length",Unit.METER),
+	MASS(4,"Mass",Unit.CELSIUS),
+	TIME(5,"Time",Unit.CELSIUS),
+	CURRENT(6,"Current",Unit.CELSIUS),
 	;
 	
 	int metricId;
