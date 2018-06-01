@@ -32,7 +32,6 @@ public class UnitsUtil {
 	}
 	
 	public static Double convertToSiUnit(Object value,Unit from) {
-		
 		return convert(value, from, from.getMetric().getSiUnit());
 	}
 }
