@@ -43,7 +43,6 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "production_deployment" ]; then
     sed -i'' "s%api.servername=.*%api.servername=api.facilio.ae%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%websocket.url=.*%websocket.url=wss://api.facilio.ae/websocket%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%cors.allowed.origins=.*%cors.allowed.origins=http://idcaccess:9090,https://facilio.ae,https://fazilio.com,https://facilio.com,https://facilio.in,https://facilstack.com%g" $CONF_DIR/awsprops.properties
-    sed -i'' "s%enable.transaction=.*%enable.transaction=false%g" $CONF_DIR/awsprops.properties
     echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/ubuntu/deployment.log
 fi
 
