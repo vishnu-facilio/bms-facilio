@@ -4,6 +4,14 @@ import com.facilio.bmsconsole.modules.FacilioField;
 
 public class WorkflowFieldContext {
 
+	private long resourceId = -1;
+	public long getResourceId() {
+		return resourceId;
+	}
+	public void setResourceId(long resourceId) {
+		this.resourceId = resourceId;
+	}
+
 	private long orgId = -1;
 	public long getOrgId() {
 		return orgId;

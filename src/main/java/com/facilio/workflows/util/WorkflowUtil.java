@@ -201,6 +201,19 @@ public class WorkflowUtil {
 					workflowFieldContext.setModuleId(module.getModuleId());
 					workflowFieldContext.setFieldId(field.getId());
 					workflowFieldContext.setWorkflowId(workflowContext.getId());
+					
+					Long parentId = null;
+					if(expression.getCriteria() != null ) {
+						Map<Integer, Condition> conditions = expression.getCriteria().getConditions();
+						for(Condition condition :conditions.values()) {
+							if(condition.getFieldName().equals("parentId")) {
+								parentId = Long.parseLong(condition.getValue());
+							}
+						}
+					}
+					if(parentId != null) {
+						workflowFieldContext.setResourceId(parentId);
+					}
 					props = FieldUtil.getAsProperties(workflowFieldContext);
 					insertBuilder.addRecord(props);
 					LOGGER.severe("ADDED WORKFLOW FIELD ID --- "+(Long) props.get("id"));
@@ -240,7 +253,18 @@ public class WorkflowUtil {
 					if (workflowContext.getId() != null) {
 						workflowFieldContext.setWorkflowId(workflowContext.getId());
 					}
-					
+					Long parentId = null;
+					if(expression.getCriteria() != null) {
+						Map<Integer, Condition> conditions = expression.getCriteria().getConditions();
+						for(Condition condition :conditions.values()) {
+							if(condition.getFieldName().equals("parentId")) {
+								parentId = Long.parseLong(condition.getValue());
+							}
+						}
+					}
+					if(parentId != null) {
+						workflowFieldContext.setResourceId(parentId);
+					}
 					workflowFieldList.add(workflowFieldContext);
 				}
 			}

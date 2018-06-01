@@ -2954,6 +2954,8 @@ public class FieldFactory {
 		fieldId.setColumnName("FIELD_ID");
 		fieldId.setModule(module);
 		fields.add(fieldId);
+		
+		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.NUMBER));
 
 		return fields;
 	}
