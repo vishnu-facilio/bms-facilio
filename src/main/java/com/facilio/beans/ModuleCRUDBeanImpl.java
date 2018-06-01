@@ -45,6 +45,7 @@ import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -162,9 +163,9 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	}
 
 	@Override
-	public int updateAlarmResource(long resourceId, String node) throws Exception {
+	public int updateAlarmResource(long resourceId, String source) throws Exception {
 		// TODO Auto-generated method stub
-		if (node != null && !node.isEmpty() && resourceId != -1) {
+		if (source != null && !source.isEmpty() && resourceId != -1) {
 			AlarmContext alarm = new AlarmContext();
 			ResourceContext resource = new ResourceContext();
 			resource.setId(resourceId);
@@ -172,7 +173,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.ALARM, alarm);
-			context.put(FacilioConstants.ContextNames.NODE, node);
+			context.put(EventConstants.EventContextNames.SOURCE, source);
 
 			Chain updateAlarm = FacilioChainFactory.getUpdateAlarmResourceChain();
 			updateAlarm.execute(context);

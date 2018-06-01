@@ -214,14 +214,14 @@ public class EventAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	public String getAllNodes() throws Exception {
-		setNodes(EventAPI.getAllNodes(AccountUtil.getCurrentOrg().getOrgId()));
+	public String getAllSources() throws Exception {
+		setSources(EventAPI.getAllSources(AccountUtil.getCurrentOrg().getOrgId()));
 		return SUCCESS;
 	}
 	
-	public String updateNodeWithResource() throws Exception {
+	public String updateSourceWithResource() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(EventConstants.EventContextNames.NODE, node);
+		context.put(EventConstants.EventContextNames.SOURCE, source);
 		context.put(EventConstants.EventContextNames.RESOURCE_ID, resourceId);
 		
 		Chain updateAssetChain = EventConstants.EventChainFactory.updateNodeToResourceMappingChain();
@@ -235,14 +235,14 @@ public class EventAction extends ActionSupport {
 		return result;
 	}
 	
-	private String node;
-	public String getNode() {
-		return node;
+	private String source;
+	public String getSource() {
+		return source;
 	}
-	public void setNode(String node) {
-		this.node = node;
+	public void setSource(String source) {
+		this.source = source;
 	}
-	
+
 	private long resourceId = -1;
 	public long getResourceId() {
 		return resourceId;
@@ -251,14 +251,14 @@ public class EventAction extends ActionSupport {
 		this.resourceId = resourceId;
 	}
 
-	private List<Map<String, Object>> nodes;
-	public List<Map<String, Object>> getNodes() {
-		return nodes;
+	private List<Map<String, Object>> sources;
+	public List<Map<String, Object>> getSources() {
+		return sources;
 	}
-	public void setNodes(List<Map<String, Object>> nodes) {
-		this.nodes = nodes;
+	public void setSources(List<Map<String, Object>> sources) {
+		this.sources = sources;
 	}
-	
+
 	private int page = 1;
 	public int getPage() {
 		return this.page;

@@ -17,12 +17,12 @@ public class UpdateAlarmAssetMappingCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		String node = (String) context.get(EventConstants.EventContextNames.NODE);
+		String source = (String) context.get(EventConstants.EventContextNames.SOURCE);
 		long resourceId = (long) context.get(EventConstants.EventContextNames.RESOURCE_ID);
 		
 		JSONObject json = new JSONObject();
 		json.put("orgId", AccountUtil.getCurrentOrg().getOrgId());
-		json.put("node", node);
+		json.put("source", source);
 		json.put("resourceId", resourceId);
 		
 		Map<String, String> headers = new HashMap<>();

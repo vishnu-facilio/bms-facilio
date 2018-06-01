@@ -1,5 +1,7 @@
 package com.facilio.events.context;
 
+import java.util.StringJoiner;
+
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -25,20 +27,23 @@ public class EventContext {
 		this.orgId = orgId;
 	}
 	
+	private String entity;
+	public String getEntity() {
+		if (entity == null && eventMessage != null) {
+			entity = eventMessage;
+		}
+		return entity;
+	}
+	public void setEntity(String entity) {
+		this.entity = entity;
+	}
+
 	private String source;
 	public String getSource() {
 		return source;
 	}
 	public void setSource(String source) {
 		this.source = source;
-	}
-	
-	private String node;
-	public String getNode() {
-		return node;
-	}
-	public void setNode(String node) {
-		this.node = node;
 	}
 	
 	private ResourceContext resource;
@@ -59,6 +64,9 @@ public class EventContext {
 
 	private String eventMessage;
 	public String getEventMessage() {
+		if (eventMessage == null && entity != null) {
+			eventMessage = entity;
+		}
 		return eventMessage;
 	}
 	public void setEventMessage(String eventMessage) {
@@ -67,9 +75,16 @@ public class EventContext {
 	
 	private String messageKey;
 	public String getMessageKey() {
-		if(messageKey == null && source != null && node != null && eventMessage != null)
+		if(messageKey == null)
 		{
-			this.messageKey = this.source + "_" + this.node + "_" + this.eventMessage;
+			StringJoiner joiner = new StringJoiner("_");
+			if (source != null) {
+				joiner.add(source);
+			}
+			if (entity != null) {
+				joiner.add(entity);
+			}
+			this.messageKey = joiner.toString();
 		}
 		return messageKey;
 	}

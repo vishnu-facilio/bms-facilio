@@ -76,13 +76,13 @@ public class EventAPI {
 	    {
 	    	String key = iterator.next();
 	    	String value = payload.get(key).toString();
-	    	if(key.equalsIgnoreCase("source"))
+	    	if(key.equalsIgnoreCase("entity"))
+	    	{
+	    		event.setEntity(value);
+	    	}
+	    	else if(key.equalsIgnoreCase("source"))
 	    	{
 	    		event.setSource(value);
-	    	}
-	    	else if(key.equalsIgnoreCase("node"))
-	    	{
-	    		event.setNode(value);
 	    	}
 	    	else if(key.equalsIgnoreCase("message") || key.equalsIgnoreCase("eventMessage"))
 	    	{
@@ -123,15 +123,15 @@ public class EventAPI {
 	    event.setEventState(EventState.READY);
 	    event.setInternalState(EventInternalState.ADDED);
 	    
-	    if(event.getNode() != null) {
-	    	long resourceId = getResourceFromNode(event.getNode(), orgId);
+	    if(event.getSource() != null) {
+	    	long resourceId = getResourceFromSource(event.getSource(), orgId);
 	    	if(resourceId != -1) {
 	    		if(resourceId != 0) {
 	    			event.setResourceId(resourceId);
 	    		}
 	    	}
 	    	else {
-	    		addNodeToResourceMapping(event.getNode(), orgId);
+	    		addSourceToResourceMapping(event.getSource(), orgId);
 	    	}
 	    }
 	    
@@ -146,11 +146,11 @@ public class EventAPI {
 		updatebuilder.update(FieldUtil.getAsProperties(event));
 	}
 	
-	public static long getResourceFromNode(String node, long orgId) throws Exception {
+	public static long getResourceFromSource(String source, long orgId) throws Exception {
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-																.table(EventConstants.EventModuleFactory.getNodeToResourceMappingModule().getTableName())
-																.select(EventConstants.EventFieldFactory.getNodeToResourceMappingFields())
-																.andCustomWhere("ORGID = ? AND NODE = ?", orgId, node);
+																.table(EventConstants.EventModuleFactory.getSourceToResourceMappingModule().getTableName())
+																.select(EventConstants.EventFieldFactory.getSourceToResourceMappingFields())
+																.andCustomWhere("ORGID = ? AND SOURCE = ?", orgId, source);
 		
 		List<Map<String, Object>> props = selectRecordBuilder.get();
 		if(props != null && !props.isEmpty()) {
@@ -178,34 +178,34 @@ public class EventAPI {
 		builder.save();
 	}
 	
-	public static long addNodeToResourceMapping(String node, long orgId) throws SQLException, RuntimeException {
+	public static long addSourceToResourceMapping(String source, long orgId) throws SQLException, RuntimeException {
 		Map<String, Object> prop = new HashMap<>();
 		prop.put("orgId", orgId);
-		prop.put(EventConstants.EventContextNames.NODE, node);
+		prop.put(EventConstants.EventContextNames.SOURCE, source);
 		GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
-																.table(EventConstants.EventModuleFactory.getNodeToResourceMappingModule().getTableName())
-																.fields(EventConstants.EventFieldFactory.getNodeToResourceMappingFields())
+																.table(EventConstants.EventModuleFactory.getSourceToResourceMappingModule().getTableName())
+																.fields(EventConstants.EventFieldFactory.getSourceToResourceMappingFields())
 																.addRecord(prop);
 		
 		insertRecordBuilder.save();
 		return (long) prop.get("id");
 	}
 	
-	public static void updateResourceForNode(long assetId, String node, long orgId) throws SQLException {
+	public static void updateResourceForSource(long assetId, String source, long orgId) throws SQLException {
 		Map<String, Object> prop = new HashMap<>();
 		prop.put(EventConstants.EventContextNames.RESOURCE_ID, assetId);
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-														.table(EventConstants.EventModuleFactory.getNodeToResourceMappingModule().getTableName())
-														.fields(EventConstants.EventFieldFactory.getNodeToResourceMappingFields())
-														.andCustomWhere("ORGID = ? AND NODE = ?", orgId, node);
+														.table(EventConstants.EventModuleFactory.getSourceToResourceMappingModule().getTableName())
+														.fields(EventConstants.EventFieldFactory.getSourceToResourceMappingFields())
+														.andCustomWhere("ORGID = ? AND SOURCE = ?", orgId, source);
 		
 		updateBuilder.update(prop);
 	}
 	
-	public static List<Map<String, Object>> getAllNodes(long orgId) throws Exception {
+	public static List<Map<String, Object>> getAllSources(long orgId) throws Exception {
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-																.table(EventConstants.EventModuleFactory.getNodeToResourceMappingModule().getTableName())
-																.select(EventConstants.EventFieldFactory.getNodeToResourceMappingFields())
+																.table(EventConstants.EventModuleFactory.getSourceToResourceMappingModule().getTableName())
+																.select(EventConstants.EventFieldFactory.getSourceToResourceMappingFields())
 																.andCustomWhere("ORGID = ?", orgId);
 
 		return selectRecordBuilder.get();

@@ -19,7 +19,7 @@ import com.facilio.events.commands.ProcessEventCommand;
 import com.facilio.events.commands.UpdateAlarmAssetMappingCommand;
 import com.facilio.events.commands.UpdateEventCommand;
 import com.facilio.events.commands.UpdateEventResourcesMappingCommand;
-import com.facilio.events.commands.UpdateNodeToResourceMappingCommand;
+import com.facilio.events.commands.UpdateSourceToResourceMappingCommand;
 
 public class EventConstants {
 	
@@ -35,7 +35,7 @@ public class EventConstants {
 		public static final String EVENT_PROPERTY = "eventProperty";
 		public static final String EVENT_RULE = "eventRule";
 		public static final String EVENT_RULE_LIST = "eventRules";
-		public static final String NODE = "node";
+		public static final String SOURCE = "source";
 		public static final String RESOURCE_ID = "resourceId";
 		public static final String ALARM_ID = "alarmId";
 	}
@@ -142,7 +142,7 @@ public class EventConstants {
 		
 		public static Chain updateNodeToResourceMappingChain() {
 			Chain c = new ChainBase();
-			c.addCommand(new UpdateNodeToResourceMappingCommand());
+			c.addCommand(new UpdateSourceToResourceMappingCommand());
 			c.addCommand(new UpdateEventResourcesMappingCommand());
 			c.addCommand(new UpdateAlarmAssetMappingCommand());
 			addCleanUpCommand(c);
@@ -196,11 +196,11 @@ public class EventConstants {
 			return eventmappingrule;
 		}
 		
-		public static FacilioModule getNodeToResourceMappingModule() {
+		public static FacilioModule getSourceToResourceMappingModule() {
 			FacilioModule nodeAssetMappingModule = new FacilioModule();
-			nodeAssetMappingModule.setName("nodetoresourcemapping");
-			nodeAssetMappingModule.setDisplayName("Node To Resource Mapping");
-			nodeAssetMappingModule.setTableName("Node_To_Resource_Mapping");
+			nodeAssetMappingModule.setName("sourcetoresourcemapping");
+			nodeAssetMappingModule.setDisplayName("Source To Resource Mapping");
+			nodeAssetMappingModule.setTableName("Source_To_Resource_Mapping");
 			return  nodeAssetMappingModule;
 		}
 	}
@@ -215,18 +215,18 @@ public class EventConstants {
 			fields.add(FieldFactory.getOrgIdField(module));
 			
 			FacilioField source = new FacilioField();
-			source.setName("source");
+			source.setName("entity");
 			source.setDataType(FieldType.STRING);
 			source.setDisplayType(FacilioField.FieldDisplayType.TEXTBOX);
-			source.setColumnName("SOURCE");
+			source.setColumnName("ENTITY");
 			source.setModule(module);
 			fields.add(source);
 			
 			FacilioField node = new FacilioField();
-			node.setName("node");
+			node.setName("source");
 			node.setDataType(FieldType.STRING);
 			node.setDisplayType(FacilioField.FieldDisplayType.TEXTBOX);
-			node.setColumnName("NODE");
+			node.setColumnName("SOURCE");
 			node.setModule(module);
 			fields.add(node);
 			
@@ -523,17 +523,17 @@ public class EventConstants {
 			return fields;
 		}
 		
-		public static List<FacilioField> getNodeToResourceMappingFields() {
-			FacilioModule module = EventModuleFactory.getNodeToResourceMappingModule();
+		public static List<FacilioField> getSourceToResourceMappingFields() {
+			FacilioModule module = EventModuleFactory.getSourceToResourceMappingModule();
 			List<FacilioField> fields = new ArrayList<>();
 			
 			fields.add(FieldFactory.getIdField(module));
 			fields.add(FieldFactory.getOrgIdField(module));
 			
 			FacilioField node = new FacilioField();
-			node.setName(EventConstants.EventContextNames.NODE);
+			node.setName(EventConstants.EventContextNames.SOURCE);
 			node.setDataType(FieldType.STRING);
-			node.setColumnName("NODE");
+			node.setColumnName("SOURCE");
 			node.setModule(module);
 			fields.add(node);
 			

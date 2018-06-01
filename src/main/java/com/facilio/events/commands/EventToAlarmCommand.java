@@ -163,8 +163,8 @@ public class EventToAlarmCommand implements Command {
 	private void addAlarm(long entityId, EventContext event) throws Exception {
 		JSONObject json = new JSONObject();
 		json.put("orgId", event.getOrgId());
+		json.put("entity", event.getEntity());
 		json.put("source", event.getSource());
-		json.put("node", event.getNode());
 		json.put("subject", event.getEventMessage());
 		json.put("description", event.getDescription());
 		json.put("severityString", event.getSeverity());

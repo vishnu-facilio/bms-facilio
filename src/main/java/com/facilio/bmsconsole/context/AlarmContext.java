@@ -125,6 +125,14 @@ public class AlarmContext extends TicketContext {
 		this.clearedBy = clearedBy;
 	}
 
+	private String entity;
+	public String getEntity() {
+		return entity;
+	}
+	public void setEntity(String entity) {
+		this.entity = entity;
+	}
+
 	private String source;
 	public String getSource() {
 		return source;
@@ -133,14 +141,6 @@ public class AlarmContext extends TicketContext {
 		this.source = source;
 	}
 
-	private String node;
-	public String getNode() {
-		return node;
-	}
-	public void setNode(String node) {
-		this.node = node;
-	}
-	
 	private String severityString;
 	public String getSeverityString() {
 		return severityString;

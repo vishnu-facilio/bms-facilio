@@ -14,14 +14,14 @@ public class UpdateEventResourcesMappingCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		String node = (String) context.get(EventConstants.EventContextNames.NODE);
+		String source = (String) context.get(EventConstants.EventContextNames.SOURCE);
 		long resourceId = (long) context.get(EventConstants.EventContextNames.RESOURCE_ID);
 		EventContext event = new EventContext();
 		event.setResourceId(resourceId);
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 														.fields(EventConstants.EventFieldFactory.getEventFields())
 														.table(EventConstants.EventModuleFactory.getEventModule().getTableName())
-														.andCustomWhere("ORGID = ? AND NODE = ?", AccountUtil.getCurrentOrg().getOrgId(), node);
+														.andCustomWhere("ORGID = ? AND SOURCE = ?", AccountUtil.getCurrentOrg().getOrgId(), source);
 		updateBuilder.update(FieldUtil.getAsProperties(event));
 		return false;
 	}

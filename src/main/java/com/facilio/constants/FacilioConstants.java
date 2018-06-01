@@ -398,7 +398,6 @@ public class FacilioConstants {
 		public static final String WORKFLOW_RULE_TYPE = "workflowRuleType";
 		public static final String WORKFLOW_ACTION="workflowAction";
 		public static final String WORKFLOW_ACTION_ID="workflowActionId";
-		public static final String NODE = "node";
 		public static final String PAGINATION = "pagination";
 		public static final String CURRENT_EXECUTION_TIME = "currentexecutiontime";
 		public static final String NEXT_EXECUTION_TIMES = "nextexecutiontimes";

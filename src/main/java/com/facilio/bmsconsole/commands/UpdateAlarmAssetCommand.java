@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
 
 public class UpdateAlarmAssetCommand implements Command {
@@ -19,8 +20,8 @@ public class UpdateAlarmAssetCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		AlarmContext alarm = (AlarmContext) context.get(FacilioConstants.ContextNames.ALARM);
-		String node = (String) context.get(FacilioConstants.ContextNames.NODE);
-		if(alarm != null && node != null && !node.isEmpty()) {
+		String source = (String) context.get(EventConstants.EventContextNames.SOURCE);
+		if(alarm != null && source != null && !source.isEmpty()) {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
@@ -28,7 +29,7 @@ public class UpdateAlarmAssetCommand implements Command {
 			UpdateRecordBuilder<AlarmContext> updateBuilder = new UpdateRecordBuilder<AlarmContext>()
 																	.module(module)
 																	.fields(fields)
-																	.andCustomWhere("NODE = ?", node);
+																	.andCustomWhere("SOURCE = ?", source);
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, updateBuilder.update(alarm));
 		}
 		return false;

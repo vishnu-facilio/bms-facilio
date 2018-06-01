@@ -50,7 +50,7 @@ public class InternalActions extends ActionSupport {
 	
 	public String updateAlarmResource() throws Exception {
 		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-		rowsUpdated = bean.updateAlarmResource(resourceId, node);
+		rowsUpdated = bean.updateAlarmResource(resourceId, source);
 		return SUCCESS;
 	}
 	
@@ -88,14 +88,14 @@ public class InternalActions extends ActionSupport {
 		this.priority = priority;
 	}
 	
-	private String node;
-	public String getNode() {
-		return node;
+	private String source;
+	public String getSource() {
+		return source;
 	}
-	public void setNode(String node) {
-		this.node = node;
+	public void setSource(String source) {
+		this.source = source;
 	}
-	
+
 	private long resourceId = -1;
 	public long getResourceId() {
 		return resourceId;

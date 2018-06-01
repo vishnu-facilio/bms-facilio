@@ -110,15 +110,15 @@
 			</result>
 		</action>
 		
-		<action name="nodes" class="com.facilio.events.actions.EventAction" method="getAllNodes">
+		<action name="sources" class="com.facilio.events.actions.EventAction" method="getAllSources">
 			<param name="moduleName">alarm</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
-				<param name="root">nodes</param>
+				<param name="root">sources</param>
 			</result>
 		</action>
 		
-		<action name="updatenode" class="com.facilio.events.actions.EventAction" method="updateNodeWithResource">
+		<action name="updatesource" class="com.facilio.events.actions.EventAction" method="updateSourceWithResource">
 			<param name="moduleName">alarm</param>
 			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 			<result name="success" type="json">
