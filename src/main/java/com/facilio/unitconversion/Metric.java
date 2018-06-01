@@ -10,7 +10,7 @@ public enum Metric {
 	TEMPRATURE(2,"Temprature",Unit.CELSIUS),
 	LENGTH(3,"Length",Unit.METER),
 	MASS(4,"Mass",Unit.CELSIUS),
-	TIME(5,"Time",Unit.CELSIUS),
+	TIME(5,"Time",Unit.HOUR),
 	CURRENT(6,"Current",Unit.CELSIUS),
 	;
 	

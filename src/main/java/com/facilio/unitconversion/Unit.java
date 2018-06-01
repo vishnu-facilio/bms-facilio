@@ -30,7 +30,12 @@ public enum Unit {
 	FEET(16,"Feet",Metric.LENGTH,"si*3.280839895","this*0.3048"),
 	INCH(17,"Inch",Metric.LENGTH,"si*39.3700787402","this*0.0254"),
 	
-	
+	HOUR(18,"Hour",Metric.TIME),
+	MIN(19,"Minute",Metric.TIME,"si*60","this/60"),
+	SEC(20,"Second",Metric.TIME,"si*60*60","this/(60*60)"),
+	DAY(21,"Day",Metric.TIME,"si/24","this*24"),
+	WEEK(22,"Week",Metric.TIME,"si/(24*7)","this*(24*7)"),
+	YEAR(24,"Year",Metric.TIME,"si/(24*365)","this*(24*365)"),
 	;
 	
 	int unitId;
