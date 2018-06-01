@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import com.facilio.bmsconsole.context.FormulaFieldContext;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.udojava.evalex.Expression;
 
@@ -30,6 +32,14 @@ public class WorkflowContext {
 	}
 	public void setDependentFieldIds(List<Long> dependentFieldIds) {
 		this.dependentFieldIds = dependentFieldIds;
+	}
+	
+	private List<FacilioField> dependentFields;
+	public List<FacilioField> getDependentFields() {
+		return dependentFields;
+	}
+	public void setDependentFields(List<FacilioField> dependentFields) {
+		this.dependentFields = dependentFields;
 	}
 	
 	public Map<String, Object> getVariableResultMap() {

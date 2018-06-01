@@ -40,14 +40,15 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 		try {
 			List<Integer> types = getFrequencyTypesToBeFetched();
 			logger.log(Level.INFO, "Frequencies to be fetched for Scheduled Formula Calculation : ");
-			List<FormulaFieldContext> enPIs = FormulaFieldAPI.getScheduledFormulasOfFrequencyType(types);
-			logger.log(Level.INFO, "Formulas to be calculate : "+enPIs);
+			List<FormulaFieldContext> formulas = FormulaFieldAPI.getScheduledFormulasOfFrequencyType(types);
+			logger.log(Level.INFO, "Formulas to be calculated : "+formulas);
 			List<Long> calculatedFieldIds = new ArrayList<>();
-			if (enPIs != null && !enPIs.isEmpty()) {
+			if (formulas != null && !formulas.isEmpty()) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				fetchFields(formulas, modBean);
 				long endTime = DateTimeUtil.getHourStartTime();
-				while (!enPIs.isEmpty()) {
-					Iterator<FormulaFieldContext> it = enPIs.iterator();
+				while (!formulas.isEmpty()) {
+					Iterator<FormulaFieldContext> it = formulas.iterator();
 					while (it.hasNext()) {
 						FormulaFieldContext enpi = it.next();
 						if(isCalculatable(enpi, calculatedFieldIds)) {
@@ -99,11 +100,9 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 		}
 	}
 	
-	private boolean isCalculatable(FormulaFieldContext enpi, List<Long> calculatedFieldIds) throws Exception {
-		if (enpi.getWorkflow().getDependentFieldIds() != null && !enpi.getWorkflow().getDependentFieldIds().isEmpty()) {
-			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			for(Long fieldId : enpi.getWorkflow().getDependentFieldIds()) {
-				FacilioField field = bean.getField(fieldId);
+	private boolean isCalculatable(FormulaFieldContext formula, List<Long> calculatedFieldIds) throws Exception {
+		if (formula.getWorkflow().getDependentFields() != null && !formula.getWorkflow().getDependentFields().isEmpty()) {
+			for(FacilioField field : formula.getWorkflow().getDependentFields()) {
 				if (field.getModule().getTypeEnum() == ModuleType.SCHEDULED_FORMULA && !calculatedFieldIds.contains(field.getFieldId())) {
 					return false;
 				}
@@ -144,4 +143,16 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 		return types;
 	}
 
+	private void fetchFields (List<FormulaFieldContext> formulas, ModuleBean modBean) throws Exception {
+		for (FormulaFieldContext formula : formulas) {
+			List<Long> dependentIds = formula.getWorkflow().getDependentFieldIds();
+			if (dependentIds != null && !dependentIds.isEmpty()) {
+				List<FacilioField> fields = new ArrayList<>();
+				for (Long fieldId : dependentIds) {
+					fields.add(modBean.getField(fieldId));
+				}
+				formula.getWorkflow().setDependentFields(fields);
+			}
+		}
+	}
 }

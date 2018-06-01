@@ -36,6 +36,7 @@ import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -53,6 +54,17 @@ public class ReadingsAPI {
 	
 	public static final int DEFAULT_DATA_INTERVAL = 15; //In Minutes
 	public static final SecondsChronoUnit DEFAULT_DATA_INTERVAL_UNIT = new SecondsChronoUnit(DEFAULT_DATA_INTERVAL * 60); 
+	
+	public static ReadingInputType getRDMInputTypeFromModuleType(ModuleType type) {
+		switch (type) {
+			case SCHEDULED_FORMULA:
+			case LIVE_FORMULA:
+			case SYSTEM_SCHEDULED_FORMULA:
+				return ReadingInputType.FORMULA_FIELD;
+			default:
+				return ReadingInputType.WEB;
+		}
+	}
 	
 	public static int updateReadingDataMetaInputType (long resourceId, long fieldId, ReadingDataMeta.ReadingInputType type) throws SQLException {
 		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
