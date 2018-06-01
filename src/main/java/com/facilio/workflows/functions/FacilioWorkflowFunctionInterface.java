@@ -1,4 +1,4 @@
-package com.facilio.workflows.util;
+package com.facilio.workflows.functions;
 
 public interface FacilioWorkflowFunctionInterface {
 

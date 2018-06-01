@@ -1,4 +1,4 @@
-package com.facilio.workflows.util;
+package com.facilio.workflows.functions;
 
 import java.util.Collections;
 import java.util.HashMap;
