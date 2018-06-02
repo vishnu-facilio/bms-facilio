@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Map;
+
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
@@ -8,12 +10,18 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.chain.impl.ChainBase;
 
+import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.exception.AccountException;
+import com.facilio.accounts.util.AccountConstants;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
 import com.facilio.leed.commands.AddConsumptionForLeed;
 import com.facilio.leed.commands.AddEnergyMeterCommand;
 import com.facilio.leed.commands.FetchArcAssetsCommand;
 import com.facilio.leed.commands.LeedBuildingDetailsCommand;
+import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.transaction.FacilioTransactionManager;
 
 public class FacilioChainFactory {
@@ -1221,7 +1229,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getProcessDataChain() {
-		Chain c = new TransactionChain();
+		Chain c = new ChainBase();
 		c.addCommand(new ProcessDataCommand());
 		c.addCommand(new ModeledDataCommand());
 		c.addCommand(new UnModeledDataCommand());
@@ -2199,6 +2207,74 @@ public class FacilioChainFactory {
 		c.addCommand(new GenerateSortingQueryCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
 		addCleanUpCommand(c);
+		return c;
+	}
+	
+	private static  long createOrg(Organization org) throws Exception {
+		
+		Organization existingOrg = getOrg(org.getDomain());
+		if (existingOrg != null) {
+			throw new AccountException(AccountException.ErrorCode.ORG_DOMAIN_ALREADY_EXISTS, "The given domain already registered.");
+		}
+		
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(AccountConstants.getOrgModule().getTableName())
+				.fields(AccountConstants.getOrgFields());
+		
+		Map<String, Object> props = FieldUtil.getAsProperties(org);
+		insertBuilder.addRecord(props);
+		insertBuilder.save();
+		
+		long orgId = (Long) props.get("id");
+		
+		AccountUtil.getRoleBean().createSuperdminRoles(orgId);
+		
+		return orgId;
+	}
+	private static Organization getOrg(String domain) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	public static Chain getTestTransactionChain()
+	{
+		Chain c = new TransactionChain();
+	
+		Command command = new Command() {
+
+			@Override
+			public boolean execute(Context arg0) throws Exception {
+				String prefix = "x";
+				// TODO Auto-generated method stub
+				Organization org = new Organization();
+				//	String prefix = "abi";
+					org.setDomain(prefix+1);
+					createOrg(org);
+					org = new Organization();
+					org.setDomain(prefix+2);
+					createOrg(org);
+					org = new Organization();
+					org.setDomain(prefix+3);
+					createOrg(org);
+					org = new Organization();
+					org.setDomain(prefix+4);
+					createOrg(org);
+					if(false)
+					{
+					throw new Exception();
+					}
+					org = new Organization();
+					org.setDomain(prefix+5);
+					createOrg(org);
+					org = new Organization();
+					org.setDomain(prefix+6);
+					createOrg(org);
+				return false;
+			}
+			
+			
+		};
+		c.addCommand(command);
+		
 		return c;
 	}
 	
