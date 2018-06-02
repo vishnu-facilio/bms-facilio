@@ -55,8 +55,8 @@ public class GetReadingDataMetaCommand implements Command {
 					}
 				}
 				if (moduleName.equals(FacilioConstants.ContextNames.WEATHER_READING) || moduleName.equals(FacilioConstants.ContextNames.PSYCHROMETRIC_READING)) {
-					logger.log(Level.DEBUG, "Readings : "+readings);
-					logger.log(Level.DEBUG, "RDM Pairs : "+rdmPairs);
+					logger.log(Level.INFO, "Readings : "+readings);
+					logger.log(Level.INFO, "RDM Pairs : "+rdmPairs);
 				}
 				List<ReadingDataMeta> metaList = ReadingsAPI.getReadingDataMetaList(rdmPairs) ;
 				for(ReadingDataMeta meta : metaList) {
