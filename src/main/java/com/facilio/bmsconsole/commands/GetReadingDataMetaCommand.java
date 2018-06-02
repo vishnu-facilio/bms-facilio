@@ -8,6 +8,9 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -20,7 +23,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
 public class GetReadingDataMetaCommand implements Command {
-
+	private static final Logger logger = LogManager.getLogger(GetReadingDataMetaCommand.class.getName());
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -50,6 +53,10 @@ public class GetReadingDataMetaCommand implements Command {
 							rdmPairs.add(pair);
 						}		
 					}
+				}
+				if (moduleName.equals(FacilioConstants.ContextNames.WEATHER_READING) || moduleName.equals(FacilioConstants.ContextNames.PSYCHROMETRIC_READING)) {
+					logger.log(Level.DEBUG, "Readings : "+readings);
+					logger.log(Level.DEBUG, "RDM Pairs : "+rdmPairs);
 				}
 				List<ReadingDataMeta> metaList = ReadingsAPI.getReadingDataMetaList(rdmPairs) ;
 				for(ReadingDataMeta meta : metaList) {
