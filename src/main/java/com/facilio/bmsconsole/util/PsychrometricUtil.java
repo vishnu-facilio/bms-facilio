@@ -3,6 +3,9 @@ package com.facilio.bmsconsole.util;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.FieldUtil;
+
 public class PsychrometricUtil {
 	
 	private static double ZERO_CELSIUS = 273.15;            // Zero ºC expressed in K
@@ -26,9 +29,9 @@ public class PsychrometricUtil {
 	
 	public static Double getDewPointTemperatureFromRelativeHumudity(Map<String,Object> weatherReading) {
 		
-		Double dryBulbTemperature = (Double) weatherReading.get("apparentTemperature");
-		Double pressure = (Double) weatherReading.get("pressure") * 100;
-		Double relativeHumidity = (Double) weatherReading.get("humidity");
+		Double dryBulbTemperature = (Double) FieldUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("apparentTemperature"));
+		Double pressure = ((Double) FieldUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("pressure"))) * 100;
+		Double relativeHumidity = (Double) FieldUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("humidity"));
 		
 		Double humidityRatio = getHumidityRatioFromRelativeHumidity(dryBulbTemperature, relativeHumidity, pressure);
 		return getDewPointTemperatureFromHumidityRatio(dryBulbTemperature, humidityRatio, pressure);
@@ -36,9 +39,9 @@ public class PsychrometricUtil {
 	
 	public static Double getWetBulbTemperatureFromRelativeHumidity(Map<String,Object> weatherReading) {
 		
-		Double dryBulbTemperature = (Double) weatherReading.get("apparentTemperature");
-		Double pressure = (Double) weatherReading.get("pressure") * 100;
-		Double relativeHumidity = (Double) weatherReading.get("humidity");
+		Double dryBulbTemperature = (Double) FieldUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("apparentTemperature"));
+		Double pressure = ((Double) FieldUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("pressure"))) * 100;
+		Double relativeHumidity = (Double) FieldUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("humidity"));
 		
 		Double humidityRatio = getHumidityRatioFromRelativeHumidity(dryBulbTemperature, relativeHumidity, pressure);
 		return getWetBulbTemperatureFromHumidityRatio(dryBulbTemperature, humidityRatio, pressure);

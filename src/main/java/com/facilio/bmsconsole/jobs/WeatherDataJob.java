@@ -3,12 +3,14 @@ package com.facilio.bmsconsole.jobs;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.commons.chain.Chain;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.ExecuteAllWorkflowsCommand;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -22,9 +24,7 @@ import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 
 public class WeatherDataJob extends FacilioJob {
-	private static final Logger logger = Logger.getLogger(WeatherDataJob.class.getName());
-	
-	
+	private static final Logger logger = LogManager.getLogger(ExecuteAllWorkflowsCommand.class.getName());
 
 	@Override
 	public void execute(JobContext jc) {
@@ -63,7 +63,7 @@ public class WeatherDataJob extends FacilioJob {
 			
 		}
 		catch (Exception e) {
-			logger.log(Level.SEVERE, e.getMessage(), e);
+			logger.log(Level.ERROR, e.getMessage(), e);
 			CommonCommandUtil.emailException("Exception in Weather Data job ", e);
 		}
 	}
@@ -99,7 +99,7 @@ public class WeatherDataJob extends FacilioJob {
 			reading.addReading("dewPointTemperature", dewPointTemperature);
 		}
 		catch (Exception e) {
-			logger.log(Level.SEVERE, e.getMessage(), e);
+			logger.log(Level.ERROR, e.getMessage(), e);
 		}
 		return reading;
 	}
