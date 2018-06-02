@@ -2152,36 +2152,22 @@ public class DashboardAction extends ActionSupport {
 					List<SiteContext> sites = SpaceAPI.getAllSites();
 					if(sites != null && !sites.isEmpty()) {
 						Long siteId = sites.get(0).getId();
-						
-						List<EnergyMeterContext> meters = DashboardUtil.getMainEnergyMeter(siteId+"");
-						
-						if (meters != null && meters.size() > 0) {
-							List<Long> meterIds = new ArrayList<Long>();
-							for (EnergyMeterContext meter : meters) {
-								meterIds.add(meter.getId());
-							}
-							
-							String meterIdStr = StringUtils.join(meterIds, ",");
-							energyMeterValue = meterIdStr;
-							buildingCondition = CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", meterIdStr, NumberOperators.EQUALS);
-						}
+						report.getReportSpaceFilterContext().setSiteId(siteId);
 					}
 				}
-				else {
-					Long siteId = report.getReportSpaceFilterContext().getSiteId();
-					
-					List<EnergyMeterContext> meters = DashboardUtil.getMainEnergyMeter(siteId+"");
-					
-					if (meters != null && meters.size() > 0) {
-						List<Long> meterIds = new ArrayList<Long>();
-						for (EnergyMeterContext meter : meters) {
-							meterIds.add(meter.getId());
-						}
-						
-						String meterIdStr = StringUtils.join(meterIds, ",");
-						energyMeterValue = meterIdStr;
-						buildingCondition = CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", meterIdStr, NumberOperators.EQUALS);
+				Long siteId = report.getReportSpaceFilterContext().getSiteId();
+				
+				List<EnergyMeterContext> meters = DashboardUtil.getMainEnergyMeter(siteId+"");
+				
+				if (meters != null && meters.size() > 0) {
+					List<Long> meterIds = new ArrayList<Long>();
+					for (EnergyMeterContext meter : meters) {
+						meterIds.add(meter.getId());
 					}
+					
+					String meterIdStr = StringUtils.join(meterIds, ",");
+					energyMeterValue = meterIdStr;
+					buildingCondition = CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", meterIdStr, NumberOperators.EQUALS);
 				}
 			}
 //			else if (report.getEnergyMeter().getGroupBy() != null && "building".equalsIgnoreCase(report.getEnergyMeter().getGroupBy())) {
