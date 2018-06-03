@@ -71,65 +71,67 @@ public class GetPMJobsCommand implements Command {
 			for(PreventiveMaintenance pm : pms) 
 			{
 				List<PMTriggerContext> pmTrigggers = pmTriggersMap.get(pm.getId());
-				if(pm.getWoTemplate() != null && pm.getWoTemplate().getResourceId() != -1 && !resourceIds.contains(pm.getWoTemplate().getResourceId()))
-				{
-					resourceIds.add(pm.getWoTemplate().getResourceId());
-				}
-				//pm.setTriggers(pmTrigggers);
-				for (PMTriggerContext trigger : pmTrigggers) {
-					if(trigger.getSchedule() != null) {
-						pmTriggerMap.put(trigger.getId(), trigger);
-						if(trigger.getSchedule().getFrequencyTypeEnum() == ScheduleInfo.FrequencyType.DO_NOT_REPEAT) {
-							if(trigger.getStartTime() > startTime && trigger.getStartTime() <= endTime) {
-								// PMJobsContext pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger.getId(), startTime, false);
-								Map<String, Object> pmJob = pmJobsMap.get(trigger.getId()).get(0);
-								pmJobList.add(pmJob);
-							}
-						}
-						else {
-							long virtualJobsStartTime = -1;
-							switch(pm.getTriggerTypeEnum()) {
-								case ONLY_SCHEDULE_TRIGGER: 
-									// List<PMJobsContext> pmJobs = PreventiveMaintenanceAPI.getNextPMJobs(trigger, startTime, endTime);
-									List<Map<String, Object>> pmJobs = pmJobsMap.get(trigger.getId());
-									if(pmJobs != null && !pmJobs.isEmpty()) {
-										for(Map<String, Object> pmJob : pmJobs) {
-											if(pmJob.get("templateId") != null && (long) pmJob.get("templateId") != -1)
-											{
-												WorkorderTemplate template = (WorkorderTemplate) TemplateAPI.getTemplate((long) pmJob.get("templateId"));
-												pmJob.put("template", template);
-											}
-											pmJobList.add(pmJob);
-										}
-										// virtualJobsStartTime = pmJobs.get(pmJobs.size() - 1).getNextExecutionTime();
-									}
-									long plannedEndTime = DateTimeUtil.getDayStartTime(PreventiveMaintenanceAPI.PM_CALCULATION_DAYS+1, true) - 1;
-									if(startTime > plannedEndTime) {
-										virtualJobsStartTime = startTime;
-									}
-									else if(endTime > plannedEndTime) {
-										virtualJobsStartTime = plannedEndTime+1;
-									}
-									break;
-								case FIXED:
-								case FLOATING:
+				if (pmTrigggers != null && !pmTrigggers.isEmpty()) {
+					if(pm.getWoTemplate() != null && pm.getWoTemplate().getResourceId() != -1 && !resourceIds.contains(pm.getWoTemplate().getResourceId()))
+					{
+						resourceIds.add(pm.getWoTemplate().getResourceId());
+					}
+					//pm.setTriggers(pmTrigggers);
+					for (PMTriggerContext trigger : pmTrigggers) {
+						if(trigger.getSchedule() != null) {
+							pmTriggerMap.put(trigger.getId(), trigger);
+							if(trigger.getSchedule().getFrequencyTypeEnum() == ScheduleInfo.FrequencyType.DO_NOT_REPEAT) {
+								if(trigger.getStartTime() > startTime && trigger.getStartTime() <= endTime) {
 									// PMJobsContext pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger.getId(), startTime, false);
 									Map<String, Object> pmJob = pmJobsMap.get(trigger.getId()).get(0);
-									if((long) pmJob.get("nextExecutionTime") > endTime) {
-										virtualJobsStartTime = -1;
-									}
-									else if((long) pmJob.get("nextExecutionTime") > startTime) {
-										pmJobList.add(pmJob);
-										virtualJobsStartTime = (long) pmJob.get("nextExecutionTime");
-									}
-									else {
-										virtualJobsStartTime = startTime;
-									}
-									break;
+									pmJobList.add(pmJob);
+								}
 							}
-							if(virtualJobsStartTime != -1) {
-								List<Map<String, Object>> pmJobs = PreventiveMaintenanceAPI.createProjectedPMJobs(pm, trigger, virtualJobsStartTime, endTime);
-								pmJobList.addAll(pmJobs);
+							else {
+								long virtualJobsStartTime = -1;
+								switch(pm.getTriggerTypeEnum()) {
+									case ONLY_SCHEDULE_TRIGGER: 
+										// List<PMJobsContext> pmJobs = PreventiveMaintenanceAPI.getNextPMJobs(trigger, startTime, endTime);
+										List<Map<String, Object>> pmJobs = pmJobsMap.get(trigger.getId());
+										if(pmJobs != null && !pmJobs.isEmpty()) {
+											for(Map<String, Object> pmJob : pmJobs) {
+												if(pmJob.get("templateId") != null && (long) pmJob.get("templateId") != -1)
+												{
+													WorkorderTemplate template = (WorkorderTemplate) TemplateAPI.getTemplate((long) pmJob.get("templateId"));
+													pmJob.put("template", template);
+												}
+												pmJobList.add(pmJob);
+											}
+											// virtualJobsStartTime = pmJobs.get(pmJobs.size() - 1).getNextExecutionTime();
+										}
+										long plannedEndTime = DateTimeUtil.getDayStartTime(PreventiveMaintenanceAPI.PM_CALCULATION_DAYS+1, true) - 1;
+										if(startTime > plannedEndTime) {
+											virtualJobsStartTime = startTime;
+										}
+										else if(endTime > plannedEndTime) {
+											virtualJobsStartTime = plannedEndTime+1;
+										}
+										break;
+									case FIXED:
+									case FLOATING:
+										// PMJobsContext pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger.getId(), startTime, false);
+										Map<String, Object> pmJob = pmJobsMap.get(trigger.getId()).get(0);
+										if((long) pmJob.get("nextExecutionTime") > endTime) {
+											virtualJobsStartTime = -1;
+										}
+										else if((long) pmJob.get("nextExecutionTime") > startTime) {
+											pmJobList.add(pmJob);
+											virtualJobsStartTime = (long) pmJob.get("nextExecutionTime");
+										}
+										else {
+											virtualJobsStartTime = startTime;
+										}
+										break;
+								}
+								if(virtualJobsStartTime != -1) {
+									List<Map<String, Object>> pmJobs = PreventiveMaintenanceAPI.createProjectedPMJobs(pm, trigger, virtualJobsStartTime, endTime);
+									pmJobList.addAll(pmJobs);
+								}
 							}
 						}
 					}
