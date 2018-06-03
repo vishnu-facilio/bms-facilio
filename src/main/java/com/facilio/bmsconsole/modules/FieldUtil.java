@@ -32,8 +32,8 @@ public class FieldUtil {
 		return prop;
 	}
 	
-	public static void castOrParseValueAsPerType(PreparedStatement pstmt, int paramIndex, FieldType type, Object value) throws SQLException {
-		
+	public static void castOrParseValueAsPerType(PreparedStatement pstmt, int paramIndex, FacilioField field, Object value) throws SQLException {
+		FieldType type = field.getDataTypeEnum();
 		switch(type) {
 			
 			case STRING:
@@ -75,8 +75,9 @@ public class FieldUtil {
 						pstmt.setBoolean(paramIndex, (boolean) value);
 					}
 					else {
-						String val = value.toString();
-						if (val.trim().equals("1")) {
+						BooleanField booleanField = (BooleanField) field;
+						String val = value.toString().trim();
+						if (val.equals("1") || (booleanField.getTrueVal() != null && booleanField.getTrueVal().equalsIgnoreCase(val))) {
 							pstmt.setBoolean(paramIndex, true);
 						}
 						else {
@@ -120,76 +121,74 @@ public class FieldUtil {
 	
 	
 	public static Object castOrParseValueAsPerType( FieldType type, Object value)  {
-
 		switch(type) {
-
-		case STRING:
-			if(value != null && !(value instanceof String && ((String)value).isEmpty())) {
-				if(!(value instanceof String)) {
-					value= value.toString();
-				}
-			}
-			else {
-				value= null;
-			}
-			return value;
-		case DECIMAL:
-			Double val;
-			if(value != null && !(value instanceof String && ((String)value).isEmpty())) {
-
-				if(value instanceof Double) {
-					val = (double) value;
+			case STRING:
+				if(value != null && !(value instanceof String && ((String)value).isEmpty())) {
+					if(!(value instanceof String)) {
+						value= value.toString();
+					}
 				}
 				else {
-					val = Double.parseDouble(value.toString());
+					value= null;
 				}
-			}
-			else {
-				val=null;
-			}
-			return val;
-		case BOOLEAN:
-			Boolean booleanVal;
-			if(value != null) {
-				if(value instanceof Boolean) {
-					booleanVal=(Boolean)value;
-				}
-				else {
-					String booleanValStr = value.toString();
-					if (booleanValStr.trim().equals("1")) {
-						booleanVal = true;
+				return value;
+			case DECIMAL:
+				Double val;
+				if(value != null && !(value instanceof String && ((String)value).isEmpty())) {
+	
+					if(value instanceof Double) {
+						val = (double) value;
 					}
 					else {
-						booleanVal=Boolean.valueOf(booleanValStr);
+						val = Double.parseDouble(value.toString());
 					}
 				}
-			}
-			else {
-				booleanVal=null;
-			}
-			return booleanVal;
-		case LOOKUP:
-		case NUMBER:	
-		case DATE:
-		case DATE_TIME:
-			Long longVal;
-			if(value != null && !(value instanceof String && ((String)value).isEmpty())) {
-
-				if(value instanceof Long) {
-					longVal = (long) value;
+				else {
+					val=null;
+				}
+				return val;
+			case BOOLEAN:
+				Boolean booleanVal;
+				if(value != null) {
+					if(value instanceof Boolean) {
+						booleanVal=(Boolean)value;
+					}
+					else {
+						String booleanValStr = value.toString();
+						if (booleanValStr.trim().equals("1")) {
+							booleanVal = true;
+						}
+						else {
+							booleanVal=Boolean.valueOf(booleanValStr);
+						}
+					}
 				}
 				else {
-					longVal = new Double(value.toString()).longValue();
+					booleanVal=null;
 				}
-
-			}
-			else {
-				longVal=null;
-			}
-			return longVal;
-		case MISC:
-		default:
-			return value;
+				return booleanVal;
+			case LOOKUP:
+			case NUMBER:	
+			case DATE:
+			case DATE_TIME:
+				Long longVal;
+				if(value != null && !(value instanceof String && ((String)value).isEmpty())) {
+	
+					if(value instanceof Long) {
+						longVal = (long) value;
+					}
+					else {
+						longVal = new Double(value.toString()).longValue();
+					}
+	
+				}
+				else {
+					longVal=null;
+				}
+				return longVal;
+			case MISC:
+			default:
+				return value;
 		}
 	}
 	

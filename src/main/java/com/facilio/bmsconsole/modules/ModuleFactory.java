@@ -70,7 +70,7 @@ public class ModuleFactory {
 		fieldModule.setName("lookupField");
 		fieldModule.setDisplayName("Lookup Fields");
 		fieldModule.setTableName("LookupFields");
-		fieldModule.setExtendModule(getFieldsModule());
+//		fieldModule.setExtendModule(getFieldsModule());
 		return fieldModule;
 	}
 	
@@ -79,8 +79,17 @@ public class ModuleFactory {
 		numberModule.setName("numberField");
 		numberModule.setDisplayName("Number Fields");
 		numberModule.setTableName("NumberFields");
-		numberModule.setExtendModule(getFieldsModule());
+//		numberModule.setExtendModule(getFieldsModule());
 		return numberModule;
+	}
+	
+	public static FacilioModule getBooleanFieldsModule() {
+		FacilioModule booleanModule = new FacilioModule();
+		booleanModule.setName("booleanField");
+		booleanModule.setDisplayName("Boolean Fields");
+		booleanModule.setTableName("BooleanFields");
+//		booleanModule.setExtendModule(getFieldsModule());
+		return booleanModule;
 	}
 	
 	public static FacilioModule getSpaceCategoryReadingRelModule() {

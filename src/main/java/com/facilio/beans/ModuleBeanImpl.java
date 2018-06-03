@@ -23,6 +23,7 @@ import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.BooleanField;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
@@ -408,6 +409,10 @@ public class ModuleBeanImpl implements ModuleBean {
 						prop.putAll(extendedPropsMap.get(type).get((Long) prop.get("fieldId")));
 						fields.add(FieldUtil.getAsBeanFromMap(prop, NumberField.class));
 						break;
+					case BOOLEAN:
+						prop.putAll(extendedPropsMap.get(type).get((Long) prop.get("fieldId")));
+						fields.add(FieldUtil.getAsBeanFromMap(prop, BooleanField.class));
+						break;
 					case LOOKUP:
 						prop.putAll(extendedPropsMap.get(type).get((Long) prop.get("fieldId")));
 						Long lookupModuleId = (Long) prop.get("lookupModuleId");
@@ -434,6 +439,9 @@ public class ModuleBeanImpl implements ModuleBean {
 				case NUMBER:
 				case DECIMAL:
 					extendedProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getNumberFieldModule(), FieldFactory.getNumberFieldFields(), entry.getValue()));
+					break;
+				case BOOLEAN:
+					extendedProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getBooleanFieldsModule(), FieldFactory.getBooleanFieldFields(), entry.getValue()));
 					break;
 				case LOOKUP:
 					extendedProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getLookupFieldsModule(), FieldFactory.getLookupFieldFields(), entry.getValue()));
@@ -539,6 +547,18 @@ public class ModuleBeanImpl implements ModuleBean {
 				case NUMBER:
 				case DECIMAL:
 					addExtendedProps(ModuleFactory.getNumberFieldModule(), FieldFactory.getNumberFieldFields(), fieldProps);
+					break;
+				case BOOLEAN:
+					if (field instanceof BooleanField) {
+						BooleanField booleanField = (BooleanField) field;
+						if (booleanField.getTrueVal() != null && !booleanField.getTrueVal().isEmpty() && (booleanField.getFalseVal() == null || booleanField.getFalseVal().isEmpty())) {
+							throw new IllegalArgumentException("False value cannot be empty when True value is set for Boolean Field");
+						}
+						else if (booleanField.getFalseVal() != null && !booleanField.getFalseVal().isEmpty() && (booleanField.getTrueVal() == null || booleanField.getTrueVal().isEmpty())) {
+							throw new IllegalArgumentException("True value cannot be empty when False value is set for Boolean Field");
+						}
+					}
+					addExtendedProps(ModuleFactory.getBooleanFieldsModule(), FieldFactory.getBooleanFieldFields(), fieldProps);
 					break;
 				case LOOKUP:
 					addExtendedProps(ModuleFactory.getLookupFieldsModule(), FieldFactory.getLookupFieldFields(), fieldProps);

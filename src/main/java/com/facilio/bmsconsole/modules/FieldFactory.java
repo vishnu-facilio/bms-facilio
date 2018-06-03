@@ -85,6 +85,18 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	public static List<FacilioField> getBooleanFieldFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getBooleanFieldsModule();
+		
+		fields.add(getField("fieldId", "FIELDID", module, FieldType.NUMBER));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("trueVal", "TRUE_VAL", module, FieldType.STRING));
+		fields.add(getField("falseVal", "FALSE_VAL", module, FieldType.STRING));
+		
+		return fields;
+	}
+ 	
 	public static List<FacilioField> getAddFieldFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getFieldsModule();
