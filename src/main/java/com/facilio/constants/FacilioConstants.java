@@ -436,6 +436,7 @@ public class FacilioConstants {
 		public static final String FORMULA_LIST = "formulaList";
 		public static final String HISTORY_READINGS = "historyReadings";
 		public static final String ANALYTICS_ANAMOLY = "analyticsAnamoly";
+		public static final String DERIVATION = "derivation";
 		
 		public static final String PORTALINFO = "portalInfo";
 		public static final String PUBLICKEYFILE = "publicKeyFile";
@@ -450,6 +451,8 @@ public class FacilioConstants {
 		public static final String PSYCHROMETRIC_READING = "psychrometric";
 		public static final String WET_BULB_TEMPERATURE="wetBulbTemperature";
 		public static final String MODULE_NAMES = "moduleNames";
+		
+		public static final String EXCLUDE_EMPTY_FIELDS = "exludeEmptyFields";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
