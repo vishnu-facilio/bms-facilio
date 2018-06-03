@@ -85,10 +85,10 @@ public class SpaceAPI {
 		
 		List<FacilioModule> readings = null;
 		if (onlyReading) {
-			readings = modBean.getSubModules(moduleName, ModuleType.READING);
+			readings = modBean.getSubModules(moduleName, ModuleType.READING, ModuleType.SYSTEM_SCHEDULED_FORMULA);
 		}
 		else {
-			readings = modBean.getSubModules(moduleName, ModuleType.READING, ModuleType.LIVE_FORMULA, ModuleType.SCHEDULED_FORMULA);
+			readings = modBean.getSubModules(moduleName, ModuleType.READING, ModuleType.LIVE_FORMULA, ModuleType.SCHEDULED_FORMULA, ModuleType.SYSTEM_SCHEDULED_FORMULA);
 		}
 		return readings;
 	}
