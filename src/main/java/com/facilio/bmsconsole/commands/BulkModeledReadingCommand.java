@@ -70,7 +70,7 @@ public class BulkModeledReadingCommand implements Command {
 						ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 						FacilioField field =bean.getField(fieldId);
 						String moduleName=field.getModule().getName();
-						String readingKey=moduleName+"|"+assetId;
+						String readingKey=moduleName+"|"+assetId+"|"+timeStamp;
 						
 						ReadingContext reading=iModuleVsReading.get(readingKey);
 						if(reading==null) {
