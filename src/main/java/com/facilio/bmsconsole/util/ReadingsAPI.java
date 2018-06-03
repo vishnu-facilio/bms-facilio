@@ -165,10 +165,8 @@ public class ReadingsAPI {
 				.select(FieldFactory.getReadingDataMetaFields())
 				.table(module.getTableName())
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resourceId", String.valueOf(resourceId), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition("FIELD_ID", "fieldId", StringUtils.join(fieldMap.keySet(), ","), NumberOperators.EQUALS));
-		if (resourceId != null) {
-			builder.andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resourceId", String.valueOf(resourceId), NumberOperators.EQUALS));
-		}
 		List<Map<String, Object>> stats = builder.get();	
 		return getReadingDataFromProps(stats, fieldMap);
 	}
@@ -395,12 +393,12 @@ public class ReadingsAPI {
 		return fieldNames;
 	}
 	
-	public static List<FacilioField> excludeDefaultAndEmptyReadingFields(List<FacilioField> fields, boolean excludeEmptyFields) throws Exception {
+	public static List<FacilioField> excludeDefaultAndEmptyReadingFields(List<FacilioField> fields,Long parentId) throws Exception {
 		List<Long> fieldsWithValues = null;
-		if (excludeEmptyFields) {
-			List<ReadingDataMeta> readingMetaDatas = getReadingDataMetaList(null, fields);
+		if (parentId != null && parentId > -1) {
+			List<ReadingDataMeta> readingMetaDatas = getReadingDataMetaList(parentId, fields);
 			if (readingMetaDatas != null) {
-				fieldsWithValues = readingMetaDatas.stream().filter(meta -> meta.getValue() != null && !meta.getValue().toString().equals("-1"))
+				fieldsWithValues = readingMetaDatas.stream().filter(meta -> meta.getReadingDataId() != -1)
 						.map(meta -> meta.getFieldId()).collect(Collectors.toList());
 			}
 		}
