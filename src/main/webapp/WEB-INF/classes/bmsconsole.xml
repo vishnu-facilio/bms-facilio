@@ -1519,6 +1519,7 @@
 		<action name="getassetreadings" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="getAssetReadings">
 			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
 				<param name="root">readings</param>
 			</result>
 		</action>
@@ -1666,6 +1667,12 @@
 			</result>
 		</action>
 		
+		<action name="calculateFormulField" class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="calculateFormulField">
+			<result name="success" type="json">
+				<param name="root">readingValues</param>
+			</result>
+		</action>
 		
 	</package>
 
@@ -3916,6 +3923,11 @@
 			</result>
 		</action>
 		<action name="addDerivation" class="com.facilio.bmsconsole.actions.DashboardAction" method="addDerivation">
+			<result name="success" type="json">
+				<param name="includeProperties">^derivation.*</param>
+			</result>
+		</action>
+		<action name="updateDerivation" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDerivation">
 			<result name="success" type="json">
 				<param name="includeProperties">^derivation.*</param>
 			</result>

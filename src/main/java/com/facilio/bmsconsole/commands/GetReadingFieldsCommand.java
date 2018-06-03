@@ -21,7 +21,8 @@ public class GetReadingFieldsCommand implements Command {
 		if(readings != null && !readings.isEmpty()) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			for(FacilioModule reading : readings) {
-				List<FacilioField> dataPoints = ReadingsAPI.excludeDefaultReadingFields(modBean.getAllFields(reading.getName()));
+				Boolean excludeEmptyFields = (Boolean) context.get(FacilioConstants.ContextNames.EXCLUDE_EMPTY_FIELDS);
+				List<FacilioField> dataPoints = ReadingsAPI.excludeDefaultAndEmptyReadingFields(modBean.getAllFields(reading.getName()), excludeEmptyFields != null && excludeEmptyFields);
 				reading.setFields(dataPoints);
 			}
 		}

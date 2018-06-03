@@ -127,6 +127,7 @@ public class ReadingAction extends ActionSupport {
 	public String getSpaceSpecificReadings() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PARENT_ID, getParentId());
+		context.put(FacilioConstants.ContextNames.EXCLUDE_EMPTY_FIELDS, excludeEmptyFields != null ? excludeEmptyFields : true);
 		
 		Chain getSpaceSpecifcReadingsChain = FacilioChainFactory.getSpaceReadingsChain();
 		getSpaceSpecifcReadingsChain.execute(context);
@@ -138,6 +139,7 @@ public class ReadingAction extends ActionSupport {
 	public String getAssetSpecificReadings() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PARENT_ID, getParentId());
+		context.put(FacilioConstants.ContextNames.EXCLUDE_EMPTY_FIELDS, excludeEmptyFields != null ? excludeEmptyFields : true);
 		
 		Chain getSpaceSpecifcReadingsChain = FacilioChainFactory.getAssetReadingsChain();
 		getSpaceSpecifcReadingsChain.execute(context);
@@ -193,6 +195,7 @@ public class ReadingAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, module);
 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, getParentCategoryId());
+		context.put(FacilioConstants.ContextNames.EXCLUDE_EMPTY_FIELDS, excludeEmptyFields != null ? excludeEmptyFields : false);
 		
 		Chain getCategoryReadingChain = FacilioChainFactory.getCategoryReadingsChain();
 		getCategoryReadingChain.execute(context);
@@ -673,5 +676,13 @@ public class ReadingAction extends ActionSupport {
 	}
 	public void setWorkflow(WorkflowContext workflow) {
 		this.workflow = workflow;
+	}
+	
+	private Boolean excludeEmptyFields;
+	public Boolean getExcludeEmptyFields() {
+		return excludeEmptyFields;
+	}
+	public void setExcludeEmptyFields(Boolean excludeEmptyFields) {
+		this.excludeEmptyFields = excludeEmptyFields;
 	}
  }
