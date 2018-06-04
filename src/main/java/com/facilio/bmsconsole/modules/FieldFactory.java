@@ -2,14 +2,33 @@ package com.facilio.bmsconsole.modules;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.facilio.constants.FacilioConstants;
 
 public class FieldFactory {
+	
+	private static final Map<String, Pair<String, Boolean>> lookupModuleVsSortFieldName = Collections.unmodifiableMap(initMap());
+	
+	private static Map<String, Pair<String, Boolean>> initMap() {
+		Map<String, Pair<String, Boolean>> lookupModuleVsSortFieldName = new HashMap<>();
+		lookupModuleVsSortFieldName.put("ticketpriority",  Pair.of("sequenceNumber", false));
+		lookupModuleVsSortFieldName.put("ticketcategory", Pair.of("name", true));
+		lookupModuleVsSortFieldName.put("ticketstatus", Pair.of("status", true));
+		lookupModuleVsSortFieldName.put("tickettype", Pair.of("name", true));
+		return lookupModuleVsSortFieldName;
+	}
+	
+	public static Pair<String, Boolean> getSortableFieldName(String moduleName) {
+		return lookupModuleVsSortFieldName.get(moduleName);
+	}
 	
 	public static List<FacilioField> getAssetCategoryReadingRelFields() {
 		List<FacilioField> fields = new ArrayList<>();
@@ -58,7 +77,7 @@ public class FieldFactory {
 		lookupModuleId.setColumnName("LOOKUP_MODULE_ID");
 		lookupModuleId.setModule(module);
 		fields.add(lookupModuleId);
-
+		
 		return fields;
 	}
 	
@@ -3007,6 +3026,37 @@ public class FieldFactory {
 		actionId.setModule(module);
 		fields.add(actionId);
 
+		return fields;
+	}
+	
+	public static List<FacilioField> getViewSortColumnFields() {
+		FacilioModule module = ModuleFactory.getViewSortColumnsModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		
+		FacilioField viewID = new FacilioField();
+		viewID.setName("viewId");
+		viewID.setDataType(FieldType.NUMBER);
+		viewID.setColumnName("VIEWID");
+		viewID.setModule(module);
+		fields.add(viewID);
+		
+		FacilioField field = new FacilioField();
+		field.setName("fieldId");
+		field.setDataType(FieldType.NUMBER);
+		field.setColumnName("FIELDID");
+		field.setModule(module);
+		fields.add(field);
+		
+		FacilioField orderType = new FacilioField();
+		orderType.setName("isAscending");
+		orderType.setDataType(FieldType.BOOLEAN);
+		orderType.setColumnName("IS_ASCENDING");
+		orderType.setModule(module);
+		fields.add(orderType);
+		
 		return fields;
 	}
 

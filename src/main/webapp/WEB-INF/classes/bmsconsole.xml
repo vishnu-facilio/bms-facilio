@@ -1378,6 +1378,12 @@
 				<param name="includeProperties">fields.*</param>
 			</result>
 		</action>
+		<action name="customizeSortColumns" class="com.facilio.bmsconsole.actions.ViewAction"
+			method="customizeSortColumns">
+			<result name="success" type="json">
+				<param name="includeProperties">sortFields.*</param>
+			</result>
+		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.ViewAction"
 			method="getViewDetail">
 			<param name="viewName">{1}</param>

@@ -22,10 +22,13 @@ import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.view.ColumnFactory;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.FacilioView.ViewType;
+import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
@@ -136,11 +139,11 @@ public class ViewAPI {
 				}
 				List<ViewField> columns = getViewColumns(view.getId());
 				view.setFields(columns);
+				view.setSortFields(getSortFields(view.getId()));
 				return view;
 			}
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw e;
 		}
@@ -162,7 +165,23 @@ public class ViewAPI {
 															.table("Views")
 															.fields(FieldFactory.getViewFields())
 															.addRecord(viewProp);
+			
 			insertBuilder.save();
+			
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module =  modBean.getModule(view.getModuleId());
+			List<SortField> defaultSortFileds = ColumnFactory.getDefaultSortField(module.getName());
+			
+			if (defaultSortFileds != null && !defaultSortFileds.isEmpty()) {
+				for (int i = 0; i < defaultSortFileds.size(); i++) {
+					FacilioField sortfield = modBean.getField(defaultSortFileds.get(i).getSortField().getName(), module.getName());
+					Long fieldID = modBean.getField(sortfield.getName(), module.getName()).getFieldId();
+					defaultSortFileds.get(i).setFieldId(fieldID);
+					defaultSortFileds.get(i).setOrgId(orgId);
+				}
+				
+				customizeViewSortColumns((long) viewProp.get("id"), defaultSortFileds);
+			}
 			
 			return (long) viewProp.get("id");
 			
@@ -240,6 +259,31 @@ public class ViewAPI {
 		}
 	}
 	
+	public static void customizeViewSortColumns(long viewId, List<SortField> sortfields) throws Exception {
+		try {
+			deleteViewSortColumns(viewId);
+			
+			List<Map<String, Object>> props = new ArrayList<>();
+			
+			for(SortField field: sortfields) {
+				field.setViewId(viewId);
+				field.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+				Map<String, Object> prop = FieldUtil.getAsProperties(field);
+				props.add(prop);
+			}
+			
+			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+					.table(ModuleFactory.getViewSortColumnsModule().getTableName())
+					.fields(FieldFactory.getViewSortColumnFields())
+					.addRecords(props);
+			
+			insertBuilder.save();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	
 	public static int deleteViewColumns(long viewId) throws Exception {
 		
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
@@ -248,6 +292,13 @@ public class ViewAPI {
 		
 		return builder.delete();
 
+	}
+	
+	public static int deleteViewSortColumns(long viewId) throws Exception {
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+				.table(ModuleFactory.getViewSortColumnsModule().getTableName())
+				.andCustomWhere("ORGID = ? AND VIEWID = ?", AccountUtil.getCurrentOrg().getId(), viewId);
+		return builder.delete();
 	}
 	
 	public static List<ViewField> getViewColumns(long viewId) throws Exception {
@@ -274,6 +325,34 @@ public class ViewAPI {
 		return columns;
 	}
 	
+	public static List<SortField> getSortFields(long viewID) throws Exception {
+		List<SortField> sortFields = new ArrayList<>();
+		
+		try {
+			List<FacilioField> fields = FieldFactory.getViewSortColumnFields();
+			FacilioModule viewSortColumnsModule = ModuleFactory.getViewSortColumnsModule();
+			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+					.table(viewSortColumnsModule.getTableName())
+					.select(fields)
+					.andCustomWhere("ORGID = ? AND VIEWID = ?", AccountUtil.getCurrentOrg().getOrgId(), viewID)
+					.orderBy("ID");
+			
+			List<Map<String, Object>> props = builder.get();
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			
+			for (Map<String, Object> prop : props) {
+				SortField sortField = FieldUtil.getAsBeanFromMap(prop, SortField.class);
+				FacilioField field = modBean.getField(sortField.getFieldId());
+				sortField.setSortField(field);
+				sortFields.add(sortField);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return sortFields;
+	}
+	
 	public static long checkAndAddView(String viewName, String moduleName, List<ViewField> columns) throws Exception {
 		long viewId = -1;
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -295,6 +374,16 @@ public class ViewAPI {
 						Long fieldId = modBean.getField(column.getName(), moduleName).getFieldId();
 						column.setFieldId(fieldId);
 					}
+				}
+				List<SortField> sortFields = view.getSortFields();
+				if (sortFields != null && !sortFields.isEmpty()) {
+					for (SortField field : sortFields) {
+						FacilioField sortfield = modBean.getField(field.getSortField().getName(), moduleName);
+						Long fieldID = modBean.getField(sortfield.getName(), moduleName).getFieldId();
+						field.setFieldId(fieldID);
+						field.setOrgId(orgId);
+					}
+					customizeViewSortColumns(viewId, sortFields);
 				}
 			}
 			else {

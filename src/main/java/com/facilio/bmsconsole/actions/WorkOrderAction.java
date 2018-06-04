@@ -42,6 +42,7 @@ import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.bmsconsole.workflow.TicketActivity;
 import com.facilio.constants.FacilioConstants;
@@ -813,16 +814,6 @@ public class WorkOrderAction extends ActionSupport {
 			searchObj.put("query", getSearch());
 			context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
 		}
-
-		JSONObject sorting = new JSONObject();
-		if (getOrderBy() != null) {
-			sorting.put("orderBy", getOrderBy());
-			sorting.put("orderType", getOrderType());
-		} else {
-			sorting.put("orderBy", "createdTime");
-			sorting.put("orderType", "desc");
-		}
-		context.put(FacilioConstants.ContextNames.SORTING, sorting);
 
 		JSONObject pagination = new JSONObject();
 		pagination.put("page", getPage());

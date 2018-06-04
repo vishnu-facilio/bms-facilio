@@ -107,6 +107,14 @@ public class FacilioView {
 	public void setFields(List<ViewField> fields) {
 		this.fields = fields;
 	}
+
+	private List<SortField> sortFields;
+	public List<SortField> getSortFields() {
+		return sortFields;
+	}
+	public void setSortFields(List<SortField> sortFields) {
+		this.sortFields = sortFields;
+	}
 	
 	private Map<String, ViewField> defaultModulefields;
 	public void setDefaultModuleFields(String moduleName, String parentViewName) {

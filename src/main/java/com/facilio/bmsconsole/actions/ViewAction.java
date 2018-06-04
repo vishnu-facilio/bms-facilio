@@ -10,9 +10,11 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.context.ViewSharingContext;
 import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.opensymphony.xwork2.ActionSupport;
+import org.json.simple.JSONObject;
 
 public class ViewAction extends ActionSupport {
 	
@@ -106,6 +108,26 @@ public class ViewAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String customizeSortColumns() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+		
+		JSONObject sortObject = new JSONObject();
+		sortObject.put("orderBy", getOrderBy());
+		sortObject.put("orderType", getOrderType());
+		
+		context.put(FacilioConstants.ContextNames.VIEWID, viewId);
+		context.put(FacilioConstants.ContextNames.SORTING, sortObject);
+		
+		Chain customizeSortColumnsChain = FacilioChainFactory.getViewCustomizeSortColumnsChain();
+		customizeSortColumnsChain.execute(context);
+		
+		this.sortFields = (List<SortField>) context.get(FacilioConstants.ContextNames.SORT_FIELDS_OBJECT);
+		
+		return SUCCESS;
+	}
+	
 	private long viewId = -1;
 	public long getViewId() {
 		return viewId;
@@ -170,5 +192,34 @@ public class ViewAction extends ActionSupport {
 		this.fields = fields;
 	}
 	
+	public String getOrderBy() {
+		return orderBy;
+	}
+
+	public void setOrderBy(String orderBy) {
+		this.orderBy = orderBy;
+	}
+
+	public String getOrderType() {
+		return orderType;
+	}
+
+	public void setOrderType(String orderType) {
+		this.orderType = orderType;
+	}
+
+	public List<SortField> getSortFields() {
+		return sortFields;
+	}
+
+	public void setSortFields(List<SortField> sortFields) {
+		this.sortFields = sortFields;
+	}
+
+	private String orderBy;
+	
+	private String orderType;
+	
+	private List<SortField> sortFields;
 	
 }

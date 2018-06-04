@@ -1,12 +1,16 @@
 package com.facilio.bmsconsole.view;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsole.context.ViewField;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 
 public class ColumnFactory {
 	
@@ -59,6 +63,25 @@ public class ColumnFactory {
 		columnMap.put("energydata-report", getDefaultEnergyColumns());
 		
 		return columnMap;
+	}
+	
+	private static final Map<String, List<SortField>> defaultSortFields = Collections.unmodifiableMap(initDefaultSortFields());
+	
+	private static Map<String, List<SortField>> initDefaultSortFields() {
+		Map<String, List<SortField>> defaultMap = new HashMap<>();
+		
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(ModuleFactory.getWorkOrdersModule());
+		
+		defaultMap.put("workorder", Arrays.asList(new SortField(createdTime, false)));
+		return defaultMap;
+	}
+	
+	public static List<SortField> getDefaultSortField(String moduleName) {
+		return defaultSortFields.get(moduleName);
 	}
 	
 	private static List<ViewField> getDefaultViewColumns() {

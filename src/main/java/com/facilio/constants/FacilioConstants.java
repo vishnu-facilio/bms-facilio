@@ -451,6 +451,8 @@ public class FacilioConstants {
 		public static final String PSYCHROMETRIC_READING = "psychrometric";
 		public static final String WET_BULB_TEMPERATURE="wetBulbTemperature";
 		public static final String MODULE_NAMES = "moduleNames";
+		public static final String SORT_FIELDS = "sortFields";
+		public static final String SORT_FIELDS_OBJECT = "sortFieldsObject";
 		
 		public static final String EXCLUDE_EMPTY_FIELDS = "exludeEmptyFields";
 		

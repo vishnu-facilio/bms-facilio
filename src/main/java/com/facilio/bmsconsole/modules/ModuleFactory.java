@@ -735,6 +735,12 @@ public class ModuleFactory {
 		return viewFieldsModule;
 	}
 	
+	public static FacilioModule getViewSortColumnsModule() {
+		FacilioModule viewSortColumnsModule  = new FacilioModule();
+		viewSortColumnsModule.setTableName("View_Sort_Columns");
+		return viewSortColumnsModule;
+	}
+	
 	public static FacilioModule getTaskInputOptionModule() {
 		FacilioModule taskInputOptionsModule = new FacilioModule();
 		taskInputOptionsModule.setName("taskInputOpyion");

@@ -348,7 +348,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getWorkOrderListChain() {
-		Chain c = new ChainBase();
+		Chain c = new TransactionChain();
 		c.addCommand(SetTableNamesCommand.getForWorkOrder());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadViewCommand());
@@ -356,7 +356,6 @@ public class FacilioChainFactory {
 		//c.addCommand(new GenerateCondtionsFromFiltersCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
-		c.addCommand(new GenerateSortingQueryCommand());
 		c.addCommand(new GetWorkOrderListCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -1639,7 +1638,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getViewsCustomizeChain() {
-		Chain c = new ChainBase();
+		Chain c = new TransactionChain();
 		c.addCommand(new CustomizeViewCommand());
 		c.addCommand(new GetViewListCommand());
 		addCleanUpCommand(c);
@@ -1649,6 +1648,13 @@ public class FacilioChainFactory {
 	public static Chain getViewCustomizeColumnChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new CustomizeViewColumnCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getViewCustomizeSortColumnsChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new SaveSortFieldsCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
