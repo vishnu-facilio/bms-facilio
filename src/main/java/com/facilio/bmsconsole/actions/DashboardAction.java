@@ -1889,6 +1889,99 @@ public class DashboardAction extends ActionSupport {
 					return ticketData;
 				}
 			}
+			
+			else if (report.getId() == 2382l) {
+				
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				
+				int tcompliance = 0,tnonCompliance = 0,trepeatFinding = 0,total = 0;
+				
+				List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
+				
+				ticketData = new JSONArray();
+
+				for(TicketCategoryContext category:categories) {
+					
+					List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrders(category.getId());
+					
+					if(workorders.isEmpty()) {
+						continue;
+					}
+					
+					int compliance = 0,nonCompliance = 0,repeatFinding = 0,notApplicable = 0;
+					
+					for(WorkOrderContext workorder:workorders) {
+						
+						if(workorder.getResource().getId() != report.getReportSpaceFilterContext().getBuildingId()) {
+							continue;
+						}
+						LOGGER.log(Level.SEVERE, "dateFilter --- "+dateFilter);
+						if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
+							continue;
+						}
+						LOGGER.log(Level.SEVERE, "passed --- "+workorder.getId());
+						Command chain = FacilioChainFactory.getGetTasksOfTicketCommand();
+						FacilioContext context = new FacilioContext();
+						
+						context.put(FacilioConstants.ContextNames.ID, workorder.getId());
+						context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
+						context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME,"Tasks");
+						context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(FacilioConstants.ContextNames.TASK));
+						context.put("isAsMap", true);
+						chain.execute(context);
+						
+						List<Map<String, Object>> taskMap = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
+						
+						LOGGER.log(Level.SEVERE, "passed1 --- "+taskMap.size());
+						for(Map<String, Object> task : taskMap) {
+							
+							String subject = (String) task.get("subject");
+							
+							subject = subject.trim();
+							
+							//inputValue
+							if(task.get("inputValue") != null) {
+								
+								Integer value = Integer.parseInt(task.get("inputValue").toString());
+								
+								if (subject.endsWith("Non Compliance")) {
+									nonCompliance += value;
+								}
+								else if(subject.endsWith("Compliance")) {
+									compliance += value;
+								}
+								else if (subject.endsWith("Repeat Findings")) {
+									repeatFinding += value;
+								}
+							}
+						}
+					}
+					nonCompliance = Math.abs(nonCompliance);
+					compliance = Math.abs(compliance);
+					repeatFinding = Math.abs(repeatFinding);
+					
+					JSONObject buildingres = new JSONObject();
+					
+					buildingres.put("label", "Compliance");
+					buildingres.put("label", compliance);
+					ticketData.add(buildingres);
+					
+					
+					buildingres = new JSONObject();
+					
+					buildingres.put("label", "Non Compliance");
+					buildingres.put("label", nonCompliance);
+					ticketData.add(buildingres);
+					
+					buildingres = new JSONObject();
+					
+					buildingres.put("label", "Repeat Finding");
+					buildingres.put("label", repeatFinding);
+					ticketData.add(buildingres);
+						
+					return ticketData;
+				}
+			}
 		}
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
