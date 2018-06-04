@@ -317,26 +317,27 @@ public class ReadingsAPI {
 				long readingId = readingContext.getId();
 				Map<String,Object> readings=  readingContext.getReadings();
 				for(Map.Entry<String, Object> reading :readings.entrySet()) {
-
-					FacilioField fField=fieldMap.get(reading.getKey());
-					long fieldId=fField.getFieldId();
-					if (metaMap != null) {
-						ReadingDataMeta meta = metaMap.get(resourceId+"_"+fField.getFieldId());
-						if(meta != null)
-						{
-							Object lastReading = meta.getValue();
-							long lastTimeStamp = meta.getTtime();
-							if (lastReading != null && lastTimeStamp != -1 && 
-									!"-1".equals(lastReading.toString()) && timeStamp < lastTimeStamp) {
-								continue;
+					FacilioField fField = fieldMap.get(reading.getKey());
+					if (fField != null) {
+						long fieldId = fField.getFieldId();
+						if (metaMap != null) {
+							ReadingDataMeta meta = metaMap.get(resourceId+"_"+fField.getFieldId());
+							if(meta != null)
+							{
+								Object lastReading = meta.getValue();
+								long lastTimeStamp = meta.getTtime();
+								if (lastReading != null && lastTimeStamp != -1 && 
+										!"-1".equals(lastReading.toString()) && timeStamp < lastTimeStamp) {
+									continue;
+								}
 							}
 						}
+						fields.add(fieldId);
+						String value= reading.getValue().toString();
+						timeBuilder.append(getCase(resourceId,fieldId,timeStamp,false));
+						valueBuilder.append(getCase(resourceId,fieldId,value,true));
+						idBuilder.append(getCase(resourceId,fieldId,readingId,false));
 					}
-					fields.add(fieldId);
-					String value= reading.getValue().toString();
-					timeBuilder.append(getCase(resourceId,fieldId,timeStamp,false));
-					valueBuilder.append(getCase(resourceId,fieldId,value,true));
-					idBuilder.append(getCase(resourceId,fieldId,readingId,false));
 				}
 			}
 
