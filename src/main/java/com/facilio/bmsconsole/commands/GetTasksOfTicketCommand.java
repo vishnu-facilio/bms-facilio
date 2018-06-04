@@ -19,7 +19,10 @@ public class GetTasksOfTicketCommand implements Command {
 		// TODO Auto-generated method stub
 		
 		long ticketId = (long) context.get(FacilioConstants.ContextNames.ID);
-		boolean isAsMap = (boolean) context.get("isAsMap");
+		boolean isAsMap = false;
+		if(context.get("isAsMap") != null) {
+			isAsMap = (boolean) context.get("isAsMap");
+		}
 		if(ticketId > 0) {
 			
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);

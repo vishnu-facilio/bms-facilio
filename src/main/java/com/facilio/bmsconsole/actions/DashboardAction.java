@@ -1370,28 +1370,27 @@ public class DashboardAction extends ActionSupport {
 							context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
 							context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME,"Tasks");
 							context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(FacilioConstants.ContextNames.TASK));
+							context.put("isAsMap", true);
 							chain.execute(context);
 							
-							Map<Long, List<TaskContext>> taskMap = (Map<Long, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
+							List<Map<String, Object>> taskMap = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
 							
-							for(Long key : taskMap.keySet()) {
-								List<TaskContext> tasks = taskMap.get(key);
+							for(Map<String, Object> task : taskMap) {
 								
-								for(TaskContext task :tasks) {
-									String subject = task.getSubject().trim();
-									if(task.getInputValue() != null) {
-										
-										Integer value = Integer.parseInt(task.getInputValue());
-										
-										if (subject.endsWith("Non Compliance")) {
-											nonCompliance += value;
-										}
-										else if(subject.endsWith("Compliance")) {
-											compliance += value;
-										}
-										else if (subject.endsWith("Repeat Findings")) {
-											repeatFinding += value;
-										}
+								String subject = (String) task.get("subject");
+								
+								if(task.get("inputValue") != null) {
+									
+									Integer value = Integer.parseInt(task.get("inputValue").toString());
+									
+									if (subject.endsWith("Non Compliance")) {
+										nonCompliance += value;
+									}
+									else if(subject.endsWith("Compliance")) {
+										compliance += value;
+									}
+									else if (subject.endsWith("Repeat Findings")) {
+										repeatFinding += value;
 									}
 								}
 							}
@@ -1564,18 +1563,18 @@ public class DashboardAction extends ActionSupport {
 								context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
 								context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME,"Tasks");
 								context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(FacilioConstants.ContextNames.TASK));
+								
+								context.put("isAsMap", true);
 								chain.execute(context);
 								
-								Map<Long, List<TaskContext>> taskMap = (Map<Long, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
+								List<Map<String, Object>> taskMap = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
 								
-								for(Long key : taskMap.keySet()) {
-									List<TaskContext> tasks = taskMap.get(key);
+								for(Map<String, Object> task : taskMap) {
 									
-									for(TaskContext task :tasks) {
-										String subject = task.getSubject().trim();
-										if(task.getInputValue() != null) {
+										String subject = (String) task.get("subject");
+										if(task.get("inputValue") != null) {
 											
-											Integer value = Integer.parseInt(task.getInputValue());
+											Integer value = Integer.parseInt(task.get("inputValue").toString());
 											
 											if (subject.endsWith("Non Compliance")) {
 												nonCompliance += value;
@@ -1587,7 +1586,6 @@ public class DashboardAction extends ActionSupport {
 												repeatFinding += value;
 											}
 										}
-									}
 								}
 							}
 							JSONObject buildingres = new JSONObject();
