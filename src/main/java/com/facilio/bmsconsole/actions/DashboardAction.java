@@ -1404,7 +1404,7 @@ public class DashboardAction extends ActionSupport {
 				}
 			}
 			
-			else if(report.getId() == 2350l) {
+			else if(report.getId() == 2361l) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				
 				int tcompliance = 0,tnonCompliance = 0,trepeatFinding = 0,total = 0;
@@ -1482,7 +1482,7 @@ public class DashboardAction extends ActionSupport {
 				}
 			}
 			
-			else if(report.getId() == 2351l) {
+			else if(report.getId() == 2362l) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				
 				int tcompliance = 0,tnonCompliance = 0,trepeatFinding = 0,total = 0;
