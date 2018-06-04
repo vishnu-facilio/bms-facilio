@@ -1400,7 +1400,7 @@ public class DashboardAction extends ActionSupport {
 						buildingres.put(building.getId(), jsonObject);
 					}
 					
-					System.out.println("buildingres ----"+buildingres);
+					LOGGER.log(Level.SEVERE, "23611l buildingres ----"+buildingres);
 				}
 			}
 			
@@ -1478,7 +1478,7 @@ public class DashboardAction extends ActionSupport {
 						buildingres.put(building.getId(), compliance+nonCompliance+repeatFinding);
 					}
 					
-					System.out.println("buildingres ----"+buildingres);
+					LOGGER.log(Level.SEVERE, "2362ll buildingres ----"+buildingres);
 				}
 			}
 			
@@ -1573,7 +1573,7 @@ public class DashboardAction extends ActionSupport {
 						q++;
 					}
 					
-					System.out.println("buildingres ---- "+qres);
+					LOGGER.log(Level.SEVERE, "last buildingres ----"+qres);
 				}
 			}
 		}
