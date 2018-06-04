@@ -80,7 +80,8 @@ public class ReadingDataMeta {
 		WEB,
 		TASK,
 		CONTROLLER_MAPPED,
-		FORMULA_FIELD
+		FORMULA_FIELD,
+		HIDDEN_FORMULA_FIELD
 		;
 		
 		public int getValue() {

@@ -63,6 +63,22 @@ public class DerivationContext {
 	public void setAnalyticsType(AnalyticsType analyticsType) {
 		this.analyticsType = analyticsType;
 	}
+	
+	private long formulaId;
+	public long getFormulaId() {
+		return formulaId;
+	}
+	public void setFormulaId(long formulaId) {
+		this.formulaId = formulaId;
+	}
+	
+	private FormulaFieldContext formulaField;
+	public FormulaFieldContext getFormulaField() {
+		return formulaField;
+	}
+	public void setFormulaField(FormulaFieldContext formulaField) {
+		this.formulaField = formulaField;
+	}
 
 	public static enum AnalyticsType {
 			

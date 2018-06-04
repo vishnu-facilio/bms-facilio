@@ -2196,6 +2196,14 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain addDerivationFormulaChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(addFormulaFieldChain());
+		c.addCommand(new UpdateDerivationCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getModuleListChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new SetTableNamesCommand());

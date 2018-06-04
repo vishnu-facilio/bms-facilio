@@ -47,6 +47,7 @@ import com.facilio.bmsconsole.context.FormulaContext.NumberAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.SpaceAggregateOperator;
 import com.facilio.bmsconsole.context.MarkedReadingContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
+import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReportColumnContext;
 import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.ReportContext.LegendMode;
@@ -98,6 +99,9 @@ import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.DerivationAPI;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.ExportUtil;
+import com.facilio.bmsconsole.util.FacilioFrequency;
+import com.facilio.bmsconsole.util.FormulaFieldAPI;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -704,6 +708,10 @@ public class DashboardAction extends ActionSupport {
 	}
 	
 	public String getReadingReportData() throws Exception {
+		if (derivation != null) {
+			return getDerivationData();
+		}
+		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioField readingField = modBean.getFieldFromDB(readingFieldId);
 		
@@ -714,6 +722,41 @@ public class DashboardAction extends ActionSupport {
 		reportContext = constructReportObjectForReadingReport(module, readingField);
 		reportModule = module;
 		reportData = getDataForReadings(reportContext, module, dateFilter, null, baseLineId, -1);
+		return SUCCESS;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private String getDerivationData() throws Exception {
+		WorkflowContext workflow = WorkflowUtil.getWorkflowContext(derivation.getWorkflowId(), true);
+		Map<Long,Long> intervalMap;
+		if (xAggr != 0) {
+			FacilioFrequency frequency = DashboardUtil.getAggrFrequency(xAggr);
+			ScheduleInfo schedule = FormulaFieldAPI.getSchedule(frequency);
+			intervalMap= DateTimeUtil.getTimeIntervals((Long)dateFilter.get(0),(Long) dateFilter.get(1), schedule);
+		}
+		else {
+			int minuteInterval = ReadingsAPI.getDataInterval(workflow);
+			intervalMap= DateTimeUtil.getTimeIntervals((Long)dateFilter.get(0),(Long) dateFilter.get(1), minuteInterval);
+		}
+		
+		List<ReadingContext> readingValues = FormulaFieldAPI.calculateFormulaReadings(-1, derivation.getName(), intervalMap, workflow);
+		if (readingValues != null) {
+			reportData = new JSONArray();
+			readingValues.forEach(value -> {
+				JSONObject obj =  new JSONObject(); 
+				obj.put("label", value.getReading("startTime"));
+				obj.put("value", value.getReading(derivation.getName()));
+				reportData.add(obj);
+			});
+		}
+		yLabel = derivation.getName();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule("energydata");
+		FacilioField readingField = new FacilioField();
+		readingField.setName(derivation.getName());
+		reportContext = constructReportObjectForReadingReport(module, readingField);
+		setEntityName(derivation.getName());
+		
 		return SUCCESS;
 	}
 	
@@ -3528,6 +3571,11 @@ public class DashboardAction extends ActionSupport {
 		long id = DerivationAPI.addDerivation(derivation);
 		derivation.setId(id);
 		
+		return SUCCESS;
+	}
+	
+	public String updateDerivation() throws Exception {
+		derivation = DerivationAPI.updateDerivation(derivation);
 		return SUCCESS;
 	}
 	

@@ -208,6 +208,7 @@ public class FormulaFieldAPI {
 						ReadingContext reading = new ReadingContext();
 						reading.setParentId(resourceId);
 						reading.addReading(fieldName, resultVal);
+						reading.addReading("startTime", iStartTime);
 						reading.setTtime(iEndTime);
 						readings.add(reading);
 					}

@@ -57,8 +57,10 @@ public class ValidateTasksCommand implements Command {
 							ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(task.getResource().getId(), modBean.getField(task.getReadingFieldId()));
 							switch (meta.getInputTypeEnum()) {
 								case CONTROLLER_MAPPED:
-								case FORMULA_FIELD: 
 									throw new IllegalArgumentException("Readings that are mapped with controller cannot be used.");
+								case FORMULA_FIELD:
+								case HIDDEN_FORMULA_FIELD:
+									throw new IllegalArgumentException("Readings that are mapped with formula field cannot be used.");
 								default:
 									metaList.add(meta);
 									break;

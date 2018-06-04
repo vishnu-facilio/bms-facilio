@@ -605,12 +605,12 @@ public class DateTimeUtil
 		HashMap<Long,Long> intervalMap = new LinkedHashMap <Long,Long>();
 
 		while(modTime<endTime) {
-			intervalMap.put(startTime+1, modTime);
+			intervalMap.put(startTime, modTime - 1);
 			startTime=modTime;
 			modTime=modTime+interval;
 		}
 		if(startTime<endTime) {
-			intervalMap.put(startTime+1,endTime);
+			intervalMap.put(startTime,endTime);
 		}
 		return intervalMap;
 	}

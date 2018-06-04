@@ -124,6 +124,7 @@ public class TimeSeriesAPI {
 			case CONTROLLER_MAPPED:
 				throw new IllegalArgumentException("Field with ID "+fieldId+" for instance "+instanceName+" is already mapped");
 			case FORMULA_FIELD:
+			case HIDDEN_FORMULA_FIELD:
 				throw new IllegalArgumentException("Field with ID "+fieldId+" is formula field and therefore cannot be mapped");
 			default:
 				break;

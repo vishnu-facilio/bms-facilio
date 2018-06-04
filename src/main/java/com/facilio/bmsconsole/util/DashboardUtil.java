@@ -8,7 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
+import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -16,6 +18,8 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
@@ -24,10 +28,15 @@ import com.facilio.bmsconsole.context.DashboardSharingContext;
 import com.facilio.bmsconsole.context.DashboardSharingContext.SharingType;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
+import com.facilio.bmsconsole.context.DerivationContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.FormulaContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
+import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
+import com.facilio.bmsconsole.context.FormulaFieldContext;
+import com.facilio.bmsconsole.context.FormulaFieldContext.ResourceType;
+import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.context.ReportColumnContext;
 import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.ReportContext.LegendMode;
@@ -64,6 +73,9 @@ import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.context.WorkflowFieldContext;
+import com.facilio.workflows.util.WorkflowUtil;
 
 public class DashboardUtil {
 	
@@ -1332,6 +1344,9 @@ public class DashboardUtil {
 			reportContext.setOrgId(AccountUtil.getCurrentOrg().getId());
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			
+			if (reportContext.getDerivation() != null) {
+				setDerivationFormulaProps(reportContext);
+			}
 			if(reportContext.getModuleId() == -1) {
 				FacilioModule module = modBean.getModule(reportContext.getModuleName());
 				reportContext.setModuleId(module.getModuleId());
@@ -2112,5 +2127,72 @@ public class DashboardUtil {
 		}
 		reportContext = getReportContext(reportContext.getId());
 		return reportContext;
+	}
+	
+	private static void setDerivationFormulaProps (ReportContext reportContext) throws Exception {
+		
+		DerivationContext derivation = reportContext.getDerivation();
+		FormulaFieldContext formulaField = derivation.getFormulaField();
+		if (formulaField.getId() == -1) { 
+			addDefaultFormulaProps(derivation);
+			
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.FORMULA_FIELD, formulaField);
+			context.put(FacilioConstants.ContextNames.READING_DATA_META_TYPE, ReadingInputType.HIDDEN_FORMULA_FIELD);
+			context.put(FacilioConstants.ContextNames.DERIVATION, derivation);
+			
+			Chain addFormulaFieldChain = FacilioChainFactory.addDerivationFormulaChain();
+			addFormulaFieldChain.execute(context);
+			formulaField = (FormulaFieldContext) context.get(FacilioConstants.ContextNames.FORMULA_FIELD);
+		}
+		
+		FacilioField readingField = formulaField.getReadingField();
+		reportContext.setModuleId(readingField.getModuleId());
+		
+		ReportFieldContext yAxisField = new ReportFieldContext();
+		yAxisField.setModuleFieldId(readingField.getFieldId());
+		reportContext.setY1AxisField(yAxisField);
+		
+		if (reportContext.getDateFilter() != null) {
+			ReportDateFilterContext dateFilter = reportContext.getDateFilter();
+			dateFilter.setField(readingField);
+		}
+	}
+	
+	private static void addDefaultFormulaProps(DerivationContext derivation) throws Exception {
+		FormulaFieldContext formula = derivation.getFormulaField();
+		List<WorkflowFieldContext> workflowFields = WorkflowUtil.getWorkflowFields(derivation.getWorkflowId()).stream()
+				.filter(f -> f.getResourceId() != -1).collect(Collectors.toList());
+		formula.setResourceType(ResourceType.ONE_RESOURCE);
+		formula.setResourceId(workflowFields.get(0).getResourceId()); // TODO Handle intelligently
+		int interval = ReadingsAPI.getDataInterval(workflowFields);
+		formula.setInterval(interval);
+		// Temp...needs to remove once new analytics done
+		if (formula.getWorkflow() == null) {
+			WorkflowContext workflow = WorkflowUtil.getWorkflowContext(derivation.getWorkflowId());
+			formula.setWorkflow(workflow);
+		}
+	}
+	
+	public static FacilioFrequency getAggrFrequency(int aggr) {
+		DateAggregateOperator operator = (DateAggregateOperator)AggregateOperator.getAggregateOperator(aggr);
+		FacilioFrequency frequency;
+		switch(operator) {
+			case HOURSOFDAYONLY: 
+				frequency = FacilioFrequency.HOURLY;
+				break;
+			case FULLDATE:
+				frequency = FacilioFrequency.DAILY;
+				break;
+			case WEEKANDYEAR:
+				frequency = FacilioFrequency.WEEKLY;
+				break;
+			case MONTHANDYEAR:
+				frequency = FacilioFrequency.MONTHLY;
+				break;
+			default:
+				frequency = FacilioFrequency.DAILY;
+		}
+		return frequency;
 	}
 }

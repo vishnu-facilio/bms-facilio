@@ -40,7 +40,8 @@ public class InsertReadingDataMetaForNewReadingCommand implements Command {
 		}
 
 		if (parentIds != null && !parentIds.isEmpty()) {
-			ReadingInputType type = ReadingsAPI.getRDMInputTypeFromModuleType(module.getTypeEnum());
+			ReadingInputType moduleType = (ReadingInputType) context.get(FacilioConstants.ContextNames.READING_DATA_META_TYPE);
+			ReadingInputType type = moduleType != null ? moduleType : ReadingsAPI.getRDMInputTypeFromModuleType(module.getTypeEnum());
 			
 			long orgId=AccountUtil.getCurrentOrg().getOrgId();
 			long timestamp=System.currentTimeMillis();

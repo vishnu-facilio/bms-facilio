@@ -805,6 +805,14 @@ public class ReportContext extends ModuleBaseWithCustomFields {
 		this.reportColor = reportColor;
 	}
 	
+	private DerivationContext derivation;
+	public DerivationContext getDerivation() {
+		return derivation;
+	}
+	public void setDerivation(DerivationContext derivation) {
+		this.derivation = derivation;
+	}
+
 	public enum LegendMode {
 		RESOURCE_NAME (1),
 		READING_NAME (2),

@@ -12,6 +12,7 @@ import org.json.simple.JSONArray;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.DashboardAction;
 import com.facilio.bmsconsole.context.BaseLineContext;
+import com.facilio.bmsconsole.context.DerivationContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
 import com.facilio.bmsconsole.context.ReportColumnContext;
@@ -22,6 +23,7 @@ import com.facilio.bmsconsole.context.ReportSpaceFilterContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
@@ -379,6 +381,9 @@ public class ReportExportUtil {
 				action.setBaseLineId((long) data.get("baseLineId"));
 			}
 			action.setExcludeWeekends(excludeWeekends);
+			if (data.containsKey("derivation")) {
+				action.setDerivation(FieldUtil.getAsBeanFromMap((Map<String, Object>)data.get("derivation"), DerivationContext.class));
+			}
 			
 			action.getReadingReportData();
 			Map<String, Object> exportData = new HashMap<>();
