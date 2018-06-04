@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -18,6 +19,7 @@ public class GetTasksOfTicketCommand implements Command {
 		// TODO Auto-generated method stub
 		
 		long ticketId = (long) context.get(FacilioConstants.ContextNames.ID);
+		boolean isAsMap = (boolean) context.get("isAsMap");
 		if(ticketId > 0) {
 			
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
@@ -32,8 +34,15 @@ public class GetTasksOfTicketCommand implements Command {
 					.andCustomWhere("PARENT_TICKET_ID = ?", ticketId)
 					.orderBy("id");
 
-			List<TaskContext> tasks = builder.get();
-			context.put(FacilioConstants.ContextNames.TASK_MAP, TicketAPI.groupTaskBySection(tasks));
+			
+			if(isAsMap) {
+				List<Map<String, Object>> tasks = builder.getAsProps();
+				context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
+			}
+			else {
+				List<TaskContext> tasks = builder.get();
+				context.put(FacilioConstants.ContextNames.TASK_MAP, TicketAPI.groupTaskBySection(tasks));
+			}
 		}
 		else {
 			throw new IllegalArgumentException("Invalid ticket ID : "+ticketId);

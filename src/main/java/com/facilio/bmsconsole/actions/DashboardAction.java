@@ -1452,11 +1452,6 @@ public class DashboardAction extends ActionSupport {
 						compliance = 0;nonCompliance = 0;repeatFinding = 0;notApplicable = 0;
 						for(WorkOrderContext workorder:workorders) {
 							
-							LOGGER.log(Level.SEVERE, "buildingId --- "+building.getId());
-							if(workorder.getResource() != null) {
-								LOGGER.log(Level.SEVERE, "workorder.getResource().getId() --- "+workorder.getResource().getId());
-							}
-							
 							if(workorder.getResource().getId() != building.getId()) {
 								continue;
 							}
@@ -1472,31 +1467,29 @@ public class DashboardAction extends ActionSupport {
 							context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
 							context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME,"Tasks");
 							context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(FacilioConstants.ContextNames.TASK));
+							context.put("isAsMap", true);
 							chain.execute(context);
 							
-							Map<Long, List<TaskContext>> taskMap = (Map<Long, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
+							List<Map<String, Object>> taskMap = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
 							
 							LOGGER.log(Level.SEVERE, "passed1 --- "+taskMap.size());
-							for(Long key : taskMap.keySet()) {
+							for(Map<String, Object> task : taskMap) {
 								
-								List<TaskContext> tasks = taskMap.get(key);
+								String subject = (String) task.get("subject");
 								
-								LOGGER.log(Level.SEVERE, "passed2 --- "+tasks.size());
-								for(TaskContext task :tasks) {
-									String subject = task.getSubject().trim();
-									if(task.getInputValue() != null) {
-										
-										Integer value = Integer.parseInt(task.getInputValue());
-										
-										if (subject.endsWith("Non Compliance")) {
-											nonCompliance += value;
-										}
-										else if(subject.endsWith("Compliance")) {
-											compliance += value;
-										}
-										else if (subject.endsWith("Repeat Findings")) {
-											repeatFinding += value;
-										}
+								//inputValue
+								if(task.get("inputValue") != null) {
+									
+									Integer value = Integer.parseInt(task.get("inputValue").toString());
+									
+									if (subject.endsWith("Non Compliance")) {
+										nonCompliance += value;
+									}
+									else if(subject.endsWith("Compliance")) {
+										compliance += value;
+									}
+									else if (subject.endsWith("Repeat Findings")) {
+										repeatFinding += value;
 									}
 								}
 							}
