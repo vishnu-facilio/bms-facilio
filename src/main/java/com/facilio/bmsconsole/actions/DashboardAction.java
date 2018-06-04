@@ -123,6 +123,7 @@ import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.google.gson.JsonObject;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class DashboardAction extends ActionSupport {
@@ -1396,20 +1397,22 @@ public class DashboardAction extends ActionSupport {
 							}
 						}
 						JSONArray array = new JSONArray();
+						
 						JSONObject jsonObject = new JSONObject();
 						jsonObject.put("label", "Compliance");
-						jsonObject.put("value", compliance);
+						jsonObject.put("value", Math.abs(compliance));
 						array.add(jsonObject);
 						
 						jsonObject = new JSONObject();
 						jsonObject.put("label", "Non Compliance");
-						jsonObject.put("value", nonCompliance);
+						jsonObject.put("value", Math.abs(nonCompliance));
 						array.add(jsonObject);
 						
 						jsonObject = new JSONObject();
 						jsonObject.put("label", "Repeat Finding");
-						jsonObject.put("value", repeatFinding);
+						jsonObject.put("value", Math.abs(repeatFinding));
 						array.add(jsonObject);
+						
 						buildingres = new JSONObject();
 						
 						buildingres.put("label", building.getName());
@@ -1539,12 +1542,11 @@ public class DashboardAction extends ActionSupport {
 					qDateRange.put(1530383400000l, 1538332200000l);
 					qDateRange.put(1538332200000l, 1546194600000l);
 					
-					int q=1;
-					JSONObject qres = new JSONObject();
+					ticketData = new JSONArray();
 					for(long fromTime: qDateRange.keySet()) {
 						long toTime = qDateRange.get(fromTime);
 						
-						JSONObject buildingres = new JSONObject();
+						JSONArray array = new JSONArray(); 
 						for(BuildingContext building : SpaceAPI.getAllBuildings()) {
 							
 							compliance = 0;nonCompliance = 0;repeatFinding = 0;notApplicable = 0;
@@ -1595,15 +1597,36 @@ public class DashboardAction extends ActionSupport {
 									}
 								}
 							}
+							JSONObject buildingres = new JSONObject();
+							buildingres.put("label", building.getName());
+							buildingres.put("value", compliance+nonCompliance+repeatFinding);
 							
-							buildingres.put(building.getName(), compliance+nonCompliance+repeatFinding);
+							array.add(buildingres);
 						}
 						
-						qres.put("Q"+q, buildingres);
-						q++;
+						JSONObject qres = new JSONObject();
+						qres.put("value", array);
+						
+						if(fromTime == 1514745000000l) {
+							qres.put("label", "Q1 2018");
+						}
+						else if(fromTime == 1522521000000l) {
+							qres.put("label", "Q2 2018");
+						}
+						else if(fromTime == 1530383400000l) {
+							qres.put("label", "Q3 2018");
+						}
+						else if(fromTime == 1538332200000l) {
+							qres.put("label", "Q4 2018");
+						}
+						
+						ticketData.add(qres);
+						
 					}
 					
-					LOGGER.log(Level.SEVERE, "last buildingres ----"+qres);
+					LOGGER.log(Level.SEVERE, "last buildingres ----"+ticketData);
+					
+					return ticketData;
 				}
 			}
 		}
