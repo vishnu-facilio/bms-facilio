@@ -1318,6 +1318,265 @@ public class DashboardAction extends ActionSupport {
 	private JSONArray getDataForTickets(ReportContext report, FacilioModule module, JSONArray dateFilter, JSONObject userFilterValues, long baseLineId, long criteriaId) throws Exception {
 		JSONArray ticketData = null;
 		
+		if(AccountUtil.getCurrentOrg().getOrgId() == 108l) {
+			
+			if(report.getId() == 2349l) {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				
+				int tcompliance = 0,tnonCompliance = 0,trepeatFinding = 0,total = 0;
+				
+				List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
+				
+				reportData = new JSONArray();
+
+				for(TicketCategoryContext category:categories) {
+					
+					List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrders(category.getId());
+					
+					if(workorders.isEmpty()) {
+						continue;
+					}
+					
+					int compliance = 0,nonCompliance = 0,repeatFinding = 0,notApplicable = 0;
+					
+					JSONObject buildingres = new JSONObject();
+					for(BuildingContext building : SpaceAPI.getAllBuildings()) {
+						
+						compliance = 0;nonCompliance = 0;repeatFinding = 0;notApplicable = 0;
+						for(WorkOrderContext workorder:workorders) {
+							
+							LOGGER.log(Level.SEVERE, "buildingId --- "+buildingId);
+							if(workorder.getResource() != null) {
+								LOGGER.log(Level.SEVERE, "workorder.getResource().getId() --- "+workorder.getResource().getId());
+							}
+							
+							if(workorder.getResource().getId() != building.getBuildingId()) {
+								continue;
+							}
+							if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
+								continue;
+							}
+							
+							Command chain = FacilioChainFactory.getGetTasksOfTicketCommand();
+							FacilioContext context = new FacilioContext();
+							
+							context.put(FacilioConstants.ContextNames.ID, workorder.getId());
+							context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
+							context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME,"Tasks");
+							context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(FacilioConstants.ContextNames.TASK));
+							chain.execute(context);
+							
+							Map<Long, List<TaskContext>> taskMap = (Map<Long, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
+							
+							for(Long key : taskMap.keySet()) {
+								List<TaskContext> tasks = taskMap.get(key);
+								
+								for(TaskContext task :tasks) {
+									String subject = task.getSubject().trim();
+									if(task.getInputValue() != null) {
+										
+										Integer value = Integer.parseInt(task.getInputValue());
+										
+										if (subject.endsWith("Non Compliance")) {
+											nonCompliance += value;
+										}
+										else if(subject.endsWith("Compliance")) {
+											compliance += value;
+										}
+										else if (subject.endsWith("Repeat Findings")) {
+											repeatFinding += value;
+										}
+									}
+								}
+							}
+						}
+						
+						JSONObject jsonObject = new JSONObject();
+						
+						jsonObject.put("fullScore", compliance);
+						jsonObject.put("nonCompliance", nonCompliance);
+						jsonObject.put("repeatFinding", repeatFinding);
+						
+						buildingres.put(building.getId(), jsonObject);
+					}
+					
+					System.out.println("buildingres ----"+buildingres);
+				}
+			}
+			
+			else if(report.getId() == 2350l) {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				
+				int tcompliance = 0,tnonCompliance = 0,trepeatFinding = 0,total = 0;
+				
+				List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
+				
+				reportData = new JSONArray();
+
+				for(TicketCategoryContext category:categories) {
+					
+					List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrders(category.getId());
+					
+					if(workorders.isEmpty()) {
+						continue;
+					}
+					
+					int compliance = 0,nonCompliance = 0,repeatFinding = 0,notApplicable = 0;
+					
+					JSONObject buildingres = new JSONObject();
+					for(BuildingContext building : SpaceAPI.getAllBuildings()) {
+						
+						compliance = 0;nonCompliance = 0;repeatFinding = 0;notApplicable = 0;
+						for(WorkOrderContext workorder:workorders) {
+							
+							LOGGER.log(Level.SEVERE, "buildingId --- "+buildingId);
+							if(workorder.getResource() != null) {
+								LOGGER.log(Level.SEVERE, "workorder.getResource().getId() --- "+workorder.getResource().getId());
+							}
+							
+							if(workorder.getResource().getId() != building.getBuildingId()) {
+								continue;
+							}
+							if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
+								continue;
+							}
+							
+							Command chain = FacilioChainFactory.getGetTasksOfTicketCommand();
+							FacilioContext context = new FacilioContext();
+							
+							context.put(FacilioConstants.ContextNames.ID, workorder.getId());
+							context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
+							context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME,"Tasks");
+							context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(FacilioConstants.ContextNames.TASK));
+							chain.execute(context);
+							
+							Map<Long, List<TaskContext>> taskMap = (Map<Long, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
+							
+							for(Long key : taskMap.keySet()) {
+								List<TaskContext> tasks = taskMap.get(key);
+								
+								for(TaskContext task :tasks) {
+									String subject = task.getSubject().trim();
+									if(task.getInputValue() != null) {
+										
+										Integer value = Integer.parseInt(task.getInputValue());
+										
+										if (subject.endsWith("Non Compliance")) {
+											nonCompliance += value;
+										}
+										else if(subject.endsWith("Compliance")) {
+											compliance += value;
+										}
+										else if (subject.endsWith("Repeat Findings")) {
+											repeatFinding += value;
+										}
+									}
+								}
+							}
+						}
+						
+						buildingres.put(building.getId(), compliance+nonCompliance+repeatFinding);
+					}
+					
+					System.out.println("buildingres ----"+buildingres);
+				}
+			}
+			
+			else if(report.getId() == 2351l) {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				
+				int tcompliance = 0,tnonCompliance = 0,trepeatFinding = 0,total = 0;
+				
+				List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
+				
+				reportData = new JSONArray();
+
+				for(TicketCategoryContext category:categories) {
+					
+					List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrders(category.getId());
+					
+					if(workorders.isEmpty()) {
+						continue;
+					}
+					
+					int compliance = 0,nonCompliance = 0,repeatFinding = 0,notApplicable = 0;
+					
+					
+					Map<Long,Long> qDateRange = new HashMap<>();
+					
+					qDateRange.put(1514745000000l, 1522521000000l);
+					qDateRange.put(1522521000000l, 1530383400000l);
+					qDateRange.put(1530383400000l, 1538332200000l);
+					qDateRange.put(1538332200000l, 1546194600000l);
+					
+					int q=1;
+					JSONObject qres = new JSONObject();
+					for(long fromTime: qDateRange.keySet()) {
+						long toTime = qDateRange.get(fromTime);
+						
+						JSONObject buildingres = new JSONObject();
+						for(BuildingContext building : SpaceAPI.getAllBuildings()) {
+							
+							compliance = 0;nonCompliance = 0;repeatFinding = 0;notApplicable = 0;
+							for(WorkOrderContext workorder:workorders) {
+								
+								LOGGER.log(Level.SEVERE, "buildingId --- "+buildingId);
+								if(workorder.getResource() != null) {
+									LOGGER.log(Level.SEVERE, "workorder.getResource().getId() --- "+workorder.getResource().getId());
+								}
+								
+								if(workorder.getResource().getId() != building.getBuildingId()) {
+									continue;
+								}
+								if(dateFilter != null && !(fromTime < workorder.getCreatedTime() && workorder.getCreatedTime() < toTime)) {
+									continue;
+								}
+								
+								Command chain = FacilioChainFactory.getGetTasksOfTicketCommand();
+								FacilioContext context = new FacilioContext();
+								
+								context.put(FacilioConstants.ContextNames.ID, workorder.getId());
+								context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
+								context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME,"Tasks");
+								context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(FacilioConstants.ContextNames.TASK));
+								chain.execute(context);
+								
+								Map<Long, List<TaskContext>> taskMap = (Map<Long, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
+								
+								for(Long key : taskMap.keySet()) {
+									List<TaskContext> tasks = taskMap.get(key);
+									
+									for(TaskContext task :tasks) {
+										String subject = task.getSubject().trim();
+										if(task.getInputValue() != null) {
+											
+											Integer value = Integer.parseInt(task.getInputValue());
+											
+											if (subject.endsWith("Non Compliance")) {
+												nonCompliance += value;
+											}
+											else if(subject.endsWith("Compliance")) {
+												compliance += value;
+											}
+											else if (subject.endsWith("Repeat Findings")) {
+												repeatFinding += value;
+											}
+										}
+									}
+								}
+							}
+							
+							buildingres.put(building.getId(), compliance+nonCompliance+repeatFinding);
+						}
+						
+						qres.put("Q"+q, buildingres);
+						q++;
+					}
+					
+					System.out.println("buildingres ---- "+qres);
+				}
+			}
+		}
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
