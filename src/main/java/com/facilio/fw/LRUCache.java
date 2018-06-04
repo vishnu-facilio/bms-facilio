@@ -8,18 +8,23 @@ import org.apache.log4j.Logger;
 
 public class LRUCache<K, V>{
 
-    public static void main(String args [])
+    public static void main(String args []) throws InterruptedException
     {
     	LRUCache testcache =  	new LRUCache<String,Object>(7);
     	String arrya[] = {"yoge","babu","test" ,"ram","manthosh","shivaraj","test2","magesh","vivek"};
     	for(int i=0;i<arrya.length;i++)
     	{
+    		Thread.sleep(2000);
       	testcache.put(arrya[i], arrya[i]);
     	}
     	for(int i=0;i<arrya.length;i++)
     	{
+    		Thread.sleep(2000);
       	testcache.put(arrya[i], arrya[i]);
     	}
+    	Thread.sleep(2000);
+    	testcache.get("yoge");
+    	testcache.get("babu");
     	System.out.println("testcache --" +testcache);
     }
 
@@ -44,22 +49,36 @@ public class LRUCache<K, V>{
     private long hitcount = 0;
     private long misscount = 1;
     // Define Node with pointers to the previous and next items and a key, value pair
-    class Node<T, U> {
+    class Node<T, U> implements Comparable<Node> {
         Node<T, U> previous;
         Node<T, U> next;
         T key;
         U value;
+        long lastaccessedtime;
 
         public Node(Node<T, U> previous, Node<T, U> next, T key, U value){
             this.previous = previous;
             this.next = next;
             this.key = key;
             this.value = value;
+            this.lastaccessedtime= System.currentTimeMillis();
         }
+        
+        public  int compareTo(Node o)
+        {
+        	 return (int)( (this.lastaccessedtime-o.lastaccessedtime)/1000);
+        }
+
         
         public String toString()
         {
-        	return "\n"+key +":" +value;
+        	return "\n Key "+key +": value" +value +" ---Last access time " + new java.util.Date(lastaccessedtime)+"\n";
+        }
+        
+        public U getValue()
+        {
+        	this.lastaccessedtime= System.currentTimeMillis();
+        	return value;
         }
     }
 
@@ -127,7 +146,8 @@ public class LRUCache<K, V>{
 	        mostRecentlyUsed = tempNode;
 	        mostRecentlyUsed.next = null;
 	        hitcount++;
-	        return tempNode.value;
+	        
+	        return tempNode.getValue();
     	}
     	catch (Exception e) {
     		e.printStackTrace();
@@ -158,7 +178,7 @@ public class LRUCache<K, V>{
                         cache.remove(leastRecentlyUsed.key);
                         leastRecentlyUsed = leastRecentlyUsed.next;
                         leastRecentlyUsed.previous = null;
-                        currentSize = currentSize - tenPercent;
+                         currentSize--;
                     }
                 } catch (Exception e) {
                     logger.log(Level.INFO, "Error in put " + this , e);
