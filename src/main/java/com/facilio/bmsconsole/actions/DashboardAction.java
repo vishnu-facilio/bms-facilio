@@ -1327,7 +1327,7 @@ public class DashboardAction extends ActionSupport {
 				
 				List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
 				
-				reportData = new JSONArray();
+				ticketData = new JSONArray();
 
 				for(TicketCategoryContext category:categories) {
 					
@@ -1345,12 +1345,12 @@ public class DashboardAction extends ActionSupport {
 						compliance = 0;nonCompliance = 0;repeatFinding = 0;notApplicable = 0;
 						for(WorkOrderContext workorder:workorders) {
 							
-							LOGGER.log(Level.SEVERE, "buildingId --- "+buildingId);
+							LOGGER.log(Level.SEVERE, "buildingId --- "+building.getId());
 							if(workorder.getResource() != null) {
 								LOGGER.log(Level.SEVERE, "workorder.getResource().getId() --- "+workorder.getResource().getId());
 							}
 							
-							if(workorder.getResource().getId() != building.getBuildingId()) {
+							if(workorder.getResource().getId() != building.getId()) {
 								continue;
 							}
 							if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
@@ -1392,15 +1392,21 @@ public class DashboardAction extends ActionSupport {
 						}
 						
 						JSONObject jsonObject = new JSONObject();
+						jsonObject.put("Compliance", compliance);
+						jsonObject.put("Non Compliance", nonCompliance);
+						jsonObject.put("Repeat Finding", repeatFinding);
 						
-						jsonObject.put("fullScore", compliance);
-						jsonObject.put("nonCompliance", nonCompliance);
-						jsonObject.put("repeatFinding", repeatFinding);
+						buildingres = new JSONObject();
 						
-						buildingres.put(building.getId(), jsonObject);
+						buildingres.put("label", building.getId());
+						buildingres.put("value", jsonObject);
+						
+						ticketData.add(buildingres);
 					}
 					
-					LOGGER.log(Level.SEVERE, "23611l buildingres ----"+buildingres);
+					LOGGER.log(Level.SEVERE, "23611l buildingres ----"+ticketData);
+					
+					return ticketData;
 				}
 			}
 			
@@ -1411,7 +1417,7 @@ public class DashboardAction extends ActionSupport {
 				
 				List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
 				
-				reportData = new JSONArray();
+				ticketData = new JSONArray();
 
 				for(TicketCategoryContext category:categories) {
 					
@@ -1421,26 +1427,27 @@ public class DashboardAction extends ActionSupport {
 						continue;
 					}
 					
+					LOGGER.log(Level.SEVERE, "23611l passed Category ----"+category.getName());
 					int compliance = 0,nonCompliance = 0,repeatFinding = 0,notApplicable = 0;
 					
-					JSONObject buildingres = new JSONObject();
 					for(BuildingContext building : SpaceAPI.getAllBuildings()) {
 						
 						compliance = 0;nonCompliance = 0;repeatFinding = 0;notApplicable = 0;
 						for(WorkOrderContext workorder:workorders) {
 							
-							LOGGER.log(Level.SEVERE, "buildingId --- "+buildingId);
+							LOGGER.log(Level.SEVERE, "buildingId --- "+building.getId());
 							if(workorder.getResource() != null) {
 								LOGGER.log(Level.SEVERE, "workorder.getResource().getId() --- "+workorder.getResource().getId());
 							}
 							
-							if(workorder.getResource().getId() != building.getBuildingId()) {
+							if(workorder.getResource().getId() != building.getId()) {
 								continue;
 							}
+							LOGGER.log(Level.SEVERE, "dateFilter --- "+dateFilter);
 							if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
 								continue;
 							}
-							
+							LOGGER.log(Level.SEVERE, "passed --- "+workorder.getId());
 							Command chain = FacilioChainFactory.getGetTasksOfTicketCommand();
 							FacilioContext context = new FacilioContext();
 							
@@ -1452,9 +1459,12 @@ public class DashboardAction extends ActionSupport {
 							
 							Map<Long, List<TaskContext>> taskMap = (Map<Long, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
 							
+							LOGGER.log(Level.SEVERE, "passed1 --- "+taskMap.size());
 							for(Long key : taskMap.keySet()) {
+								
 								List<TaskContext> tasks = taskMap.get(key);
 								
+								LOGGER.log(Level.SEVERE, "passed2 --- "+tasks.size());
 								for(TaskContext task :tasks) {
 									String subject = task.getSubject().trim();
 									if(task.getInputValue() != null) {
@@ -1474,11 +1484,17 @@ public class DashboardAction extends ActionSupport {
 								}
 							}
 						}
+						JSONObject buildingres = new JSONObject();
+						buildingres.put("label",building.getId()); 
+						buildingres.put("value", compliance+nonCompliance+repeatFinding);
 						
-						buildingres.put(building.getId(), compliance+nonCompliance+repeatFinding);
+						ticketData.add(buildingres);
+						
 					}
 					
-					LOGGER.log(Level.SEVERE, "2362ll buildingres ----"+buildingres);
+					LOGGER.log(Level.SEVERE, "2362ll buildingres ----"+ticketData);
+					
+					return ticketData;
 				}
 			}
 			
@@ -1525,7 +1541,7 @@ public class DashboardAction extends ActionSupport {
 									LOGGER.log(Level.SEVERE, "workorder.getResource().getId() --- "+workorder.getResource().getId());
 								}
 								
-								if(workorder.getResource().getId() != building.getBuildingId()) {
+								if(workorder.getResource().getId() != building.getId()) {
 									continue;
 								}
 								if(dateFilter != null && !(fromTime < workorder.getCreatedTime() && workorder.getCreatedTime() < toTime)) {
