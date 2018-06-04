@@ -133,8 +133,10 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 						} else {
 							org = AccountUtil.getOrgBean().getPortalOrg(subDomain);
 						}
+						System.out.println("___+_++_+______ Org"+org);
 						if (org != null) {
 							Long portalId = org.getPortalId();
+							System.out.println("Portal Domain ......"+portalId);
 							User user = null;
 							if (cognitoUser != null) {
 								user = AccountUtil.getUserBean().getPortalUser(cognitoUser.getEmail(), portalId);

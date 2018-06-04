@@ -77,6 +77,26 @@ public class PickListAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String updateTicketCategory() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, getTicketCategory());
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(getTicketCategory().getId()));
+		Chain updateTicketCategoryChain = FacilioChainFactory.getUpdateTicketCategoryChain();
+		updateTicketCategoryChain.execute(context);
+		
+		return SUCCESS;
+	}
+	
+	public String deleteTicketCategory() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, getTicketCategory());
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(getTicketCategory().getId()));
+		Chain deleteTicketCategoryChain = FacilioChainFactory.getDeleteTicketCategoryChain();
+		deleteTicketCategoryChain.execute(context);
+		
+		return SUCCESS;
+	}
+	
 	
 	TicketPriorityContext ticketPriority;
 	public TicketPriorityContext getTicketPriority() {
@@ -91,6 +111,26 @@ public class PickListAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.RECORD, getTicketPriority());
 		Chain addTicketPriorityChain = FacilioChainFactory.getAddTicketPriorityChain();
 		addTicketPriorityChain.execute(context);
+		
+		return SUCCESS;
+	}
+	
+	public String updateTicketPriority() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, getTicketPriority());
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(getTicketPriority().getId()));
+		Chain updateTicketPriorityChain = FacilioChainFactory.getUpdateTicketPriorityChain();
+		updateTicketPriorityChain.execute(context);
+		
+		return SUCCESS;
+	}
+	
+	public String deleteTicketPriority() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, getTicketPriority());
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(getTicketPriority().getId()));
+		Chain deleteTicketPriorityChain = FacilioChainFactory.getDeleteTicketPriorityChain();
+		deleteTicketPriorityChain.execute(context);
 		
 		return SUCCESS;
 	}
@@ -111,7 +151,24 @@ public class PickListAction extends ActionSupport {
 		
 		return SUCCESS;
 	}
-	
+	public String updateTicketType() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, getTicketType());
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(getTicketType().getId()));
+		Chain updateTicketTypeChain = FacilioChainFactory.getUpdateTicketTypeChain();
+		updateTicketTypeChain.execute(context);
+		
+		return SUCCESS;
+	}
+	public String deleteTicketType() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, getTicketType());
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(getTicketType().getId()));
+		Chain deleteTicketTypeChain = FacilioChainFactory.getDeleteTicketTypeChain();
+		deleteTicketTypeChain.execute(context);
+		
+		return SUCCESS;
+	}
 	AssetCategoryContext assetCategory;
 	public AssetCategoryContext getAssetCategory() {
 		return assetCategory;

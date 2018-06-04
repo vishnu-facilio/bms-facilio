@@ -316,6 +316,7 @@ public class FacilioAuthAction extends ActionSupport {
     
     public long portalId() {
         if(AccountUtil.getCurrentOrg() != null) {
+        	System.out.println("()))))))))PortalID in facilio Auth Action"+ AccountUtil.getCurrentOrg().getDomain());
             return AccountUtil.getCurrentOrg().getPortalId();
         }
         return -1L;
@@ -395,8 +396,11 @@ public class FacilioAuthAction extends ActionSupport {
             }
         } else {
             User user;
+            System.out.println("#$#$#$#$#$#$$#$#$$$$$$$$$$ portal ID"+ portalId());
             if(portalId() > 0) {
-                user = AccountUtil.getUserBean().getPortalUser(getEmailaddress(), portalId());
+                
+            	user = AccountUtil.getUserBean().getPortalUser(getEmailaddress(), portalId());
+            	System.out.println("#$#$#$#$#$#$$#$#$$$$$$$$$$ USER"+ user);
             } else {
                 user = AccountUtil.getUserBean().getFacilioUser(getEmailaddress());
             }

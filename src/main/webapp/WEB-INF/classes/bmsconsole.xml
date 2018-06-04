@@ -950,14 +950,50 @@
 				<param name="root">ticketCategory</param>
 			</result>
 		</action>
+		<action name="updateTicketCategory" class="com.facilio.bmsconsole.actions.PickListAction"
+			method="updateTicketCategory">
+			<result name="success" type="json">
+				<param name="root">ticketCategory</param>
+			</result>
+		</action>
+		<action name="deleteTicketCategory" class="com.facilio.bmsconsole.actions.PickListAction"
+			method="deleteTicketCategory">
+			<result name="success" type="json">
+				<param name="root">ticketCategory</param>
+			</result>
+		</action>
 		<action name="addTicketPriority" class="com.facilio.bmsconsole.actions.PickListAction"
 			method="addTicketPriority">
 			<result name="success" type="json">
 				<param name="root">ticketPriority</param>
 			</result>
 		</action>
+		<action name="updateTicketPriority" class="com.facilio.bmsconsole.actions.PickListAction"
+			method="updateTicketPriority">
+			<result name="success" type="json">
+				<param name="root">ticketPriority</param>
+			</result>
+		</action>
+		<action name="deleteTicketPriority" class="com.facilio.bmsconsole.actions.PickListAction"
+			method="deleteTicketPriority">
+			<result name="success" type="json">
+				<param name="root">ticketPriority</param>
+			</result>
+		</action>
 		<action name="addTicketType" class="com.facilio.bmsconsole.actions.PickListAction"
 			method="addTicketType">
+			<result name="success" type="json">
+				<param name="root">ticketType</param>
+			</result>
+		</action>
+		<action name="updateTicketType" class="com.facilio.bmsconsole.actions.PickListAction"
+			method="updateTicketType">
+			<result name="success" type="json">
+				<param name="root">ticketType</param>
+			</result>
+		</action>
+		<action name="deleteTicketType" class="com.facilio.bmsconsole.actions.PickListAction"
+			method="deleteTicketType">
 			<result name="success" type="json">
 				<param name="root">ticketType</param>
 			</result>
