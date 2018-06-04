@@ -99,6 +99,9 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 				TicketAPI.loadTicketLookups(tasks);
 			}
 		}
+		if (listOfTasks != null) {
+			TicketAPI.loadTicketLookups(listOfTasks);
+		}
 		
 		List<PMReminder> reminders = PreventiveMaintenanceAPI.getPMReminders(Collections.singletonList(pm.getId()));
 		context.put(FacilioConstants.ContextNames.PM_REMINDERS, reminders);
