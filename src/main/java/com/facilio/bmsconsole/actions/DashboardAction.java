@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -123,7 +124,6 @@ import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import com.google.gson.JsonObject;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class DashboardAction extends ActionSupport {
@@ -1379,6 +1379,8 @@ public class DashboardAction extends ActionSupport {
 								
 								String subject = (String) task.get("subject");
 								
+								subject = subject.trim();
+								
 								if(task.get("inputValue") != null) {
 									
 									Integer value = Integer.parseInt(task.get("inputValue").toString());
@@ -1476,6 +1478,8 @@ public class DashboardAction extends ActionSupport {
 								
 								String subject = (String) task.get("subject");
 								
+								subject = subject.trim();
+								
 								//inputValue
 								if(task.get("inputValue") != null) {
 									
@@ -1493,6 +1497,10 @@ public class DashboardAction extends ActionSupport {
 								}
 							}
 						}
+						nonCompliance = Math.abs(nonCompliance);
+						compliance = Math.abs(compliance);
+						repeatFinding = Math.abs(repeatFinding);
+						
 						JSONObject buildingres = new JSONObject();
 						buildingres.put("label",building.getName()); 
 						buildingres.put("value", compliance+nonCompliance+repeatFinding);
@@ -1503,6 +1511,184 @@ public class DashboardAction extends ActionSupport {
 					
 					LOGGER.log(Level.SEVERE, "2362ll buildingres ----"+ticketData);
 					
+					return ticketData;
+				}
+			}
+			
+			else if(report.getId() == 2361l) {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				
+				int tcompliance = 0,tnonCompliance = 0,trepeatFinding = 0,total = 0;
+				
+				List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
+				
+				ticketData = new JSONArray();
+
+				for(TicketCategoryContext category:categories) {
+					
+					List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrders(category.getId());
+					
+					if(workorders.isEmpty()) {
+						continue;
+					}
+					
+					LOGGER.log(Level.SEVERE, "23611l passed Category ----"+category.getName());
+					int compliance = 0,nonCompliance = 0,repeatFinding = 0,notApplicable = 0;
+					
+					for(BuildingContext building : SpaceAPI.getAllBuildings()) {
+						
+						compliance = 0;nonCompliance = 0;repeatFinding = 0;notApplicable = 0;
+						for(WorkOrderContext workorder:workorders) {
+							
+							if(workorder.getResource().getId() != building.getId()) {
+								continue;
+							}
+							LOGGER.log(Level.SEVERE, "dateFilter --- "+dateFilter);
+							if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
+								continue;
+							}
+							LOGGER.log(Level.SEVERE, "passed --- "+workorder.getId());
+							Command chain = FacilioChainFactory.getGetTasksOfTicketCommand();
+							FacilioContext context = new FacilioContext();
+							
+							context.put(FacilioConstants.ContextNames.ID, workorder.getId());
+							context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
+							context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME,"Tasks");
+							context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(FacilioConstants.ContextNames.TASK));
+							context.put("isAsMap", true);
+							chain.execute(context);
+							
+							List<Map<String, Object>> taskMap = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
+							
+							LOGGER.log(Level.SEVERE, "passed1 --- "+taskMap.size());
+							for(Map<String, Object> task : taskMap) {
+								
+								String subject = (String) task.get("subject");
+								
+								subject = subject.trim();
+								
+								//inputValue
+								if(task.get("inputValue") != null) {
+									
+									Integer value = Integer.parseInt(task.get("inputValue").toString());
+									
+									if (subject.endsWith("Non Compliance")) {
+										nonCompliance += value;
+									}
+									else if(subject.endsWith("Compliance")) {
+										compliance += value;
+									}
+									else if (subject.endsWith("Repeat Findings")) {
+										repeatFinding += value;
+									}
+								}
+							}
+						}
+						nonCompliance = Math.abs(nonCompliance);
+						compliance = Math.abs(compliance);
+						repeatFinding = Math.abs(repeatFinding);
+						
+						JSONObject buildingres = new JSONObject();
+						buildingres.put("label",building.getName()); 
+						buildingres.put("value", compliance+nonCompliance+repeatFinding);
+						
+						ticketData.add(buildingres);
+						
+					}
+					
+					LOGGER.log(Level.SEVERE, "2362ll buildingres ----"+ticketData);
+					
+					return ticketData;
+				}
+			}
+			
+			else if (report.getId() == 2381l || report.getId() == 2380l || report.getId() == 2379l) {
+
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				
+				int tcompliance = 0,tnonCompliance = 0,trepeatFinding = 0,total = 0;
+				
+				List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
+				
+				ticketData = new JSONArray();
+
+				for(TicketCategoryContext category:categories) {
+					
+					List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrders(category.getId());
+					
+					if(workorders.isEmpty()) {
+						continue;
+					}
+					
+					int compliance = 0,nonCompliance = 0,repeatFinding = 0,notApplicable = 0;
+					
+					for(BuildingContext building : SpaceAPI.getAllBuildings()) {
+						
+						compliance = 0;nonCompliance = 0;repeatFinding = 0;notApplicable = 0;
+						for(WorkOrderContext workorder:workorders) {
+							
+							if(workorder.getResource().getId() != building.getId()) {
+								continue;
+							}
+							LOGGER.log(Level.SEVERE, "dateFilter --- "+dateFilter);
+							if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
+								continue;
+							}
+							LOGGER.log(Level.SEVERE, "passed --- "+workorder.getId());
+							Command chain = FacilioChainFactory.getGetTasksOfTicketCommand();
+							FacilioContext context = new FacilioContext();
+							
+							context.put(FacilioConstants.ContextNames.ID, workorder.getId());
+							context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
+							context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME,"Tasks");
+							context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(FacilioConstants.ContextNames.TASK));
+							context.put("isAsMap", true);
+							chain.execute(context);
+							
+							List<Map<String, Object>> taskMap = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
+							
+							LOGGER.log(Level.SEVERE, "passed1 --- "+taskMap.size());
+							for(Map<String, Object> task : taskMap) {
+								
+								String subject = (String) task.get("subject");
+								
+								subject = subject.trim();
+								
+								//inputValue
+								if(task.get("inputValue") != null) {
+									
+									Integer value = Integer.parseInt(task.get("inputValue").toString());
+									
+									if (subject.endsWith("Non Compliance")) {
+										nonCompliance += value;
+									}
+									else if(subject.endsWith("Compliance")) {
+										compliance += value;
+									}
+									else if (subject.endsWith("Repeat Findings")) {
+										repeatFinding += value;
+									}
+								}
+							}
+						}
+						nonCompliance = Math.abs(nonCompliance);
+						compliance = Math.abs(compliance);
+						repeatFinding = Math.abs(repeatFinding);
+						
+						JSONObject buildingres = new JSONObject();
+						buildingres.put("label",building.getName()); 
+						if(report.getId() == 2381l) {
+							buildingres.put("value", repeatFinding);
+						}
+						else if (report.getId() == 2380l) {
+							buildingres.put("value", nonCompliance);
+						}
+						else if (report.getId() == 2379l) {
+							buildingres.put("value", compliance);
+						}
+						
+						ticketData.add(buildingres);
+					}
 					return ticketData;
 				}
 			}
@@ -1572,6 +1758,9 @@ public class DashboardAction extends ActionSupport {
 								for(Map<String, Object> task : taskMap) {
 									
 										String subject = (String) task.get("subject");
+										
+										subject = subject.trim();
+										
 										if(task.get("inputValue") != null) {
 											
 											Integer value = Integer.parseInt(task.get("inputValue").toString());
@@ -1588,6 +1777,11 @@ public class DashboardAction extends ActionSupport {
 										}
 								}
 							}
+							
+							nonCompliance = Math.abs(nonCompliance);
+							compliance = Math.abs(compliance);
+							repeatFinding = Math.abs(repeatFinding);
+							
 							JSONObject buildingres = new JSONObject();
 							buildingres.put("label", building.getName());
 							buildingres.put("value", compliance+nonCompliance+repeatFinding);
@@ -1597,6 +1791,7 @@ public class DashboardAction extends ActionSupport {
 						
 						JSONObject qres = new JSONObject();
 						qres.put("value", array);
+						
 						
 						if(fromTime == 1514745000000l) {
 							qres.put("label", "Q1 2018");
@@ -1610,13 +1805,87 @@ public class DashboardAction extends ActionSupport {
 						else if(fromTime == 1538332200000l) {
 							qres.put("label", "Q4 2018");
 						}
-						
+						Map map = new LinkedHashMap();
 						ticketData.add(qres);
 						
 					}
 					
 					LOGGER.log(Level.SEVERE, "last buildingres ----"+ticketData);
 					
+					return ticketData;
+				}
+			}
+			else if (report.getId() == 2362l) {
+
+
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				
+				List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
+				
+				ticketData = new JSONArray();
+
+				for(TicketCategoryContext category:categories) {
+					
+					List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrders(category.getId());
+					
+					if(workorders.isEmpty()) {
+						continue;
+					}
+					
+					for(BuildingContext building : SpaceAPI.getAllBuildings()) {
+						
+						int completed = 0,pending = 0;
+						for(WorkOrderContext workorder:workorders) {
+							
+							if(workorder.getResource().getId() != building.getId()) {
+								continue;
+							}
+							LOGGER.log(Level.SEVERE, "dateFilter --- "+dateFilter);
+							if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
+								continue;
+							}
+							Command chain = FacilioChainFactory.getGetTasksOfTicketCommand();
+							FacilioContext context = new FacilioContext();
+							
+							context.put(FacilioConstants.ContextNames.ID, workorder.getId());
+							context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
+							context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME,"Tasks");
+							context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(FacilioConstants.ContextNames.TASK));
+							context.put("isAsMap", true);
+							chain.execute(context);
+							
+							List<Map<String, Object>> taskMap = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
+							
+							LOGGER.log(Level.SEVERE, "passed1 --- "+taskMap.size());
+							for(Map<String, Object> task : taskMap) {
+								
+								if(task.get("inputValue") != null) {
+									completed ++;
+								}
+								else {
+									pending ++;
+								}
+							}
+						}
+						
+						JSONObject buildingres = new JSONObject();
+						
+						JSONArray resArray = new JSONArray();
+						
+						JSONObject res = new JSONObject();
+						res.put("label", "Completed");
+						res.put("label", completed);
+						resArray.add(res);
+						
+						res = new JSONObject();
+						res.put("label", "Pending");
+						res.put("label", pending);
+						resArray.add(res);
+						
+						buildingres.put("label", building.getName());
+						buildingres.put("value", resArray);
+						ticketData.add(buildingres);
+					}
 					return ticketData;
 				}
 			}
@@ -3077,31 +3346,33 @@ public class DashboardAction extends ActionSupport {
 				context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
 				context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME,"Tasks");
 				context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(FacilioConstants.ContextNames.TASK));
+				context.put("isAsMap", true);
 				chain.execute(context);
 				
-				Map<Long, List<TaskContext>> taskMap = (Map<Long, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
+				List<Map<String, Object>> taskMap = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
 				
-				for(Long key : taskMap.keySet()) {
-					List<TaskContext> tasks = taskMap.get(key);
+				for(Map<String, Object> task : taskMap) {
 					
-					for(TaskContext task :tasks) {
-						String subject = task.getSubject().trim();
-						if(task.getInputValue() != null) {
-							
-							Integer value = Integer.parseInt(task.getInputValue());
-							
-							if (subject.endsWith("Non Compliance")) {
-								nonCompliance += value;
-							}
-							else if(subject.endsWith("Compliance")) {
-								compliance += value;
-							}
-							else if (subject.endsWith("Repeat Findings")) {
-								repeatFinding += value;
-							}
-							else if (subject.endsWith("Not Applicable")) {
-								notApplicable += value;
-							}
+					
+					String subject = (String) task.get("subject");
+					
+					subject = subject.trim();
+					
+					if(task.get("inputValue") != null) {
+						
+						Integer value = Integer.parseInt(task.get("inputValue").toString());
+						
+						if (subject.endsWith("Non Compliance")) {
+							nonCompliance += value;
+						}
+						else if(subject.endsWith("Compliance")) {
+							compliance += value;
+						}
+						else if (subject.endsWith("Repeat Findings")) {
+							repeatFinding += value;
+						}
+						else if (subject.endsWith("Not Applicable")) {
+							notApplicable += value;
 						}
 					}
 				}
