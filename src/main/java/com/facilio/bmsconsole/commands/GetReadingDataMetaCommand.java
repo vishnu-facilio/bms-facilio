@@ -46,11 +46,14 @@ public class GetReadingDataMetaCommand implements Command {
 				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
 				List<Pair<Long, FacilioField>> rdmPairs = new ArrayList<>();
 				for(ReadingContext reading : readings) {
-					Map<String, Object> readingData = reading.getData();
+					Map<String, Object> readingData = reading.getReadings();
 					if (readingData != null && !readingData.isEmpty()) {
 						for (String fieldName : readingData.keySet()) {
-							Pair<Long, FacilioField> pair = Pair.of(reading.getParentId(), fieldMap.get(fieldName));
-							rdmPairs.add(pair);
+							FacilioField field = fieldMap.get(fieldName);
+							if (field != null) {
+								Pair<Long, FacilioField> pair = Pair.of(reading.getParentId(), field);
+								rdmPairs.add(pair);
+							}
 						}		
 					}
 				}
