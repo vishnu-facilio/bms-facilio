@@ -1320,6 +1320,11 @@ public class DashboardAction extends ActionSupport {
 		
 		if(AccountUtil.getCurrentOrg().getOrgId() == 108l) {
 			
+			if(dateFilter == null) {
+				dateFilter = new JSONArray();
+				dateFilter.add(1522521000000l);
+				dateFilter.add(1530383400000l);
+			}
 			if(report.getId() == 2349l) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				
@@ -1390,16 +1395,25 @@ public class DashboardAction extends ActionSupport {
 								}
 							}
 						}
-						
+						JSONArray array = new JSONArray();
 						JSONObject jsonObject = new JSONObject();
-						jsonObject.put("Compliance", compliance);
-						jsonObject.put("Non Compliance", nonCompliance);
-						jsonObject.put("Repeat Finding", repeatFinding);
+						jsonObject.put("label", "Compliance");
+						jsonObject.put("value", compliance);
+						array.add(jsonObject);
 						
+						jsonObject = new JSONObject();
+						jsonObject.put("label", "Non Compliance");
+						jsonObject.put("value", nonCompliance);
+						array.add(jsonObject);
+						
+						jsonObject = new JSONObject();
+						jsonObject.put("label", "Repeat Finding");
+						jsonObject.put("value", repeatFinding);
+						array.add(jsonObject);
 						buildingres = new JSONObject();
 						
-						buildingres.put("label", building.getId());
-						buildingres.put("value", jsonObject);
+						buildingres.put("label", building.getName());
+						buildingres.put("value", array);
 						
 						ticketData.add(buildingres);
 					}
@@ -1485,7 +1499,7 @@ public class DashboardAction extends ActionSupport {
 							}
 						}
 						JSONObject buildingres = new JSONObject();
-						buildingres.put("label",building.getId()); 
+						buildingres.put("label",building.getName()); 
 						buildingres.put("value", compliance+nonCompliance+repeatFinding);
 						
 						ticketData.add(buildingres);
@@ -1582,7 +1596,7 @@ public class DashboardAction extends ActionSupport {
 								}
 							}
 							
-							buildingres.put(building.getId(), compliance+nonCompliance+repeatFinding);
+							buildingres.put(building.getName(), compliance+nonCompliance+repeatFinding);
 						}
 						
 						qres.put("Q"+q, buildingres);
