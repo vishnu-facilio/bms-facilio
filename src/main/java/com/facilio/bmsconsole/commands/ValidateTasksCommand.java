@@ -11,6 +11,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -54,13 +55,16 @@ public class ValidateTasksCommand implements Command {
 							if(task.getReadingFieldId() == -1) {
 								throw new IllegalArgumentException("Reading ID cannot be null when reading is enabled for task");
 							}
-							ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(task.getResource().getId(), modBean.getField(task.getReadingFieldId()));
+							FacilioField readingField = modBean.getField(task.getReadingFieldId());
+							ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(task.getResource().getId(), readingField);
 							switch (meta.getInputTypeEnum()) {
 								case CONTROLLER_MAPPED:
 									throw new IllegalArgumentException("Readings that are mapped with controller cannot be used.");
 								case FORMULA_FIELD:
 								case HIDDEN_FORMULA_FIELD:
 									throw new IllegalArgumentException("Readings that are mapped with formula field cannot be used.");
+								case TASK:
+									throw new IllegalArgumentException(readingField.getName()+" cannot be used as it is already used in another task.");
 								default:
 									metaList.add(meta);
 									break;
