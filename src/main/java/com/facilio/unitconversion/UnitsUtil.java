@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.OrgUnitsContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -67,6 +68,23 @@ public class UnitsUtil {
 				int updatedRows = updateBuilder.update(props);
 			}
 		}
+	}
+	
+	public static boolean updateOrgUnit(int metric,int unit) throws Exception {
+		
+			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+					.table(ModuleFactory.getOrgUnitsModule().getTableName())
+					.fields(FieldFactory.getOrgUnitsFields())
+					.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
+					.andCustomWhere("METRIC = ? ", metric);
+
+			Map<String, Object> props = new HashMap<>();
+			props.put("unit", unit);
+			int updatedRows = updateBuilder.update(props);
+			if(updatedRows > 0) {
+				return true;
+			}
+			return false;
 	}
 	
 	public static List<OrgUnitsContext> getOrgUnitsList() throws Exception {

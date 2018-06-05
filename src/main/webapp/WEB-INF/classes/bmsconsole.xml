@@ -4012,6 +4012,11 @@
 				<param name="includeProperties">result</param>
 			</result>
 		</action>
+		<action name="updatedefaultMetricUnit" class="com.facilio.bmsconsole.actions.UnitAction" method="updatedefaultMetricUnit">
+			<result name="success" type="json">
+				<param name="includeProperties">result</param>
+			</result>
+		</action>
 	</package>
 	<package name="sample" namespace="/api/sample" extends="homeApi">
 		<action name="*">

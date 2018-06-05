@@ -1736,7 +1736,7 @@ public class DashboardAction extends ActionSupport {
 						else if(i == 3) {
 							fromTime = 1538332200000l;
 						}
-						long toTime = qDateRange.get(startTime);
+						long toTime = qDateRange.get(fromTime);
 						JSONArray array = new JSONArray(); 
 						for(BuildingContext building : SpaceAPI.getAllBuildings()) {
 							
@@ -1976,20 +1976,20 @@ public class DashboardAction extends ActionSupport {
 					JSONObject buildingres = new JSONObject();
 					
 					buildingres.put("label", "Compliance");
-					buildingres.put("label", compliance);
+					buildingres.put("value", compliance);
 					ticketData.add(buildingres);
 					
 					
 					buildingres = new JSONObject();
 					
 					buildingres.put("label", "Non Compliance");
-					buildingres.put("label", nonCompliance);
+					buildingres.put("value", nonCompliance);
 					ticketData.add(buildingres);
 					
 					buildingres = new JSONObject();
 					
 					buildingres.put("label", "Repeat Finding");
-					buildingres.put("label", repeatFinding);
+					buildingres.put("value", repeatFinding);
 					ticketData.add(buildingres);
 						
 					return ticketData;

@@ -80,6 +80,29 @@ public class UnitAction extends ActionSupport {
 		}
 		return SUCCESS;
 	}
-	
-	
+	int unit = -1;
+	int metric = -1;
+	public int getUnit() {
+		return unit;
+	}
+
+	public void setUnit(int unit) {
+		this.unit = unit;
+	}
+
+	public int getMetric() {
+		return metric;
+	}
+
+	public void setMetric(int metric) {
+		this.metric = metric;
+	}
+
+	public String updatedefaultMetricUnit() throws Exception {
+		
+		if(unit > 0 && metric >0) {
+			UnitsUtil.updateOrgUnit(metric, unit);
+		}
+		return SUCCESS;
+	}
 }
