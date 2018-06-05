@@ -981,4 +981,12 @@ public class ModuleFactory {
 		taskSection.setTableName("Derivations");
 		return taskSection;
 	}
+	
+	public static FacilioModule getOrgUnitsModule() {
+		FacilioModule taskSection = new FacilioModule();
+		taskSection.setName("orgUnits");
+		taskSection.setDisplayName("Org Units");
+		taskSection.setTableName("Org_Units");
+		return taskSection;
+	}
 }
