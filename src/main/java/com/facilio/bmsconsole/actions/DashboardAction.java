@@ -3740,6 +3740,7 @@ public class DashboardAction extends ActionSupport {
 					JSONObject jsonObject = new JSONObject();
 					
 					jsonObject.put("area", workorder.getSubject());
+					jsonObject.put("workOrderId", workorder.getId());
 					jsonObject.put("fullScore", compliance);
 					jsonObject.put("nonCompliance", nonCompliance);
 					jsonObject.put("repeatFinding", repeatFinding);
