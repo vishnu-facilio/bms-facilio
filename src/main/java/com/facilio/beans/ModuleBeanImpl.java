@@ -24,6 +24,7 @@ import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.BooleanField;
+import com.facilio.bmsconsole.modules.EnumField;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
@@ -422,6 +423,10 @@ public class ModuleBeanImpl implements ModuleBean {
 						}
 						fields.add(FieldUtil.getAsBeanFromMap(prop, LookupField.class));
 						break;
+					case ENUM:
+						prop.putAll(extendedPropsMap.get(type).get((Long) prop.get("fieldId")));
+						fields.add(FieldUtil.getAsBeanFromMap(prop, EnumField.class));
+						break;
 					default:
 						fields.add(FieldUtil.getAsBeanFromMap(prop, FacilioField.class));
 						break;
@@ -446,6 +451,9 @@ public class ModuleBeanImpl implements ModuleBean {
 				case LOOKUP:
 					extendedProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getLookupFieldsModule(), FieldFactory.getLookupFieldFields(), entry.getValue()));
 					break;
+				case ENUM:
+					extendedProps.put(entry.getKey(), getEnumExtendedProps(entry.getValue()));
+					break;
 				default:
 					break;
 			}
@@ -457,12 +465,37 @@ public class ModuleBeanImpl implements ModuleBean {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition("FIELDID", "fieldId", StringUtils.join(fieldIds, ","), NumberOperators.EQUALS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		Map<Long, Map<String, Object>> propsMap = new HashMap<>();
 		for (Map<String, Object> prop : props) {
 			propsMap.put((Long) prop.get("fieldId"), prop);
+		}
+		return propsMap;
+	}
+	
+	private Map<Long, Map<String, Object>> getEnumExtendedProps (List<Long> fieldIds) throws Exception {
+		FacilioModule module = ModuleFactory.getEnumFieldValuesModule();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(FieldFactory.getEnumFieldValuesFields())
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCondition("FIELDID", "fieldId", StringUtils.join(fieldIds, ","), NumberOperators.EQUALS))
+														.orderBy("FIELDID, IDX")
+														;
+		List<Map<String, Object>> props = selectBuilder.get();
+		Map<Long, Map<String, Object>> propsMap = new HashMap<>();
+		for (Map<String, Object> prop : props) {
+			Long fieldId = (Long) prop.get("fieldId");
+			Map<String, Object> fieldProp = propsMap.get(fieldId);
+			if (fieldProp == null) {
+				fieldProp = new HashMap<>();
+				fieldProp.put("values", new ArrayList<>());
+				propsMap.put(fieldId, fieldProp);
+			}
+			((List<String>) fieldProp.get("values")).add((String) prop.get("value"));
 		}
 		return propsMap;
 	}
@@ -542,7 +575,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			insertBuilder.save();
 			long fieldId = (long) fieldProps.get("id"); 
 			fieldProps.put("fieldId", fieldId);
-			
+			field.setFieldId(fieldId);
 			switch(field.getDataTypeEnum()) {
 				case NUMBER:
 				case DECIMAL:
@@ -563,6 +596,9 @@ public class ModuleBeanImpl implements ModuleBean {
 				case LOOKUP:
 					addExtendedProps(ModuleFactory.getLookupFieldsModule(), FieldFactory.getLookupFieldFields(), fieldProps);
 					break;
+				case ENUM:
+					addEnumField((EnumField) field);
+					break;
 				default:
 					break;
 			}
@@ -580,6 +616,26 @@ public class ModuleBeanImpl implements ModuleBean {
 				.fields(fields)
 				.addRecord(props);
 
+		insertBuilder.save();
+	}
+	
+	private void addEnumField(EnumField field) throws Exception {
+		if (field.getValues() == null || field.getValues().isEmpty()) {
+			throw new IllegalArgumentException("Enum Values cannot be null during addition of Enum Field");
+		}
+		
+		FacilioModule module = ModuleFactory.getEnumFieldValuesModule();
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+														.table(module.getTableName())
+														.fields(FieldFactory.getEnumFieldValuesFields());
+		for (int i = 1; i <= field.getValues().size(); i++) {
+			Map<String, Object> prop = new HashMap<>();
+			prop.put("fieldId", field.getFieldId());
+			prop.put("orgId", field.getOrgId());
+			prop.put("index", i);
+			prop.put("value", field.getValue(i));
+			insertBuilder.addRecord(prop);
+		}
 		insertBuilder.save();
 	}
 	

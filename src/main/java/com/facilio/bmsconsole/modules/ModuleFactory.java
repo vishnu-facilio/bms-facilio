@@ -92,6 +92,14 @@ public class ModuleFactory {
 		return booleanModule;
 	}
 	
+	public static FacilioModule getEnumFieldValuesModule() {
+		FacilioModule enumFieldValues = new FacilioModule();
+		enumFieldValues.setName("enumFieldValues");
+		enumFieldValues.setDisplayName("Enum Field Values");
+		enumFieldValues.setTableName("EnumFieldValues");
+		return enumFieldValues;
+	}
+ 	
 	public static FacilioModule getSpaceCategoryReadingRelModule() {
 		FacilioModule fieldModule = new FacilioModule();
 		fieldModule.setName("spacecategoryreading");

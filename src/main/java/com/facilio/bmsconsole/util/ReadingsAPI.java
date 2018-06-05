@@ -17,6 +17,9 @@ import java.util.stream.Collectors;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -56,7 +59,7 @@ import com.facilio.workflows.context.WorkflowFieldContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class ReadingsAPI {
-	
+	private static final Logger logger = LogManager.getLogger(ReadingsAPI.class.getName());
 	public static final int DEFAULT_DATA_INTERVAL = 15; //In Minutes
 	public static final SecondsChronoUnit DEFAULT_DATA_INTERVAL_UNIT = new SecondsChronoUnit(DEFAULT_DATA_INTERVAL * 60); 
 	
@@ -178,7 +181,7 @@ public class ReadingsAPI {
 				ReadingDataMeta meta = FieldUtil.getAsBeanFromMap(prop, ReadingDataMeta.class);
 				Object value = meta.getValue();
 				FacilioField field = fieldMap.get(meta.getFieldId());
-				meta.setValue(FieldUtil.castOrParseValueAsPerType(field.getDataTypeEnum(), value));
+				meta.setValue(FieldUtil.castOrParseValueAsPerType(field, value));
 				meta.setField(field);
 				metaList.add(meta);
 			}
@@ -319,24 +322,30 @@ public class ReadingsAPI {
 				for(Map.Entry<String, Object> reading :readings.entrySet()) {
 					FacilioField fField = fieldMap.get(reading.getKey());
 					if (fField != null) {
-						long fieldId = fField.getFieldId();
-						if (metaMap != null) {
-							ReadingDataMeta meta = metaMap.get(resourceId+"_"+fField.getFieldId());
-							if(meta != null)
-							{
-								Object lastReading = meta.getValue();
-								long lastTimeStamp = meta.getTtime();
-								if (lastReading != null && lastTimeStamp != -1 && 
-										!"-1".equals(lastReading.toString()) && timeStamp < lastTimeStamp) {
-									continue;
+						Object val = FieldUtil.castOrParseValueAsPerType(fField, reading.getValue());
+						if (val != null) {
+							long fieldId = fField.getFieldId();
+							if (metaMap != null) {
+								ReadingDataMeta meta = metaMap.get(resourceId+"_"+fField.getFieldId());
+								if(meta != null)
+								{
+									Object lastReading = meta.getValue();
+									long lastTimeStamp = meta.getTtime();
+									if (lastReading != null && lastTimeStamp != -1 && 
+											!"-1".equals(lastReading.toString()) && timeStamp < lastTimeStamp) {
+										continue;
+									}
 								}
 							}
+							fields.add(fieldId);
+							String value = val.toString();
+							timeBuilder.append(getCase(resourceId,fieldId,timeStamp,false));
+							valueBuilder.append(getCase(resourceId,fieldId,value,true));
+							idBuilder.append(getCase(resourceId,fieldId,readingId,false));
 						}
-						fields.add(fieldId);
-						String value= reading.getValue().toString();
-						timeBuilder.append(getCase(resourceId,fieldId,timeStamp,false));
-						valueBuilder.append(getCase(resourceId,fieldId,value,true));
-						idBuilder.append(getCase(resourceId,fieldId,readingId,false));
+						else {
+							logger.log(Level.INFO, "Not updating RDM for "+fField.getName()+" from "+readingContext+" because after parsing, value is null");
+						}
 					}
 				}
 			}
