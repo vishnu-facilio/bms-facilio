@@ -1,8 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,15 +8,9 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.OrgUnitsContext;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.sql.GenericInsertRecordBuilder;
-import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.unitconversion.Metric;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
-import com.google.common.collect.Multimap;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class UnitAction extends ActionSupport {
@@ -71,4 +63,23 @@ public class UnitAction extends ActionSupport {
 		
 		return SUCCESS;
 	}
+	
+	JSONObject metricUnitMap;
+	public JSONObject getMetricUnitMap() {
+		return metricUnitMap;
+	}
+
+	public void setMetricUnitMap(JSONObject metricUnitMap) {
+		this.metricUnitMap = metricUnitMap;
+	}
+	
+	public String updatedefaultMetricUnits() throws Exception {
+		
+		if(metricUnitMap != null) {
+			UnitsUtil.updateOrgUnitsList(metricUnitMap);
+		}
+		return SUCCESS;
+	}
+	
+	
 }
