@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import com.facilio.bmsconsole.context.FormulaFieldContext;
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.udojava.evalex.Expression;
@@ -184,7 +185,7 @@ public class WorkflowContext {
 				String var = "${"+parameter.getName()+"}";
 				String varRegex = "\\$\\{"+parameter.getName()+"\\}";
 				if(expressionString.contains(var)) {
-					expressionString = expressionString.replaceAll(varRegex, val);
+					expressionString = expressionString.replaceAll(varRegex, StringEscapeUtils.escapeXml10(val));
 				}
 			}
 		}
