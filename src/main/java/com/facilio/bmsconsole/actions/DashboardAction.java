@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -64,6 +65,7 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
+import com.facilio.bmsconsole.context.TicketStatusContext.StatusType;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetListViewContext;
 import com.facilio.bmsconsole.context.WidgetStaticContext;
@@ -1897,6 +1899,80 @@ public class DashboardAction extends ActionSupport {
 					}
 					return ticketData;
 				}
+			}
+			
+			else if (report.getId() == 2410l) {
+
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				
+				List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
+				
+				ticketData = new JSONArray();
+
+				for(TicketCategoryContext category:categories) {
+					
+					List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrders(category.getId());
+					
+					if(workorders.isEmpty()) {
+						continue;
+					}
+					
+					for(BuildingContext building : SpaceAPI.getAllBuildings()) {
+						
+						int inTime = 0,overdue = 0;
+						for(WorkOrderContext workorder:workorders) {
+							
+							if(workorder.getResource().getId() != building.getId()) {
+								continue;
+							}
+							LOGGER.log(Level.SEVERE, "dateFilter --- "+dateFilter);
+							if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
+								continue;
+							}
+							if(workorder.getStatus() != null && workorder.getStatus().getType() != null && workorder.getStatus().getType().equals(StatusType.CLOSED)) {
+								
+								if(workorder.getEstimatedEnd() != -1 && workorder.getActualWorkEnd() != -1) {
+									if(workorder.getEstimatedEnd() < workorder.getActualWorkEnd()) {
+										overdue++;
+									}
+									else {
+										inTime++;
+									}
+								}
+							}
+							else {
+								if(workorder.getEstimatedEnd() != -1) {
+									if(workorder.getEstimatedEnd() < DateTimeUtil.getCurrenTime()) {
+										overdue++;
+									}
+									else {
+										inTime++;
+									}
+								}
+							}
+						}
+						
+						JSONObject buildingres = new JSONObject();
+						
+						JSONArray resArray = new JSONArray();
+						
+						JSONObject res = new JSONObject();
+						res.put("label", "In Time");
+						res.put("value", inTime);
+						resArray.add(res);
+						
+						res = new JSONObject();
+						res.put("label", "Overdue");
+						res.put("value", overdue);
+						resArray.add(res);
+						
+						buildingres.put("label", building.getName());
+						buildingres.put("value", resArray);
+						ticketData.add(buildingres);
+					}
+					return ticketData;
+				}
+			
 			}
 			
 			else if (report.getId() == 2408l) {
