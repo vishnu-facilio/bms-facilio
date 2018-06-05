@@ -42,6 +42,10 @@ public class ValidateTasksCommand implements Command {
 		if (tasks != null && !tasks.isEmpty()) {
 			List<ReadingDataMeta> metaList = new ArrayList<>();
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			Boolean pmExecution = (Boolean) context.get(FacilioConstants.ContextNames.IS_PM_EXECUTION);
+			if (pmExecution == null) {
+				pmExecution = false;
+			}
 			for(TaskContext task : tasks) {
 				if (task.getInputTypeEnum() == null) {
 					task.setInputType(TaskContext.InputType.NONE);
@@ -64,7 +68,9 @@ public class ValidateTasksCommand implements Command {
 								case HIDDEN_FORMULA_FIELD:
 									throw new IllegalArgumentException("Readings that are mapped with formula field cannot be used.");
 								case TASK:
-									throw new IllegalArgumentException(readingField.getName()+" cannot be used as it is already used in another task.");
+									if (!pmExecution) {
+										throw new IllegalArgumentException(readingField.getName()+" cannot be used as it is already used in another task.");
+									}
 								default:
 									metaList.add(meta);
 									break;
