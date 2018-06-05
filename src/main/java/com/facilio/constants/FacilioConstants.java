@@ -420,6 +420,7 @@ public class FacilioConstants {
 		
 		public static final String BASE_LINE = "baseLine";
 		public static final String BASE_LINE_LIST = "baseLines";
+		public static final String DATE_RANGE = "dateRange";
 		
 		public static final String TIMESTAMP = "timestamp";
 		public static final String DEVICE_DATA="deviceData";

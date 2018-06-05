@@ -2,12 +2,14 @@ package com.facilio.bmsconsole.commands;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.FormulaFieldContext;
-import com.facilio.bmsconsole.context.FormulaFieldContext.TriggerType;
+import com.facilio.bmsconsole.criteria.DateRange;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.tasker.FacilioTimer;
 
 public class AddFormulaFieldCommand implements Command {
 
@@ -20,9 +22,12 @@ public class AddFormulaFieldCommand implements Command {
 		}
 		long formulaId = FormulaFieldAPI.addFormulaField(formula);
 		
-		if (formula.getTriggerTypeEnum() == TriggerType.SCHEDULE) {
-			FacilioTimer.scheduleOneTimeJob(formulaId, "HistoricalFormulaFieldCalculator", 30, "priority");
+		JSONObject props = null;
+		DateRange dateRange = (DateRange) context.get(FacilioConstants.ContextNames.DATE_RANGE);
+		if (dateRange != null) {
+			props = FieldUtil.getAsJSON(dateRange);
 		}
+		BmsJobUtil.scheduleOneTimeJobWithProps(formulaId, "HistoricalFormulaFieldCalculator", 30, "priority", props);
 		return false;
 	}
 }
