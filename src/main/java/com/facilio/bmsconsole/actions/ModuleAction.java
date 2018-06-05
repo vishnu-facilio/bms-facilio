@@ -91,9 +91,7 @@ public class ModuleAction extends ActionSupport {
 	
 	public String deleteFields() throws Exception {
 		FacilioContext context = new FacilioContext();
-		List<Long> ids = new ArrayList<>();
-		ids.add(fieldId);
-		context.put(FacilioConstants.ContextNames.MODULE_FIELD_IDS, ids);
+		context.put(FacilioConstants.ContextNames.MODULE_FIELD_IDS, fieldIds);
 		
 		Chain deleteFieldsChain = FacilioChainFactory.getdeleteFieldsChain();
 		deleteFieldsChain.execute(context);
