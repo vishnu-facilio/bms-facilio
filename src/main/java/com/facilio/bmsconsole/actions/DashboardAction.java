@@ -2687,17 +2687,20 @@ public class DashboardAction extends ActionSupport {
 			facilioField.setColumnName("ID");
 			facilioField.setModule(energyMeterModule);
 			facilioField.setName("id");
+			facilioField.setDataType(FieldType.NUMBER);
 			subFields.add(facilioField);
 			
 			FacilioField facilioField1 = new FacilioField();
 			facilioField1.setColumnName("PURPOSE_SPACE_ID");
 			facilioField1.setModule(energyMeterModule);
 			facilioField1.setName("purposeSpace");
+			facilioField1.setDataType(FieldType.NUMBER);
 			subFields.add(facilioField1);
 			
 			FacilioField facilioField2 = new FacilioField();
 			facilioField2.setColumnName("PURPOSE_ID");
 			facilioField2.setModule(energyMeterModule);
+			facilioField2.setDataType(FieldType.NUMBER);
 			facilioField2.setName("purpose");
 			
 			subFields.add(facilioField2);

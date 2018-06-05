@@ -10,10 +10,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -27,6 +31,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 public class FieldUtil {
 	
+	private static final Logger logger = LogManager.getLogger(FieldUtil.class.getName());
 	public static Map<String, Object> getLookedUpProp(long id) {
 		Map<String, Object> prop = new HashMap<>();
 		prop.put("id", id);
@@ -145,11 +150,17 @@ public class FieldUtil {
 	}
 	
 	public static Object getObjectFromRS (FacilioField field, ResultSet rs) throws SQLException {
-		switch (field.getDataTypeEnum()) {
-			case BOOLEAN:
-				return rs.getBoolean(field.getName());
-			default:
-				return rs.getObject(field.getName());
+		if (field.getDataTypeEnum() != null) { //Temp Fix
+			switch (field.getDataTypeEnum()) {
+				case BOOLEAN:
+					return rs.getBoolean(field.getName());
+				default:
+					return rs.getObject(field.getName());
+			}
+		}
+		else {
+			logger.log(Level.INFO, "Data type shouldn't be null\n"+CommonCommandUtil.getStackTraceString(Thread.currentThread().getStackTrace()));
+			return rs.getObject(field.getName());
 		}
 	}
 	
