@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.modules;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.HashMap;
@@ -112,6 +113,30 @@ public class FieldUtil {
 					pstmt.setNull(paramIndex, Types.BIGINT);
 				}
 				break;
+			case ENUM:
+				pstmt.setNull(paramIndex, Types.INTEGER);
+				if(value != null && !(value instanceof String && ((String)value).isEmpty())) {
+					EnumField enumField = (EnumField) field;
+					if (value instanceof Integer) {
+						int val = (int) value;
+						if (enumField.getValue(val) != null) {
+							pstmt.setInt(paramIndex, val);
+						}
+					}
+					else if (value instanceof Long) {
+						int val = ((Long) value).intValue();
+						if (enumField.getValue(val) != null) {
+							pstmt.setInt(paramIndex, val);
+						}
+					}
+					else {
+						int val = enumField.getIndex(value.toString());
+						if (val != -1) {
+							pstmt.setInt(paramIndex, val);
+						}
+					}
+				}
+				break;
 			case MISC:
 			default:
 					pstmt.setObject(paramIndex, value);
@@ -119,9 +144,29 @@ public class FieldUtil {
 		}
 	}
 	
+	public static Object getObjectFromRS (FacilioField field, ResultSet rs) throws SQLException {
+		switch (field.getDataTypeEnum()) {
+			case BOOLEAN:
+				return rs.getBoolean(field.getName());
+			default:
+				return rs.getObject(field.getName());
+		}
+	}
 	
-	public static Object castOrParseValueAsPerType( FieldType type, Object value)  {
-		switch(type) {
+	public static Object castOrParseValueAsPerType(FieldType type, Object value)  {
+		switch (type) {
+			case LOOKUP:
+			case ENUM:
+				throw new IllegalArgumentException("Unsupported DataType. Field Object is required for these types and cannot be used directly");
+			default:
+				FacilioField field = new FacilioField();
+				field.setDataType(type);
+				return castOrParseValueAsPerType(field, value);
+		}
+	}
+	
+	public static Object castOrParseValueAsPerType(FacilioField field, Object value)  {
+		switch(field.getDataTypeEnum()) {
 			case STRING:
 				if(value != null && !(value instanceof String && ((String)value).isEmpty())) {
 					if(!(value instanceof String)) {
@@ -133,20 +178,20 @@ public class FieldUtil {
 				}
 				return value;
 			case DECIMAL:
-				Double val;
+				Double doubleVal;
 				if(value != null && !(value instanceof String && ((String)value).isEmpty())) {
 	
 					if(value instanceof Double) {
-						val = (double) value;
+						doubleVal = (double) value;
 					}
 					else {
-						val = Double.parseDouble(value.toString());
+						doubleVal = Double.parseDouble(value.toString());
 					}
 				}
 				else {
-					val=null;
+					doubleVal = null;
 				}
-				return val;
+				return doubleVal;
 			case BOOLEAN:
 				Boolean booleanVal;
 				if(value != null) {
@@ -154,12 +199,13 @@ public class FieldUtil {
 						booleanVal=(Boolean)value;
 					}
 					else {
-						String booleanValStr = value.toString();
-						if (booleanValStr.trim().equals("1")) {
+						BooleanField booleanField = (BooleanField) field;
+						String val = value.toString().trim();
+						if (val.equals("1") || (booleanField.getTrueVal() != null && booleanField.getTrueVal().equalsIgnoreCase(val))) {
 							booleanVal = true;
 						}
 						else {
-							booleanVal=Boolean.valueOf(booleanValStr);
+							booleanVal=Boolean.valueOf(val);
 						}
 					}
 				}
@@ -186,6 +232,30 @@ public class FieldUtil {
 					longVal=null;
 				}
 				return longVal;
+			case ENUM:
+				Integer enumVal = null; 
+				if(value != null && !(value instanceof String && ((String)value).isEmpty())) {
+					EnumField enumField = (EnumField) field;
+					if (value instanceof Integer) {
+						int val = (int) value;
+						if (enumField.getValue(val) != null) {
+							enumVal = val;
+						}
+					}
+					else if (value instanceof Long) {
+						int val = ((Long) value).intValue();
+						if (enumField.getValue(val) != null) {
+							enumVal = val;
+						}
+					}
+					else {
+						int val = enumField.getIndex(value.toString());
+						if (val != -1) {
+							enumVal = val;
+						}
+					}
+				}
+				return enumVal;
 			case MISC:
 			default:
 				return value;

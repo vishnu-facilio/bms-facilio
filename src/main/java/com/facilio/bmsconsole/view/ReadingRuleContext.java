@@ -269,7 +269,7 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		if (!checkForParentResource(reading)) {
 			return false;
 		}
-		Object currentReadingObj = FieldUtil.castOrParseValueAsPerType(readingField.getDataTypeEnum(), reading.getReading(readingField.getName()));
+		Object currentReadingObj = FieldUtil.castOrParseValueAsPerType(readingField, reading.getReading(readingField.getName()));
 		if (currentReadingObj == null) {
 			return false;
 		}
@@ -412,7 +412,7 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		ReadingDataMeta meta = metaMap.get(((ReadingContext)record).getParentId()+"_"+readingField.getFieldId());
 		if (meta != null) {
 			Object prevValue = meta.getValue();
-			rulePlaceHolders.put("previousValue", FieldUtil.castOrParseValueAsPerType(readingField.getDataTypeEnum(), prevValue));
+			rulePlaceHolders.put("previousValue", FieldUtil.castOrParseValueAsPerType(readingField, prevValue));
 		}
 		rulePlaceHolders.put("resourceId", ((ReadingContext)record).getParentId());
 		
