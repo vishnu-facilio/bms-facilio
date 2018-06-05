@@ -1721,9 +1721,22 @@ public class DashboardAction extends ActionSupport {
 					qDateRange.put(1538332200000l, 1546194600000l);
 					
 					ticketData = new JSONArray();
-					for(long fromTime: qDateRange.keySet()) {
-						long toTime = qDateRange.get(fromTime);
+					for(int i=0;i<qDateRange.size();i++) {
 						
+						long fromTime = 0l;
+						if(i==0) {
+							fromTime = 1514745000000l;
+						}
+						else if(i == 1) {
+							fromTime = 1522521000000l;
+						}
+						else if(i == 2) {
+							fromTime = 1530383400000l;				
+						}
+						else if(i == 3) {
+							fromTime = 1538332200000l;
+						}
+						long toTime = qDateRange.get(startTime);
 						JSONArray array = new JSONArray(); 
 						for(BuildingContext building : SpaceAPI.getAllBuildings()) {
 							

@@ -1,6 +1,8 @@
 package com.facilio.unitconversion;
 
 import java.awt.List;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,36 +12,49 @@ import com.google.common.collect.Multimap;
 
 public enum Unit {
 	
-	WH(1,"wh",Metric.ENERGY),
-	KWH(2,"kwh",Metric.ENERGY,"si/1000","this*1000"),
-	MWH(3,"mwh",Metric.ENERGY,"si/1000000","this*1000000"),
+	WH(1,"watt Hour","wh",Metric.ENERGY),
+	KWH(2,"kilo watt Hour","kwh",Metric.ENERGY,"si/1000","this*1000"),
+	MWH(3,"Mega watt Hour","mwh",Metric.ENERGY,"si/1000000","this*1000000"),
 	
-	CELSIUS(4,"Celsius",Metric.TEMPRATURE),
-	FAHRENHEIT(5,"Fahrenheit",Metric.TEMPRATURE,"(si*1.8)+32","(this-32)/1.8"),
-	KELWIN(6,"Kelwin",Metric.TEMPRATURE,"si+273.15","this-273.15"),
+	CELSIUS(4,"Celsius","°C",Metric.TEMPRATURE),
+	FAHRENHEIT(5,"Fahrenheit","F",Metric.TEMPRATURE,"(si*1.8)+32","(this-32)/1.8"),
+	KELWIN(6,"Kelwin","K",Metric.TEMPRATURE,"si+273.15","this-273.15"),
 	
-	METER(7,"Meter",Metric.LENGTH),
-	DECIMETER(8,"Decimetre",Metric.LENGTH,"si*10","this/10"),
-	CENTIMETER(9,"Centimetre",Metric.LENGTH,"si*100","this/100"),
-	MILLIMETER(10,"Millimeter",Metric.LENGTH,"si*1000","this/1000"),
-	DECAMETER(11,"Decameter",Metric.LENGTH,"si/10","this*10"),
-	HECTOMETER(12,"Hectometer",Metric.LENGTH,"si/100","this*100"),
-	KILOMETER(13,"kilometer",Metric.LENGTH,"si/1000","this*1000"),
-	MILE(14,"Mile",Metric.LENGTH,"si/1609.34","this*1609.34"),
-	YARD(15,"Yard",Metric.LENGTH,"si*1.0936132983","this*0.9144"),
-	FEET(16,"Feet",Metric.LENGTH,"si*3.280839895","this*0.3048"),
-	INCH(17,"Inch",Metric.LENGTH,"si*39.3700787402","this*0.0254"),
+	METER(7,"Meter","m",Metric.LENGTH),
+	DECIMETER(8,"Decimetre","dm",Metric.LENGTH,"si*10","this/10"),
+	CENTIMETER(9,"Centimetre","cm",Metric.LENGTH,"si*100","this/100"),
+	MILLIMETER(10,"Millimeter","mm",Metric.LENGTH,"si*1000","this/1000"),
+	DECAMETER(11,"Decameter","dkm",Metric.LENGTH,"si/10","this*10"),
+	HECTOMETER(12,"Hectometer","hm",Metric.LENGTH,"si/100","this*100"),
+	KILOMETER(13,"kilometer","km",Metric.LENGTH,"si/1000","this*1000"),
+	MILE(14,"Mile","mi",Metric.LENGTH,"si/1609.34","this*1609.34"),
+	YARD(15,"Yard","yd",Metric.LENGTH,"si*1.0936132983","this*0.9144"),
+	FEET(16,"Feet","ft",Metric.LENGTH,"si*3.280839895","this*0.3048"),
+	INCH(17,"Inch","in",Metric.LENGTH,"si*39.3700787402","this*0.0254"),
 	
-	HOUR(18,"Hour",Metric.TIME),
-	MIN(19,"Minute",Metric.TIME,"si*60","this/60"),
-	SEC(20,"Second",Metric.TIME,"si*60*60","this/(60*60)"),
-	DAY(21,"Day",Metric.TIME,"si/24","this*24"),
-	WEEK(22,"Week",Metric.TIME,"si/(24*7)","this*(24*7)"),
-	YEAR(24,"Year",Metric.TIME,"si/(24*365)","this*(24*365)"),
+	HOUR(18,"Hour","h",Metric.TIME),
+	MIN(19,"Minute","m",Metric.TIME,"si*60","this/60"),
+	SEC(20,"Second","s",Metric.TIME,"si*60*60","this/(60*60)"),
+	DAY(21,"Day","D",Metric.TIME,"si/24","this*24"),
+	WEEK(22,"Week","W",Metric.TIME,"si/(24*7)","this*(24*7)"),
+	YEAR(24,"Year","Y",Metric.TIME,"si/(24*365)","this*(24*365)"),
+	
+	KILOGRAM(25,"Kilo Gram","kg",Metric.MASS),
+	HECTOGRAM(26,"Minute","hg",Metric.MASS,"si*10","this/10"),
+	DEKAGRAM(27,"dekagram","dag",Metric.MASS,"si*100","this/100"),
+	GRAM(28,"gram","g",Metric.MASS,"si*1000","this/1000"),
+	DECIGRAM(29,"decigram","dg",Metric.MASS,"si*10000","this/10000"),
+	CENTIGRAM(30,"centigram","cg",Metric.MASS,"si*100000","this/100000"),
+	MILLIGRAM(31,"milligram","mg",Metric.MASS,"si*1000000","this/1000000"),
+	TON(32,"Ton","t",Metric.MASS,"si/1000","this*1000"),
+	STONE(33,"Stone","st",Metric.MASS,"si*0.157473","this/0.157473"),
+	POUND(34,"Pound","lb",Metric.MASS,"si*2.20462","this/2.20462"),
+	OUNCE(35,"Ounce","oz",Metric.MASS,"si*35.2739199982575","this/35.2739199982575"),
 	;
 	
 	int unitId;
 	String displayName;
+	String symbol;
 	Metric metric;
 	boolean isSiUnit;
 	String fromSiUnit;
@@ -54,30 +69,50 @@ public enum Unit {
 		return typeMap;
 	}
 	
-	private static final Multimap<Metric, Unit> METRIC_UNIT_MAP = initMap();
-	private static Multimap<Metric, Unit> initMap() {
-		Multimap<Metric, Unit> typeMap = ArrayListMultimap.create();
-		for(Unit type : values()) {
-			typeMap.put(type.getMetric(), type);
+	private static final Map<Metric,Collection<Unit>> METRIC_UNIT_MAP = initMap();
+	
+	public static Unit valueOf(int unitId) {
+		return UNIT_MAP.get(unitId);
+	}
+	private static Map<Metric,Collection<Unit>> initMap() {
+		Map<Metric,Collection<Unit>> typeMap = new HashMap<>();
+		for(Unit unit : values()) {
+			
+			Collection<Unit> units = typeMap.get(unit.metric) == null ? new ArrayList<>() :typeMap.get(unit.metric);
+			units.add(unit);
+			
+			if(typeMap.get(unit.metric) == null) {
+				typeMap.put(unit.metric, units);
+			}
 		}
 		return typeMap;
 	}
 	
-	Unit(int unitId,String displayName,Metric metric) {
+	public static Map<Metric,Collection<Unit>> getMetricUnitMap() {
+		return METRIC_UNIT_MAP;
+	}
+	
+	public static Collection<Unit> getUnitsForMetric(Metric metric) {
+		return METRIC_UNIT_MAP.get(metric);
+	}
+	
+	Unit(int unitId,String displayName,String symbol,Metric metric) {
 		
 		this.unitId = unitId;
 		this.metric = metric;
 		this.isSiUnit = true;
 		this.displayName = displayName;
+		this.symbol = symbol;
 	}
 	
-	Unit(int unitId,String displayName,Metric metric,String fromSiUnit,String toSiUnit) {
+	Unit(int unitId,String displayName,String symbol,Metric metric,String fromSiUnit,String toSiUnit) {
 		this.unitId = unitId;
 		this.metric = metric;
 		this.isSiUnit = false;
 		this.fromSiUnit = fromSiUnit;
 		this.toSiUnit = toSiUnit;
 		this.displayName = displayName;
+		this.symbol = symbol;
 	}
 	
 	public String getDisplayName() {
@@ -127,4 +162,13 @@ public enum Unit {
 	public void setToSiUnit(String toSiUnit) {
 		this.toSiUnit = toSiUnit;
 	}
+	
+	public String getSymbol() {
+		return symbol;
+	}
+	
+	public void setSymbol(String symbol) {
+		this.symbol = symbol;
+	}
+
 }

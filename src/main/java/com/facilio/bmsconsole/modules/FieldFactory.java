@@ -3629,6 +3629,19 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	
+	public static List<FacilioField> getOrgUnitsFields() {
+		FacilioModule module = ModuleFactory.getOrgUnitsModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("metric", "METRIC", module, FieldType.NUMBER));
+		fields.add(getField("unit", "UNIT", module, FieldType.NUMBER));
+		
+		return fields;
+	}
+	
 	public static FacilioField getField(String name, String colName, FacilioModule module, FieldType type) {
 		return getField(name, null, colName, module, type);
 	}

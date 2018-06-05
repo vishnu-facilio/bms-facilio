@@ -3999,6 +3999,15 @@
 			</result>
 		</action>
 	</package>
+	
+	<package name="units" namespace="/api/units" extends="home">
+		<action name="getDefaultMetricUnits" class="com.facilio.bmsconsole.actions.UnitAction" method="getDefaultMetricUnits">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">^metricWithUnits.*,^orgUnitsList.*,^metrics.*</param>
+			</result>
+		</action>
+	</package>
 	<package name="sample" namespace="/api/sample" extends="homeApi">
 		<action name="*">
 			<result>/jsps/samples/{1}.jsp</result>

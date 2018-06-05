@@ -1,7 +1,17 @@
 package com.facilio.unitconversion;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
+import com.facilio.bmsconsole.context.OrgUnitsContext;
+import com.facilio.bmsconsole.context.ReportContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.sql.GenericSelectRecordBuilder;
 import com.udojava.evalex.Expression;
 
 public class UnitsUtil {
@@ -32,6 +42,30 @@ public class UnitsUtil {
 	}
 	
 	public static Double convertToSiUnit(Object value,Unit from) {
-		return convert(value, from, from.getMetric().getSiUnit());
+		return convert(value, from, Unit.valueOf(from.getMetric().getSiUnitId()));
 	}
+	
+	public static List<OrgUnitsContext> getOrgUnitsList() throws Exception {
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getOrgUnitsModule().getTableName())
+				.select(FieldFactory.getOrgUnitsFields())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getOrgUnitsModule()));
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		if (props != null && !props.isEmpty()) {
+			List<OrgUnitsContext> orgUnitsContexts = new ArrayList<>();
+			for(Map<String, Object> prop:props) {
+				OrgUnitsContext reportContext = FieldUtil.getAsBeanFromMap(prop, OrgUnitsContext.class);
+				orgUnitsContexts.add(reportContext);
+			}
+			return orgUnitsContexts;
+		}
+		return null;
+	}
+	
+	
+	
+	
 }
