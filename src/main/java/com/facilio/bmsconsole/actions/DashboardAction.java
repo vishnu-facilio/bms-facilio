@@ -1791,10 +1791,6 @@ public class DashboardAction extends ActionSupport {
 								}
 							}
 							
-							nonCompliance = Math.abs(nonCompliance);
-							compliance = Math.abs(compliance);
-							repeatFinding = Math.abs(repeatFinding);
-							
 							JSONObject buildingres = new JSONObject();
 							buildingres.put("label", building.getName());
 							buildingres.put("value", compliance+nonCompliance+repeatFinding);
@@ -1828,7 +1824,7 @@ public class DashboardAction extends ActionSupport {
 					return ticketData;
 				}
 			}
-			else if (report.getId() == 2362l) {
+			else if (report.getId() == 2407l) {
 
 
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -1887,18 +1883,197 @@ public class DashboardAction extends ActionSupport {
 						
 						JSONObject res = new JSONObject();
 						res.put("label", "Completed");
-						res.put("label", completed);
+						res.put("value", completed);
 						resArray.add(res);
 						
 						res = new JSONObject();
 						res.put("label", "Pending");
-						res.put("label", pending);
+						res.put("value", pending);
 						resArray.add(res);
 						
 						buildingres.put("label", building.getName());
 						buildingres.put("value", resArray);
 						ticketData.add(buildingres);
 					}
+					return ticketData;
+				}
+			}
+			
+			else if (report.getId() == 2408l) {
+
+
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				
+				List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
+				
+				ticketData = new JSONArray();
+
+				for(TicketCategoryContext category:categories) {
+					
+					List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrders(category.getId());
+					
+					if(workorders.isEmpty()) {
+						continue;
+					}
+					
+					int completed = 0,pending = 0;
+					for(WorkOrderContext workorder:workorders) {
+						
+						if(workorder.getResource().getId() != report.getReportSpaceFilterContext().getBuildingId()) {
+							continue;
+						}
+						LOGGER.log(Level.SEVERE, "dateFilter --- "+dateFilter);
+						if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
+							continue;
+						}
+						Command chain = FacilioChainFactory.getGetTasksOfTicketCommand();
+						FacilioContext context = new FacilioContext();
+						
+						context.put(FacilioConstants.ContextNames.ID, workorder.getId());
+						context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
+						context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME,"Tasks");
+						context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(FacilioConstants.ContextNames.TASK));
+						context.put("isAsMap", true);
+						chain.execute(context);
+						
+						List<Map<String, Object>> taskMap = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
+						
+						LOGGER.log(Level.SEVERE, "passed1 --- "+taskMap.size());
+						for(Map<String, Object> task : taskMap) {
+							
+							if(task.get("inputValue") != null) {
+								completed ++;
+							}
+							else {
+								pending ++;
+							}
+						}
+					}
+					
+					JSONObject res = new JSONObject();
+					res.put("label", "Completed");
+					res.put("value", completed);
+					ticketData.add(res);
+					
+					res = new JSONObject();
+					res.put("label", "Pending");
+					res.put("value", pending);
+					ticketData.add(res);
+					
+					return ticketData;
+				}
+			}
+			
+			else if (report.getId() == 2409l) {
+
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				
+				List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
+				
+				for(TicketCategoryContext category:categories) {
+					
+					List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrders(category.getId());
+					
+					if(workorders.isEmpty()) {
+						continue;
+					}
+					
+					Map<Long,Long> qDateRange = new HashMap<>();
+					
+					qDateRange.put(1514745000000l, 1522521000000l);
+					qDateRange.put(1522521000000l, 1530383400000l);
+					qDateRange.put(1530383400000l, 1538332200000l);
+					qDateRange.put(1538332200000l, 1546194600000l);
+					
+					ticketData = new JSONArray();
+					for(int i=0;i<qDateRange.size();i++) {
+						
+						int compliance = 0,nonCompliance = 0,repeatFinding = 0,notApplicable = 0;
+						long fromTime = 0l;
+						if(i==0) {
+							fromTime = 1514745000000l;
+						}
+						else if(i == 1) {
+							fromTime = 1522521000000l;
+						}
+						else if(i == 2) {
+							fromTime = 1530383400000l;				
+						}
+						else if(i == 3) {
+							fromTime = 1538332200000l;
+						}
+						long toTime = qDateRange.get(fromTime);
+							
+						for(WorkOrderContext workorder:workorders) {
+							
+							LOGGER.log(Level.SEVERE, "buildingId --- "+buildingId);
+							if(workorder.getResource() != null) {
+								LOGGER.log(Level.SEVERE, "workorder.getResource().getId() --- "+workorder.getResource().getId());
+							}
+							
+							if(workorder.getResource().getId() != report.getReportSpaceFilterContext().getBuildingId()) {
+								continue;
+							}
+							if(dateFilter != null && !(fromTime < workorder.getCreatedTime() && workorder.getCreatedTime() < toTime)) {
+								continue;
+							}
+							
+							Command chain = FacilioChainFactory.getGetTasksOfTicketCommand();
+							FacilioContext context = new FacilioContext();
+							
+							context.put(FacilioConstants.ContextNames.ID, workorder.getId());
+							context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
+							context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME,"Tasks");
+							context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(FacilioConstants.ContextNames.TASK));
+							
+							context.put("isAsMap", true);
+							chain.execute(context);
+							
+							List<Map<String, Object>> taskMap = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
+							
+							for(Map<String, Object> task : taskMap) {
+								
+								String subject = (String) task.get("subject");
+								
+								subject = subject.trim();
+								
+								if(task.get("inputValue") != null) {
+									
+									Integer value = Integer.parseInt(task.get("inputValue").toString());
+									
+									if (subject.endsWith("Non Compliance")) {
+										nonCompliance += value;
+									}
+									else if(subject.endsWith("Compliance")) {
+										compliance += value;
+									}
+									else if (subject.endsWith("Repeat Findings")) {
+										repeatFinding += value;
+									}
+								}
+							}
+						}
+						
+						JSONObject buildingres = new JSONObject();
+						buildingres.put("value", compliance+nonCompliance+repeatFinding);
+						
+						if(fromTime == 1514745000000l) {
+							buildingres.put("label", "Q1 2018");
+						}
+						else if(fromTime == 1522521000000l) {
+							buildingres.put("label", "Q2 2018");
+						}
+						else if(fromTime == 1530383400000l) {
+							buildingres.put("label", "Q3 2018");
+						}
+						else if(fromTime == 1538332200000l) {
+							buildingres.put("label", "Q4 2018");
+						}
+						ticketData.add(buildingres);
+					}
+					
+					LOGGER.log(Level.SEVERE, "last buildingres ----"+ticketData);
+					
 					return ticketData;
 				}
 			}
