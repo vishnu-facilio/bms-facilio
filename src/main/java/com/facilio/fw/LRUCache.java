@@ -285,20 +285,23 @@ public class LRUCache<K, V>{
           Node<K, V> previousNode = tempNode.previous;
 
           // If at the left-most, we update LRU 
-          if (tempNode.key == leastRecentlyUsed.key){
+          if ( leastRecentlyUsed!= null && tempNode.key == leastRecentlyUsed.key){
               nextNode.previous = null;
               leastRecentlyUsed = nextNode;
           }
 
           // If we are in the middle, we need to update the items before and after our item
-          else if (tempNode.key != mostRecentlyUsed.key){
+          else if (mostRecentlyUsed !=null && tempNode.key != mostRecentlyUsed.key){
               previousNode.next = nextNode;
               nextNode.previous = previousNode;
           } else 
           {
         	  // at the end of the list 
+        	  if(previousNode!=null)
+        	  {
         	     previousNode.next = null;
         	     mostRecentlyUsed = previousNode;
+        	  }
         	  
           }
           cache.remove(key);
