@@ -569,7 +569,7 @@ public class FacilioChainFactory {
 		c.addCommand(new AddTasksCommand());
 		c.addCommand(new AddTaskOptionsCommand());
 		c.addCommand(new UpdateReadingDataMetaCommand());
-		c.addCommand(new AddTaskTicketActivityCommand());
+		// c.addCommand(new AddTaskTicketActivityCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
