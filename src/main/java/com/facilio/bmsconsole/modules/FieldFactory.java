@@ -23,6 +23,10 @@ public class FieldFactory {
 		lookupModuleVsSortFieldName.put("ticketcategory", Pair.of("name", true));
 		lookupModuleVsSortFieldName.put("ticketstatus", Pair.of("status", true));
 		lookupModuleVsSortFieldName.put("tickettype", Pair.of("name", true));
+		lookupModuleVsSortFieldName.put("assetcategory", Pair.of("name", true));
+		lookupModuleVsSortFieldName.put("assetdepartment", Pair.of("name", true));
+		lookupModuleVsSortFieldName.put("assettype", Pair.of("name", true));
+		lookupModuleVsSortFieldName.put("alarmseverity", Pair.of("cardinality", false));
 		return lookupModuleVsSortFieldName;
 	}
 	

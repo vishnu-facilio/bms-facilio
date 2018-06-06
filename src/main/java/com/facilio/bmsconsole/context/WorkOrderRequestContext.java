@@ -83,9 +83,9 @@ public class WorkOrderRequestContext extends TicketContext {
 	}
 	
 	public static enum WORUrgency {
-		EMERGENCY(1, "Emergency"),
+		NOTURGENT(1, "Not Urgent"),
 		URGENT(2, "Urgent"),
-		NOTURGENT(3, "Not Urgent");
+		EMERGENCY(3, "Emergency");
 		
 		private int intVal;
 		private String strVal;
