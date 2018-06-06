@@ -53,30 +53,35 @@ public enum Unit {
 	
 	VOLT(36,"Volt","V",Metric.VOLTAGE),
 	MILLIVOLT(37,"Milli Volt","mV",Metric.VOLTAGE,"si*1000","this/1000"),
-	MICROVOLT(38,"Micro Volt","μV",Metric.VOLTAGE,"si*1000000","this/1000000"),
+	MICROVOLT(38,"Micro Volt","&#x3BC;V",Metric.VOLTAGE,"si*1000000","this/1000000"),
 	KILOVOLT(39,"Kilo Volt","kV",Metric.VOLTAGE,"si/1000","this*1000"),
 	MEGAVOLT(40,"Mega Volt","MV",Metric.VOLTAGE,"si/1000000","this*1000000"),
 	
 	AMPERE(41,"Ampere","A",Metric.CURRENT),
 	MILLIAMPERE(42,"Milli Ampere","mA",Metric.CURRENT,"si*1000","this/1000"),
-	MICROAMPERE(43,"Micro Ampere","μA",Metric.CURRENT,"si*1000000","this/1000000"),
+	MICROAMPERE(43,"Micro Ampere","&#x3BC;A",Metric.CURRENT,"si*1000000","this/1000000"),
 	KILOAMPERE(44,"Kilo Ampere","kA",Metric.CURRENT,"si/1000","this*1000"),
 	MEGAAMPERE(45,"Mega Ampere","MA",Metric.CURRENT,"si/1000000","this*1000000"),
 	
 	WATT(46,"Watt","W",Metric.POWER),
 	MILLIWATT(47,"Milli Watt","mW",Metric.POWER,"si*1000","this/1000"),
-	MICROWATT(48,"Micro Watt","μW",Metric.POWER,"si*1000000","this/1000000"),
+	MICROWATT(48,"Micro Watt","&#x3BC;W",Metric.POWER,"si*1000000","this/1000000"),
 	KILOWATT(49,"Kilo Watt","kW",Metric.POWER,"si/1000","this*1000"),
 	MEGAWATT(50,"Mega Watt","MW",Metric.POWER,"si/1000000","this*1000000"),
 	
 	HERTZ(51,"Hertz","Hz",Metric.FREQUENCY),
 	MILLIHERTZ(52,"Milli Hertz","mHz",Metric.FREQUENCY,"si*1000","this/1000"),
-	MICROHERTZ(53,"Micro Hertz","μHz",Metric.FREQUENCY,"si*1000000","this/1000000"),
+	MICROHERTZ(53,"Micro Hertz","&#x3BC;Hz",Metric.FREQUENCY,"si*1000000","this/1000000"),
 	KILOHERTZ(54,"Kilo Hertz","kHz",Metric.FREQUENCY,"si/1000","this*1000"),
 	MEGAHERTZ(55,"Mega Hertz","MHz",Metric.FREQUENCY,"si/1000000","this*1000000"),
 	GIGAHERTZ(56,"Giga Hertz","GHz",Metric.FREQUENCY,"si/1000000000","this*1000000000"),
 	TERAHERTZ(57,"Tera Hertz","THz",Metric.FREQUENCY,"si/1000000000000","this*1000000000000"),
 	
+	VAR(58,"var","var",Metric.REACTIVEPOWER),
+	KILOVAR(59,"Kilo var","kvar",Metric.REACTIVEPOWER,"si/1000","this*1000"),
+	MEGAVAR(60,"Mega","Mvar",Metric.REACTIVEPOWER,"si/1000000","this*1000000"),
+	
+	PASCAL(61,"Pascal","pa",Metric.PRESSURE),
 	;
 	
 	int unitId;
