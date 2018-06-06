@@ -403,6 +403,19 @@ public class ViewAPI {
 		
 		if (columns != null && !columns.isEmpty()) {
 			customizeViewColumns(viewId, columns);
+			List<SortField> sortFields = view.getSortFields();
+			if (sortFields == null || sortFields.isEmpty()) {
+				sortFields = ColumnFactory.getDefaultSortField(moduleName);
+			}
+			if (sortFields != null && !sortFields.isEmpty()) {
+				for (SortField field : sortFields) {
+					FacilioField sortfield = modBean.getField(field.getSortField().getName(), moduleName);
+					Long fieldID = modBean.getField(sortfield.getName(), moduleName).getFieldId();
+					field.setFieldId(fieldID);
+					field.setOrgId(orgId);
+				}
+				customizeViewSortColumns(viewId, sortFields);
+			}
 		}
 		return viewId;
 	}

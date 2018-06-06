@@ -23,6 +23,10 @@ public class FieldFactory {
 		lookupModuleVsSortFieldName.put("ticketcategory", Pair.of("name", true));
 		lookupModuleVsSortFieldName.put("ticketstatus", Pair.of("status", true));
 		lookupModuleVsSortFieldName.put("tickettype", Pair.of("name", true));
+		lookupModuleVsSortFieldName.put("assetcategory", Pair.of("name", true));
+		lookupModuleVsSortFieldName.put("assetdepartment", Pair.of("name", true));
+		lookupModuleVsSortFieldName.put("assettype", Pair.of("name", true));
+		lookupModuleVsSortFieldName.put("alarmseverity", Pair.of("cardinality", false));
 		return lookupModuleVsSortFieldName;
 	}
 	
@@ -100,6 +104,8 @@ public class FieldFactory {
 		unit.setColumnName("UNIT");
 		unit.setModule(module);
 		fields.add(unit);
+		
+		fields.add(getField("metric", "METRIC", module, FieldType.NUMBER));
 		
 		return fields;
 	}
@@ -3285,6 +3291,7 @@ public class FieldFactory {
 		fields.add(getField("value", "VALUE", module, FieldType.STRING));
 		fields.add(getField("readingDataId", "READING_DATA_ID", module, FieldType.NUMBER));
 		fields.add(getField("inputType", "INPUT_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("unit", "UNIT", module, FieldType.NUMBER));
 		return fields;
 	}
 	

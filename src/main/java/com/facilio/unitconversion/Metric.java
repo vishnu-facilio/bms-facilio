@@ -8,10 +8,16 @@ import java.util.Map;
 public enum Metric {
 
 	ENERGY(1,"Energy",1),
-	TEMPRATURE(2,"Temprature",4),
+	TEMPERATURE(2,"Temperature",4),
 	LENGTH(3,"Length",7),
 	MASS(4,"Mass",25),
 	TIME(5,"Time",18),
+	CURRENT(6,"Current",41),
+	VOLTAGE(7,"Voltage",36),
+	POWER(8,"Power",46),
+	FREQUENCY(9,"Frequency",51),
+	REACTIVEPOWER(10,"Reactive Power",58),
+	PRESSURE(11,"Presure",61),
 	;
 	
 	public static Map<Integer, Metric> getMetricMap() {

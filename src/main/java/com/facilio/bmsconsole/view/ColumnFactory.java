@@ -76,7 +76,29 @@ public class ColumnFactory {
 		createdTime.setColumnName("CREATED_TIME");
 		createdTime.setModule(ModuleFactory.getWorkOrdersModule());
 		
+		FacilioField modifiedTime = new FacilioField();
+		modifiedTime.setColumnName("MODIFIED_TIME");
+		modifiedTime.setName("modifiedTime");
+		modifiedTime.setDataType(FieldType.DATE_TIME);
+		modifiedTime.setModule(ModuleFactory.getAlarmsModule());
+		
+		FacilioField name = new FacilioField();
+		name.setName("name");
+		name.setColumnName("NAME");
+		name.setDataType(FieldType.STRING);
+		name.setModule(ModuleFactory.getAssetsModule());
+		
+		FacilioField woReqCreatedTime = new FacilioField();
+		woReqCreatedTime.setName("createdTime");
+		woReqCreatedTime.setDataType(FieldType.NUMBER);
+		woReqCreatedTime.setColumnName("CREATED_TIME");
+		woReqCreatedTime.setModule(ModuleFactory.getWorkOrderRequestsModule());
+		
 		defaultMap.put("workorder", Arrays.asList(new SortField(createdTime, false)));
+		defaultMap.put("alarm", Arrays.asList(new SortField(modifiedTime, false)));
+		defaultMap.put("asset", Arrays.asList(new SortField(name, false)));
+		defaultMap.put("workorderrequest", Arrays.asList(new SortField(woReqCreatedTime, false)));
+		
 		return defaultMap;
 	}
 	
