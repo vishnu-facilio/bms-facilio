@@ -12,13 +12,13 @@ import com.google.common.collect.Multimap;
 
 public enum Unit {
 	
-	WH(1,"watt Hour","wh",Metric.ENERGY),
-	KWH(2,"kilo watt Hour","kwh",Metric.ENERGY,"si/1000","this*1000"),
-	MWH(3,"Mega watt Hour","mwh",Metric.ENERGY,"si/1000000","this*1000000"),
+	WH(1,"watt Hour","Wh",Metric.ENERGY),
+	KWH(2,"kilo watt Hour","kWh",Metric.ENERGY,"si/1000","this*1000"),
+	MWH(3,"Mega watt Hour","mWh",Metric.ENERGY,"si/1000000","this*1000000"),
 	
-	CELSIUS(4,"Celsius","°C",Metric.TEMPRATURE),
-	FAHRENHEIT(5,"Fahrenheit","F",Metric.TEMPRATURE,"(si*1.8)+32","(this-32)/1.8"),
-	KELWIN(6,"Kelwin","K",Metric.TEMPRATURE,"si+273.15","this-273.15"),
+	CELSIUS(4,"Celsius","&deg;C",Metric.TEMPERATURE),
+	FAHRENHEIT(5,"Fahrenheit","&deg;F",Metric.TEMPERATURE,"(si*1.8)+32","(this-32)/1.8"),
+	KELWIN(6,"Kelwin","K",Metric.TEMPERATURE,"si+273.15","this-273.15"),
 	
 	METER(7,"Meter","m",Metric.LENGTH),
 	DECIMETER(8,"Decimetre","dm",Metric.LENGTH,"si*10","this/10"),
@@ -50,6 +50,33 @@ public enum Unit {
 	STONE(33,"Stone","st",Metric.MASS,"si*0.157473","this/0.157473"),
 	POUND(34,"Pound","lb",Metric.MASS,"si*2.20462","this/2.20462"),
 	OUNCE(35,"Ounce","oz",Metric.MASS,"si*35.2739199982575","this/35.2739199982575"),
+	
+	VOLT(36,"Volt","V",Metric.VOLTAGE),
+	MILLIVOLT(37,"Milli Volt","mV",Metric.VOLTAGE,"si*1000","this/1000"),
+	MICROVOLT(38,"Micro Volt","μV",Metric.VOLTAGE,"si*1000000","this/1000000"),
+	KILOVOLT(39,"Kilo Volt","kV",Metric.VOLTAGE,"si/1000","this*1000"),
+	MEGAVOLT(40,"Mega Volt","MV",Metric.VOLTAGE,"si/1000000","this*1000000"),
+	
+	AMPERE(41,"Ampere","A",Metric.CURRENT),
+	MILLIAMPERE(42,"Milli Ampere","mA",Metric.CURRENT,"si*1000","this/1000"),
+	MICROAMPERE(43,"Micro Ampere","μA",Metric.CURRENT,"si*1000000","this/1000000"),
+	KILOAMPERE(44,"Kilo Ampere","kA",Metric.CURRENT,"si/1000","this*1000"),
+	MEGAAMPERE(45,"Mega Ampere","MA",Metric.CURRENT,"si/1000000","this*1000000"),
+	
+	WATT(46,"Watt","W",Metric.POWER),
+	MILLIWATT(47,"Milli Watt","mW",Metric.POWER,"si*1000","this/1000"),
+	MICROWATT(48,"Micro Watt","μW",Metric.POWER,"si*1000000","this/1000000"),
+	KILOWATT(49,"Kilo Watt","kW",Metric.POWER,"si/1000","this*1000"),
+	MEGAWATT(50,"Mega Watt","MW",Metric.POWER,"si/1000000","this*1000000"),
+	
+	HERTZ(51,"Hertz","Hz",Metric.FREQUENCY),
+	MILLIHERTZ(52,"Milli Hertz","mHz",Metric.FREQUENCY,"si*1000","this/1000"),
+	MICROHERTZ(53,"Micro Hertz","μHz",Metric.FREQUENCY,"si*1000000","this/1000000"),
+	KILOHERTZ(54,"Kilo Hertz","kHz",Metric.FREQUENCY,"si/1000","this*1000"),
+	MEGAHERTZ(55,"Mega Hertz","MHz",Metric.FREQUENCY,"si/1000000","this*1000000"),
+	GIGAHERTZ(56,"Giga Hertz","GHz",Metric.FREQUENCY,"si/1000000000","this*1000000000"),
+	TERAHERTZ(57,"Tera Hertz","THz",Metric.FREQUENCY,"si/1000000000000","this*1000000000000"),
+	
 	;
 	
 	int unitId;
