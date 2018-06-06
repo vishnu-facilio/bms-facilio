@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -157,14 +158,18 @@ public class TaskAction extends ActionSupport {
 	private String updateTask(FacilioContext context) throws Exception {
 		context.put(FacilioConstants.ContextNames.TASK, task);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
-		
 		Chain updateTask = FacilioChainFactory.getUpdateTaskChain();
 		updateTask.execute(context);
 		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
-		
 		return SUCCESS;
 	}
-	
+	List<TaskContext> taskContextList;
+	public List<TaskContext> getTaskContextList() {
+		return taskContextList;
+	}
+	public void setTaskContextList(List<TaskContext> taskContextList) {
+		this.taskContextList = taskContextList;
+	}
 	List<Long> taskIdList;
 
 	public List<Long> getTaskIdList() {
@@ -190,6 +195,21 @@ public class TaskAction extends ActionSupport {
 			defaultClosedTaskObj.setStatus(TicketAPI.getStatus("Closed"));
 			context.put(FacilioConstants.ContextNames.TASK, defaultClosedTaskObj);
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, taskIdList);
+			Chain updateTask = FacilioChainFactory.getUpdateTaskChain();
+			updateTask.execute(context);
+			rowsUpdated += (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
+		}
+		return SUCCESS;
+	}
+	public String updateAllTask() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
+		System.out.println(taskContextList.size());
+		for (TaskContext singleTask :taskContextList)
+		{
+			context.put(FacilioConstants.ContextNames.TASK, singleTask);
+			System.out.println(taskContextList.size());
+			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(singleTask.getId()));
 			Chain updateTask = FacilioChainFactory.getUpdateTaskChain();
 			updateTask.execute(context);
 			rowsUpdated += (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);

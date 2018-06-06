@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +14,7 @@ import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
@@ -25,8 +27,19 @@ public class GetWorkOrderRequestListCommand implements Command {
 		// TODO Auto-generated method stub
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
-		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
+		String count = (String) context.get(FacilioConstants.ContextNames.WO_LIST_COUNT);
+		List<FacilioField> fields = new ArrayList<FacilioField>();
+		if (count != null) {
+			FacilioField countFld = new FacilioField();
+			countFld.setName("count");
+			countFld.setColumnName("COUNT(WorkOrderRequests.ID)");
+			countFld.setDataType(FieldType.NUMBER);
+			fields.add(countFld);
+		}
+		else {
+			fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+		}
 		
 		SelectRecordsBuilder<WorkOrderRequestContext> builder = new SelectRecordsBuilder<WorkOrderRequestContext>()
 														.table(dataTableName)
@@ -73,8 +86,15 @@ public class GetWorkOrderRequestListCommand implements Command {
 		List<WorkOrderRequestContext> workOrderRequests = builder.get();
 		loadRequesters(workOrderRequests);
 		TicketAPI.loadTicketLookups(workOrderRequests);
-		context.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST_LIST, workOrderRequests);
-		
+		if (count != null) {
+			for (WorkOrderRequestContext wo : workOrderRequests)
+			{
+				context.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST_COUNT, wo.getData().get("count"));
+			}
+		}
+		else {
+			context.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST_LIST, workOrderRequests);
+		}		
 		return false;
 	}
 	

@@ -263,7 +263,24 @@ public class WorkOrderRequestAction extends ActionSupport {
 		
 		return SUCCESS;
 	}
+	private String count;
+	public String getCount() {
+		return count;
+	}
+
+	public void setCount(String count) {
+		this.count = count;
+	}
 	
+	private long woCount;
+
+	public long getWoCount() {
+		return woCount;
+	}
+
+	public void setWoCount(long woCount) {
+		this.woCount = woCount;
+	}
 	public String workOrderRequestList() throws Exception {
 		// TODO Auto-generated method stub
  		FacilioContext context = new FacilioContext();
@@ -291,12 +308,23 @@ public class WorkOrderRequestAction extends ActionSupport {
  			sorting.put("orderType", "desc");
  		}
  		context.put(FacilioConstants.ContextNames.SORTING, sorting);
- 		
+ 		if (getCount() != null) {
+			context.put(FacilioConstants.ContextNames.WO_LIST_COUNT, getCount());
+		}
  		System.out.println("View Name : "+getViewName());
  		Chain workOrderListChain = FacilioChainFactory.getWorkOrderRequestListChain();
  		workOrderListChain.execute(context);
  		
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
+		
+		if (getCount() != null) {
+//			setWorkorder((WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER_LIST));
+			setWoCount((long) context.get(FacilioConstants.ContextNames.WORK_ORDER_REQUEST_COUNT));
+			System.out.println("data" + getWoCount());
+		}
+		else {
+			setWorkOrderRequests((List<WorkOrderRequestContext>) context.get(FacilioConstants.ContextNames.WORK_ORDER_REQUEST_LIST));
+		}
 		setWorkOrderRequests((List<WorkOrderRequestContext>) context.get(FacilioConstants.ContextNames.WORK_ORDER_REQUEST_LIST));
 		
 		FacilioView cv = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);

@@ -143,6 +143,7 @@ public class FacilioConstants {
 		
 		public static final String WORK_ORDER = "workorder";
 		public static final String WORK_ORDER_LIST = "workorders";
+		public static final String WORK_ORDER_COUNT = "workorderscount";
 		public static final String TEMPLATE_ID = "templateId";
 		public static final String TEMPLATE_TYPE = "templateType";
 		public static final Object TEMPLATE_LIST = "templateList";
@@ -157,6 +158,8 @@ public class FacilioConstants {
 		
 		public static final String WORK_ORDER_REQUEST = "workorderrequest";
 		public static final String WORK_ORDER_REQUEST_LIST = "workorderrequests";
+		public static final String WORK_ORDER_REQUEST_COUNT = "workorderrequestcount";
+
 		
 		public static final String ALARM_SEVERITY = "alarmseverity";
 		public static final String ALARM = "alarm";
@@ -361,6 +364,7 @@ public class FacilioConstants {
 		public static final String PM_ID = "pmid";
 		public static final String PREVENTIVE_MAINTENANCE_STATUS = "preventivemaintenanceStatus";
 		public static final String PREVENTIVE_MAINTENANCE_LIST = "preventivemaintenances";
+		public static final String PREVENTIVE_MAINTENANCE_COUNT = "preventivemaintenancecount";
 		public static final String PREVENTIVE_MAINTENANCE_JOBS_LIST = "preventivemaintenancejobs";
 		public static final String PREVENTIVE_MAINTENANCE_TRIGGERS_LIST = "preventivemaintenancetriggerss";
 		public static final String PREVENTIVE_MAINTENANCE_RESOURCES = "preventivemaintenanceresources";
@@ -375,6 +379,7 @@ public class FacilioConstants {
 		
 		public static final String WO_DUE_STARTTIME = "woDueStarttime";
 		public static final String WO_DUE_ENDTIME = "woDueEndtime";
+		public static final String WO_LIST_COUNT = "woListCount";
 		
 		public static final String CV_NAME = "cvName";
 		public static final String CUSTOM_VIEW = "customView";

@@ -42,7 +42,6 @@ import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
-import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.bmsconsole.workflow.TicketActivity;
 import com.facilio.constants.FacilioConstants;
@@ -569,10 +568,11 @@ public class WorkOrderAction extends ActionSupport {
 	}
 
 	public String plannedMaintenanceList() throws Exception {
-
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
-
+		if (getCount() != null) {
+			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_COUNT, getCount());
+		}
 		if (getFilters() != null) {
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(getFilters());
@@ -597,9 +597,14 @@ public class WorkOrderAction extends ActionSupport {
 
 		Chain getPmchain = FacilioChainFactory.getGetPreventiveMaintenanceListChain();
 		getPmchain.execute(context);
-
-		setPms((List<PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST));
-
+		if (getCount() != null) {
+//			setWorkorder((WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER_LIST));
+			setWoCount((long) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_COUNT));
+			System.out.println("data" + getWoCount());
+		}
+		else {
+			setPms((List<PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST));
+		}
 		return SUCCESS;
 	}
 
@@ -793,6 +798,28 @@ public class WorkOrderAction extends ActionSupport {
 	public void setRowsUpdated(int rowsUpdated) {
 		this.rowsUpdated = rowsUpdated;
 	}
+	
+	private String count;
+	public String getCount() {
+		return count;
+	}
+	private long woCount;
+
+	public long getWoCount() {
+		return woCount;
+	}
+
+	public void setWoCount(long woCount) {
+		this.woCount = woCount;
+	}
+
+	public void setCount(String count) {
+		this.count = count;
+	}
+
+	public String workOrderCount () throws Exception {
+		return SUCCESS;	
+	}
 
 	public String workOrderList() throws Exception {
 		// TODO Auto-generated method stub
@@ -800,6 +827,9 @@ public class WorkOrderAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
 		context.put(FacilioConstants.ContextNames.WO_DUE_STARTTIME, getStartTime());
 		context.put(FacilioConstants.ContextNames.WO_DUE_ENDTIME, getEndTime());
+		if (getCount() != null) {
+			context.put(FacilioConstants.ContextNames.WO_LIST_COUNT, getCount());
+		}
 		if (getFilters() != null) {
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(getFilters());
@@ -815,6 +845,16 @@ public class WorkOrderAction extends ActionSupport {
 			context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
 		}
 
+		JSONObject sorting = new JSONObject();
+		if (getOrderBy() != null) {
+			sorting.put("orderBy", getOrderBy());
+			sorting.put("orderType", getOrderType());
+		} else {
+			sorting.put("orderBy", "createdTime");
+			sorting.put("orderType", "desc");
+		}
+		context.put(FacilioConstants.ContextNames.SORTING, sorting);
+
 		JSONObject pagination = new JSONObject();
 		pagination.put("page", getPage());
 		pagination.put("perPage", getPerPage());
@@ -826,8 +866,14 @@ public class WorkOrderAction extends ActionSupport {
 		workOrderListChain.execute(context);
 
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
-		setWorkOrders((List<WorkOrderContext>) context.get(FacilioConstants.ContextNames.WORK_ORDER_LIST));
-
+		if (getCount() != null) {
+//			setWorkorder((WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER_LIST));
+			setWoCount((long) context.get(FacilioConstants.ContextNames.WORK_ORDER_COUNT));
+			System.out.println("data" + getWoCount());
+		}
+		else {
+			setWorkOrders((List<WorkOrderContext>) context.get(FacilioConstants.ContextNames.WORK_ORDER_LIST));
+		}
 		FacilioView cv = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		if (cv != null) {
 			setViewDisplayName(cv.getDisplayName());
