@@ -589,7 +589,7 @@
 			<param name="permission">READ,READ_OWN,READ_TEAM</param>
 			<param name="viewName">{1}</param>
 			<result name="success" type="json">
-				<param name="includeProperties">alarms,alarms\[\d+\],alarms\[\d+\].*</param>
+				<param name="includeProperties">count,alarms,alarms\[\d+\],alarms\[\d+\].*</param>
 			</result>
 		</action>
 	</package>
