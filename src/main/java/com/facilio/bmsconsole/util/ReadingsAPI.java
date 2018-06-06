@@ -518,8 +518,10 @@ public class ReadingsAPI {
 					readings.add(reading);
 				}
 			}
-			setReadingInterval(readings, null);
-			return readings.stream().mapToInt(reading -> (int) reading.getDatum("interval")).max().getAsInt();
+			if (!readings.isEmpty()) {
+				setReadingInterval(readings, null);
+				return readings.stream().mapToInt(reading -> (int) reading.getDatum("interval")).max().getAsInt();
+			}
 		}
 		return dataInterval;
 	}

@@ -18,7 +18,6 @@ import java.util.logging.Logger;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -63,7 +62,6 @@ import com.facilio.bmsconsole.context.ReportThreshold;
 import com.facilio.bmsconsole.context.ReportUserFilterContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SiteContext;
-import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.TicketStatusContext.StatusType;
 import com.facilio.bmsconsole.context.WidgetChartContext;
@@ -743,8 +741,8 @@ public class DashboardAction extends ActionSupport {
 		}
 		
 		List<ReadingContext> readingValues = FormulaFieldAPI.calculateFormulaReadings(-1, derivation.getName(), intervalMap, workflow);
+		reportData = new JSONArray();
 		if (readingValues != null) {
-			reportData = new JSONArray();
 			readingValues.forEach(value -> {
 				JSONObject obj =  new JSONObject(); 
 				obj.put("label", value.getReading("startTime"));
@@ -4510,7 +4508,14 @@ public class DashboardAction extends ActionSupport {
 	}
 	
 	public String updateDerivation() throws Exception {
+		derivation.setFormulaId(-1);
 		derivation = DerivationAPI.updateDerivation(derivation);
+		return SUCCESS;
+	}
+	
+	public String deleteDerivation() throws Exception {
+		DerivationAPI.deleteDerivation(id.get(0));
+		rowsUpdated = 1;
 		return SUCCESS;
 	}
 	

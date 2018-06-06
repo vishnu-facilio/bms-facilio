@@ -91,5 +91,10 @@ public class DerivationAPI {
 		builder.update(prop);
 		return getDerivation(derivationContext.getId());
 	}
+	
+	public static void deleteDerivation(long id) throws Exception {
+		DerivationContext derivation = getDerivation(id);
+		WorkflowUtil.deleteWorkflow(derivation.getWorkflowId());
+	}
 
 }

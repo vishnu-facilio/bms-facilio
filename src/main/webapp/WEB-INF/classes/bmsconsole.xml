@@ -3979,6 +3979,11 @@
 				<param name="includeProperties">^derivation.*</param>
 			</result>
 		</action>
+		<action name="deleteDerivation" class="com.facilio.bmsconsole.actions.DashboardAction" method="deleteDerivation">
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
 		<action name="derivationList" class="com.facilio.bmsconsole.actions.DashboardAction" method="derivationList">
 			<result name="success" type="json">
 				<param name="includeProperties">^derivations.*</param>
