@@ -19,13 +19,6 @@ public class FacilioTimer {
 		// TODO Auto-generated constructor stub
 	}
 
-	public static void scheduleJob(JobContext jc, long delay) throws Exception {
-		long nextExecutionTime = (System.currentTimeMillis()/1000)+delay;
-		jc.setExecutionTime(nextExecutionTime);
-		
-		JobStore.addJob(jc);
-	}
-	
 	public static void scheduleCalendarJob(long jobId, String jobName, long startTime, ScheduleInfo schedule, String executorName) throws Exception {
 		long nextExecutionTime = schedule.nextExecutionTime(getStartTimeInSecond(startTime));
 		scheduleJob(jobId, jobName, nextExecutionTime, -1, schedule, executorName, -1, -1);

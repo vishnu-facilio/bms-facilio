@@ -17,7 +17,6 @@ import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
@@ -26,6 +25,7 @@ import com.facilio.bmsconsole.context.FormulaFieldContext.TriggerType;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -37,7 +37,6 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.tasker.ScheduleInfo.FrequencyType;
 import com.facilio.workflows.context.WorkflowContext;
@@ -275,12 +274,9 @@ public class FormulaFieldAPI {
 		return getFormulaFieldsFromProps(selectBuilder.get());
 	}
 	
-	public static void recalculateHistoricalData(FormulaFieldContext enpi, FacilioField enpiField) throws Exception {
-		ModuleCRUDBean crudBean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD");
-		crudBean.deleteAllData(enpiField.getModule().getName());
-		
-		FacilioTimer.deleteJob(enpi.getId(), "HistoricalFormulaFieldCalculator");
-		FacilioTimer.scheduleOneTimeJob(enpi.getId(), "HistoricalFormulaFieldCalculator", 30, "priority");
+	public static void recalculateHistoricalData(FormulaFieldContext enpi, FacilioField enpiField, DateRange range) throws Exception {
+		BmsJobUtil.deleteJobWithProps(enpi.getId(), "HistoricalFormulaFieldCalculator");
+		BmsJobUtil.scheduleOneTimeJobWithProps(enpi.getId(), "HistoricalFormulaFieldCalculator", 30, "priority", FieldUtil.getAsJSON(range));
 	}
 	
 	private static List<FormulaFieldContext> getFormulaFieldsFromProps (List<Map<String, Object>> props) throws Exception {

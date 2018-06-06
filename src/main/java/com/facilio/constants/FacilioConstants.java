@@ -373,6 +373,7 @@ public class FacilioConstants {
 		public static final String PM_CURRENT_TRIGGER = "pmCurrentTrigger";
 		public static final String PM_CURRENT_JOB = "pmCurrentJob";
 		public static final String PM_TO_WO = "pmtowo";
+		public static final String IS_PM_EXECUTION = "isPMExecution";
 		
 		public static final String PREVENTIVE_MAINTENANCE_STARTTIME = "preventivemaintenanceStarttime";
 		public static final String PREVENTIVE_MAINTENANCE_ENDTIME = "preventivemaintenanceEndtime";
@@ -425,6 +426,7 @@ public class FacilioConstants {
 		
 		public static final String BASE_LINE = "baseLine";
 		public static final String BASE_LINE_LIST = "baseLines";
+		public static final String DATE_RANGE = "dateRange";
 		
 		public static final String TIMESTAMP = "timestamp";
 		public static final String DEVICE_DATA="deviceData";

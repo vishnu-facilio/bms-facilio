@@ -3654,6 +3654,18 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	public static List<FacilioField> getCommonJobPropsFields() {
+		FacilioModule module = ModuleFactory.getCommonJobPropsModule();
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getField("jobId", "JOBID", module, FieldType.NUMBER));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("jobName", "JOBNAME", module, FieldType.STRING));
+		fields.add(getField("props", "PROPS", module, FieldType.STRING));
+		
+		return fields;
+	}
+	
 	public static FacilioField getField(String name, String colName, FacilioModule module, FieldType type) {
 		return getField(name, null, colName, module, type);
 	}

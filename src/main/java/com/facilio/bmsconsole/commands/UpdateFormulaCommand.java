@@ -8,11 +8,13 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext.TriggerType;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
@@ -84,7 +86,9 @@ public class UpdateFormulaCommand implements Command {
 		
 		if (newFormula.getWorkflow() != null) {
 			WorkflowUtil.deleteWorkflow(oldFormula.getWorkflowId());
-			FormulaFieldAPI.recalculateHistoricalData(newFormula, oldFormula.getReadingField());
+			
+			DateRange dateRange = (DateRange) context.get(FacilioConstants.ContextNames.DATE_RANGE);
+			FormulaFieldAPI.recalculateHistoricalData(newFormula, oldFormula.getReadingField(), dateRange);
 		}
 		context.put(FacilioConstants.ContextNames.RESULT, "success");
 		return false;

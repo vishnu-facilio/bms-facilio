@@ -989,4 +989,12 @@ public class ModuleFactory {
 		taskSection.setTableName("Org_Units");
 		return taskSection;
 	}
+	
+	public static FacilioModule getCommonJobPropsModule() {
+		FacilioModule commonJobProps = new FacilioModule();
+		commonJobProps.setName("commonJobProps");
+		commonJobProps.setDisplayName("Common Job Props");
+		commonJobProps.setTableName("Common_Job_Props");
+		return commonJobProps;
+	}
 }
