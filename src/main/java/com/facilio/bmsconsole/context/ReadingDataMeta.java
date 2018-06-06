@@ -1,9 +1,23 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.unitconversion.Unit;
 
 public class ReadingDataMeta {
 	private long orgId = -1;
+	int unit = -1;
+	public int getUnit() {
+		return unit;
+	}
+	public void setUnit(int unit) {
+		this.unit = unit;
+	}
+	public Unit getUnitEnum() {
+		if(unit != -1) {
+			return Unit.valueOf(unit);
+		}
+		return null;
+	}
 	public long getOrgId() {
 		return orgId;
 	}

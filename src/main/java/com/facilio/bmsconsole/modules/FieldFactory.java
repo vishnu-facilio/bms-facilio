@@ -101,6 +101,8 @@ public class FieldFactory {
 		unit.setModule(module);
 		fields.add(unit);
 		
+		fields.add(getField("metric", "METRIC", module, FieldType.NUMBER));
+		
 		return fields;
 	}
 	
@@ -3285,6 +3287,7 @@ public class FieldFactory {
 		fields.add(getField("value", "VALUE", module, FieldType.STRING));
 		fields.add(getField("readingDataId", "READING_DATA_ID", module, FieldType.NUMBER));
 		fields.add(getField("inputType", "INPUT_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("unit", "UNIT", module, FieldType.NUMBER));
 		return fields;
 	}
 	

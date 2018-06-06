@@ -12,9 +12,9 @@ import com.google.common.collect.Multimap;
 
 public enum Unit {
 	
-	WH(1,"watt Hour","Wh",Metric.ENERGY),
-	KWH(2,"kilo watt Hour","kWh",Metric.ENERGY,"si/1000","this*1000"),
-	MWH(3,"Mega watt Hour","mWh",Metric.ENERGY,"si/1000000","this*1000000"),
+	WH(1,"Watt Hour","Wh",Metric.ENERGY),
+	KWH(2,"Kilo Watt Hour","kWh",Metric.ENERGY,"si/1000","this*1000"),
+	MWH(3,"Mega Watt Hour","mWh",Metric.ENERGY,"si/1000000","this*1000000"),
 	
 	CELSIUS(4,"Celsius","&deg;C",Metric.TEMPERATURE),
 	FAHRENHEIT(5,"Fahrenheit","&deg;F",Metric.TEMPERATURE,"(si*1.8)+32","(this-32)/1.8"),
