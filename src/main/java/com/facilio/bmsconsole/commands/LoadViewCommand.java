@@ -77,6 +77,7 @@ public class LoadViewCommand implements Command {
 							joiner.add(getOrderClauseForLookupTable(sortField, moduleName));	
 						}
 						context.put(FacilioConstants.ContextNames.SORTING_QUERY, joiner.toString());
+						view.setSortFields(defaultSortFields);
 					}
 				}
 				context.put(FacilioConstants.ContextNames.CUSTOM_VIEW, view);

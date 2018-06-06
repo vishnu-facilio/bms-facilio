@@ -404,7 +404,6 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCondtionsFromFiltersCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
-		c.addCommand(new GenerateSortingQueryCommand());
 		c.addCommand(new GetWorkOrderRequestListCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -478,7 +477,6 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
-		c.addCommand(new GenerateSortingQueryCommand());
 		c.addCommand(new GetAlarmListCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -1170,7 +1168,6 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
-		c.addCommand(new GenerateSortingQueryCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
 		addCleanUpCommand(c);
 		return c;
