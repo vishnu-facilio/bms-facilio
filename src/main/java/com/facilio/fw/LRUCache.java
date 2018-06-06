@@ -30,9 +30,11 @@ public class LRUCache<K, V>{
 
     	testcache.get("manthosh");
 
-
+System.out.println("Before "+testcache);
     	
     	testcache.clearTenPercentile();
+    	System.out.println("After "+testcache);
+
     	
     }
 
@@ -95,8 +97,8 @@ public class LRUCache<K, V>{
     }
 
     private ConcurrentHashMap<K, Node<K, V>> cache;
-    private Node<K, V> leastRecentlyUsed;
-    private Node<K, V> mostRecentlyUsed;
+  //  private Node<K, V> leastRecentlyUsed;
+   // private Node<K, V> mostRecentlyUsed;
     private int maxSize;
     private int currentSize;
 
@@ -152,6 +154,7 @@ public class LRUCache<K, V>{
     	  for(int i = 0;i<list.size();i++)
     	  {
     		  cache.remove(list.get(i).key);
+    		  System.out.println("Removing "+list.get(i).key);
     		  currentSize--;
     	  }
     }
@@ -168,8 +171,8 @@ public class LRUCache<K, V>{
     public void purgeCache()
     {
     	   this.currentSize = 0;
-         leastRecentlyUsed = new Node<K, V>(null, null, null, null);
-         mostRecentlyUsed = leastRecentlyUsed;
+    //     leastRecentlyUsed = new Node<K, V>(null, null, null, null);
+      //   mostRecentlyUsed = leastRecentlyUsed;
          cache = new ConcurrentHashMap<K, Node<K, V>>();
     }
 
@@ -177,8 +180,8 @@ public class LRUCache<K, V>{
         this.maxSize = maxSize;
         this.currentSize = 0;
       //  this.tenPercent = (maxSize/10);
-        leastRecentlyUsed = new Node<K, V>(null, null, null, null);
-        mostRecentlyUsed = leastRecentlyUsed;
+    //    leastRecentlyUsed = new Node<K, V>(null, null, null, null);
+     //   mostRecentlyUsed = leastRecentlyUsed;
         cache = new ConcurrentHashMap<K, Node<K, V>>();
     }
 
@@ -190,35 +193,13 @@ public class LRUCache<K, V>{
 	            return null;
 	        }
 	        // If MRU leave the list as it is
-	        else if (tempNode.key == mostRecentlyUsed.key){
-	        	hitcount++;
-	            return mostRecentlyUsed.value;
-	        }
+	      
 	
 	        // Get the next and previous nodes
-	        Node<K, V> nextNode = tempNode.next;
-	        Node<K, V> previousNode = tempNode.previous;
-	
-	        // If at the left-most, we update LRU 
-	        if (tempNode.key == leastRecentlyUsed.key){
-	            nextNode.previous = null;
-	            leastRecentlyUsed = nextNode;
-	        }
-	        else if(nextNode==null)
-	        {
-	        	   // do nothing if this node is the recently used one ..
-	        }
-	        else if (tempNode.key != mostRecentlyUsed.key){
-		        // If we are in the middle, we need to update the items before and after our item
-	            previousNode.next = nextNode;
-	            nextNode.previous = previousNode;
-	        }
+	      
 	
 	        // Finally move our item to the MRU
-	        tempNode.previous = mostRecentlyUsed;
-	        mostRecentlyUsed.next = tempNode;
-	        mostRecentlyUsed = tempNode;
-	        mostRecentlyUsed.next = null;
+	       
 	        hitcount++;
 	        
 	        return tempNode.getValue();
@@ -239,21 +220,16 @@ public class LRUCache<K, V>{
         }
 
         // Put the new node at the right-most end of the linked-list
-        Node<K, V> myNode = new Node<K, V>(mostRecentlyUsed, null, key, value);
-        mostRecentlyUsed.next = myNode;
+        Node<K, V> myNode = new Node<K, V>(null, null, key, value);
+     //   mostRecentlyUsed.next = myNode;
         cache.put(key, myNode);
-        mostRecentlyUsed = myNode;
+        currentSize++;
+       // mostRecentlyUsed = myNode;
 
         // Delete the left-most entry and update the LRU pointer
-        if (currentSize == maxSize){
+        if (currentSize >= maxSize){
             synchronized (cache) {
                 try {
-                  /*  for(int i = 0; i < tenPercent; i++ ) {
-                        cache.remove(leastRecentlyUsed.key);
-                        leastRecentlyUsed = leastRecentlyUsed.next;
-                        leastRecentlyUsed.previous = null;
-                         currentSize--;
-                    }*/
                     clearTenPercentile();
                 } catch (Exception e) {
                     logger.log(Level.INFO, "Error in put " + this , e);
@@ -264,11 +240,8 @@ public class LRUCache<K, V>{
 
         // Update cache size, for the first added entry update the LRU pointer
         else if (currentSize < maxSize){
-            if (currentSize == 0){
-                leastRecentlyUsed = myNode;
-                mostRecentlyUsed.previous = null;
-            }
-            currentSize++;
+            
+           
         }
     }
     
@@ -281,7 +254,7 @@ public class LRUCache<K, V>{
           
 
           // Get the next and previous nodes
-          Node<K, V> nextNode = tempNode.next;
+      /*    Node<K, V> nextNode = tempNode.next;
           Node<K, V> previousNode = tempNode.previous;
 
           // If at the left-most, we update LRU 
@@ -304,6 +277,7 @@ public class LRUCache<K, V>{
         	  }
         	  
           }
+          */
           cache.remove(key);
 
           currentSize--;
