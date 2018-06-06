@@ -11,9 +11,10 @@ import com.amazonaws.services.kinesis.clientlibrary.types.InitializationInput;
 import com.amazonaws.services.kinesis.clientlibrary.types.ProcessRecordsInput;
 import com.amazonaws.services.kinesis.clientlibrary.types.ShutdownInput;
 import com.amazonaws.services.kinesis.model.Record;
-import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.events.tasker.tasks.EventProcessor;
+import com.facilio.fw.BeanFactory;
 
 public class TimeSeriesProcessor implements IRecordProcessor {
 
@@ -30,13 +31,6 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 	public void initialize(InitializationInput initializationInput) {
 		
 		 this.shardId = initializationInput.getShardId();
-	        try {
-	            AccountUtil.setCurrentAccount(orgId);
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	        }
-	        System.out.println("Initializing record processor for stream : " + orgDomainName + " and shard : " + shardId);
-
 	}
 
 	@Override
@@ -55,7 +49,8 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 
 				if(dataType!=null && "timeseries".equals(dataType)) {
 					long timeStamp=	record.getApproximateArrivalTimestamp().getTime();
-					TimeSeriesAPI.processPayLoad(timeStamp, payLoad, record, processRecordsInput.getCheckpointer());
+					ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+					bean.processTimeSeries(timeStamp, payLoad, record,processRecordsInput.getCheckpointer());
 //					Temp fix
 //					processRecordsInput.getCheckpointer().checkpoint(record);
 				}

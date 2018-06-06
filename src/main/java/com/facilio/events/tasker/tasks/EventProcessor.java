@@ -15,11 +15,12 @@ import com.amazonaws.services.kinesis.clientlibrary.types.InitializationInput;
 import com.amazonaws.services.kinesis.clientlibrary.types.ProcessRecordsInput;
 import com.amazonaws.services.kinesis.clientlibrary.types.ShutdownInput;
 import com.amazonaws.services.kinesis.model.Record;
-import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.util.EventAPI;
 import com.facilio.events.util.EventRulesAPI;
+import com.facilio.fw.BeanFactory;
 
 public class EventProcessor implements IRecordProcessor {
 
@@ -42,12 +43,6 @@ public class EventProcessor implements IRecordProcessor {
     @Override
     public void initialize(InitializationInput initializationInput) {
         this.shardId = initializationInput.getShardId();
-        try {
-            AccountUtil.setCurrentAccount(orgId);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        System.out.println("Initializing record processor for stream : " + orgDomainName + " and shard : " + shardId);
     }
 
     @Override
@@ -95,7 +90,9 @@ public class EventProcessor implements IRecordProcessor {
 
 
     private boolean processEvents(long timestamp, JSONObject object) throws Exception {
-        long currentExecutionTime = EventAPI.processEvents(timestamp, object, eventRules, eventCountMap, lastEventTime);
+    	
+    	ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+        long currentExecutionTime = bean.processEvents(timestamp, object, eventRules, eventCountMap, lastEventTime);
         if(currentExecutionTime != -1) {
         	lastEventTime = currentExecutionTime;
         	return true;

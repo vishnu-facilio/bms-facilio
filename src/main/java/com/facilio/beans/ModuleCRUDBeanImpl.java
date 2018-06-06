@@ -13,6 +13,8 @@ import org.apache.commons.chain.Command;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
+import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -46,11 +48,14 @@ import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
+import com.facilio.events.context.EventRuleContext;
+import com.facilio.events.util.EventAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.facilio.timeseries.TimeSeriesAPI;
 
 public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
@@ -518,6 +523,18 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 														.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
 														;
 		deleteBuilder.delete();
+	}
+
+	@Override
+	public void processTimeSeries(long timeStamp, JSONObject payLoad, Record record,
+			IRecordProcessorCheckpointer checkPointer) throws Exception {
+			TimeSeriesAPI.processPayLoad(timeStamp, payLoad, record, checkPointer);
+	}
+
+	@Override
+	public long processEvents(long timeStamp, JSONObject payLoad, List<EventRuleContext> eventRules,
+			Map<String, Integer> eventCountMap, long lastEventTime) throws Exception {
+		return EventAPI.processEvents(timeStamp, payLoad, eventRules, eventCountMap, lastEventTime);
 	}
 
 }

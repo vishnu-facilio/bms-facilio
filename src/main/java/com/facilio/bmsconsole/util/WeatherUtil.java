@@ -24,8 +24,6 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -174,30 +172,21 @@ public class WeatherUtil {
 	
 	
 	public static Map<Long,List<Map<String,Object>>> getWeatherReadings() throws Exception {
-		return getReadings(FacilioConstants.ContextNames.WEATHER_READING,"temperature");
+		return getReadings(FacilioConstants.ContextNames.WEATHER_READING);
 	}
 	
 	public static Map<Long,List<Map<String,Object>>> getWetBulbReadings() throws Exception {
-		return getReadings(FacilioConstants.ContextNames.PSYCHROMETRIC_READING ,"wetBulbTemperature");
+		return getReadings(FacilioConstants.ContextNames.PSYCHROMETRIC_READING );
 	}
 	
-public static Map<Long,List<Map<String,Object>>> getReadings(String moduleName, String fieldName) throws Exception {
+public static Map<Long,List<Map<String,Object>>> getReadings(String moduleName) throws Exception {
 		
 		
 		ModuleBean modBean= (ModuleBean) BeanFactory.lookup("ModuleBean");
-		Map<String,FacilioField>	fieldMap=FieldFactory.getAsMap(modBean.getAllFields(moduleName));
 		
-		FacilioField parentId = fieldMap.get("parentId");
-		FacilioField timeFld = fieldMap.get("ttime");
-		FacilioField temperatureFld = fieldMap.get(fieldName);
-
-		List<FacilioField> fields = new ArrayList<FacilioField>();
-		fields.add(parentId);
-		fields.add(timeFld);
-		fields.add(temperatureFld);
 		
 		SelectRecordsBuilder<ReadingContext> builder = new SelectRecordsBuilder<ReadingContext>()
-				.select(fields)
+				.select(modBean.getAllFields(moduleName))
 				.moduleName(moduleName)
 				.beanClass(ReadingContext.class)
 				.andCondition(CriteriaAPI.getCondition("TTIME", "ttime",null, DateOperators.YESTERDAY));
@@ -218,57 +207,30 @@ public static Map<Long,List<Map<String,Object>>> getReadings(String moduleName, 
 	}
 	
 	
-
-	
-	
-	public static Double getCDD(Double cddBaseTemp, List<Map<String,Object>> weatherReadings) {
-	
-		int count= weatherReadings.size();
-		Double totalTemp= new Double(0);
-		for(Map<String,Object> reading: weatherReadings){
-			
-			Double temperature=(Double)reading.get("temperature");
-			if(temperature==null || temperature < cddBaseTemp) {
-				continue;
-			}
-			totalTemp+=(temperature - cddBaseTemp);
-		}
-		Double cdd=totalTemp/count;
-		return cdd;
-	}
-	
-	public static Double getHDD(Double hddBaseTemp, List<Map<String,Object>> weatherReadings) {
-
-		int count= weatherReadings.size();
-		Double totalTemp= new Double(0);
-		for(Map<String,Object> reading: weatherReadings){
-
-			Double temperature=(Double)reading.get("temperature");
-			if(temperature==null || temperature > hddBaseTemp) {
-				continue;
-			}
-			totalTemp+=(hddBaseTemp-temperature);
-		}
-		Double hdd=totalTemp/count;
-		return hdd;
-
-	}
-	
-	
-	public static Double getWDD(Double wddBaseTemp, List<Map<String,Object>> weatherReadings) {
+	public static Double getDegreeDays(String ddName,String temperatureField, Double ddBaseTemp,List<Map<String,Object>> weatherReadings) {
 		
-		int count= weatherReadings.size();
 		Double totalTemp= new Double(0);
 		for(Map<String,Object> reading: weatherReadings){
 			
-			Double temperature=(Double)reading.get("wetBulbTemperature");
-			if(temperature==null || temperature < wddBaseTemp) {
+			Double temperature=(Double)reading.get(temperatureField);
+			if(temperature==null ){
 				continue;
 			}
-			totalTemp+=(temperature - wddBaseTemp);
+			if(ddName.equalsIgnoreCase("heat")) {
+				if(temperature > ddBaseTemp) {
+					continue;
+				}
+				totalTemp+=(ddBaseTemp-temperature);
+			}
+			else {
+				if(temperature < ddBaseTemp) {
+					continue;
+				}
+				totalTemp+=(temperature - ddBaseTemp);
+			}
 		}
-		Double wdd=totalTemp/count;
-		return wdd;
+		Double dd=totalTemp/48;
+		return dd;
 	}
 	
 	public static void main (String args[]) {
