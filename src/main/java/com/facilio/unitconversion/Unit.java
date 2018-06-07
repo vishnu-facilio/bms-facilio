@@ -32,12 +32,12 @@ public enum Unit {
 	FEET(16,"Feet","ft",Metric.LENGTH,"si*3.280839895","this*0.3048"),
 	INCH(17,"Inch","in",Metric.LENGTH,"si*39.3700787402","this*0.0254"),
 	
-	HOUR(18,"Hour","h",Metric.TIME),
-	MIN(19,"Minute","m",Metric.TIME,"si*60","this/60"),
-	SEC(20,"Second","s",Metric.TIME,"si*60*60","this/(60*60)"),
-	DAY(21,"Day","D",Metric.TIME,"si/24","this*24"),
-	WEEK(22,"Week","W",Metric.TIME,"si/(24*7)","this*(24*7)"),
-	YEAR(24,"Year","Y",Metric.TIME,"si/(24*365)","this*(24*365)"),
+	HOUR(18,"Hour","h",Metric.DURATION),
+	MIN(19,"Minute","m",Metric.DURATION,"si*60","this/60"),
+	SEC(20,"Second","s",Metric.DURATION,"si*60*60","this/(60*60)"),
+	DAY(21,"Day","D",Metric.DURATION,"si/24","this*24"),
+	WEEK(22,"Week","W",Metric.DURATION,"si/(24*7)","this*(24*7)"),
+	YEAR(24,"Year","Y",Metric.DURATION,"si/(24*365)","this*(24*365)"),
 	
 	KILOGRAM(25,"Kilo Gram","kg",Metric.MASS),
 	HECTOGRAM(26,"Minute","hg",Metric.MASS,"si*10","this/10"),
