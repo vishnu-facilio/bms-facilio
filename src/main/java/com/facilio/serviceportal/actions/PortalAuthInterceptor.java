@@ -122,7 +122,7 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 				  String orgdomain = (String)customdomains.get(domainName);
 				  if(orgdomain!=null)
 				  {
-					  domainName = "https://"+orgdomain+"."+PORTALDOMAIN;
+					  domainName = orgdomain+"."+PORTALDOMAIN;
 				  }
 					logger.info("Found a valid domain for custom domain for "+ domainName);
 
