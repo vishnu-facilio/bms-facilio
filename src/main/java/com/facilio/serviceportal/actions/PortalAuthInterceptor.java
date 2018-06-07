@@ -1,6 +1,7 @@
 package com.facilio.serviceportal.actions;
 
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -18,7 +19,9 @@ import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 
+
 public class PortalAuthInterceptor extends AbstractInterceptor {
+	private static Logger logger = Logger.getLogger(PortalAuthInterceptor.class.getName());
 
 	private HashMap customdomains = null;
 	@Override
@@ -46,6 +49,7 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 			{
 			customdomains = (HashMap) context.getAttribute("customdomains");
 			}
+			logger.info("Custom domains loaded "+customdomains);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -94,7 +98,6 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
         HttpServletRequest request = ServletActionContext.getRequest();
 		CognitoUtil.CognitoUser cognitoUser = null;
 		Account currentAccount = null;
-		System.out.println("Getting portal auth info");
 		try {
 			AccountUtil.cleanCurrentAccount();
 			cognitoUser = AuthenticationUtil.getCognitoUser(request,true);
@@ -102,7 +105,8 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 				AccountUtil.setCurrentAccount(currentAccount);
 			} else {
 				String domainName = request.getHeader("Origin");
-				
+				logger.info("Getting portal auth info" +domainName);
+
 				System.out.println("Authenticating for "+ domainName);
 				if(domainName!=null) {
 				if (domainName.contains("http://")) {
@@ -113,12 +117,15 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 				}
 				if(customdomains!=null)
 				{
-					
+					logger.info("Matching...  "+ domainName );
+
 				  String orgdomain = (String)customdomains.get(domainName);
 				  if(orgdomain!=null)
 				  {
 					  domainName = "https://"+orgdomain+"."+PORTALDOMAIN;
 				  }
+					logger.info("Found a valid domain for custom domain for "+ domainName);
+
 				}
 				if(domainName != null) {
 					
