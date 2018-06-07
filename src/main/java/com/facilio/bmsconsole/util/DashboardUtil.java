@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalDouble;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -34,6 +35,7 @@ import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.FormulaContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
+import com.facilio.bmsconsole.context.FormulaContext.NumberAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext.ResourceType;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
@@ -76,6 +78,8 @@ import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowFieldContext;
 import com.facilio.workflows.util.WorkflowUtil;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 
 public class DashboardUtil {
 	
@@ -1699,6 +1703,128 @@ public class DashboardUtil {
 		}
 		
 		return result;
+	}
+	
+	
+	public static JSONArray consolidateResult(List<JSONArray> reportDatas,int xAxisAggr,int yAxisAggr) {
+		
+		List<JSONObject> reportDatasNew = new ArrayList<>();
+		
+		Map<String,Long> labelMap = new HashMap<>();
+		
+		for(JSONArray reportData :reportDatas) {
+			
+			JSONObject reportDataNew = new JSONObject();
+			
+			for(Object resultObject : reportData) {
+				
+				JSONObject result = (JSONObject) resultObject;
+				
+				long labelLong = (long) result.get("label");
+				String labelString = covertLabelLongToString(labelLong,AggregateOperator.getAggregateOperator(xAxisAggr));
+				
+				reportDataNew.put(labelString, result.get("value"));
+			}
+			reportDatasNew.add(reportDataNew);
+		}
+		
+		JSONObject reportData = reportDatasNew.get(0);
+		Multimap<String, Double> resultMap = ArrayListMultimap.create();
+		
+		for(Object resultLabel : reportData.keySet()) {
+			
+			resultMap.put((String) resultLabel, (Double) reportData.get(resultLabel));
+			
+			for(int i=1;i<reportDatas.size();i++) {
+				JSONObject reportData1 = reportDatasNew.get(i);
+				resultMap.put((String) resultLabel, (Double) reportData1.get(resultLabel));
+			}
+		}
+		
+		JSONArray finalRes = new JSONArray();
+		for(String StringLabel :resultMap.keys()) {
+			double aggr = performAggregation((List<Double>) resultMap.get(StringLabel),AggregateOperator.getAggregateOperator(yAxisAggr));
+			JSONObject result = new JSONObject();
+			result.put("label", labelMap.get(StringLabel));
+			result.put("value", aggr);
+			
+			finalRes.add(result);
+		}
+		
+		return finalRes;
+	}
+	
+	public static double performAggregation(List<Double> values, AggregateOperator yAggrOpr) {
+		
+		NumberAggregateOperator xAxisAggr1 = (NumberAggregateOperator) yAggrOpr;
+		
+		switch(xAxisAggr1) {
+		case SUM: {
+			return values.stream().mapToDouble(Double::doubleValue).sum();
+		}
+		case AVERAGE: {
+			OptionalDouble optionalDouble = values.stream().mapToDouble(Double::doubleValue).average();
+			double value = optionalDouble.orElse(0);
+			return value;
+		}
+		case COUNT: {
+			return values.size();
+			
+		}
+		case MIN: {
+			OptionalDouble optionalDouble = values.stream().mapToDouble(Double::doubleValue).min();
+			double value = optionalDouble.orElse(0);
+			return value;
+		}
+		case MAX: {
+			OptionalDouble optionalDouble = values.stream().mapToDouble(Double::doubleValue).max();
+			double value = optionalDouble.orElse(0);
+			return value;
+		}
+		}
+		return 0;
+	}
+	
+	public static String covertLabelLongToString(long labelLong,AggregateOperator xAxisAggr) {
+		DateAggregateOperator xAxisAggr1 = (DateAggregateOperator) xAxisAggr;
+		ZonedDateTime zonedDateTime = DateTimeUtil.getZonedDateTime(labelLong);
+		switch(xAxisAggr1) {
+		
+		case HOURSOFDAY: {
+			return zonedDateTime.getHour()+"";
+		}
+		case HOURSOFDAYONLY: {
+			return zonedDateTime.getYear()+" "+zonedDateTime.getMonth().getValue()+" "+zonedDateTime.getDayOfMonth()+" "+zonedDateTime.getHour();
+		}
+		case DAYSOFMONTH: {
+			return zonedDateTime.getDayOfMonth()+"";
+		}
+		case WEEKDAY: {
+			return zonedDateTime.getDayOfWeek().getValue()+"";
+		}
+		case WEEK: {
+			break;
+		}
+		case MONTH: {
+			return zonedDateTime.getMonth().getValue()+"";
+		}
+		case DATEANDTIME: {
+			return zonedDateTime.getYear()+" "+zonedDateTime.getMonth().getValue()+" "+zonedDateTime.getDayOfMonth()+" "+zonedDateTime.getHour() +":"+zonedDateTime.getMinute();
+		}
+		case FULLDATE: {
+			return zonedDateTime.getYear()+" "+zonedDateTime.getMonth().getValue()+" "+zonedDateTime.getDayOfMonth();
+		}
+		case WEEKANDYEAR: {
+			break;
+		}
+		case MONTHANDYEAR: {
+			return zonedDateTime.getYear()+" "+zonedDateTime.getMonth().getValue();
+		}
+		case YEAR: {
+			return zonedDateTime.getYear()+"";
+		}
+		}
+		return null;
 	}
 	
 	public static boolean populateBuildingEnergyReports(long buildingId, String buildingName) throws Exception {

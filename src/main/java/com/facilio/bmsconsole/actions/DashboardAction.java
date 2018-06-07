@@ -708,9 +708,33 @@ public class DashboardAction extends ActionSupport {
 		this.reportModule = reportModule;
 	}
 	
+	JSONObject consolidateDataPoints;
+	
+	public JSONObject getConsolidateDataPoints() {
+		return consolidateDataPoints;
+	}
+	public void setConsolidateDataPoints(JSONObject consolidateDataPoints) {
+		this.consolidateDataPoints = consolidateDataPoints;
+	}
 	public String getReadingReportData() throws Exception {
 		if (derivation != null) {
 			return getDerivationData();
+		}
+		
+		if(consolidateDataPoints != null) {
+			List<JSONArray> reportDatas = new ArrayList<>();
+			for(Object parentId : consolidateDataPoints.keySet()) {
+				readingFieldId = (long) consolidateDataPoints.get(parentId);
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioField readingField = modBean.getFieldFromDB(readingFieldId);
+				reportModule = readingField.getModule();
+				reportContext = constructReportObjectForReadingReport(readingField.getModule(), readingField,(Long) parentId);
+				reportData = getDataForReadings(reportContext, readingField.getModule(), dateFilter, null, baseLineId, -1);
+				reportDatas.add(reportData);
+			}
+			
+			reportData = DashboardUtil.consolidateResult(reportDatas, xAggr, yAggr);
+			return SUCCESS;
 		}
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -720,7 +744,7 @@ public class DashboardAction extends ActionSupport {
 		this.entityName = parentName + " ("+readingField.getDisplayName()+")";
 		
 		FacilioModule module = readingField.getModule();
-		reportContext = constructReportObjectForReadingReport(module, readingField);
+		reportContext = constructReportObjectForReadingReport(module, readingField,parentId);
 		reportModule = module;
 		reportData = getDataForReadings(reportContext, module, dateFilter, null, baseLineId, -1);
 		return SUCCESS;
@@ -755,7 +779,7 @@ public class DashboardAction extends ActionSupport {
 		FacilioModule module = modBean.getModule("energydata");
 		FacilioField readingField = new FacilioField();
 		readingField.setName(derivation.getName());
-		reportContext = constructReportObjectForReadingReport(module, readingField);
+		reportContext = constructReportObjectForReadingReport(module, readingField,parentId);
 		setEntityName(derivation.getName());
 		
 		return SUCCESS;
@@ -765,7 +789,7 @@ public class DashboardAction extends ActionSupport {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioField readingField = modBean.getFieldFromDB(readingFieldId);
 		FacilioModule module = readingField.getModule();
-		ReportContext readingReport = constructReportObjectForReadingReport(module, readingField);
+		ReportContext readingReport = constructReportObjectForReadingReport(module, readingField,parentId);
 		this.reportContext = readingReport;
 		return addReport();
 	}
@@ -900,7 +924,7 @@ public class DashboardAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	private ReportContext constructReportObjectForReadingReport(FacilioModule module, FacilioField readingField) throws Exception {
+	private ReportContext constructReportObjectForReadingReport(FacilioModule module, FacilioField readingField,Long parentid) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		LOGGER.log(Level.SEVERE,"module.getName() -- "+module.getName());
 		ReportContext readingReport = new ReportContext();
@@ -950,7 +974,7 @@ public class DashboardAction extends ActionSupport {
 			readingReport.setY1AxisaggregateFunction(yAggr);
 		}
 		Criteria criteria = new Criteria();
-		criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("parentId", module.getName()), String.valueOf(parentId), PickListOperators.IS));
+		criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("parentId", module.getName()), String.valueOf(parentid), PickListOperators.IS));
 		readingReport.setCriteria(criteria);
 		
 		ReportDateFilterContext dateFilter = new ReportDateFilterContext();
