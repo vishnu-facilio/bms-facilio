@@ -41,7 +41,7 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 				RequestUtil.MOBILE_HOSTNAME= (String) context.getInitParameter("M_DOMAINNAME");
 			}
 			
-			System.out.println("PortalAuthInterceptor loaded"+RequestUtil.HOSTNAME);
+			//System.out.println("PortalAuthInterceptor loaded"+RequestUtil.HOSTNAME);
 			if(customdomains==null)
 			{
 			customdomains = (HashMap) context.getAttribute("customdomains");
@@ -55,7 +55,7 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 	
 	@Override
 	public String intercept(ActionInvocation arg0) throws Exception {
-		System.out.println("This is the interceptopr for service portal" );
+		//System.out.println("This is the interceptopr for service portal" );
 		initHost();
 		
 		
@@ -64,19 +64,19 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 		try {
 
 			String actionname = ActionContext.getContext().getName();
-			System.out.println("inside if"+actionname);
+		//	System.out.println("inside if"+actionname);
 
 			boolean bypassauth = actionname.equals("login") || actionname.equals("samllogin");
 			intercept0();
 			boolean validsession =false;
 			if(bypassauth || validsession) {
-				System.out.println("inside if");
+			//	System.out.println("inside if");
 				String result = arg0.invoke();
 				return result;
 			} else {
 				
 				// redirect to login page..
-				System.out.println("inside else");
+			//	System.out.println("inside else");
 				String result = arg0.invoke();
 				return result;
 			}
@@ -96,17 +96,24 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 		Account currentAccount = null;
 		System.out.println("Getting portal auth info");
 		try {
+			AccountUtil.cleanCurrentAccount();
 			cognitoUser = AuthenticationUtil.getCognitoUser(request,true);
 			if (AuthenticationUtil.checkIfSameUser(currentAccount, cognitoUser)) {
-				AccountUtil.cleanCurrentAccount();
 				AccountUtil.setCurrentAccount(currentAccount);
 			} else {
 				String domainName = request.getHeader("Origin");
 				
 				System.out.println("Authenticating for "+ domainName);
-				
+				if(domainName!=null) {
+				if (domainName.contains("http://")) {
+					domainName = domainName.replace("http://", "");
+				} else if (domainName.contains("https://")) {
+					domainName = domainName.replace("https://", "");
+				}
+				}
 				if(customdomains!=null)
 				{
+					
 				  String orgdomain = (String)customdomains.get(domainName);
 				  if(orgdomain!=null)
 				  {
@@ -114,11 +121,7 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 				  }
 				}
 				if(domainName != null) {
-					if (domainName.contains("http://")) {
-						domainName = domainName.replace("http://", "");
-					} else if (domainName.contains("https://")) {
-						domainName = domainName.replace("https://", "");
-					}
+					
 					
 					String[] domainArray = domainName.split("\\.");
 					if (domainArray.length > 2) {
@@ -142,7 +145,6 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 								user = AccountUtil.getUserBean().getPortalUser(cognitoUser.getEmail(), portalId);
 							}
 							currentAccount = new Account(org, user);
-							AccountUtil.cleanCurrentAccount();
 							AccountUtil.setCurrentAccount(currentAccount);
 						}
 					}
