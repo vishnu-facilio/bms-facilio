@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.workflows.context.WorkflowContext;
 
 public class DerivationContext {
@@ -78,6 +79,14 @@ public class DerivationContext {
 	}
 	public void setFormulaField(FormulaFieldContext formulaField) {
 		this.formulaField = formulaField;
+	}
+	
+	private DateRange dateRange;
+	public DateRange getDateRange() {
+		return dateRange;
+	}
+	public void setDateRange(DateRange dateRange) {
+		this.dateRange = dateRange;
 	}
 
 	public static enum AnalyticsType {

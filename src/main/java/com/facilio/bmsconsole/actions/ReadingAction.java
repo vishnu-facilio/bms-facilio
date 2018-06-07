@@ -544,6 +544,10 @@ public class ReadingAction extends ActionSupport {
 	public String addFormulaField() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.FORMULA_FIELD, formula);
+		if (formula.getInterval() == -1) {
+			int interval = ReadingsAPI.getDataInterval(formula.getWorkflow());
+			formula.setInterval(interval);
+		}
 		
 		Chain addEnpiChain = FacilioChainFactory.addFormulaFieldChain();
 		addEnpiChain.execute(context);

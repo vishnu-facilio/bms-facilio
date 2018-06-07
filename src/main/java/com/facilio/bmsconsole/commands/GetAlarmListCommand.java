@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
@@ -11,6 +12,7 @@ import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -24,7 +26,18 @@ public class GetAlarmListCommand implements Command {
 		// TODO Auto-generated method stub
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
-		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+		String count = (String) context.get(FacilioConstants.ContextNames.COUNT);
+		List<FacilioField> fields = null;
+		if (count != null) {
+			FacilioField countFld = new FacilioField();
+			countFld.setName("count");
+			countFld.setColumnName("COUNT(Alarms.ID)");
+			countFld.setDataType(FieldType.NUMBER);
+			fields = Collections.singletonList(countFld);
+		}
+		else {
+			fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+		}
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 
 		SelectRecordsBuilder<AlarmContext> builder = new SelectRecordsBuilder<AlarmContext>()
@@ -94,7 +107,15 @@ public class GetAlarmListCommand implements Command {
 		List<AlarmContext> alarms = builder.get();
 		AlarmAPI.loadExtendedAlarms(alarms);
 		TicketAPI.loadTicketLookups(alarms);
-		context.put(FacilioConstants.ContextNames.ALARM_LIST, alarms);
+		if (count != null) {
+			for (AlarmContext alarm : alarms)
+			{
+				context.put(FacilioConstants.ContextNames.COUNT, alarm.getData().get("count"));
+			}
+		}
+		else {
+			context.put(FacilioConstants.ContextNames.ALARM_LIST, alarms);
+		}		
 
 		return false;
 	}

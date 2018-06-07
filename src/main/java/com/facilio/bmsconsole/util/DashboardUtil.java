@@ -2143,6 +2143,7 @@ public class DashboardUtil {
 			context.put(FacilioConstants.ContextNames.FORMULA_FIELD, formulaField);
 			context.put(FacilioConstants.ContextNames.READING_DATA_META_TYPE, ReadingInputType.HIDDEN_FORMULA_FIELD);
 			context.put(FacilioConstants.ContextNames.DERIVATION, derivation);
+			context.put(FacilioConstants.ContextNames.DATE_RANGE, derivation.getDateRange());
 			
 			Chain addFormulaFieldChain = FacilioChainFactory.addDerivationFormulaChain();
 			addFormulaFieldChain.execute(context);

@@ -589,7 +589,7 @@
 			<param name="permission">READ,READ_OWN,READ_TEAM</param>
 			<param name="viewName">{1}</param>
 			<result name="success" type="json">
-				<param name="includeProperties">alarms,alarms\[\d+\],alarms\[\d+\].*</param>
+				<param name="includeProperties">count,alarms,alarms\[\d+\],alarms\[\d+\].*</param>
 			</result>
 		</action>
 	</package>
@@ -3977,6 +3977,11 @@
 		<action name="updateDerivation" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDerivation">
 			<result name="success" type="json">
 				<param name="includeProperties">^derivation.*</param>
+			</result>
+		</action>
+		<action name="deleteDerivation" class="com.facilio.bmsconsole.actions.DashboardAction" method="deleteDerivation">
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
 		<action name="derivationList" class="com.facilio.bmsconsole.actions.DashboardAction" method="derivationList">

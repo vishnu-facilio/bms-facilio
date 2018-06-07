@@ -260,7 +260,7 @@ public class WorkflowUtil {
 					if(expression.getCriteria() != null) {
 						Map<Integer, Condition> conditions = expression.getCriteria().getConditions();
 						for(Condition condition :conditions.values()) {
-							if(condition.getFieldName().equals("parentId")) {
+							if(condition.getFieldName().equals("parentId") && !condition.getValue().equals("${resourceId}")) {
 								parentId = Long.parseLong(condition.getValue());
 							}
 						}

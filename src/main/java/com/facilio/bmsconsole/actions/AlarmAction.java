@@ -119,7 +119,22 @@ public class AlarmAction extends ActionSupport {
 	public void setRowsUpdated(int rowsUpdated) {
 		this.rowsUpdated = rowsUpdated;
 	}
+	private String isCount;
 	
+	
+	public String getIsCount() {
+		return isCount;
+	}
+	public void setIsCount(String isCount) {
+		this.isCount = isCount;
+	}
+	private long count ;
+	public long getCount() {
+		return count;
+	}
+	public void setCount(long count) {
+		this.count = count;
+	}
 	private FacilioContext constructChainContext() throws Exception {
 		FacilioContext context = new FacilioContext();
  		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
@@ -137,7 +152,9 @@ public class AlarmAction extends ActionSupport {
 	 		context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
  		}
  		context.put(FacilioConstants.ContextNames.CRITERIA_IDS, getCriteriaIds());
- 		
+ 		if (getIsCount() != null) {
+ 			context.put(FacilioConstants.ContextNames.COUNT, getIsCount());
+ 		}
  		JSONObject sorting = new JSONObject();
  		if (getOrderBy() != null) {
  			sorting.put("orderBy", getOrderBy());
@@ -167,7 +184,13 @@ public class AlarmAction extends ActionSupport {
 		alarmListChain.execute(context);
  		
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
-		setAlarms((List<AlarmContext>) context.get(FacilioConstants.ContextNames.ALARM_LIST));
+		if (getIsCount() != null) {
+			setCount((long) context.get(FacilioConstants.ContextNames.COUNT));
+			System.out.println("data" + getCount());
+		}
+		else {
+			setAlarms((List<AlarmContext>) context.get(FacilioConstants.ContextNames.ALARM_LIST));
+		}
 		
 		FacilioView cv = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		if(cv != null) {

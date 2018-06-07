@@ -3643,6 +3643,7 @@ public class FieldFactory {
 		fields.add(getOrgIdField(module));
 		fields.add(getField("name", "NAME", module, FieldType.STRING));
 		fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.NUMBER));
+		fields.add(getField("formulaId", "FORMULA_FIELD_ID", module, FieldType.NUMBER));
 		fields.add(getField("analyticsType", "ANALYTICS_TYPE", module, FieldType.NUMBER));
 		
 		return fields;
