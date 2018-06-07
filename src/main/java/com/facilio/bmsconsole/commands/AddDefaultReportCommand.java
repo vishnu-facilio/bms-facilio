@@ -3,14 +3,17 @@ package com.facilio.bmsconsole.commands;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.SQLScriptRunner;
@@ -50,6 +53,35 @@ public class AddDefaultReportCommand implements Command {
 				for(FacilioField field:fields) {
 					paramValues.put(module.getName()+"_"+field.getName(), String.valueOf(field.getId()));
 				}
+			}
+			
+			module = modBean.getModule(ContextNames.ENERGY_DATA_READING);
+			paramValues.put("energyDataModuleId", String.valueOf(module.getModuleId()));
+			
+			fields = modBean.getAllFields(module.getName());
+			if(fields != null) {
+				for(FacilioField field:fields) {
+					paramValues.put(module.getName()+"_"+field.getName(), String.valueOf(field.getId()));
+				}
+			}
+			
+			module = modBean.getModule(ContextNames.ENERGY_METER);
+			paramValues.put("energyMeterModuleId", String.valueOf(module.getModuleId()));
+			
+			fields = modBean.getAllFields(module.getName());
+			if(fields != null) {
+				for(FacilioField field:fields) {
+					paramValues.put(module.getName()+"_"+field.getName(), String.valueOf(field.getId()));
+				}
+			}
+			
+			List<BaseLineContext> baselines = BaseLineAPI.getAllBaseLines();
+			
+			for(BaseLineContext baseline : baselines) {
+				
+				String name = baseline.getName();
+				name = name.replaceAll("\\s","");
+				paramValues.put("baseline_"+name, String.valueOf(baseline.getId()));
 			}
 			
 			System.out.println(paramValues);
