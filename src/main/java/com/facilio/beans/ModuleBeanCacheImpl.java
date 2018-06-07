@@ -262,15 +262,17 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 	public int updateField(FacilioField field) throws Exception {
 		// TODO Auto-generated method stub
 		int rows = super.updateField(field);
-//		if (rows > 0) {
-//			FacilioField newField = super.getField(field.getId());
-//			
-//			LRUCache cache = 	LRUCache.getModuleFieldsCache();
-//			cache.remove(CacheUtil.FIELDS_KEY(getOrgId(), newField.getModule().getName()));
-//			
-//			cache = LRUCache.getFieldsCache();
-//			cache.remove(CacheUtil.FIELD_KEY(getOrgId(), newField.getFieldId()));
-//		}
+		if (rows > 0) {
+			FacilioField newField = super.getField(field.getId());
+			
+			LRUCache cache = 	LRUCache.getModuleFieldsCache();
+			cache.remove(CacheUtil.FIELDS_KEY(getOrgId(), newField.getModule().getName()));
+			
+			cache = LRUCache.getFieldsCache();
+			cache.remove(CacheUtil.FIELD_KEY(getOrgId(), newField.getFieldId()));
+		
+		 // CacheUtil.remove(CacheUtil.PRIMARY_FIELD_KEY(getOrgId(), moduleName));
+		}
 		return rows;
 	}
 	
