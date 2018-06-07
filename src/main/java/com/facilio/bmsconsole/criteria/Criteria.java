@@ -242,6 +242,9 @@ public class Criteria extends ExpressionEvaluator<Predicate> {
 	}
 	
 	private void appendCriteria(Criteria newCriteria, String operator) {
+		if (newCriteria == null) {
+			return;
+		}
 		Map<Integer, Condition> newConditions = newCriteria.getConditions();
 		String newPattern = newCriteria.getPattern();
 		int sequence = 1;
