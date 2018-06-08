@@ -1091,7 +1091,7 @@ public class DashboardAction extends ActionSupport {
 			else {
 				column.setData(getDataForReadings(column.getReport(), module, dateFilter, null, column.getBaseLineId(), -1));
 			}
-			LOGGER.severe(column.getReportId()+"  ----  "+column.getData());
+			//LOGGER.info(column.getReportId()+"  ----  "+column.getData());
 		}
 		Multimap<Integer, Object> resultMap = ArrayListMultimap.create();
 		Map<Integer,Long> dateMap = new HashMap<>();
@@ -1115,7 +1115,7 @@ public class DashboardAction extends ActionSupport {
 		}
 		List<Integer> keys = new ArrayList<>(dateMap.keySet());
 		Collections.sort(keys);
-		LOGGER.severe("keys --- "+ keys);
+		//LOGGER.info("keys --- "+ keys);
 		 for(Integer key:keys){
 			 Collection<Object> d = resultMap.get(key);
 			 JSONArray data = new JSONArray();
@@ -1129,7 +1129,7 @@ public class DashboardAction extends ActionSupport {
 				dataJsonArray.add(data);
 		 }
 
-		 LOGGER.severe("datas --- "+dataJsonArray);
+		//LOGGER.info("datas --- "+dataJsonArray);
 		
 		reportData = dataJsonArray;
 		
