@@ -16,7 +16,7 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "pre_production" ]; then
     sed -i -e 's/localhost:9090/app.facilio.in/g' $CONF_DIR/awsprops.properties
     sed -i -e 's/localhost:8080/facilio.in/g' $CONF_DIR/awsprops.properties
     sed -i'' "s%environment=.*%environment=stage%g" $CONF_DIR/awsprops.properties
-    sed -i'' "s%kinesisServer=.*%kinesisServer=false%g" $CONF_DIR/awsprops.properties
+    sed -i'' "s%kinesisServer=.*%kinesisServer=true%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%schedulerServer=.*%schedulerServer=true%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%enable.transaction=.*%enable.transaction=true%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%enable.kinesis=.*%enable.kinesis=true%g" $CONF_DIR/awsprops.properties
