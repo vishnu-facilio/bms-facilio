@@ -48,7 +48,8 @@ public class EventProcessor implements IRecordProcessor {
     @Override
     public void processRecords(ProcessRecordsInput processRecordsInput) {
         try {
-            List<EventRuleContext> ruleList = EventRulesAPI.getActiveEventRules();
+            ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+            List<EventRuleContext> ruleList = bean.getActiveEventRules();
             if(ruleList != null){
                 eventRules = ruleList;
             }

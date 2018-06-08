@@ -50,6 +50,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.util.EventAPI;
+import com.facilio.events.util.EventRulesAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -535,6 +536,11 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	public long processEvents(long timeStamp, JSONObject payLoad, List<EventRuleContext> eventRules,
 			Map<String, Integer> eventCountMap, long lastEventTime) throws Exception {
 		return EventAPI.processEvents(timeStamp, payLoad, eventRules, eventCountMap, lastEventTime);
+	}
+
+	@Override
+	public List<EventRuleContext> getActiveEventRules() throws Exception {
+		return EventRulesAPI.getActiveEventRules();
 	}
 
 }
