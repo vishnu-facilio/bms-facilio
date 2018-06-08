@@ -1676,6 +1676,13 @@ public class FieldFactory {
 		isHidden.setModule(module);
 		fields.add(isHidden);
 		
+		FacilioField moduleName = new FacilioField();
+		moduleName.setName("moduleName");
+		moduleName.setDataType(FieldType.STRING);
+		moduleName.setColumnName("MODULENAME");
+		moduleName.setModule(module);
+		fields.add(moduleName);
+		
 		return fields;
 
 	}

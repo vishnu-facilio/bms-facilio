@@ -11,12 +11,16 @@ import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 
 public class ColumnFactory {
 	
 	private static Map<String, List<ViewField>> columns = Collections.unmodifiableMap(initColumns());
 	public static List<ViewField> getColumns (String moduleName, String viewName) {
 		String name = moduleName + "-" +viewName;
+		if (LookupSpecialTypeUtil.isSpecialType(moduleName)) {
+			name = moduleName;
+		}
 		if (columns.containsKey(name)) {
 			return new ArrayList(columns.get(name));
 		}
@@ -61,6 +65,9 @@ public class ColumnFactory {
 		columnMap.put("workorder-report", getWorkOrderReportColumns());
 		columnMap.put("alarm-report", getAlarmReportColumns());
 		columnMap.put("energydata-report", getDefaultEnergyColumns());
+		
+		// Special types
+		//columnMap.put("preventivemaintenance", )
 		
 		return columnMap;
 	}
@@ -119,6 +126,10 @@ public class ColumnFactory {
 		columns.add(new ViewField("noOfTasks", "Tasks"));
 		
 		return columns;
+	}
+	
+	private static List<ViewField> getDefaultPMViewColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
 	}
 	
 	private static List<ViewField> getMyWorkorderColumns() {

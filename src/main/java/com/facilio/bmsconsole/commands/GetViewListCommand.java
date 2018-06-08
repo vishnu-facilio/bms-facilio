@@ -12,6 +12,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.ViewFactory;
@@ -31,7 +32,13 @@ public class GetViewListCommand implements Command {
 				viewMap.remove(entry.getKey());
 			}
 		}
-		List<FacilioView> dbViews = ViewAPI.getAllViews(moduleObj.getModuleId(), AccountUtil.getCurrentOrg().getOrgId());
+		List<FacilioView> dbViews;
+		if (LookupSpecialTypeUtil.isSpecialType(moduleName)) {
+			dbViews = ViewAPI.getAllViews(moduleName, AccountUtil.getCurrentOrg().getOrgId());
+		} else {
+			dbViews = ViewAPI.getAllViews(moduleObj.getModuleId(), AccountUtil.getCurrentOrg().getOrgId());
+		}
+		
 		for(FacilioView view: dbViews) {
 			viewMap.put(view.getName(), view);
 		}

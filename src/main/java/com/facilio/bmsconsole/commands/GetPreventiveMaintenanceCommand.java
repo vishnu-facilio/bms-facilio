@@ -32,7 +32,9 @@ public class GetPreventiveMaintenanceCommand implements Command {
 		}
 		if (( filters == null || includeParentCriteria) && view != null) {
 			Criteria viewCriteria = view.getCriteria();
-			criteria.andCriteria(viewCriteria);
+			if (viewCriteria != null) {
+				criteria.andCriteria(viewCriteria);
+			}
 		}
 		String query = null;
 		if (( serachQuery != null)) {

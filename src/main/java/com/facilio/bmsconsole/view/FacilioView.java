@@ -70,6 +70,15 @@ public class FacilioView {
 		this.moduleId = moduleId;
 	}
 	
+	private String moduleName = "";
+	public String getModuleName() {
+		return moduleName;
+	}
+	
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
+	
 	private long criteriaId = -1;
 	public long getCriteriaId() {
 		return criteriaId;

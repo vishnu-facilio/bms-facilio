@@ -10,6 +10,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ViewSharingContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.ColumnFactory;
 import com.facilio.bmsconsole.view.FacilioView;
@@ -34,7 +35,9 @@ public class AddCVCommand implements Command {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule moduleObj = modBean.getModule(moduleName);
-			
+			if (LookupSpecialTypeUtil.isSpecialType(moduleName)) {
+				view.setModuleName(moduleName);
+			} 
 			view.setModuleId(moduleObj.getModuleId());
 			if(view.getName() == null)
 			{
