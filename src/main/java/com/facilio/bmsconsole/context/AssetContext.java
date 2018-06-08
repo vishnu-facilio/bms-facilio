@@ -165,6 +165,21 @@ public class AssetContext extends ResourceContext {
 		this.localId = localId;
 	}
 	
+	private Boolean hideToCustomer;
+	public Boolean getHideToCustomer() {
+		return hideToCustomer;
+	}
+	public void setHideToCustomer(Boolean hideToCustomer) {
+		this.hideToCustomer = hideToCustomer;
+	}
+	public Boolean isHideToCustomer() {
+		if(hideToCustomer != null) {
+			return hideToCustomer.booleanValue();
+		}
+		return false;
+	}
+
+	
 	@Override
 	public ResourceType getResourceTypeEnum() {
 		return ResourceType.ASSET;

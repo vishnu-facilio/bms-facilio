@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Chain;
@@ -162,14 +163,32 @@ public class ReadingsAPI {
 	}
 	
 	public static List<ReadingDataMeta> getReadingDataMetaList(Long resourceId, Collection<FacilioField> fieldList) throws Exception {
+		return getReadingDataMetaList(resourceId, fieldList, false);
+	}
+	
+	public static List<ReadingDataMeta> getReadingDataMetaList(Long resourceId, Collection<FacilioField> fieldList, boolean excludeEmptyFields, ReadingInputType...readingTypes) throws Exception {
 		Map<Long, FacilioField> fieldMap = FieldFactory.getAsIdMap(fieldList);
 		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
+		List<FacilioField> redingFields = FieldFactory.getReadingDataMetaFields();
+		Map<String, FacilioField> readingFieldsMap = FieldFactory.getAsMap(redingFields);
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getReadingDataMetaFields())
 				.table(module.getTableName())
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resourceId", String.valueOf(resourceId), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("FIELD_ID", "fieldId", StringUtils.join(fieldMap.keySet(), ","), NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("resourceId"), String.valueOf(resourceId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("fieldId"), StringUtils.join(fieldMap.keySet(), ","), NumberOperators.EQUALS));
+		
+		if (excludeEmptyFields) {
+			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), "-1", StringOperators.ISN_T));
+		}
+		
+		if (readingTypes != null && readingTypes.length > 0) {
+			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("inputType"), getReadingTypes(readingTypes), PickListOperators.IS));
+		}
+		else {
+			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("inputType"),String.valueOf(ReadingInputType.HIDDEN_FORMULA_FIELD.getValue()), PickListOperators.ISN_T));
+		}
+		
 		List<Map<String, Object>> stats = builder.get();	
 		return getReadingDataFromProps(stats, fieldMap);
 	}
@@ -188,6 +207,14 @@ public class ReadingsAPI {
 			return metaList;
 		}
 		return null;
+	}
+	
+	private static String getReadingTypes(ReadingInputType... types) {
+		StringJoiner joiner = new StringJoiner(",");
+		for (ReadingInputType type : types) {
+			joiner.add(String.valueOf(type.getValue()));
+		}
+		return joiner.toString();
 	}
 	
 	public static void loadReadingParent(Collection<ReadingContext> readings) throws Exception {
@@ -406,15 +433,14 @@ public class ReadingsAPI {
 	public static List<FacilioField> excludeDefaultAndEmptyReadingFields(List<FacilioField> fields,Long parentId) throws Exception {
 		List<Long> fieldsWithValues = null;
 		if (parentId != null && parentId > -1) {
-			List<ReadingDataMeta> readingMetaDatas = getReadingDataMetaList(parentId, fields);
+			List<ReadingDataMeta> readingMetaDatas = getReadingDataMetaList(parentId, fields, true);
 			if (readingMetaDatas != null) {
-				fieldsWithValues = readingMetaDatas.stream().filter(meta -> meta.getReadingDataId() != -1)
-						.map(meta -> meta.getFieldId()).collect(Collectors.toList());
+				fieldsWithValues = readingMetaDatas.stream().map(meta -> meta.getFieldId()).collect(Collectors.toList());
 			}
 		}
 		List<FacilioField> fieldsToReturn = new ArrayList<>();
 		for(FacilioField field: fields) {
-			if (!DEFAULT_READING_FIELDS.contains(field.getName()) && (fieldsWithValues == null || fieldsWithValues.contains(field.getId())) ) {
+			if (fieldsWithValues != null && fieldsWithValues.contains(field.getId()) && !DEFAULT_READING_FIELDS.contains(field.getName()) ) {
 				fieldsToReturn.add(field);
 			}
 		}

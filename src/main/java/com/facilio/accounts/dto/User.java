@@ -5,9 +5,11 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.BuildingOperator;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
@@ -296,6 +298,9 @@ public class User {
 
 			criteria = new Criteria();
 			criteria.addAndCondition(condition);
+			if (userType == 0) {
+				criteria.addAndCondition(CriteriaAPI.getCondition("hideToCustomer", "HIDE_TO_CUSTOMER", String.valueOf(false), BooleanOperators.IS));
+			}
 		}
 		if(moduleName.equals("site")) {
 			Condition condition = new Condition();
