@@ -470,8 +470,10 @@ public class UserBeanImpl implements UserBean {
 					.fields(AccountConstants.getOrgUserFields())
 					.andCustomWhere("ORG_USERID = ?", ouid);
 
-			deleteAccessibleSpace(user.getOuid());
-			addAccessibleSpace(user.getOuid(), user.getAccessibleSpace());
+			if(user.getAccessibleSpace() != null) {
+				deleteAccessibleSpace(user.getOuid());
+				addAccessibleSpace(user.getOuid(), user.getAccessibleSpace());
+			}
 
 			Map<String, Object> props = FieldUtil.getAsProperties(user);
 			

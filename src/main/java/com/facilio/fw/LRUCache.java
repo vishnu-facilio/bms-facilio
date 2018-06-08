@@ -278,6 +278,7 @@ System.out.println("Before "+testcache);
         	  
           }
           */
+          System.out.println("Key :"+key);
           cache.remove(key);
 
           currentSize--;

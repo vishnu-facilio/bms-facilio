@@ -3,6 +3,8 @@ package com.facilio.accounts.util;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.List;
+import java.util.Map;
 
 import com.facilio.accounts.bean.GroupBean;
 import com.facilio.accounts.bean.OrgBean;
@@ -11,10 +13,19 @@ import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
+import com.facilio.bmsconsole.context.PortalInfoContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
+import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class AccountUtil {
@@ -116,5 +127,24 @@ public class AccountUtil {
 	
 	public static boolean isFeatureEnabled(int featureId) throws Exception {
 		return (getFeatureLicense() & featureId) == featureId;
+	}
+	
+	public static PortalInfoContext getPortalInfo() throws Exception {
+		FacilioModule module = ModuleFactory.getServicePortalModule();
+		List<FacilioField> fields = FieldFactory.getServicePortalFields();
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+												.table(module.getTableName())
+												.select(fields)
+												.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+		
+		List<Map<String, Object>> portalInfoList = builder.get();
+		
+		if(portalInfoList != null && portalInfoList.size() > 0) {
+			Map<String, Object> props = portalInfoList.get(0);
+			PortalInfoContext protalInfo = FieldUtil.getAsBeanFromMap(props, PortalInfoContext.class);
+			return protalInfo;
+		}
+		return null;
 	}
 }

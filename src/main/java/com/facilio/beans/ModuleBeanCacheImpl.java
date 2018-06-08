@@ -264,7 +264,6 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 		int rows = super.updateField(field);
 		if (rows > 0) {
 			FacilioField newField = super.getField(field.getId());
-			
 			dropFieldFromCache(newField);
 		
 		 // CacheUtil.remove(CacheUtil.PRIMARY_FIELD_KEY(getOrgId(), moduleName));
@@ -274,8 +273,6 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 	
 	private void dropFieldFromCache(FacilioField newField )
 	{
-		
-		
 		LRUCache cache = 	LRUCache.getModuleFieldsCache();
 		cache.remove(CacheUtil.FIELDS_KEY(getOrgId(), newField.getModule().getName()));
 		
@@ -288,6 +285,5 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 		dropFieldFromCache(f);
 		return super.deleteField(fieldId);
 	}
-	
 	
 }
