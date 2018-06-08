@@ -99,6 +99,14 @@ public class ReadingContext extends ModuleBaseWithCustomFields {
 		this.parent = parent;
 	}
 	
+	private boolean newReading = false;
+	public boolean isNewReading() {
+		return newReading;
+	}
+	public void setNewReading(boolean newReading) {
+		this.newReading = newReading;
+	}
+	
 	@Override
 	public String toString() {
 

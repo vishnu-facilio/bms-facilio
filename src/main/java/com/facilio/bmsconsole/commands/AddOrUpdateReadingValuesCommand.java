@@ -94,9 +94,11 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 			
 			if (reading.getReadings() != null && !reading.getReadings().isEmpty()) {
 				if(reading.getId() == -1) {
+					reading.setNewReading(true);
 					readingsToBeAdded.add(reading);
 				}
 				else {
+					reading.setNewReading(false);
 					updateReading(module, fields, reading, metaMap, updateLastReading);
 				}
 			}
