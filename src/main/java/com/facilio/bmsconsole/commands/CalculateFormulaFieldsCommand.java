@@ -58,9 +58,7 @@ public class CalculateFormulaFieldsCommand implements Command {
 						Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(entry.getKey()));
 						if (readings != null && !readings.isEmpty()) {
 							for (ReadingContext reading : readings) {
-								if(reading.getId() == -1) {
-									calculateDependentFormulas(reading, formulaMap, completedFormulas, formulaFields, fieldMap);
-								}
+								calculateDependentFormulas(reading, formulaMap, completedFormulas, formulaFields, fieldMap);
 							}
 						}
 					}
@@ -82,7 +80,7 @@ public class CalculateFormulaFieldsCommand implements Command {
 		// TODO Auto-generated method stub
 		for (FormulaFieldContext formula : formulas) {
 			if (formula.getMatchedResources().contains(reading.getParentId())) {
-				if (reading.getId() == -1) {
+				if (reading.isNewReading()) {
 					calculateNewFormula(formula, reading, formulaMap, completedFormulas, fieldMap);
 				}
 				else {
