@@ -14,7 +14,6 @@ import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskSectionContext;
-import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -22,7 +21,6 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
-import com.twilio.sdk.resource.taskrouter.v1.workspace.Task;
 
 public class TaskAction extends ActionSupport {
 	

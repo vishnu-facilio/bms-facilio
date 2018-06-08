@@ -17,7 +17,6 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
-import com.facilio.events.util.EventAPI;
 import com.facilio.fw.BeanFactory;
 
 public class ModeledDataCommand implements Command {

@@ -1,14 +1,10 @@
 package com.facilio.unitconversion;
 
-import java.awt.List;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 
 public enum Unit {
 	

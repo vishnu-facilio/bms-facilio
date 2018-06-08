@@ -8,7 +8,6 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.view.FacilioView;
-import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
 
 public class GenerateSortingQueryCommand implements Command {

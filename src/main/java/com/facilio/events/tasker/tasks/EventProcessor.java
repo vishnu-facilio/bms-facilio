@@ -18,8 +18,6 @@ import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.events.context.EventRuleContext;
-import com.facilio.events.util.EventAPI;
-import com.facilio.events.util.EventRulesAPI;
 import com.facilio.fw.BeanFactory;
 
 public class EventProcessor implements IRecordProcessor {

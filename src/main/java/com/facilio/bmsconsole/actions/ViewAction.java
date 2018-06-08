@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.actions;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
+import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -14,7 +15,6 @@ import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.opensymphony.xwork2.ActionSupport;
-import org.json.simple.JSONObject;
 
 public class ViewAction extends ActionSupport {
 	
