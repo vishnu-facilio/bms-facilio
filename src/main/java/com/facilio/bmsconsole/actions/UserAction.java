@@ -228,6 +228,7 @@ public class UserAction extends ActionSupport {
 	}
 	
 	public String updateMyProfile() throws Exception{
+		System.out.println("!@@!@!@!!!!!!!!!!! user"+user);
 		boolean status = AccountUtil.getUserBean().updateUser(AccountUtil.getCurrentUser().getId(), user);
 		
 		return SUCCESS;

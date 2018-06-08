@@ -61,7 +61,7 @@ public class PortalInfoAction extends ActionSupport
 	{
 		System.out.println(">>>>>>>>> portalInfoMap : "+portalInfoMap);
 		FacilioContext context = new FacilioContext();
-		//portalInfoMap.put("signup_allowed",signup_allowed);
+		// portalInfoMap.put("signup_allowed",signup_allowed);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, "serviceportal");
 		context.put(FacilioConstants.ContextNames.PORTALINFO, portalInfoMap);
 		Chain updatePortalInfoChain = FacilioChainFactory.updatePortalInfoChain();

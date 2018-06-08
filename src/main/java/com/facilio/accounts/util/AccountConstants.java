@@ -993,7 +993,7 @@ public class AccountConstants {
 		fields.add(portalId);
 
 		FacilioField name = new FacilioField();
-		name.setName("name");
+		name.setName("username");
 		name.setDataType(FieldType.STRING);
 		name.setColumnName("username");
 		name.setModule(module);
