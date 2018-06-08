@@ -7,11 +7,14 @@ import java.util.stream.Collectors;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.DeleteRecordBuilder;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -21,6 +24,7 @@ import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 
 public class DeletePMAndDependenciesCommand implements Command{
@@ -111,16 +115,16 @@ public class DeletePMAndDependenciesCommand implements Command{
 	}
 	
 	private int deletePMs(List<Long> recordIds) throws Exception {
+		//Deleting via Delete Cascading
+		
 		int count = 0;
 		if(recordIds != null && !recordIds.isEmpty()) {
-			
-			FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
-			GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
-					.table("Preventive_Maintenance")
-					.andCondition(CriteriaAPI.getIdCondition(recordIds, module));
-			
-			count = builder.delete();
-
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+			DeleteRecordBuilder<ResourceContext> deleteBuilder = new DeleteRecordBuilder<ResourceContext>()
+																		.module(module)
+																		.andCondition(CriteriaAPI.getIdCondition(recordIds, module));
+			count = deleteBuilder.delete();
 		}
 		return count;
 	}
