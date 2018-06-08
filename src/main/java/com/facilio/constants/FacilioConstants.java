@@ -464,6 +464,7 @@ public class FacilioConstants {
 		public static final String SORT_FIELDS_OBJECT = "sortFieldsObject";
 		
 		public static final String EXCLUDE_EMPTY_FIELDS = "exludeEmptyFields";
+		public static final String WITH_READINGS = "withReadings";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {

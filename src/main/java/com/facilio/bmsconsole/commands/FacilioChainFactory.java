@@ -1173,6 +1173,19 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getAssetWithReadingsListChain() {
+		Chain c = new ChainBase();
+		c.addCommand(SetTableNamesCommand.getForAsset());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GetAllAssetsWithReadingsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getAssetDetailsChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForAsset());

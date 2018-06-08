@@ -732,6 +732,14 @@
 				<param name="includeProperties">reports.*,reportcards,reportcards\[\d+\],reportcards\[\d+\].*</param>
 			</result>
 		</action>
+		
+		<action name="withReadings" class="com.facilio.bmsconsole.actions.AssetAction" method="withReadings">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+			<result name="success" type="json">
+				<param name="includeProperties">assets,assets\[\d+\],assets\[\d+\].*</param>
+			</result>
+		</action>
 
 		<action name="*" class="com.facilio.bmsconsole.actions.AssetAction"
 			method="assetList">

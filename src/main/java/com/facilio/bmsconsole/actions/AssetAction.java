@@ -38,6 +38,40 @@ public class AssetAction extends ActionSupport {
 		return FormLayout.getNewAssetLayout(fields);
 	}
 	
+	private Boolean withReadings;
+	
+	
+	
+	public String withReadings() throws Exception {
+		FacilioContext context = new FacilioContext();
+ 		context.put(FacilioConstants.ContextNames.CV_NAME, "all");
+ 		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Assets.LOCAL_ID desc");
+ 		context.put(FacilioConstants.ContextNames.WITH_READINGS, this.getWithReadings());
+ 		if(getFilters() != null)
+ 		{	
+	 		JSONParser parser = new JSONParser();
+	 		JSONObject json = (JSONObject) parser.parse(getFilters());
+	 		context.put(FacilioConstants.ContextNames.FILTERS, json);
+ 		}
+ 		if (getSearch() != null) {
+ 			JSONObject searchObj = new JSONObject();
+ 			searchObj.put("fields", "asset.name");
+ 			searchObj.put("query", getSearch());
+	 		context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
+ 		}
+ 		
+ 		JSONObject pagination = new JSONObject();
+ 		pagination.put("page", getPage());
+ 		pagination.put("perPage", getPerPage());
+ 		context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+ 		
+ 		Chain assetList = FacilioChainFactory.getAssetWithReadingsListChain();
+ 		assetList.execute(context);
+ 		assets = (List<AssetContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+		
+		return SUCCESS;
+	}
+	
 	public String addAsset() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
@@ -237,5 +271,16 @@ public class AssetAction extends ActionSupport {
 	
 	public int getPerPage() {
 		return this.perPage;
+	}
+
+	public Boolean getWithReadings() {
+		if (withReadings == null) {
+			return false;
+		}
+		return withReadings;
+	}
+
+	public void setWithReadings(Boolean withReadings) {
+		this.withReadings = withReadings;
 	}
 }
