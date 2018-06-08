@@ -127,9 +127,7 @@ public class ViewFactory {
 		
 		order = 1;
 		views = new LinkedHashMap<>();
-		FacilioView preventiveView = getAllPreventiveWorkOrders().setOrder(order++);
-		views.put(preventiveView.getName(),preventiveView);
-		preventiveView = getStatusPreventiveWorkOrders("active", "Active", true).setOrder(order++);
+		FacilioView preventiveView = getStatusPreventiveWorkOrders("active", "Active", true).setOrder(order++);
 		views.put(preventiveView.getName(),preventiveView);
 		preventiveView = getTypePreventiveWorkOrders("preventive", "Preventive", "Preventive").setOrder(order++);
 		views.put(preventiveView.getName(),preventiveView);
@@ -140,6 +138,8 @@ public class ViewFactory {
 		preventiveView = getTypePreventiveWorkOrders("breakdown", "Breakdown", "Breakdown").setOrder(order++);
 		views.put(preventiveView.getName(),preventiveView);
 		preventiveView = getTypePreventiveWorkOrders("compliance", "Compliance", "Compliance").setOrder(order++);
+		views.put(preventiveView.getName(),preventiveView);
+		preventiveView = getAllPreventiveWorkOrders().setOrder(order++);
 		views.put(preventiveView.getName(),preventiveView);
 		preventiveView = getStatusPreventiveWorkOrders("inactive", "Inactive", false).setOrder(order++);
 		views.put(preventiveView.getName(),preventiveView);
