@@ -36,7 +36,7 @@ public class DeltaCalculationCommand implements Command {
 		if(metaMap==null || metaMap.isEmpty()) {
 			return false;
 		}
-		System.err.println( Thread.currentThread().getName()+"Inside DeltaCommand####### lastReadingMap "+metaMap);
+//		System.err.println( Thread.currentThread().getName()+"Inside DeltaCommand####### lastReadingMap "+metaMap);
 
 		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
 		
