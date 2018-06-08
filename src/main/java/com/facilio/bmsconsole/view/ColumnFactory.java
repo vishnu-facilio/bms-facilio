@@ -128,9 +128,7 @@ public class ColumnFactory {
 		return columns;
 	}
 	
-	private static List<ViewField> getDefaultPMViewColumns() {
-		List<ViewField> columns = new ArrayList<ViewField>();
-	}
+	
 	
 	private static List<ViewField> getMyWorkorderColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
