@@ -8,6 +8,7 @@ import org.apache.commons.chain.Command;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
@@ -15,11 +16,15 @@ import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class WorkOrderRequestAction extends ActionSupport {
@@ -280,6 +285,26 @@ public class WorkOrderRequestAction extends ActionSupport {
 
 	public void setWoCount(long woCount) {
 		this.woCount = woCount;
+	}
+	
+	public String getWorkOrderRequest() throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER_REQUEST);
+		
+		SelectRecordsBuilder<WorkOrderRequestContext> builder = new SelectRecordsBuilder<WorkOrderRequestContext>()
+				.table(module.getTableName())
+				.moduleName(FacilioConstants.ContextNames.WORK_ORDER_REQUEST)
+				.beanClass(WorkOrderRequestContext.class)
+				.select(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER_REQUEST))
+				.andCondition(CriteriaAPI.getIdCondition(workOrderRequestId, module));
+		
+		List<WorkOrderRequestContext> props = builder.get();
+		
+		if(props != null && !props.isEmpty()) {
+			workorderrequest = props.get(0);
+		}
+		return SUCCESS;
 	}
 	public String workOrderRequestList() throws Exception {
 		// TODO Auto-generated method stub

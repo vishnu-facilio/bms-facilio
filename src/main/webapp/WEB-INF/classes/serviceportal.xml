@@ -37,6 +37,11 @@
         <result>/service/index.jsp</result>
     </action>
   
+  		<action name="getrequests" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="getWorkOrderRequest">
+			<result name="success" type="json">
+				<param name="includeProperties">workorderrequest</param>
+			</result>
+		</action>
         <action name="apisignup" class="com.facilio.auth.actions.FacilioAuthAction"
         method="signupPortalUser">
                 <result name="success" type="json">
@@ -89,7 +94,7 @@
 			</result>
 		</action>
 
-   <action name="samllogin" class="com.facilio.customerportal.actions.Authentication" method="samllogin">
+   		<action name="samllogin" class="com.facilio.customerportal.actions.Authentication" method="samllogin">
 			<result >/service/samllogin.jsp</result>
 		</action>
 
