@@ -46,7 +46,7 @@
              closeMethod="close"
              driverClassName="com.mysql.jdbc.Driver"
              factory="com.zaxxer.hikari.HikariJNDIFactory"
-             maximumPoolSize="100"
+             maximumPoolSize="70"
              connectionTimeout="30000"
              leakDetectionThreshold="55000"
              dataSource.implicitCachingEnabled="true"
