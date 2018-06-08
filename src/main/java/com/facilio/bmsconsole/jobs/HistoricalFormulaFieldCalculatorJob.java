@@ -50,6 +50,7 @@ public class HistoricalFormulaFieldCalculatorJob extends FacilioJob {
 			
 			if (range == null) {
 				logger.log(Level.SEVERE, "Historical Formula calculation not done for formula : "+formulaId+", because no range specified");
+				return;
 			}
 			
 			Map<Long, Long> intervals = getIntervals(formula, range);

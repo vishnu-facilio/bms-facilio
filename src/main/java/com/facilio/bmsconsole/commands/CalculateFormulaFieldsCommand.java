@@ -68,7 +68,7 @@ public class CalculateFormulaFieldsCommand implements Command {
 				if (!formulaMap.isEmpty()) {
 					FacilioContext formulContext = new FacilioContext();
 					formulContext.put(FacilioConstants.ContextNames.MODULE_NAME,FacilioConstants.ContextNames.ENERGY_DATA_READING );
-					formulContext.put(FacilioConstants.ContextNames.READINGS_MAP, readingMap);
+					formulContext.put(FacilioConstants.ContextNames.READINGS_MAP, formulaMap);
 					Chain addReading = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
 					addReading.execute(formulContext);
 				}
@@ -93,7 +93,7 @@ public class CalculateFormulaFieldsCommand implements Command {
 	}
 	
 	private void calculateNewFormula(FormulaFieldContext formula, ReadingContext reading, Map<String, List<ReadingContext>> formulaMap, Set<String> completedFormulas, Map<String, FacilioField> fieldMap) throws Exception {
-		String completedKey = formula.getName()+"|"+reading.getParentId();
+		String completedKey = formula.getId()+"|"+reading.getParentId();
 		if (!completedFormulas.contains(completedKey)) {
 			Map<String, Object> readingData = reading.getData();
 			if (readingData != null && !readingData.isEmpty()) {
@@ -126,7 +126,7 @@ public class CalculateFormulaFieldsCommand implements Command {
 		zdt = zdt.truncatedTo(new SecondsChronoUnit(formula.getInterval() * 60));
 		long startTime = DateTimeUtil.getMillis(zdt, true);
 		long endTime = (startTime + (formula.getInterval() * 60 * 1000)) - 1;
-		String completedKey = formula.getName()+"|"+reading.getParentId()+"|"+startTime+"|"+endTime;
+		String completedKey = formula.getId()+"|"+reading.getParentId()+"|"+startTime+"|"+endTime;
 		if (!completedFormulas.contains(completedKey)) {
 			Map<String, Object> readingData = reading.getData();
 			if (readingData != null && !readingData.isEmpty()) {
