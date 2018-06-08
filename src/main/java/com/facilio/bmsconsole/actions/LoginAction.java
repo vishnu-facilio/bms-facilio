@@ -643,6 +643,7 @@ public class LoginAction extends ActionSupport{
 		account = new HashMap<>();
 		account.put("org", AccountUtil.getCurrentOrg());
 		account.put("user", AccountUtil.getCurrentUser());
+		account.put("portalInfo", AccountUtil.getPortalInfo());
 
 		return SUCCESS;
 	}

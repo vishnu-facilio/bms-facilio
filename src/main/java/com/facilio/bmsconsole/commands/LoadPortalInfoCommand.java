@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -21,22 +22,9 @@ public class LoadPortalInfoCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		FacilioModule module = ModuleFactory.getServicePortalModule();
-		List<FacilioField> fields = FieldFactory.getServicePortalFields();
 		
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-												.table(module.getTableName())
-												.select(fields)
-												.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
-		
-		List<Map<String, Object>> portalInfoList = builder.get();
-		
-		if(portalInfoList != null && portalInfoList.size() > 0) {
-			Map<String, Object> props = portalInfoList.get(0);
-			PortalInfoContext protalInfo = FieldUtil.getAsBeanFromMap(props, PortalInfoContext.class);
-			System.out.println(">>>>>>>>>>> portalInfoMap : "+protalInfo);
-			context.put(FacilioConstants.ContextNames.PORTALINFO, protalInfo);
-		}
+		PortalInfoContext portalinfo = AccountUtil.getPortalInfo();
+		context.put(FacilioConstants.ContextNames.PORTALINFO, portalinfo);
 		
 		return false;
 	}
