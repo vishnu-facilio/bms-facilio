@@ -107,7 +107,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 		this.value = value;
 		this.functionName = functionName;
 	}
-	public static FacilioDateFunction getFacilioDefaultFunction(String functionName) {
+	public static FacilioDateFunction getFacilioDateFunction(String functionName) {
 		return DATE_FUNCTIONS.get(functionName);
 	}
 	static final Map<String, FacilioDateFunction> DATE_FUNCTIONS = Collections.unmodifiableMap(initTypeMap());
