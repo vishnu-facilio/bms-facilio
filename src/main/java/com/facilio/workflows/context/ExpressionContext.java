@@ -248,17 +248,37 @@ public class ExpressionContext {
 						selectBuilder.limit(1);
 					}
 					else if(expAggregateOpp.equals(ExpressionAggregateOperator.LAST_VALUE)) {
-						String parentIdString = null;
+						boolean isLastValueWithTimeRange = false;
+						
 						Map<Integer, Condition> conditions = criteria.getConditions();
 						for(Integer key:conditions.keySet()) {
 							Condition condition = conditions.get(key);
-							if(condition.getFieldName().contains("parentId")) {
-								parentIdString = condition.getValue();
+							if(condition.getFieldName().contains("ttime")) {
+								isLastValueWithTimeRange = true;
+								break;
 							}
 						}
-						ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(Long.parseLong(parentIdString), select);
-						exprResult = meta.getValue();
-						return exprResult;
+						
+						if(isLastValueWithTimeRange) {
+							
+							selectBuilder.limit(1);
+							selectBuilder.orderBy("TTIME desc");
+						}
+						else {
+							
+							String parentIdString = null;
+							conditions = criteria.getConditions();
+							for(Integer key:conditions.keySet()) {
+								Condition condition = conditions.get(key);
+								if(condition.getFieldName().contains("parentId")) {
+									parentIdString = condition.getValue();
+									break;
+								}
+							}
+							ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(Long.parseLong(parentIdString), select);
+							exprResult = meta.getValue();
+							return exprResult;
+						}
 					}
 				}
 				selectFields.add(select);
