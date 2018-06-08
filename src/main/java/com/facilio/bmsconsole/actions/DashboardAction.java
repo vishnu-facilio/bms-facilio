@@ -1401,22 +1401,20 @@ public class DashboardAction extends ActionSupport {
 							
 							for(Map<String, Object> task : taskMap) {
 								
-								String subject = (String) task.get("subject");
-								
-								subject = subject.trim();
-								
 								if(task.get("inputValue") != null) {
 									
-									Integer value = Integer.parseInt(task.get("inputValue").toString());
+									String subject = (String) task.get("inputValue");
+									
+									subject = subject.trim();
 									
 									if (subject.endsWith("Non Compliance")) {
-										nonCompliance += value;
+										nonCompliance += aswaqnonComp;
 									}
 									else if(subject.endsWith("Compliance")) {
-										compliance += value;
+										compliance += aswaqComp;
 									}
 									else if (subject.endsWith("Repeat Findings")) {
-										repeatFinding += value;
+										repeatFinding += aswaqrep;
 									}
 								}
 							}
@@ -1500,23 +1498,20 @@ public class DashboardAction extends ActionSupport {
 							LOGGER.log(Level.SEVERE, "passed1 --- "+taskMap.size());
 							for(Map<String, Object> task : taskMap) {
 								
-								String subject = (String) task.get("subject");
-								
-								subject = subject.trim();
-								
-								//inputValue
 								if(task.get("inputValue") != null) {
 									
-									Integer value = Integer.parseInt(task.get("inputValue").toString());
+									String subject = (String) task.get("inputValue");
+									
+									subject = subject.trim();
 									
 									if (subject.endsWith("Non Compliance")) {
-										nonCompliance += value;
+										nonCompliance += aswaqnonComp;
 									}
 									else if(subject.endsWith("Compliance")) {
-										compliance += value;
+										compliance += aswaqComp;
 									}
 									else if (subject.endsWith("Repeat Findings")) {
-										repeatFinding += value;
+										repeatFinding += aswaqrep;
 									}
 								}
 							}
@@ -1587,23 +1582,20 @@ public class DashboardAction extends ActionSupport {
 							LOGGER.log(Level.SEVERE, "passed1 --- "+taskMap.size());
 							for(Map<String, Object> task : taskMap) {
 								
-								String subject = (String) task.get("subject");
-								
-								subject = subject.trim();
-								
-								//inputValue
 								if(task.get("inputValue") != null) {
 									
-									Integer value = Integer.parseInt(task.get("inputValue").toString());
+									String subject = (String) task.get("inputValue");
+									
+									subject = subject.trim();
 									
 									if (subject.endsWith("Non Compliance")) {
-										nonCompliance += value;
+										nonCompliance += aswaqnonComp;
 									}
 									else if(subject.endsWith("Compliance")) {
-										compliance += value;
+										compliance += aswaqComp;
 									}
 									else if (subject.endsWith("Repeat Findings")) {
-										repeatFinding += value;
+										repeatFinding += aswaqrep;
 									}
 								}
 							}
@@ -1674,23 +1666,20 @@ public class DashboardAction extends ActionSupport {
 							LOGGER.log(Level.SEVERE, "passed1 --- "+taskMap.size());
 							for(Map<String, Object> task : taskMap) {
 								
-								String subject = (String) task.get("subject");
-								
-								subject = subject.trim();
-								
-								//inputValue
 								if(task.get("inputValue") != null) {
 									
-									Integer value = Integer.parseInt(task.get("inputValue").toString());
+									String subject = (String) task.get("inputValue");
+									
+									subject = subject.trim();
 									
 									if (subject.endsWith("Non Compliance")) {
-										nonCompliance += value;
+										nonCompliance += aswaqnonComp;
 									}
 									else if(subject.endsWith("Compliance")) {
-										compliance += value;
+										compliance += aswaqComp;
 									}
 									else if (subject.endsWith("Repeat Findings")) {
-										repeatFinding += value;
+										repeatFinding += aswaqrep;
 									}
 								}
 							}
@@ -1794,22 +1783,20 @@ public class DashboardAction extends ActionSupport {
 								
 								for(Map<String, Object> task : taskMap) {
 									
-										String subject = (String) task.get("subject");
-										
-										subject = subject.trim();
-										
 										if(task.get("inputValue") != null) {
 											
-											Integer value = Integer.parseInt(task.get("inputValue").toString());
+											String subject = (String) task.get("inputValue");
+											
+											subject = subject.trim();
 											
 											if (subject.endsWith("Non Compliance")) {
-												nonCompliance += value;
+												nonCompliance += aswaqnonComp;
 											}
 											else if(subject.endsWith("Compliance")) {
-												compliance += value;
+												compliance += aswaqComp;
 											}
 											else if (subject.endsWith("Repeat Findings")) {
-												repeatFinding += value;
+												repeatFinding += aswaqrep;
 											}
 										}
 								}
@@ -2131,22 +2118,20 @@ public class DashboardAction extends ActionSupport {
 							
 							for(Map<String, Object> task : taskMap) {
 								
-								String subject = (String) task.get("subject");
-								
-								subject = subject.trim();
-								
 								if(task.get("inputValue") != null) {
 									
-									Integer value = Integer.parseInt(task.get("inputValue").toString());
+									String subject = (String) task.get("inputValue");
+									
+									subject = subject.trim();
 									
 									if (subject.endsWith("Non Compliance")) {
-										nonCompliance += value;
+										nonCompliance += aswaqnonComp;
 									}
 									else if(subject.endsWith("Compliance")) {
-										compliance += value;
+										compliance += aswaqComp;
 									}
 									else if (subject.endsWith("Repeat Findings")) {
-										repeatFinding += value;
+										repeatFinding += aswaqrep;
 									}
 								}
 							}
@@ -2221,23 +2206,20 @@ public class DashboardAction extends ActionSupport {
 						LOGGER.log(Level.SEVERE, "passed1 --- "+taskMap.size());
 						for(Map<String, Object> task : taskMap) {
 							
-							String subject = (String) task.get("subject");
-							
-							subject = subject.trim();
-							
-							//inputValue
 							if(task.get("inputValue") != null) {
 								
-								Integer value = Integer.parseInt(task.get("inputValue").toString());
+								String subject = (String) task.get("inputValue");
+								
+								subject = subject.trim();
 								
 								if (subject.endsWith("Non Compliance")) {
-									nonCompliance += value;
+									nonCompliance += aswaqnonComp;
 								}
 								else if(subject.endsWith("Compliance")) {
-									compliance += value;
+									compliance += aswaqComp;
 								}
 								else if (subject.endsWith("Repeat Findings")) {
-									repeatFinding += value;
+									repeatFinding += aswaqrep;
 								}
 							}
 						}
@@ -3575,6 +3557,8 @@ public class DashboardAction extends ActionSupport {
 	}
 	
 	
+	public static final int aswaqComp = 1,aswaqnonComp = 1,aswaqrep = 1,aswaqna = 1;
+	
 	public String getAswaqData() throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -3629,26 +3613,23 @@ public class DashboardAction extends ActionSupport {
 				
 				for(Map<String, Object> task : taskMap) {
 					
-					
-					String subject = (String) task.get("subject");
-					
-					subject = subject.trim();
-					
 					if(task.get("inputValue") != null) {
 						
-						Integer value = Integer.parseInt(task.get("inputValue").toString());
+						String subject = (String) task.get("inputValue");
+						
+						subject = subject.trim();
 						
 						if (subject.endsWith("Non Compliance")) {
-							nonCompliance += value;
+							nonCompliance += aswaqnonComp;
 						}
 						else if(subject.endsWith("Compliance")) {
-							compliance += value;
+							compliance += aswaqComp;
 						}
 						else if (subject.endsWith("Repeat Findings")) {
-							repeatFinding += value;
+							repeatFinding += aswaqrep;
 						}
 						else if (subject.endsWith("Not Applicable")) {
-							notApplicable += value;
+							notApplicable += aswaqna;
 						}
 					}
 				}
