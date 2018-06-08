@@ -334,6 +334,7 @@ public class WorkOrderAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
 		context.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
+		context.put(FacilioConstants.ContextNames.IS_UPDATE_PM, true);
 
 		Chain updatePM = FacilioChainFactory.getUpdatePreventiveMaintenanceChain();
 		updatePM.execute(context);

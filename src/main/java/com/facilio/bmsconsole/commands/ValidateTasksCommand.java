@@ -46,6 +46,11 @@ public class ValidateTasksCommand implements Command {
 			if (pmExecution == null) {
 				pmExecution = false;
 			}
+			Boolean updatePM = (Boolean) context.get(FacilioConstants.ContextNames.IS_UPDATE_PM);//Temp fix
+			if (updatePM == null) {
+				updatePM = false;
+			}
+			
 			for(TaskContext task : tasks) {
 				if (task.getInputTypeEnum() == null) {
 					task.setInputType(TaskContext.InputType.NONE);
@@ -68,7 +73,7 @@ public class ValidateTasksCommand implements Command {
 								case HIDDEN_FORMULA_FIELD:
 									throw new IllegalArgumentException("Readings that are mapped with formula field cannot be used.");
 								case TASK:
-									if (!pmExecution) {
+									if (!pmExecution && !updatePM) {//Temp fix
 										throw new IllegalArgumentException(readingField.getName()+" cannot be used as it is already used in another task.");
 									}
 								default:

@@ -374,6 +374,7 @@ public class FacilioConstants {
 		public static final String PM_CURRENT_JOB = "pmCurrentJob";
 		public static final String PM_TO_WO = "pmtowo";
 		public static final String IS_PM_EXECUTION = "isPMExecution";
+		public static final String IS_UPDATE_PM = "isUpdatePM";
 		
 		public static final String PREVENTIVE_MAINTENANCE_STARTTIME = "preventivemaintenanceStarttime";
 		public static final String PREVENTIVE_MAINTENANCE_ENDTIME = "preventivemaintenanceEndtime";

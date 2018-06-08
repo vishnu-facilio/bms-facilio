@@ -36,7 +36,6 @@ public class AddPreventiveMaintenanceCommand implements Command {
 	}
 
 	private static void addDefaultProps(PreventiveMaintenance pm, Context context) {
-		WorkOrderContext workorder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
 		long templateId = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 
 		pm.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
