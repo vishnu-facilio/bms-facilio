@@ -3,6 +3,8 @@ package com.facilio.timeseries;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -17,6 +19,8 @@ import com.facilio.events.tasker.tasks.EventProcessor;
 import com.facilio.fw.BeanFactory;
 
 public class TimeSeriesProcessor implements IRecordProcessor {
+	
+	private static final Logger logger = LogManager.getLogger(TimeSeriesProcessor.class.getName());
 
 	private long orgId;
 	private String orgDomainName;
@@ -49,6 +53,8 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 
 				if(dataType!=null && "timeseries".equals(dataType)) {
 					long timeStamp=	record.getApproximateArrivalTimestamp().getTime();
+					
+		            logger.error("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + " TIME::::" +timeStamp);
 					ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
 					bean.processTimeSeries(timeStamp, payLoad, record,processRecordsInput.getCheckpointer());
 //					Temp fix
