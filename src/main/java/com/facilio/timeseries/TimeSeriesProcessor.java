@@ -40,7 +40,7 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 	@Override
 	public void processRecords(ProcessRecordsInput processRecordsInput) {
 
-		logger.error("TIMESERIES DATA PROCESSED START TIME::: RECORD SIZE::::::: "+processRecordsInput.getRecords().size());
+		logger.error("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + "RECORD SIZE::::::: "+processRecordsInput.getRecords().size());
 		for (Record record : processRecordsInput.getRecords()) {
 			String data = "";
 			try {
@@ -56,10 +56,9 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 					long timeStamp=	record.getApproximateArrivalTimestamp().getTime();
 					
 		            logger.error("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + " TIME::::" +timeStamp);
-		            logger.error("TIMESERIES DATA PROCESSED TIME::: CHECKPOINTER::::::: "+processRecordsInput.getCheckpointer());
 					ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
 					bean.processTimeSeries(timeStamp, payLoad, record,processRecordsInput.getCheckpointer());
-					logger.error("TIMESERIES DATA PROCESSED TIME::: COMPLETED::::::: ");
+					logger.error("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + "COMPLETED::::::: ");
 //					Temp fix
 //					processRecordsInput.getCheckpointer().checkpoint(record);
 				}
@@ -71,7 +70,7 @@ public class TimeSeriesProcessor implements IRecordProcessor {
                  e.printStackTrace();
             }
 		}
-		logger.error("TIMESERIES DATA PROCESSED START TIME::: ALL RECORD PROCESSED::::::: ");
+		logger.error("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + "COMPLETED");
 	}
 	
 	@Override
