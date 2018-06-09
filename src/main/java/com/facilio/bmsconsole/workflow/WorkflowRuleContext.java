@@ -4,6 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import com.facilio.bmsconsole.commands.ExecuteAllWorkflowsCommand;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -12,7 +16,7 @@ import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class WorkflowRuleContext {
-	
+	private static final Logger LOGGER = LogManager.getLogger(ExecuteAllWorkflowsCommand.class.getName());
 	private long orgId = -1;
 	public long getOrgId() {
 		return orgId;
@@ -176,12 +180,18 @@ public class WorkflowRuleContext {
 	}
 	
 	public boolean evaluateWorkflowExpression (String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
-		boolean workflowFlag = true;
-		if (workflow != null) {
-			double result = (double) WorkflowUtil.getWorkflowExpressionResult(workflow.getWorkflowString(), placeHolders);
-			workflowFlag = result == 1;
+		try {
+			boolean workflowFlag = true;
+			if (workflow != null) {
+				double result = (double) WorkflowUtil.getWorkflowExpressionResult(workflow.getWorkflowString(), placeHolders);
+				workflowFlag = result == 1;
+			}
+			return workflowFlag;
 		}
-		return workflowFlag;
+		catch (ArithmeticException e) {
+			LOGGER.error("Arithmetic exception during execution of workflow for rule : "+id, e);
+			return false;
+		}
 	}
 	
 	public Map<String, Object> constructPlaceHolders(String moduleName, Object record, Map<String, Object> recordPlaceHolders, FacilioContext context) throws Exception {
