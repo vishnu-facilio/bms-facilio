@@ -335,11 +335,7 @@ public class ReadingsAPI {
 			Map<String,FacilioField>  fieldMap = FieldFactory.getAsMap(fieldsList);
 			Set<Long> resources= new HashSet<Long>();
 			Set<Long> fields= new HashSet<Long>();
-			StringBuilder timeBuilder= new StringBuilder();
-			StringBuilder valueBuilder= new StringBuilder();
-			StringBuilder idBuilder= new StringBuilder();
-			long orgId=AccountUtil.getCurrentOrg().getOrgId();
-
+			Map<String, ReadingDataMeta> uniqueRDMs = new HashMap<>();
 			for(ReadingContext readingContext:readingList) {
 				long resourceId=readingContext.getParentId();
 				resources.add(resourceId);
@@ -366,9 +362,19 @@ public class ReadingsAPI {
 							}
 							fields.add(fieldId);
 							String value = val.toString();
-							timeBuilder.append(getCase(resourceId,fieldId,timeStamp,false));
-							valueBuilder.append(getCase(resourceId,fieldId,value,true));
-							idBuilder.append(getCase(resourceId,fieldId,readingId,false));
+							
+							String uniqueKey = resourceId + "|" + fieldId;
+							ReadingDataMeta rdm = uniqueRDMs.get(uniqueKey);
+							if (rdm == null || rdm.getTtime() < timeStamp) {
+								rdm = new ReadingDataMeta();
+								rdm.setFieldId(fieldId);
+								rdm.setTtime(timeStamp);
+								rdm.setValue(value);
+								rdm.setReadingDataId(readingId);
+								rdm.setResourceId(resourceId);
+								
+								uniqueRDMs.put(uniqueKey, rdm);
+							}
 						}
 						else {
 							logger.log(Level.INFO, "Not updating RDM for "+fField.getName()+" from "+readingContext+" because after parsing, value is null");
@@ -376,7 +382,22 @@ public class ReadingsAPI {
 					}
 				}
 			}
+			
+			if (uniqueRDMs.size() == 0) {
+				return 0;
+			}
+			
+			StringBuilder timeBuilder= new StringBuilder();
+			StringBuilder valueBuilder= new StringBuilder();
+			StringBuilder idBuilder= new StringBuilder();
+			long orgId=AccountUtil.getCurrentOrg().getOrgId();
 
+			for (ReadingDataMeta rdm : uniqueRDMs.values()) {
+				timeBuilder.append(getCase(rdm.getResourceId(),rdm.getFieldId(),rdm.getTtime(),false));
+				valueBuilder.append(getCase(rdm.getResourceId(),rdm.getFieldId(),rdm.getValue(),true));
+				idBuilder.append(getCase(rdm.getResourceId(),rdm.getFieldId(),rdm.getReadingDataId(),false));
+			}
+			
 			if(timeBuilder.length()<=0 || valueBuilder.length()<=0) {
 				return 0;
 			}
@@ -440,7 +461,7 @@ public class ReadingsAPI {
 		}
 		List<FacilioField> fieldsToReturn = new ArrayList<>();
 		for(FacilioField field: fields) {
-			if (fieldsWithValues != null && fieldsWithValues.contains(field.getId()) && !DEFAULT_READING_FIELDS.contains(field.getName()) ) {
+			if ((parentId == null || (fieldsWithValues != null && fieldsWithValues.contains(field.getId()))) && !DEFAULT_READING_FIELDS.contains(field.getName()) ) {
 				fieldsToReturn.add(field);
 			}
 		}

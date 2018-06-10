@@ -1858,7 +1858,7 @@ public class FacilioChainFactory {
 	
 	
 	public static Chain getAddOrUpdateReadingValuesChain() {
-		Chain c = new TransactionChain();
+		Chain c = new ChainBase();
 		c.addCommand(new GetReadingDataMetaCommand());
 		c.addCommand(new DeltaCalculationCommand());
 		c.addCommand(new AddOrUpdateReadingValuesCommand());

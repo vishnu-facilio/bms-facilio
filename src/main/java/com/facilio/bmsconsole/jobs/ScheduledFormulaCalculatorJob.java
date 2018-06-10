@@ -4,6 +4,7 @@ import java.time.Month;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -78,8 +79,7 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 									Chain addReadingChain = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
 									addReadingChain.execute(context);
 									
-									List<FacilioField> fieldsList = modBean.getAllFields(enpi.getReadingField().getModule().getName());
-									ReadingsAPI.updateReadingDataMeta(fieldsList, lastReadings, null);
+									ReadingsAPI.updateReadingDataMeta(Collections.singletonList(enpi.getReadingField()), lastReadings, null);
 								}
 							}
 							catch (Exception e) {
