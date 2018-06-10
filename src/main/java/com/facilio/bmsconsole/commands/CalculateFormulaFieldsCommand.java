@@ -107,7 +107,7 @@ public class CalculateFormulaFieldsCommand implements Command {
 						Map<Long, Long> intervals = DateTimeUtil.getTimeIntervals(meta.getTtime(), System.currentTimeMillis(), formula.getInterval());
 						long startTime = System.currentTimeMillis();
 						List<ReadingContext> formulaReadings = FormulaFieldAPI.calculateFormulaReadings(reading.getParentId(), formula.getReadingField().getName(), intervals, formula.getWorkflow());
-						LOGGER.error(AccountUtil.getCurrentOrg().getId()+"::Time taken for formula calculation alone for formula : "+formula.getName()+" is "+(System.currentTimeMillis() - startTime));
+						LOGGER.error(AccountUtil.getCurrentOrg().getId()+"::Time taken for formula calculation of : "+formula.getName()+" for "+reading.getParentId()+" is "+(System.currentTimeMillis() - startTime));
 						if (formulaReadings != null && !formulaReadings.isEmpty()) {
 							List<ReadingContext> existingReadings = formulaMap.get(formula.getReadingField().getModule().getName());
 							if (existingReadings == null) {
