@@ -15,6 +15,14 @@ public class TaskContext extends TicketContext {
 	public void setParentTicketId(long parentTicketId) {
 		this.parentTicketId = parentTicketId;
 	}
+	
+	private int uniqueId = -1;
+	public int getUniqueId() {
+		return uniqueId;
+	}
+	public void setUniqueId(int uniqueId) {
+		this.uniqueId = uniqueId;
+	}
 
 	private long createdTime = -1;
 	public long getCreatedTime() {

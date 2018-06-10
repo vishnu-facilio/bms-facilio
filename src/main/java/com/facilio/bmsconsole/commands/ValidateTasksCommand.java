@@ -9,12 +9,22 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.templates.TaskTemplate;
+import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class ValidateTasksCommand implements Command {
 
@@ -22,6 +32,7 @@ public class ValidateTasksCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<TaskContext> tasks = null;
+		int maxUniqueId = 0;
 		Map<String, List<TaskContext>> taskMap = (Map<String, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
 		if(taskMap == null) {
 			tasks = (List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST);
@@ -29,6 +40,7 @@ public class ValidateTasksCommand implements Command {
 				TaskContext task = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
 				if(task != null) {
 					tasks = Collections.singletonList(task);
+					maxUniqueId = getMaxUniqueIdFromExistingTasks(task.getParentTicketId());
 				}
 			}
 		}
@@ -50,8 +62,17 @@ public class ValidateTasksCommand implements Command {
 			if (updatePM == null) {
 				updatePM = false;
 			}
+			else if (context.containsKey(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST)){
+				PreventiveMaintenance oldPm = ((List<PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST)).get(0);
+				if (oldPm.getWoTemplate() != null) {
+					maxUniqueId = getMaxUniqueIdFromTemplate(oldPm.getWoTemplate().getId());
+				}
+			}
 			
 			for(TaskContext task : tasks) {
+				if (task.getUniqueId() == -1) {
+					task.setUniqueId(++maxUniqueId);
+				}
 				if (task.getInputTypeEnum() == null) {
 					task.setInputType(TaskContext.InputType.NONE);
 				}
@@ -98,6 +119,36 @@ public class ValidateTasksCommand implements Command {
 			}
 		}
 		return false;
+	}
+	
+	private static int getMaxUniqueIdFromTemplate (long templateId) throws Exception {
+		int maxUniqueId = 0;
+		WorkorderTemplate woTemplate = (WorkorderTemplate) TemplateAPI.getTemplate(templateId);
+		if (woTemplate.getTaskTemplates() != null) {
+			
+			for(TaskTemplate template: woTemplate.getTaskTemplates()) {
+				TaskContext task = template.getTask();
+				if (task.getUniqueId() > maxUniqueId) {
+					maxUniqueId = task.getUniqueId();
+				}
+			}
+//			maxUniqueId = woTemplate.getTaskTemplates().stream().map(taskTemplate -> taskTemplate.getTask()).mapToInt(TaskContext::getUniqueId).max().getAsInt();
+		}
+		return maxUniqueId;
+	}
+	
+	private int getMaxUniqueIdFromExistingTasks (long parentId) throws Exception {
+		int maxId = 0;
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getTasksModule().getTableName())
+				.select(Collections.singletonList(FieldFactory.getField("uniqueId", "MAX(UNIQUE_ID)", FieldType.NUMBER)))
+				.andCondition(CriteriaAPI.getCondition("PARENT_TICKET_ID", "parentTicketId", String.valueOf(parentId), NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = builder.get();
+		if (props != null && !props.isEmpty()) {
+			maxId = (int) props.get(0).get("uniqueId");
+		}
+		return maxId;
 	}
 
 }

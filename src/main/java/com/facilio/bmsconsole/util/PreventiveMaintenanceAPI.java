@@ -458,8 +458,8 @@ public class PreventiveMaintenanceAPI {
 
 	}
 	
-	public static List<PreventiveMaintenance> getPMsDetails(List<Long> ids, Criteria... criteria) throws Exception {
-		return getPMs(ids, criteria != null && criteria.length == 1 ? criteria[0] : null, null, null, true, true);
+	public static List<PreventiveMaintenance> getPMsDetails(List<Long> ids) throws Exception {
+		return getPMs(ids, null, null, null, null, true, true);
 	}
 	
 	public static List<PreventiveMaintenance> getPMs(List<Long> ids, Criteria criteria, String searchQuery, JSONObject pagination, Boolean...fetchDependencies) throws Exception {
