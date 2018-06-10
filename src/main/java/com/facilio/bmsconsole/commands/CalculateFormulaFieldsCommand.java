@@ -18,6 +18,7 @@ import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
@@ -74,7 +75,7 @@ public class CalculateFormulaFieldsCommand implements Command {
 					addReading.execute(formulContext);
 				}
 			}
-			LOGGER.error("Time taken for formula calculation for modules : "+readingMap.keySet()+" is "+(processStarttime - System.currentTimeMillis()));
+			LOGGER.error(AccountUtil.getCurrentOrg().getId()+"::Time taken for formula calculation for modules : "+readingMap.keySet()+" is "+(System.currentTimeMillis() - processStarttime));
 		}
 		
 		return false;
@@ -106,7 +107,7 @@ public class CalculateFormulaFieldsCommand implements Command {
 						Map<Long, Long> intervals = DateTimeUtil.getTimeIntervals(meta.getTtime(), System.currentTimeMillis(), formula.getInterval());
 						long startTime = System.currentTimeMillis();
 						List<ReadingContext> formulaReadings = FormulaFieldAPI.calculateFormulaReadings(reading.getParentId(), formula.getReadingField().getName(), intervals, formula.getWorkflow());
-						LOGGER.error("Time taken for Formula calculation alone for formula : "+formula.getName()+" is "+(startTime - System.currentTimeMillis()));
+						LOGGER.error(AccountUtil.getCurrentOrg().getId()+"::Time taken for formula calculation alone for formula : "+formula.getName()+" is "+(System.currentTimeMillis() - startTime));
 						if (formulaReadings != null && !formulaReadings.isEmpty()) {
 							List<ReadingContext> existingReadings = formulaMap.get(formula.getReadingField().getModule().getName());
 							if (existingReadings == null) {
