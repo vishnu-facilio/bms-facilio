@@ -36,7 +36,7 @@ import com.facilio.fw.BeanFactory;
 
 public class ExecuteAllWorkflowsCommand implements Command 
 {
-	private static final Logger logger = LogManager.getLogger(ExecuteAllWorkflowsCommand.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(ExecuteAllWorkflowsCommand.class.getName());
 	RuleType[] ruleTypes;
 	public ExecuteAllWorkflowsCommand(RuleType... ruleTypes) {
 		// TODO Auto-generated constructor stub
@@ -55,7 +55,7 @@ public class ExecuteAllWorkflowsCommand implements Command
 			for (Map.Entry<String, List> entry : recordMap.entrySet()) {
 				String moduleName = entry.getKey();
 				if (moduleName == null || moduleName.isEmpty() || entry.getValue() == null || entry.getValue().isEmpty()) {
-					logger.log(Level.WARN, "Module Name / Records is null/ empty ==> "+moduleName+"==>"+entry.getValue());
+					LOGGER.log(Level.WARN, "Module Name / Records is null/ empty ==> "+moduleName+"==>"+entry.getValue());
 					continue;
 				}
 				
@@ -141,7 +141,7 @@ public class ExecuteAllWorkflowsCommand implements Command
 								.append(" of module : ")
 								.append(moduleName);
 					}
-					logger.log(Level.ERROR, builder.toString(), e);
+					LOGGER.log(Level.ERROR, builder.toString(), e);
 					throw e;
 				}
 			}
@@ -173,7 +173,7 @@ public class ExecuteAllWorkflowsCommand implements Command
 			}
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			if (moduleName == null || moduleName.isEmpty() || records == null || records.isEmpty()) {
-				logger.log(Level.WARN, "Module Name / Records is null/ empty ==> "+moduleName+"==>"+records);
+				LOGGER.log(Level.WARN, "Module Name / Records is null/ empty ==> "+moduleName+"==>"+records);
 				return null;
 			}
 			

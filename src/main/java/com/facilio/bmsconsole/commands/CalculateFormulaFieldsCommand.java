@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -36,13 +38,14 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.time.SecondsChronoUnit;
 
 public class CalculateFormulaFieldsCommand implements Command {
-
+	private static final Logger LOGGER = LogManager.getLogger(CalculateFormulaFieldsCommand.class.getName());
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		Map<String, ReadingDataMeta> readingDataMeta = (Map<String, ReadingDataMeta>) context.get(FacilioConstants.ContextNames.READING_DATA_META);
 		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
 		if (readingDataMeta != null && !readingDataMeta.isEmpty() && readingMap != null && !readingMap.isEmpty()) {
+			long processStarttime = System.currentTimeMillis();
 			Collection<ReadingDataMeta> metaList = readingDataMeta.values();
 			Set<Long> fieldIds = metaList.stream().map(meta -> meta.getField().getId()).collect(Collectors.toSet());
 			
@@ -71,6 +74,7 @@ public class CalculateFormulaFieldsCommand implements Command {
 					addReading.execute(formulContext);
 				}
 			}
+			LOGGER.error("Time taken for formula calculation for modules : "+readingMap.keySet()+" is "+(processStarttime - System.currentTimeMillis()));
 		}
 		
 		return false;
@@ -100,7 +104,9 @@ public class CalculateFormulaFieldsCommand implements Command {
 					if (formula.getWorkflow().getDependentFieldIds().contains(field.getId())) {
 						ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(reading.getParentId(), formula.getReadingField());
 						Map<Long, Long> intervals = DateTimeUtil.getTimeIntervals(meta.getTtime(), System.currentTimeMillis(), formula.getInterval());
+						long startTime = System.currentTimeMillis();
 						List<ReadingContext> formulaReadings = FormulaFieldAPI.calculateFormulaReadings(reading.getParentId(), formula.getReadingField().getName(), intervals, formula.getWorkflow());
+						LOGGER.error("Time taken for Formula calculation alone for formula : "+formula.getName()+" is "+(startTime - System.currentTimeMillis()));
 						if (formulaReadings != null && !formulaReadings.isEmpty()) {
 							List<ReadingContext> existingReadings = formulaMap.get(formula.getReadingField().getModule().getName());
 							if (existingReadings == null) {
