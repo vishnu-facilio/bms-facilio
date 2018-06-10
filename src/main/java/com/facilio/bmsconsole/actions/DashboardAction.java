@@ -1375,9 +1375,9 @@ public class DashboardAction extends ActionSupport {
 						compliance = 0;nonCompliance = 0;repeatFinding = 0;notApplicable = 0;
 						for(WorkOrderContext workorder:workorders) {
 							
-							LOGGER.log(Level.SEVERE, "buildingId --- "+building.getId());
+						//	LOGGER.log(Level.SEVERE, "buildingId --- "+building.getId());
 							if(workorder.getResource() != null) {
-								LOGGER.log(Level.SEVERE, "workorder.getResource().getId() --- "+workorder.getResource().getId());
+								LOGGER.log(Level.INFO, "workorder.getResource().getId() --- "+workorder.getResource().getId());
 							}
 							
 							if(workorder.getResource().getId() != building.getId()) {
@@ -1444,7 +1444,7 @@ public class DashboardAction extends ActionSupport {
 						ticketData.add(buildingres);
 					}
 					
-					LOGGER.log(Level.SEVERE, "23611l buildingres ----"+ticketData);
+					LOGGER.log(Level.INFO, "23611l buildingres ----"+ticketData);
 					
 					return ticketData;
 				}
@@ -1467,7 +1467,7 @@ public class DashboardAction extends ActionSupport {
 						continue;
 					}
 					
-					LOGGER.log(Level.SEVERE, "23611l passed Category ----"+category.getName());
+					LOGGER.log(Level.INFO, "23611l passed Category ----"+category.getName());
 					int compliance = 0,nonCompliance = 0,repeatFinding = 0,notApplicable = 0;
 					
 					for(BuildingContext building : SpaceAPI.getAllBuildings()) {
@@ -1478,11 +1478,11 @@ public class DashboardAction extends ActionSupport {
 							if(workorder.getResource().getId() != building.getId()) {
 								continue;
 							}
-							LOGGER.log(Level.SEVERE, "dateFilter --- "+dateFilter);
+							LOGGER.log(Level.INFO, "dateFilter --- "+dateFilter);
 							if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
 								continue;
 							}
-							LOGGER.log(Level.SEVERE, "passed --- "+workorder.getId());
+							LOGGER.log(Level.INFO, "passed --- "+workorder.getId());
 							Command chain = FacilioChainFactory.getGetTasksOfTicketCommand();
 							FacilioContext context = new FacilioContext();
 							
@@ -1528,7 +1528,7 @@ public class DashboardAction extends ActionSupport {
 						
 					}
 					
-					LOGGER.log(Level.SEVERE, "2362ll buildingres ----"+ticketData);
+					LOGGER.log(Level.INFO, "2362ll buildingres ----"+ticketData);
 					
 					return ticketData;
 				}
@@ -1860,7 +1860,7 @@ public class DashboardAction extends ActionSupport {
 							if(workorder.getResource().getId() != building.getId()) {
 								continue;
 							}
-							LOGGER.log(Level.SEVERE, "dateFilter --- "+dateFilter);
+							LOGGER.log(Level.INFO, "dateFilter --- "+dateFilter);
 							if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
 								continue;
 							}
@@ -1876,7 +1876,7 @@ public class DashboardAction extends ActionSupport {
 							
 							List<Map<String, Object>> taskMap = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
 							
-							LOGGER.log(Level.SEVERE, "passed1 --- "+taskMap.size());
+							LOGGER.log(Level.INFO, "passed1 --- "+taskMap.size());
 							for(Map<String, Object> task : taskMap) {
 								
 								if(task.get("inputValue") != null) {
@@ -1934,7 +1934,7 @@ public class DashboardAction extends ActionSupport {
 							if(workorder.getResource().getId() != building.getId()) {
 								continue;
 							}
-							LOGGER.log(Level.SEVERE, "dateFilter --- "+dateFilter);
+							LOGGER.log(Level.INFO, "dateFilter --- "+dateFilter);
 							if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
 								continue;
 							}
@@ -2007,7 +2007,7 @@ public class DashboardAction extends ActionSupport {
 						if(workorder.getResource().getId() != report.getReportSpaceFilterContext().getBuildingId()) {
 							continue;
 						}
-						LOGGER.log(Level.SEVERE, "dateFilter --- "+dateFilter);
+						LOGGER.log(Level.INFO, "dateFilter --- "+dateFilter);
 						if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
 							continue;
 						}
@@ -2023,7 +2023,7 @@ public class DashboardAction extends ActionSupport {
 						
 						List<Map<String, Object>> taskMap = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
 						
-						LOGGER.log(Level.SEVERE, "passed1 --- "+taskMap.size());
+						LOGGER.log(Level.INFO, "passed1 --- "+taskMap.size());
 						for(Map<String, Object> task : taskMap) {
 							
 							if(task.get("inputValue") != null) {
@@ -2091,9 +2091,9 @@ public class DashboardAction extends ActionSupport {
 							
 						for(WorkOrderContext workorder:workorders) {
 							
-							LOGGER.log(Level.SEVERE, "buildingId --- "+buildingId);
+							LOGGER.log(Level.INFO, "buildingId --- "+buildingId);
 							if(workorder.getResource() != null) {
-								LOGGER.log(Level.SEVERE, "workorder.getResource().getId() --- "+workorder.getResource().getId());
+								LOGGER.log(Level.INFO, "workorder.getResource().getId() --- "+workorder.getResource().getId());
 							}
 							
 							if(workorder.getResource().getId() != report.getReportSpaceFilterContext().getBuildingId()) {
@@ -2186,11 +2186,11 @@ public class DashboardAction extends ActionSupport {
 						if(workorder.getResource().getId() != report.getReportSpaceFilterContext().getBuildingId()) {
 							continue;
 						}
-						LOGGER.log(Level.SEVERE, "dateFilter --- "+dateFilter);
+						LOGGER.log(Level.INFO, "dateFilter --- "+dateFilter);
 						if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
 							continue;
 						}
-						LOGGER.log(Level.SEVERE, "passed --- "+workorder.getId());
+						LOGGER.log(Level.INFO, "passed --- "+workorder.getId());
 						Command chain = FacilioChainFactory.getGetTasksOfTicketCommand();
 						FacilioContext context = new FacilioContext();
 						
@@ -2203,7 +2203,7 @@ public class DashboardAction extends ActionSupport {
 						
 						List<Map<String, Object>> taskMap = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
 						
-						LOGGER.log(Level.SEVERE, "passed1 --- "+taskMap.size());
+						LOGGER.log(Level.INFO, "passed1 --- "+taskMap.size());
 						for(Map<String, Object> task : taskMap) {
 							
 							if(task.get("inputValue") != null) {
@@ -2498,10 +2498,10 @@ public class DashboardAction extends ActionSupport {
 		fields.add(xAxisField);
 		builder.select(fields);
 		List<Map<String, Object>> rs = builder.get();
-		LOGGER.severe("builder --- "+reportContext.getId() +"   "+baseLineId);
-		LOGGER.severe("builder --- "+builder);
+		LOGGER.info("builder --- "+reportContext.getId() +"   "+baseLineId);
+		LOGGER.info("builder --- "+builder);
 		
-		LOGGER.severe("res 1-- "+rs);
+		LOGGER.info("res 1-- "+rs);
 		
 		if(report.getGroupBy() != null) {
 			
