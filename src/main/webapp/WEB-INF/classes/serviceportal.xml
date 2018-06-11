@@ -126,6 +126,21 @@
 			</result>
 		</action>
 		
+		<action name="closeWorkorderRequest"
+			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="closeWorkOrderRequest">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+		<action name="activities" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction"
+			method="getActivitiesList">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<result name="success" type="json">
+				<param name="root">activities</param>
+			</result>
+		</action> 
         <action name="logout" class="com.facilio.auth.actions.FacilioAuthAction"
                 method="apiLogout">
             <result name="success" type="json">

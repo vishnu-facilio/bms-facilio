@@ -143,6 +143,13 @@ public enum ActivityType {
 			return "Updated the task";
 		}
 		
+	},
+	CLOSE_WORK_ORDER_REQUEST(32768) {
+		@Override
+		public String getMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return "Closed the request";
+		}
 	}
 	;
 

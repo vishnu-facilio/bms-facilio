@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
@@ -40,6 +41,7 @@ public class AddWorkOrderRequestCommand implements Command {
 			workOrderRequest.setId(workOrderId);
 			context.put(FacilioConstants.ContextNames.RECORD, workOrderRequest);
 			context.put(FacilioConstants.ContextNames.RECORD_ID, workOrderId);
+			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(workOrderId));
 			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
 		}
 		else {

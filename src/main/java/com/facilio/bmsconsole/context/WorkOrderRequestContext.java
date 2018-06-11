@@ -140,8 +140,8 @@ public class WorkOrderRequestContext extends TicketContext {
 	public static enum RequestStatus {
 		OPEN(1, "Open"),
 		APPROVED(2, "Approved"),
-		REJECTED(3, "Rejected");
-		
+		REJECTED(3, "Rejected"),
+		CLOSED(4, "Closed");
 		private int intVal;
 		private String strVal;
 		

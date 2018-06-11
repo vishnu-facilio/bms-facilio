@@ -23,6 +23,7 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.ActivityType;
+import com.facilio.bmsconsole.workflow.TicketActivity;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.opensymphony.xwork2.ActionSupport;
@@ -89,6 +90,17 @@ public class WorkOrderRequestAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		//set Event
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.REJECT_WORK_ORDER_REQUEST);
+		return updateWorkOrderRequest(context);
+	}
+	
+	public String closeWorkOrderRequest() throws Exception {
+		if (workorderrequest == null) {
+			workorderrequest = new WorkOrderRequestContext();
+		}
+		workorderrequest.setRequestStatus(WorkOrderRequestContext.RequestStatus.CLOSED);
+		FacilioContext context = new FacilioContext();
+		//set Event
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CLOSE_WORK_ORDER_REQUEST);
 		return updateWorkOrderRequest(context);
 	}
 	
@@ -254,6 +266,26 @@ public class WorkOrderRequestAction extends ActionSupport {
 		this.rowsUpdated = rowsUpdated;
 	}
 
+	public String getActivitiesList() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.TICKET_ID, workOrderRequestId);
+
+		Chain activitiesChain = FacilioChainFactory.getTicketActivitiesChain();
+		activitiesChain.execute(context);
+
+		setActivities((List<TicketActivity>) context.get(FacilioConstants.TicketActivity.TICKET_ACTIVITIES));
+
+		return SUCCESS;
+	}
+	private List<TicketActivity> activities;
+
+	public List<TicketActivity> getActivities() {
+		return activities;
+	}
+
+	public void setActivities(List<TicketActivity> activities) {
+		this.activities = activities;
+	}
 	
 	public String viewWorkOrderRequest() throws Exception {
 		
