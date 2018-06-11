@@ -91,7 +91,7 @@ public class BuildingAction extends ActionSupport {
 	{
 		FacilioContext context = new FacilioContext();	
 		LocationContext location = building.getLocation();
-		if(location != null && (location.getLat() != -1 && location.getLng() != -1))
+		if(location != null && (location.getLat() != null && location.getLng() != null))
 		{
 			//In Building Update flow, we are adding new location if the lat long params are changed. 
 			//Instead, we need to update if any previous same coordinate locations are present and add if they are not present. 

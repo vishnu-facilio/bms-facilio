@@ -17,6 +17,7 @@ import java.util.zip.InflaterInputStream;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.LocationContext;
@@ -24,9 +25,15 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericSelectRecordBuilder;
 
 
 public class WeatherUtil {
@@ -148,13 +155,13 @@ public class WeatherUtil {
 	@SuppressWarnings("unchecked")
 	public static Map<String,Object>getWeatherData(SiteContext site) throws Exception {
 		
-		LocationContext location= site.getLocation();
-		if(location==null) {
+		Map<String, Object> cordinates=getLocation(site);
+		if(cordinates==null) {
 			return null;
 		}
-		Double lat=location.getLat();
-		Double lng=location.getLng();
-		if(lat==-1 || lng==-1) {
+		Double lat=(Double)cordinates.get("latitude");
+		Double lng=(Double)cordinates.get("longtitude");
+		if(lat==null || lng==null) {
 			return null;
 		}
 		String weatherURL=WeatherUtil.getForecastURL(lat, lng);
@@ -170,6 +177,28 @@ public class WeatherUtil {
 		
 	}
 	
+	public static Map<String, Object> getLocation(SiteContext site) throws Exception {
+		
+		List<Map<String, Object>> weatherStation= getWeatherStation(site.getSiteId());
+		if(weatherStation!=null && !weatherStation.isEmpty()) {
+			return weatherStation.get(0);
+		}
+		
+		LocationContext location= site.getLocation();
+		if(location==null) {
+			return null;
+		}
+		Double lat=location.getLat();
+		Double lng=location.getLng();
+		if(lat==null || lng==null) {
+			return null;
+		}
+		Map<String,Object> cordinates= new HashMap<String,Object>();
+		cordinates.put("latitude", lat);
+		cordinates.put("longtitude", lng);
+		return cordinates;
+	}
+	
 	
 	public static Map<Long,List<Map<String,Object>>> getWeatherReadings() throws Exception {
 		return getReadings(FacilioConstants.ContextNames.WEATHER_READING);
@@ -183,8 +212,6 @@ public static Map<Long,List<Map<String,Object>>> getReadings(String moduleName) 
 		
 		
 		ModuleBean modBean= (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
-		
 		SelectRecordsBuilder<ReadingContext> builder = new SelectRecordsBuilder<ReadingContext>()
 				.select(modBean.getAllFields(moduleName))
 				.moduleName(moduleName)
@@ -231,6 +258,24 @@ public static Map<Long,List<Map<String,Object>>> getReadings(String moduleName) 
 		}
 		Double dd=totalTemp/48;
 		return dd;
+	}
+	
+	
+	public static List<Map<String, Object>> getWeatherStation(long siteId) throws Exception {
+		
+		 List<FacilioField> fields = new ArrayList<>();
+		 fields.add( FieldFactory.getField("latitude","LAT",FieldType.NUMBER));
+		 fields.add(FieldFactory.getField("longtitude","LNG",FieldType.NUMBER));
+
+		 GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+					.select(fields)
+					.table("Weather_Stations")
+					.innerJoin("Locations")
+					.on("Weather_Stations.LOCATION_ID=Locations.ID")
+	                .andCustomWhere("Weather_Stations.ORGID=?",AccountUtil.getCurrentOrg().getOrgId())
+					.andCustomWhere("Weather_Stations.SITE_ID=?",siteId );
+				return builder.get();
+			
 	}
 	
 	public static void main (String args[]) {
