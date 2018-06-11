@@ -58,7 +58,13 @@ public interface Operator<E> {
 		for(Operator operator : BuildingOperator.values()) {
 			operatorMap.put(operator.getOperatorId(), operator);
 		}
+		
+		for(Operator operator : EnumOperators.values()) {
+			operatorMap.put(operator.getOperatorId(), operator);
+		}
+		
 		return operatorMap;
+		//Max operator code is 55
 	}
 	
 	@SuppressWarnings("rawtypes")

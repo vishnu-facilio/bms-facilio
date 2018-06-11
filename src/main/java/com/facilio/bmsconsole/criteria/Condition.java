@@ -123,6 +123,10 @@ public class Condition {
 				updateFieldNameWithModule();
 				computedWhereClause = operator.getWhereClause(fieldName, criteriaValue);
 			}
+			else if (operator == EnumOperators.IS || operator == EnumOperators.ISN_T) {
+				updateFieldNameWithModule();
+				computedWhereClause = operator.getWhereClause(fieldName, value);
+			}
 			else if (placeHolders != null && !placeHolders.isEmpty() && isExpressionValue() && Arrays.asList(NumberOperators.values()).contains(operator)) {
 				computedWhereClause = operator.getWhereClause(columnName, evaluateExpression(placeHolders));									
 			}
@@ -177,6 +181,10 @@ public class Condition {
 			if(operator == LookupOperator.LOOKUP) {
 				updateFieldNameWithModule();
 				return operator.getPredicate(fieldName, criteriaValue);
+			}
+			else if (operator == EnumOperators.IS || operator == EnumOperators.ISN_T) {
+				updateFieldNameWithModule();
+				return operator.getPredicate(fieldName, value);
 			}
 			else if (placeHolders != null && !placeHolders.isEmpty() && isExpressionValue() && Arrays.asList(NumberOperators.values()).contains(operator)) {
 				return operator.getPredicate(fieldName, evaluateExpression(placeHolders));

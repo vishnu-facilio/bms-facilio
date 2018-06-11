@@ -40,7 +40,7 @@ public enum LookupOperator implements Operator<Criteria> {
 			if(fieldName != null && !fieldName.isEmpty() && value != null) {
 				String[] module = fieldName.split("\\.");
 				if(module.length > 1) {
-					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", AccountUtil.getCurrentOrg().getOrgId());
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					LookupField lookupField = (LookupField) modBean.getField(module[1], module[0]);
 					
 					FacilioModule lookupModule = lookupField.getLookupModule();

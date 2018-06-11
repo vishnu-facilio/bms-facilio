@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.EnumOperators;
 import com.facilio.bmsconsole.criteria.LookupOperator;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.Operator;
@@ -20,7 +21,7 @@ public enum FieldType {
 	DATE(5, "Date", new String[] {"DATE_CF1", "DATE_CF2", "DATE_CF3", "DATE_CF4", "DATE_CF5"}, DateOperators.getAllOperators()),
 	DATE_TIME(6, "DateTime", new String[] {"DATETIME_CF1", "DATETIME_CF2", "DATETIME_CF3", "DATETIME_CF4", "DATETIME_CF5"}, DateOperators.getAllOperators()),
 	LOOKUP(7, "Lookup", null, LookupOperator.getAllOperators()),
-	ENUM(8, "Enum", null, null)
+	ENUM(8, "Enum", new String[] {"ENUM_CF1", "ENUM_CF2", "ENUM_CF3", "ENUM_CF4", "ENUM_CF5"}, EnumOperators.getAllOperators())
 	;
 	
 	private int value;
