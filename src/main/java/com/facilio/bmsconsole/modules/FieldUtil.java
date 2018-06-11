@@ -31,7 +31,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 public class FieldUtil {
 	
-	private static final Logger logger = LogManager.getLogger(FieldUtil.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(FieldUtil.class.getName());
 	public static Map<String, Object> getLookedUpProp(long id) {
 		Map<String, Object> prop = new HashMap<>();
 		prop.put("id", id);
@@ -159,7 +159,7 @@ public class FieldUtil {
 			}
 		}
 		else {
-			logger.log(Level.INFO, "Data type shouldn't be null\n"+CommonCommandUtil.getStackTraceString(Thread.currentThread().getStackTrace()));
+			LOGGER.log(Level.DEBUG, "Data type shouldn't be null\n"+CommonCommandUtil.getStackTraceString(Thread.currentThread().getStackTrace()));
 			return rs.getObject(field.getName());
 		}
 	}
