@@ -117,6 +117,15 @@
 				<param name="includeProperties">workOrderRequests,workOrderRequests\[\d+\],workOrderRequests\[\d+\].*</param>
 			</result>
 		</action>
+		
+		<action name="assets" class="com.facilio.bmsconsole.actions.AssetAction" method="withReadings">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+			<result name="success" type="json">
+				<param name="includeProperties">assets,assets\[\d+\],assets\[\d+\].*</param>
+			</result>
+		</action>
+		
         <action name="logout" class="com.facilio.auth.actions.FacilioAuthAction"
                 method="apiLogout">
             <result name="success" type="json">
