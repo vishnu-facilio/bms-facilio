@@ -64,7 +64,7 @@ public class CampusAction extends ActionSupport {
 		System.out.println("The campus is "+site);
 		
 		LocationContext location = site.getLocation();
-		if(location != null)
+		if(location != null && location.getLat() != null && location.getLng() != null)
 		{
 			location.setName(site.getName()+"_Location");
 			context.put(FacilioConstants.ContextNames.RECORD, location);

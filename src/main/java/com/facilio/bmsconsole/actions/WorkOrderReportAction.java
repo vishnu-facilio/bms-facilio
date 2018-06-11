@@ -327,8 +327,12 @@ public class WorkOrderReportAction extends ActionSupport {
 						JSONObject location = new JSONObject();
 						location.put("city", locationCtxt.getCity());
 						location.put("street",locationCtxt.getStreet());
-						location.put("lat",locationCtxt.getLat());
-						location.put("lng",locationCtxt.getLng());
+						if(locationCtxt.getLat()!=null) {
+							location.put("lat",locationCtxt.getLat());
+						}
+						if(locationCtxt.getLng()!=null) {
+							location.put("lng",locationCtxt.getLng());
+						}
 						buildingObj.put("location", location);
 					}
 					// List<BaseSpaceContext> allSpaces = SpaceAPI.getBaseSpaceWithChildren(building.getId());

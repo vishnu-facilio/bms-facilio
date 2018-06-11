@@ -3,6 +3,7 @@ package com.facilio.workflows.util;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -63,6 +64,7 @@ public class WorkflowUtil {
 //	private static final String CONDITION_FORMATTER = "((.*?)`(baseLine\\{(\\d+)\\}\\s*)?([^`]*)`(.*))";
 	private static final String CONDITION_FORMATTER = "((.*?)`(baseLine\\{(\\d+)(\\,*)(\\d*)\\}\\s*)?([^`]*)`(.*))";
 	private static final String CUSTOM_FUNCTION_RESULT_EVALUATOR = "(.*?)(\\.)(.*?)(\\()(.*?)(\\))";
+	private static final String VARIABLE_PLACE_HOLDER = "\\$\\{(.+?)\\}";
 	
 	
 	static {
@@ -153,9 +155,38 @@ public class WorkflowUtil {
 		deleteBuilder.delete();
 	}
 	
+	public static void checkParamsDeclaration(WorkflowContext workflow) throws Exception {
+		
+		List<String> params = new ArrayList<String>();
+		
+		for(ParameterContext parameter :workflow.getParameters()) {
+			params.add(parameter.getName());
+		}
+		for(ExpressionContext expressionContext : workflow.getExpressions()) {
+			
+			if(expressionContext.getExpressionString().contains("${")) {
+				
+				List<String> allMatch = new ArrayList<String>();
+				
+				Pattern pattern = Pattern.compile(VARIABLE_PLACE_HOLDER);
+				Matcher matcher = pattern.matcher(expressionContext.getExpressionString());
+
+				while (matcher.find())
+				{
+					allMatch.add(matcher.group());
+				}
+				for(String match :allMatch) {
+					String variable = match.substring(2, match.length()-1);
+					if(!params.contains(variable)) {
+						throw new Exception("Variable - "+variable+" is not declared in params");
+					}
+				}
+			}
+		}
+	}
+	
 	public static Long addWorkflow(WorkflowContext workflowContext) throws Exception {
 
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		WorkflowContext workflow = new WorkflowContext();
 		if(workflowContext.getWorkflowString() == null) {
@@ -165,11 +196,15 @@ public class WorkflowUtil {
 			workflow.setWorkflowString(workflowContext.getWorkflowString());
 		}
 		
+		parseStringToWorkflowObject(workflow.getWorkflowString(),workflow);
+		
+		checkParamsDeclaration(workflow);
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
 		workflow.setShowXml(workflowContext.isShowXml());
 		
 		workflow.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-		
-		LOGGER.severe("ADDING WORKFLOW STRING--- "+workflowContext.getWorkflowString());
 		
 		LOGGER.severe("ADDING WORKFLOW STRING--- "+workflowContext.getWorkflowString());
 		
@@ -739,6 +774,83 @@ public class WorkflowUtil {
 		return null;
 	}
 	
+	public static Criteria parseCriteriaString(String moduleName,String criteriaString) throws Exception {
+		
+		String CONDITION_SPACE_SEPERATOR = "##";
+		
+		Pattern condtionStringpattern = Pattern.compile(CONDITION_FORMATTER);
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		ArrayList<FacilioField> fields = modBean.getAllFields(moduleName);
+		
+		Map<String, FacilioField> fieldMap = new HashMap<>();
+		for (FacilioField field : fields) {
+			fieldMap.put(field.getName(), field);
+		}
+		Map<Integer, Condition> conditions = new HashMap<>();
+		
+		String[] values = criteriaString.split(CONDITION_SPACE_SEPERATOR);
+		int sequence = 0;
+		
+		StringBuilder sb =  new StringBuilder();
+		for(String value : values) {
+			value = value.trim();
+			if(value.equals("&&")) {
+				sb.append("AND ");
+			}
+			else if(value.equals("||")) {
+				sb.append("OR ");
+			}
+			else if(value.equals("(")) {
+				sb.append("( ");
+			}
+			else if(value.equals(")")) {
+				sb.append(") ");
+			}
+			else{
+				Matcher matcher = condtionStringpattern.matcher(value);
+				while (matcher.find()) {
+					String fieldName = matcher.group(2);
+					FacilioField field = null;
+					if(fieldName.equals("id")) {
+						field = FieldFactory.getIdField(modBean.getModule(moduleName));
+					}
+					else {
+						field = fieldMap.get(fieldName);
+					}
+					Operator operator = field.getDataTypeEnum().getOperator(matcher.group(5));
+					String conditionValue = matcher.group(6);
+					
+					Condition condition = null;
+					if (matcher.group(3) != null) {
+						if(operator instanceof DateOperators && ((DateOperators)operator).isBaseLineSupported()) {
+							BaseLineContext baseLine = BaseLineAPI.getBaseLine(Long.parseLong(matcher.group(4)));
+							condition = baseLine.getBaseLineCondition(field, ((DateOperators)operator).getRange(conditionValue));
+						}
+						else {
+							throw new IllegalArgumentException("BaseLine is not supported for this operator");
+						}
+					}
+					else {
+						condition = new Condition();
+						condition.setField(field);
+						condition.setOperator(operator);
+						condition.setValue(conditionValue);
+					}
+					sequence++;
+					sb.append(sequence + " ");
+					condition.setSequence(sequence);
+					conditions.put(sequence, condition);
+				}
+			}
+		}
+		Criteria criteria = new Criteria();
+		criteria.setConditions(conditions);
+		criteria.setPattern(sb.toString());
+		
+		return criteria;
+	}
+	
 	private static Condition getConditionObjectFromConditionString(ExpressionContext expressionContext,String conditionString,String moduleName,Integer sequence) throws Exception {
 
 		Pattern condtionStringpattern = Pattern.compile(CONDITION_FORMATTER);
@@ -803,7 +915,6 @@ public class WorkflowUtil {
     		workflowContext = new WorkflowContext();
     	}
 		workflowContext.setWorkflowString(workflow);
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		InputStream stream = new ByteArrayInputStream(workflow.getBytes("UTF-16"));
     	

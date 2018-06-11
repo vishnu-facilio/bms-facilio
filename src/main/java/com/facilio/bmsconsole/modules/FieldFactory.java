@@ -3492,6 +3492,15 @@ public class FieldFactory {
 	}
 	
 	
+	public static List<FacilioField> getWeatherStationsFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getField("orgId", "ORGID",FieldType.NUMBER ));
+		fields.add(getField("siteId", "SITE_ID",FieldType.NUMBER ));
+		fields.add(getField("name", "NAME",FieldType.STRING ));
+		fields.add(getField("locationId", "LOCATION_ID",FieldType.NUMBER ));
+		return fields;
+	}
+	
 	public static List<FacilioField> getMarkedReadingFields() {
 		FacilioModule module = ModuleFactory.getMarkedReadingModule();
 		List<FacilioField> fields = new ArrayList<>();
