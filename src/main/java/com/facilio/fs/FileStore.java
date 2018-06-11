@@ -385,13 +385,13 @@ public abstract class FileStore {
 		fileInfo.setContentType(rs.getString("CONTENT_TYPE"));
 		fileInfo.setUploadedBy(rs.getLong("UPLOADED_BY"));
 		fileInfo.setUploadedTime(rs.getLong("UPLOADED_TIME"));
-		try {
-			fileInfo.setUrl(rs.getString("URL"));
-			fileInfo.setExpiryTime(rs.getLong("EXPIRY_TIME"));
-		}
-		catch(SQLException e) {
-			System.err.println("No such column :"+e.getMessage());
-		}
+//		try {
+//			fileInfo.setUrl(rs.getString("URL"));
+//			fileInfo.setExpiryTime(rs.getLong("EXPIRY_TIME"));
+//		}
+//		catch(SQLException e) {
+//			System.err.println("No such column :"+e.getMessage());
+//		}
 		
 		return fileInfo;
 	}
