@@ -37,7 +37,7 @@ public class FacilioServerEndpoint
     @OnOpen
     public void onOpen(Session session, @PathParam("uid") long uid) throws IOException, EncodeException 
     {
-    	System.out.println("Session started uid ::" +uid + ":::sessionid" + session.getId());
+//    	System.out.println("Session started uid ::" +uid + ":::sessionid" + session.getId());
         this.session = session;
         endpoints.add(this);
         
@@ -48,7 +48,7 @@ public class FacilioServerEndpoint
     @OnMessage
     public void onMessage(Session session, Message message) throws IOException, EncodeException 
     {
-    	System.out.println("Session started message to ::" +message.getTo()+ ":::sessionid" + session.getId()+"  msg: "+message.getContent()+"  cc: "+message);
+//    	System.out.println("Session started message to ::" +message.getTo()+ ":::sessionid" + session.getId()+"  msg: "+message.getContent()+"  cc: "+message);
     	if (message.getContent() != null && message.getContent().get("ping") != null) {
     		message.getContent().put("ping", "pong");
     		session.getBasicRemote().sendObject(message);
@@ -66,7 +66,7 @@ public class FacilioServerEndpoint
     @OnClose
     public void onClose(Session session) throws IOException, EncodeException 
     {
-    	System.out.println("Session started closed" +session.getId());
+//    	System.out.println("Session started closed" +session.getId());
     	endpoints.remove(this);
     	SessionManager.getInstance().removeUserSession(session.getId());
     	session.close();
@@ -75,9 +75,9 @@ public class FacilioServerEndpoint
     @OnError
     public void onError(Session session, Throwable throwable) 
     {
-    	System.out.println("Session started Error" +throwable.getMessage());
-        log.warning(throwable.toString());
-        throwable.printStackTrace();
+//    	System.out.println("Session started Error" +throwable.getMessage());
+//        log.warning(throwable.toString());
+//        throwable.printStackTrace();
     }
 
     public static void broadcast(Message message) throws IOException, EncodeException 
