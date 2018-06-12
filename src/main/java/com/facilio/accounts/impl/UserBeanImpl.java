@@ -1126,10 +1126,6 @@ public class UserBeanImpl implements UserBean {
 	
 	static User createUserFromProps(Map<String, Object> prop) throws Exception {
 		User user = FieldUtil.getAsBeanFromMap(prop, User.class);
-		if (user.getPhotoId() > 0) {
-			FileStore fs = FileStoreFactory.getInstance().getFileStore();
-			user.setAvatarUrl(fs.getPrivateUrl(user.getPhotoId()));
-		}
 		return user;
 	}
 }
