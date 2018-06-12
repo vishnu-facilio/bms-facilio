@@ -125,7 +125,6 @@
 				<param name="includeProperties">assets,assets\[\d+\],assets\[\d+\].*</param>
 			</result>
 		</action>
-		
 		<action name="closeWorkorderRequest"
 			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="closeWorkOrderRequest">
 			<param name="permission">WORKORDER_CREATE</param>
@@ -141,6 +140,14 @@
 				<param name="root">activities</param>
 			</result>
 		</action> 
+		<action name="notelist" class="com.facilio.bmsconsole.actions.NoteAction"
+			method="getNotesList">
+			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
+			<result name="success" type="json">
+				<param name="root">notes</param>
+			</result>
+		</action>
+		
         <action name="logout" class="com.facilio.auth.actions.FacilioAuthAction"
                 method="apiLogout">
             <result name="success" type="json">
