@@ -141,6 +141,11 @@
 				<param name="root">activities</param>
 			</result>
 		</action> 
+		<action name="attachment" class="com.facilio.bmsconsole.actions.AttachmentAction" method="attachmentList">
+			<result name="success" type="json">
+				<param name="includeProperties">attachments,attachments\[\d+\],attachments\[\d+\].*</param>
+			</result>
+		</action>
         <action name="logout" class="com.facilio.auth.actions.FacilioAuthAction"
                 method="apiLogout">
             <result name="success" type="json">
