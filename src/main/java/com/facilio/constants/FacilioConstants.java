@@ -330,6 +330,8 @@ public class FacilioConstants {
 		
 		public static final String REQUESTER = "requester";
 		
+		public static final String IS_PUBLIC_REQUEST = "is_public_request";
+		
 		public static final String SUPPORT_EMAIL = "supportEmail";
 		public static final String SUPPORT_EMAIL_LIST = "supportEmails";
 		public static final String EMAIL_SETTING = "emailSetting";

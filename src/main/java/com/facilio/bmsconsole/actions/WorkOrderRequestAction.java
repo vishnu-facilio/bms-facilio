@@ -8,6 +8,7 @@ import org.apache.commons.chain.Command;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -148,6 +149,10 @@ public class WorkOrderRequestAction extends ActionSupport {
 		workorderrequest.setSourceType(TicketContext.SourceType.WEB_REQUEST);
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.REQUESTER, workorderrequest.getRequester());
+		if (AccountUtil.getCurrentUser() == null && workorderrequest.getRequester().getEmail() != null) {
+			// public work request
+			context.put(FacilioConstants.ContextNames.IS_PUBLIC_REQUEST, true);
+		}
 		context.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, workorderrequest);
 		
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, this.attachedFiles);
