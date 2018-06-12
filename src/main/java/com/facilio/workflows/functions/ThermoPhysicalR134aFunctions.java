@@ -8,7 +8,7 @@ import java.util.TreeSet;
 import com.facilio.workflow.exceptions.FunctionParamException;
 import com.facilio.workflows.util.WorkflowUtil;
 
-public enum ChillerR123Functions implements FacilioWorkflowFunctionInterface {
+public enum ThermoPhysicalR134aFunctions implements FacilioWorkflowFunctionInterface {
 
 	GET_TEMP_FROM_PRESSURE(1,"getTempratureFromPresure") {
 		@Override
@@ -34,7 +34,6 @@ public enum ChillerR123Functions implements FacilioWorkflowFunctionInterface {
 				Object[] keysetArray = keySet.toArray();
 				
 				for(int i=0;i<keysetArray.length;i++) {
-					
 					double key = (double) keysetArray[i];
 					if(presure < key) {
 						if( i== 0) {
@@ -67,7 +66,7 @@ public enum ChillerR123Functions implements FacilioWorkflowFunctionInterface {
 	
 	private Integer value;
 	private String functionName;
-	private String namespace = "chiller.r123";
+	private String namespace = "thermoPhysical.R134a";
 	private String params;
 	
 	public Integer getValue() {
@@ -94,17 +93,17 @@ public enum ChillerR123Functions implements FacilioWorkflowFunctionInterface {
 	public void setParams(String params) {
 		this.params = params;
 	}
-	ChillerR123Functions(Integer value,String functionName) {
+	ThermoPhysicalR134aFunctions(Integer value,String functionName) {
 		this.value = value;
 		this.functionName = functionName;
 	}
-	public static ChillerR123Functions getChillerR123Function(String functionName) {
+	public static ThermoPhysicalR134aFunctions getThermoPhysicalR134aFunction(String functionName) {
 		return DEFAULT_FUNCTIONS.get(functionName);
 	}
-	static final Map<String, ChillerR123Functions> DEFAULT_FUNCTIONS = Collections.unmodifiableMap(initTypeMap());
-	static Map<String, ChillerR123Functions> initTypeMap() {
-		Map<String, ChillerR123Functions> typeMap = new HashMap<>();
-		for(ChillerR123Functions type : ChillerR123Functions.values()) {
+	static final Map<String, ThermoPhysicalR134aFunctions> DEFAULT_FUNCTIONS = Collections.unmodifiableMap(initTypeMap());
+	static Map<String, ThermoPhysicalR134aFunctions> initTypeMap() {
+		Map<String, ThermoPhysicalR134aFunctions> typeMap = new HashMap<>();
+		for(ThermoPhysicalR134aFunctions type : ThermoPhysicalR134aFunctions.values()) {
 			typeMap.put(type.getFunctionName(), type);
 		}
 		return typeMap;
