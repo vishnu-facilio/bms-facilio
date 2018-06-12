@@ -715,4 +715,20 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 		return duration;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public static TicketContext getParentTicket (long parentTicketId, String parentModuleName) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		SelectRecordsBuilder<? extends TicketContext> ticketBuilder = new SelectRecordsBuilder<TicketContext>()
+																.select(modBean.getAllFields(parentModuleName))
+																.moduleName(parentModuleName)
+																.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(parentModuleName))
+																.andCustomWhere("Tickets.ID = ?", parentTicketId)
+																;
+		List<? extends TicketContext> tickets = ticketBuilder.get();
+		if(tickets != null && !tickets.isEmpty()) {
+			return tickets.get(0);
+		}
+		
+		return null;
+	}
 }
