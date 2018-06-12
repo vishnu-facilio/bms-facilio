@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
@@ -45,6 +47,8 @@ public class GetWorkOrderRequestCommand implements Command {
 				context.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, workOrderRequest);
 				
 				TicketAPI.loadRelatedModules(workOrderRequest);
+				TicketAPI.loadTicketLookups(Collections.singleton(workOrderRequest));
+
 			}
 		}
 		else {

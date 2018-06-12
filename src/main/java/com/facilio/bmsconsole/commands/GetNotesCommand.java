@@ -1,12 +1,19 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -15,7 +22,9 @@ import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -65,7 +74,17 @@ public class GetNotesCommand implements Command {
 				selectBuilder.andCriteria(cri);
 			}
 			
-			context.put(FacilioConstants.ContextNames.NOTE_LIST, selectBuilder.get());
+			List<NoteContext> noteListContext = selectBuilder.get();
+			List<Long> ids = noteListContext.stream().map(note -> note.getCreatedBy().getId()).collect(Collectors.toList());
+			List<User> userList = AccountUtil.getUserBean().getUsers(null, ids);
+			Map<Long, User> userMap = userList.stream().collect(Collectors.toMap(User::getId, Function.identity(), 
+											(prevValue, curValue) -> { return prevValue; }));
+			if (userList != null) {
+				for (NoteContext notess : noteListContext) {
+					notess.setCreatedBy(userMap.get(notess.getCreatedBy().getId()));
+				}
+			}
+			context.put(FacilioConstants.ContextNames.NOTE_LIST, noteListContext);
 		}
 		return false;
 	}

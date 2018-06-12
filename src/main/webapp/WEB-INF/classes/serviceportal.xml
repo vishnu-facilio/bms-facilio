@@ -36,10 +36,13 @@
   	<action name="index" >
         <result>/service/index.jsp</result>
     </action>
-  
-  		<action name="getrequests" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="getWorkOrderRequest">
+		
+		<action name="getrequests"
+			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="viewWorkOrderRequest">
+			<param name="moduleName">workorderrequest</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
-				<param name="includeProperties">workorderrequest.*</param>
+				<param name="includeProperties">^workorderrequest.*</param>
 			</result>
 		</action>
         <action name="apisignup" class="com.facilio.auth.actions.FacilioAuthAction"
@@ -169,7 +172,7 @@
 			method="addNote">
 			<param name="permission">WORKORDER_READ,TASK_READ</param>
 			<result name="success" type="json">
-				<param name="includeProperties">noteId</param>
+				<param name="includeProperties">^note.*</param>
 			</result>
 		</action>
 		

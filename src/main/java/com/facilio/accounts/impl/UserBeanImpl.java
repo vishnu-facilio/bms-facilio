@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
@@ -18,8 +20,10 @@ import com.facilio.accounts.util.AccountEmailTemplate;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -785,7 +789,7 @@ public class UserBeanImpl implements UserBean {
 	}
 
 	@Override
-	public List<User> getUsers(Criteria criteria) throws Exception {
+	public List<User> getUsers(Criteria criteria, List<Long>... ouids) throws Exception {
 		
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getUserFields());
@@ -798,6 +802,10 @@ public class UserBeanImpl implements UserBean {
 				.on("Users.USERID = ORG_Users.USERID")
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getOrgUserModule()))
 				.andCriteria(criteria);
+				
+		if (ouids != null && ouids.length == 1) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.ORG_USERID", "ouid", StringUtils.join(ouids[0], ","), NumberOperators.EQUALS));
+		}
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {

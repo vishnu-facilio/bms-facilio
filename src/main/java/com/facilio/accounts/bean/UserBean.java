@@ -45,7 +45,7 @@ public interface UserBean {
 	
 	public User getUser(String email) throws Exception;
 	
-	public List<User> getUsers(Criteria criteria) throws Exception;
+	public List<User> getUsers(Criteria criteria, List<Long>... ouids) throws Exception;
 
 	User getFacilioUser(long orgId, String email) throws Exception;
 

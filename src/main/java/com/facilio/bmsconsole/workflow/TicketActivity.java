@@ -44,7 +44,15 @@ public class TicketActivity {
 	public void setModifiedBy(long modifiedBy) {
 		this.modifiedBy = modifiedBy;
 	}
+	private String name;
 	
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	private ActivityType activityType;
 	public int getActivityType() {
 		if(activityType != null) {
