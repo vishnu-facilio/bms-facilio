@@ -10,6 +10,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -47,11 +48,21 @@ public class GetNotesCommand implements Command {
 			if (portalID > 0)
 			{
 				System.out.println("AccountUtil	 + " + portalID);
+				Condition createdByCond = new Condition();
+				createdByCond.setField(modBean.getField("createdBy", moduleName));
+				createdByCond.setOperator(NumberOperators.EQUALS);
+				createdByCond.setValue(AccountUtil.getCurrentUser().getId() + "");
+				
 				Condition notifyCondition = new Condition();
 				notifyCondition.setField(modBean.getField("notifyRequester", moduleName));
 				notifyCondition.setOperator(BooleanOperators.IS);
-				notifyCondition.setValue(String.valueOf(true));		
-				selectBuilder.andCondition(notifyCondition);
+				notifyCondition.setValue(String.valueOf(true));
+				
+				Criteria cri = new Criteria();
+				cri.addOrCondition(createdByCond);
+				cri.addOrCondition(notifyCondition);
+				
+				selectBuilder.andCriteria(cri);
 			}
 			
 			context.put(FacilioConstants.ContextNames.NOTE_LIST, selectBuilder.get());

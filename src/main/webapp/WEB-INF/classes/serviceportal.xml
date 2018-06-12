@@ -160,6 +160,13 @@
 				<param name="root">notes</param>
 			</result>
 		</action>
+		<action name="addNotes" class="com.facilio.bmsconsole.actions.NoteAction"
+			method="addNote">
+			<param name="permission">WORKORDER_READ,TASK_READ</param>
+			<result name="success" type="json">
+				<param name="includeProperties">noteId</param>
+			</result>
+		</action>
 		
         <action name="logout" class="com.facilio.auth.actions.FacilioAuthAction"
                 method="apiLogout">
@@ -167,6 +174,7 @@
                 <param name="includeProperties">^account.*</param>
             </result>
         </action>
+
 
 	</package>
 	
