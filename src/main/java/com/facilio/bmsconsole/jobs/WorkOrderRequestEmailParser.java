@@ -135,7 +135,7 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 			LOGGER.info("Support email addresses : "+toAddresses);
 			for(Address address : toAddresses) {
 				String email = ((InternetAddress) address).getAddress();
-				if(email.endsWith(".facilio.me")) {
+				if(email.endsWith(".facilio.com")) {
 					SupportEmailContext supportEmail = SupportEmailAPI.getSupportEmailFromFwdEmail(email);
 					LOGGER.info("Support email object : "+supportEmail);
 					return supportEmail;
