@@ -1,7 +1,12 @@
 package com.facilio.workflows.util;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -44,17 +49,21 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.sql.SQLScriptRunner;
 import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowFieldContext;
 import com.facilio.workflows.context.WorkflowFunctionContext;
+import com.facilio.workflows.functions.ChillerR123Functions;
 import com.facilio.workflows.functions.FacilioDateFunction;
 import com.facilio.workflows.functions.FacilioDefaultFunction;
 import com.facilio.workflows.functions.FacilioMathFunction;
 import com.facilio.workflows.functions.FacilioWorkflowFunctionInterface;
 
 public class WorkflowUtil {
+	
+	public static Map<Double, Double> CHILLER_TEMP_VS_PRESSURE = null;
 	
 	private static final Logger LOGGER = Logger.getLogger(WorkflowUtil.class.getName());
 
@@ -85,6 +94,37 @@ public class WorkflowUtil {
 		ARITHMETIC_OPPERATORS.add("/");
 		ARITHMETIC_OPPERATORS.add("%");
 		ARITHMETIC_OPPERATORS.add("^");
+	}
+	
+	public static synchronized Map<Double, Double> getChillerTempVsPressureMap() {
+		
+		if(CHILLER_TEMP_VS_PRESSURE == null) {
+
+			WorkflowUtil w = new WorkflowUtil();
+			URL res = w.getClass().getClassLoader().getResource("conf/chillerdata.csv");
+			File chillerCSVFile = new File(w.getClass().getClassLoader().getResource("conf/chillerdata.csv").getFile());
+	        String line = "";
+	        String cvsSplitBy = ",";
+
+	        Map<Double,Double> temp = new HashMap<>();
+	        try (BufferedReader br = new BufferedReader(new FileReader(chillerCSVFile))) {
+	            while ((line = br.readLine()) != null) {
+
+	                String[] values = line.split(cvsSplitBy);
+
+	                Double presure = Double.parseDouble(values[0]);
+	                Double temprature = Double.parseDouble(values[1]);
+	                
+	                temp.put(presure, temprature);
+	            }
+	        } 
+	        catch (IOException e) {
+	            e.printStackTrace();
+	        }
+	        CHILLER_TEMP_VS_PRESSURE = temp;
+		}
+		
+		return CHILLER_TEMP_VS_PRESSURE;
 	}
 	
 	public static List<String> getComparisionOpperator() {
@@ -795,10 +835,10 @@ public class WorkflowUtil {
 		StringBuilder sb =  new StringBuilder();
 		for(String value : values) {
 			value = value.trim();
-			if(value.equals("&&")) {
+			if(value.equals("and")) {
 				sb.append("AND ");
 			}
-			else if(value.equals("||")) {
+			else if(value.equals("or")) {
 				sb.append("OR ");
 			}
 			else if(value.equals("(")) {
@@ -811,20 +851,23 @@ public class WorkflowUtil {
 				Matcher matcher = condtionStringpattern.matcher(value);
 				while (matcher.find()) {
 					String fieldName = matcher.group(2);
-					FacilioField field = null;
-					if(fieldName.equals("id")) {
-						field = FieldFactory.getIdField(modBean.getModule(moduleName));
-					}
-					else {
-						field = fieldMap.get(fieldName);
-					}
-					Operator operator = field.getDataTypeEnum().getOperator(matcher.group(5));
-					String conditionValue = matcher.group(6);
+					FacilioField field = modBean.getField(fieldName, moduleName);
+					Operator operator = field.getDataTypeEnum().getOperator(matcher.group(7));
+					String conditionValue = matcher.group(8);
 					
 					Condition condition = null;
 					if (matcher.group(3) != null) {
 						if(operator instanceof DateOperators && ((DateOperators)operator).isBaseLineSupported()) {
 							BaseLineContext baseLine = BaseLineAPI.getBaseLine(Long.parseLong(matcher.group(4)));
+							
+							if(matcher.group(6) != null && !matcher.group(6).equals("")) {
+								Integer isAdjust = Integer.parseInt(matcher.group(6));
+								baseLine.setAdjustType(isAdjust);
+							}
+							else {
+								baseLine.setAdjustType(AdjustType.WEEK);
+							}
+							
 							condition = baseLine.getBaseLineCondition(field, ((DateOperators)operator).getRange(conditionValue));
 						}
 						else {
@@ -995,7 +1038,12 @@ public class WorkflowUtil {
 			
 			facilioWorkflowFunction = FacilioDateFunction.getFacilioDateFunction(functionName);
 			break;
+		case "chiller" :
+			
+			facilioWorkflowFunction = ChillerR123Functions.getChillerR123Function(functionName);
+			break;
 		}
+		
 		
 		return facilioWorkflowFunction;
 	}
