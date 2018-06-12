@@ -29,6 +29,8 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.EncryptionUtil;
 import com.facilio.bmsconsole.util.SMSUtil;
+import com.facilio.fs.FileStore;
+import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.LRUCache;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -647,7 +649,7 @@ public class UserBeanImpl implements UserBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			User user =  FieldUtil.getAsBeanFromMap(props.get(0), User.class);
+			User user =  createUserFromProps(props.get(0));
 			user.setAccessibleSpace(getAccessibleSpaceList(ouid));
 			return user;
 		}
@@ -670,7 +672,7 @@ public class UserBeanImpl implements UserBean {
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			User user =  FieldUtil.getAsBeanFromMap(props.get(0), User.class);
+			User user =  createUserFromProps(props.get(0));
 			user.setAccessibleSpace(getAccessibleSpaceList(ouid));
 			return user;
 		}
@@ -719,7 +721,7 @@ public class UserBeanImpl implements UserBean {
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			User user =  FieldUtil.getAsBeanFromMap(props.get(0), User.class);
+			User user =  createUserFromProps(props.get(0));
 			user.setAccessibleSpace(getAccessibleSpaceList(user.getOuid()));
 		System.out.println(user.getEmail()+"$$$$$$$$$$$$$$$$$$$$$"+ user.getMobile());
 			return user;
@@ -748,7 +750,7 @@ public class UserBeanImpl implements UserBean {
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			User user =  FieldUtil.getAsBeanFromMap(props.get(0), User.class);
+			User user =  createUserFromProps(props.get(0));
 			user.setAccessibleSpace(getAccessibleSpaceList(user.getOuid()));
 			return user;
 		}
@@ -777,7 +779,7 @@ public class UserBeanImpl implements UserBean {
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			return FieldUtil.getAsBeanFromMap(props.get(0), User.class);
+			return createUserFromProps(props.get(0));
 		}
 		return null;
 	}
@@ -801,10 +803,9 @@ public class UserBeanImpl implements UserBean {
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
-				User user = FieldUtil.getAsBeanFromMap(prop, User.class);
+				User user = createUserFromProps(prop);
 				user.setAccessibleSpace(getAccessibleSpaceList(user.getOuid()));
 				users.add(user);
-//				users.add(FieldUtil.getAsBeanFromMap(prop, User.class));
 			}
 			return users;
 		}
@@ -829,7 +830,7 @@ public class UserBeanImpl implements UserBean {
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			User user =  FieldUtil.getAsBeanFromMap(props.get(0), User.class);
+			User user =  createUserFromProps(props.get(0));
 			user.setAccessibleSpace(getAccessibleSpaceList(user.getOuid()));
 			return user;
 		}
@@ -852,10 +853,9 @@ public class UserBeanImpl implements UserBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			User user =  FieldUtil.getAsBeanFromMap(props.get(0), User.class);
+			User user =  createUserFromProps(props.get(0));
 			user.setAccessibleSpace(getAccessibleSpaceList(user.getOuid()));
 			return user;
-//			return FieldUtil.getAsBeanFromMap(props.get(0), User.class);
 		}
 		return null;
 	}
@@ -1010,7 +1010,7 @@ public class UserBeanImpl implements UserBean {
 		builder.delete();
 	}
 
-	public static List<Long> getAccessibleSpaceList (long uid) throws Exception {
+	static List<Long> getAccessibleSpaceList (long uid) throws Exception {
 	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 			.select(AccountConstants.getAccessbileSpaceFields())
 			.table(ModuleFactory.getAccessibleSpaceModule().getTableName())
@@ -1122,5 +1122,14 @@ public class UserBeanImpl implements UserBean {
 		builder.delete();
 		
 		LRUCache.getUserSessionCache().remove(email);
+	}
+	
+	static User createUserFromProps(Map<String, Object> prop) throws Exception {
+		User user = FieldUtil.getAsBeanFromMap(prop, User.class);
+		if (user.getPhotoId() > 0) {
+			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			user.setAvatarUrl(fs.getPrivateUrl(user.getPhotoId()));
+		}
+		return user;
 	}
 }
