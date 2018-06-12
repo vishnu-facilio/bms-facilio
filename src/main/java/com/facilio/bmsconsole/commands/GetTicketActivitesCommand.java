@@ -7,13 +7,20 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.StringOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.bmsconsole.workflow.TicketActivity;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class GetTicketActivitesCommand implements Command {
@@ -22,17 +29,31 @@ public class GetTicketActivitesCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		long ticketId = (long) context.get(FacilioConstants.ContextNames.TICKET_ID);
+		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+//		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioField> fields = FieldFactory.getTicketActivityFields();
 		if(ticketId != -1) {
 			FacilioModule module = ModuleFactory.getTicketActivityModule();
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-															.select(FieldFactory.getTicketActivityFields())
+															.select(fields)
 															.table(module.getTableName())
 															.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 															.andCustomWhere("TICKET_ID = ?", ticketId)
 															.orderBy("MODIFIED_TIME desc");
 			
+			long portalID =  AccountUtil.getCurrentUser().getPortalId();
+			if (portalID > 0)
+			{
+				Condition con = new Condition();
+				int index = fields.indexOf("activityType");
+				if( index > -1) {
+					con.setField(fields.get(index));
+					con.setOperator(StringOperators.IS);
+					con.setValue(ActivityType.CLOSE_WORK_ORDER.getValue() + "," + ActivityType.EDIT.getValue());
+					selectBuilder.andCondition(con);
+				}
+			}
 			List<Map<String, Object>> activityProps = selectBuilder.get();
-			
 			if(activityProps != null && !activityProps.isEmpty()) {
 				List<TicketActivity> activities = new ArrayList<>();
 				for(Map<String, Object> prop : activityProps) {

@@ -45,7 +45,7 @@ public class NoteContext extends ModuleBaseWithCustomFields {
 		this.parentId = parentId;
 	}
 	
-	public boolean notifyRequester = false;
+	private boolean notifyRequester = false;
 	public boolean getNotifyRequester() {
 		return notifyRequester;
 	}

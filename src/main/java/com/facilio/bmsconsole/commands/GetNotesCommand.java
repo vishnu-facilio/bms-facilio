@@ -5,9 +5,12 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.NoteContext;
+import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -39,6 +42,17 @@ public class GetNotesCommand implements Command {
 																		.beanClass(NoteContext.class)
 																		.andCondition(idCondition)
 																		.maxLevel(0);
+			System.out.println("getPortalId" + AccountUtil.getCurrentUser().getPortalId());
+			long portalID =  AccountUtil.getCurrentUser().getPortalId();
+			if (portalID > 0)
+			{
+				System.out.println("AccountUtil	 + " + portalID);
+				Condition notifyCondition = new Condition();
+				notifyCondition.setField(modBean.getField("notifyRequester", moduleName));
+				notifyCondition.setOperator(BooleanOperators.IS);
+				notifyCondition.setValue(String.valueOf(true));		
+				selectBuilder.andCondition(notifyCondition);
+			}
 			
 			context.put(FacilioConstants.ContextNames.NOTE_LIST, selectBuilder.get());
 		}
