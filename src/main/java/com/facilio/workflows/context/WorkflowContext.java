@@ -19,6 +19,19 @@ public class WorkflowContext {
 	
 	public static String VARIABLE_PLACE_HOLDER = "\\$\\{.+\\}";
 
+	public Map<String,List<Map<String,Object>>> CACHED_DATA = new HashMap<String, List<Map<String,Object>>>();
+	
+	public Map<String, List<Map<String, Object>>> getCachedData() {
+		return CACHED_DATA;
+	}
+	public void setCachedData(Map<String, List<Map<String, Object>>> cACHED_DATA) {
+		CACHED_DATA = cACHED_DATA;
+	}
+	
+	public void addCachedData(String name, List<Map<String, Object>> data) {
+		CACHED_DATA.put(name, data);
+	}
+
 	Long id;
 	Long orgId;
 	String workflowString;
@@ -27,6 +40,15 @@ public class WorkflowContext {
 	Map<String,Object> variableResultMap;
 	String resultEvaluator;
 	
+	boolean isFromDerivation;
+	
+	public boolean isFromDerivation() {
+		return isFromDerivation;
+	}
+	public void setFromDerivation(boolean isFromDerivation) {
+		this.isFromDerivation = isFromDerivation;
+	}
+
 	private List<Long> dependentFieldIds;
 	public List<Long> getDependentFieldIds() {
 		return dependentFieldIds;
@@ -106,6 +128,7 @@ public class WorkflowContext {
 		if(expressions == null) {
 			expressions = new ArrayList<>();
 		}
+		expression.setWorkflowContext(this);
 		expressions.add(expression);
 	}
 
