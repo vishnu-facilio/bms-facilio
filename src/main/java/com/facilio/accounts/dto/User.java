@@ -11,8 +11,6 @@ import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.PickListOperators;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
 
 public class User {
 	
@@ -89,13 +87,15 @@ public class User {
 	public long getPhotoId() {
 		return photoId;
 	}
-	public String getAvatarUrl() throws Exception {
-		if (this.photoId > 0) {
-			FileStore fs = FileStoreFactory.getInstance().getFileStore();
-			return fs.getPrivateUrl(this.photoId);
-		}
-		return null;
+	
+	private String avatarUrl;
+	public String getAvatarUrl() {
+		return avatarUrl;
 	}
+	public void setAvatarUrl(String avatarUrl) {
+		this.avatarUrl = avatarUrl;
+	}
+	
 	public void setPhotoId(long photoId) {
 		this.photoId = photoId;
 	}

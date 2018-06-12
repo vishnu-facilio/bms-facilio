@@ -17,6 +17,8 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.fs.FileStore;
+import com.facilio.fs.FileStoreFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
@@ -176,9 +178,13 @@ public class OrgBeanImpl implements OrgBean {
 	
 	private Organization createOrgFromProps(Map<String, Object> prop) throws Exception {
 		Organization org = FieldUtil.getAsBeanFromMap(prop, Organization.class);
+		if (org.getLogoId() > 0) {
+			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			org.setLogoUrl(fs.getPrivateUrl(org.getLogoId()));
+		}
 		return org;
 	}
-
+	
     @Override
     public List<User> getOrgPortalUsers(long orgId) throws Exception {
 		FacilioModule portalUsersModule = AccountConstants.getPortalUserModule();
@@ -203,7 +209,7 @@ public class OrgBeanImpl implements OrgBean {
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
-				User user = FieldUtil.getAsBeanFromMap(prop, User.class);
+				User user = UserBeanImpl.createUserFromProps(prop);
 				user.setFacilioAuth(true);
 				users.add(user);
 			}
@@ -230,10 +236,9 @@ public class OrgBeanImpl implements OrgBean {
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
-				User user = FieldUtil.getAsBeanFromMap(prop, User.class);
+				User user = UserBeanImpl.createUserFromProps(prop);
 				user.setAccessibleSpace(UserBeanImpl.getAccessibleSpaceList(user.getOuid()));
 				users.add(user);
-//				users.add(FieldUtil.getAsBeanFromMap(prop, User.class));
 			}
 			return users;
 		}
@@ -258,7 +263,7 @@ public class OrgBeanImpl implements OrgBean {
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
-				users.add(FieldUtil.getAsBeanFromMap(prop, User.class));
+				users.add(UserBeanImpl.createUserFromProps(prop));
 			}
 			return users;
 		}
@@ -282,7 +287,7 @@ public class OrgBeanImpl implements OrgBean {
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
-				users.add(FieldUtil.getAsBeanFromMap(prop, User.class));
+				users.add(UserBeanImpl.createUserFromProps(prop));
 			}
 			return users;
 		}
@@ -309,7 +314,7 @@ public class OrgBeanImpl implements OrgBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			return FieldUtil.getAsBeanFromMap(props.get(0), User.class);
+			return UserBeanImpl.createUserFromProps(props.get(0));
 		}
 		return null;
 	}

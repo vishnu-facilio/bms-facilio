@@ -14,6 +14,8 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -25,19 +27,17 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
-import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 
 public class WeatherUtil {
-	
+	private static final Logger LOGGER = LogManager.getLogger(WeatherUtil.class.getName());
 	private static String weatherURL=AwsUtil.getConfig("weather.url");
 	private static String weatherParams="?units=si&exclude=flags,daily,hourly,alerts";
 	
@@ -181,7 +181,9 @@ public class WeatherUtil {
 		
 		List<Map<String, Object>> weatherStation= getWeatherStation(site.getSiteId());
 		if(weatherStation!=null && !weatherStation.isEmpty()) {
-			return weatherStation.get(0);
+			Map<String, Object> prop = weatherStation.get(0);
+			LOGGER.info("Weather Util::ORGID::"+AccountUtil.getCurrentOrg().getId()+"::Location::"+prop);
+			return prop;
 		}
 		
 		LocationContext location= site.getLocation();
