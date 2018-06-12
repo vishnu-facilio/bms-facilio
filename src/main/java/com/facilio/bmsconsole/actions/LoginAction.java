@@ -644,7 +644,10 @@ public class LoginAction extends ActionSupport{
 		account.put("org", AccountUtil.getCurrentOrg());
 		account.put("user", AccountUtil.getCurrentUser());
 		account.put("portalInfo", AccountUtil.getPortalInfo());
-
+		List<User> users = AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId());
+		Map<String, Object> data = new HashMap<>();
+		data.put("users", users);
+		account.put("data", data);
 		return SUCCESS;
 	}
 
