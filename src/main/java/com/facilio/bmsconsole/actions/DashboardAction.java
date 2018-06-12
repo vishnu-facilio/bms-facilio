@@ -753,6 +753,7 @@ public class DashboardAction extends ActionSupport {
 	@SuppressWarnings("unchecked")
 	private String getDerivationData() throws Exception {
 		WorkflowContext workflow = WorkflowUtil.getWorkflowContext(derivation.getWorkflowId(), true);
+//		workflow.setFromDerivation(true);
 		Map<Long,Long> intervalMap;
 		if (xAggr != 0) {
 			FacilioFrequency frequency = DashboardUtil.getAggrFrequency(xAggr);

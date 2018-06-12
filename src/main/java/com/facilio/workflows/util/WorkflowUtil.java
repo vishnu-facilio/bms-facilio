@@ -96,6 +96,30 @@ public class WorkflowUtil {
 		ARITHMETIC_OPPERATORS.add("^");
 	}
 	
+	public static List<Object> getFieldAsListFromProperties(List<Map<String,Object>> props, String fieldName) {
+		
+		List<Object> values = null;
+		for(Map<String, Object> prop :props) {
+			if(values == null) {
+				values = new ArrayList<>();
+			}
+			Object value = prop.get(fieldName);
+			values.add(value);
+		}
+		return values;
+	}
+	public static String getParentIdFromCriteria (Criteria criteria) {
+		
+		Map<Integer, Condition> conditions = criteria.getConditions();
+		for(Integer key:conditions.keySet()) {
+			Condition condition = conditions.get(key);
+			if(condition.getFieldName().contains("parentId")) {
+				return condition.getValue();
+			}
+		}
+		return null;
+	}
+	
 	public static synchronized Map<Double, Double> getChillerTempVsPressureMap() {
 		
 		if(CHILLER_TEMP_VS_PRESSURE == null) {

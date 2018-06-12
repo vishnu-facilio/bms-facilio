@@ -198,11 +198,14 @@ public class OrgBeanImpl implements OrgBean {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(portalId);
 		fields.addAll(AccountConstants.getPortalUserFields());
+		fields.addAll(AccountConstants.getUserFields());
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(portalUsersModule.getTableName())
 				.innerJoin(portalInfoModule.getTableName())
 				.on(portalUsersModule.getTableName()+".PORTALID = PortalInfo.PORTALID")
+				.innerJoin("Users")
+				.on(portalUsersModule.getTableName()+".USERID = Users.USERID")
 				.andCustomWhere("PortalInfo.ORGID="+ orgId);
 
 		List<Map<String, Object>> props = selectBuilder.get();

@@ -23,6 +23,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.workflows.util.ExpressionAggregateOperator;
 import com.facilio.workflows.util.WorkflowUtil;
+import com.google.common.base.Predicate;
 
 public class ExpressionContext {
 	
@@ -44,7 +45,16 @@ public class ExpressionContext {
 	String limit;
 	String groupBy;
 	Map<Integer,Long> conditionSeqVsBaselineId;
+	WorkflowContext workflowContext;
 	
+	public WorkflowContext getWorkflowContext() {
+		return workflowContext;
+	}
+
+	public void setWorkflowContext(WorkflowContext workflowContext) {
+		this.workflowContext = workflowContext;
+	}
+
 	boolean isCustomFunctionResultEvaluator;
 	WorkflowFunctionContext defaultFunctionContext;
 	
@@ -214,6 +224,27 @@ public class ExpressionContext {
 		}
 		if(getConstant() != null) {
 			return getConstant();
+		}
+		if(getWorkflowContext().isFromDerivation()) {
+			
+			String parentId = WorkflowUtil.getParentIdFromCriteria(criteria);
+			
+			List<Map<String, Object>> cachedDatas = this.getWorkflowContext().getCachedData().get(moduleName+"-"+parentId);
+			
+			if(cachedDatas == null) {
+				
+			}
+			
+			List<Map<String, Object>> passedData = new ArrayList<>();
+			for(Map<String, Object> cachedData :cachedDatas) {
+				org.apache.commons.collections.Predicate Predicate = criteria.computePredicate(cachedData);
+				if(Predicate.evaluate(cachedData)) {
+					passedData.add(cachedData);
+				}
+			}
+			if(getAggregateOpperator() != null) {
+				return getAggregateOpperator().getAggregateResult(passedData, fieldName);
+			}
 		}
 		List<Map<String, Object>> props = null;
 		if (!LookupSpecialTypeUtil.isSpecialType(moduleName)) {
