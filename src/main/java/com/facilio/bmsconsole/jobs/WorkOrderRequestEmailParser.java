@@ -9,6 +9,8 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.mail.util.MimeMessageParser;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.amazonaws.services.s3.model.S3Object;
 import com.facilio.accounts.dto.User;
@@ -28,6 +30,7 @@ import com.facilio.tasker.job.JobContext;
 public class WorkOrderRequestEmailParser extends FacilioJob {
 
 	public static final String S3_BUCKET_NAME = "ses-facilio-support";
+	private static final Logger LOGGER = LogManager.getLogger(WorkOrderRequestEmailParser.class.getName());
 	
 	private Map<String, Object> updateIsProcessed = new HashMap<>();
 	
@@ -104,7 +107,7 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 			workOrderRequest.setSourceType(TicketContext.SourceType.EMAIL_REQUEST);
 			
 			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", supportEmail.getOrgId());
-			System.out.println("Added Workorder from Email Parser : " + bean.addWorkOrderRequest(workOrderRequest));
+			LOGGER.info("Added Workorder from Email Parser : " + bean.addWorkOrderRequest(workOrderRequest));
 		}
 	}
 	
@@ -129,10 +132,13 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 	
 	private SupportEmailContext getSupportEmail(List<Address> toAddresses) throws Exception {
 		if(toAddresses != null) {
+			LOGGER.info("Support email addresses : "+toAddresses);
 			for(Address address : toAddresses) {
 				String email = ((InternetAddress) address).getAddress();
 				if(email.endsWith(".facilio.me")) {
-					return SupportEmailAPI.getSupportEmailFromFwdEmail(email);
+					SupportEmailContext supportEmail = SupportEmailAPI.getSupportEmailFromFwdEmail(email);
+					LOGGER.info("Support email object : "+supportEmail);
+					return supportEmail;
 				}
 			}
 		}
