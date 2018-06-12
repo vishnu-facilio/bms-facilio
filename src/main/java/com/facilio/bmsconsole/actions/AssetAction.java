@@ -139,6 +139,10 @@ public class AssetAction extends ActionSupport {
  		JSONObject pagination = new JSONObject();
  		pagination.put("page", getPage());
  		pagination.put("perPage", getPerPage());
+ 		if (getPerPage() < 0) {
+ 			pagination.put("perPage", 5000);
+ 		}
+ 		
  		context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
  		
  		Chain assetList = FacilioChainFactory.getAssetListChain();
