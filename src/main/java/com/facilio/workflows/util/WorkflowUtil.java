@@ -55,7 +55,7 @@ import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowFieldContext;
 import com.facilio.workflows.context.WorkflowFunctionContext;
-import com.facilio.workflows.functions.ChillerR123Functions;
+import com.facilio.workflows.functions.ThermoPhysicalR134aFunctions;
 import com.facilio.workflows.functions.FacilioDateFunction;
 import com.facilio.workflows.functions.FacilioDefaultFunction;
 import com.facilio.workflows.functions.FacilioMathFunction;
@@ -721,7 +721,19 @@ public class WorkflowUtil {
              			expressionContext.setIsCustomFunctionResultEvaluator(true);
              			WorkflowFunctionContext defaultFunctionContext = new WorkflowFunctionContext();
              			defaultFunctionContext.setNameSpace(matcher.group(1));
-             			defaultFunctionContext.setFunctionName(matcher.group(3));
+             			if(matcher.group(3).contains(".")) {
+             				String[] splits = matcher.group(3).split("\\.");
+             				
+             				String extraNameSpace = splits[0];
+             				String functionName = splits[1];
+             				
+             				defaultFunctionContext.setNameSpace(defaultFunctionContext.getNameSpace()+"."+extraNameSpace);
+             				defaultFunctionContext.setFunctionName(functionName);
+             			}
+             			else {
+             				defaultFunctionContext.setFunctionName(matcher.group(3));
+             			}
+             			
              			defaultFunctionContext.setParams(matcher.group(5));
              			expressionContext.setDefaultFunctionContext(defaultFunctionContext);
              		}
@@ -1038,9 +1050,9 @@ public class WorkflowUtil {
 			
 			facilioWorkflowFunction = FacilioDateFunction.getFacilioDateFunction(functionName);
 			break;
-		case "chiller" :
+		case "thermoPhysical.R134a" :
 			
-			facilioWorkflowFunction = ChillerR123Functions.getChillerR123Function(functionName);
+			facilioWorkflowFunction = ThermoPhysicalR134aFunctions.getThermoPhysicalR134aFunction(functionName);
 			break;
 		}
 		
