@@ -33,14 +33,6 @@ public class AccountUtil {
 	
 	public static void setCurrentAccount(Account account) throws Exception {
 		currentAccount.set(account);
-		if (account.getOrg() != null && account.getOrg().getLogoId() > 0) {
-			FileStore fs = FileStoreFactory.getInstance().getFileStore();
-			account.getOrg().setLogoUrl(fs.getPrivateUrl(account.getOrg().getLogoId()));
-		}
-		if (account.getUser() != null && account.getUser().getPhotoId() > 0) {
-			FileStore fs = FileStoreFactory.getInstance().getFileStore();
-			account.getUser().setAvatarUrl(fs.getPrivateUrl(account.getUser().getPhotoId()));
-		}
 	}
 	
 	public static void setCurrentAccount(long orgId) throws Exception {
