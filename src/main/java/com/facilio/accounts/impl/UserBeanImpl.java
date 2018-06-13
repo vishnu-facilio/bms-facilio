@@ -94,10 +94,10 @@ public class UserBeanImpl implements UserBean {
 	}
 	
 	private long addUserEntry(User user) throws Exception {
-		return addUserEntry(user, true);
+		return addUserEntry(user, true, false);
 	}
 
-	private long addUserEntry(User user, boolean emailVerificationRequired) throws Exception {
+	private long addUserEntry(User user, boolean emailVerificationRequired, boolean isPortalUser) throws Exception {
 
 		List<FacilioField> fields = AccountConstants.getUserFields();
 		fields.add(AccountConstants.getUserPasswordField());
@@ -111,7 +111,9 @@ public class UserBeanImpl implements UserBean {
 		long userId = (Long) props.get("id");
 		user.setUid(userId);
 		if(emailVerificationRequired) {
-			sendEmailRegistration(user);
+			if (!isPortalUser) {
+				sendEmailRegistration(user);
+			}
 		}
 		return userId;
 	}
@@ -232,7 +234,7 @@ public class UserBeanImpl implements UserBean {
 		if (uid == -1) {
 			user.setTimezone(AccountUtil.getCurrentOrg().getTimezone());
 			user.setLanguage(AccountUtil.getCurrentUser().getLanguage());
-			uid = addUserEntry(user, false);
+			uid = addUserEntry(user, false, false);
 			user.setUid(uid);
 			addFacilioUser(user);
 			user.setDefaultOrg(true);
@@ -259,9 +261,21 @@ public class UserBeanImpl implements UserBean {
 
 		return ouid;
 	}
+	
+public long inviteRequester(long orgId, User user) throws Exception {
+		
+		long ouid = addRequester(orgId, user);
+		Organization portalOrg = AccountUtil.getOrgBean().getPortalOrg(AccountUtil.getCurrentOrg().getDomain());
+		user.setPortalId(portalOrg.getPortalId());
+		sendInvitation(ouid, user);
+		
+		return ouid;
+	}
+
 
 	private User getUserFromToken(String userToken){
-		String token = EncryptionUtil.decode(userToken);
+		String[] tokenPortal = userToken.split("&");
+		String token = EncryptionUtil.decode(tokenPortal[0]);
 		String[] userObj = token.split(USER_TOKEN_REGEX);
 		User user = null;
 		if(userObj.length == 4) {
@@ -270,6 +284,13 @@ public class UserBeanImpl implements UserBean {
 			user.setUid(Long.parseLong(userObj[1]));
 			user.setEmail(userObj[2]);
 			user.setInvitedTime(Long.parseLong(userObj[3]));
+			if(tokenPortal.length > 1) {
+				String[] portalIdString = tokenPortal[1].split("=");
+				if(portalIdString.length > 1){
+					int portalId = Integer.parseInt(portalIdString[1].trim());
+					user.setPortalId(portalId);
+				}
+			}
 		}
 		return user;
 	}
@@ -330,12 +351,14 @@ public class UserBeanImpl implements UserBean {
 	}
 	
 	private void sendEmailRegistration(User user) throws Exception {
+		
 		String inviteLink = getUserLink(user, "/emailregistration/");
 		Map<String, Object> placeholders = new HashMap<>();
 		CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(user), placeholders);
 		placeholders.put("invitelink", inviteLink);
 		
 		AccountEmailTemplate.EMAIL_VERIFICATION.send(placeholders);
+
 	}
 
 	@Override
@@ -913,10 +936,10 @@ public class UserBeanImpl implements UserBean {
 		if (orgUser != null) {
 			return orgUser.getOuid();
 		}
-
+		Boolean isPortalRequester = true;
 		long uid = getPortalUid(user.getPortalId(), user.getEmail());
 		if (uid == -1) {
-			uid = addUserEntry(user);
+			uid = addUserEntry(user, false, true);
 			user.setDefaultOrg(true);
 		}
 		user.setUid(uid);
@@ -932,7 +955,9 @@ public class UserBeanImpl implements UserBean {
 		insertBuilder.save();
 		
 		long ouid = (Long) props.get("id");
+		
 		addFacilioRequestor(user);
+				
 		return ouid;
 	}
 

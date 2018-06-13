@@ -141,6 +141,36 @@ public class UserAction extends ActionSupport {
 		
 		return SUCCESS;
 	}
+	public String inviteRequester() throws Exception {
+		
+		// setting necessary fields
+		long orgid = AccountUtil.getCurrentOrg().getOrgId();
+		user.setOrgId(orgid);
+		if(user.getEmail() == null || user.getEmail().isEmpty()) {
+			user.setEmail(user.getMobile());
+		}
+
+		try {
+			AccountUtil.getUserBean().inviteRequester(orgid, user);
+			setUserId(user.getId());
+			
+		}
+		catch (Exception e) {
+			if (e instanceof AccountException) {
+				AccountException ae = (AccountException) e;
+				if (ae.getErrorCode().equals(AccountException.ErrorCode.EMAIL_ALREADY_EXISTS)) {
+					addFieldError("email", "This user already exists in your organization.");
+				}
+			}
+			else {
+				e.printStackTrace();
+				addFieldError("email", "This user already exists in your organization.");
+				System.out.println("........> Error");
+			}
+			return ERROR;
+		}
+		return SUCCESS;
+	}
 	
 	public String addUser() throws Exception {
 		
@@ -183,6 +213,21 @@ public class UserAction extends ActionSupport {
 			}
 			return ERROR;
 		}
+		return SUCCESS;
+	}
+	
+	public String addRequester() throws Exception {
+		
+		// setting necessary fields
+		user.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+		if(user.getEmail() == null || user.getEmail().isEmpty()) {
+			user.setEmail(user.getMobile());
+		}
+
+		
+		long requesterId = AccountUtil.getUserBean().addRequester(AccountUtil.getCurrentOrg().getOrgId(), user);
+		user.setId(requesterId);
+		
 		return SUCCESS;
 	}
 	
