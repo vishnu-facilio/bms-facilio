@@ -970,6 +970,8 @@ public class FieldFactory {
 		s3MessageIdField.setColumnName("S3_MESSAGE_ID");
 		s3MessageIdField.setModule(module);
 		fields.add(s3MessageIdField);
+		
+		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.DATE_TIME));
 
 		FacilioField isProcessField = new FacilioField();
 		isProcessField.setName("isProcessed");
@@ -3701,8 +3703,14 @@ public class FieldFactory {
 			case DECIMAL:
 				columnFld = new NumberField();
 				break;
+			case BOOLEAN:
+				columnFld = new BooleanField();
+				break;
 			case LOOKUP:
 				columnFld = new LookupField();
+				break;
+			case ENUM:
+				columnFld = new EnumField();
 				break;
 			default:
 				columnFld = new FacilioField();
