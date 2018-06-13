@@ -94,7 +94,7 @@ public class CalculateFormulaFieldsCommand implements Command {
 					}
 				}
 				catch (Exception e) {
-					LOGGER.error("Error occurred while calculating of "+formula+" for reading "+reading);
+					LOGGER.error("Error occurred while calculating of "+formula+" for reading "+reading, e);
 				}
 			}
 		}

@@ -115,6 +115,7 @@ public class ReadingContext extends ModuleBaseWithCustomFields {
 			Map<String, Object> localReadings=new HashMap<>(getReadings());
 			localReadings.put ("parentId",parentId);
 			localReadings.put ("ttime",ttime);
+			localReadings.put("id", getId());
 			return localReadings.toString();
 		}
 		return null;
