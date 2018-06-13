@@ -72,6 +72,8 @@ public class AddWOFromRequestCommand implements Command {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
 		context.put(FacilioConstants.ContextNames.INSERT_LEVEL, 2);
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.APPROVE_WORK_ORDER_REQUEST);
+		
 		
 		Command addWorkOrder = FacilioChainFactory.getAddWorkOrderChain();
 		addWorkOrder.execute(context);
