@@ -32,7 +32,8 @@ public class UpdateTaskCommand implements Command {
 		TaskContext task = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		if(task != null && recordIds != null && !recordIds.isEmpty()) {
-			updateParentTicketStatus(recordIds.get(0));
+			List<TaskContext> oldTasks = getTasks(recordIds);
+			updateParentTicketStatus(oldTasks.get(0));
 			
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
@@ -62,29 +63,30 @@ public class UpdateTaskCommand implements Command {
 																		.fields(fields)
 																		.andCondition(idCondition);
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, updateBuilder.update(task));
+			context.put(FacilioConstants.TicketActivity.OLD_TICKETS, oldTasks);
 		}
 		return false;
 	}
 	
-	private TaskContext getTask(long id) throws Exception {
+	private List<TaskContext> getTasks(List<Long> ids) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TASK);
 		SelectRecordsBuilder<TaskContext> builder = new SelectRecordsBuilder<TaskContext>()
 														.module(module)
 														.beanClass(TaskContext.class)
 														.select(modBean.getAllFields(FacilioConstants.ContextNames.TASK))
-														.andCondition(CriteriaAPI.getIdCondition(id, module));
+														.andCondition(CriteriaAPI.getIdCondition(ids, module));
 		
 		List<TaskContext> tasks = builder.get();
 		if(tasks != null && !tasks.isEmpty()) {
-			return tasks.get(0);
+			return tasks;
 		}
 		return null;
 	}
 	
-	private void updateParentTicketStatus(Long taskId) throws Exception {
+	private void updateParentTicketStatus(TaskContext task) throws Exception {
 		
-		TaskContext completeRecord = getTask(taskId);
+		//TaskContext completeRecord = getTask(taskId);
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule taskModule = modBean.getModule(FacilioConstants.ContextNames.TASK);
@@ -95,7 +97,7 @@ public class UpdateTaskCommand implements Command {
 				.select(ticketFields)
 				.module(module)
 				.beanClass(TicketContext.class)
-				.andCondition(CriteriaAPI.getIdCondition(completeRecord.getParentTicketId(), module))
+				.andCondition(CriteriaAPI.getIdCondition(task.getParentTicketId(), module))
 				.maxLevel(1);
 		
 		List<? extends TicketContext> tickets = builder.get();
@@ -115,7 +117,7 @@ public class UpdateTaskCommand implements Command {
 				UpdateRecordBuilder<TicketContext> updateBuilder = new UpdateRecordBuilder<TicketContext>()
 															.module(module)
 															.fields(ticketFields)
-															.andCondition(CriteriaAPI.getIdCondition(completeRecord.getParentTicketId(), module));
+															.andCondition(CriteriaAPI.getIdCondition(task.getParentTicketId(), module));
 				
 				updateBuilder.update(newTicket);
 			}
