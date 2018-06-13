@@ -60,12 +60,16 @@ public class GetTicketActivitesCommand implements Command {
 				for(Map<String, Object> prop : activityProps) {
 					TicketActivity checkIsNotify = FieldUtil.getAsBeanFromMap(prop, TicketActivity.class);
 					if (portalID > 0) {
-						System.out.println(checkIsNotify.getInfo().get("notifyRequester"));
-						if (checkIsNotify.getInfo().get("notifyRequester") != null) {
-							if ((boolean) checkIsNotify.getInfo().get("notifyRequester")) {
-								System.out.println("Boolean");
-								activities.add(checkIsNotify);
+						if (checkIsNotify.getActivityType() == ActivityType.ADD_TICKET_NOTE.getValue())
+						{
+							if (checkIsNotify.getInfo().get("notifyRequester") != null) {
+								if ((boolean) checkIsNotify.getInfo().get("notifyRequester")) {
+									activities.add(checkIsNotify);
+								}
 							}
+						}
+						else {
+							activities.add(checkIsNotify);
 						}
 					}
 					else {
