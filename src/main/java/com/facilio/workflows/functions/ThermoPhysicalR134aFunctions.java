@@ -37,7 +37,7 @@ public enum ThermoPhysicalR134aFunctions implements FacilioWorkflowFunctionInter
 					double key = (double) keysetArray[i];
 					if(presure < key) {
 						if( i== 0) {
-							return chillerMap.get(key);
+							return null;
 						}
 						greaterValue = key;
 						lesserValue = (double) keysetArray[i-1];
