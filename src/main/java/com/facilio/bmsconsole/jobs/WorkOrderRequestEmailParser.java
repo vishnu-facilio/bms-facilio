@@ -11,6 +11,7 @@ import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.mail.util.MimeMessageParser;
 import org.apache.log4j.LogManager;
@@ -118,12 +119,12 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 					LOGGER.info("Attachment Class name : "+attachment.getClass());
 					LOGGER.info("Attachment File Name : "+attachment.getName());
 					LOGGER.info("Attachment File Type : "+attachment.getContentType());
-//					attachedFilesFileName.add(attachment.getName());
-//					attachedFilesContentType.add(attachment.getContentType());
-//					
-//					File file = File.createTempFile(attachment.getName(), null);
-//					FileUtils.copyInputStreamToFile(attachment.getInputStream(), file);
-//					attachedFiles.add(file);
+					attachedFilesFileName.add(attachment.getName());
+					attachedFilesContentType.add(attachment.getContentType());
+					
+					File file = File.createTempFile(attachment.getName(), "");
+					FileUtils.copyInputStreamToFile(attachment.getInputStream(), file);
+					attachedFiles.add(file);
 				}
 				LOGGER.info("Parsed Attachments : "+attachedFiles);
 			}
