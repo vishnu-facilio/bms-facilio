@@ -1,13 +1,18 @@
 package com.facilio.bmsconsole.jobs;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.mail.util.MimeMessageParser;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -100,15 +105,33 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 			workOrderRequest.setRequester(requester);
 			
 			workOrderRequest.setSubject(parser.getSubject());
-			workOrderRequest.setDescription(parser.getPlainContent());
-			LOGGER.info("Attachment List : "+parser.getAttachmentList());
+			workOrderRequest.setDescription(StringUtils.trim(parser.getPlainContent()));
+			
+			List<DataSource> attachments = parser.getAttachmentList();
+			List<File> attachedFiles = null;
+			List<String> attachedFilesFileName = null;
+			List<String> attachedFilesContentType = null;
+			if (attachments != null && !attachments.isEmpty()) {
+				LOGGER.info("Attachment List : "+attachments);
+				attachedFiles = new ArrayList<>();
+				attachedFilesFileName = new ArrayList<>();
+				attachedFilesContentType = new ArrayList<>();
+				
+				for (DataSource attachment : attachments) {
+					attachedFilesFileName.add(attachment.getName());
+					attachedFilesContentType.add(attachment.getContentType());
+					attachedFiles.add(((FileDataSource) attachment).getFile());
+					LOGGER.info("Attachment Class name : "+attachment.getClass());
+				}
+			}
+			
 			if(supportEmail.getAutoAssignGroup() != null) {
 				workOrderRequest.setAssignmentGroup(supportEmail.getAutoAssignGroup());
 			}
 			workOrderRequest.setSourceType(TicketContext.SourceType.EMAIL_REQUEST);
 			
 			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", supportEmail.getOrgId());
-			LOGGER.info("Added Workorder from Email Parser : " + bean.addWorkOrderRequest(workOrderRequest));
+			LOGGER.info("Added Workorder from Email Parser : " + bean.addWorkOrderRequest(workOrderRequest, attachedFiles, attachedFilesFileName, attachedFilesContentType));
 		}
 	}
 	

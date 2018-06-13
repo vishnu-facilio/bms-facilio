@@ -1,5 +1,6 @@
 package com.facilio.beans;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +18,9 @@ public interface ModuleCRUDBean {
 	public long addWorkOrder(WorkOrderContext workorder) throws Exception;
 	
 	public long addWorkOrderRequest(WorkOrderRequestContext workOrderRequest) throws Exception;
+	
+	public long addWorkOrderRequest(WorkOrderRequestContext workOrderRequest, List<File> attachedFiles,
+			List<String> attachedFileNames, List<String> attachedFilesContentType) throws Exception;
 	
 	public AlarmContext processAlarm(JSONObject alarmInfo) throws Exception;
 	
@@ -48,5 +52,5 @@ public interface ModuleCRUDBean {
 	public void processTimeSeries(long timeStamp, JSONObject payLoad, Record record, 
 			IRecordProcessorCheckpointer checkpointer) throws Exception;
 	
-	public List<EventRuleContext> getActiveEventRules() throws Exception;	
+	public List<EventRuleContext> getActiveEventRules() throws Exception;
 }
