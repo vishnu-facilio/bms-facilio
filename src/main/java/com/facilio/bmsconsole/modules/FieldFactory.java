@@ -979,6 +979,8 @@ public class FieldFactory {
 		isProcessField.setColumnName("IS_PROCESSED");
 		isProcessField.setModule(module);
 		fields.add(isProcessField);
+		
+		fields.add(getField("requestId", "REQUEST_ID", module, FieldType.NUMBER));
 
 		return fields;
 	}
