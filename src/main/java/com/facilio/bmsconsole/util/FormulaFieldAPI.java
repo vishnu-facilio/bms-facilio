@@ -295,8 +295,6 @@ public class FormulaFieldAPI {
 			
 			Map<Long, WorkflowContext> workflowMap = WorkflowUtil.getWorkflowsAsMap(workflowIds, true);
 			Map<Long, List<Long>> dependentFieldMap = WorkflowUtil.getDependentFieldsIdsAsMap(workflowIds);
-			LOGGER.info("Dependent Fields of Workflows : "+workflowIds);
-			LOGGER.info(dependentFieldMap);
 			for (FormulaFieldContext enpi : enpiList) {
 				WorkflowContext workflow = workflowMap.get(enpi.getWorkflowId());
 				if (dependentFieldMap != null && !dependentFieldMap.isEmpty()) {
