@@ -101,6 +101,7 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 			
 			workOrderRequest.setSubject(parser.getSubject());
 			workOrderRequest.setDescription(parser.getPlainContent());
+			LOGGER.info("Attachment List : "+parser.getAttachmentList());
 			if(supportEmail.getAutoAssignGroup() != null) {
 				workOrderRequest.setAssignmentGroup(supportEmail.getAutoAssignGroup());
 			}
