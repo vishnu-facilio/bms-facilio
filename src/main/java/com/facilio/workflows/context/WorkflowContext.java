@@ -230,6 +230,9 @@ public class WorkflowContext {
 			if(variablesMap.get(key) != null) {
 				value = variablesMap.get(key).toString();
 			}
+			else if (!ignoreNullValues) {
+				return null;
+			}
 			expression.with(key, value);
 		}
 		BigDecimal result = expression.eval();

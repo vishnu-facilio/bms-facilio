@@ -23,7 +23,6 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.workflows.util.ExpressionAggregateOperator;
 import com.facilio.workflows.util.WorkflowUtil;
-import com.google.common.base.Predicate;
 
 public class ExpressionContext {
 	
