@@ -1,14 +1,14 @@
 {
 	"1": {
 		"name": "WORKORDER_ASSIGN_EMAIL",
-		"sender": "support@${org.domain}.facilio.com",
+		"sender": "noreply@${org.domain}.facilio.com",
 		"subject": "New Workorder Assigned",
 		"to": "${workorder.assignedTo.email:-}",
 		"message": "${workorder.assignedBy.name} has assigned a new workorder to you.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description:-}\nDue by : ${workorder.dueDateString:-}\nPlease view the new workorder here - ${workorder.url}\n\nRegards,\nTeam Facilio."
 	},
 	"2": {
 		"name": "WORKORDER_ACTIVITY_FOLLOWUP",
-		"sender": "support@${org.domain}.facilio.com",
+		"sender": "noreply@${org.domain}.facilio.com",
 		"subject": "Workorder Follow",
 		"to": "shivaraj@thingscient.com",
 		"message": "A new work order has been assigned to you. Please follow the link below to view the work order."
@@ -20,14 +20,14 @@
 	},
 	"4": {
 		"name": "TASK_COMMENT_EMAIL",
-		"sender": "support@${org.domain}.facilio.com",
+		"sender": "noreply@${org.domain}.facilio.com",
 		"subject": "New Comment added",
 		"to": "${workorder.assignedTo.email:-}",
 		"message": "${comment.createdBy.name} has  added a new comment in your workorder ${workorder.subject} . Please view the workorder here - ${workorder.url} to reply/view the comments.\n\nRegards,\nTeam Facilio."
 	},
 	"5": {
 		"name": "ALARM_CREATION_EMAIL",
-		"sender": "support@${org.domain}.facilio.com",
+		"sender": "noreply@${org.domain}.facilio.com",
 		"subject": "New Alarm raised",
 		"to": "",
 		"message": "A new Alarm has been raised in the system. \n\nReason : ${alarm.subject}\nDetails: ${alarm.description}\nStatus: ${alarm.state}\n\nPlease view the alarm here - ${alarm.url} and acknowledge it as soon as possible.\n\nRegards,\nTeam Facilio."
@@ -76,21 +76,21 @@
 	},
 	"10": {
 		"name": "PM_EMAIL_PRE_REMINDER",
-		"sender": "support@${org.domain}.facilio.com",
+		"sender": "noreply@${org.domain}.facilio.com",
 		"subject": "New WorkOrder created from PPM ${workorder.subject} will be executed on ${workorder.createdTimeString}",
 		"to": "${workorder.assignedTo.email:-}",
 		"message": "The following PPM will be created and a new workorder will be created on ${workorder.createdTimeString}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nRegards,\nTeam Facilio."
 	},
 	"11": {
 		"name": "PM_EMAIL_DUE_REMINDER",
-		"sender": "support@${org.domain}.facilio.com",
+		"sender": "noreply@${org.domain}.facilio.com",
 		"subject": "Workorder is due by ${workorder.dueDateString}",
 		"to": "${workorder.assignedTo.email:-}",
 		"message": "The following workorder created from PPM ${workorder.subject} is in due by ${workorder.dueDateString}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nDue by : ${workorder.dueDateString}\n\nPlease view the workorder here - ${workorder.url}\n\nRegards,\nTeam Facilio."
 	},
 	"12": {
 		"name": "NEW_WORK_REQUEST_EMAIL",
-		"sender": "support@${org.domain}.facilio.com",
+		"sender": "noreply@${org.domain}.facilio.com",
 		"subject": "New Workrequest raised",
 		"to": "${org.superAdmin.email:-}",
 		"message": "The following workorderrequest has been raised by ${workorderrequest.requester.name}.\n\nSubject : ${workorderrequest.subject}\nDescription : \n${workorderrequest.description}\n\nPlease approve/reject the workrequest here - ${workorderrequest.url}\n\nRegards,\nTeam Facilio."
@@ -114,7 +114,7 @@
 			"module_name": "workorderrequest",
 			"priority": "high"
 		},
-		"id": "${workorderrequest.requester.id:-}"	
+		"id": "${workorderrequest.requester.id:-}"
 	},
 	"15": {
 		"name": "NEW_WORK_REQUEST_WEB",
@@ -134,7 +134,7 @@
 	},
 	"16": {
 		"name": "APPROVE_WOREQ_EMAIL",
-		"sender": "support@${org.domain}.facilio.com",
+		"sender": "noreply@${org.domain}.facilio.com",
 		"subject": "Workrequest approved",
 		"to": "${workorderrequest.requester.email:-}",
 		"message": "Your workorderrequest has been approved. A workrorder has been created and assigned to ${workorderrequest.assignedTo.name}.\n\nSubject : ${workorderrequest.subject}\nDescription : \n${workorderrequest.description}.\n\nRegards,\nTeam Facilio."
@@ -165,7 +165,7 @@
 	},
 	"20": {
 		"name": "REJECT_WOREQ_EMAIL",
-		"sender": "support@${org.domain}.facilio.com",
+		"sender": "noreply@${org.domain}.facilio.com",
 		"subject": "Workorderrequest rejected ",
 		"to": "${workorderrequest.requester.email:-}",
 		"message": "Your workorderrequest has been rejected.\n\nSubject : ${workorderrequest.subject}\nDescription : \n${workorderrequest.description}\n\nPlease check for the further details here - ${workorderrequest.url}.\n\nRegards,\nTeam Facilio."
@@ -181,7 +181,7 @@
 	"23": {
 		"name": "REJECT_WOREQ_PUSH",
 		"notification": {
-		    "text": "Your workorderrequest has been rejected.\n\nSubject : ${workorderrequest.subject}\nDescription : \n${workorderrequest.description}\n\nPlease check for the further details here - ${workorderrequest.url}.\n - Team Facilio.",
+			"text": "Your workorderrequest has been rejected.\n\nSubject : ${workorderrequest.subject}\nDescription : \n${workorderrequest.description}\n\nPlease check for the further details here - ${workorderrequest.url}.\n - Team Facilio.",
 			"click_action": "WORKORDERREQUEST_SUMMARY",
 			"title": "Reject Workorderrequest"
 		},
@@ -196,7 +196,7 @@
 	},
 	"24": {
 		"name": "TECH_SOLVE_WO_EMAIL",
-		"sender": "support@${org.domain}.facilio.com",
+		"sender": "noreply@${org.domain}.facilio.com",
 		"subject": "Work order resolved",
 		"to": "${workorder.assignedBy.email:-}",
 		"message": "The workorder ${workorder.subject} has been resolved by Technician ${workorder.assignedTo.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status.status}\n\nPlease verify/close the workorder here - ${workorder.url}\n\nRegards,\nTeam Facilio."
@@ -212,7 +212,7 @@
 	"27": {
 		"name": "TECH_SOLVE_WO_PUSH",
 		"notification": {
-		    "text": "The workorder ${workorder.subject} has been resolved by Technician ${workorder.assignedTo.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status.status}\n\nPlease verify/close the workorder here - ${workorder.url}\n\n - Team Facilio.",
+			"text": "The workorder ${workorder.subject} has been resolved by Technician ${workorder.assignedTo.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status.status}\n\nPlease verify/close the workorder here - ${workorder.url}\n\n - Team Facilio.",
 			"click_action": "WORKORDER_SUMMARY",
 			"title": "Work order completed"
 		},
@@ -227,7 +227,7 @@
 	},
 	"28": {
 		"name": "TECH_CLOSE_WO_EMAIL",
-		"sender": "support@${org.domain}.facilio.com",
+		"sender": "noreply@${org.domain}.facilio.com",
 		"subject": "Work order closed",
 		"to": "${workorder.assignedTo.email:-}",
 		"message": "The following work order ${workorder.subject} has been verified and closed by ${workorder.assignedBy.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status.status}\n\nPlease view the closed work order here - ${workorder.url}\n\nRegards,\nTeam Facilio."
@@ -243,7 +243,7 @@
 	"31": {
 		"name": "TECH_CLOSE_WO_PUSH",
 		"notification": {
-		    "text": "The following work order ${workorder.subject} has been verified and closed by ${workorder.assignedBy.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status.status}\n\nPlease view the closed work order here - ${workorder.url}\n\n - Team Facilio.",
+			"text": "The following work order ${workorder.subject} has been verified and closed by ${workorder.assignedBy.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status.status}\n\nPlease view the closed work order here - ${workorder.url}\n\n - Team Facilio.",
 			"click_action": "WORKORDER_SUMMARY",
 			"title": "Work order closed"
 		},
@@ -258,7 +258,7 @@
 	},
 	"32": {
 		"name": "CLOSED_WOREQ_EMAIL",
-		"sender": "support@${org.domain}.facilio.com",
+		"sender": "noreply@${org.domain}.facilio.com",
 		"subject": "Workorderrequest Resolved",
 		"to": "${workorderrequest.requester.email:-}",
 		"message": "Your workorderrequest has been resolved by ${workorder.assignedTo.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease view your resolved workorderrequest here - ${workorder.url}\n\nRegards,\nTeam Facilio."
@@ -274,7 +274,7 @@
 	"35": {
 		"name": "CLOSED_WOREQ_PUSH",
 		"notification": {
-		    "text": "Your workorderrequest has been resolved by ${workorder.assignedTo.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease view your resolved workorderrequest here - ${workorder.url}\n\n - Team Facilio.",
+			"text": "Your workorderrequest has been resolved by ${workorder.assignedTo.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease view your resolved workorderrequest here - ${workorder.url}\n\n - Team Facilio.",
 			"click_action": "WORKORDER_SUMMARY",
 			"title": "Closed Workorderrequest"
 		},
@@ -293,7 +293,7 @@
 	"37": {
 		"name": "WORKORDER_ASSIGN_PUSH",
 		"notification": {
-		    "text": "${workorder.assignedBy.name} has assigned a new workorder to you. \n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description:-}\nDue by : ${workorder.dueDateString:-}\nPlease view the work order here - ${workorder.url}\n\n - Team Facilio.",
+			"text": "${workorder.assignedBy.name} has assigned a new workorder to you. \n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description:-}\nDue by : ${workorder.dueDateString:-}\nPlease view the work order here - ${workorder.url}\n\n - Team Facilio.",
 			"click_action": "WORKORDER_SUMMARY",
 			"title": "Assign Workorder"
 		},
@@ -308,11 +308,11 @@
 	},
 	"38": {
 		"name": "WORKORDER_ASSIGN_GROUP_EMAIL",
-		"sender": "support@${org.domain}.facilio.com",
+		"sender": "noreply@${org.domain}.facilio.com",
 		"subject": "New Workorder Assigned",
 		"to": "${workorder.assignmentGroup.email:-}",
 		"message": "${workorder.assignedBy.name} has assigned a new workorder to your team - ${workorder.assignmentGroup.name}. \n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description:-}\nDue by : ${workorder.dueDateString:-}\nPlease view the work order here - ${workorder.url}\n\nRegards,\nTeam Facilio."
-    },
+	},
 	"39": {
 		"name": "WORKORDER_ASSIGN_GROUP_SMS",
 		"to": "${workorder.assignmentGroup.phone:-}",
@@ -324,7 +324,7 @@
 	"41": {
 		"name": "WORKORDER_ASSIGN_GROUP_PUSH",
 		"notification": {
-		    "text": "${workorder.assignmentGroup.name} has assigned a new workorder to your team - ${workorder.assignmentGroup.name}. \n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description:-}\nDue by : ${workorder.dueDateString:-}\nPlease view the work order here - ${workorder.url}\n - Team Facilio.",
+			"text": "${workorder.assignmentGroup.name} has assigned a new workorder to your team - ${workorder.assignmentGroup.name}. \n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description:-}\nDue by : ${workorder.dueDateString:-}\nPlease view the work order here - ${workorder.url}\n - Team Facilio.",
 			"click_action": "WORKORDER_SUMMARY",
 			"title": "Assign Workorder"
 		},
@@ -348,7 +348,7 @@
 	"44": {
 		"name": "TASK_COMMENT_WEB",
 		"notification": {
-		    "text": "${comment.createdBy.name} has  added a new comment in your workorder ${workorder.subject} . Please view the workorder here - ${workorder.url} to reply/view the comments.\n - Team Facilio.",
+			"text": "${comment.createdBy.name} has  added a new comment in your workorder ${workorder.subject} . Please view the workorder here - ${workorder.url} to reply/view the comments.\n - Team Facilio.",
 			"click_action": "WORKORDER_SUMMARY",
 			"title": "New Comment"
 		},
@@ -363,7 +363,7 @@
 	},
 	"45": {
 		"name": "ADD_TASK_EMAIL",
-		"sender": "support@${org.domain}.facilio.com",
+		"sender": "noreply@${org.domain}.facilio.com",
 		"subject": "New Task added",
 		"to": "${workorder.assignedTo.email:-}",
 		"message": "A new Task has been added in your WorkOrder ${workorder.subject} by ${workorder.assignedBy.name}.Please view the new task here - ${workorder.url}\n\nRegards\nTeam Facilio."
@@ -379,7 +379,7 @@
 	"48": {
 		"name": "ADD_TASK_PUSH",
 		"notification": {
-		    "text": "A new Task has been added in your WorkOrder ${workorder.subject} by ${workorder.assignedBy.name}.Please view the new task here - ${workorder.url}\n - Team Facilio.",
+			"text": "A new Task has been added in your WorkOrder ${workorder.subject} by ${workorder.assignedBy.name}.Please view the new task here - ${workorder.url}\n - Team Facilio.",
 			"click_action": "WORKORDER_SUMMARY",
 			"title": "New Task added"
 		},
@@ -394,7 +394,7 @@
 	},
 	"49": {
 		"name": "UPDATE_TASK_EMAIL",
-		"sender": "support@${org.domain}.facilio.com",
+		"sender": "noreply@${org.domain}.facilio.com",
 		"subject": "Task Updated",
 		"to": "${workorder.assignedTo.email:-}",
 		"message": "A Task has been updated in your WorkOrder ${workorder.subject}.Please view the updated task here - ${workorder.url}\n\nRegards\nTeam Facilio."
@@ -410,7 +410,7 @@
 	"52": {
 		"name": "UPDATE_TASK_PUSH",
 		"notification": {
-		     "text": "A Task has been updated in your WorkOrder ${workorder.subject}.Please view the updated task here - ${workorder.url}\n - Team Facilio.",
+			"text": "A Task has been updated in your WorkOrder ${workorder.subject}.Please view the updated task here - ${workorder.url}\n - Team Facilio.",
 			"click_action": "WORKORDER_SUMMARY",
 			"title": "New Task added"
 		},
@@ -425,7 +425,7 @@
 	},
 	"53": {
 		"name": "WO_RESOLVED_EMAIL",
-		"sender": "support@${org.domain}.facilio.com",
+		"sender": "noreply@${org.domain}.facilio.com",
 		"subject": "Workorder resolved",
 		"to": "${workorder.assignedTo.email:-}",
 		"message": "The following work order ${workorder.subject} has been resolved. Please view the resolved workorder here - ${workorder.url}\n\nRegards\nTeam Facilio."
@@ -441,7 +441,7 @@
 	"56": {
 		"name": "TASK_RESOLVED_PUSH",
 		"notification": {
-		    "text": "The following work order ${workorder.subject} has been resolved. Please view the resolved workorder here - ${workorder.url}\n\n - Team Facilio.",
+			"text": "The following work order ${workorder.subject} has been resolved. Please view the resolved workorder here - ${workorder.url}\n\n - Team Facilio.",
 			"click_action": "WORKORDER_SUMMARY",
 			"title": "Task closed"
 		},
@@ -454,18 +454,18 @@
 		},
 		"id": "${workorder.assignedTo.id:-}"
 	},
-	
-	
+
+
 	"57": {
 		"name": "PM_EMAIL_OVERDUE_REMINDER",
-		"sender": "support@${org.domain}.facilio.com",
+		"sender": "noreply@${org.domain}.facilio.com",
 		"subject": "Workorder ${workorder.subject} is overdue",
 		"to": "${workorder.assignedTo.email:-}",
 		"message": "The following work order created from planned maintenance ${workorder.subject} is overdue by ${workorder.dueDateString}.\n\nSubject : ${workorder.subject}\nDescription : ${workorder.description}\nDue by : ${workorder.dueDateString}\n\nPlease view the work order here - ${workorder.url} .\n\nRegards,\nTeam Facilio"
 	},
 	"58": {
 		"name": "TECH_CLOSE_WOREQ_EMAIL",
-		"sender": "support@${org.domain}.facilio.com",
+		"sender": "noreply@${org.domain}.facilio.com",
 		"subject": "Work order closed",
 		"to": "${workorder.requester.email:-}",
 		"message": "The following work order ${workorder.subject} has been verified and closed by ${workorder.assignedBy.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status.status}\n\nPlease view the closed work order here - ${workorder.url}\n\nRegards,\nTeam Facilio."
@@ -481,7 +481,7 @@
 	"61": {
 		"name": "TECH_CLOSE_WOREQ_PUSH",
 		"notification": {
-		    "text": "The following work order ${workorder.subject} has been verified and closed by ${workorder.assignedBy.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status.status}\n\nPlease view the closed work order here - ${workorder.url}\n\n - Team Facilio.",
+			"text": "The following work order ${workorder.subject} has been verified and closed by ${workorder.assignedBy.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status.status}\n\nPlease view the closed work order here - ${workorder.url}\n\n - Team Facilio.",
 			"click_action": "WORKORDER_SUMMARY",
 			"title": "Work order closed"
 		},
@@ -496,7 +496,7 @@
 	},
 	"62": {
 		"name": "ALARM_CLEAR_UPDATE_EMAIL",
-		"sender": "support@${org.domain}.facilio.com",
+		"sender": "noreply@${org.domain}.facilio.com",
 		"subject": "Alarm Cleared",
 		"to": "",
 		"message": "The following Alarm has been cleared. \n\nReason : ${alarm.subject}\nDetails: ${alarm.description}\nStatus: ${alarm.state}\n\nPlease view the alarm here - ${alarm.url} and acknowledge it as soon as possible.\n\nRegards,\nTeam Facilio."
