@@ -128,7 +128,7 @@ public class WorkflowContext {
 		if(expressions == null) {
 			expressions = new ArrayList<>();
 		}
-		expression.setWorkflowContext(this);
+//		expression.setWorkflowContext(this);
 		expressions.add(expression);
 	}
 
