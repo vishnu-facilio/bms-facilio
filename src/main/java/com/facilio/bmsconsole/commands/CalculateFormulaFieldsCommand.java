@@ -85,11 +85,16 @@ public class CalculateFormulaFieldsCommand implements Command {
 		// TODO Auto-generated method stub
 		for (FormulaFieldContext formula : formulas) {
 			if (formula.getMatchedResources().contains(reading.getParentId())) {
-				if (reading.isNewReading()) {
-					calculateNewFormula(formula, reading, formulaMap, completedFormulas, fieldMap);
+				try {
+					if (reading.isNewReading()) {
+						calculateNewFormula(formula, reading, formulaMap, completedFormulas, fieldMap);
+					}
+					else {
+						updateFormula(formula, reading, formulaMap, completedFormulas, fieldMap);
+					}
 				}
-				else {
-					updateFormula(formula, reading, formulaMap, completedFormulas, fieldMap);
+				catch (Exception e) {
+					LOGGER.error("Error occurred while calculating of "+formula+" for reading "+reading);
 				}
 			}
 		}
