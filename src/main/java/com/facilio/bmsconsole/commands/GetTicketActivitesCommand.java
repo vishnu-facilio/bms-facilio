@@ -11,8 +11,6 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.StringOperators;
@@ -24,7 +22,6 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.bmsconsole.workflow.TicketActivity;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class GetTicketActivitesCommand implements Command {
@@ -53,7 +50,7 @@ public class GetTicketActivitesCommand implements Command {
 				if( index > -1) {
 					con.setField(fields.get(index));
 					con.setOperator(StringOperators.IS);
-					con.setValue(ActivityType.CLOSE_WORK_ORDER.getValue() + "," + ActivityType.SOLVE_WORK_ORDER.getValue() + "," + ActivityType.EDIT.getValue());
+					con.setValue(ActivityType.CLOSE_WORK_ORDER.getValue() + "," + ActivityType.SOLVE_WORK_ORDER.getValue() + "," + ActivityType.ADD_TICKET_NOTE.getValue() + "," + ActivityType.EDIT.getValue());
 					selectBuilder.andCondition(con);
 				}
 			}
@@ -61,15 +58,29 @@ public class GetTicketActivitesCommand implements Command {
 			if(activityProps != null && !activityProps.isEmpty()) {
 				List<TicketActivity> activities = new ArrayList<>();
 				for(Map<String, Object> prop : activityProps) {
-					activities.add(FieldUtil.getAsBeanFromMap(prop, TicketActivity.class));
+					TicketActivity checkIsNotify = FieldUtil.getAsBeanFromMap(prop, TicketActivity.class);
+					if (portalID > 0) {
+						System.out.println(checkIsNotify.getInfo().get("notifyRequester"));
+						if (checkIsNotify.getInfo().get("notifyRequester") != null) {
+							if ((boolean) checkIsNotify.getInfo().get("notifyRequester")) {
+								System.out.println("Boolean");
+								activities.add(checkIsNotify);
+							}
+						}
+					}
+					else {
+						activities.add(checkIsNotify);
+					}
 				}
 				List<Long> ids = activities.stream().map(activity -> activity.getModifiedBy()).collect(Collectors.toList());
-				List<User> userList = AccountUtil.getUserBean().getUsers(null, ids);
-				Map<Long, User> userMap = userList.stream().collect(Collectors.toMap(User::getId, Function.identity(), 
-												(prevValue, curValue) -> { return prevValue; }));
-				if (userList != null) {
-					for (TicketActivity activi : activities) {
-						activi.setName(userMap.get(activi.getModifiedBy()).getName());
+				if (ids.size() > 0) {
+					List<User> userList = AccountUtil.getUserBean().getUsers(null, ids);
+					Map<Long, User> userMap = userList.stream().collect(Collectors.toMap(User::getId, Function.identity(), 
+													(prevValue, curValue) -> { return prevValue; }));
+					if (userList != null) {
+						for (TicketActivity activi : activities) {
+							activi.setName(userMap.get(activi.getModifiedBy()).getName());
+						}
 					}
 				}
 				context.put(FacilioConstants.TicketActivity.TICKET_ACTIVITIES, activities);

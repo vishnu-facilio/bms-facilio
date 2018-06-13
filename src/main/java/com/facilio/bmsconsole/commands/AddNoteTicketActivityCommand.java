@@ -50,6 +50,7 @@ public class AddNoteTicketActivityCommand implements Command {
 		
 		JSONObject info = new JSONObject();
 		info.put("content", note.getBody());
+		info.put("notifyRequester", note.getNotifyRequester());
 		activity.setInfo(info);
 		
 		GenericInsertRecordBuilder insertActivityBuilder = new GenericInsertRecordBuilder()
