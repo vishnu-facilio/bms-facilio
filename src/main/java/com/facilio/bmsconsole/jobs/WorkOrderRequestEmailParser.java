@@ -121,12 +121,14 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 				
 				for (DataSource attachment : attachments) {
 					LOGGER.info("Attachment Class name : "+attachment.getClass());
-					attachedFilesFileName.add(attachment.getName());
-					attachedFilesContentType.add(attachment.getContentType());
-					
-					File file = File.createTempFile(attachment.getName(), null);
-					FileUtils.copyInputStreamToFile(attachment.getInputStream(), file);
-					attachedFiles.add(file);
+					LOGGER.info("Attachment File Name : "+attachment.getName());
+					LOGGER.info("Attachment File Type : "+attachment.getContentType());
+//					attachedFilesFileName.add(attachment.getName());
+//					attachedFilesContentType.add(attachment.getContentType());
+//					
+//					File file = File.createTempFile(attachment.getName(), null);
+//					FileUtils.copyInputStreamToFile(attachment.getInputStream(), file);
+//					attachedFiles.add(file);
 				}
 				LOGGER.info("Parsed Attachments : "+attachedFiles);
 			}
