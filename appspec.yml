@@ -16,7 +16,7 @@ files:
   - source: /start_xvfb.sh
     destination: /home/ubuntu
   - source: /setenv.sh
-    destination: /home/ubuntu/tomcat/bin
+    destination: /home/ubuntu
 
 permissions:
   - object: /home/ubuntu/tomcat/webapps
@@ -25,9 +25,6 @@ permissions:
 
   - object: /home/ubuntu
     pattern: "*.sh"
-    mode: 755
-
-  - object: /home/ubuntu/tomcat/bin/setenv.sh
     mode: 755
 
 hooks:

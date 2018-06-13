@@ -14,5 +14,6 @@ artifacts:
     - scripts/change_conf.sh
     - scripts/move_logs.sh
     - scripts/start_xvfb.sh
+    - scripts/setenv.sh
   discard-paths: yes
 
