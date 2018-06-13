@@ -17,7 +17,7 @@ public class AddRequesterCommand implements Command {
 		User requester = (User) context.get(FacilioConstants.ContextNames.REQUESTER);
 		if (requester != null && requester.getEmail() != null && !"".equals(requester.getEmail())) {
 			long orgid = AccountUtil.getCurrentOrg().getOrgId();
-			requester.setId(AccountUtil.getUserBean().addRequester(orgid, requester));
+			requester.setId(AccountUtil.getUserBean().inviteRequester(orgid, requester));
 			
 			Boolean isPublicRequest = (Boolean) context.get(FacilioConstants.ContextNames.IS_PUBLIC_REQUEST);
 			if (isPublicRequest != null && isPublicRequest == true) {

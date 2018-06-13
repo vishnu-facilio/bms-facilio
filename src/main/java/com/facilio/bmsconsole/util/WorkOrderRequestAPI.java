@@ -17,6 +17,7 @@ public class WorkOrderRequestAPI {
 			
 			Map<String, Object> workOrderEmailProps = new HashMap<>();
 			workOrderEmailProps.put("s3MessageId", s3Id);
+			workOrderEmailProps.put("createdTime", System.currentTimeMillis());
 			
 			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 															.table("WorkOrderRequest_EMail")

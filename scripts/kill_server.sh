@@ -11,7 +11,7 @@ today=`date +%F-%H-%M-%S`
 
 cd $APP_HOME
 
-sh bin/shutdown.sh
+sudo sh bin/shutdown.sh
 sh /home/ubuntu/move_logs.sh
 sudo aws s3 mv $APP_HOME/logs/catalina.out s3://$logsBucket/$servername/$ipAddress/catalinaout.$today.log
 

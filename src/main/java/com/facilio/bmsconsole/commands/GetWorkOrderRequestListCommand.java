@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
@@ -48,7 +49,12 @@ public class GetWorkOrderRequestListCommand implements Command {
 														.select(fields)
 														.maxLevel(0);
 
-		if(view != null) {
+		JSONObject filters = (JSONObject) context.get(FacilioConstants.ContextNames.FILTERS);
+		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
+		if (filterCriteria != null) {
+			builder.andCriteria(filterCriteria);
+		}
+		if (view != null) {
 			Criteria criteria = view.getCriteria();
 			builder.andCriteria(criteria);
 		}
@@ -72,6 +78,7 @@ public class GetWorkOrderRequestListCommand implements Command {
 		}
 		
 		if (AccountUtil.getCurrentAccount().getUser().getUserType() != 2) {
+			System.out.println(AccountUtil.getCurrentAccount());
 			Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(moduleName,"read");
 			if(permissionCriteria != null) {
 				builder.andCriteria(permissionCriteria);

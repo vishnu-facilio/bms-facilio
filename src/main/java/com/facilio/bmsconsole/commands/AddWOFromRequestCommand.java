@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -66,6 +67,7 @@ public class AddWOFromRequestCommand implements Command {
 		WorkOrderContext wo = new WorkOrderContext();
 		BeanUtils.copyProperties(wo, request);
 		wo.setCreatedTime(System.currentTimeMillis());
+		wo.setStatus(TicketAPI.getStatus("Submitted"));
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);

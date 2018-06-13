@@ -18,6 +18,7 @@ public enum AccountEmailTemplate {
 	EMAIL_VERIFICATION(3),
 	RESET_PASSWORD(4);
 	
+	
 	private int val;
 	private String templateJson;
 	private AccountEmailTemplate(int val) {

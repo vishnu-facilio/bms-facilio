@@ -1127,10 +1127,6 @@ public class DashboardUtil {
 					else {
 						legendMode = LegendMode.RESOURCE_NAME;
 					}
-					if(AccountUtil.getCurrentOrg().getId() == 78l) {
-						
-						legendMode = LegendMode.RESOURCE_WITH_READING_NAME;
-					}
 					for(Map<String, Object> compReportProp:compReportProps) {
 						ReportContext compReportContext = FieldUtil.getAsBeanFromMap(compReportProp, ReportContext.class);
 						compReportContext.setLegendMode(legendMode);

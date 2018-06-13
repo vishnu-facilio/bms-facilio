@@ -402,7 +402,7 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadViewCommand());
 		c.addCommand(new LoadAllFieldsCommand());
-		c.addCommand(new GenerateCondtionsFromFiltersCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
 		c.addCommand(new GetWorkOrderRequestListCommand());
 		addCleanUpCommand(c);

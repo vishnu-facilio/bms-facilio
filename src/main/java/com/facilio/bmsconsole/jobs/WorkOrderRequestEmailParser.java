@@ -7,11 +7,10 @@ import java.util.List;
 import java.util.Map;
 
 import javax.activation.DataSource;
-import javax.activation.FileDataSource;
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.mail.util.MimeMessageParser;
 import org.apache.log4j.LogManager;
@@ -24,7 +23,10 @@ import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.SupportEmailAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -54,44 +56,39 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 															.table("WorkOrderRequest_EMail")
 															.andCustomWhere("IS_PROCESSED IS NULL OR IS_PROCESSED = false");
 			List<Map<String, Object>> emailProps = selectBuilder.get();
-			StringBuilder idsToBeRemoved = new StringBuilder("ID in (");
-			boolean isEmpty = true;
 			if(emailProps != null) {
 				for(Map<String, Object> emailProp : emailProps) {
 					try {
 						String s3Id = (String) emailProp.get("s3MessageId");
 						S3Object rawEmail = AwsUtil.getAmazonS3Client().getObject(S3_BUCKET_NAME, s3Id);
-						createWorkOrderRequest(rawEmail);
-						if(!isEmpty) {
-							idsToBeRemoved.append(", ");
+						long requestId = createWorkOrderRequest(rawEmail);
+						if (requestId != -1) {
+							updateEmailProp((long) emailProp.get("id"), requestId);
 						}
-						else {
-							isEmpty = false;
-						}
-						idsToBeRemoved.append(emailProp.get("id"));
 					}
 					catch(Exception e) {
 						e.printStackTrace();
 					}
 				}
 			}
-			
-			if(!isEmpty) {
-				idsToBeRemoved.append(")");
-				GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-																.fields(FieldFactory.getWorkorderEmailFields())
-																.table("WorkOrderRequest_EMail")
-																.andCustomWhere(idsToBeRemoved.toString());
-				updateBuilder.update(updateIsProcessed);
-			}
-
 		}
 		catch(Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	private void createWorkOrderRequest(S3Object rawEmail) throws Exception {
+	private void updateEmailProp(long id, long requestId) throws Exception {
+		updateIsProcessed.put("requestId",requestId);
+		FacilioModule module = ModuleFactory.getWorkOrderRequestEMailModule();
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.fields(FieldFactory.getWorkorderEmailFields())
+				.table("WorkOrderRequest_EMail")
+				.andCondition(CriteriaAPI.getIdCondition(id, module));
+		updateBuilder.update(updateIsProcessed);
+		updateIsProcessed.remove("requestId");
+	}
+	
+	private long createWorkOrderRequest(S3Object rawEmail) throws Exception {
 		MimeMessage emailMsg = new MimeMessage(null, rawEmail.getObjectContent());
 		MimeMessageParser parser = new MimeMessageParser(emailMsg);
 		parser.parse();
@@ -118,11 +115,20 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 				attachedFilesContentType = new ArrayList<>();
 				
 				for (DataSource attachment : attachments) {
-					attachedFilesFileName.add(attachment.getName());
-					attachedFilesContentType.add(attachment.getContentType());
-					attachedFiles.add(((FileDataSource) attachment).getFile());
-					LOGGER.info("Attachment Class name : "+attachment.getClass());
+//					LOGGER.info("Attachment Class name : "+attachment.getClass());
+//					LOGGER.info("Attachment File Name : "+attachment.getName());
+//					LOGGER.info("Attachment File Type : "+attachment.getContentType());
+					
+					if (attachment.getName() != null) {
+						attachedFilesFileName.add(attachment.getName());
+						attachedFilesContentType.add(attachment.getContentType());
+						
+						File file = File.createTempFile(attachment.getName(), "");
+						FileUtils.copyInputStreamToFile(attachment.getInputStream(), file);
+						attachedFiles.add(file);
+					}
 				}
+				LOGGER.info("Parsed Attachments : "+attachedFiles);
 			}
 			
 			if(supportEmail.getAutoAssignGroup() != null) {
@@ -131,8 +137,11 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 			workOrderRequest.setSourceType(TicketContext.SourceType.EMAIL_REQUEST);
 			
 			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", supportEmail.getOrgId());
-			LOGGER.info("Added Workorder from Email Parser : " + bean.addWorkOrderRequest(workOrderRequest, attachedFiles, attachedFilesFileName, attachedFilesContentType));
+			long requestId = bean.addWorkOrderRequest(workOrderRequest, attachedFiles, attachedFilesFileName, attachedFilesContentType);
+			LOGGER.info("Added Workorder from Email Parser : " + requestId );
+			return requestId;
 		}
+		return -1;
 	}
 	
 	private SupportEmailContext getSupportEmail(MimeMessageParser parser) throws Exception {
