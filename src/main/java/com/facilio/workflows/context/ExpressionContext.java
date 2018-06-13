@@ -225,12 +225,11 @@ public class ExpressionContext {
 		if(getConstant() != null) {
 			return getConstant();
 		}
-		if(getWorkflowContext().isFromDerivation()) {
+		if(getWorkflowContext() != null && getWorkflowContext().isGetDataFromCache()) {
 			
 			String parentId = WorkflowUtil.getParentIdFromCriteria(criteria);
 			
 			List<Map<String, Object>> cachedDatas = this.getWorkflowContext().getCachedData().get(moduleName+"-"+parentId);
-			
 			if(cachedDatas == null) {
 				
 			}
