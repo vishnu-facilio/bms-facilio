@@ -1,5 +1,6 @@
 package com.facilio.beans;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -107,18 +108,30 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	}
 
 	@Override
-	public long addWorkOrderRequest(WorkOrderRequestContext workOrderRequest) throws Exception {
+	public long addWorkOrderRequest(WorkOrderRequestContext workOrderRequest, List<File> attachedFiles, List<String> attachedFileNames, List<String> attachedFilesContentType) throws Exception {
 		// TODO Auto-generated method stub
 		if (workOrderRequest != null) {
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.REQUESTER, workOrderRequest.getRequester());
 			context.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, workOrderRequest);
 
+			if (attachedFiles != null && !attachedFiles.isEmpty() && attachedFileNames != null && !attachedFileNames.isEmpty() && attachedFilesContentType != null && !attachedFilesContentType.isEmpty()) {
+				context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, attachedFiles);
+		 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, attachedFileNames);
+		 		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, attachedFilesContentType);
+			}
+			
 			Command addWorkOrderRequest = FacilioChainFactory.getAddWorkOrderRequestChain();
 			addWorkOrderRequest.execute(context);
 			return workOrderRequest.getId();
 		}
 		return -1;
+	}
+	
+	@Override
+	public long addWorkOrderRequest(WorkOrderRequestContext workOrderRequest) throws Exception {
+		// TODO Auto-generated method stub
+		return addWorkOrderRequest(workOrderRequest, null, null, null);
 	}
 
 	@Override
