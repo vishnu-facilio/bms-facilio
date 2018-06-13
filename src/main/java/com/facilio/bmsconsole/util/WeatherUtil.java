@@ -179,7 +179,7 @@ public class WeatherUtil {
 	
 	public static Map<String, Object> getLocation(SiteContext site) throws Exception {
 		
-		List<Map<String, Object>> weatherStation= getWeatherStation(site.getSiteId());
+		List<Map<String, Object>> weatherStation= getWeatherStation(site.getId());
 		if(weatherStation!=null && !weatherStation.isEmpty()) {
 			Map<String, Object> prop = weatherStation.get(0);
 			LOGGER.info("Weather Util::ORGID::"+AccountUtil.getCurrentOrg().getId()+"::Location::"+prop);
