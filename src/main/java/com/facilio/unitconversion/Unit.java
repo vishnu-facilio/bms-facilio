@@ -80,6 +80,13 @@ public enum Unit {
 	PASCAL(61,"Pascal","pa",Metric.PRESSURE),
 	
 	DEGREE(62,"Degree","&deg;",Metric.DEGREE),
+	
+	SQUARE_METER(63,"Square Meter","m<sup>2</sup>",Metric.AREA),
+	SQUARE_KILOMETER(64,"Square Kilometer","km<sup>2</sup>",Metric.AREA,"si/1000000","this * 1000000"),
+	SQUARE_INCH(65,"Square Inch","in<sup>2</sup>",Metric.AREA,"si*1550.0031000062","this * 0.00064516"),
+	SQUARE_FOOT(66,"Square Foot","ft<sup>2</sup>",Metric.AREA,"si*10.7639","this/10.7639"),
+	HECTARE(67,"Hectare","ha",Metric.AREA,"si/10000","this*10000"),
+	ACRE(68,"Acre","acre",Metric.AREA,"si/4046.86","this*4046.86"),
 	;
 	
 	int unitId;
