@@ -49,11 +49,20 @@ public class TemplateAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	private String templateName;
+	public String getTemplateName() {
+		return templateName;
+	}
+	public void setTemplateName(String templateName) {
+		this.templateName = templateName;
+	}
+	
 	public String addWorkOrderTemplate() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
 		context.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.WORKORDER);
+		context.put(FacilioConstants.ContextNames.TEMPLATE_NAME, templateName);
 		
 		Chain addTemplate = FacilioChainFactory.getAddWorkorderTemplateChain();
 		addTemplate.execute(context);
@@ -69,6 +78,7 @@ public class TemplateAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
 		context.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.WORKORDER);
+		context.put(FacilioConstants.ContextNames.TEMPLATE_NAME, templateName);
 		
 		Chain addTemplate = FacilioChainFactory.updateWorkorderTemplateChain();
 		addTemplate.execute(context);
