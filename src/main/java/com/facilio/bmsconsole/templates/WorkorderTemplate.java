@@ -126,7 +126,7 @@ public class WorkorderTemplate extends Template {
 		if (getName() != null && !getName().isEmpty()) {
 			Map<String, Object> woProp = new HashMap<>();
 			
-			woProp.put("subject", getName());
+			woProp.put("subject", getSubject());
 			woProp.put("description", description);
 			woProp.put("duration", duration);
 			if (statusId != -1) {
@@ -160,9 +160,18 @@ public class WorkorderTemplate extends Template {
 		return null;
 	}
 	
+	private String subject;
+	public String getSubject() {
+		return subject;
+	}
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
+	
 	public void setWorkorder(WorkOrderContext workorder) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		if (workorder != null) {
-			setName(workorder.getSubject());
+			// setName(workorder.getSubject());
+			subject = workorder.getSubject();
 			description = workorder.getDescription();
 			duration = workorder.getDuration();
 			if (workorder.getStatus() != null) {

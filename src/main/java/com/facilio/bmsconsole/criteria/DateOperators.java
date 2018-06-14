@@ -1452,6 +1452,61 @@ public enum DateOperators implements Operator<String> {
 			return true;
 		}
 	},
+	LAST_N_MINUTES(56, "Last N Minutes") {
+		@Override
+		public String getWhereClause(String columnName, String value) {
+			if(columnName != null && !columnName.isEmpty()) {
+				Long currentTime = DateTimeUtil.getCurrenTime();
+				StringBuilder builder = new StringBuilder();
+				builder.append(DateTimeUtil.getLastNMinute(currentTime, Integer.valueOf(value)))
+						.append("<=")
+						.append(columnName)
+						.append(" AND ")
+						.append(columnName)
+						.append("<")
+						.append(currentTime);
+				return builder.toString();
+			}
+			return null;
+		}
+		
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						if(object != null && object instanceof Long) {
+							Long currentTime = DateTimeUtil.getCurrenTime();
+							long currentVal = (long) object;
+							return DateTimeUtil.getLastNMinute(currentTime, Integer.valueOf(value)) <= currentVal && currentVal < currentTime;
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
+
+		@Override
+		public DateRange getRange(String value) {
+			// TODO Auto-generated method stub
+			Long currentTime = DateTimeUtil.getCurrenTime();
+			return new DateRange(DateTimeUtil.getLastNHour(currentTime, Integer.valueOf(value)), currentTime-1);
+		}
+		
+		@Override
+		public boolean isDynamicOperator() {
+			return true;
+		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+	},
 	LAST_N_HOURS(42, "Last N Hours") {
 		@Override
 		public String getWhereClause(String columnName, String value) {

@@ -75,7 +75,7 @@ public class CalculateFormulaFieldsCommand implements Command {
 					addReading.execute(formulContext);
 				}
 			}
-			LOGGER.error(AccountUtil.getCurrentOrg().getId()+"::Time taken for formula calculation for modules : "+readingMap.keySet()+" is "+(System.currentTimeMillis() - processStarttime));
+			LOGGER.info(AccountUtil.getCurrentOrg().getId()+"::Time taken for formula calculation for modules : "+readingMap.keySet()+" is "+(System.currentTimeMillis() - processStarttime));
 		}
 		
 		return false;
@@ -85,11 +85,16 @@ public class CalculateFormulaFieldsCommand implements Command {
 		// TODO Auto-generated method stub
 		for (FormulaFieldContext formula : formulas) {
 			if (formula.getMatchedResources().contains(reading.getParentId())) {
-				if (reading.isNewReading()) {
-					calculateNewFormula(formula, reading, formulaMap, completedFormulas, fieldMap);
+				try {
+					if (reading.isNewReading()) {
+						calculateNewFormula(formula, reading, formulaMap, completedFormulas, fieldMap);
+					}
+					else {
+						updateFormula(formula, reading, formulaMap, completedFormulas, fieldMap);
+					}
 				}
-				else {
-					updateFormula(formula, reading, formulaMap, completedFormulas, fieldMap);
+				catch (Exception e) {
+					LOGGER.error("Error occurred while calculating of "+formula+" for reading "+reading, e);
 				}
 			}
 		}
@@ -102,12 +107,12 @@ public class CalculateFormulaFieldsCommand implements Command {
 			if (readingData != null && !readingData.isEmpty()) {
 				for (String fieldName : readingData.keySet()) {
 					FacilioField field = fieldMap.get(fieldName);
-					if (formula.getWorkflow().getDependentFieldIds().contains(field.getId())) {
+					if (field != null && formula.getWorkflow().getDependentFieldIds().contains(field.getId())) {
 						ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(reading.getParentId(), formula.getReadingField());
 						Map<Long, Long> intervals = DateTimeUtil.getTimeIntervals(meta.getTtime(), System.currentTimeMillis(), formula.getInterval());
 						long startTime = System.currentTimeMillis();
 						List<ReadingContext> formulaReadings = FormulaFieldAPI.calculateFormulaReadings(reading.getParentId(), formula.getReadingField().getName(), intervals, formula.getWorkflow());
-						LOGGER.error(AccountUtil.getCurrentOrg().getId()+"::Time taken for formula calculation of : "+formula.getName()+" for "+reading.getParentId()+" is "+(System.currentTimeMillis() - startTime));
+						LOGGER.info(AccountUtil.getCurrentOrg().getId()+"::Time taken for formula calculation of : "+formula.getName()+" for "+reading.getParentId()+" is "+(System.currentTimeMillis() - startTime));
 						if (formulaReadings != null && !formulaReadings.isEmpty()) {
 							List<ReadingContext> existingReadings = formulaMap.get(formula.getReadingField().getModule().getName());
 							if (existingReadings == null) {

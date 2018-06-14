@@ -44,7 +44,7 @@ import com.facilio.workflows.util.WorkflowUtil;
 import com.mysql.jdbc.ResultSetImpl;
 
 public class FormulaFieldAPI {
-	private static final Logger logger = LogManager.getLogger(ResultSetImpl.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(ResultSetImpl.class.getName());
 	public static long addFormulaField (FormulaFieldContext formula) throws Exception {
 		updateChildIds(formula);
 		validateFormula(formula, true);
@@ -213,7 +213,7 @@ public class FormulaFieldAPI {
 					}
 				}
 				catch (Exception e) {
-					logger.log(Level.ERROR, e.getMessage(), e);
+					LOGGER.log(Level.ERROR, e.getMessage(), e);
 					if (e.getMessage() == null || !(e.getMessage().contains("Division by zero") || e.getMessage().contains("Division undefined")  || e.getMessage().contains("/ by zero"))) {
 						CommonCommandUtil.emailException("Formula calculation failed for : "+fieldName+" between "+iStartTime+" and "+iEndTime, e);
 					}

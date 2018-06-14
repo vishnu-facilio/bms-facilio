@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -1050,6 +1051,12 @@ public class WorkflowUtil {
 				Object obj = variableToExpresionMap.get(param);
 				objects[objectIndex++] = obj;
 			}
+		}
+		if(objects == null) {
+			LOGGER.severe("function params--- IS NULL");
+		}
+		else {
+			LOGGER.severe("function params---"+Arrays.toString(objects));
 		}
 		
 		return defaultFunctions.execute(objects);

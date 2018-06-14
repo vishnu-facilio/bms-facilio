@@ -15,7 +15,9 @@ public enum ThermoPhysicalR134aFunctions implements FacilioWorkflowFunctionInter
 		public Object execute(Object... objects) throws Exception {
 			
 			checkParam(objects);
-			
+			if(objects[0] == null) {
+				return null;
+			}
 			double presure = Double.parseDouble(objects[0].toString());
 			
 			Map<Double, Double> chillerMap = WorkflowUtil.getChillerTempVsPressureMap();
@@ -37,7 +39,7 @@ public enum ThermoPhysicalR134aFunctions implements FacilioWorkflowFunctionInter
 					double key = (double) keysetArray[i];
 					if(presure < key) {
 						if( i== 0) {
-							return chillerMap.get(key);
+							return null;
 						}
 						greaterValue = key;
 						lesserValue = (double) keysetArray[i-1];

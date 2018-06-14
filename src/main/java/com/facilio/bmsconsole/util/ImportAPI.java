@@ -200,7 +200,7 @@ public class ImportAPI {
 		ProcessXLS.populateData(importProcessContext, readingsList);
 	}
 	
-public static Long getSpaceIDforAssets(HashMap<String, Object> colVal) throws Exception {
+	public static Long getSpaceIDforAssets(HashMap<String, Object> colVal) throws Exception {
 
 		
 		String siteName = (String) colVal.get("site");

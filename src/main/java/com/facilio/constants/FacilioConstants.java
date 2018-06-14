@@ -146,6 +146,7 @@ public class FacilioConstants {
 		public static final String WORK_ORDER_COUNT = "workorderscount";
 		public static final String TEMPLATE_ID = "templateId";
 		public static final String TEMPLATE_TYPE = "templateType";
+		public static final String TEMPLATE_NAME = "templateName";
 		public static final Object TEMPLATE_LIST = "templateList";
 		public static final Object TEMPLATE = "template";
 		public static final String WORK_ORDER_TEMPLATE = "workordertemplate";
