@@ -30,7 +30,8 @@ import com.facilio.tasker.ScheduleInfo;
 
 public class DateTimeUtil 
 {
-	public static Long ONE_HOUR_MILLIS_VALUE = 3600000l; 
+	public static final long ONE_HOUR_MILLIS_VALUE = 3600000l;
+	public static final long ONE_MINUTE_MILLIS_VALUE = 60000l;
 	private static ZoneId getZoneId()
 	{
 		//TODO TimeZone related changes to be done.
@@ -511,6 +512,10 @@ public class DateTimeUtil
 	
 	public static String getFormattedTime(long time, String format) {
 		return DateTimeUtil.getZonedDateTime(time).format(DateTimeFormatter.ofPattern(format));
+	}
+	
+	public static long getLastNMinute(long currentTime,int minute) {
+		return currentTime - (minute * ONE_MINUTE_MILLIS_VALUE);
 	}
 	
 	public static long getLastNHour(long currentTime,int hour) {
