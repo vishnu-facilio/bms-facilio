@@ -89,7 +89,16 @@ public class AddTaskTicketActivityCommand implements Command {
 					activity.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 					activity.setActivityType(ActivityType.UPDATE_TICKET_TASK);
 					
-					Map<String, Object> oldTicketProps = FieldUtil.getAsProperties(oldTicketMap.get(task.getId()));
+					Map<String, Object> oldTicketProps;
+					if (task.getId() == -1)
+					{
+						oldTicketProps = FieldUtil.getAsProperties(oldTicketMap.get(recordId));
+					}
+					else
+					{
+						oldTicketProps = FieldUtil.getAsProperties(oldTicketMap.get(task.getId()));
+					}
+					
 					Iterator<String> keys = oldTicketProps.keySet().iterator();
 					while (keys.hasNext()) {
 						String key = keys.next();
