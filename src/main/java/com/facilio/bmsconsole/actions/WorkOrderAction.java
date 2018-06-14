@@ -46,6 +46,7 @@ import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.bmsconsole.workflow.TicketActivity;
+import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.leed.context.PMTriggerContext;
@@ -119,7 +120,7 @@ public class WorkOrderAction extends ActionSupport {
 			context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 			context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
 			context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST, getAttachmentId());
-
+			
 			Command addWorkOrder = FacilioChainFactory.getAddWorkOrderChain();
 			addWorkOrder.execute(context);
 			setWorkOrderId(workorder.getId());

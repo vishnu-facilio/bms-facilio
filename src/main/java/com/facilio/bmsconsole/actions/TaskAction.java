@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -187,6 +188,9 @@ public class TaskAction extends ActionSupport {
 	public void setParentTicketId(Long parentTicketId) {
 		this.parentTicketId = parentTicketId;
 	}
+	
+	private Map<String,String> error;
+	
 	public String closeAllTask() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
@@ -215,7 +219,15 @@ public class TaskAction extends ActionSupport {
 			System.out.println(taskContextList.size());
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(singleTask.getId()));
 			Chain updateTask = FacilioChainFactory.getUpdateTaskChain();
-			updateTask.execute(context);
+			try {
+				updateTask.execute(context);
+			} catch (IllegalArgumentException ex) {
+				String msg = ex.getMessage();
+				Map<String, String> map = new HashMap<>();
+				map.put("message", msg);
+				setError(map);
+				return ERROR;
+			}
 			rowsUpdated += (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 		}
 		return SUCCESS;
@@ -378,6 +390,12 @@ public class TaskAction extends ActionSupport {
 	public TaskContext getRecord() 
 	{
 		return task;
+	}
+	public Map<String,String> getError() {
+		return error;
+	}
+	public void setError(Map<String,String> error) {
+		this.error = error;
 	}
  }
 

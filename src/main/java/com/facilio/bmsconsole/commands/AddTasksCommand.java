@@ -2,9 +2,13 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.logging.Logger;
 
+import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.TaskContext;
@@ -14,11 +18,16 @@ import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
+import com.facilio.bmsconsole.view.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
-public class AddTasksCommand implements Command {
 
+public class AddTasksCommand implements Command {
+	
+	private static final Logger LOGGER = Logger.getLogger(AddTasksCommand.class.getName());
+	
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -51,6 +60,26 @@ public class AddTasksCommand implements Command {
 				}
 			});
 			builder.save();
+			
+			for (Entry<String, List<TaskContext>> entry: taskMap.entrySet()) {
+				for (TaskContext task: entry.getValue()) {
+					List<ReadingRuleContext> rules = task.getReadingRules();
+					Chain c = FacilioChainFactory.getAddWorkflowRuleChain();
+					for (int i = 0; i < rules.size(); ++i) {
+						ReadingRuleContext rule = rules.get(i);
+						rule.setRuleType(WorkflowRuleContext.RuleType.VALIDATION_RULE);
+						context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, rule);
+						context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, task.getActionsList().get(i));
+						try {
+							c.execute(context);
+						} catch (Exception e) {
+							String ex = ExceptionUtils.getStackTrace(e);
+							LOGGER.severe(ex);
+							throw e;
+						}
+					}
+				}
+			}
 			context.put(FacilioConstants.ContextNames.TASK_LIST, builder.getRecords());
 		}
 		else {

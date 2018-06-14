@@ -1881,6 +1881,7 @@ public class FacilioChainFactory {
 		c.addCommand(new ReadingUnitConversionCommand());
 		c.addCommand(new DeltaCalculationCommand());
 		c.addCommand(new CalculatePreFormulaCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.VALIDATION_RULE));
 		c.addCommand(new AddOrUpdateReadingValuesCommand());
 		c.addCommand(new AddMarkedReadingValuesCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.READING_RULE, RuleType.PM_READING_RULE));

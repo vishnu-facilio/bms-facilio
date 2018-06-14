@@ -512,6 +512,15 @@ public enum ActionType {
 			alarm.setSeverity(severityMap.get(alarm.getSeverity().getId()));
 		}
 
+	},
+	THROW_EXCEPTION(12) {
+
+		@Override
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
+				Object currentRecord) throws Exception {
+			throw new IllegalArgumentException("Input Should be incremental");
+		}
+		
 	};
 
 	private int val;
@@ -526,7 +535,7 @@ public enum ActionType {
 	}
 
 	abstract public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
-			Object currentRecord);
+			Object currentRecord) throws Exception;
 
 	public static ActionType getActionType(int actionTypeVal) {
 		return TYPE_MAP.get(actionTypeVal);
@@ -544,7 +553,7 @@ public enum ActionType {
 		return typeMap;
 	}
 
-	public static void main(String arg[]) {
+	public static void main(String arg[]) throws Exception {
 		System.out.println("hello world");
 		ActionType t = ActionType.SMS_NOTIFICATION;
 		JSONObject json = new JSONObject();
