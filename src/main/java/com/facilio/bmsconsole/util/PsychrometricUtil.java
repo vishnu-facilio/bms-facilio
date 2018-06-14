@@ -17,7 +17,7 @@ public class PsychrometricUtil {
 	
 	public static void main(String[] args) {
 		Map<String,Object> weatherReading = new HashMap<String, Object>();
-		weatherReading.put("apparentTemperature", 30.89);
+		weatherReading.put("temperature", 30.89);
 		weatherReading.put("humidity", 0.36);
 		weatherReading.put("pressure", 100845.00);
 		Double wbt = getWetBulbTemperatureFromRelativeHumidity(weatherReading);
@@ -29,7 +29,7 @@ public class PsychrometricUtil {
 	
 	public static Double getDewPointTemperatureFromRelativeHumudity(Map<String,Object> weatherReading) {
 		
-		Double dryBulbTemperature = (Double) FieldUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("apparentTemperature"));
+		Double dryBulbTemperature = (Double) FieldUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("temperature"));
 		Double pressure = ((Double) FieldUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("pressure"))) * 100;
 		Double relativeHumidity = (Double) FieldUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("humidity"));
 		
@@ -39,7 +39,7 @@ public class PsychrometricUtil {
 	
 	public static Double getWetBulbTemperatureFromRelativeHumidity(Map<String,Object> weatherReading) {
 		
-		Double dryBulbTemperature = (Double) FieldUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("apparentTemperature"));
+		Double dryBulbTemperature = (Double) FieldUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("temperature"));
 		Double pressure = ((Double) FieldUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("pressure"))) * 100;
 		Double relativeHumidity = (Double) FieldUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("humidity"));
 		
