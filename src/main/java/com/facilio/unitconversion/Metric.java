@@ -18,6 +18,7 @@ public enum Metric {
 	FREQUENCY(9,"Frequency",51),
 	REACTIVEPOWER(10,"Reactive Power",58),
 	PRESSURE(11,"Presure",61),
+	DEGREE(12,"Degree",62),
 	;
 	
 	public static Map<Integer, Metric> getMetricMap() {

@@ -78,6 +78,8 @@ public enum Unit {
 	MEGAVAR(60,"Mega","Mvar",Metric.REACTIVEPOWER,"si/1000000","this*1000000"),
 	
 	PASCAL(61,"Pascal","pa",Metric.PRESSURE),
+	
+	DEGREE(62,"Degree","&deg;",Metric.DEGREE),
 	;
 	
 	int unitId;
