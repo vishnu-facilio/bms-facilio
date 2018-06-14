@@ -224,7 +224,7 @@ public class ExpressionContext {
 		if(getConstant() != null) {
 			return getConstant();
 		}
-		if(getWorkflowContext() != null && getWorkflowContext().isFromDerivation) {
+		if(getWorkflowContext() != null && getWorkflowContext().isGetDataFromCache()) {
 			
 			String parentId = WorkflowUtil.getParentIdFromCriteria(criteria);
 			

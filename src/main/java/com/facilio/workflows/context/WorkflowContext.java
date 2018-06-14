@@ -40,13 +40,14 @@ public class WorkflowContext {
 	Map<String,Object> variableResultMap;
 	String resultEvaluator;
 	
-	boolean isFromDerivation;
+	boolean getDataFromCache;
 	
-	public boolean isFromDerivation() {
-		return isFromDerivation;
+
+	public boolean isGetDataFromCache() {
+		return getDataFromCache;
 	}
-	public void setFromDerivation(boolean isFromDerivation) {
-		this.isFromDerivation = isFromDerivation;
+	public void setGetDataFromCache(boolean getDataFromCache) {
+		this.getDataFromCache = getDataFromCache;
 	}
 
 	private List<Long> dependentFieldIds;
