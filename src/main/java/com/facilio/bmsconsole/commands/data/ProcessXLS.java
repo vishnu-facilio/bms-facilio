@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
@@ -220,12 +221,12 @@ public class ProcessXLS implements Command {
 		LOGGER.severe("IMPORT DONE");
 	}
 	
-	public static void populateData(ImportProcessContext importProcessContext,List<ReadingContext> readingsList) throws Exception {
+	public static void populateData(ImportProcessContext importProcessContext,List<ReadingContext> readingsEntireList) throws Exception {
 		
 		String moduleName=importProcessContext.getModule().getName();
 		if(importProcessContext.getModule().getTypeEnum() == ModuleType.READING) {
 			
-			Map<String, List<ReadingContext>> readingMap= Collections.singletonMap(moduleName, readingsList);
+			Map<String, List<ReadingContext>> readingMap= Collections.singletonMap(moduleName, readingsEntireList);
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.HISTORY_READINGS,true);
 			context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS,false);
@@ -235,18 +236,35 @@ public class ProcessXLS implements Command {
 		}
 		else {
 			
-			if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ENERGY_METER)) {
-				for(ReadingContext reading :readingsList) {
-					reading.addReading("resourceType", ResourceContext.ResourceType.ASSET.getValue());
+			int insertLimit = 10000;
+			int splitSize = (readingsEntireList.size()/insertLimit) + 1;
+			LOGGER.severe("splitSize ----- "+splitSize);
+			for(int i=0 ; i < splitSize; i++) {
+				
+				int fromValue = i*insertLimit;
+				int toValue = (i*insertLimit) + insertLimit - 1;
+				if(toValue > readingsEntireList.size()) {
+					toValue = readingsEntireList.size()-1;
 				}
+				List<ReadingContext> readingsList = readingsEntireList.subList(fromValue , toValue);
+				
+				if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ENERGY_METER)) {
+					for(ReadingContext reading :readingsList) {
+						reading.addReading("resourceType", ResourceContext.ResourceType.ASSET.getValue());
+					}
+				}
+				ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				
+				InsertRecordBuilder<ReadingContext> readingBuilder = new InsertRecordBuilder<ReadingContext>()
+						.moduleName(moduleName)
+						.fields(bean.getAllFields(moduleName))
+						.addRecords(readingsList);
+				readingBuilder.save();
+				
+				Thread.sleep(10000L);
+				
 			}
-			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			
-			InsertRecordBuilder<ReadingContext> readingBuilder = new InsertRecordBuilder<ReadingContext>()
-					.moduleName(moduleName)
-					.fields(bean.getAllFields(moduleName))
-					.addRecords(readingsList);
-			readingBuilder.save();
 		}
 	}
 
