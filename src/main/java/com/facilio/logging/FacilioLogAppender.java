@@ -1,6 +1,7 @@
 package com.facilio.logging;
 
 import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import org.apache.log4j.DailyRollingFileAppender;
 import org.apache.log4j.Layout;
@@ -98,7 +99,11 @@ public class FacilioLogAppender extends DailyRollingFileAppender {
     public void append(LoggingEvent event) {
         Organization org = AccountUtil.getCurrentOrg();
         if(org != null) {
-            event.setProperty("orgid", ""+org.getOrgId());
+            event.setProperty("orgId", String.valueOf(org.getOrgId()));
+        }
+        User user = AccountUtil.getCurrentUser();
+        if (user != null) {
+        	event.setProperty("userId", String.valueOf(user.getOuid()));
         }
         super.append(event);
     }
