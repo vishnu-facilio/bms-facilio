@@ -111,9 +111,7 @@ public class UserBeanImpl implements UserBean {
 		long userId = (Long) props.get("id");
 		user.setUid(userId);
 		if(emailVerificationRequired) {
-			if (!isPortalUser) {
-				sendEmailRegistration(user);
-			}
+			sendEmailRegistration(user);
 		}
 		return userId;
 	}
@@ -263,12 +261,11 @@ public class UserBeanImpl implements UserBean {
 	}
 	
 public long inviteRequester(long orgId, User user) throws Exception {
-		
-		long ouid = addRequester(orgId, user);
+	
 		Organization portalOrg = AccountUtil.getOrgBean().getPortalOrg(AccountUtil.getCurrentOrg().getDomain());
 		user.setPortalId(portalOrg.getPortalId());
+		long ouid = addRequester(orgId, user, false);
 		sendInvitation(ouid, user);
-		
 		return ouid;
 	}
 
@@ -932,6 +929,11 @@ public long inviteRequester(long orgId, User user) throws Exception {
 	@Override
 	public long addRequester(long orgId, User user) throws Exception {
 
+		return addRequester(orgId, user, true);
+	}
+	
+	public long addRequester(long orgId, User user, boolean emailVerification) throws Exception {
+
 		User orgUser = getPortalUser(user.getEmail(), user.getPortalId());
 		if (orgUser != null) {
 			return orgUser.getOuid();
@@ -939,7 +941,7 @@ public long inviteRequester(long orgId, User user) throws Exception {
 		Boolean isPortalRequester = true;
 		long uid = getPortalUid(user.getPortalId(), user.getEmail());
 		if (uid == -1) {
-			uid = addUserEntry(user, false, true);
+			uid = addUserEntry(user, emailVerification, true);
 			user.setDefaultOrg(true);
 		}
 		user.setUid(uid);
