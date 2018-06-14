@@ -24,7 +24,14 @@ public class CreateWorkorderTemplateCommand implements Command {
 		WorkorderTemplate workorderTemplate = new WorkorderTemplate();
 		workorderTemplate.setWorkorder(workorder);
 		workorderTemplate.setTasks(tasks);
-		workorderTemplate.setName((String) context.get(FacilioConstants.ContextNames.TEMPLATE_NAME));
+		
+		String templateName = (String) context.get(FacilioConstants.ContextNames.TEMPLATE_NAME);
+		if (templateName == null || !templateName.isEmpty()) {
+			workorderTemplate.setName(workorder.getSubject());
+		}
+		else {
+			workorderTemplate.setName(templateName);
+		}
 		Template.Type type = (Type) context.get(FacilioConstants.ContextNames.TEMPLATE_TYPE);
 		
 		long templateId = -1; 
