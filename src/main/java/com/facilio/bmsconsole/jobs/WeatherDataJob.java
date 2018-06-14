@@ -86,12 +86,6 @@ public class WeatherDataJob extends FacilioJob {
 		ReadingContext reading= new ReadingContext();
 		reading.setParentId(siteId);
 		try {
-			Long time=(Long)weatherData.get("time");
-			long ttime=System.currentTimeMillis();
-			if(time!=null) {
-				ttime=time*1000;
-			}
-			reading.setTtime(ttime);
 			Double wetBulbTemperature = PsychrometricUtil.getWetBulbTemperatureFromRelativeHumidity(weatherData);
 			Double dewPointTemperature = PsychrometricUtil.getDewPointTemperatureFromRelativeHumudity(weatherData);
 			
@@ -108,19 +102,13 @@ public class WeatherDataJob extends FacilioJob {
 		
 		
 		Object temperature=currentWeather.get("temperature");
-		Long time=(Long)currentWeather.get("time");
 		
 		if(temperature==null) {
 			return null;
 		}
 		
-		long ttime=System.currentTimeMillis();
-		if(time!=null) {
-			ttime=time*1000;
-		}
 		ReadingContext reading= new ReadingContext();
 		reading.setParentId(siteId);
-		reading.setTtime(ttime);
 		reading.addReading("temperature", temperature);
 		reading.addReading("icon", currentWeather.get("icon"));
 		reading.addReading("summary", currentWeather.get("summary"));
