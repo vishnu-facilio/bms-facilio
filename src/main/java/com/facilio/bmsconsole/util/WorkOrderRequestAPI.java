@@ -7,11 +7,13 @@ import java.util.logging.Logger;
 
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
+import org.apache.log4j.LogManager;
 
 public class WorkOrderRequestAPI {
 	
 	private static Logger logger = Logger.getLogger(WorkOrderRequestAPI.class.getName());
-	
+	private static org.apache.log4j.Logger log = LogManager.getLogger(WorkOrderRequestAPI.class.getName());
+
 	public static long addS3MessageId(String s3Id) throws SQLException {
 		try {
 			
@@ -27,7 +29,7 @@ public class WorkOrderRequestAPI {
 			return (long) workOrderEmailProps.get("id");
 		}
 		catch(SQLException e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 	}

@@ -17,8 +17,11 @@ import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.SQLScriptRunner;
+import org.apache.log4j.LogManager;
 
 public class AddDefaultReportCommand implements Command {
+
+	private static org.apache.log4j.Logger log = LogManager.getLogger(AddDefaultReportCommand.class.getName());
 
 	private static final File INSERT_REPORTS_SQL = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/defaultReports.sql").getFile());
 	@Override
@@ -91,7 +94,7 @@ public class AddDefaultReportCommand implements Command {
 //			CommonCommandUtil.insertOrgInfo(orgId, "newdashboard", "wo,fa");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		return false;
 	}

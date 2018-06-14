@@ -13,6 +13,8 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
@@ -45,7 +47,8 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class ProcessSpaceXLS implements Command {
 
-	
+	private static Logger log = LogManager.getLogger(ProcessSpaceXLS.class.getName());
+
 	public boolean execute(Context context) throws Exception {
 		
 		
@@ -232,7 +235,7 @@ public class ProcessSpaceXLS implements Command {
 				}
 				catch(Exception e)
 				{
-					e.printStackTrace();
+					log.info("Exception occurred ", e);
 				}
 				
 				
@@ -265,7 +268,7 @@ public class ProcessSpaceXLS implements Command {
 				}
 				catch (Exception e)
 				{
-					e.printStackTrace();
+					log.info("Exception occurred ", e);
 				}
 				 // Long idh = siteMeta.addSite(siteName);
 				 
@@ -384,7 +387,7 @@ public class ProcessSpaceXLS implements Command {
 			return props;			
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		return null;
 	}

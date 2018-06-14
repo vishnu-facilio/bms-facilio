@@ -15,8 +15,12 @@ import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class UpdateBuildingCommand implements Command {
+
+    private static Logger log = LogManager.getLogger(UpdateBuildingCommand.class.getName());
 	
 	@SuppressWarnings("unchecked")
 	@Override
@@ -48,7 +52,7 @@ public class UpdateBuildingCommand implements Command {
 			
 			}catch(Exception e)
 			{
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 			}
 		}
 		else 

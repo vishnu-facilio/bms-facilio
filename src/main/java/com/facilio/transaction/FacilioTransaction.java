@@ -1,5 +1,8 @@
 package com.facilio.transaction;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -17,6 +20,7 @@ public class FacilioTransaction implements Transaction {
 
 	private int status=Status.STATUS_ACTIVE;
 	private long transactionTimeout = 60L;
+	private static Logger log = LogManager.getLogger(FacilioTransaction.class.getName());
 
 	private ArrayList<Connection> connections = new ArrayList<Connection>();
 	
@@ -59,7 +63,7 @@ public class FacilioTransaction implements Transaction {
 					disAssociateConnection(fc);
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 			}
 			
 		}
@@ -103,7 +107,7 @@ public class FacilioTransaction implements Transaction {
 				fc.getPhysicalConnection().rollback();
 				fc.getPhysicalConnection().close();
 			} catch (SQLException e) {
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 			}
 			disAssociateConnection(fc);
 			

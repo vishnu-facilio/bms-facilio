@@ -32,6 +32,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.log4j.LogManager;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -40,7 +41,9 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 public class SAMLUtil {
-	
+
+	private static org.apache.log4j.Logger log = LogManager.getLogger(SAMLUtil.class.getName());
+
 	public static String getFileAsString(File file) throws IOException {
 		FileInputStream fis = new FileInputStream(file);
 		try {
@@ -219,7 +222,7 @@ public class SAMLUtil {
 		}
 		catch(IllegalArgumentException e) {
 			privKey = null;
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 
 		return privKey;

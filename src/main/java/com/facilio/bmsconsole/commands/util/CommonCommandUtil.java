@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.StringJoiner;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.Organization;
@@ -46,6 +48,7 @@ import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class CommonCommandUtil {
+	private static Logger log = LogManager.getLogger(CommonCommandUtil.class.getName());
 	public static void setFwdMail(SupportEmailContext supportEmail) {
 		String actualEmail = supportEmail.getActualEmail();
 		String orgEmailDomain = "@"+AccountUtil.getCurrentOrg().getDomain()+".facilio.com";
@@ -174,7 +177,7 @@ public class CommonCommandUtil {
 			return pickList;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		return null;	
 	}
@@ -202,7 +205,7 @@ public class CommonCommandUtil {
 			return pickList;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		return null;	
 	}
@@ -273,7 +276,7 @@ public class CommonCommandUtil {
 						.append(rs.getString("Status"));
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					log.info("Exception occurred ", e);
 				}
 			}
 			if(msg.toLowerCase().contains("timeout")) {
@@ -283,7 +286,7 @@ public class CommonCommandUtil {
 						.append(FacilioTablePrinter.getResultSetData(rs));
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					log.info("Exception occurred ", e);
 				}
 			}
 		}

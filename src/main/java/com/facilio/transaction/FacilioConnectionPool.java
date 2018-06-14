@@ -1,5 +1,8 @@
 package com.facilio.transaction;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -14,7 +17,8 @@ import javax.transaction.TransactionManager;
 
 public enum FacilioConnectionPool {
 	INSTANCE;
-	
+	private  Logger log = LogManager.getLogger(FacilioConnectionPool.class.getName());
+
 	private DataSource ds = null;
 	
 	private FacilioConnectionPool() {
@@ -25,7 +29,7 @@ public enum FacilioConnectionPool {
 			envCtx = (Context) initCtx.lookup("java:comp/env");
 			ds = (DataSource) envCtx.lookup("jdbc/pcmDB");
 		} catch (NamingException e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw new ExceptionInInitializerError("Unable to initialize DB connection pool due to the following error : \n"+e.getMessage());
 		}
 		finally {
@@ -33,7 +37,7 @@ public enum FacilioConnectionPool {
 				try {
 					initCtx.close();
 				} catch (NamingException e) {
-					e.printStackTrace();
+					log.info("Exception occurred ", e);
 				}
 			}
 		}
@@ -57,7 +61,7 @@ public enum FacilioConnectionPool {
                    return   ((FacilioTransaction)t).getConnection();
 				}
 			} catch (SystemException e) {
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 			}
 			return getConnectionFromPool();
 		

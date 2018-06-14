@@ -9,6 +9,8 @@ import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.impl.ChainBase;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -51,7 +53,9 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class WorkOrderReportAction extends ActionSupport {
 
-	private String type;
+    private static Logger log = LogManager.getLogger(WorkOrderReportAction.class.getName());
+
+    private String type;
 	public String getType() {
 		return this.type;
 	}
@@ -342,7 +346,7 @@ public class WorkOrderReportAction extends ActionSupport {
 				}
 			}
 			catch(Exception e) {
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 				throw e;
 			}
 		}

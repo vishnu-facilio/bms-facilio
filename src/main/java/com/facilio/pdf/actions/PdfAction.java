@@ -8,6 +8,8 @@ import java.io.InputStream;
 import com.facilio.pdf.PdfUtil;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class PdfAction extends ActionSupport {
 
@@ -15,6 +17,8 @@ public class PdfAction extends ActionSupport {
     private long orgId;
     private String username;
     private InputStream fileInputStream;
+
+    private static Logger log = LogManager.getLogger(PdfAction.class.getName());
 
     public String getUrl() {
         return url;
@@ -54,7 +58,7 @@ public class PdfAction extends ActionSupport {
             try {
                 fileInputStream = new FileInputStream(new File(fileName));
             } catch (FileNotFoundException e) {
-                e.printStackTrace();
+                log.info("Exception occurred ", e);
             }
             return Action.SUCCESS;
         }

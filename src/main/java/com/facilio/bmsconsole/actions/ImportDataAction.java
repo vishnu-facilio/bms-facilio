@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.apache.log4j.LogManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -30,7 +31,7 @@ import com.opensymphony.xwork2.ActionSupport;
 public class ImportDataAction extends ActionSupport {
 	
 	private static final Logger LOGGER = Logger.getLogger(ImportDataAction.class.getName());
-	
+	private static org.apache.log4j.Logger log = LogManager.getLogger(ImportDataAction.class.getName());
 	public String upload() throws Exception {
 		
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
@@ -80,7 +81,7 @@ public class ImportDataAction extends ActionSupport {
 			this.chillerAssets = AssetsAPI.getAssetListOfCategory(AssetsAPI.getCategory("Chiller").getId());
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		return SUCCESS;
 	}

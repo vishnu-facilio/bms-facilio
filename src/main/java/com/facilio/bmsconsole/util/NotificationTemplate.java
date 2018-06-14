@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.text.StrSubstitutor;
+import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -15,7 +16,8 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.workflow.ActivityType;
 
 public class NotificationTemplate {
-	
+	private static org.apache.log4j.Logger log = LogManager.getLogger(NotificationTemplate.class.getName());
+
 	public static JSONObject getFormattedMessage(NotificationContext notification) throws Exception {
 		
 		JSONObject templateJson = getMessageTemplate(notification.getNotificationType());
@@ -33,7 +35,7 @@ public class NotificationTemplate {
 		try {
 			return (JSONObject) parser.parse(StrSubstitutor.replace(templateJson, placeholders));
 		} catch (ParseException e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		return null;
 	}

@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.chain.Chain;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
@@ -40,6 +42,8 @@ public class Home extends ActionSupport {
 response_type = code
 state = PORTAL-yogendrababu
  */
+private static Logger log = LogManager.getLogger(Home.class.getName());
+
 	public String loginSubmit()
 	{
 		System.out.println(redirect_uri + state + response_type);
@@ -162,7 +166,7 @@ state = PORTAL-yogendrababu
 				pstmt.executeUpdate();
 
 			} catch(SQLException | RuntimeException e) {
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 				throw e;
 			} finally {
 				DBUtil.closeAll(conn, pstmt);
@@ -230,7 +234,7 @@ state = PORTAL-yogendrababu
 				userAgent = userAgent != null ? userAgent : "";
 				AccountUtil.getUserBean().startUserSession(uid, username, jwt, request.getRemoteAddr(), userAgent);
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 				setJsonresponse("message", "Error while validating user name and password");
 				return ERROR;
 			}
@@ -282,7 +286,7 @@ Pragma: no-cache
 				
 		}catch(SQLException | RuntimeException e)
 		{
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 		finally
@@ -375,7 +379,7 @@ Pragma: no-cache
 					pstmt.executeUpdate();
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					log.info("Exception occurred ", e);
 				}
 				finally
 				{
@@ -414,7 +418,7 @@ Pragma: no-cache
 			setJsonresponse("message", "Username exists for this portal");
 			return ERROR;
 		} catch (SQLException | RuntimeException e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			setJsonresponse("message", "Error during signup");
 			return ERROR;
 		} finally {
@@ -467,7 +471,7 @@ Pragma: no-cache
 			c.execute(signupContext);
 		}catch(SQLException | RuntimeException e)
 		{
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			setJsonresponse("message", "Error during signup");
 			return ERROR;
 		}
@@ -563,7 +567,7 @@ Pragma: no-cache
 		}
 		catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();	
+			log.info("Exception occurred ", e);
 		}
 			HashMap<String, Object> subscription = (HashMap<String, Object>) this.getContent().get("subscription");
 			String PlanId = (String) subscription.get("plan_id");
@@ -591,7 +595,7 @@ Pragma: no-cache
 				
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 			}
 			
 		}

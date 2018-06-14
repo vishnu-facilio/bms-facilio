@@ -13,8 +13,12 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class VirtualMeterEnergyDataCalculator extends FacilioJob {
+
+	private Logger log = LogManager.getLogger(VirtualMeterEnergyDataCalculator.class.getName());
 
 	private static final int CALCULATION_DELAY = 60*1000; //One minute delay
 	
@@ -37,14 +41,14 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 					DeviceAPI.insertVirtualMeterReadings(meter, startTime,endTime,minutesInterval, true);
 				}
 				catch (Exception e) {
-					e.printStackTrace();
+					log.info("Exception occurred ", e);
 					CommonCommandUtil.emailException("VM Calculation failed for meter : "+meter.getId(), e);
 				}
 			}
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			CommonCommandUtil.emailException("VM Calculation failed", e);
 		}
 	}

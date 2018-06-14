@@ -13,9 +13,12 @@ import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
+import org.apache.log4j.LogManager;
 
 public class PhotosAction extends ActionSupport {
-	
+
+	private static org.apache.log4j.Logger log = LogManager.getLogger(PhotosAction.class.getName());
+
 	public String addBaseSpacePhotos() throws Exception {
 		return addPhotos(FacilioConstants.ContextNames.BASE_SPACE_PHOTOS);
 	}
@@ -211,7 +214,7 @@ public class PhotosAction extends ActionSupport {
 				}
 			}
 			catch (Exception e) {
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 			}
 		}
 		

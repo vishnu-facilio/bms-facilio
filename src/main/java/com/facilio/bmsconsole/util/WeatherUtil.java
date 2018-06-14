@@ -40,7 +40,9 @@ public class WeatherUtil {
 	private static final Logger LOGGER = LogManager.getLogger(WeatherUtil.class.getName());
 	private static String weatherURL=AwsUtil.getConfig("weather.url");
 	private static String weatherParams="?units=si&exclude=flags,daily,hourly,alerts";
-	
+	private static org.apache.log4j.Logger log = LogManager.getLogger(WeatherUtil.class.getName());
+
+
 	private static String[] apiKeys=AwsUtil.getConfig("weather.key").trim().split(",");
 	
 	private static int currentKey=0;
@@ -298,7 +300,7 @@ public static Map<Long,List<Map<String,Object>>> getReadings(String moduleName) 
 
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 	}
 	

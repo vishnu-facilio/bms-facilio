@@ -13,8 +13,12 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericUpdateRecordBuilder;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class UpdateNotificationSettings implements Command {
+	private static Logger log = LogManager.getLogger(UpdateNotificationSettings.class.getName());
+
 	@Override
 	public boolean execute(Context context) throws Exception {
 		WorkflowRuleContext workflow=(WorkflowRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_UPDATE);
@@ -31,7 +35,7 @@ public class UpdateNotificationSettings implements Command {
 				builder.update(workflowProps);
 				context.put(FacilioConstants.ContextNames.RESULT, "success");
 			} catch(Exception e){
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 				throw e;
 			}
 			

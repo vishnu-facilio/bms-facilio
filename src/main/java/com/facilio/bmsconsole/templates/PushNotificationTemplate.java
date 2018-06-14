@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.templates;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -9,6 +11,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 public class PushNotificationTemplate extends Template{
+
+	private static Logger log = LogManager.getLogger(PushNotificationTemplate.class.getName());
 
 	private String to;
 	public String getTo() {
@@ -51,7 +55,7 @@ public class PushNotificationTemplate extends Template{
 	 			obj = (JSONObject) parser.parse(body);
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 			}
 		}
 //		obj.put("to", to);

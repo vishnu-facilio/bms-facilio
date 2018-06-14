@@ -11,7 +11,9 @@ import org.apache.log4j.Logger;
 
 public class LRUCache<K, V>{
 
-    public static void main(String args []) throws InterruptedException
+	private static Logger log = LogManager.getLogger(LRUCache.class.getName());
+
+	public static void main(String args []) throws InterruptedException
     {
     	LRUCache testcache =  	new LRUCache<String,Object>(18);
     	String arrya[] = {"yoge","babu","karry" ,"ram","manthosh","shivaraj","vikram","magesh","vivek","radhakrishnan","swami","manthosh","krishna","praveen","simran","madhura","gowtham","dhivya","aravind"};
@@ -205,7 +207,7 @@ System.out.println("Before "+testcache);
 	        return tempNode.getValue();
     	}
     	catch (Exception e) {
-    		e.printStackTrace();
+    		log.info("Exception occurred ", e);
     		return null;
     	}
     }

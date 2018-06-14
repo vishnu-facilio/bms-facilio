@@ -9,8 +9,12 @@ import org.apache.commons.collections.Predicate;
 
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class FacilioModulePredicate extends BeanPredicate {
+
+	private static Logger log = LogManager.getLogger(FacilioModulePredicate.class.getName());
 
 	public FacilioModulePredicate(String propertyName, Predicate predicate) {
 		super(propertyName, predicate);
@@ -38,7 +42,7 @@ public class FacilioModulePredicate extends BeanPredicate {
 				return getPredicate().evaluate(propertyVal);
 			} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 			}
 		}
 		return false;

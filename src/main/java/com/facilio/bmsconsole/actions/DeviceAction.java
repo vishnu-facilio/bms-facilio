@@ -18,10 +18,12 @@ import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.kinesis.KinesisProcessor;
 import com.opensymphony.xwork2.ActionSupport;
+import org.apache.log4j.LogManager;
 
 public class DeviceAction extends ActionSupport
 {
 	private static Logger logger = Logger.getLogger(DeviceAction.class.getName());
+	private static org.apache.log4j.Logger log = LogManager.getLogger(DeviceAction.class.getName());
 
 	private String url;
 
@@ -67,7 +69,7 @@ public class DeviceAction extends ActionSupport
 				CommonCommandUtil.insertOrgInfo(orgId, FacilioConstants.ContextNames.FEDGE_CERT_FILE_ID, String.valueOf(id));
 	
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 			}
 	
 			KinesisProcessor.startProcessor(orgId, orgName);

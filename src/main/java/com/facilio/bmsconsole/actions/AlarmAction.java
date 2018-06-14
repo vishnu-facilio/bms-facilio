@@ -12,6 +12,8 @@ import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -39,6 +41,7 @@ import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class AlarmAction extends ActionSupport {
+	private static Logger log = LogManager.getLogger(AlarmAction.class.getName());
 	private AlarmContext alarm;
 	public AlarmContext getAlarm() {
 		return alarm;
@@ -504,7 +507,7 @@ public class AlarmAction extends ActionSupport {
 			return -1;
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 	}

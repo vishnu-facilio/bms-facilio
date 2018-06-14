@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
@@ -19,6 +20,8 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.constants.FacilioConstants;
 
 public class CreateAccountCommand implements Command {
+
+	private static org.apache.log4j.Logger log = LogManager.getLogger(CreateAccountCommand.class.getName());
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -86,7 +89,7 @@ public class CreateAccountCommand implements Command {
 			context.put("ouid", ouid);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		return false;
 	}

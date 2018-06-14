@@ -2,8 +2,11 @@ package com.facilio.bmsconsole.commands;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.chain.Filter;
+import org.apache.log4j.LogManager;
 
 public class TransactionExceptionHandler implements Filter{
+
+	private static org.apache.log4j.Logger log = LogManager.getLogger(TransactionExceptionHandler.class.getName());
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -27,7 +30,7 @@ public class TransactionExceptionHandler implements Filter{
 			}
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		
 		return false;

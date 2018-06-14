@@ -17,10 +17,12 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.events.tasker.tasks.EventProcessorFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.timeseries.TimeSeriesProcessorFactory;
+import org.apache.log4j.LogManager;
 
 public class KinesisProcessor {
 
     private static final HashSet<String> STREAMS = new HashSet<>();
+    private static org.apache.log4j.Logger log = LogManager.getLogger(KinesisProcessor.class.getName());
 
     private static Properties getLoggingProps(){
         Properties properties = new Properties();
@@ -43,7 +45,7 @@ public class KinesisProcessor {
                 STREAMS.addAll(streamNames);
             }
         } catch (Exception e){
-            e.printStackTrace();
+            log.info("Exception occurred ", e);
         }
     }
 
@@ -75,7 +77,7 @@ public class KinesisProcessor {
                 }
             }
         } catch (Exception e){
-            e.printStackTrace();
+            log.info("Exception occurred ", e);
         }
     }
 
@@ -89,7 +91,7 @@ public class KinesisProcessor {
         } catch (ResourceNotFoundException e){
             System.out.println("Kinesis stream not found for org : " + orgDomainName +" id "+ orgId);
         } catch (Exception e){
-            e.printStackTrace();
+            log.info("Exception occurred ", e);
         }
     }
     
@@ -99,7 +101,7 @@ public class KinesisProcessor {
     		new Thread(() -> StreamProcessor.run(orgId, orgDomainName, type, getProcessorFactory(orgId,orgDomainName,type))).start();
     	}
     	catch (Exception e){
-    		e.printStackTrace();
+    		log.info("Exception occurred ", e);
     	}
 
     }

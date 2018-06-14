@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 
 import com.facilio.beans.ModuleBean;
@@ -32,7 +34,9 @@ import com.facilio.fw.BeanFactory;
 
 public class ReportExportUtil {
 	
-	private static final String UNKNOWN = "Unknown"; 
+	private static final String UNKNOWN = "Unknown";
+
+	private static Logger log = LogManager.getLogger(ReportExportUtil.class.getName());
 
 	public static Map<String, Object> getDataInExportFormat(JSONArray reportData, ReportContext reportContext, Long baseLineComparisionDiff,ReportSpaceFilterContext reportSpaceFilterContext, JSONArray dateFilter) throws Exception {
 		List<Map<String, Object>> reportDatas = new ArrayList<>();
@@ -134,7 +138,7 @@ public class ReportExportUtil {
 				});
 			}
 			catch(Exception e) {
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 			}
 		}
 		
@@ -443,7 +447,7 @@ public class ReportExportUtil {
 			try {
 				return formatValue(label, dataType, operator, reportContext).toString();
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 			}
 		}
 		

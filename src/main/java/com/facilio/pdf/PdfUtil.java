@@ -9,13 +9,15 @@ import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.auth.CognitoUtil;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class PdfUtil {
 
     private static final String PDF_CMD = System.getProperty("user.home")+"/slimerjs-0.10.3/slimerjs";
     private static final String RENDER_JS = System.getProperty("user.home")+"/render.js";
     private static final String SERVER_NAME = AwsUtil.getConfig("api.servername");
-
+    private static Logger log = LogManager.getLogger(PdfUtil.class.getName());
     public static String convertUrlToPdf(long orgId, String username, String url, FileFormat format) {
     		if (format == null) {
 			format = FileFormat.PDF;
@@ -40,7 +42,7 @@ public class PdfUtil {
                 int exitStatus = CommandExecutor.execute(command);
                 System.out.println("Converted to pdf with exit status" + exitStatus + " and file " + pdfFile.getAbsolutePath());
             } catch (IOException e) {
-                e.printStackTrace();
+                log.info("Exception occurred ", e);
             }
         }
         return pdfFileLocation;
@@ -59,7 +61,7 @@ public class PdfUtil {
                 fileId = fs.addFile(pdfFile.getName(), pdfFile, format.getContentType());
                 return fs.getPrivateUrl(fileId);
             } catch (Exception e) {
-                e.printStackTrace();
+                log.info("Exception occurred ", e);
             }
         }
         return null;

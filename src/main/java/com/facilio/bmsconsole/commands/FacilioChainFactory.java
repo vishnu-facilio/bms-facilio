@@ -23,10 +23,13 @@ import com.facilio.leed.commands.FetchArcAssetsCommand;
 import com.facilio.leed.commands.LeedBuildingDetailsCommand;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.transaction.FacilioTransactionManager;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class FacilioChainFactory {
+    private static Logger log = LogManager.getLogger(FacilioChainFactory.class.getName());
 
-	public static Chain getOrgSignupChain()
+    public static Chain getOrgSignupChain()
 	{
 		Chain c = new ChainBase();
 		c.addCommand(new CreateAccountCommand());
@@ -2362,7 +2365,9 @@ public class FacilioChainFactory {
 }
 
 class TransactionChain extends ChainBase {
-	private boolean enableTransaction = false;
+    private static Logger log = LogManager.getLogger(TransactionChain.class.getName());
+
+    private boolean enableTransaction = false;
 	public boolean execute(Context context) throws Exception {
 		boolean istransaction = false;
 		String jtaEnabled = AwsUtil.getConfig("enable.transaction");
@@ -2391,7 +2396,7 @@ class TransactionChain extends ChainBase {
 			return status;
 		} catch (Throwable e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			if (enableTransaction) {
 				if (istransaction) {
 					FacilioTransactionManager.INSTANCE.getTransactionManager().rollback();

@@ -29,9 +29,12 @@ import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
+import org.apache.log4j.LogManager;
 
 public class SetupActions<T> extends ActionSupport {
-	
+
+	private static org.apache.log4j.Logger log = LogManager.getLogger(SetupActions.class.getName());
+
 	static
 	{
 		System.out.println("###############Setup Action Class Loaded#############");
@@ -178,7 +181,7 @@ public String importData() throws Exception {
 				return ERROR;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		
 		return SUCCESS;

@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.LogManager;
 import org.apache.struts2.ServletActionContext;
 
 import com.facilio.accounts.dto.Account;
@@ -22,6 +23,7 @@ import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 
 public class PortalAuthInterceptor extends AbstractInterceptor {
 	private static Logger logger = Logger.getLogger(PortalAuthInterceptor.class.getName());
+	private static org.apache.log4j.Logger log = LogManager.getLogger(PortalAuthInterceptor.class.getName());
 
 	private HashMap customdomains = null;
 	@Override
@@ -52,7 +54,7 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 			logger.info("Custom domains loaded "+customdomains);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 
 	}
@@ -86,7 +88,7 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			return "login";
 		}
 
@@ -162,7 +164,7 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 				}
 			}
 		} catch (Exception e){
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 	    return "success";
     }

@@ -22,6 +22,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -65,7 +66,8 @@ import com.facilio.workflows.functions.FacilioWorkflowFunctionInterface;
 public class WorkflowUtil {
 	
 	public static Map<Double, Double> CHILLER_TEMP_VS_PRESSURE = null;
-	
+	private static org.apache.log4j.Logger log = LogManager.getLogger(WorkflowUtil.class.getName());
+
 	private static final Logger LOGGER = Logger.getLogger(WorkflowUtil.class.getName());
 
 	static final List<String> COMPARISION_OPPERATORS = new ArrayList<>();
@@ -144,7 +146,7 @@ public class WorkflowUtil {
 	            }
 	        } 
 	        catch (IOException e) {
-	            e.printStackTrace();
+	            log.info("Exception occurred ", e);
 	        }
 	        CHILLER_TEMP_VS_PRESSURE = temp;
 		}

@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 
 public class SetupLayout<T> {
 	private T t;
-	
+	private static Logger log = LogManager.getLogger(SetupLayout.class.getName());
+
 	public void setData(T t) {
         this.t = t;
     }
@@ -29,7 +32,7 @@ public class SetupLayout<T> {
 				return type.newInstance();
 			} catch (InstantiationException | IllegalAccessException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 			}
     	}
     	
@@ -452,7 +455,8 @@ class ActionButton
 	String className;
 	String iconClass;
 	Type type;
-	
+	private static Logger log = LogManager.getLogger(ActionButton.class.getName());
+
 	public enum Type {
 		
 		SAVE,

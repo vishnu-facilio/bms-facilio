@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -30,6 +32,8 @@ import com.facilio.fw.BeanFactory;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class WorkOrderRequestAction extends ActionSupport {
+	private static Logger log = LogManager.getLogger(WorkOrderRequestAction.class.getName());
+
 	public String newWorkOrderRequest() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
@@ -242,7 +246,7 @@ public class WorkOrderRequestAction extends ActionSupport {
 			wo = FieldUtil.getAsBeanFromJson(obj, WorkOrderRequestContext.class);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		return wo;
 	}

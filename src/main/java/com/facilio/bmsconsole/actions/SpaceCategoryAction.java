@@ -9,8 +9,12 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
+import org.apache.log4j.LogManager;
 
 public class SpaceCategoryAction  extends ActionSupport{
+
+	private static org.apache.log4j.Logger log = LogManager.getLogger(SpaceCategoryAction.class.getName());
+
 
 	SpaceCategoryContext spaceCategory;
 	
@@ -104,7 +108,7 @@ public class SpaceCategoryAction  extends ActionSupport{
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			setResultAction(false);
 			setResultMessage("Error in deleting Category");
 			return ERROR;

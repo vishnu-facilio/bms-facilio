@@ -21,8 +21,12 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class ActionAPI {
+
+    private static Logger log = LogManager.getLogger(ActionAPI.class.getName());
 	public static List<ActionContext> getAllActionsFromWorkflowRule(long orgId, long workflowRuleId) throws Exception {
 		GenericSelectRecordBuilder actionBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getActionFields())
@@ -122,7 +126,7 @@ public class ActionAPI {
 
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 	}

@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.text.StrSubstitutor;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -18,7 +20,7 @@ public enum AccountEmailTemplate {
 	EMAIL_VERIFICATION(3),
 	RESET_PASSWORD(4);
 	
-	
+	private static Logger log = LogManager.getLogger(AccountEmailTemplate.class.getName());
 	private int val;
 	private String templateJson;
 	private AccountEmailTemplate(int val) {
@@ -35,7 +37,7 @@ public enum AccountEmailTemplate {
 		try {
 			return (JSONObject) parser.parse(StrSubstitutor.replace(templateJson, placeHolders));
 		} catch (ParseException e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		return null;
 	};
@@ -45,7 +47,7 @@ public enum AccountEmailTemplate {
 		try {
 			return (JSONObject) parser.parse(templateJson);
 		} catch (ParseException e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		return null;
 	}

@@ -10,8 +10,12 @@ import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class ExecutePMCommand implements Command {
+
+	private static Logger log = LogManager.getLogger(ExecutePMCommand.class.getName());
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -33,7 +37,7 @@ public class ExecutePMCommand implements Command {
 					}
 				}
 				catch (Exception e) {
-					e.printStackTrace();
+					log.info("Exception occurred ", e);
 					CommonCommandUtil.emailException("PM Execution failed for PM : "+pmId, e);
 				}
 				context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);

@@ -24,8 +24,12 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.tasker.ScheduleInfo.FrequencyType;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class PMScheduler extends FacilioJob {
+
+	private Logger log = LogManager.getLogger(PMScheduler.class.getName());
 
 	@Override
 	public void execute(JobContext jc) {
@@ -79,7 +83,7 @@ public class PMScheduler extends FacilioJob {
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 														
 	}

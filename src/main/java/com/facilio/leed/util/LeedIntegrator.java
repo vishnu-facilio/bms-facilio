@@ -20,6 +20,8 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -37,7 +39,8 @@ public class LeedIntegrator {
 	public static String authheadervalue= Base64.getEncoder().encodeToString((username+":"+password).getBytes());
 	public static String authKey = "Bearer Qq2NJpDM7IieThJiU3iFIoqT19YJGW"; // This is generated with doAuth() method in this same class. 
 	//public static String serverURL = "https://api.usgbc.org:443";
-	
+	private static Logger log = LogManager.getLogger(LeedIntegrator.class.getName());
+
 	public LeedIntegrator()
 	{
 		
@@ -122,7 +125,7 @@ public class LeedIntegrator {
         		System.out.println("#### authToken : "+authToken);
         	}catch(Exception e)
         	{
-        		e.printStackTrace();
+        		log.info("Exception occurred ", e);
         	}
         	finally {
             httpclient.close();

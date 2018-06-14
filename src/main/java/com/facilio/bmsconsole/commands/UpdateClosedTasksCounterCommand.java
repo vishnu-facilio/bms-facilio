@@ -17,9 +17,12 @@ import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class UpdateClosedTasksCounterCommand implements Command {
 
+    private static Logger log = LogManager.getLogger(UpdateClosedTasksCounterCommand.class.getName());
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -45,7 +48,7 @@ public class UpdateClosedTasksCounterCommand implements Command {
 					updateBuilder.update(ticket);
 				}
 				catch(Exception e) {
-					e.printStackTrace();
+					log.info("Exception occurred ", e);
 					throw e;
 				}
 			}
@@ -82,7 +85,7 @@ public class UpdateClosedTasksCounterCommand implements Command {
 			}
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 		

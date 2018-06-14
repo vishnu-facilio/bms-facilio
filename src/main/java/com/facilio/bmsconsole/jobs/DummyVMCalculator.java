@@ -6,8 +6,12 @@ import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class DummyVMCalculator extends FacilioJob {
+
+	private Logger log = LogManager.getLogger(DummyVMCalculator.class.getName());
 
 	@Override
 	public void execute(JobContext jc) {
@@ -31,7 +35,7 @@ public class DummyVMCalculator extends FacilioJob {
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 	}
 

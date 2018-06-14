@@ -15,9 +15,12 @@ import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.opensymphony.xwork2.ActionSupport;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class AttachmentAction  extends ActionSupport {
 
+	private static Logger log = LogManager.getLogger(AttachmentAction.class.getName());
 	private String module;
 	public String getModule() {
 		return this.module;
@@ -110,7 +113,7 @@ public class AttachmentAction  extends ActionSupport {
 			List<AttachmentContext> attachmentList = (List<AttachmentContext>) context.get(FacilioConstants.ContextNames.ATTACHMENT_LIST);
 			setAttachments(attachmentList);
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		return SUCCESS;
 	}
@@ -136,7 +139,7 @@ public class AttachmentAction  extends ActionSupport {
 			List<AttachmentContext> attachmentList = (List<AttachmentContext>) context.get(FacilioConstants.ContextNames.ATTACHMENT_LIST);
 			setAttachments(attachmentList);
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		return SUCCESS;
 	}
@@ -149,7 +152,7 @@ public class AttachmentAction  extends ActionSupport {
 			Chain deleteAttachmentChain = FacilioChainFactory.getDeleteAttachmentChain();
 			deleteAttachmentChain.execute(context);
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		return SUCCESS;
 	}
@@ -186,7 +189,7 @@ public class AttachmentAction  extends ActionSupport {
 				return ERROR;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		
 		return SUCCESS;

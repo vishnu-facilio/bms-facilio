@@ -4,8 +4,12 @@ import java.sql.PreparedStatement;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.transaction.FacilioConnectionPool;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class EventInfo {
+
+	private static Logger log = LogManager.getLogger(EventInfo.class.getName());
 
 	public String source;
 	public String getSource() {
@@ -99,7 +103,7 @@ public class EventInfo {
 			ps.executeBatch();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		finally
 		{

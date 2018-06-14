@@ -1,5 +1,8 @@
 package com.facilio.transaction;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.transaction.TransactionManager;
@@ -7,7 +10,7 @@ import javax.transaction.TransactionManager;
 
 public enum FacilioTransactionManager {
 	INSTANCE;
-	
+	private static Logger log = LogManager.getLogger(FacilioTransactionManager.class.getName());
 //	private TransactionManager txn = null;
 	private FacilioTransactionManager() {
 	/*	try {
@@ -30,7 +33,7 @@ public enum FacilioTransactionManager {
 			return txn;
 		} catch (NamingException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw new ExceptionInInitializerError("Unable to initialize Transaction manager due to the following error : \n"+e.getMessage());
 		}
 	}

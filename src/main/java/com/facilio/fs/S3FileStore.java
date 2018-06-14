@@ -20,6 +20,8 @@ import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
 import com.amazonaws.services.s3.model.S3Object;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.util.ImageScaleUtil;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class S3FileStore extends FileStore {
 	
@@ -29,6 +31,7 @@ public class S3FileStore extends FileStore {
 	
 	private String bucketName;
 	private String rootPath;
+	private static Logger log = LogManager.getLogger(S3FileStore.class.getName());
 
 	@Override
 	protected String getRootPath() {
@@ -93,7 +96,7 @@ public class S3FileStore extends FileStore {
 			    	}
 				}
 		    } catch (Exception e) {
-		    	e.printStackTrace();
+		    	log.info("Exception occurred ", e);
 		    }
 		}
 		return fileId;
@@ -155,7 +158,7 @@ public class S3FileStore extends FileStore {
 					.withKeys(filePathList.toArray(new String[filePathList.size()]));
 			AwsUtil.getAmazonS3Client().deleteObjects(dor);
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		return deleteFileEntries(fileId);
 	}

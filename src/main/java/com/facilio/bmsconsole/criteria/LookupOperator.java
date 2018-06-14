@@ -10,10 +10,14 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.fw.BeanFactory;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public enum LookupOperator implements Operator<Criteria> {
 
 	LOOKUP(35, "lookup");
+
+	private static Logger log = LogManager.getLogger(LookupOperator.class.getName());
 
 	private LookupOperator(int operatorId, String operator) {
 		this.operatorId = operatorId;
@@ -61,7 +65,7 @@ public enum LookupOperator implements Operator<Criteria> {
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		return null;
 	}

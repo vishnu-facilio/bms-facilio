@@ -30,6 +30,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 public class JobStore {
 
+    private static org.apache.log4j.Logger log = org.apache.log4j.LogManager.getLogger(JobStore.class.getName());
 	public static void addJob(JobContext job) throws Exception {
 		if(job != null) {
 			
@@ -300,7 +301,7 @@ public class JobStore {
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 	}

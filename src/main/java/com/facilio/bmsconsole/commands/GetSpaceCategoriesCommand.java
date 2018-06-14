@@ -15,9 +15,12 @@ import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
+import org.apache.log4j.LogManager;
 
 public class GetSpaceCategoriesCommand implements Command {
-	
+
+	private static org.apache.log4j.Logger log = LogManager.getLogger(GetSpaceCategoriesCommand.class.getName());
+
 	@Override
 	public boolean execute(Context context) throws Exception {
 	
@@ -44,7 +47,7 @@ public class GetSpaceCategoriesCommand implements Command {
 			context.put(FacilioConstants.ContextNames.SPACECATEGORIESLIST, spaceCategories);
 		}
 		catch(SQLException | RuntimeException e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 		finally {

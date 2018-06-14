@@ -16,6 +16,8 @@ import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.util.SkillAPI;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class SkillActions extends ActionSupport {
 
@@ -35,12 +37,13 @@ public class SkillActions extends ActionSupport {
 		return actionForm;
 	}
 
+	private static Logger log = LogManager.getLogger(SkillActions.class.getName());
 	public String execute() {
 
 		try {
 			setSkills(SkillAPI.getAllSkill(AccountUtil.getCurrentOrg().getOrgId()));
 		} catch (SQLException e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		return SUCCESS;
 	}

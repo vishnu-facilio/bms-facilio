@@ -11,6 +11,7 @@ import java.util.Map;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -50,6 +51,7 @@ import com.facilio.leed.context.PMTriggerContext;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public enum ActionType {
+
 	EMAIL_NOTIFICATION(1) {
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
@@ -68,7 +70,7 @@ public enum ActionType {
 						}
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					log.info("Exception occurred ", e);
 				}
 			}
 		}
@@ -91,7 +93,7 @@ public enum ActionType {
 						}
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					log.info("Exception occurred ", e);
 				}
 			}
 		}
@@ -128,7 +130,7 @@ public enum ActionType {
 						}
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					log.info("Exception occurred ", e);
 				}
 			}
 		}
@@ -165,7 +167,7 @@ public enum ActionType {
 						}
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					log.info("Exception occurred ", e);
 				}
 			}
 		}
@@ -198,7 +200,7 @@ public enum ActionType {
 					}
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					log.info("Exception occurred ", e);
 				}
 			}
 		}
@@ -226,7 +228,7 @@ public enum ActionType {
 					Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
 					getAddEventChain.execute(addEventContext);
 				} catch (Exception e) {
-					e.printStackTrace();
+					log.info("Exception occurred ", e);
 				}
 			}
 		}
@@ -267,7 +269,7 @@ public enum ActionType {
 					}
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 			}
 		}
 
@@ -344,7 +346,7 @@ public enum ActionType {
 				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 			}
 
 		}
@@ -389,7 +391,7 @@ public enum ActionType {
 						.andCondition(CriteriaAPI.getIdCondition(workOrder.getId(), woModule));
 				updateBuilder.update(updateWO);
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 			}
 
 		}
@@ -439,7 +441,7 @@ public enum ActionType {
 					updateBuilder.update(updateWO);
 
 				} catch (Exception e) {
-					e.printStackTrace();
+					log.info("Exception occurred ", e);
 				}
 
 			}
@@ -481,7 +483,7 @@ public enum ActionType {
 				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 			}
 		}
 		
@@ -531,6 +533,8 @@ public enum ActionType {
 	}
 
 	private static final Map<Integer, ActionType> TYPE_MAP = Collections.unmodifiableMap(initTypeMap());
+
+	private static org.apache.log4j.Logger log = LogManager.getLogger(ActionType.class.getName());
 
 	private static Map<Integer, ActionType> initTypeMap() {
 		Map<Integer, ActionType> typeMap = new HashMap<>();

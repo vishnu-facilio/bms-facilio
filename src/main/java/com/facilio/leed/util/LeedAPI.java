@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.LogManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -31,6 +32,8 @@ import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class LeedAPI {
+
+	private static org.apache.log4j.Logger log = LogManager.getLogger(LeedAPI.class.getName());
 
 	public static List<LeedConfigurationContext> getLeedConfigurationList(long orgId) throws Exception
 	{
@@ -274,7 +277,7 @@ public class LeedAPI {
 			}			
 		}catch(SQLException | RuntimeException e)
 		{
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		finally
 		{
@@ -397,7 +400,7 @@ public class LeedAPI {
 			}			
 		}catch(SQLException | RuntimeException e)
 		{
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		finally
 		{
@@ -426,7 +429,7 @@ public class LeedAPI {
 					
 		}catch(SQLException | RuntimeException e)
 		{
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		finally
 		{

@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -21,6 +23,8 @@ import com.facilio.events.context.EventContext;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class GetEventListCommand implements Command {
+
+	private static Logger log = LogManager.getLogger(GetEventListCommand.class.getName());
 
 	@SuppressWarnings({ "unchecked", "deprecation" })
 	@Override
@@ -77,7 +81,7 @@ public class GetEventListCommand implements Command {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 		context.put(EventConstants.EventContextNames.EVENT_LIST, events);

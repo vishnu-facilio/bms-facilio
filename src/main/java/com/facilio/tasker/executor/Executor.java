@@ -11,10 +11,13 @@ import com.facilio.tasker.FacilioScheduler;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.tasker.job.JobStore;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class Executor implements Runnable {
 	
 	private static final int MAX_RETRY = 5;
+	private static Logger log = LogManager.getLogger(Executor.class.getName());
 	
 	private ScheduledExecutorService executor = null;
 	private String name = null;
@@ -62,14 +65,14 @@ public class Executor implements Runnable {
 					}
 					catch(Exception e) {
 						System.err.println("Unable to schedule job : "+jc.getJobName());
-						e.printStackTrace();
+						log.info("Exception occurred ", e);
 					}
 				}
 				
 //				Thread.sleep((endTime*1000)-System.currentTimeMillis());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 			}
 //		}
 	}

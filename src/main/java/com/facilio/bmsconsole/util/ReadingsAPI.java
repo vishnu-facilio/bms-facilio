@@ -239,7 +239,7 @@ public class ReadingsAPI {
 				}
 			}
 			catch(Exception e) {
-				e.printStackTrace();
+				logger.info("Exception occurred ", e);
 				throw e;
 			}
 		}
@@ -416,7 +416,7 @@ public class ReadingsAPI {
 			}
 		}
 		catch(SQLException e) {
-			e.printStackTrace();
+			logger.info("Exception occurred ", e);
 			throw new SQLException("Query failed : "+sql, e);
 		}
 

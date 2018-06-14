@@ -1,5 +1,8 @@
 package com.facilio.util;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -9,6 +12,7 @@ public class FacilioUtil {
 
     private static final String PROPERTY_FILE = "conf/facilio.properties";
     private static final Properties PROPERTIES = new Properties();
+    private static Logger log = LogManager.getLogger(FacilioUtil.class.getName());
 
     static {
         URL resource = FacilioUtil.class.getClassLoader().getResource(PROPERTY_FILE);
@@ -16,7 +20,7 @@ public class FacilioUtil {
             try (InputStream stream = resource.openStream()) {
                 PROPERTIES.load(stream);
             } catch (IOException e) {
-                e.printStackTrace();
+                log.info("Exception occurred ", e);
             }
         }
     }

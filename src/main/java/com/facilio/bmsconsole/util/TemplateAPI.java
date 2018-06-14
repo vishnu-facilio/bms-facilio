@@ -20,6 +20,7 @@ import java.util.regex.Pattern;
 import javax.xml.bind.JAXBContext;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.LogManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -68,7 +69,8 @@ import com.facilio.workflows.util.WorkflowUtil;
 
 public class TemplateAPI {
 	private static final Logger logger = Logger.getLogger(SessionManager.class.getName());
-	
+	private static org.apache.log4j.Logger log = LogManager.getLogger(TemplateAPI.class.getName());
+
 	private static final String[] LANG = new String[]{"en"};
 	private static final Map<String, Map<Integer,DefaultTemplate>> DEFAULT_TEMPLATES = Collections.unmodifiableMap(loadDefaultTemplates());
 	private static Map<String, Map<Integer,DefaultTemplate>> loadDefaultTemplates() {
@@ -642,7 +644,7 @@ public class TemplateAPI {
 			template.setMessage(IOUtils.toString(body));
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 		
@@ -798,7 +800,7 @@ public class TemplateAPI {
 			template.setContent(IOUtils.toString(body));
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 		return template;

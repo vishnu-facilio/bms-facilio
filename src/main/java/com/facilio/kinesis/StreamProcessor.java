@@ -8,8 +8,12 @@ import com.amazonaws.services.kinesis.clientlibrary.lib.worker.Worker;
 import com.amazonaws.services.kinesis.metrics.interfaces.MetricsLevel;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class StreamProcessor {
+
+    private static Logger log = LogManager.getLogger(StreamProcessor.class.getName());
 
     public static void run(long orgId, String orgDomainName, String eventType, IRecordProcessorFactory recordProcessorFactory) {
 
@@ -47,7 +51,7 @@ public class StreamProcessor {
 
             worker.run();
         } catch (Exception e){
-            e.printStackTrace();
+            log.info("Exception occurred ", e);
         }
 
     }

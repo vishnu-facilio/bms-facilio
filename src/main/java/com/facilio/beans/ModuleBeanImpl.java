@@ -14,6 +14,7 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -45,7 +46,8 @@ import com.facilio.transaction.FacilioConnectionPool;
 
 public class ModuleBeanImpl implements ModuleBean {
 
-	
+	private static org.apache.log4j.Logger log = LogManager.getLogger(ModuleBeanImpl.class.getName());
+
 	private Connection getConnection() throws SQLException {
 	//	return BeanFactory.getConnection();
 		return FacilioConnectionPool.INSTANCE.getConnection();
@@ -104,7 +106,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			return getModuleFromRS(rs);
 		}
 		catch(SQLException e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 		finally {
@@ -135,7 +137,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			return getModuleFromRS(rs);
 		}
 		catch(SQLException e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 		finally {
@@ -162,7 +164,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			return getSubModulesFromRS(rs);
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 		finally {
@@ -171,7 +173,7 @@ public class ModuleBeanImpl implements ModuleBean {
 					rs.close();
 				}
 				catch(SQLException e) {
-					e.printStackTrace();
+					log.info("Exception occurred ", e);
 				}
 			}
 		}
@@ -188,7 +190,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			return getSubModulesFromRS(rs);
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 		finally {
@@ -197,7 +199,7 @@ public class ModuleBeanImpl implements ModuleBean {
 					rs.close();
 				}
 				catch(SQLException e) {
-					e.printStackTrace();
+					log.info("Exception occurred ", e);
 				}
 			}
 		}
@@ -225,7 +227,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			return getSubModulesFromRS(rs);
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 		finally {
@@ -234,7 +236,7 @@ public class ModuleBeanImpl implements ModuleBean {
 					rs.close();
 				}
 				catch(SQLException e) {
-					e.printStackTrace();
+					log.info("Exception occurred ", e);
 				}
 			}
 		}
@@ -254,7 +256,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			return getSubModulesFromRS(rs);
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 		finally {
@@ -263,7 +265,7 @@ public class ModuleBeanImpl implements ModuleBean {
 					rs.close();
 				}
 				catch(SQLException e) {
-					e.printStackTrace();
+					log.info("Exception occurred ", e);
 				}
 			}
 		}
@@ -367,7 +369,7 @@ public class ModuleBeanImpl implements ModuleBean {
 				return pstmt.executeUpdate();
 			}
 			catch (Exception e) {
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 				throw e;
 			}
 		}
@@ -776,7 +778,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			}
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 		finally {
@@ -785,7 +787,7 @@ public class ModuleBeanImpl implements ModuleBean {
 					rs.close();
 				}
 				catch(SQLException e) {
-					e.printStackTrace();
+					log.info("Exception occurred ", e);
 				}
 			}
 		}
@@ -803,7 +805,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			}
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 	}

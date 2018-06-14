@@ -9,6 +9,8 @@ import java.util.List;
 
 import org.apache.commons.chain.Chain;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
@@ -31,6 +33,8 @@ import com.facilio.leed.util.LeedIntegrator;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class LeedAction extends ActionSupport {
+
+	private static Logger log = LogManager.getLogger(LeedAction.class.getName());
 
 
 	private LeedConfigurationContext leedConfigurationContext;
@@ -507,7 +511,7 @@ public class LeedAction extends ActionSupport {
 		LeedAPI.addConsumptionData(dataMapList);
 		}catch(Exception e)
 		{
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		return SUCCESS;
 	}

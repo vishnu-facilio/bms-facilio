@@ -11,8 +11,10 @@ import org.apache.commons.chain.Context;
 import com.facilio.bmsconsole.context.ReportColumnContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.transaction.FacilioConnectionPool;
+import org.apache.log4j.LogManager;
 
 public class UpdateReportColumnSequence implements Command {
+	private static org.apache.log4j.Logger log = LogManager.getLogger(UpdateReportColumnSequence.class.getName());
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -26,7 +28,7 @@ public class UpdateReportColumnSequence implements Command {
 					int rowsUpdated = pstmt.executeUpdate();
 				}
 				catch(SQLException e) {
-					e.printStackTrace();
+					log.info("Exception occurred ", e);
 					throw e;
 				}
 			}

@@ -10,10 +10,13 @@ import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class SupportEmailAPI {
 	public static final String TABLE_NAME = "SupportEmails";
-	
+	private static Logger log = LogManager.getLogger(SupportEmailAPI.class.getName());
+
 	public static SupportEmailContext getSupportEmailFromFwdEmail(String fwdMail) throws Exception {
 		try {
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
@@ -28,7 +31,7 @@ public class SupportEmailAPI {
 			}
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 		return null;
@@ -49,7 +52,7 @@ public class SupportEmailAPI {
 			}
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 		return null;
@@ -72,7 +75,7 @@ public class SupportEmailAPI {
 			}
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 		return null;

@@ -34,9 +34,13 @@ import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class ViewAPI {
-	
+
+	private static Logger log = LogManager.getLogger(ViewAPI.class.getName());
+
 	public static List<FacilioView> getAllViews(String moduleName, long orgId) throws Exception {
 		//List<FacilioView> views = new ArrayList<>();
 		Map<Long, FacilioView> viewMap = new HashMap<>();
@@ -67,7 +71,7 @@ public class ViewAPI {
 		} 
 		catch (Exception e) 
 		{
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 		return getFilteredViews(viewMap, viewIds);
@@ -104,7 +108,7 @@ public class ViewAPI {
 		} 
 		catch (Exception e) 
 		{
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 		return getFilteredViews(viewMap, viewIds);
@@ -179,7 +183,7 @@ public class ViewAPI {
 			}
 			
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 		return null;
@@ -208,7 +212,7 @@ public class ViewAPI {
 			}
 			
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 		return null;
@@ -257,7 +261,7 @@ public class ViewAPI {
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 	}
@@ -324,7 +328,7 @@ public class ViewAPI {
 			insertBuilder.save();
 			
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 	}
@@ -349,7 +353,7 @@ public class ViewAPI {
 			
 			insertBuilder.save();
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 	}
@@ -389,7 +393,7 @@ public class ViewAPI {
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 		return columns;
@@ -417,7 +421,7 @@ public class ViewAPI {
 				sortFields.add(sortField);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 		return sortFields;

@@ -5,9 +5,12 @@ import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.fw.BeanFactory;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class ReportDateFilterContext {
 
+	private static Logger log = LogManager.getLogger(ReportDateFilterContext.class.getName());
 	private Long id;
 	private Long reportId;
 	private Long fieldId;
@@ -48,7 +51,7 @@ public class ReportDateFilterContext {
 				this.fieldId = modBean.getField(this.field.getName(), this.field.getModule().getName()).getId();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 			}
 		}
 		return fieldId;

@@ -11,6 +11,8 @@ import java.util.Map;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -51,7 +53,9 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class WorkOrderAction extends ActionSupport {
 
-	public String newWorkOrder() throws Exception {
+    private static Logger log = LogManager.getLogger(WorkOrderAction.class.getName());
+
+    public String newWorkOrder() throws Exception {
 
 		FacilioContext context = new FacilioContext();
 		Chain newTicket = FacilioChainFactory.getNewWorkOrderChain();
@@ -120,7 +124,7 @@ public class WorkOrderAction extends ActionSupport {
 			addWorkOrder.execute(context);
 			setWorkOrderId(workorder.getId());
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		return SUCCESS;
 	}

@@ -9,8 +9,12 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class NoteAction extends ActionSupport {
+
+    private static Logger log = LogManager.getLogger(NoteAction.class.getName());
 	
 	private long noteId;
 	public long getNoteId() {
@@ -118,7 +122,7 @@ public class NoteAction extends ActionSupport {
 
 			setNotes((List<NoteContext>) context.get(FacilioConstants.ContextNames.NOTE_LIST));
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		return SUCCESS;
 	}

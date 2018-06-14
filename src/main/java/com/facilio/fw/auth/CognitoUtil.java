@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -51,6 +52,8 @@ import com.nimbusds.jwt.proc.DefaultJWTProcessor;
 
 
 public class CognitoUtil {
+
+	private static org.apache.log4j.Logger log = LogManager.getLogger(CognitoUtil.class.getName());
 
 	private static AWSCognitoIdentityProvider IDP_PROVIDER = null;
 	
@@ -196,7 +199,7 @@ public class CognitoUtil {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		return false;
 	}
@@ -225,7 +228,7 @@ public class CognitoUtil {
 			emailDomain = email.split("@")[1];
 			emailDomain = emailDomain.split("\\.")[0];
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		
 		AdminGetUserResult userResult = CognitoUtil.getUser(email);
@@ -278,7 +281,7 @@ public class CognitoUtil {
 			return faciliouser;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			return null;
 		}
 		//faciliouser.set

@@ -41,11 +41,14 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
+import org.apache.log4j.LogManager;
 
 public class TicketAPI {
 	
 	private static Logger logger = Logger.getLogger(TicketAPI.class.getName());
-	
+	private static org.apache.log4j.Logger log = LogManager.getLogger(TicketAPI.class.getName());
+
+
 	public static List<AttachmentContext> getRelatedAttachments(long ticketId) throws Exception 
 	{
 		return AttachmentsAPI.getAttachments(FacilioConstants.ContextNames.TICKET_ATTACHMENTS, ticketId);
@@ -82,7 +85,7 @@ public class TicketAPI {
 			return statuses.get(0);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 	}
@@ -102,7 +105,7 @@ public class TicketAPI {
 			return builder.get();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 	}
@@ -122,7 +125,7 @@ public class TicketAPI {
 			return builder.get();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 	}
@@ -142,7 +145,7 @@ public class TicketAPI {
 			return builder.get();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 	}
@@ -163,7 +166,7 @@ public class TicketAPI {
 			return categories.get(0);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 	}
@@ -184,7 +187,7 @@ public class TicketAPI {
 			return categories.get(0);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 	}
@@ -205,7 +208,7 @@ public class TicketAPI {
 			return categories.get(0);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 	}
@@ -226,7 +229,7 @@ public class TicketAPI {
 			return statuses.get(0);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 	}
@@ -245,7 +248,7 @@ public class TicketAPI {
 		
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 	}
@@ -396,7 +399,7 @@ public class TicketAPI {
 			}
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 		return 0;
@@ -476,7 +479,7 @@ public class TicketAPI {
 						ids = myGroups.stream().map(Group::getId).collect(Collectors.toList());
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					log.info("Exception occurred ", e);
 				}
 				
 				if (!ids.contains(oldTicket.getAssignmentGroup().getId())) {
@@ -546,7 +549,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 				}
 			}
 			catch(Exception e) {
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 				throw e;
 			}
 		}
@@ -573,7 +576,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 				}
 			}
 			catch(Exception e) {
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 				throw e;
 			}
 		}
@@ -600,7 +603,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 				}
 			}
 			catch(Exception e) {
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 				throw e;
 			}
 		}

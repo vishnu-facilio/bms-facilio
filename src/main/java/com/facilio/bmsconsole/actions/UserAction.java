@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 
 import com.facilio.accounts.dto.GroupMember;
@@ -33,7 +35,8 @@ import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class UserAction extends ActionSupport {
-	
+
+	private static Logger log = LogManager.getLogger(UserAction.class.getName());
 	private SetupLayout setup;
 	public SetupLayout getSetup() {
 		return this.setup;
@@ -102,7 +105,7 @@ public class UserAction extends ActionSupport {
 			System.out.println(sql);
 			statement.execute(sql);
 		} catch (SQLException | RuntimeException e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			result = "User cannot be deleted.";
 			return ERROR;
 		} finally {
@@ -163,7 +166,7 @@ public class UserAction extends ActionSupport {
 				}
 			}
 			else {
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 				addFieldError("email", "This user already exists in your organization.");
 				System.out.println("........> Error");
 			}
@@ -207,7 +210,7 @@ public class UserAction extends ActionSupport {
 				}
 			}
 			else {
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 				addFieldError("email", "This user already exists in your organization.");
 				System.out.println("........> Error");
 			}

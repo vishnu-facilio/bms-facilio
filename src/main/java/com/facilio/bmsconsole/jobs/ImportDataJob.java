@@ -10,10 +10,13 @@ import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
+import org.apache.log4j.LogManager;
 
 public class ImportDataJob extends FacilioJob {
 
 	private static final Logger LOGGER = Logger.getLogger(ImportDataJob.class.getName());
+	private org.apache.log4j.Logger log = LogManager.getLogger(ImportDataJob.class.getName());
+
 	@Override
 	public void execute(JobContext jc) {
 		
@@ -38,7 +41,7 @@ public class ImportDataJob extends FacilioJob {
 			ImportAPI.updateImportProcess(importProcessContext,ImportStatus.IMPORTED);
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 	}
 

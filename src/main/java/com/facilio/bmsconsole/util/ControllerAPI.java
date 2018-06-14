@@ -10,9 +10,11 @@ import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import org.apache.log4j.LogManager;
 
 public class ControllerAPI {
-	
+	private static org.apache.log4j.Logger log = LogManager.getLogger(ControllerAPI.class.getName());
+
 	public static List<ControllerContext> getControllerSettings(long orgId) throws Exception {
 		try {
 			GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
@@ -42,7 +44,7 @@ public class ControllerAPI {
 			}
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 		return null;

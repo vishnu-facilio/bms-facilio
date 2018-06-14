@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -16,7 +18,8 @@ import com.facilio.leed.util.LeedIntegrator;
 public class GetLeedDataCommand {
 	
 	public static List<Map<String, String>> energy_meters = new ArrayList<>();
-	
+	private static Logger log = LogManager.getLogger(GetLeedDataCommand.class.getName());
+
 	public static void main(String args[])
 	{
 		GetLeedDataCommand obj = new GetLeedDataCommand();
@@ -59,7 +62,7 @@ public class GetLeedDataCommand {
 		
 		} catch (Exception e) {
 		
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 	}
 	
@@ -91,7 +94,7 @@ public class GetLeedDataCommand {
 			System.out.println("@@@@@@@@@@@ :"+meterMap.toString());
 		
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 	}
 	

@@ -12,8 +12,12 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
+import org.apache.log4j.LogManager;
 
 public class GetPickListCommand implements Command {
+
+	private static org.apache.log4j.Logger log = LogManager.getLogger(GetPickListCommand.class.getName());
+
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -46,7 +50,7 @@ public class GetPickListCommand implements Command {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			System.out.println("Exception occurred during retrieval of pick list for "+moduleName);
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		finally
 		{

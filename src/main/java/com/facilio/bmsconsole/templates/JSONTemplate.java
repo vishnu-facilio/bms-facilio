@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.templates;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -8,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 public class JSONTemplate extends Template {
 
+	private static Logger log = LogManager.getLogger(JSONTemplate.class.getName());
 	private long contentId = -1;
 	public long getContentId() {
 		return contentId;
@@ -32,7 +35,7 @@ public class JSONTemplate extends Template {
 				return (JSONObject) parser.parse(content);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 			}
 		}
 		return null;

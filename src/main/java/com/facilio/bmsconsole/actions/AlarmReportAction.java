@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -30,6 +32,7 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class AlarmReportAction extends ActionSupport {
 
+	private static Logger log = LogManager.getLogger(AlarmReportAction.class.getName());
 	private String type;
 	public String getType() {
 		return this.type;
@@ -310,7 +313,7 @@ public class AlarmReportAction extends ActionSupport {
 				}
 			}
 			catch(Exception e) {
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 				throw e;
 			}
 		}

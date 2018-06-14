@@ -14,10 +14,12 @@ import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.constants.FacilioConstants;
+import org.apache.log4j.LogManager;
 
 public class Role {
 	
 	private static final Logger LOGGER = Logger.getLogger(Role.class.getName());
+	private static org.apache.log4j.Logger log = LogManager.getLogger(Role.class.getName());
 
 	private long roleId;
 	private long orgId;
@@ -72,7 +74,7 @@ public class Role {
 					return permission.hasPermission(permissionVal);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					log.info("Exception occurred ", e);
 				}
 			}
 		}
@@ -145,7 +147,7 @@ public class Role {
 										groups = AccountUtil.getGroupBean().getMyGroups(ouid);
 									} catch (Exception e) {
 										// TODO Auto-generated catch block
-										e.printStackTrace();
+										log.info("Exception occurred ", e);
 									}
 									List<Long> groupIds = new ArrayList<>();
 									for(Group group : groups) {

@@ -10,8 +10,11 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.sql.SQLScriptRunner;
+import org.apache.log4j.LogManager;
 
 public class AddDefaultModulesCommand implements Command {
+	private static org.apache.log4j.Logger log = LogManager.getLogger(AddDefaultModulesCommand.class.getName());
+
 	private static Logger logger = Logger.getLogger("AddDefaultModulesCommand");
 
 	private static final File INSERT_MODULES_SQL = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/defaultModules.sql").getFile());
@@ -29,7 +32,7 @@ public class AddDefaultModulesCommand implements Command {
 			scriptRunner.runScript();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			logger.log(Level.SEVERE,"Error",e);
 		}
 		

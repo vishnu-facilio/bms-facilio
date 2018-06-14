@@ -5,8 +5,12 @@ import java.util.List;
 
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.util.DashboardUtil;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class DashboardContext extends ModuleBaseWithCustomFields {
+
+	private static Logger log = LogManager.getLogger(DashboardContext.class.getName());
 
 	private String dashboardName;
 	
@@ -51,7 +55,7 @@ public class DashboardContext extends ModuleBaseWithCustomFields {
 				try {
 					DashboardUtil.updateDashboardLinkName(this.getId(), linkName);
 				} catch (Exception e) {
-					e.printStackTrace();
+					log.info("Exception occurred ", e);
 				}
 			}
 		}

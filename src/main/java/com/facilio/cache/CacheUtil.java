@@ -8,9 +8,12 @@ import org.apache.commons.lang3.SerializationUtils;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 
+import org.apache.log4j.LogManager;
 import redis.clients.jedis.Jedis;
 
 public class CacheUtil {
+
+	private static org.apache.log4j.Logger log = LogManager.getLogger(CacheUtil.class.getName());
 
 	public static final String KEY_SEPARATOR = "#";
 	
@@ -88,7 +91,7 @@ public class CacheUtil {
 			return true;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		finally {
 			if (conn != null) {
@@ -121,7 +124,7 @@ public class CacheUtil {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		finally {
 			if (conn != null) {
@@ -144,7 +147,7 @@ public class CacheUtil {
 			return true;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		finally {
 			if (conn != null) {

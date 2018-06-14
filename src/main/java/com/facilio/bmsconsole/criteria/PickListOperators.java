@@ -15,6 +15,8 @@ import org.apache.commons.collections.PredicateUtils;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.constants.FacilioConstants;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public enum PickListOperators implements Operator<String> {
 	
@@ -78,6 +80,7 @@ public enum PickListOperators implements Operator<String> {
 			return null;
 		}
 
+
 		@Override
 		public FacilioModulePredicate getPredicate(String fieldName, String value) {
 			// TODO Auto-generated method stub
@@ -138,7 +141,7 @@ public enum PickListOperators implements Operator<String> {
 							builder.append("?");
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						log.info("Exception occurred ", e);
 					}
 					val = groupBuilder.toString();
 				}
@@ -152,8 +155,9 @@ public enum PickListOperators implements Operator<String> {
 			builder.append(value);
 		}
 	}
-	
-	
+
+	private static Logger log = LogManager.getLogger(PickListOperators.class.getName());
+
 	@Override
 	public abstract String getWhereClause(String fieldName, String value);
 	
@@ -243,7 +247,7 @@ public enum PickListOperators implements Operator<String> {
 					}
 				}
 				catch(IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-					e.printStackTrace();
+					log.info("Exception occurred ", e);
 				}
 			}
 			return false;
@@ -261,7 +265,7 @@ public enum PickListOperators implements Operator<String> {
 				ids = Collections.singletonList(-100L);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		return ids;
 	}

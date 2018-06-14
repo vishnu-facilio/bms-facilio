@@ -13,8 +13,12 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericUpdateRecordBuilder;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class UpdateSupportEmailCommand implements Command {
+
+	private static Logger log = LogManager.getLogger(UpdateSupportEmailCommand.class.getName());
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -43,7 +47,7 @@ public class UpdateSupportEmailCommand implements Command {
 				context.put(FacilioConstants.ContextNames.RESULT, "success");
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 				throw e;
 			}
 			finally

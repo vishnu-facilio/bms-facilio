@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.actions;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
@@ -15,7 +17,7 @@ import com.facilio.fw.BeanFactory;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class TicketStatusAction extends ActionSupport {
-	
+	private static Logger log = LogManager.getLogger(TicketStatusAction.class.getName());
 	public String statusList() throws Exception {
 		FacilioContext context = new FacilioContext();
 		
@@ -59,13 +61,13 @@ public class TicketStatusAction extends ActionSupport {
 			
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		return null;
 	}

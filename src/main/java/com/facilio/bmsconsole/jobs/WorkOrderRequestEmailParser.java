@@ -67,13 +67,13 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 						}
 					}
 					catch(Exception e) {
-						e.printStackTrace();
+						LOGGER.info("Exception occurred ", e);
 					}
 				}
 			}
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			LOGGER.info("Exception occurred ", e);
 		}
 	}
 	

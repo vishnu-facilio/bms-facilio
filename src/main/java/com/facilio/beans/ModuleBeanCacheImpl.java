@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.cache.CacheUtil;
 import com.facilio.fw.LRUCache;
+import org.apache.log4j.LogManager;
 
 /**
  *  Cache Logic:
@@ -24,6 +25,7 @@ import com.facilio.fw.LRUCache;
 public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 	
 	private static final Logger LOGGER = Logger.getLogger(ModuleBeanCacheImpl.class.getName());
+	private static org.apache.log4j.Logger log = LogManager.getLogger(ModuleBeanCacheImpl.class.getName());
 	
 	@Override
 	public FacilioModule getModule(String moduleName) throws Exception {
@@ -223,7 +225,7 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 		return field;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 	}

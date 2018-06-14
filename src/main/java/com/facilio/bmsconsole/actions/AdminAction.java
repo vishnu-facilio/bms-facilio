@@ -25,6 +25,7 @@ import com.opensymphony.xwork2.util.ValueStack;
 public class AdminAction extends ActionSupport
 {
 	private static Logger logger = Logger.getLogger(AdminAction.class.getName());
+	private static org.apache.log4j.Logger log = org.apache.log4j.LogManager.getLogger(AdminAction.class.getName());
 	
 	public String show()
 	{
@@ -108,10 +109,10 @@ public class AdminAction extends ActionSupport
 			WmsApi.broadCastMessage(message);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		} catch (EncodeException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		
 		

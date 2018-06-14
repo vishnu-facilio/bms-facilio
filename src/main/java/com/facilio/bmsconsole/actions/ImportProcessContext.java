@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.apache.log4j.LogManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -21,6 +22,7 @@ import com.facilio.fw.BeanFactory;
 public class ImportProcessContext
 {
 	private static final Logger LOGGER = Logger.getLogger(ImportProcessContext.class.getName());
+	private static org.apache.log4j.Logger log = LogManager.getLogger(ImportProcessContext.class.getName());
 	
 	Long id,orgId,moduleId,fileId;
 	Integer status,importType;
@@ -197,7 +199,7 @@ public class ImportProcessContext
 				return facilioFieldMapping;
 			}
 			catch(Exception e) {
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 			}
 		}
 		return facilioFieldMapping;

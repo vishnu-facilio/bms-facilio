@@ -13,6 +13,8 @@ import org.apache.commons.collections.PredicateUtils;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.EnumField;
 import com.facilio.fw.BeanFactory;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public enum EnumOperators implements Operator<String> {
 	IS(52, "is") {
@@ -94,7 +96,8 @@ public enum EnumOperators implements Operator<String> {
 		}
 	}
 	;
-	
+	private static Logger log = LogManager.getLogger(EnumOperators.class.getName());
+
 	private static Predicate computeIsIsntPredicate(String fieldName, String value) {
 		// TODO Auto-generated method stub
 		try {
@@ -116,7 +119,7 @@ public enum EnumOperators implements Operator<String> {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		return null;
 	}
@@ -163,7 +166,7 @@ public enum EnumOperators implements Operator<String> {
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		return null;
 	}

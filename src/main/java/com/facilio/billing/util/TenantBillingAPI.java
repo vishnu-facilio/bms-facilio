@@ -278,17 +278,7 @@ public class TenantBillingAPI {
 			DBUtil.closeAll(conn, pstmt, rs);
 		}
 	}
-	
-	public static void main(String args[])
-	{
-		try {
-			addTenant();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}
+
 	
 	public static Tenant getTenantOLD(long tenantId) throws SQLException, RuntimeException
 	{

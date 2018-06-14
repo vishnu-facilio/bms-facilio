@@ -21,8 +21,12 @@ import com.facilio.leed.context.PMTriggerContext;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class PMToWorkOrder extends FacilioJob {
+
+	private Logger log = LogManager.getLogger(PMToWorkOrder.class.getName());
 
 	@Override
 	public void execute(JobContext jc) {
@@ -65,7 +69,7 @@ public class PMToWorkOrder extends FacilioJob {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			CommonCommandUtil.emailException("PM Execution failed for pm job : "+jc.getJobId(), e);
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 	}
 }

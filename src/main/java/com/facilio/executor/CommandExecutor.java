@@ -1,9 +1,13 @@
 package com.facilio.executor;
 
+import org.apache.log4j.LogManager;
+
 import java.io.IOException;
 import java.util.Arrays;
 
 public class CommandExecutor {
+
+    private static org.apache.log4j.Logger log = LogManager.getLogger(CommandExecutor.class.getName());
 
     public static int execute(String[] commandWithArgs){
         ProcessBuilder builder = new ProcessBuilder(commandWithArgs);
@@ -14,7 +18,7 @@ public class CommandExecutor {
             process.waitFor();
             exitStatus = process.exitValue();
         } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+            log.info("Exception occurred ", e);
         }
         return exitStatus;
     }

@@ -21,9 +21,12 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class TaskAction extends ActionSupport {
-	
+
+	private static Logger log = LogManager.getLogger(TaskAction.class.getName());
 	//New Task Props
 	public String newTask() throws Exception {
 		
@@ -292,7 +295,7 @@ public class TaskAction extends ActionSupport {
 				setTasks((Map<Long, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP));
 				setSections((Map<Long, TaskSectionContext>) context.get(FacilioConstants.ContextNames.TASK_SECTIONS));
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 			}
 		}
 		else {

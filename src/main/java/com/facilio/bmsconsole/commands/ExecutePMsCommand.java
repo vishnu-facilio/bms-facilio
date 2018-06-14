@@ -14,8 +14,12 @@ import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class ExecutePMsCommand implements Command {
+
+	private static Logger log = LogManager.getLogger(ExecutePMsCommand.class.getName());
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -32,7 +36,7 @@ public class ExecutePMsCommand implements Command {
 					wo = bean.addWorkOrderFromPM(pm);
 				}
 				catch (Exception e) {
-					e.printStackTrace();
+					log.info("Exception occurred ", e);
 				}
 				if(wo != null) {
 					woIds.add(wo.getId());

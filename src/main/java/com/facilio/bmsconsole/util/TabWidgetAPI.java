@@ -9,9 +9,12 @@ import com.facilio.bmsconsole.context.TabWidgetContext;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class TabWidgetAPI {
-	
+	private static Logger log = LogManager.getLogger(TabWidgetAPI.class.getName());
+
 	@SuppressWarnings({ "deprecation" })
 	public static TabWidgetContext getTabWidget(String tabLinkName) throws Exception {
 		try {
@@ -35,7 +38,7 @@ public class TabWidgetAPI {
 			return tabWidget;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 	}

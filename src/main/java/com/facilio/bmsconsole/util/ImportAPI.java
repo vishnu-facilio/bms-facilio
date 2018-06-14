@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.LogManager;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -50,6 +51,8 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class ImportAPI {
+
+	private static org.apache.log4j.Logger log = LogManager.getLogger(ImportAPI.class.getName());
 
 	public static JSONArray getColumnHeadings(File excelfile) throws Exception
 	{
@@ -166,7 +169,7 @@ public class ImportAPI {
 						fieldMapping = importProcessContext.getFacilioFieldMapping();
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
-						e.printStackTrace();
+						log.info("Exception occurred ", e);
 					}
 					FacilioField facilioField = fieldMapping.get(value);
 					if(facilioField != null && facilioField.getDataTypeEnum().equals(FieldType.LOOKUP)) {
@@ -433,7 +436,7 @@ public class ImportAPI {
 			}
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		return fields;
 	}

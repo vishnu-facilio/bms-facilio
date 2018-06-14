@@ -22,6 +22,8 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 	
 	private static final Logger logger = LogManager.getLogger(TimeSeriesProcessor.class.getName());
 
+	private static Logger log = LogManager.getLogger(TimeSeriesProcessor.class.getName());
+
 	private long orgId;
 	private String orgDomainName;
 	private String shardId;
@@ -67,7 +69,7 @@ public class TimeSeriesProcessor implements IRecordProcessor {
             	
             		CommonCommandUtil.emailException("Error in processing records : "
             		+record.getSequenceNumber()+ " in TimeSeries ", e, data);
-                 e.printStackTrace();
+                 log.info("Exception occurred ", e);
             }
 		}
 		logger.error("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + "COMPLETED");

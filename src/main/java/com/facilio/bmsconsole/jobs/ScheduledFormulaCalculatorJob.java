@@ -35,6 +35,8 @@ import com.facilio.tasker.job.JobContext;
 
 public class ScheduledFormulaCalculatorJob extends FacilioJob {
 	private static final Logger logger = LogManager.getLogger(ScheduledFormulaCalculatorJob.class.getName());
+	private static Logger log = LogManager.getLogger(ScheduledFormulaCalculatorJob.class.getName());
+
 	@Override
 	public void execute(JobContext jc) {
 		// TODO Auto-generated method stub
@@ -83,7 +85,7 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 								}
 							}
 							catch (Exception e) {
-								e.printStackTrace();
+								log.info("Exception occurred ", e);
 								CommonCommandUtil.emailException("EnPI Calculation failed for : "+enpi.getId()+" in org : "+jc.getOrgId(), e);
 							}
 							calculatedFieldIds.add(enpi.getReadingFieldId());
@@ -95,7 +97,7 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			CommonCommandUtil.emailException("EnPI Calculation job failed for orgid : "+jc.getOrgId(), e);
 		}
 	}

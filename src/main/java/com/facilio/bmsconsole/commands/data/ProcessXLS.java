@@ -15,6 +15,7 @@ import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
@@ -50,7 +51,7 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 public class ProcessXLS implements Command {
 
 	private static final Logger LOGGER = Logger.getLogger(ProcessXLS.class.getName());
-	
+	private static org.apache.log4j.Logger log = LogManager.getLogger(ProcessXLS.class.getName());
 	public boolean execute(Context context) throws Exception {
 		
 		return false;
@@ -189,7 +190,7 @@ public class ProcessXLS implements Command {
 							facilioField = importProcessContext.getFacilioFieldMapping().get(key);
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
-							e.printStackTrace();
+							log.info("Exception occurred ", e);
 						}
 						if(facilioField.getDataTypeEnum().equals(FieldType.LOOKUP)) {
 							LookupField lookupField = (LookupField) facilioField;
@@ -319,7 +320,7 @@ public class ProcessXLS implements Command {
 			return props;			
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		return null;
 	}

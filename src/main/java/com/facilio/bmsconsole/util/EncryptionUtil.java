@@ -10,10 +10,13 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.log4j.LogManager;
 
 public class EncryptionUtil {
 	
 	private static final byte[]	SALT = { (byte) 0x21, (byte) 0x21, (byte) 0xF0, (byte) 0x55, (byte) 0xC3, (byte) 0x9F, (byte) 0x5A, (byte) 0x75};
+
+	private static org.apache.log4j.Logger log = LogManager.getLogger(EncryptionUtil.class.getName());
 
 	private final static int ITERATION_COUNT	= 31;
 
@@ -45,7 +48,7 @@ public class EncryptionUtil {
 			return res;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		return "";
 	}
@@ -77,7 +80,7 @@ public class EncryptionUtil {
 
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		return null;
 	}

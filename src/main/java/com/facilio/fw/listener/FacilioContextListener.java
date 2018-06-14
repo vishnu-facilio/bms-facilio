@@ -19,6 +19,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.flywaydb.core.Flyway;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -42,6 +44,7 @@ import com.facilio.transaction.TransactionMonitor;
 public class FacilioContextListener implements ServletContextListener {
 
 	private Timer timer = new Timer();
+	private static Logger log = LogManager.getLogger(FacilioContextListener.class.getName());
 
 	public void contextDestroyed(ServletContextEvent event) {
 		// TODO Auto-generated method stub
@@ -76,7 +79,7 @@ public class FacilioContextListener implements ServletContextListener {
 			migrateSchemaChanges();
 			}
 			catch(Exception e) {
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 			}
 			BeanFactory.initBeans();
 			
@@ -126,7 +129,7 @@ public class FacilioContextListener implements ServletContextListener {
 					new Thread(KinesisProcessor::startProcessor).start();
 				}
 			} catch (Exception e){
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 			}
 			InputStream versionfile;
 			try {
@@ -140,14 +143,14 @@ public class FacilioContextListener implements ServletContextListener {
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 			}
 
 PortalAuthInterceptor.PORTALDOMAIN = com.facilio.aws.util.AwsUtil.getConfig("portal.domain");// event.getServletContext().getInitParameter("SERVICEPORTAL_DOMAIN");
 			System.out.println("Loading the domain name as ######"+PortalAuthInterceptor.PORTALDOMAIN );
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		
 	}
@@ -186,7 +189,7 @@ PortalAuthInterceptor.PORTALDOMAIN = com.facilio.aws.util.AwsUtil.getConfig("por
 			}
 		}
 		catch(SQLException e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		finally {
 			DBUtil.closeAll(conn, stmt, rs);
@@ -217,13 +220,13 @@ PortalAuthInterceptor.PORTALDOMAIN = com.facilio.aws.util.AwsUtil.getConfig("por
 
 		} catch (SAXException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		} catch (ParserConfigurationException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		} 
 		return null;
 	}

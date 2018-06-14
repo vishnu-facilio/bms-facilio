@@ -40,6 +40,8 @@ import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
 import javax.xml.crypto.dsig.spec.TransformParameterSpec;
 
 import org.apache.commons.chain.Chain;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 import org.w3c.dom.Document;
@@ -81,7 +83,7 @@ public class LoginAction extends ActionSupport{
 		System.out.println("Login action loaded");
 	}
 	private static String HOSTNAME = null;
-	
+	private static Logger log = LogManager.getLogger(LoginAction.class.getName());
 	private static final SimpleDateFormat SAML_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 	
 	private String response = null;
@@ -182,7 +184,7 @@ public class LoginAction extends ActionSupport{
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		
 		return "loginpage";
@@ -210,7 +212,7 @@ public class LoginAction extends ActionSupport{
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		
 		HttpSession session = request.getSession();
@@ -297,7 +299,7 @@ public class LoginAction extends ActionSupport{
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		
 		LoginUtil.eraseUserCookie(httpReq, httpResp, LoginUtil.IDTOKEN_COOKIE_NAME, HOSTNAME);
@@ -839,7 +841,7 @@ public class LoginAction extends ActionSupport{
 			//Sign the document
 			xmlSignature.sign(domSignCtx);
 		}catch(Exception e){
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		return root;
 	}
@@ -895,7 +897,7 @@ public class LoginAction extends ActionSupport{
 			return result;
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		return null;
 	}

@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -20,6 +22,8 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 
 public class GenerateFilterFromCriteriaCommand implements Command{
+
+	private static Logger log = LogManager.getLogger(GenerateFilterFromCriteriaCommand.class.getName());
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -102,7 +106,7 @@ public class GenerateFilterFromCriteriaCommand implements Command{
 				objs = myGroups.stream().map(Group::getId).collect(Collectors.toList());
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		return objs;
 	}

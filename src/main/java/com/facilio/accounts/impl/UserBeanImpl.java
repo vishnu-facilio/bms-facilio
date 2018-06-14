@@ -41,11 +41,14 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class UserBeanImpl implements UserBean {
 
 	private static final long INVITE_LINK_EXPIRE_TIME = (7 * 24 * 60 * 60 * 1000L);
 	private static final String USER_TOKEN_REGEX = "#";
+	private static Logger log = LogManager.getLogger(UserBeanImpl.class.getName());
 
 	private long getUid(String email) throws Exception {
 		
@@ -131,21 +134,21 @@ public class UserBeanImpl implements UserBean {
 			pstmt.setLong(4, user.getUid());
 			pstmt.executeUpdate();
 		} catch (Exception e){
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		} finally {
 			try {
 				if(pstmt!= null) {
 					pstmt.close();
 				}
 			} catch (SQLException e) {
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 			}
 			try {
 				if(conn != null) {
 					conn.close();
 				}
 			} catch (SQLException e) {
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 			}
 		}
 	}
@@ -307,7 +310,7 @@ public long inviteRequester(long orgId, User user) throws Exception {
 				inviteToken = inviteToken +"&portalid="+user.getPortalId();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 			}
 			
 		}
@@ -368,7 +371,7 @@ public long inviteRequester(long orgId, User user) throws Exception {
 					user.setUserVerified(true);
 					updateUser(user);
 				} catch (Exception e) {
-					e.printStackTrace();
+					log.info("Exception occurred ", e);
 				}
 				return user;
 			}
@@ -387,7 +390,7 @@ public long inviteRequester(long orgId, User user) throws Exception {
 					user.setUserVerified(true);
 					updateUser(user);
 				} catch (Exception e) {
-					e.printStackTrace();
+					log.info("Exception occurred ", e);
 				}
 				return user;
 			}
@@ -976,21 +979,21 @@ public long inviteRequester(long orgId, User user) throws Exception {
 			pstmt.setLong(5, user.getUid());
 			pstmt.executeUpdate();
 		} catch (Exception e){
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		} finally {
 			try {
 				if(pstmt!= null) {
 					pstmt.close();
 				}
 			} catch (SQLException e) {
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 			}
 			try {
 				if(conn != null) {
 					conn.close();
 				}
 			} catch (SQLException e) {
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 			}
 		}
 	}

@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -43,7 +44,8 @@ import com.google.gson.Gson;
 public class ReportsUtil 
 {
 	private static Logger logger = Logger.getLogger("ReportsUtil");
-	
+	private static org.apache.log4j.Logger log = LogManager.getLogger(ReportsUtil.class.getName());
+
 	public static double getVariance(Double currentVal, Double previousVal)
 	{
 		if(currentVal==null || currentVal==0 || previousVal==null || previousVal==0)
@@ -119,7 +121,7 @@ public class ReportsUtil
 		}
 		catch(Exception e) {
 			//if the input format is invalid.. setting the default value to 1-1-2018
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		List<Integer> dateList=new ArrayList<Integer>();
 		dateList.add(day);
@@ -271,7 +273,7 @@ public class ReportsUtil
 			
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		
 		buildingData.put("photoid", building.getPhotoId());
@@ -294,7 +296,7 @@ public class ReportsUtil
 			}
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		return buildingData;
 	}
@@ -336,7 +338,7 @@ public class ReportsUtil
 			return result;
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		return null;
 	}
@@ -368,7 +370,7 @@ public class ReportsUtil
 		return result;
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		return null;
 	}
@@ -437,7 +439,7 @@ public class ReportsUtil
 		try {
 			result = builder.get();
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 		}
 		return result;	
 	}

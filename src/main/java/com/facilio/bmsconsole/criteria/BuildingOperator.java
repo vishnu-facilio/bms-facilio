@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.transaction.FacilioConnectionPool;
+import org.apache.log4j.LogManager;
 
 public enum BuildingOperator implements Operator<String> {
 	
@@ -55,18 +56,20 @@ public enum BuildingOperator implements Operator<String> {
 				}
 			}
 			catch(SQLException e) {
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 			} catch (NumberFormatException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.info("Exception occurred ", e);
 			}
 			return null;
 		}
 	};
-	
+
+	private static org.apache.log4j.Logger log = LogManager.getLogger(BuildingOperator.class.getName());
+
 	@Override
 	public abstract String getWhereClause(String columnName, String value);
 	
@@ -138,7 +141,7 @@ public enum BuildingOperator implements Operator<String> {
 			return null;
 		}
 		catch(SQLException e) {
-			e.printStackTrace();
+			log.info("Exception occurred ", e);
 			throw e;
 		}
 	}
