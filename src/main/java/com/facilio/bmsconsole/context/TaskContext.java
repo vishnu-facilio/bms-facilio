@@ -6,8 +6,11 @@ import java.util.List;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class TaskContext extends TicketContext {
+	private static Logger log = LogManager.getLogger(TaskContext.class.getName());
 	private long parentTicketId = -1;
 	public long getParentTicketId() {
 		return parentTicketId;
@@ -38,7 +41,7 @@ public class TaskContext extends TicketContext {
 				try {
 					this.createdTime = FacilioConstants.HTML5_DATE_FORMAT_1.parse(createdTime).getTime();
 				} catch (ParseException e1) {
-					e1.printStackTrace();
+					log.info("Exception occurred ", e1);
 				}
 			}
 		}

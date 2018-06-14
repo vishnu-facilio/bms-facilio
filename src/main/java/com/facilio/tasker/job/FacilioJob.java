@@ -11,9 +11,11 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.tasker.executor.Executor;
 import com.facilio.transaction.FacilioTransactionManager;
+import org.apache.log4j.LogManager;
 
 public abstract class FacilioJob implements Runnable {
 
+    private static org.apache.log4j.Logger log = LogManager.getLogger(FacilioJob.class.getName());
 	private JobContext jc = null;
 	public void setJobContext(JobContext jc) {
 		this.jc = jc;
@@ -63,7 +65,7 @@ public abstract class FacilioJob implements Runnable {
 				FacilioTransactionManager.INSTANCE.getTransactionManager().rollback();
 			} catch (IllegalStateException | SecurityException | SystemException e1) {
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				log.info("Exception occurred ", e1);
 			}
 			executor.removeJob(jc);
 			System.out.println("Exception occurred during execution of job : "+jc);

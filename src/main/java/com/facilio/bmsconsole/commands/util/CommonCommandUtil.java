@@ -262,7 +262,7 @@ public class CommonCommandUtil {
 			AwsUtil.sendEmail(json);
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			log.info("Exception occurred ", e1);
 		}
 	}
 	

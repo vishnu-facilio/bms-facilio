@@ -451,7 +451,7 @@ public class FacilioAuthAction extends ActionSupport {
             }
             return sb.toString();
         } catch (NoSuchAlgorithmException ex) {
-            ex.printStackTrace();
+            LOGGER.log(Level.INFO, "Exception ", ex);
         }
         return null;
     }

@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -18,7 +20,7 @@ import com.facilio.events.context.EventContext;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
 public class AlarmContext extends TicketContext {
-	
+	private static Logger log = LogManager.getLogger(AlarmContext.class.getName());
 	private Boolean isAcknowledged;
 	public boolean isAcknowledged() {
 		if(isAcknowledged != null) {
@@ -86,7 +88,7 @@ public class AlarmContext extends TicketContext {
 				try {
 					this.createdTime = FacilioConstants.HTML5_DATE_FORMAT_1.parse(createdTime).getTime();
 				} catch (java.text.ParseException e1) {
-					e1.printStackTrace();
+					log.info("Exception occurred ", e1);
 				}
 			}
 		}

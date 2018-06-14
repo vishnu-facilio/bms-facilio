@@ -12,9 +12,11 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class TicketContext extends ModuleBaseWithCustomFields {
-	
+	private static Logger log = LogManager.getLogger(TicketContext.class.getName());
 	private Boolean sendForApproval;
 	public Boolean getSendForApproval() {
 		return sendForApproval;
@@ -142,7 +144,7 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 				try {
 					this.dueDate = FacilioConstants.HTML5_DATE_FORMAT_1.parse(dueDate).getTime();
 				} catch (ParseException e1) {
-					e1.printStackTrace();
+					log.info("Exception occurred ", e1);
 				}
 			}
 		}
@@ -226,7 +228,7 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 				try {
 					this.scheduledStart = FacilioConstants.HTML5_DATE_FORMAT_1.parse(scheduledStart).getTime();
 				} catch (ParseException e1) {
-					e1.printStackTrace();
+					log.info("Exception occurred ", e1);
 				}
 			}
  		}
@@ -256,7 +258,7 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 				try {
 					this.estimatedEnd = FacilioConstants.HTML5_DATE_FORMAT_1.parse(estimatedEnd).getTime();
 				} catch (ParseException e1) {
-					e1.printStackTrace();
+					log.info("Exception occurred ", e1);
 				}
 			}
  		}
@@ -278,7 +280,7 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 				try {
 					this.actualWorkStart = FacilioConstants.HTML5_DATE_FORMAT_1.parse(actualWorkStart).getTime();
 				} catch (ParseException e1) {
-					e1.printStackTrace();
+					log.info("Exception occurred ", e1);
 				}
 			}
  		}
@@ -300,7 +302,7 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 				try {
 					this.actualWorkEnd = FacilioConstants.HTML5_DATE_FORMAT_1.parse(actualWorkEnd).getTime();
 				} catch (ParseException e1) {
-					e1.printStackTrace();
+					log.info("Exception occurred ", e1);
 				}
 			}
  		}

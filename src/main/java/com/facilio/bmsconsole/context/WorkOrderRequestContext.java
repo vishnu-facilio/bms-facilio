@@ -9,8 +9,11 @@ import com.facilio.accounts.dto.User;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class WorkOrderRequestContext extends TicketContext {
+	private static Logger log = LogManager.getLogger(WorkOrderRequestContext.class.getName());
 	private User requester;
 	public User getRequester() {
 		return requester;
@@ -73,7 +76,7 @@ public class WorkOrderRequestContext extends TicketContext {
 				try {
 					this.createdTime = FacilioConstants.HTML5_DATE_FORMAT_1.parse(createdTime).getTime();
 				} catch (ParseException e1) {
-					e1.printStackTrace();
+					log.info("Exception occurred ", e1);
 				}
 			}
 		}

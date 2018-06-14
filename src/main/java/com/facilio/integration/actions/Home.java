@@ -575,7 +575,7 @@ Pragma: no-cache
 				CommonCommandUtil.insertOrgInfo(orgId,"Plan_id",PlanId);
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			log.info("Exception occurred ", e1);
 		}
 		ArrayList<?> addons = (ArrayList<?>) subscription.get("addons");
 			for (int i = 0; i < addons.size(); i++) {

@@ -71,7 +71,7 @@ public class KinesisProcessor {
                         Thread.sleep(10000L);
                         startProcessor(orgId, orgDomainName);
                     } catch (InterruptedException | LimitExceededException interrupted) {
-                        interrupted.printStackTrace();
+                        log.info("Exception occurred ", interrupted);
                         CommonCommandUtil.emailException("Exception while starting stream " + orgDomainName, interrupted);
                     }
                 }

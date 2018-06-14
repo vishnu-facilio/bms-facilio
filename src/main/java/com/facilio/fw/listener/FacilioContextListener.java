@@ -58,13 +58,13 @@ public class FacilioContextListener implements ServletContextListener {
 			System.setOut(new SysOutLogger("SysOut"));
 		} catch (FileNotFoundException e1) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			log.info("Exception occurred ", e1);
 		}
 		try {
 			System.setErr(new SysOutLogger("SysErr"));
 		} catch (FileNotFoundException e1) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			log.info("Exception occurred ", e1);
 		}
 		if("true".equals(AwsUtil.getConfig("enable.transaction")) && false) {
 			timer.schedule(new TransactionMonitor(), 0L, 3000L);
