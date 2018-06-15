@@ -33,7 +33,14 @@ public class CreateReadingModuleCommand implements Command {
 			FacilioModule module = new FacilioModule();
 			module.setName(readingName.toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
 			module.setDisplayName(readingName);
-			module.setTableName("Readings");
+			
+			String tableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
+			if (tableName == null || tableName.isEmpty()) {
+				module.setTableName("Readings");
+			}
+			else {
+				module.setTableName(tableName);
+			}
 			module.setType((ModuleType) context.get(FacilioConstants.ContextNames.MODULE_TYPE));
 			if (module.getTypeEnum() == null) {
 				module.setType(ModuleType.READING);

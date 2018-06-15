@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.EnumField;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
@@ -102,12 +103,24 @@ public class ValidateTasksCommand implements Command {
 									break;
 							}
 							break;
-						case CHECKBOX:
+//						case CHECKBOX:
 						case RADIO:
-							if(task.getOptions() == null || task.getOptions().size() < 2) {
-								throw new IllegalArgumentException("Minimum two options has to be added for CHECKBOX/ RADIO task");
+							if (task.getReadingFieldId() != -1) {
+								task.setReadingField(modBean.getField(task.getReadingFieldId()));
+								if(task.getReadingField() != null && ((EnumField) task.getReadingField()).getValues().size() < 2) {
+									throw new IllegalArgumentException("Minimum two options has to be added for CHECKBOX/ RADIO task");
+								}
+							}
+							else {
+								if(task.getOptions() == null || task.getOptions().size() < 2) {
+									throw new IllegalArgumentException("Minimum two options has to be added for CHECKBOX/ RADIO task");
+								}
 							}
 							break;
+						case BOOLEAN:
+							if (task.getOptions() == null || task.getOptions().size() < 2) {
+								throw new IllegalArgumentException("Both true and false valuse has to be set for BOOLEAN task");
+							}
 						default:
 							break;
 					}
@@ -117,6 +130,7 @@ public class ValidateTasksCommand implements Command {
 				context.put(FacilioConstants.ContextNames.READING_DATA_META_LIST, metaList);
 				context.put(FacilioConstants.ContextNames.READING_DATA_META_TYPE, ReadingDataMeta.ReadingInputType.TASK);
 			}
+			context.put(FacilioConstants.ContextNames.TASK_LIST, tasks);
 		}
 		return false;
 	}

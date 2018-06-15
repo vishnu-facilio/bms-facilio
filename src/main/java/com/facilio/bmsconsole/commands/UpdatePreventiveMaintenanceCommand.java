@@ -37,7 +37,8 @@ public class UpdatePreventiveMaintenanceCommand implements Command{
 		updateBuilder.update(pmProps);
 		
 		newPm.setId(oldPm.getId());
-		
+		context.put(FacilioConstants.ContextNames.PARENT_ID, oldPm.getId());
+		context.put(FacilioConstants.ContextNames.RECORD_ID, oldPm.getId());
 		return false;
 	}
 	

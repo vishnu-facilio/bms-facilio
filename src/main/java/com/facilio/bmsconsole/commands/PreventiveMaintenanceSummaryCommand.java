@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
@@ -93,12 +92,6 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 		context.put(FacilioConstants.ContextNames.TASK_LIST, listOfTasks);
 		context.put(FacilioConstants.ContextNames.TASK_SECTIONS, template.getSectionTemplates());
 		PreventiveMaintenanceAPI.updateResourceDetails(workorder, taskMap);
-		if(taskMap != null && !taskMap.isEmpty()) {
-			for (Entry<String, List<TaskContext>> entry : taskMap.entrySet()) {
-				List<TaskContext> tasks = entry.getValue();
-				TicketAPI.loadTicketLookups(tasks);
-			}
-		}
 		if (listOfTasks != null) {
 			TicketAPI.loadTicketLookups(listOfTasks);
 		}

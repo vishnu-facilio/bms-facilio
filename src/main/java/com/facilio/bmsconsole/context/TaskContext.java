@@ -175,7 +175,9 @@ public class TaskContext extends TicketContext {
 		TEXT,
 		NUMBER,
 		RADIO,
-		CHECKBOX;
+//		CHECKBOX,
+		BOOLEAN
+		;
 		
 		public int getVal() {
 			return ordinal()+1;

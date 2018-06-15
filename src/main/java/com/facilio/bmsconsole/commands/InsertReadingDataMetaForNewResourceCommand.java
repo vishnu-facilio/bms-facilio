@@ -37,8 +37,13 @@ public class InsertReadingDataMetaForNewResourceCommand implements Command {
 				.fields(FieldFactory.getReadingDataMetaFields());
 		
 		for(FacilioModule module : readingModules) {
-			ReadingInputType type = ReadingsAPI.getRDMInputTypeFromModuleType(module.getTypeEnum());
+			ReadingInputType type = (ReadingInputType) context.get(FacilioConstants.ContextNames.READING_DATA_META_TYPE);
+			if (type == null) {
+				type = ReadingsAPI.getRDMInputTypeFromModuleType(module.getTypeEnum());
+			}
 			List<FacilioField> fieldsList= module.getFields();
+			List<FacilioField> dFields= FieldFactory.getDefaultReadingFields(module);
+			fieldsList.remove(dFields);
 			for(FacilioField field : fieldsList) {
 				ReadingDataMeta dataMeta = new ReadingDataMeta();
 				dataMeta.setOrgId(orgId);

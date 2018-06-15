@@ -19,7 +19,13 @@ public class AddResourceReadingRelCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
+		List<FacilioModule> moduleList = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
+		if (moduleList == null) {
+			FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
+			if (module != null) {
+				moduleList = Collections.singletonList(module);
+			}
+		}
 		List<Long> parentIds = (List<Long>) context.get(FacilioConstants.ContextNames.PARENT_ID_LIST);
 		if (parentIds == null) {
 			Long parentId = (Long) context.get(FacilioConstants.ContextNames.PARENT_ID);
@@ -28,15 +34,17 @@ public class AddResourceReadingRelCommand implements Command {
 			}
 		}
 		
-		if (parentIds != null && !parentIds.isEmpty()) {
+		if (parentIds != null && !parentIds.isEmpty() && moduleList != null && !moduleList.isEmpty()) {
 			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 					.table(ModuleFactory.getResourceReadingsModule().getTableName())
 					.fields(FieldFactory.getResourceReadingsFields());
 			for (Long parentId : parentIds) {
-				Map<String, Object> prop = new HashMap<>();
-				prop.put("readingId", module.getModuleId());
-				prop.put("resourceId", parentId);
-				insertBuilder.addRecord(prop);
+				for (FacilioModule module : moduleList) {
+					Map<String, Object> prop = new HashMap<>();
+					prop.put("readingId", module.getModuleId());
+					prop.put("resourceId", parentId);
+					insertBuilder.addRecord(prop);
+				}
 			}
 			insertBuilder.save();
 		}

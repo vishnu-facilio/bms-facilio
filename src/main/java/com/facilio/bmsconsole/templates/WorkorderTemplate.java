@@ -197,6 +197,7 @@ public class WorkorderTemplate extends Template {
 			}
 			
 			Map<String, Object> prop = FieldUtil.getAsProperties(workorder);
+			prop.remove("id");
 			prop.remove("subject");
 			prop.remove("description");
 			prop.remove("duration");
