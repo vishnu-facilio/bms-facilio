@@ -40,11 +40,13 @@ public class AddTaskOptionsCommand implements Command {
 				switch(task.getInputTypeEnum()) {
 //					case CHECKBOX:
 					case RADIO:
-						for (String option : task.getOptions()) {
-							Map<String, Object> optionMap = new HashMap<>();
-							optionMap.put("taskId", task.getId());
-							optionMap.put("option", option);
-							insertBuilder.addRecord(optionMap);
+						if (task.getOptions() != null && !task.getOptions().isEmpty()) {
+							for (String option : task.getOptions()) {
+								Map<String, Object> optionMap = new HashMap<>();
+								optionMap.put("taskId", task.getId());
+								optionMap.put("option", option);
+								insertBuilder.addRecord(optionMap);
+							}
 						}
 						break;
 					default:
