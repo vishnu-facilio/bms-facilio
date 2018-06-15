@@ -9,6 +9,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.modules.EnumField;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -35,8 +36,13 @@ public class GetTaskInputDataCommand implements Command {
 						task.setReadingField(modBean.getField(task.getReadingFieldId()));
 						break;
 					case RADIO:
-						task.setReadingField(modBean.getField(task.getReadingFieldId()));
-						task.setOptions(((EnumField)task.getReadingField()).getValues());
+						if (task.getReadingFieldId() != -1) {
+							task.setReadingField(modBean.getField(task.getReadingFieldId()));
+							task.setOptions(((EnumField)task.getReadingField()).getValues());
+						}
+						else {
+							task.setOptions(TicketAPI.getTaskInputOptions(task.getId()));
+						}
 						break;
 //					case CHECKBOX:
 //						task.setOptions(TicketAPI.getTaskInputOptions(task.getId()));
