@@ -86,7 +86,7 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 							}
 							catch (Exception e) {
 								log.info("Exception occurred ", e);
-								CommonCommandUtil.emailException("EnPI Calculation failed for : "+enpi.getId()+" in org : "+jc.getOrgId(), e);
+								CommonCommandUtil.emailException("ScheduledFormulaCalculatorJob", "EnPI Calculation failed for : "+enpi.getId()+" in org : "+jc.getOrgId(), e);
 							}
 							calculatedFieldIds.add(enpi.getReadingFieldId());
 							it.remove();
@@ -98,7 +98,7 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			log.info("Exception occurred ", e);
-			CommonCommandUtil.emailException("EnPI Calculation job failed for orgid : "+jc.getOrgId(), e);
+			CommonCommandUtil.emailException("ScheduledFormulaCalculatorJobENPI", "EnPI Calculation job failed for orgid : "+jc.getOrgId(), e);
 		}
 	}
 	

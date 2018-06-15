@@ -111,7 +111,7 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 					.append(sql)
 					.append("\nProps : \n")
 					.append(values);
-			CommonCommandUtil.emailException("Insertion failed - ", e, builder.toString());
+			CommonCommandUtil.emailException("GenericInsertRecord", "Insertion failed - ", e, builder.toString());
 			LOGGER.log(Level.ERROR, "Insertion failed ", e);
 			throw e;
 		}

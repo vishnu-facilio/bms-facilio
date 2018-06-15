@@ -215,7 +215,7 @@ public class FormulaFieldAPI {
 				catch (Exception e) {
 					LOGGER.log(Level.ERROR, e.getMessage(), e);
 					if (e.getMessage() == null || !(e.getMessage().contains("Division by zero") || e.getMessage().contains("Division undefined")  || e.getMessage().contains("/ by zero"))) {
-						CommonCommandUtil.emailException("Formula calculation failed for : "+fieldName+" between "+iStartTime+" and "+iEndTime, e);
+						CommonCommandUtil.emailException("FormulaFieldAPI", "Formula calculation failed for : "+fieldName+" between "+iStartTime+" and "+iEndTime, e);
 					}
 				}
 			}

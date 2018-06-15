@@ -95,7 +95,7 @@ public class HistoricalFormulaFieldCalculatorJob extends FacilioJob {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			logger.log(Level.SEVERE, e.getMessage(), e);
-			CommonCommandUtil.emailException("Historical EnPI calculation failed for : "+jc.getJobId(), e);
+			CommonCommandUtil.emailException("HistoricalFormulaFieldCalculatorJob", "Historical EnPI calculation failed for : "+jc.getJobId(), e);
 		}
 	}
 	

@@ -38,7 +38,7 @@ public class ExecutePMCommand implements Command {
 				}
 				catch (Exception e) {
 					log.info("Exception occurred ", e);
-					CommonCommandUtil.emailException("PM Execution failed for PM : "+pmId, e);
+					CommonCommandUtil.emailException("ExecutePMCommand", "PM Execution failed for PM : "+pmId, e);
 				}
 				context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
 			}

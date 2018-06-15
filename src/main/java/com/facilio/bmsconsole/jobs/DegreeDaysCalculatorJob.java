@@ -57,7 +57,7 @@ public class DegreeDaysCalculatorJob extends FacilioJob {
 		}
 		catch (Exception e) {
 			logger.log(Level.SEVERE, e.getMessage(), e);
-			CommonCommandUtil.emailException("Exception in calculating Degree Days", e);
+			CommonCommandUtil.emailException("DegreeDaysCalculatorJob", "Exception in calculating Degree Days", e);
 		}
 	}
 

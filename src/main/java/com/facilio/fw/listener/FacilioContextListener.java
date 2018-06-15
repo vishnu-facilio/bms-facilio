@@ -19,6 +19,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import com.facilio.queue.FacilioExceptionProcessor;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.flywaydb.core.Flyway;
@@ -68,6 +69,10 @@ public class FacilioContextListener implements ServletContextListener {
 		}
 		if("true".equals(AwsUtil.getConfig("enable.transaction")) && false) {
 			timer.schedule(new TransactionMonitor(), 0L, 3000L);
+		}
+
+		if("true".equals(AwsUtil.getConfig("schedulerServer")) && "production".equals(AwsUtil.getConfig("environment"))) {
+			timer.schedule(new FacilioExceptionProcessor(), 0L, 1800000L); // 30 minutes
 		}
 
 

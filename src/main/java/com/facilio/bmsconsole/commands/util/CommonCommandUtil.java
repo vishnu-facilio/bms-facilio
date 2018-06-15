@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 
+import com.facilio.queue.FAWSQueue;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -49,6 +50,7 @@ import com.facilio.transaction.FacilioConnectionPool;
 
 public class CommonCommandUtil {
 	private static Logger log = LogManager.getLogger(CommonCommandUtil.class.getName());
+	public static final String DELIMITER = "######";
 	public static void setFwdMail(SupportEmailContext supportEmail) {
 		String actualEmail = supportEmail.getActualEmail();
 		String orgEmailDomain = "@"+AccountUtil.getCurrentOrg().getDomain()+".facilio.com";
@@ -210,11 +212,11 @@ public class CommonCommandUtil {
 		return null;	
 	}
 	
-	public static void emailException(String msg, Throwable e) {
-		emailException(msg, e, null);
+	public static void emailException(String fromClass, String msg, Throwable e) {
+		emailException(fromClass, msg, e, null);
 	}
 	
-	public static void emailException(String msg, Throwable e, String info) {
+	public static void emailException(String fromClass, String msg, Throwable e, String info) {
 		try {
 			JSONObject json = new JSONObject();
 			
@@ -242,8 +244,10 @@ public class CommonCommandUtil {
 			
 			Organization org = AccountUtil.getCurrentOrg();
 			if(org != null) {
-				body.append(org);
+				body.append(org.getOrgId()).append('-');
 			}
+
+			body.append(fromClass).append(DELIMITER);
 			
 			body.append("\n\nMsg : ")
 				.append(msg)
@@ -257,9 +261,12 @@ public class CommonCommandUtil {
 			}
 			
 			checkDB(e.getMessage(), body);
-			
-			json.put("message", body.toString());
+			String message = body.toString();
+			json.put("message", message);
 			AwsUtil.sendEmail(json);
+			if("production".equals(AwsUtil.getConfig("environment"))) {
+				FAWSQueue.sendMessage("Exception", message);
+			}
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			log.info("Exception occurred ", e1);

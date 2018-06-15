@@ -42,14 +42,14 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 				}
 				catch (Exception e) {
 					log.info("Exception occurred ", e);
-					CommonCommandUtil.emailException("VM Calculation failed for meter : "+meter.getId(), e);
+					CommonCommandUtil.emailException("VMEnergyDataCalculatorForMeter", "VM Calculation failed for meter : "+meter.getId(), e);
 				}
 			}
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			log.info("Exception occurred ", e);
-			CommonCommandUtil.emailException("VM Calculation failed", e);
+			CommonCommandUtil.emailException("VMEnergyDataCalculator", "VM Calculation failed", e);
 		}
 	}
 }

@@ -79,8 +79,8 @@ public class EventProcessor implements IRecordProcessor {
                     }
                 }
             } catch (Exception e) {
-            		CommonCommandUtil.emailException("Error in processing records : "
-            			+record.getSequenceNumber()+ " in EventProcessor ", e, data);
+            		CommonCommandUtil.emailException("EventProcessor", "Error in processing records : "
+            			+record.getSequenceNumber()+ " in EventProcessor ", e,  data);
             		log.info("Exception occurred ", e);
             }
         }

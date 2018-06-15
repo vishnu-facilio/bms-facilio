@@ -67,7 +67,7 @@ public class TimeSeriesProcessor implements IRecordProcessor {
             }
             catch (Exception e) {
             	
-            		CommonCommandUtil.emailException("Error in processing records : "
+            		CommonCommandUtil.emailException("TimeSeriesProcessor", "Error in processing records : "
             		+record.getSequenceNumber()+ " in TimeSeries ", e, data);
                  log.info("Exception occurred ", e);
             }

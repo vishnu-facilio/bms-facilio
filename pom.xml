@@ -250,8 +250,14 @@
 		    <artifactId>commons-math3</artifactId>
 		    <version>3.6.1</version>
 		</dependency>
-		
-		
+
+		<!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-sqs -->
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-sqs</artifactId>
+			<version>1.11.347</version>
+		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/com.twilio.sdk/twilio-java-sdk -->
 <dependency>
     <groupId>com.twilio.sdk</groupId>

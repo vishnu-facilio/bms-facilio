@@ -67,12 +67,12 @@ public class KinesisProcessor {
                     startProcessor(orgId, orgDomainName);
                 } catch (Exception e) {
                     try {
-                        CommonCommandUtil.emailException("Exception while starting stream " + orgDomainName, new Exception("Exception while starting stream will retry after 10 sec"));
+                        CommonCommandUtil.emailException("KinesisProcessor", "Exception while starting stream " + orgDomainName, new Exception("Exception while starting stream will retry after 10 sec"));
                         Thread.sleep(10000L);
                         startProcessor(orgId, orgDomainName);
                     } catch (InterruptedException | LimitExceededException interrupted) {
                         log.info("Exception occurred ", interrupted);
-                        CommonCommandUtil.emailException("Exception while starting stream " + orgDomainName, interrupted);
+                        CommonCommandUtil.emailException("KinesisProcessor", "Exception while starting stream " + orgDomainName, interrupted);
                     }
                 }
             }

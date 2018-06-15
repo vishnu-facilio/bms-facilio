@@ -33,6 +33,8 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 
+import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -119,6 +121,7 @@ public class AwsUtil
 	private static AWSCredentials basicCredentials = null;
 	private static AWSCredentialsProvider credentialsProvider = null;
 	private static AWSIot awsIot = null;
+	private static AmazonSQS awsSQS = null;
 	private static User user = null;
 	private static AmazonKinesis kinesis = null;
 	private static String region = null;
@@ -432,6 +435,19 @@ public class AwsUtil
 			}
 		}
 		return awsIot;
+	}
+
+	public static AmazonSQS getSQSClient() {
+		if(awsSQS == null) {
+			synchronized (LOCK) {
+				if(awsSQS == null) {
+					awsSQS = AmazonSQSClientBuilder.standard()
+							.withCredentials(getAWSCredentialsProvider())
+							.withRegion(getRegion()).build();
+				}
+			}
+		}
+		return awsSQS;
 	}
 
 	private static String getUserId() {
