@@ -8,8 +8,8 @@ import java.util.Map;
 
 public enum Unit {
 	
-	WH(1,"Watt Hour","Wh",Metric.ENERGY),
-	KWH(2,"Kilo Watt Hour","kWh",Metric.ENERGY,"si/1000","this*1000"),
+	KWH(1,"Kilo Watt Hour","kWh",Metric.ENERGY),
+	WH(2,"Watt Hour","Wh",Metric.ENERGY,"si*1000","this/1000"),
 	MWH(3,"Mega Watt Hour","mWh",Metric.ENERGY,"si/1000000","this*1000000"),
 	
 	CELSIUS(4,"Celsius","&deg;C",Metric.TEMPERATURE),
@@ -59,10 +59,10 @@ public enum Unit {
 	KILOAMPERE(44,"Kilo Ampere","kA",Metric.CURRENT,"si/1000","this*1000"),
 	MEGAAMPERE(45,"Mega Ampere","MA",Metric.CURRENT,"si/1000000","this*1000000"),
 	
-	WATT(46,"Watt","W",Metric.POWER),
+	KILOWATT(46,"Kilo Watt","kW",Metric.POWER),
 	MILLIWATT(47,"Milli Watt","mW",Metric.POWER,"si*1000","this/1000"),
 	MICROWATT(48,"Micro Watt","&#x3BC;W",Metric.POWER,"si*1000000","this/1000000"),
-	KILOWATT(49,"Kilo Watt","kW",Metric.POWER,"si/1000","this*1000"),
+	WATT(49,"Watt","W",Metric.POWER,"si*1000","this/1000"),
 	MEGAWATT(50,"Mega Watt","MW",Metric.POWER,"si/1000000","this*1000000"),
 	
 	HERTZ(51,"Hertz","Hz",Metric.FREQUENCY),
