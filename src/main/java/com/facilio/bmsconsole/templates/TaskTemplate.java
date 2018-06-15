@@ -250,6 +250,7 @@ public class TaskTemplate extends Template {
 			}
 			
 			Map<String, Object> prop = FieldUtil.getAsProperties(task);
+			prop.remove("id");
 			prop.remove("subject");
 			prop.remove("description");
 			prop.remove("duration");

@@ -79,7 +79,7 @@ public class ReadingAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.READING_NAME, getReadingName());
 		context.put(FacilioConstants.ContextNames.PARENT_ID, getParentCategoryId());
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
-		Chain addReadingChain = FacilioChainFactory.addSpaceReadingChain();
+		Chain addReadingChain = FacilioChainFactory.addResourceReadingChain();
 		addReadingChain.execute(context);
 		
 		return SUCCESS;
@@ -115,7 +115,7 @@ public class ReadingAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
 		context.put(FacilioConstants.ContextNames.PARENT_ID, getParentId());
 		
-		Chain addSpaceReadingChain = FacilioChainFactory.addSpaceReadingChain();
+		Chain addSpaceReadingChain = FacilioChainFactory.addResourceReadingChain();
 		addSpaceReadingChain.execute(context);
 		
 		FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);

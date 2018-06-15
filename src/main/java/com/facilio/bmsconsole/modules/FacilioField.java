@@ -263,7 +263,32 @@ public class FacilioField implements Serializable {
 	
 	public String toString()
 	{
-		return "\n"+module.getName()+ " - "+name + " - " +dataType;
+		StringBuilder builder = new StringBuilder();
+		if (module != null) {
+			builder.append("Module Name : ")
+					.append(module.getName())
+					.append("::");
+		}
+		if (name != null) {
+			builder.append("Name : ")
+					.append(name)
+					.append("::");
+		}
+		if (displayName != null) {
+			builder.append("Display Name : ")
+					.append(displayName)
+					.append("::");
+		}
+		if (columnName != null) {
+			builder.append("Column Name : ")
+					.append(columnName)
+					.append("::");
+		}
+		if (dataType != null) {
+			builder.append("DataType : ")
+					.append(dataType);
+		}
+		return builder.toString();
 	}
 	
 	public enum FieldDisplayType {

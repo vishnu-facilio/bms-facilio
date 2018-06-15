@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
 
 import com.amazonaws.services.kms.model.UnsupportedOperationException;
 import com.facilio.beans.ModuleBean;
@@ -14,7 +13,10 @@ import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.modules.BooleanField;
+import com.facilio.bmsconsole.modules.EnumField;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
@@ -54,41 +56,40 @@ public class ValidateAndCreateValuesForInputTaskCommand implements Command {
 						}
 						switch(completeRecord.getInputTypeEnum()) {
 							case READING:
-								ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-								FacilioField field = modBean.getField(completeRecord.getReadingFieldId());
-								FacilioModule readingModule = field.getModule();
-								ReadingContext reading = new ReadingContext();
-								reading.setId(completeRecord.getReadingDataId());
-								reading.setParentId(completeRecord.getResource().getId());
-								reading.addReading(field.getName(), task.getInputValue());
-								reading.setTtime(task.getInputTime());
-								if (completeRecord.getLastReading() == null) {
-									ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(completeRecord.getResource().getId(), field);
-									task.setLastReading(meta.getValue() != null ? meta.getValue() : -1);
-								}
-								context.put(FacilioConstants.ContextNames.MODULE_NAME, readingModule.getName());
-								context.put(FacilioConstants.ContextNames.READING, reading);
+								addReading(task, completeRecord, completeRecord.getReadingField(), context, false);
 								break;
 							case NUMBER:
 								Double.parseDouble(task.getInputValue());
+								addReading(task, completeRecord, completeRecord.getReadingField(), context, true);
 								break;
 							case RADIO:
-								List<String> options = TicketAPI.getTaskInputOptions(completeRecord.getId());
-								if(!options.contains(task.getInputValue())) {
+								EnumField enumField = (EnumField) completeRecord.getReadingField();
+								if(enumField.getIndex(task.getInputValue()) == -1) {
 									throw new IllegalArgumentException("Invalid input value");
 								}
+								addReading(task, completeRecord, enumField, context, true);
 								break;
-							case CHECKBOX:
-								options = TicketAPI.getTaskInputOptions(completeRecord.getId());
-								if (!task.getInputValues().stream().allMatch(input -> options.contains(input))) {
-									throw new IllegalArgumentException("Invalid input value");
-								}
-								task.setInputValue(StringUtils.join(task.getInputValues(), ","));
-								break;
+//							case CHECKBOX:
+//								List<String> options = TicketAPI.getTaskInputOptions(completeRecord.getId());
+//								if (!task.getInputValues().stream().allMatch(input -> options.contains(input))) {
+//									throw new IllegalArgumentException("Invalid input value");
+//								}
+//								task.setInputValue(StringUtils.join(task.getInputValues(), ","));
+//								break;
 							case TEXT:
+								addReading(task, completeRecord, completeRecord.getReadingField(), context, true);
+								break;
+							case BOOLEAN:
+								BooleanField booleanField = (BooleanField) task.getReadingField();
+								if (!(task.getInputValue().equals("true") || task.getInputValue().equals("false") || task.getInputValue().equals(booleanField.getTrueVal()) || task.getInputValue().equals(booleanField.getFalseVal()))) {
+									throw new IllegalArgumentException("Invalid input value");
+								}
+								addReading(task, completeRecord, completeRecord.getReadingField(), context, true);
 								break;
 							case NONE:
 								task.setInputValue(null);
+							default:
+								break;
 						}
 					}
 				}
@@ -99,6 +100,38 @@ public class ValidateAndCreateValuesForInputTaskCommand implements Command {
 		}
 //		}
 		return false;
+	}
+	
+	private void addReading(TaskContext newTask, TaskContext oldTask, FacilioField field, Context context, boolean isPMReading) throws Exception {
+		
+		long pmId = -1;
+		if (isPMReading) {
+			WorkOrderContext wo = getWO(oldTask.getParentTicketId());
+			pmId = wo.getPm() != null ? wo.getPm().getId() : -1;
+		}
+		
+		if (!isPMReading || pmId != -1) {
+			FacilioModule readingModule = field.getModule();
+			ReadingContext reading = new ReadingContext();
+			reading.setId(oldTask.getReadingDataId());
+			reading.addReading(field.getName(), newTask.getInputValue());
+			reading.setTtime(newTask.getInputTime());
+			long resourceId = isPMReading ? pmId : oldTask.getResource().getId();
+			reading.setParentId(resourceId);
+			if (oldTask.getLastReading() == null) {
+				ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(resourceId, field);
+				newTask.setLastReading(meta.getValue() != null ? meta.getValue() : -1);
+			}
+			
+			if (isPMReading) {
+				reading.addReading("woId", oldTask.getParentTicketId());
+				reading.addReading("taskId", oldTask.getId());
+				reading.addReading("taskUniqueId", oldTask.getUniqueId());
+			}
+			
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, readingModule.getName());
+			context.put(FacilioConstants.ContextNames.READING, reading);
+		}
 	}
 	
 	private TaskContext getTask(long id) throws Exception {
@@ -112,11 +145,29 @@ public class ValidateAndCreateValuesForInputTaskCommand implements Command {
 		
 		List<TaskContext> tasks = builder.get();
 		if(tasks != null && !tasks.isEmpty()) {
-			return tasks.get(0);
+			TaskContext task = tasks.get(0);
+			if (task.getReadingFieldId() != -1) {
+				task.setReadingField(modBean.getField(task.getReadingFieldId()));
+			}
+			return task;
 		}
 		return null;
 	}
 	
-	
+	private WorkOrderContext getWO(long id) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+		SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
+														.module(module)
+														.beanClass(WorkOrderContext.class)
+														.select(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER))
+														.andCondition(CriteriaAPI.getIdCondition(id, module));
+		
+		List<WorkOrderContext> workorders = builder.get();
+		if(workorders != null && !workorders.isEmpty()) {
+			return workorders.get(0);
+		}
+		return null;
+	}
 	
 }

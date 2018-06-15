@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -9,7 +8,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.TaskContext;
-import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.modules.EnumField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -26,22 +25,28 @@ public class GetTaskInputDataCommand implements Command {
 			}
 		}
 		if(tasks != null && !tasks.isEmpty()) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			for(TaskContext task : tasks) {
 				switch(task.getInputTypeEnum()) {
-					case RADIO:
-						task.setOptions(TicketAPI.getTaskInputOptions(task.getId()));
-					case CHECKBOX:
-						task.setOptions(TicketAPI.getTaskInputOptions(task.getId()));
-						if(task.getInputValue() != null && !task.getInputValue().isEmpty()) {
-							task.setInputValues(Arrays.asList(task.getInputValue().split("\\s*,\\s*")));
-						}
-						else {
-							task.setInputValues(Collections.emptyList());
-						}
-						break;
+					case TEXT:
+					case NUMBER:
 					case READING:
-						ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					case BOOLEAN:
 						task.setReadingField(modBean.getField(task.getReadingFieldId()));
+						break;
+					case RADIO:
+						task.setReadingField(modBean.getField(task.getReadingFieldId()));
+						task.setOptions(((EnumField)task.getReadingField()).getValues());
+						break;
+//					case CHECKBOX:
+//						task.setOptions(TicketAPI.getTaskInputOptions(task.getId()));
+//						if(task.getInputValue() != null && !task.getInputValue().isEmpty()) {
+//							task.setInputValues(Arrays.asList(task.getInputValue().split("\\s*,\\s*")));
+//						}
+//						else {
+//							task.setInputValues(Collections.emptyList());
+//						}
+//						break;
 					default:
 						break;
 				}

@@ -35,7 +35,8 @@ public class AddPreventiveMaintenanceCommand implements Command {
 		builder.save();
 		long id = (long) pmProps.get("id");
 		pm.setId(id);
-
+		context.put(FacilioConstants.ContextNames.PARENT_ID, id);
+		context.put(FacilioConstants.ContextNames.RECORD_ID, id);
 		return false;
 	}
 	

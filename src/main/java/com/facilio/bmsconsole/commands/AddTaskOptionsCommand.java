@@ -38,7 +38,7 @@ public class AddTaskOptionsCommand implements Command {
 			
 			for(TaskContext task : tasks) {
 				switch(task.getInputTypeEnum()) {
-					case CHECKBOX:
+//					case CHECKBOX:
 					case RADIO:
 						for (String option : task.getOptions()) {
 							Map<String, Object> optionMap = new HashMap<>();

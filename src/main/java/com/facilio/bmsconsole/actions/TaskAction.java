@@ -204,10 +204,11 @@ public class TaskAction extends ActionSupport {
 	}
 	public String updateAllTask() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
 		System.out.println(taskContextList.size());
 		for (TaskContext singleTask :taskContextList)
 		{
+			context.clear();
+			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
 			context.put(FacilioConstants.ContextNames.TASK, singleTask);
 			System.out.println(taskContextList.size());
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(singleTask.getId()));
