@@ -106,7 +106,10 @@ public class PortfolioAction extends ActionSupport {
 			if(mainMeter != null && !mainMeter.isEmpty()) {
 				buildingData.put("rootMeter", mainMeter.get(0));
 			}
-			
+			List<EnergyMeterContext> meters = DeviceAPI.getRootServiceMeters(building.getId()+"");
+			if(meters != null && !meters.isEmpty()) {
+				buildingData.put("rootServiceMeters", meters);
+			}
 			buildingArray.add(buildingData);
 		}
 		result.put("buildingDetails", buildingArray);
