@@ -253,10 +253,13 @@ public class TicketAPI {
 		}
 	}
 	
-	public static List<TaskContext> getRelatedTasks(long ticketId) throws Exception 
+	public static List<TaskContext> getRelatedTasks(long ticketId) throws Exception {
+		return getRelatedTasks(ticketId, true);
+	}
+	
+	public static List<TaskContext> getRelatedTasks(long ticketId, boolean fetchChildren) throws Exception 
 	{
-		long orgId = AccountUtil.getCurrentOrg().getOrgId();
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", orgId);
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioField> fields = modBean.getAllFields("task");
 		
 		SelectRecordsBuilder<TaskContext> builder = new SelectRecordsBuilder<TaskContext>()
@@ -268,11 +271,14 @@ public class TicketAPI {
 				.orderBy("ID");
 
 		List<TaskContext> tasks = builder.get();
-		for(TaskContext task: tasks) {
-			if (task.getLastReading() == null && task.getInputTypeEnum() == InputType.READING && task.getResource() != null) {
-				FacilioField readingField = modBean.getField(task.getReadingFieldId());
-				ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(task.getResource().getId(), readingField);
-				task.setLastReading(meta.getValue());
+		
+		if (fetchChildren) {
+			for(TaskContext task: tasks) {
+				if (task.getLastReading() == null && task.getInputTypeEnum() == InputType.READING && task.getResource() != null) {
+					FacilioField readingField = modBean.getField(task.getReadingFieldId());
+					ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(task.getResource().getId(), readingField);
+					task.setLastReading(meta.getValue());
+				}
 			}
 		}
 		return tasks;
