@@ -1095,8 +1095,10 @@ public class DashboardUtil {
 			
 			if(reportContext.getParentFolderId() != null) {
 				selectBuilder = new GenericSelectRecordBuilder()
-						.select(FieldFactory.getReportFields())
+						.select(fields)
 						.table(ModuleFactory.getReport().getTableName())
+						.leftJoin(ModuleFactory.getReportCriteria().getTableName())
+						.on(ModuleFactory.getReport().getTableName()+".ID="+ModuleFactory.getReportCriteria().getTableName()+".REPORT_ID")
 						.andCustomWhere(ModuleFactory.getReport().getTableName()+".REPORT_ENTITY_ID = ?", reportContext.getReportEntityId())
 						.andCustomWhere(ModuleFactory.getReport().getTableName()+".REPORT_FOLDER_ID IS NULL")
 						.orderBy("REPORT_ORDER");
@@ -1106,21 +1108,68 @@ public class DashboardUtil {
 				List<Map<String, Object>> compReportProps = selectBuilder.get();
 				if (compReportProps != null && !compReportProps.isEmpty()) {
 					
-					Map<String, Boolean> yAxisFields = new HashMap<>();
+					List<FacilioField> yAxisFields = new ArrayList<>();
+					List<Criteria> criterias = new ArrayList<>();
+					
 					if (reportContext.getY1AxisField() != null) {
-						yAxisFields.put(reportContext.getY1AxisField().getId()+"", true);
+						yAxisFields.add(reportContext.getY1AxisField().getField());
+					}
+					if(reportContext.getCriteria() != null) {
+						criterias.add(reportContext.getCriteria());
 					}
 					
 					for(Map<String, Object> compReportProp:compReportProps) {
 						ReportContext compReportContext = FieldUtil.getAsBeanFromMap(compReportProp, ReportContext.class);
+						if(compReportProp.get("criteriaId") != null) {
+							Criteria criteria = CriteriaAPI.getCriteria(reportContext.getOrgId(), (Long) compReportProp.get("criteriaId"));
+							if(criteria != null) {
+								compReportContext.setCriteria(criteria);
+								criterias.add(compReportContext.getCriteria());
+							}
+						}
 						if (compReportContext.getY1AxisField() != null) {
-							yAxisFields.put(compReportContext.getY1AxisField().getId()+"", true);
+							ReportFieldContext y1Axis = DashboardUtil.getReportField(compReportContext.getY1AxisField());
+							if(y1Axis.getField() != null) {
+								yAxisFields.add(y1Axis.getField());
+							}
 						}
 					}
 					
-					if (yAxisFields.size() > 1) {
-						if (yAxisFields.size() == (compReportProps.size() + 1)) {
+					if (compReportProps.size() > 0) {
+						
+						boolean isSameFieldComparision = true;
+						boolean isSameResourceComparision = true;
+						
+						String parentId = null;
+						if(!criterias.isEmpty()) {
+							for(Criteria criteria :criterias) {
+								if(parentId == null) {
+									parentId = WorkflowUtil.getParentIdFromCriteria(criteria);
+								}
+								else if(!parentId.equals(WorkflowUtil.getParentIdFromCriteria(criteria))) {
+									isSameResourceComparision = false;
+								}
+							}
+						}
+						
+						if(!isSameResourceComparision) {
+							String fieldName = null;
+							for(FacilioField yAxisField :yAxisFields) {
+								if(fieldName == null) {
+									fieldName = yAxisField.getName();
+								}
+								else if(!fieldName.equals(yAxisField.getName())){
+									isSameFieldComparision = false;
+									break;
+								}
+							}
+						}
+						
+						if(isSameResourceComparision) {
 							legendMode = LegendMode.READING_NAME;
+						}
+						else if(isSameFieldComparision) {
+							legendMode = LegendMode.RESOURCE_NAME;
 						}
 						else {
 							legendMode = LegendMode.RESOURCE_WITH_READING_NAME;

@@ -114,10 +114,12 @@ public class WorkflowUtil {
 	public static String getParentIdFromCriteria (Criteria criteria) {
 		
 		Map<Integer, Condition> conditions = criteria.getConditions();
-		for(Integer key:conditions.keySet()) {
-			Condition condition = conditions.get(key);
-			if(condition.getFieldName().contains("parentId")) {
-				return condition.getValue();
+		if(conditions != null) {
+			for(Integer key:conditions.keySet()) {
+				Condition condition = conditions.get(key);
+				if(condition.getFieldName().contains("parentId")) {
+					return condition.getValue();
+				}
 			}
 		}
 		return null;
