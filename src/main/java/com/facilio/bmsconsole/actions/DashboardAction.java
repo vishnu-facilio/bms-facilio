@@ -119,6 +119,8 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.timeseries.TimeSeriesAPI;
+import com.facilio.unitconversion.Unit;
+import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -1058,6 +1060,15 @@ public class DashboardAction extends ActionSupport {
 						paramMap.put("endTime", rang1e.getEndTime());
 					}
 					Object wfResult = WorkflowUtil.getResult(widgetVsWorkflowContext.getWorkflowId(), paramMap);
+					if(AccountUtil.getCurrentOrg().getOrgId() == 104l) {
+						if(widgetStaticContext != null && widgetStaticContext.getStaticKey().equals("weathercard") && widgetVsWorkflowContext.getWorkflowName().equals("weather")) {
+							Map<String,Object> ss = (Map<String, Object>) wfResult;
+							Object temprature = ss.get("temperature");
+							temprature = UnitsUtil.convert(temprature, Unit.CELSIUS, Unit.FAHRENHEIT);
+							ss.put("temperature", temprature);
+						}
+					}
+					
 					LOGGER.severe("widgetVsWorkflowContext.getWorkflowId() --- "+widgetVsWorkflowContext.getWorkflowId() +" wfResult --  "+wfResult);
 					result.put(widgetVsWorkflowContext.getWorkflowName(), wfResult);
 				}
@@ -1179,7 +1190,6 @@ public class DashboardAction extends ActionSupport {
 		this.variance = variance;
 	}
 	public String getData() throws Exception {
-		
 		if (reportContext == null) {
 			reportContext = DashboardUtil.getReportContext(reportId);
 		}
@@ -3088,7 +3098,6 @@ public class DashboardAction extends ActionSupport {
 					report.setGroupBy(-1L);
 				}
 				else {
-//					List<EnergyMeterContext> meters = DeviceAPI.getMainEnergyMeter(report.getReportSpaceFilterContext().getBuildingId()+"");
 					List<EnergyMeterContext> meters = DashboardUtil.getMainEnergyMeter(report.getReportSpaceFilterContext().getBuildingId()+"");
 					if (meters != null && meters.size() > 0) {
 						List<Long> meterIds = new ArrayList<Long>();
