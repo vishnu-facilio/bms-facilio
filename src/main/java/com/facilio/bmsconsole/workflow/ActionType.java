@@ -525,11 +525,11 @@ public enum ActionType {
 				long fieldId = readingRule.getReadingFieldId();
 				String fieldName = readingRule.getReadingField().getModule().getDisplayName();
 				String evaluator = currentRule.getWorkflow().getResultEvaluator();
-				if("(a<b)".equals(evaluator)) {
+				if("(b!=-1)&&(a<b)".equals(evaluator)) {
 					msg = fieldName+ " should be incremental.";
-				} else if("(a>b)".equals(evaluator)) {
+				} else if("(b!=-1)&&(a>b)".equals(evaluator)) {
 					msg = fieldName+ " should be decremental.";
-				} else if("((a>=b)&&(a<=c))".equals(evaluator)) {
+				} else if("(a<b)||(a>c)".equals(evaluator)) { 
 					msg = fieldName+ " should be within safe range.";
 				}
 				throw new ReadingValidationException(fieldId, msg, evaluator);
