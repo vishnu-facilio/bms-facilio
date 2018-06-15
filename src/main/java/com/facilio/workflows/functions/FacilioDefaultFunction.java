@@ -4,10 +4,20 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.fw.BeanFactory;
+import com.facilio.unitconversion.Unit;
+import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.workflow.exceptions.FunctionParamException;
+import com.facilio.workflows.util.WorkflowUtil;
 
 public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 
@@ -89,8 +99,72 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			}
 			return (objects[0] == null ? objects[1] == null : objects[0].toString().contains(objects[1].toString()));
 		}
-		
-	}
+	},
+	CONVERT_UNIT(5,"convertUnit") {
+
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			if (objects.length < 3) {
+				return null;
+			}
+			Double value = null;
+			Integer fromUnit = null;
+			Integer toUnit = null;
+			if(objects[0] != null) {
+				value = Double.parseDouble(objects[0].toString());
+			}
+			if(objects[1] != null) {
+				fromUnit = Integer.parseInt(objects[1].toString());
+			}
+			if(objects[2] != null) {
+				toUnit = Integer.parseInt(objects[2].toString());
+			}
+			LOGGER.log(Level.SEVERE, "value -- "+value);
+			LOGGER.log(Level.SEVERE, "fromUnit -- "+fromUnit);
+			LOGGER.log(Level.SEVERE, "toUnit -- "+toUnit);
+			if(value != null && fromUnit != null && toUnit != null) {
+				return UnitsUtil.convert(value, Unit.valueOf(fromUnit), Unit.valueOf(toUnit));
+			}
+			return null;
+		}
+	},
+	
+	FATCH_DATA(6,"fetchData") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			if (objects.length < 2) {
+				return false;
+			}
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			String moduleName = (String) objects[0];
+			String criteriaString = (String) objects[1];
+			Criteria criteria = WorkflowUtil.parseCriteriaString(moduleName, criteriaString);
+			String fieldName = null, aggregateCondition = null;
+			
+			if(objects[2] != null) {
+				fieldName = (String) objects[2];
+			}
+			if(objects[3] != null) {
+				aggregateCondition = (String) objects[3];
+			}
+			
+			FacilioModule module = modBean.getModule(moduleName);
+			
+			SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>();
+			builder.module(module);
+			builder.andCriteria(criteria);
+			
+			if(fieldName != null) {
+				
+				if(aggregateCondition != null) {
+					
+				}
+			}
+			return null;
+		}
+	},
 	;
 	
 	private Integer value;
