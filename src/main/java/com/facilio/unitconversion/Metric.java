@@ -20,6 +20,8 @@ public enum Metric {
 	PRESSURE(11,"Presure",61),
 	DEGREE(12,"Degree",62),
 	AREA(12,"Area",63),
+	TORQUE(13,"Torque",69),
+	LIQUID(14,"Liquid",70),
 	;
 	
 	public static Map<Integer, Metric> getMetricMap() {

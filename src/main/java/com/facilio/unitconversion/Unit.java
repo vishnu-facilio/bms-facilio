@@ -87,6 +87,15 @@ public enum Unit {
 	SQUARE_FOOT(66,"Square Foot","ft<sup>2</sup>",Metric.AREA,"si*10.7639","this/10.7639"),
 	HECTARE(67,"Hectare","ha",Metric.AREA,"si/10000","this*10000"),
 	ACRE(68,"Acre","acre",Metric.AREA,"si/4046.86","this*4046.86"),
+	
+	NEWTON_METER(69,"Newton Meter","N m",Metric.TORQUE),
+	
+	LITRE(70,"Litre","l",Metric.LIQUID),
+	MILILITRE(71,"Mili Litre","ml",Metric.LIQUID,"si*1000","this/1000"),
+	CUBICFOOT(72,"Cubic Foot","ft<sup>3</sup>",Metric.LIQUID,"si/28.3168","this*28.3168"),
+	CUBICINCH(73,"Cubic Inch","in<sup>3</sup>",Metric.LIQUID,"si*61.0237","this/61.0237"),
+	USGALLON(74,"US Gallon","G",Metric.LIQUID,"si/3.78541","this*3.78541"),
+	IMPERIALGALLON(75,"Imperial Gallon","G",Metric.LIQUID,"si/4.54609","this*4.54609"),
 	;
 	
 	int unitId;
