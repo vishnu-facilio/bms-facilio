@@ -493,11 +493,7 @@
 		<action name="updateAllTask" class="com.facilio.bmsconsole.actions.TaskAction" method="updateAllTask">
 			<param name="permission">TASK_CREATE</param>
 			<result name="success" type="json">
-				<param name="includeProperties">rowsUpdated</param>
-			</result>
-			<result name="error" type="json">
-				<param name="statusCode">400</param>
-				<param name="includeProperties">^error.*</param>
+				<param name="includeProperties">rowsUpdated,^error.*</param>
 			</result>
 		</action>
 		<action name="addorupdatetaskinput" class="com.facilio.bmsconsole.actions.TaskAction"

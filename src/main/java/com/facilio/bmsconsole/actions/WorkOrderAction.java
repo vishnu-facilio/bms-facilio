@@ -44,6 +44,8 @@ import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.view.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.ActionContext;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.bmsconsole.workflow.TicketActivity;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
@@ -120,6 +122,8 @@ public class WorkOrderAction extends ActionSupport {
 			context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 			context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
 			context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST, getAttachmentId());
+			context.put(FacilioConstants.ContextNames.READING_RULES_LIST, getReadingRules());
+			context.put(FacilioConstants.ContextNames.ACTIONS_LIST, getActionsList());
 			
 			Command addWorkOrder = FacilioChainFactory.getAddWorkOrderChain();
 			addWorkOrder.execute(context);
@@ -1124,6 +1128,23 @@ public class WorkOrderAction extends ActionSupport {
 		}
 
 		return SUCCESS;
+	}
+	
+	private List<List<ReadingRuleContext>> readingRules;
+	public List<List<ReadingRuleContext>> getReadingRules() {
+		return readingRules;
+	}
+	public void setReadingRules(List<List<ReadingRuleContext>> readingRules) {
+		this.readingRules = readingRules;
+	}
+	
+	private List<List<List<ActionContext>>> actionsList;
+	public List<List<List<ActionContext>>> getActionsList() {
+		return this.actionsList;
+	}
+	
+	public void setActionsList(List<List<List<ActionContext>>> actionsList) {
+		this.actionsList = actionsList;
 	}
 
 }

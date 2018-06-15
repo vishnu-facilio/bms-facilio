@@ -60,26 +60,6 @@ public class AddTasksCommand implements Command {
 				}
 			});
 			builder.save();
-			
-			for (Entry<String, List<TaskContext>> entry: taskMap.entrySet()) {
-				for (TaskContext task: entry.getValue()) {
-					List<ReadingRuleContext> rules = task.getReadingRules();
-					Chain c = FacilioChainFactory.getAddWorkflowRuleChain();
-					for (int i = 0; i < rules.size(); ++i) {
-						ReadingRuleContext rule = rules.get(i);
-						rule.setRuleType(WorkflowRuleContext.RuleType.VALIDATION_RULE);
-						context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, rule);
-						context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, task.getActionsList().get(i));
-						try {
-							c.execute(context);
-						} catch (Exception e) {
-							String ex = ExceptionUtils.getStackTrace(e);
-							LOGGER.severe(ex);
-							throw e;
-						}
-					}
-				}
-			}
 			context.put(FacilioConstants.ContextNames.TASK_LIST, builder.getRecords());
 		}
 		else {

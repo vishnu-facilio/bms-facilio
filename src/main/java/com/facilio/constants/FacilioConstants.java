@@ -473,7 +473,8 @@ public class FacilioConstants {
 		public static final String BENCHMARK_UNITS = "benchmarkUnits";
 		public static final String BENCHMARK_VALUE = "benchmarkValue";
 		public static final String BENCHMARK_DATE_AGGR = "benchmarkDateAggr";
-
+		public static final String READING_RULES_LIST = "readingRulesList";
+		public static final String ACTIONS_LIST = "actionsList";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {

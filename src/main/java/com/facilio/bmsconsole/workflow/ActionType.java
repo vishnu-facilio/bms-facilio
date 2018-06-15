@@ -46,6 +46,7 @@ import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
+import com.facilio.exception.ReadingValidationException;
 import com.facilio.fw.BeanFactory;
 import com.facilio.leed.context.PMTriggerContext;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -518,9 +519,23 @@ public enum ActionType {
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
 				Object currentRecord) throws Exception {
-			throw new IllegalArgumentException("Input Should be incremental");
+			if (currentRule instanceof ReadingRuleContext) {
+				ReadingRuleContext readingRule = (ReadingRuleContext) currentRule;
+				String msg = "";
+				long fieldId = readingRule.getReadingFieldId();
+				String fieldName = readingRule.getReadingField().getModule().getDisplayName();
+				String evaluator = currentRule.getWorkflow().getResultEvaluator();
+				if("(a<b)".equals(evaluator)) {
+					msg = fieldName+ " should be incremental.";
+				} else if("(a>b)".equals(evaluator)) {
+					msg = fieldName+ " should be decremental.";
+				} else if("((a>=b)&&(a<=c))".equals(evaluator)) {
+					msg = fieldName+ " should be within safe range.";
+				}
+				throw new ReadingValidationException(fieldId, msg, evaluator);
+			}
 		}
-		
+		   
 	};
 
 	private int val;
