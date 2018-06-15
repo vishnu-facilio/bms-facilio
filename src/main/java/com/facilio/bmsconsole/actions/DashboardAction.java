@@ -1065,7 +1065,8 @@ public class DashboardAction extends ActionSupport {
 							Map<String,Object> ss = (Map<String, Object>) wfResult;
 							Object temprature = ss.get("temperature");
 							temprature = UnitsUtil.convert(temprature, Unit.CELSIUS, Unit.FAHRENHEIT);
-							ss.put("temperature", temprature);
+							DecimalFormat f = new DecimalFormat("##.0");
+							ss.put("temperature", f.format(temprature));
 						}
 					}
 					
