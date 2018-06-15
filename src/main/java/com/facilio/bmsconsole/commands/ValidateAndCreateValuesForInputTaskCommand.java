@@ -56,18 +56,30 @@ public class ValidateAndCreateValuesForInputTaskCommand implements Command {
 						}
 						switch(completeRecord.getInputTypeEnum()) {
 							case READING:
-								addReading(task, completeRecord, completeRecord.getReadingField(), context, false);
+								if (completeRecord.getReadingFieldId() != -1) {
+									addReading(task, completeRecord, completeRecord.getReadingField(), context, false);
+								}
 								break;
 							case NUMBER:
 								Double.parseDouble(task.getInputValue());
-								addReading(task, completeRecord, completeRecord.getReadingField(), context, true);
+								if (completeRecord.getReadingFieldId() != -1) {
+									addReading(task, completeRecord, completeRecord.getReadingField(), context, true);
+								}
 								break;
 							case RADIO:
-								EnumField enumField = (EnumField) completeRecord.getReadingField();
-								if(enumField.getIndex(task.getInputValue()) == -1) {
-									throw new IllegalArgumentException("Invalid input value");
+								if (completeRecord.getReadingFieldId() != -1) {
+									EnumField enumField = (EnumField) completeRecord.getReadingField();
+									if(enumField.getIndex(task.getInputValue()) == -1) {
+										throw new IllegalArgumentException("Invalid input value");
+									}
+									addReading(task, completeRecord, enumField, context, true);
 								}
-								addReading(task, completeRecord, enumField, context, true);
+								else {
+									List<String> options = TicketAPI.getTaskInputOptions(completeRecord.getId());
+									if(!options.contains(task.getInputValue())) {
+										throw new IllegalArgumentException("Invalid input value");
+									}
+								}
 								break;
 //							case CHECKBOX:
 //								List<String> options = TicketAPI.getTaskInputOptions(completeRecord.getId());
@@ -77,14 +89,18 @@ public class ValidateAndCreateValuesForInputTaskCommand implements Command {
 //								task.setInputValue(StringUtils.join(task.getInputValues(), ","));
 //								break;
 							case TEXT:
-								addReading(task, completeRecord, completeRecord.getReadingField(), context, true);
+								if (completeRecord.getReadingFieldId() != -1) {
+									addReading(task, completeRecord, completeRecord.getReadingField(), context, true);
+								}
 								break;
 							case BOOLEAN:
-								BooleanField booleanField = (BooleanField) task.getReadingField();
-								if (!(task.getInputValue().equals("true") || task.getInputValue().equals("false") || task.getInputValue().equals(booleanField.getTrueVal()) || task.getInputValue().equals(booleanField.getFalseVal()))) {
-									throw new IllegalArgumentException("Invalid input value");
+								if (completeRecord.getReadingFieldId() != -1) {
+									BooleanField booleanField = (BooleanField) task.getReadingField();
+									if (!(task.getInputValue().equals("true") || task.getInputValue().equals("false") || task.getInputValue().equals(booleanField.getTrueVal()) || task.getInputValue().equals(booleanField.getFalseVal()))) {
+										throw new IllegalArgumentException("Invalid input value");
+									}
+									addReading(task, completeRecord, completeRecord.getReadingField(), context, true);
 								}
-								addReading(task, completeRecord, completeRecord.getReadingField(), context, true);
 								break;
 							case NONE:
 								task.setInputValue(null);
