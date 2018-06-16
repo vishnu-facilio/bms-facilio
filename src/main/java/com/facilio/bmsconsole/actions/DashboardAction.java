@@ -1060,14 +1060,15 @@ public class DashboardAction extends ActionSupport {
 						paramMap.put("endTime", rang1e.getEndTime());
 					}
 					Object wfResult = WorkflowUtil.getResult(widgetVsWorkflowContext.getWorkflowId(), paramMap);
-					if(AccountUtil.getCurrentOrg().getOrgId() == 104l) {
-						if(widgetStaticContext != null && widgetStaticContext.getStaticKey().equals("weathercard") && widgetVsWorkflowContext.getWorkflowName().equals("weather")) {
-							Map<String,Object> ss = (Map<String, Object>) wfResult;
-							Object temprature = ss.get("temperature");
+					
+					if(widgetStaticContext != null && widgetStaticContext.getStaticKey().equals("weathercard") && widgetVsWorkflowContext.getWorkflowName().equals("weather")) {
+						Map<String,Object> ss = (Map<String, Object>) wfResult;
+						Object temprature = ss.get("temperature");
+						if(AccountUtil.getCurrentOrg().getOrgId() == 104l) {
 							temprature = UnitsUtil.convert(temprature, Unit.CELSIUS, Unit.FAHRENHEIT);
-							DecimalFormat f = new DecimalFormat("##.0");
-							ss.put("temperature", f.format(temprature));
 						}
+						DecimalFormat f = new DecimalFormat("##.0");
+						ss.put("temperature", f.format(temprature));
 					}
 					
 					LOGGER.severe("widgetVsWorkflowContext.getWorkflowId() --- "+widgetVsWorkflowContext.getWorkflowId() +" wfResult --  "+wfResult);
