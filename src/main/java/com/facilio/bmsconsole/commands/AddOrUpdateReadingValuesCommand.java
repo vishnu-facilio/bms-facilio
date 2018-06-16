@@ -95,20 +95,6 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 			}
 			adjustTtime(module, reading, useControllerDataInterval);
 			
-			if (reading.getReadings() != null && !reading.getReadings().isEmpty()) {
-				if(reading.getId() == -1) {
-					reading.setNewReading(true);
-					readingsToBeAdded.add(reading);
-				}
-				else {
-					reading.setNewReading(false);
-					updateReading(module, fields, reading, metaMap, updateLastReading);
-				}
-			}
-			else {
-				itr.remove();
-			}
-			
 			Map<String, Object> data = reading.getData();
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			
@@ -124,6 +110,20 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 						}
 					}
 				}
+			}
+			
+			if (reading.getReadings() != null && !reading.getReadings().isEmpty()) {
+				if(reading.getId() == -1) {
+					reading.setNewReading(true);
+					readingsToBeAdded.add(reading);
+				}
+				else {
+					reading.setNewReading(false);
+					updateReading(module, fields, reading, metaMap, updateLastReading);
+				}
+			}
+			else {
+				itr.remove();
 			}
 		}
 		return readingsToBeAdded;
