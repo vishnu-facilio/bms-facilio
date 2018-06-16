@@ -2989,6 +2989,7 @@ public class FieldFactory {
 		fields.add(selectFieldId);
 		
 		fields.add(getField("showXml", "SHOW_XML", module, FieldType.BOOLEAN));
+		fields.add(getField("workflowUIMode", "UI_MODE", module, FieldType.NUMBER));
 
 		return fields;
 	}

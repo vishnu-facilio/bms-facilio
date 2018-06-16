@@ -141,18 +141,21 @@ public class WorkflowContext {
 		this.resultEvaluator = resultEvaluator;
 	}
 	
-	private Boolean showXml;
-	public Boolean getShowXml() {
-		return showXml;
+	private WorkflowUIMode workflowUIMode;
+	public WorkflowUIMode getFormulaFieldTypeEnum() {
+		return workflowUIMode;
 	}
-	public void setShowXml(Boolean showXml) {
-		this.showXml = showXml;
+	public void setWorkflowUIMode(WorkflowUIMode workflowUIMode) {
+		this.workflowUIMode = workflowUIMode;
 	}
-	public Boolean isShowXml() {
-		if(showXml != null) {
-			return showXml.booleanValue();
+	public int getWorkflowUIMode() {
+		if (workflowUIMode != null) {
+			return workflowUIMode.getValue();
 		}
-		return false;
+		return -1;
+	}
+	public void setWorkflowUIMode(int workflowUIMode) {
+		this.workflowUIMode = WorkflowUIMode.valueOf(workflowUIMode);
 	}
 
 	public Object executeWorkflow(boolean ignoreNullValues) throws Exception {
@@ -285,5 +288,23 @@ public class WorkflowContext {
 			}
 		}
 		return false;
+	}
+	
+	public enum WorkflowUIMode {
+		GUI,
+		XML,
+		COMPLEX
+		;
+		
+		public int getValue() {
+			return ordinal() + 1;
+		}
+		
+		public static WorkflowUIMode valueOf (int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
 	}
 }
