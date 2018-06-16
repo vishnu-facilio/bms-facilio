@@ -21,6 +21,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.unitconversion.UnitsUtil;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonInclude.Value;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -40,6 +41,10 @@ public class FieldUtil {
 	
 	public static void castOrParseValueAsPerType(PreparedStatement pstmt, int paramIndex, FacilioField field, Object value) throws SQLException {
 		FieldType type = field.getDataTypeEnum();
+		
+		if(field.getUnit() != null) {
+			value = UnitsUtil.convertToSiUnit(value, field.getUnit());
+		}
 		switch(type) {
 			
 			case STRING:

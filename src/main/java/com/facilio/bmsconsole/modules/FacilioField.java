@@ -5,9 +5,26 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.unitconversion.Unit;
+
 public class FacilioField implements Serializable {
 	
 	private long fieldId = -1;
+	
+	private int unitId;
+	
+	public int getUnitId() {
+		return unitId;
+	}
+	public void setUnitId(int unitId) {
+		this.unitId = unitId;
+	}
+	public Unit getUnit() {
+		if(unitId > 0) {
+			return Unit.valueOf(unitId);
+		}
+		return null;
+	}
 	public long getFieldId() {
 		return fieldId;
 	}
