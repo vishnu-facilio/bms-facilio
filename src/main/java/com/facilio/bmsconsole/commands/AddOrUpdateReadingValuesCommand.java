@@ -102,11 +102,14 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 				for(String fieldName : data.keySet()) {
 					
 					if(data.get(fieldName) != null) {
-						String key = reading.getParentId()+"_"+bean.getField(fieldName, module.getName()).getId();
-						ReadingDataMeta readingDataMeta = metaMap.get(key);
-						if(readingDataMeta != null && readingDataMeta.getUnitEnum() != null) {
-							Object value = UnitsUtil.convertToSiUnit(data.get(fieldName), readingDataMeta.getUnitEnum());
-							data.put(fieldName, value);
+						if(reading.getParentId() > 0 && bean != null  && fieldName != null  && module != null && module.getName() != null && bean.getField(fieldName, module.getName()) != null) {
+							
+							String key = reading.getParentId()+"_"+bean.getField(fieldName, module.getName()).getId();
+							ReadingDataMeta readingDataMeta = metaMap.get(key);
+							if(readingDataMeta != null && readingDataMeta.getUnitEnum() != null) {
+								Object value = UnitsUtil.convertToSiUnit(data.get(fieldName), readingDataMeta.getUnitEnum());
+								data.put(fieldName, value);
+							}
 						}
 					}
 				}
