@@ -11,6 +11,7 @@ import java.util.Set;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.poi.util.Units;
 
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
 import com.amazonaws.services.kinesis.model.Record;
@@ -33,6 +34,8 @@ import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.time.SecondsChronoUnit;
+import com.facilio.unitconversion.Unit;
+import com.facilio.unitconversion.UnitsUtil;
 
 public class AddOrUpdateReadingValuesCommand implements Command {
 
@@ -104,6 +107,23 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 			}
 			else {
 				itr.remove();
+			}
+			
+			Map<String, Object> data = reading.getData();
+			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			
+			if(metaMap != null) {
+				for(String fieldName : data.keySet()) {
+					
+					if(data.get(fieldName) != null) {
+						String key = reading.getParentId()+"_"+bean.getField(fieldName, module.getName()).getId();
+						ReadingDataMeta readingDataMeta = metaMap.get(key);
+						if(readingDataMeta != null && readingDataMeta.getUnitEnum() != null) {
+							Object value = UnitsUtil.convertToSiUnit(data.get(fieldName), readingDataMeta.getUnitEnum());
+							data.put(fieldName, value);
+						}
+					}
+				}
 			}
 		}
 		return readingsToBeAdded;

@@ -42,9 +42,11 @@ public class FieldUtil {
 	public static void castOrParseValueAsPerType(PreparedStatement pstmt, int paramIndex, FacilioField field, Object value) throws SQLException {
 		FieldType type = field.getDataTypeEnum();
 		
-		if(field.getUnit() != null) {
-			value = UnitsUtil.convertToSiUnit(value, field.getUnit());
-		}
+//		if((type.equals(FieldType.DECIMAL) || type.equals(FieldType.NUMBER)) && field instanceof NumberField) {
+//			
+//			NumberField numberField = (NumberField) field;
+//			value = UnitsUtil.convertToSiUnit(value, numberField.getUnitEnum());
+//		}
 		switch(type) {
 			
 			case STRING:

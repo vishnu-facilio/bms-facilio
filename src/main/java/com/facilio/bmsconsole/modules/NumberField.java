@@ -1,8 +1,24 @@
 package com.facilio.bmsconsole.modules;
 
 import com.facilio.unitconversion.Metric;
+import com.facilio.unitconversion.Unit;
 
 public class NumberField extends FacilioField {
+	
+	private int unitId;
+	
+	public int getUnitId() {
+		return unitId;
+	}
+	public void setUnitId(int unitId) {
+		this.unitId = unitId;
+	}
+	public Unit getUnitEnum() {
+		if(unitId > 0) {
+			return Unit.valueOf(unitId);
+		}
+		return null;
+	}
 	private String unit;
 	public String getUnit() {
 		return unit;
