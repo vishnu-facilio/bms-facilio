@@ -53,9 +53,9 @@ public class UnitsUtil {
 		return convert(value, from, orgDisplayUnit);
 	}
 	
-	public static Double convertToOrgDisplayUnitFromSi(Object value,Metric metric) throws Exception {
-		Unit orgDisplayUnit = getOrgDisplayUnit(AccountUtil.getCurrentOrg().getOrgId(),metric.getMetricId());
-		return convert(value, Unit.valueOf(metric.getSiUnitId()) , orgDisplayUnit);
+	public static Double convertToOrgDisplayUnitFromSi(Object value,int metricId) throws Exception {
+		Unit orgDisplayUnit = getOrgDisplayUnit(AccountUtil.getCurrentOrg().getOrgId(),metricId);
+		return convert(value, Unit.valueOf(Metric.valueOf(metricId).getSiUnitId()) , orgDisplayUnit);
 	}
 	
 	public static void updateOrgUnitsList(JSONObject metricUnitMap) throws Exception {

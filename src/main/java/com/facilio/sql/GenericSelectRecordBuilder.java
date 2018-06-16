@@ -17,7 +17,9 @@ import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.transaction.FacilioConnectionPool;
+import com.facilio.unitconversion.UnitsUtil;
 
 public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, Object>> {
 	private static final Logger LOGGER = LogManager.getLogger(GenericSelectRecordBuilder.class.getName());
@@ -186,6 +188,12 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 				Map<String, Object> record = new HashMap<>();
 				for(FacilioField field : selectFields) {
 					Object val = FieldUtil.getObjectFromRS(field, rs);
+					if(field != null &&  field instanceof NumberField) {
+						NumberField numberField =  (NumberField)field;
+						if(numberField.getMetric() > 0) {
+							val = UnitsUtil.convertToOrgDisplayUnitFromSi(val, numberField.getMetric());
+						}
+					}
 					if(val != null) {
 						record.put(field.getName(), val);
 					}
