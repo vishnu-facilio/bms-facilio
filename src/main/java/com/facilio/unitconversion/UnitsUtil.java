@@ -10,6 +10,7 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.OrgUnitsContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
@@ -46,6 +47,15 @@ public class UnitsUtil {
 	
 	public static Double convertToSiUnit(Object value,Unit from) {
 		return convert(value, from, Unit.valueOf(from.getMetric().getSiUnitId()));
+	}
+	public static Double convertToOrgDisplayUnit(Object value,Unit from) throws Exception {
+		Unit orgDisplayUnit = getOrgDisplayUnit(AccountUtil.getCurrentOrg().getOrgId(),from.getMetric().getMetricId());
+		return convert(value, from, orgDisplayUnit);
+	}
+	
+	public static Double convertToOrgDisplayUnitFromSi(Object value,Metric metric) throws Exception {
+		Unit orgDisplayUnit = getOrgDisplayUnit(AccountUtil.getCurrentOrg().getOrgId(),metric.getMetricId());
+		return convert(value, Unit.valueOf(metric.getSiUnitId()) , orgDisplayUnit);
 	}
 	
 	public static void updateOrgUnitsList(JSONObject metricUnitMap) throws Exception {
@@ -85,6 +95,25 @@ public class UnitsUtil {
 				return true;
 			}
 			return false;
+	}
+	
+	public static Unit getOrgDisplayUnit(Long orgid, int metricId) throws Exception {
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getOrgUnitsModule().getTableName())
+				.select(FieldFactory.getOrgUnitsFields())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getOrgUnitsModule()))
+				.andCondition(CriteriaAPI.getCondition("METRIC", "metric", metricId+"", NumberOperators.EQUALS));
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		if (props != null && !props.isEmpty()) {
+			
+			Map<String, Object> prop = props.get(0);
+			int unitid = (int) prop.get("unit");
+			return Unit.valueOf(unitid);
+		}
+		return null;
 	}
 	
 	public static List<OrgUnitsContext> getOrgUnitsList() throws Exception {
