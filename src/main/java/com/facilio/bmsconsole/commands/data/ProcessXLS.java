@@ -243,9 +243,9 @@ public class ProcessXLS implements Command {
 			for(int i=0 ; i < splitSize; i++) {
 				
 				int fromValue = i*insertLimit;
-				int toValue = (i*insertLimit) + insertLimit - 1;
+				int toValue = (i*insertLimit) + insertLimit;
 				if(toValue >= readingsEntireList.size()) {
-					toValue = readingsEntireList.size()-1;
+					toValue = readingsEntireList.size();
 				}
 				List<ReadingContext> readingsList = readingsEntireList.subList(fromValue , toValue);
 				
