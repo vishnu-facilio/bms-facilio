@@ -50,7 +50,7 @@ public class CalculateFormulaFieldsCommand implements Command {
 			Collection<ReadingDataMeta> metaList = readingDataMeta.values();
 			Set<Long> fieldIds = metaList.stream().map(meta -> meta.getField().getId()).collect(Collectors.toSet());
 			
-			List<FormulaFieldContext> formulaFields = FormulaFieldAPI.getFormulasDependingOnFields(TriggerType.LIVE_READING, fieldIds);
+			List<FormulaFieldContext> formulaFields = FormulaFieldAPI.getActiveFormulasDependingOnFields(TriggerType.LIVE_READING, fieldIds);
 			if (formulaFields != null && !formulaFields.isEmpty()) {
 				Map<String, List<ReadingContext>> formulaMap = new HashMap<>();
 				Set<String> completedFormulas = new HashSet<>();
