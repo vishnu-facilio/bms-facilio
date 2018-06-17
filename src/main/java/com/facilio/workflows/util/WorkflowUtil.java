@@ -231,6 +231,8 @@ public class WorkflowUtil {
 		}
 		for(ExpressionContext expressionContext : workflow.getExpressions()) {
 			
+			params.add(expressionContext.getName());
+			
 			if(expressionContext.getExpressionString().contains("${")) {
 				
 				List<String> allMatch = new ArrayList<String>();
