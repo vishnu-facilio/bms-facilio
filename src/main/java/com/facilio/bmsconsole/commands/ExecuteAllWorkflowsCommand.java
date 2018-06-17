@@ -45,7 +45,7 @@ public class ExecuteAllWorkflowsCommand implements Command
 	
 	@Override
 	public boolean execute(Context context) throws Exception {
-		
+		long startTime = System.currentTimeMillis();
 		Boolean historyReading = (Boolean) context.get(FacilioConstants.ContextNames.HISTORY_READINGS);
 		if (historyReading != null && historyReading==true) {
 			return false;
@@ -95,6 +95,7 @@ public class ExecuteAllWorkflowsCommand implements Command
 					}
 				}
 			}
+			LOGGER.info("Time taken to Execute workflows for modules : "+recordMap.keySet()+" is "+(System.currentTimeMillis() - startTime));
 		}
 		return false;
 	}

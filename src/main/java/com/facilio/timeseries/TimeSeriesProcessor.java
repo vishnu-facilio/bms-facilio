@@ -42,6 +42,7 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 	@Override
 	public void processRecords(ProcessRecordsInput processRecordsInput) {
 
+		long startTime = System.currentTimeMillis();
 		logger.error("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + "RECORD SIZE::::::: "+processRecordsInput.getRecords().size());
 		for (Record record : processRecordsInput.getRecords()) {
 			String data = "";
@@ -72,7 +73,7 @@ public class TimeSeriesProcessor implements IRecordProcessor {
                  log.info("Exception occurred ", e);
             }
 		}
-		logger.error("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + "COMPLETED");
+		logger.error("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + "COMPLETED::TIME TAKEN : "+(System.currentTimeMillis() - startTime));
 	}
 	
 	@Override

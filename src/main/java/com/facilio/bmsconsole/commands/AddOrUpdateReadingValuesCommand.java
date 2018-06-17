@@ -11,7 +11,8 @@ import java.util.Set;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
-import org.apache.poi.util.Units;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
 import com.amazonaws.services.kinesis.model.Record;
@@ -35,11 +36,11 @@ import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.time.SecondsChronoUnit;
-import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 
 public class AddOrUpdateReadingValuesCommand implements Command {
-
+	
+	private static final Logger LOGGER = LogManager.getLogger(AddOrUpdateReadingValuesCommand.class.getName());
 	private SecondsChronoUnit defaultAdjustUnit = null;
 	private Map<Long, ControllerContext> controllers = null;
 	private Map<Long, ResourceContext> resources = null;
@@ -48,6 +49,7 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
+		long startTime = System.currentTimeMillis();
 		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
 		
 		Boolean updateLastReading = (Boolean) context.get(FacilioConstants.ContextNames.UPDATE_LAST_READINGS);
@@ -70,16 +72,18 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 				addReadings(module, fields, readingsToBeAdded,lastReadingMap, updateLastReading);
 			}
 		}
+		LOGGER.info("Time taken to add/update Readings data to DB : "+(System.currentTimeMillis() - startTime));
 		context.put(FacilioConstants.ContextNames.RECORD_MAP, readingMap);
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
 		
 		//Temp code. To be removed later
+		startTime = System.currentTimeMillis();
 		Record record = (Record) context.get(FacilioConstants.ContextNames.KINESIS_RECORD);
 		if (record != null) {
 			IRecordProcessorCheckpointer checkPointer = (IRecordProcessorCheckpointer) context.get(FacilioConstants.ContextNames.KINESIS_CHECK_POINTER);
 			checkPointer.checkpoint(record);
+			LOGGER.info("Time taken to update checkpoint : "+(System.currentTimeMillis() - startTime));
 		}
-		
 		return false;
 	}
 	
