@@ -50,7 +50,7 @@ public class CalculateFormulaFieldsCommand implements Command {
 			Collection<ReadingDataMeta> metaList = readingDataMeta.values();
 			Set<Long> fieldIds = metaList.stream().map(meta -> meta.getField().getId()).collect(Collectors.toSet());
 			
-			List<FormulaFieldContext> formulaFields = FormulaFieldAPI.getFormulasDependingOnFields(TriggerType.LIVE_READING, fieldIds);
+			List<FormulaFieldContext> formulaFields = FormulaFieldAPI.getActiveFormulasDependingOnFields(TriggerType.LIVE_READING, fieldIds);
 			if (formulaFields != null && !formulaFields.isEmpty()) {
 				Map<String, List<ReadingContext>> formulaMap = new HashMap<>();
 				Set<String> completedFormulas = new HashSet<>();
@@ -67,6 +67,7 @@ public class CalculateFormulaFieldsCommand implements Command {
 						}
 					}
 				}
+				LOGGER.info("Adding formula Data for for modules : "+readingMap.keySet()+". Data => "+formulaMap);
 				if (!formulaMap.isEmpty()) {
 					FacilioContext formulContext = new FacilioContext();
 					formulContext.put(FacilioConstants.ContextNames.MODULE_NAME,FacilioConstants.ContextNames.ENERGY_DATA_READING );
@@ -110,9 +111,10 @@ public class CalculateFormulaFieldsCommand implements Command {
 					if (field != null && formula.getWorkflow().getDependentFieldIds().contains(field.getId())) {
 						ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(reading.getParentId(), formula.getReadingField());
 						Map<Long, Long> intervals = DateTimeUtil.getTimeIntervals(meta.getTtime(), System.currentTimeMillis(), formula.getInterval());
+						LOGGER.info("Intervals for calculation of : "+formula.getName()+" for "+reading.getParentId()+" is "+intervals);
 						long startTime = System.currentTimeMillis();
 						List<ReadingContext> formulaReadings = FormulaFieldAPI.calculateFormulaReadings(reading.getParentId(), formula.getReadingField().getName(), intervals, formula.getWorkflow());
-						LOGGER.info(AccountUtil.getCurrentOrg().getId()+"::Time taken for formula calculation of : "+formula.getName()+" for "+reading.getParentId()+" is "+(System.currentTimeMillis() - startTime));
+						LOGGER.info("Time taken for formula calculation of : "+formula.getName()+" for "+reading.getParentId()+" is "+(System.currentTimeMillis() - startTime));
 						if (formulaReadings != null && !formulaReadings.isEmpty()) {
 							List<ReadingContext> existingReadings = formulaMap.get(formula.getReadingField().getModule().getName());
 							if (existingReadings == null) {

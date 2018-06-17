@@ -24,6 +24,7 @@ import com.facilio.bmsconsole.context.FormulaFieldContext.ResourceType;
 import com.facilio.bmsconsole.context.FormulaFieldContext.TriggerType;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -144,21 +145,22 @@ public class FormulaFieldAPI {
 		}
 	}
 	
-	private static void updateChildIds(FormulaFieldContext enpi) throws Exception {
-		long workflowId = WorkflowUtil.addWorkflow(enpi.getWorkflow());
-		enpi.setWorkflowId(workflowId);
-		enpi.setOrgId(AccountUtil.getCurrentOrg().getId());
-		enpi.setReadingFieldId(enpi.getReadingField().getId());
+	private static void updateChildIds(FormulaFieldContext formula) throws Exception {
+		long workflowId = WorkflowUtil.addWorkflow(formula.getWorkflow());
+		formula.setWorkflowId(workflowId);
+		formula.setOrgId(AccountUtil.getCurrentOrg().getId());
+		formula.setReadingFieldId(formula.getReadingField().getId());
+		formula.setActive(true);
 	}
 	
-	public static FormulaFieldContext getFormulaField(long enpiId) throws Exception {
+	public static FormulaFieldContext getFormulaField(long id) throws Exception {
 		FacilioModule module = ModuleFactory.getFormulaFieldModule();
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getFormulaFieldFields())
 														.table(module.getTableName())
 														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-														.andCondition(CriteriaAPI.getIdCondition(enpiId, module))
+														.andCondition(CriteriaAPI.getIdCondition(id, module))
 														;
 		
 		List<FormulaFieldContext> enpiList = getFormulaFieldsFromProps(selectBuilder.get());
@@ -238,12 +240,13 @@ public class FormulaFieldAPI {
 		return getFormulaFieldsFromProps(selectBuilder.get());
 	}
 	
-	public static List<FormulaFieldContext> getScheduledFormulasOfFrequencyType(List<Integer> types) throws Exception {
+	public static List<FormulaFieldContext> getActiveScheduledFormulasOfFrequencyType(List<Integer> types) throws Exception {
 		FacilioModule module = ModuleFactory.getFormulaFieldModule();
 		List<FacilioField> fields = FieldFactory.getFormulaFieldFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		FacilioField frequencyField = fieldMap.get("frequency");
 		FacilioField triggerType = fieldMap.get("triggerType");
+		FacilioField active = fieldMap.get("active");
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
@@ -251,23 +254,26 @@ public class FormulaFieldAPI {
 														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(triggerType, String.valueOf(TriggerType.SCHEDULE.getValue()), NumberOperators.EQUALS))
 														.andCondition(CriteriaAPI.getCondition(frequencyField, StringUtils.join(types, ","), NumberOperators.EQUALS))
+														.andCondition(CriteriaAPI.getCondition(active, String.valueOf(true), BooleanOperators.IS))
 														;
 		
 		return getFormulaFieldsFromProps(selectBuilder.get());
 		
 	}
 	
-	public static List<FormulaFieldContext> getFormulasDependingOnFields (TriggerType triggerType, Collection<Long> fieldIds) throws Exception {
+	public static List<FormulaFieldContext> getActiveFormulasDependingOnFields (TriggerType triggerType, Collection<Long> fieldIds) throws Exception {
 		FacilioModule module = ModuleFactory.getFormulaFieldModule();
 		List<FacilioField> fields = FieldFactory.getFormulaFieldFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		FacilioField triggerTypeField = fieldMap.get("triggerType");
+		FacilioField active = fieldMap.get("active");
 				
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 													.select(fields)
 													.table(module.getTableName())
 													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCondition(CriteriaAPI.getCondition(triggerTypeField, String.valueOf(triggerType.getValue()), NumberOperators.EQUALS))
+													.andCondition(CriteriaAPI.getCondition(active, String.valueOf(true), BooleanOperators.IS))
 													.andCustomWhere("WORKFLOW_ID IN (SELECT WORKFLOW_ID FROM Workflow_Field WHERE ORGID = ? AND FIELD_ID IN ("+StringUtils.join(fieldIds, ",")+"))", AccountUtil.getCurrentOrg().getId())
 													;
 

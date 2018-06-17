@@ -43,7 +43,7 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 		try {
 			List<Integer> types = getFrequencyTypesToBeFetched();
 			logger.log(Level.INFO, "Frequencies to be fetched for Scheduled Formula Calculation : ");
-			List<FormulaFieldContext> formulas = FormulaFieldAPI.getScheduledFormulasOfFrequencyType(types);
+			List<FormulaFieldContext> formulas = FormulaFieldAPI.getActiveScheduledFormulasOfFrequencyType(types);
 			logger.log(Level.INFO, "Formulas to be calculated : "+formulas);
 			List<Long> calculatedFieldIds = new ArrayList<>();
 			if (formulas != null && !formulas.isEmpty()) {

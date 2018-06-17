@@ -207,6 +207,23 @@ public class FormulaFieldContext {
 		this.resultDataType = FieldType.getCFType(resultDataType);
 	}
 	
+	private Boolean active;
+	public Boolean getActive() {
+		return active;
+	}
+	public void setActive(Boolean active) {
+		this.active = active;
+	}
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+	public boolean isActive() {
+		if (active != null) {
+			return active.booleanValue();
+		}
+		return false;
+	}
+
 	public enum TriggerType {
 		SCHEDULE,
 		LIVE_READING

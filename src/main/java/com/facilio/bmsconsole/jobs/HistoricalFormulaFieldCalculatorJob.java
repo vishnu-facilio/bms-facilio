@@ -80,7 +80,7 @@ public class HistoricalFormulaFieldCalculatorJob extends FacilioJob {
 					List<FacilioField> fieldsList = modBean.getAllFields(formula.getReadingField().getModule().getName());
 					ReadingsAPI.updateReadingDataMeta(fieldsList, lastReadings, null);
 					
-					List<FormulaFieldContext> dependentFormulas = FormulaFieldAPI.getFormulasDependingOnFields(TriggerType.SCHEDULE, Collections.singletonList(formula.getReadingField().getId()));
+					List<FormulaFieldContext> dependentFormulas = FormulaFieldAPI.getActiveFormulasDependingOnFields(TriggerType.SCHEDULE, Collections.singletonList(formula.getReadingField().getId()));
 					if (dependentFormulas != null && !dependentFormulas.isEmpty()) {
 						for (FormulaFieldContext currentFormula : dependentFormulas) {
 							List<Long> dependentFieldIds = currentFormula.getWorkflow().getDependentFieldIds();

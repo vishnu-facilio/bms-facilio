@@ -3411,6 +3411,7 @@ public class FieldFactory {
 		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.LOOKUP));
 		fields.add(getField("assetCategoryId", "ASSET_CATEGORY_ID", module, FieldType.LOOKUP));
 		fields.add(getField("spaceCategoryId", "SPACE_CATEGORY_ID", module, FieldType.LOOKUP));
+		fields.add(getField("active", "ACTIVE", module, FieldType.BOOLEAN));
 		
 		return fields;
 	}

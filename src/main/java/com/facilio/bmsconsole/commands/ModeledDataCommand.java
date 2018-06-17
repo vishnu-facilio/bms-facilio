@@ -9,6 +9,8 @@ import java.util.Map;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
@@ -20,7 +22,7 @@ import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
 
 public class ModeledDataCommand implements Command {
-
+	private static final Logger LOGGER = LogManager.getLogger(ModeledDataCommand.class.getName());
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -32,7 +34,7 @@ public class ModeledDataCommand implements Command {
 		Map<String,List<ReadingContext>> moduleVsReading = new HashMap<String,List<ReadingContext>> ();
 		Map<String,ReadingContext> iModuleVsReading = new HashMap<String,ReadingContext> ();
 		
-		System.err.println( Thread.currentThread().getName()+"Inside ModeledDataCommand####### deviceData: "+deviceData);
+		LOGGER.debug("Inside ModeledDataCommand####### deviceData: "+deviceData);
 		for(Map.Entry<String, Map<String,String>> data:deviceData.entrySet()) {
 			
 			
@@ -93,7 +95,7 @@ public class ModeledDataCommand implements Command {
 			}
 			readings.add(reading);
 		}
-		System.err.println( Thread.currentThread().getName()+"Inside ModeledDataCommand####### moduleVsReading: "+moduleVsReading);
+		LOGGER.debug("Inside ModeledDataCommand####### moduleVsReading: "+moduleVsReading);
 
 
 		context.put(FacilioConstants.ContextNames.READINGS_MAP,moduleVsReading);
