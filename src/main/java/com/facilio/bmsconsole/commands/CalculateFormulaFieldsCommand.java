@@ -67,6 +67,7 @@ public class CalculateFormulaFieldsCommand implements Command {
 						}
 					}
 				}
+				LOGGER.info("Adding formula Data for for modules : "+readingMap.keySet()+". Data => "+formulaMap);
 				if (!formulaMap.isEmpty()) {
 					FacilioContext formulContext = new FacilioContext();
 					formulContext.put(FacilioConstants.ContextNames.MODULE_NAME,FacilioConstants.ContextNames.ENERGY_DATA_READING );
