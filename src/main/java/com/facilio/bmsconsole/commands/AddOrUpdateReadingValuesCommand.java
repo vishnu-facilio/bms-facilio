@@ -24,6 +24,7 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.DateTimeUtil;
@@ -95,27 +96,27 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 			}
 			adjustTtime(module, reading, useControllerDataInterval);
 			
-			Map<String, Object> data = reading.getData();
-			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			
-			if(metaMap != null) {
-				for(String fieldName : data.keySet()) {
-					
-					if(data.get(fieldName) != null) {
-						if(reading.getParentId() > 0 && bean != null  && fieldName != null  && module != null && module.getName() != null && bean.getField(fieldName, module.getName()) != null) {
-							
-							String key = reading.getParentId()+"_"+bean.getField(fieldName, module.getName()).getId();
-							ReadingDataMeta readingDataMeta = metaMap.get(key);
-							if(readingDataMeta != null && readingDataMeta.getUnitEnum() != null) {
-								Object value = UnitsUtil.convertToSiUnit(data.get(fieldName), readingDataMeta.getUnitEnum());
-								data.put(fieldName, value);
+			Map<String, Object> readingData = reading.getReadings();
+			if (readingData != null && !readingData.isEmpty()) {
+				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+				ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				if(metaMap != null) {
+					for(String fieldName : readingData.keySet()) {
+						FacilioField field = fieldMap.get(fieldName);
+						if(field != null && readingData.get(fieldName) != null) {
+							if(reading.getParentId() > 0 && bean != null  && fieldName != null  && module != null && module.getName() != null && bean.getField(fieldName, module.getName()) != null) {
+								
+								String key = reading.getParentId()+"_"+field.getId();
+								ReadingDataMeta readingDataMeta = metaMap.get(key);
+								if(readingDataMeta != null && readingDataMeta.getUnitEnum() != null) {
+									Object value = UnitsUtil.convertToSiUnit(readingData.get(fieldName), readingDataMeta.getUnitEnum());
+									readingData.put(fieldName, value);
+								}
 							}
 						}
 					}
 				}
-			}
-			
-			if (reading.getReadings() != null && !reading.getReadings().isEmpty()) {
+				
 				if(reading.getId() == -1) {
 					reading.setNewReading(true);
 					readingsToBeAdded.add(reading);
