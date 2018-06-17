@@ -20,7 +20,7 @@ import com.facilio.fw.BeanFactory;
 
 public class TimeSeriesProcessor implements IRecordProcessor {
 	
-	private static final Logger logger = LogManager.getLogger(TimeSeriesProcessor.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(TimeSeriesProcessor.class.getName());
 
 	private static Logger log = LogManager.getLogger(TimeSeriesProcessor.class.getName());
 
@@ -41,9 +41,8 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 
 	@Override
 	public void processRecords(ProcessRecordsInput processRecordsInput) {
-
-		long startTime = System.currentTimeMillis();
-		logger.error("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + "RECORD SIZE::::::: "+processRecordsInput.getRecords().size());
+		long processStartTime = System.currentTimeMillis();
+		LOGGER.info("TOTAL TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + "RECORD SIZE::::::: "+processRecordsInput.getRecords().size());
 		for (Record record : processRecordsInput.getRecords()) {
 			String data = "";
 			try {
@@ -57,11 +56,11 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 
 				if(dataType!=null && "timeseries".equals(dataType)) {
 					long timeStamp=	record.getApproximateArrivalTimestamp().getTime();
-					
-		            logger.error("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + " TIME::::" +timeStamp);
+					long startTime = System.currentTimeMillis();
+		            LOGGER.info("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + " TIME::::" +timeStamp);
 					ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
 					bean.processTimeSeries(timeStamp, payLoad, record,processRecordsInput.getCheckpointer());
-					logger.error("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + "COMPLETED::::::: ");
+					LOGGER.info("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + "COMPLETED:::::::TIME TAKEN : "+(System.currentTimeMillis() - startTime));
 //					Temp fix
 //					processRecordsInput.getCheckpointer().checkpoint(record);
 				}
@@ -73,7 +72,7 @@ public class TimeSeriesProcessor implements IRecordProcessor {
                  log.info("Exception occurred ", e);
             }
 		}
-		logger.error("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + "COMPLETED::TIME TAKEN : "+(System.currentTimeMillis() - startTime));
+		LOGGER.info("TOTAL TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + "COMPLETED::TIME TAKEN : "+(System.currentTimeMillis() - processStartTime));
 	}
 	
 	@Override
