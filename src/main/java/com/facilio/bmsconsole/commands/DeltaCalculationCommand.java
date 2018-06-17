@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -23,7 +25,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
 public class DeltaCalculationCommand implements Command {
-
+	private static final Logger LOGGER = LogManager.getLogger(DeltaCalculationCommand.class.getName());
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -36,7 +38,7 @@ public class DeltaCalculationCommand implements Command {
 		if(metaMap==null || metaMap.isEmpty()) {
 			return false;
 		}
-//		System.err.println( Thread.currentThread().getName()+"Inside DeltaCommand####### lastReadingMap "+metaMap);
+		LOGGER.debug("Inside DeltaCommand####### lastReadingMap "+metaMap);
 
 		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
 		
@@ -60,10 +62,10 @@ public class DeltaCalculationCommand implements Command {
 				}
 			}
 			context.put(FacilioConstants.ContextNames.MARKED_READINGS, markedList);
-			System.err.println( Thread.currentThread().getName()+"Inside DeltaCommand#######  "+markedList);
+			LOGGER.debug("Inside DeltaCommand#######  "+markedList);
 
 		}
-		System.err.println( Thread.currentThread().getName()+"Exiting DeltaCommand#######  ");
+		LOGGER.debug("Exiting DeltaCommand#######  ");
 
 		return false;
 	}
