@@ -6,12 +6,14 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.constants.FacilioConstants;
 
 public class ProcessDataCommand implements Command {
-
+	private static final Logger LOGGER = LogManager.getLogger(ProcessDataCommand.class.getName());
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -19,7 +21,7 @@ public class ProcessDataCommand implements Command {
 		JSONObject payLoad =(JSONObject)context.get(FacilioConstants.ContextNames.PAY_LOAD);
 		Iterator<String> keyList = payLoad.keySet().iterator();
 		Map<String, Map<String,String>> deviceData= new HashMap<String, Map<String,String>>();
-		System.err.println( Thread.currentThread().getName()+"Inside ProcessDataCommand####### incoming JSON: "+payLoad);
+		LOGGER.debug("Inside ProcessDataCommand####### incoming JSON: "+payLoad);
 		while(keyList.hasNext())
 		{
 			String actualKey = keyList.next();
@@ -50,7 +52,7 @@ public class ProcessDataCommand implements Command {
 				data.put(instanceName,instanceVal);
 			}
 		}
-		System.err.println( Thread.currentThread().getName()+"Finished ProcessDataCommand####### : ");
+		LOGGER.debug("Finished ProcessDataCommand####### : ");
 		context.put(FacilioConstants.ContextNames.DEVICE_DATA, deviceData);
 		return false;
 	}
