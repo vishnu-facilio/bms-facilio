@@ -719,6 +719,17 @@ public class DashboardAction extends ActionSupport {
 	public void setConsolidateDataPoints(JSONObject consolidateDataPoints) {
 		this.consolidateDataPoints = consolidateDataPoints;
 	}
+	
+	boolean cost = false;
+	
+	public void setCost(boolean cost) {
+		this.cost = cost;
+	}
+	
+	public boolean getCost() {
+		return this.cost;
+	}
+	
 	public String getReadingReportData() throws Exception {
 		if (derivation != null) {
 			return getDerivationData();
@@ -748,6 +759,9 @@ public class DashboardAction extends ActionSupport {
 		
 		FacilioModule module = readingField.getModule();
 		reportContext = constructReportObjectForReadingReport(module, readingField,parentId);
+		if (getCost() && reportContext.getY1AxisField() != null) {
+			reportContext.getY1AxisField().setUnit("cost");
+		}
 		reportModule = module;
 		reportData = getDataForReadings(reportContext, module, dateFilter, null, baseLineId, -1);
 		return SUCCESS;
