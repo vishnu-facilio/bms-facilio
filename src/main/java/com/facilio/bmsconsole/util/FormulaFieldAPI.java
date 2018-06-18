@@ -159,8 +159,10 @@ public class FormulaFieldAPI {
 	private static void updateChildIds(FormulaFieldContext formula) throws Exception {
 		long workflowId = WorkflowUtil.addWorkflow(formula.getWorkflow());
 		formula.setWorkflowId(workflowId);
+		formula.setWorkflow(null);
 		formula.setOrgId(AccountUtil.getCurrentOrg().getId());
 		formula.setReadingFieldId(formula.getReadingField().getId());
+		formula.setReadingField(null);
 		formula.setActive(true);
 	}
 	

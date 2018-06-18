@@ -46,7 +46,6 @@ public class AddFieldsCommand implements Command {
 					field.setFieldId(fieldId);
 					fieldIds.add(fieldId);
 				}
-				module.setFields(fields);
 				context.put(FacilioConstants.ContextNames.MODULE_FIELD_IDS, fieldIds);
 			}
 		}

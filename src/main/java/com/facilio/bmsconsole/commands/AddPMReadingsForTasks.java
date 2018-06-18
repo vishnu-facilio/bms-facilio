@@ -170,7 +170,9 @@ public class AddPMReadingsForTasks implements Command {
 		Chain addReadingChain = FacilioChainFactory.getAddReadingChain();
 		addReadingChain.execute(context);
 		
-		return (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
+		FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
+		module.setFields(fields);
+		return module;
 	}
 	
 	private void addDefaultPMReadingFields(List<FacilioField> fields) {
