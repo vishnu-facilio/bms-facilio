@@ -14,13 +14,15 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
+
+import org.apache.commons.lang3.tuple.Pair;
 
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
@@ -597,7 +599,7 @@ public class DateTimeUtil
 	}
 	
 	
-	public static HashMap<Long,Long> getTimeIntervals(long startTime, long endTime, int minutesInterval){
+	public static List<Pair<Long, Long>> getTimeIntervals(long startTime, long endTime, int minutesInterval){
 
 		startTime=removeMillisPrecision(startTime, true);
 		endTime=removeMillisPrecision(endTime, false);
@@ -607,27 +609,27 @@ public class DateTimeUtil
 		if(startTime>=endTime) {
 			return null;
 		}
-		HashMap<Long,Long> intervalMap = new LinkedHashMap <Long,Long>();
+		List<Pair<Long, Long>> intervals = new ArrayList<>();
 
 		while(modTime<endTime) {
-			intervalMap.put(startTime, modTime - 1);
+			intervals.add(Pair.of(startTime, modTime - 1));
 			startTime=modTime;
 			modTime=modTime+interval;
 		}
 		if(startTime<endTime) {
-			intervalMap.put(startTime,endTime);
+			intervals.add(Pair.of(startTime,endTime));
 		}
-		return intervalMap;
+		return intervals;
 	}
 	
-	public static Map<Long, Long> getTimeIntervals(long startTime, long endTime, ScheduleInfo schedule) {
-		Map<Long, Long> intervals = new LinkedHashMap<>();
+	public static List<Pair<Long, Long>> getTimeIntervals(long startTime, long endTime, ScheduleInfo schedule) {
+		List<Pair<Long, Long>> intervals = new ArrayList<>();
 		startTime = startTime/1000;
 		endTime = endTime/1000;
 		
 		long currentEndTime = schedule.nextExecutionTime(startTime);
 		while (currentEndTime <= endTime) {
-			intervals.put(startTime*1000, (currentEndTime*1000)-1);
+			intervals.add(Pair.of(startTime*1000, (currentEndTime*1000)-1));
 			startTime = currentEndTime;
 			currentEndTime = schedule.nextExecutionTime(startTime);
 		}

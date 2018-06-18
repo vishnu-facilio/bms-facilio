@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.stat.StatUtils;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -393,7 +394,7 @@ public class DeviceAPI
 
 	public static void insertVirtualMeterReadings(EnergyMeterContext meter, long startTime, long endTime, int minutesInterval,boolean updateReading) throws Exception {
 
-		HashMap<Long,Long> intervalMap= DateTimeUtil.getTimeIntervals(startTime, endTime, minutesInterval);
+		List<Pair<Long, Long>> intervals= DateTimeUtil.getTimeIntervals(startTime, endTime, minutesInterval);
 		GenericSelectRecordBuilder childMeterBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getVirtualMeterRelFields())
 				.table(ModuleFactory.getVirtualMeterRelModule().getTableName())
@@ -412,9 +413,9 @@ public class DeviceAPI
 		}
 		List<ReadingContext> vmReadings = new ArrayList<ReadingContext>();
 		List<ReadingContext> intervalReadings=new ArrayList<ReadingContext>();
-		for(Map.Entry<Long, Long> map:intervalMap.entrySet()) {
-			double iStartTime = Math.floor(map.getKey()/1000);
-			double iEndTime = Math.floor(map.getValue()/1000);
+		for(Pair<Long, Long> interval : intervals) {
+			double iStartTime = Math.floor(interval.getLeft()/1000);
+			double iEndTime = Math.floor(interval.getRight()/1000);
 			
 			Iterator<ReadingContext> itr = completeReadings.iterator();
 			while (itr.hasNext()) {

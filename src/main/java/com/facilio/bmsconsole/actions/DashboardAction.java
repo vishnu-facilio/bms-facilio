@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -756,18 +757,18 @@ public class DashboardAction extends ActionSupport {
 	private String getDerivationData() throws Exception {
 		WorkflowContext workflow = WorkflowUtil.getWorkflowContext(derivation.getWorkflowId(), true);
 //		workflow.setFromDerivation(true);
-		Map<Long,Long> intervalMap;
+		List<Pair<Long, Long>> intervals;
 		if (xAggr != 0) {
 			FacilioFrequency frequency = DashboardUtil.getAggrFrequency(xAggr);
 			ScheduleInfo schedule = FormulaFieldAPI.getSchedule(frequency);
-			intervalMap= DateTimeUtil.getTimeIntervals((Long)dateFilter.get(0),(Long) dateFilter.get(1), schedule);
+			intervals= DateTimeUtil.getTimeIntervals((Long)dateFilter.get(0),(Long) dateFilter.get(1), schedule);
 		}
 		else {
 			int minuteInterval = ReadingsAPI.getDataInterval(workflow);
-			intervalMap= DateTimeUtil.getTimeIntervals((Long)dateFilter.get(0),(Long) dateFilter.get(1), minuteInterval);
+			intervals= DateTimeUtil.getTimeIntervals((Long)dateFilter.get(0),(Long) dateFilter.get(1), minuteInterval);
 		}
 		
-		List<ReadingContext> readingValues = FormulaFieldAPI.calculateFormulaReadings(-1, derivation.getName(), intervalMap, workflow);
+		List<ReadingContext> readingValues = FormulaFieldAPI.calculateFormulaReadings(-1, derivation.getName(), intervals, workflow);
 		reportData = new JSONArray();
 		if (readingValues != null) {
 			readingValues.forEach(value -> {

@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -110,7 +111,7 @@ public class CalculateFormulaFieldsCommand implements Command {
 					FacilioField field = fieldMap.get(fieldName);
 					if (field != null && formula.getWorkflow().getDependentFieldIds().contains(field.getId())) {
 						ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(reading.getParentId(), formula.getReadingField());
-						Map<Long, Long> intervals = DateTimeUtil.getTimeIntervals(meta.getTtime(), System.currentTimeMillis(), formula.getInterval());
+						List<Pair<Long, Long>> intervals = DateTimeUtil.getTimeIntervals(meta.getTtime(), System.currentTimeMillis(), formula.getInterval());
 						LOGGER.info("Intervals for calculation of : "+formula.getName()+" for "+reading.getParentId()+" is "+intervals);
 						long startTime = System.currentTimeMillis();
 						List<ReadingContext> formulaReadings = FormulaFieldAPI.calculateFormulaReadings(reading.getParentId(), formula.getReadingField().getName(), intervals, formula.getWorkflow());
@@ -147,7 +148,7 @@ public class CalculateFormulaFieldsCommand implements Command {
 					FacilioField field = fieldMap.get(fieldName);
 					if (formula.getWorkflow().getDependentFieldIds().contains(field.getId())) {
 						oldReading = getOldReading(formula, startTime, endTime);
-						Map<Long, Long> intervals = Collections.singletonMap(startTime, endTime);
+						List<Pair<Long, Long>> intervals = Collections.singletonList(Pair.of(startTime, endTime));
 						List<ReadingContext> formulaReadings = FormulaFieldAPI.calculateFormulaReadings(reading.getParentId(), formula.getReadingField().getName(), intervals, formula.getWorkflow());
 						if (formulaReadings != null && !formulaReadings.isEmpty()) {
 							ReadingContext newReading = formulaReadings.get(0);

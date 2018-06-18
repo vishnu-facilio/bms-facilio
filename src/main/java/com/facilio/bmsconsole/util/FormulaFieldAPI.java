@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -188,12 +189,12 @@ public class FormulaFieldAPI {
 		return null;
 	}
 	
-	public static List<ReadingContext> calculateFormulaReadings(long resourceId, String fieldName, Map<Long, Long> intervalMap, WorkflowContext workflow) throws Exception {
-		if (intervalMap != null && !intervalMap.isEmpty()) {
+	public static List<ReadingContext> calculateFormulaReadings(long resourceId, String fieldName, List<Pair<Long, Long>> intervals, WorkflowContext workflow) throws Exception {
+		if (intervals != null && !intervals.isEmpty()) {
 			List<ReadingContext> readings = new ArrayList<>();
-			for(Map.Entry<Long, Long> map:intervalMap.entrySet()) {
-				long iStartTime = map.getKey();
-				long iEndTime = map.getValue();
+			for(Pair<Long, Long> interval : intervals) {
+				long iStartTime = interval.getLeft();
+				long iEndTime = interval.getRight();
 				try {
 					Map<String, Object> params = new HashMap<>();
 					params.put("startTime", iStartTime);

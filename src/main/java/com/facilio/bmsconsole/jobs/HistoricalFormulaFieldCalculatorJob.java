@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.lang3.tuple.Pair;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
@@ -53,7 +54,7 @@ public class HistoricalFormulaFieldCalculatorJob extends FacilioJob {
 				return;
 			}
 			
-			Map<Long, Long> intervals = getIntervals(formula, range);
+			List<Pair<Long, Long>> intervals = getIntervals(formula, range);
 			if (intervals != null && !intervals.isEmpty()) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				List<ReadingContext> readings = new ArrayList<>();
@@ -113,7 +114,7 @@ public class HistoricalFormulaFieldCalculatorJob extends FacilioJob {
 		return deleteBuilder.delete();
 	}
 	
-	private Map<Long, Long> getIntervals(FormulaFieldContext formula, DateRange range) {
+	private List<Pair<Long, Long>> getIntervals(FormulaFieldContext formula, DateRange range) {
 		switch (formula.getTriggerTypeEnum()) {
 			case LIVE_READING:
 				return DateTimeUtil.getTimeIntervals(range.getStartTime(), range.getEndTime(), formula.getInterval());

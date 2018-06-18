@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.lang3.tuple.Pair;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
@@ -628,7 +629,7 @@ public class ReadingAction extends ActionSupport {
 	}
 	
 	public String calculateFormulField() throws Exception {
-		HashMap<Long,Long> intervalMap= DateTimeUtil.getTimeIntervals(startTime, endTime, minuteInterval);
+		List<Pair<Long, Long>> intervalMap= DateTimeUtil.getTimeIntervals(startTime, endTime, minuteInterval);
 		readingValues = FormulaFieldAPI.calculateFormulaReadings(resourceId, fieldName, intervalMap, workflow);
 		return SUCCESS;
 	}
