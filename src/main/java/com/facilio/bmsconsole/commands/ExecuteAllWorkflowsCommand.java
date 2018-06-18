@@ -16,6 +16,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -68,7 +69,7 @@ public class ExecuteAllWorkflowsCommand implements Command
 				fetchAndExecuteRules(recordMap, (FacilioContext) context);
 			}
 			else {
-				new ParallalWorkflowExecution(recordMap, (FacilioContext) context).invoke();
+				new ParallalWorkflowExecution(AccountUtil.getCurrentAccount(), recordMap, (FacilioContext) context).invoke();
 			}
 			LOGGER.info("Time taken to Execute workflows for modules : "+recordMap.keySet()+" is "+(System.currentTimeMillis() - startTime));
 		}
@@ -206,11 +207,13 @@ public class ExecuteAllWorkflowsCommand implements Command
 	
 	private class ParallalWorkflowExecution extends RecursiveAction {
 
+		private Account account;
 		private Map<String, List> recordMap = null;
 		private FacilioContext context = null;
 		
-		public ParallalWorkflowExecution(Map<String, List> recordMap, FacilioContext context) {
+		public ParallalWorkflowExecution(Account account, Map<String, List> recordMap, FacilioContext context) {
 			// TODO Auto-generated constructor stub
+			this.account = account;
 			this.recordMap = recordMap;
 			this.context = context;
 		}
@@ -218,38 +221,41 @@ public class ExecuteAllWorkflowsCommand implements Command
 		@Override
 		protected void compute() {
 			// TODO Auto-generated method stub
-			if (recordMap.size() > 1) {
-				List<ParallalWorkflowExecution> subTasks  = new ArrayList<>();
-				for (Map.Entry<String, List> entry : recordMap.entrySet()) {
-					String name = entry.getKey();
-					if (name != null && !name.isEmpty()) {
-						subTasks.add(new ParallalWorkflowExecution(Collections.singletonMap(name, entry.getValue()), context));
+			try {
+				AccountUtil.cleanCurrentAccount();
+				AccountUtil.setCurrentAccount(account);
+				
+				if (recordMap.size() > 1) {
+					List<ParallalWorkflowExecution> subTasks  = new ArrayList<>();
+					for (Map.Entry<String, List> entry : recordMap.entrySet()) {
+						String name = entry.getKey();
+						if (name != null && !name.isEmpty()) {
+							subTasks.add(new ParallalWorkflowExecution(account, Collections.singletonMap(name, entry.getValue()), context));
+						}
 					}
+					ForkJoinTask.invokeAll(subTasks);
 				}
-				ForkJoinTask.invokeAll(subTasks);
-			}
-			else if (recordMap.size() == 1) {
-				Map.Entry<String, List> entry = recordMap.entrySet().iterator().next();
-				List records = entry.getValue();
-				if (records != null && !records.isEmpty()) {
-					String moduleName = entry.getKey();
-					if (records.size() <= recordsPerThread) {
-						try {
+				else if (recordMap.size() == 1) {
+					Map.Entry<String, List> entry = recordMap.entrySet().iterator().next();
+					List records = entry.getValue();
+					if (records != null && !records.isEmpty()) {
+						String moduleName = entry.getKey();
+						if (records.size() <= recordsPerThread) {
 							fetchAndExecuteRules(recordMap, context);
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							LOGGER.error("Error occurred during execution of Workflows for record map "+recordMap, e);
 						}
-					}
-					else {
-						List<List> recordLists = Lists.partition(records, recordsPerThread);
-						List<ParallalWorkflowExecution> subTasks  = new ArrayList<>();
-						for (List recordList : recordLists) {
-							subTasks.add(new ParallalWorkflowExecution(Collections.singletonMap(moduleName, recordList), context));
+						else {
+							List<List> recordLists = Lists.partition(records, recordsPerThread);
+							List<ParallalWorkflowExecution> subTasks  = new ArrayList<>();
+							for (List recordList : recordLists) {
+								subTasks.add(new ParallalWorkflowExecution(account, Collections.singletonMap(moduleName, recordList), context));
+							}
+							ForkJoinTask.invokeAll(subTasks);
 						}
-						ForkJoinTask.invokeAll(subTasks);
 					}
 				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				LOGGER.error("Error occurred during execution of Workflows for record map "+recordMap, e);
 			}
 		}
 		
