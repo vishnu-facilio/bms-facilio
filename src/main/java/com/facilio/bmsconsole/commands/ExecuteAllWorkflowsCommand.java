@@ -255,7 +255,8 @@ public class ExecuteAllWorkflowsCommand implements Command
 				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				LOGGER.error("Error occurred during execution of Workflows for record map "+recordMap, e);
+				CommonCommandUtil.emailException("ParallalWorkflowForkJoinThread", "Error occurred during parallal execution of Workflows", e, recordMap.toString());
+				LOGGER.error("Error occurred during parallal execution of Workflows for record map "+recordMap, e);
 			}
 		}
 		
