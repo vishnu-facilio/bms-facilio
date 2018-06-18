@@ -114,6 +114,12 @@ public class CalculateFormulaFieldsCommand implements Command {
 						List<Pair<Long, Long>> intervals = DateTimeUtil.getTimeIntervals(meta.getTtime(), System.currentTimeMillis(), formula.getInterval());
 						LOGGER.info("Intervals for calculation of : "+formula.getName()+" for "+reading.getParentId()+" is "+intervals);
 						long startTime = System.currentTimeMillis();
+						if (intervals.size() > 1) { //If more than one interval has to be calculated, only the last interval will be calculated here. Previous intervals will be done via scheduler
+							long minTime = intervals.get(0).getLeft();
+							long maxTime = intervals.get(intervals.size() - 2).getRight();
+							FormulaFieldAPI.calculateHistoricalDataForSingleResource(formula.getId(), reading.getParentId(), minTime, maxTime);
+							intervals = Collections.singletonList(intervals.get(intervals.size() - 1));
+						}
 						List<ReadingContext> formulaReadings = FormulaFieldAPI.calculateFormulaReadings(reading.getParentId(), formula.getReadingField().getName(), intervals, formula.getWorkflow());
 						LOGGER.info("Time taken for formula calculation of : "+formula.getName()+" for "+reading.getParentId()+" is "+(System.currentTimeMillis() - startTime));
 						if (formulaReadings != null && !formulaReadings.isEmpty()) {

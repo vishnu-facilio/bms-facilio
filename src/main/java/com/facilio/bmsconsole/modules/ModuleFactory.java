@@ -884,6 +884,14 @@ public class ModuleFactory {
 		return readingRuleInclusionsExclusions;
 	}
 	
+	public static FacilioModule getFormulaFieldResourceJobModule() {
+		FacilioModule readingRuleInclusionsExclusions = new FacilioModule();
+		readingRuleInclusionsExclusions.setName("formulaFieldResourceJob");
+		readingRuleInclusionsExclusions.setDisplayName("Formula Field Resource Job");
+		readingRuleInclusionsExclusions.setTableName("Formula_Field_Resource_Jobs");
+		return readingRuleInclusionsExclusions;
+	}
+	
 	public static FacilioModule getReadingRuleFlapsModule() {
 		FacilioModule readingRuleFlaps = new FacilioModule();
 		readingRuleFlaps.setName("readingRuleFlaps");

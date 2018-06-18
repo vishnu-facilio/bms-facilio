@@ -400,6 +400,18 @@ public class FieldFactory {
 		return name;
 	}
 	
+	public static FacilioField getDescriptionField(FacilioModule module) {
+		FacilioField name = new FacilioField();
+		name.setName("description");
+		name.setDataType(FieldType.STRING);
+		name.setColumnName("DESCRIPTION");
+		if (module != null) {
+			name.setModule(module);
+		}
+
+		return name;
+	}
+	
 	public static FacilioField getIsDeletedField() {
 		return getField("deleted", "SYS_DELETED", FieldType.BOOLEAN);
 	}
@@ -3424,6 +3436,20 @@ public class FieldFactory {
 		fields.add(getOrgIdField(module));
 		fields.add(getField("formulaId", "FORMULA_FIELD_ID", module, FieldType.LOOKUP));
 		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.LOOKUP));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getFormulaFieldResourceJobFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getFormulaFieldResourceJobModule();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("formulaId", "FORMULA_FIELD_ID", module, FieldType.LOOKUP));
+		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("startTime", "START_TIME", module, FieldType.DATE_TIME));
+		fields.add(getField("endTime", "END_TIME", module, FieldType.DATE_TIME));
 		
 		return fields;
 	}

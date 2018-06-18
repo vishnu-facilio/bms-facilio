@@ -87,7 +87,7 @@ public class UpdateFormulaCommand implements Command {
 			WorkflowUtil.deleteWorkflow(oldFormula.getWorkflowId());
 			
 			DateRange dateRange = (DateRange) context.get(FacilioConstants.ContextNames.DATE_RANGE);
-			FormulaFieldAPI.recalculateHistoricalData(newFormula, oldFormula.getReadingField(), dateRange);
+			FormulaFieldAPI.recalculateHistoricalData(newFormula.getId(), dateRange);
 		}
 		context.put(FacilioConstants.ContextNames.RESULT, "success");
 		return false;
