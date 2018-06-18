@@ -619,7 +619,15 @@ public class FormulaFieldAPI {
 					List<FormulaFieldContext> dependentFormulas = FormulaFieldAPI.getActiveFormulasDependingOnFields(TriggerType.SCHEDULE, Collections.singletonList(formula.getReadingField().getId()));
 					if (dependentFormulas != null && !dependentFormulas.isEmpty()) {
 						for (FormulaFieldContext currentFormula : dependentFormulas) {
-							if (singleResourceId == -1 || currentFormula.getMatchedResources().contains(singleResourceId)) {
+							if (singleResourceId != -1 ) {
+								if (currentFormula.getMatchedResources().contains(singleResourceId)) {
+									List<Long> dependentFieldIds = currentFormula.getWorkflow().getDependentFieldIds();
+									if (dependentFieldIds.contains(formula.getReadingField().getFieldId())) {
+										calculateHistoricalDataForSingleResource(currentFormula.getId(), singleResourceId, range.getStartTime(), range.getEndTime());
+									}
+								}
+							}
+							else{
 								List<Long> dependentFieldIds = currentFormula.getWorkflow().getDependentFieldIds();
 								if (dependentFieldIds.contains(formula.getReadingField().getFieldId())) {
 									recalculateHistoricalData(currentFormula.getId(), range);
