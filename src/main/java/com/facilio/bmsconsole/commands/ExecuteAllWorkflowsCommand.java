@@ -1,11 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.RecursiveAction;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -33,13 +36,22 @@ import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.google.common.collect.Lists;
 
 public class ExecuteAllWorkflowsCommand implements Command 
 {
 	private static final Logger LOGGER = LogManager.getLogger(ExecuteAllWorkflowsCommand.class.getName());
-	RuleType[] ruleTypes;
+	private RuleType[] ruleTypes;
+	private int recordsPerThread = -1;
 	public ExecuteAllWorkflowsCommand(RuleType... ruleTypes) {
 		// TODO Auto-generated constructor stub
+		this.ruleTypes = ruleTypes;
+	}
+	public ExecuteAllWorkflowsCommand(int recordsPerThread, RuleType... ruleTypes) {
+		// TODO Auto-generated constructor stub
+		if (recordsPerThread > 0) {
+			this.recordsPerThread = recordsPerThread;
+		}
 		this.ruleTypes = ruleTypes;
 	}
 	
@@ -52,52 +64,61 @@ public class ExecuteAllWorkflowsCommand implements Command
 		}
 		Map<String, List> recordMap = getRecordMap((FacilioContext) context);
 		if(recordMap != null && !recordMap.isEmpty()) {
-			for (Map.Entry<String, List> entry : recordMap.entrySet()) {
-				String moduleName = entry.getKey();
-				if (moduleName == null || moduleName.isEmpty() || entry.getValue() == null || entry.getValue().isEmpty()) {
-					LOGGER.log(Level.WARN, "Module Name / Records is null/ empty ==> "+moduleName+"==>"+entry.getValue());
-					continue;
-				}
-				
-				ActivityType activityType = (ActivityType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
-				if(activityType != null) {
-					List<ActivityType> activities = Collections.singletonList(activityType);
-					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-					long moduleId = modBean.getModule(moduleName).getModuleId();
-					
-					Map<String, FacilioField> fields = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleFields());
-					FacilioField parentRule = fields.get("parentRuleId");
-					FacilioField onSuccess = fields.get("onSuccess");
-					Criteria parentCriteria = new Criteria();
-					parentCriteria.addAndCondition(CriteriaAPI.getCondition(parentRule, CommonOperators.IS_EMPTY));
-					parentCriteria.addAndCondition(CriteriaAPI.getCondition(onSuccess, CommonOperators.IS_EMPTY));
-					List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(moduleId, activities, parentCriteria, ruleTypes);
-					if (workflowRules != null && !workflowRules.isEmpty()) {
-						Map<String, Object> placeHolders = new HashMap<>();
-						CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeHolders);
-						CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeHolders);
-						
-						List records = new LinkedList<>(entry.getValue());
-						Iterator it = records.iterator();
-						while (it.hasNext()) {
-							Object record = it.next();
-							Map<String, Object> recordPlaceHolders = new HashMap<>(placeHolders);
-							CommonCommandUtil.appendModuleNameInKey(moduleName, moduleName, FieldUtil.getAsProperties(record), recordPlaceHolders);
-							List<WorkflowRuleContext> currentWorkflows = workflowRules;
-							while (currentWorkflows != null && !currentWorkflows.isEmpty()) {
-								Criteria childCriteria = executeWorkflows(currentWorkflows, moduleName, record, it, recordPlaceHolders, (FacilioContext) context);
-								if (childCriteria == null) {
-									break;
-								}
-								currentWorkflows = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(moduleId, activities, childCriteria, ruleTypes);
-							}
-						}
-					}
-				}
+			if (recordsPerThread == -1) {
+				fetchAndExecuteRules(recordMap, (FacilioContext) context);
+			}
+			else {
+				new ParallalWorkflowExecution(recordMap, (FacilioContext) context).invoke();
 			}
 			LOGGER.info("Time taken to Execute workflows for modules : "+recordMap.keySet()+" is "+(System.currentTimeMillis() - startTime));
 		}
 		return false;
+	}
+	
+	private void fetchAndExecuteRules(Map<String, List> recordMap, FacilioContext context) throws Exception {
+		for (Map.Entry<String, List> entry : recordMap.entrySet()) {
+			String moduleName = entry.getKey();
+			if (moduleName == null || moduleName.isEmpty() || entry.getValue() == null || entry.getValue().isEmpty()) {
+				LOGGER.log(Level.WARN, "Module Name / Records is null/ empty ==> "+moduleName+"==>"+entry.getValue());
+				continue;
+			}
+			
+			ActivityType activityType = (ActivityType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
+			if(activityType != null) {
+				List<ActivityType> activities = Collections.singletonList(activityType);
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				long moduleId = modBean.getModule(moduleName).getModuleId();
+				
+				Map<String, FacilioField> fields = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleFields());
+				FacilioField parentRule = fields.get("parentRuleId");
+				FacilioField onSuccess = fields.get("onSuccess");
+				Criteria parentCriteria = new Criteria();
+				parentCriteria.addAndCondition(CriteriaAPI.getCondition(parentRule, CommonOperators.IS_EMPTY));
+				parentCriteria.addAndCondition(CriteriaAPI.getCondition(onSuccess, CommonOperators.IS_EMPTY));
+				List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(moduleId, activities, parentCriteria, ruleTypes);
+				if (workflowRules != null && !workflowRules.isEmpty()) {
+					Map<String, Object> placeHolders = new HashMap<>();
+					CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeHolders);
+					CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeHolders);
+					
+					List records = new LinkedList<>(entry.getValue());
+					Iterator it = records.iterator();
+					while (it.hasNext()) {
+						Object record = it.next();
+						Map<String, Object> recordPlaceHolders = new HashMap<>(placeHolders);
+						CommonCommandUtil.appendModuleNameInKey(moduleName, moduleName, FieldUtil.getAsProperties(record), recordPlaceHolders);
+						List<WorkflowRuleContext> currentWorkflows = workflowRules;
+						while (currentWorkflows != null && !currentWorkflows.isEmpty()) {
+							Criteria childCriteria = executeWorkflows(currentWorkflows, moduleName, record, it, recordPlaceHolders, (FacilioContext) context);
+							if (childCriteria == null) {
+								break;
+							}
+							currentWorkflows = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(moduleId, activities, childCriteria, ruleTypes);
+						}
+					}
+				}
+			}
+		}
 	}
 	
 	private Criteria executeWorkflows(List<WorkflowRuleContext> workflowRules, String moduleName, Object record, Iterator itr, Map<String, Object> recordPlaceHolders, FacilioContext context) throws Exception {
@@ -181,5 +202,56 @@ public class ExecuteAllWorkflowsCommand implements Command
 			recordMap = Collections.singletonMap(moduleName, records);
 		}
 		return recordMap;
+	}
+	
+	private class ParallalWorkflowExecution extends RecursiveAction {
+
+		private Map<String, List> recordMap = null;
+		private FacilioContext context = null;
+		
+		public ParallalWorkflowExecution(Map<String, List> recordMap, FacilioContext context) {
+			// TODO Auto-generated constructor stub
+			this.recordMap = recordMap;
+			this.context = context;
+		}
+		
+		@Override
+		protected void compute() {
+			// TODO Auto-generated method stub
+			if (recordMap.size() > 1) {
+				List<ParallalWorkflowExecution> subTasks  = new ArrayList<>();
+				for (Map.Entry<String, List> entry : recordMap.entrySet()) {
+					String name = entry.getKey();
+					if (name != null && !name.isEmpty()) {
+						subTasks.add(new ParallalWorkflowExecution(Collections.singletonMap(name, entry.getValue()), context));
+					}
+				}
+				ForkJoinTask.invokeAll(subTasks);
+			}
+			else if (recordMap.size() == 1) {
+				Map.Entry<String, List> entry = recordMap.entrySet().iterator().next();
+				List records = entry.getValue();
+				if (records != null && !records.isEmpty()) {
+					String moduleName = entry.getKey();
+					if (records.size() <= recordsPerThread) {
+						try {
+							fetchAndExecuteRules(recordMap, context);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							LOGGER.error("Error occurred during execution of Workflows for record map "+recordMap, e);
+						}
+					}
+					else {
+						List<List> recordLists = Lists.partition(records, recordsPerThread);
+						List<ParallalWorkflowExecution> subTasks  = new ArrayList<>();
+						for (List recordList : recordLists) {
+							subTasks.add(new ParallalWorkflowExecution(Collections.singletonMap(moduleName, recordList), context));
+						}
+						ForkJoinTask.invokeAll(subTasks);
+					}
+				}
+			}
+		}
+		
 	}
 }
