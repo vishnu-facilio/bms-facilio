@@ -320,7 +320,8 @@ public class AwsUtil
 	public static void sendEmail(JSONObject mailJson) throws Exception 
 	{
 		if(AwsUtil.getConfig("app.url").contains("localhost")) {
-			mailJson.put("subject", "Local - "+mailJson.get("subject"));
+//			mailJson.put("subject", "Local - "+mailJson.get("subject"));
+			return;
 		}
 
 		String toAddress = (String)mailJson.get("to");
@@ -370,7 +371,8 @@ public class AwsUtil
 		if(sendEmail) {
 			try {
 				if (AwsUtil.getConfig("app.url").contains("localhost")) {
-					mailJson.put("subject", "Local - " + mailJson.get("subject"));
+//					mailJson.put("subject", "Local - " + mailJson.get("subject"));
+					return;
 				}
 
 				MimeMessage message = getEmailMessage(mailJson, files);
