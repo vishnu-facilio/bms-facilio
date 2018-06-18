@@ -165,6 +165,8 @@ public class WorkOrderAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, preventivemaintenance);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
+		context.put(FacilioConstants.ContextNames.READING_RULES_LIST, getReadingRules());
+		context.put(FacilioConstants.ContextNames.ACTIONS_LIST, getActionsList());
 
 		context.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
 

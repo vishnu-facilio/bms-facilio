@@ -21,6 +21,8 @@ import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.view.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.ActionContext;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.exception.ReadingValidationException;
@@ -110,6 +112,8 @@ public class TaskAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TASK, task);
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST, getAttachmentId());
+		context.put(FacilioConstants.ContextNames.READING_RULES_LIST, getReadingRules());
+		context.put(FacilioConstants.ContextNames.ACTIONS_LIST, getActionsList());
 		
 		Chain addTask = FacilioChainFactory.getAddTaskChain();
 		addTask.execute(context);
@@ -399,6 +403,23 @@ public class TaskAction extends ActionSupport {
 	}
 	public void setError(Map<Long, Map<String, String>> error) {
 		this.error = error;
+	}
+	
+	private List<List<ReadingRuleContext>> readingRules;
+	public List<List<ReadingRuleContext>> getReadingRules() {
+		return readingRules;
+	}
+	public void setReadingRules(List<List<ReadingRuleContext>> readingRules) {
+		this.readingRules = readingRules;
+	}
+	
+	private List<List<List<ActionContext>>> actionsList;
+	public List<List<List<ActionContext>>> getActionsList() {
+		return this.actionsList;
+	}
+	
+	public void setActionsList(List<List<List<ActionContext>>> actionsList) {
+		this.actionsList = actionsList;
 	}
  }
 

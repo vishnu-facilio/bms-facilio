@@ -5,8 +5,6 @@ import java.util.List;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-
 import com.facilio.bmsconsole.view.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.ActionContext;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
@@ -19,7 +17,12 @@ public class AddValidationRulesCommand implements Command {
 		List<List<ReadingRuleContext>> readingRules = (List<List<ReadingRuleContext>>) context.get(FacilioConstants.ContextNames.READING_RULES_LIST); 
 		List<List<List<ActionContext>>> actionsList = (List<List<List<ActionContext>>>) context.get(FacilioConstants.ContextNames.ACTIONS_LIST);
 		
-		Chain c = FacilioChainFactory.getAddWorkflowRuleChain();
+		if (readingRules == null || readingRules.isEmpty() || actionsList == null || actionsList.isEmpty()) {
+			return false; 
+		}
+		
+		Chain addChain = FacilioChainFactory.getAddWorkflowRuleChain();
+		Chain updateChain = FacilioChainFactory.updateWorkflowRuleChain();
 		
 		for (int i = 0; i < readingRules.size(); ++i) {
 			for (int j = 0; j < readingRules.get(i).size(); ++j) {
@@ -27,7 +30,11 @@ public class AddValidationRulesCommand implements Command {
 				rule.setRuleType(WorkflowRuleContext.RuleType.VALIDATION_RULE);
 				context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, rule);
 				context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, actionsList.get(i).get(j));
-				c.execute(context);
+				if (rule.getId() != -1) {
+					updateChain.execute(context);
+				} else {
+					addChain.execute(context);
+				}
 			}
 		}
 		return false;

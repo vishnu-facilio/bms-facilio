@@ -523,7 +523,7 @@ public enum ActionType {
 				ReadingRuleContext readingRule = (ReadingRuleContext) currentRule;
 				String msg = "";
 				long fieldId = readingRule.getReadingFieldId();
-				String fieldName = readingRule.getReadingField().getModule().getDisplayName();
+				String fieldName = readingRule.getReadingField().getDisplayName();
 				String evaluator = currentRule.getWorkflow().getResultEvaluator();
 				if("(b!=-1)&&(a<b)".equals(evaluator)) {
 					msg = fieldName+ " should be incremental.";
@@ -541,7 +541,6 @@ public enum ActionType {
 	private int val;
 
 	private ActionType(int val) {
-		// TODO Auto-generated constructor stub
 		this.val = val;
 	}
 

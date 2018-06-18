@@ -561,6 +561,7 @@ public class FacilioChainFactory {
 		c.addCommand(new AddTaskOptionsCommand());
 		c.addCommand(new UpdateReadingDataMetaCommand());
 		c.addCommand(new AddTaskTicketActivityCommand());
+		c.addCommand(new AddValidationRulesCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -1459,6 +1460,7 @@ public class FacilioChainFactory {
 		c.addCommand(new AddAndSchedulePMTriggerCommand());
 		c.addCommand(new AddPMReminderCommand());
 		c.addCommand(new UpdateReadingDataMetaCommand());
+		c.addCommand(new AddValidationRulesCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -1854,6 +1856,7 @@ public class FacilioChainFactory {
 		Chain c = new TransactionChain();
 		c.addCommand(new GetCategoryReadingsCommand());
 		c.addCommand(new GetReadingFieldsCommand());
+		c.addCommand(new GetReadingRulesFromFieldsCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
