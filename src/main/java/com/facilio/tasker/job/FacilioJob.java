@@ -2,20 +2,20 @@ package com.facilio.tasker.job;
 
 import java.sql.SQLException;
 import java.time.Instant;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.transaction.SystemException;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.tasker.executor.Executor;
 import com.facilio.transaction.FacilioTransactionManager;
-import org.apache.log4j.LogManager;
 
 public abstract class FacilioJob implements Runnable {
 
-    private static org.apache.log4j.Logger log = LogManager.getLogger(FacilioJob.class.getName());
+    private static Logger LOGGER = LogManager.getLogger(FacilioJob.class.getName());
 	private JobContext jc = null;
 	public void setJobContext(JobContext jc) {
 		this.jc = jc;
@@ -65,12 +65,12 @@ public abstract class FacilioJob implements Runnable {
 				FacilioTransactionManager.INSTANCE.getTransactionManager().rollback();
 			} catch (IllegalStateException | SecurityException | SystemException e1) {
 				// TODO Auto-generated catch block
-				log.info("Exception occurred ", e1);
+				LOGGER.error("Exception occurred ", e1);
 			}
 			executor.removeJob(jc);
 			System.out.println("Exception occurred during execution of job : "+jc);
-			logger.log(Level.SEVERE," Job execution failed JobID :"+jc.getJobId()+" : "+ jc.getJobName(),e);
-			CommonCommandUtil.emailException("FacilioJob", "Job execution failed JobID :"+jc.getJobId()+" : "+ jc.getJobName(), e);
+			LOGGER.error("Job execution failed for Job :"+jc.getJobId()+" : "+ jc.getJobName(),e);
+			CommonCommandUtil.emailException("FacilioJob", "Job execution failed for Job :"+jc.getJobId()+" : "+ jc.getJobName(), e);
 			reschedule();
 		}
 	}
@@ -99,23 +99,19 @@ public abstract class FacilioJob implements Runnable {
 	
 	private void reschedule() {
 		if(retryExecutionCount <= executor.getMaxRetry()) {
-			System.out.println("Rescheduling : "+jc.getJobId()+"::"+jc.getJobName()+" for the "+retryExecutionCount+" time.");
+			LOGGER.error("Rescheduling : "+jc.getJobId()+"::"+jc.getJobName()+" for the "+retryExecutionCount+" time.");
 			executor.schedule(this, 1);
 		}
 		else {
-			System.out.println("Max retry exceeded for : "+jc+".\nSo making it inactive");
+			LOGGER.error("Max retry exceeded for : "+jc+".\nSo making it inactive");
 			try {
 				JobStore.setInActive(jc.getJobId(), jc.getJobName());
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
-				
-				logger.log(Level.SEVERE,"Error",e);
-
+				LOGGER.error("Error",e);
 			}
 		}
 	}
-	private static Logger logger = Logger.getLogger("ReportsUtil");
-
 	public abstract void execute(JobContext jc);
 	
 	@Override
