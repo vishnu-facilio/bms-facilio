@@ -56,6 +56,8 @@ import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowFieldContext;
 import com.facilio.workflows.context.WorkflowFunctionContext;
 import com.facilio.workflows.functions.ThermoPhysicalR134aFunctions;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import com.facilio.workflows.functions.FacilioDateFunction;
 import com.facilio.workflows.functions.FacilioDefaultFunction;
 import com.facilio.workflows.functions.FacilioMathFunction;
@@ -108,6 +110,26 @@ public class WorkflowUtil {
 			values.add(value);
 		}
 		return values;
+	}
+	public static Multimap<String, FacilioField> getAllParentAndfieldIdfromWorkflow(String workflowString) throws Exception {
+		
+		WorkflowContext workflowContext = new WorkflowContext();
+		workflowContext.setWorkflowString(workflowString);
+		return getAllParentAndfieldIdfromWorkflow(workflowContext);
+	}
+	public static Multimap<String, FacilioField> getAllParentAndfieldIdfromWorkflow(WorkflowContext workflow) throws Exception {
+		
+		WorkflowContext workflowContext = parseStringToWorkflowObject(workflow.getWorkflowString());
+		parseExpression(workflowContext);
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		Multimap<String, FacilioField> resultMap = ArrayListMultimap.create();
+		
+		for(ExpressionContext exp : workflowContext.getExpressions()) {
+			String parentId = WorkflowUtil.getParentIdFromCriteria(exp.getCriteria());
+			FacilioField field = modBean.getField(exp.getFieldName(), exp.getModuleName());
+			resultMap.put(parentId, field);
+		}
+		return resultMap;
 	}
 	public static String getParentIdFromCriteria (Criteria criteria) {
 		
