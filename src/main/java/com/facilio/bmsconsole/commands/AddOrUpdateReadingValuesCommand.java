@@ -102,13 +102,14 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 			
 			Map<String, Object> readingData = reading.getReadings();
 			if (readingData != null && !readingData.isEmpty()) {
+				
 				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-				ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				if(metaMap != null) {
 					for(String fieldName : readingData.keySet()) {
 						FacilioField field = fieldMap.get(fieldName);
 						if(field != null && readingData.get(fieldName) != null) {
-							if(reading.getParentId() > 0 && bean != null  && fieldName != null  && module != null && module.getName() != null && bean.getField(fieldName, module.getName()) != null) {
+							
+							if(reading.getParentId() > 0  && field.getId() > 0) {
 								
 								String key = reading.getParentId()+"_"+field.getId();
 								ReadingDataMeta readingDataMeta = metaMap.get(key);
