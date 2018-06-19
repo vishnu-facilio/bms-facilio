@@ -11,11 +11,11 @@ import org.apache.log4j.Logger;
 
 public class LRUCache<K, V>{
 
-	private static Logger log = LogManager.getLogger(LRUCache.class.getName());
+	private static Logger LOGGER = LogManager.getLogger(LRUCache.class.getName());
 
 	public static void main(String args []) throws InterruptedException
     {
-    	LRUCache testcache =  	new LRUCache<String,Object>(18);
+    	LRUCache testcache =  	new LRUCache<String,Object>("test", 18);
     	String arrya[] = {"yoge","babu","karry" ,"ram","manthosh","shivaraj","vikram","magesh","vivek","radhakrishnan","swami","manthosh","krishna","praveen","simran","madhura","gowtham","dhivya","aravind"};
    
     	for(int i=0;i<arrya.length;i++)
@@ -55,9 +55,9 @@ System.out.println("Before "+testcache);
 
 		 return (" The current size "+currentSize+"\n hitcount "+hitcount+"\n Cache Hit Ratio= "+ hitc +"\n\n"+cache );
 	}
-	private static LRUCache<String,Object> fieldCache = new LRUCache<String,Object>(1000);
-	private static LRUCache<String,Object> modulefieldCache = new LRUCache<String,Object>(1000);
-	private static LRUCache<String,Object> userSessionCache = new LRUCache<String,Object>(300);
+	private static LRUCache<String,Object> fieldCache = new LRUCache<String,Object>("fieldCache", 2000);
+	private static LRUCache<String,Object> modulefieldCache = new LRUCache<String,Object>("moduleFieldCache", 2000);
+	private static LRUCache<String,Object> userSessionCache = new LRUCache<String,Object>("userSessionCache", 300);
     private long hitcount = 0;
     private long misscount = 1;
     // Define Node with pointers to the previous and next items and a key, value pair
@@ -107,6 +107,7 @@ System.out.println("Before "+testcache);
 
     private void clearTenPercentile()
     {
+    	LOGGER.info("Removing ten percent for ");
     	   long mintime = 0;
     	   long maxtime = 0;
     	   long totalcount = cache.size();
@@ -114,6 +115,7 @@ System.out.println("Before "+testcache);
     	   
     	   SortedArrayList<Node> list = new SortedArrayList<>();
     	   Enumeration<LRUCache<K,V>.Node<K,V>> enums =  cache.elements();
+    	   
     	  while (enums.hasMoreElements())
     	  {
     		  Node node=   enums.nextElement();
@@ -177,8 +179,11 @@ System.out.println("Before "+testcache);
       //   mostRecentlyUsed = leastRecentlyUsed;
          cache = new ConcurrentHashMap<K, Node<K, V>>();
     }
+    
+    private String name;
 
-    public LRUCache(int maxSize){
+    public LRUCache(String name, int maxSize){
+    	this.name = name;
         this.maxSize = maxSize;
         this.currentSize = 0;
       //  this.tenPercent = (maxSize/10);
@@ -207,7 +212,7 @@ System.out.println("Before "+testcache);
 	        return tempNode.getValue();
     	}
     	catch (Exception e) {
-    		log.info("Exception occurred ", e);
+    		LOGGER.info("Exception occurred ", e);
     		return null;
     	}
     }
