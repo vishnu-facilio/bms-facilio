@@ -231,7 +231,12 @@ public class WorkflowUtil {
 		}
 		for(ExpressionContext expressionContext : workflow.getExpressions()) {
 			
-			params.add(expressionContext.getName());
+			String expString = expressionContext.getExpressionString();
+			
+			int nameStartIndex = expString.indexOf("<expression name=\"")+"<expression name=\"".length();
+			String name = expString.substring(nameStartIndex, expString.indexOf('"', nameStartIndex));
+			
+			params.add(name.trim());
 			
 			if(expressionContext.getExpressionString().contains("${")) {
 				
@@ -315,7 +320,9 @@ public class WorkflowUtil {
 						Map<Integer, Condition> conditions = expression.getCriteria().getConditions();
 						for(Condition condition :conditions.values()) {
 							if(condition.getFieldName().equals("parentId") && !condition.getValue().equals("${resourceId}")) {
-								parentId = Long.parseLong(condition.getValue());
+								if(condition.getValue() != null && !condition.getValue().contains("${")) {
+									parentId = Long.parseLong(condition.getValue());
+								}
 							}
 						}
 					}
