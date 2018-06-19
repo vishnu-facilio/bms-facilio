@@ -104,18 +104,23 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 			if (readingData != null && !readingData.isEmpty()) {
 				
 				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+				
 				if(metaMap != null) {
 					for(String fieldName : readingData.keySet()) {
 						FacilioField field = fieldMap.get(fieldName);
+						
 						if(field != null && readingData.get(fieldName) != null) {
-							
+							LOGGER.error("before conv -- "+field.getId() +" ---- "+readingData.get(fieldName)); 
 							if(reading.getParentId() > 0  && field.getId() > 0) {
 								
+								LOGGER.error("REACHED 1");
 								String key = reading.getParentId()+"_"+field.getId();
 								ReadingDataMeta readingDataMeta = metaMap.get(key);
 								if(readingDataMeta != null && readingDataMeta.getUnitEnum() != null) {
+									LOGGER.error("REACHED 2");
 									Object value = UnitsUtil.convertToSiUnit(readingData.get(fieldName), readingDataMeta.getUnitEnum());
 									readingData.put(fieldName, value);
+									LOGGER.error("after conversion --" +field.getId() +" ---- "+value);
 								}
 							}
 						}
