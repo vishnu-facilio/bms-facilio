@@ -1770,6 +1770,7 @@ public class DashboardUtil {
 				long labelLong = (long) result.get("label");
 				String labelString = covertLabelLongToString(labelLong,AggregateOperator.getAggregateOperator(xAxisAggr));
 				
+				labelMap.put(labelString, labelLong);
 				reportDataNew.put(labelString, result.get("value"));
 			}
 			reportDatasNew.add(reportDataNew);
