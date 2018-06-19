@@ -19,6 +19,7 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
@@ -61,8 +62,15 @@ public class ReportsUtil
 	
 	public static double getUnitCost(long orgid)
 	{
-		if(orgid==60)
-		{
+		try {
+			Map<String, Object> unitCostMap = CommonCommandUtil.getOrgInfo(orgid, "unitCost");
+			if (unitCostMap != null && unitCostMap.get("value") != null && !"".equals(unitCostMap.get("value").toString())) {
+				return Double.parseDouble(unitCostMap.get("value").toString().trim());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (orgid == 60) {
 			return 5;
 		}
 		return unitCost;
