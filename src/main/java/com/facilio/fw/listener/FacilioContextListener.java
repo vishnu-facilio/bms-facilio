@@ -19,7 +19,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import com.facilio.queue.FacilioExceptionProcessor;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.flywaydb.core.Flyway;
@@ -35,6 +34,7 @@ import com.facilio.cache.RedisManager;
 import com.facilio.fw.BeanFactory;
 import com.facilio.kinesis.KinesisProcessor;
 import com.facilio.logging.SysOutLogger;
+import com.facilio.queue.FacilioExceptionProcessor;
 import com.facilio.serviceportal.actions.PortalAuthInterceptor;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.SQLScriptRunner;
@@ -102,7 +102,7 @@ public class FacilioContextListener implements ServletContextListener {
 				System.out.println("Custom domains loaded" + customdomains);
 			}
 			
-			File file = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/leedconsole.sql").getFile());
+			/*File file = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/leedconsole.sql").getFile());
 			SQLScriptRunner scriptRunner = new SQLScriptRunner(file, true, null);
 			//Connection c = FacilioConnectionPool.getInstance().getConnection();
 			try
@@ -127,7 +127,7 @@ public class FacilioContextListener implements ServletContextListener {
 			catch(Exception e)
 			{
 				
-			}
+			}*/
 			
 			try {
 				if(("true".equalsIgnoreCase(AwsUtil.getConfig("enable.kinesis"))) && "true".equalsIgnoreCase(AwsUtil.getConfig("kinesisServer"))) {
