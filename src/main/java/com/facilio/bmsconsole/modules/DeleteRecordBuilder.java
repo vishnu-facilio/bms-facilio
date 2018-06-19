@@ -132,8 +132,8 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 				currentLevel--;
 			}
 			deleteBuilder.table(currentModule.getTableName());
-			WhereBuilder orgWhere = getWhereWithOrgIdAndModuleId(currentModule);
-			deleteBuilder.andCustomWhere(orgWhere.getWhereClause(), orgWhere.getValues())
+//			WhereBuilder orgWhere = getWhereWithOrgIdAndModuleId(currentModule);
+			deleteBuilder//.andCustomWhere(orgWhere.getWhereClause(), orgWhere.getValues())
 							.andCondition(CriteriaAPI.getIdCondition(ids, currentModule));
 			return deleteBuilder.delete();
 		}
