@@ -369,6 +369,10 @@ public class ReportExportUtil {
 		if(analyticsConfig.containsKey("excludeWeekends")) {
 			excludeWeekends = (boolean) analyticsConfig.get("excludeWeekends");
 		}
+		boolean cost = false;
+		if(analyticsConfig.containsKey("cost")) {
+			cost = (boolean) analyticsConfig.get("cost");
+		}
 		
 		List<Map<String, Object>> reportDatas = new ArrayList<>();
 		FacilioModule module = null;
@@ -385,6 +389,7 @@ public class ReportExportUtil {
 				action.setBaseLineId((long) data.get("baseLineId"));
 			}
 			action.setExcludeWeekends(excludeWeekends);
+			action.setCost(cost);
 			if (data.containsKey("derivation")) {
 				action.setDerivation(FieldUtil.getAsBeanFromMap((Map<String, Object>)data.get("derivation"), DerivationContext.class));
 			}
