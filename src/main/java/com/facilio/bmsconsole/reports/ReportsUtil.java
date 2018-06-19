@@ -260,6 +260,7 @@ public class ReportsUtil
 		buildingData.put("id", building.getId());
 		buildingData.put("area", building.getGrossFloorArea());
 		buildingData.put("floors", building.getNoOfFloors());
+		buildingData.put("siteId", building.getSiteId());
 		
 		try {
 			if(building.getPhotoId() <= 0) {
