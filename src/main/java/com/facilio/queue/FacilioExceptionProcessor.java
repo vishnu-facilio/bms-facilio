@@ -39,24 +39,24 @@ public class FacilioExceptionProcessor extends TimerTask {
 
 
         if(messageList.size() > 0 ) {
-
-            StringBuilder builder = new StringBuilder();
-            for(String orgWithClass : EXCEPTION_COUNT.keySet()) {
-                builder.append(orgWithClass).append("  :   ").append(EXCEPTION_COUNT.get(orgWithClass)).append(System.lineSeparator())
-                        .append(EXCEPTION_MESSAGES.get(orgWithClass)).append(System.lineSeparator());
-            }
-
-            JSONObject json = new JSONObject();
+        	JSONObject json = new JSONObject();
 
             json.put("sender", "error@facilio.com");
             json.put("to", "error@facilio.com");
-            json.put("subject", "Exception Mail");
-            json.put("message", builder.toString());
-            try {
-                AwsUtil.sendEmail(json);
-            } catch (Exception e) {
-                LOGGER.info("Exception while sending email ", e);
+            for(String orgWithClass : EXCEPTION_COUNT.keySet()) {
+            	StringBuilder builder = new StringBuilder();
+                builder.append(orgWithClass).append("  :   ").append(EXCEPTION_COUNT.get(orgWithClass)).append(System.lineSeparator())
+                        .append(EXCEPTION_MESSAGES.get(orgWithClass)).append(System.lineSeparator());
+                
+                json.put("subject", orgWithClass+" - Exception Mail");
+                json.put("message", builder.toString());
+                try {
+                    AwsUtil.sendEmail(json);
+                } catch (Exception e) {
+                    LOGGER.info("Exception while sending email ", e);
+                }
             }
+
             for (Message msg : messageList) {
                 FAWSQueue.deleteMessage(QUEUE, msg.getReceiptHandle());
             }
