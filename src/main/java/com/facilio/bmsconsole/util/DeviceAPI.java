@@ -364,7 +364,7 @@ public class DeviceAPI
 		jobProp.put("intervalValue", interval);
 		jobProp.put("updateReading", updateReading);
 		long jobId= historyVMBuilder.insert(jobProp);
-		FacilioTimer.scheduleOneTimeJob(jobId, "HistoricalVMCalculation", 30, "priority");
+		FacilioTimer.scheduleOneTimeJob(jobId, "HistoricalVMCalculation", 30, "facilio");
 	}
 	
 	
