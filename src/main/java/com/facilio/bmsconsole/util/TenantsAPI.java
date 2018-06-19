@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -58,20 +59,23 @@ public class TenantsAPI {
 		if (props != null && !props.isEmpty()) {
 			List<TenantContext> tenants = new ArrayList<>();
 			List<Long> ids = new ArrayList<>();
+			List<Long> spaceIds = new ArrayList<>();
 			for (Map<String, Object> prop : props) {
 				TenantContext tenant = FieldUtil.getAsBeanFromMap(prop, TenantContext.class);
 				tenants.add(tenant);
 				ids.add(tenant.getId());
-				
+				spaceIds.add(tenant.getSpaceId());
 				if (tenant.getLogoId()  != -1) {
 					FileStore fs = FileStoreFactory.getInstance().getFileStore();
 					tenant.setLogoUrl(fs.getPrivateUrl(tenant.getLogoId()));
 				}
 			}
 			Map<Long, List<UtilityAsset>> utilMap = getUtilityAssets(ids);
+			Map<Long, BaseSpaceContext> spaceMap = SpaceAPI.getBaseSpaceMap(spaceIds);
 			if (utilMap != null && !utilMap.isEmpty()) {
 				for (TenantContext tenant : tenants) {
 					tenant.setUtilityAssets(utilMap.get(tenant.getId()));
+					tenant.setSpace(spaceMap.get(tenant.getSpaceId()));
 				}
 			}
 			return tenants;
@@ -158,10 +162,14 @@ public class TenantsAPI {
 	
 	private static int deleteUtilityMapping(TenantContext tenant) throws SQLException {
 		FacilioModule module = ModuleFactory.getTenantsUtilityMappingModule();
+		List<FacilioField> fields = FieldFactory.getTenantsUtilityMappingFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioField tenantId = fieldMap.get("tenantId");
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 														.table(module.getTableName())
 														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-														.andCondition(CriteriaAPI.getIdCondition(tenant.getId(), module));
+														.andCondition(CriteriaAPI.getCondition(tenantId, String.valueOf(tenant.getId()), PickListOperators.IS))
+														;
 		return deleteBuilder.delete();
 	}
 	

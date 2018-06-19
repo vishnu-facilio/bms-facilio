@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.tenant;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.tenant.RateCardServiceContext.ServiceType;
 import com.facilio.fw.BeanFactory;
 
 public enum TenantUtility {

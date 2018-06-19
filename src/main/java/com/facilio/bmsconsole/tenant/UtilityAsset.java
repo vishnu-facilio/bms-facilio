@@ -32,8 +32,11 @@ public class UtilityAsset {
 	public void setUtility(TenantUtility utility) {
 		this.utility = utility;
 	}
-	public TenantUtility getUtility() {
-		return utility;
+	public int getUtility() {
+		if (utility != null) {
+			return utility.getValue();
+		}
+		return -1;
 	}
 	public void setUtility(int utility) {
 		this.utility = TenantUtility.valueOf(utility);
