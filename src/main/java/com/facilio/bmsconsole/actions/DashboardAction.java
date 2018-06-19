@@ -760,7 +760,7 @@ public class DashboardAction extends ActionSupport {
 		FacilioModule module = readingField.getModule();
 		reportContext = constructReportObjectForReadingReport(module, readingField,parentId);
 		if (getCost() && reportContext.getY1AxisField() != null) {
-			reportContext.getY1AxisField().setUnit("cost");
+			reportContext.setY1AxisUnit("cost");
 		}
 		reportModule = module;
 		reportData = getDataForReadings(reportContext, module, dateFilter, null, baseLineId, -1);
