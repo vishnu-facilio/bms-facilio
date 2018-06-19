@@ -607,7 +607,7 @@ public class FormulaFieldAPI {
 				FacilioContext context = new FacilioContext();
 				context.put(FacilioConstants.ContextNames.MODULE_NAME, formula.getReadingField().getModule().getName());
 				context.put(FacilioConstants.ContextNames.READINGS, readings);
-				context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS, false);
+//				context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS, false);
 				
 				Chain addReadingChain = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
 				addReadingChain.execute(context);
