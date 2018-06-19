@@ -111,7 +111,7 @@ public class CalculateFormulaFieldsCommand implements Command {
 					FacilioField field = fieldMap.get(fieldName);
 					if (field != null && formula.getWorkflow().getDependentFieldIds().contains(field.getId())) {
 						ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(reading.getParentId(), formula.getReadingField());
-						List<Pair<Long, Long>> intervals = DateTimeUtil.getTimeIntervals(meta.getTtime(), System.currentTimeMillis(), formula.getInterval());
+						List<Pair<Long, Long>> intervals = DateTimeUtil.getTimeIntervals(meta.getTtime()+1, System.currentTimeMillis(), formula.getInterval());
 						LOGGER.info("Intervals for calculation of : "+formula.getName()+" for "+reading.getParentId()+" is "+intervals);
 						long startTime = System.currentTimeMillis();
 						if (intervals.size() > 1) { //If more than one interval has to be calculated, only the last interval will be calculated here. Previous intervals will be done via scheduler
