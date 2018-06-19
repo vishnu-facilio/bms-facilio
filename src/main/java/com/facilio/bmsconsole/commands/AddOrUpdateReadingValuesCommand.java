@@ -115,6 +115,7 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 								
 								LOGGER.error("REACHED 1");
 								String key = reading.getParentId()+"_"+field.getId();
+								LOGGER.error("key 1 --- "+key);
 								ReadingDataMeta readingDataMeta = metaMap.get(key);
 								if(readingDataMeta != null && readingDataMeta.getUnitEnum() != null) {
 									LOGGER.error("REACHED 2");
