@@ -106,6 +106,7 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 				
 				if(metaMap != null) {
+					LOGGER.error("metaMap ---"+metaMap);
 					for(String fieldName : readingData.keySet()) {
 						FacilioField field = fieldMap.get(fieldName);
 						

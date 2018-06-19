@@ -60,7 +60,10 @@ public class GetReadingDataMetaCommand implements Command {
 //					logger.log(Level.INFO, "Readings : "+readings);
 //					logger.log(Level.INFO, "RDM Pairs : "+rdmPairs);
 //				}
+				LOGGER.error("rdmPairs--"+rdmPairs);
 				List<ReadingDataMeta> metaList = ReadingsAPI.getReadingDataMetaList(rdmPairs) ;
+				LOGGER.error("metaList--"+metaList);
+				
 				for(ReadingDataMeta meta : metaList) {
 					long resourceId = meta.getResourceId();
 					long fieldId = meta.getField().getFieldId();
