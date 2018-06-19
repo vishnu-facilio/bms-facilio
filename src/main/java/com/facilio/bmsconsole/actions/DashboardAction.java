@@ -742,7 +742,7 @@ public class DashboardAction extends ActionSupport {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioField readingField = modBean.getFieldFromDB(readingFieldId);
 				reportModule = readingField.getModule();
-				reportContext = constructReportObjectForReadingReport(readingField.getModule(), readingField,(Long) parentId);
+				reportContext = constructReportObjectForReadingReport(readingField.getModule(), readingField,Long.parseLong(parentId.toString()));
 				reportData = getDataForReadings(reportContext, readingField.getModule(), dateFilter, null, baseLineId, -1);
 				reportDatas.add(reportData);
 			}
