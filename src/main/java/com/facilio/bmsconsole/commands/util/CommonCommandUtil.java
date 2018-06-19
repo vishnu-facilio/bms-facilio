@@ -263,7 +263,7 @@ public class CommonCommandUtil {
 			checkDB(e.getMessage(), body);
 			String message = body.toString();
 			json.put("message", message);
-			AwsUtil.sendEmail(json);
+			//AwsUtil.sendEmail(json);
 			if("production".equals(AwsUtil.getConfig("environment"))) {
 				FAWSQueue.sendMessage("Exception", message);
 			}
