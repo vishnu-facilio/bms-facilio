@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
@@ -286,5 +287,27 @@ public class AssetAction extends ActionSupport {
 
 	public void setWithReadings(Boolean withReadings) {
 		this.withReadings = withReadings;
+	}
+	
+	JSONObject assetsReadings;
+	public JSONObject getAssetsReadings() {
+		return assetsReadings;
+	}
+	public void setAssetsReadings(JSONObject assetsReadings) {
+		this.assetsReadings = assetsReadings;
+	}
+	
+	public String getReadingsWithAssets() throws Exception {
+		
+		assetsReadings = AssetsAPI.getAssetsWithReadings(buildingIds);
+		return SUCCESS;
+  	}
+	
+	private List<Long> buildingIds;
+	public List<Long> getBuildingIds() {
+		return buildingIds;
+	}
+	public void setBuildingIds(List<Long> buildingIds) {
+		this.buildingIds = buildingIds;
 	}
 }

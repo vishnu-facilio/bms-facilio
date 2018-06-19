@@ -1,7 +1,9 @@
 package com.facilio.beans;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.json.simple.JSONObject;
 
@@ -36,6 +38,8 @@ public interface ModuleBean extends RootBean {
 	public FacilioField getFieldFromDB(long fieldId) throws Exception;
 	
 	public FacilioField getField(String fieldName, String moduleName) throws Exception;
+	
+	public Map<Long, FacilioField> getFields(Collection<Long> fieldIds) throws Exception;
 	
 	public long addField(FacilioField field) throws Exception;
 	

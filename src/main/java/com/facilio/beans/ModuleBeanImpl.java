@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -535,6 +536,29 @@ public class ModuleBeanImpl implements ModuleBean {
 			Map<Long, FacilioModule> moduleMap = splitModules(module);
 			List<FacilioField> fields = getFieldFromPropList(fieldProps, moduleMap);
 			return fields.get(0);
+		}
+		return null;
+	}
+	
+	@Override
+	public Map<Long, FacilioField> getFields(Collection<Long> fieldIds) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getSelectFieldFields())
+				.table("Fields")
+				.andCondition(CriteriaAPI.getOrgIdCondition(getOrgId(), ModuleFactory.getFieldsModule()))
+				.andCondition(CriteriaAPI.getCondition("FIELDID", "fieldId", StringUtils.join(fieldIds, ","), NumberOperators.EQUALS));
+		List<Map<String, Object>> fieldProps = selectBuilder.get();
+
+		if(fieldProps != null && !fieldProps.isEmpty()) {
+			Map<Long, FacilioModule> moduleMap = new HashMap<Long, FacilioModule>();
+			for(Map<String, Object> fieldProp: fieldProps) {
+				FacilioModule module = getMod((long)fieldProp.get("moduleId"));
+				if (!moduleMap.containsKey(module.getModuleId())) {
+					moduleMap.putAll(splitModules(module));
+				}
+			}
+			List<FacilioField> fields = getFieldFromPropList(fieldProps, moduleMap);
+			return FieldFactory.getAsIdMap(fields);
 		}
 		return null;
 	}

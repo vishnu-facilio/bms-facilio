@@ -752,6 +752,13 @@
 				<param name="includeProperties">assets,assets\[\d+\],assets\[\d+\].*</param>
 			</result>
 		</action>
+		
+		<action name="getreadings" class="com.facilio.bmsconsole.actions.AssetAction"
+			method="getReadingsWithAssets">
+			<result name="success" type="json">
+				<param name="root">assetsReadings</param>
+			</result>
+		</action>
 
 		<action name="*" class="com.facilio.bmsconsole.actions.AssetAction"
 			method="assetList">
