@@ -229,10 +229,7 @@ public class ExpressionContext {
 			String parentId = WorkflowUtil.getParentIdFromCriteria(criteria);
 			
 			List<Map<String, Object>> cachedDatas = this.getWorkflowContext().getCachedData().get(moduleName+"-"+parentId);
-			if(cachedDatas == null) {
-				
-			}
-			
+
 			List<Map<String, Object>> passedData = new ArrayList<>();
 			for(Map<String, Object> cachedData :cachedDatas) {
 				org.apache.commons.collections.Predicate Predicate = criteria.computePredicate(cachedData);
