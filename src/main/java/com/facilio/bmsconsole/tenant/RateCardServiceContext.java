@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.tenant;
 
+import com.facilio.workflows.context.WorkflowContext;
+
 public class RateCardServiceContext {
 	private long id = -1;
 	public long getId() {
@@ -50,12 +52,21 @@ public class RateCardServiceContext {
 		this.serviceType = ServiceType.valueOf(serviceType);
 	}
 
-	private long utilityId = -1;
-	public long getUtilityId() {
-		return utilityId;
+	private TenantUtility utility;
+	public TenantUtility getUtilityEnum() {
+		return utility;
 	}
-	public void setUtilityId(long utilityId) {
-		this.utilityId = utilityId;
+	public void setUtility(TenantUtility utility) {
+		this.utility = utility;
+	}
+	public int getUtility() {
+		if (utility != null) {
+			return utility.getValue();
+		}
+		return -1;
+	}
+	public void setUtility(int utility) {
+		this.utility = TenantUtility.valueOf(utility);
 	}
 	
 	private double price = -1;
@@ -74,6 +85,14 @@ public class RateCardServiceContext {
 		this.workflowId = workflowId;
 	}
 	
+	private WorkflowContext workflow;
+	public WorkflowContext getWorkflow() {
+		return workflow;
+	}
+	public void setWorkflow(WorkflowContext workflow) {
+		this.workflow = workflow;
+	}
+
 	public static enum ServiceType {
 		UTILITY,
 		FORMULA

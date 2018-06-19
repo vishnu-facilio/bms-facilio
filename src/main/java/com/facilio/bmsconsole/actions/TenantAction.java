@@ -2,19 +2,12 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.List;
 
+import com.facilio.bmsconsole.tenant.RateCardContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.TenantsAPI;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class TenantAction extends ActionSupport {
-	
-	private TenantContext tenant;
-	public TenantContext getTenant() {
-		return tenant;
-	}
-	public void setTenant(TenantContext tenant) {
-		this.tenant = tenant;
-	}
 	
 	private long id = -1;
 	public long getId() {
@@ -32,12 +25,36 @@ public class TenantAction extends ActionSupport {
 		this.result = result;
 	}
 	
+	private TenantContext tenant;
+	public TenantContext getTenant() {
+		return tenant;
+	}
+	public void setTenant(TenantContext tenant) {
+		this.tenant = tenant;
+	}
+	
 	private List<TenantContext> tenants;
 	public List<TenantContext> getTenants() {
 		return tenants;
 	}
 	public void setTenants(List<TenantContext> tenants) {
 		this.tenants = tenants;
+	}
+	
+	private RateCardContext rateCard;
+	public RateCardContext getRateCard() {
+		return rateCard;
+	}
+	public void setRateCard(RateCardContext rateCard) {
+		this.rateCard = rateCard;
+	}
+	
+	private List<RateCardContext> rateCards;
+	public List<RateCardContext> getRateCards() {
+		return rateCards;
+	}
+	public void setRateCards(List<RateCardContext> rateCards) {
+		this.rateCards = rateCards;
 	}
 	
 	public String addTenant() throws Exception {
@@ -64,6 +81,33 @@ public class TenantAction extends ActionSupport {
 	
 	public String fetchAllTenants() throws Exception {
 		tenants = TenantsAPI.getAllTenants();
+		return SUCCESS;
+	}
+	
+	public String addRateCard() throws Exception {
+		TenantsAPI.addRateCard(rateCard);
+		return SUCCESS;
+	}
+	
+	public String updateRateCard() throws Exception {
+		TenantsAPI.updateRateCard(rateCard);
+		result = SUCCESS;
+		return SUCCESS;
+	}
+	
+	public String fetchRateCard() throws Exception {
+		rateCard = TenantsAPI.getRateCard(id);
+		return SUCCESS;
+	}
+	
+	public String deleteRateCard() throws Exception {
+		TenantsAPI.deleteRateCard(id);
+		result = SUCCESS;
+		return SUCCESS;
+	}
+	
+	public String fetchAllRateCards() throws Exception {
+		rateCards = TenantsAPI.getAllRateCards();
 		return SUCCESS;
 	}
 	

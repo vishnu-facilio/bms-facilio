@@ -3771,7 +3771,7 @@ public class FieldFactory {
 		fields.add(getNameField(module));
 		fields.add(getField("rateCardId", "RATE_CARD_ID", module, FieldType.LOOKUP));
 		fields.add(getField("serviceType", "SERVICE_TYPE", module, FieldType.NUMBER));
-		fields.add(getField("utilityId", "UTILITY_ID", module, FieldType.LOOKUP));
+		fields.add(getField("utility", "UTILITY_ID", module, FieldType.NUMBER));
 		fields.add(getField("price", "PRICE", module, FieldType.DECIMAL));
 		fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.LOOKUP));
 		
