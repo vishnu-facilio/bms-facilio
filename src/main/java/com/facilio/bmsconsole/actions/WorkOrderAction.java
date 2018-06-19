@@ -122,8 +122,6 @@ public class WorkOrderAction extends ActionSupport {
 			context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 			context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
 			context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST, getAttachmentId());
-			context.put(FacilioConstants.ContextNames.READING_RULES_LIST, getReadingRules());
-			context.put(FacilioConstants.ContextNames.ACTIONS_LIST, getActionsList());
 			
 			Command addWorkOrder = FacilioChainFactory.getAddWorkOrderChain();
 			addWorkOrder.execute(context);
@@ -165,9 +163,6 @@ public class WorkOrderAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, preventivemaintenance);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
-		context.put(FacilioConstants.ContextNames.READING_RULES_LIST, getReadingRules());
-		context.put(FacilioConstants.ContextNames.ACTIONS_LIST, getActionsList());
-
 		context.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
 
 		Chain addTemplate = FacilioChainFactory.getAddPreventiveMaintenanceChain();
@@ -346,6 +341,7 @@ public class WorkOrderAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
 		context.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
 		context.put(FacilioConstants.ContextNames.IS_UPDATE_PM, true);
+		context.put(FacilioConstants.ContextNames.DEL_READING_RULE_IDS, this.deleteReadingRulesList);
 
 		Chain updatePM = FacilioChainFactory.getUpdatePreventiveMaintenanceChain();
 		updatePM.execute(context);
@@ -389,9 +385,6 @@ public class WorkOrderAction extends ActionSupport {
 
 	@SuppressWarnings("unchecked")
 	public String preventiveMaintenanceSummary() throws Exception {
-		
-		System.out.println("----- summary");
-
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, id.get(0));
 
@@ -1132,21 +1125,13 @@ public class WorkOrderAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	private List<List<ReadingRuleContext>> readingRules;
-	public List<List<ReadingRuleContext>> getReadingRules() {
-		return readingRules;
-	}
-	public void setReadingRules(List<List<ReadingRuleContext>> readingRules) {
-		this.readingRules = readingRules;
+	private List<Long> deleteReadingRulesList;
+	public void setDeleteReadingRulesList(List<Long> deleteReadingRulesList) {
+		this.deleteReadingRulesList = deleteReadingRulesList;
 	}
 	
-	private List<List<List<ActionContext>>> actionsList;
-	public List<List<List<ActionContext>>> getActionsList() {
-		return this.actionsList;
-	}
-	
-	public void setActionsList(List<List<List<ActionContext>>> actionsList) {
-		this.actionsList = actionsList;
+	public List<Long> getDeleteReadingRulesList() {
+		return this.deleteReadingRulesList;
 	}
 
 }

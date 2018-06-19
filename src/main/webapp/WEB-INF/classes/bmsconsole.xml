@@ -1597,7 +1597,7 @@
 			method="getAssetReadings">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
-				<param name="includeProperties">readings.*,validationRules.*</param>
+				<param name="root">readings</param>
 			</result>
 		</action>
 		

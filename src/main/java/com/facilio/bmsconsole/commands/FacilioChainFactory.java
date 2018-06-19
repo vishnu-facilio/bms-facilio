@@ -297,7 +297,6 @@ public class FacilioChainFactory {
 		c.addCommand(new ValidateWorkOrderFieldsCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddWorkOrderCommand());
-		c.addCommand(new AddValidationRulesCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SLA_RULE));
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE));
@@ -561,7 +560,6 @@ public class FacilioChainFactory {
 		c.addCommand(new AddTaskOptionsCommand());
 		c.addCommand(new UpdateReadingDataMetaCommand());
 		c.addCommand(new AddTaskTicketActivityCommand());
-		c.addCommand(new AddValidationRulesCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -1498,6 +1496,7 @@ public class FacilioChainFactory {
 //		c.addCommand(new DeletePMRemindersCommand());
 		c.addCommand(new AddPMReminderCommand());
 		c.addCommand(new UpdateReadingDataMetaCommand());
+		c.addCommand(new AddValidationRulesCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -1856,7 +1855,6 @@ public class FacilioChainFactory {
 		Chain c = new TransactionChain();
 		c.addCommand(new GetCategoryReadingsCommand());
 		c.addCommand(new GetReadingFieldsCommand());
-		c.addCommand(new GetReadingRulesFromFieldsCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

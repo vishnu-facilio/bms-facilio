@@ -46,6 +46,15 @@ public class TaskAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	private boolean skipValidation;
+	public boolean getSkipValidation() {
+		return skipValidation;
+	}
+	
+	public void setSkipValidation(boolean skipValidation) {
+		this.skipValidation = skipValidation;
+	}
+	
 	private TaskSectionContext section;
 	public TaskSectionContext getSection() {
 		return section;
@@ -112,8 +121,6 @@ public class TaskAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TASK, task);
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST, getAttachmentId());
-		context.put(FacilioConstants.ContextNames.READING_RULES_LIST, getReadingRules());
-		context.put(FacilioConstants.ContextNames.ACTIONS_LIST, getActionsList());
 		
 		Chain addTask = FacilioChainFactory.getAddTaskChain();
 		addTask.execute(context);
@@ -222,6 +229,7 @@ public class TaskAction extends ActionSupport {
 			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
 			context.put(FacilioConstants.ContextNames.TASK, singleTask);
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(singleTask.getId()));
+			context.put(FacilioConstants.ContextNames.SKIP_VALIDATION, getSkipValidation());
 			Chain updateTask = FacilioChainFactory.getUpdateTaskChain();
 			try {
 				updateTask.execute(context);
@@ -403,23 +411,6 @@ public class TaskAction extends ActionSupport {
 	}
 	public void setError(Map<Long, Map<String, String>> error) {
 		this.error = error;
-	}
-	
-	private List<List<ReadingRuleContext>> readingRules;
-	public List<List<ReadingRuleContext>> getReadingRules() {
-		return readingRules;
-	}
-	public void setReadingRules(List<List<ReadingRuleContext>> readingRules) {
-		this.readingRules = readingRules;
-	}
-	
-	private List<List<List<ActionContext>>> actionsList;
-	public List<List<List<ActionContext>>> getActionsList() {
-		return this.actionsList;
-	}
-	
-	public void setActionsList(List<List<List<ActionContext>>> actionsList) {
-		this.actionsList = actionsList;
 	}
  }
 

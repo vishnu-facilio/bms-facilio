@@ -197,13 +197,11 @@ public class ReadingAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, module);
 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, getParentCategoryId());
-		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_TYPE, RuleType.VALIDATION_RULE);
 		
 		Chain getCategoryReadingChain = FacilioChainFactory.getCategoryReadingsChain();
 		getCategoryReadingChain.execute(context);
 		
 		readings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
-		setValidationRules((Map<Long, List<ReadingRuleContext>>) context.get(FacilioConstants.ContextNames.READING_RULES_LIST));
 		
 		return SUCCESS;
 	}

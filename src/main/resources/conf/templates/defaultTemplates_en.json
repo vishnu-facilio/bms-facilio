@@ -516,5 +516,17 @@
 		"subject": "Alarm Cleared",
 		"to": "",
 		"message": "The following Alarm has been cleared. \n\nReason : ${alarm.subject}\nDetails: ${alarm.description}\nStatus: ${alarm.state}\n\nPlease view the alarm here - ${alarm.url} and acknowledge it as soon as possible.\n\nRegards,\nTeam Facilio."
+	},
+	"63": {
+		"name": "INCREMENTAL_VALIDATION",
+		"message": "Reading should be incremental."
+	},
+	"64": {
+		"name": "DECREMENTAL_VALIDATION",
+		"message": "Reading should be decremental."
+	},
+	"65": {
+		"name": "SAFE_LIMIT_VALIDATION",
+		"message": "Reading should be within safe limit."
 	}
 }

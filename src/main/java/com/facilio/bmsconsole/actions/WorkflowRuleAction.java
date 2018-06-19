@@ -266,7 +266,6 @@ public class WorkflowRuleAction extends ActionSupport {
 	public String getReadingRulesMap() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.READING_FIELDS, id);
-		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_TYPE, this.ruleType);
 
 		Chain getReadingRules = FacilioChainFactory.getReadingRulesOfFieldsChain();
 		getReadingRules.execute(context);

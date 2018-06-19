@@ -521,17 +521,9 @@ public enum ActionType {
 				Object currentRecord) throws Exception {
 			if (currentRule instanceof ReadingRuleContext) {
 				ReadingRuleContext readingRule = (ReadingRuleContext) currentRule;
-				String msg = "";
+				String msg = (String) obj.get("message");
 				long fieldId = readingRule.getReadingFieldId();
-				String fieldName = readingRule.getReadingField().getDisplayName();
 				String evaluator = currentRule.getWorkflow().getResultEvaluator();
-				if("(b!=-1)&&(a<b)".equals(evaluator)) {
-					msg = fieldName+ " should be incremental.";
-				} else if("(b!=-1)&&(a>b)".equals(evaluator)) {
-					msg = fieldName+ " should be decremental.";
-				} else if("(a<b)||(a>c)".equals(evaluator)) { 
-					msg = fieldName+ " should be within safe range.";
-				}
 				throw new ReadingValidationException(fieldId, msg, evaluator);
 			}
 		}
