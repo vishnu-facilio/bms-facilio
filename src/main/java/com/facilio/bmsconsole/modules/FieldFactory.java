@@ -3723,6 +3723,61 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	public static List<FacilioField> getTenantsFields() {
+		FacilioModule module = ModuleFactory.getTenantsModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getNameField(module));
+		fields.add(getDescriptionField(module));
+		fields.add(getField("logoId", "LOGO_ID", module, FieldType.LOOKUP));
+		fields.add(getField("spaceId", "SPACE", module, FieldType.LOOKUP));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getTenantsUtilityMappingFields() {
+		FacilioModule module = ModuleFactory.getTenantsUtilityMappingModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("tenantId", "TENANT_ID", module, FieldType.LOOKUP));
+		fields.add(getField("utility", "UTILITY_ID", module, FieldType.NUMBER));
+		fields.add(getField("assetId", "ASSET_ID", module, FieldType.LOOKUP));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getRateCardFields() {
+		FacilioModule module = ModuleFactory.getRateCardModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getNameField(module));
+		fields.add(getDescriptionField(module));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getRateCardServiceFields() {
+		FacilioModule module = ModuleFactory.getRateCardServiceModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getNameField(module));
+		fields.add(getField("rateCardId", "RATE_CARD_ID", module, FieldType.LOOKUP));
+		fields.add(getField("serviceType", "SERVICE_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("utilityId", "UTILITY_ID", module, FieldType.LOOKUP));
+		fields.add(getField("price", "PRICE", module, FieldType.DECIMAL));
+		fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.LOOKUP));
+		
+		return fields;
+	}
+	
 	public static FacilioField getField(String name, String colName, FacilioModule module, FieldType type) {
 		return getField(name, null, colName, module, type);
 	}

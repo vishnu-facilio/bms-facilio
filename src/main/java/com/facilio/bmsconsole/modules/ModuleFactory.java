@@ -1005,4 +1005,36 @@ public class ModuleFactory {
 		commonJobProps.setTableName("Common_Job_Props");
 		return commonJobProps;
 	}
+	
+	public static FacilioModule getTenantsModule() {
+		FacilioModule tenants = new FacilioModule();
+		tenants.setName("tenant");
+		tenants.setDisplayName("Tenants");
+		tenants.setTableName("Tenants");
+		return tenants;
+	}
+	
+	public static FacilioModule getTenantsUtilityMappingModule() {
+		FacilioModule mapping = new FacilioModule();
+		mapping.setName("tenantsUtilityMapping");
+		mapping.setDisplayName("Tenants Utility Mapping");
+		mapping.setTableName("Tenants_Utility_Mapping");
+		return mapping;
+	}
+	
+	public static FacilioModule getRateCardModule() {
+		FacilioModule rateCard = new FacilioModule();
+		rateCard.setName("rateCard");
+		rateCard.setDisplayName("Rate Card");
+		rateCard.setTableName("Rate_Card");
+		return rateCard;
+	}
+	
+	public static FacilioModule getRateCardServiceModule() {
+		FacilioModule rateCardService = new FacilioModule();
+		rateCardService.setName("rateCardService");
+		rateCardService.setDisplayName("Rate Card Service");
+		rateCardService.setTableName("Rate_Card_Services");
+		return rateCardService;
+	}
 }
