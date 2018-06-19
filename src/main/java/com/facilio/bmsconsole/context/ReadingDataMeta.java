@@ -119,6 +119,7 @@ public class ReadingDataMeta {
 										.append(", Ttime : ").append(ttime)
 										.append(", Value : ").append(value)
 										.append(", Reading Data ID : ").append(readingDataId)
+										.append(", Unit : ").append(unit)
 										.append(", Input Type : "+inputType);
 		return builder.toString();
 	}

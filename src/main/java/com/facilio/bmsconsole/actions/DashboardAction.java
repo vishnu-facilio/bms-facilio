@@ -120,6 +120,7 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.timeseries.TimeSeriesAPI;
+import com.facilio.unitconversion.Metric;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.workflows.context.ExpressionContext;
@@ -742,11 +743,27 @@ public class DashboardAction extends ActionSupport {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioField readingField = modBean.getFieldFromDB(readingFieldId);
 				reportModule = readingField.getModule();
+				if(yAggr == 0) {
+					if(readingField instanceof NumberField) {
+						NumberField numberField = (NumberField) readingField;
+						if(numberField.getMetricEnum() != null && numberField.getMetric() == Metric.ENERGY.getMetricId()) {
+							yAggr = NumberAggregateOperator.SUM.getValue();
+						}
+						else if (readingField.getName().equals("totalEnergyConsumptionDelta")) {
+							yAggr = NumberAggregateOperator.SUM.getValue();
+						}
+						else {
+							yAggr = NumberAggregateOperator.AVERAGE.getValue();
+						}
+					}
+					else {
+						yAggr = NumberAggregateOperator.AVERAGE.getValue();
+					}
+				}
 				reportContext = constructReportObjectForReadingReport(readingField.getModule(), readingField,Long.parseLong(parentId.toString()));
 				reportData = getDataForReadings(reportContext, readingField.getModule(), dateFilter, null, baseLineId, -1);
 				reportDatas.add(reportData);
 			}
-			
 			reportData = DashboardUtil.consolidateResult(reportDatas, xAggr, yAggr);
 			return SUCCESS;
 		}

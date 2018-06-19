@@ -106,7 +106,6 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 				
 				if(metaMap != null) {
-					LOGGER.error("metaMap ---"+metaMap);
 					for(String fieldName : readingData.keySet()) {
 						FacilioField field = fieldMap.get(fieldName);
 						
@@ -114,7 +113,6 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 							LOGGER.error("before conv -- "+field.getId() +" ---- "+readingData.get(fieldName)); 
 							if(reading.getParentId() > 0  && field.getId() > 0) {
 								
-								LOGGER.error("REACHED 1");
 								String key = reading.getParentId()+"_"+field.getId();
 								LOGGER.error("key 1 --- "+key);
 								ReadingDataMeta readingDataMeta = metaMap.get(key);
