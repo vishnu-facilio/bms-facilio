@@ -18,43 +18,43 @@ public class CreateReadingModuleCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		String readingName = (String) context.get(FacilioConstants.ContextNames.READING_NAME);
-		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.MODULE_FIELD_LIST);
 		
-		if (fields == null) {
-			FacilioField field = (FacilioField) context.get(FacilioConstants.ContextNames.MODULE_FIELD);
-			if (field != null) {
-				fields = new ArrayList<>();
-				fields.add(field);
-				context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fields);
-			}
-		}
-		
-		if(readingName != null && !readingName.isEmpty() && fields != null && !fields.isEmpty()) {
-			FacilioModule module = new FacilioModule();
-			module.setName(readingName.toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
-			module.setDisplayName(readingName);
+		if(readingName != null && !readingName.isEmpty()) {
+			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.MODULE_FIELD_LIST);
 			
-			String tableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
-			if (tableName == null || tableName.isEmpty()) {
-				module.setTableName("Readings");
-			}
-			else {
-				module.setTableName(tableName);
-			}
-			module.setType((ModuleType) context.get(FacilioConstants.ContextNames.MODULE_TYPE));
-			if (module.getTypeEnum() == null) {
-				module.setType(ModuleType.READING);
+			if (fields == null) {
+				FacilioField field = (FacilioField) context.get(FacilioConstants.ContextNames.MODULE_FIELD);
+				if (field != null) {
+					fields = new ArrayList<>();
+					fields.add(field);
+					context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fields);
+				}
 			}
 			
-			Integer dataInterval = (Integer) context.get(FacilioConstants.ContextNames.MODULE_DATA_INTERVAL);
-			if (dataInterval != null) {
-				module.setDataInterval(dataInterval);
+			if (fields != null && !fields.isEmpty()) {
+				FacilioModule module = new FacilioModule();
+				module.setName(readingName.toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
+				module.setDisplayName(readingName);
+				
+				String tableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
+				if (tableName == null || tableName.isEmpty()) {
+					module.setTableName("Readings");
+				}
+				else {
+					module.setTableName(tableName);
+				}
+				module.setType((ModuleType) context.get(FacilioConstants.ContextNames.MODULE_TYPE));
+				if (module.getTypeEnum() == null) {
+					module.setType(ModuleType.READING);
+				}
+				
+				Integer dataInterval = (Integer) context.get(FacilioConstants.ContextNames.MODULE_DATA_INTERVAL);
+				if (dataInterval != null) {
+					module.setDataInterval(dataInterval);
+				}
+				context.put(FacilioConstants.ContextNames.MODULE, module);
+				fields.addAll(FieldFactory.getDefaultReadingFields(module));
 			}
-			context.put(FacilioConstants.ContextNames.MODULE, module);
-			fields.addAll(FieldFactory.getDefaultReadingFields(module));
-		}
-		else {
-			throw new IllegalArgumentException("Invalid Reading Name/ Field list during addition of Reading");
 		}
 		return false;
 	}

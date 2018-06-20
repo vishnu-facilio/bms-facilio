@@ -116,6 +116,25 @@ public class FormulaFieldContext {
 	public void setInterval(int interval) {
 		this.interval = interval;
 	}
+	
+	private String moduleName;
+	public String getModuleName() {
+		if (moduleName == null && readingField != null && readingField.getModule() != null) {
+			return readingField.getModule().getName();
+		}
+		return moduleName;
+	}
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
+	
+	private long moduleId = -1;
+	public long getModuleId() {
+		return moduleId;
+	}
+	public void setModuleId(long moduleId) {
+		this.moduleId = moduleId;
+	}
 
 	private long readingFieldId = -1;
 	public long getReadingFieldId() {
@@ -223,10 +242,11 @@ public class FormulaFieldContext {
 		}
 		return false;
 	}
-
+	
 	public enum TriggerType {
 		SCHEDULE,
-		LIVE_READING
+		POST_LIVE_READING,
+		PRE_LIVE_READING
 		;
 		
 		public int getValue() {
@@ -243,8 +263,7 @@ public class FormulaFieldContext {
 
 	public enum FormulaFieldType {
 		ENPI,
-		BEFORE_READING_FORMULA,
-		AFTER_READING_FORMULA
+		LIVE_FORMULA
 		;
 		
 		public int getValue() {
@@ -284,8 +303,6 @@ public class FormulaFieldContext {
 	public String toString() {
 		// TODO Auto-generated method stub
 		StringBuilder builder = new StringBuilder("Formula Field::")
-									.append(orgId)
-									.append("::")
 									.append(id)
 									.append("::")
 									.append(name)

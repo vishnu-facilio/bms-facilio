@@ -1,13 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
+import com.facilio.bmsconsole.context.FormulaFieldContext.TriggerType;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
@@ -15,6 +18,7 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 
 public class CreateFormulaFieldDependenciesCommand implements Command {
 
@@ -30,11 +34,21 @@ public class CreateFormulaFieldDependenciesCommand implements Command {
 			field.setDisplayType(FacilioField.FieldDisplayType.ENPI);
 			formulaField.setReadingField(field);
 			
-			context.put(FacilioConstants.ContextNames.READING_NAME, formulaField.getName());
-			context.put(FacilioConstants.ContextNames.MODULE_FIELD, formulaField.getReadingField());
-			context.put(FacilioConstants.ContextNames.MODULE_DATA_INTERVAL, getDataInterval(formulaField));
-			context.put(FacilioConstants.ContextNames.MODULE_TYPE, FormulaFieldAPI.getModuleTypeFromTrigger(formulaField.getTriggerTypeEnum()));
-			setReadingParent(formulaField, context);
+			if (formulaField.getTriggerTypeEnum() == TriggerType.PRE_LIVE_READING) {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				List<FacilioField> existingFields = modBean.getAllFields(formulaField.getModuleName());
+				List<FacilioField> newFields = Collections.singletonList(field);
+				context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, existingFields);
+				context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, newFields);
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, formulaField.getModuleName());
+			}
+			else {
+				context.put(FacilioConstants.ContextNames.READING_NAME, formulaField.getName());
+				context.put(FacilioConstants.ContextNames.MODULE_FIELD, formulaField.getReadingField());
+				context.put(FacilioConstants.ContextNames.MODULE_DATA_INTERVAL, getDataInterval(formulaField));
+				context.put(FacilioConstants.ContextNames.MODULE_TYPE, FormulaFieldAPI.getModuleTypeFromTrigger(formulaField.getTriggerTypeEnum()));
+				setReadingParent(formulaField, context);
+			}
 		}
 		return false;
 	}
@@ -55,11 +69,13 @@ public class CreateFormulaFieldDependenciesCommand implements Command {
 					default:
 						return -1;
 				}
-			case LIVE_READING:
+			case POST_LIVE_READING:
 				if (formula.getInterval() > (24 * 60)) {
 					return 24 * 60;
 				}
 				return formula.getInterval();
+			case PRE_LIVE_READING:
+				break;
 		}
 		return -1;
 	}

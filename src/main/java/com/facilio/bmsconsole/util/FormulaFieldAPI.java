@@ -131,12 +131,18 @@ public class FormulaFieldAPI {
 		}
 		
 		switch (field.getTriggerTypeEnum()) {
-			case LIVE_READING:
+			case PRE_LIVE_READING:
+				if (field.getModuleName() == null || field.getModuleName().isEmpty()) {
+					throw new IllegalArgumentException("Module Name cannot be empty for 'PRE_LIVE_READING'");
+				}
+				//Check for Workflow Fields. It should be empty
+				break;
+			case POST_LIVE_READING:
 				if (field.getInterval() == -1) {
-					throw new IllegalArgumentException("Interval cannot be empty for 'LIVE_READING' trigger type");
+					throw new IllegalArgumentException("Interval cannot be empty for 'POST_LIVE_READING' trigger type");
 				}
 				if (field.getInterval() > (24 * 60)) {
-					throw new IllegalArgumentException("Interval cannot be more than 1440 minutes (1 day) for 'LIVE_READING' trigger type");
+					throw new IllegalArgumentException("Interval cannot be more than 1440 minutes (1 day) for 'POST_LIVE_READING' trigger type");
 				}
 				break;
 			case SCHEDULE:
@@ -150,6 +156,12 @@ public class FormulaFieldAPI {
 		}
 		
 		if (checkChildIds) {
+			if (field.getModuleId() == -1) {
+				throw new IllegalArgumentException("Module ID cannot be null for FormulaField");
+			}
+			if (field.getReadingFieldId() == -1) {
+				throw new IllegalArgumentException("Reading Field ID cannot be null for FormulaField");
+			}
 			if (field.getWorkflowId() == -1) {
 				throw new IllegalArgumentException("Workflow ID cannot be null for FormulaField");
 			}
@@ -161,6 +173,7 @@ public class FormulaFieldAPI {
 		formula.setWorkflowId(workflowId);
 		formula.setWorkflow(null);
 		formula.setOrgId(AccountUtil.getCurrentOrg().getId());
+		formula.setModuleId(formula.getReadingField().getModule().getModuleId());
 		formula.setReadingFieldId(formula.getReadingField().getId());
 		formula.setReadingField(null);
 		formula.setActive(true);
@@ -296,6 +309,46 @@ public class FormulaFieldAPI {
 		return getFormulaFieldsFromProps(selectBuilder.get());
 	}
 	
+	public static Map<String, List<FormulaFieldContext>> getActivePreFormulasOfModule(Collection<String> moduleNames) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<Long> moduleIds = new ArrayList<>();
+		for (String moduleName : moduleNames) {
+			FacilioModule mod = modBean.getModule(moduleName);
+			moduleIds.add(mod.getModuleId());
+		}
+		
+		FacilioModule module = ModuleFactory.getFormulaFieldModule();
+		List<FacilioField> fields = FieldFactory.getFormulaFieldFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioField triggerTypeField = fieldMap.get("triggerType");
+		FacilioField moduleIdField = fieldMap.get("moduleId");
+		FacilioField active = fieldMap.get("active");
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCondition(triggerTypeField, String.valueOf(TriggerType.PRE_LIVE_READING.getValue()), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(active, String.valueOf(true), BooleanOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(moduleIdField, moduleIds, PickListOperators.IS))
+				;
+
+		List<FormulaFieldContext> formulas = getFormulaFieldsFromProps(selectBuilder.get());
+		if (formulas != null && !formulas.isEmpty()) {
+			Map<String, List<FormulaFieldContext>> formulaMap = new HashMap<>();
+			for (FormulaFieldContext formula : formulas) {
+				List<FormulaFieldContext> formulaList = formulaMap.get(formula.getModuleName());
+				if (formulaList == null) {
+					formulaList = new ArrayList<>();
+					formulaMap.put(formula.getModuleName(), formulaList);
+				}
+				formulaList.add(formula);
+			}
+			return formulaMap;
+		}
+		return null;
+	}
+	
 	public static void recalculateHistoricalData(long formulaId, DateRange range) throws Exception {
 		BmsJobUtil.deleteJobWithProps(formulaId, "HistoricalFormulaFieldCalculator");
 		BmsJobUtil.scheduleOneTimeJobWithProps(formulaId, "HistoricalFormulaFieldCalculator", 30, "priority", FieldUtil.getAsJSON(range));
@@ -395,6 +448,8 @@ public class FormulaFieldAPI {
 				workflowIds.add(formula.getWorkflowId());
 				fetchInclusions(formula);
 				fetchMatchedResources(formula);
+				FacilioModule module = modBean.getModule(formula.getModuleId());
+				formula.setModuleName(module.getName());
 			}
 			
 			Map<Long, WorkflowContext> workflowMap = WorkflowUtil.getWorkflowsAsMap(workflowIds, true);
@@ -564,7 +619,8 @@ public class FormulaFieldAPI {
 		switch (type) {
 			case SCHEDULE:
 				return ModuleType.SCHEDULED_FORMULA;
-			case LIVE_READING:
+			case PRE_LIVE_READING:
+			case POST_LIVE_READING:
 				return ModuleType.LIVE_FORMULA;
 			default:
 				return null;
@@ -656,7 +712,9 @@ public class FormulaFieldAPI {
 	
 	private static List<Pair<Long, Long>> getIntervals(FormulaFieldContext formula, DateRange range) {
 		switch (formula.getTriggerTypeEnum()) {
-			case LIVE_READING:
+			case PRE_LIVE_READING:
+				return null;
+			case POST_LIVE_READING:
 				return DateTimeUtil.getTimeIntervals(range.getStartTime(), range.getEndTime(), formula.getInterval());
 			case SCHEDULE:
 				ScheduleInfo schedule = FormulaFieldAPI.getSchedule(formula.getFrequencyEnum());

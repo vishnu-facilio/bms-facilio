@@ -3417,6 +3417,7 @@ public class FieldFactory {
 		fields.add(getField("triggerType", "TRIGGER_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("frequency", "FREQUENCY_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("interval", "DATA_INTERVAL", module, FieldType.NUMBER));
+		fields.add(getField("moduleId", "MODULE_ID", module, FieldType.LOOKUP));
 		fields.add(getField("readingFieldId", "READING_FIELD_ID", module, FieldType.LOOKUP));
 		fields.add(getField("resourceType", "RESOURCE_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.LOOKUP));

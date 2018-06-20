@@ -44,7 +44,9 @@ public class HistoricalFormulaFieldCalculatorJob extends FacilioJob {
 		long currentTime = DateTimeUtil.getCurrenTime();
 		DateRange range = null;
 		switch (formula.getTriggerTypeEnum()) {
-			case LIVE_READING:
+			case PRE_LIVE_READING:
+				return null;
+			case POST_LIVE_READING:
 				if (props == null || props.isEmpty()) {
 					return null;
 				}

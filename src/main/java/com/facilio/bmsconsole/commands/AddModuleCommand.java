@@ -33,9 +33,6 @@ public class AddModuleCommand implements Command {
 				modBean.addSubModule(parentModule.getModuleId(), moduleId);
 			}
 		}
-		else {
-			throw new IllegalArgumentException("No Module to Add");
-		}
 		return false;
 	}
 	

@@ -39,8 +39,8 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.time.SecondsChronoUnit;
 
-public class CalculateFormulaFieldsCommand implements Command {
-	private static final Logger LOGGER = LogManager.getLogger(CalculateFormulaFieldsCommand.class.getName());
+public class CalculatePostFormulaCommand implements Command {
+	private static final Logger LOGGER = LogManager.getLogger(CalculatePostFormulaCommand.class.getName());
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -51,7 +51,7 @@ public class CalculateFormulaFieldsCommand implements Command {
 			Collection<ReadingDataMeta> metaList = readingDataMeta.values();
 			Set<Long> fieldIds = metaList.stream().map(meta -> meta.getField().getId()).collect(Collectors.toSet());
 			
-			List<FormulaFieldContext> formulaFields = FormulaFieldAPI.getActiveFormulasDependingOnFields(TriggerType.LIVE_READING, fieldIds);
+			List<FormulaFieldContext> formulaFields = FormulaFieldAPI.getActiveFormulasDependingOnFields(TriggerType.POST_LIVE_READING, fieldIds);
 			if (formulaFields != null && !formulaFields.isEmpty()) {
 				Map<String, List<ReadingContext>> formulaMap = new HashMap<>();
 				Set<String> completedFormulas = new HashSet<>();
@@ -77,7 +77,7 @@ public class CalculateFormulaFieldsCommand implements Command {
 					addReading.execute(formulContext);
 				}
 			}
-			LOGGER.info(AccountUtil.getCurrentOrg().getId()+"::Time taken for formula calculation for modules : "+readingMap.keySet()+" is "+(System.currentTimeMillis() - processStarttime));
+			LOGGER.info(AccountUtil.getCurrentOrg().getId()+"::Time taken for post formula calculation for modules : "+readingMap.keySet()+" is "+(System.currentTimeMillis() - processStarttime));
 		}
 		
 		return false;
@@ -111,7 +111,7 @@ public class CalculateFormulaFieldsCommand implements Command {
 					FacilioField field = fieldMap.get(fieldName);
 					if (field != null && formula.getWorkflow().getDependentFieldIds().contains(field.getId())) {
 						ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(reading.getParentId(), formula.getReadingField());
-						List<Pair<Long, Long>> intervals = DateTimeUtil.getTimeIntervals(meta.getTtime()+1, System.currentTimeMillis(), formula.getInterval());
+						List<Pair<Long, Long>> intervals = DateTimeUtil.getTimeIntervals(meta.getTtime()+1000, System.currentTimeMillis(), formula.getInterval());
 						LOGGER.info("Intervals for calculation of : "+formula.getName()+" for "+reading.getParentId()+" is "+intervals);
 						long startTime = System.currentTimeMillis();
 						if (intervals.size() > 1) { //If more than one interval has to be calculated, only the last interval will be calculated here. Previous intervals will be done via scheduler
