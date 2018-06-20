@@ -210,14 +210,14 @@ public class WorkflowUtil {
 	
 	public static Object getWorkflowExpressionResult(String workflowString,Map<String,Object> paramMap, boolean ignoreNullExpressions) throws Exception {
 		WorkflowContext workflowContext = parseStringToWorkflowObject(workflowString);
-		List<ParameterContext> parameterContexts = validateAndGetParameters(workflowContext.getParameters(),paramMap);
+		List<ParameterContext> parameterContexts = validateAndGetParameters(workflowContext,paramMap);
 		workflowContext.setParameters(parameterContexts);
 		return workflowContext.executeWorkflow(ignoreNullExpressions);
 	}
 	
 	public static Map<String, Object> getExpressionResultMap(String workflowString,Map<String,Object> paramMap) throws Exception {
 		WorkflowContext workflowContext = parseStringToWorkflowObject(workflowString);
-		List<ParameterContext> parameterContexts = validateAndGetParameters(workflowContext.getParameters(),paramMap);
+		List<ParameterContext> parameterContexts = validateAndGetParameters(workflowContext,paramMap);
 		workflowContext.setParameters(parameterContexts);
 		workflowContext.executeWorkflow(true);
 		return workflowContext.getVariableResultMap();
@@ -546,14 +546,18 @@ public class WorkflowUtil {
 		return getWorkflowExpressionResult(workflowContext.getWorkflowString(),paramMap, ignoreNullExpressions);
 	}
 	
-	public static List<ParameterContext> validateAndGetParameters(List<ParameterContext> paramterContexts,Map<String,Object> paramMap) throws Exception {
+	public static List<ParameterContext> validateAndGetParameters(WorkflowContext workflowContext,Map<String,Object> paramMap) throws Exception {
 		
+		List<ParameterContext> paramterContexts = workflowContext.getParameters();
 		if(!paramterContexts.isEmpty()) {
-			if(paramMap == null || paramMap.isEmpty()) {
-				throw new Exception("No paramters match found");
-			}
-			if(paramterContexts.size() > paramMap.size()) {
-				throw new Exception("No. of arguments mismatched");
+			
+			if(!workflowContext.isIgnoreNullParams()) {
+				if(paramMap == null || paramMap.isEmpty()) {
+					throw new Exception("No paramters match found");
+				}
+				if(paramterContexts.size() > paramMap.size()) {
+					throw new Exception("No. of arguments mismatched");
+				}
 			}
 			for(ParameterContext parameterContext:paramterContexts) {
 				Object value = paramMap.get(parameterContext.getName());

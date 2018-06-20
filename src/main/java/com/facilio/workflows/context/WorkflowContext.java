@@ -40,6 +40,15 @@ public class WorkflowContext {
 	Map<String,Object> variableResultMap;
 	String resultEvaluator;
 	
+	boolean isIgnoreNullParams;
+	
+	public boolean isIgnoreNullParams() {
+		return isIgnoreNullParams;
+	}
+	public void setIgnoreNullParams(boolean isIgnoreNullParams) {
+		this.isIgnoreNullParams = isIgnoreNullParams;
+	}
+
 	boolean getDataFromCache;
 	
 
