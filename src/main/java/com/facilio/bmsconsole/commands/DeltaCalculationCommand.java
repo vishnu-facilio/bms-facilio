@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -21,6 +22,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.reports.ReportsUtil;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -54,11 +56,22 @@ public class DeltaCalculationCommand implements Command {
 				List<FacilioField> allFields= bean.getAllFields(moduleName);
 				long moduleId=bean.getModule(moduleName).getModuleId();
 				Map<String,FacilioField>  fieldMap = FieldFactory.getAsMap(allFields);
+				List<Pair<Long, FacilioField>> deltaRdmPairs = new ArrayList<>();
 				for(ReadingContext reading:readings) {
-					setDelta(fieldMap,"totalEnergyConsumption",moduleId, reading,metaMap,markedList);
-					setDelta(fieldMap,"phaseEnergyR",moduleId,reading,metaMap,markedList);
-					setDelta(fieldMap,"phaseEnergyY",moduleId,reading,metaMap,markedList);
-					setDelta(fieldMap,"phaseEnergyB",moduleId,reading,metaMap,markedList);
+					setDelta(fieldMap,"totalEnergyConsumption",moduleId, reading,metaMap,markedList, deltaRdmPairs);
+					setDelta(fieldMap,"phaseEnergyR",moduleId,reading,metaMap,markedList, deltaRdmPairs);
+					setDelta(fieldMap,"phaseEnergyY",moduleId,reading,metaMap,markedList, deltaRdmPairs);
+					setDelta(fieldMap,"phaseEnergyB",moduleId,reading,metaMap,markedList, deltaRdmPairs);
+				}
+				
+				if (!deltaRdmPairs.isEmpty()) {
+					List<ReadingDataMeta> metaList = ReadingsAPI.getReadingDataMetaList(deltaRdmPairs) ;
+					
+					for(ReadingDataMeta meta : metaList) {
+						long resourceId = meta.getResourceId();
+						long fieldId = meta.getField().getFieldId();
+						metaMap.put(resourceId+"_"+fieldId, meta);
+					}
 				}
 			}
 			context.put(FacilioConstants.ContextNames.MARKED_READINGS, markedList);
@@ -72,7 +85,7 @@ public class DeltaCalculationCommand implements Command {
 
 
 	private void setDelta(Map<String,FacilioField>  fieldMap, String fieldName,long moduleId, ReadingContext reading,Map<String, 
-			ReadingDataMeta> metaMap,List<MarkedReadingContext> markedList ) {
+			ReadingDataMeta> metaMap,List<MarkedReadingContext> markedList, List<Pair<Long, FacilioField>> deltaRdmPairs) throws Exception {
 			
 			FacilioField readingField=fieldMap.get(fieldName);
 			FieldType dataType=readingField.getDataTypeEnum();
@@ -189,7 +202,9 @@ public class DeltaCalculationCommand implements Command {
 				
 				markedList.add(getMarkedReading(reading,readingField.getFieldId(),moduleId,type,currentReading,lastReading));
 			}
-			reading.addReading(fieldName+"Delta", delta);
+			String deltaFieldName = fieldName+"Delta";
+			reading.addReading(deltaFieldName, delta);
+			deltaRdmPairs.add(Pair.of(reading.getParentId(), fieldMap.get(deltaFieldName)));
 	}
 	
 	
