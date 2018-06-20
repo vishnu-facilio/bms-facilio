@@ -52,6 +52,8 @@ public class CalculatePostFormulaCommand implements Command {
 			Set<Long> fieldIds = metaList.stream().map(meta -> meta.getField().getId()).collect(Collectors.toSet());
 			
 			List<FormulaFieldContext> formulaFields = FormulaFieldAPI.getActiveFormulasDependingOnFields(TriggerType.POST_LIVE_READING, fieldIds);
+			LOGGER.info("Post Formulas of modules : "+readingMap.keySet());
+			LOGGER.info(formulaFields);
 			if (formulaFields != null && !formulaFields.isEmpty()) {
 				Map<String, List<ReadingContext>> formulaMap = new HashMap<>();
 				Set<String> completedFormulas = new HashSet<>();

@@ -36,6 +36,8 @@ public class CalculatePreFormulaCommand implements Command {
 		if (readingMap != null && !readingMap.isEmpty()) {
 			long processStarttime = System.currentTimeMillis();
 			Map<String, List<FormulaFieldContext>> formulaMap = FormulaFieldAPI.getActivePreFormulasOfModule(readingMap.keySet());
+			LOGGER.info("Pre Formulas of modules : "+readingMap.keySet());
+			LOGGER.info(formulaMap);
 			if (formulaMap != null && !formulaMap.isEmpty()) {
 				List<Pair<Long, FacilioField>> newRdmPairs = new ArrayList<>();
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
