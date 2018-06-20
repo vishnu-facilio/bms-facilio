@@ -90,6 +90,7 @@ public class AccountUtil {
 	public static final int FEATURE_SPACE_ASSET 			= 8;
 	public static final int FEATURE_WEATHER_INTEGRATION 	= 16;
 	public static final int FEATURE_ANOMALY_DETECTOR = 32;
+	public static final int FEATURE_WIDGET_LEGENDS = 64;
 	
 	public static int getFeatureLicense() throws Exception {
 		long orgId = getCurrentOrg().getOrgId();
