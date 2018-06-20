@@ -11,7 +11,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -337,7 +336,7 @@ public class AssetsAPI {
 			if (!readings.containsKey(fieldId)) {
 				Map<String, Object> readingObj = new HashMap<>();
 				FacilioField readingField = fieldMap.get(fieldId);
-				readingObj.put("name", readingField.getDisplayName());
+				readingObj.put("field", readingField);
 				assetIds = new HashSet<Long>();
 				readingObj.put("assetIds", assetIds);
 				readings.put(fieldId, readingObj);
@@ -348,7 +347,12 @@ public class AssetsAPI {
 			assetIds.add(asset.getId());
 			categoryVsFields.put(asset.getCategory().getId(), readings);
 		}
-		Map<Long, AssetContext> assetMap = assets.stream().collect(Collectors.toMap(AssetContext::getId, Function.identity(), (prevValue, curValue) -> {return prevValue;}));
+		// Temp
+		Map<Long, Object> assetMap = new JSONObject();
+		for(AssetContext asset: assets) {
+			assetMap.put(asset.getId(), asset.getName());
+		}
+//		Map<Long, AssetContext> assetMap = assets.stream().collect(Collectors.toMap(AssetContext::getId, Function.identity(), (prevValue, curValue) -> {return prevValue;}));
 		JSONObject data = new JSONObject();
 		data.put("categoryWithFields", categoryVsFields);
 		data.put("assets", assetMap);
