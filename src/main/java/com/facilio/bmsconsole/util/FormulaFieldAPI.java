@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.xml.stream.events.EndDocument;
-
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -40,10 +38,10 @@ import com.facilio.bmsconsole.modules.DeleteRecordBuilder;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -658,7 +656,9 @@ public class FormulaFieldAPI {
 			}
 			
 			if (!readings.isEmpty()) {
-				deleteOlderData(range.getStartTime(), range.getEndTime(), formula.getMatchedResources(), formula.getReadingField().getModule().getName());
+				int deletedData = deleteOlderData(range.getStartTime(), range.getEndTime(), formula.getMatchedResources(), formula.getReadingField().getModule().getName());
+				LOGGER.info("Deleted rows for formula : "+formula.getName()+" between "+range+" is : "+deletedData);
+				LOGGER.info("Historical Data to be added for formula "+readings.size());
 				
 				FacilioContext context = new FacilioContext();
 				context.put(FacilioConstants.ContextNames.MODULE_NAME, formula.getReadingField().getModule().getName());

@@ -27,4 +27,10 @@ public class DateRange {
 	public void setEndTime(long endTime) {
 		this.endTime = endTime;
 	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return startTime+" and "+endTime;
+	}
 }
