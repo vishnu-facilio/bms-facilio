@@ -3157,27 +3157,60 @@ public class DashboardAction extends ActionSupport {
 			}
 			else if (report.getReportSpaceFilterContext() != null && report.getReportSpaceFilterContext().getSiteId() != null) {
 				
-				if(report.getReportSpaceFilterContext().getSiteId().equals(-1l)) {
+				if ("service".equalsIgnoreCase(report.getReportSpaceFilterContext().getGroupBy())) {
 					
-					List<SiteContext> sites = SpaceAPI.getAllSites();
-					if(sites != null && !sites.isEmpty()) {
-						Long siteId = sites.get(0).getId();
-						report.getReportSpaceFilterContext().setSiteId(siteId);
+					List<EnergyMeterContext> meters = DeviceAPI.getRootServiceMeters(report.getReportSpaceFilterContext().getSiteId()+"");
+					if (meters != null && meters.size() > 0) {
+						List<Long> meterIds = new ArrayList<Long>();
+						for (EnergyMeterContext meter : meters) {
+							meterIds.add(meter.getId());
+							buildingVsMeter.put(meter.getId(), meter.getPurpose().getId());
+						}
+						
+						String meterIdStr = StringUtils.join(meterIds, ",");
+						energyMeterValue = meterIdStr;
+						buildingCondition = CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", meterIdStr, NumberOperators.EQUALS);
 					}
+					
+					FacilioField groupByField = new FacilioField();
+					groupByField.setName("groupBy");
+					groupByField.setDataType(FieldType.NUMBER);
+					groupByField.setColumnName("PARENT_METER_ID");
+					groupByField.setDisplayName("Service");
+					groupByField.setModule(module);
+					fields.add(groupByField);
+					builder.groupBy("label, groupBy");
+					
+					ReportFieldContext groupByReportField = new ReportFieldContext();
+					groupByReportField.setModuleField(groupByField);
+					
+					report.setGroupByField(groupByReportField);
+					
+					report.setGroupBy(-1L);
 				}
-				Long siteId = report.getReportSpaceFilterContext().getSiteId();
-				
-				List<EnergyMeterContext> meters = DashboardUtil.getMainEnergyMeter(siteId+"");
-				
-				if (meters != null && meters.size() > 0) {
-					List<Long> meterIds = new ArrayList<Long>();
-					for (EnergyMeterContext meter : meters) {
-						meterIds.add(meter.getId());
+				else {
+					if(report.getReportSpaceFilterContext().getSiteId().equals(-1l)) {
+						
+						List<SiteContext> sites = SpaceAPI.getAllSites();
+						if(sites != null && !sites.isEmpty()) {
+							Long siteId = sites.get(0).getId();
+							report.getReportSpaceFilterContext().setSiteId(siteId);
+						}
 					}
+					Long siteId = report.getReportSpaceFilterContext().getSiteId();
 					
-					String meterIdStr = StringUtils.join(meterIds, ",");
-					energyMeterValue = meterIdStr;
-					buildingCondition = CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", meterIdStr, NumberOperators.EQUALS);
+					List<EnergyMeterContext> meters = DashboardUtil.getMainEnergyMeter(siteId+"");
+					
+					if (meters != null && meters.size() > 0) {
+						List<Long> meterIds = new ArrayList<Long>();
+						for (EnergyMeterContext meter : meters) {
+							meterIds.add(meter.getId());
+						}
+						
+						String meterIdStr = StringUtils.join(meterIds, ",");
+						energyMeterValue = meterIdStr;
+						buildingCondition = CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", meterIdStr, NumberOperators.EQUALS);
+					}
 				}
 			}
 		}
