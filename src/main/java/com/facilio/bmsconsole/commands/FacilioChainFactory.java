@@ -1503,7 +1503,6 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(new PreventiveMaintenanceSummaryCommand());
 		c.addCommand(new GetPMWorkOrders());
-		c.addCommand(new GetTaskInputDataCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
