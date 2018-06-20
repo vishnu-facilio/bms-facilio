@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.reports.ReportsUtil;
+import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
@@ -399,7 +400,7 @@ public class ReportActions extends ActionSupport {
 	{
 		BuildingContext building =SpaceAPI.getBuildingSpace(getBuildingId());
 		JSONObject buildingData=ReportsUtil.getBuildingData(building);
-		List<EnergyMeterContext> rootMeterList= DeviceAPI.getMainEnergyMeter(""+buildingId);
+		List<EnergyMeterContext> rootMeterList= DashboardUtil.getMainEnergyMeter(""+buildingId);
 
 		StringBuilder rootBuilder= new StringBuilder();
 		for(EnergyMeterContext emc : rootMeterList)
