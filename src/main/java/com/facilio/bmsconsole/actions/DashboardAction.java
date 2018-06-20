@@ -3294,7 +3294,7 @@ public class DashboardAction extends ActionSupport {
 		 			Map<String, Object> thisMap = rs.get(i);
 		 			if(thisMap!=null) {
 		 				
-		 				if ( report.getReportSpaceFilterContext() != null && (report.getReportSpaceFilterContext().getBuildingId() == null || report.getReportSpaceFilterContext().getBuildingId() <= 0) && "service".equalsIgnoreCase(report.getReportSpaceFilterContext().getGroupBy())) {
+		 				if ( report.getReportSpaceFilterContext() != null && (report.getReportSpaceFilterContext().getBuildingId() == null || report.getReportSpaceFilterContext().getBuildingId() <= 0 || report.getReportSpaceFilterContext().getSiteId() == null || report.getReportSpaceFilterContext().getSiteId() <= 0) && "service".equalsIgnoreCase(report.getReportSpaceFilterContext().getGroupBy())) {
 		 					Object xlabel = thisMap.get("label");
 		 					if(thisMap.get("dummyField") != null) {
 			 					xlabel = thisMap.get("dummyField");
