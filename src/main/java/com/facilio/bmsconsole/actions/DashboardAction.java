@@ -2856,6 +2856,16 @@ public class DashboardAction extends ActionSupport {
 			if(reportContext.getReportSpaceFilterContext() != null && reportContext.getReportSpaceFilterContext().getSpaceFilterId() != null) {
 				subBuilder.andCustomWhere(energyMeterModule.getTableName()+".PURPOSE_SPACE_ID="+reportContext.getReportSpaceFilterContext().getSpaceFilterId());
 			}
+			
+			if(reportContext.getId() == 2952l || reportContext.getId() == 2951l) {
+				subBuilder.andCustomWhere(energyMeterPurposeModule.getTableName()+".Name=\"EB Main\"");
+				subBuilder.andCustomWhere(energyMeterPurposeModule.getTableName()+".Name=\"DG Main\"");
+			}
+			if(reportContext.getId() == 1154l || reportContext.getId() == 2950l) {
+				subBuilder.andCustomWhere(energyMeterPurposeModule.getTableName()+".Name!=\"EB Main\"");
+				subBuilder.andCustomWhere(energyMeterPurposeModule.getTableName()+".Name!=\"DG Main\"");
+			}
+			
 			report.getxAxisField().getField().setDisplayName("Service");
 			report.getxAxisField().getField().setName("Service");
 		}
