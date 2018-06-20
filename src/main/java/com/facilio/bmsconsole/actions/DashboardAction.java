@@ -2858,8 +2858,7 @@ public class DashboardAction extends ActionSupport {
 			}
 			
 			if(reportContext.getId() == 2952l || reportContext.getId() == 2951l) {
-				subBuilder.andCustomWhere(energyMeterPurposeModule.getTableName()+".Name=\"EB Main\"");
-				subBuilder.andCustomWhere(energyMeterPurposeModule.getTableName()+".Name=\"DG Main\"");
+				subBuilder.andCustomWhere(energyMeterPurposeModule.getTableName()+".Name in (\"EB Main\",\"DG Main\")");
 			}
 			if(reportContext.getId() == 1154l || reportContext.getId() == 2950l) {
 				subBuilder.andCustomWhere(energyMeterPurposeModule.getTableName()+".Name!=\"EB Main\"");
