@@ -601,8 +601,8 @@ public class DateTimeUtil
 	
 	public static List<Pair<Long, Long>> getTimeIntervals(long startTime, long endTime, int minutesInterval){
 
-		startTime=removeMillisPrecision(startTime, true);
-		endTime=removeMillisPrecision(endTime, false);
+//		startTime=removeMillisPrecision(startTime, true);
+//		endTime=removeMillisPrecision(endTime, false);
 
 		long interval=minutesInterval*60*1000;
 		long modTime=startTime+interval;
