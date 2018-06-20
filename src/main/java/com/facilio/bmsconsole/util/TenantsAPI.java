@@ -255,7 +255,7 @@ public class TenantsAPI {
 	private static Map<Long, List<RateCardServiceContext>> getRateCardServicesMap (List<Long> ids) throws Exception {
 		List<Map<String, Object>> props = getRateCardServicesPropsFromRateCardIds(ids);
 		
-		if (props != null && props.isEmpty()) {
+		if (props != null && !props.isEmpty()) {
 			Map<Long, List<RateCardServiceContext>> serviceMap = new HashMap<>();
 			List<Long> workflowIds = new ArrayList<>();
 			for (Map<String, Object> prop : props) {
@@ -397,7 +397,7 @@ public class TenantsAPI {
 	}
 	
 	private static void updateChildIdsForService(RateCardServiceContext service) throws Exception {
-		if (service.getWorkflowId() == -1) {
+		if (service.getWorkflowId() == -1 && service.getWorkflow() != null) {
 			service.setWorkflowId(WorkflowUtil.addWorkflow(service.getWorkflow()));
 		}
 	}
@@ -419,6 +419,7 @@ public class TenantsAPI {
 				if (service.getPrice() == -1) {
 					throw new IllegalArgumentException("Pricee cannot be null for service type : "+RateCardServiceContext.ServiceType.UTILITY);
 				}
+				break;
 			case FORMULA:
 				if (service.getWorkflow() == null) {
 					throw new IllegalArgumentException("Workflow cannot be null for service type : "+RateCardServiceContext.ServiceType.FORMULA);

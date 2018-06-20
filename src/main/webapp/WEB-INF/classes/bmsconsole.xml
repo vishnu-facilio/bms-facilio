@@ -3207,7 +3207,7 @@
 			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
 			<param name="id">{1}</param>
 			<result name="success" type="json">
-				<param name="root">tenant</param>
+				<param name="root">rateCard</param>
 			</result>
 		</action>
 	</package>
