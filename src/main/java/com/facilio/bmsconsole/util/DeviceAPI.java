@@ -18,6 +18,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
@@ -131,6 +132,22 @@ public class DeviceAPI
 				.andCustomWhere("PARENT_ASSET_ID IS NULL")
 				.maxLevel(0);
 		return selectBuilder.get();
+	}
+	
+	public static Map<Long, Long> getMainEnergyMeterForAllBuildings() throws Exception {
+		
+		String idList = "";
+		for(BuildingContext building :SpaceAPI.getAllBuildings()) {
+			idList = idList +building.getId()+",";
+		}
+		idList = idList.substring(0, idList.length()-1);
+		
+		List<EnergyMeterContext> energyMeters = DashboardUtil.getMainEnergyMeter(idList);
+		Map <Long, Long> buildingVsMeter = new HashMap<>();
+		for(EnergyMeterContext energyMeter :energyMeters) {
+			buildingVsMeter.put(energyMeter.getPurposeSpace().getId(), energyMeter.getId());
+		}
+		return buildingVsMeter;
 	}
 	
 	//for org..

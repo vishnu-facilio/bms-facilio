@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
@@ -23,6 +24,7 @@ import com.opensymphony.xwork2.ActionSupport;
 public class PortfolioAction extends ActionSupport {
 	
 	private static final long serialVersionUID = 1L;
+	private static final Logger LOGGER = Logger.getLogger(PortfolioAction.class.getName());
 	
 	@SuppressWarnings("unchecked")
 	public String getBuildingMap() throws Exception
@@ -51,8 +53,9 @@ public class PortfolioAction extends ActionSupport {
 		long sitesCount = SpaceAPI.getSitesCount();
 		result.put("sitesCount", sitesCount);
 		
-		List<EnergyMeterContext> energyMeters= DeviceAPI.getAllMainEnergyMeters();
-		Map <Long, Long> buildingVsMeter= ReportsUtil.getBuildingVsMeter(energyMeters);
+//		List<EnergyMeterContext> energyMeters = DeviceAPI.getAllMainEnergyMeters();
+//		Map <Long, Long> buildingVsMeter = ReportsUtil.getBuildingVsMeter(energyMeters);
+		Map <Long, Long> buildingVsMeter= DeviceAPI.getMainEnergyMeterForAllBuildings();
 		String deviceList=StringUtils.join(buildingVsMeter.values(),",");
 		String buildingList=StringUtils.join(buildingVsMeter.keySet(),",");
 		List<BuildingContext> buildings=SpaceAPI.getBuildingSpace(buildingList);
@@ -66,22 +69,12 @@ public class PortfolioAction extends ActionSupport {
 		System.out.println("deviceList --- "+deviceList);
 		
 		List<Map<String, Object>> prevResult = null;
-		if(AccountUtil.getCurrentOrg().getId() == 58l) {
-			prevResult= ReportsUtil.fetchMeterData("1256",prevStartTime,previousEndTime-1,true);
-			
-			previousEndTime=prevStartTime+(1525545000000l - currentStartTime);		// may 6th value
-			
-			List<Map<String, Object>> prevResult1= ReportsUtil.fetchMeterData("14001,14011,14032,14020,14038",prevStartTime,previousEndTime-1,true);
-			
-			prevResult.addAll(prevResult1);
-		}
-		else {
-			prevResult = ReportsUtil.fetchMeterData(deviceList,prevStartTime,previousEndTime-1,true);
-		}
+		prevResult = ReportsUtil.fetchMeterData(deviceList,prevStartTime,previousEndTime-1,true);
 		
 		Map<Long,Double> prevMeterVsConsumption=ReportsUtil.getMeterVsConsumption(prevResult);
 		//going for two queries.. so that it will be easy while going for separate queries in case of caching url..
 		List<Map<String, Object>> currentResult= ReportsUtil.fetchMeterData(deviceList,currentStartTime,endTime,true);
+		LOGGER.severe("currentResult---- "+currentResult);
 		Map<Long,Double> currentMeterVsConsumption=ReportsUtil.getMeterVsConsumption(currentResult);
 		
 		int lastMonthDays= DateTimeUtil.getDaysBetween(prevStartTime,currentStartTime);//sending this month startTime as to time is excluded
@@ -97,7 +90,9 @@ public class PortfolioAction extends ActionSupport {
 			Double thisMonthKwh=currentMeterVsConsumption.get(meterId);
 			JSONObject lastMonthData = ReportsUtil.getEnergyData(lastMonthKwh,lastMonthDays);
 			buildingData.put("previousVal", lastMonthData);
+			LOGGER.severe("thisMonthKwh1 ---- "+thisMonthKwh);
 			JSONObject thisMonthData = ReportsUtil.getEnergyData(thisMonthKwh,thisMonthDays);
+			LOGGER.severe("thisMonthKwh1 ---- "+thisMonthData);
 			buildingData.put("currentVal", thisMonthData);
 			double variance= ReportsUtil.getVariance(thisMonthKwh, lastMonthKwh);
 			buildingData.put("variance", variance);
