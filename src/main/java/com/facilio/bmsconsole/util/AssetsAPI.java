@@ -293,7 +293,7 @@ public class AssetsAPI {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
+		List<FacilioField> fields = new ArrayList(modBean.getAllFields(FacilioConstants.ContextNames.ASSET));
 		FacilioModule readingsModule = ModuleFactory.getReadingDataMetaModule();
 		List<FacilioField> redingFields = FieldFactory.getReadingDataMetaFields();
 		fields.addAll(redingFields);
