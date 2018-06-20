@@ -50,6 +50,9 @@ System.out.println("Before "+testcache);
 	public static LRUCache<String, Object> getUserSessionCache() {
 		return userSessionCache;
 	}
+	public static LRUCache<String, Object> getModuleCache() {
+		return moduleCache;
+	}
 	public String toString() {
 		double hitc =  ((hitcount*100)/(hitcount+misscount) );
 
@@ -58,6 +61,8 @@ System.out.println("Before "+testcache);
 	private static LRUCache<String,Object> fieldCache = new LRUCache<String,Object>("fieldCache", 2000);
 	private static LRUCache<String,Object> modulefieldCache = new LRUCache<String,Object>("moduleFieldCache", 2000);
 	private static LRUCache<String,Object> userSessionCache = new LRUCache<String,Object>("userSessionCache", 300);
+	private static LRUCache<String,Object> moduleCache = new LRUCache<String,Object>("moduleCache", 2000);
+
     private long hitcount = 0;
     private long misscount = 1;
     // Define Node with pointers to the previous and next items and a key, value pair

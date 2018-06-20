@@ -30,13 +30,15 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 	@Override
 	public FacilioModule getModule(String moduleName) throws Exception {
 		
-		FacilioModule moduleObj = (FacilioModule) CacheUtil.get(CacheUtil.MODULE_KEY(getOrgId(), moduleName));
-		
+LRUCache modulecache = LRUCache.getModuleCache();
+		// FacilioModule moduleObj = (FacilioModule) CacheUtil.get(CacheUtil.MODULE_KEY(getOrgId(), moduleName));
+		FacilioModule moduleObj = (FacilioModule) modulecache.get(CacheUtil.MODULE_KEY(getOrgId(), moduleName));
 		if (moduleObj == null) {
 			
 			moduleObj = super.getModule(moduleName);
 			
-			CacheUtil.set(CacheUtil.MODULE_KEY(getOrgId(), moduleName), moduleObj);
+		//	CacheUtil.set(CacheUtil.MODULE_KEY(getOrgId(), moduleName), moduleObj);
+			modulecache.put(CacheUtil.MODULE_KEY(getOrgId(), moduleName), moduleObj);
 			
 			//LOGGER.log(Level.INFO, "getModule result from DB for module: "+moduleName);
 		}
@@ -48,19 +50,20 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 
 	@Override
 	public FacilioModule getModule(long moduleId) throws Exception {
-		
-		FacilioModule moduleObj = (FacilioModule) CacheUtil.get(CacheUtil.MODULE_KEY(getOrgId(), moduleId));
+		LRUCache modulecache = LRUCache.getModuleCache();
+
+		FacilioModule moduleObj = (FacilioModule) modulecache.get(CacheUtil.MODULE_KEY(getOrgId(), moduleId));
 		
 		if (moduleObj == null) {
 			
 			moduleObj = super.getModule(moduleId);
 			
-			CacheUtil.set(CacheUtil.MODULE_KEY(getOrgId(), moduleId), moduleObj);
+			modulecache.put(CacheUtil.MODULE_KEY(getOrgId(), moduleId), moduleObj);
 			
-			//LOGGER.log(Level.INFO, "getModule result from DB for module: "+moduleId);
+			LOGGER.log(Level.INFO, "getModule result from DB for module: "+moduleId);
 		}
 		else {
-			LOGGER.log(Level.INFO, "getModule result from CACHE for module: "+moduleId);
+			//LOGGER.log(Level.INFO, "getModule result from CACHE for module: "+moduleId);
 		}
 		return moduleObj;
 	}
@@ -287,5 +290,7 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 		dropFieldFromCache(f);
 		return super.deleteField(fieldId);
 	}
+	
+	
 	
 }
