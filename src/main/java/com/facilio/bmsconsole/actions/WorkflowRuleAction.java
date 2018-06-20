@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.templates.AssignmentTemplate;
 import com.facilio.bmsconsole.templates.SLATemplate;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
 import com.facilio.bmsconsole.view.SLARuleContext;
 import com.facilio.bmsconsole.workflow.ActionContext;
@@ -290,6 +291,34 @@ public class WorkflowRuleAction extends ActionSupport {
 		Chain workflowRuleType = FacilioChainFactory.getWorkflowRuleOfTypeChain();
 		workflowRuleType.execute(context);
 		workflowRuleList = (List<WorkflowRuleContext>) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST);
+		return SUCCESS;
+	}
+	
+	public String newFetchWorkflowRulesOfType() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_TYPE, ruleType);
+		
+		Chain workflowRuleType = FacilioChainFactory.fetchWorkflowRulesOfTypeChain();
+		workflowRuleType.execute(context);
+		workflowRuleList = (List<WorkflowRuleContext>) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST);
+		return SUCCESS;
+	}
+	
+	private long ruleId = -1;
+	public long getRuleId() {
+		return ruleId;
+	}
+	public void setRuleId(long ruleId) {
+		this.ruleId = ruleId;
+	}
+	public String fetchWorkflow() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ID, ruleId);
+		
+		Chain fetchWorkflowChain = FacilioChainFactory.fetchWorkflowRuleWithActionChain();
+		fetchWorkflowChain.execute(context);
+		
+		rule = (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
 		return SUCCESS;
 	}
 	

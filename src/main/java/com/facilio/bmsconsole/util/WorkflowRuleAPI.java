@@ -195,19 +195,28 @@ public class WorkflowRuleAPI {
 	}
 	
 	public static WorkflowRuleContext getWorkflowRule (long ruleId) throws Exception {
+		return getWorkflowRule(ruleId, false);
+	}	
+	public static WorkflowRuleContext getWorkflowRule (long ruleId, boolean fetchEvent) throws Exception {
+		if (ruleId <= 0) {
+			return null;
+		}
+		
 		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
-		fields.addAll(FieldFactory.getWorkflowEventFields());
 		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
-		FacilioModule eventModule = ModuleFactory.getWorkflowEventModule();
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 													.table(module.getTableName())
-													.innerJoin(eventModule.getTableName())
-													.on(module.getTableName()+".EVENT_ID = "+eventModule.getTableName()+".ID")
-													.select(fields)
 													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCondition(CriteriaAPI.getIdCondition(ruleId, module));
-		List<WorkflowRuleContext> rules = getWorkFlowsFromMapList(ruleBuilder.get(), true);
 		
+		if (fetchEvent) {
+			fields.addAll(FieldFactory.getWorkflowEventFields());
+			FacilioModule eventModule = ModuleFactory.getWorkflowEventModule();
+			ruleBuilder.innerJoin(eventModule.getTableName())
+						.on(module.getTableName()+".EVENT_ID = "+eventModule.getTableName()+".ID");
+		}
+		ruleBuilder.select(fields);
+		List<WorkflowRuleContext> rules = getWorkFlowsFromMapList(ruleBuilder.get(), fetchEvent);
 		if(rules != null && !rules.isEmpty()) {
 			return rules.get(0);
 		}

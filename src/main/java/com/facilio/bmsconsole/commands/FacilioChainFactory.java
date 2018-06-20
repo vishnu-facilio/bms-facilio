@@ -1120,11 +1120,17 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getThresholdRulesChain() {
+	public static Chain fetchWorkflowRulesOfTypeChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new GetWorkFlowOfRuleTypeCommand());
-		c.addCommand(new GetActionListForWorkflowRulesCommand());
 		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain fetchWorkflowRuleWithActionChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new FetchWorkflowRuleCommand());
+		c.addCommand(new GetActionListForWorkflowRulesCommand());
 		return c;
 	}
 	

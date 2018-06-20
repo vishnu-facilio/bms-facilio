@@ -24,6 +24,13 @@
 				<param name="root">workflowRuleList</param>
 			</result>
 		</action>
+		<action name="fetchWorkflowRules" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="newFetchWorkflowRulesOfType">
+			<param name="moduleName">setup</param>
+            <param name="permission">ASSET_SETTINGS</param>
+			<result name="success" type="json">
+				<param name="root">workflowRuleList</param>
+			</result>
+		</action>
 		<action name="runThroughFilters" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="runThroughFilters">
 			<!-- <param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param> -->
@@ -63,6 +70,14 @@
 			<param name="permission">ORG_ACCESS_ADMINISTER</param> -->
 			<result name="success" type="json">
 				<param name="includeProperties">result</param>
+			</result>
+		</action>
+		<action name="getRule" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="fetchWorkflow">
+			<!-- <param name="moduleName">setup</param>
+			<param name="permission">ORG_ACCESS_ADMINISTER</param> -->
+			<result name="success" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="root">rule</param>
 			</result>
 		</action>
 		<action name="addAssignmentRule" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="addAssignmentRule">
