@@ -118,12 +118,12 @@ public class AwsUtil
 	private static AmazonS3 AWS_S3_CLIENT = null;
 	private static AmazonRekognition AWS_REKOGNITION_CLIENT = null;
 
-	private static AWSCredentials basicCredentials = null;
-	private static AWSCredentialsProvider credentialsProvider = null;
-	private static AWSIot awsIot = null;
-	private static AmazonSQS awsSQS = null;
-	private static User user = null;
-	private static AmazonKinesis kinesis = null;
+	private static volatile AWSCredentials basicCredentials = null;
+	private static volatile AWSCredentialsProvider credentialsProvider = null;
+	private static volatile AWSIot awsIot = null;
+	private static volatile AmazonSQS awsSQS = null;
+	private static volatile User user = null;
+	private static volatile AmazonKinesis kinesis = null;
 	private static String region = null;
 	private static final Object LOCK = new Object();
 	
