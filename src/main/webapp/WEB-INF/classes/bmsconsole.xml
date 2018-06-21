@@ -510,7 +510,7 @@
 			<param name="moduleName">workorder</param>
 			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
 			<result name="success" type="json">
-				<param name="includeProperties">rowsUpdated</param>
+				<param name="includeProperties">rowsUpdated,^error.*</param>
 			</result>
 		</action>
 

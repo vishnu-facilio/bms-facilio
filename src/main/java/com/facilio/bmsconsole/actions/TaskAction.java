@@ -161,6 +161,7 @@ public class TaskAction extends ActionSupport {
 	public String updateTask() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
+		context.put(FacilioConstants.ContextNames.SKIP_VALIDATION, getSkipValidation());
 		return updateTask(context);
 	}
 	public String addTaskInput() throws Exception {
@@ -172,8 +173,17 @@ public class TaskAction extends ActionSupport {
 	private String updateTask(FacilioContext context) throws Exception {
 		context.put(FacilioConstants.ContextNames.TASK, task);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
+		Map<Long, Map<String, String>> errorMap = new HashMap<>();
 		Chain updateTask = FacilioChainFactory.getUpdateTaskChain();
-		updateTask.execute(context);
+		try {
+			updateTask.execute(context);
+		} catch (ReadingValidationException ex) {
+			Map<String, String> msgMap = new HashMap<>();
+			msgMap.put("message", ex.getMessage());
+			msgMap.put("evaluator", ex.getResultEvaluator());
+			errorMap.put(ex.getReadingFieldId(), msgMap);
+			setError(errorMap);
+		}
 		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 		return SUCCESS;
 	}

@@ -1,10 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
@@ -17,6 +21,9 @@ import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.TriggerType;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -26,10 +33,13 @@ import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.leed.context.PMTriggerContext;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.tasker.ScheduleInfo;
+import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.util.WorkflowUtil;
 
 public class PreventiveMaintenanceSummaryCommand implements Command {
 
@@ -78,13 +88,44 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 		List<TaskContext> listOfTasks = null;
 		if ( template.getTaskTemplates() != null) {
 			listOfTasks = template.getTaskTemplates().stream().map(taskTemplate -> taskTemplate.getTask()).collect(Collectors.toList());
+			fillReadingFields(listOfTasks);
 		}
-		
 		
 		WorkOrderContext workorder = template.getWorkorder();
 		Map<String, List<TaskContext>> taskMap = template.getTasks();
 		
+		List<Long> fieldIds = taskMap.entrySet().stream().map(Entry::getValue).flatMap(List::stream).map(TaskContext::getReadingFieldId).collect(Collectors.toList());
 		
+		StringJoiner j = new StringJoiner(",");
+		fieldIds.stream().forEach(f -> j.add(String.valueOf(f)));
+		
+		Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition("READING_FIELD_ID", "readingFieldId", j.toString(), NumberOperators.EQUALS));
+        criteria.addAndCondition(CriteriaAPI.getCondition("RULE_TYPE", "ruleType", String.valueOf(RuleType.VALIDATION_RULE.getIntVal()), NumberOperators.EQUALS));
+        List<ReadingRuleContext> readingRules = WorkflowRuleAPI.getReadingRules(criteria);
+        
+        if (readingRules != null && !readingRules.isEmpty()) {
+        	List<Long> workFlowIds = readingRules.stream().map(ReadingRuleContext::getWorkflowId).collect(Collectors.toList());
+            Map<Long, WorkflowContext> workflowMap = WorkflowUtil.getWorkflowsAsMap(workFlowIds, true);
+            Map<Long, List<ReadingRuleContext>> fieldVsRules = new HashMap<>();
+            
+        	for (ReadingRuleContext r:  readingRules) {
+        		if (r.getReadingFieldId() != -1) { 
+        			List<ReadingRuleContext> rules = fieldVsRules.get(r.getReadingFieldId());
+        			if (rules == null) {
+        				rules = new ArrayList<>();
+        				fieldVsRules.put(r.getReadingFieldId(), rules);
+        			}
+        			rules.add(r);
+        		}
+        		long workflowId = r.getWorkflowId();
+        		if (workflowId != -1) {
+        			r.setWorkflow(workflowMap.get(workflowId));
+        		}
+        	}
+        	taskMap.entrySet().stream().map(Entry::getValue).flatMap(List::stream).forEach(t -> t.setReadingRules(fieldVsRules.get(t.getReadingFieldId())));
+        }
+        
 		TicketAPI.loadTicketLookups(Arrays.asList(workorder));
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
@@ -100,5 +141,40 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 		context.put(FacilioConstants.ContextNames.PM_REMINDERS, reminders);
 		
 		return false;
+	}
+
+	private void fillReadingFields(List<TaskContext> listOfTasks) throws Exception {
+		if (listOfTasks != null && !listOfTasks.isEmpty()) {
+			List<Long> fieldIds = listOfTasks.stream().map(TaskContext::getReadingFieldId).collect(Collectors.toList());
+			StringJoiner j = new StringJoiner(",");
+			fieldIds.stream().forEach(f -> j.add(String.valueOf(f)));
+			
+			Criteria criteria = new Criteria();
+		    criteria.addAndCondition(CriteriaAPI.getCondition("READING_FIELD_ID", "readingFieldId", j.toString(), NumberOperators.EQUALS));
+		    criteria.addAndCondition(CriteriaAPI.getCondition("RULE_TYPE", "ruleType", String.valueOf(RuleType.VALIDATION_RULE.getIntVal()), NumberOperators.EQUALS));
+		    List<ReadingRuleContext> readingRules = WorkflowRuleAPI.getReadingRules(criteria);
+		    
+		    if (readingRules != null && !readingRules.isEmpty()) {
+		    	List<Long> workFlowIds = readingRules.stream().map(ReadingRuleContext::getWorkflowId).collect(Collectors.toList());
+		        Map<Long, WorkflowContext> workflowMap = WorkflowUtil.getWorkflowsAsMap(workFlowIds, true);
+		        Map<Long, List<ReadingRuleContext>> fieldVsRules = new HashMap<>();
+		        
+		    	for (ReadingRuleContext r:  readingRules) {
+		    		if (r.getReadingFieldId() != -1) { 
+		    			List<ReadingRuleContext> rules = fieldVsRules.get(r.getReadingFieldId());
+		    			if (rules == null) {
+		    				rules = new ArrayList<>();
+		    				fieldVsRules.put(r.getReadingFieldId(), rules);
+		    			}
+		    			rules.add(r);
+		    		}
+		    		long workflowId = r.getWorkflowId();
+		    		if (workflowId != -1) {
+		    			r.setWorkflow(workflowMap.get(workflowId));
+		    		}
+		    	}
+		    	listOfTasks.stream().forEach(t -> t.setReadingRules(fieldVsRules.get(t.getReadingFieldId())));
+		    }
+		}
 	}
 }
