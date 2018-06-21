@@ -271,28 +271,28 @@ public class ViewFactory {
 			assetView.setCriteria(criteria);
 		}
 		
-		FacilioField name = new FacilioField();
-		name.setName("name");
-		name.setColumnName("NAME");
-		name.setDataType(FieldType.STRING);
-		name.setModule(ModuleFactory.getAssetsModule());
+		FacilioField localId = new FacilioField();
+		localId.setName("localId");
+		localId.setColumnName("LOCAL_ID");
+		localId.setDataType(FieldType.NUMBER);
+		localId.setModule(ModuleFactory.getAssetsModule());
 		
-		assetView.setSortFields(Arrays.asList(new SortField(name, true)));
+		assetView.setSortFields(Arrays.asList(new SortField(localId, false)));
 		
 		return assetView;
 	}
 	
 	private static FacilioView getAllAssetsView() {
-		FacilioField name = new FacilioField();
-		name.setName("name");
-		name.setColumnName("NAME");
-		name.setDataType(FieldType.STRING);
-		name.setModule(ModuleFactory.getAssetsModule());
+		FacilioField localId = new FacilioField();
+		localId.setName("localId");
+		localId.setColumnName("LOCAL_ID");
+		localId.setDataType(FieldType.NUMBER);
+		localId.setModule(ModuleFactory.getAssetsModule());
 		
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Assets");
-		allView.setSortFields(Arrays.asList(new SortField(name, true)));
+		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
 		return allView;
 	}
 	
@@ -318,13 +318,13 @@ public class ViewFactory {
 			assetView.setCriteria(criteria);
 		}
 		
-		FacilioField name = new FacilioField();
-		name.setName("name");
-		name.setColumnName("NAME");
-		name.setDataType(FieldType.STRING);
-		name.setModule(ModuleFactory.getAssetsModule());
+		FacilioField localId = new FacilioField();
+		localId.setName("localId");
+		localId.setColumnName("LOCAL_ID");
+		localId.setDataType(FieldType.NUMBER);
+		localId.setModule(ModuleFactory.getAssetsModule());
 		
-		assetView.setSortFields(Arrays.asList(new SortField(name, true)));
+		assetView.setSortFields(Arrays.asList(new SortField(localId, false)));
 		
 		return assetView;
 	}
