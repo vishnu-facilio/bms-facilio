@@ -3168,6 +3168,15 @@ public class DashboardAction extends ActionSupport {
 				if ("service".equalsIgnoreCase(report.getReportSpaceFilterContext().getGroupBy())) {
 					
 					List<EnergyMeterContext> meters = DeviceAPI.getRootServiceMeters(report.getReportSpaceFilterContext().getSiteId()+"");
+					if(report.getId() == 2957l || report.getId() == 2795l) {
+						List<EnergyMeterContext> omitmeters = new ArrayList<>();
+						for(EnergyMeterContext meter :meters) {
+							if(meter.getPurpose().getId() == 372l || meter.getPurpose().getId() == 373l) {
+								omitmeters.add(meter);
+							}
+						}
+						meters.removeAll(omitmeters);
+					}
 					if (meters != null && meters.size() > 0) {
 						List<Long> meterIds = new ArrayList<Long>();
 						for (EnergyMeterContext meter : meters) {
