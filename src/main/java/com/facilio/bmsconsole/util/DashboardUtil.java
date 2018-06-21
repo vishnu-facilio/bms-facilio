@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -82,6 +83,7 @@ import com.facilio.workflows.context.WorkflowFieldContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Multiset;
 
 public class DashboardUtil {
 	
@@ -1791,7 +1793,16 @@ public class DashboardUtil {
 		}
 		
 		JSONArray finalRes = new JSONArray();
-		for(String StringLabel :resultMap.keys()) {
+		Multiset<String> keys = resultMap.keys();
+		
+		ArrayList<String> keys1 = new ArrayList();
+
+		for(String key:keys) {
+			keys1.add(key);
+		}
+		Collections.sort(keys1);
+		
+		for(String StringLabel :keys1) {
 			double aggr = performAggregation((List<Double>) resultMap.get(StringLabel),AggregateOperator.getAggregateOperator(yAxisAggr));
 			JSONObject result = new JSONObject();
 			result.put("label", labelMap.get(StringLabel));
