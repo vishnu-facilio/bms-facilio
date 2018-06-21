@@ -112,7 +112,7 @@ System.out.println("Before "+testcache);
 
     private void clearTenPercentile()
     {
-    	LOGGER.info("Removing ten percent for ");
+    	LOGGER.debug("Removing ten percent for "+name);
     	   long mintime = 0;
     	   long maxtime = 0;
     	   long totalcount = cache.size();
