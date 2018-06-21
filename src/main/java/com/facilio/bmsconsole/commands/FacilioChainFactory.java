@@ -9,6 +9,8 @@ import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.chain.impl.ChainBase;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.exception.AccountException;
@@ -23,8 +25,6 @@ import com.facilio.leed.commands.FetchArcAssetsCommand;
 import com.facilio.leed.commands.LeedBuildingDetailsCommand;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.transaction.FacilioTransactionManager;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
 public class FacilioChainFactory {
     private static Logger log = LogManager.getLogger(FacilioChainFactory.class.getName());
@@ -1509,6 +1509,7 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(new PreventiveMaintenanceSummaryCommand());
 		c.addCommand(new GetPMWorkOrders());
+		c.addCommand(new GetTaskInputDataCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
