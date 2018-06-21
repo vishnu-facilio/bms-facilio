@@ -3280,7 +3280,14 @@ public class DashboardAction extends ActionSupport {
 					for(String label:lables) {
 						JSONArray temp = new JSONArray();
 						Long labelDummyValue = null;
-						for(Long spaceId :energyMeterMap.keySet()) {
+						Set<Long> keys = energyMeterMap.keySet();
+						ArrayList<Long> keys1 = new ArrayList<>();
+
+						for(Long key:keys) {
+							keys1.add(key);
+						}
+						Collections.sort(keys1);
+						for(Long spaceId :keys1) {
 							Double sumValue = 0.0;  
 							List<EnergyMeterContext> energyMeterList = (List<EnergyMeterContext>) energyMeterMap.get(spaceId);
 							for(EnergyMeterContext energyMeter:energyMeterList) {
@@ -3296,7 +3303,6 @@ public class DashboardAction extends ActionSupport {
 							value.put("label", resource.getName());
 							value.put("value", sumValue);
 							temp.add(value);
-							LOGGER.severe(""+temp);
 						}
 						JSONObject temp1 = new JSONObject();
 						temp1.put("label", labelDummyValue);
