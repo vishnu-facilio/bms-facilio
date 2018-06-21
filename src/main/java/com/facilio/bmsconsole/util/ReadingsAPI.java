@@ -548,6 +548,16 @@ public class ReadingsAPI {
 		return -1;
 	}
 	
+	public static int getDataInterval(long resourceId, FacilioModule module) throws Exception {
+		ReadingContext readingContext = new ReadingContext();
+		readingContext.setParentId(resourceId);
+		readingContext.setModuleId(module.getModuleId());
+		Map<Long,FacilioModule> moduleMap = new HashMap<>();
+		moduleMap.put(module.getModuleId(), module);
+		setReadingInterval(Collections.singletonList(readingContext), moduleMap);
+		return (int) readingContext.getDatum("interval");
+	}
+	
 	public static int getDataInterval(List<WorkflowFieldContext> wFields) throws Exception {
 		return getDataInterval(null, wFields);
 	}
