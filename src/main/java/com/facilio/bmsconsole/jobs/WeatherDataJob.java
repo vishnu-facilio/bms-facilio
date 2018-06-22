@@ -10,7 +10,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.ExecuteAllWorkflowsCommand;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -24,7 +23,7 @@ import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 
 public class WeatherDataJob extends FacilioJob {
-	private static final Logger logger = LogManager.getLogger(ExecuteAllWorkflowsCommand.class.getName());
+	private static final Logger logger = LogManager.getLogger(WeatherDataJob.class.getName());
 
 	@Override
 	public void execute(JobContext jc) {

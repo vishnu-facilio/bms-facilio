@@ -83,131 +83,53 @@ public class DeltaCalculationCommand implements Command {
 		return false;
 	}
 
-
 	private void setDelta(Map<String,FacilioField>  fieldMap, String fieldName,long moduleId, ReadingContext reading,Map<String, 
-			ReadingDataMeta> metaMap,List<MarkedReadingContext> markedList, List<Pair<Long, FacilioField>> deltaRdmPairs) throws Exception {
+			ReadingDataMeta> metaMap,List<MarkedReadingContext> markedList,List<Pair<Long, FacilioField>> deltaRdmPairs ) {
 			
 			FacilioField readingField=fieldMap.get(fieldName);
 			FieldType dataType=readingField.getDataTypeEnum();
 			Object readingVal=reading.getReading(fieldName);
-			Object deltaVal=reading.getReading(fieldName+"Delta");
-			FacilioField deltaField = fieldMap.get(fieldName+"Delta");
-			if( deltaVal!=null) {// delta already set in reading
+			String deltaFieldName = fieldName+"Delta";
+			Object deltaVal=reading.getReading(deltaFieldName);
+
+			if( deltaVal!=null || readingVal==null) {// delta already set in reading or reading is null..
 				return;
 			}
 			
-			long currentTimestamp=reading.getTtime();
 			long resourceId=reading.getParentId();
 			
-			ReadingDataMeta consumptionMeta = metaMap.get(resourceId+"_"+readingField.getFieldId());
+			long energyFieldId= readingField.getFieldId();
+			ReadingDataMeta consumptionMeta = metaMap.get(resourceId+"_"+energyFieldId);
 			if(consumptionMeta == null) {
 				return;
 			}
 			
 			Double lastReading = (Double) consumptionMeta.getValue(); 
-			Long lastTimestamp = consumptionMeta.getTtime();
-			if(lastReading == null || lastTimestamp == null) {
+			if(lastReading == null) {
 				return;
 			}
-			
-			if(currentTimestamp < lastTimestamp)  {
-				//timestamp check .. for ignoring historical data..
-				return;
-			}
-			ReadingDataMeta deltaMeta = metaMap.get(resourceId+"_"+deltaField.getFieldId());
-			Double lastDeltaReading = null;
-			Long lastDeltaTimestamp = null;
-			if(deltaMeta != null) {
-				lastDeltaReading = (Double) deltaMeta.getValue();
-				lastDeltaTimestamp = deltaMeta.getTtime();
-			}
-			
-			double delta = 0;
-			if(lastReading == -1 && readingVal != null) {
-				//lastReading  check.. for very first reading 
-				reading.addReading(fieldName+"Delta", delta);
-				return;
-			}
-			double lastDelta = 0;
-			if(lastDeltaReading != null) {
-				lastDelta = lastDeltaReading;
-				lastDelta = ReportsUtil.roundOff(lastDelta, 4);
-			}
-			long dataInterval = 15 * 60 * 1000;//this we should get from jace interval from org settings in future
-			long rearmInterval = 1 * 60 * 1000;//this is an adjuster to consider little above than the given range..
-			double leastMargin = 50;// this is the least value above which the delta rule can be considered..
-			MarkType type = MarkType.DECREMENTAL_VALUE;
-			
 			Double currentReading = (Double) FieldUtil.castOrParseValueAsPerType(dataType, readingVal);
-			if(currentReading == null) {
-				currentReading = new Double(0);//if the reading is null.. setting the reading as zero, to set the delta properly..
-			}
 			
-			if(currentReading>=lastReading) { // this check ensures incremental & same reading scenario
-				delta=currentReading-lastReading;
-				delta=ReportsUtil.roundOff(delta, 4);
-				
-				if(delta>=leastMargin && lastDelta>=leastMargin) { 
-					//if current delta or lastDelta  is zero or smaller value no point in coming here..
-					
-					long timeDiff=currentTimestamp-lastDeltaTimestamp;
-					if(timeDiff <=(dataInterval+rearmInterval)) {
-						
-						//if the time diff is less than or equals dataInterval+ adjuster range minutes we can check the below rule..
-						if(delta >= 10*lastDelta) {
-							//too high.. need to be marked & reading reset also done..
-							// do we really need resetting here or just notify them??
-							reading.addReading(fieldName, lastReading);
-							delta=0;
-							type=MarkType.TOO_HIGH_VALUE;
-							markedList.add(getMarkedReading(reading,readingField.getFieldId(),moduleId, type, currentReading,lastReading));
-						}
-						else if (delta >= 2*lastDelta) {
-							//bit high.. only marking done but reading reset not done..
-							type=MarkType.HIGH_VALUE;
-							markedList.add(getMarkedReading(reading,readingField.getFieldId(),moduleId,type, currentReading,currentReading));
-						}
-
-						//need to think of any other rules here..
-					}
-					else {
-						//this means missing reading scenario..i.e reading coming after long interval.. 
-
-						if (delta >= 2 * lastDelta) {
-							if(timeDiff <= 86400000) { 
-								//missing records for 24 hrs or less..
-								//then this reading spike need not be considered for per day graphs i.e hourly plots for a day..
-								type=MarkType.HIGH_VALUE_HOURLY_VIOLATION;
-							}
-							else {
-								//missing records for more than 24 hrs .. 
-								//then this reading spike need not be considered for monthly graphs i.e  day plots for a month..
-								type=MarkType.HIGH_VALUE_DAILY_VIOLATION;
-							}
-							markedList.add(getMarkedReading(reading,readingField.getFieldId(),moduleId,type, currentReading,currentReading));
-						}
-						
-					}
-				}
-			}
-			else {//here current reading equals zero or lesser than last reading scenario..
-
+			
+			MarkType type = MarkType.NEGATIVE_VALUE;
+			if(currentReading<=0) {
 				reading.addReading(fieldName, lastReading);
 				if(currentReading == 0) {
 					type=MarkType.ZERO_VALUE;
 				}
-				else if(currentReading<0) {
-					type=MarkType.NEGATIVE_VALUE;
-				}
-				
-				markedList.add(getMarkedReading(reading,readingField.getFieldId(),moduleId,type,currentReading,lastReading));
+				markedList.add(getMarkedReading(reading,energyFieldId,moduleId,type,currentReading,lastReading));
+				currentReading=lastReading;
 			}
-			String deltaFieldName = fieldName+"Delta";
-			reading.addReading(deltaFieldName, delta);
+			else if(currentReading<lastReading) {
+				type=MarkType.DECREMENTAL_VALUE;
+				long deltaFieldId=fieldMap.get(deltaFieldName).getFieldId();
+				markedList.add(getMarkedReading(reading,deltaFieldId,moduleId,type,currentReading,lastReading));
+			}
+			Double delta= currentReading-lastReading;
+			reading.addReading(deltaFieldName, ReportsUtil.roundOff(delta,4));
 			deltaRdmPairs.add(Pair.of(reading.getParentId(), fieldMap.get(deltaFieldName)));
 	}
-	
-	
+
 	private MarkedReadingContext getMarkedReading(ReadingContext reading,long fieldId,long moduleId, MarkType markType, Object currentReading, Object lastReading) {
 		
 		MarkedReadingContext mReading= new MarkedReadingContext();
