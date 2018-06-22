@@ -91,7 +91,7 @@ public class ColumnFactory {
 
 		FacilioField localId = new FacilioField();
 		localId.setName("localId");
-		localId.setColumnName("Local_ID");
+		localId.setColumnName("LOCAL_ID");
 		localId.setDataType(FieldType.NUMBER);
 		localId.setModule(ModuleFactory.getAssetsModule());
 		
