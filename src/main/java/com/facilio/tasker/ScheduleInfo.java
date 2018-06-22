@@ -155,7 +155,7 @@ public class ScheduleInfo {
 					throw new IllegalArgumentException("Invalid value range of Days of Week");
 				}
 				
-				if(zdt.toLocalTime().isAfter(times.get(times.size() - 1))) {
+				if(zdt.toLocalTime().isAfter(times.get(times.size() - 1).plusSeconds(1))) {
 					zdt = zdt.with(LocalTime.of(0, 0)).plusDays(1);
 				}
 				
@@ -175,7 +175,7 @@ public class ScheduleInfo {
 				}
 				addAndSortValue(zdt.getDayOfWeek().getValue());
 				
-				while(!values.contains(zdt.getDayOfWeek().getValue()) || zdt.toLocalTime().isAfter(times.get(times.size() - 1))) {
+				while(!values.contains(zdt.getDayOfWeek().getValue()) || zdt.toLocalTime().isAfter(times.get(times.size() - 1).plusSeconds(1))) {
 					zdt = zdt.with(LocalTime.of(0, 0)).plusDays(1);
 				}
 				nextZdt = compareHourAndMinute(zdt);
@@ -201,7 +201,7 @@ public class ScheduleInfo {
 				}
 				addAndSortValue(zdt.getDayOfMonth());
 
-				while(!values.contains(zdt.getDayOfMonth()) || zdt.toLocalTime().isAfter(times.get(times.size() - 1))) {
+				while(!values.contains(zdt.getDayOfMonth()) || zdt.toLocalTime().isAfter(times.get(times.size() - 1).plusSeconds(1))) {
 					zdt = zdt.with(LocalTime.of(0, 0)).plusDays(1);
 				}
 				nextZdt = compareHourAndMinute(zdt);
@@ -250,7 +250,7 @@ public class ScheduleInfo {
 				}
 				
 				addAndSortValue(zdt.getDayOfWeek().getValue());
-				if(!values.contains(zdt.getDayOfWeek().getValue()) || !checkWeekOfMonth(zdt) || zdt.toLocalTime().isAfter(times.get(times.size() - 1))) {
+				if(!values.contains(zdt.getDayOfWeek().getValue()) || !checkWeekOfMonth(zdt) || zdt.toLocalTime().isAfter(times.get(times.size() - 1).plusSeconds(1))) {
 					zdt = firstMonthlyWeek(zdt, 1);
 				}
 				nextZdt = compareHourAndMinute(zdt);
@@ -264,7 +264,7 @@ public class ScheduleInfo {
 					throw new IllegalArgumentException("Invalid value range of Months");
 				}
 				addAndSortValue(zdt.getMonthValue());
-				if(!values.contains(zdt.getMonthValue()) || (yearlyDayValue != -1 && yearlyDayValue <= zdt.getDayOfMonth()) || zdt.toLocalTime().isAfter(times.get(times.size() - 1))) {
+				if(!values.contains(zdt.getMonthValue()) || (yearlyDayValue != -1 && yearlyDayValue < zdt.getDayOfMonth()) || zdt.toLocalTime().isAfter(times.get(times.size() - 1).plusSeconds(1))) {
 					zdt = incrementYear(zdt, 1);
 				}
 				nextZdt = compareHourAndMinute(zdt);
@@ -374,6 +374,9 @@ public class ScheduleInfo {
 		
 		if(increaseYear) {
 			newZdt = zdt.with(LocalTime.of(0, 0)).plusYears(frequency).withMonth(values.get(0));
+			if (yearlyDayValue != -1) {
+				newZdt = newZdt.withDayOfMonth(yearlyDayValue);
+			}
 		}
 		return newZdt;
 	}
