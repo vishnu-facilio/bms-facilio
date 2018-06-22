@@ -60,6 +60,8 @@ public class FacilioExceptionProcessor extends TimerTask {
             for (Message msg : messageList) {
                 FAWSQueue.deleteMessage(QUEUE, msg.getReceiptHandle());
             }
+            EXCEPTION_MESSAGES.clear();
+            EXCEPTION_COUNT.clear();
         }
     }
 }
