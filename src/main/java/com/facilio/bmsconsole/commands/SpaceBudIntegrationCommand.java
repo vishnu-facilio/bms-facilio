@@ -28,7 +28,8 @@ public class SpaceBudIntegrationCommand implements Command {
 	{
 		public Attribute(String meterid,Object reading)
 		{
-			super.put(meterid,reading);
+			super.put("meter_id",meterid);
+			super.put("meter_reading",reading);
 		}
 	}
 	@SuppressWarnings("unchecked")
@@ -173,9 +174,14 @@ public class SpaceBudIntegrationCommand implements Command {
 						else if (reading.getParentId() == 2346 && reading.getReading("totalEnergyConsumptionDelta") != null) {
 							attributes.add(new Attribute("EM_1003B_EB_KWH", reading.getReading("totalEnergyConsumptionDelta")));
 						}
+					
+
 					} // end of for loop
-					eventInfo.put("attributes", attributes);
-					eventInfo.put("eventInfo", eventInfo);
+					eventInfo.put("attributes", attributes); // List of meters for energy consumption
+					JSONArray eventinfoarray = new JSONArray();
+					eventinfoarray.add(eventInfo);
+					postdata.put("eventInfo", eventinfoarray); // eventInfo always array of one element
+					postdata.put("timestamp", System.currentTimeMillis()); 
 				}
 				logger.log(Level.INFO, "SpaceBudIntegrationCommand POST content " + postdata.toJSONString());
 				if (!postdata.isEmpty()) {
