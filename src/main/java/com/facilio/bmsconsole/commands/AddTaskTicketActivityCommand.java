@@ -80,7 +80,24 @@ public class AddTaskTicketActivityCommand implements Command {
 			newTicketProps.remove("id");
 			List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 			boolean bulkAction = (boolean) context.get(FacilioConstants.ContextNames.IS_BULK_ACTION);
-			if (recordIds != null && !recordIds.isEmpty() && !bulkAction) {
+			if(bulkAction == true) {
+				TicketActivity activity = new TicketActivity();
+				long parentTicketId = (long) context.get(FacilioConstants.ContextNames.PARENT_ID);
+				activity.setTicketId(parentTicketId);
+				activity.setModifiedTime((long) context.get(FacilioConstants.TicketActivity.MODIFIED_TIME));
+				activity.setModifiedBy((long) context.get(FacilioConstants.TicketActivity.MODIFIED_USER));
+				activity.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+				activity.setActivityType(ActivityType.CLOSE_ALL_TASK);
+				JSONObject info = new JSONObject();
+				JSONArray updatedFields = new JSONArray();
+				JSONObject taskJson = new JSONObject();
+				info.put("taskIds", recordIds);
+				info.put("task", taskJson);
+				info.put("updatedFields", updatedFields);
+				activity.setInfo(info);
+				insertActivityBuilder.addRecord(FieldUtil.getAsProperties(activity));
+			}
+			else if (recordIds != null && !recordIds.isEmpty()) {
 				for (Long recordId : recordIds) {
 					TaskContext oldTask = oldTicketMap.get(recordId);
 					TicketActivity activity = new TicketActivity();
@@ -139,23 +156,6 @@ public class AddTaskTicketActivityCommand implements Command {
 					activity.setInfo(info);
 					insertActivityBuilder.addRecord(FieldUtil.getAsProperties(activity));
 				}
-			}
-			else {
-				TicketActivity activity = new TicketActivity();
-				long parentTicketId = (long) context.get(FacilioConstants.ContextNames.PARENT_ID);
-				activity.setTicketId(parentTicketId);
-				activity.setModifiedTime((long) context.get(FacilioConstants.TicketActivity.MODIFIED_TIME));
-				activity.setModifiedBy((long) context.get(FacilioConstants.TicketActivity.MODIFIED_USER));
-				activity.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-				activity.setActivityType(ActivityType.CLOSE_ALL_TASK);
-				JSONObject info = new JSONObject();
-				JSONArray updatedFields = new JSONArray();
-				JSONObject taskJson = new JSONObject();
-				info.put("taskIds", recordIds);
-				info.put("task", taskJson);
-				info.put("updatedFields", updatedFields);
-				activity.setInfo(info);
-				insertActivityBuilder.addRecord(FieldUtil.getAsProperties(activity));
 			}
 		}
 		else {
