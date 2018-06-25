@@ -24,5 +24,8 @@
     "gulp-s3-upload": "^1.6.4",
     "gulp-uglify": "^3.0.0",
     "gulp-util": "^3.0.8"
+  },
+  "dependencies": {
+    "vue2-editor": "^2.5.0"
   }
 }

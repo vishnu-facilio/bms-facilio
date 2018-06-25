@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,15 +16,30 @@ import org.apache.commons.chain.Command;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
+import com.chargebee.*;
+import com.chargebee.filters.enums.SortOrder;
+import com.chargebee.models.*;
+import com.chargebee.models.enums.*;
+
+import com.chargebee.Environment;
+import com.chargebee.ListResult;
+import com.chargebee.filters.enums.SortOrder;
+import com.chargebee.models.Card;
+import com.chargebee.models.Customer;
+import com.chargebee.models.Subscription;
 import com.facilio.accounts.dto.GroupMember;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
 import com.facilio.accounts.exception.AccountException;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.SetupLayout;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
@@ -275,7 +291,98 @@ public class UserAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	private JSONObject content;
+	
+	public void setContent(JSONObject content) {
+		this.content = content;
+	}
+	
+	public JSONObject getContent() {
+		return this.content;
+	}
+	
+	private JSONObject subscription;
+	
+	public void setSubscription(JSONObject subscription) {
+		this.subscription = subscription;
+	}
+	
+	public JSONObject getSubscription() {
+		return this.subscription;
+	}
+	
+	public String subscriptionInfo() throws Exception
+	{
+//		HashMap<String, Object> cus = (HashMap<String, Object>) this.getContent().get("customer");
+//		String cusEmail = (String) cus.get("email");
+		long orgId = AccountUtil.getCurrentOrg().getId();
+        try{
+			
+		String site = AwsUtil.getConfig("chargebee.site");
+		String api =  AwsUtil.getConfig("chargebee.api"); 
+		
+		Environment.configure(site, api);
+		
+		Map<String, Object> cusid = CommonCommandUtil.getOrgInfo(orgId, "Customer_id");
+		System.out.println("*****************customer  ID *********************" +cusid);
+		ListResult result = Subscription.list()
+                          .limit(5)
+                          .customerId().is((String) cusid.get("value"))
+                          //.status().is(Subscription.Status.ACTIVE)
+                          .sortByCreatedAt(SortOrder.ASC).request();
+    for(ListResult.Entry entry:result){
+      Subscription subscription = entry.subscription();
+      Customer customer = entry.customer();
+      Card card = entry.card();
+      
+      JSONObject sub = (JSONObject) new JSONParser().parse(subscription.toJson());
+      JSONObject cus = (JSONObject) new JSONParser().parse(customer.toJson());
+      JSONObject crd = (JSONObject) new JSONParser().parse(card.toJson());
+       
+      this.subscription = new JSONObject();
+      this.subscription.put("subscription", sub);
+      this.subscription.put("customer", cus);
+      this.subscription.put("card", crd);
+    }
+    System.out.println("*****************Subscription Info *********************");
+   
+    System.out.println(result);
+        }
+	catch (Exception e){
+		e.printStackTrace();
+	}
+    return SUCCESS;
+	}
+
+	
+  private JSONObject card;
+  
+  public String updateCard() throws Exception{
+	  String site = AwsUtil.getConfig("chargebee.site");
+		String api =  AwsUtil.getConfig("chargebee.api"); 
+		long orgId = AccountUtil.getCurrentOrg().getId();
+		Map<String, Object> cusid = CommonCommandUtil.getOrgInfo(orgId, "Customer_id");
+    Environment.configure("payfacilio-test","test_AcdMBlnceZzwYhGeAX6dkxzocvglIkJjL");
+    System.out.println((String) card.get("firstName"));
+    Result result = Card.updateCardForCustomer((String) cusid.get("value"))
+                      .gateway(Gateway.CHARGEBEE)
+                      .firstName((String) card.get("firstName"))
+                      .lastName((String) card.get("lastName"))	
+                      .number((String) card.get("cardNumber"))
+                      .expiryMonth((Integer.parseInt(card.get("expiryMonth").toString())))
+                      .expiryYear((Integer.parseInt(card.get("expiryYear").toString())))
+                      .cvv((String) card.get("cvv")).request();
+    Customer customer = result.customer();
+    Card card = result.card();
+    System.out.println(result);
+    return null;
+  }
+
+            
+	
 	public String updateMyProfile() throws Exception{
+		System.out.println("***************** calling Subscription Info *********************");
+		subscriptionInfo();
 		System.out.println("!@@!@!@!!!!!!!!!!! user"+user);
 		boolean status = AccountUtil.getUserBean().updateUser(AccountUtil.getCurrentUser().getId(), user);
 		
@@ -409,6 +516,14 @@ public class UserAction extends ActionSupport {
 	private String result;
 	public String getResult() {
 		return result;
+	}
+
+	public JSONObject getCard() {
+		return card;
+	}
+
+	public void setCard(JSONObject card) {
+		this.card = card;
 	}
 	
 }

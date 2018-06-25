@@ -1,6 +1,7 @@
 package com.facilio.integration.actions;
 
 import java.security.MessageDigest;
+
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -19,11 +20,14 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
+import java.io.IOException;
+
 
 import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.actions.LoginAction;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -560,9 +564,16 @@ Pragma: no-cache
 		// Org id details through the customer email 
 		HashMap<String, Object> customer = (HashMap<String, Object>) this.getContent().get("customer");
 		String customerEmail = (String) customer.get("email");
+		String customerId = (String) customer.get("id");
+		
+		String isPlanRequest = "false";
+
+		System.out.println("**************customer Email" +customerEmail);
+		
 		long orgId = 0;
         try{
-        	User userObj = AccountUtil.getUserBean().getUser(customerEmail);
+        	
+        	User userObj = AccountUtil.getUserBean().getFacilioUser(customerEmail);
         	orgId = userObj.getOrgId();
 		}
 		catch (Exception e) {
@@ -572,13 +583,17 @@ Pragma: no-cache
 			HashMap<String, Object> subscription = (HashMap<String, Object>) this.getContent().get("subscription");
 			String PlanId = (String) subscription.get("plan_id");
 		try {
+				CommonCommandUtil.insertOrgInfo(orgId, "isPlanRequest", isPlanRequest);
+				CommonCommandUtil.insertOrgInfo(orgId, "Customer_id", customerId);
 				CommonCommandUtil.insertOrgInfo(orgId,"Plan_id",PlanId);
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			log.info("Exception occurred ", e1);
 		}
 		ArrayList<?> addons = (ArrayList<?>) subscription.get("addons");
-			for (int i = 0; i < addons.size(); i++) {
+		if (addons!= null)	
+		{
+		for (int i = 0; i < addons.size(); i++) {
 				HashMap<String, Object> addon = (HashMap<String, Object>) addons.get(i);
 				String Name = (String) addon.get("id");
 				if (Name.equals("staff-basic") || Name.equals("staff-professional")){
@@ -598,6 +613,7 @@ Pragma: no-cache
 				log.info("Exception occurred ", e);
 			}
 			
+		}
 		}
 
 		return SUCCESS;

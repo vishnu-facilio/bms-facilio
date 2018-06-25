@@ -265,9 +265,9 @@ public class CognitoUtil {
 			
 			if (!isPortalUser) {
 				String email = faciliouser.getEmail();
-				String sessionVerify = AwsUtil.getConfig("enable.sessionverify");
-				if (sessionVerify != null) {
-					if (Arrays.asList(sessionVerify.split(",")).contains(email)) {
+//				String sessionVerify = AwsUtil.getConfig("enable.sessionverify");
+//			if (sessionVerify != null) {
+//					if (Arrays.asList(sessionVerify.split(",")).contains(email)) {
 						if (AccountUtil.getUserBean().verifyUserSession(faciliouser.getEmail(), idToken)) {
 							return faciliouser;
 						}
@@ -276,8 +276,8 @@ public class CognitoUtil {
 							return null;
 						}
 					}
-				}
-			}
+//				}
+//			}
 			return faciliouser;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

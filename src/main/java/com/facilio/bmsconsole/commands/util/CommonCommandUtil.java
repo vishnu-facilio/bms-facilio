@@ -324,7 +324,6 @@ public class CommonCommandUtil {
 		    
 		}
 	}
-	
     public static Map<String, Object> getOrgInfo(long orgId, String name) throws Exception {
     	
     	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
