@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
 
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountConstants.ModulePermission;
@@ -14,7 +15,6 @@ import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.constants.FacilioConstants;
-import org.apache.log4j.LogManager;
 
 public class Role {
 	

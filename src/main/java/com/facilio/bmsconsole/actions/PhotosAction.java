@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
+import org.apache.log4j.LogManager;
 
 import com.amazonaws.services.rekognition.model.TextDetection;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -13,7 +14,6 @@ import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
-import org.apache.log4j.LogManager;
 
 public class PhotosAction extends ActionSupport {
 

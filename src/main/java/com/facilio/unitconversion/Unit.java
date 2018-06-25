@@ -8,12 +8,12 @@ import java.util.Map;
 
 public enum Unit {
 	
-	// last id -- 76
+	// last id -- 78
 	
 	KWH(1,"Kilo Watt Hour","kWh",Metric.ENERGY),
 	HECTOWH(76,"Hecto Watt Hour","hWh",Metric.ENERGY,"si*10","this/10"),
 	WH(2,"Watt Hour","Wh",Metric.ENERGY,"si*1000","this/1000"),
-	MWH(3,"Mega Watt Hour","mWh",Metric.ENERGY,"si/1000000","this*1000000"),
+	MWH(3,"Mega Watt Hour","mWh",Metric.ENERGY,"si/1000","this*1000"),
 	
 	CELSIUS(4,"Celsius","&deg;C",Metric.TEMPERATURE),
 	FAHRENHEIT(5,"Fahrenheit","&deg;F",Metric.TEMPERATURE,"(si*1.8)+32","(this-32)/1.8"),
@@ -63,10 +63,10 @@ public enum Unit {
 	MEGAAMPERE(45,"Mega Ampere","MA",Metric.CURRENT,"si/1000000","this*1000000"),
 	
 	KILOWATT(46,"Kilo Watt","kW",Metric.POWER),
-	MILLIWATT(47,"Milli Watt","mW",Metric.POWER,"si*1000","this/1000"),
-	MICROWATT(48,"Micro Watt","&#x3BC;W",Metric.POWER,"si*1000000","this/1000000"),
+	MILLIWATT(47,"Milli Watt","mW",Metric.POWER,"si*1000000","this/1000000"),
+	MICROWATT(48,"Micro Watt","&#x3BC;W",Metric.POWER,"si*1000000000","this/1000000000"),
 	WATT(49,"Watt","W",Metric.POWER,"si*1000","this/1000"),
-	MEGAWATT(50,"Mega Watt","MW",Metric.POWER,"si/1000000","this*1000000"),
+	MEGAWATT(50,"Mega Watt","MW",Metric.POWER,"si/1000","this*1000"),
 	
 	HERTZ(51,"Hertz","Hz",Metric.FREQUENCY),
 	MILLIHERTZ(52,"Milli Hertz","mHz",Metric.FREQUENCY,"si*1000","this/1000"),
@@ -95,10 +95,13 @@ public enum Unit {
 	
 	LITRE(70,"Litre","l",Metric.LIQUID),
 	MILILITRE(71,"Mili Litre","ml",Metric.LIQUID,"si*1000","this/1000"),
+	DECALITRE(77,"Deca Litre","dl",Metric.LIQUID,"si/10","this*10"),
+	KILOLITRE(78,"Kilo Litre","kl",Metric.LIQUID,"si/1000","this*1000"),
 	CUBICFOOT(72,"Cubic Foot","ft<sup>3</sup>",Metric.LIQUID,"si/28.3168","this*28.3168"),
 	CUBICINCH(73,"Cubic Inch","in<sup>3</sup>",Metric.LIQUID,"si*61.0237","this/61.0237"),
 	USGALLON(74,"US Gallon","G",Metric.LIQUID,"si/3.78541","this*3.78541"),
 	IMPERIALGALLON(75,"Imperial Gallon","G",Metric.LIQUID,"si/4.54609","this*4.54609"),
+	
 	;
 	
 	int unitId;

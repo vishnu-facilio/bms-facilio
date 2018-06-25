@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
+import org.apache.log4j.LogManager;
 
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
@@ -29,7 +30,6 @@ import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
-import org.apache.log4j.LogManager;
 
 public class SetupActions<T> extends ActionSupport {
 

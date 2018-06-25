@@ -1,8 +1,5 @@
 package com.facilio.transaction;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -15,6 +12,9 @@ import javax.transaction.Synchronization;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.xa.XAResource;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class FacilioTransaction implements Transaction {
 

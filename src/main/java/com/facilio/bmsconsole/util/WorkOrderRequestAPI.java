@@ -5,9 +5,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.apache.log4j.LogManager;
+
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
-import org.apache.log4j.LogManager;
 
 public class WorkOrderRequestAPI {
 	

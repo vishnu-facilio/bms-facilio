@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -15,8 +17,6 @@ import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.opensymphony.xwork2.ActionSupport;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
 public class AttachmentAction  extends ActionSupport {
 

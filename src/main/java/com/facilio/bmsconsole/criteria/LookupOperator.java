@@ -5,13 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.accounts.util.AccountUtil;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.fw.BeanFactory;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
 public enum LookupOperator implements Operator<Criteria> {
 

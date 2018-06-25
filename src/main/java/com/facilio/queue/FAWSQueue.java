@@ -1,13 +1,13 @@
 package com.facilio.queue;
 
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.model.GetQueueUrlResult;
 import com.amazonaws.services.sqs.model.Message;
 import com.amazonaws.services.sqs.model.ReceiveMessageResult;
 import com.facilio.aws.util.AwsUtil;
-
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class FAWSQueue {
 

@@ -485,7 +485,23 @@
 			<result name="success" type="json">
 			</result>
 		</action>
-		
+				
+		<action name="subscription" class="com.facilio.bmsconsole.actions.UserAction"
+			method="subscriptionInfo">
+			<param name="moduleName">setup</param>
+			<param name="permission">USER_MANAGEMENT</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^subscription.*</param>
+			</result>
+		</action>
+		<action name="updatecard" class="com.facilio.bmsconsole.actions.UserAction"
+			method="updateCard">
+			<param name="moduleName">setup</param>
+			<param name="permission">USER_MANAGEMENT</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^updateCard.*</param>
+			</result>
+		</action>
 		<action name="controllersettings" class="com.facilio.bmsconsole.actions.SetupActions" method="showControllerSettings">
 		<param name="moduleName">setup</param>
 		<param name="permission">CONTROLLER</param>

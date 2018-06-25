@@ -6,13 +6,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
 
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.cache.CacheUtil;
 import com.facilio.fw.LRUCache;
-import org.apache.log4j.LogManager;
 
 /**
  *  Cache Logic:
@@ -38,7 +38,7 @@ LRUCache modulecache = LRUCache.getModuleCache();
 			moduleObj = super.getModule(moduleName);
 			
 		//	CacheUtil.set(CacheUtil.MODULE_KEY(getOrgId(), moduleName), moduleObj);
-//			modulecache.put(CacheUtil.MODULE_KEY(getOrgId(), moduleName), moduleObj);
+			modulecache.put(CacheUtil.MODULE_KEY(getOrgId(), moduleName), moduleObj);
 			
 			//LOGGER.log(Level.INFO, "getModule result from DB for module: "+moduleName);
 		}
@@ -58,7 +58,7 @@ LRUCache modulecache = LRUCache.getModuleCache();
 			
 			moduleObj = super.getModule(moduleId);
 			
-//			modulecache.put(CacheUtil.MODULE_KEY(getOrgId(), moduleId), moduleObj);
+			modulecache.put(CacheUtil.MODULE_KEY(getOrgId(), moduleId), moduleObj);
 			
 			LOGGER.log(Level.INFO, "getModule result from DB for module: "+moduleId);
 		}

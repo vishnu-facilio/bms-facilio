@@ -1,8 +1,5 @@
 package com.facilio.transaction;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -13,6 +10,9 @@ import javax.sql.DataSource;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 
 public enum FacilioConnectionPool {

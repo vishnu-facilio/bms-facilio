@@ -9,12 +9,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.log4j.LogManager;
+
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.transaction.FacilioConnectionPool;
-import org.apache.log4j.LogManager;
 
 public enum BuildingOperator implements Operator<String> {
 	

@@ -9,12 +9,12 @@ import java.util.StringJoiner;
 
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.EnumField;
 import com.facilio.fw.BeanFactory;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
 public enum EnumOperators implements Operator<String> {
 	IS(52, "is") {

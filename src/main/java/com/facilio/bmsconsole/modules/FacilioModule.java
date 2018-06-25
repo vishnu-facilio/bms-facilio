@@ -59,6 +59,8 @@ public class FacilioModule implements Serializable {
 	}
 	
 	private List<FacilioField> fields;
+	
+	@JsonIgnore
 	public List<FacilioField> getFields() {
 		return fields;
 	}

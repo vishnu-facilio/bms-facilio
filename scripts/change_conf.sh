@@ -18,6 +18,8 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "pre_production" ]; then
     sed -i -e 's/localhost:9090/app.facilio.in/g' $CONF_DIR/awsprops.properties
     sed -i -e 's/localhost:8080/facilio.in/g' $CONF_DIR/awsprops.properties
     sed -i'' "s%environment=.*%environment=stage%g" $CONF_DIR/awsprops.properties
+    sed -i'' "s%chargebee.site=.*%chargebee.site=payfacilio-test%g" $CONF_DIR/awsprops.properties
+    sed -i'' "s%chargebee.api=.*%chargebee.api=test_AcdMBlnceZzwYhGeAX6dkxzocvglIkJjL%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%kinesisServer=.*%kinesisServer=true%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%schedulerServer=.*%schedulerServer=true%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%enable.transaction=.*%enable.transaction=true%g" $CONF_DIR/awsprops.properties
@@ -37,6 +39,8 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "production_deployment" ]; then
     cp $META_INF_DIR/context-production.xml $META_INF_DIR/context.xml
     cp $UBUNTU_HOME/setenv.sh $APP_HOME/bin/setenv.sh
     sed -i'' "s%schedulerServer=.*%schedulerServer=false%g" $CONF_DIR/awsprops.properties
+    sed -i'' "s%chargebee.site=.*%chargebee.site=payfacilio%g" $CONF_DIR/awsprops.properties
+    sed -i'' "s%chargebee.api=.*%chargebee.api=live_JcuJ3da1RxcdRkVVZsGi1fWquFFMXLsAtW%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%kinesisServer=.*%kinesisServer=false%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%enable.transaction=.*%enable.transaction=true%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%enable.kinesis=.*%enable.kinesis=false%g" $CONF_DIR/awsprops.properties

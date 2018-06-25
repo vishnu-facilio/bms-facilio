@@ -6,11 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.LogManager;
+
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.sql.GenericSelectRecordBuilder;
-import org.apache.log4j.LogManager;
 
 public class ControllerAPI {
 	private static org.apache.log4j.Logger log = LogManager.getLogger(ControllerAPI.class.getName());
