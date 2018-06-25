@@ -38,7 +38,7 @@ LRUCache modulecache = LRUCache.getModuleCache();
 			moduleObj = super.getModule(moduleName);
 			
 		//	CacheUtil.set(CacheUtil.MODULE_KEY(getOrgId(), moduleName), moduleObj);
-//			modulecache.put(CacheUtil.MODULE_KEY(getOrgId(), moduleName), moduleObj);
+			modulecache.put(CacheUtil.MODULE_KEY(getOrgId(), moduleName), moduleObj);
 			
 			//LOGGER.log(Level.INFO, "getModule result from DB for module: "+moduleName);
 		}
@@ -58,7 +58,7 @@ LRUCache modulecache = LRUCache.getModuleCache();
 			
 			moduleObj = super.getModule(moduleId);
 			
-//			modulecache.put(CacheUtil.MODULE_KEY(getOrgId(), moduleId), moduleObj);
+			modulecache.put(CacheUtil.MODULE_KEY(getOrgId(), moduleId), moduleObj);
 			
 			LOGGER.log(Level.INFO, "getModule result from DB for module: "+moduleId);
 		}

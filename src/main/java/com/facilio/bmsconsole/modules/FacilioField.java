@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class FacilioField implements Serializable {
 	
 	private long fieldId = -1;
@@ -243,18 +245,28 @@ public class FacilioField implements Serializable {
 	}
 	
 	private FieldDisplayType displayType;
+	
+	@JsonIgnore
 	public FieldDisplayType getDisplayType() {
 		return displayType;
 	}
+	
+	@JsonIgnore
 	public void setDisplayType(FieldDisplayType displayType) {
 		this.displayType = displayType;
 	}
+	
+	@JsonIgnore
 	public void setDisplayType(int displayType) {
 		this.displayType = FieldDisplayType.TYPE_MAP.get(displayType);
 	}
+	
+	@JsonIgnore
 	public void setDisplayTypeInt(int displayType) {
 		this.displayType = FieldDisplayType.TYPE_MAP.get(displayType);
 	}
+	
+	@JsonIgnore
 	public int getDisplayTypeInt() {
 		if (displayType != null) {
 			return displayType.getIntValForDB();
