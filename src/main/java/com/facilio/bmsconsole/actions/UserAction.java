@@ -344,9 +344,9 @@ public class UserAction extends ActionSupport {
       this.subscription.put("customer", cus);
       this.subscription.put("card", crd);
     }
-    System.out.println("*****************Subscription Info *********************");
+   // System.out.println("*****************Subscription Info *********************");
    
-    System.out.println(result);
+    // System.out.println(result);
         }
 	catch (Exception e){
 		e.printStackTrace();
@@ -362,8 +362,9 @@ public class UserAction extends ActionSupport {
 		String api =  AwsUtil.getConfig("chargebee.api"); 
 		long orgId = AccountUtil.getCurrentOrg().getId();
 		Map<String, Object> cusid = CommonCommandUtil.getOrgInfo(orgId, "Customer_id");
-    Environment.configure("payfacilio-test","test_AcdMBlnceZzwYhGeAX6dkxzocvglIkJjL");
-    System.out.println((String) card.get("firstName"));
+    // Environment.configure("payfacilio-test","test_AcdMBlnceZzwYhGeAX6dkxzocvglIkJjL");
+		Environment.configure(site, api);
+    // System.out.println((String) card.get("firstName"));
     Result result = Card.updateCardForCustomer((String) cusid.get("value"))
                       .gateway(Gateway.CHARGEBEE)
                       .firstName((String) card.get("firstName"))
@@ -374,16 +375,16 @@ public class UserAction extends ActionSupport {
                       .cvv((String) card.get("cvv")).request();
     Customer customer = result.customer();
     Card card = result.card();
-    System.out.println(result);
+    // System.out.println(result);
     return null;
   }
 
             
 	
 	public String updateMyProfile() throws Exception{
-		System.out.println("***************** calling Subscription Info *********************");
+		// System.out.println("***************** calling Subscription Info *********************");
 		subscriptionInfo();
-		System.out.println("!@@!@!@!!!!!!!!!!! user"+user);
+		// System.out.println("!@@!@!@!!!!!!!!!!! user"+user);
 		boolean status = AccountUtil.getUserBean().updateUser(AccountUtil.getCurrentUser().getId(), user);
 		
 		return SUCCESS;
