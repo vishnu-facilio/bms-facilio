@@ -586,7 +586,7 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new UpdateTaskCommand());
 		c.addCommand(new UpdateClosedTasksCounterCommand());
-		c.addCommand(new AddTaskTicketActivityCommand());
+//		c.addCommand(new AddTaskTicketActivityCommand());
 		// c.addCommand(new ExecuteAllWorkflowsCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -1879,6 +1879,7 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(new GetReadingDataMetaCommand());
 		c.addCommand(new DeltaCalculationCommand());
+		c.addCommand(new ReadingUnitConversionCommand());
 		c.addCommand(new CalculatePreFormulaCommand());
 		c.addCommand(new AddOrUpdateReadingValuesCommand());
 		c.addCommand(new AddMarkedReadingValuesCommand());
