@@ -32,7 +32,7 @@ public class ReadingUnitConversionCommand implements Command {
 			for (Map.Entry<String, List<ReadingContext>> entry : readingMap.entrySet()) {
 				String moduleName = entry.getKey();
 				List<ReadingContext> readings = entry.getValue();
-				if (moduleName != null && !moduleName.isEmpty() && readings != null && readings.isEmpty()) {
+				if (moduleName != null && !moduleName.isEmpty() && readings != null && !readings.isEmpty()) {
 					List<FacilioField> fields= bean.getAllFields(moduleName);
 					Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 					for (ReadingContext reading : readings) {
