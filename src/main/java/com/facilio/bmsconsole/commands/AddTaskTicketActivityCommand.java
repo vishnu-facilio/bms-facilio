@@ -79,7 +79,10 @@ public class AddTaskTicketActivityCommand implements Command {
 			Map<String, Object> newTicketProps = FieldUtil.getAsProperties(task);
 			newTicketProps.remove("id");
 			List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
-			boolean bulkAction = (boolean) context.get(FacilioConstants.ContextNames.IS_BULK_ACTION);
+			boolean bulkAction = false;
+			if(context.get(FacilioConstants.ContextNames.IS_BULK_ACTION) != null) {
+				bulkAction = (boolean) context.get(FacilioConstants.ContextNames.IS_BULK_ACTION);
+			}
 			if(bulkAction == true) {
 				TicketActivity activity = new TicketActivity();
 				long parentTicketId = (long) context.get(FacilioConstants.ContextNames.PARENT_ID);
