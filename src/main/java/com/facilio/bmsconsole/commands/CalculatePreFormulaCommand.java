@@ -11,7 +11,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
@@ -67,7 +66,7 @@ public class CalculatePreFormulaCommand implements Command {
 					}
 				}
 			}
-			LOGGER.info(AccountUtil.getCurrentOrg().getId()+"::Time taken for pre formula calculation for modules : "+readingMap.keySet()+" is "+(System.currentTimeMillis() - processStarttime));
+			LOGGER.info("Time taken for pre formula calculation for modules : "+readingMap.keySet()+" is "+(System.currentTimeMillis() - processStarttime));
 		}
 		return false;
 	}
@@ -85,7 +84,9 @@ public class CalculatePreFormulaCommand implements Command {
 						FacilioField field = fieldMap.get(entry.getKey());
 						if (field != null) {
 							ReadingDataMeta rdm = rdmMap.get(reading.getParentId()+"_"+field.getFieldId());
-							params.put(entry.getKey()+".previousValue", rdm.getValue())  ;
+							if (rdm != null) {
+								params.put(entry.getKey()+".previousValue", rdm.getValue());
+							}
 						}
 					}
 					
