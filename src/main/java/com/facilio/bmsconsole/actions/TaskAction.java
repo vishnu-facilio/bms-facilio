@@ -196,6 +196,8 @@ public class TaskAction extends ActionSupport {
 			defaultClosedTaskObj.setStatus(TicketAPI.getStatus("Closed"));
 			context.put(FacilioConstants.ContextNames.TASK, defaultClosedTaskObj);
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, taskIdList);
+			context.put(FacilioConstants.ContextNames.IS_BULK_ACTION, true);
+			context.put(FacilioConstants.ContextNames.PARENT_ID, parentTicketId);
 			Chain updateTask = FacilioChainFactory.getUpdateTaskChain();
 			updateTask.execute(context);
 			rowsUpdated += (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);

@@ -101,6 +101,7 @@ public class FacilioConstants {
 		public static final String RECORD_ID_LIST = "recordIds";
 		public static final String ROWS_UPDATED = "rowsUpdated";
 		public static final String ACTIVITY_TYPE = "activityType";
+		public static final String IS_BULK_ACTION = "isBulkAction";
 		
 		public static final String USER_ID = "userId";
 		public static final String USER = "user";

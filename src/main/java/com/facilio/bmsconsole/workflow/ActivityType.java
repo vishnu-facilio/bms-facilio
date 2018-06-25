@@ -157,6 +157,13 @@ public enum ActivityType {
 			// TODO Auto-generated method stub
 			return "Create work request";
 		}
+	},
+	CLOSE_ALL_TASK(131072) {
+		@Override
+		public String getMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return "Close all task";
+		}
 	}
 	;
 
