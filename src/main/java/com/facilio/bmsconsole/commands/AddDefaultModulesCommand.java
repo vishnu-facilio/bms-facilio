@@ -8,9 +8,9 @@ import java.util.logging.Logger;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
 
 import com.facilio.sql.SQLScriptRunner;
-import org.apache.log4j.LogManager;
 
 public class AddDefaultModulesCommand implements Command {
 	private static org.apache.log4j.Logger log = LogManager.getLogger(AddDefaultModulesCommand.class.getName());

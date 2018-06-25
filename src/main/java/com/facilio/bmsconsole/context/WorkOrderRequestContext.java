@@ -5,12 +5,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.accounts.dto.User;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
 public class WorkOrderRequestContext extends TicketContext {
 	private static Logger log = LogManager.getLogger(WorkOrderRequestContext.class.getName());

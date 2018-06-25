@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -16,8 +18,6 @@ import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.util.SkillAPI;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
 public class SkillActions extends ActionSupport {
 

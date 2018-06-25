@@ -2,6 +2,8 @@ package com.facilio.bmsconsole.jobs;
 
 import java.util.logging.Logger;
 
+import org.apache.log4j.LogManager;
+
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.actions.ImportProcessContext.ImportStatus;
 import com.facilio.bmsconsole.commands.data.ProcessXLS;
@@ -10,7 +12,6 @@ import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
-import org.apache.log4j.LogManager;
 
 public class ImportDataJob extends FacilioJob {
 

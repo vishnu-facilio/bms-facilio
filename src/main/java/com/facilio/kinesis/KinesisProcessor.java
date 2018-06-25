@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.log4j.LogManager;
+
 import com.amazonaws.services.kinesis.AmazonKinesis;
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.v2.IRecordProcessorFactory;
 import com.amazonaws.services.kinesis.model.LimitExceededException;
@@ -17,7 +19,6 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.events.tasker.tasks.EventProcessorFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.timeseries.TimeSeriesProcessorFactory;
-import org.apache.log4j.LogManager;
 
 public class KinesisProcessor {
 

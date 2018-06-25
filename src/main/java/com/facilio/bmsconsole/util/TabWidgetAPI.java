@@ -3,14 +3,15 @@ package com.facilio.bmsconsole.util;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ConnectedAppContext;
 import com.facilio.bmsconsole.context.TabWidgetContext;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.sql.GenericSelectRecordBuilder;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
 public class TabWidgetAPI {
 	private static Logger log = LogManager.getLogger(TabWidgetAPI.class.getName());

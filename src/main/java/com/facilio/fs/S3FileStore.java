@@ -12,6 +12,9 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
@@ -20,8 +23,6 @@ import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
 import com.amazonaws.services.s3.model.S3Object;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.util.ImageScaleUtil;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
 public class S3FileStore extends FileStore {
 	

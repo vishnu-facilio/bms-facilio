@@ -6,11 +6,11 @@ import java.util.Map;
 import org.apache.commons.beanutils.BeanPredicate;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.Predicate;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
 public class FacilioModulePredicate extends BeanPredicate {
 

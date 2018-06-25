@@ -7,11 +7,11 @@ import java.util.List;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
 
 import com.facilio.bmsconsole.context.ReportColumnContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.transaction.FacilioConnectionPool;
-import org.apache.log4j.LogManager;
 
 public class UpdateReportColumnSequence implements Command {
 	private static org.apache.log4j.Logger log = LogManager.getLogger(UpdateReportColumnSequence.class.getName());

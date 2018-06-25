@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.facilio.unitconversion.Unit;
-
 public class FacilioField implements Serializable {
 	
 	private long fieldId = -1;

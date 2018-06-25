@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.SupportEmailContext;
@@ -13,8 +15,6 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericUpdateRecordBuilder;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
 public class UpdateSupportEmailCommand implements Command {
 

@@ -2,12 +2,13 @@ package com.facilio.bmsconsole.jobs;
 
 import java.util.List;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
 public class DummyVMCalculator extends FacilioJob {
 

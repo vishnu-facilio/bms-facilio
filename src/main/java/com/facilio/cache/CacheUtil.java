@@ -4,11 +4,11 @@ import java.io.Serializable;
 import java.util.StringJoiner;
 
 import org.apache.commons.lang3.SerializationUtils;
+import org.apache.log4j.LogManager;
 
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 
-import org.apache.log4j.LogManager;
 import redis.clients.jedis.Jedis;
 
 public class CacheUtil {

@@ -3,11 +3,12 @@ package com.facilio.bmsconsole.context;
 import java.text.ParseException;
 import java.util.List;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
 public class TaskContext extends TicketContext {
 	private static Logger log = LogManager.getLogger(TaskContext.class.getName());

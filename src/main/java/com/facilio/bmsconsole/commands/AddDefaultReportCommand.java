@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseLineContext;
@@ -17,7 +18,6 @@ import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.SQLScriptRunner;
-import org.apache.log4j.LogManager;
 
 public class AddDefaultReportCommand implements Command {
 

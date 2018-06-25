@@ -2,6 +2,9 @@ package com.facilio.bmsconsole.jobs;
 
 import java.util.List;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
@@ -13,8 +16,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
 public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 

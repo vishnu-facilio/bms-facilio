@@ -6,13 +6,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
 
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.cache.CacheUtil;
 import com.facilio.fw.LRUCache;
-import org.apache.log4j.LogManager;
 
 /**
  *  Cache Logic:
