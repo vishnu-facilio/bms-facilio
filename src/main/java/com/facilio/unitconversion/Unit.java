@@ -8,10 +8,11 @@ import java.util.Map;
 
 public enum Unit {
 	
-	// last id -- 78
+	// last id -- 79
 	
 	KWH(1,"Kilo Watt Hour","kWh",Metric.ENERGY),
 	HECTOWH(76,"Hecto Watt Hour","hWh",Metric.ENERGY,"si*10","this/10"),
+	DECAWH(79,"Deca Watt Hour","dWh",Metric.ENERGY,"si/100","this*100"),
 	WH(2,"Watt Hour","Wh",Metric.ENERGY,"si*1000","this/1000"),
 	MWH(3,"Mega Watt Hour","mWh",Metric.ENERGY,"si/1000","this*1000"),
 	
