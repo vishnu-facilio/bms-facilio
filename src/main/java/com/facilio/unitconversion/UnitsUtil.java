@@ -26,7 +26,7 @@ public class UnitsUtil {
 	public static Double convert(Object value,Unit from,Unit to) {
 		
 		if(from.equals(to)) {
-			return (Double)value;
+			return Double.parseDouble(value.toString());
 		}
 		
 		if(!from.isSiUnit()) {
