@@ -247,7 +247,7 @@ public class CommonCommandUtil {
 
 			body.append(fromClass).append(DELIMITER);
 			
-			body.append("\n\nMsg : ")
+			body.append("\n Time").append(System.currentTimeMillis()).append("\n\nMsg : ")
 				.append(msg)
 				.append("\n\nApp Url : ")
 				.append(AwsUtil.getConfig("app.url"))
