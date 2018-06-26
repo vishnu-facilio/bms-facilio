@@ -1,8 +1,12 @@
 package com.facilio.bmsconsole.commands.data;
 
 import java.io.InputStream;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -15,6 +19,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
@@ -22,15 +27,18 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
+import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
@@ -39,6 +47,8 @@ import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.modules.LookupField;
+import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
@@ -132,8 +142,14 @@ public class ProcessXLS implements Command {
 						val = cell.getStringCellValue();
 					}
 					else if (cell.getCellTypeEnum() == CellType.NUMERIC || cell.getCellTypeEnum() == CellType.FORMULA) {
-
-						val = cell.getNumericCellValue();
+						if(HSSFDateUtil.isCellDateFormatted(cell)) {
+							Date date = cell.getDateCellValue();
+							 ZonedDateTime date1 = date.toInstant().atZone(DateTimeUtil.getZoneId(AccountUtil.getCurrentOrg().getTimezone()));
+							 val = (Long) date1.toEpochSecond()*1000;
+						}
+						else {
+							val = cell.getNumericCellValue();
+						}
 					}
 					else if(cell.getCellTypeEnum() == CellType.BOOLEAN) {
 						val = cell.getBooleanCellValue();
@@ -193,12 +209,34 @@ public class ProcessXLS implements Command {
 						}
 						if(facilioField.getDataTypeEnum().equals(FieldType.LOOKUP)) {
 							LookupField lookupField = (LookupField) facilioField;
-							List<Map<String, Object>> lookupPropsList = getLookupProps(lookupField,cellValue);
-							if(lookupPropsList != null) {
-								Map<String, Object> lookupProps = lookupPropsList.get(0);
-								props.put(key, lookupProps);
-								isfilledByLookup = true;
+							if(facilioField.getDisplayType().equals(FacilioField.FieldDisplayType.LOOKUP_SIMPLE)) {
+								List<Map<String, Object>> lookupPropsList = getLookupProps(lookupField,cellValue);
+								if(lookupPropsList != null) {
+									Map<String, Object> lookupProps = lookupPropsList.get(0);
+									props.put(key, lookupProps);
+									isfilledByLookup = true;
+								}
 							}
+							else if(facilioField.getDisplayType().equals(FacilioField.FieldDisplayType.LOOKUP_POPUP)) {
+								Map<String, Object> specialLookupList = getSpecialLookupProps(lookupField,cellValue);
+								if(specialLookupList != null) {
+									props.put(key, specialLookupList);
+									isfilledByLookup = true;
+								}
+							}
+						}
+						
+						try {
+							if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER) && (facilioField.getDataTypeEnum().equals(FieldType.DATE_TIME) || facilioField.getDataTypeEnum().equals(FieldType.DATE))) {
+								if(!(cellValue instanceof Long)) {
+									long millis = DateTimeUtil.getTime(cellValue.toString(), "dd-MM-yyyy HH:mm");
+									props.put(key, millis);
+									isfilledByLookup = true;
+								}
+							}
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
 						}
 					}
 					
@@ -253,6 +291,11 @@ public class ProcessXLS implements Command {
 						reading.addReading("resourceType", ResourceContext.ResourceType.ASSET.getValue());
 					}
 				}
+				if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
+					for(ReadingContext reading :readingsList) {
+						reading.addReading("sourceType", TicketContext.SourceType.WEB_ORDER.getIntVal());
+					}
+				}
 				ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				
 				InsertRecordBuilder<ReadingContext> readingBuilder = new InsertRecordBuilder<ReadingContext>()
@@ -281,10 +324,22 @@ public class ProcessXLS implements Command {
 			fieldsList.add(FieldFactory.getOrgIdField(lookupField.getLookupModule()));
 			fieldsList.add(FieldFactory.getModuleIdField(lookupField.getLookupModule()));
 			
+			String collumnName = "NAME";
+			String fieldName = "name";
+			if(lookupField.getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
+				if(lookupField.getName().equals("status")) {
+					collumnName = "STATUS";
+					fieldName = "status";
+				}
+				else if (lookupField.getName().equals("priority")) {
+					collumnName = "PRIORITY";
+					fieldName = "priority";
+				}
+			}
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 					.select(fieldsList)
 					.table(lookupField.getLookupModule().getTableName())
-					.andCustomWhere("LOWER(NAME) = ?", value.toString().toLowerCase())
+					.andCustomWhere("LOWER("+collumnName+") = ?", value.toString().toLowerCase())
 					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(lookupField.getLookupModule()));
 			
 			List<Map<String, Object>> props = selectBuilder.get();
@@ -293,7 +348,7 @@ public class ProcessXLS implements Command {
 				
 				HashMap <String, Object> insertProps = new LinkedHashMap<String,Object>();
 				
-				insertProps.put("name", value);
+				insertProps.put(fieldName, value);
 				insertProps.put("orgId", AccountUtil.getCurrentOrg().getId());
 				insertProps.put("moduleId", lookupField.getLookupModule().getModuleId());
 				
@@ -317,6 +372,36 @@ public class ProcessXLS implements Command {
 				}
 			}
 			return props;			
+		}
+		catch(Exception e) {
+			log.info("Exception occurred ", e);
+		}
+		return null;
+	}
+	
+	
+	public static Map<String, Object> getSpecialLookupProps(LookupField lookupField,Object value) {
+		
+		try {
+			
+			switch (lookupField.getName()) {
+				case "assignedBy":
+				case "assignedTo":
+				case "requester": {
+					User user = AccountUtil.getUserBean().getFacilioUser(value.toString());
+					Map<String, Object> prop = FieldUtil.getAsProperties(user);
+					return prop;
+					
+				}
+				case "resource": {
+					long assetid = AssetsAPI.getAssetId(value.toString(), lookupField.getOrgId());
+					AssetContext asset = AssetsAPI.getAssetInfo(assetid);
+					
+					Map<String, Object> prop1 = FieldUtil.getAsProperties(asset);
+					return prop1;
+				}
+			}
+					
 		}
 		catch(Exception e) {
 			log.info("Exception occurred ", e);
