@@ -3,7 +3,7 @@ package com.facilio.bmsconsole.context;
 public class ModuleLocalIdContext {
 	
 	long orgId;
-	long lastLocalId;
+	long localId;
 	String moduleName;
 	public long getOrgId() {
 		return orgId;
@@ -11,11 +11,11 @@ public class ModuleLocalIdContext {
 	public void setOrgId(long orgId) {
 		this.orgId = orgId;
 	}
-	public long getLastLocalId() {
-		return lastLocalId;
+	public long getLocalId() {
+		return localId;
 	}
-	public void setLastLocalId(long lastLocalId) {
-		this.lastLocalId = lastLocalId;
+	public void setLocalId(long localId) {
+		this.localId = localId;
 	}
 	public String getModuleName() {
 		return moduleName;

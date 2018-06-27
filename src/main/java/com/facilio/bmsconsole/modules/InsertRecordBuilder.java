@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.ModuleLocalIdUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.InsertBuilderIfc;
@@ -20,6 +21,16 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	private int level = 1;
 	private List<E> records = new ArrayList<>();
 	
+	private boolean isWithLocalIdModule;
+	
+	public boolean isWithLocalIdModule() {
+		return isWithLocalIdModule;
+	}
+
+	public void setWithLocalIdModule(boolean isWithLocalIdModule) {
+		this.isWithLocalIdModule = isWithLocalIdModule;
+	}
+
 	public InsertRecordBuilder () {
 		// TODO Auto-generated constructor stub
 	}
@@ -103,6 +114,11 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		
 		int currentLevel = 1;
 		for(FacilioModule currentModule : modules) {
+			
+			Long localId = null;
+			if(isWithLocalIdModule) {
+				localId = ModuleLocalIdUtil.getModuleLocalId(currentModule.getName());
+			}
 			if(currentLevel >= level) {
 				List<FacilioField> currentFields = fieldMap.get(currentModule.getModuleId());
 				if(currentFields == null) {
@@ -118,10 +134,16 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 				
 				for(Map<String, Object> beanProp : beanProps) {
 					beanProp.put("moduleId", currentModule.getModuleId());
+					if(isWithLocalIdModule && localId != null) {
+						beanProp.put("localId", localId++);
+					}
 					insertBuilder.addRecord(beanProp);
 				}
 				
 				insertBuilder.save();
+				if(isWithLocalIdModule && localId != null) {
+					ModuleLocalIdUtil.updateModuleLocalId(currentModule.getName(), localId);
+				}
 			}
 			currentLevel++;
 		}

@@ -3782,8 +3782,8 @@ public class FieldFactory {
 		FacilioModule module = ModuleFactory.getModuleLocalIdModule();
 		List<FacilioField> fields = new ArrayList<>();
 		
-		fields.add(getIdField(module));
-		fields.add(getField("lastLocalId", "LAST_LOCAL_ID", module, FieldType.NUMBER));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("localId", "LAST_LOCAL_ID", module, FieldType.NUMBER));
 		fields.add(getField("moduleName", "MODULE_NAME", module, FieldType.STRING));
 		
 		return fields;

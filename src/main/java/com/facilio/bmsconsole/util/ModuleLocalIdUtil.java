@@ -43,7 +43,7 @@ public class ModuleLocalIdUtil {
 	public static Long getModuleLocalId(Long orgId,String moduleName) throws Exception {
 		ModuleLocalIdContext moduleLocalIdContext = getModuleLocalContext(orgId,moduleName);
 		if(moduleLocalIdContext != null) {
-			return moduleLocalIdContext.getLastLocalId();
+			return moduleLocalIdContext.getLocalId();
 		}
 		return null;
 	}
@@ -58,7 +58,7 @@ public class ModuleLocalIdUtil {
 		ModuleLocalIdContext moduleLocalIdContext = new ModuleLocalIdContext();
 		moduleLocalIdContext.setOrgId(orgId);
 		moduleLocalIdContext.setModuleName(moduleName);
-		moduleLocalIdContext.setLastLocalId(lastLocalId);
+		moduleLocalIdContext.setLocalId(lastLocalId);
 		
 		return updateModuleLocalId(moduleLocalIdContext);
 	}
