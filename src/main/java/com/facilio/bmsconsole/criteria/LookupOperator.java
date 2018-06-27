@@ -74,6 +74,12 @@ public enum LookupOperator implements Operator<Criteria> {
 	public boolean isDynamicOperator() {
 		return false;
 	}
+	
+	@Override
+	public boolean isValueNeeded() {
+		// TODO Auto-generated method stub
+		return true;
+	}
 
 	@Override
 	public List<Object> computeValues(Criteria value) {

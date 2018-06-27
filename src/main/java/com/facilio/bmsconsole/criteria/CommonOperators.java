@@ -62,6 +62,12 @@ public enum CommonOperators implements Operator<String> {
 	}
 	
 	@Override
+	public boolean isValueNeeded() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+	@Override
 	public List<Object> computeValues(String value) {
 		return null;
 	}

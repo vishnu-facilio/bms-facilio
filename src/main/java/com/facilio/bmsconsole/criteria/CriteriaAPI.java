@@ -72,8 +72,8 @@ public class CriteriaAPI {
 				if (condition.getOperator() == LookupOperator.LOOKUP && condition.getCriteriaValue() == null && condition.getCriteriaValueId() == -1) {
 					throw new IllegalArgumentException("Criteria Value cannot be null in Condition with LOOKUP operator");
 				}
-				if (condition.getOperator() != LookupOperator.LOOKUP && (condition.getValue() == null || condition.getValue().isEmpty())) {
-					throw new IllegalArgumentException("Value cannot be null for a Condition");
+				if (condition.getOperator() != LookupOperator.LOOKUP && condition.getOperator().isValueNeeded() && (condition.getValue() == null || condition.getValue().isEmpty())) {
+					throw new IllegalArgumentException("Value cannot be null for Condition with operator "+condition.getOperator());
 				}
 				
 				int sequence = -1;

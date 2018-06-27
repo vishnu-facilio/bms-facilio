@@ -19,6 +19,8 @@ public interface Operator<E> {
 	
 	public boolean isDynamicOperator();
 	
+	public boolean isValueNeeded();
+	
 	public List<Object> computeValues(E value);
 	
 	@SuppressWarnings("rawtypes")

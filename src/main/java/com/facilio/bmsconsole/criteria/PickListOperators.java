@@ -170,6 +170,12 @@ public enum PickListOperators implements Operator<String> {
 	}
 	
 	@Override
+	public boolean isValueNeeded() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+	
+	@Override
 	public List<Object> computeValues(String value) {
 		if(value.contains(FacilioConstants.Criteria.LOGGED_IN_USER)) {
 			List<Object> objs = new ArrayList<>();

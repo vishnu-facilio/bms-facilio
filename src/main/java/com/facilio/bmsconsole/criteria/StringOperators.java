@@ -242,6 +242,12 @@ public enum StringOperators implements Operator<String> {
 	public boolean isDynamicOperator() {
 		return false;
 	}
+	
+	@Override
+	public boolean isValueNeeded() {
+		// TODO Auto-generated method stub
+		return true;
+	}
  	
 	@Override
 	public abstract List<Object> computeValues(String value);

@@ -57,6 +57,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return false;
 		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return true;
+		}
 	},
 	
 	ISN_T(17, "isn't") {
@@ -109,6 +115,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return false;
 		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return true;
+		}
 	},
 	
 	IS_BEFORE(18, "is before") {
@@ -149,6 +161,12 @@ public enum DateOperators implements Operator<String> {
 		public boolean isBaseLineSupported() {
 			// TODO Auto-generated method stub
 			return false;
+		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return true;
 		}
 	},
 	
@@ -191,6 +209,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return false;
 		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return true;
+		}
 	},
 	
 	BETWEEN(20, "between") {
@@ -221,6 +245,12 @@ public enum DateOperators implements Operator<String> {
 
 		@Override
 		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+		
+		@Override
+		public boolean isValueNeeded() {
 			// TODO Auto-generated method stub
 			return true;
 		}
@@ -255,6 +285,12 @@ public enum DateOperators implements Operator<String> {
 		public boolean isBaseLineSupported() {
 			// TODO Auto-generated method stub
 			return false;
+		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return true;
 		}
 	},
 	
@@ -312,6 +348,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return true;
 		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 	},
 	TODAY_UPTO_NOW(43, "today upto now") {
 		@Override
@@ -366,6 +408,12 @@ public enum DateOperators implements Operator<String> {
 		public boolean isBaseLineSupported() {
 			// TODO Auto-generated method stub
 			return true;
+		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return false;
 		}
 	},
 	
@@ -424,6 +472,11 @@ public enum DateOperators implements Operator<String> {
 			return true;
 		}
 	 	
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 	},
 	
 	STARTING_TOMORROW(24, "Starting Tomorrow") {
@@ -477,6 +530,11 @@ public enum DateOperators implements Operator<String> {
 			return false;
 		}
 	 	
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 	},
 	
 	YESTERDAY(25, "Yesterday") {
@@ -533,6 +591,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return true;
 		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 	},
 	
 	TILL_YESTERDAY(26, "Till Yesterday") {
@@ -582,6 +646,12 @@ public enum DateOperators implements Operator<String> {
 
 		@Override
 		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		
+		@Override
+		public boolean isValueNeeded() {
 			// TODO Auto-generated method stub
 			return false;
 		}
@@ -641,6 +711,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return true;
 		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 	},
 	
 	CURRENT_MONTH(28, "Current Month") {
@@ -697,6 +773,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return true;
 		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 	},
 	CURRENT_MONTH_UPTO_NOW(48, "Current Month upto now") {
 		@Override
@@ -751,6 +833,12 @@ public enum DateOperators implements Operator<String> {
 		public boolean isBaseLineSupported() {
 			// TODO Auto-generated method stub
 			return true;
+		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return false;
 		}
 	},
 	
@@ -808,6 +896,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return true;
 		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 	},
 	CURRENT_YEAR(44, "Current Year") {
 		@Override
@@ -861,6 +955,12 @@ public enum DateOperators implements Operator<String> {
 		public boolean isBaseLineSupported() {
 			// TODO Auto-generated method stub
 			return true;
+		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return false;
 		}
 	},
 	LAST_YEAR(45, "Last Year") {
@@ -916,6 +1016,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return true;
 		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 	},
 	CURRENT_YEAR_UPTO_NOW(46, "Current Year upto now") {
 		@Override
@@ -969,6 +1075,12 @@ public enum DateOperators implements Operator<String> {
 		public boolean isBaseLineSupported() {
 			// TODO Auto-generated method stub
 			return true;
+		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return false;
 		}
 	},
 	
@@ -1026,6 +1138,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return true;
 		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 	},
 	
 	CURRENT_WEEK(31, "Current Week") {
@@ -1081,6 +1199,12 @@ public enum DateOperators implements Operator<String> {
 		public boolean isBaseLineSupported() {
 			// TODO Auto-generated method stub
 			return true;
+		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return false;
 		}
 	},
 	
@@ -1138,6 +1262,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return true;
 		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 	},
 	
 	NEXT_WEEK(32, "Next Week") {
@@ -1194,6 +1324,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return true;
 		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 	},
 	
 	AGE_IN_DAYS(33, "Age in Days") {
@@ -1242,6 +1378,12 @@ public enum DateOperators implements Operator<String> {
 		public boolean isBaseLineSupported() {
 			// TODO Auto-generated method stub
 			return false;
+		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return true;
 		}
 	},
 	
@@ -1292,12 +1434,18 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return false;
 		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return true;
+		}
 	},
 	
 	LAST_MONTHS(39, "Last Months") {
 		@Override
 		public String getWhereClause(String columnName, String value) {
-			if(columnName != null && !columnName.isEmpty()) {
+			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
 				builder.append(DateTimeUtil.getMonthStartTime(-Integer.parseInt(value)))
 						.append("<=")
@@ -1345,12 +1493,18 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return true;
 		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return true;
+		}
 	},
 	
 	WITHIN_HOURS(40, "Within Hours") {
 		@Override
 		public String getWhereClause(String columnName, String value) {
-			if(columnName != null && !columnName.isEmpty()) {
+			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
 				builder.append(DateTimeUtil.getHourStartTime(-Integer.parseInt(value)))
 						.append("<=")
@@ -1398,12 +1552,18 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return true;
 		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return true;
+		}
 	},
 	
 	NEXT_HOURS(41, "Next Hours") {
 		@Override
 		public String getWhereClause(String columnName, String value) {
-			if(columnName != null && !columnName.isEmpty()) {
+			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
 				builder.append(DateTimeUtil.getHourStartTime())
 						.append("<=")
@@ -1451,11 +1611,17 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return true;
 		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return true;
+		}
 	},
 	LAST_N_MINUTES(56, "Last N Minutes") {
 		@Override
 		public String getWhereClause(String columnName, String value) {
-			if(columnName != null && !columnName.isEmpty()) {
+			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
 				Long currentTime = DateTimeUtil.getCurrenTime();
 				StringBuilder builder = new StringBuilder();
 				builder.append(DateTimeUtil.getLastNMinute(currentTime, Integer.valueOf(value)))
@@ -1506,11 +1672,17 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return true;
 		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return true;
+		}
 	},
 	LAST_N_HOURS(42, "Last N Hours") {
 		@Override
 		public String getWhereClause(String columnName, String value) {
-			if(columnName != null && !columnName.isEmpty()) {
+			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
 				Long currentTime = DateTimeUtil.getCurrenTime();
 				StringBuilder builder = new StringBuilder();
 				builder.append(DateTimeUtil.getLastNHour(currentTime, Integer.valueOf(value)))
@@ -1561,12 +1733,18 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return true;
 		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return true;
+		}
 	},
 	
 	LAST_N_DAYS(49, "Last N Days") {
 		@Override
 		public String getWhereClause(String columnName, String value) {
-			if(columnName != null && !columnName.isEmpty()) {
+			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
 				builder.append(DateTimeUtil.getDayStartTime(-(Integer.valueOf(value)-1)))
 						.append("<=")
@@ -1614,11 +1792,17 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return true;
 		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return true;
+		}
 	},
 	LAST_N_WEEKS(50, "Last N Weeks") {
 		@Override
 		public String getWhereClause(String columnName, String value) {
-			if(columnName != null && !columnName.isEmpty()) {
+			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
 				builder.append(DateTimeUtil.getWeekStartTime(-(Integer.valueOf(value)-1)))
 						.append("<=")
@@ -1667,11 +1851,17 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return true;
 		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return true;
+		}
 	},
 	LAST_N_MONTHS(51, "Last N Months") {
 		@Override
 		public String getWhereClause(String columnName, String value) {
-			if(columnName != null && !columnName.isEmpty()) {
+			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
 				builder.append(DateTimeUtil.getMonthStartTime(-(Integer.valueOf(value)-1)))
 						.append("<=")
@@ -1716,6 +1906,12 @@ public enum DateOperators implements Operator<String> {
 
 		@Override
 		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+		
+		@Override
+		public boolean isValueNeeded() {
 			// TODO Auto-generated method stub
 			return true;
 		}
