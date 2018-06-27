@@ -3778,6 +3778,17 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	public static List<FacilioField> getModuleLocalIdFields() {
+		FacilioModule module = ModuleFactory.getModuleLocalIdModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getField("lastLocalId", "LAST_LOCAL_ID", module, FieldType.NUMBER));
+		fields.add(getField("moduleName", "MODULE_NAME", module, FieldType.STRING));
+		
+		return fields;
+	}
+	
 	public static FacilioField getField(String name, String colName, FacilioModule module, FieldType type) {
 		return getField(name, null, colName, module, type);
 	}

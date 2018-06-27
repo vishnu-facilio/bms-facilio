@@ -1037,4 +1037,11 @@ public class ModuleFactory {
 		rateCardService.setTableName("Rate_Card_Services");
 		return rateCardService;
 	}
+	public static FacilioModule getModuleLocalIdModule() {
+		FacilioModule rateCardService = new FacilioModule();
+		rateCardService.setName("moduleLocalId");
+		rateCardService.setDisplayName("Module Local Id");
+		rateCardService.setTableName("Module_Local_ID");
+		return rateCardService;
+	}
 }
