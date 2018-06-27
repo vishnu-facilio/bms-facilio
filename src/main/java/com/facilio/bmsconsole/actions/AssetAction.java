@@ -298,8 +298,15 @@ public class AssetAction extends ActionSupport {
 	}
 	
 	public String getReadingsWithAssets() throws Exception {
-		
-		assetsReadings = AssetsAPI.getAssetsWithReadings(buildingIds);
+		if (search == null || search.isEmpty()) {
+			assetsReadings = AssetsAPI.getAssetsWithReadings(buildingIds);
+		}
+		else {
+			JSONObject pagination = new JSONObject();
+	 		pagination.put("page", getPage());
+	 		pagination.put("perPage", getPerPage());
+			assetsReadings = AssetsAPI.getAssetsWithReadings(buildingIds, search, pagination);
+		}
 		return SUCCESS;
   	}
 	
@@ -310,4 +317,5 @@ public class AssetAction extends ActionSupport {
 	public void setBuildingIds(List<Long> buildingIds) {
 		this.buildingIds = buildingIds;
 	}
+	
 }

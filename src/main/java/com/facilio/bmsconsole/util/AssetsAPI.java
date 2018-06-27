@@ -26,12 +26,14 @@ import com.facilio.bmsconsole.context.AssetTypeContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.criteria.BuildingOperator;
+import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
@@ -288,7 +290,7 @@ public class AssetsAPI {
 		return null;
 	}
 	
-	public static JSONObject getAssetsWithReadings(List<Long> buildingIds) throws Exception {
+	public static JSONObject getAssetsWithReadings (List<Long> buildingIds) throws Exception {
 		Map<Long, FacilioField> fieldMap = null;
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -312,6 +314,7 @@ public class AssetsAPI {
 		}
 		
 		List<AssetContext> assets = selectBuilder.get();
+		
 		if (assets == null || assets.isEmpty()) {
 			return null;
 		}
@@ -355,6 +358,117 @@ public class AssetsAPI {
 //		Map<Long, AssetContext> assetMap = assets.stream().collect(Collectors.toMap(AssetContext::getId, Function.identity(), (prevValue, curValue) -> {return prevValue;}));
 		JSONObject data = new JSONObject();
 		data.put("categoryWithFields", categoryVsFields);
+		data.put("assets", assetMap);
+		return data;
+	}
+	
+	public static JSONObject getAssetsWithReadings(List<Long> buildingIds, String searchText, JSONObject pagination) throws Exception {
+		List<FacilioField> fields = new ArrayList<>();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+		FacilioModule resourcesModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+		List<FacilioField> assetFields = new ArrayList(modBean.getAllFields(FacilioConstants.ContextNames.ASSET));
+		Map<String, FacilioField> assetFieldMap = FieldFactory.getAsMap(assetFields);
+		fields.add(FieldFactory.getIdField(module));
+		FacilioField assetNameField = assetFieldMap.get("name");
+		fields.add(FieldFactory.getField("assetName", assetNameField.getColumnName(), resourcesModule, assetNameField.getDataTypeEnum()));
+		fields.add(assetFieldMap.get("category"));
+		
+		FacilioModule readingFieldsModule = ModuleFactory.getFieldsModule();
+		List<FacilioField> readingFields = FieldFactory.getSelectFieldFields();
+		Map<String, FacilioField> readingFieldsMap = FieldFactory.getAsMap(readingFields);
+		fields.addAll(readingFields);
+		
+		FacilioModule readingsMetaModule = ModuleFactory.getReadingDataMetaModule();
+		List<FacilioField> redingMetaFields = FieldFactory.getReadingDataMetaFields();
+		Map<String, FacilioField> readingMetaFieldsMap = FieldFactory.getAsMap(redingMetaFields);
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(module.getTableName())
+				.innerJoin(resourcesModule.getTableName())
+				.on(module.getTableName()+".ID"+"="+resourcesModule.getTableName()+".ID")
+				.innerJoin(readingsMetaModule.getTableName())
+				.on(readingsMetaModule.getTableName()+"."+readingMetaFieldsMap.get("resourceId").getColumnName()+"="+module.getTableName()+".ID")
+				.innerJoin(readingFieldsModule.getTableName())
+				.on(readingFieldsModule.getTableName()+"." + readingFieldsMap.get("fieldId").getColumnName()+"="+ readingsMetaModule.getTableName()+"."+readingMetaFieldsMap.get("fieldId").getColumnName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCondition(readingMetaFieldsMap.get("value"), "-1", StringOperators.ISN_T));
+				;
+
+		if (buildingIds != null && !buildingIds.isEmpty()) {
+			builder.andCondition(CriteriaAPI.getCondition("SPACE_ID", "spaceId", StringUtils.join(buildingIds, ","), BuildingOperator.BUILDING_IS));
+		}
+		
+		if (searchText != null && !searchText.isEmpty()) {
+			Criteria criteria = new Criteria();
+			criteria.addAndCondition(CriteriaAPI.getCondition(assetFieldMap.get("name"), searchText, StringOperators.CONTAINS));
+			criteria.addAndCondition(CriteriaAPI.getCondition(readingFieldsMap.get("name"), searchText, StringOperators.CONTAINS));
+			builder.andCriteria(criteria);
+		}
+		
+		if (pagination != null) {
+			int page = (int) pagination.get("page");
+			int perPage = (int) pagination.get("perPage");
+			if (perPage != -1) {
+				int offset = ((page-1) * perPage);
+				if (offset < 0) {
+					offset = 0;
+				}
+				builder.offset(offset);
+				builder.limit(perPage);
+			}
+		}
+		
+		List<Map<String, Object>> list = builder.get();
+		if (list == null || list.isEmpty()) {
+			return null;
+		}
+		
+		Map<Long, Object> assetMap = new HashMap<Long, Object>();
+		Map<Long, FacilioField> fieldMap = new HashMap<Long, FacilioField>();
+		JSONObject assetVsReading = new JSONObject();
+		Map<Long, List<Long>> assetsAndReadings = new HashMap<>();
+		
+		for(Map<String, Object> item: list) {
+			long assetId = (long) item.get("id");
+			if (!assetMap.containsKey(assetId)) {
+				AssetContext asset = new AssetContext();
+				asset.setId((long) item.get("id"));
+				asset.setName((String) item.get("assetName"));
+				AssetCategoryContext category = new AssetCategoryContext();
+				category.setId(((long) item.get("category")));
+				asset.setCategory(category);
+				assetMap.put(assetId, asset);
+			}
+			
+			long fieldId = (long) item.get("fieldId");
+			if (!fieldMap.containsKey(fieldId)) {
+				FacilioField field = FieldUtil.getAsBeanFromMap(item, FacilioField.class);
+				fieldMap.put(fieldId, field);
+			}
+			
+			if (!assetVsReading.containsKey(assetId) && assetVsReading.containsValue(fieldId)) {
+				assetVsReading.put(assetId, fieldId);
+			}
+			
+			List<Long> readings;
+			if (!assetsAndReadings.containsKey(assetId)) {
+				readings = new ArrayList<Long>();
+				assetsAndReadings.put(assetId, readings);
+			}
+			else {
+				readings = assetsAndReadings.get(assetId);
+			}
+			if (!readings.contains(fieldId)) {
+				readings.add(fieldId);
+			}
+		}
+		
+		
+		JSONObject data = new JSONObject();
+		data.put("assetVsReadings", assetsAndReadings);
+		data.put("readings", fieldMap);
 		data.put("assets", assetMap);
 		return data;
 	}
