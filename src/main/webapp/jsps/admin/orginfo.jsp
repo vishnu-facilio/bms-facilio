@@ -70,9 +70,8 @@ if (org != null) { %>
 </table>
 
 <% } %>
-<%
-if(result.size() != 0) {
-Iterator<?> keys = result.keySet().iterator();%>
+<% if(result.size() != 0) { 
+	Iterator<?> keys = result.keySet().iterator();%>
 <h2> Org-Properties</h2> 
 <table style=" margin-top:40px;" class="table table-bordered">
 <tr>
@@ -82,14 +81,14 @@ Iterator<?> keys = result.keySet().iterator();%>
 
 <%while( keys.hasNext() ) {
     String key = (String) keys.next();
-    String value = (String) result.get(key);%>
+    String value = (String) result.get(key); %>
     <tr>
     <td><%=key %></td>
     <td><%=value %></td> 
   </tr>
-<% }
-}
-%>
+<% } %>
+</table>
+<%}%>
 
 
 </div>
