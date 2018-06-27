@@ -66,6 +66,16 @@ public class CriteriaAPI {
 					}
 				}
 				
+				if (condition.getOperator() == null) {
+					throw new IllegalArgumentException("Operator cannot be null in Condition");
+				}
+				if (condition.getOperator() == LookupOperator.LOOKUP && condition.getCriteriaValue() == null && condition.getCriteriaValueId() == -1) {
+					throw new IllegalArgumentException("Criteria Value cannot be null in Condition with LOOKUP operator");
+				}
+				if (condition.getOperator() != LookupOperator.LOOKUP && (condition.getValue() == null || condition.getValue().isEmpty())) {
+					throw new IllegalArgumentException("Value cannot be null for a Condition");
+				}
+				
 				int sequence = -1;
 				Object key = conditionEntry.getKey();
 				if(key instanceof Integer) {
