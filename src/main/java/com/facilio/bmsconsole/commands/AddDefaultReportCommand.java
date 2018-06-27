@@ -40,7 +40,7 @@ public class AddDefaultReportCommand implements Command {
 			
 			paramValues.put("workOrderModuleId", String.valueOf(module.getModuleId()));
 			
-			ArrayList<FacilioField> fields = modBean.getAllFields(module.getName());
+			List<FacilioField> fields = modBean.getAllFields(module.getName());
 			if(fields != null) {
 				for(FacilioField field:fields) {
 					paramValues.put(module.getName()+"_"+field.getName(), String.valueOf(field.getId()));

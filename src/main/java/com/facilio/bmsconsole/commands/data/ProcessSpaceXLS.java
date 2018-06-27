@@ -354,7 +354,7 @@ public class ProcessSpaceXLS implements Command {
 			System.out.println("getLookupProps -- "+lookupField.getColumnName() +" facilioField.getModule() - "+lookupField.getLookupModule().getTableName() +" with value -- "+value);
 			System.out.println("<--------------- checking 8 ----------------->");
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			ArrayList<FacilioField> fieldsList= bean.getAllFields(lookupField.getLookupModule().getName());
+			List<FacilioField> fieldsList= new ArrayList<>(bean.getAllFields(lookupField.getLookupModule().getName()));
 			fieldsList.add(FieldFactory.getIdField());
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 					.select(fieldsList)

@@ -319,7 +319,7 @@ public class ProcessXLS implements Command {
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			ArrayList<FacilioField> fieldsList = new ArrayList<FacilioField>();
 			
-			fieldsList= (ArrayList<FacilioField>) bean.getAllFields(lookupField.getLookupModule().getName()).clone();
+			fieldsList= new ArrayList<> (bean.getAllFields(lookupField.getLookupModule().getName()));
 			fieldsList.add(FieldFactory.getIdField(lookupField.getLookupModule()));
 			fieldsList.add(FieldFactory.getOrgIdField(lookupField.getLookupModule()));
 			fieldsList.add(FieldFactory.getModuleIdField(lookupField.getLookupModule()));

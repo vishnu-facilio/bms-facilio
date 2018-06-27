@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -151,7 +152,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		while(rs.next()) {
 			subModules.add(getMod(rs.getLong("CHILD_MODULE_ID")));
 		}
-		return subModules;
+		return Collections.unmodifiableList(subModules);
 	}
 	
 	@Override
@@ -379,7 +380,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		}
 	}
 	
-	private ArrayList<FacilioField> getFieldFromPropList(List<Map<String, Object>> props, Map<Long, FacilioModule> moduleMap) throws Exception {
+	private List<FacilioField> getFieldFromPropList(List<Map<String, Object>> props, Map<Long, FacilioModule> moduleMap) throws Exception {
 		
 		if(props != null && !props.isEmpty()) {
 			Map<FieldType, List<Long>> extendedIds = new HashMap<>();
@@ -394,7 +395,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			}
 			Map<FieldType, Map<Long, Map<String, Object>>> extendedPropsMap = getTypeWiseExtendedProps(extendedIds);
 			
-			ArrayList<FacilioField> fields = new ArrayList<>();
+			List<FacilioField> fields = new ArrayList<>();
 			for (Map<String, Object> prop : props) {
 				Long extendedModuleId = (Long) prop.get("extendedModuleId");
 				if(extendedModuleId != null) {
@@ -435,7 +436,7 @@ public class ModuleBeanImpl implements ModuleBean {
 						break;
 				}
 			}
-			return fields;
+			return Collections.unmodifiableList(fields);
 		}
 		return null;
 	}
@@ -504,7 +505,7 @@ public class ModuleBeanImpl implements ModuleBean {
 	}
 	
 	@Override
-	public ArrayList<FacilioField> getAllFields(String moduleName) throws Exception {
+	public List<FacilioField> getAllFields(String moduleName) throws Exception {
 		
 		if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {
 			return (ArrayList<FacilioField>) LookupSpecialTypeUtil.getAllFields(moduleName);
@@ -518,7 +519,7 @@ public class ModuleBeanImpl implements ModuleBean {
 														.table("Fields")
 															.andCustomWhere("Fields.ORGID = ? AND Fields.MODULEID = ?", getOrgId(), module.getModuleId());
 		List<Map<String, Object>> fieldProps = selectBuilder.get();
-		ArrayList<FacilioField> fields = getFieldFromPropList(fieldProps, moduleMap);
+		List<FacilioField> fields = getFieldFromPropList(fieldProps, moduleMap);
 		return fields;
 	}
 	

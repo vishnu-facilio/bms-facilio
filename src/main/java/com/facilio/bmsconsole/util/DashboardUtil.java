@@ -1624,7 +1624,7 @@ public class DashboardUtil {
 		List<ReportFieldContext> yAxisField = new ArrayList<ReportFieldContext>();
 		List<ReportFieldContext> groupField = new ArrayList<ReportFieldContext>();
 		
-		ArrayList<FacilioField> allFields = modBean.getAllFields(moduleName);
+		List<FacilioField> allFields = modBean.getAllFields(moduleName);
 		
 		for(FacilioField field:allFields) {
 			ReportFieldContext reportFieldContext = new ReportFieldContext();

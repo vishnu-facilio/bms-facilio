@@ -47,7 +47,7 @@ public class SpaceAPI {
 		
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE_PHOTOS);
 		
-		ArrayList<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE_PHOTOS);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE_PHOTOS);
 		
 		SelectRecordsBuilder<PhotosContext> builder = new SelectRecordsBuilder<PhotosContext>()
 				.select(fields)

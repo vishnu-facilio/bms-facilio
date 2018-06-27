@@ -414,7 +414,7 @@ public class ImportAPI {
 		
 		try {
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			ArrayList<FacilioField> fieldsList= bean.getAllFields(module);
+			List<FacilioField> fieldsList= bean.getAllFields(module);
 
 			for(FacilioField field : fieldsList)
 			{

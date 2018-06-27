@@ -1,9 +1,9 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -187,7 +187,7 @@ public class ImportProcessContext
 				
 				facilioFieldMapping = new HashMap<String, FacilioField>();
 				ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				ArrayList<FacilioField> fieldsList= bean.getAllFields(getModule().getName());
+				List<FacilioField> fieldsList= bean.getAllFields(getModule().getName());
 
 				for(FacilioField field : fieldsList)
 				{

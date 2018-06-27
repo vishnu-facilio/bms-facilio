@@ -906,7 +906,7 @@ public class WorkflowUtil {
 		Pattern condtionStringpattern = Pattern.compile(CONDITION_FORMATTER);
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		ArrayList<FacilioField> fields = modBean.getAllFields(moduleName);
+		List<FacilioField> fields = modBean.getAllFields(moduleName);
 		
 		Map<String, FacilioField> fieldMap = new HashMap<>();
 		for (FacilioField field : fields) {

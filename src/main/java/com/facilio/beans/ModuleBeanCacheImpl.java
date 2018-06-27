@@ -181,7 +181,7 @@ LRUCache modulecache = LRUCache.getModuleCache();
 	}
 
 	@Override
-	public ArrayList<FacilioField> getAllFields(String moduleName) throws Exception {
+	public List<FacilioField> getAllFields(String moduleName) throws Exception {
 		
 		//ArrayList<FacilioField> fields = (ArrayList<FacilioField>) CacheUtil.get(CacheUtil.FIELDS_KEY(getOrgId(), moduleName));
 		long begintime = System.currentTimeMillis();
@@ -189,12 +189,12 @@ LRUCache modulecache = LRUCache.getModuleCache();
 		
 		Object key = CacheUtil.FIELDS_KEY(getOrgId(), moduleName);
 		
-		ArrayList<FacilioField> fields = (ArrayList<FacilioField>)cache.get(key);
+		List<FacilioField> fields = (List<FacilioField>)cache.get(key);
 		if (fields == null) {
 			
 			fields = super.getAllFields(moduleName);
 			
-			CacheUtil.set(CacheUtil.FIELDS_KEY(getOrgId(), moduleName), fields);
+//			CacheUtil.set(CacheUtil.FIELDS_KEY(getOrgId(), moduleName), fields);
 			cache.put(key, fields);
 			
 			//LOGGER.log(Level.INFO, "getAllFields result from DB for module: "+moduleName +"\n Time taken"+ (System.currentTimeMillis()-begintime));
