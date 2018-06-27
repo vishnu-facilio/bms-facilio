@@ -338,7 +338,24 @@ public class CommonCommandUtil {
 		return null;		
 	}
     
-    public static JSONObject getOrgInfo() throws Exception {
+    public static JSONObject getOrgInfo(long orgId) throws Exception {
+    	
+    	JSONObject result = new JSONObject();
+    	FacilioModule module = AccountConstants.getOrgInfoModule();
+    	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(AccountConstants.getOrgInfoFields())
+				.table(module.getTableName())
+				.andCustomWhere("ORGID = ?", orgId);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			for (Map<String, Object> prop : props) {
+				result.put((String) prop.get("name"), prop.get("value"));
+			}
+		}
+		return result;		
+	}
+public static JSONObject getOrgInfo() throws Exception {
     	
     	JSONObject result = new JSONObject();
     	FacilioModule module = AccountConstants.getOrgInfoModule();

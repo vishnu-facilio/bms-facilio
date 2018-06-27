@@ -34,8 +34,14 @@
                <span class="nav-title ">User Management</span>
                </a>
            </li>
-                      
            <li>
+           <a href="orginfo">
+           <span class="nav-icon">
+           <i class="sidebar-icon fa fa-building-o  fa-fw"></i> </span>
+           <span class="nav-titile ">Org Info</span>
+           </a>
+           </li>  	
+               <li>
                <a href="sqlconsole">
                <span class="nav-icon">
                <i class=" sidebar-icon fa fa-terminal  fa-fw "></i> </span>
