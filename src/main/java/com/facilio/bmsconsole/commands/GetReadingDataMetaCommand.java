@@ -28,10 +28,7 @@ public class GetReadingDataMetaCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		
 		
-		Boolean historyReading = (Boolean) context.get(FacilioConstants.ContextNames.HISTORY_READINGS);
-		if (historyReading != null && historyReading==true) {
-			return false;
-		}
+		
 		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
 		
 		if (readingMap != null && !readingMap.isEmpty()) {
