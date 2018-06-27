@@ -58,11 +58,6 @@ public class ExecuteAllWorkflowsCommand implements Command
 	
 	@Override
 	public boolean execute(Context context) throws Exception {
-		Boolean skipValidation = (Boolean) context.get(FacilioConstants.ContextNames.SKIP_VALIDATION);
-		if (skipValidation != null && skipValidation && ruleTypes.length == 1 && ruleTypes[0] == RuleType.VALIDATION_RULE) {
-			return false;
-		}
-		
 		long startTime = System.currentTimeMillis();
 		Boolean historyReading = (Boolean) context.get(FacilioConstants.ContextNames.HISTORY_READINGS);
 		if (historyReading != null && historyReading==true) {

@@ -1,0 +1,140 @@
+package com.facilio.bmsconsole.commands;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.criteria.BooleanOperators;
+import com.facilio.bmsconsole.criteria.CommonOperators;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.view.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.ActivityType;
+import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
+import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.exception.ReadingValidationException;
+import com.facilio.fw.BeanFactory;
+
+public class ExecuteValidationRule implements Command {
+
+	@Override
+	public boolean execute(Context context) throws Exception {
+		Boolean skipValidation = (Boolean) context.get(FacilioConstants.ContextNames.SKIP_VALIDATION);
+		if (skipValidation != null && skipValidation) {
+			return false;
+		}
+		
+		Map recordMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
+		if (recordMap == null) {
+			return false;
+		}
+			
+		fetchAndExecuteRules(recordMap, (FacilioContext) context);
+		return false;
+	}
+	
+	private void fetchAndExecuteRules(Map<String, List> recordMap, FacilioContext context) throws Exception {
+		for (Map.Entry<String, List> entry : recordMap.entrySet()) {
+			String moduleName = entry.getKey();
+			if (moduleName == null || moduleName.isEmpty() || entry.getValue() == null || entry.getValue().isEmpty()) {
+				continue;
+			}
+			
+			List<ActivityType> activities = Collections.singletonList(ActivityType.CREATE);
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			long moduleId = modBean.getModule(moduleName).getModuleId();
+			Map<String, FacilioField> fields = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleFields());
+			FacilioField parentRule = fields.get("parentRuleId");
+			FacilioField onSuccess = fields.get("onSuccess");
+			Criteria parentCriteria = new Criteria();
+			parentCriteria.addAndCondition(CriteriaAPI.getCondition(parentRule, CommonOperators.IS_EMPTY));
+			parentCriteria.addAndCondition(CriteriaAPI.getCondition(onSuccess, CommonOperators.IS_EMPTY));
+			List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(moduleId, activities, parentCriteria, RuleType.VALIDATION_RULE);
+			if (workflowRules != null && !workflowRules.isEmpty()) {
+				Map<String, Object> placeHolders = new HashMap<>();
+				CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeHolders);
+				CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeHolders);
+				
+				List records = new LinkedList<>(entry.getValue());
+				Iterator it = records.iterator();
+				while (it.hasNext()) {
+					Object record = it.next();
+					Map<String, Object> recordPlaceHolders = new HashMap<>(placeHolders);
+					CommonCommandUtil.appendModuleNameInKey(moduleName, moduleName, FieldUtil.getAsProperties(record), recordPlaceHolders);
+					List<WorkflowRuleContext> currentWorkflows = workflowRules;
+					while (currentWorkflows != null && !currentWorkflows.isEmpty()) {
+						Criteria childCriteria = executeWorkflows(currentWorkflows, moduleName, record, it, recordPlaceHolders, (FacilioContext) context);
+						if (childCriteria == null) {
+							break;
+						}
+						currentWorkflows = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(moduleId, activities, childCriteria, RuleType.VALIDATION_RULE);
+					}
+				}
+			}
+		}
+	}
+	
+	private static Criteria executeWorkflows(List<WorkflowRuleContext> workflowRules, String moduleName, Object record, Iterator itr, Map<String, Object> recordPlaceHolders, FacilioContext context) throws Exception {
+		if(workflowRules != null && !workflowRules.isEmpty()) {
+			Map<String, FacilioField> fields = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleFields());
+			FacilioField parentRule = fields.get("parentRuleId");
+			FacilioField onSuccess = fields.get("onSuccess");
+			Criteria criteria = new Criteria();
+			
+			for(WorkflowRuleContext workflowRule : workflowRules) {
+				Map<String, Object> rulePlaceHolders = workflowRule.constructPlaceHolders(moduleName, record, recordPlaceHolders, (FacilioContext) context);
+				boolean miscFlag = false, criteriaFlag = false, workflowFlag = false;
+				miscFlag = workflowRule.evaluateMisc(moduleName, record, rulePlaceHolders, (FacilioContext) context);
+				if (miscFlag) {
+					criteriaFlag = workflowRule.evaluateCriteria(moduleName, record, rulePlaceHolders, (FacilioContext) context);
+					if (criteriaFlag) {
+						workflowFlag = workflowRule.evaluateWorkflowExpression(moduleName, record, rulePlaceHolders, (FacilioContext) context);
+					}
+				}
+				
+				boolean result = criteriaFlag && workflowFlag && miscFlag;
+				if(result) {
+					String resultEvaluator = workflowRule.getWorkflow().getResultEvaluator();
+					ReadingRuleContext readingRule = (ReadingRuleContext) workflowRule;
+					String msg;
+					switch (resultEvaluator) {
+					case "(b!=-1&&a<b)||(c!=-1&&a>c)":
+						msg = readingRule.getReadingField().getDisplayName() + " should be within safe limit.";
+						throw new ReadingValidationException(readingRule.getReadingFieldId(), msg, resultEvaluator);
+					case "(b!=-1)&&(a<b)":
+						msg = readingRule.getReadingField().getDisplayName() + " should be incremental.";
+						throw new ReadingValidationException(readingRule.getReadingFieldId(), msg, resultEvaluator);
+					case "(b!=-1)&&(a>b)":
+						msg = readingRule.getReadingField().getDisplayName() + " should be decremental.";
+						throw new ReadingValidationException(readingRule.getReadingFieldId(), msg, resultEvaluator);
+					default:
+						throw new IllegalStateException();
+					}
+				}
+				
+				Criteria currentCriteria = new Criteria();
+				currentCriteria.addAndCondition(CriteriaAPI.getCondition(parentRule, String.valueOf(workflowRule.getId()), NumberOperators.EQUALS));
+				currentCriteria.addAndCondition(CriteriaAPI.getCondition(onSuccess, String.valueOf(result), BooleanOperators.IS));
+				criteria.orCriteria(currentCriteria);
+			}
+			return criteria;
+		}
+		return null;
+	}
+
+}

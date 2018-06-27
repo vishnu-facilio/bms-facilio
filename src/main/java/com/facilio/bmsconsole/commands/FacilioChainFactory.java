@@ -1806,12 +1806,23 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getUpdateReadingChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new RestrictUneditablePropsInFieldCommand());
+		c.addCommand(getUpdateFieldChain());
+		c.addCommand(new AddValidationRulesCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getAddCategoryReadingChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(getAddReadingChain());
 		c.addCommand(new AddCategoryReadingRelCommand());
 		c.addCommand(new GetCategoryResourcesCommand());
 		c.addCommand(new InsertReadingDataMetaForNewReadingCommand());
+		//c.addCommand(new SetValidationRulesContextCommand());
+		c.addCommand(new AddValidationRulesCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -1883,10 +1894,10 @@ public class FacilioChainFactory {
 		c.addCommand(new ReadingUnitConversionCommand());
 		c.addCommand(new DeltaCalculationCommand());
 		c.addCommand(new CalculatePreFormulaCommand());
-		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.VALIDATION_RULE));
+		c.addCommand(new ExecuteValidationRule());
 		c.addCommand(new AddOrUpdateReadingValuesCommand());
 		c.addCommand(new AddMarkedReadingValuesCommand());
-		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.READING_RULE, RuleType.PM_READING_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.READING_RULE, RuleType.PM_READING_RULE, RuleType.VALIDATION_RULE));
 		c.addCommand(new CalculatePostFormulaCommand());
 		c.addCommand(new SpaceBudIntegrationCommand());	//For RMZ-SpaceBud Integration
 		addCleanUpCommand(c);
