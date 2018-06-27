@@ -17,6 +17,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class WorkorderTemplate extends Template {
 	
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		String name = super.getName();
+		if (name == null || name.isEmpty()) {
+			return subject;
+		}
+		return name;
+	}
+	
 	private String description;
 	public String getDescription() {
 		return description;
