@@ -96,6 +96,7 @@ public class SiteContext extends BaseSpaceContext {
 	public enum SiteType {
 		COMMON(1, "Common"),
 		HOSPITAL(2, "Hospital"),
+		RESIDENTIAL(3, "Residential"),
 		OFFICE(4, "Office")
 		;
 		
