@@ -7,13 +7,13 @@ import java.util.Map;
 import com.facilio.constants.FacilioConstants;
 
 public class ModuleFactory {
-	
+
 	private static final Map<String, FacilioModule> MODULE_MAP = Collections.unmodifiableMap(initMap());
-	
+
 	public static FacilioModule getModule(String moduleName) {
 		return MODULE_MAP.get(moduleName);
 	}
-	
+
 	private static Map<String, FacilioModule> initMap() {
 		Map<String, FacilioModule> moduleMap = new HashMap<>();
 		moduleMap.put("field", getFieldsModule());
@@ -52,46 +52,46 @@ public class ModuleFactory {
 		moduleMap.put("singledaybusinesshour", getSingleDayBusinessHourModule());
 		moduleMap.put("businesshours", getBusinessHoursModule());
 		moduleMap.put("files", getFilesModule());
-		moduleMap.put("anomalyScheduler", getAnalyticsAnomalyModule());	
+		moduleMap.put("anomalyScheduler", getAnalyticsAnomalyModule());
 		return moduleMap;
 	}
-			
+
 	public static FacilioModule getFieldsModule() {
 		FacilioModule fieldModule = new FacilioModule();
 		fieldModule.setName("field");
 		fieldModule.setDisplayName("Fields");
 		fieldModule.setTableName("Fields");
-		
+
 		return fieldModule;
 	}
-	
+
 	public static FacilioModule getLookupFieldsModule() {
 		FacilioModule fieldModule = new FacilioModule();
 		fieldModule.setName("lookupField");
 		fieldModule.setDisplayName("Lookup Fields");
 		fieldModule.setTableName("LookupFields");
-//		fieldModule.setExtendModule(getFieldsModule());
+		// fieldModule.setExtendModule(getFieldsModule());
 		return fieldModule;
 	}
-	
+
 	public static FacilioModule getNumberFieldModule() {
 		FacilioModule numberModule = new FacilioModule();
 		numberModule.setName("numberField");
 		numberModule.setDisplayName("Number Fields");
 		numberModule.setTableName("NumberFields");
-//		numberModule.setExtendModule(getFieldsModule());
+		// numberModule.setExtendModule(getFieldsModule());
 		return numberModule;
 	}
-	
+
 	public static FacilioModule getBooleanFieldsModule() {
 		FacilioModule booleanModule = new FacilioModule();
 		booleanModule.setName("booleanField");
 		booleanModule.setDisplayName("Boolean Fields");
 		booleanModule.setTableName("BooleanFields");
-//		booleanModule.setExtendModule(getFieldsModule());
+		// booleanModule.setExtendModule(getFieldsModule());
 		return booleanModule;
 	}
-	
+
 	public static FacilioModule getEnumFieldValuesModule() {
 		FacilioModule enumFieldValues = new FacilioModule();
 		enumFieldValues.setName("enumFieldValues");
@@ -99,43 +99,43 @@ public class ModuleFactory {
 		enumFieldValues.setTableName("EnumFieldValues");
 		return enumFieldValues;
 	}
- 	
+
 	public static FacilioModule getSpaceCategoryReadingRelModule() {
 		FacilioModule fieldModule = new FacilioModule();
 		fieldModule.setName("spacecategoryreading");
 		fieldModule.setDisplayName("Space Readings");
 		fieldModule.setTableName("Space_Category_Readings");
-		
+
 		return fieldModule;
 	}
-	
+
 	public static FacilioModule getAssetsModule() {
 		FacilioModule fieldModule = new FacilioModule();
 		fieldModule.setName(FacilioConstants.ContextNames.ASSET);
 		fieldModule.setDisplayName("Assets");
 		fieldModule.setTableName("Assets");
-		
+
 		return fieldModule;
 	}
-	
+
 	public static FacilioModule getAssetCategoryReadingRelModule() {
 		FacilioModule fieldModule = new FacilioModule();
 		fieldModule.setName("assetcategoryreading");
 		fieldModule.setDisplayName("Asset Readings");
 		fieldModule.setTableName("Asset_Category_Readings");
-		
+
 		return fieldModule;
 	}
-	
+
 	public static FacilioModule getRequesterModule() {
 		FacilioModule requesterModule = new FacilioModule();
 		requesterModule.setName("requester");
 		requesterModule.setDisplayName("Requester");
 		requesterModule.setTableName("Requester");
-			//prevModule.setExtendModule(currentModule);
+		// prevModule.setExtendModule(currentModule);
 		return requesterModule;
 	}
-	
+
 	public static FacilioModule getEmailSettingModule() {
 		FacilioModule emailSettingModule = new FacilioModule();
 		emailSettingModule.setName("emailsettings");
@@ -143,7 +143,7 @@ public class ModuleFactory {
 		emailSettingModule.setTableName("EmailSettings");
 		return emailSettingModule;
 	}
-	
+
 	public static FacilioModule getWorkflowEventModule() {
 		FacilioModule workflowEventModule = new FacilioModule();
 		workflowEventModule.setName("workflowevent");
@@ -151,7 +151,7 @@ public class ModuleFactory {
 		workflowEventModule.setTableName("Workflow_Event");
 		return workflowEventModule;
 	}
-	
+
 	public static FacilioModule getWorkflowRuleModule() {
 		FacilioModule workflowRuleModule = new FacilioModule();
 		workflowRuleModule.setName("workflowrule");
@@ -159,17 +159,17 @@ public class ModuleFactory {
 		workflowRuleModule.setTableName("Workflow_Rule");
 		return workflowRuleModule;
 	}
-	
+
 	public static FacilioModule getReadingRuleModule() {
 		FacilioModule readingRuleModule = new FacilioModule();
 		readingRuleModule.setName("readingrule");
 		readingRuleModule.setDisplayName("Reading Rule");
 		readingRuleModule.setTableName("Reading_Rule");
 		readingRuleModule.setExtendModule(getWorkflowRuleModule());
-		
+
 		return readingRuleModule;
 	}
-	
+
 	public static FacilioModule getReadingRuleInclusionsExclusionsModule() {
 		FacilioModule readingRuleInclusionsExclusions = new FacilioModule();
 		readingRuleInclusionsExclusions.setName("readingruleInclusionsExclusions");
@@ -177,17 +177,17 @@ public class ModuleFactory {
 		readingRuleInclusionsExclusions.setTableName("Reading_Rule_Inclusions_Exclusions");
 		return readingRuleInclusionsExclusions;
 	}
-	
+
 	public static FacilioModule getSLARuleModule() {
 		FacilioModule slarule = new FacilioModule();
 		slarule.setName("slarule");
 		slarule.setDisplayName("SLA Rule");
 		slarule.setTableName("SLA_Rule");
 		slarule.setExtendModule(getWorkflowRuleModule());
-		
+
 		return slarule;
 	}
-	
+
 	public static FacilioModule getWorkflowRuleActionModule() {
 		FacilioModule workflowRuleModule = new FacilioModule();
 		workflowRuleModule.setName("workflowruleaction");
@@ -195,7 +195,7 @@ public class ModuleFactory {
 		workflowRuleModule.setTableName("Workflow_Rule_Action");
 		return workflowRuleModule;
 	}
-	
+
 	public static FacilioModule getActionModule() {
 		FacilioModule actionModule = new FacilioModule();
 		actionModule.setName("action");
@@ -203,7 +203,7 @@ public class ModuleFactory {
 		actionModule.setTableName("Action");
 		return actionModule;
 	}
-	
+
 	public static FacilioModule getSupportEmailsModule() {
 		FacilioModule supportEmailsModule = new FacilioModule();
 		supportEmailsModule.setName("supportemails");
@@ -211,16 +211,16 @@ public class ModuleFactory {
 		supportEmailsModule.setTableName("SupportEmails");
 		return supportEmailsModule;
 	}
-	
-	public static FacilioModule getOrgUserModule(){
+
+	public static FacilioModule getOrgUserModule() {
 		FacilioModule orgUserModule = new FacilioModule();
 		orgUserModule.setName("orgusers");
 		orgUserModule.setDisplayName("Org Users");
 		orgUserModule.setTableName("ORG_Users");
 		return orgUserModule;
-		
+
 	}
-	
+
 	public static FacilioModule getUserModule() {
 		FacilioModule userModule = new FacilioModule();
 		userModule.setName(FacilioConstants.ContextNames.USER);
@@ -228,7 +228,7 @@ public class ModuleFactory {
 		userModule.setTableName("Users");
 		return userModule;
 	}
-	
+
 	public static FacilioModule getAccessibleSpaceModule() {
 		FacilioModule accessbileSpaceModule = new FacilioModule();
 		accessbileSpaceModule.setName(FacilioConstants.ContextNames.ACCESSIBLE_SPACE);
@@ -236,7 +236,7 @@ public class ModuleFactory {
 		accessbileSpaceModule.setTableName("Accessible_Space");
 		return accessbileSpaceModule;
 	}
-	
+
 	public static FacilioModule getNotesModule() {
 		FacilioModule notesModule = new FacilioModule();
 		notesModule.setName("notes");
@@ -244,7 +244,7 @@ public class ModuleFactory {
 		notesModule.setTableName("Notes");
 		return notesModule;
 	}
-	
+
 	public static FacilioModule getWorkOrderRequestEMailModule() {
 		FacilioModule workOrderRequestEMailModule = new FacilioModule();
 		workOrderRequestEMailModule.setName("workorderrequestemail");
@@ -252,7 +252,7 @@ public class ModuleFactory {
 		workOrderRequestEMailModule.setTableName("WorkOrderRequest_EMail");
 		return workOrderRequestEMailModule;
 	}
-	
+
 	public static FacilioModule getTicketActivityModule() {
 		FacilioModule ticketActivityModule = new FacilioModule();
 		ticketActivityModule.setName("ticketactivity");
@@ -260,7 +260,7 @@ public class ModuleFactory {
 		ticketActivityModule.setTableName("Ticket_Activity");
 		return ticketActivityModule;
 	}
-	
+
 	public static FacilioModule getAlarmFollowersModule() {
 		FacilioModule alarmFollowersModule = new FacilioModule();
 		alarmFollowersModule.setName("alarmfollowers");
@@ -268,7 +268,7 @@ public class ModuleFactory {
 		alarmFollowersModule.setTableName("AlarmFollowers");
 		return alarmFollowersModule;
 	}
-	
+
 	public static FacilioModule getTemplatesModule() {
 		FacilioModule templatesModule = new FacilioModule();
 		templatesModule.setName("templates");
@@ -276,7 +276,7 @@ public class ModuleFactory {
 		templatesModule.setTableName("Templates");
 		return templatesModule;
 	}
-	
+
 	public static FacilioModule getEMailTemplatesModule() {
 		FacilioModule eMailTemplatesModule = new FacilioModule();
 		eMailTemplatesModule.setName("emailtemplates");
@@ -285,7 +285,7 @@ public class ModuleFactory {
 		eMailTemplatesModule.setExtendModule(getTemplatesModule());
 		return eMailTemplatesModule;
 	}
-	
+
 	public static FacilioModule getSMSTemplatesModule() {
 		FacilioModule smsTemplatesModule = new FacilioModule();
 		smsTemplatesModule.setName("smstemplates");
@@ -294,7 +294,7 @@ public class ModuleFactory {
 		smsTemplatesModule.setExtendModule(getTemplatesModule());
 		return smsTemplatesModule;
 	}
-	
+
 	public static FacilioModule getAssignmentTemplatesModule() {
 		FacilioModule assignmentTemplatesModule = new FacilioModule();
 		assignmentTemplatesModule.setName("assignmenttemplates");
@@ -303,6 +303,7 @@ public class ModuleFactory {
 		assignmentTemplatesModule.setExtendModule(getTemplatesModule());
 		return assignmentTemplatesModule;
 	}
+
 	public static FacilioModule getSlaTemplatesModule() {
 		FacilioModule assignmentTemplatesModule = new FacilioModule();
 		assignmentTemplatesModule.setName("slatemplates");
@@ -311,7 +312,7 @@ public class ModuleFactory {
 		assignmentTemplatesModule.setExtendModule(getTemplatesModule());
 		return assignmentTemplatesModule;
 	}
-	
+
 	public static FacilioModule getPushNotificationTemplateModule() {
 		FacilioModule pushNotificationTemplatesModule = new FacilioModule();
 		pushNotificationTemplatesModule.setName("pushNotificationTemplates");
@@ -320,7 +321,7 @@ public class ModuleFactory {
 		pushNotificationTemplatesModule.setExtendModule(getTemplatesModule());
 		return pushNotificationTemplatesModule;
 	}
-	
+
 	public static FacilioModule getWebNotificationTemplateModule() {
 		FacilioModule webNotificationTemplatesModule = new FacilioModule();
 		webNotificationTemplatesModule.setName("webNotificationTemplates");
@@ -329,7 +330,7 @@ public class ModuleFactory {
 		webNotificationTemplatesModule.setExtendModule(getTemplatesModule());
 		return webNotificationTemplatesModule;
 	}
-	
+
 	public static FacilioModule getExcelTemplatesModule() {
 		FacilioModule excelTemplatesModule = new FacilioModule();
 		excelTemplatesModule.setName("exceltemplates");
@@ -338,7 +339,7 @@ public class ModuleFactory {
 		excelTemplatesModule.setExtendModule(getTemplatesModule());
 		return excelTemplatesModule;
 	}
-	
+
 	public static FacilioModule getTenantModule() {
 		FacilioModule tenantModule = new FacilioModule();
 		tenantModule.setName("tenant");
@@ -346,8 +347,7 @@ public class ModuleFactory {
 		tenantModule.setTableName("Tenant");
 		return tenantModule;
 	}
-	
-	
+
 	public static FacilioModule getCriteriaModule() {
 		FacilioModule criteriaModule = new FacilioModule();
 		criteriaModule.setName("criteria");
@@ -355,7 +355,7 @@ public class ModuleFactory {
 		criteriaModule.setTableName("Criteria");
 		return criteriaModule;
 	}
-	
+
 	public static FacilioModule getConditionsModule() {
 		FacilioModule conditionModule = new FacilioModule();
 		conditionModule.setName("conditions");
@@ -363,7 +363,7 @@ public class ModuleFactory {
 		conditionModule.setTableName("Conditions");
 		return conditionModule;
 	}
-	
+
 	public static FacilioModule getViewsModule() {
 		FacilioModule viewsModule = new FacilioModule();
 		viewsModule.setName("views");
@@ -371,7 +371,7 @@ public class ModuleFactory {
 		viewsModule.setTableName("Views");
 		return viewsModule;
 	}
-	
+
 	public static FacilioModule getUsersModule() {
 		FacilioModule usersModule = new FacilioModule();
 		usersModule.setName("users");
@@ -379,7 +379,7 @@ public class ModuleFactory {
 		usersModule.setTableName("Users");
 		return usersModule;
 	}
-	
+
 	public static FacilioField getTicketStatusIdField() {
 		FacilioModule module = getTicketStatusModule();
 		FacilioField idField = new FacilioField();
@@ -387,12 +387,10 @@ public class ModuleFactory {
 		idField.setDataType(FieldType.NUMBER);
 		idField.setColumnName("ID");
 		idField.setModule(module);
-		
+
 		return idField;
 	}
-	
-	
-	
+
 	public static FacilioModule getTicketStatusModule() {
 		FacilioModule ticketStatusModule = new FacilioModule();
 		ticketStatusModule.setName(FacilioConstants.ContextNames.TICKET_STATUS);
@@ -400,7 +398,7 @@ public class ModuleFactory {
 		ticketStatusModule.setTableName("TicketStatus");
 		return ticketStatusModule;
 	}
-	
+
 	public static FacilioModule getTicketCategoryModule() {
 		FacilioModule ticketCategoryModule = new FacilioModule();
 		ticketCategoryModule.setName(FacilioConstants.ContextNames.TICKET_CATEGORY);
@@ -408,7 +406,7 @@ public class ModuleFactory {
 		ticketCategoryModule.setTableName("TicketCategory");
 		return ticketCategoryModule;
 	}
-	
+
 	public static FacilioModule getTicketTypeModule() {
 		FacilioModule ticketTypeModule = new FacilioModule();
 		ticketTypeModule.setName(FacilioConstants.ContextNames.TICKET_TYPE);
@@ -416,7 +414,7 @@ public class ModuleFactory {
 		ticketTypeModule.setTableName("TicketType");
 		return ticketTypeModule;
 	}
-	
+
 	public static FacilioModule getTicketPriorityModule() {
 		FacilioModule ticketTypeModule = new FacilioModule();
 		ticketTypeModule.setName(FacilioConstants.ContextNames.TICKET_PRIORITY);
@@ -424,7 +422,7 @@ public class ModuleFactory {
 		ticketTypeModule.setTableName("TicketPriority");
 		return ticketTypeModule;
 	}
-	
+
 	public static FacilioModule getTicketsModule() {
 		FacilioModule ticketStatusModule = new FacilioModule();
 		ticketStatusModule.setName(FacilioConstants.ContextNames.TICKET);
@@ -432,7 +430,7 @@ public class ModuleFactory {
 		ticketStatusModule.setTableName("Tickets");
 		return ticketStatusModule;
 	}
-	
+
 	public static FacilioModule getWorkOrdersModule() {
 		FacilioModule workOrdersModule = new FacilioModule();
 		workOrdersModule.setName(FacilioConstants.ContextNames.WORK_ORDER);
@@ -441,7 +439,7 @@ public class ModuleFactory {
 		workOrdersModule.setExtendModule(getTicketsModule());
 		return workOrdersModule;
 	}
-	
+
 	public static FacilioModule getWorkOrderRequestsModule() {
 		FacilioModule workOrderRequestsModule = new FacilioModule();
 		workOrderRequestsModule.setName(FacilioConstants.ContextNames.WORK_ORDER_REQUEST);
@@ -450,7 +448,7 @@ public class ModuleFactory {
 		workOrderRequestsModule.setExtendModule(getTicketsModule());
 		return workOrderRequestsModule;
 	}
-	
+
 	public static FacilioModule getTasksModule() {
 		FacilioModule workOrderRequestsModule = new FacilioModule();
 		workOrderRequestsModule.setName(FacilioConstants.ContextNames.TASK);
@@ -459,7 +457,7 @@ public class ModuleFactory {
 		workOrderRequestsModule.setExtendModule(getTicketsModule());
 		return workOrderRequestsModule;
 	}
-	
+
 	public static FacilioModule getAlarmsModule() {
 		FacilioModule alarmModule = new FacilioModule();
 		alarmModule.setName(FacilioConstants.ContextNames.ALARM);
@@ -468,7 +466,7 @@ public class ModuleFactory {
 		alarmModule.setExtendModule(getTicketsModule());
 		return alarmModule;
 	}
-	
+
 	public static FacilioModule getAlarmSeverityModule() {
 		FacilioModule alarmSeverityModule = new FacilioModule();
 		alarmSeverityModule.setName(FacilioConstants.ContextNames.ALARM_SEVERITY);
@@ -476,7 +474,7 @@ public class ModuleFactory {
 		alarmSeverityModule.setTableName("Alarm_Severity");
 		return alarmSeverityModule;
 	}
-	
+
 	public static FacilioModule getJSONTemplateModule() {
 		FacilioModule jsonTemplateModule = new FacilioModule();
 		jsonTemplateModule.setName("jsontemplate");
@@ -484,7 +482,7 @@ public class ModuleFactory {
 		jsonTemplateModule.setTableName("JSON_Template");
 		return jsonTemplateModule;
 	}
-	
+
 	public static FacilioModule getPreventiveMaintenancetModule() {
 		FacilioModule alarmModule = new FacilioModule();
 		alarmModule.setName("preventivemaintenance");
@@ -492,7 +490,7 @@ public class ModuleFactory {
 		alarmModule.setTableName("Preventive_Maintenance");
 		return alarmModule;
 	}
-	
+
 	public static FacilioModule getJobsModule() {
 		FacilioModule alarmModule = new FacilioModule();
 		alarmModule.setName("jobs");
@@ -508,7 +506,7 @@ public class ModuleFactory {
 		connectedApp.setTableName("Connected_App");
 		return connectedApp;
 	}
-	
+
 	public static FacilioModule getTabWidgetModule() {
 		FacilioModule tabWidget = new FacilioModule();
 		tabWidget.setName("tabwidget");
@@ -516,7 +514,7 @@ public class ModuleFactory {
 		tabWidget.setTableName("Tab_Widget");
 		return tabWidget;
 	}
-	
+
 	public static FacilioModule getSpaceCategoryModule() {
 		FacilioModule ticketCategoryModule = new FacilioModule();
 		ticketCategoryModule.setName(FacilioConstants.ContextNames.SPACE_CATEGORY);
@@ -530,113 +528,118 @@ public class ModuleFactory {
 		singleDayBusinessHour.setName("singledaybusinesshour");
 		singleDayBusinessHour.setDisplayName("Single Day Business Hour");
 		singleDayBusinessHour.setTableName("SingleDayBusinessHours");
-		
+
 		return singleDayBusinessHour;
 	}
-	
+
 	public static FacilioModule getBusinessHoursModule() {
 		FacilioModule businessHours = new FacilioModule();
 		businessHours.setName("businesshours");
 		businessHours.setDisplayName("Business Hours");
 		businessHours.setTableName("BusinessHours");
-		
+
 		return businessHours;
 	}
-	
+
 	public static FacilioModule getFilesModule() {
 		FacilioModule filesModule = new FacilioModule();
 		filesModule.setName("files");
 		filesModule.setDisplayName("Files");
 		filesModule.setTableName("File");
-		
+
 		return filesModule;
 	}
-	
+
 	public static FacilioModule getZoneRelModule() {
 		FacilioModule zoneRelModule = new FacilioModule();
 		zoneRelModule.setName("zonespacerel");
 		zoneRelModule.setDisplayName("Zone Space Rel");
 		zoneRelModule.setTableName("Zone_Space");
-		
+
 		return zoneRelModule;
 	}
-	
+
 	public static FacilioModule getAssetCategoryModule() {
 		FacilioModule fieldModule = new FacilioModule();
 		fieldModule.setName("assetcategory");
 		fieldModule.setDisplayName("Asset Category");
 		fieldModule.setTableName("Asset_Categories");
-		
+
 		return fieldModule;
 	}
-	
+
 	public static FacilioModule getControllerModule() {
 		FacilioModule controllerModule = new FacilioModule();
 		controllerModule.setName("controller");
 		controllerModule.setDisplayName("Controllers");
 		controllerModule.setTableName("Controller");
-		
+
 		return controllerModule;
 	}
-	
+
 	public static FacilioModule getNotificationModule() {
 		FacilioModule notificationModule = new FacilioModule();
 		notificationModule.setName("notification");
 		notificationModule.setDisplayName("Notifications");
 		notificationModule.setTableName("Notification");
-		
+
 		return notificationModule;
 	}
-	
+
 	public static FacilioModule getVirtualMeterRelModule() {
 		FacilioModule virtualMeterRelModule = new FacilioModule();
 		virtualMeterRelModule.setName("virtualmeterrelmodule");
 		virtualMeterRelModule.setDisplayName("Virtual Meter Rel");
 		virtualMeterRelModule.setTableName("Virtual_Energy_Meter_Rel");
-		
+
 		return virtualMeterRelModule;
 	}
-	
-	
+
 	public static FacilioModule getHistoricalVMModule() {
 		FacilioModule historicalVMCalModule = new FacilioModule();
 		historicalVMCalModule.setName("historicalvmcalcualtionmodule");
 		historicalVMCalModule.setDisplayName("Historical VM Calcuation");
 		historicalVMCalModule.setTableName("Historical_VM_Calculation");
-		
+
 		return historicalVMCalModule;
 	}
-	
+
 	public static FacilioModule getDashboardModule() {
 		FacilioModule dashboardWigetModule = new FacilioModule();
 		dashboardWigetModule.setTableName("Dashboard");
 		return dashboardWigetModule;
 	}
+
 	public static FacilioModule getWidgetModule() {
 		FacilioModule dashboardWigetModule = new FacilioModule();
 		dashboardWigetModule.setTableName("Widget");
 		return dashboardWigetModule;
 	}
+
 	public static FacilioModule getDashboardVsWidgetModule() {
 		FacilioModule dashboardWigetModule = new FacilioModule();
 		dashboardWigetModule.setTableName("Dashboard_vs_Widget");
 		return dashboardWigetModule;
 	}
+
 	public static FacilioModule getWidgetChartModule() {
 		FacilioModule dashboardWigetModule = new FacilioModule();
 		dashboardWigetModule.setTableName("Widget_Chart");
 		return dashboardWigetModule;
 	}
+
 	public static FacilioModule getWidgetListViewModule() {
 		FacilioModule dashboardWigetModule = new FacilioModule();
 		dashboardWigetModule.setTableName("Widget_List_View");
 		return dashboardWigetModule;
 	}
+
 	public static FacilioModule getWidgetStaticModule() {
 		FacilioModule dashboardWigetModule = new FacilioModule();
 		dashboardWigetModule.setTableName("Widget_Static");
 		return dashboardWigetModule;
 	}
+
 	public static FacilioModule getWidgetWebModule() {
 		FacilioModule dashboardWigetModule = new FacilioModule();
 		dashboardWigetModule.setTableName("Widget_Web");
@@ -648,61 +651,70 @@ public class ModuleFactory {
 		dashboardWigetModule.setTableName("Formula");
 		return dashboardWigetModule;
 	}
-	
+
 	public static FacilioModule getReportFolder() {
 		FacilioModule reportFolderModule = new FacilioModule();
 		reportFolderModule.setTableName("Report_Folder");
 		return reportFolderModule;
 	}
+
 	public static FacilioModule getReport() {
 		FacilioModule reportModule = new FacilioModule();
 		reportModule.setTableName("Report");
 		return reportModule;
 	}
+
 	public static FacilioModule getReportField() {
 		FacilioModule reportFieldModule = new FacilioModule();
 		reportFieldModule.setTableName("Report_Field");
 		return reportFieldModule;
 	}
+
 	public static FacilioModule getReportDateFilter() {
 		FacilioModule reportFieldModule = new FacilioModule();
 		reportFieldModule.setTableName("Report_DateFilter");
 		return reportFieldModule;
 	}
+
 	public static FacilioModule getReportEnergyMeter() {
 		FacilioModule reportFieldModule = new FacilioModule();
 		reportFieldModule.setTableName("Report_EnergyMeter");
 		return reportFieldModule;
 	}
+
 	public static FacilioModule getReportCriteria() {
 		FacilioModule reportCriteriaModule = new FacilioModule();
 		reportCriteriaModule.setTableName("Report_Criteria");
 		return reportCriteriaModule;
 	}
+
 	public static FacilioModule getReportFormulaField() {
 		FacilioModule reportFormulaFieldModule = new FacilioModule();
 		reportFormulaFieldModule.setTableName("Report_Formula_Field");
 		return reportFormulaFieldModule;
 	}
+
 	public static FacilioModule getReportThreshold() {
 		FacilioModule reportThresholdModule = new FacilioModule();
 		reportThresholdModule.setTableName("Report_Threshold");
 		return reportThresholdModule;
 	}
+
 	public static FacilioModule getReportUserFilter() {
 		FacilioModule reportThresholdModule = new FacilioModule();
 		reportThresholdModule.setTableName("Report_User_Filter");
 		return reportThresholdModule;
 	}
+
 	public static FacilioModule getPMReminderModule() {
 		FacilioModule reminderModule = new FacilioModule();
 		reminderModule.setName("pmreminder");
 		reminderModule.setDisplayName("Preventive Maintenance Reminder");
 		reminderModule.setTableName("PM_Reminders");
-		
+
 		return reminderModule;
 	}
-	
+
 	public static FacilioModule getPMTriggersModule() {
 		FacilioModule pmTriggers = new FacilioModule();
 		pmTriggers.setName("pmtrigger");
@@ -710,25 +722,25 @@ public class ModuleFactory {
 		pmTriggers.setTableName("PM_Triggers");
 		return pmTriggers;
 	}
-	
+
 	public static FacilioModule getPMJobsModule() {
 		FacilioModule pmJobs = new FacilioModule();
 		pmJobs.setName("pmJobs");
 		pmJobs.setDisplayName("Preventive Maintenance Jobs");
 		pmJobs.setTableName("PM_Jobs");
-		
+
 		return pmJobs;
 	}
-	
+
 	public static FacilioModule getBeforePMRemindersTriggerRelModule() {
 		FacilioModule beforePMRemindersTriggerRel = new FacilioModule();
 		beforePMRemindersTriggerRel.setName("beforepmreminderstriggerrel");
 		beforePMRemindersTriggerRel.setDisplayName("Before PM Reminders Trigger Rel");
 		beforePMRemindersTriggerRel.setTableName("Before_PM_Reminder_Trigger_Rel");
-		
+
 		return beforePMRemindersTriggerRel;
 	}
-	
+
 	public static FacilioModule getAfterPMRemindersWORelModule() {
 		FacilioModule pmReminderJobWORel = new FacilioModule();
 		pmReminderJobWORel.setName("afterpmreminderworel");
@@ -736,19 +748,19 @@ public class ModuleFactory {
 		pmReminderJobWORel.setTableName("After_PM_Reminder_WO_Rel");
 		return pmReminderJobWORel;
 	}
-	
+
 	public static FacilioModule getViewColumnsModule() {
 		FacilioModule viewFieldsModule = new FacilioModule();
 		viewFieldsModule.setTableName("View_Column");
 		return viewFieldsModule;
 	}
-	
+
 	public static FacilioModule getViewSortColumnsModule() {
-		FacilioModule viewSortColumnsModule  = new FacilioModule();
+		FacilioModule viewSortColumnsModule = new FacilioModule();
 		viewSortColumnsModule.setTableName("View_Sort_Columns");
 		return viewSortColumnsModule;
 	}
-	
+
 	public static FacilioModule getTaskInputOptionModule() {
 		FacilioModule taskInputOptionsModule = new FacilioModule();
 		taskInputOptionsModule.setName("taskInputOpyion");
@@ -756,7 +768,7 @@ public class ModuleFactory {
 		taskInputOptionsModule.setTableName("Task_Input_Options");
 		return taskInputOptionsModule;
 	}
-	
+
 	public static FacilioModule getTaskSectionModule() {
 		FacilioModule taskSection = new FacilioModule();
 		taskSection.setName("tasksection");
@@ -764,7 +776,7 @@ public class ModuleFactory {
 		taskSection.setTableName("Task_Section");
 		return taskSection;
 	}
-	
+
 	public static FacilioModule getAlarmEntityModule() {
 		FacilioModule alarmentity = new FacilioModule();
 		alarmentity.setName("alarmentity");
@@ -772,6 +784,7 @@ public class ModuleFactory {
 		alarmentity.setTableName("Alarm_Entity");
 		return alarmentity;
 	}
+
 	public static FacilioModule getReportEntityModule() {
 		FacilioModule alarmentity = new FacilioModule();
 		alarmentity.setName("reportentity");
@@ -779,22 +792,25 @@ public class ModuleFactory {
 		alarmentity.setTableName("Report_Entity");
 		return alarmentity;
 	}
+
 	public static FacilioModule getWorkflowModule() {
 		FacilioModule dashboardWigetModule = new FacilioModule();
 		dashboardWigetModule.setTableName("Workflow");
 		return dashboardWigetModule;
 	}
+
 	public static FacilioModule getWorkflowFieldModule() {
 		FacilioModule dashboardWigetModule = new FacilioModule();
 		dashboardWigetModule.setTableName("Workflow_Field");
 		return dashboardWigetModule;
 	}
+
 	public static FacilioModule getExpressionModule() {
 		FacilioModule dashboardWigetModule = new FacilioModule();
 		dashboardWigetModule.setTableName("Expression");
 		return dashboardWigetModule;
 	}
-	
+
 	public static FacilioModule getReportScheduleInfoModule() {
 		FacilioModule reportScheduleInfo = new FacilioModule();
 		reportScheduleInfo.setName("reportScheduleInfo");
@@ -802,7 +818,7 @@ public class ModuleFactory {
 		reportScheduleInfo.setTableName("Report_Schedule_Info");
 		return reportScheduleInfo;
 	}
-	
+
 	public static FacilioModule getCalendarColorModule() {
 		FacilioModule calendarColor = new FacilioModule();
 		calendarColor.setName("calendarColor");
@@ -810,24 +826,24 @@ public class ModuleFactory {
 		calendarColor.setTableName("Calendar_Color");
 		return calendarColor;
 	}
-	
-	public static FacilioModule getBaseLineModule()  {
+
+	public static FacilioModule getBaseLineModule() {
 		FacilioModule blModule = new FacilioModule();
 		blModule.setName("baseline");
 		blModule.setDisplayName("Base Lines");
 		blModule.setTableName("BaseLines");
-		return  blModule;
+		return blModule;
 	}
-	
+
 	public static FacilioModule getBaseLineReportRelModule() {
 		FacilioModule relModule = new FacilioModule();
 		relModule.setName("baselinereportrel");
 		relModule.setDisplayName("Base Line Reports Rel");
 		relModule.setTableName("Report_BaseLine_Rel");
-		
+
 		return relModule;
 	}
-	
+
 	public static FacilioModule getReadingDataMetaModule() {
 		FacilioModule readingDataMeta = new FacilioModule();
 		readingDataMeta.setName("readingdatameta");
@@ -835,7 +851,7 @@ public class ModuleFactory {
 		readingDataMeta.setTableName("Reading_Data_Meta");
 		return readingDataMeta;
 	}
-	
+
 	public static FacilioModule getWorkOrderTemplateModule() {
 		FacilioModule workOrderTemplate = new FacilioModule();
 		workOrderTemplate.setName("workordertemplate");
@@ -843,7 +859,7 @@ public class ModuleFactory {
 		workOrderTemplate.setTableName("Workorder_Template");
 		return workOrderTemplate;
 	}
-	
+
 	public static FacilioModule getTaskSectionTemplateModule() {
 		FacilioModule taskSectionModule = new FacilioModule();
 		taskSectionModule.setName("tasksectiontemplate");
@@ -851,7 +867,7 @@ public class ModuleFactory {
 		taskSectionModule.setTableName("Task_Section_Template");
 		return taskSectionModule;
 	}
- 	
+
 	public static FacilioModule getTaskTemplateModule() {
 		FacilioModule taskTemplate = new FacilioModule();
 		taskTemplate.setName("tasktemplate");
@@ -859,7 +875,7 @@ public class ModuleFactory {
 		taskTemplate.setTableName("Task_Template");
 		return taskTemplate;
 	}
-	
+
 	public static FacilioModule getResourceReadingsModule() {
 		FacilioModule baseSpaceReadings = new FacilioModule();
 		baseSpaceReadings.setName("resourcereadings");
@@ -867,7 +883,7 @@ public class ModuleFactory {
 		baseSpaceReadings.setTableName("Resource_Readings");
 		return baseSpaceReadings;
 	}
-	
+
 	public static FacilioModule getFormulaFieldModule() {
 		FacilioModule enpi = new FacilioModule();
 		enpi.setName("formulaField");
@@ -875,7 +891,7 @@ public class ModuleFactory {
 		enpi.setTableName("Formula_Field");
 		return enpi;
 	}
-	
+
 	public static FacilioModule getFormulaFieldInclusionsModule() {
 		FacilioModule readingRuleInclusionsExclusions = new FacilioModule();
 		readingRuleInclusionsExclusions.setName("formulaFieldInclusions");
@@ -883,7 +899,7 @@ public class ModuleFactory {
 		readingRuleInclusionsExclusions.setTableName("Formula_Field_Inclusions");
 		return readingRuleInclusionsExclusions;
 	}
-	
+
 	public static FacilioModule getFormulaFieldResourceJobModule() {
 		FacilioModule readingRuleInclusionsExclusions = new FacilioModule();
 		readingRuleInclusionsExclusions.setName("formulaFieldResourceJob");
@@ -891,16 +907,17 @@ public class ModuleFactory {
 		readingRuleInclusionsExclusions.setTableName("Formula_Field_Resource_Jobs");
 		return readingRuleInclusionsExclusions;
 	}
-	
+
 	public static FacilioModule getReadingRuleFlapsModule() {
 		FacilioModule readingRuleFlaps = new FacilioModule();
 		readingRuleFlaps.setName("readingRuleFlaps");
 		readingRuleFlaps.setDisplayName("Reading Rule Flaps");
 		readingRuleFlaps.setTableName("Reading_Rule_Flaps");
-		
+
 		return readingRuleFlaps;
-		
+
 	}
+
 	public static FacilioModule getServicePortalModule() {
 		FacilioModule enpi = new FacilioModule();
 		enpi.setName("serviceportal");
@@ -908,6 +925,7 @@ public class ModuleFactory {
 		enpi.setTableName("PortalInfo");
 		return enpi;
 	}
+
 	public static FacilioModule getReportSpaceFilterModule() {
 		FacilioModule repSpaceFilter = new FacilioModule();
 		repSpaceFilter.setName("reportspacefilter");
@@ -915,7 +933,7 @@ public class ModuleFactory {
 		repSpaceFilter.setTableName("Report_SpaceFilter");
 		return repSpaceFilter;
 	}
-	
+
 	public static FacilioModule getMarkedReadingModule() {
 		FacilioModule markedReading = new FacilioModule();
 		markedReading.setName("markedReading");
@@ -923,7 +941,7 @@ public class ModuleFactory {
 		markedReading.setTableName("Marked_Reading");
 		return markedReading;
 	}
-	
+
 	public static FacilioModule getReportColumnsModule() {
 		FacilioModule reportColumns = new FacilioModule();
 		reportColumns.setName("reportColumns");
@@ -931,7 +949,7 @@ public class ModuleFactory {
 		reportColumns.setTableName("Report_Columns");
 		return reportColumns;
 	}
-	
+
 	public static FacilioModule getDashboardSharingModule() {
 		FacilioModule dashboardSharing = new FacilioModule();
 		dashboardSharing.setName("dashboardSharing");
@@ -939,7 +957,7 @@ public class ModuleFactory {
 		dashboardSharing.setTableName("Dashboard_Sharing");
 		return dashboardSharing;
 	}
-	
+
 	public static FacilioModule getViewSharingModule() {
 		FacilioModule viewSharing = new FacilioModule();
 		viewSharing.setName("viewSharing");
@@ -947,7 +965,7 @@ public class ModuleFactory {
 		viewSharing.setTableName("View_Sharing");
 		return viewSharing;
 	}
-	
+
 	public static FacilioModule getWidgetVsWorkflowModule() {
 		FacilioModule dashboardSharing = new FacilioModule();
 		dashboardSharing.setName("widgetVsWorkflow");
@@ -955,7 +973,7 @@ public class ModuleFactory {
 		dashboardSharing.setTableName("Widget_Vs_Workflow");
 		return dashboardSharing;
 	}
-	
+
 	public static FacilioModule getImportProcessModule() {
 		FacilioModule dashboardSharing = new FacilioModule();
 		dashboardSharing.setName("importProcess");
@@ -969,19 +987,19 @@ public class ModuleFactory {
 		analyticsAnomalyJob.setName("anomalyScheduler");
 		analyticsAnomalyJob.setDisplayName("Analytics Scheduler");
 		analyticsAnomalyJob.setTableName("Energy_Data");
-		
+
 		return analyticsAnomalyJob;
 	}
-	
+
 	public static FacilioModule getAnalyticsAnomalyIDListModule() {
 		FacilioModule analyticsAnomalyIDListJob = new FacilioModule();
 		analyticsAnomalyIDListJob.setName("anomalyIDList");
 		analyticsAnomalyIDListJob.setDisplayName("Anomaly List");
 		analyticsAnomalyIDListJob.setTableName("Time_Series_Anomaly");
-		
+
 		return analyticsAnomalyIDListJob;
 	}
-	
+
 	public static FacilioModule getDerivationsModule() {
 		FacilioModule taskSection = new FacilioModule();
 		taskSection.setName("derivations");
@@ -989,7 +1007,7 @@ public class ModuleFactory {
 		taskSection.setTableName("Derivations");
 		return taskSection;
 	}
-	
+
 	public static FacilioModule getOrgUnitsModule() {
 		FacilioModule taskSection = new FacilioModule();
 		taskSection.setName("orgUnits");
@@ -997,7 +1015,7 @@ public class ModuleFactory {
 		taskSection.setTableName("Org_Units");
 		return taskSection;
 	}
-	
+
 	public static FacilioModule getCommonJobPropsModule() {
 		FacilioModule commonJobProps = new FacilioModule();
 		commonJobProps.setName("commonJobProps");
@@ -1005,7 +1023,7 @@ public class ModuleFactory {
 		commonJobProps.setTableName("Common_Job_Props");
 		return commonJobProps;
 	}
-	
+
 	public static FacilioModule getTenantsModule() {
 		FacilioModule tenants = new FacilioModule();
 		tenants.setName("tenant");
@@ -1013,7 +1031,7 @@ public class ModuleFactory {
 		tenants.setTableName("Tenants");
 		return tenants;
 	}
-	
+
 	public static FacilioModule getTenantsUtilityMappingModule() {
 		FacilioModule mapping = new FacilioModule();
 		mapping.setName("tenantsUtilityMapping");
@@ -1021,7 +1039,7 @@ public class ModuleFactory {
 		mapping.setTableName("Tenants_Utility_Mapping");
 		return mapping;
 	}
-	
+
 	public static FacilioModule getRateCardModule() {
 		FacilioModule rateCard = new FacilioModule();
 		rateCard.setName("rateCard");
@@ -1029,7 +1047,7 @@ public class ModuleFactory {
 		rateCard.setTableName("Rate_Card");
 		return rateCard;
 	}
-	
+
 	public static FacilioModule getRateCardServiceModule() {
 		FacilioModule rateCardService = new FacilioModule();
 		rateCardService.setName("rateCardService");
@@ -1037,6 +1055,7 @@ public class ModuleFactory {
 		rateCardService.setTableName("Rate_Card_Services");
 		return rateCardService;
 	}
+
 	public static FacilioModule getModuleLocalIdModule() {
 		FacilioModule rateCardService = new FacilioModule();
 		rateCardService.setName("moduleLocalId");
@@ -1044,6 +1063,23 @@ public class ModuleFactory {
 		rateCardService.setTableName("Module_Local_ID");
 		return rateCardService;
 	}
+
+	public static FacilioModule getBenchmarkModule() {
+		FacilioModule benchmark = new FacilioModule();
+		benchmark.setName("benchmark");
+		benchmark.setDisplayName("Benchmark");
+		benchmark.setTableName("Benchmark");
+		return benchmark;
+	}
+
+	public static FacilioModule getBenchmarkUnitModule() {
+		FacilioModule benchmarkUnit = new FacilioModule();
+		benchmarkUnit.setName("benchmarkUnit");
+		benchmarkUnit.setDisplayName("Benchmark Units");
+		benchmarkUnit.setTableName("Benchmark_Units");
+		return benchmarkUnit;
+	}
+
 	public static FacilioModule getReportBenchmarkRelModule() {
 		FacilioModule rateCardService = new FacilioModule();
 		rateCardService.setName("reportBenchmarkRel");

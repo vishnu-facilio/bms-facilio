@@ -4090,6 +4090,11 @@
 				<param name="includeProperties">^derivations.*</param>
 			</result>
 		</action>
+		<action name="calculateBenchmark" class="com.facilio.bmsconsole.actions.DashboardAction" method="calculateBenchmarkValue">
+			<result name="success" type="json">
+				<param name="includeProperties">value</param>
+			</result>
+		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.DashboardAction" method="viewDashboard">
 			<param name="linkName">{1}</param>
 			<result name="success" type="json">

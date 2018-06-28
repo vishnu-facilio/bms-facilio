@@ -470,6 +470,11 @@ public class FacilioConstants {
 		public static final String EXCLUDE_EMPTY_FIELDS = "exludeEmptyFields";
 		public static final String WITH_READINGS = "withReadings";
 		
+		public static final String BENCHMARK_UNITS = "benchmarkUnits";
+		public static final String BENCHMARK_VALUE = "benchmarkValue";
+		public static final String BENCHMARK_DATE_AGGR = "benchmarkDateAggr";
+
+		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();

@@ -5,7 +5,6 @@ import java.text.DecimalFormat;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,7 +18,6 @@ import java.util.logging.Logger;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
-import org.apache.commons.collections.list.SetUniqueList;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.json.simple.JSONArray;
@@ -36,6 +34,7 @@ import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.BenchmarkUnit;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardContext.DashboardPublishStatus;
@@ -4479,7 +4478,7 @@ public class DashboardAction extends ActionSupport {
 		this.scheduleInfo = scheduleInfo;
 	}
 	
-	private long startTime;
+	private long startTime = -1;
 	public long getStartTime() {
 		return startTime;
 	}
@@ -4559,4 +4558,62 @@ public class DashboardAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String calculateBenchmarkValue() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ID, benchmarkId);
+		context.put(FacilioConstants.ContextNames.SPACE_ID, spaceId);
+		context.put(FacilioConstants.ContextNames.BENCHMARK_UNITS, units);
+		context.put(FacilioConstants.ContextNames.BENCHMARK_DATE_AGGR, dateAggr);
+		context.put(FacilioConstants.ContextNames.START_TIME, startTime);
+		
+		Chain calculateBenchmarkChain = FacilioChainFactory.calculateBenchmarkValueChain();
+		calculateBenchmarkChain.execute(context);
+		
+		value = (double) context.get(FacilioConstants.ContextNames.BENCHMARK_VALUE);
+		
+		return SUCCESS;
+	}
+	
+	private long benchmarkId = -1;
+	public long getBenchmarkId() {
+		return benchmarkId;
+	}
+	public void setBenchmarkId(long benchmarkId) {
+		this.benchmarkId = benchmarkId;
+	}
+	
+	private double value = -1;
+	public double getValue() {
+		return value;
+	}
+	public void setValue(double value) {
+		this.value = value;
+	}
+
+	private long spaceId = -1;
+	public long getSpaceId() {
+		return spaceId;
+	}
+	public void setSpaceId(long spaceId) {
+		this.spaceId = spaceId;
+	}
+	
+	private DateAggregateOperator dateAggr;
+	public int getDateAggr() {
+		if (dateAggr != null) {
+			return dateAggr.getValue();
+		}
+		return -1;
+	}
+	public void setDateAggr(int dateAggr) {
+		this.dateAggr = (DateAggregateOperator) AggregateOperator.getAggregateOperator(dateAggr);
+	}
+	
+	private List<BenchmarkUnit> units;
+	public List<BenchmarkUnit> getUnits() {
+		return units;
+	}
+	public void setUnits(List<BenchmarkUnit> units) {
+		this.units = units;
+	}
 }
