@@ -126,6 +126,7 @@ public class ReadingAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.READING_RULES_LIST, readingRules);
 		context.put(FacilioConstants.ContextNames.ACTIONS_LIST, actionsList);
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD, getField());
+		context.put(FacilioConstants.ContextNames.DEL_READING_RULE_IDS, getDelReadingRulesIds());
 		
 		Chain c = FacilioChainFactory.getUpdateReadingChain();
 		c.execute(context);
@@ -739,5 +740,14 @@ public class ReadingAction extends ActionSupport {
 	
 	public long getModuleId() {
 		return this.moduleId;
+	}
+	
+	private List<Long> delReadingRulesIds;
+	public void setDelReadingRulesIds(List<Long> delReadingRulesIds) {
+		this.delReadingRulesIds = delReadingRulesIds;
+	}
+	
+	public List<Long> getDelReadingRulesIds() {
+		return this.delReadingRulesIds;
 	}
  }

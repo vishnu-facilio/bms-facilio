@@ -38,7 +38,11 @@ public class AddValidationRulesCommand implements Command {
 					rule.setResourceId(resourceID);
 				}
 				context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, rule);
-				context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, actionsList.get(i).get(j));
+				if (actionsList.get(i) != null && !actionsList.get(i).isEmpty()) {
+					context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, actionsList.get(i).get(j));
+				} else {
+					context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, null);
+				}
 				if (rule.getId() != -1) {
 					updateChain.execute(context);
 				} else {

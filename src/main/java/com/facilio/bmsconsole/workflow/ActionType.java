@@ -513,21 +513,6 @@ public enum ActionType {
 			alarm.setSeverity(severityMap.get(alarm.getSeverity().getId()));
 		}
 
-	},
-	THROW_EXCEPTION(12) {
-
-		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
-				Object currentRecord) throws Exception {
-			if (currentRule instanceof ReadingRuleContext) {
-				ReadingRuleContext readingRule = (ReadingRuleContext) currentRule;
-				String msg = (String) obj.get("message");
-				long fieldId = readingRule.getReadingFieldId();
-				String evaluator = currentRule.getWorkflow().getResultEvaluator();
-				throw new ReadingValidationException(fieldId, msg, evaluator);
-			}
-		}
-		   
 	};
 
 	private int val;

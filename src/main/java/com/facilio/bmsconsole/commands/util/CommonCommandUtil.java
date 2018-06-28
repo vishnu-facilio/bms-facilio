@@ -10,8 +10,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -25,7 +29,9 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.SupportEmailContext;
+import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -37,6 +43,9 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.FacilioTablePrinter;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.view.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.queue.FAWSQueue;
@@ -45,6 +54,9 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
+import com.facilio.workflows.context.ExpressionContext;
+import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.util.WorkflowUtil;
 
 public class CommonCommandUtil {
 	private static Logger log = LogManager.getLogger(CommonCommandUtil.class.getName());
@@ -426,5 +438,44 @@ public static JSONObject getOrgInfo() throws Exception {
     	}
     	joiner.add("###################################################");
     	return joiner.toString();
+    }
+    
+    public static Pair<Double, Double> getSafeLimitForField(long fieldId) throws Exception {
+    	Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition("READING_FIELD_ID", "readingFieldId", String.valueOf(fieldId), NumberOperators.EQUALS));
+        criteria.addAndCondition(CriteriaAPI.getCondition("RULE_TYPE", "ruleType", String.valueOf(RuleType.VALIDATION_RULE.getIntVal()), NumberOperators.EQUALS));
+        List<ReadingRuleContext> readingRules = WorkflowRuleAPI.getReadingRules(criteria);
+        Double min = null;
+        Double max = null;
+        if (readingRules != null && !readingRules.isEmpty()) {
+        	List<Long> workFlowIds = readingRules.stream().map(ReadingRuleContext::getWorkflowId).collect(Collectors.toList());
+            Map<Long, WorkflowContext> workflowMap = WorkflowUtil.getWorkflowsAsMap(workFlowIds, true);
+            Map<Long, List<ReadingRuleContext>> fieldVsRules = new HashMap<>();
+            
+        	for (ReadingRuleContext r:  readingRules) {
+        		long workflowId = r.getWorkflowId();
+        		if (workflowId != -1) {
+        			r.setWorkflow(workflowMap.get(workflowId));
+        		}
+        		if (r.getWorkflow().getResultEvaluator().equals("(b!=-1&&a<b)||(c!=-1&&a>c)")) {
+        			Optional<ExpressionContext> exp = r.getWorkflow().getExpressions().stream().filter(e -> {return e.getName().equals("b");}).findFirst();
+        			if (exp.isPresent()) {
+        				min = Double.parseDouble((String) exp.get().getConstant());
+        				if (min == -1) {
+        					min = null;
+        				}
+        			}
+        			
+        			exp = r.getWorkflow().getExpressions().stream().filter(e -> {return e.getName().equals("c");}).findFirst();
+        			if (exp.isPresent()) {
+        				max = Double.parseDouble((String) exp.get().getConstant());
+        				if (max == -1) {
+        					max = null;
+        				}
+        			}
+        		}
+        	}
+        }
+    	return Pair.of(min, max);
     }
 }
