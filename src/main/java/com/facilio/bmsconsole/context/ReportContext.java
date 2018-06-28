@@ -26,6 +26,22 @@ public class ReportContext extends ModuleBaseWithCustomFields {
 		this.reportFolderContext = reportFolderContext;
 	}
 
+	List<ReportBenchmarkRelContext> reportBenchmarkRelContexts;
+	
+	public List<ReportBenchmarkRelContext> getReportBenchmarkRelContexts() {
+		return reportBenchmarkRelContexts;
+	}
+
+	public void setReportBenchmarkRelContexts(List<ReportBenchmarkRelContext> reportBenchmarkRelContexts) {
+		this.reportBenchmarkRelContexts = reportBenchmarkRelContexts;
+	}
+	
+	public void addReportBenchmarkRelContexts(ReportBenchmarkRelContext reportBenchmarkRelContext) {
+		if(reportBenchmarkRelContexts == null) {
+			reportBenchmarkRelContexts = new ArrayList<>();
+		}
+		reportBenchmarkRelContexts.add(reportBenchmarkRelContext);
+	}
 
 	String name;
 	String description;

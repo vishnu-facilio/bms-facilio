@@ -45,6 +45,7 @@ import com.facilio.bmsconsole.context.FormulaContext.NumberAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext.ResourceType;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
+import com.facilio.bmsconsole.context.ReportBenchmarkRelContext;
 import com.facilio.bmsconsole.context.ReportColumnContext;
 import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.ReportContext.LegendMode;
@@ -1254,6 +1255,20 @@ public class DashboardUtil {
 				ReportSpaceFilterContext spaceFilterContext = FieldUtil.getAsBeanFromMap(spaceFilterProps.get(0), ReportSpaceFilterContext.class);
 				fillFirstSpaceForEmptySpace(spaceFilterContext);
 				reportContext.setReportSpaceFilterContext(spaceFilterContext);
+			}
+			
+			selectBuilder = new GenericSelectRecordBuilder()
+					.select(FieldFactory.getReportBenchmarkRelFields())
+					.table(ModuleFactory.getReportBenchmarkRelModule().getTableName())
+					.andCustomWhere(ModuleFactory.getReportBenchmarkRelModule().getTableName()+".REPORT_ID = ?", reportId);
+			
+			List<Map<String, Object>> reportBenchmarkRelProps = selectBuilder.get();
+			if (reportBenchmarkRelProps != null && !reportBenchmarkRelProps.isEmpty()) {
+				
+				for(Map<String, Object> reportBenchmarkRelProp :reportBenchmarkRelProps) {
+					ReportBenchmarkRelContext reportBenchmarkRelContext = FieldUtil.getAsBeanFromMap(reportBenchmarkRelProp, ReportBenchmarkRelContext.class);
+					reportContext.addReportBenchmarkRelContexts(reportBenchmarkRelContext);
+				}
 			}
 			
 			reportContext.setBaseLineContexts(BaseLineAPI.getBaseLinesOfReport(reportId));

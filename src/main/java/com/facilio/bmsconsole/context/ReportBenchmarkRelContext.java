@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.context;
 
-public class ReportBaselineRelContext {
+public class ReportBenchmarkRelContext {
 
 	long reportId,baselineId;
 
