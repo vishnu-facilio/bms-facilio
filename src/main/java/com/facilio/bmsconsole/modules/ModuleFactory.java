@@ -1044,4 +1044,11 @@ public class ModuleFactory {
 		rateCardService.setTableName("Module_Local_ID");
 		return rateCardService;
 	}
+	public static FacilioModule getReportBenchmarkRelModule() {
+		FacilioModule rateCardService = new FacilioModule();
+		rateCardService.setName("reportBenchmarkRel");
+		rateCardService.setDisplayName("Report Benchmark Rel");
+		rateCardService.setTableName("Report_Bechmark_Rel");
+		return rateCardService;
+	}
 }

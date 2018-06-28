@@ -3789,6 +3789,16 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	public static List<FacilioField> getReportBenchmarkRelFields() {
+		FacilioModule module = ModuleFactory.getReportBenchmarkRelModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getField("reportId", "REPORT_ID", module, FieldType.NUMBER));
+		fields.add(getField("benchmarkId", "BENCHMARK_ID", module, FieldType.NUMBER));
+		
+		return fields;
+	}
+	
 	public static FacilioField getField(String name, String colName, FacilioModule module, FieldType type) {
 		return getField(name, null, colName, module, type);
 	}
