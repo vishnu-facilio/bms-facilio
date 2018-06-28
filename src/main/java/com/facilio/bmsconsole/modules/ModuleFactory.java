@@ -1048,7 +1048,7 @@ public class ModuleFactory {
 		FacilioModule rateCardService = new FacilioModule();
 		rateCardService.setName("reportBenchmarkRel");
 		rateCardService.setDisplayName("Report Benchmark Rel");
-		rateCardService.setTableName("Report_Bechmark_Rel");
+		rateCardService.setTableName("Report_Benchmark_Rel");
 		return rateCardService;
 	}
 }

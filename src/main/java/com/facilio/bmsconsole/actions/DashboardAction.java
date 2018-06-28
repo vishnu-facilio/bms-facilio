@@ -3535,6 +3535,8 @@ public class DashboardAction extends ActionSupport {
 			readingData = res;
 		}
 		
+		
+		
 		if(energyMeterValue != null && !"".equalsIgnoreCase(energyMeterValue.trim()) && isEnergyDataWithTimeFrame && !report.getIsComparisionReport() && report.getY1AxisField() != null) {
 			
 			JSONObject filterJson = new JSONObject();
