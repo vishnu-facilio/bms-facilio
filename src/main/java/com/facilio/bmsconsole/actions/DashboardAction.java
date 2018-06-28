@@ -30,6 +30,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReportsChainFactory;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseLineContext;
@@ -130,6 +131,7 @@ import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.google.gson.JsonArray;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class DashboardAction extends ActionSupport {
@@ -2726,6 +2728,15 @@ public class DashboardAction extends ActionSupport {
 		return this.excludeWeekends;
 	}
 	
+	public JSONArray safelimit;
+	
+	
+	public JSONArray getSafelimit() {
+		return safelimit;
+	}
+	public void setSafelimit(JSONArray safelimit) {
+		this.safelimit = safelimit;
+	}
 	private JSONArray getDataForReadings(ReportContext report, FacilioModule module, JSONArray dateFilter, JSONObject userFilterValues, long baseLineId, long criteriaId) throws Exception {
 		JSONArray readingData = null;
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -2884,6 +2895,16 @@ public class DashboardAction extends ActionSupport {
 			yAxisFieldName = y1AxisField.getDisplayName();
 			if(y1AggregateOpperator != null) {
 				y1AxisField = y1AggregateOpperator.getSelectField(y1AxisField);
+				if(y1AxisField.getId() > 0) {
+					Pair<Double, Double> safelimitPair = CommonCommandUtil.getSafeLimitForField(y1AxisField.getId());
+					
+					JSONArray safeLimtJson = new JSONArray();
+					safeLimtJson.add(safelimitPair.getKey());
+					safeLimtJson.add(safelimitPair.getValue());
+					
+					setSafelimit(safeLimtJson);
+				}
+				
 			}
 		}
 		else {
