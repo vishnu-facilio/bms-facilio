@@ -10,10 +10,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalDouble;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.collections.list.SetUniqueList;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONArray;
@@ -35,6 +37,7 @@ import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
 import com.facilio.bmsconsole.context.DerivationContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
+import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.FormulaContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
@@ -71,6 +74,7 @@ import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
@@ -438,7 +442,7 @@ public class DashboardUtil {
 		return false;
 	}
 	
-	public static JSONObject getStandardVariance(List<Map<String, Object>> props) {
+	public static JSONObject getStandardVariance(List<Map<String, Object>> props,List<String> meterList) {
 		
 		try {
 			Double min = null ,max = null,avg = null,sum = (double) 0;
@@ -466,6 +470,52 @@ public class DashboardUtil {
 			variance.put("max", max);
 			variance.put("avg", avg);
 			variance.put("sum", sum);
+			
+			if(meterList != null && !meterList.isEmpty() && sum > 0) {
+				LOGGER.log(Level.SEVERE, "meterList --- "+meterList);
+				List<Long> bb = new ArrayList<Long>();
+		        bb.add(null);
+		        meterList.removeAll(bb);
+				if(!meterList.isEmpty()) {
+					
+					List<String> uniqueList = (List<String>) SetUniqueList.decorate(meterList);
+					LOGGER.log(Level.SEVERE, "uniqueList --- "+uniqueList);
+			        if(uniqueList.size() == 1) {
+			        	
+			        	long meterID = Long.parseLong(uniqueList.get(0));
+			        	
+			        	EnergyMeterContext energyMeter = DeviceAPI.getEnergyMeter(meterID);
+			        	if(energyMeter.isRoot()) {
+			        		BaseSpaceContext purposeSpace = SpaceAPI.getBaseSpace(energyMeter.getPurposeSpace().getId());
+			        		double grossFloorArea = 0.0;
+			        		if(purposeSpace.getSpaceType() == BaseSpaceContext.SpaceType.SITE.getIntVal()) {
+			        			SiteContext sites = SpaceAPI.getSiteSpace(purposeSpace.getId());
+			        			if(sites != null) {
+			        				grossFloorArea = sites.getGrossFloorArea();
+			        			}
+			        		}
+			        		else if(purposeSpace.getSpaceType() == BaseSpaceContext.SpaceType.BUILDING.getIntVal()) {
+			        			BuildingContext building = SpaceAPI.getBuildingSpace(purposeSpace.getId());
+			        			if(building != null) {
+			        				grossFloorArea = building.getGrossFloorArea();
+			        			}
+							}
+			        		else if(purposeSpace.getSpaceType() == BaseSpaceContext.SpaceType.FLOOR.getIntVal()) {
+			        			FloorContext floor = SpaceAPI.getFloorSpace(purposeSpace.getId());
+			        			if(floor != null) {
+			        				grossFloorArea = floor.getArea();
+			        			}
+							}
+			        		if(grossFloorArea > 0 && sum > 0) {
+			        			double eui = sum/grossFloorArea;
+			        			eui = eui * ReportsUtil.conversionMultiplier;
+			        			variance.put("eui", eui);
+			        		}
+			        	}
+			        }
+				}
+			}
+			
 			return variance;
 		}
 		catch (Exception e) {

@@ -47,6 +47,7 @@ public class ReportsUtil
 	private static Logger logger = Logger.getLogger("ReportsUtil");
 	private static org.apache.log4j.Logger log = LogManager.getLogger(ReportsUtil.class.getName());
 
+	public static final double conversionMultiplier=3.412;
 	public static double getVariance(Double currentVal, Double previousVal)
 	{
 		if(currentVal==null || currentVal==0 || previousVal==null || previousVal==0)
@@ -403,7 +404,6 @@ public class ReportsUtil
 		{
 			return 0;
 		}
-		double conversionMultiplier=3.412;//this for electrical energy..
 		double convertedVal=currentKwh*conversionMultiplier;
 		double eui= convertedVal/buildingArea;
 		return roundOff(eui, 2);
