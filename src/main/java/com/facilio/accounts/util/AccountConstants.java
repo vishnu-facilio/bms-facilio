@@ -1150,6 +1150,13 @@ public class AccountConstants {
 		FacilioModule module = getUserSessionModule();
 		List<FacilioField> fields = new ArrayList<>();
 
+		FacilioField id = new FacilioField();
+		id.setName("id");
+		id.setDataType(FieldType.NUMBER);
+		id.setColumnName("SESSIONID");
+		id.setModule(module);
+		fields.add(id);
+		
 		FacilioField uid = new FacilioField();
 		uid.setName("uid");
 		uid.setDataType(FieldType.NUMBER);

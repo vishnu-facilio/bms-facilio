@@ -144,7 +144,7 @@ public class UserAction extends ActionSupport {
 //		        .build();
 		
 		
-		List<Map<String, Object>> sessions = AccountUtil.getUserBean().getUserSessions(AccountUtil.getCurrentUser().getUid());
+		List<Map<String, Object>> sessions = AccountUtil.getUserBean().getUserSessions(AccountUtil.getCurrentUser().getUid(), true);
 		
 		UserAgentAnalyzer uaa = UserAgentAnalyzer
                 .newBuilder()

@@ -1111,14 +1111,18 @@ public long inviteRequester(long orgId, User user) throws Exception {
 		return false;
 	}
 	@Override
-	public List<Map<String, Object>> getUserSessions(long uid) throws Exception
+	public List<Map<String, Object>> getUserSessions(long uid, Boolean isActive) throws Exception
 	{
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(AccountConstants.getUserSessionFields())
 				.table("Users")
 				.innerJoin("UserSessions")
 				.on("Users.USERID = UserSessions.USERID")
-				.andCustomWhere("Users.USERID = ? AND UserSessions.IS_ACTIVE=1", uid);
+				.andCustomWhere("Users.USERID = ?", uid);
+		
+		if (isActive != null) {
+			selectBuilder.andCustomWhere("UserSessions.IS_ACTIVE = ?", isActive);
+		}
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {

@@ -1,12 +1,14 @@
-<%@page import="com.facilio.accounts.util.AccountUtil, java.util.List, com.facilio.accounts.dto.User"%>
+<%@page import="com.facilio.accounts.util.AccountUtil, java.util.List, java.sql.Timestamp, java.util.Date, java.util.Map, com.facilio.accounts.dto.User"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
   
  <%
  	String email = request.getParameter("email");
  List<User> userList = null;
+ List<Map<String, Object>> sessions = null;
  if (email != null) {
 	 User usr = AccountUtil.getUserBean().getFacilioUser(email);
+	 sessions = AccountUtil.getUserBean().getUserSessions(AccountUtil.getCurrentUser().getUid(), null);
 	 long orgId = usr.getOrgId();
 	 long roleId = usr.getRoleId();
 	 if (AccountUtil.getRoleBean().getRole(roleId).getName().equalsIgnoreCase("Super Administrator")) {
@@ -35,6 +37,38 @@
 <button  id="show" type="submit"  >Submit</button>
 </div> 
 <div >
+<%
+if (sessions != null) { %>
+<br>
+<br>
+<b>Sessions:</b>
+<table style=" margin-top:10px;" class="table table-bordered" >
+<tr>
+<th>ID</th>	
+<th>START_TIME</th>
+<th>END_TIME</th>
+<th>IS_ACTIVE</th>
+<th>IPADDRESS</th>
+<th>USER_AGENT</th>
+</tr>
+<% for(Map<String, Object> sss : sessions) {
+	Long startTime = (Long) sss.get("startTime");
+	Long endTime = (Long) sss.get("endTime");
+%>
+<tr id="id">
+<td><%=sss.get("id") %></td>
+<td><%= (startTime != null && startTime > 0) ? new Date(startTime).toString() : "-"  %></td>
+<td><%= (endTime != null && endTime > 0) ? new Date(endTime).toString() : "-"  %></td>
+<td><%=sss.get("isActive") %></td>
+<td><%=sss.get("ipAddress") %></td>
+<td><%=sss.get("userAgent") %></td>
+</tr>
+<%
+}%>
+
+</table>
+<% }
+%>
 <%
 if (userList != null) { %>
 <table style=" margin-top:40px;" class="table table-bordered" >

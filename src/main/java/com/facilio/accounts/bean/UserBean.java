@@ -72,7 +72,7 @@ public interface UserBean {
     
     public boolean endUserSession(long uid, String email, String token) throws Exception;
     
-    public List<Map<String, Object>> getUserSessions(long uid) throws Exception;
+    public List<Map<String, Object>> getUserSessions(long uid, Boolean isActive) throws Exception;
     
     public void clearUserSession(long uid, String email, String token) throws Exception;
     
