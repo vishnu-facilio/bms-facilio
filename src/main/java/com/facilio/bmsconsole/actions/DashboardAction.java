@@ -3261,7 +3261,56 @@ public class DashboardAction extends ActionSupport {
 		
 		LOGGER.severe("builder --- "+reportContext.getId() +"   "+baseLineId);
 		LOGGER.severe("builder --- "+builder);
-//		LOGGER.severe("rs1 -- "+rs);
+		
+		if (report.getCriteria() != null) {
+			criteria = report.getCriteria();
+			if(report.getCriteria().getCriteriaId() != -1) {
+				criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), report.getCriteria().getCriteriaId());
+			}
+			if(criteria != null && criteria.getConditions() != null) {
+				Map<Integer, Condition> conditions = criteria.getConditions();
+				for(Condition condition:conditions.values()) {
+					if(condition.getFieldName().equals("parentId")) {
+						energyMeterValue = energyMeterValue + condition.getValue() +",";
+					}
+				}
+			}
+		}
+		
+		if (energyMeterValue != null && !"".equalsIgnoreCase(energyMeterValue.trim())) {
+			this.meterIds = energyMeterValue.split(",");
+			
+			LegendMode legendMode = (this.legendMode != null && !this.legendMode.trim().equals("")) ? LegendMode.valueOf(this.legendMode) : reportContext.getLegendMode();
+			if (legendMode == null) {
+				legendMode = LegendMode.RESOURCE_WITH_READING_NAME;
+			}
+			
+			String resourceName = null;
+			String readingName = null;
+			ResourceContext res = ResourceAPI.getResource(Long.parseLong(this.meterIds[0]));
+			if (res != null) {
+				resourceName = res.getName();
+			}
+			if (yAxisFieldName != null) {
+				readingName = yAxisFieldName; 
+			}
+			
+			if (legendMode == LegendMode.READING_NAME && readingName != null) {
+				this.entityName = readingName;
+			}
+			else if (legendMode == LegendMode.RESOURCE_NAME && resourceName != null) {
+				this.entityName = resourceName;
+			}
+			else {
+				this.entityName = resourceName;
+				if (readingName != null) {
+					this.entityName = readingName + (this.entityName != null ? " ("+this.entityName+")" : "");
+				}
+			}
+		}
+		if (this.entityName != null && baseLineName != null) {
+			this.entityName += " - " + baseLineName;
+		}
 		
 		Map<String, Double> violatedReadings = getViolatedReadings(report, dateFilter, baseLineId);
 		
@@ -3472,56 +3521,6 @@ public class DashboardAction extends ActionSupport {
 	 			}
 		 	}
 			readingData = res;
-		}
-		
-		if (report.getCriteria() != null) {
-			criteria = report.getCriteria();
-			if(report.getCriteria().getCriteriaId() != -1) {
-				criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), report.getCriteria().getCriteriaId());
-			}
-			if(criteria != null && criteria.getConditions() != null) {
-				Map<Integer, Condition> conditions = criteria.getConditions();
-				for(Condition condition:conditions.values()) {
-					if(condition.getFieldName().equals("parentId")) {
-						energyMeterValue = energyMeterValue + condition.getValue() +",";
-					}
-				}
-			}
-		}
-		
-		if (energyMeterValue != null && !"".equalsIgnoreCase(energyMeterValue.trim())) {
-			this.meterIds = energyMeterValue.split(",");
-			
-			LegendMode legendMode = (this.legendMode != null && !this.legendMode.trim().equals("")) ? LegendMode.valueOf(this.legendMode) : reportContext.getLegendMode();
-			if (legendMode == null) {
-				legendMode = LegendMode.RESOURCE_WITH_READING_NAME;
-			}
-			
-			String resourceName = null;
-			String readingName = null;
-			ResourceContext res = ResourceAPI.getResource(Long.parseLong(this.meterIds[0]));
-			if (res != null) {
-				resourceName = res.getName();
-			}
-			if (yAxisFieldName != null) {
-				readingName = yAxisFieldName; 
-			}
-			
-			if (legendMode == LegendMode.READING_NAME && readingName != null) {
-				this.entityName = readingName;
-			}
-			else if (legendMode == LegendMode.RESOURCE_NAME && resourceName != null) {
-				this.entityName = resourceName;
-			}
-			else {
-				this.entityName = resourceName;
-				if (readingName != null) {
-					this.entityName = readingName + (this.entityName != null ? " ("+this.entityName+")" : "");
-				}
-			}
-		}
-		if (this.entityName != null && baseLineName != null) {
-			this.entityName += " - " + baseLineName;
 		}
 		
 		if(energyMeterValue != null && !"".equalsIgnoreCase(energyMeterValue.trim()) && isEnergyDataWithTimeFrame && !report.getIsComparisionReport() && report.getY1AxisField() != null) {
