@@ -135,7 +135,7 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 				for(Map<String, Object> beanProp : beanProps) {
 					beanProp.put("moduleId", currentModule.getModuleId());
 					if(isWithLocalIdModule && localId != null) {
-						beanProp.put("localId", localId++);
+						beanProp.put("localId", ++localId);
 					}
 					insertBuilder.addRecord(beanProp);
 				}
