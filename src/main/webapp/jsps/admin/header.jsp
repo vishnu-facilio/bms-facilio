@@ -4,7 +4,8 @@
     <div class="navbar-header">
        
     
-        <a class="navbar-brand" href="">Admin Console</a>
+        <a class="navbar-brand" href=""><img src = "${pageContext.request.contextPath}/images/facilio-logo.png" />
+        <span>Admin Console</span></a>
     </div>
     <!-- /.navbar-header -->
 

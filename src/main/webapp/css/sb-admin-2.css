@@ -68,10 +68,9 @@ a, abbr, acronym, address, applet, big, blockquote, body, cite, code, dd, del, d
    
 }
 .navbar-brand img{
-width: 25px;
-    height: 25px;
-    float: left;
-    margin-right: 5px;
+  width: 70px;
+  float: left;
+  margin-right: 10px;
 }
 .navbar-top-links {
   margin-right: 0;

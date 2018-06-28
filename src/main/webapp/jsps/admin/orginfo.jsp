@@ -1,15 +1,17 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-    <%@page import="com.facilio.accounts.util.AccountUtil , java.util.*, java.util.Iterator ,org.json.simple.JSONObject,org.json.simple.JSONArray,java.util.List, com.facilio.accounts.dto.Organization, org.json.simple.JSONObject, com.facilio.bmsconsole.commands.util.CommonCommandUtil"%>
+    <%@page import="com.facilio.accounts.util.AccountUtil, com.facilio.accounts.dto.User, java.util.*, java.util.Iterator ,org.json.simple.JSONObject,org.json.simple.JSONArray,java.util.List, com.facilio.accounts.dto.Organization, org.json.simple.JSONObject,com.facilio.accounts.impl.OrgBeanImpl, com.facilio.bmsconsole.commands.util.CommonCommandUtil"%>
   <%
- 	String orgid = request.getParameter("orgid");
-  Organization org = null;
-  JSONObject result = null;
-  if (orgid != null) {
-	  org = AccountUtil.getOrgBean().getOrg(Long.parseLong(orgid));
-	  result = CommonCommandUtil.getOrgInfo(Long.parseLong(orgid)); 
-  }
- %>
+  	String orgid = request.getParameter("orgid");
+    Organization org = null;
+    JSONObject result = null;
+     List<User> users = null;
+    if (orgid != null) {
+  	  org = AccountUtil.getOrgBean().getOrg(Long.parseLong(orgid));
+  	  result = CommonCommandUtil.getOrgInfo(Long.parseLong(orgid));
+  	  users = AccountUtil.getOrgBean().getAllOrgUsers(Long.parseLong(orgid));
+  	}
+  %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -23,14 +25,13 @@
  
     <div style="margin-top:40px;" class="input-group col-lg-8 col-md-8 col-sm-8	">
       <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-      <input id="orginfo" type="text" value="<%= org == null ? "" : org.getId() %>" class="form-control" name="orgid" placeholder="org_id" required/>
+      <input id="orginfo" type="text" value="<%= org == null ? "" : org.getId() %>" class="form-control" name="orgid" />
     </div>
     <div style="margin-top:30px;">
 
 <button  id="show" type="submit"  >Submit</button>
-<%
-if (org != null) { %>
-<table style=" margin-top:40px;" class="table table-bordered" >
+<% if (org != null) { %>
+<table style=" margin-top:40px;"  class="table table-bordered" >
 <tr> <th>orgId</th>
 <th> Name </th>
 <th> Domain </th>
@@ -71,7 +72,7 @@ if (org != null) { %>
 
 <% } %>
 <% if(result.size() != 0) { 
-	Iterator<?> keys = result.keySet().iterator();%>
+	Iterator<?> keys = result.keySet().iterator(); %>
 <h2> Org-Properties</h2> 
 <table style=" margin-top:40px;" class="table table-bordered">
 <tr>
@@ -79,7 +80,7 @@ if (org != null) { %>
   <th style="text-align:center">VALUES</th>
 </tr>
 
-<%while( keys.hasNext() ) {
+<% while( keys.hasNext() ) {
     String key = (String) keys.next();
     String value = (String) result.get(key); %>
     <tr>
@@ -89,7 +90,7 @@ if (org != null) { %>
 <% } %>
 </table>
 <%}%>
-
+No Of Users In OrgId  <%= org.getOrgId() %> :  <%= users.size() %>
 
 </div>
 </div>
