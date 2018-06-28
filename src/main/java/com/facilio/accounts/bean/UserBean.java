@@ -1,6 +1,7 @@
 package com.facilio.accounts.bean;
 
 import java.util.List;
+import java.util.Map;
 
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
@@ -70,6 +71,8 @@ public interface UserBean {
     public long startUserSession(long uid, String email, String token, String ipAddress, String userAgent) throws Exception;
     
     public boolean endUserSession(long uid, String email, String token) throws Exception;
+    
+    public List<Map<String, Object>> getUserSessions(long uid) throws Exception;
     
     public void clearUserSession(long uid, String email, String token) throws Exception;
     
