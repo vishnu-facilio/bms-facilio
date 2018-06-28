@@ -66,7 +66,14 @@ public class ModuleBaseWithCustomFields {
 		}
 	}
 	
+	private long localId;
 	
+	public long getLocalId() {
+		return localId;
+	}
+	public void setLocalId(long localId) {
+		this.localId = localId;
+	}
 	@JsonAnySetter
 	public void setDatum(String key, Object value) {
 		if(data == null) {

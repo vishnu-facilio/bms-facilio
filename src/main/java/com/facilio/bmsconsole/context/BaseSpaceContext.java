@@ -96,12 +96,11 @@ public class BaseSpaceContext extends ResourceContext {
 		this.lastAssignedOccupancyTime = lastAssignedOccupancyTime;
 	}
 	
-	private int localId = -1;
-	public int getLocalId() {
-		return localId;
+	public long getLocalId() {
+		return super.getLocalId();
 	}
-	public void setLocalId(int localId) {
-		this.localId = localId;
+	public void setLocalId(long localId) {
+		super.setLocalId(localId);
 	}
 
 	private long siteId = -1;
