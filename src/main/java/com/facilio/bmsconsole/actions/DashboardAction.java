@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,6 +19,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
+import org.apache.commons.collections.list.SetUniqueList;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.json.simple.JSONArray;
@@ -2636,7 +2638,7 @@ public class DashboardAction extends ActionSupport {
 			ticketData = finalres;
 		}
 		else {
-			variance = DashboardUtil.getStandardVariance(rs);
+			variance = DashboardUtil.getStandardVariance(rs,null);
 			JSONArray res = new JSONArray();
 			Map<Long, Long> buildingResult = new HashMap<>();
 			for(int i=0;i<rs.size();i++) {
@@ -2971,15 +2973,19 @@ public class DashboardAction extends ActionSupport {
 			dateCondition = DashboardUtil.getDateCondition(report, dateFilter, module);
 			builder.andCondition(dateCondition);
 		}
-		
+		List<String> meterIdsUsed = new ArrayList<>();
 		if(criteriaId != -1) {
 			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), criteriaId);
 		}
 		if(criteria != null) {
 			builder.andCriteria(criteria);
+			String parentIdString = WorkflowUtil.getParentIdFromCriteria(criteria);
+			meterIdsUsed.add(parentIdString);
 		}
 		if(report.getCriteria() != null) {
 			builder.andCriteria(report.getCriteria());
+			String parentIdString = WorkflowUtil.getParentIdFromCriteria(report.getCriteria());
+			meterIdsUsed.add(parentIdString);
 		}
 		
 		String energyMeterValue = "";
@@ -3040,9 +3046,7 @@ public class DashboardAction extends ActionSupport {
 				}
 				if(isGroupBySpace) {
 					String buildingList = StringUtils.join(buildingVsMeter.values(),",");
-					LOGGER.severe("buildingList -- "+buildingList);
 					buildingVsArea = ReportsUtil.getMapping(SpaceAPI.getBuildingArea(buildingList), "ID", "AREA");
-					LOGGER.severe("buildingVsArea -- "+buildingVsArea);
 				}
 				
 				String meterIdStr = StringUtils.join(meterIds, ",");
@@ -3237,6 +3241,13 @@ public class DashboardAction extends ActionSupport {
 		builder.select(fields);
 		if(buildingCondition != null) {
 			builder.andCondition(buildingCondition);
+			String meterIds = buildingCondition.getValue();
+			if(meterIds != null) {
+				String[] meterArray = meterIds.split(",");
+				for(String meter :meterArray) {
+					meterIdsUsed.add(meter);
+				}
+			}
 		}
 		
 		if (excludeWeekends) {
@@ -3251,6 +3262,7 @@ public class DashboardAction extends ActionSupport {
 			}
 		}
 		List<Map<String, Object>> rs = null;
+		
 		if((subBuilder != null || report.getReportSpaceFilterContext() != null) && buildingCondition == null) {
 //			dont query return null;
 			rs  = new ArrayList<>();
@@ -3440,7 +3452,7 @@ public class DashboardAction extends ActionSupport {
 			JSONArray res = new JSONArray();
 			
 			JSONObject purposeIndexMapping = new JSONObject();
-			variance = DashboardUtil.getStandardVariance(rs);
+			variance = DashboardUtil.getStandardVariance(rs,meterIdsUsed);
 			for(int i=0;i<rs.size();i++) {
 				boolean newPurpose = false;
 	 			Map<String, Object> thisMap = rs.get(i);
