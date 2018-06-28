@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -34,78 +36,82 @@ public class ValidateAndCreateValuesForInputTaskCommand implements Command {
 		TaskContext task = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
 		if(task != null) {
 			List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
-			if(recordIds != null && recordIds.size() == 1) {
-				TaskContext completeRecord = getTask(recordIds.get(0));
-				if(completeRecord != null) {
-					if(task.getStatus() != null && task.getStatus().getId() != -1) {
-						TicketStatusContext status = TicketAPI.getStatus("Closed");
-						if(status.getId() == task.getStatus().getId()) {
-							if (completeRecord.getInputTypeEnum() != InputType.NONE && (completeRecord.getInputValue() == null || completeRecord.getInputValue().isEmpty())) {
-								throw new UnsupportedOperationException("Input task cannot be closed without entering input value");
-							}
-							
-							List<AttachmentContext> attachments = TicketAPI.getRelatedAttachments(recordIds.get(0));
-							if(completeRecord.isAttachmentRequired() && (attachments == null || attachments.isEmpty())) {
-								throw new UnsupportedOperationException("Atleast one file has to be attached since attachment is required to close the task");
+			if(recordIds != null && !recordIds.isEmpty()) {
+				Map<Long, TaskContext> oldTasks = getTask(recordIds);
+				// Bulk operation for closing multiple tasks check only.
+				for(int i = 0; i < recordIds.size(); i++) {
+					TaskContext completeRecord = oldTasks.get(recordIds.get(i));
+					if(completeRecord != null) {
+						if(task.getStatus() != null && task.getStatus().getId() != -1) {
+							TicketStatusContext status = TicketAPI.getStatus("Closed");
+							if(status.getId() == task.getStatus().getId()) {
+								if (completeRecord.getInputTypeEnum() != InputType.NONE && (completeRecord.getInputValue() == null || completeRecord.getInputValue().isEmpty())) {
+									throw new UnsupportedOperationException("Input task cannot be closed without entering input value");
+								}
+								
+								List<AttachmentContext> attachments = TicketAPI.getRelatedAttachments(recordIds.get(i));
+								if(completeRecord.isAttachmentRequired() && (attachments == null || attachments.isEmpty())) {
+									throw new UnsupportedOperationException("Atleast one file has to be attached since attachment is required to close the task");
+								}
 							}
 						}
-					}
-					if((task.getInputValue() != null && !task.getInputValue().isEmpty()) || (task.getInputValues() != null && !task.getInputValues().isEmpty())) {
-						if(task.getInputTime() == -1) {
-							task.setInputTime(System.currentTimeMillis());
-						}
-						switch(completeRecord.getInputTypeEnum()) {
-							case READING:
-								if (completeRecord.getReadingFieldId() != -1) {
-									addReading(task, completeRecord, completeRecord.getReadingField(), context, false);
-								}
-								break;
-							case NUMBER:
-								Double.parseDouble(task.getInputValue());
-								if (completeRecord.getReadingFieldId() != -1) {
-									addReading(task, completeRecord, completeRecord.getReadingField(), context, true);
-								}
-								break;
-							case RADIO:
-								if (completeRecord.getReadingFieldId() != -1) {
-									EnumField enumField = (EnumField) completeRecord.getReadingField();
-									if(enumField.getIndex(task.getInputValue()) == -1) {
-										throw new IllegalArgumentException("Invalid input value");
+						if((task.getInputValue() != null && !task.getInputValue().isEmpty()) || (task.getInputValues() != null && !task.getInputValues().isEmpty())) {
+							if(task.getInputTime() == -1) {
+								task.setInputTime(System.currentTimeMillis());
+							}
+							switch(completeRecord.getInputTypeEnum()) {
+								case READING:
+									if (completeRecord.getReadingFieldId() != -1) {
+										addReading(task, completeRecord, completeRecord.getReadingField(), context, false);
 									}
-									addReading(task, completeRecord, enumField, context, true);
-								}
-								else {
-									List<String> options = TicketAPI.getTaskInputOptions(completeRecord.getId());
-									if(!options.contains(task.getInputValue())) {
-										throw new IllegalArgumentException("Invalid input value");
+									break;
+								case NUMBER:
+									Double.parseDouble(task.getInputValue());
+									if (completeRecord.getReadingFieldId() != -1) {
+										addReading(task, completeRecord, completeRecord.getReadingField(), context, true);
 									}
-								}
-								break;
-//							case CHECKBOX:
-//								List<String> options = TicketAPI.getTaskInputOptions(completeRecord.getId());
-//								if (!task.getInputValues().stream().allMatch(input -> options.contains(input))) {
-//									throw new IllegalArgumentException("Invalid input value");
-//								}
-//								task.setInputValue(StringUtils.join(task.getInputValues(), ","));
-//								break;
-							case TEXT:
-								if (completeRecord.getReadingFieldId() != -1) {
-									addReading(task, completeRecord, completeRecord.getReadingField(), context, true);
-								}
-								break;
-							case BOOLEAN:
-								if (completeRecord.getReadingFieldId() != -1) {
-									BooleanField booleanField = (BooleanField) task.getReadingField();
-									if (!(task.getInputValue().equals("true") || task.getInputValue().equals("false") || task.getInputValue().equals(booleanField.getTrueVal()) || task.getInputValue().equals(booleanField.getFalseVal()))) {
-										throw new IllegalArgumentException("Invalid input value");
+									break;
+								case RADIO:
+									if (completeRecord.getReadingFieldId() != -1) {
+										EnumField enumField = (EnumField) completeRecord.getReadingField();
+										if(enumField.getIndex(task.getInputValue()) == -1) {
+											throw new IllegalArgumentException("Invalid input value");
+										}
+										addReading(task, completeRecord, enumField, context, true);
 									}
-									addReading(task, completeRecord, completeRecord.getReadingField(), context, true);
-								}
-								break;
-							case NONE:
-								task.setInputValue(null);
-							default:
-								break;
+									else {
+										List<String> options = TicketAPI.getTaskInputOptions(completeRecord.getId());
+										if(!options.contains(task.getInputValue())) {
+											throw new IllegalArgumentException("Invalid input value");
+										}
+									}
+									break;
+//								case CHECKBOX:
+//									List<String> options = TicketAPI.getTaskInputOptions(completeRecord.getId());
+//									if (!task.getInputValues().stream().allMatch(input -> options.contains(input))) {
+//										throw new IllegalArgumentException("Invalid input value");
+//									}
+//									task.setInputValue(StringUtils.join(task.getInputValues(), ","));
+//									break;
+								case TEXT:
+									if (completeRecord.getReadingFieldId() != -1) {
+										addReading(task, completeRecord, completeRecord.getReadingField(), context, true);
+									}
+									break;
+								case BOOLEAN:
+									if (completeRecord.getReadingFieldId() != -1) {
+										BooleanField booleanField = (BooleanField) task.getReadingField();
+										if (!(task.getInputValue().equals("true") || task.getInputValue().equals("false") || task.getInputValue().equals(booleanField.getTrueVal()) || task.getInputValue().equals(booleanField.getFalseVal()))) {
+											throw new IllegalArgumentException("Invalid input value");
+										}
+										addReading(task, completeRecord, completeRecord.getReadingField(), context, true);
+									}
+									break;
+								case NONE:
+									task.setInputValue(null);
+								default:
+									break;
+							}
 						}
 					}
 				}
@@ -150,7 +156,7 @@ public class ValidateAndCreateValuesForInputTaskCommand implements Command {
 		}
 	}
 	
-	private TaskContext getTask(long id) throws Exception {
+	private Map<Long, TaskContext> getTask(List<Long> id) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TASK);
 		SelectRecordsBuilder<TaskContext> builder = new SelectRecordsBuilder<TaskContext>()
@@ -159,13 +165,15 @@ public class ValidateAndCreateValuesForInputTaskCommand implements Command {
 														.select(modBean.getAllFields(FacilioConstants.ContextNames.TASK))
 														.andCondition(CriteriaAPI.getIdCondition(id, module));
 		
-		List<TaskContext> tasks = builder.get();
+		Map<Long, TaskContext> tasks = builder.getAsMap();
 		if(tasks != null && !tasks.isEmpty()) {
-			TaskContext task = tasks.get(0);
-			if (task.getReadingFieldId() != -1) {
-				task.setReadingField(modBean.getField(task.getReadingFieldId()));
+			for (Entry<Long, TaskContext> entry : tasks.entrySet()) {
+				TaskContext task = entry.getValue();
+				if (task.getReadingFieldId() != -1) {
+					task.setReadingField(modBean.getField(task.getReadingFieldId()));
+				}
 			}
-			return task;
+			return tasks;
 		}
 		return null;
 	}

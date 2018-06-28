@@ -164,7 +164,14 @@ public enum ActivityType {
 			// TODO Auto-generated method stub
 			return "Close all task";
 		}
-	}
+	},
+	CREATE_OR_UPDATE_ALARM_SEVERITY(CREATE.getValue() + UPDATED_ALARM_SEVERITY.getValue()) {
+		@Override
+		public String getMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+	},
 	;
 
     private int eventType;

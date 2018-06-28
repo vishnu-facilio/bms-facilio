@@ -1,7 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -12,15 +14,20 @@ import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class UpdateWorkOrderCommand implements Command {
 
@@ -52,7 +59,7 @@ public class UpdateWorkOrderCommand implements Command {
 				for(WorkOrderContext oldWo: oldWos) {
 					
 					if (!validateWorkorderStatus(statusObj, oldWo)) {
-						throw new Exception("Please close all tasks before closing the workorder");
+						throw new Exception("Please close all tasks before closing/resolving the workorder");
 					}
 					
 					WorkOrderContext newWo = FieldUtil.cloneBean(workOrder, WorkOrderContext.class);
@@ -113,10 +120,36 @@ public class UpdateWorkOrderCommand implements Command {
 		return builder.get();
 	}
 	
-	private boolean validateWorkorderStatus(TicketStatusContext statusObj , WorkOrderContext oldWo) {
+	private boolean validateWorkorderStatus(TicketStatusContext statusObj , WorkOrderContext oldWo) throws Exception {
 		if ("Resolved".equalsIgnoreCase(statusObj.getStatus()) || "Closed".equalsIgnoreCase(statusObj.getStatus())) {
-			if (oldWo.getNoOfClosedTasks() < oldWo.getNoOfTasks()) {
-				return false;
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = ModuleFactory.getTasksModule();
+			List<FacilioField> fields =  modBean.getAllFields("task");
+			Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+			
+			FacilioModule ticketModule = ModuleFactory.getTicketsModule();
+			Map<String,FacilioField> ticketFieldMap = FieldFactory.getAsMap(FieldFactory.getTicketFields(ticketModule));
+			
+			String statusTable = ModuleFactory.getTicketStatusModule().getTableName();
+			Map<String, FacilioField> statusFieldMap = FieldFactory.getAsMap(modBean.getAllFields("ticketstatus"));
+			
+			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+					.select(Collections.singletonList(FieldFactory.getField("closedTasks", "COUNT(Tasks.ID)", FieldType.NUMBER)))
+					.table(module.getTableName())
+					.innerJoin(ticketModule.getTableName())
+					.on(module.getTableName()+".ID="+ticketModule.getTableName()+".ID")
+					.innerJoin(statusTable)
+					.on(statusTable+".ID="+ticketModule.getTableName()+"."+ticketFieldMap.get("status").getColumnName())
+					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentTicketId"), String.valueOf(oldWo.getId()), NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(statusFieldMap.get("typeCode"),"2", NumberOperators.EQUALS));
+			
+			List<Map<String, Object>> task = builder.get();
+			if (task != null && !task.isEmpty()) {
+				long count = (long) task.get(0).get("closedTasks");
+				if (count < oldWo.getNoOfTasks()) {
+					return false;
+				}
 			}
 		}
 		return true;

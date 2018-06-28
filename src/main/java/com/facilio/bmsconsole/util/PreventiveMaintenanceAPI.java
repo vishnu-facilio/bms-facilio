@@ -88,17 +88,20 @@ public class PreventiveMaintenanceAPI {
 	}
 	
 	public static List<Map<String, Object>> createProjectedPMJobs (PreventiveMaintenance pm, PMTriggerContext pmTrigger, long startTime, long endTime) throws Exception { //Both in seconds
+		startTime = pmTrigger.getSchedule().getFrequency() > 1 ? pmTrigger.getStartTime() / 1000 :  startTime;
 		long nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(startTime);
 		int currentCount = pm.getCurrentExecutionCount();
 		List<Map<String, Object>> pmJobs = new ArrayList<>();
 		while (nextExecutionTime <= endTime && (pm.getMaxCount() == -1 || currentCount < pm.getMaxCount()) && (pm.getEndTime() == -1 || nextExecutionTime <= pm.getEndTime())) {
-			Map<String, Object> pmJob = new HashMap<>();
-			pmJob.put("pmId", pm.getId());
-			pmJob.put("pmTriggerId", pmTrigger.getId());
-			pmJob.put("nextExecutionTime", nextExecutionTime);
-			pmJob.put("projected", true);
-			pmJob.put("status", PMJobsStatus.ACTIVE);
-			pmJobs.add(pmJob);
+			if (nextExecutionTime >= startTime) {
+				Map<String, Object> pmJob = new HashMap<>();
+				pmJob.put("pmId", pm.getId());
+				pmJob.put("pmTriggerId", pmTrigger.getId());
+				pmJob.put("nextExecutionTime", nextExecutionTime);
+				pmJob.put("projected", true);
+				pmJob.put("status", PMJobsStatus.ACTIVE);
+				pmJobs.add(pmJob);
+			}
 			nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(nextExecutionTime);
 			currentCount++;
 			if(pmTrigger.getSchedule().getFrequencyTypeEnum() == FrequencyType.DO_NOT_REPEAT) {
