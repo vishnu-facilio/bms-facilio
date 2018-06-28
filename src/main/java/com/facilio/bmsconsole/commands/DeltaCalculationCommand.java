@@ -22,6 +22,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.reports.ReportsUtil;
+import com.facilio.bmsconsole.util.MarkingUtil;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -122,8 +123,12 @@ public class DeltaCalculationCommand implements Command {
 			}
 			else if(currentReading<lastReading) {
 				type=MarkType.DECREMENTAL_VALUE;
+				reading.addReading(fieldName, lastReading);
+				
 				long deltaFieldId=fieldMap.get(deltaFieldName).getFieldId();
+				markedList.add(getMarkedReading(reading,energyFieldId,moduleId,type,currentReading,lastReading));
 				markedList.add(getMarkedReading(reading,deltaFieldId,moduleId,type,currentReading,lastReading));
+				currentReading=lastReading;
 			}
 			Double delta= currentReading-lastReading;
 			reading.addReading(deltaFieldName, ReportsUtil.roundOff(delta,4));
