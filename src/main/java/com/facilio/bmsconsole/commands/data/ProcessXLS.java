@@ -50,6 +50,7 @@ import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.ImportAPI;
+import com.facilio.bmsconsole.util.ModuleLocalIdUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
@@ -302,6 +303,10 @@ public class ProcessXLS implements Command {
 						.moduleName(moduleName)
 						.fields(bean.getAllFields(moduleName))
 						.addRecords(readingsList);
+				
+				if(ModuleLocalIdUtil.isModuleWithLocalId(moduleName)) {
+					readingBuilder.setWithLocalIdModule(true);
+				}
 				readingBuilder.save();
 				
 				Thread.sleep(10000L);

@@ -30,6 +30,7 @@ public class GenericAddModuleDataCommand implements Command {
 																						.module(module)
 																						.fields(fields);
 			
+			insertRecordBuilder.setWithLocalIdModule(true);
 			long id = insertRecordBuilder.insert(record);
 			record.setId(id);
 			context.put(FacilioConstants.ContextNames.RECORD_ID, id);

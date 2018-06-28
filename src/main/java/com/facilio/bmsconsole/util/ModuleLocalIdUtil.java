@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.util;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -10,11 +11,18 @@ import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class ModuleLocalIdUtil {
 
+	public static final List<String> modulesWithLocalId = new ArrayList<>();
+	
+	static {
+		modulesWithLocalId.add(FacilioConstants.ContextNames.ASSET);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.ENERGY_METER);
+	}
 	
 	public static ModuleLocalIdContext getModuleLocalContext(Long orgId,String moduleName) throws Exception {
 		
@@ -77,5 +85,7 @@ public class ModuleLocalIdUtil {
 		
 	}
 	
-	
+	public static boolean isModuleWithLocalId(String moduleName) {
+		return modulesWithLocalId.contains(moduleName) ? true : false;
+	}
 }
