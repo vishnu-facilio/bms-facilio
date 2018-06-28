@@ -352,6 +352,20 @@ public class WorkflowRuleAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String updateWorkflowRule() throws Exception {
+		rule.setActions(actions);
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, actions);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, rule);
+		
+		Chain updateRule = FacilioChainFactory.updateWorkflowRuleChain();
+		updateRule.execute(context);
+		
+		rule = (ReadingRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
+		
+		return SUCCESS;
+	}
+	
 	public String businessRules() throws Exception {
 		
 	    return SUCCESS;
