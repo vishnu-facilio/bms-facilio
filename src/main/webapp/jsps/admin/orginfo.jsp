@@ -70,7 +70,7 @@
 </tr>
 </table>
 
-<% } %>
+
 <% if(result.size() != 0) { 
 	Iterator<?> keys = result.keySet().iterator(); %>
 <h2> Org-Properties</h2> 
@@ -91,7 +91,7 @@
 </table>
 <%}%>
 No Of Users In OrgId  <%= org.getOrgId() %> :  <%= users.size() %>
-
+<% } %>
 </div>
 </div>
 </form>
