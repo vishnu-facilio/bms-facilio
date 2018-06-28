@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.model.GetQueueUrlResult;
 import com.amazonaws.services.sqs.model.Message;
+import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
 import com.amazonaws.services.sqs.model.ReceiveMessageResult;
 import com.facilio.aws.util.AwsUtil;
 
@@ -32,7 +33,8 @@ public class FAWSQueue {
             url = result.getQueueUrl();
             nameVsURL.put(queueName, url);
         }
-        ReceiveMessageResult result = sqs.receiveMessage(url);
+        ReceiveMessageRequest request = new ReceiveMessageRequest().withMaxNumberOfMessages(10).withVisibilityTimeout(180).withQueueUrl(url);
+        ReceiveMessageResult result = sqs.receiveMessage(request);
         return result.getMessages();
     }
 
