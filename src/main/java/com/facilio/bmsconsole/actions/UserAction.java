@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import java.io.File;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -23,7 +24,8 @@ import com.chargebee.*;
 import com.chargebee.filters.enums.SortOrder;
 import com.chargebee.models.*;
 import com.chargebee.models.enums.*;
-
+import nl.basjes.parse.useragent.UserAgent;
+import nl.basjes.parse.useragent.UserAgentAnalyzer;
 import com.chargebee.Environment;
 import com.chargebee.ListResult;
 import com.chargebee.filters.enums.SortOrder;
@@ -129,6 +131,38 @@ public class UserAction extends ActionSupport {
 		}
 		portalUserList();
 		return SUCCESS;
+	}
+	
+	public String userAgent() throws Exception{
+		System.out.println("********UserAgentAnalyzer************");
+//		UserAgentAnalyzer uaa;
+//
+//		uaa = UserAgentAnalyzer
+//		        .newBuilder()
+//		        .withField("DeviceClass")
+//		        .withField("AgentNameVersionMajor")
+//		        .build();
+		
+		
+		List<Map<String, Object>> sessions = AccountUtil.getUserBean().getUserSessions(AccountUtil.getCurrentUser().getUid());
+		
+		UserAgentAnalyzer uaa = UserAgentAnalyzer
+                .newBuilder()
+                .hideMatcherLoadStats()
+                .withCache(25000)
+                .build();
+		
+		if (sessions != null) {
+			for (Map<String, Object> session : sessions) {
+				UserAgent agent = uaa.parse((String) session.get("userAgent"));
+				
+				for (String fieldName: agent.getAvailableFieldNamesSorted()) {
+			        System.out.println(fieldName + " = " + agent.getValue(fieldName));
+			    }
+			}
+		}
+		
+			return SUCCESS;
 	}
 
 	public String deleteUser() throws Exception {
@@ -383,6 +417,7 @@ public class UserAction extends ActionSupport {
 	
 	public String updateMyProfile() throws Exception{
 		// System.out.println("***************** calling Subscription Info *********************");
+		// userAgent();
 		subscriptionInfo();
 		// System.out.println("!@@!@!@!!!!!!!!!!! user"+user);
 		boolean status = AccountUtil.getUserBean().updateUser(AccountUtil.getCurrentUser().getId(), user);

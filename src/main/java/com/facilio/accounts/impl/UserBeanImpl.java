@@ -34,6 +34,7 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.EncryptionUtil;
 import com.facilio.bmsconsole.util.SMSUtil;
+import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.LRUCache;
@@ -1109,7 +1110,23 @@ public long inviteRequester(long orgId, User user) throws Exception {
 		}
 		return false;
 	}
-
+	@Override
+	public List<Map<String, Object>> getUserSessions(long uid) throws Exception
+	{
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(AccountConstants.getUserSessionFields())
+				.table("Users")
+				.innerJoin("UserSessions")
+				.on("Users.USERID = UserSessions.USERID")
+				.andCustomWhere("Users.USERID = ? AND UserSessions.IS_ACTIVE=1", uid);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			return props;
+		}
+		return null;
+	
+	}
 	@Override
 	public boolean verifyUserSession(String email, String token) throws Exception {
 		
@@ -1120,13 +1137,14 @@ public long inviteRequester(long orgId, User user) throws Exception {
 		if (sessions.contains(token)) {
 			return true;
 		}
-		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(AccountConstants.getUserSessionFields())
 				.table("Users")
+				.innerJoin("faciliousers")
+				.on("Users.USERID = faciliousers.USERID")
 				.innerJoin("UserSessions")
 				.on("Users.USERID = UserSessions.USERID")
-				.andCustomWhere("Users.EMAIL = ? AND UserSessions.TOKEN = ? AND UserSessions.IS_ACTIVE = ?", email, token, true);
+				.andCustomWhere("(faciliousers.email = ? or faciliousers.mobile = ? ) AND UserSessions.TOKEN = ? AND UserSessions.IS_ACTIVE = ?",email, email, token, true);
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
