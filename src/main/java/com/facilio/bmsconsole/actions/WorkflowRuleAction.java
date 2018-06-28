@@ -361,7 +361,7 @@ public class WorkflowRuleAction extends ActionSupport {
 		Chain updateRule = FacilioChainFactory.updateWorkflowRuleChain();
 		updateRule.execute(context);
 		
-		rule = (ReadingRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
+		rule = (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
 		
 		return SUCCESS;
 	}

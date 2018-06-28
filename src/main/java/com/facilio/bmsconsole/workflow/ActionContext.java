@@ -52,9 +52,6 @@ public class ActionContext {
 	}
 	public void setDefaultTemplateId(int defaultTemplateId) {
 		this.template = TemplateAPI.getDefaultTemplate(defaultTemplateId);
-		if(template == null) {
-			throw new IllegalArgumentException("No DefaultTemplate exists with value : "+defaultTemplateId);
-		}
 		this.defaultTemplateId = defaultTemplateId;
 	}
 	

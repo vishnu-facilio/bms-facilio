@@ -74,6 +74,15 @@ public class ActionAPI {
 		for(ActionContext action:actions) {
 			action.setOrgId(orgId);
 			action.setStatus(true);
+			
+			if (action.getTemplateId() == -1 && action.getDefaultTemplateId() == -1) {
+				throw new IllegalArgumentException("Either template ID / default template has to be set for Action during addition");
+			}
+			
+			if (action.getTemplateId() == -1 && TemplateAPI.getDefaultTemplate(action.getDefaultTemplateId()) == null) {
+				throw new IllegalArgumentException("Invalid default template id for action during addition.");
+			}
+			
 			actionProps.add(FieldUtil.getAsProperties(action));
 		}
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
@@ -139,10 +148,9 @@ public class ActionAPI {
 				ActionContext action = FieldUtil.getAsBeanFromMap(prop, ActionContext.class);
 				if(action.getTemplateId() != -1) {
 					action.setTemplate(TemplateAPI.getTemplate(action.getTemplateId())); //Template should be obtained from some api
-					
-					if(action.getTemplate() == null) {
-						throw new IllegalArgumentException("Invalid template ID for action : "+action.getId());
-					}
+				}
+				if(action.getTemplate() == null) {
+					throw new IllegalArgumentException("Invalid template for action : "+action.getId());
 				}
 				actions.add(action);
 			}
