@@ -275,7 +275,7 @@ public class ProcessXLS implements Command {
 		}
 		else {
 			
-			int insertLimit = 100;
+			int insertLimit = 10000;
 			int splitSize = (readingsEntireList.size()/insertLimit) + 1;
 			LOGGER.severe("splitSize ----- "+splitSize);
 			for(int i=0 ; i < splitSize; i++) {

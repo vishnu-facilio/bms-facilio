@@ -357,7 +357,6 @@ public class DeviceAPI
 																.select(fields)
 																.moduleName(FacilioConstants.ContextNames.ENERGY_METER)
 																.beanClass(EnergyMeterContext.class)
-																.andCustomWhere("IS_VIRTUAL = ?", true)
 																.andCondition(CriteriaAPI.getIdCondition(id, module));
 		List<EnergyMeterContext> meters = selectBuilder.get();
 		if (meters != null && !meters.isEmpty()) {
