@@ -3580,22 +3580,26 @@ public class DashboardAction extends ActionSupport {
 			if(variance != null && variance.containsKey("space")) {
 				spaceId = (Long) variance.get("space");
 			}
-			for(ReportBenchmarkRelContext reportBenchmarkRel : reportContext.getReportBenchmarkRelContexts()) {
-				
-				benchmarkId = reportBenchmarkRel.getBenchmarkId();
-				BenchmarkUnit benchmarkUnit = new BenchmarkUnit();
-				benchmarkUnit.setFromUnit(Unit.SQUARE_METER);
-				benchmarkUnit.setToUnit(Unit.SQUARE_FOOT);
-				List<BenchmarkUnit> units1 = new ArrayList<>();
-				units1.add(benchmarkUnit);
-				units = units1;
-				
-				calculateBenchmarkValue();
-				BenchmarkContext benchmark = BenchmarkAPI.getBenchmark(benchmarkId);
-				benchmark.setValue(value);
-				
-				addBenchmarks(benchmark);
-				
+			if(dateAggr != null) {
+				if(!(dateAggr.equals(DateAggregateOperator.DATEANDTIME) || dateAggr.equals(DateAggregateOperator.HOURSOFDAY) || dateAggr.equals(DateAggregateOperator.HOURSOFDAYONLY))) {
+					for(ReportBenchmarkRelContext reportBenchmarkRel : reportContext.getReportBenchmarkRelContexts()) {
+						
+						benchmarkId = reportBenchmarkRel.getBenchmarkId();
+						BenchmarkUnit benchmarkUnit = new BenchmarkUnit();
+						benchmarkUnit.setFromUnit(Unit.SQUARE_METER);
+						benchmarkUnit.setToUnit(Unit.SQUARE_FOOT);
+						List<BenchmarkUnit> units1 = new ArrayList<>();
+						units1.add(benchmarkUnit);
+						units = units1;
+						
+						calculateBenchmarkValue();
+						BenchmarkContext benchmark = BenchmarkAPI.getBenchmark(benchmarkId);
+						benchmark.setValue(value);
+						
+						addBenchmarks(benchmark);
+						
+					}
+				}
 			}
 		}
 		

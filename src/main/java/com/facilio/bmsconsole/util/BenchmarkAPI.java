@@ -129,7 +129,7 @@ public class BenchmarkAPI {
 		}
 		
 		switch (aggr) {
-			case DATEANDTIME:
+			case FULLDATE:
 			case DAYSOFMONTH:
 			case WEEKDAY:
 				if (frequency != FacilioFrequency.DAILY) {
