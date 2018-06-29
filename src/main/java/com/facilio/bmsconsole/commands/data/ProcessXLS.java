@@ -210,7 +210,18 @@ public class ProcessXLS implements Command {
 						}
 						if(facilioField.getDataTypeEnum().equals(FieldType.LOOKUP)) {
 							LookupField lookupField = (LookupField) facilioField;
-							if(facilioField.getDisplayType().equals(FacilioField.FieldDisplayType.LOOKUP_SIMPLE)) {
+							
+							boolean isSkipSpecialLookup = false;
+							
+							try {
+								if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) && lookupField.getName().equals("department")) {
+									isSkipSpecialLookup = true;
+								}
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+							
+							if(facilioField.getDisplayType().equals(FacilioField.FieldDisplayType.LOOKUP_SIMPLE) || isSkipSpecialLookup) {
 								List<Map<String, Object>> lookupPropsList = getLookupProps(lookupField,cellValue);
 								if(lookupPropsList != null) {
 									Map<String, Object> lookupProps = lookupPropsList.get(0);
