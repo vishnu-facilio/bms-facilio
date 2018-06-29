@@ -113,8 +113,12 @@ public class UnitsUtil {
 			int unitid = (int) prop.get("unit");
 			return Unit.valueOf(unitid);
 		}
-		return null;
+		return Unit.valueOf(Metric.valueOf(metricId).getSiUnitId());
 	}
+	
+	public static Unit getOrgDisplayUnit(Long orgid, Metric metric) throws Exception {
+		return getOrgDisplayUnit(orgid, metric.getMetricId());
+	} 
 	
 	public static List<OrgUnitsContext> getOrgUnitsList() throws Exception {
 		
