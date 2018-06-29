@@ -406,6 +406,22 @@ public class DashboardUtil {
 		return null;
 	}
 	
+	public static String getStringFromDateAggregator(DateAggregateOperator dateaggr) {
+		if(dateaggr.equals(DateAggregateOperator.DAYSOFMONTH) || dateaggr.equals(DateAggregateOperator.FULLDATE) || dateaggr.equals(DateAggregateOperator.WEEKDAY)) {
+			return "day";
+		}
+		else if(dateaggr.equals(DateAggregateOperator.MONTH) || dateaggr.equals(DateAggregateOperator.MONTHANDYEAR)) {
+			return "month";
+		}
+		else if(dateaggr.equals(DateAggregateOperator.YEAR)) {
+			return "year";
+		}
+		else if(dateaggr.equals(DateAggregateOperator.WEEKANDYEAR) || dateaggr.equals(DateAggregateOperator.WEEK)) {
+			return "week";
+		}
+		return null;
+	}
+	
 	public static boolean deleteWidgetFromDashboard(Long dashboardId,Long widgetId) throws SQLException {
 		
 		if(dashboardId != null && widgetId != null) {
