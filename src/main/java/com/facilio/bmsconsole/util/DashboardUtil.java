@@ -472,7 +472,7 @@ public class DashboardUtil {
 			variance.put("avg", avg);
 			variance.put("sum", sum);
 			
-			if(meterList != null && !meterList.isEmpty() && sum > 0) {
+			if(meterList != null && !meterList.isEmpty()) {
 				LOGGER.log(Level.SEVERE, "meterList --- "+meterList);
 				List<Long> bb = new ArrayList<Long>();
 		        bb.add(null);
@@ -488,6 +488,7 @@ public class DashboardUtil {
 			        	EnergyMeterContext energyMeter = DeviceAPI.getEnergyMeter(meterID);
 			        	if(energyMeter.isRoot()) {
 			        		BaseSpaceContext purposeSpace = SpaceAPI.getBaseSpace(energyMeter.getPurposeSpace().getId());
+			        		variance.put("space", purposeSpace.getId());
 			        		double grossFloorArea = 0.0;
 			        		if(purposeSpace.getSpaceType() == BaseSpaceContext.SpaceType.SITE.getIntVal()) {
 			        			SiteContext sites = SpaceAPI.getSiteSpace(purposeSpace.getId());
