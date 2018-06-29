@@ -46,7 +46,6 @@ import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
-import com.facilio.exception.ReadingValidationException;
 import com.facilio.fw.BeanFactory;
 import com.facilio.leed.context.PMTriggerContext;
 import com.facilio.sql.GenericSelectRecordBuilder;
