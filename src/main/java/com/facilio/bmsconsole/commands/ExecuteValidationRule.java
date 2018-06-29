@@ -34,8 +34,8 @@ public class ExecuteValidationRule implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		Boolean skipValidation = (Boolean) context.get(FacilioConstants.ContextNames.SKIP_VALIDATION);
-		if (skipValidation != null && skipValidation) {
+		Boolean doValidation = (Boolean) context.get(FacilioConstants.ContextNames.DO_VALIDTION);
+		if (doValidation == null || !doValidation) {
 			return false;
 		}
 		

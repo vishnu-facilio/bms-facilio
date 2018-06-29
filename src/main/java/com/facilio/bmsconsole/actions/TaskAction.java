@@ -46,13 +46,13 @@ public class TaskAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	private boolean skipValidation;
-	public boolean getSkipValidation() {
-		return skipValidation;
+	private boolean doValidation;
+	public boolean getDoValidation() {
+		return doValidation;
 	}
 	
-	public void setSkipValidation(boolean skipValidation) {
-		this.skipValidation = skipValidation;
+	public void setDoValidation(boolean doValidation) {
+		this.doValidation = doValidation;
 	}
 	
 	private TaskSectionContext section;
@@ -161,7 +161,7 @@ public class TaskAction extends ActionSupport {
 	public String updateTask() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
-		context.put(FacilioConstants.ContextNames.SKIP_VALIDATION, getSkipValidation());
+		context.put(FacilioConstants.ContextNames.DO_VALIDTION, getDoValidation());
 		return updateTask(context);
 	}
 	public String addTaskInput() throws Exception {
@@ -239,7 +239,7 @@ public class TaskAction extends ActionSupport {
 			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
 			context.put(FacilioConstants.ContextNames.TASK, singleTask);
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(singleTask.getId()));
-			context.put(FacilioConstants.ContextNames.SKIP_VALIDATION, getSkipValidation());
+			context.put(FacilioConstants.ContextNames.DO_VALIDTION, getDoValidation());
 			Chain updateTask = FacilioChainFactory.getUpdateTaskChain();
 			try {
 				updateTask.execute(context);
