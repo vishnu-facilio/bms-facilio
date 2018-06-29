@@ -3472,7 +3472,11 @@ public class DashboardAction extends ActionSupport {
 			JSONArray res = new JSONArray();
 			
 			JSONObject purposeIndexMapping = new JSONObject();
-			variance = DashboardUtil.getStandardVariance(rs,meterIdsUsed);
+			
+			if(!"eui".equalsIgnoreCase(report.getY1AxisUnit())) {
+				variance = DashboardUtil.getStandardVariance(rs,meterIdsUsed);
+			}
+			
 			for(int i=0;i<rs.size();i++) {
 				boolean newPurpose = false;
 	 			Map<String, Object> thisMap = rs.get(i);
