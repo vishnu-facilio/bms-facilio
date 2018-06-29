@@ -56,6 +56,12 @@ public class ColumnFactory {
 		columnMap.put("alarm-energy", getDefaultAlarmColumns());
 		columnMap.put("alarm-hvac", getDefaultAlarmColumns());
 		
+		columnMap.put("asset-all", getDefaultAssetsColumns());
+		columnMap.put("asset-energy", getDefaultAssetsColumns());
+		columnMap.put("asset-hvac", getDefaultAssetsColumns());
+		columnMap.put("asset-active", getDefaultAssetsColumns());
+		columnMap.put("asset-retired", getDefaultAssetsColumns());
+		
 		// For getting default columns for a module
 		columnMap.put("workorder-default", getDefaultViewColumns());
 		columnMap.put("alarm-default", getDefaultAlarmColumns());
@@ -164,6 +170,18 @@ public class ColumnFactory {
 		
 		columns.add(new ViewField("ttime", "Timestamp"));
 		columns.add(new ViewField("totalEnergyConsumptionDelta", "Total Energy Consumption Delta"));
+		
+		return columns;
+	}
+	
+	private static List<ViewField> getDefaultAssetsColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("name", "Asset Name"));
+		columns.add(new ViewField("type", "Type"));
+		columns.add(new ViewField("category", "Category"));
+		columns.add(new ViewField("department", "Department"));
+//		columns.add(new ViewField("movable", "Movable"));		// TODO needs to handle parent field
 		
 		return columns;
 	}
