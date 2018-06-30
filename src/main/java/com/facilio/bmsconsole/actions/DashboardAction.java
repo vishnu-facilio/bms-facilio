@@ -69,6 +69,7 @@ import com.facilio.bmsconsole.context.ReportUserFilterContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
+import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.TicketStatusContext.StatusType;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetListViewContext;
@@ -1988,6 +1989,10 @@ public class DashboardAction extends ActionSupport {
 							LOGGER.log(Level.INFO, "dateFilter --- "+dateFilter);
 							if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
 								continue;
+							}
+							if(workorder.getStatus() != null && workorder.getStatus().getId() > 0) {
+								TicketStatusContext status = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getId(), workorder.getStatus().getId());
+								workorder.setStatus(status);
 							}
 							if(workorder.getStatus() != null && workorder.getStatus().getType() != null && workorder.getStatus().getType().equals(StatusType.CLOSED)) {
 								
