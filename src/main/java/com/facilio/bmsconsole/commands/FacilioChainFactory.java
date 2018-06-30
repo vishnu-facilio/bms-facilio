@@ -32,12 +32,13 @@ public class FacilioChainFactory {
     public static Chain getOrgSignupChain()
 	{
 		Chain c = new ChainBase();
-		c.addCommand(new CreateAccountCommand());
+		c.addCommand(new CreateOrgCommand());
 		c.addCommand(new AddDefaultModulesCommand());
 		c.addCommand(new AddDefaultReportCommand());
 		c.addCommand(new AddDefaultUnitsCommand());
 		c.addCommand(new AddEventModuleCommand());
 		c.addCommand(new AddOrgInfoCommand());
+		c.addCommand(new CreateSuperAdminCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

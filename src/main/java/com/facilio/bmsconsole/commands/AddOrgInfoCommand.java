@@ -27,7 +27,7 @@ public class AddOrgInfoCommand implements Command {
             properties.put("value", facilioAuth);
             insertRecordBuilder.addRecord(properties);
             insertRecordBuilder.save();
-            return true;
+            return false;
         }
 
 }
