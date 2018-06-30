@@ -41,7 +41,7 @@ public class PdfUtil {
                 }
                 String[] command = new String[]{PDF_CMD, RENDER_JS, url, pdfFileLocation, token, serverName};
                 int exitStatus = CommandExecutor.execute(command);
-                System.out.println("Converted to pdf with exit status" + exitStatus + " and file " + pdfFile.getAbsolutePath());
+                log.info("Converted to pdf with exit status" + exitStatus + " and file " + pdfFile.getAbsolutePath());
             } catch (IOException e) {
                 log.info("Exception occurred ", e);
             }
