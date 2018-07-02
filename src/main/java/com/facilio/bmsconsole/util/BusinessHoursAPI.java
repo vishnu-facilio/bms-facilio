@@ -9,9 +9,12 @@ import java.util.Map;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.BusinessHourContext;
 import com.facilio.bmsconsole.context.BusinessHoursList;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
@@ -42,7 +45,6 @@ public class BusinessHoursAPI {
 	}
 	
 	public static BusinessHoursList getBusinessHours(long id) throws Exception {
-		
 		String businessHoursTable = ModuleFactory.getBusinessHoursModule().getTableName();
 		String singleDayTable = ModuleFactory.getSingleDayBusinessHourModule().getTableName();
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
@@ -66,6 +68,16 @@ public class BusinessHoursAPI {
 		}
 		
 		return null;
+	}
+	
+	public static void deleteBusinessHours(long id) throws Exception {
+		FacilioModule businessHoursTable = ModuleFactory.getBusinessHoursModule();
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+				.table(businessHoursTable.getTableName())
+				.andCondition(CriteriaAPI.getIdCondition(id, businessHoursTable))
+				.andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getOrgId(), businessHoursTable));
+		
+		builder.delete();
 	}
 
 }

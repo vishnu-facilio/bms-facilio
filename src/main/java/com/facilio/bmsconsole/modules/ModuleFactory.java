@@ -540,6 +540,14 @@ public class ModuleFactory {
 
 		return businessHours;
 	}
+	
+	public static FacilioModule getShiftModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("shift");
+		module.setDisplayName("Shift");
+		module.setTableName("Shift");
+		return module;
+	}
 
 	public static FacilioModule getFilesModule() {
 		FacilioModule filesModule = new FacilioModule();

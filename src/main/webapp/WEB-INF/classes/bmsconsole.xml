@@ -4180,6 +4180,23 @@
 			</result>
 		</action>
 	</package>
+	<package name="shifts" namespace="/api/shifts" extends="home">
+		<action name="add" class="com.facilio.bmsconsole.actions.ShiftAction" method="add">
+			<result name="success" type="json">
+				<param name="includeProperties">shift.*</param>
+			</result>
+		</action>
+		<action name="all" class="com.facilio.bmsconsole.actions.ShiftAction" method="all">
+			<result name="success" type="json">
+				<param name="includeProperties">shifts.*</param>
+			</result>
+		</action>
+		<action name="update" class="com.facilio.bmsconsole.actions.ShiftAction" method="update">
+			<result name="success" type="json">
+				<param name="includeProperties">shift.*</param>
+			</result>
+		</action>
+	</package>
 	<package name="sample" namespace="/api/sample" extends="homeApi">
 		<action name="*">
 			<result>/jsps/samples/{1}.jsp</result>

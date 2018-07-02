@@ -1918,6 +1918,57 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	public static List<FacilioField> getShiftField() {
+		FacilioModule module = ModuleFactory.getShiftModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		
+		FacilioField name = new FacilioField();
+		name.setName("name");
+		name.setDataType(FieldType.STRING);
+		name.setColumnName("NAME");
+		name.setModule(module);
+		fields.add(name);
+		
+		FacilioField siteId = new FacilioField();
+		siteId.setName("siteId");
+		siteId.setDataType(FieldType.STRING);
+		siteId.setColumnName("SITEID");
+		siteId.setModule(module);
+		fields.add(siteId);
+		
+		FacilioField isSameTime = new FacilioField();
+		isSameTime.setName("isSameTime");
+		isSameTime.setDataType(FieldType.BOOLEAN);
+		isSameTime.setColumnName("ISSAMETIME");
+		isSameTime.setModule(module);
+		fields.add(isSameTime);
+		
+		FacilioField startTime = new FacilioField();
+		startTime.setName("startTime");
+		startTime.setDataType(FieldType.MISC);
+		startTime.setColumnName("START_TIME");
+		startTime.setModule(module);
+		fields.add(startTime);
+		
+		FacilioField endTime = new FacilioField();
+		endTime.setName("endTime");
+		endTime.setDataType(FieldType.MISC);
+		endTime.setColumnName("END_TIME");
+		endTime.setModule(module);
+		fields.add(endTime);
+		
+		FacilioField businessHoursId = new FacilioField();
+		businessHoursId.setName("businessHoursId");
+		businessHoursId.setDataType(FieldType.MISC);
+		businessHoursId.setColumnName("BUSINESSHOURSID");
+		businessHoursId.setModule(module);
+		fields.add(businessHoursId);
+		
+		return fields;
+	}
 
 	public static List<FacilioField> getSingleDayBusinessHoursFields() {
 		FacilioModule module = ModuleFactory.getSingleDayBusinessHourModule();
