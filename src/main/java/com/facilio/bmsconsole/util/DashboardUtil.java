@@ -1900,6 +1900,7 @@ public class DashboardUtil {
 		
 		NumberAggregateOperator xAxisAggr1 = (NumberAggregateOperator) yAggrOpr;
 		
+		values.removeIf(value -> value == null);
 		switch(xAxisAggr1) {
 		case SUM: {
 			return values.stream().mapToDouble(Double::doubleValue).sum();
