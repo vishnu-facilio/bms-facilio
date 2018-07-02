@@ -182,7 +182,7 @@ public class TaskAction extends ActionSupport {
 			errorMap.put(ex.getReadingFieldId(), msgMap);
 			setError(errorMap);
 		}
-		Integer count = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
+		Integer count = (Integer) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 		if (count != null) {
 			rowsUpdated = count;
 		}
