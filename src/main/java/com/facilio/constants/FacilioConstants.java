@@ -107,6 +107,8 @@ public class FacilioConstants {
 		public static final String USER = "user";
 		public static final String USER_MOBILE_SETTING = "userMobileSetting";
 		public static final String ACCESSIBLE_SPACE = "accessibleSpace";
+		public static final String USER_SHIFT_READING = "usershiftreading";
+		public static final String USER_WORK_HOURS_READINGS = "userworkhoursreading";
 		
 		public static final String GROUP_ID = "groupId";
 		public static final String GROUP = "group";
