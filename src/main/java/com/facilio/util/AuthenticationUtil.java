@@ -2,9 +2,6 @@ package com.facilio.util;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.facilio.accounts.dto.Account;
 import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.fw.auth.LoginUtil;
@@ -12,8 +9,6 @@ import com.facilio.fw.auth.LoginUtil;
 
 public class AuthenticationUtil {
 	
-	private static Logger log = LogManager.getLogger(AuthenticationUtil.class.getName());
-
     public static CognitoUtil.CognitoUser getCognitoUser(HttpServletRequest request,boolean isPortaluser) throws Exception {
         String facilioToken = null;
         if(isPortaluser) {
@@ -36,9 +31,6 @@ public class AuthenticationUtil {
             String overrideSessionCookie = LoginUtil.getUserCookie(request, "fc.overrideSession");
             boolean overrideSessionCheck = overrideSessionCookie != null && overrideSessionCookie.equalsIgnoreCase("true");
             CognitoUtil.CognitoUser cognitoUser =  CognitoUtil.verifiyFacilioToken(facilioToken, isPortaluser, overrideSessionCheck);
-            if (cognitoUser != null) {
-            		log.info("user verified - " + cognitoUser.getEmail() + ": " + cognitoUser);
-            }
             return cognitoUser;
         }
         return  null;

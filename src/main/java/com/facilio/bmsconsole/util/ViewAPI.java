@@ -15,12 +15,12 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.context.ViewSharingContext;
 import com.facilio.bmsconsole.context.ViewSharingContext.SharingType;
-import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.LookupOperator;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -40,8 +40,12 @@ import com.facilio.sql.GenericUpdateRecordBuilder;
 public class ViewAPI {
 
 	private static Logger log = LogManager.getLogger(ViewAPI.class.getName());
+	
+	public static List<FacilioView> getAllViews(String moduleName) throws Exception {
+		return getAllViews(-1, moduleName);
+	}
 
-	public static List<FacilioView> getAllViews(String moduleName, long orgId) throws Exception {
+	public static List<FacilioView> getAllViews(long moduleId, String... moduleName) throws Exception {
 		//List<FacilioView> views = new ArrayList<>();
 		Map<Long, FacilioView> viewMap = new HashMap<>();
 		List<Long> viewIds = new ArrayList<>();
@@ -50,52 +54,18 @@ public class ViewAPI {
 			FacilioModule module = ModuleFactory.getViewsModule();
 			List<FacilioField> fields = FieldFactory.getViewFields();
 			Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
-			FacilioField moduleField = fieldsMap.get("moduleName");
-			FacilioField isHiddenField = fieldsMap.get("isHidden");
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 													.select(fields)
 													.table(module.getTableName())
 													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-													.andCondition(CriteriaAPI.getCondition(moduleField, "'"+moduleName+"'", NumberOperators.EQUALS))
-													.andCondition(CriteriaAPI.getCondition(isHiddenField, String.valueOf(false) , BooleanOperators.IS))
 													.orderBy("SEQUENCE_NUMBER");
 			
-			List<Map<String, Object>> viewProps = builder.get();
-			for(Map<String, Object> viewProp : viewProps) 
-			{
-				//views.add(FieldUtil.getAsBeanFromMap(viewProp, FacilioView.class));
-				FacilioView view = FieldUtil.getAsBeanFromMap(viewProp, FacilioView.class);
-				viewMap.put(view.getId(), view);
-				viewIds.add(view.getId());
+			if (moduleId != -1) {
+				builder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("moduleId"), String.valueOf(moduleId), NumberOperators.EQUALS));
 			}
-		} 
-		catch (Exception e) 
-		{
-			log.info("Exception occurred ", e);
-			throw e;
-		}
-		return getFilteredViews(viewMap, viewIds);
-	}
-	
-	public static List<FacilioView> getAllViews(long moduleId, long orgId) throws Exception {
-		
-		//List<FacilioView> views = new ArrayList<>();
-		Map<Long, FacilioView> viewMap = new HashMap<>();
-		List<Long> viewIds = new ArrayList<>();
-		try 
-		{
-			FacilioModule module = ModuleFactory.getViewsModule();
-			List<FacilioField> fields = FieldFactory.getViewFields();
-			Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
-			FacilioField moduleField = fieldsMap.get("moduleId");
-			FacilioField isHiddenField = fieldsMap.get("isHidden");
-			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-													.select(fields)
-													.table(module.getTableName())
-													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-													.andCondition(CriteriaAPI.getCondition(moduleField, moduleId+"", NumberOperators.EQUALS))
-													.andCondition(CriteriaAPI.getCondition(isHiddenField, String.valueOf(false) , BooleanOperators.IS))
-													.orderBy("SEQUENCE_NUMBER");
+			else {
+				builder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("moduleName"), moduleName[0], StringOperators.IS));
+			}
 			
 			List<Map<String, Object>> viewProps = builder.get();
 			for(Map<String, Object> viewProp : viewProps) 
@@ -218,6 +188,37 @@ public class ViewAPI {
 		return null;
 	}
 	
+	public static FacilioView getView(long viewId) throws Exception {
+		try {
+			FacilioModule module = ModuleFactory.getViewsModule();
+			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+													.select(FieldFactory.getViewFields())
+													.table(module.getTableName())
+													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+													.andCondition(CriteriaAPI.getIdCondition(viewId, module));
+			
+			List<Map<String, Object>> viewProps = builder.get();
+			if(viewProps != null && !viewProps.isEmpty()) {
+				Map<String, Object> viewProp = viewProps.get(0);
+				FacilioView view = FieldUtil.getAsBeanFromMap(viewProp, FacilioView.class);
+				if(view.getCriteriaId() != -1) {
+					Criteria criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getId(), view.getCriteriaId());
+					setCriteriaValue(criteria);
+					view.setCriteria(criteria);
+				}
+				List<ViewField> columns = getViewColumns(view.getId());
+				view.setFields(columns);
+				view.setSortFields(getSortFields(view.getId()));
+				return view;
+			}
+			
+		} catch (Exception e) {
+			log.info("Exception occurred ", e);
+			throw e;
+		}
+		return null;
+	}
+	
 	public static long addView(FacilioView view, long orgId) throws Exception {
 		view.setOrgId(orgId);
 		view.setId(-1);
@@ -265,6 +266,57 @@ public class ViewAPI {
 			throw e;
 		}
 	}
+	
+	/*public static long editView(long viewId, FacilioView view) throws Exception {
+		try {
+			FacilioView oldView = getView(viewId);
+			Criteria criteria = view.getCriteria();
+			if(criteria != null) {
+				long criteriaId = CriteriaAPI.addCriteria(criteria, AccountUtil.getCurrentOrg().getId());
+				view.setCriteriaId(criteriaId);
+			}
+			
+			Map<String, Object> viewProp = FieldUtil.getAsProperties(view);
+			FacilioModule viewModule = ModuleFactory.getViewsModule();
+			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+															.table(viewModule.getTableName())
+															.fields(FieldFactory.getViewFields())
+															.andCondition(CriteriaAPI.getIdCondition(viewId, viewModule));
+			
+			updateBuilder.update(viewProp);
+			
+			if(criteria != null) {
+				CriteriaAPI.deleteCriteria(oldView.getCriteriaId());
+			}
+			
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module;
+			if (LookupSpecialTypeUtil.isSpecialType(view.getModuleName())) {
+				module =  modBean.getModule(view.getModuleName());
+			} else {
+				module =  modBean.getModule(view.getModuleId());
+			}
+			
+			List<SortField> defaultSortFileds = ColumnFactory.getDefaultSortField(module.getName());
+		
+			if (defaultSortFileds != null && !defaultSortFileds.isEmpty()) {
+				for (int i = 0; i < defaultSortFileds.size(); i++) {
+					FacilioField sortfield = modBean.getField(defaultSortFileds.get(i).getSortField().getName(), module.getName());
+					Long fieldID = modBean.getField(sortfield.getName(), module.getName()).getFieldId();
+					defaultSortFileds.get(i).setFieldId(fieldID);
+					defaultSortFileds.get(i).setOrgId(AccountUtil.getCurrentOrg().getId());
+				}
+				
+				customizeViewSortColumns((long) viewProp.get("id"), defaultSortFileds);
+			}
+			
+			return (long) viewProp.get("id");
+			
+		} catch (Exception e) {
+			log.info("Exception occurred ", e);
+			throw e;
+		}
+	}*/
 	
 	public static void customizeViews(List<FacilioView> views) throws Exception {
 		

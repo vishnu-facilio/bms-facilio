@@ -130,6 +130,8 @@ public class ColumnFactory {
 		columns.add(new ViewField("priority", "Priority"));
 		columns.add(new ViewField("noOfNotes", "Comments"));
 		columns.add(new ViewField("noOfTasks", "Tasks"));
+		columns.add(new ViewField("modifiedTime", "Last Updated Time"));
+		columns.add(new ViewField("actualWorkEnd", "Closed Time"));
 		
 		return columns;
 	}
