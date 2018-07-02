@@ -180,10 +180,13 @@ public class ProcessXLS implements Command {
 
 				HashMap <String, Object> props = new LinkedHashMap<String,Object>();
 				
-				if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET)) {
+				if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) || importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ENERGY_METER)) {
 					
 					Long spaceId = ImportAPI.getSpaceIDforAssets(colVal);
 					 props.put("space", spaceId);
+					 if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ENERGY_METER)) {
+						 props.put("purposeSpace", spaceId);
+					 }
 					 props.put("resourceType", ResourceType.ASSET.getValue());
 					 
 					colVal.remove("site");
@@ -212,7 +215,7 @@ public class ProcessXLS implements Command {
 							boolean isSkipSpecialLookup = false;
 							
 							try {
-								if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) && lookupField.getName().equals("department")) {
+								if((importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) || importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ENERGY_METER)) && lookupField.getName().equals("department")) {
 									isSkipSpecialLookup = true;
 								}
 							} catch (Exception e) {

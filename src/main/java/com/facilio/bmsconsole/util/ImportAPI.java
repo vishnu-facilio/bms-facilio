@@ -423,11 +423,14 @@ public class ImportAPI {
 					fields.add(field.getName());
 				}
 			}
-			if(module.equals(FacilioConstants.ContextNames.ASSET)) {
+			if(module.equals(FacilioConstants.ContextNames.ASSET) || module.equals(FacilioConstants.ContextNames.ENERGY_METER)) {
 				
 				fields.remove("space");
 				fields.remove("localId");
 				fields.remove("resourceType");
+				if(module.equals(FacilioConstants.ContextNames.ENERGY_METER)) {
+					fields.remove("purposeSpace");
+				}
 				
 				fields.add("site");
 				fields.add("building");
