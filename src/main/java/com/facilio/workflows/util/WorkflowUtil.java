@@ -331,6 +331,22 @@ public class WorkflowUtil {
 				.fields(FieldFactory.getWorkflowFieldsFields());
 		
 		workflowContext = WorkflowUtil.getWorkflowContext(workflowContext.getId(), true);
+		
+		List<WorkflowFieldContext> workflowFields = getWorkflowFields(workflowContext);
+		
+		for(WorkflowFieldContext workflowField :workflowFields) {
+			props = FieldUtil.getAsProperties(workflowField);
+			insertBuilder.addRecord(props);
+		}
+		insertBuilder.save();
+		return workflowContext.getId();
+	}
+	
+	public static List<WorkflowFieldContext> getWorkflowFields(WorkflowContext workflowContext) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		List<WorkflowFieldContext> workflowFieldContexts = null;
 		for(ExpressionContext expression :workflowContext.getExpressions()) {
 			
 			String fieldName = expression.getFieldName();
@@ -362,14 +378,14 @@ public class WorkflowUtil {
 					if(parentId != null) {
 						workflowFieldContext.setResourceId(parentId);
 					}
-					props = FieldUtil.getAsProperties(workflowFieldContext);
-					insertBuilder.addRecord(props);
-					LOGGER.severe("ADDED WORKFLOW FIELD ID --- "+(Long) props.get("id"));
+					if(workflowFieldContexts == null) {
+						workflowFieldContexts = new ArrayList<>();
+					}
+					workflowFieldContexts.add(workflowFieldContext);
 				}
 			}
 		}
-		insertBuilder.save();
-		return workflowContext.getId();
+		return workflowFieldContexts;
 	}
 	
 	public static List<WorkflowFieldContext>  getWorkflowField(WorkflowContext workflowContext) throws Exception {
