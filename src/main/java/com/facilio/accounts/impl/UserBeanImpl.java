@@ -1,5 +1,6 @@
 package com.facilio.accounts.impl;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -21,7 +22,10 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountEmailTemplate;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -31,11 +35,14 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.EncryptionUtil;
 import com.facilio.bmsconsole.util.SMSUtil;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
+import com.facilio.fw.BeanFactory;
 import com.facilio.fw.LRUCache;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -198,6 +205,23 @@ public class UserBeanImpl implements UserBean {
 		user.setUserType(AccountConstants.UserType.USER.getValue());
 		user.setUserStatus(true);
 		user.setAccessibleSpace(getAccessibleSpaceList(uid));
+		return addToORGUsers(user);
+	}
+	
+	private long addToORGUsers(User user) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		InsertRecordBuilder<ResourceContext> insertRecordBuilder = new InsertRecordBuilder<ResourceContext>()
+																		.moduleName(FacilioConstants.ContextNames.RESOURCE)
+																		.fields(modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE))
+																		;
+		ResourceContext resource = new ResourceContext();
+		resource.setName(user.getEmail());
+		resource.setResourceType(ResourceType.USER);
+		
+		long id = insertRecordBuilder.insert(resource);
+		user.setId(id);
+		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(AccountConstants.getOrgUserModule().getTableName())
 				.fields(AccountConstants.getOrgUserFields());
@@ -206,7 +230,7 @@ public class UserBeanImpl implements UserBean {
 		insertBuilder.addRecord(props);
 		insertBuilder.save();
 		
-		return (Long) props.get("id");
+		return id;
 	}
 
 	@Override
@@ -950,15 +974,7 @@ public long inviteRequester(long orgId, User user) throws Exception {
 		user.setOrgId(orgId);
 		user.setUserType(AccountConstants.UserType.REQUESTER.getValue());
 		
-		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-				.table(AccountConstants.getOrgUserModule().getTableName())
-				.fields(AccountConstants.getOrgUserFields());
-		
-		Map<String, Object> props = FieldUtil.getAsProperties(user);
-		insertBuilder.addRecord(props);
-		insertBuilder.save();
-		
-		long ouid = (Long) props.get("id");
+		long ouid = addToORGUsers(user);
 		
 		addFacilioRequestor(user);
 				
