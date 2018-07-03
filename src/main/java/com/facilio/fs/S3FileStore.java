@@ -234,6 +234,16 @@ public class S3FileStore extends FileStore {
 		}
 		return url;
 	}
+	
+	@Override
+	public String getDownloadUrl(long fileId) throws Exception {
+		
+		FileInfo fileInfo = getFileInfo(fileId);
+		if (fileInfo != null) {
+			return fetchDownloadUrl(fileInfo, getExpiration());
+		}
+		return null;
+	}
 
 	private String fetchUrl(FileInfo fileInfo, long expiration) {
 		
@@ -250,6 +260,29 @@ public class S3FileStore extends FileStore {
 		if (fileInfo.getContentType() != null) {
 			ResponseHeaderOverrides resHeaders = new ResponseHeaderOverrides();
 			resHeaders.setContentType(fileInfo.getContentType());
+			generatePresignedUrlRequest.setResponseHeaders(resHeaders);
+		}
+		             
+		URL url = AwsUtil.getAmazonS3Client().generatePresignedUrl(generatePresignedUrlRequest);
+		return url.toString();
+	}
+	
+	private String fetchDownloadUrl(FileInfo fileInfo, long expiration) {
+		
+		
+        
+		GeneratePresignedUrlRequest generatePresignedUrlRequest = 
+		              new GeneratePresignedUrlRequest(getBucketName(), fileInfo.getFilePath());
+		generatePresignedUrlRequest.setMethod(HttpMethod.GET);
+		
+		Date expiry = new Date();
+		expiry.setTime(expiry.getTime()+expiration);
+		generatePresignedUrlRequest.setExpiration(expiry);
+		
+		if (fileInfo.getContentType() != null) {
+			ResponseHeaderOverrides resHeaders = new ResponseHeaderOverrides();
+			resHeaders.setContentType(fileInfo.getContentType());
+			resHeaders.setContentDisposition("attachment; filename=" + fileInfo.getFileName());
 			generatePresignedUrlRequest.setResponseHeaders(resHeaders);
 		}
 		             

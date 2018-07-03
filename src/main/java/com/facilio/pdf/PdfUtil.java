@@ -60,7 +60,7 @@ public class PdfUtil {
             long fileId = 0;
             try {
                 fileId = fs.addFile(pdfFile.getName(), pdfFile, format.getContentType());
-                return fs.getPrivateUrl(fileId);
+                return fs.getDownloadUrl(fileId);
             } catch (Exception e) {
                 log.info("Exception occurred ", e);
             }
