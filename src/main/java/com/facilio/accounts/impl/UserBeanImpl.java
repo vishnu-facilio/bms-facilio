@@ -268,16 +268,8 @@ public class UserBeanImpl implements UserBean {
 		user.setInviteAcceptStatus(false);
 		user.setInvitedTime(System.currentTimeMillis());
 		user.setUserType(AccountConstants.UserType.USER.getValue());
-		
-		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-				.table(AccountConstants.getOrgUserModule().getTableName())
-				.fields(AccountConstants.getOrgUserFields());
-		
-		Map<String, Object> props = FieldUtil.getAsProperties(user);
-		insertBuilder.addRecord(props);
-		insertBuilder.save();
-		
-		long ouid = (Long) props.get("id");
+
+		long ouid = addToORGUsers(user);
 		user.setOuid(ouid);
 		
 		sendInvitation(ouid, user);
