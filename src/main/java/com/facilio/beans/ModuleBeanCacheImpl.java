@@ -192,18 +192,18 @@ LRUCache modulecache = LRUCache.getModuleCache();
 		
 		Object key = CacheUtil.FIELDS_KEY(getOrgId(), moduleName);
 		
-		List<FacilioField> fields = (ArrayList<FacilioField>)cache.get(key);
+		List<FacilioField> fields = (List<FacilioField>)cache.get(key);
 		if (fields == null) {
 			
 			fields = super.getAllFields(moduleName);
 			
-			CacheUtil.set(CacheUtil.FIELDS_KEY(getOrgId(), moduleName), new ArrayList<>(fields));
+//			CacheUtil.set(CacheUtil.FIELDS_KEY(getOrgId(), moduleName), new ArrayList<>(fields));
 			cache.put(key, fields);
 			
 			//LOGGER.log(Level.INFO, "getAllFields result from DB for module: "+moduleName +"\n Time taken"+ (System.currentTimeMillis()-begintime));
 		}
 		else {
-			fields = Collections.unmodifiableList(fields);
+//			fields = Collections.unmodifiableList(fields);
 			//LOGGER.log(Level.INFO, "getAllFields result from CACHE for module: "+moduleName +"\n Time taken"+ (System.currentTimeMillis()-begintime));
 		}
 		return fields;
