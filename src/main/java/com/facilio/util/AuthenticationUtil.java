@@ -8,7 +8,7 @@ import com.facilio.fw.auth.LoginUtil;
 
 
 public class AuthenticationUtil {
-
+	
     public static CognitoUtil.CognitoUser getCognitoUser(HttpServletRequest request,boolean isPortaluser) throws Exception {
         String facilioToken = null;
         if(isPortaluser) {
@@ -28,8 +28,9 @@ public class AuthenticationUtil {
                 }
             }
 
-
-            CognitoUtil.CognitoUser cognitoUser =  CognitoUtil.verifiyFacilioToken(facilioToken, isPortaluser);
+            String overrideSessionCookie = LoginUtil.getUserCookie(request, "fc.overrideSession");
+            boolean overrideSessionCheck = overrideSessionCookie != null && overrideSessionCookie.equalsIgnoreCase("true");
+            CognitoUtil.CognitoUser cognitoUser =  CognitoUtil.verifiyFacilioToken(facilioToken, isPortaluser, overrideSessionCheck);
             return cognitoUser;
         }
         return  null;

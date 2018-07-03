@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +23,7 @@ import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.exception.ReadingValidationException;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class TaskAction extends ActionSupport {
@@ -40,6 +42,15 @@ public class TaskAction extends ActionSupport {
 		fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		
 		return SUCCESS;
+	}
+	
+	private boolean doValidation;
+	public boolean getDoValidation() {
+		return doValidation;
+	}
+	
+	public void setDoValidation(boolean doValidation) {
+		this.doValidation = doValidation;
 	}
 	
 	private TaskSectionContext section;
@@ -148,6 +159,7 @@ public class TaskAction extends ActionSupport {
 	public String updateTask() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
+		context.put(FacilioConstants.ContextNames.DO_VALIDTION, getDoValidation());
 		return updateTask(context);
 	}
 	public String addTaskInput() throws Exception {
@@ -159,9 +171,21 @@ public class TaskAction extends ActionSupport {
 	private String updateTask(FacilioContext context) throws Exception {
 		context.put(FacilioConstants.ContextNames.TASK, task);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
+		Map<Long, Map<String, String>> errorMap = new HashMap<>();
 		Chain updateTask = FacilioChainFactory.getUpdateTaskChain();
-		updateTask.execute(context);
-		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
+		try {
+			updateTask.execute(context);
+		} catch (ReadingValidationException ex) {
+			Map<String, String> msgMap = new HashMap<>();
+			msgMap.put("message", ex.getMessage());
+			msgMap.put("evaluator", ex.getResultEvaluator());
+			errorMap.put(ex.getReadingFieldId(), msgMap);
+			setError(errorMap);
+		}
+		Integer count = (Integer) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
+		if (count != null) {
+			rowsUpdated = count;
+		}
 		return SUCCESS;
 	}
 	List<TaskContext> taskContextList;
@@ -187,6 +211,9 @@ public class TaskAction extends ActionSupport {
 	public void setParentTicketId(Long parentTicketId) {
 		this.parentTicketId = parentTicketId;
 	}
+	
+	private Map<Long, Map<String, String>> error;
+	
 	public String closeAllTask() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
@@ -206,17 +233,28 @@ public class TaskAction extends ActionSupport {
 	}
 	public String updateAllTask() throws Exception {
 		FacilioContext context = new FacilioContext();
-		System.out.println(taskContextList.size());
+		Map<Long, Map<String, String>> errorMap = new HashMap<>();
 		for (TaskContext singleTask :taskContextList)
 		{
 			context.clear();
 			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
 			context.put(FacilioConstants.ContextNames.TASK, singleTask);
-			System.out.println(taskContextList.size());
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(singleTask.getId()));
+			context.put(FacilioConstants.ContextNames.DO_VALIDTION, getDoValidation());
 			Chain updateTask = FacilioChainFactory.getUpdateTaskChain();
-			updateTask.execute(context);
-			rowsUpdated += (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
+			try {
+				updateTask.execute(context);
+			} catch (ReadingValidationException ex) {
+				Map<String, String> msgMap = new HashMap<>();
+				msgMap.put("message", ex.getMessage());
+				msgMap.put("evaluator", ex.getResultEvaluator());
+				errorMap.put(ex.getReadingFieldId(), msgMap);
+				setError(errorMap);
+			}
+			Object count = context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
+			if (count != null) {
+				rowsUpdated += (int) count;
+			}
 		}
 		return SUCCESS;
 	}
@@ -378,6 +416,12 @@ public class TaskAction extends ActionSupport {
 	public TaskContext getRecord() 
 	{
 		return task;
+	}
+	public Map<Long, Map<String, String>> getError() {
+		return error;
+	}
+	public void setError(Map<Long, Map<String, String>> error) {
+		this.error = error;
 	}
  }
 

@@ -406,6 +406,22 @@ public class DashboardUtil {
 		return null;
 	}
 	
+	public static String getStringFromDateAggregator(DateAggregateOperator dateaggr) {
+		if(dateaggr.equals(DateAggregateOperator.DAYSOFMONTH) || dateaggr.equals(DateAggregateOperator.FULLDATE) || dateaggr.equals(DateAggregateOperator.WEEKDAY)) {
+			return "day";
+		}
+		else if(dateaggr.equals(DateAggregateOperator.MONTH) || dateaggr.equals(DateAggregateOperator.MONTHANDYEAR)) {
+			return "month";
+		}
+		else if(dateaggr.equals(DateAggregateOperator.YEAR)) {
+			return "year";
+		}
+		else if(dateaggr.equals(DateAggregateOperator.WEEKANDYEAR) || dateaggr.equals(DateAggregateOperator.WEEK)) {
+			return "week";
+		}
+		return null;
+	}
+	
 	public static boolean deleteWidgetFromDashboard(Long dashboardId,Long widgetId) throws SQLException {
 		
 		if(dashboardId != null && widgetId != null) {
@@ -472,7 +488,7 @@ public class DashboardUtil {
 			variance.put("avg", avg);
 			variance.put("sum", sum);
 			
-			if(meterList != null && !meterList.isEmpty() && sum > 0) {
+			if(meterList != null && !meterList.isEmpty()) {
 				LOGGER.log(Level.SEVERE, "meterList --- "+meterList);
 				List<Long> bb = new ArrayList<Long>();
 		        bb.add(null);
@@ -488,6 +504,7 @@ public class DashboardUtil {
 			        	EnergyMeterContext energyMeter = DeviceAPI.getEnergyMeter(meterID);
 			        	if(energyMeter.isRoot()) {
 			        		BaseSpaceContext purposeSpace = SpaceAPI.getBaseSpace(energyMeter.getPurposeSpace().getId());
+			        		variance.put("space", purposeSpace.getId());
 			        		double grossFloorArea = 0.0;
 			        		if(purposeSpace.getSpaceType() == BaseSpaceContext.SpaceType.SITE.getIntVal()) {
 			        			SiteContext sites = SpaceAPI.getSiteSpace(purposeSpace.getId());
@@ -1883,6 +1900,7 @@ public class DashboardUtil {
 		
 		NumberAggregateOperator xAxisAggr1 = (NumberAggregateOperator) yAggrOpr;
 		
+		values.removeIf(value -> value == null);
 		switch(xAxisAggr1) {
 		case SUM: {
 			return values.stream().mapToDouble(Double::doubleValue).sum();

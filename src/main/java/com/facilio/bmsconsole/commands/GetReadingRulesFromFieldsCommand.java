@@ -13,8 +13,6 @@ import org.apache.commons.lang3.StringUtils;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
@@ -26,14 +24,15 @@ public class GetReadingRulesFromFieldsCommand implements Command{
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<Long> fieldIds = (List<Long>) context.get(FacilioConstants.ContextNames.READING_FIELDS);
+		
 		if(fieldIds != null && !fieldIds.isEmpty()) {
-			FacilioModule module = ModuleFactory.getReadingRuleModule();
 			Criteria criteria = new Criteria();
 			criteria.addAndCondition(CriteriaAPI.getCondition("READING_FIELD_ID", "readingFieldId", StringUtils.join(fieldIds,","), NumberOperators.EQUALS));
 			criteria.addAndCondition(CriteriaAPI.getCondition("RULE_TYPE", "ruleType", String.valueOf(RuleType.READING_RULE.getIntVal()), NumberOperators.EQUALS));
 			
 			List<ReadingRuleContext> readingRules = WorkflowRuleAPI.getReadingRules(criteria);
 			if (readingRules != null && !readingRules.isEmpty()) {
+				
 				Map<Long, ReadingRuleContext> rules = new HashMap<>();
 				rules = readingRules.stream()
 									.collect(Collectors

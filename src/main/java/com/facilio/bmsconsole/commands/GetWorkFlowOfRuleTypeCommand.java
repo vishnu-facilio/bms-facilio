@@ -14,7 +14,7 @@ public class GetWorkFlowOfRuleTypeCommand implements Command {
 		// TODO Auto-generated method stub
 		RuleType ruleType = (RuleType) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_TYPE);
 		if(ruleType != null){
-		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST, WorkflowRuleAPI.getWorkflowRulesOfType(ruleType));
+			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST, WorkflowRuleAPI.getWorkflowRulesOfType(ruleType));
 		}
 		return false;
 	}

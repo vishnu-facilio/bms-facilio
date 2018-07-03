@@ -1,9 +1,5 @@
  package com.facilio.bmsconsole.commands;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -12,7 +8,6 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.sql.DBUtil;
 
 public class LoadMainFieldCommand implements Command {
 
@@ -27,29 +22,18 @@ public class LoadMainFieldCommand implements Command {
 		}
  		
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		try {
-			
 			//Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
 			
 			//Transaction trans = FacilioTransactionManager.INSTANCE.getTransactionManager().suspend();
 			
-			ModuleBean modBean =  (ModuleBean) BeanFactory.lookup("ModuleBean", orgId);
+		ModuleBean modBean =  (ModuleBean) BeanFactory.lookup("ModuleBean", orgId);
 		//	modBean.
 			
 			//FacilioTransactionManager.INSTANCE.getTransactionManager().resume(trans);
-			FacilioField defaultField = modBean.getPrimaryField(moduleName);
+		FacilioField defaultField = modBean.getPrimaryField(moduleName);
 			
-			context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, defaultField.getModule().getTableName());
-			context.put(FacilioConstants.ContextNames.DEFAULT_FIELD, defaultField);
-		}
-		catch (SQLException e) {
-			throw e;
-		}
-		finally {
-			DBUtil.closeAll(pstmt, rs);
-		}
+		context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, defaultField.getModule().getTableName());
+		context.put(FacilioConstants.ContextNames.DEFAULT_FIELD, defaultField);
 		
 		return false;
 		

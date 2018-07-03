@@ -8,6 +8,16 @@ import com.facilio.unitconversion.Metric;
 import com.facilio.unitconversion.Unit;
 
 public class BenchmarkContext {
+	
+	private String displayUnit;
+	
+	public String getDisplayUnit() {
+		return displayUnit;
+	}
+	public void setDisplayUnit(String displayUnit) {
+		this.displayUnit = displayUnit;
+	}
+
 	private long id = -1;
 	public long getId() {
 		return id;

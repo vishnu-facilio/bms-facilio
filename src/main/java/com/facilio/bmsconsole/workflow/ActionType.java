@@ -517,7 +517,6 @@ public enum ActionType {
 	private int val;
 
 	private ActionType(int val) {
-		// TODO Auto-generated constructor stub
 		this.val = val;
 	}
 
@@ -526,7 +525,7 @@ public enum ActionType {
 	}
 
 	abstract public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
-			Object currentRecord);
+			Object currentRecord) throws Exception;
 
 	public static ActionType getActionType(int actionTypeVal) {
 		return TYPE_MAP.get(actionTypeVal);
@@ -544,7 +543,7 @@ public enum ActionType {
 		return typeMap;
 	}
 
-	public static void main(String arg[]) {
+	public static void main(String arg[]) throws Exception {
 		System.out.println("hello world");
 		ActionType t = ActionType.SMS_NOTIFICATION;
 		JSONObject json = new JSONObject();

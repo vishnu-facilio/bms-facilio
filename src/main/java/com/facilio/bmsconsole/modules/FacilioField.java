@@ -3,7 +3,11 @@ package com.facilio.bmsconsole.modules;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import com.facilio.bmsconsole.view.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.ActionContext;
 
 public class FacilioField implements Serializable {
 	
@@ -265,6 +269,24 @@ public class FacilioField implements Serializable {
 			return displayType.getIntValForDB();
 		}
 		return -1;
+	}
+	
+	private List<ReadingRuleContext> readingRules;
+	public List<ReadingRuleContext> getReadingRules() {
+		return this.readingRules;
+	}
+	
+	public void setReadingRules(List<ReadingRuleContext> readingRules) {
+		this.readingRules = readingRules;
+	}
+	
+	private List<List<ActionContext>> actionsList;
+	public List<List<ActionContext>> getActionsList() {
+		return this.actionsList;
+	}
+	
+	public void setActionsList(List<List<ActionContext>> actionsList) {
+		this.actionsList = actionsList;
 	}
 	
 	public String toString()

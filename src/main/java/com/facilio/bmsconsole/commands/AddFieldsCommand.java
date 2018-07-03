@@ -9,6 +9,8 @@ import org.apache.commons.chain.Context;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.view.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.ActionContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -30,6 +32,8 @@ public class AddFieldsCommand implements Command {
 			
 			if(module != null) {
 				List<Long> fieldIds = new ArrayList<>();
+				List<List<ReadingRuleContext>> readingRules = new ArrayList<>();
+				List<List<List<ActionContext>>> actionsList = new ArrayList<>();
 				for(FacilioField field : fields) {
 					field.setModule(module);
 					
@@ -45,7 +49,21 @@ public class AddFieldsCommand implements Command {
 					long fieldId = modBean.addField(field);
 					field.setFieldId(fieldId);
 					fieldIds.add(fieldId);
+					List<ReadingRuleContext> rule = field.getReadingRules();
+					List<List<ActionContext>> actions = new ArrayList<>();
+					
+					if (rule != null && !rule.isEmpty()) {
+						rule.stream().forEach((r) -> {
+							r.setReadingFieldId(fieldId);
+							r.getEvent().setModuleId(field.getModule().getModuleId());
+							actions.add(r.getActions());
+						});
+						readingRules.add(rule);
+						actionsList.add(actions);
+					}
 				}
+				context.put(FacilioConstants.ContextNames.READING_RULES_LIST, readingRules);
+				context.put(FacilioConstants.ContextNames.ACTIONS_LIST, actionsList);
 				context.put(FacilioConstants.ContextNames.MODULE_FIELD_IDS, fieldIds);
 			}
 		}

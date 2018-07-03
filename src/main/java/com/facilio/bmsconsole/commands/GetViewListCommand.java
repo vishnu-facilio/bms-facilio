@@ -4,12 +4,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
@@ -27,21 +25,17 @@ public class GetViewListCommand implements Command {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule moduleObj = modBean.getModule(moduleName);
 		Map<String,FacilioView> viewMap = ViewFactory.getModuleViews(moduleName);
-		for (Entry<String, FacilioView> entry : viewMap.entrySet()) {
-			if(entry.getValue().isHidden()){
-				viewMap.remove(entry.getKey());
-			}
-		}
 		List<FacilioView> dbViews;
 		if (LookupSpecialTypeUtil.isSpecialType(moduleName)) {
-			dbViews = ViewAPI.getAllViews(moduleName, AccountUtil.getCurrentOrg().getOrgId());
+			dbViews = ViewAPI.getAllViews(moduleName);
 		} else {
-			dbViews = ViewAPI.getAllViews(moduleObj.getModuleId(), AccountUtil.getCurrentOrg().getOrgId());
+			dbViews = ViewAPI.getAllViews(moduleObj.getModuleId());
 		}
 		
 		for(FacilioView view: dbViews) {
 			viewMap.put(view.getName(), view);
 		}
+		viewMap.entrySet().removeIf(enrty -> enrty.getValue().isHidden());
 		List<FacilioView> allViews = new ArrayList<>(viewMap.values());
 		allViews.sort(Comparator.comparing(FacilioView::getSequenceNumber, (s1, s2) -> {
 			if(s1 == s2){

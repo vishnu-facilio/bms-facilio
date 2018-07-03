@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
@@ -24,6 +25,8 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.NumberField;
+import com.facilio.bmsconsole.view.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.ActionContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -36,16 +39,42 @@ public class AddPMReadingsForTasks implements Command {
 	
 	@Override
 	public boolean execute(Context context) throws Exception {
-		// TODO Auto-generated method stub
 		List<TaskContext> tasks = (List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST);
 		PreventiveMaintenance pm = (PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 		if (tasks != null && !tasks.isEmpty()) {
 			Map<FieldType, List<FacilioField>> fieldMap = createAndSplitFields(tasks);
 			context.put(FacilioConstants.ContextNames.MODULE_LIST, createAndAddReadings(pm.getTitle(), fieldMap));
 			context.put(FacilioConstants.ContextNames.READING_DATA_META_TYPE, ReadingDataMeta.ReadingInputType.TASK);
+			context.put(FacilioConstants.ContextNames.READING_RULES_LIST, getReadingRules(tasks));
+			context.put(FacilioConstants.ContextNames.ACTIONS_LIST, getActionsList(tasks));
 			updateTaskFieldId(tasks);
 		}
 		return false;
+	}
+	
+	private List<List<List<ActionContext>>> getActionsList(List<TaskContext> tasks) {
+		List<List<List<ActionContext>>> actionsList = tasks.stream().map(TaskContext::getActionsList).collect(Collectors.toList());
+		tasks.stream().forEach(t -> t.setActionsList(null));
+		return actionsList;
+	}
+	
+	private List<List<ReadingRuleContext>> getReadingRules(List<TaskContext> tasks) {
+		List<List<ReadingRuleContext>> readingRules = tasks.stream().map(t -> {
+			List<ReadingRuleContext> r = t.getReadingRules();
+			r.stream().forEach(rule -> {
+				long id = t.getReadingField().getFieldId();
+				rule.setReadingFieldId(id);
+				FacilioField f = t.getReadingField();
+				if (f != null) {
+					rule.getEvent().setModuleId(f.getModuleId());
+				}
+			});
+			return r;
+		}).collect(Collectors.toList());
+		
+		tasks.stream().forEach(t -> t.setReadingRules(null));
+		
+		return readingRules;
 	}
 	
 	private Map<FieldType, List<FacilioField>> createAndSplitFields(List<TaskContext> tasks) throws Exception {

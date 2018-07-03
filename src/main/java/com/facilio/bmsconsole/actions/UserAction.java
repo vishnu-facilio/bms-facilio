@@ -1,12 +1,10 @@
 package com.facilio.bmsconsole.actions;
 
 import java.io.File;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,18 +18,14 @@ import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.chargebee.*;
-import com.chargebee.filters.enums.SortOrder;
-import com.chargebee.models.*;
-import com.chargebee.models.enums.*;
-import nl.basjes.parse.useragent.UserAgent;
-import nl.basjes.parse.useragent.UserAgentAnalyzer;
 import com.chargebee.Environment;
 import com.chargebee.ListResult;
+import com.chargebee.Result;
 import com.chargebee.filters.enums.SortOrder;
 import com.chargebee.models.Card;
 import com.chargebee.models.Customer;
 import com.chargebee.models.Subscription;
+import com.chargebee.models.enums.Gateway;
 import com.facilio.accounts.dto.GroupMember;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
@@ -51,6 +45,9 @@ import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
+
+import nl.basjes.parse.useragent.UserAgent;
+import nl.basjes.parse.useragent.UserAgentAnalyzer;
 
 public class UserAction extends ActionSupport {
 

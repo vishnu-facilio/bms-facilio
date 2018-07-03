@@ -119,7 +119,7 @@ public class WorkOrderAction extends ActionSupport {
 			context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 			context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
 			context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST, getAttachmentId());
-
+			
 			Command addWorkOrder = FacilioChainFactory.getAddWorkOrderChain();
 			addWorkOrder.execute(context);
 			setWorkOrderId(workorder.getId());
@@ -160,7 +160,6 @@ public class WorkOrderAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, preventivemaintenance);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
-
 		context.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
 
 		Chain addTemplate = FacilioChainFactory.getAddPreventiveMaintenanceChain();
@@ -339,6 +338,7 @@ public class WorkOrderAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
 		context.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
 		context.put(FacilioConstants.ContextNames.IS_UPDATE_PM, true);
+		context.put(FacilioConstants.ContextNames.DEL_READING_RULE_IDS, this.deleteReadingRulesList);
 
 		Chain updatePM = FacilioChainFactory.getUpdatePreventiveMaintenanceChain();
 		updatePM.execute(context);
@@ -382,9 +382,6 @@ public class WorkOrderAction extends ActionSupport {
 
 	@SuppressWarnings("unchecked")
 	public String preventiveMaintenanceSummary() throws Exception {
-		
-		System.out.println("----- summary");
-
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, id.get(0));
 
@@ -1123,6 +1120,15 @@ public class WorkOrderAction extends ActionSupport {
 		}
 
 		return SUCCESS;
+	}
+	
+	private List<Long> deleteReadingRulesList;
+	public void setDeleteReadingRulesList(List<Long> deleteReadingRulesList) {
+		this.deleteReadingRulesList = deleteReadingRulesList;
+	}
+	
+	public List<Long> getDeleteReadingRulesList() {
+		return this.deleteReadingRulesList;
 	}
 
 }

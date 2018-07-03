@@ -45,7 +45,9 @@
 	"8": {
 		"name": "ALARM_CREATION_PUSH",
 		"notification": {
-			
+			"text": "[${alarm.modifiedTimeString}] [NEW Alarm:#ID${alarm.id}] \"${alarm.severity.severity}\" Alarm reported for source \"${alarm.source}\". Alarm message: \"${alarm.subject}\". State: ${alarm.state}.",
+			"click_action": "ALARM_SUMMARY",
+			"title": "New Alarm"
 		},
 		"data": {
 			"content_available": true,
@@ -62,7 +64,9 @@
 	"9": {
 		"name": "ALARM_UPDATION_PUSH",
 		"notification": {
-		
+			"text": "[${alarm.modifiedTimeString}] [UPDATED Alarm:#ID${alarm.id}] \"${alarm.previousSeverity.severity}\" Alarm updated to \"${alarm.severity.severity}\" for source \"${alarm.source}\". Alarm message: \"${alarm.subject}\". State: ${alarm.state}.",
+			"click_action": "ALARM_SUMMARY",
+			"title": "New Alarm"
 		},
 		"data": {
 			"content_available": true,
@@ -105,10 +109,12 @@
 	"14": {
 		"name": "NEW_WORK_REQUEST_PUSH",
 		"notification": {
-			
+			"text": "The following workorderrequest has been raised by ${workorderrequest.requester.name}.\n\nSubject : ${workorderrequest.subject}\nDescription : \n${workorderrequest.description}\n\nPlease approve/reject the workrequest here - ${workorderrequest.url}\n\n - Team Facilio.",
+			"click_action": "WORKORDERREQUEST_SUMMARY",
+			"title": "New Workorderrequest"
 		},
 		"data": {
-			"content_available": true,
+			"content_available": true,                                                                              
 			"summary_id": "${workorderrequest.id}",
 			"sound": "default",
 			"module_name": "workorderrequest",
@@ -218,7 +224,9 @@
 	"27": {
 		"name": "TECH_SOLVE_WO_PUSH",
 		"notification": {
-			
+			"text": "The workorder ${workorder.subject} has been resolved by Technician ${workorder.assignedTo.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status.status}\n\nPlease verify/close the workorder here - ${workorder.url}\n\n - Team Facilio.",
+			"click_action": "WORKORDER_SUMMARY",
+			"title": "Work order completed"
 		},
 		"data": {
 			"content_available": true,
@@ -250,7 +258,9 @@
 	"31": {
 		"name": "TECH_CLOSE_WO_PUSH",
 		"notification": {
-			
+			"text": "The following work order ${workorder.subject} has been verified and closed by ${workorder.assignedBy.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status.status}\n\nPlease view the closed work order here - ${workorder.url}\n\n - Team Facilio.",
+			"click_action": "WORKORDER_SUMMARY",
+			"title": "Work order closed"
 		},
 		"data": {
 			"content_available": true,
@@ -282,7 +292,9 @@
 	"35": {
 		"name": "CLOSED_WOREQ_PUSH",
 		"notification": {
-			
+			"text": "Your workorderrequest has been resolved by ${workorder.assignedTo.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease view your resolved workorderrequest here - ${workorder.url}\n\n - Team Facilio.",
+			"click_action": "WORKORDER_SUMMARY",
+			"title": "Closed Workorderrequest"
 		},
 		"data": {
 			"content_available": true,
@@ -302,7 +314,9 @@
 	"37": {
 		"name": "WORKORDER_ASSIGN_PUSH",
 		"notification": {
-			
+			"text": "${workorder.assignedBy.name} has assigned a new workorder to you. \n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description:-}\nDue by : ${workorder.dueDateString:-}\nPlease view the work order here - ${workorder.url}\n\n - Team Facilio.",
+			"click_action": "WORKORDER_SUMMARY",
+			"title": "Assign Workorder"
 		},
 		"data": {
 			"content_available": true,
@@ -334,7 +348,9 @@
 	"41": {
 		"name": "WORKORDER_ASSIGN_GROUP_PUSH",
 		"notification": {
-			
+			"text": "${workorder.assignmentGroup.name} has assigned a new workorder to your team - ${workorder.assignmentGroup.name}. \n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description:-}\nDue by : ${workorder.dueDateString:-}\nPlease view the work order here - ${workorder.url}\n - Team Facilio.",
+			"click_action": "WORKORDER_SUMMARY",
+			"title": "Assign Workorder"
 		},
 		"data": {
 			"content_available": true,
@@ -359,7 +375,9 @@
 	"44": {
 		"name": "TASK_COMMENT_WEB",
 		"notification": {
-			
+			"text": "${comment.createdBy.name} has  added a new comment in your workorder ${workorder.subject} . Please view the workorder here - ${workorder.url} to reply/view the comments.\n - Team Facilio.",
+			"click_action": "WORKORDER_SUMMARY",
+			"title": "New Comment"
 		},
 		"data": {
 			"content_available": true,
@@ -391,7 +409,9 @@
 	"48": {
 		"name": "ADD_TASK_PUSH",
 		"notification": {
-			
+			"text": "A new Task has been added in your WorkOrder ${workorder.subject} by ${workorder.assignedBy.name}.Please view the new task here - ${workorder.url}\n - Team Facilio.",
+			"click_action": "WORKORDER_SUMMARY",
+			"title": "New Task added"
 		},
 		"data": {
 			"content_available": true,
@@ -423,7 +443,9 @@
 	"52": {
 		"name": "UPDATE_TASK_PUSH",
 		"notification": {
-			
+			"text": "A Task has been updated in your WorkOrder ${workorder.subject}.Please view the updated task here - ${workorder.url}\n - Team Facilio.",
+			"click_action": "WORKORDER_SUMMARY",
+			"title": "New Task added"
 		},
 		"data": {
 			"content_available": true,
@@ -455,7 +477,9 @@
 	"56": {
 		"name": "TASK_RESOLVED_PUSH",
 		"notification": {
-			
+			"text": "The following work order ${workorder.subject} has been resolved. Please view the resolved workorder here - ${workorder.url}\n\n - Team Facilio.",
+			"click_action": "WORKORDER_SUMMARY",
+			"title": "Task closed"
 		},
 		"data": {
 			"content_available": true,
@@ -496,7 +520,9 @@
 	"61": {
 		"name": "TECH_CLOSE_WOREQ_PUSH",
 		"notification": {
-			
+			"text": "The following work order ${workorder.subject} has been verified and closed by ${workorder.assignedBy.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status.status}\n\nPlease view the closed work order here - ${workorder.url}\n\n - Team Facilio.",
+			"click_action": "WORKORDER_SUMMARY",
+			"title": "Work order closed"
 		},
 		"data": {
 			"content_available": true,
@@ -516,5 +542,17 @@
 		"subject": "Alarm Cleared",
 		"to": "",
 		"message": "The following Alarm has been cleared. \n\nReason : ${alarm.subject}\nDetails: ${alarm.description}\nStatus: ${alarm.state}\n\nPlease view the alarm here - ${alarm.url} and acknowledge it as soon as possible.\n\nRegards,\nTeam Facilio."
+	},
+	"63": {
+		"name": "INCREMENTAL_VALIDATION",
+		"message": "Reading should be incremental."
+	},
+	"64": {
+		"name": "DECREMENTAL_VALIDATION",
+		"message": "Reading should be decremental."
+	},
+	"65": {
+		"name": "SAFE_LIMIT_VALIDATION",
+		"message": "Reading should be within safe limit."
 	}
 }

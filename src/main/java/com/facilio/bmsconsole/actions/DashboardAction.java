@@ -30,10 +30,12 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReportsChainFactory;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.BenchmarkContext;
 import com.facilio.bmsconsole.context.BenchmarkUnit;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.DashboardContext;
@@ -52,6 +54,7 @@ import com.facilio.bmsconsole.context.FormulaContext.SpaceAggregateOperator;
 import com.facilio.bmsconsole.context.MarkedReadingContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReportBenchmarkRelContext;
 import com.facilio.bmsconsole.context.ReportColumnContext;
 import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.ReportContext.LegendMode;
@@ -66,6 +69,7 @@ import com.facilio.bmsconsole.context.ReportUserFilterContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
+import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.TicketStatusContext.StatusType;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetListViewContext;
@@ -98,6 +102,7 @@ import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.BaseLineAPI;
+import com.facilio.bmsconsole.util.BenchmarkAPI;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.DerivationAPI;
@@ -1985,6 +1990,10 @@ public class DashboardAction extends ActionSupport {
 							if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
 								continue;
 							}
+							if(workorder.getStatus() != null && workorder.getStatus().getId() > 0) {
+								TicketStatusContext status = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getId(), workorder.getStatus().getId());
+								workorder.setStatus(status);
+							}
 							if(workorder.getStatus() != null && workorder.getStatus().getType() != null && workorder.getStatus().getType().equals(StatusType.CLOSED)) {
 								
 								if(workorder.getEstimatedEnd() != -1 && workorder.getActualWorkEnd() != -1) {
@@ -2726,6 +2735,15 @@ public class DashboardAction extends ActionSupport {
 		return this.excludeWeekends;
 	}
 	
+	public JSONArray safelimit;
+	
+	
+	public JSONArray getSafelimit() {
+		return safelimit;
+	}
+	public void setSafelimit(JSONArray safelimit) {
+		this.safelimit = safelimit;
+	}
 	private JSONArray getDataForReadings(ReportContext report, FacilioModule module, JSONArray dateFilter, JSONObject userFilterValues, long baseLineId, long criteriaId) throws Exception {
 		JSONArray readingData = null;
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -2818,6 +2836,7 @@ public class DashboardAction extends ActionSupport {
 						xAggregateOpperator = FormulaContext.DateAggregateOperator.MONTHANDYEAR;
 					}
 				}
+				dateAggr = (DateAggregateOperator) xAggregateOpperator;
 				report.setxAxisaggregateFunction(xAggregateOpperator.getValue());
 			}
 		}
@@ -2884,6 +2903,16 @@ public class DashboardAction extends ActionSupport {
 			yAxisFieldName = y1AxisField.getDisplayName();
 			if(y1AggregateOpperator != null) {
 				y1AxisField = y1AggregateOpperator.getSelectField(y1AxisField);
+				if(y1AxisField.getId() > 0) {
+					Pair<Double, Double> safelimitPair = CommonCommandUtil.getSafeLimitForField(y1AxisField.getId());
+					
+					JSONArray safeLimtJson = new JSONArray();
+					safeLimtJson.add(safelimitPair.getKey());
+					safeLimtJson.add(safelimitPair.getValue());
+					
+					setSafelimit(safeLimtJson);
+				}
+				
 			}
 		}
 		else {
@@ -2948,6 +2977,7 @@ public class DashboardAction extends ActionSupport {
 		Criteria criteria = null;
 		String baseLineName = null;
 		if(baseLineId != -1) {
+			
 			BaseLineContext baseLineContext = BaseLineAPI.getBaseLine(baseLineId);
 			if(baseLineContext.getAdjustType() <= 0) {
 				baseLineContext.setAdjustType(1);
@@ -2962,15 +2992,28 @@ public class DashboardAction extends ActionSupport {
 				dateRange = report.getDateFilter().getOperator().getRange(report.getDateFilter().getValue());
 			}
 			LOGGER.severe("start -- "+dateRange.getStartTime() +" end -- "+dateRange.getEndTime());
-			Condition condition = baseLineContext.getBaseLineCondition(report.getDateFilter().getField(), dateRange);
-			String baseLineStartValue = condition.getValue().substring(0,condition.getValue().indexOf(","));
+			dateCondition = baseLineContext.getBaseLineCondition(report.getDateFilter().getField(), dateRange);
+			String baseLineStartValue = dateCondition.getValue().substring(0,dateCondition.getValue().indexOf(","));
 			this.baseLineComparisionDiff = dateRange.getStartTime() - Long.parseLong(baseLineStartValue);
-			LOGGER.severe(""+condition);
-			builder.andCondition(condition);
+			builder.andCondition(dateCondition);
 		}
 		else if(report.getDateFilter() != null) {
+			
 			dateCondition = DashboardUtil.getDateCondition(report, dateFilter, module);
 			builder.andCondition(dateCondition);
+		}
+		if(dateCondition != null) {
+			if(dateCondition.getValue() != null && dateCondition.getValue().contains(",")) {
+				String startTimeString  = dateCondition.getValue().substring(0, dateCondition.getValue().indexOf(",")).trim();
+				this.startTime = Long.parseLong(startTimeString);
+				
+			}
+			else if(dateCondition.getOperator() != null && dateCondition.getOperator() instanceof DateOperators) {
+				DateOperators dateOpp = (DateOperators)dateCondition.getOperator();
+				DateRange range = dateOpp.getRange(dateCondition.getValue());
+				this.startTime = range.getStartTime();
+			}
+			
 		}
 		List<String> meterIdsUsed = new ArrayList<>();
 		if(criteriaId != -1) {
@@ -3451,7 +3494,11 @@ public class DashboardAction extends ActionSupport {
 			JSONArray res = new JSONArray();
 			
 			JSONObject purposeIndexMapping = new JSONObject();
-			variance = DashboardUtil.getStandardVariance(rs,meterIdsUsed);
+			
+			if(!"eui".equalsIgnoreCase(report.getY1AxisUnit())) {
+				variance = DashboardUtil.getStandardVariance(rs,meterIdsUsed);
+			}
+			
 			for(int i=0;i<rs.size();i++) {
 				boolean newPurpose = false;
 	 			Map<String, Object> thisMap = rs.get(i);
@@ -3534,6 +3581,33 @@ public class DashboardAction extends ActionSupport {
 			readingData = res;
 		}
 		
+		if(reportContext.getReportBenchmarkRelContexts() != null && !reportContext.getReportBenchmarkRelContexts().isEmpty()) {
+			if(variance != null && variance.containsKey("space")) {
+				spaceId = (Long) variance.get("space");
+			}
+			if(dateAggr != null) {
+				if(!(dateAggr.equals(DateAggregateOperator.DATEANDTIME) || dateAggr.equals(DateAggregateOperator.HOURSOFDAY) || dateAggr.equals(DateAggregateOperator.HOURSOFDAYONLY))) {
+					for(ReportBenchmarkRelContext reportBenchmarkRel : reportContext.getReportBenchmarkRelContexts()) {
+						
+						benchmarkId = reportBenchmarkRel.getBenchmarkId();
+						BenchmarkUnit benchmarkUnit = new BenchmarkUnit();
+						benchmarkUnit.setFromUnit(Unit.SQUARE_METER);
+						benchmarkUnit.setToUnit(Unit.SQUARE_FOOT);
+						List<BenchmarkUnit> units1 = new ArrayList<>();
+						units1.add(benchmarkUnit);
+						units = units1;
+						
+						calculateBenchmarkValue();
+						BenchmarkContext benchmark = BenchmarkAPI.getBenchmark(benchmarkId);
+						benchmark.setValue(value);
+						String unit = "/"+Unit.SQUARE_FOOT.getSymbol()+"/"+DashboardUtil.getStringFromDateAggregator(dateAggr);
+						benchmark.setDisplayUnit(unit);
+						addBenchmarks(benchmark);
+						
+					}
+				}
+			}
+		}
 		
 		
 		if(energyMeterValue != null && !"".equalsIgnoreCase(energyMeterValue.trim()) && isEnergyDataWithTimeFrame && !report.getIsComparisionReport() && report.getY1AxisField() != null) {
@@ -4569,11 +4643,26 @@ public class DashboardAction extends ActionSupport {
 		Chain calculateBenchmarkChain = FacilioChainFactory.calculateBenchmarkValueChain();
 		calculateBenchmarkChain.execute(context);
 		
-		value = (double) context.get(FacilioConstants.ContextNames.BENCHMARK_VALUE);
-		
+		LOGGER.log(Level.SEVERE, "benchmarkId -- "+benchmarkId+" spaceId -- "+spaceId+" units -- "+units+" dateAggr -- "+dateAggr+" startTime -- "+startTime);
+		if(context.get(FacilioConstants.ContextNames.BENCHMARK_VALUE) != null) {
+			value = (double) context.get(FacilioConstants.ContextNames.BENCHMARK_VALUE);
+		}
+		LOGGER.log(Level.SEVERE, "value -- "+value);
 		return SUCCESS;
 	}
-	
+	List<BenchmarkContext> benchmarks;
+	public List<BenchmarkContext> getBenchmarks() {
+		return benchmarks;
+	}
+	public void setBenchmarks(List<BenchmarkContext> benchmarks) {
+		this.benchmarks = benchmarks;
+	}
+	public void addBenchmarks(BenchmarkContext benchmark) {
+		if(this.benchmarks == null) {
+			this.benchmarks = new ArrayList<>();
+		}
+		this.benchmarks.add(benchmark);
+	}
 	private long benchmarkId = -1;
 	public long getBenchmarkId() {
 		return benchmarkId;

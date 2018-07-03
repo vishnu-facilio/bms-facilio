@@ -174,4 +174,9 @@ public class LocalFileStore extends FileStore {
 	public String getPrivateUrl(long fileId, int width) throws Exception {
 		return null;
 	}
+	
+	@Override
+	public String getDownloadUrl(long fileId) throws Exception {
+		return null;
+	}
 }

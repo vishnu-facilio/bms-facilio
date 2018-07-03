@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
@@ -29,13 +30,11 @@ public class GetSpaceSpecifcReadingsCommand implements Command {
 			SpaceType type = getSpaceType(parentId, context);
 			List<FacilioModule> readings = ResourceAPI.getResourceSpecificReadings(parentId);
 			if (readings == null) {
-				readings = SpaceAPI.getDefaultReadings(type, onlyReading); 
+				readings = new ArrayList<FacilioModule>(); 
 			}
-			else {
-				List<FacilioModule> moduleReadings = SpaceAPI.getDefaultReadings(type, onlyReading);
-				if (moduleReadings != null) {
-					readings.addAll(moduleReadings);
-				}
+			List<FacilioModule> moduleReadings = SpaceAPI.getDefaultReadings(type, onlyReading);
+			if (moduleReadings != null) {
+				readings.addAll(moduleReadings);
 			}
 			context.put(FacilioConstants.ContextNames.MODULE_LIST, readings);
 		}

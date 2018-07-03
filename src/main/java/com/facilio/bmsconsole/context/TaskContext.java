@@ -7,6 +7,8 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.view.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.ActionContext;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
@@ -168,6 +170,23 @@ public class TaskContext extends TicketContext {
 	}
 	public void setOptions(List<String> options) {
 		this.options = options;
+	}
+	
+	private List<ReadingRuleContext> readingRules;
+	public List<ReadingRuleContext> getReadingRules() {
+		return readingRules;
+	}
+	public void setReadingRules(List<ReadingRuleContext> readingRules) {
+		this.readingRules = readingRules;
+	}
+	
+	private List<List<ActionContext>> actionsList;
+	public List<List<ActionContext>> getActionsList() {
+		return this.actionsList;
+	}
+	
+	public void setActionsList(List<List<ActionContext>> actionsList) {
+		this.actionsList = actionsList;
 	}
 
 	public enum InputType {

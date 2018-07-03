@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -322,6 +323,34 @@ public class LookupSpecialTypeUtil {
 		List<FacilioField> fields = getAllFields(specialType);
 		if (fields != null && !fields.isEmpty()) {
 			return FieldFactory.getAsMap(fields).get(fieldName);
+		}
+		return null;
+	}
+	
+	public static List<FacilioModule> getAllSubModules (String moduleName) throws Exception {
+		if (moduleName != null && !moduleName.isEmpty()) {
+			switch (moduleName) {
+				case FacilioConstants.ContextNames.USERS:
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					List<FacilioModule> modules = new ArrayList<>();
+					modules.add(modBean.getModule(FacilioConstants.ContextNames.USER_SHIFT_READING));
+					modules.add(modBean.getModule(FacilioConstants.ContextNames.USER_WORK_HOURS_READINGS));
+					return modules;
+				default:
+					break;
+			}
+		}
+		return null;
+	}
+	
+	public static List<FacilioModule> getSubModules (String moduleName, FacilioModule.ModuleType... types) throws Exception {
+		if (moduleName != null && !moduleName.isEmpty()) {
+			switch (moduleName) {
+				case FacilioConstants.ContextNames.USERS:
+					return getAllSubModules(moduleName);
+				default:
+					break;
+			}
 		}
 		return null;
 	}

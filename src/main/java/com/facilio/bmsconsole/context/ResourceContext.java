@@ -79,7 +79,8 @@ public class ResourceContext extends ModuleBaseWithCustomFields {
 	public static enum ResourceType {
 		SPACE,
 		ASSET,
-		PM
+		PM,
+		USER
 		;
 		
 		public int getValue() {

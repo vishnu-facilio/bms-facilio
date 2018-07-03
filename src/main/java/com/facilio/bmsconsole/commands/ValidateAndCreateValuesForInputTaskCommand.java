@@ -24,8 +24,11 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+
+
 
 public class ValidateAndCreateValuesForInputTaskCommand implements Command {
 
@@ -153,6 +156,8 @@ public class ValidateAndCreateValuesForInputTaskCommand implements Command {
 			
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, readingModule.getName());
 			context.put(FacilioConstants.ContextNames.READING, reading);
+			context.put(FacilioConstants.ContextNames.RECORD, reading);						
+			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
 		}
 	}
 	

@@ -164,7 +164,7 @@ public class FormulaContext {
 			FacilioField selectField = new FacilioField();
 			selectField.setDisplayName(this.name());
 			selectField.setColumnName(selectFieldString);
-			
+			selectField.setFieldId(field.getFieldId());
 			return selectField;
 		}
 	}
@@ -194,7 +194,7 @@ public class FormulaContext {
 			
 			FacilioField selectField = new FacilioField();
 			selectField.setColumnName(selectFieldString);
-			
+			selectField.setFieldId(field.getFieldId());
 			return selectField;
 		}
 	}
@@ -254,7 +254,7 @@ public class FormulaContext {
 			
 			FacilioField selectField = new FacilioField();
 			selectField.setColumnName(selectFieldString);
-			
+			selectField.setFieldId(field.getFieldId());
 			return selectField;
 		}
 	}
@@ -325,7 +325,7 @@ public class FormulaContext {
 			
 			field.setColumnName(getcolumnName());
 			field.setModule(baseSpaceModule);
-			
+			field.setFieldId(field.getFieldId());
 			field.setExtendedModule(null);
 			
 			return field;

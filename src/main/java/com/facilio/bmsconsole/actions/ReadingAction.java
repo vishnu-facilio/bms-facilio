@@ -1,8 +1,10 @@
 package com.facilio.bmsconsole.actions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.tuple.Pair;
@@ -25,6 +27,8 @@ import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.bmsconsole.view.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.ActionContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.workflows.context.WorkflowContext;
@@ -105,6 +109,27 @@ public class ReadingAction extends ActionSupport {
 		addReadingChain.execute(context);
 		FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
 		setReadingId(module.getModuleId());
+		
+		return SUCCESS;
+	}
+	
+	public String updateAssetCategoryReading() throws Exception {
+		FacilioContext context = new FacilioContext();
+		
+		List<List<ReadingRuleContext>> readingRules = Arrays.asList(getField().getReadingRules());
+		readingRules.stream().flatMap(List::stream).forEach((r) -> {
+			r.setReadingFieldId(getField().getFieldId());
+			r.getEvent().setModuleId(getModuleId());
+		});
+		List<List<List<ActionContext>>> actionsList = readingRules.stream().map(l -> {return l.stream().map(ReadingRuleContext::getActions).collect(Collectors.toList());}).collect(Collectors.toList());
+		
+		context.put(FacilioConstants.ContextNames.READING_RULES_LIST, readingRules);
+		context.put(FacilioConstants.ContextNames.ACTIONS_LIST, actionsList);
+		context.put(FacilioConstants.ContextNames.MODULE_FIELD, getField());
+		context.put(FacilioConstants.ContextNames.DEL_READING_RULE_IDS, getDelReadingRulesIds());
+		
+		Chain c = FacilioChainFactory.getUpdateReadingChain();
+		c.execute(context);
 		
 		return SUCCESS;
 	}
@@ -204,6 +229,16 @@ public class ReadingAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	private Map<Long, List<ReadingRuleContext>> validationRules;
+	public Map<Long, List<ReadingRuleContext>> getValidationRules() {
+		return validationRules;
+	}
+	
+	public void setValidationRules(Map<Long, List<ReadingRuleContext>> validationRules) {
+		this.validationRules = validationRules;
+	}
+	
+	
 	private List<FacilioModule> readings;
 	public List<FacilioModule> getReadings() {
 		return readings;
@@ -246,6 +281,15 @@ public class ReadingAction extends ActionSupport {
 		this.readingName = readingName;
 	}
 	
+	private FacilioField field;
+	public FacilioField getField() {
+		return this.field;
+	}
+	
+	public void setField(FacilioField field) {
+		this.field = field;
+	}
+	
 	private List<FacilioField> fields;
 	public List<FacilioField> getFields() {
 		return fields;
@@ -282,7 +326,6 @@ public class ReadingAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.READINGS, getReadingValues());
-		
 		Chain addCurrentOccupancy = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
 		addCurrentOccupancy.execute(context);
 		return SUCCESS;
@@ -687,5 +730,23 @@ public class ReadingAction extends ActionSupport {
 	}
 	public void setExcludeEmptyFields(Boolean excludeEmptyFields) {
 		this.excludeEmptyFields = excludeEmptyFields;
+	}
+	
+	private long moduleId;
+	public void setModuleId(long moduleId) {
+		this.moduleId = moduleId;
+	}
+	
+	public long getModuleId() {
+		return this.moduleId;
+	}
+	
+	private List<Long> delReadingRulesIds;
+	public void setDelReadingRulesIds(List<Long> delReadingRulesIds) {
+		this.delReadingRulesIds = delReadingRulesIds;
+	}
+	
+	public List<Long> getDelReadingRulesIds() {
+		return this.delReadingRulesIds;
 	}
  }

@@ -257,8 +257,14 @@ public class WorkflowRuleContext {
 				// TODO Auto-generated method stub
 				return false;
 			}
-		}
-		;
+		},
+		VALIDATION_RULE {
+			@Override
+			public boolean stopFurtherRuleExecution() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+		};
 		
 		public int getIntVal() {
 			return ordinal()+1;

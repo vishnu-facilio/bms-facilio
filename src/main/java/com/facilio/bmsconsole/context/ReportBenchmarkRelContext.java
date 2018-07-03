@@ -2,7 +2,7 @@ package com.facilio.bmsconsole.context;
 
 public class ReportBenchmarkRelContext {
 
-	long reportId,baselineId;
+	long reportId,benchmarkId;
 
 	public long getReportId() {
 		return reportId;
@@ -12,11 +12,12 @@ public class ReportBenchmarkRelContext {
 		this.reportId = reportId;
 	}
 
-	public long getBaselineId() {
-		return baselineId;
+	public long getBenchmarkId() {
+		return benchmarkId;
 	}
 
-	public void setBaselineId(long baselineId) {
-		this.baselineId = baselineId;
+	public void setBenchmarkId(long benchmarkId) {
+		this.benchmarkId = benchmarkId;
 	}
+
 }

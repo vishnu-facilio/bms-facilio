@@ -109,6 +109,8 @@ public class FacilioConstants {
 		public static final String USER = "user";
 		public static final String USER_MOBILE_SETTING = "userMobileSetting";
 		public static final String ACCESSIBLE_SPACE = "accessibleSpace";
+		public static final String USER_SHIFT_READING = "usershiftreading";
+		public static final String USER_WORK_HOURS_READINGS = "userworkhoursreading";
 		
 		public static final String GROUP_ID = "groupId";
 		public static final String GROUP = "group";
@@ -479,7 +481,10 @@ public class FacilioConstants {
 		public static final String BENCHMARK_UNITS = "benchmarkUnits";
 		public static final String BENCHMARK_VALUE = "benchmarkValue";
 		public static final String BENCHMARK_DATE_AGGR = "benchmarkDateAggr";
-
+		public static final String READING_RULES_LIST = "readingRulesList";
+		public static final String ACTIONS_LIST = "actionsList";
+		public static final String DEL_READING_RULE_IDS = "delReadingRuleIDs";
+		public static final String DO_VALIDTION = "doValidation";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {

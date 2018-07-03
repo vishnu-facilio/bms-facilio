@@ -24,7 +24,9 @@ public class UnitsUtil {
 	public final static String FORMULA_THIS_PLACE_HOLDER_STRING = "this";
 	
 	public static Double convert(Object value,Unit from,Unit to) {
-		
+		if(value == null ) {
+			return null;
+		}
 		if(from.equals(to)) {
 			return Double.parseDouble(value.toString());
 		}
@@ -113,8 +115,12 @@ public class UnitsUtil {
 			int unitid = (int) prop.get("unit");
 			return Unit.valueOf(unitid);
 		}
-		return null;
+		return Unit.valueOf(Metric.valueOf(metricId).getSiUnitId());
 	}
+	
+	public static Unit getOrgDisplayUnit(Long orgid, Metric metric) throws Exception {
+		return getOrgDisplayUnit(orgid, metric.getMetricId());
+	} 
 	
 	public static List<OrgUnitsContext> getOrgUnitsList() throws Exception {
 		

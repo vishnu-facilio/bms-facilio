@@ -1381,4 +1381,16 @@
 			</expression>
 		</workflow>
 	</template>
+	<template id="63">
+		<workflow>
+		</workflow>
+	</template>
+	<template id="64">
+		<workflow>
+		</workflow>
+	</template>
+	<template id="65">
+		<workflow>
+		</workflow>
+	</template>
 </workflows>

@@ -55,6 +55,7 @@ public class WorkflowRuleAPI {
 		switch(rule.getRuleTypeEnum()) {
 			case READING_RULE:
 			case PM_READING_RULE:
+			case VALIDATION_RULE:
 				addExtendedProps(ModuleFactory.getReadingRuleModule(), FieldFactory.getReadingRuleFields(), ruleProps);
 				addReadingRuleInclusionsExlusions((ReadingRuleContext) rule);
 				break;
@@ -424,6 +425,7 @@ public class WorkflowRuleAPI {
 			switch (entry.getKey()) {
 				case READING_RULE:
 				case PM_READING_RULE:
+				case VALIDATION_RULE:
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getReadingRuleModule(), FieldFactory.getReadingRuleFields(), entry.getValue()));
 					break;
 				case SLA_RULE:
@@ -461,6 +463,7 @@ public class WorkflowRuleAPI {
 					
 					case PM_READING_RULE:
 					case READING_RULE:
+					case VALIDATION_RULE:
 						prop.putAll(typeWiseExtendedProps.get(ruleType).get((Long) prop.get("id")));
 						workflow = FieldUtil.getAsBeanFromMap(prop, ReadingRuleContext.class);
 						ReadingRuleContext readingRule = ((ReadingRuleContext)workflow);

@@ -493,7 +493,7 @@
 		<action name="updateAllTask" class="com.facilio.bmsconsole.actions.TaskAction" method="updateAllTask">
 			<param name="permission">TASK_CREATE</param>
 			<result name="success" type="json">
-				<param name="includeProperties">rowsUpdated</param>
+				<param name="includeProperties">rowsUpdated,^error.*</param>
 			</result>
 		</action>
 		<action name="addorupdatetaskinput" class="com.facilio.bmsconsole.actions.TaskAction"
@@ -510,7 +510,7 @@
 			<param name="moduleName">workorder</param>
 			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
 			<result name="success" type="json">
-				<param name="includeProperties">rowsUpdated</param>
+				<param name="includeProperties">rowsUpdated,^error.*</param>
 			</result>
 		</action>
 
@@ -1528,6 +1528,15 @@
 				<param name="permission">ASSET_SETTINGS</param>
 			<result name="success" type="json">
 				<param name="includeProperties">readingId</param>
+			</result>
+		</action>
+		
+		<action name="updatesetupreading" class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="updateAssetCategoryReading">
+				<param name="moduleName">setup</param>
+				<param name="permission">ASSET_SETTINGS</param>
+			<result name="success" type="json">
+				<param name="includeProperties">field</param>
 			</result>
 		</action>
 		
@@ -3959,7 +3968,7 @@
 		<action name="getData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getData">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
-				<param name="includeProperties">^reportData.*,^reportContext.*,^baseLineComparisionDiff.*,^entityName.*,^meterIds.*,^readingAlarms.*,^reportColumns.*,^reportFieldLabelMap.*,^variance.*</param>
+				<param name="includeProperties">^reportData.*,^reportContext.*,^baseLineComparisionDiff.*,^entityName.*,^meterIds.*,^readingAlarms.*,^reportColumns.*,^reportFieldLabelMap.*,^variance.*,^safelimit.*,^benchmarks.*</param>
 			</result>
 		</action>
 		<action name="getAswaqData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getAswaqData">

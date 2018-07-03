@@ -407,4 +407,6 @@ public abstract class FileStore {
 	public abstract String getPrivateUrl(long fileId) throws Exception;
 	
 	public abstract String getPrivateUrl(long fileId, int width) throws Exception;
+	
+	public abstract String getDownloadUrl(long fileId) throws Exception;
 }

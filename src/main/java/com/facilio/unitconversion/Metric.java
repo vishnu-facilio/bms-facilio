@@ -39,19 +39,10 @@ public enum Metric {
 	public int getMetricId() {
 		return metricId;
 	}
-
-	public void setMetricId(int metricId) {
-		this.metricId = metricId;
-	}
-
+	
 	public String getName() {
 		return name;
 	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	
 	Metric(int metricId, String name,int siUnitid) {
 		this.metricId = metricId;

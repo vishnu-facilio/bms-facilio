@@ -13,7 +13,7 @@ public class CommandExecutor {
         ProcessBuilder builder = new ProcessBuilder(commandWithArgs);
         int exitStatus = -1;
         try {
-            System.out.println("command is : " + Arrays.asList(commandWithArgs));
+        		log.info("command is : " + Arrays.asList(commandWithArgs));
             Process process = builder.start();
             process.waitFor();
             exitStatus = process.exitValue();

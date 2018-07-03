@@ -3,7 +3,6 @@ package com.facilio.fw.auth;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -253,7 +252,7 @@ public class CognitoUtil {
 		return verifiyFacilioToken(idToken, false);
 	}
 	
-	public static CognitoUser verifiyFacilioToken(String idToken, boolean isPortalUser)
+	public static CognitoUser verifiyFacilioToken(String idToken, boolean isPortalUser, Boolean...overrideSessionCheck)
 	{
 		System.out.println("verifiyFacilioToken() :idToken :"+idToken);
 		try {
@@ -268,7 +267,8 @@ public class CognitoUtil {
 //				String sessionVerify = AwsUtil.getConfig("enable.sessionverify");
 //			if (sessionVerify != null) {
 //					if (Arrays.asList(sessionVerify.split(",")).contains(email)) {
-						if (AccountUtil.getUserBean().verifyUserSession(faciliouser.getEmail(), idToken)) {
+						boolean override = overrideSessionCheck != null && overrideSessionCheck.length == 1 && overrideSessionCheck[0];
+						if (override || AccountUtil.getUserBean().verifyUserSession(faciliouser.getEmail(), idToken)) {
 							return faciliouser;
 						}
 						else {

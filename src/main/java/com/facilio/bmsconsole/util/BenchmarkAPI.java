@@ -1,17 +1,17 @@
 package com.facilio.bmsconsole.util;
 
-import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.context.BenchmarkContext;
 import com.facilio.bmsconsole.context.BenchmarkUnit;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -80,21 +80,34 @@ public class BenchmarkAPI {
 	public static double calculateBenchmarkValue(long id, List<BenchmarkUnit> units, long startTime, DateAggregateOperator dateAggregation) throws Exception {
 		BenchmarkContext benchmark = getBenchmark(id);
 		if (benchmark != null) {
-			double val = benchmark.getValue();
-			if (benchmark.getDurationEnum() != null && dateAggregation != null && startTime != -1) {
-				val = getDayNormalizedValues(val, benchmark.getDurationEnum(), dateAggregation, startTime);
-			}
-			if (units != null && !units.isEmpty()) {
-				for (BenchmarkUnit unit : units) {
-					if (benchmark.getUnits().contains(unit.getFromUnitEnum())) {
-						val = UnitsUtil.convert(val, unit.getFromUnitEnum(), unit.getToUnitEnum());
-						val = val * unit.getVal();
-					}
-				}
-			}
-			return val;
+			return calculateBenchmarkValue(benchmark, units, startTime, dateAggregation);
 		}
 		return -1;
+	}
+	
+	public static double calculateBenchmarkValue(BenchmarkContext benchmark, List<BenchmarkUnit> units, long startTime, DateAggregateOperator dateAggregation) throws Exception {
+		double val = benchmark.getValue();
+		if (benchmark.getDurationEnum() != null && dateAggregation != null && startTime != -1) {
+			val = getDayNormalizedValues(val, benchmark.getDurationEnum(), dateAggregation, startTime);
+		}
+		if (units != null && !units.isEmpty()) {
+			Map<Unit, BenchmarkUnit> unitMap = units.stream()
+													.collect(Collectors.toMap(
+															BenchmarkUnit::getFromUnitEnum, 
+															Function.identity(),
+															(prevValue, curValue) -> {
+																return curValue;
+															}
+															));
+			for (Unit unit : benchmark.getUnits()) {
+				BenchmarkUnit bUnit = unitMap.get(unit);
+				if (bUnit != null) {
+					val = UnitsUtil.convert(val, bUnit.getFromUnitEnum(), bUnit.getToUnitEnum());
+					val = val * bUnit.getVal();
+				}
+			}
+		}
+		return val;
 	}
 	
 	private static double getDayNormalizedValues (double value, FacilioFrequency frequency, DateAggregateOperator aggr, long startTime) {
@@ -116,7 +129,7 @@ public class BenchmarkAPI {
 		}
 		
 		switch (aggr) {
-			case DATEANDTIME:
+			case FULLDATE:
 			case DAYSOFMONTH:
 			case WEEKDAY:
 				if (frequency != FacilioFrequency.DAILY) {
