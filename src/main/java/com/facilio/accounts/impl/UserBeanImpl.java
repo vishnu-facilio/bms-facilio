@@ -1,6 +1,5 @@
 package com.facilio.accounts.impl;
 
-import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -9,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -23,6 +23,8 @@ import com.facilio.accounts.util.AccountEmailTemplate;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
@@ -229,6 +231,14 @@ public class UserBeanImpl implements UserBean {
 		Map<String, Object> props = FieldUtil.getAsProperties(user);
 		insertBuilder.addRecord(props);
 		insertBuilder.save();
+		
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID, id);
+		context.put(FacilioConstants.ContextNames.MODULE_LIST, modBean.getSubModules(FacilioConstants.ContextNames.USERS, FacilioModule.ModuleType.READING));
+		
+		Chain addRDMChain = FacilioChainFactory.addResourceRDMChain();
+		addRDMChain.execute(context);
 		
 		return id;
 	}

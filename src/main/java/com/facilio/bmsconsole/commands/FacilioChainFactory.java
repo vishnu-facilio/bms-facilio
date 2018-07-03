@@ -1887,7 +1887,13 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	
+	public static Chain addResourceRDMChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new GetReadingFieldsCommand());
+		c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
 	
 	public static Chain getAddOrUpdateReadingValuesChain() {
 		Chain c = new ChainBase();

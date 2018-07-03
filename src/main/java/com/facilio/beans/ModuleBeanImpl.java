@@ -183,6 +183,11 @@ public class ModuleBeanImpl implements ModuleBean {
 	
 	@Override
 	public List<FacilioModule> getAllSubModules(String moduleName) throws Exception {
+		
+		if (LookupSpecialTypeUtil.isSpecialType(moduleName)) {
+			return LookupSpecialTypeUtil.getAllSubModules(moduleName);
+		}
+		
 		String sql = "SELECT CHILD_MODULE_ID FROM SubModulesRel INNER JOIN (SELECT m.MODULEID, @em:=m.EXTENDS_ID AS EXTENDS_ID FROM (SELECT * FROM Modules ORDER BY MODULEID DESC) m JOIN (SELECT @em:=MODULEID FROM Modules WHERE ORGID = ? AND NAME = ?) tmp WHERE m.MODULEID=@em) parentmod ON SubModulesRel.PARENT_MODULE_ID = parentmod.MODULEID";
 		ResultSet rs = null;
 		try(Connection conn = getConnection();PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -249,6 +254,11 @@ public class ModuleBeanImpl implements ModuleBean {
 		if (types == null || types.length == 0) {
 			return null;
 		}
+		
+		if (LookupSpecialTypeUtil.isSpecialType(moduleName)) {
+			return LookupSpecialTypeUtil.getSubModules(moduleName, types);
+		}
+		
 		String sql = "SELECT CHILD_MODULE_ID FROM SubModulesRel INNER JOIN Modules childmod ON SubModulesRel.CHILD_MODULE_ID = childmod.MODULEID INNER JOIN (SELECT m.MODULEID, @em:=m.EXTENDS_ID AS EXTENDS_ID FROM (SELECT * FROM Modules ORDER BY MODULEID DESC) m JOIN (SELECT @em:=MODULEID FROM Modules WHERE ORGID = ? AND NAME = ?) tmp WHERE m.MODULEID=@em) parentmod ON SubModulesRel.PARENT_MODULE_ID = parentmod.MODULEID WHERE childmod.MODULE_TYPE IN ("+getTypes(types)+")";
 		ResultSet rs = null;
 		try(Connection conn = getConnection();PreparedStatement pstmt = conn.prepareStatement(sql)) {
