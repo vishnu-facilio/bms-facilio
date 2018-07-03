@@ -1393,4 +1393,52 @@
 		<workflow>
 		</workflow>
 	</template>
+	<template id="66">
+		<workflow>
+			<parameter name="org.superAdmin.email" type="String" />
+			<parameter name="org.superAdmin.phone" type="String" />
+			<parameter name="asset.name" type="String" />
+			<parameter name="asset.id" type="String" />
+			<parameter name="org.domain" type="String" />
+			<expression name="asset.name" type="String">
+				<constant>${asset.name}</constant>
+			</expression>
+			<expression name="asset.id">
+				<constant>${asset.id}</constant>
+			</expression>
+			<expression name="org.superAdmin.phone">
+				<constant>${org.superAdmin.phone}</constant>
+			</expression>
+			<expression name="org.superAdmin.email">
+				<constant>${org.superAdmin.email}</constant>
+			</expression>
+			<expression name="org.domain">
+				<constant>${org.domain}</constant>
+			</expression>
+		</workflow>
+	</template>
+	<template id="67">
+		<workflow>
+			<parameter name="org.superAdmin.email" type="String" />
+			<parameter name="org.superAdmin.phone" type="String" />
+			<parameter name="asset.name" type="String" />
+			<parameter name="asset.id" type="String" />
+			<parameter name="org.domain" type="String" />
+			<expression name="asset.name" type="String">
+				<constant>${asset.name}</constant>
+			</expression>
+			<expression name="asset.id">
+				<constant>${asset.id}</constant>
+			</expression>
+			<expression name="org.superAdmin.phone">
+				<constant>${org.superAdmin.phone}</constant>
+			</expression>
+			<expression name="org.superAdmin.email">
+				<constant>${org.superAdmin.email}</constant>
+			</expression>
+			<expression name="org.domain">
+				<constant>${org.domain}</constant>
+			</expression>
+		</workflow>
+	</template>
 </workflows>

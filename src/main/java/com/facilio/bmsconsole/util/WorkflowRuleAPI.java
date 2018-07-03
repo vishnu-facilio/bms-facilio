@@ -11,11 +11,13 @@ import java.util.StringJoiner;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.actions.WorkflowRuleAction;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
+import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -23,6 +25,7 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
 import com.facilio.bmsconsole.view.SLARuleContext;
+import com.facilio.bmsconsole.workflow.ActionContext;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.bmsconsole.workflow.WorkflowEventContext;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
@@ -220,6 +223,38 @@ public class WorkflowRuleAPI {
 		List<WorkflowRuleContext> rules = getWorkFlowsFromMapList(ruleBuilder.get(), fetchEvent);
 		if(rules != null && !rules.isEmpty()) {
 			return rules.get(0);
+		}
+		return null;
+	}
+	
+	public static List<WorkflowRuleContext> getAllWorkflowRuleContextOfType (WorkflowRuleContext.RuleType ruleType,boolean fetchEvent,boolean fetchAction) throws Exception {
+		
+		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
+		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
+		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
+													.table(module.getTableName())
+													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+													.andCondition(CriteriaAPI.getCondition("RULE_TYPE", "ruleType", ruleType.getIntVal()+"", StringOperators.IS));
+		
+		if (fetchEvent) {
+			fields.addAll(FieldFactory.getWorkflowEventFields());
+			FacilioModule eventModule = ModuleFactory.getWorkflowEventModule();
+			ruleBuilder.innerJoin(eventModule.getTableName())
+						.on(module.getTableName()+".EVENT_ID = "+eventModule.getTableName()+".ID");
+		}
+		
+		ruleBuilder.select(fields);
+		List<WorkflowRuleContext> rules = getWorkFlowsFromMapList(ruleBuilder.get(), fetchEvent);
+		
+		if(fetchAction) {
+			for(WorkflowRuleContext rule :rules) {
+				List<ActionContext> actionList = ActionAPI.getAllActionsFromWorkflowRule(AccountUtil.getCurrentOrg().getId(), rule.getId());
+				rule.setActions(actionList);
+			}
+		}
+		
+		if(rules != null && !rules.isEmpty()) {
+			return rules;
 		}
 		return null;
 	}

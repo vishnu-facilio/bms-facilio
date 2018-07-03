@@ -21,4 +21,5 @@
 	 <job name='DegreeDaysCalculator' classname = 'com.facilio.bmsconsole.jobs.DegreeDaysCalculatorJob' />
 	 <job name='AnomalyDetector' classname = 'com.facilio.bmsconsole.jobs.AnomalyDetectorJob' />
 	 <job name='importData' classname = 'com.facilio.bmsconsole.jobs.ImportDataJob' />
+	 <job name='assetActionJob' classname = 'com.facilio.bmsconsole.jobs.AssetActionJob' />
 </scheduler>
