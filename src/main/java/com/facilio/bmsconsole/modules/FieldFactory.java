@@ -34,6 +34,31 @@ public class FieldFactory {
 	public static Pair<String, Boolean> getSortableFieldName(String moduleName) {
 		return lookupModuleVsSortFieldName.get(moduleName);
 	}
+	
+	public static class Fields {
+		public static List<String> alarmsFieldsInclude = new ArrayList<String>();
+		static {
+			alarmsFieldsInclude.add("isAcknowledged");
+			alarmsFieldsInclude.add("serialNumber");
+			alarmsFieldsInclude.add("clearedBy");
+			alarmsFieldsInclude.add("status");
+			alarmsFieldsInclude.add("type");
+			alarmsFieldsInclude.add("category");
+			alarmsFieldsInclude.add("resource");
+			alarmsFieldsInclude.add("severity");
+			alarmsFieldsInclude.add("alarmClass");
+			alarmsFieldsInclude.add("alarmPriority");
+			alarmsFieldsInclude.add("subject");
+			alarmsFieldsInclude.add("previousSeverity");
+			alarmsFieldsInclude.add("createdTime");
+			alarmsFieldsInclude.add("entity");
+			alarmsFieldsInclude.add("noOfAttachments");
+		}
+		public static List<String> energyFieldsInclude = new ArrayList<String>();
+		static {
+			energyFieldsInclude.add("id");
+		}
+	}
 
 	public static List<FacilioField> getAssetCategoryReadingRelFields() {
 		List<FacilioField> fields = new ArrayList<>();

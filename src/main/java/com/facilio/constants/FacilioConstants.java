@@ -2,8 +2,10 @@ package com.facilio.constants;
 
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.json.simple.JSONObject;
@@ -201,6 +203,10 @@ public class FacilioConstants {
 		public static final String CATEGORY_READING_PARENT_MODULE = "categoryReadingParentModule";
 		public static final String PARENT_CATEGORY_ID = "parentCategoryId";
 		public static final String PARENT_CATEGORY_IDS = "parentCategoryIds";
+		public static final String RESOURCE_TYPE = "resourceType";
+		public static final String IS_FILTER = "isFilter";
+		public static final String CATEGORY_ID = "categoryId";
+		public static final String META = "meta";
 		
 		public static final String READINGS_MAP = "readingsMap";
 		public static final String READINGS = "readings";
@@ -734,7 +740,6 @@ public class FacilioConstants {
 				DateFilter.put("CUSTOM_WITH_WEEK",CUSTOM_WITH_WEEK);
 				DateFilter.put("CUSTOM_WITH_MONTH",CUSTOM_WITH_MONTH);
 		}
-		
 		
 		public static class Energy
 
