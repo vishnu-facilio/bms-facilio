@@ -54,8 +54,7 @@ public class AddSpaceCommand implements Command {
 			BuildingContext building = SpaceAPI.getBuildingSpace(buildingId);
 			space.setSiteId(building.getSiteId());
 		}
-		
-		if(space.getFloor() != null) {
+		if(space.getFloor().getId() != -1 && space.getFloor().getId() != 0) {
 			long floorId = space.getFloor().getId();
 			FloorContext floor = SpaceAPI.getFloorSpace(floorId);
 			space.setSiteId(floor.getSiteId());
