@@ -3933,6 +3933,16 @@ public class FieldFactory {
 		fields.add(getField("benchmarkId", "BENCHMARK_ID", module, FieldType.NUMBER));
 		return fields;
 	}
+	
+	public static List<FacilioField> getShiftUserRelModuleFields() {
+		FacilioModule module = ModuleFactory.getShiftUserRelModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField());
+		fields.add(getField("userId", "USERID", module, FieldType.NUMBER));
+		fields.add(getField("shiftId", "SHIFTID", module, FieldType.NUMBER));
+		return fields;
+	}
 
 	public static FacilioField getField(String name, String colName, FacilioModule module, FieldType type) {
 		return getField(name, null, colName, module, type);

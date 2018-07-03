@@ -1,5 +1,6 @@
 package com.facilio.accounts.impl;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -27,6 +28,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.ShiftUserRelContext;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -173,12 +175,23 @@ public class UserBeanImpl implements UserBean {
 				.table(AccountConstants.getUserModule().getTableName())
 				.fields(fields)
 				.andCustomWhere("USERID = ?", user.getUid());
+		
 
 		Map<String, Object> props = FieldUtil.getAsProperties(user);
 		int updatedRows = updateBuilder.update(props);
+		
+		GenericDeleteRecordBuilder relDeleteBuilder = new GenericDeleteRecordBuilder()
+				.table(ModuleFactory.getShiftUserRelModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(user.getUid()), NumberOperators.EQUALS));
+		
+		if (user.getShiftId() != null) {
+			insertShiftRel(user.getUid(), user.getShiftId());
+		}
+		
 		if (updatedRows > 0) {
 			return true;
 		}
+		
 		return false;
 	}
 	
@@ -279,14 +292,34 @@ public class UserBeanImpl implements UserBean {
 		user.setInviteAcceptStatus(false);
 		user.setInvitedTime(System.currentTimeMillis());
 		user.setUserType(AccountConstants.UserType.USER.getValue());
-
 		long ouid = addToORGUsers(user);
+
 		user.setOuid(ouid);
+		Long shiftId = user.getShiftId();
+		
+		if (shiftId != null) {
+			insertShiftRel(uid, shiftId);
+		}
 		
 		sendInvitation(ouid, user);
 		addAccessibleSpace(user.getOuid(), user.getAccessibleSpace());
 
 		return ouid;
+	}
+
+	private void insertShiftRel(long uid, Long shiftId)
+			throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
+		GenericInsertRecordBuilder shiftRelInsertBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getShiftUserRelModule().getTableName())
+				.fields(FieldFactory.getShiftUserRelModuleFields());
+		
+		ShiftUserRelContext rel = new ShiftUserRelContext();
+		rel.setUserId(uid);
+		rel.setShiftId(shiftId);
+		
+		Map<String, Object> relProps = FieldUtil.getAsProperties(rel);
+		shiftRelInsertBuilder.addRecord(relProps);
+		shiftRelInsertBuilder.save();
 	}
 	
 public long inviteRequester(long orgId, User user) throws Exception {

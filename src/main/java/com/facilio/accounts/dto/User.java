@@ -39,7 +39,7 @@ public class User {
 	private long portalId;
 	private String serverName;
 	private FacilioLicense license;
-	
+	private Long shiftId;
 	public long getUid() {
 		return uid;
 	}
@@ -349,5 +349,11 @@ public class User {
 	public void setServerName(String serverName) {
 		this.serverName = serverName;
 	}
-	
+
+	public Long getShiftId() {
+		return shiftId;
+	}
+	public void setShiftId(Long shiftId) {
+		this.shiftId = shiftId;
+	}
 }

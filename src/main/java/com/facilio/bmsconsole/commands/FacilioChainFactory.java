@@ -2362,6 +2362,26 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getAllShiftsCommand() {
+		Chain c = new ChainBase();
+		c.addCommand(new GetAllShiftsCommand());
+		return c;
+	}
+	
+	public static Chain getAddShiftCommand() {
+		Chain c = new TransactionChain();
+		c.addCommand(new AddShiftCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getUpdateShiftCommand() {
+		Chain c = new TransactionChain();
+		c.addCommand(new UpdateShiftCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	private static  long createOrg(Organization org) throws Exception {
 		
 		Organization existingOrg = getOrg(org.getDomain());

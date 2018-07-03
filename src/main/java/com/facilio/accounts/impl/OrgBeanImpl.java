@@ -15,6 +15,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.fs.FileStore;
@@ -227,12 +228,15 @@ public class OrgBeanImpl implements OrgBean {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getUserFields());
 		fields.addAll(AccountConstants.getOrgUserFields());
+		fields.addAll(FieldFactory.getShiftUserRelModuleFields());
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Users")
 				.innerJoin("ORG_Users")
 				.on("Users.USERID = ORG_Users.USERID")
+				.leftJoin("Shift_User_Rel")
+				.on("Users.USERID = Shift_User_Rel.USERID")
 				.andCustomWhere("ORGID = ? AND USER_TYPE = ? AND DELETED_TIME = -1", orgId, AccountConstants.UserType.USER.getValue());
 		
 		List<Map<String, Object>> props = selectBuilder.get();

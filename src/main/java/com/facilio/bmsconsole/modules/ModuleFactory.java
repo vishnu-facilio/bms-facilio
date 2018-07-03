@@ -1107,4 +1107,12 @@ public class ModuleFactory {
 		rateCardService.setTableName("Report_Benchmark_Rel");
 		return rateCardService;
 	}
+
+	public static FacilioModule getShiftUserRelModule() {
+		FacilioModule shiftUserRel = new FacilioModule();
+		shiftUserRel.setName("shiftUserRel");
+		shiftUserRel.setDisplayName("Shift User Rel");
+		shiftUserRel.setTableName("Shift_User_Rel");
+		return shiftUserRel;
+	}
 }
