@@ -1,11 +1,11 @@
 package com.facilio.beans;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -83,18 +83,19 @@ LRUCache modulecache = LRUCache.getModuleCache();
 	@Override
 	public List<FacilioModule> getAllSubModules(String moduleName) throws Exception {
 		
-		ArrayList<FacilioModule> modules = (ArrayList<FacilioModule>) CacheUtil.get(CacheUtil.SUB_MODULE_KEY(getOrgId(), moduleName));
+		List<FacilioModule> modules = (ArrayList<FacilioModule>) CacheUtil.get(CacheUtil.SUB_MODULE_KEY(getOrgId(), moduleName));
 		
 		if (modules == null) {
 			
-			modules = (ArrayList<FacilioModule>) super.getAllSubModules(moduleName);
+			modules = (List<FacilioModule>) super.getAllSubModules(moduleName);
 			
-			CacheUtil.set(CacheUtil.SUB_MODULE_KEY(getOrgId(), moduleName), modules);
+			CacheUtil.set(CacheUtil.SUB_MODULE_KEY(getOrgId(), moduleName), new ArrayList<>(modules));
 			
 			//LOGGER.log(Level.INFO, "getSubModules result from DB for module: "+moduleName);
 		}
 		else {
 			LOGGER.log(Level.INFO, "getSubModules result from CACHE for module: "+moduleName);
+			modules = Collections.unmodifiableList(modules);
 		}
 		return modules;
 	}
@@ -102,17 +103,18 @@ LRUCache modulecache = LRUCache.getModuleCache();
 	@Override
 	public List<FacilioModule> getAllSubModules(long moduleId) throws Exception {
 		
-		ArrayList<FacilioModule> modules = (ArrayList<FacilioModule>) CacheUtil.get(CacheUtil.SUB_MODULE_KEY(getOrgId(), moduleId));
+		List<FacilioModule> modules = (ArrayList<FacilioModule>) CacheUtil.get(CacheUtil.SUB_MODULE_KEY(getOrgId(), moduleId));
 		
 		if (modules == null) {
 			
-			modules = (ArrayList<FacilioModule>) super.getAllSubModules(moduleId);
+			modules = (List<FacilioModule>) super.getAllSubModules(moduleId);
 			
-			CacheUtil.set(CacheUtil.SUB_MODULE_KEY(getOrgId(), moduleId), modules);
+			CacheUtil.set(CacheUtil.SUB_MODULE_KEY(getOrgId(), moduleId), new ArrayList<>(modules));
 			
 			LOGGER.log(Level.INFO, "getSubModules result from DB for module: "+moduleId);
 		}
 		else {
+			modules = Collections.unmodifiableList(modules);
 			//LOGGER.log(Level.INFO, "getSubModules result from CACHE for module: "+moduleId);
 		}
 		return modules;
@@ -123,18 +125,18 @@ LRUCache modulecache = LRUCache.getModuleCache();
 		if (types == null || types.length == 0) {
 			return null;
 		}
-		String key = StringUtils.join(types);
-		ArrayList<FacilioModule> modules = (ArrayList<FacilioModule>) CacheUtil.get(CacheUtil.SUB_MODULE_KEY(getOrgId(), moduleName, types));
+		List<FacilioModule> modules = (ArrayList<FacilioModule>) CacheUtil.get(CacheUtil.SUB_MODULE_KEY(getOrgId(), moduleName, types));
 		
 		if (modules == null) {
 			
-			modules = (ArrayList<FacilioModule>) super.getSubModules(moduleName, types);
+			modules = (List<FacilioModule>) super.getSubModules(moduleName, types);
 			
-			CacheUtil.set(CacheUtil.SUB_MODULE_KEY(getOrgId(), moduleName, types), modules);
+			CacheUtil.set(CacheUtil.SUB_MODULE_KEY(getOrgId(), moduleName, types), new ArrayList<>(modules));
 			
 			//LOGGER.log(Level.INFO, "getSubModules result from DB for module: "+moduleName);
 		}
 		else {
+			modules = Collections.unmodifiableList(modules);
 			//LOGGER.log(Level.INFO, "getSubModules result from CACHE for module: "+moduleName);
 		}
 		return modules;
@@ -145,17 +147,18 @@ LRUCache modulecache = LRUCache.getModuleCache();
 		if (types == null || types.length == 0) {
 			return null;
 		}
-		ArrayList<FacilioModule> modules = (ArrayList<FacilioModule>) CacheUtil.get(CacheUtil.SUB_MODULE_KEY(getOrgId(), moduleId, types));
+		List<FacilioModule> modules = (ArrayList<FacilioModule>) CacheUtil.get(CacheUtil.SUB_MODULE_KEY(getOrgId(), moduleId, types));
 		
 		if (modules == null) {
 			
-			modules = (ArrayList<FacilioModule>) super.getSubModules(moduleId, types);
+			modules = (List<FacilioModule>) super.getSubModules(moduleId, types);
 			
-			CacheUtil.set(CacheUtil.SUB_MODULE_KEY(getOrgId(), moduleId, types), modules);
+			CacheUtil.set(CacheUtil.SUB_MODULE_KEY(getOrgId(), moduleId, types), new ArrayList<>(modules));
 			
 			LOGGER.log(Level.INFO, "getSubModules result from DB for module: "+moduleId);
 		}
 		else {
+			modules = Collections.unmodifiableList(modules);
 			LOGGER.log(Level.INFO, "getSubModules result from CACHE for module: "+moduleId);
 		}
 		return modules;
@@ -189,17 +192,18 @@ LRUCache modulecache = LRUCache.getModuleCache();
 		
 		Object key = CacheUtil.FIELDS_KEY(getOrgId(), moduleName);
 		
-		List<FacilioField> fields = (List<FacilioField>)cache.get(key);
+		List<FacilioField> fields = (ArrayList<FacilioField>)cache.get(key);
 		if (fields == null) {
 			
 			fields = super.getAllFields(moduleName);
 			
-//			CacheUtil.set(CacheUtil.FIELDS_KEY(getOrgId(), moduleName), fields);
+			CacheUtil.set(CacheUtil.FIELDS_KEY(getOrgId(), moduleName), new ArrayList<>(fields));
 			cache.put(key, fields);
 			
 			//LOGGER.log(Level.INFO, "getAllFields result from DB for module: "+moduleName +"\n Time taken"+ (System.currentTimeMillis()-begintime));
 		}
 		else {
+			fields = Collections.unmodifiableList(fields);
 			//LOGGER.log(Level.INFO, "getAllFields result from CACHE for module: "+moduleName +"\n Time taken"+ (System.currentTimeMillis()-begintime));
 		}
 		return fields;
