@@ -24,7 +24,9 @@ public class UnitsUtil {
 	public final static String FORMULA_THIS_PLACE_HOLDER_STRING = "this";
 	
 	public static Double convert(Object value,Unit from,Unit to) {
-		
+		if(value == null ) {
+			return null;
+		}
 		if(from.equals(to)) {
 			return Double.parseDouble(value.toString());
 		}
