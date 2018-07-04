@@ -49,7 +49,7 @@ public class PerformAssetAction implements Command {
 				Map<String, Object> placeHolders = new HashMap<>();
 				CommonCommandUtil.appendModuleNameInKey(FacilioConstants.ContextNames.ASSET, FacilioConstants.ContextNames.ASSET, FieldUtil.getAsProperties(asset), placeHolders);
 				CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeHolders);
-				placeHolders.put("org.superAdmin.email", "krishnan.e@facilio.com");
+				placeHolders.put("org.superAdmin.email", superAdmin.getEmail());
 				placeHolders.put("org.superAdmin.phone", superAdmin.getPhone());
 				for(ActionContext action :workflowRule.getActions()) {
 					
