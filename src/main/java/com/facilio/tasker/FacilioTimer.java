@@ -98,8 +98,8 @@ public class FacilioTimer {
 		JobStore.addJob(jc);
 	}
 	
-	public static void deleteJob(long jobId) throws Exception {
-		JobStore.deleteJob(jobId);
+	public static void deleteJobs(List<Long> jobId) throws Exception {
+		JobStore.deleteJobs(jobId);
 	}
 	
 	public static void deleteJob(long jobId, String jobName) throws Exception {

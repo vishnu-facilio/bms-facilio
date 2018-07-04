@@ -6,21 +6,32 @@ import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.StringJoiner;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
+import org.apache.commons.chain.Chain;
+
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.AddShiftCommand;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.BusinessHourContext;
+import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ShiftContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.jobs.ShiftStartJob;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.ScheduleInfo;
@@ -37,9 +48,11 @@ public class ShiftAPI {
 		List<Map<String, Object>> props = selectBuilder.get();
 		StringJoiner j = new StringJoiner(",");
 		if (props != null && !props.isEmpty()) {
-			ShiftContext s = FieldUtil.getAsBeanFromMap(props.get(0), ShiftContext.class);
-			j.add(String.valueOf(s.getBusinessHoursId()));
-			shifts.add(s);
+			for (Map<String, Object> p : props) {
+				ShiftContext s = FieldUtil.getAsBeanFromMap(p, ShiftContext.class);
+				j.add(String.valueOf(s.getBusinessHoursId()));
+				shifts.add(s);
+			}
 		}
 		
 		String businessHoursTable = ModuleFactory.getBusinessHoursModule().getTableName();
@@ -75,12 +88,11 @@ public class ShiftAPI {
 		return shifts;
 	}
 	
-	public static void deleteJobsForshift(long shiftId) throws Exception {
-		FacilioTimer.deleteJob(shiftId);
+	public static void deleteJobsForshifts(List<Long> ids) throws Exception {
+		FacilioTimer.deleteJobs(ids);
 	}
 
-	public static void scheduleJobs(long shiftId, List<BusinessHourContext> days) throws Exception {
-		deleteJobsForshift(shiftId);
+	public static void scheduleJobs(List<BusinessHourContext> days) throws Exception {
 		for (BusinessHourContext d: days) {
 			LocalTime startTime = d.getStartTimeAsLocalTime();
 			LocalTime endTime = d.getEndTimeAsLocalTime();
@@ -89,13 +101,13 @@ public class ShiftAPI {
 			startShiftschedule.addValue(d.getDayOfWeek());
 			startShiftschedule.addTime(d.getStartTime());
 			startShiftschedule.setFrequencyType(FrequencyType.WEEKLY);
-			FacilioTimer.scheduleCalendarJob(shiftId, getJobName(d.getDayOfWeekEnum(), true), ShiftAPI.getShiftStartScheduleExecutionTime(d.getDayOfWeekEnum(), startTime, endTime), startShiftschedule, "priority");
+			FacilioTimer.scheduleCalendarJob(d.getId(), "StartShift", ShiftAPI.getShiftStartScheduleExecutionTime(d.getDayOfWeekEnum(), startTime, endTime), startShiftschedule, "priority");
 			
 			ScheduleInfo endShiftschedule = new ScheduleInfo();
 			endShiftschedule.addValue(d.getDayOfWeek());
-			endShiftschedule.addTime(d.getStartTime());
+			endShiftschedule.addTime(d.getEndTime());
 			endShiftschedule.setFrequencyType(FrequencyType.WEEKLY);
-			FacilioTimer.scheduleCalendarJob(shiftId, getJobName(d.getDayOfWeekEnum(), false), getShiftEndScheduleExecutionTime(d.getDayOfWeekEnum(), startTime, endTime), endShiftschedule, "priority");			
+			FacilioTimer.scheduleCalendarJob(d.getId(), "EndShift", getShiftEndScheduleExecutionTime(d.getDayOfWeekEnum(), startTime, endTime), endShiftschedule, "priority");			
 		}
 	}
 
@@ -115,14 +127,14 @@ public class ShiftAPI {
 		return nextWeek(now, day, startTime); 
 	}
 	
-	private static long currentWeek(ZonedDateTime now, DayOfWeek day, LocalTime startTime) {
+	private static long currentWeek(ZonedDateTime now, DayOfWeek day, LocalTime time) {
 		ZonedDateTime adjusted = now.with(TemporalAdjusters.nextOrSame(day));
-		return ZonedDateTime.of(adjusted.toLocalDate(), startTime, adjusted.getZone()).toInstant().toEpochMilli();
+		return ZonedDateTime.of(adjusted.toLocalDate(), time, adjusted.getZone()).toInstant().toEpochMilli();
 	}
 
-	private static long nextWeek(ZonedDateTime now, DayOfWeek day, LocalTime startTime) {
+	private static long nextWeek(ZonedDateTime now, DayOfWeek day, LocalTime time) {
 		ZonedDateTime adjusted = now.with(TemporalAdjusters.next(day));
-		return ZonedDateTime.of(adjusted.toLocalDate(), startTime, adjusted.getZone()).toInstant().toEpochMilli();
+		return ZonedDateTime.of(adjusted.toLocalDate(), time, adjusted.getZone()).toInstant().toEpochMilli();
 	}
 
 	private static long getShiftEndScheduleExecutionTime(DayOfWeek day, LocalTime startTime, LocalTime endTime) {
@@ -140,8 +152,40 @@ public class ShiftAPI {
 		} 
 		return nextWeek(now, day, endTime);
 	}
+
+	public static void addUserShiftReading(long singleDayBusinessId, String entry, long executionTime) throws Exception {
+		List<Long> userIds = getUserIds(singleDayBusinessId);
+		Map<String, List<ReadingContext>> readingMap = new HashMap<>();
+		readingMap.put("usershiftreading", userIds.stream().map(id -> {
+			ReadingContext rContext = new ReadingContext();
+			rContext.setParentId(id);
+			rContext.addReading("shiftEntry", entry);
+			rContext.setTtime(executionTime);
+			return rContext;
+		}).collect(Collectors.toList()));
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.READINGS_MAP, readingMap);
+		Chain c = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
+		c.execute(context);
+	}
 	
-	private static String getJobName(DayOfWeek day, boolean isStartTime) {
-		return day.getDisplayName(TextStyle.FULL, Locale.US) + (isStartTime ? "_SHIFT_START" : "_SHIFT_END");		
+	private static List<Long> getUserIds(long singleDayBusinessId) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(Arrays.asList(AccountConstants.getUserIdField(AccountConstants.getUserModule())))
+				.table("Users")
+				.innerJoin("Shift_User_Rel")
+				.on("Users.USERID = Shift_User_Rel.USERID")
+				.innerJoin("Shift")
+				.on("Shift_User_Rel.SHIFTID = Shift.ID")
+				.innerJoin("BusinessHours")
+				.on("Shift.BUSINESSHOURSID = BusinessHours.ID")
+				.innerJoin("SingleDayBusinessHours")
+				.on("SingleDayBusinessHours.PARENT_ID = BusinessHours.ID")
+				.andCondition(CriteriaAPI.getCondition("SingleDayBusinessHours.ID", "childId", String.valueOf(singleDayBusinessId), NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		return props.stream().map(x -> {return (long) x.get("uid");}).collect(Collectors.toList());
 	}
 }

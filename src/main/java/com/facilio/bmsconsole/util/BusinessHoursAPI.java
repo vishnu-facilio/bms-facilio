@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.util;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,11 +36,18 @@ public class BusinessHoursAPI {
 																.table(ModuleFactory.getSingleDayBusinessHourModule().getTableName())
 																.fields(FieldFactory.getSingleDayBusinessHoursFields());
 		
+		List<Map<String, Object>> singleDayProps = new ArrayList<>();
 		for(BusinessHourContext singleDay : businessHours) {
 			singleDay.setParentId(parentId);
-			singleDayBuilder.addRecord(FieldUtil.getAsProperties(singleDay));
+			singleDayProps.add(FieldUtil.getAsProperties(singleDay));
 		}
+		singleDayBuilder.addRecords(singleDayProps);
 		singleDayBuilder.save();
+		
+		int len = businessHours.size();
+		for (int i = 0; i < len; ++i) {
+			businessHours.get(i).setId((long) singleDayProps.get(i).get("id"));
+		}
 		
 		return parentId;
 	}

@@ -1,11 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.BusinessHourContext;
+import com.facilio.bmsconsole.context.BusinessHoursList;
 import com.facilio.bmsconsole.context.ShiftContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -24,6 +27,10 @@ public class UpdateShiftCommand implements Command {
 		ShiftContext shift = (ShiftContext) context.get(FacilioConstants.ContextNames.SHIFT);
 		long oldId = shift.getBusinessHoursId();
 		
+		BusinessHoursList businessHoursList = BusinessHoursAPI.getBusinessHours(oldId);
+		
+		ShiftAPI.deleteJobsForshifts(businessHoursList.stream().map(BusinessHourContext::getId).collect(Collectors.toList()));
+		
 		long id = BusinessHoursAPI.addBusinessHours(shift.getDays());
 		shift.setBusinessHoursId(id);
 		
@@ -36,10 +43,9 @@ public class UpdateShiftCommand implements Command {
 		
 		Map<String, Object> prop = FieldUtil.getAsProperties(shift);
 		builder.update(prop);
-		
+
 		BusinessHoursAPI.deleteBusinessHours(oldId);
-		
-		ShiftAPI.scheduleJobs(shift.getId(), shift.getDays());
+		ShiftAPI.scheduleJobs(shift.getDays());
 		return false;
 	}
 

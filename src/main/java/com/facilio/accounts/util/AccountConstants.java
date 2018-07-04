@@ -837,12 +837,7 @@ public class AccountConstants {
 		FacilioModule module = getFacilioUserModule();
 		List<FacilioField> fields = new ArrayList<>();
 
-		FacilioField uid = new FacilioField();
-		uid.setName("uid");
-		uid.setDataType(FieldType.NUMBER);
-		uid.setColumnName("USERID");
-		uid.setModule(module);
-		fields.add(uid);
+		fields.add(getUserIdField(module));
 
 		FacilioField name = new FacilioField();
 		name.setName("username");
@@ -868,6 +863,15 @@ public class AccountConstants {
 		return fields;
 	}
 
+	public static FacilioField getUserIdField(FacilioModule module) {
+		FacilioField uid = new FacilioField();
+		uid.setName("uid");
+		uid.setDataType(FieldType.NUMBER);
+		uid.setColumnName("USERID");
+		uid.setModule(module);
+		return uid;
+	}
+
 	public static FacilioField getUserPasswordField() {
 		FacilioField password = new FacilioField();
 		password.setName("password");
@@ -881,12 +885,7 @@ public class AccountConstants {
 		FacilioModule module = getUserModule();
 		List<FacilioField> fields = new ArrayList<>();
 
-		FacilioField uid = new FacilioField();
-		uid.setName("uid");
-		uid.setDataType(FieldType.NUMBER);
-		uid.setColumnName("USERID");
-		uid.setModule(module);
-		fields.add(uid);
+		fields.add(getUserIdField(module));
 
 		FacilioField name = new FacilioField();
 		name.setName("name");
@@ -1089,12 +1088,7 @@ public class AccountConstants {
 		ouid.setModule(module);
 		fields.add(ouid);
 
-		FacilioField uid = new FacilioField();
-		uid.setName("uid");
-		uid.setDataType(FieldType.NUMBER);
-		uid.setColumnName("USERID");
-		uid.setModule(module);
-		fields.add(uid);
+		fields.add(getUserIdField(module));
 
 		FacilioField orgId = new FacilioField();
 		orgId.setName("orgId");
@@ -1262,12 +1256,7 @@ public class AccountConstants {
 		id.setModule(module);
 		fields.add(id);
 		
-		FacilioField uid = new FacilioField();
-		uid.setName("uid");
-		uid.setDataType(FieldType.NUMBER);
-		uid.setColumnName("USERID");
-		uid.setModule(module);
-		fields.add(uid);
+		fields.add(getUserIdField(module));
 		
 		FacilioField token = new FacilioField();
 		token.setName("token");
