@@ -126,36 +126,35 @@ public class AwsUtil
 	private static volatile AmazonKinesis kinesis = null;
 	private static String region = null;
 	private static final Object LOCK = new Object();
-	
+
+	private static final Properties PROPERTIES = new Properties();
+
 	private static final String SERVERNAME = getConfig("servername");
 
+	static {
+		loadProperties();
+	}
 
-	public static String getConfig(String name)
-    {
-        Properties prop = new Properties();
-        URL resource = AwsUtil.class.getClassLoader().getResource(AWS_PROPERTY_FILE);
-        if (resource == null) 
-        {
-            return null;
+	private static void loadProperties() {
+		URL resource = AwsUtil.class.getClassLoader().getResource(AWS_PROPERTY_FILE);
+		if (resource != null) {
+			try (InputStream stream = resource.openStream()) {
+				PROPERTIES.load(stream);
+			} catch (IOException e) {
+				logger.info("Exception while trying to load property file " + AWS_PROPERTY_FILE);
+			}
+		}
+	}
+
+	public static String getConfig(String name) {
+    	String value = PROPERTIES.getProperty(name);
+        if (value != null ) {
+        	value = value.trim();
+        	if(value.length() > 0) {
+        		return value;
+        	}
         }
-        try (InputStream stream = resource.openStream()) 
-        {
-            prop.load(stream);
-        } 
-        catch (IOException e) 
-        {
-            return null;
-        }
-        
-        String value = prop.getProperty(name);
-        if (value == null || value.trim().length() == 0) 
-        {
-            return null;
-        } 
-        else 
-        {
-            return value;
-        }
+        return null;
     }
     
     public static CreateKeysAndCertificateResult getCertificateResult()
