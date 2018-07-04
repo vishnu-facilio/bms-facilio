@@ -60,7 +60,13 @@ public class FacilioChainFactory {
 		return c;
 	}
 
-	
+	public static Chain getAssetActionChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new PerformAssetAction());
+		addCleanUpCommand(c);
+		return c;
+		
+	}
 	public static Chain getPickListChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new LoadMainFieldCommand());

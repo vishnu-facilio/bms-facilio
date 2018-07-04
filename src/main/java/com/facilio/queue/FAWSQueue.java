@@ -1,5 +1,6 @@
 package com.facilio.queue;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -25,7 +26,7 @@ public class FAWSQueue {
         sqs.sendMessage(url, message);
     }
 
-    public static List<Message> receiveMessages(String queueName) {
+    static List<Message> receiveMessages(String queueName) {
         String url = nameVsURL.get(queueName);
         AmazonSQS sqs = AwsUtil.getSQSClient();
         if(url == null) {
@@ -33,12 +34,19 @@ public class FAWSQueue {
             url = result.getQueueUrl();
             nameVsURL.put(queueName, url);
         }
-        ReceiveMessageRequest request = new ReceiveMessageRequest().withMaxNumberOfMessages(10).withVisibilityTimeout(180).withQueueUrl(url);
-        ReceiveMessageResult result = sqs.receiveMessage(request);
-        return result.getMessages();
+        List<Message> messageList = new ArrayList<>();
+        while (true) {
+            ReceiveMessageRequest request = new ReceiveMessageRequest().withMaxNumberOfMessages(10).withVisibilityTimeout(1800).withQueueUrl(url);
+            ReceiveMessageResult result = sqs.receiveMessage(request);
+            if(result.getMessages().size() == 0) {
+                break;
+            }
+            messageList.addAll(result.getMessages());
+        }
+        return messageList;
     }
 
-    public static void deleteMessage(String queueName, String receiptHandle) {
+    static void deleteMessage(String queueName, String receiptHandle) {
         String url = nameVsURL.get(queueName);
         AmazonSQS sqs = AwsUtil.getSQSClient();
         if(url == null) {

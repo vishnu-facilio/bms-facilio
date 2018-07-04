@@ -31,6 +31,10 @@ public class CalculateBenchmarkValueCommand implements Command {
 		}
 		List<BenchmarkUnit> units = (List<BenchmarkUnit>) context.get(FacilioConstants.ContextNames.BENCHMARK_UNITS);
 		DateAggregateOperator aggr = (DateAggregateOperator) context.get(FacilioConstants.ContextNames.BENCHMARK_DATE_AGGR);
+		Integer dateVal = (Integer) context.get(FacilioConstants.ContextNames.BENCHMARK_DATE_VAL);
+		if (dateVal == null) {
+			dateVal = 1;
+		}
 		long startTime = (long) context.get(FacilioConstants.ContextNames.START_TIME);
 		long spaceId = (long) context.get(FacilioConstants.ContextNames.SPACE_ID);
 		if (spaceId != -1) {
@@ -69,12 +73,12 @@ public class CalculateBenchmarkValueCommand implements Command {
 							units.add(unit);
 						}
 					}
-					context.put(FacilioConstants.ContextNames.BENCHMARK_VALUE, BenchmarkAPI.calculateBenchmarkValue(benchmark, units, startTime, aggr));
+					context.put(FacilioConstants.ContextNames.BENCHMARK_VALUE, BenchmarkAPI.calculateBenchmarkValue(benchmark, units, startTime, aggr, dateVal));
 				}
 				return false;
 			}
 		}
-		context.put(FacilioConstants.ContextNames.BENCHMARK_VALUE, BenchmarkAPI.calculateBenchmarkValue(id, units, startTime, aggr));
+		context.put(FacilioConstants.ContextNames.BENCHMARK_VALUE, BenchmarkAPI.calculateBenchmarkValue(id, units, startTime, aggr, dateVal));
 		return false;
 	}
 

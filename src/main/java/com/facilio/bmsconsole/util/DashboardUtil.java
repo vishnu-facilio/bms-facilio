@@ -2174,6 +2174,7 @@ public class DashboardUtil {
 		return meterIds;
 	}
 	public static final long ONE_MIN_MILLIS = 60000l;
+	public static final long ONE_DAY_MILLIS = 86400000l;
 	public static int predictDateOpperator(JSONArray dateFilter) {
 	
 	long diff = (Long) dateFilter.get(1) - (Long) dateFilter.get(0);
@@ -2192,7 +2193,13 @@ public class DashboardUtil {
 	}
 	
 }
-	
+	public static int getNoOfDaysBetweenDateRange(long startTime,long endTime) {
+		
+		if((endTime-startTime) > ONE_DAY_MILLIS) {
+			return (int) ((endTime-startTime)/ONE_DAY_MILLIS);
+		}
+		return -1;
+	}
 	public static Condition getDateCondition(ReportContext reportContext, JSONArray dateFilter, FacilioModule module) throws Exception {
 		Condition dateCondition = new Condition();
 		dateCondition.setField(reportContext.getDateFilter().getField());
