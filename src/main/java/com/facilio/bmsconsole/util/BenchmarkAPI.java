@@ -114,7 +114,8 @@ public class BenchmarkAPI {
 			for (Unit unit : benchmark.getUnits()) {
 				BenchmarkUnit bUnit = unitMap.get(unit);
 				if (bUnit != null) {
-					val = UnitsUtil.convert(val, bUnit.getFromUnitEnum(), bUnit.getToUnitEnum());
+					double convertedValue = UnitsUtil.convert(1, bUnit.getFromUnitEnum(), bUnit.getToUnitEnum()); 
+					val = val / convertedValue;
 					val = val * bUnit.getVal();
 				}
 			}
