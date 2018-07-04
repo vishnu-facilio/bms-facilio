@@ -94,37 +94,39 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 		WorkOrderContext workorder = template.getWorkorder();
 		Map<String, List<TaskContext>> taskMap = template.getTasks();
 		
-		List<Long> fieldIds = taskMap.entrySet().stream().map(Entry::getValue).flatMap(List::stream).map(TaskContext::getReadingFieldId).collect(Collectors.toList());
-		
-		StringJoiner j = new StringJoiner(",");
-		fieldIds.stream().forEach(f -> j.add(String.valueOf(f)));
-		
-		Criteria criteria = new Criteria();
-        criteria.addAndCondition(CriteriaAPI.getCondition("READING_FIELD_ID", "readingFieldId", j.toString(), NumberOperators.EQUALS));
-        criteria.addAndCondition(CriteriaAPI.getCondition("RULE_TYPE", "ruleType", String.valueOf(RuleType.VALIDATION_RULE.getIntVal()), NumberOperators.EQUALS));
-        List<ReadingRuleContext> readingRules = WorkflowRuleAPI.getReadingRules(criteria);
-        
-        if (readingRules != null && !readingRules.isEmpty()) {
-        	List<Long> workFlowIds = readingRules.stream().map(ReadingRuleContext::getWorkflowId).collect(Collectors.toList());
-            Map<Long, WorkflowContext> workflowMap = WorkflowUtil.getWorkflowsAsMap(workFlowIds, true);
-            Map<Long, List<ReadingRuleContext>> fieldVsRules = new HashMap<>();
-            
-        	for (ReadingRuleContext r:  readingRules) {
-        		if (r.getReadingFieldId() != -1) { 
-        			List<ReadingRuleContext> rules = fieldVsRules.get(r.getReadingFieldId());
-        			if (rules == null) {
-        				rules = new ArrayList<>();
-        				fieldVsRules.put(r.getReadingFieldId(), rules);
-        			}
-        			rules.add(r);
-        		}
-        		long workflowId = r.getWorkflowId();
-        		if (workflowId != -1) {
-        			r.setWorkflow(workflowMap.get(workflowId));
-        		}
-        	}
-        	taskMap.entrySet().stream().map(Entry::getValue).flatMap(List::stream).forEach(t -> t.setReadingRules(fieldVsRules.get(t.getReadingFieldId())));
-        }
+		if (taskMap != null && !taskMap.isEmpty()) {
+			List<Long> fieldIds = taskMap.entrySet().stream().map(Entry::getValue).flatMap(List::stream).map(TaskContext::getReadingFieldId).collect(Collectors.toList());
+			
+			StringJoiner j = new StringJoiner(",");
+			fieldIds.stream().forEach(f -> j.add(String.valueOf(f)));
+			
+			Criteria criteria = new Criteria();
+	        criteria.addAndCondition(CriteriaAPI.getCondition("READING_FIELD_ID", "readingFieldId", j.toString(), NumberOperators.EQUALS));
+	        criteria.addAndCondition(CriteriaAPI.getCondition("RULE_TYPE", "ruleType", String.valueOf(RuleType.VALIDATION_RULE.getIntVal()), NumberOperators.EQUALS));
+	        List<ReadingRuleContext> readingRules = WorkflowRuleAPI.getReadingRules(criteria);
+	        
+	        if (readingRules != null && !readingRules.isEmpty()) {
+	        	List<Long> workFlowIds = readingRules.stream().map(ReadingRuleContext::getWorkflowId).collect(Collectors.toList());
+	            Map<Long, WorkflowContext> workflowMap = WorkflowUtil.getWorkflowsAsMap(workFlowIds, true);
+	            Map<Long, List<ReadingRuleContext>> fieldVsRules = new HashMap<>();
+	            
+	        	for (ReadingRuleContext r:  readingRules) {
+	        		if (r.getReadingFieldId() != -1) { 
+	        			List<ReadingRuleContext> rules = fieldVsRules.get(r.getReadingFieldId());
+	        			if (rules == null) {
+	        				rules = new ArrayList<>();
+	        				fieldVsRules.put(r.getReadingFieldId(), rules);
+	        			}
+	        			rules.add(r);
+	        		}
+	        		long workflowId = r.getWorkflowId();
+	        		if (workflowId != -1) {
+	        			r.setWorkflow(workflowMap.get(workflowId));
+	        		}
+	        	}
+	        	taskMap.entrySet().stream().map(Entry::getValue).flatMap(List::stream).forEach(t -> t.setReadingRules(fieldVsRules.get(t.getReadingFieldId())));
+	        }
+		}
         
 		TicketAPI.loadTicketLookups(Arrays.asList(workorder));
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
