@@ -334,10 +334,13 @@ public class WorkflowUtil {
 		
 		List<WorkflowFieldContext> workflowFields = getWorkflowFields(workflowContext);
 		
-		for(WorkflowFieldContext workflowField :workflowFields) {
-			props = FieldUtil.getAsProperties(workflowField);
-			insertBuilder.addRecord(props);
+		if (workflowFields != null && !workflowFields.isEmpty()) {
+			for(WorkflowFieldContext workflowField :workflowFields) {
+				props = FieldUtil.getAsProperties(workflowField);
+				insertBuilder.addRecord(props);
+			}
 		}
+
 		insertBuilder.save();
 		return workflowContext.getId();
 	}
