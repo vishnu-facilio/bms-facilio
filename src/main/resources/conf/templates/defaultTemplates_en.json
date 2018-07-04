@@ -560,11 +560,11 @@
 		"sender": "noreply@${org.domain}.facilio.com",
 		"subject": "Asset Expired",
 		"to": "${org.superAdmin.email:-}",
-		"message": "${asset.name} has expired \n\nRegards,\nTeam Facilio."
+		"message": "${asset.names} has expired \n\nRegards,\nTeam Facilio."
 	},
 	"67": {
 		"name": "ASSET_EXPIRE_SMS",
 		"to": "${org.superAdmin.phone:-}",
-		"message": "${asset.name} has expired \n\nRegards,\nTeam Facilio."
+		"message": "${asset.names} has expired \n\nRegards,\nTeam Facilio."
 	}
 }

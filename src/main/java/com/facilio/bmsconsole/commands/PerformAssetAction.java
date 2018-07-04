@@ -1,11 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
@@ -45,15 +47,24 @@ public class PerformAssetAction implements Command {
 			List<AssetContext> assets = selectBuilder.get();
 			
 			User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getId());
+			List<String> assetNameList = new ArrayList<>();
 			for(AssetContext asset :assets) {
+				assetNameList.add(asset.getName());
+				
+			}
+			if(!assetNameList.isEmpty()) {
+				
+				String assetNames = StringUtils.join(assetNameList,",");
+				
 				Map<String, Object> placeHolders = new HashMap<>();
-				CommonCommandUtil.appendModuleNameInKey(FacilioConstants.ContextNames.ASSET, FacilioConstants.ContextNames.ASSET, FieldUtil.getAsProperties(asset), placeHolders);
 				CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeHolders);
-				placeHolders.put("org.superAdmin.email", superAdmin.getEmail());
+				placeHolders.put("org.superAdmin.email", "krishnan.e@facilio.com");
 				placeHolders.put("org.superAdmin.phone", superAdmin.getPhone());
+				placeHolders.put("asset.names", assetNames);
+				
 				for(ActionContext action :workflowRule.getActions()) {
 					
-					action.executeAction(placeHolders, context, workflowRule, asset);
+					action.executeAction(placeHolders, context, workflowRule, null);
 				}
 				
 			}
