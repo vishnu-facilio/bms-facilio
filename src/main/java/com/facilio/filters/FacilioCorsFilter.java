@@ -1,6 +1,8 @@
 package com.facilio.filters;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -14,6 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.facilio.aws.util.AwsUtil;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class FacilioCorsFilter implements Filter {
 
@@ -42,6 +46,9 @@ public class FacilioCorsFilter implements Filter {
 
     private static String allowedHeaderString = "";
     private static String exposedHeaderString = "";
+    private static String ip = "";
+
+    private static final Logger LOGGER = LogManager.getLogger(FacilioCorsFilter.class.getName());
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -60,6 +67,15 @@ public class FacilioCorsFilter implements Filter {
         exposedHeaderString = filterConfig.getInitParameter("cors.exposed.headers");
         if(exposedHeaderString == null){
             exposedHeaderString = "";
+        }
+        setServerIp();
+    }
+
+    private void setServerIp() {
+        try {
+            ip = InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            LOGGER.info("Unable to set IP ");
         }
     }
 
@@ -81,10 +97,10 @@ public class FacilioCorsFilter implements Filter {
         if(customdomains==null) {
         	customdomains = (HashMap)(request.getServletContext()).getAttribute("customdomains");
         }
-
+        response.addHeader("internal", ip);
         String forwardedProtocol = request.getHeader("X-Forwarded-Proto");
         if(forwardedProtocol != null) {
-            if ("stage".equals(AwsUtil.getConfig("environment")) && "http".equalsIgnoreCase(forwardedProtocol)){
+            if ("http".equalsIgnoreCase(forwardedProtocol)){
                 response.sendRedirect("https://"+request.getServerName()+request.getRequestURI());
                 return;
             }
@@ -104,7 +120,6 @@ public class FacilioCorsFilter implements Filter {
                 handlePreFlight(request, response);
                 break;
         }
-
 
     }
 
