@@ -286,6 +286,25 @@ public class JobStore {
 		return jc;
 	}
 	
+	public static void deleteJob(long jobId) throws SQLException {
+		String deleteSql = "DELETE FROM Jobs WHERE JOBID = ?";
+		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = conn.prepareStatement(deleteSql)) {
+			pstmt.setLong(1, jobId);
+			if(pstmt.executeUpdate() < 1) {
+				System.out.println("Deletion failed with Job ID : "+jobId);
+			}
+			else {
+				System.out.println("Successfully deleted job with Job ID : "+jobId);
+			}
+			
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			log.info("Exception occurred ", e);
+			throw e;
+		}
+	}
+	
 	public static void deleteJob(long jobId, String jobName) throws SQLException {
 		String deleteSql = "DELETE FROM Jobs WHERE JOBID = ? AND JOBNAME = ?";
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = conn.prepareStatement(deleteSql)) {

@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.BusinessHoursAPI;
+import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 
@@ -37,6 +38,8 @@ public class UpdateShiftCommand implements Command {
 		builder.update(prop);
 		
 		BusinessHoursAPI.deleteBusinessHours(oldId);
+		
+		ShiftAPI.scheduleJobs(shift.getId(), shift.getDays());
 		return false;
 	}
 

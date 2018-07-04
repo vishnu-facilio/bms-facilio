@@ -47,6 +47,10 @@ public class BusinessHourContext {
 		return null;
 	}
 	
+	public DayOfWeek getDayOfWeekEnum() {
+		return dayOfWeek;
+	}
+	
 	private LocalTime startTime;
 	public LocalTime getStartTimeAsLocalTime() {
 		return startTime;
