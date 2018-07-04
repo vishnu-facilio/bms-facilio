@@ -34,7 +34,7 @@ public class FieldFactory {
 	public static Pair<String, Boolean> getSortableFieldName(String moduleName) {
 		return lookupModuleVsSortFieldName.get(moduleName);
 	}
-	
+
 	public static class Fields {
 		public static List<String> alarmsFieldsInclude = new ArrayList<String>();
 		static {
@@ -350,6 +350,7 @@ public class FieldFactory {
 	public static FacilioField getOrgIdField(FacilioModule module) {
 		FacilioField field = new FacilioField();
 		field.setName("orgId");
+		field.setDisplayName("Org Id");
 		field.setDataType(FieldType.NUMBER);
 		field.setColumnName("ORGID");
 		if (module != null) {
@@ -407,6 +408,7 @@ public class FieldFactory {
 		FacilioField field = new FacilioField();
 		field.setName("id");
 		field.setDataType(FieldType.NUMBER);
+		field.setDisplayName("Id");
 		field.setColumnName("ID");
 		if (module != null) {
 			field.setModule(module);

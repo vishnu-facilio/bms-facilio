@@ -104,7 +104,9 @@ public class GetAllFieldsCommand implements Command {
 					if(FieldFactory.Fields.alarmsFieldsInclude.contains(fieldObject.getName())) {
 						fields.add(fieldObject);
 					}
-				}		
+				} else {
+					fields = allFields;
+				}
 			}
 		} else {
 			fields = allFields;
