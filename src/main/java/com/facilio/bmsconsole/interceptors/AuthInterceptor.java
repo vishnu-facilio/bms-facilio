@@ -1,8 +1,6 @@
 
 package com.facilio.bmsconsole.interceptors;
 
-import java.awt.List;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar ;
 import java.util.Locale;
@@ -15,7 +13,6 @@ import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Role;
-import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.fw.auth.CognitoUtil.CognitoUser;
@@ -93,29 +90,29 @@ public class AuthInterceptor extends AbstractInterceptor {
 				}
 			}
 			
-		String email = AwsUtil.getConfig("admin.console");
-		java.util.List<String> list = null;
-		list =  Arrays.asList(email.split(" , "));
-		User cu = currentAccount.getUser();
-		String useremail = cu.getEmail();
-		StringBuffer url = request.getRequestURL();
-		String data = "/app/admin";
-		if ( url.indexOf(data) != -1) {
-		if (list.contains(useremail)) {
-			logger.log(Level.SEVERE, "Admin console");
-		}
-		else {
-			logger.log(Level.SEVERE, "you are not allowed to access this page from");
-			return Action.LOGIN;
-		}
-		}
+			if (request.getRequestURL().indexOf("/app/admin") != -1) {
+				
+				String email = AwsUtil.getConfig("admin.console");
+				if (email != null && !"".equals(email.trim())) {
+					
+					java.util.List<String> list = Arrays.asList(email.split(","));
+					String useremail = currentAccount.getUser().getEmail();
+					
+					if (list.contains(useremail)) {
+						logger.log(Level.SEVERE, "Admin console access");
+					}
+					else {
+						logger.log(Level.SEVERE, "you are not allowed to access this page from");
+						return Action.LOGIN;
+					}
+				}
+			}
 		}
 		catch (Exception e) {
 			logger.log(Level.SEVERE, "error in auth interceptor", e);
 			return Action.LOGIN;
 		}
 		
-
 		/* let us call action or next interceptor */
 		String result = arg0.invoke();
 
