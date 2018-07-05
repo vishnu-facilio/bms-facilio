@@ -1,10 +1,7 @@
 
 package com.facilio.bmsconsole.interceptors;
 
-import java.util.Arrays;
-import java.util.Calendar ;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,6 +22,23 @@ import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 
 public class AuthInterceptor extends AbstractInterceptor {
+
+	private static final HashSet<String> ADMIN_IDS = new HashSet<>();
+
+	static {
+		loadIds();
+	}
+
+	private static void loadIds() {
+		String email = AwsUtil.getConfig("admin.console");
+		if (email == null || "".equals(email.trim())) {
+			return;
+		}
+		String[] list = email.split(",");
+		for(String id : list) {
+			ADMIN_IDS.add(id.trim());
+		}
+	}
 
 	@Override
 	public void init() {
@@ -70,8 +84,6 @@ public class AuthInterceptor extends AbstractInterceptor {
 				} else {
 					localeObj = new Locale(lang);
 				}
-				
-				logger.fine("### LOCALE: " + localeObj);
 
 				String timezone = currentAccount.getUser().getTimezone();
 				TimeZone timezoneObj = null;
@@ -83,7 +95,6 @@ public class AuthInterceptor extends AbstractInterceptor {
 				}
 				ActionContext.getContext().getSession().put("TIMEZONE", timezoneObj);
 			} else {
-			//	System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"+AccountUtil.getCurrentAccount().getOrg().getDomain());
 				String authRequired = ActionContext.getContext().getParameters().get("auth").getValue();
 				if (authRequired == null || "".equalsIgnoreCase(authRequired.trim()) || "true".equalsIgnoreCase(authRequired)) {
 					return Action.LOGIN;
@@ -91,17 +102,9 @@ public class AuthInterceptor extends AbstractInterceptor {
 			}
 			
 			if (request.getRequestURL().indexOf("/app/admin") != -1) {
-				
-				String email = AwsUtil.getConfig("admin.console");
-				if (email != null && !"".equals(email.trim())) {
-					
-					java.util.List<String> list = Arrays.asList(email.split(","));
+				if(currentAccount != null) {
 					String useremail = currentAccount.getUser().getEmail();
-					
-					if (list.contains(useremail)) {
-						logger.log(Level.SEVERE, "Admin console access");
-					}
-					else {
+					if ( ! ADMIN_IDS.contains(useremail)) {
 						logger.log(Level.SEVERE, "you are not allowed to access this page from");
 						return Action.LOGIN;
 					}
