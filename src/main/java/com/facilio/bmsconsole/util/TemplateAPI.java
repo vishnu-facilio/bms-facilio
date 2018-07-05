@@ -640,13 +640,13 @@ public class TemplateAPI {
 		
 		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
 		
-//		try(InputStream body = FileStoreFactory.getInstance().getFileStore(superAdmin.getId()).readFile(template.getBodyId())) {
-//			template.setMessage(IOUtils.toString(body));
-//		}
-//		catch(Exception e) {
-//			log.info("Exception occurred ", e);
-//			throw e;
-//		}
+		try(InputStream body = FileStoreFactory.getInstance().getFileStore(superAdmin.getId()).readFile(template.getBodyId())) {
+			template.setMessage(IOUtils.toString(body));
+		}
+		catch(Exception e) {
+			log.info("Exception occurred ", e);
+			throw e;
+		}
 		
 		return template;
 	}

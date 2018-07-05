@@ -19,7 +19,7 @@ public class DeleterOldRuleActionsCommand implements Command {
 		List<ActionContext> actions = (List<ActionContext>) context.get(FacilioConstants.ContextNames.WORKFLOW_ACTION);
 		WorkflowRuleContext rule = (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
 		
-		if (actions != null && !actions.isEmpty()) {
+		if (actions != null) {
 			ActionAPI.deleteAllActionsFromWorkflowRules(Collections.singletonList(rule.getId()));
 		}
 		return false;

@@ -35,6 +35,31 @@ public class FieldFactory {
 		return lookupModuleVsSortFieldName.get(moduleName);
 	}
 
+	public static class Fields {
+		public static List<String> alarmsFieldsInclude = new ArrayList<String>();
+		static {
+			alarmsFieldsInclude.add("isAcknowledged");
+			alarmsFieldsInclude.add("serialNumber");
+			alarmsFieldsInclude.add("clearedBy");
+			alarmsFieldsInclude.add("status");
+			alarmsFieldsInclude.add("type");
+			alarmsFieldsInclude.add("category");
+			alarmsFieldsInclude.add("resource");
+			alarmsFieldsInclude.add("severity");
+			alarmsFieldsInclude.add("alarmClass");
+			alarmsFieldsInclude.add("alarmPriority");
+			alarmsFieldsInclude.add("subject");
+			alarmsFieldsInclude.add("previousSeverity");
+			alarmsFieldsInclude.add("createdTime");
+			alarmsFieldsInclude.add("entity");
+			alarmsFieldsInclude.add("noOfAttachments");
+		}
+		public static List<String> energyFieldsInclude = new ArrayList<String>();
+		static {
+			energyFieldsInclude.add("id");
+		}
+	}
+
 	public static List<FacilioField> getAssetCategoryReadingRelFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getAssetCategoryReadingRelModule();
@@ -325,6 +350,7 @@ public class FieldFactory {
 	public static FacilioField getOrgIdField(FacilioModule module) {
 		FacilioField field = new FacilioField();
 		field.setName("orgId");
+		field.setDisplayName("Org Id");
 		field.setDataType(FieldType.NUMBER);
 		field.setColumnName("ORGID");
 		if (module != null) {
@@ -382,6 +408,7 @@ public class FieldFactory {
 		FacilioField field = new FacilioField();
 		field.setName("id");
 		field.setDataType(FieldType.NUMBER);
+		field.setDisplayName("Id");
 		field.setColumnName("ID");
 		if (module != null) {
 			field.setModule(module);

@@ -217,6 +217,7 @@ public class EventConstants {
 			FacilioField source = new FacilioField();
 			source.setName("entity");
 			source.setDataType(FieldType.STRING);
+			source.setDisplayName("Entity");
 			source.setDisplayType(FacilioField.FieldDisplayType.TEXTBOX);
 			source.setColumnName("ENTITY");
 			source.setModule(module);
@@ -225,6 +226,7 @@ public class EventConstants {
 			FacilioField node = new FacilioField();
 			node.setName("source");
 			node.setDataType(FieldType.STRING);
+			node.setDisplayName("Source");
 			node.setDisplayType(FacilioField.FieldDisplayType.TEXTBOX);
 			node.setColumnName("SOURCE");
 			node.setModule(module);
@@ -232,6 +234,7 @@ public class EventConstants {
 			
 			FacilioField resourceId = new FacilioField();
 			resourceId.setName("resourceId");
+			resourceId.setDisplayName("Resource Id");
 			resourceId.setDataType(FieldType.NUMBER);
 			resourceId.setDisplayType(FacilioField.FieldDisplayType.NUMBER);
 			resourceId.setColumnName("RESOURCE_ID");
@@ -240,6 +243,7 @@ public class EventConstants {
 			
 			FacilioField eventType = new FacilioField();
 			eventType.setName("eventMessage");
+			eventType.setDisplayName("Event Message");
 			eventType.setDataType(FieldType.STRING);
 			eventType.setDisplayType(FacilioField.FieldDisplayType.TEXTBOX);
 			eventType.setColumnName("EVENT_MESSAGE");
@@ -248,6 +252,7 @@ public class EventConstants {
 			
 			FacilioField messageKey = new FacilioField();
 			messageKey.setName("messageKey");
+			messageKey.setDisplayName("Message Key");
 			messageKey.setDataType(FieldType.STRING);
 			messageKey.setDisplayType(FacilioField.FieldDisplayType.TEXTBOX);
 			messageKey.setColumnName("MESSAGE_KEY");
@@ -256,6 +261,7 @@ public class EventConstants {
 			
 			FacilioField severity = new FacilioField();
 			severity.setName("severity");
+			severity.setDisplayName("Severity");
 			severity.setDataType(FieldType.STRING);
 			severity.setDisplayType(FacilioField.FieldDisplayType.TEXTBOX);
 			severity.setColumnName("SEVERITY");
@@ -264,6 +270,7 @@ public class EventConstants {
 			
 			FacilioField createdTime = new FacilioField();
 			createdTime.setName("createdTime");
+			createdTime.setDisplayName("Created Time");
 			createdTime.setDataType(FieldType.DATE_TIME);
 			createdTime.setDisplayType(FacilioField.FieldDisplayType.DATETIME);
 			createdTime.setColumnName("CREATED_TIME");
@@ -272,6 +279,7 @@ public class EventConstants {
 			
 			FacilioField eventState = new FacilioField();
 			eventState.setName("eventState");
+			eventState.setDisplayName("Event State");
 			eventState.setDataType(FieldType.NUMBER);
 			eventState.setDisplayType(FacilioField.FieldDisplayType.NUMBER);
 			eventState.setColumnName("EVENT_STATE");
@@ -280,6 +288,7 @@ public class EventConstants {
 			
 			FacilioField internalState = new FacilioField();
 			internalState.setName("internalState");
+			internalState.setDisplayName("Internal State");
 			internalState.setDataType(FieldType.NUMBER);
 			internalState.setDisplayType(FacilioField.FieldDisplayType.NUMBER);
 			internalState.setColumnName("INTERNAL_STATE");
@@ -288,6 +297,7 @@ public class EventConstants {
 			
 			FacilioField eventRuleId = new FacilioField();
 			eventRuleId.setName("eventRuleId");
+			eventRuleId.setDisplayName("Event Rule Id");
 			eventRuleId.setDataType(FieldType.NUMBER);
 			eventRuleId.setDisplayType(FacilioField.FieldDisplayType.NUMBER);
 			eventRuleId.setColumnName("EVENT_RULE_ID");
@@ -296,6 +306,7 @@ public class EventConstants {
 			
 			FacilioField alarmId = new FacilioField();
 			alarmId.setName("alarmId");
+			alarmId.setDisplayName("Alarm Id");
 			alarmId.setDataType(FieldType.NUMBER);
 			alarmId.setDisplayType(FacilioField.FieldDisplayType.NUMBER);
 			alarmId.setColumnName("ALARM_ID");
@@ -304,6 +315,7 @@ public class EventConstants {
 			
 			FacilioField priority = new FacilioField();
 			priority.setName("priority");
+			priority.setDisplayName("Priority");
 			priority.setDataType(FieldType.STRING);
 			priority.setDisplayType(FacilioField.FieldDisplayType.TEXTBOX);
 			priority.setColumnName("PRIORITY");
@@ -313,6 +325,7 @@ public class EventConstants {
 			FacilioField alarmClass = new FacilioField();
 			alarmClass.setName("alarmClass");
 			alarmClass.setDataType(FieldType.STRING);
+			alarmClass.setDisplayName("Alarm Class");
 			alarmClass.setDisplayType(FacilioField.FieldDisplayType.TEXTBOX);
 			alarmClass.setColumnName("ALARM_CLASS");
 			alarmClass.setModule(module);
@@ -321,6 +334,7 @@ public class EventConstants {
 			FacilioField state = new FacilioField();
 			state.setName("state");
 			state.setDataType(FieldType.STRING);
+			state.setDisplayName("State");
 			state.setDisplayType(FacilioField.FieldDisplayType.TEXTBOX);
 			state.setColumnName("STATE");
 			state.setModule(module);
@@ -329,6 +343,7 @@ public class EventConstants {
 			FacilioField description = new FacilioField();
 			description.setName("description");
 			description.setDataType(FieldType.STRING);
+			description.setDisplayName("Description");
 			description.setDisplayType(FacilioField.FieldDisplayType.TEXTBOX);
 			description.setColumnName("DESCRIPTION");
 			description.setModule(module);
@@ -336,6 +351,7 @@ public class EventConstants {
 			
 			FacilioField additionalInfo = new FacilioField();
 			additionalInfo.setName("additionalInfoJsonStr");
+			additionalInfo.setDisplayName("Additional Info");
 			additionalInfo.setDataType(FieldType.STRING);
 			additionalInfo.setDisplayType(FacilioField.FieldDisplayType.TEXTBOX);
 			additionalInfo.setColumnName("ADDITIONAL_INFO");

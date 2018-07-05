@@ -3005,15 +3005,16 @@ public class DashboardAction extends ActionSupport {
 		if(dateCondition != null) {
 			if(dateCondition.getValue() != null && dateCondition.getValue().contains(",")) {
 				String startTimeString  = dateCondition.getValue().substring(0, dateCondition.getValue().indexOf(",")).trim();
+				String endTimeString  = dateCondition.getValue().substring( dateCondition.getValue().indexOf(",")+1,dateCondition.getValue().length()).trim();
 				this.startTime = Long.parseLong(startTimeString);
-				
+				this.endTime = Long.parseLong(endTimeString);
 			}
 			else if(dateCondition.getOperator() != null && dateCondition.getOperator() instanceof DateOperators) {
 				DateOperators dateOpp = (DateOperators)dateCondition.getOperator();
 				DateRange range = dateOpp.getRange(dateCondition.getValue());
 				this.startTime = range.getStartTime();
+				this.endTime = range.getEndTime();
 			}
-			
 		}
 		List<String> meterIdsUsed = new ArrayList<>();
 		if(criteriaId != -1) {
@@ -3585,6 +3586,12 @@ public class DashboardAction extends ActionSupport {
 			if(variance != null && variance.containsKey("space")) {
 				spaceId = (Long) variance.get("space");
 			}
+			if(dateAggr == null && startTime > 0 && endTime > 0) {
+				LOGGER.log(Level.SEVERE, "DATE AGGR NULL");
+				dateAggr = DateAggregateOperator.FULLDATE;
+				noOfDaysInReport = DashboardUtil.getNoOfDaysBetweenDateRange(startTime, endTime);
+				LOGGER.log(Level.SEVERE, "DATE AGGR NULL -- "+noOfDaysInReport);
+			}
 			if(dateAggr != null) {
 				if(!(dateAggr.equals(DateAggregateOperator.DATEANDTIME) || dateAggr.equals(DateAggregateOperator.HOURSOFDAY) || dateAggr.equals(DateAggregateOperator.HOURSOFDAYONLY))) {
 					for(ReportBenchmarkRelContext reportBenchmarkRel : reportContext.getReportBenchmarkRelContexts()) {
@@ -3600,7 +3607,7 @@ public class DashboardAction extends ActionSupport {
 						calculateBenchmarkValue();
 						BenchmarkContext benchmark = BenchmarkAPI.getBenchmark(benchmarkId);
 						benchmark.setValue(value);
-						String unit = "/"+Unit.SQUARE_FOOT.getSymbol()+"/"+DashboardUtil.getStringFromDateAggregator(dateAggr);
+						String unit = "/"+Unit.SQUARE_FOOT.getSymbol();
 						benchmark.setDisplayUnit(unit);
 						addBenchmarks(benchmark);
 						
@@ -4638,6 +4645,9 @@ public class DashboardAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.SPACE_ID, spaceId);
 		context.put(FacilioConstants.ContextNames.BENCHMARK_UNITS, units);
 		context.put(FacilioConstants.ContextNames.BENCHMARK_DATE_AGGR, dateAggr);
+		if(noOfDaysInReport > 0) {
+			context.put(FacilioConstants.ContextNames.BENCHMARK_DATE_VAL, noOfDaysInReport);
+		}
 		context.put(FacilioConstants.ContextNames.START_TIME, startTime);
 		
 		Chain calculateBenchmarkChain = FacilioChainFactory.calculateBenchmarkValueChain();
@@ -4697,7 +4707,14 @@ public class DashboardAction extends ActionSupport {
 	public void setDateAggr(int dateAggr) {
 		this.dateAggr = (DateAggregateOperator) AggregateOperator.getAggregateOperator(dateAggr);
 	}
+	private int noOfDaysInReport;
 	
+	public int getNoOfDaysInReport() {
+		return noOfDaysInReport;
+	}
+	public void setNoOfDaysInReport(int noOfDaysInReport) {
+		this.noOfDaysInReport = noOfDaysInReport;
+	}
 	private List<BenchmarkUnit> units;
 	public List<BenchmarkUnit> getUnits() {
 		return units;

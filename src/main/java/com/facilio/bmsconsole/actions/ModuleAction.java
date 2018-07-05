@@ -132,83 +132,24 @@ public class ModuleAction extends ActionSupport {
 	public String metadata() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
-
 		List<FacilioField> fields = new ArrayList();
-		if(resourceType!= null && getCategoryId() != -1)
-		{
-			FacilioModule module = null;
-			if(resourceType.equalsIgnoreCase("asset"))
-			{
-				module = ModuleFactory.getAssetCategoryReadingRelModule();
-			}
-			else
-			{
-				module = ModuleFactory.getSpaceCategoryReadingRelModule();
-			}
-			context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, module);
-			context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, getCategoryId());
-			context.put(FacilioConstants.ContextNames.LIMIT_VALUE, -1);
-//			context.put(FacilioConstants.ContextNames.PARENT_ID, getAssetId());
-			
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			
-			List<FacilioModule> moduleList = new ArrayList<>();
-			moduleList.add(modBean.getModule(moduleName));
-			
-			context.put(FacilioConstants.ContextNames.MODULE_LIST, moduleList);
-			
-			Chain addCurrentOccupancy = FacilioChainFactory.getCategoryReadingsChain();
-			addCurrentOccupancy.execute(context);
-			
-			List<FacilioModule> readingModules = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
-			for(FacilioModule reading : readingModules) {
-				List<FacilioField> readingFields = reading.getFields();
-				fields.addAll(readingFields);
-			}
-			
-		}
-		else
-		{
-			Chain getFieldsChain = FacilioChainFactory.getGetFieldsChain();
-			getFieldsChain.execute(context);
-		
-			fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-			
-		}
-		
-		String displayName = (String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME);
-		if(displayName == null)
-		{
-			displayName = (String)context.get(FacilioConstants.ContextNames.MODULE_NAME);
-		}
-
-		JSONObject operators = new JSONObject();
-		for (FieldType ftype : FieldType.values()) {
-			operators.put(ftype.name(), ftype.getOperators());
-		}
-		
-		JSONObject reportOperators = new JSONObject();
-		reportOperators.put("DateAggregateOperator", FormulaContext.DateAggregateOperator.values());
-		reportOperators.put("NumberAggregateOperator", FormulaContext.NumberAggregateOperator.values());
-		reportOperators.put("StringAggregateOperator", FormulaContext.StringAggregateOperator.values());
-		reportOperators.put("SpaceAggregateOperator", FormulaContext.SpaceAggregateOperator.values());
-		reportOperators.put("EnergyPurposeAggregateOperator", FormulaContext.EnergyPurposeAggregateOperator.values());
-		
-		long orgId = AccountUtil.getCurrentOrg().getOrgId();
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", orgId);
-		FacilioModule mod = modBean.getModule(getModuleName());
-		
-		List<WorkflowEventContext> workflowEvents = WorkflowRuleAPI.getWorkflowEvents(orgId, mod.getModuleId());
-		
-		JSONObject meta = new JSONObject();
-		meta.put("name", getModuleName());
-		meta.put("displayName", displayName);
-		meta.put("fields", fields);
-		meta.put("operators", operators);
-		meta.put("reportOperators", reportOperators);
-		meta.put("workflowEvents", workflowEvents);
-		setMeta(meta);
-		
+		context.put(FacilioConstants.ContextNames.RESOURCE_TYPE, getResourceType());
+		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, getCategoryId());
+		Chain metaField = FacilioChainFactory.getAllFieldsChain();
+		metaField.execute(context);
+		setMeta((JSONObject) context.get(FacilioConstants.ContextNames.META));
+		return SUCCESS;
+	}
+	public String metaFilterFields() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
+		List<FacilioField> fields = new ArrayList();
+		context.put(FacilioConstants.ContextNames.RESOURCE_TYPE, getResourceType());
+		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, getCategoryId());
+		context.put(FacilioConstants.ContextNames.IS_FILTER, true);
+		Chain metaField = FacilioChainFactory.getAllFieldsChain();
+		metaField.execute(context);
+		setMeta((JSONObject) context.get(FacilioConstants.ContextNames.META));
 		return SUCCESS;
 	}
 	

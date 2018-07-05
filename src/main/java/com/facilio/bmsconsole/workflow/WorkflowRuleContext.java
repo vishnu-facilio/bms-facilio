@@ -127,7 +127,6 @@ public class WorkflowRuleContext {
 	public void setActions(List<ActionContext> actions) {
 		this.actions = actions;
 	}
-
 	private long parentRuleId = -1;
 	public long getParentRuleId() {
 		return parentRuleId;
@@ -264,7 +263,15 @@ public class WorkflowRuleContext {
 				// TODO Auto-generated method stub
 				return false;
 			}
-		};
+		},
+		ASSET_ACTION_RULE {		//id - 10
+			@Override	
+			public boolean stopFurtherRuleExecution() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+		},
+		;
 		
 		public int getIntVal() {
 			return ordinal()+1;

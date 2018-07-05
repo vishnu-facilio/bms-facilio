@@ -177,6 +177,10 @@ public class AlarmAction extends ActionSupport {
  		
  		return context;
 	}
+	
+	public String alarmsCount() throws Exception {
+		return alarmList();
+	}
 
 	public String alarmList() throws Exception {
  		FacilioContext context = constructChainContext();

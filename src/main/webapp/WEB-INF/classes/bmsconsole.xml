@@ -1888,6 +1888,13 @@
 				<param name="includeProperties">meta.*</param>
 			</result>
 		</action>
+		<action name="metafields" class="com.facilio.bmsconsole.actions.ModuleAction"
+			method="metaFilterFields">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">meta.*</param>
+			</result>
+		</action>
 		
 		<action name="fields" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="fields">
@@ -2111,6 +2118,14 @@
 			</result>
 		</action>
 		
+		<action name="workOrderCount" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="workOrderCount">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">woCount</param>
+			</result>
+		</action>
 		<action name="activities" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="getActivitiesList">
 			<param name="moduleName">workorder</param>
@@ -2184,6 +2199,15 @@
 				<param name="root">pms</param>
 			</result>
 		</action>
+		
+		<action name="pmCount" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="pmCount">
+			<param name="moduleName">planned</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">woCount</param>
+			</result>
+		</action>
 	</package>
 
 	<package name="workOrderRequestApi" namespace="/api/workorderrequest"
@@ -2251,6 +2275,16 @@
 				<param name="includeProperties">workOrderRequests,workOrderRequests\[\d+\],workOrderRequests\[\d+\].*</param>
 			</result>
 		</action>
+		
+		<action name="workrequestCount" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction"
+			method="workRequestCount">
+			<param name="moduleName">workorderrequest</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">woCount</param>
+			</result>
+		</action>
+		
 	</package>
 
 	<package name="workOrderRequestSummary" namespace="/app/workorderrequest/summary"

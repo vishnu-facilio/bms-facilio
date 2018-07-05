@@ -569,6 +569,9 @@ public class WorkOrderAction extends ActionSupport {
 		return SUCCESS;
 	}
 
+	public String pmCount () throws Exception {
+		return plannedMaintenanceList();
+	}
 	public String plannedMaintenanceList() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
@@ -820,7 +823,8 @@ public class WorkOrderAction extends ActionSupport {
 	}
 
 	public String workOrderCount () throws Exception {
-		return SUCCESS;	
+		System.out.println("View Name :  clount " + getViewName());
+		return workOrderList();	
 	}
 
 	public String workOrderList() throws Exception {
@@ -871,7 +875,7 @@ public class WorkOrderAction extends ActionSupport {
 		if (getCount() != null) {
 //			setWorkorder((WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER_LIST));
 			setWoCount((long) context.get(FacilioConstants.ContextNames.WORK_ORDER_COUNT));
-			System.out.println("data" + getWoCount());
+			System.out.println("data" + getWoCount() + getViewName());
 		}
 		else {
 			setWorkOrders((List<WorkOrderContext>) context.get(FacilioConstants.ContextNames.WORK_ORDER_LIST));

@@ -60,7 +60,13 @@ public class FacilioChainFactory {
 		return c;
 	}
 
-	
+	public static Chain getAssetActionChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new PerformAssetAction());
+		addCleanUpCommand(c);
+		return c;
+		
+	}
 	public static Chain getPickListChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new LoadMainFieldCommand());
@@ -1871,6 +1877,13 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getAllFieldsChain () {
+		Chain c = new TransactionChain();
+		addCleanUpCommand(c);
+		c.addCommand(new GetAllFieldsCommand());
+		return c;
+	}
+	
 	public static Chain getAllCategoryReadingsChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new GetAllCategoryReadingsCommand());
@@ -1887,7 +1900,13 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	
+	public static Chain addResourceRDMChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new GetReadingFieldsCommand());
+		c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
 	
 	public static Chain getAddOrUpdateReadingValuesChain() {
 		Chain c = new ChainBase();

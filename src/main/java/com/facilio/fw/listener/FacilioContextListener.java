@@ -4,12 +4,16 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.Scanner;
 import java.util.Timer;
 
 import javax.servlet.ServletContextEvent;
@@ -153,6 +157,9 @@ public class FacilioContextListener implements ServletContextListener {
 
 PortalAuthInterceptor.PORTALDOMAIN = com.facilio.aws.util.AwsUtil.getConfig("portal.domain");// event.getServletContext().getInitParameter("SERVICEPORTAL_DOMAIN");
 			System.out.println("Loading the domain name as ######"+PortalAuthInterceptor.PORTALDOMAIN );
+			
+			
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			log.info("Exception occurred ", e);
@@ -234,6 +241,34 @@ PortalAuthInterceptor.PORTALDOMAIN = com.facilio.aws.util.AwsUtil.getConfig("por
 			log.info("Exception occurred ", e);
 		} 
 		return null;
+	}
+	public static String INSTANCEID = null;
+	private void initLostHostName()
+	{
+	
+		String instanceid = null;
+		try {
+			URL url = new URL("http://169.254.169.254/latest/meta-data/instance-id");
+			URLConnection conn = url.openConnection();
+			Scanner s = new Scanner(conn.getInputStream());
+			if (s.hasNext()) {
+			  //System.out.println(s.next());
+			  instanceid = s.next();
+			}
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			log.fatal("Exception occurred ", e);
+			
+			} catch (IOException e) {
+			// TODO Auto-generated catch block
+			log.fatal("Exception occurred ", e);
+			} 
+		catch (Exception e) {
+			// TODO Auto-generated catch block
+			log.fatal("Exception occurred ", e);
+			} 
+		INSTANCEID = instanceid;
+		//return instanceid;
 	}
 
 }

@@ -1,5 +1,6 @@
 package com.facilio.events.commands;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
@@ -129,7 +131,7 @@ public class EventToAlarmCommand implements Command {
 		List<FacilioField> alarmFields = modBean.getAllFields(FacilioConstants.ContextNames.ALARM);
 		
 		JSONObject alarm = new JSONObject();
-		JSONArray ids = new JSONArray();
+		List<Long> ids = new ArrayList<>();
 		ids.add(alarmId);
 		alarm.put("severityString", event.getSeverity());
 		alarm.put("orgId", event.getOrgId());
@@ -146,15 +148,17 @@ public class EventToAlarmCommand implements Command {
 			}
 		}
 
-		JSONObject content = new JSONObject();
-		content.put("alarmInfo", alarm);
-		content.put("id", ids);
-
-		Map<String, String> headers = new HashMap<>();
-		headers.put("Content-Type","application/json");
-		String server = AwsUtil.getConfig("servername");
-		String url = "http://" + server + "/internal/updateAlarmFromEvent";
-		AwsUtil.doHttpPost(url, headers, null, content.toJSONString());
+//		JSONObject content = new JSONObject();
+//		content.put("alarmInfo", alarm);
+//		content.put("id", ids);
+//
+//		Map<String, String> headers = new HashMap<>();
+//		headers.put("Content-Type","application/json");
+//		String server = AwsUtil.getConfig("servername");
+//		String url = "http://" + server + "/internal/updateAlarmFromEvent";
+//		AwsUtil.doHttpPost(url, headers, null, content.toJSONString());
+		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD");
+		bean.updateAlarmFromJson(alarm, ids);
 
 		event.setAlarmId(alarmId);
 		event.setEventState(EventState.ALARM_UPDATED);
@@ -195,19 +199,22 @@ public class EventToAlarmCommand implements Command {
 			}
 		}
 		
-		JSONObject content = new JSONObject();
-		content.put("alarmInfo", json);
-
-		Map<String, String> headers = new HashMap<>();
-		headers.put("Content-Type","application/json");
-		String server = AwsUtil.getConfig("servername");
-		String url = "http://" + server + "/internal/addAlarm";
-
-		JSONParser parser = new JSONParser();
-		String response = AwsUtil.doHttpPost(url, headers, null, content.toJSONString());
-		System.out.println(response);
-		JSONObject res = (JSONObject) parser.parse(response);
-		event.setAlarmId((long) res.get("alarmId"));
+//		JSONObject content = new JSONObject();
+//		content.put("alarmInfo", json);
+//
+//		Map<String, String> headers = new HashMap<>();
+//		headers.put("Content-Type","application/json");
+//		String server = AwsUtil.getConfig("servername");
+//		String url = "http://" + server + "/internal/addAlarm";
+//
+//		JSONParser parser = new JSONParser();
+//		String response = AwsUtil.doHttpPost(url, headers, null, content.toJSONString());
+//		System.out.println(response);
+//		JSONObject res = (JSONObject) parser.parse(response);
+		
+		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD");
+		AlarmContext alarm = bean.processAlarm(json);
+		event.setAlarmId(alarm.getId());
 		event.setEventState(EventState.ALARM_CREATED);
 	}
 }

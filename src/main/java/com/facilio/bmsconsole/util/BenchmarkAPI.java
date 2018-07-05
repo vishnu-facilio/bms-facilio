@@ -85,10 +85,22 @@ public class BenchmarkAPI {
 		return -1;
 	}
 	
+	public static double calculateBenchmarkValue(long id, List<BenchmarkUnit> units, long startTime, DateAggregateOperator dateAggregation, int dateVal) throws Exception {
+		BenchmarkContext benchmark = getBenchmark(id);
+		if (benchmark != null) {
+			return calculateBenchmarkValue(benchmark, units, startTime, dateAggregation, dateVal);
+		}
+		return -1;
+	}
+	
 	public static double calculateBenchmarkValue(BenchmarkContext benchmark, List<BenchmarkUnit> units, long startTime, DateAggregateOperator dateAggregation) throws Exception {
+		return calculateBenchmarkValue(benchmark, units, startTime, dateAggregation, 1);
+	}
+	
+	public static double calculateBenchmarkValue(BenchmarkContext benchmark, List<BenchmarkUnit> units, long startTime, DateAggregateOperator dateAggregation, int dateVal) throws Exception {
 		double val = benchmark.getValue();
 		if (benchmark.getDurationEnum() != null && dateAggregation != null && startTime != -1) {
-			val = getDayNormalizedValues(val, benchmark.getDurationEnum(), dateAggregation, startTime);
+			val = getDayNormalizedValues(val, benchmark.getDurationEnum(), dateAggregation, startTime, dateVal);
 		}
 		if (units != null && !units.isEmpty()) {
 			Map<Unit, BenchmarkUnit> unitMap = units.stream()
@@ -102,7 +114,8 @@ public class BenchmarkAPI {
 			for (Unit unit : benchmark.getUnits()) {
 				BenchmarkUnit bUnit = unitMap.get(unit);
 				if (bUnit != null) {
-					val = UnitsUtil.convert(val, bUnit.getFromUnitEnum(), bUnit.getToUnitEnum());
+					double convertedValue = UnitsUtil.convert(1, bUnit.getFromUnitEnum(), bUnit.getToUnitEnum()); 
+					val = val / convertedValue;
 					val = val * bUnit.getVal();
 				}
 			}
@@ -110,7 +123,7 @@ public class BenchmarkAPI {
 		return val;
 	}
 	
-	private static double getDayNormalizedValues (double value, FacilioFrequency frequency, DateAggregateOperator aggr, long startTime) {
+	private static double getDayNormalizedValues (double value, FacilioFrequency frequency, DateAggregateOperator aggr, long startTime, int dateVal) {
 		double perDayVal = value;
 		switch (frequency) {
 			case DAILY:
@@ -133,25 +146,25 @@ public class BenchmarkAPI {
 			case DAYSOFMONTH:
 			case WEEKDAY:
 				if (frequency != FacilioFrequency.DAILY) {
-					return perDayVal;
+					return perDayVal * dateVal;
 				}
 			case WEEK:
 			case WEEKANDYEAR:
 				if (frequency != FacilioFrequency.WEEKLY) {
-					return perDayVal * 7;
+					return perDayVal * 7 * dateVal;
 				}
 			case MONTHANDYEAR:
 			case MONTH:
 				if (frequency != FacilioFrequency.MONTHLY) {
-					return perDayVal * (DateTimeUtil.getZonedDateTime(startTime).with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth());
+					return perDayVal * (DateTimeUtil.getZonedDateTime(startTime).with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth()) * dateVal;
 				}
 			case YEAR:
 				if (frequency != FacilioFrequency.ANNUALLY) {
-					return perDayVal * (DateTimeUtil.getZonedDateTime(startTime).with(TemporalAdjusters.lastDayOfYear()).getDayOfYear());
+					return perDayVal * (DateTimeUtil.getZonedDateTime(startTime).with(TemporalAdjusters.lastDayOfYear()).getDayOfYear()) * dateVal;
 				}
 			default:
 				break;
 		}
-		return value;
+		return value * dateVal;
 	}
 }
