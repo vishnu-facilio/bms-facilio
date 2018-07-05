@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AnalyticsAnomalyContext;
+import com.facilio.bmsconsole.context.TemperatureContext;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -22,6 +23,7 @@ public class AnomalySchedulerUtil {
 	private static final Logger logger = Logger.getLogger(AnomalySchedulerUtil.class.getName());
 	private static final String energyDataTable = ModuleFactory.getAnalyticsAnomalyModule().getTableName();
 	private static final String anomalyIdTable =  ModuleFactory.getAnalyticsAnomalyIDListModule().getTableName();
+	private static final String weatherDataTable = ModuleFactory.getAnalyticsAnomalyModuleWeatherData().getTableName();
 	
 	public static List<AnalyticsAnomalyContext> getAllReadings(String moduleName, long startTime, long endTime, long meterID, long orgID) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -63,5 +65,27 @@ public class AnomalySchedulerUtil {
 		}
 
 		return setOfAnomalyIDs;
+	}
+	
+	public static List<TemperatureContext> getAllTemperatureReadings(String moduleName, long startTime, long endTime, 
+			long orgID) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		List<TemperatureContext> listOfReadings=new ArrayList<TemperatureContext>();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getAnomalyTemperatureFields())
+				.table("Weather_Reading")
+				.andCustomWhere("Weather_Reading.TTIME > ? AND Weather_Reading.TTIME < ? AND Weather_Reading.TEMPERATURE IS NOT NULL AND Weather_Reading.ORGID = ? ", startTime, endTime, orgID);
+	
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			
+			for(Map<String, Object> prop:props) {
+				TemperatureContext temperatureContext = FieldUtil.getAsBeanFromMap(prop, TemperatureContext.class);
+				listOfReadings.add(temperatureContext);
+			}
+		}
+
+		return listOfReadings;
 	}
 }

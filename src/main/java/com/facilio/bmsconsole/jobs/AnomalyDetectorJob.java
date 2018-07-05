@@ -1,7 +1,11 @@
 package com.facilio.bmsconsole.jobs;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -18,6 +22,7 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.AnalyticsAnomalyContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.TemperatureContext;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
@@ -42,23 +47,29 @@ public class AnomalyDetectorJob extends FacilioJob {
 	@Override
 	public void execute(JobContext jc) {
 		try {
-		    //TO DO  .. Feature bit check
-			if (!AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_ANOMALY_DETECTOR))
-			{
+			// TO DO .. Feature bit check
+			if (!AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_ANOMALY_DETECTOR)) {
+				logger.log(Level.INFO, "Feature BITS is not enabled");
 				return;
 			}
-		
+
+			String meters = AwsUtil.getConfig("anomalyMeters");
+			Integer anomalyPeriodicity = Integer.parseInt(AwsUtil.getConfig("anomalyPeriodicity"));
 			// get the list of all sub meters
-			List<EnergyMeterContext> allEnergyMeters=DeviceAPI.getAllEnergyMeters();
-			
-			long now = System.currentTimeMillis();
-			long endTime = now - FIFTEEN_MINUTES_IN_MILLISEC; 
-			long startTime = endTime - SEVEN_DAYS_IN_MILLISEC;
-			for(EnergyMeterContext energyMeter: allEnergyMeters) {
+			List<EnergyMeterContext> allEnergyMeters = DeviceAPI.getSpecificEnergyMeters(meters);
+
+			//long correction = 0;
+			long correction = System.currentTimeMillis() - 1524720891689L;
+			long endTime = System.currentTimeMillis() - correction;
+			long startTime = endTime - (2 * anomalyPeriodicity *  60 * 1000L);
+
+			logger.log(Level.INFO, "selected Meters ");
+			for (EnergyMeterContext energyMeter : allEnergyMeters) {
+
+				// logger.log(Level.INFO, "" + energyMeter.getId());
 				doEnergyMeterAnomalyDetection(energyMeter, startTime, endTime);
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			logger.log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
@@ -89,10 +100,24 @@ public class AnomalyDetectorJob extends FacilioJob {
 				return;
 			}
 				
-			String jsonInString = mapper.writeValueAsString(meterReadings);
-			String result=AwsUtil.doHttpPost(url, null, null, jsonInString);
-			logger.log(Level.INFO, "ID=" + energyMeterContext.getId() + " startTime=" + startTime + " endTime=" + endTime + " anomaly=" + (result == null ? "NA" : result));
+			String readingsList = mapper.writeValueAsString(meterReadings);
+			List<TemperatureContext> temperatureContext = AnomalySchedulerUtil.getAllTemperatureReadings(moduleName,
+					startTime, endTime, energyMeterContext.getOrgId());
+
+			CheckAnomalyModelPostData postData=new CheckAnomalyModelPostData();
+			String postURL = AwsUtil.getConfig("anomalyCheckServiceURL") + "/checkAnomaly";
+
+			postData.meterID = energyMeterContext.getId();
+			postData.temperatureData=temperatureContext;
+			postData.energyData=meterReadings;
+			postData.timezone = AccountUtil.getCurrentOrg().getTimezone();
+			String jsonInString = mapper.writeValueAsString(postData);
+			logger.log(Level.INFO, " post body is " + jsonInString);
 			
+			Map<String, String> headers = new HashMap<>();
+			headers.put("Content-Type","application/json");
+			String result=AwsUtil.doHttpPost(postURL, headers, null, jsonInString);
+			logger.log(Level.INFO, " result is " + result);
 			AnomalyList anomalyList = new GsonBuilder().create().fromJson(result, AnomalyList.class);
 
 			if(anomalyList == null || anomalyList.getAnomalyIDs() == null || anomalyList.getAnomalyIDs().length == 0) {
@@ -202,14 +227,15 @@ public class AnomalyDetectorJob extends FacilioJob {
 		while (iterator.hasNext() && (!impactedIDs.isEmpty())) {
 			AnalyticsAnomalyContext anomalyObject = iterator.next();
 			
-			if(impactedIDs.contains(anomalyObject.getId()) && (anomalyObject.getTtime() >= endTimeOfWindow - 2 * FIFTEEN_MINUTES_IN_MILLISEC))  {
-				AnomalyIDInsertRow newAnomalyId = new AnomalyIDInsertRow(anomalyObject.getId(), anomalyObject.getOrgId(), 
+			//if(impactedIDs.contains(anomalyObject.getId()) && (anomalyObject.getTtime() >= endTimeOfWindow - 2 * FIFTEEN_MINUTES_IN_MILLISEC))  {
+				
+			AnomalyIDInsertRow newAnomalyId = new AnomalyIDInsertRow(anomalyObject.getId(), anomalyObject.getOrgId(), 
 								anomalyObject.getModuleId(), anomalyObject.getMeterId(), anomalyObject.getTtime(), anomalyObject.getEnergyDelta(), currentTimeInMillisec);
 				
 				props.add(FieldUtil.getAsProperties(newAnomalyId));
 				impactedIDs.remove(anomalyObject.getId());
 				impactedContexts.add(anomalyObject); 
-			}
+			//}
 		}
 		
 		GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
@@ -244,5 +270,24 @@ public class AnomalyDetectorJob extends FacilioJob {
 			Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
 			getAddEventChain.execute(addEventContext);
 		}
+	}
+	
+	class CheckAnomalyModelPostData {
+		public Long getMeterID() {
+			return meterID;
+		}
+		public String getTimezone() {
+			return timezone;
+		}
+		public List<AnalyticsAnomalyContext> getEnergyData() {
+			return energyData;
+		}
+		public List<TemperatureContext> getTemperatureData() {
+			return temperatureData;
+		}
+		Long meterID;
+		String timezone;
+		List<AnalyticsAnomalyContext> energyData;
+		List<TemperatureContext> temperatureData;
 	}
 }

@@ -16,8 +16,13 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.amazonaws.HttpMethod;
+
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
 import com.amazonaws.services.s3.model.S3Object;
@@ -69,6 +74,12 @@ public class S3FileStore extends FileStore {
 	    }
 	}
 	
+	public static String getURL( String bucket, String filePath, File file) throws Exception {
+		AmazonS3Client s3Client = (AmazonS3Client) AwsUtil.getAmazonS3Client();
+		s3Client.putObject(new PutObjectRequest(bucket, filePath, file).withCannedAcl(CannedAccessControlList.PublicRead));
+		return s3Client.getResourceUrl(bucket, filePath);
+	}
+
 	@Override
 	public long addFile(String fileName, File file, String contentType, int[] resize) throws Exception {
 		long fileId = this.addFile(fileName, file, contentType);

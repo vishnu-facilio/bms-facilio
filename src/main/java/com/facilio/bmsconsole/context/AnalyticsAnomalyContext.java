@@ -29,4 +29,14 @@ public class AnalyticsAnomalyContext extends ModuleBaseWithCustomFields {
 	public void setEnergyDelta(double energyDelta) {
 		this.energyDelta = energyDelta;
 	}
+
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		buf.append(new Long(getId()).toString());
+		buf.append(",");
+		buf.append(new Long(ttime).toString());
+		buf.append(",");
+		buf.append(new Double(energyDelta).toString());
+		return buf.toString();
+	}
 }

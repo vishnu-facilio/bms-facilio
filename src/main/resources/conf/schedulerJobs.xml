@@ -20,5 +20,6 @@
 	 <job name='WeatherData' classname = 'com.facilio.bmsconsole.jobs.WeatherDataJob' />
 	 <job name='DegreeDaysCalculator' classname = 'com.facilio.bmsconsole.jobs.DegreeDaysCalculatorJob' />
 	 <job name='AnomalyDetector' classname = 'com.facilio.bmsconsole.jobs.AnomalyDetectorJob' />
+	 <job name='RefreshAnomalyModel' classname = 'com.facilio.bmsconsole.jobs.RefreshAnomalyModelJob' />
 	 <job name='importData' classname = 'com.facilio.bmsconsole.jobs.ImportDataJob' />
 </scheduler>

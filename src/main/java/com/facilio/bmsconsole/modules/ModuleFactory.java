@@ -990,6 +990,18 @@ public class ModuleFactory {
 
 		return analyticsAnomalyJob;
 	}
+	
+	
+
+	public static FacilioModule getAnalyticsAnomalyModuleWeatherData() {
+		FacilioModule analyticsAnomalyJob = new FacilioModule();
+		analyticsAnomalyJob.setName("anomalyWeatherScheduler");
+		analyticsAnomalyJob.setDisplayName("Analytics Scheduler");
+		analyticsAnomalyJob.setTableName("Weather_Reading");
+
+		return analyticsAnomalyJob;
+	}
+
 
 	public static FacilioModule getAnalyticsAnomalyIDListModule() {
 		FacilioModule analyticsAnomalyIDListJob = new FacilioModule();

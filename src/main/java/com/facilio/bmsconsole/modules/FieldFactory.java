@@ -3644,6 +3644,19 @@ public class FieldFactory {
 		fields.add(getField("ttime", "TTIME", module, FieldType.NUMBER));
 		return fields;
 	}
+	
+	public static List<FacilioField> getAnomalyTemperatureFields() {
+		FacilioModule module = ModuleFactory.getAnalyticsAnomalyModuleWeatherData();
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getOrgIdField(module));
+		fields.add(getModuleIdField(module));
+		fields.add(getField("id", "ID", module, FieldType.NUMBER));
+		fields.add(getField("temperature", "TEMPERATURE", module, FieldType.DECIMAL));
+		fields.add(getField("ttime", "TTIME", module, FieldType.NUMBER));
+		return fields;
+	}
+
 
 	public static List<FacilioField> getAnomalyIDFields() {
 		FacilioModule module = ModuleFactory.getAnalyticsAnomalyIDListModule();
