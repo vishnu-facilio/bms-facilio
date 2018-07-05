@@ -506,12 +506,18 @@ public class DeviceAPI
 		deltaField.setName("totalEnergyConsumptionDelta");
 		deltaField.setColumnName("SUM(TOTAL_ENERGY_CONSUMPTION_DELTA)");
 		deltaField.setDataType(FieldType.DECIMAL);
+		
+		FacilioField powerField = new FacilioField();
+		powerField.setName("totalDemand");
+		powerField.setColumnName("AVG(TOTAL_DEMAND)");
+		powerField.setDataType(FieldType.DECIMAL);
 
 		List<FacilioField> fields= new ArrayList<FacilioField>();
 
 		fields.add(timeField);
 		fields.add(meterField);
 		fields.add(deltaField);
+		fields.add(powerField);
 
 		long timeInterval=minutesInterval*60*1000;
 
@@ -564,10 +570,11 @@ public class DeviceAPI
 		return virtualMeterReading;
 	}
 	
-    private static class EnergyDataEvaluator extends ExpressionEvaluator<ReadingContext> {
+	private static class EnergyDataEvaluator extends ExpressionEvaluator<ReadingContext> {
 
 		private Map<Long, List<ReadingContext>> readingMap;
 		private static final String TOTAL_ENERGY_CONSUMPTION_DELTA = "totalEnergyConsumptionDelta";
+		private static final String TOTAL_DEMAND = "totalDemand";
 		public EnergyDataEvaluator(Map<Long, List<ReadingContext>> readingMap) {
 			super.setRegEx(EnergyMeterContext.EXP_FORMAT);
 			this.readingMap = readingMap;
@@ -582,14 +589,25 @@ public class DeviceAPI
 			}
 			ReadingContext aggregatedReading = new ReadingContext();
 			
-			double sum = 0d;
+			double deltaSum = -1d;
+			double demandSum = -1d;
 			for(ReadingContext reading : readings) {
-			    if(reading.getReading(TOTAL_ENERGY_CONSUMPTION_DELTA) != null) {
-                    Double value = (Double) reading.getReading(TOTAL_ENERGY_CONSUMPTION_DELTA);
-                    sum += value;
+				Double delta=(Double) reading.getReading(TOTAL_ENERGY_CONSUMPTION_DELTA);
+				Double demand=(Double) reading.getReading(TOTAL_DEMAND);
+				
+			    if(delta != null) {
+                    deltaSum += delta;
                 }
+			    if(demand != null) {
+                    demandSum += demand;
+			    }
 			}
-			aggregatedReading.addReading(TOTAL_ENERGY_CONSUMPTION_DELTA, sum);
+			if (deltaSum != -1) {
+				aggregatedReading.addReading(TOTAL_ENERGY_CONSUMPTION_DELTA, ++deltaSum);
+			}
+			if (demandSum != -1) {
+				aggregatedReading.addReading(TOTAL_DEMAND, (++demandSum)/readings.size());//average for the same meter..
+			}
 			return aggregatedReading;
 		}
 
@@ -601,19 +619,30 @@ public class DeviceAPI
 				return null;
 			}
 			ReadingContext reading = new ReadingContext();
-			Double left = (Double)leftOperand.getReading(TOTAL_ENERGY_CONSUMPTION_DELTA);
-			Double right =(Double)rightOperand.getReading(TOTAL_ENERGY_CONSUMPTION_DELTA);
+			Double delta=getValue(TOTAL_ENERGY_CONSUMPTION_DELTA,operator,rightOperand,leftOperand);
+			Double demand=getValue(TOTAL_DEMAND,operator,rightOperand,leftOperand);
+			if(delta==null && demand==null) {
+				return null;
+			}
+			reading.addReading(TOTAL_ENERGY_CONSUMPTION_DELTA,delta);
+			reading.addReading(TOTAL_DEMAND, demand);
+			return reading;
+		}
+		
+		private Double getValue(String key,String operator, ReadingContext rightOperand, ReadingContext leftOperand) {
+			
+			Double left = (Double)leftOperand.getReading(key);
+			Double right =(Double)rightOperand.getReading(key);
 			if(left == null || right == null) {
 			    return null;
             }
-			double total = 0d;
+			Double total = 0d;
 			if("+".equals(operator)) {
 				total = left + right;
 			} else if("-".equals(operator)) {
 				total = left - right;
 			}
-			reading.addReading(TOTAL_ENERGY_CONSUMPTION_DELTA, total);
-			return reading;
+			return total;
 		}
 		
 	}

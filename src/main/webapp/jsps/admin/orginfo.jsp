@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-    <%@page import="com.facilio.accounts.util.AccountUtil, com.facilio.accounts.dto.User, java.util.*, java.util.Iterator ,org.json.simple.JSONObject,org.json.simple.JSONArray,java.util.List, com.facilio.accounts.dto.Organization, org.json.simple.JSONObject,com.facilio.accounts.impl.OrgBeanImpl, com.facilio.bmsconsole.commands.util.CommonCommandUtil"%>
+    <%@page import="com.facilio.accounts.util.AccountUtil, com.facilio.accounts.dto.User, java.util.*, java.util.Iterator ,org.json.simple.JSONObject,org.json.simple.JSONArray,java.util.List, com.facilio.accounts.dto.Organization ,org.json.simple.JSONObject,com.facilio.accounts.impl.OrgBeanImpl, com.facilio.bmsconsole.commands.util.CommonCommandUtil"%>
   <%
   	String orgid = request.getParameter("orgid");
     Organization org = null;
@@ -10,6 +10,7 @@
   	  org = AccountUtil.getOrgBean().getOrg(Long.parseLong(orgid));
   	  result = CommonCommandUtil.getOrgInfo(Long.parseLong(orgid));
   	  users = AccountUtil.getOrgBean().getAllOrgUsers(Long.parseLong(orgid));
+  	  
   	}
   %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -72,7 +73,7 @@
 
 
 <% if(result.size() != 0) { 
-	Iterator<?> keys = result.keySet().iterator(); %>
+	Iterator<?> keys = result.keySet().iterator();%>
 <h2> Org-Properties</h2> 
 <table style=" margin-top:40px;" class="table table-bordered">
 <tr>

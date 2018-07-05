@@ -66,7 +66,7 @@ public interface Operator<E> {
 		}
 		
 		return operatorMap;
-		//Max operator code is 56
+		//Max operator code is 58
 	}
 	
 	@SuppressWarnings("rawtypes")

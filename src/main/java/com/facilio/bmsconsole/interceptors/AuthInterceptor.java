@@ -1,22 +1,26 @@
+
 package com.facilio.bmsconsole.interceptors;
 
-import java.util.Calendar;
+import java.awt.List;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar ;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
-
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
-
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Role;
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.fw.auth.CognitoUtil.CognitoUser;
 import com.facilio.fw.auth.LoginUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.util.AuthenticationUtil;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;
@@ -52,7 +56,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 			if(AuthenticationUtil.checkIfSameUser(currentAccount, cognitoUser)) {
 				AccountUtil.cleanCurrentAccount();
 				AccountUtil.setCurrentAccount(currentAccount);
-				logger.log(Level.INFO, "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"+AccountUtil.getCurrentUser().getEmail());
+				logger.log(Level.INFO, "##################################"+AccountUtil.getCurrentUser().getEmail());
 				request.setAttribute("ORGID", currentAccount.getOrg().getOrgId());
 				request.setAttribute("USERID", currentAccount.getUser().getOuid());
 
@@ -88,11 +92,29 @@ public class AuthInterceptor extends AbstractInterceptor {
 					return Action.LOGIN;
 				}
 			}
+			
+		String email = AwsUtil.getConfig("admin.console");
+		java.util.List<String> list = null;
+		list =  Arrays.asList(email.split(" , "));
+		User cu = currentAccount.getUser();
+		String useremail = cu.getEmail();
+		StringBuffer url = request.getRequestURL();
+		String data = "/app/admin";
+		if ( url.indexOf(data) != -1) {
+		if (list.contains(useremail)) {
+			logger.log(Level.SEVERE, "Admin console");
+		}
+		else {
+			logger.log(Level.SEVERE, "you are not allowed to access this page from");
+			return Action.LOGIN;
+		}
+		}
 		}
 		catch (Exception e) {
 			logger.log(Level.SEVERE, "error in auth interceptor", e);
 			return Action.LOGIN;
 		}
+		
 
 		/* let us call action or next interceptor */
 		String result = arg0.invoke();
@@ -106,7 +128,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 	private static Logger logger = Logger.getLogger(AuthInterceptor.class.getName());
 
 	private boolean isAuthorizedAccess(String moduleName, String permissions) throws Exception {
-
+		
 		if (permissions == null || "".equals(permissions.trim())) {
 			System.out.println("WARNING: Configured permission is empty");
 			return true;
