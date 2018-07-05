@@ -21,10 +21,14 @@ public class AddAttachmentRelationshipCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-		long recordId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
-		List<Long> attachmentIdList = (List<Long>) context.get(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST);
-		
+		String moduleName = (String) context.get(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME);
+		if(moduleName == null ) {
+			moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		}
+		Long recordId = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+		if (recordId == null) {
+			recordId = (Long) ((List) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST)).get(0);
+		}
 		if(moduleName == null || moduleName.isEmpty()) {
 			throw new IllegalArgumentException("Invalid module name during addition of attachments");
 		}
@@ -32,18 +36,10 @@ public class AddAttachmentRelationshipCommand implements Command {
 		if(recordId == -1) {
 			throw new IllegalArgumentException("Invalid record id during addition of attachments");
 		}
-		
-		AttachmentType type = (AttachmentType) context.get(FacilioConstants.ContextNames.ATTACHMENT_TYPE);
-		if(attachmentIdList != null && !attachmentIdList.isEmpty()) {
-			List<AttachmentContext> attachments = new ArrayList<>();
-			for(long attachmentId : attachmentIdList) {
-				AttachmentContext attachment = new AttachmentContext();
-				attachment.setFileId(attachmentId);
+		List<AttachmentContext> attachments = (List<AttachmentContext>) context.get(FacilioConstants.ContextNames.ATTACHMENT_CONTEXT_LIST);
+		if(attachments != null && !attachments.isEmpty()) {
+			for(AttachmentContext attachment : attachments) {
 				attachment.setParentId(recordId);
-				attachment.setCreatedTime(System.currentTimeMillis());
-				attachment.setType(type);
-				
-				attachments.add(attachment);
 			}
 			
 			AttachmentsAPI.addAttachments(attachments, moduleName);
@@ -57,6 +53,7 @@ public class AddAttachmentRelationshipCommand implements Command {
 				context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.ADD_TICKET_ATTACHMENTS);
 			}
 		}
+		
 		return false;
 	}
 }

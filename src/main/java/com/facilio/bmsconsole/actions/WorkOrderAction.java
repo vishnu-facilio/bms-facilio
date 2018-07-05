@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import java.io.File;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,6 +14,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -21,6 +23,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMReminder;
@@ -32,6 +35,8 @@ import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.context.WorkOrderRequestContext;
+import com.facilio.bmsconsole.context.AttachmentContext.AttachmentType;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -95,17 +100,13 @@ public class WorkOrderAction extends ActionSupport {
 		this.moduleName = moduleName;
 	}
 
-	private List<Long> attachmentId;
-
-	public List<Long> getAttachmentId() {
-		return attachmentId;
-	}
-
-	public void setAttachmentId(List<Long> attachmentId) {
-		this.attachmentId = attachmentId;
-	}
-
 	public String addWorkOrder() throws Exception {
+		if(workOrderString != null) {
+			setWorkordercontex(workOrderString);
+		}
+		if(tasksString != null) {
+			setTaskcontex(tasksString);
+		}
 		return addWorkOrder(workorder);
 	}
 
@@ -113,15 +114,20 @@ public class WorkOrderAction extends ActionSupport {
 		try {
 			workorder.setSourceType(TicketContext.SourceType.WEB_ORDER);
 			FacilioContext context = new FacilioContext();
-			// context.put(FacilioConstants.ContextNames.TICKET,
-			// workorder.getTicket());
+			
 			context.put(FacilioConstants.ContextNames.REQUESTER, workorder.getRequester());
 			context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 			context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
-			context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST, getAttachmentId());
+			
+			context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, this.attachedFiles);
+	 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, this.attachedFilesFileName);
+	 		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.attachedFilesContentType);
+	 		context.put(FacilioConstants.ContextNames.ATTACHMENT_TYPE, this.attachmentType);
+	 		context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
 			
 			Command addWorkOrder = FacilioChainFactory.getAddWorkOrderChain();
 			addWorkOrder.execute(context);
+			
 			setWorkOrderId(workorder.getId());
 		} catch (Exception e) {
 			log.info("Exception occurred ", e);
@@ -150,10 +156,26 @@ public class WorkOrderAction extends ActionSupport {
 
 		return addWorkOrder(workorder);
 	}
-
+	
 	public String addPreventiveMaintenance() throws Exception {
-
 		FacilioContext context = new FacilioContext();
+		if(workOrderString != null) {
+			setWorkordercontex(workOrderString);
+		}
+		if(preventiveMaintenanceString != null) {
+			setPreventiveMaintenancecontex(preventiveMaintenanceString);
+		}
+		if(tasksString != null) {
+			setTaskcontex(tasksString);
+		}
+		if(reminderString != null) {
+			setRemindercontex(tasksString);
+		}
+		addPreventiveMaintenance(context);
+		return SUCCESS;
+	}
+
+	public String addPreventiveMaintenance(FacilioContext context) throws Exception {
 
 		workorder.setRequester(null);
 		preventivemaintenance.setReminders(reminders);
@@ -161,6 +183,11 @@ public class WorkOrderAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
 		context.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
+		
+		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, this.attachedFiles);
+ 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, this.attachedFilesFileName);
+ 		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.attachedFilesContentType);
+ 		context.put(FacilioConstants.ContextNames.ATTACHMENT_TYPE, this.attachmentType);
 
 		Chain addTemplate = FacilioChainFactory.getAddPreventiveMaintenanceChain();
 		addTemplate.execute(context);
@@ -324,10 +351,29 @@ public class WorkOrderAction extends ActionSupport {
 
 		return SUCCESS;
 	}
-
+	
 	public String updatePreventiveMaintenance() throws Exception {
-
 		FacilioContext context = new FacilioContext();
+		if(workOrderString != null) {
+			setWorkordercontex(workOrderString);
+		}
+		if(preventiveMaintenanceString != null) {
+			setPreventiveMaintenancecontex(preventiveMaintenanceString);
+		}
+		if(tasksString != null) {
+			setTaskcontex(tasksString);
+		}
+		if(reminderString != null) {
+			setRemindercontex(tasksString);
+		}
+		if(deleteReadingRulesListString != null) {
+			this.deleteReadingRulesList = convertDeleteReadingRulesListString(deleteReadingRulesListString);
+		}
+		updatePreventiveMaintenance(context);
+		return SUCCESS;
+	}
+
+	public String updatePreventiveMaintenance(FacilioContext context) throws Exception {
 
 		workorder.setRequester(null);
 		preventivemaintenance.setReminders(reminders);
@@ -339,7 +385,17 @@ public class WorkOrderAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
 		context.put(FacilioConstants.ContextNames.IS_UPDATE_PM, true);
 		context.put(FacilioConstants.ContextNames.DEL_READING_RULE_IDS, this.deleteReadingRulesList);
-
+		
+		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, this.attachedFiles);
+ 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, this.attachedFilesFileName);
+ 		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.attachedFilesContentType);
+ 		context.put(FacilioConstants.ContextNames.ATTACHMENT_TYPE, this.attachmentType);
+ 		
+ 		List<AttachmentContext> oldAttachments = workorder.getAttachments();
+ 		if(oldAttachments != null && !oldAttachments.isEmpty()) {
+ 			context.put(FacilioConstants.ContextNames.EXISTING_ATTACHMENT_LIST, oldAttachments); 			
+ 		}
+ 		
 		Chain updatePM = FacilioChainFactory.getUpdatePreventiveMaintenanceChain();
 		updatePM.execute(context);
 
@@ -826,6 +882,170 @@ public class WorkOrderAction extends ActionSupport {
 		System.out.println("View Name :  clount " + getViewName());
 		return workOrderList();	
 	}
+	
+	private List<File> attachedFiles;
+	private List<String> attachedFilesFileName;
+	private List<String> attachedFilesContentType;
+	private AttachmentType attachmentType;
+	
+	public int getAttachmentType() {
+		if(attachmentType != null) {
+			return attachmentType.getIntVal();
+		}
+		return -1;
+	}
+	public void setAttachmentType(int attachmentType) {
+		this.attachmentType = AttachmentType.getType(attachmentType);
+	}
+	
+	public List<File> getAttachedFiles() {
+		return attachedFiles;
+	}
+	public void setAttachedFiles(List<File> attachedFiles) {
+		this.attachedFiles = attachedFiles;
+	}
+	public List<String> getAttachedFilesFileName() {
+		return attachedFilesFileName;
+	}
+	public void setAttachedFilesFileName(List<String> attachedFilesFileName) {
+		this.attachedFilesFileName = attachedFilesFileName;
+	}
+	public List<String> getAttachedFilesContentType() {
+		return attachedFilesContentType;
+	}
+	public void setAttachedFilesContentType(List<String> attachedFilesContentType) {
+		this.attachedFilesContentType = attachedFilesContentType;
+	}
+	
+	private String tasksString;
+	public String getTasksString() {
+		return tasksString;
+	}
+	public void setTasksString(String tasksString) {
+		this.tasksString = tasksString;
+	}
+	
+	public void setTaskcontex(String task_string) {
+		this.tasks = convertTask(task_string);
+	}
+	public Map<String, List<TaskContext>> convertTask(String task_string)
+	{
+		Map<String, List<TaskContext>> taskObj = new HashMap<>();
+		JSONParser parser = new JSONParser();
+		try {
+			JSONObject obj = (JSONObject) parser.parse(task_string);
+			System.out.println("######## obj : "+obj);
+			Iterator itr = obj.keySet().iterator();
+			while (itr.hasNext()) {
+				String key = (String) itr.next();
+				JSONArray taskList = (JSONArray) obj.get(key);
+				List<TaskContext> taskContextList = FieldUtil.getAsBeanListFromJsonArray(taskList, TaskContext.class);
+				taskObj.put(key, taskContextList);
+			}
+
+		} catch (Exception e) {
+			log.info("Exception occurred ", e);
+		}
+		return taskObj;
+	}
+
+	private String preventiveMaintenanceString;
+	
+	public String getPreventiveMaintenanceString() {
+		return preventiveMaintenanceString;
+	}
+	public void setPreventiveMaintenanceString(String preventiveMaintenanceString) {
+		this.preventiveMaintenanceString = preventiveMaintenanceString;
+	}
+	
+	public void setPreventiveMaintenancecontex(String preventiveMaintenanceString) {
+		this.preventivemaintenance = convertPM(preventiveMaintenanceString);
+	}
+	public PreventiveMaintenance convertPM(String preventiveMaintenanceString)
+	{
+		PreventiveMaintenance pm = null;
+		JSONParser parser = new JSONParser();
+		try {
+			JSONObject obj = (JSONObject) parser.parse(preventiveMaintenanceString);
+			pm = FieldUtil.getAsBeanFromJson(obj, PreventiveMaintenance.class);
+
+		} catch (Exception e) {
+			log.info("Exception occurred ", e);
+		}
+		return pm;
+	}
+	
+	private String deleteReadingRulesListString;	
+	public String getDeleteReadingRulesListString() {
+		return deleteReadingRulesListString;
+	}
+	public void setDeleteReadingRulesListString(String deleteReadingRulesListString) {
+		this.deleteReadingRulesListString = deleteReadingRulesListString;
+	}
+	
+	public List<Long> convertDeleteReadingRulesListString(String convertDeleteReadingRulesListString)
+	{
+		List<Long> re = new ArrayList<>();
+		JSONParser parser = new JSONParser();
+		try {
+			re = (JSONArray) parser.parse(convertDeleteReadingRulesListString);
+
+		} catch (Exception e) {
+			log.info("Exception occurred ", e);
+		}
+		return re;
+	}
+	
+	private String reminderString;	
+	public String getReminderString() {
+		return reminderString;
+	}
+	public void setReminderString(String reminderString) {
+		this.reminderString = reminderString;
+	}
+	
+	public void setRemindercontex(String reminder_string) {
+		this.reminders = convertReminder(reminder_string);
+	}
+	public List<PMReminder> convertReminder(String reminder_string)
+	{
+		List<PMReminder> re = new ArrayList<>();
+		JSONParser parser = new JSONParser();
+		try {
+			JSONArray obj = (JSONArray) parser.parse(reminder_string);
+			re = FieldUtil.getAsBeanListFromJsonArray(obj, PMReminder.class);
+
+		} catch (Exception e) {
+			log.info("Exception occurred ", e);
+		}
+		return re;
+	}
+	
+	private String workOrderString;
+	public String getWorkOrdertString() {
+		return workOrderString;
+	}
+	public void setWorkOrderString(String workOrderString) {
+		this.workOrderString = workOrderString;
+	}
+	
+	public void setWorkordercontex(String workorder_string) {
+		this.workorder = convert(workorder_string);
+	}
+	public WorkOrderContext convert(String workOrderStr)
+	{
+		WorkOrderContext wo = null;
+		JSONParser parser = new JSONParser();
+		try {
+			JSONObject obj = (JSONObject) parser.parse(workOrderStr);
+			wo = FieldUtil.getAsBeanFromJson(obj, WorkOrderContext.class);
+
+		} catch (Exception e) {
+			log.info("Exception occurred ", e);
+		}
+		return wo;
+	}
+	
 
 	public String workOrderList() throws Exception {
 		// TODO Auto-generated method stub

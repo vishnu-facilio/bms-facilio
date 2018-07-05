@@ -8,7 +8,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -334,7 +336,44 @@ public abstract class FileStore {
 		}
 		finally {
 			DBUtil.closeAll(conn, pstmt, rs);
+		}	
+	}
+	
+	public Map<Long, FileInfo> getFileInfoAsMap(List<Long> fileId) throws Exception {
+		Map<Long, FileInfo> fileMap = new HashMap<Long, FileInfo>();
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try {
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			
+			String sql = "SELECT * FROM File WHERE FILE_ID IN (";
+			for (int i=0; i< fileId.size(); i++) {
+				if (i != 0) {
+					sql += ", ";
+				}
+				sql += fileId.get(i);
+			}
+			sql += ") AND ORGID=? ORDER BY FILE_NAME";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setLong(1, getOrgId());
+			
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				FileInfo fileInfo = getFileInfoFromRS(rs);
+				fileMap.put(fileInfo.getFileId(), fileInfo);
+			}
 		}
+		catch(SQLException e) {
+			throw e;
+		}
+		finally {
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+
+		return fileMap;
 	}
 	
 	protected List<String> getFilePathList(List<Long> fileId) throws Exception {

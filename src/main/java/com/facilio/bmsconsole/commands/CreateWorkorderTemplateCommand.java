@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.templates.Template;
@@ -20,6 +21,9 @@ public class CreateWorkorderTemplateCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		WorkOrderContext workorder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
+		if(context.get(FacilioConstants.ContextNames.ATTACHMENT_CONTEXT_LIST) != null) {
+			workorder.setAttachments(((List<AttachmentContext>) context.get(FacilioConstants.ContextNames.ATTACHMENT_CONTEXT_LIST)));
+		}
 		Map<String, List<TaskContext>> tasks = (Map<String, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
 		WorkorderTemplate workorderTemplate = new WorkorderTemplate();
 		workorderTemplate.setWorkorder(workorder);

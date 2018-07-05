@@ -252,6 +252,8 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			context.put(FacilioConstants.ContextNames.REQUESTER, wo.getRequester());
 			context.put(FacilioConstants.ContextNames.TASK_MAP, taskMap);
 			context.put(FacilioConstants.ContextNames.IS_PM_EXECUTION, true);
+			context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
+			context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTEXT_LIST, wo.getAttachments());
 			
 			//Temp fix. Have to be removed eventually
 			PreventiveMaintenanceAPI.updateResourceDetails(wo, taskMap);

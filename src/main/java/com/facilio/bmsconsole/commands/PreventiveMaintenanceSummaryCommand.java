@@ -15,6 +15,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
@@ -35,6 +36,9 @@ import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fs.FileInfo;
+import com.facilio.fs.FileStore;
+import com.facilio.fs.FileStoreFactory;
 import com.facilio.leed.context.PMTriggerContext;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.tasker.ScheduleInfo;
@@ -92,6 +96,16 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 		}
 		
 		WorkOrderContext workorder = template.getWorkorder();
+		if(workorder.getAttachments() != null && !workorder.getAttachments().isEmpty()) {
+			List<Long> fileIds = workorder.getAttachments().stream().map(file -> file.getFileId()).collect(Collectors.toList());
+			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			Map<Long, FileInfo> fileMap = fs.getFileInfoAsMap(fileIds);
+			for(AttachmentContext attachment: workorder.getAttachments()) {
+				FileInfo file = fileMap.get(attachment.getFileId());
+				attachment.setFileName(file.getFileName());
+				attachment.setFileSize(file.getFileSize());
+			}
+		}
 		Map<String, List<TaskContext>> taskMap = template.getTasks();
 		
 		if (taskMap != null && !taskMap.isEmpty()) {

@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
+import com.facilio.bmsconsole.context.AttachmentContext.AttachmentType;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -143,9 +144,6 @@ public class WorkOrderRequestAction extends ActionSupport {
 	
 	public String addWorkOrderRequest() throws Exception {
 		
-		System.out.println("######## attachedFile : "+attachedFiles);
-		System.out.println("######## attachedFilesFileName : "+attachedFilesFileName);
-		System.out.println("######## workorderrequest : "+workOrderRequestString);
 		if (workOrderRequestString != null) {
 			setWorkorderrequest(workOrderRequestString);
 		}
@@ -162,7 +160,7 @@ public class WorkOrderRequestAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, this.attachedFiles);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, this.attachedFilesFileName);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.attachedFilesContentType);
-// 		context.put(FacilioConstants.ContextNames.ATTACHMENT_TYPE, this.attachmentType);
+		// context.put(FacilioConstants.ContextNames.ATTACHMENT_TYPE, this.attachmentType);
 		
 		Command addWorkOrder = FacilioChainFactory.getAddWorkOrderRequestChain();
 		addWorkOrder.execute(context);
@@ -173,6 +171,17 @@ public class WorkOrderRequestAction extends ActionSupport {
 	private List<File> attachedFiles;
 	private List<String> attachedFilesFileName;
 	private List<String> attachedFilesContentType;
+	private AttachmentType attachmentType;
+	
+	public int getAttachmentType() {
+		if(attachmentType != null) {
+			return attachmentType.getIntVal();
+		}
+		return -1;
+	}
+	public void setAttachmentType(int attachmentType) {
+		this.attachmentType = AttachmentType.getType(attachmentType);
+	}
 	
 	public List<File> getAttachedFiles() {
 		return attachedFiles;

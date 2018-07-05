@@ -90,6 +90,7 @@ public class FacilioChainFactory {
 		c.addCommand(SetTableNamesCommand.getForTicket());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddTicketCommand());
+		c.addCommand(new AttachmentContextCommand());
 		c.addCommand(new AddAttachmentRelationshipCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -307,6 +308,9 @@ public class FacilioChainFactory {
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SLA_RULE));
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE));
+		c.addCommand(new AddAttachmentCommand());
+		c.addCommand(new AttachmentContextCommand());
+		c.addCommand(new AddAttachmentRelationshipCommand());
 		c.addCommand(new AddTicketActivityCommand());
 		c.addCommand(getAddTasksChain());
 		addCleanUpCommand(c);
@@ -1224,6 +1228,7 @@ public class FacilioChainFactory {
 	public static Chain getAddAttachmentChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new AddAttachmentCommand());
+		c.addCommand(new AttachmentContextCommand());
 		c.addCommand(new AddAttachmentRelationshipCommand());
 		c.addCommand(new AddAttachmentTicketActivityCommand());
 		return c;
@@ -1455,6 +1460,9 @@ public class FacilioChainFactory {
 	
 	public static Chain getAddPreventiveMaintenanceChain() {
 		Chain c = new TransactionChain();
+		c.addCommand(new AddAttachmentCommand());
+		c.addCommand(new AttachmentContextCommand());
+		
 		c.addCommand(new ValidatePMTriggersCommand());
 		c.addCommand(new ValidateTasksCommand());
 		c.addCommand(new AddPMReadingsForTasks());
@@ -1490,6 +1498,9 @@ public class FacilioChainFactory {
 	
 	public static Chain getUpdatePreventiveMaintenanceChain() {
 		Chain c = new TransactionChain();
+		c.addCommand(new AddAttachmentCommand());
+		c.addCommand(new AttachmentContextCommand());
+		
 		c.addCommand(new GetPreventiveMaintenanceCommand());
 		c.addCommand(new ValidatePMTriggersCommand());
 		c.addCommand(new ValidateTasksCommand());

@@ -78,7 +78,9 @@ public class AttachmentContext extends ModuleBaseWithCustomFields {
 		return -1;
 	}
 	public void setType(int type) {
-		this.type = AttachmentType.getType(type);
+		if (type != -1) {
+			this.type = AttachmentType.getType(type);			
+		}
 	}
 	public void setType(AttachmentType type) {
 		this.type = type;
