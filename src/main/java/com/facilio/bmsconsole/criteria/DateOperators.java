@@ -1799,6 +1799,122 @@ public enum DateOperators implements Operator<String> {
 			return true;
 		}
 	},
+	PAST_N_DAY(57, "Past N day") {
+		@Override
+		public String getWhereClause(String columnName, String value) {
+			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
+				StringBuilder builder = new StringBuilder();
+				builder.append(DateTimeUtil.getDayStartTime(-Integer.valueOf(value)))
+						.append("<=")
+						.append(columnName)
+						.append(" AND ")
+						.append(columnName)
+						.append("<")
+						.append(DateTimeUtil.getDayStartTime(-Integer.valueOf(value)+1));
+				return builder.toString();
+			}
+			return null;
+		}
+		
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						if(object != null && object instanceof Long) {
+							long currentVal = (long) object;
+							return DateTimeUtil.getDayStartTime(-Integer.valueOf(value)) <= currentVal && currentVal < DateTimeUtil.getDayStartTime(-Integer.valueOf(value)+1);
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
+
+		@Override
+		public DateRange getRange(String value) {
+			// TODO Auto-generated method stub
+			return new DateRange(DateTimeUtil.getDayStartTime(-Integer.valueOf(value)), DateTimeUtil.getDayStartTime(-Integer.valueOf(value)+1));
+		}
+		
+		@Override
+		public boolean isDynamicOperator() {
+			return true;
+		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+	},
+	IN_N_DAY(58, "In N Day") {
+		@Override
+		public String getWhereClause(String columnName, String value) {
+			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
+				StringBuilder builder = new StringBuilder();
+				builder.append(DateTimeUtil.getDayStartTime(Integer.valueOf(value)))
+						.append("<=")
+						.append(columnName)
+						.append(" AND ")
+						.append(columnName)
+						.append("<")
+						.append(DateTimeUtil.getDayStartTime(Integer.valueOf(value)+1));
+				return builder.toString();
+			}
+			return null;
+		}
+		
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						if(object != null && object instanceof Long) {
+							long currentVal = (long) object;
+							return DateTimeUtil.getDayStartTime(Integer.valueOf(value)) <= currentVal && currentVal < DateTimeUtil.getDayStartTime(Integer.valueOf(value)+1);
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
+
+		@Override
+		public DateRange getRange(String value) {
+			// TODO Auto-generated method stub
+			return new DateRange(DateTimeUtil.getDayStartTime(Integer.valueOf(value)), DateTimeUtil.getDayStartTime(Integer.valueOf(value)+1));
+		}
+		
+		@Override
+		public boolean isDynamicOperator() {
+			return true;
+		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+	},
 	LAST_N_WEEKS(50, "Last N Weeks") {
 		@Override
 		public String getWhereClause(String columnName, String value) {
