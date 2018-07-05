@@ -234,7 +234,8 @@ public class WorkflowRuleAPI {
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 													.table(module.getTableName())
 													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-													.andCondition(CriteriaAPI.getCondition("RULE_TYPE", "ruleType", ruleType.getIntVal()+"", StringOperators.IS));
+													.andCondition(CriteriaAPI.getCondition("RULE_TYPE", "ruleType", ruleType.getIntVal()+"", StringOperators.IS))
+													.andCondition(CriteriaAPI.getCondition("STATUS", "status", 1+"", StringOperators.IS));
 		
 		if (fetchEvent) {
 			fields.addAll(FieldFactory.getWorkflowEventFields());

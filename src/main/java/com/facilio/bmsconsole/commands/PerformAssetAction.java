@@ -14,7 +14,9 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
@@ -35,6 +37,10 @@ public class PerformAssetAction implements Command {
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
 		for(WorkflowRuleContext workflowRule :workflowRules) {
 			
+			if(!workflowRule.isActive()) {
+				continue;
+			}
+			
 			Criteria criteria = workflowRule.getCriteria();
 			
 			SelectRecordsBuilder<AssetContext> selectBuilder = new SelectRecordsBuilder<AssetContext>()
@@ -43,6 +49,12 @@ public class PerformAssetAction implements Command {
 					.select(modBean.getAllFields(module.getName()))
 					.table(module.getTableName())
 					.andCriteria(criteria);
+			
+			String value  = null;
+			if(criteria != null && criteria.getConditions() != null && !criteria.getConditions().isEmpty()) {
+				 Condition condition = criteria.getConditions().get(1);
+				 value = condition.getValue();
+			}
 			
 			List<AssetContext> assets = selectBuilder.get();
 			
@@ -61,6 +73,9 @@ public class PerformAssetAction implements Command {
 				placeHolders.put("org.superAdmin.email", "krishnan.e@facilio.com");
 				placeHolders.put("org.superAdmin.phone", superAdmin.getPhone());
 				placeHolders.put("asset.names", assetNames);
+				if(value != null) {
+					placeHolders.put("expired.day", value);
+				}
 				
 				for(ActionContext action :workflowRule.getActions()) {
 					
