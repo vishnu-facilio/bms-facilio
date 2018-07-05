@@ -59,6 +59,7 @@ import com.facilio.bmsconsole.context.ReportSpaceFilterContext;
 import com.facilio.bmsconsole.context.ReportThreshold;
 import com.facilio.bmsconsole.context.ReportUserFilterContext;
 import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.context.UserWorkHourReading;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetVsWorkflowContext;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -2474,5 +2475,48 @@ public class DashboardUtil {
 				frequency = FacilioFrequency.DAILY;
 		}
 		return frequency;
+	}
+	
+	public static Map<Long, Long> calculateWorkHours (List<Map<String, Object>> props, long startTime, long endTime) { //Expects it to be in order by time
+		if (props != null && !props.isEmpty()) {
+			Map<Long, List<Map<String, Object>>> userWiseProps = new HashMap<>();
+			for (Map<String, Object> prop : props) {
+				Long userId = (Long) prop.get("parentId");
+				List<Map<String, Object>> userWiseList = userWiseProps.get(userId);
+				if (userWiseList == null) {
+					userWiseList = new ArrayList<>();
+				}
+				userWiseList.add(prop);
+			}
+			
+			Map<Long, Long> workDuration = new HashMap<>();
+			for (Map.Entry<Long, List<Map<String, Object>>> entry : userWiseProps.entrySet()) {
+				Long userId = entry.getKey();
+				long workTime = 0;
+				long prevTime = startTime;
+				for (Map<String, Object> prop : entry.getValue()) {
+					Boolean hasManualEntry = (Boolean) prop.get("hasManualEntry");
+					if (hasManualEntry == null || !hasManualEntry) {
+						long currentTime = (long) prop.get("actualTtime");
+						UserWorkHourReading workHour = UserWorkHourReading.valueOf((int) prop.get("workHoursEntry"));
+						switch (workHour) {
+							case START:
+							case RESUME:
+							case SHIFT_RESUME:
+								prevTime = currentTime;
+								break;
+							case PAUSE:
+							case SHIFT_PAUSE:
+							case CLOSE:
+								workTime += (currentTime - prevTime);
+								break;
+						}
+					}
+				}
+				workDuration.put(userId, workTime);
+			}
+			return workDuration;
+		}
+		return null;
 	}
 }
