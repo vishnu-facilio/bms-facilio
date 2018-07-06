@@ -38,6 +38,7 @@ import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -739,6 +740,20 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 			return tickets.get(0);
 		}
 		
+		return null;
+	}
+	
+	public static ActivityType getActivityTypeForTicketStatus(long statusId) throws Exception {
+		TicketStatusContext status = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getId(), statusId);
+		Map<String, ActivityType> statusVsActivityType = new HashMap<>();
+		statusVsActivityType.put("Resolved", ActivityType.SOLVE_WORK_ORDER);
+		statusVsActivityType.put("Closed", ActivityType.CLOSE_WORK_ORDER);
+		statusVsActivityType.put("Assigned", ActivityType.ASSIGN_TICKET);
+		statusVsActivityType.put("On Hold", ActivityType.HOLD_WORK_ORDER);
+		
+		if (statusVsActivityType.containsKey(status.getStatus())) {
+			return statusVsActivityType.get(status.getStatus());
+		}
 		return null;
 	}
 }

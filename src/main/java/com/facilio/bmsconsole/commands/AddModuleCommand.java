@@ -44,7 +44,7 @@ public class AddModuleCommand implements Command {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 					.table("Modules")
 					.select(fields)
-					.andCustomWhere("NAME LIKE '" + module.getName() + "%'")
+					.andCustomWhere("NAME = ? OR NAME LIKE ?",module.getName(),module.getName() + "_%")
 					.orderBy(moduleField.getColumnName() + " desc")
 					.limit(1);
 		List<Map<String, Object>> props = builder.get();

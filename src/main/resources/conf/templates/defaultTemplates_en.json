@@ -573,5 +573,39 @@
 		"subject": "Asset Expired",
 		"to": "${org.superAdmin.email:-}",
 		"message": "${asset.names} will be expired in ${expired.day} day(s) \n\nRegards,\nTeam Facilio."
+	},
+	"69": {
+		"name": "ON_HOLD_WO_EMAIL",
+		"sender": "noreply@${org.domain}.facilio.com",
+		"subject": "Work order put on hold",
+		"to": "${workorder.assignedBy.email:-}",
+		"message": "The following work order ${workorder.subject} has been put on hold.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status.status}\n\nPlease view the work order here - ${workorder.url}\n\nRegards,\nTeam Facilio."
+	},
+	"70": {
+		"name": "ON_HOLD_WO_SMS",
+		"to": "${workorder.assignedBy.phone:-}",
+		"message": "The following work order ${workorder.subject} has been put on hold.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status.status}\n\nPlease view the work order here - ${workorder.url}\n\n - Team Facilio."
+	},
+	"71": {
+		"name": "ON_HOLD_WO_WEB"
+	},
+	"72": {
+		"name": "ON_HOLD_WO_PUSH",
+		"notification": {
+			"text": "The following work order ${workorder.subject} has been put on hold.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status.status}\n\nPlease view the work order here - ${workorder.url}\n\n - Team Facilio.",
+			"click_action": "WORKORDER_SUMMARY",
+			"title": "Work order put on hold"
+		},
+		"data": {
+			"content_available": true,
+			"summary_id": "${workorder.id}",
+			"sound": "default",
+			"module_name": "workorder",
+			"priority": "high",
+			"text": "The following work order ${workorder.subject} has been put on hold.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status.status}\n\nPlease view the work order here - ${workorder.url}\n\n - Team Facilio.",
+			"click_action": "WORKORDER_SUMMARY",
+			"title": "Work order put on hold"
+		},
+		"id": "${workorder.assignedBy.id:-}"
 	}
 }
