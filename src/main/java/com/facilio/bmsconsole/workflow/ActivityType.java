@@ -172,6 +172,14 @@ public enum ActivityType {
 			return null;
 		}
 	},
+	HOLD_WORK_ORDER(262144) {
+		@Override
+		public String getMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			String moduleName = (String) json.get(FacilioConstants.ContextNames.MODULE_NAME);
+			return "put on hold the "+moduleName;
+		}
+	}
 	;
 
     private int eventType;

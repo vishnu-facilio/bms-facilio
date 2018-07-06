@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -94,7 +95,8 @@ public class UpdateWorkOrderCommand implements Command {
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
 			
 			ActivityType activityType = (ActivityType)context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
-			if(ActivityType.ASSIGN_TICKET == activityType || ActivityType.CLOSE_WORK_ORDER == activityType || ActivityType.SOLVE_WORK_ORDER == activityType) {
+			List<ActivityType> types = Arrays.asList(ActivityType.ASSIGN_TICKET, ActivityType.CLOSE_WORK_ORDER,  ActivityType.SOLVE_WORK_ORDER, ActivityType.HOLD_WORK_ORDER);
+			if(types.contains(activityType)) {
 				SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
 						.moduleName(moduleName)
 						.beanClass(WorkOrderContext.class)

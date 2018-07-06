@@ -24,6 +24,7 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.AttachmentContext;
+import com.facilio.bmsconsole.context.AttachmentContext.AttachmentType;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMReminder;
@@ -35,8 +36,6 @@ import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.context.WorkOrderRequestContext;
-import com.facilio.bmsconsole.context.AttachmentContext.AttachmentType;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -780,7 +779,14 @@ public class WorkOrderAction extends ActionSupport {
 
 	public String updateWorkOrder() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
+		ActivityType activityType = ActivityType.EDIT;
+		if (workorder.getStatus() != null) {
+			ActivityType type = TicketAPI.getActivityTypeForTicketStatus(workorder.getStatus().getId());
+			if (type != null) {
+				activityType = type;
+			}
+		}
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, activityType);
 		return updateWorkOrder(context);
 	}
 
@@ -1353,6 +1359,89 @@ public class WorkOrderAction extends ActionSupport {
 	
 	public List<Long> getDeleteReadingRulesList() {
 		return this.deleteReadingRulesList;
+	}
+	
+	/******************      V2 Api    ******************/
+	
+	private int responseCode = 0;
+	public int getResponseCode() {
+		return responseCode;
+	}
+	public void setResponseCode(int responseCode) {
+		this.responseCode = responseCode;
+	}
+	
+	private String message;
+	public String getMessage() {
+		return message;
+	}
+	public void setMessage(String message) {
+		this.message = message;
+	}
+	
+	private JSONObject result;
+	public JSONObject getResult() {
+		return result;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void setResult(String key, Object result) {
+		if (this.result == null) {
+			this.result = new JSONObject();
+		}
+		this.result.put(key, result);			
+	}
+
+	public String v2viewWorkOrder() {
+		try {
+			String response = viewWorkOrder();
+			setResult(FacilioConstants.ContextNames.WORK_ORDER, workorder);
+			return response;
+		}
+		catch(Exception e) {
+			setResponseCode(1);
+			setMessage(FacilioConstants.ERROR_MESSAGE);
+			return ERROR;
+		}
+	}
+	
+	public String v2addWorkOrder() {
+		try {
+			String response = addWorkOrder();
+			setResult(FacilioConstants.ContextNames.WORK_ORDER, workorder);
+			return response;
+		}
+		catch(Exception e) {
+			setResponseCode(1);
+			setMessage(FacilioConstants.ERROR_MESSAGE);
+			return ERROR;
+		}
+	}
+	
+	public String v2updateWorkOrder() {
+		try {
+			String response = updateWorkOrder();
+			setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
+			return response;
+		}
+		catch(Exception e) {
+			setResponseCode(1);
+			setMessage(FacilioConstants.ERROR_MESSAGE);
+			return ERROR;
+		}
+	}
+	
+	public String v2workOrderList() {
+		try {
+			String response = workOrderList();
+			setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
+			return response;
+		}
+		catch(Exception e) {
+			setResponseCode(1);
+			setMessage(FacilioConstants.ERROR_MESSAGE);
+			return ERROR;
+		}
 	}
 
 }
