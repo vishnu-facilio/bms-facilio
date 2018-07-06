@@ -1514,7 +1514,7 @@
 				<constant>${org.domain}</constant>
 			</expression>		
 			<expression name="workorder.assignedBy.email">
-				<constant>${workorder.assignedBy.phone}</constant>
+				<constant>${workorder.assignedBy.email}</constant>
 			</expression>
 			<expression name="workorder.subject">
 				<constant>${workorder.subject}</constant>
