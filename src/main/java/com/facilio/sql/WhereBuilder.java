@@ -55,7 +55,7 @@ public class WhereBuilder implements WhereBuilderIfc<WhereBuilder>{
 	private WhereBuilder condition(boolean isAND, Condition condition) {
 		if(condition != null) {
 			checkIfFirstAndAdd(isAND);
-			this.condition.append(condition.getComputedWhereClause());
+			this.condition.append(condition.computeAndGetWhereClause());
 			if(condition.getComputedValues() != null) {
 				values.addAll(condition.getComputedValues());
 			}

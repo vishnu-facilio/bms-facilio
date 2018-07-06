@@ -79,7 +79,7 @@ public enum BuildingOperator implements Operator<String> {
 	
 	@Override
 	public boolean isDynamicOperator() {
-		return false;
+		return true;
 	}
 	
 	@Override
