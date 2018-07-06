@@ -1,6 +1,7 @@
 package com.facilio.accounts.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -9,7 +10,11 @@ import com.facilio.accounts.bean.RoleBean;
 import com.facilio.accounts.dto.Permissions;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.util.AccountConstants;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.license.LicenseContext;
+import com.facilio.license.LicenseContext.FacilioLicense;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -188,6 +193,27 @@ public class RoleBeanImpl implements RoleBean {
 		return null;
 	}
 	
+	public Map<String, Role> getRoleMap() throws Exception {
+		
+		List<FacilioField> fields = AccountConstants.getRoleFields();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(AccountConstants.getRoleModule().getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(AccountConstants.getRoleModule()));
+				
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		if (props != null && !props.isEmpty()) {
+			Map<String, Role> map = new HashMap<>();  
+			for (Map<String, Object> prop : props) {
+				Role roleContext = FieldUtil.getAsBeanFromMap(prop, Role.class);
+				map.put(roleContext.getName(), roleContext);
+			}
+			return map;
+		}
+		return null;
+	}
+
 	@Override
 	public List<Permissions> getPermissions (long roleId) throws Exception {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()

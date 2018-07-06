@@ -62,6 +62,13 @@
                <span class="nav-title">Close WorkOrder</span>
                </a>
            </li>
+             <li>
+               <a href="userlicense">
+               <span class="nav-icon">
+              <i class=" sidebar-icon fa fa-info-circle fa-fw "></i> </span>
+               <span class="nav-title">User License</span>
+               </a>
+           </li>
            
          </ul>
         

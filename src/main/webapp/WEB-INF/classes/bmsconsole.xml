@@ -1175,6 +1175,9 @@
 			<action name="closewo" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/closewo.jsp</result>
 			</action>
+			<action name="userlicense" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result type="tiles">adminpage/userlicense.jsp</result>
+			</action>
 			</package>
 
 
