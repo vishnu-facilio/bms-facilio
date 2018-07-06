@@ -211,12 +211,12 @@
 		"sender": "noreply@${org.domain}.facilio.com",
 		"subject": "Work order resolved",
 		"to": "${workorder.assignedBy.email:-}",
-		"message": "The following workorder ${workorder.subject} has been resolved by Technician ${workorder.assignedTo.name} in ${workorder.workhours}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status.status}\nWork hours : ${workorder.workhours}\n\nPlease view the workorder here - ${workorder.url}\n\nRegards,\nTeam Facilio."
+		"message": "The following workorder ${workorder.subject} has been resolved by Technician ${workorder.assignedTo.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status.status}\n\nPlease view the workorder here - ${workorder.url}\n\nRegards,\nTeam Facilio."
 	},
 	"25": {
 		"name": "TECH_SOLVE_WO_SMS",
 		"to": "${workorder.assignedBy.phone:-}",
-		"message": "The following workorder ${workorder.subject} has been resolved by Technician ${workorder.assignedTo.name} in ${workorders.workhours}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status.status}\nWork hours : ${workorder.workhours}\n\nPlease view the workorder here - ${workorder.url}\n\n - Team Facilio."
+		"message": "The following workorder ${workorder.subject} has been resolved by Technician ${workorder.assignedTo.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status.status}\n\nPlease view the workorder here - ${workorder.url}\n\n - Team Facilio."
 	},
 	"26": {
 		"name": "TECH_SOLVE_WO_WEB"
@@ -224,7 +224,7 @@
 	"27": {
 		"name": "TECH_SOLVE_WO_PUSH",
 		"notification": {
-			"text": "The following workorder ${workorder.subject} has been resolved by Technician ${workorder.assignedTo.name} in ${workorders.workhours}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status.status}\nWork hours : ${workorder.workhours}\n\nPlease view the workorder here - ${workorder.url}\n\n - Team Facilio.",
+			"text": "The following workorder ${workorder.subject} has been resolved by Technician ${workorder.assignedTo.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status.status}\n\nPlease view the workorder here - ${workorder.url}\n\n - Team Facilio.",
 			"click_action": "WORKORDER_SUMMARY",
 			"title": "Work order completed"
 		},
@@ -464,12 +464,12 @@
 		"sender": "noreply@${org.domain}.facilio.com",
 		"subject": "Workorder resolved",
 		"to": "${workorder.assignedTo.email:-}",
-		"message": "The following work order ${workorder.subject} has been resolved in ${workorder.workhours}. Please view the resolved workorder here - ${workorder.url}\n\nRegards\nTeam Facilio."
+		"message": "The following work order ${workorder.subject} has been resolved. Please view the resolved workorder here - ${workorder.url}\n\nRegards\nTeam Facilio."
 	},
 	"54": {
 		"name": "TASK_RESOLVED_SMS",
 		"to": "${workorder.assignedTo.phone:-}",
-		"message": "The following work order ${workorder.subject} has been resolved in ${workorder.workhours}. Please view the resolved workorder here - ${workorder.url}\n\n - Team Facilio."
+		"message": "The following work order ${workorder.subject} has been resolved. Please view the resolved workorder here - ${workorder.url}\n\n - Team Facilio."
 	},
 	"55": {
 		"name": "TASK_RESOLVED_WEB"
@@ -477,7 +477,7 @@
 	"56": {
 		"name": "TASK_RESOLVED_PUSH",
 		"notification": {
-			"text": "The following work order ${workorder.subject} has been resolved in ${workorder.workhours}. Please view the resolved workorder here - ${workorder.url}\n\n - Team Facilio.",
+			"text": "The following work order ${workorder.subject} has been resolved. Please view the resolved workorder here - ${workorder.url}\n\n - Team Facilio.",
 			"click_action": "WORKORDER_SUMMARY",
 			"title": "Task closed"
 		},
@@ -487,7 +487,7 @@
 			"sound": "default",
 			"module_name": "workorder",
 			"priority": "high",
-			"text": "The following work order ${workorder.subject} has been resolved in ${workorder.workhours}. Please view the resolved workorder here - ${workorder.url}\n\n - Team Facilio.",
+			"text": "The following work order ${workorder.subject} has been resolved. Please view the resolved workorder here - ${workorder.url}\n\n - Team Facilio.",
 			"click_action": "WORKORDER_SUMMARY",
 			"title": "Task closed"
 		},
@@ -575,26 +575,21 @@
 		"message": "This is to notify you that your facility ${site.name}'s ${asset.names} will expire on ${expired.date}. We hope you take the neccessary action and update the latest warrenty date for the asset here ${asset.url} \n\nRegards,\nTeam Facilio."
 	},
 	"69": {
-		"name": "ASSET_TOBEEXPIRED_SMS",
-		"to": "${org.superAdmin.phone:-}",
-		"message": "This is to notify you that your facility ${site.name}'s ${asset.names} will expire on ${expired.date}. We hope you take the neccessary action and update the latest warrenty date for the asset here ${asset.url} \n\nRegards,\nTeam Facilio."
-	},
-	"70": {
 		"name": "ON_HOLD_WO_EMAIL",
 		"sender": "noreply@${org.domain}.facilio.com",
 		"subject": "Work order put on hold",
 		"to": "${workorder.assignedBy.email:-}",
 		"message": "The following work order ${workorder.subject} assigned  has been put on hold by ${workorder.assignedTo.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status.status}\n\nPlease view the work order here - ${workorder.url}\n\nRegards,\nTeam Facilio."
 	},
-	"71": {
+	"70": {
 		"name": "ON_HOLD_WO_SMS",
 		"to": "${workorder.assignedBy.phone:-}",
 		"message": "The following work order ${workorder.subject} has been put on hold by ${workorder.assignedTo.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status.status}\n\nPlease view the work order here - ${workorder.url}\n\n - Team Facilio."
 	},
-	"72": {
+	"71": {
 		"name": "ON_HOLD_WO_WEB"
 	},
-	"73": {
+	"72": {
 		"name": "ON_HOLD_WO_PUSH",
 		"notification": {
 			"text": "The following work order ${workorder.subject} has been put on hold by ${workorder.assignedTo.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nStatus : ${workorder.status.status}\n\nPlease view the work order here - ${workorder.url}\n\n - Team Facilio.",
@@ -612,5 +607,10 @@
 			"title": "Work order put on hold"
 		},
 		"id": "${workorder.assignedBy.id:-}"
+	},
+	"73": {
+		"name": "ASSET_TOBEEXPIRED_SMS",
+		"to": "${org.superAdmin.phone:-}",
+		"message": "This is to notify you that your facility ${site.name}'s ${asset.names} will expire on ${expired.date}. We hope you take the neccessary action and update the latest warrenty date for the asset here ${asset.url} \n\nRegards,\nTeam Facilio."
 	}
 }

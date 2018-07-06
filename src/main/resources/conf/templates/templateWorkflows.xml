@@ -575,7 +575,6 @@
 			<parameter name="workorder.url" type="String" />
 			<parameter name="workorder.assignedTo.name" type="String" />
 			<parameter name="workorder.status.status" type="String" />	
-			<parameter name="workorder.workhours" type="String" />	
 			<expression name="org.domain">
 				<constant>${org.domain}</constant>
 			</expression>
@@ -597,9 +596,6 @@
 			<expression name="workorder.status.status">
 				<constant>${workorder.status.status}</constant>
 			</expression>
-			<expression name="workorder.workhours">
-				<constant>${workorder.workhours}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="25">
@@ -610,7 +606,6 @@
 			<parameter name="workorder.url" type="String" />
 			<parameter name="workorder.assignedTo.name" type="String" />
 			<parameter name="workorder.status.status" type="String" />
-			<parameter name="workorder.workhours" type="String" />					
 			<expression name="workorder.assignedBy.phone">
 				<constant>${workorder.assignedBy.phone}</constant>
 			</expression>
@@ -629,9 +624,6 @@
 			<expression name="workorder.status.status">
 				<constant>${workorder.status.status}</constant>
 			</expression>
-			<expression name="workorder.workhours">
-				<constant>${workorder.workhours}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="26">
@@ -647,7 +639,6 @@
 			<parameter name="workorder.assignedTo.id" type="Number" />
 			<parameter name="workorder.assignedTo.name" type="String" />
 			<parameter name="workorder.status.status" type="String" />
-			<parameter name="workorder.workhours" type="String" />											
 			<expression name="workorder.subject">
 				<constant>${workorder.subject}</constant>
 			</expression>
@@ -668,9 +659,6 @@
 			</expression>
 			<expression name="workorder.status.status">
 				<constant>${workorder.status.status}</constant>
-			</expression>
-			<expression name="workorder.workhours">
-				<constant>${workorder.workhours}</constant>
 			</expression>
 		</workflow>
 	</template>
@@ -1187,7 +1175,6 @@
 			<parameter name="workorder.assignedTo.email" type="String" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.url" type="String" />
-			<parameter name="workorder.workhours" type="String" />
 			<expression name="org.domain">
 				<constant>${org.domain}</constant>
 			</expression>
@@ -1200,9 +1187,6 @@
 			<expression name="workorder.url">
 				<constant>${workorder.url}</constant>
 			</expression>
-			<expression name="workorder.workhours">
-				<constant>${workorder.workhours}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="54">
@@ -1210,7 +1194,6 @@
 			<parameter name="workorder.assignedTo.phone" type="String" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.url" type="String" />
-			<parameter name="workorder.workhours" type="String" />
 			<expression name="workorder.assignedTo.phone">
 				<constant>${workorder.assignedTo.phone}</constant>
 			</expression>
@@ -1219,9 +1202,6 @@
 			</expression>
 			<expression name="workorder.url">
 				<constant>${workorder.url}</constant>
-			</expression>
-			<expression name="workorder.workhours">
-				<constant>${workorder.workhours}</constant>
 			</expression>
 		</workflow>
 	</template>
@@ -1235,7 +1215,6 @@
 			<parameter name="workorder.assignedTo.id" type="Number" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.url" type="String" />
-			<parameter name="workorder.workhours" type="String" />
 			<expression name="workorder.id">
 				<constant>${workorder.id}</constant>
 			</expression>
@@ -1247,9 +1226,6 @@
 			</expression>
 			<expression name="workorder.url">
 				<constant>${workorder.url}</constant>
-			</expression>
-			<expression name="workorder.workhours">
-				<constant>${workorder.workhours}</constant>
 			</expression>
 		</workflow>
 	</template>	
@@ -1479,7 +1455,7 @@
 				<constant>${org.domain}</constant>
 			</expression>
 			<expression name="expired.date">
-				<constant>${expired.day}</constant>
+				<constant>${expired.date}</constant>
 			</expression>
 			<expression name="asset.url">
 				<constant>${asset.url}</constant>
@@ -1515,7 +1491,7 @@
 				<constant>${org.domain}</constant>
 			</expression>
 			<expression name="expired.date">
-				<constant>${expired.day}</constant>
+				<constant>${expired.date}</constant>
 			</expression>
 			<expression name="asset.url">
 				<constant>${asset.url}</constant>
@@ -1526,42 +1502,6 @@
 		</workflow>
 	</template>
 	<template id="69">
-		<workflow>
-			<parameter name="org.superAdmin.email" type="String" />
-			<parameter name="org.superAdmin.phone" type="String" />
-			<parameter name="asset.id" type="String" />
-			<parameter name="org.domain" type="String" />
-			<parameter name="expired.date" type="String" />
-			<parameter name="asset.names" type="String" />
-			<parameter name="asset.url" type="String" />
-			<parameter name="site.name" type="String" />
-			<expression name="asset.names" type="String">
-				<constant>${asset.names}</constant>
-			</expression>
-			<expression name="asset.id">
-				<constant>${asset.id}</constant>
-			</expression>
-			<expression name="org.superAdmin.phone">
-				<constant>${org.superAdmin.phone}</constant>
-			</expression>
-			<expression name="org.superAdmin.email">
-				<constant>${org.superAdmin.email}</constant>
-			</expression>
-			<expression name="org.domain">
-				<constant>${org.domain}</constant>
-			</expression>
-			<expression name="expired.date">
-				<constant>${expired.day}</constant>
-			</expression>
-			<expression name="asset.url">
-				<constant>${asset.url}</constant>
-			</expression>
-			<expression name="site.name">
-				<constant>${site.name}</constant>
-			</expression>
-		</workflow>
-	</template>
-	<template id="70">
 		<workflow>
 		    <parameter name="org.domain" type="String" />
 			<parameter name="workorder.assignedBy.email" type="String" />
@@ -1593,7 +1533,7 @@
 			</expression>
 		</workflow>
 	</template>
-	<template id="71">
+	<template id="70">
 		<workflow>
 		    <parameter name="org.domain" type="String" />
 			<parameter name="workorder.assignedBy.phone" type="String" />
@@ -1625,11 +1565,11 @@
 			</expression>
 		</workflow>
 	</template>
-	<template id="72">
+	<template id="71">
 		<workflow>
 		</workflow>
 	</template>
-	<template id="73">
+	<template id="72">
 		<workflow>
 		    <parameter name="org.domain" type="String" />
 			<parameter name="workorder.subject" type="String" />
@@ -1662,6 +1602,42 @@
 			</expression>
 			<expression name="workorder.assignedTo.name">
 				<constant>${workorder.assignedTo.name}</constant>
+			</expression>
+		</workflow>
+	</template>
+	<template id="73">
+		<workflow>
+			<parameter name="org.superAdmin.email" type="String" />
+			<parameter name="org.superAdmin.phone" type="String" />
+			<parameter name="asset.id" type="String" />
+			<parameter name="org.domain" type="String" />
+			<parameter name="expired.date" type="String" />
+			<parameter name="asset.names" type="String" />
+			<parameter name="asset.url" type="String" />
+			<parameter name="site.name" type="String" />
+			<expression name="asset.names" type="String">
+				<constant>${asset.names}</constant>
+			</expression>
+			<expression name="asset.id">
+				<constant>${asset.id}</constant>
+			</expression>
+			<expression name="org.superAdmin.phone">
+				<constant>${org.superAdmin.phone}</constant>
+			</expression>
+			<expression name="org.superAdmin.email">
+				<constant>${org.superAdmin.email}</constant>
+			</expression>
+			<expression name="org.domain">
+				<constant>${org.domain}</constant>
+			</expression>
+			<expression name="expired.date">
+				<constant>${expired.date}</constant>
+			</expression>
+			<expression name="asset.url">
+				<constant>${asset.url}</constant>
+			</expression>
+			<expression name="site.name">
+				<constant>${site.name}</constant>
 			</expression>
 		</workflow>
 	</template>
