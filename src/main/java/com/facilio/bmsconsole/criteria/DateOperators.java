@@ -1563,6 +1563,66 @@ public enum DateOperators implements Operator<String> {
 		}
 	},
 	
+	NEXT_N_DAYS(61, "Next N Days") {
+		@Override
+		public String getWhereClause(String columnName, String value) {
+			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
+				StringBuilder builder = new StringBuilder();
+				builder.append(DateTimeUtil.getDayStartTime())
+						.append("<=")
+						.append(columnName)
+						.append(" AND ")
+						.append(columnName)
+						.append("<")
+						.append(DateTimeUtil.getDayStartTime(Integer.parseInt(value)));
+				return builder.toString();
+			}
+			return null;
+		}
+		
+		@Override
+		public boolean isDynamicOperator() {
+			return true;
+		}
+		
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						if(object != null && object instanceof Long) {
+							long currentVal = (long) object;
+							return DateTimeUtil.getDayStartTime() <= currentVal && currentVal < DateTimeUtil.getDayStartTime(Integer.parseInt(value));
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
+
+		@Override
+		public DateRange getRange(String value) {
+			// TODO Auto-generated method stub
+			return new DateRange(DateTimeUtil.getDayStartTime(), DateTimeUtil.getDayStartTime(Integer.parseInt(value))-1);
+		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+		
+	},
+	
 	LAST_MONTHS(39, "Last Months") {
 		@Override
 		public String getWhereClause(String columnName, String value) {
