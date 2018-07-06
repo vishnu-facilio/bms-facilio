@@ -14,7 +14,6 @@ import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.CalendarColorContext;
 import com.facilio.bmsconsole.context.NoteContext;
@@ -440,7 +439,7 @@ public class TicketAPI {
 		
 		if (oldTicket != null) {
 			if (oldTicket.getAssignedTo() != null) {
-				handleWorkHoursReading(oldTicket.getAssignedTo().getOuid(), oldTicket.getId(), oldTicket.getStatus(), statusObj);
+//				handleWorkHoursReading(oldTicket.getAssignedTo().getOuid(), oldTicket.getId(), oldTicket.getStatus(), statusObj);
 			}
 			if ("Work in Progress".equalsIgnoreCase(statusObj.getStatus())) {
 				if (oldTicket.getActualWorkStart() != -1) {
