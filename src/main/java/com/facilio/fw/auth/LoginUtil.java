@@ -64,7 +64,17 @@ public class LoginUtil {
 		} else {
 			org = AccountUtil.getOrgBean().getOrg(user.getOrgId());
 		}
-		return new Account(org, user);
+		
+		Account account = new Account(org, user);
+		
+		String isAndroid = request.getHeader("isAndroid");
+		account.setIsFromAndroid(isAndroid != null && isAndroid.equalsIgnoreCase("true"));
+		String isIos = request.getHeader("isIos");
+		account.setIsFromIos(isIos != null && isIos.equalsIgnoreCase("true"));
+		String appVersion = request.getHeader("app_version");
+		account.setAppVersion(appVersion);
+		
+		return account;
 	}
 
 	public static Account getPortalAccount(CognitoUser cognitoUser, long portalId) throws Exception {

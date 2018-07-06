@@ -9,7 +9,10 @@ import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 
+import com.facilio.accounts.dto.Account;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
@@ -61,14 +64,6 @@ public class TaskAction extends ActionSupport {
 		this.section = section;
 	}
 	
-	private String result;
-	public String getResult() {
-		return result;
-	}
-	public void setResult(String result) {
-		this.result = result;
-	}
-	
 	public String addTaskSection() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
@@ -76,7 +71,6 @@ public class TaskAction extends ActionSupport {
 		
 		Chain addSectionChain = FacilioChainFactory.addTaskSectionChain();
 		addSectionChain.execute(context);
-		setResult("success");
 		
 		return SUCCESS;
 	}
@@ -159,7 +153,13 @@ public class TaskAction extends ActionSupport {
 	public String updateTask() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
-		context.put(FacilioConstants.ContextNames.DO_VALIDTION, getDoValidation());
+		Account account = AccountUtil.getCurrentAccount();
+//		boolean doValidation = getDoValidation();
+		boolean doValidation = false;
+		if (account.getIsFromAndroid()) {
+			context.put(FacilioConstants.ContextNames.DO_VALIDTION, getDoValidation());
+		}
+		context.put(FacilioConstants.ContextNames.DO_VALIDTION, doValidation);
 		return updateTask(context);
 	}
 	public String addTaskInput() throws Exception {
