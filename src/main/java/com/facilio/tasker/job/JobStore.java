@@ -320,6 +320,33 @@ public class JobStore {
 		return deleteBuilder.delete();
 	}
 	
+	public static List<JobContext> getJobs(List<Long> jobIds, String jobName) throws SQLException, JsonParseException, JsonMappingException, IOException, ParseException {
+		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = getPStmt(conn, jobIds, jobName); ResultSet rs = pstmt.executeQuery()) {
+			List<JobContext> jcs = new ArrayList<>();
+			while (rs.next()) {
+				 jcs.add(getJobFromRS(rs));
+			}
+			return jcs;
+		}
+		catch (SQLException e) {
+			logger.log(Level.SEVERE,"Error",e);
+			throw e;
+		}
+	}
+	
+	private static PreparedStatement getPStmt(Connection conn, List<Long> ids, String jobName) throws SQLException {
+		String q = createQuery(ids.size());
+		PreparedStatement pstmt = conn.prepareStatement(q);
+		pstmt.setString(1, jobName);
+		int i = 2;
+		for (Long id: ids) {
+			pstmt.setLong(i, id);
+			i++;
+		}
+		return pstmt;
+	}
+	
+	
 	public static JobContext getJob(long jobId, String jobName) throws SQLException, JsonParseException, JsonMappingException, IOException, ParseException {
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = getPStmt(conn, jobId, jobName); ResultSet rs = pstmt.executeQuery()) {
 			if(rs.next()) {
@@ -343,5 +370,16 @@ public class JobStore {
 		pstmt.setString(2, jobName);
 		
 		return pstmt;
+	}
+	
+	private static String createQuery(int length) {
+		String query = "SELECT * FROM Jobs WHERE JOBNAME = ? AND JOBID in (";
+		StringBuilder queryBuilder = new StringBuilder(query);
+		for( int i = 0; i< length; i++){
+			queryBuilder.append(" ?");
+			if(i != length -1) queryBuilder.append(",");
+		}
+		queryBuilder.append(")");
+		return queryBuilder.toString();
 	}
 }

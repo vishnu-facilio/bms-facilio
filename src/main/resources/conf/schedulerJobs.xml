@@ -27,4 +27,5 @@
 	 <!-- Shift jobs -->
 	 <job name='StartShift' classname= 'com.facilio.bmsconsole.jobs.ShiftStartJob'/>
 	 <job name='EndShift' classname= 'com.facilio.bmsconsole.jobs.ShiftEndJob'/>
+	 <job name='EndShiftOTJ' classname= 'com.facilio.bmsconsole.jobs.ShiftEndOneTimeJob'/>
 </scheduler>

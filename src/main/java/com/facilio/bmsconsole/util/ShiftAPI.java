@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.util;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
@@ -15,6 +17,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
 
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
@@ -40,6 +44,9 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.tasker.ScheduleInfo.FrequencyType;
+import com.facilio.tasker.job.JobContext;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 public class ShiftAPI {
 	public static List<ShiftContext> getAllShifts() throws Exception {
@@ -115,6 +122,12 @@ public class ShiftAPI {
 			FacilioTimer.scheduleCalendarJob(d.getId(), "EndShift", getShiftEndScheduleExecutionTime(d.getDayOfWeekEnum(), startTime, endTime), endShiftschedule, "priority");			
 		}
 	}
+	
+	public static void scheduleOneTimeJobs(List<JobContext> jcs, JSONObject obj) throws Exception {
+		for (JobContext jc: jcs) {
+			BmsJobUtil.scheduleOneTimeJobWithProps(jc.getJobId(), "EndShiftOTJ", jc.getExecutionTime(), "priority", obj);
+		}
+	}
 
 	public static long getShiftStartScheduleExecutionTime(DayOfWeek day, LocalTime startTime, LocalTime endTime) {
 		ZonedDateTime now = DateTimeUtil.getDateTime();
@@ -145,7 +158,7 @@ public class ShiftAPI {
 	private static long getShiftEndScheduleExecutionTime(DayOfWeek day, LocalTime startTime, LocalTime endTime) {
 		ZonedDateTime now = DateTimeUtil.getDateTime();
 		int dCmp = now.getDayOfWeek().compareTo(day);
-		if (endTime.compareTo(startTime) > 0) {
+		if (endTime.compareTo(startTime) < 0) {
 			day = day.plus(1);
 		}
 		if (dCmp == 0) {
@@ -266,6 +279,26 @@ public class ShiftAPI {
 		c.execute(context);
 	}
 	
+	public static List<Long> getOuidFromShift(long shiftId) throws Exception {
+		FacilioField ouid = new FacilioField();
+		ouid.setName("ouid");
+		ouid.setDataType(FieldType.NUMBER);
+		ouid.setColumnName("ORG_USERID");
+		ouid.setModule(AccountConstants.getOrgUserModule());
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(Arrays.asList(ouid))
+				.table("ORG_Users")
+				.innerJoin("Shift_User_Rel")
+				.on("ORG_Users.ORG_USERID = Shift_User_Rel.ORG_USERID")
+				.andCondition(CriteriaAPI.getCondition("Shift_User_Rel.SHIFTID", "shiftId", String.valueOf(shiftId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(AccountUtil.getCurrentOrg().getId()), NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		return props.stream().map(x -> {return (long) x.get("ouid");}).collect(Collectors.toList());
+	}
+	
 	public static List<Long> getOuids(long singleDayBusinessId) throws Exception {
 		FacilioField ouid = new FacilioField();
 		ouid.setName("ouid");
@@ -338,9 +371,48 @@ public class ShiftAPI {
 		
 		BusinessHoursList businessHoursList = BusinessHoursAPI.getBusinessHours(shift.getBusinessHoursId());
 		
+		scheduleOneTimeJob(shift, businessHoursList);
+		
 		deleteJobsForshifts(businessHoursList.stream().map(BusinessHourContext::getId).collect(Collectors.toList()));
 		
 		BusinessHoursAPI.deleteBusinessHours(shift.getBusinessHoursId());
+	}
+
+	public static void scheduleOneTimeJob(ShiftContext shift, BusinessHoursList businessHoursList)
+			throws JsonParseException, JsonMappingException, SQLException, IOException, ParseException, Exception {
+		List<Long> bisHrIds = businessHoursList.stream().map(e -> {
+			LocalTime startTime = e.getStartTimeAsLocalTime();
+			LocalTime endTime = e.getEndTimeAsLocalTime();
+			
+			DayOfWeek day = e.getDayOfWeekEnum();
+			ZonedDateTime now = DateTimeUtil.getDateTime();
+			if (day == now.getDayOfWeek()) {
+				if (startTime.compareTo(endTime) <= 0) {
+					if (now.toLocalTime().compareTo(startTime) > 0 
+							&& now.toLocalTime().compareTo(endTime) <= 0) {
+						return e.getId();
+					} 
+				} else {
+					if (now.toLocalTime().compareTo(startTime) > 0) {
+						return e.getId();
+					} 
+				}
+			} else if (day.plus(1) == now.getDayOfWeek()) {
+				if (startTime.compareTo(endTime) > 0 
+						&& now.toLocalTime().compareTo(endTime) <= 0) {
+					return e.getId();
+				}
+			}
+			return -1l;
+		}).filter(e -> e != null && e != -1l).collect(Collectors.toList());
+		
+		if (bisHrIds == null || bisHrIds.isEmpty()) {
+			return;
+		}
+		List<JobContext> jcs = FacilioTimer.getJobs(bisHrIds, "EndShift");
+		JSONObject obj = new JSONObject();
+		obj.put("shiftId", shift.getId());
+		scheduleOneTimeJobs(jcs, obj);
 	}
 
 }
