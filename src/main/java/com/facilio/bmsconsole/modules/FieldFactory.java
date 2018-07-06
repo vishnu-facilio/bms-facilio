@@ -58,6 +58,18 @@ public class FieldFactory {
 		static {
 			energyFieldsInclude.add("id");
 		}
+		public static List<String> entityFieldsInclucde = new ArrayList<String>();
+		static {
+			entityFieldsInclucde.add("entity");
+			entityFieldsInclucde.add("source");
+			entityFieldsInclucde.add("resourceId");
+			entityFieldsInclucde.add("eventMessage");
+			entityFieldsInclucde.add("severity");
+			entityFieldsInclucde.add("createdTime");
+			entityFieldsInclucde.add("priority");
+			entityFieldsInclucde.add("alarmClass");
+			entityFieldsInclucde.add("state");
+		}
 	}
 
 	public static List<FacilioField> getAssetCategoryReadingRelFields() {

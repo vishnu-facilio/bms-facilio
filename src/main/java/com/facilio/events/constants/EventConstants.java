@@ -234,7 +234,7 @@ public class EventConstants {
 			
 			FacilioField resourceId = new FacilioField();
 			resourceId.setName("resourceId");
-			resourceId.setDisplayName("Resource Id");
+			resourceId.setDisplayName("Resource");
 			resourceId.setDataType(FieldType.NUMBER);
 			resourceId.setDisplayType(FacilioField.FieldDisplayType.NUMBER);
 			resourceId.setColumnName("RESOURCE_ID");
@@ -243,7 +243,7 @@ public class EventConstants {
 			
 			FacilioField eventType = new FacilioField();
 			eventType.setName("eventMessage");
-			eventType.setDisplayName("Event Message");
+			eventType.setDisplayName("Message");
 			eventType.setDataType(FieldType.STRING);
 			eventType.setDisplayType(FacilioField.FieldDisplayType.TEXTBOX);
 			eventType.setColumnName("EVENT_MESSAGE");

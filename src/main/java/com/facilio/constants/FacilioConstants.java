@@ -173,6 +173,9 @@ public class FacilioConstants {
 		public static final String ALARM_LIST = "alarms";
 		public static final String ALARM_ENTITY_ID = "alarmentityid";
 		
+		
+		public static final String EVENT = "event";
+		
 		public static final String TASK = "task";
 		public static final String TASK_LIST = "tasks";
 		public static final String TASK_MAP = "taskMap";

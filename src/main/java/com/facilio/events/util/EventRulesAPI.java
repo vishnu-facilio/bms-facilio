@@ -72,6 +72,23 @@ public class EventRulesAPI {
 		return getEventRulesFromProps(eventRulesProps, true);
 	}
 	
+	public static final List<EventRuleContext> getAllActiveEventRules() throws Exception {
+		FacilioModule module = EventConstants.EventModuleFactory.getEventRulesModule();
+		List<FacilioField> fields = EventConstants.EventFieldFactory.getEventRulesFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+//		FacilioField active = fieldMap.get("active");
+		
+		GenericSelectRecordBuilder rulebuilder = new GenericSelectRecordBuilder()
+													.select(fields)
+													.table(module.getTableName())
+													.orderBy("EXECUTION_ORDER")
+													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+													;
+
+		List<Map<String, Object>> eventRulesProps = rulebuilder.get();
+		return getEventRulesFromProps(eventRulesProps, true);
+	}
+	
 	private static final List<EventRuleContext> getEventRulesFromProps(List<Map<String, Object>> eventRulesProps, boolean fetchChildren) throws Exception {
 		if(eventRulesProps != null && !eventRulesProps.isEmpty()) {
 			List<EventRuleContext> eventRules = new ArrayList<>();
