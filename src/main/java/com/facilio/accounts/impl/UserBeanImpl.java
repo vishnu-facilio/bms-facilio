@@ -185,7 +185,7 @@ public class UserBeanImpl implements UserBean {
 				.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(user.getUid()), NumberOperators.EQUALS));
 		
 		if (user.getShiftId() != null) {
-			insertShiftRel(user.getUid(), user.getShiftId());
+			insertShiftRel(user.getOuid(), user.getShiftId());
 		}
 		
 		if (updatedRows > 0) {
@@ -298,7 +298,7 @@ public class UserBeanImpl implements UserBean {
 		Long shiftId = user.getShiftId();
 		
 		if (shiftId != null) {
-			insertShiftRel(uid, shiftId);
+			insertShiftRel(ouid, shiftId);
 		}
 		
 		sendInvitation(ouid, user);
@@ -314,7 +314,7 @@ public class UserBeanImpl implements UserBean {
 				.fields(FieldFactory.getShiftUserRelModuleFields());
 		
 		ShiftUserRelContext rel = new ShiftUserRelContext();
-		rel.setUserId(uid);
+		rel.setOuid(uid);
 		rel.setShiftId(shiftId);
 		
 		Map<String, Object> relProps = FieldUtil.getAsProperties(rel);

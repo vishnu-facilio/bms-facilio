@@ -286,37 +286,7 @@ public class JobStore {
 		return jc;
 	}
 	
-	public static void deleteJobs(List<Long> jobIds) throws SQLException {
-		String deleteSql = createQuery(jobIds.size());
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = conn.prepareStatement(deleteSql)) {
-			for(int i = 1; i <= jobIds.size(); i++){
-				pstmt.setLong(i, jobIds.get(i-1));
-			}
-			if(pstmt.executeUpdate() < 1) {
-				System.out.println("Deletion failed with Job ID : "+jobIds.toString());
-			}
-			else {
-				System.out.println("Successfully deleted job with Job ID : "+jobIds.toString());
-			}
-			
-			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			log.info("Exception occurred ", e);
-			throw e;
-		}
-	}
-	
-	private static String createQuery(int length) {
-		String query = "DELETE FROM Jobs WHERE JOBID IN (";
-		StringBuilder queryBuilder = new StringBuilder(query);
-		for( int i = 0; i< length; i++){
-			queryBuilder.append(" ?");
-			if(i != length -1) queryBuilder.append(",");
-		}
-		queryBuilder.append(")");
-		return queryBuilder.toString();
-	}
+
 	
 	public static void deleteJob(long jobId, String jobName) throws SQLException {
 		String deleteSql = "DELETE FROM Jobs WHERE JOBID = ? AND JOBNAME = ?";

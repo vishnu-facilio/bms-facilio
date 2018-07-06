@@ -200,6 +200,11 @@ public class ReadingsAPI {
 				ReadingDataMeta meta = FieldUtil.getAsBeanFromMap(prop, ReadingDataMeta.class);
 				Object value = meta.getValue();
 				FacilioField field = fieldMap.get(meta.getFieldId());
+				if (field.getDataTypeEnum() == FieldType.ENUM) {
+					if (value != null && value instanceof String) {
+						value = Integer.valueOf((String) value);
+					}
+				}
 				meta.setValue(FieldUtil.castOrParseValueAsPerType(field, value));
 				meta.setField(field);
 				metaList.add(meta);

@@ -236,7 +236,7 @@ public class OrgBeanImpl implements OrgBean {
 				.innerJoin("ORG_Users")
 				.on("Users.USERID = ORG_Users.USERID")
 				.leftJoin("Shift_User_Rel")
-				.on("Users.USERID = Shift_User_Rel.USERID")
+				.on("ORG_Users.ORG_USERID = Shift_User_Rel.ORG_USERID")
 				.andCustomWhere("ORGID = ? AND USER_TYPE = ? AND DELETED_TIME = -1", orgId, AccountConstants.UserType.USER.getValue());
 		
 		List<Map<String, Object>> props = selectBuilder.get();

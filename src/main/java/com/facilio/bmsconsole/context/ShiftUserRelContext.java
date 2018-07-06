@@ -4,7 +4,7 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class ShiftUserRelContext extends ModuleBaseWithCustomFields {
 	private long shiftId;
-	private long userId;
+	private long ouid;
 	
 	public long getShiftId() {
 		return shiftId;
@@ -12,11 +12,11 @@ public class ShiftUserRelContext extends ModuleBaseWithCustomFields {
 	public void setShiftId(long shiftId) {
 		this.shiftId = shiftId;
 	}
-	public long getUserId() {
-		return userId;
+	public long getOuid() {
+		return ouid;
 	}
-	public void setUserId(long userId) {
-		this.userId = userId;
+	public void setOuid(long ouid) {
+		this.ouid = ouid;
 	}
 
 }

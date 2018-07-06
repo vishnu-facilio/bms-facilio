@@ -2382,6 +2382,13 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getDeleteShiftCommand() {
+		Chain c = new TransactionChain();
+		c.addCommand(new DeleteShiftCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	private static  long createOrg(Organization org) throws Exception {
 		
 		Organization existingOrg = getOrg(org.getDomain());

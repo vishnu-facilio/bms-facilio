@@ -3,35 +3,39 @@ package com.facilio.bmsconsole.util;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
-import java.time.format.TextStyle;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.StringJoiner;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.BusinessHourContext;
+import com.facilio.bmsconsole.context.BusinessHoursList;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ShiftContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.jobs.ShiftStartJob;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.ScheduleInfo;
@@ -89,7 +93,8 @@ public class ShiftAPI {
 	}
 	
 	public static void deleteJobsForshifts(List<Long> ids) throws Exception {
-		FacilioTimer.deleteJobs(ids);
+		FacilioTimer.deleteJobs(ids, "StartShift");
+		FacilioTimer.deleteJobs(ids, "EndShift");
 	}
 
 	public static void scheduleJobs(List<BusinessHourContext> days) throws Exception {
@@ -140,6 +145,9 @@ public class ShiftAPI {
 	private static long getShiftEndScheduleExecutionTime(DayOfWeek day, LocalTime startTime, LocalTime endTime) {
 		ZonedDateTime now = DateTimeUtil.getDateTime();
 		int dCmp = now.getDayOfWeek().compareTo(day);
+		if (endTime.compareTo(startTime) > 0) {
+			day = day.plus(1);
+		}
 		if (dCmp == 0) {
 			int cmp = now.toLocalTime().compareTo(startTime);
 			if (cmp > 0) {
@@ -152,17 +160,105 @@ public class ShiftAPI {
 		} 
 		return nextWeek(now, day, endTime);
 	}
+	
+	public static List<ReadingContext> getUserWorkHoursReading(List<Long> userIds, String eventType, long executionTime) throws Exception {
+		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioField> allFields= bean.getAllFields("userworkhoursreading");
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
+		List<Pair<Long, FacilioField>> rdmPairs = new ArrayList<>();
+		
+		for (long parentId: userIds) {
+			for (String fieldName : Arrays.asList("workHoursEntry", "woId")) {
+				FacilioField field = fieldMap.get(fieldName);
+				if (field != null) {
+					Pair<Long, FacilioField> pair = Pair.of(parentId, field);
+					rdmPairs.add(pair);
+				}
+			}
+		}
+		
+		List<ReadingDataMeta> metaList = ReadingsAPI.getReadingDataMetaList(rdmPairs) ;
+		
+		if (metaList == null || metaList.isEmpty()) {
+			return null;
+		}
+		
+		Map<String, ReadingDataMeta> readingDataMeta = new HashMap<> ();
+		for(ReadingDataMeta meta : metaList) {
+			long resourceId = meta.getResourceId();
+			String fieldName = meta.getField().getName();
+			readingDataMeta.put(resourceId+"_"+fieldName, meta);
+		}
+		List<ReadingContext> rContexts = new ArrayList<>();
+		for (long userId : userIds) {
+			ReadingDataMeta meta = readingDataMeta.get(userId+"_"+"workHoursEntry");
+			ReadingDataMeta woIdMeta = readingDataMeta.get(userId+"_"+"woId");
+			if (meta == null || meta.getValue() == null) {
+				continue;
+			}
+			switch (meta.getValue().toString()) {
+			case "1":
+				if (eventType == "shiftend") {
+					ReadingContext r = new ReadingContext();
+					r.addReading("workHoursEntry", "Shift-Pause");
+					r.addReading("woId", woIdMeta.getValue());
+					r.setParentId(userId);
+					r.setTtime(executionTime);
+					rContexts.add(r);
+				}
+				break;
+			case "3":
+				if (eventType == "shiftend") {
+					ReadingContext r = new ReadingContext();
+					r.addReading("workHoursEntry", "Shift-Pause");
+					r.addReading("woId", woIdMeta.getValue());
+					r.setParentId(userId);
+					r.setTtime(executionTime);
+					rContexts.add(r);
+				}
+				break;
+			case "4":
+				if (eventType == "shiftstart") {
+					ReadingContext r = new ReadingContext();
+					r.addReading("workHoursEntry", "Shift-Resume");
+					r.addReading("woId", woIdMeta.getValue());
+					r.setParentId(userId);
+					r.setTtime(executionTime);
+					rContexts.add(r);
+				}
+			case "5":
+				if (eventType == "shiftend") {
+					ReadingContext r = new ReadingContext();
+					r.addReading("workHoursEntry", "Shift-Pause");
+					r.addReading("woId", woIdMeta.getValue());
+					r.setParentId(userId);
+					r.setTtime(executionTime);
+					rContexts.add(r);
+				}
+				break;
+			}
+		}
+		return rContexts;
+	} 
 
-	public static void addUserShiftReading(long singleDayBusinessId, String entry, long executionTime) throws Exception {
-		List<Long> userIds = getUserIds(singleDayBusinessId);
-		Map<String, List<ReadingContext>> readingMap = new HashMap<>();
-		readingMap.put("usershiftreading", userIds.stream().map(id -> {
+	public static List<ReadingContext> getUserShiftReading(List<Long> userIds, String entry, long executionTime) throws Exception {
+		return userIds.stream().map(id -> {
 			ReadingContext rContext = new ReadingContext();
 			rContext.setParentId(id);
 			rContext.addReading("shiftEntry", entry);
 			rContext.setTtime(executionTime);
 			return rContext;
-		}).collect(Collectors.toList()));
+		}).collect(Collectors.toList());
+	}
+	
+	public static void addUserWorkHoursReading(long assignedToUserId, long workOrderId, String reading, long time) throws Exception {
+		Map<String, List<ReadingContext>> readingMap = new HashMap<>();
+		ReadingContext rContext = new ReadingContext();
+		rContext.setParentId(assignedToUserId);
+		rContext.addReading("woId", workOrderId);
+		rContext.addReading("workHoursEntry", reading);
+		rContext.setTtime(time);
+		readingMap.put("userworkhoursreading", Arrays.asList(rContext));
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.READINGS_MAP, readingMap);
@@ -170,22 +266,81 @@ public class ShiftAPI {
 		c.execute(context);
 	}
 	
-	private static List<Long> getUserIds(long singleDayBusinessId) throws Exception {
+	public static List<Long> getOuids(long singleDayBusinessId) throws Exception {
+		FacilioField ouid = new FacilioField();
+		ouid.setName("ouid");
+		ouid.setDataType(FieldType.NUMBER);
+		ouid.setColumnName("ORG_USERID");
+		ouid.setModule(AccountConstants.getOrgUserModule());
+		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(Arrays.asList(AccountConstants.getUserIdField(AccountConstants.getUserModule())))
-				.table("Users")
+				.select(Arrays.asList(ouid))
+				.table("ORG_Users")
 				.innerJoin("Shift_User_Rel")
-				.on("Users.USERID = Shift_User_Rel.USERID")
+				.on("ORG_Users.ORG_USERID = Shift_User_Rel.ORG_USERID")
 				.innerJoin("Shift")
 				.on("Shift_User_Rel.SHIFTID = Shift.ID")
 				.innerJoin("BusinessHours")
 				.on("Shift.BUSINESSHOURSID = BusinessHours.ID")
 				.innerJoin("SingleDayBusinessHours")
 				.on("SingleDayBusinessHours.PARENT_ID = BusinessHours.ID")
-				.andCondition(CriteriaAPI.getCondition("SingleDayBusinessHours.ID", "childId", String.valueOf(singleDayBusinessId), NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition("SingleDayBusinessHours.ID", "childId", String.valueOf(singleDayBusinessId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(AccountUtil.getCurrentOrg().getId()), NumberOperators.EQUALS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		
-		return props.stream().map(x -> {return (long) x.get("uid");}).collect(Collectors.toList());
+		return props.stream().map(x -> {return (long) x.get("ouid");}).collect(Collectors.toList());
 	}
+	
+	public static List<String> getAssociatedUserNames(long shiftId) throws Exception {
+		FacilioField name = new FacilioField();
+		name.setName("name");
+		name.setDataType(FieldType.STRING);
+		name.setColumnName("NAME");
+		name.setModule(AccountConstants.getUserModule());
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(Arrays.asList(name))
+				.table("Users")
+				.innerJoin("ORG_Users")
+				.on("Users.USERID = ORG_USERS.USERID")
+				.innerJoin("Shift_User_Rel")
+				.on("ORG_Users.ORG_USERID = Shift_User_Rel.ORG_USERID")
+				.innerJoin("Shift")
+				.on("Shift_User_Rel.SHIFTID = Shift.ID")
+				.andCondition(CriteriaAPI.getCondition("Shift.ID", "shiftId", String.valueOf(shiftId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("Shift.ORGID", "orgId", String.valueOf(AccountUtil.getCurrentOrg().getId()), NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		return props.stream().map(x -> {return StringEscapeUtils.escapeHtml4((String) x.get("name"));}).collect(Collectors.toList());
+	}
+
+	public static void deleteShift(long id) throws Exception {
+		ShiftContext shift = null;
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getShiftField())
+				.table(ModuleFactory.getShiftModule().getTableName())
+				.andCustomWhere(ModuleFactory.getShiftModule().getTableName() + ".ORGID=? AND "+ ModuleFactory.getShiftModule().getTableName()+".ID=?", AccountUtil.getCurrentOrg().getOrgId(), id);
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			shift = FieldUtil.getAsBeanFromMap(props.get(0), ShiftContext.class);
+		}
+		
+		if (shift == null) {
+			return;
+		}
+		
+		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+				.table(ModuleFactory.getShiftModule().getName())
+				.andCustomWhere(ModuleFactory.getShiftModule().getTableName() + ".ORGID=? AND "+ ModuleFactory.getShiftModule().getTableName()+".ID=?", AccountUtil.getCurrentOrg().getOrgId(), id);
+		deleteBuilder.delete();
+		
+		BusinessHoursList businessHoursList = BusinessHoursAPI.getBusinessHours(shift.getBusinessHoursId());
+		
+		deleteJobsForshifts(businessHoursList.stream().map(BusinessHourContext::getId).collect(Collectors.toList()));
+		
+		BusinessHoursAPI.deleteBusinessHours(shift.getBusinessHoursId());
+	}
+
 }

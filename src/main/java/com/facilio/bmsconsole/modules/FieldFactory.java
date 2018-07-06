@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.constants.FacilioConstants;
 
 public class FieldFactory {
@@ -3938,8 +3939,7 @@ public class FieldFactory {
 		FacilioModule module = ModuleFactory.getShiftUserRelModule();
 		List<FacilioField> fields = new ArrayList<>();
 		
-		fields.add(getIdField());
-		fields.add(getField("userId", "USERID", module, FieldType.NUMBER));
+		fields.add(getField("ouid", "ORG_USERID", module, FieldType.NUMBER));
 		fields.add(getField("shiftId", "SHIFTID", module, FieldType.NUMBER));
 		return fields;
 	}
