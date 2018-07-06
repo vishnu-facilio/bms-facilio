@@ -5,9 +5,8 @@ public class Account {
 	private Organization org;
 	private User user;
 	
-	private Boolean isFromIos = false;
-	private Boolean isFromAndroid = false;
-	private String appVersion;
+	private String deviceType;
+	private String deviceVersion;
 	
 	public Account(Organization org, User user) {
 		this.org = org;
@@ -31,31 +30,31 @@ public class Account {
 	}
 	
 	public Boolean isFromMobile() {
-		return isFromAndroid || isFromIos;
+		return isFromAndroid() || isFromIos();
 	}
 
-	public Boolean getIsFromIos() {
-		return isFromIos;
+	public Boolean isFromIos() {
+		return deviceType != null && deviceType.equalsIgnoreCase("ios");
 	}
 
-	public void setIsFromIos(Boolean isFromIos) {
-		this.isFromIos = isFromIos;
+	public Boolean isFromAndroid() {
+		return deviceType != null && deviceType.equalsIgnoreCase("android");
+	}
+	
+	public String getDeviceType() {
+		return deviceType;
 	}
 
-	public Boolean getIsFromAndroid() {
-		return isFromAndroid;
+	public void setDeviceType(String deviceType) {
+		this.deviceType = deviceType;
 	}
 
-	public void setIsFromAndroid(Boolean isFromAndroid) {
-		this.isFromAndroid = isFromAndroid;
+	public String getDeviceVersion() {
+		return deviceVersion;
 	}
 
-	public String getAppVersion() {
-		return appVersion;
-	}
-
-	public void setAppVersion(String appVersion) {
-		this.appVersion = appVersion;
+	public void setDeviceVersion(String deviceVersion) {
+		this.deviceVersion = deviceVersion;
 	}
 	
 	

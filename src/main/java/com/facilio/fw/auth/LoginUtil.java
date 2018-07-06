@@ -67,12 +67,8 @@ public class LoginUtil {
 		
 		Account account = new Account(org, user);
 		
-		String isAndroid = request.getHeader("isAndroid");
-		account.setIsFromAndroid(isAndroid != null && isAndroid.equalsIgnoreCase("true"));
-		String isIos = request.getHeader("isIos");
-		account.setIsFromIos(isIos != null && isIos.equalsIgnoreCase("true"));
-		String appVersion = request.getHeader("app_version");
-		account.setAppVersion(appVersion);
+		account.setDeviceType(request.getHeader("X-Device-Type"));
+		account.setDeviceVersion(request.getHeader("X-App-Version"));
 		
 		return account;
 	}

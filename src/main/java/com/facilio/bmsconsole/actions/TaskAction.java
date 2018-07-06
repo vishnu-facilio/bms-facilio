@@ -11,7 +11,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -153,13 +152,11 @@ public class TaskAction extends ActionSupport {
 	public String updateTask() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
-		Account account = AccountUtil.getCurrentAccount();
 //		boolean doValidation = getDoValidation();
-		boolean doValidation = false;
-		if (account.getIsFromAndroid()) {
+		if (AccountUtil.getCurrentAccount().getDeviceType() != null) {
 			context.put(FacilioConstants.ContextNames.DO_VALIDTION, getDoValidation());
 		}
-		context.put(FacilioConstants.ContextNames.DO_VALIDTION, doValidation);
+//		context.put(FacilioConstants.ContextNames.DO_VALIDTION, doValidation);
 		return updateTask(context);
 	}
 	public String addTaskInput() throws Exception {
@@ -240,7 +237,9 @@ public class TaskAction extends ActionSupport {
 			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
 			context.put(FacilioConstants.ContextNames.TASK, singleTask);
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(singleTask.getId()));
-			context.put(FacilioConstants.ContextNames.DO_VALIDTION, getDoValidation());
+			if (AccountUtil.getCurrentAccount().getDeviceType() != null) {
+				context.put(FacilioConstants.ContextNames.DO_VALIDTION, getDoValidation());
+			}
 			Chain updateTask = FacilioChainFactory.getUpdateTaskChain();
 			try {
 				updateTask.execute(context);
@@ -423,5 +422,123 @@ public class TaskAction extends ActionSupport {
 	public void setError(Map<Long, Map<String, String>> error) {
 		this.error = error;
 	}
+	
+	
+	
+	
+	
+	
+/******************      V2 Api    ******************/
+	
+	private int responseCode = 0;
+	public int getResponseCode() {
+		return responseCode;
+	}
+	public void setResponseCode(int responseCode) {
+		this.responseCode = responseCode;
+	}
+	
+	private String message;
+	public String getMessage() {
+		return message;
+	}
+	public void setMessage(String message) {
+		this.message = message;
+	}
+	
+	private JSONObject result;
+	public JSONObject getResult() {
+		return result;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void setResult(String key, Object result) {
+		if (this.result == null) {
+			this.result = new JSONObject();
+		}
+		this.result.put(key, result);			
+	}
+	
+	public String v2viewTask() {
+		try {
+			String response = viewTask();
+			setResult(FacilioConstants.ContextNames.TASK, task);
+			return response;
+		}
+		catch(Exception e) {
+			setResponseCode(1);
+			setMessage(FacilioConstants.ERROR_MESSAGE);
+			return ERROR;
+		}
+	}
+	
+	public String v2updateStatus() {
+		try {
+			String response = updateStatus();
+			setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
+			return response;
+		}
+		catch(Exception e) {
+			setResponseCode(1);
+			setMessage(FacilioConstants.ERROR_MESSAGE);
+			return ERROR;
+		}
+	}
+	
+	public String v2closeAllTask() {
+		try {
+			String response = closeAllTask();
+			setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
+			return response;
+		}
+		catch(Exception e) {
+			setResponseCode(1);
+			setMessage(FacilioConstants.ERROR_MESSAGE);
+			return ERROR;
+		}
+	}
+	
+	public String v2updateAllTask() {
+		try {
+			String response = updateAllTask();
+			setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
+			setResult("error", getError());
+			return response;
+		}
+		catch(Exception e) {
+			setResponseCode(1);
+			setMessage(FacilioConstants.ERROR_MESSAGE);
+			return ERROR;
+		}
+	}
+	
+	public String v2updateTask() {
+		try {
+			String response = updateTask();
+			setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
+			setResult("error", getError());
+			return response;
+		}
+		catch(Exception e) {
+			setResponseCode(1);
+			setMessage(FacilioConstants.ERROR_MESSAGE);
+			return ERROR;
+		}
+	}
+	
+	public String v2taskList() {
+		try {
+			String response = taskList();
+			setResult(FacilioConstants.ContextNames.TASK_LIST, tasks);
+			setResult("sections", getSections());
+			return response;
+		}
+		catch(Exception e) {
+			setResponseCode(1);
+			setMessage(FacilioConstants.ERROR_MESSAGE);
+			return ERROR;
+		}
+	}
+	
  }
 

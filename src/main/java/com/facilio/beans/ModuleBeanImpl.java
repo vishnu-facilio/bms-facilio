@@ -686,7 +686,9 @@ public class ModuleBeanImpl implements ModuleBean {
 															.fields(FieldFactory.getUpdateFieldFields())
 															.andCustomWhere("ORGID = ? AND FIELDID = ?", getOrgId(), fieldId);
 			
-			return updateBuilder.update(FieldUtil.getAsProperties(field));
+			int count = updateBuilder.update(FieldUtil.getAsProperties(field));
+			field.setFieldId(fieldId);
+			return count;
 		}
 		else {
 			throw new IllegalArgumentException("Invalid field object for Updation");
