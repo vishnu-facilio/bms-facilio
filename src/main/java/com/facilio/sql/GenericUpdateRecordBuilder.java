@@ -113,8 +113,12 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 	@Override
 	public int update(Map<String, Object> value) throws SQLException {
 		checkForNull();
+		if (value == null) {
+			return 0;
+		}
+		value.remove("id");
 		this.value = value;
-		if(value != null && !value.isEmpty()) {
+		if(!value.isEmpty()) {
 			PreparedStatement pstmt = null;
 			
 			try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {

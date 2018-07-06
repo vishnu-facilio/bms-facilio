@@ -679,10 +679,12 @@ public class ModuleBeanImpl implements ModuleBean {
 	@Override
 	public int updateField(FacilioField field) throws Exception {
 		if(field != null && field.getFieldId() != -1) {
+			long fieldId = field.getFieldId();
+			field.setFieldId(-1);
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 															.table("Fields")
 															.fields(FieldFactory.getUpdateFieldFields())
-															.andCustomWhere("ORGID = ? AND FIELDID = ?", getOrgId(), field.getFieldId());
+															.andCustomWhere("ORGID = ? AND FIELDID = ?", getOrgId(), fieldId);
 			
 			return updateBuilder.update(FieldUtil.getAsProperties(field));
 		}
