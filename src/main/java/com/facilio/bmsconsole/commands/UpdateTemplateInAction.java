@@ -20,7 +20,7 @@ public class UpdateTemplateInAction implements Command {
 
 			ActionContext actionContext = new ActionContext();
 			actionContext.setTemplateId(template.getId());
-			ActionAPI.updateAction(AccountUtil.getCurrentOrg().getId(), actionContext, actionContext.getId());
+			ActionAPI.updateAction(AccountUtil.getCurrentOrg().getId(), actionContext, (long) templateContent.get("actionId"));
 		}
 			// TODO Auto-generated method stub
 			return false;
