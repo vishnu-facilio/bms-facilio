@@ -168,7 +168,7 @@ public class WorkOrderAction extends ActionSupport {
 			setTaskcontex(tasksString);
 		}
 		if(reminderString != null) {
-			setRemindercontex(tasksString);
+			setRemindercontex(reminderString);
 		}
 		addPreventiveMaintenance(context);
 		return SUCCESS;
@@ -363,7 +363,7 @@ public class WorkOrderAction extends ActionSupport {
 			setTaskcontex(tasksString);
 		}
 		if(reminderString != null) {
-			setRemindercontex(tasksString);
+			setRemindercontex(reminderString);
 		}
 		if(deleteReadingRulesListString != null) {
 			this.deleteReadingRulesList = convertDeleteReadingRulesListString(deleteReadingRulesListString);

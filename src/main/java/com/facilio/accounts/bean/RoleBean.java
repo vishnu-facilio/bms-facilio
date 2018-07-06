@@ -1,6 +1,7 @@
 package com.facilio.accounts.bean;
 
 import java.util.List;
+import java.util.Map;
 
 import com.facilio.accounts.dto.Permissions;
 import com.facilio.accounts.dto.Role;
@@ -22,6 +23,8 @@ public interface RoleBean {
 	public Role getRole(long orgId, String roleName) throws Exception;
 
 	public List<Role> getRoles(long orgId) throws Exception;
+	
+	public Map<String, Role> getRoleMap() throws Exception;
 	
 	public List<Permissions> getPermissions (long roleId) throws Exception;
 	

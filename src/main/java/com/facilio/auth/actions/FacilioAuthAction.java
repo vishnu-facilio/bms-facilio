@@ -434,7 +434,7 @@ public class FacilioAuthAction extends ActionSupport {
     }
 
     public String acceptUserInvite() throws Exception {
-        boolean status = AccountUtil.getUserBean().acceptInvite(getInviteToken(), getPassword());
+        boolean status = AccountUtil.getUserBean().acceptInvite(getInviteToken(), getPassword());  
         if(status){
             return SUCCESS;
         }

@@ -853,6 +853,13 @@ public class FieldFactory {
 		orgid.setColumnName("ORGID");
 		orgid.setModule(module);
 		fields.add(orgid);
+		
+		FacilioField license = new FacilioField();
+		license.setName("license");
+		license.setDataType(FieldType.NUMBER);
+		license.setColumnName("LICENSE");
+		license.setModule(module);
+		fields.add(license);
 
 		FacilioField userstatus = new FacilioField();
 		userstatus.setName("userStatus");
