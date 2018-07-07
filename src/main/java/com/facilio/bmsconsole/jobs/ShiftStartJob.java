@@ -46,6 +46,7 @@ public class ShiftStartJob extends FacilioJob{
 			
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.READINGS_MAP, readingMap);
+			context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
 			Chain c = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
 			c.execute(context);
 		} catch (Exception e) {

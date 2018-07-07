@@ -55,6 +55,10 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 			updateLastReading = true;
 		}
 //		System.err.println( Thread.currentThread().getName()+"Inside AddorUpdateCommand#######  "+readingMap);
+		Boolean adjustTime = (Boolean) context.get(FacilioConstants.ContextNames.ADJUST_READING_TTIME);
+		if (adjustTime == null) {
+			adjustTime = true;
+		}
 		
 		Map<String, ReadingDataMeta> lastReadingMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.READING_DATA_META);
 		if (readingMap != null && !readingMap.isEmpty()) {
@@ -66,7 +70,7 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 				List<ReadingContext> readings = entry.getValue();
 				List<FacilioField> fields= bean.getAllFields(moduleName);
 				FacilioModule module = bean.getModule(moduleName);
-				List<ReadingContext> readingsToBeAdded = addDefaultPropsAndGetReadingsToBeAdded(module, fields, readings, lastReadingMap, useControllerDataInterval, updateLastReading);
+				List<ReadingContext> readingsToBeAdded = addDefaultPropsAndGetReadingsToBeAdded(module, fields, readings, lastReadingMap, adjustTime, useControllerDataInterval, updateLastReading);
 				addReadings(module, fields, readingsToBeAdded,lastReadingMap, updateLastReading);
 			}
 		}
@@ -85,7 +89,7 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 		return false;
 	}
 	
-	private List<ReadingContext> addDefaultPropsAndGetReadingsToBeAdded(FacilioModule module, List<FacilioField> fields, List<ReadingContext> readings, Map<String, ReadingDataMeta> metaMap, boolean useControllerDataInterval, boolean updateLastReading) throws Exception {
+	private List<ReadingContext> addDefaultPropsAndGetReadingsToBeAdded(FacilioModule module, List<FacilioField> fields, List<ReadingContext> readings, Map<String, ReadingDataMeta> metaMap, boolean adjustTime, boolean useControllerDataInterval, boolean updateLastReading) throws Exception {
 		List<ReadingContext> readingsToBeAdded = new ArrayList<>();
 		Iterator<ReadingContext> itr = readings.iterator();
 		while (itr.hasNext()) {
@@ -96,8 +100,11 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 			if(reading.getParentId() == -1) {
 				throw new IllegalArgumentException("Invalid parent id for readings of module : "+module.getName());
 			}
-			adjustTtime(module, reading, useControllerDataInterval);
 			
+			reading.setActualTtime(reading.getTtime());
+			if (adjustTime) {
+				adjustTtime(module, reading, useControllerDataInterval);
+			}
 			Map<String, Object> readingData = reading.getReadings();
 			if (readingData != null && !readingData.isEmpty()) {
 				if(reading.getId() == -1) {
@@ -117,7 +124,6 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 	}
 	
 	private void adjustTtime(FacilioModule module, ReadingContext reading, boolean useControllerDataInterval) {
-		reading.setActualTtime(reading.getTtime());
 		ZonedDateTime zdt = DateTimeUtil.getDateTime(reading.getTtime());
 		
 		if (module.getDateIntervalUnit() != null) {

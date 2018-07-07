@@ -227,6 +227,7 @@ public class FacilioConstants {
 		public static final String PHOTO_TEXTS = "photoTexts";
 		public static final String PREVIOUS_VALUE = "previousValue";
 		public static final String ONLY_READING = "onylyReading";
+		public static final String ADJUST_READING_TTIME = "adjustReadingTtime";
 		
 		public static final String DASHBOARD = "dashboard";
 		public static final String DASHBOARD_ID = "dashboardId";

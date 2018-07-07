@@ -275,6 +275,7 @@ public class ShiftAPI {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.READINGS_MAP, readingMap);
+		context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
 		Chain c = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
 		c.execute(context);
 	}
