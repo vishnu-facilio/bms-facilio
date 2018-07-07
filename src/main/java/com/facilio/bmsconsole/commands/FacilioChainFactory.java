@@ -31,7 +31,7 @@ public class FacilioChainFactory {
 
     public static Chain getOrgSignupChain()
 	{
-		Chain c = new ChainBase();
+		Chain c = new TransactionChain();
 		c.addCommand(new CreateOrgCommand());
 		c.addCommand(new AddDefaultModulesCommand());
 		c.addCommand(new AddDefaultReportCommand());
