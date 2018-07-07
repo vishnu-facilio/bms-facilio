@@ -43,7 +43,7 @@ LRUCache modulecache = LRUCache.getModuleCache();
 			//LOGGER.log(Level.INFO, "getModule result from DB for module: "+moduleName);
 		}
 		else {
-			LOGGER.log(Level.INFO, "getModule result from CACHE for module: "+moduleName);
+			//LOGGER.log(Level.INFO, "getModule result from CACHE for module: "+moduleName);
 		}
 		return moduleObj;
 	}
