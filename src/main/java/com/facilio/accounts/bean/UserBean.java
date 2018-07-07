@@ -74,6 +74,17 @@ public interface UserBean {
     
     public List<Map<String, Object>> getUserSessions(long uid, Boolean isActive) throws Exception;
     
+//    public long addUserLicense(long orgid, long roleid, Integer number_of_users) throws Exception;
+//    
+//    public boolean updateUserLicense(long id, Integer number_of_users) throws Exception;
+//   
+//    public Integer getAvailableRoleLicense(long orgid, long roleid) throws Exception;
+//    public Map<Long, Integer> getUserRoleLicenseMap(long orgid) throws Exception;
+//    
+//    public Integer getAvailableUserLicense(long orgid) throws Exception;
+//    
+//    public void deleteUserLicense(long id) throws Exception;
+    
     public void clearUserSession(long uid, String email, String token) throws Exception;
     
     public void clearAllUserSessions(long uid, String email) throws Exception;

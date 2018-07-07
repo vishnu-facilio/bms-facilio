@@ -98,7 +98,12 @@ public class CriteriaAPI {
 						condition.setCriteriaValueId(condition.getCriteriaValue().getCriteriaId());
 					}
 				}
-				condition.getComputedWhereClause();
+				if (condition.getOperator().isDynamicOperator()) {
+					condition.setComputedWhereClause(null);
+				}
+				else {
+					condition.computeAndGetWhereClause();
+				}
 				Map<String, Object> conditionProp = FieldUtil.getAsProperties(condition);
 				insertBuilder.addRecord(conditionProp);
 			}

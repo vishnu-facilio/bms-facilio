@@ -38,6 +38,7 @@ import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -437,6 +438,9 @@ public class TicketAPI {
 		}
 		
 		if (oldTicket != null) {
+			if (oldTicket.getAssignedTo() != null) {
+				handleWorkHoursReading(oldTicket.getAssignedTo().getOuid(), oldTicket.getId(), oldTicket.getStatus(), statusObj);
+			}
 			if ("Work in Progress".equalsIgnoreCase(statusObj.getStatus())) {
 				if (oldTicket.getActualWorkStart() != -1) {
 					ticket.setResumedWorkStart(System.currentTimeMillis());
@@ -471,6 +475,30 @@ public class TicketAPI {
 			}
 		}
 		
+	}
+	
+	private static void handleWorkHoursReading(long assignedToUserId, long workOrderId, TicketStatusContext oldTicketStatus, TicketStatusContext newTicketStatus) throws Exception {
+		if (newTicketStatus.getStatus().equals("Work in Progress")) {
+			if (oldTicketStatus.getId() == TicketAPI.getStatus("Assigned").getId() 
+					|| oldTicketStatus.getId() == TicketAPI.getStatus("Closed").getId() 
+					|| oldTicketStatus.getId() == TicketAPI.getStatus("Resolved").getId()) {
+				ShiftAPI.addUserWorkHoursReading(assignedToUserId, workOrderId, "Start", System.currentTimeMillis());
+			} else if (oldTicketStatus.getId() == TicketAPI.getStatus("On Hold").getId()) {
+				ShiftAPI.addUserWorkHoursReading(assignedToUserId, workOrderId, "Resume", System.currentTimeMillis());
+			}
+		}  else if (newTicketStatus.getStatus().equals("Resolved")) {
+			ShiftAPI.addUserWorkHoursReading(assignedToUserId, workOrderId, "Close", System.currentTimeMillis());
+		} else if (newTicketStatus.getStatus().equals("On Hold")) {
+			ShiftAPI.addUserWorkHoursReading(assignedToUserId, workOrderId, "Pause", System.currentTimeMillis());
+		} else if (newTicketStatus.getStatus().equals("Closed")) {
+			if (oldTicketStatus.getId() == TicketAPI.getStatus("On Hold").getId()) {
+				long now = System.currentTimeMillis();
+				ShiftAPI.addUserWorkHoursReading(assignedToUserId, workOrderId, "Resume", now);
+				ShiftAPI.addUserWorkHoursReading(assignedToUserId, workOrderId, "Close", now);
+			} else if (oldTicketStatus.getId() == TicketAPI.getStatus("Work in Progress").getId()) {
+				ShiftAPI.addUserWorkHoursReading(assignedToUserId, workOrderId, "Close", System.currentTimeMillis());
+			}
+		}
 	}
 	
 	private static void assignTicketToCurrentUser(TicketContext ticket, TicketContext oldTicket) {
@@ -739,6 +767,20 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 			return tickets.get(0);
 		}
 		
+		return null;
+	}
+	
+	public static ActivityType getActivityTypeForTicketStatus(long statusId) throws Exception {
+		TicketStatusContext status = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getId(), statusId);
+		Map<String, ActivityType> statusVsActivityType = new HashMap<>();
+		statusVsActivityType.put("Resolved", ActivityType.SOLVE_WORK_ORDER);
+		statusVsActivityType.put("Closed", ActivityType.CLOSE_WORK_ORDER);
+		statusVsActivityType.put("Assigned", ActivityType.ASSIGN_TICKET);
+		statusVsActivityType.put("On Hold", ActivityType.HOLD_WORK_ORDER);
+		
+		if (statusVsActivityType.containsKey(status.getStatus())) {
+			return statusVsActivityType.get(status.getStatus());
+		}
 		return null;
 	}
 }

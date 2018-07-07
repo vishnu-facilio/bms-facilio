@@ -112,13 +112,12 @@ public class Condition {
 		this.criteriaValue = criteriaVal;
 	}
 	
-	private String computedWhereClause;
-	public String getComputedWhereClause() {
-		return getComputedWhereClause(null);
+	public String computeAndGetWhereClause() {
+		return computeAndGetWhereClause(null);
 	}
 	
-	public String getComputedWhereClause(Map<String, Object> placeHolders) {
-		if(operator != null && (computedWhereClause == null || operator.isDynamicOperator() || isExpressionValue())) {
+	public String computeAndGetWhereClause(Map<String, Object> placeHolders) {
+		if(computedWhereClause == null || operator.isDynamicOperator() || isExpressionValue()) {
 			if(operator == LookupOperator.LOOKUP) {
 				updateFieldNameWithModule();
 				computedWhereClause = operator.getWhereClause(fieldName, criteriaValue);
@@ -134,6 +133,11 @@ public class Condition {
 				computedWhereClause = operator.getWhereClause(columnName, value);
 			}
 		}
+		return computedWhereClause;
+	}
+	
+	private String computedWhereClause;
+	public String getComputedWhereClause() {
 		return computedWhereClause;
 	}
 	public void setComputedWhereClause(String computedWhereClause) {

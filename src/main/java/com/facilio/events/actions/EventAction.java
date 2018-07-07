@@ -8,12 +8,15 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.events.context.EventProperty;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.util.EventAPI;
+import com.facilio.events.util.EventRulesAPI;
 import com.opensymphony.xwork2.ActionSupport;
 
 @SuppressWarnings("serial")
@@ -137,10 +140,11 @@ public class EventAction extends ActionSupport {
 	public String eventRules() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
-		Chain eventRulesChain = EventConstants.EventChainFactory.getActiveEventRuleChain();
-		eventRulesChain.execute(context);
+//		Chain eventRulesChain = EventConstants.EventChainFactory.getActiveEventRuleChain();
+//		eventRulesChain.execute(context);
 		
-		setEventRules((List<EventRuleContext>) context.get(EventConstants.EventContextNames.EVENT_RULE_LIST));
+		
+		setEventRules((List<EventRuleContext>) EventRulesAPI.getAllActiveEventRules());
 		
 		return SUCCESS;
 	}
@@ -202,7 +206,6 @@ public class EventAction extends ActionSupport {
 		
 		return SUCCESS;
 	}
-	
 	public String deleteEventRule() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, id);

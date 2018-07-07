@@ -540,6 +540,14 @@ public class ModuleFactory {
 
 		return businessHours;
 	}
+	
+	public static FacilioModule getShiftModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("shift");
+		module.setDisplayName("Shift");
+		module.setTableName("Shift");
+		return module;
+	}
 
 	public static FacilioModule getFilesModule() {
 		FacilioModule filesModule = new FacilioModule();
@@ -1098,5 +1106,13 @@ public class ModuleFactory {
 		rateCardService.setDisplayName("Report Benchmark Rel");
 		rateCardService.setTableName("Report_Benchmark_Rel");
 		return rateCardService;
+	}
+
+	public static FacilioModule getShiftUserRelModule() {
+		FacilioModule shiftUserRel = new FacilioModule();
+		shiftUserRel.setName("shiftUserRel");
+		shiftUserRel.setDisplayName("Shift User Rel");
+		shiftUserRel.setTableName("Shift_User_Rel");
+		return shiftUserRel;
 	}
 }

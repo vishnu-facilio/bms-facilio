@@ -20,6 +20,7 @@ public class AddUserCommand implements Command {
 			long userId = AccountUtil.getUserBean().inviteUser(AccountUtil.getCurrentOrg().getOrgId(), user);
 			
 			context.put(FacilioConstants.ContextNames.USER_ID, userId);
+			
 		}
 		else {
 			throw new IllegalArgumentException("User Object cannot be null");

@@ -31,7 +31,7 @@ public class FacilioChainFactory {
 
     public static Chain getOrgSignupChain()
 	{
-		Chain c = new ChainBase();
+		Chain c = new TransactionChain();
 		c.addCommand(new CreateOrgCommand());
 		c.addCommand(new AddDefaultModulesCommand());
 		c.addCommand(new AddDefaultReportCommand());
@@ -173,6 +173,7 @@ public class FacilioChainFactory {
 	
 	public static Chain getAddUserCommand() {
 		Chain c = new ChainBase();
+	    c.addCommand(new ValidateLicenseCommand());
 		c.addCommand(new ValidateWorkOrderFieldsCommand());
 		c.addCommand(new AddUserCommand());
 		addCleanUpCommand(c);
@@ -2358,6 +2359,33 @@ public class FacilioChainFactory {
 	public static Chain calculateBenchmarkValueChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new CalculateBenchmarkValueCommand());
+		return c;
+	}
+	
+	public static Chain getAllShiftsCommand() {
+		Chain c = new ChainBase();
+		c.addCommand(new GetAllShiftsCommand());
+		return c;
+	}
+	
+	public static Chain getAddShiftCommand() {
+		Chain c = new TransactionChain();
+		c.addCommand(new AddShiftCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getUpdateShiftCommand() {
+		Chain c = new TransactionChain();
+		c.addCommand(new UpdateShiftCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getDeleteShiftCommand() {
+		Chain c = new TransactionChain();
+		c.addCommand(new DeleteShiftCommand());
+		addCleanUpCommand(c);
 		return c;
 	}
 	

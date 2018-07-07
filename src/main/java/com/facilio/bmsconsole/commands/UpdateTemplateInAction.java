@@ -19,9 +19,8 @@ public class UpdateTemplateInAction implements Command {
 		if(templateContent != null && !templateContent.isEmpty() && template != null) {
 
 			ActionContext actionContext = new ActionContext();
-			actionContext.setId((long) templateContent.get("actionId"));
 			actionContext.setTemplateId(template.getId());
-			ActionAPI.updateAction(AccountUtil.getCurrentOrg().getId(), actionContext, actionContext.getId());
+			ActionAPI.updateAction(AccountUtil.getCurrentOrg().getId(), actionContext, (long) templateContent.get("actionId"));
 		}
 			// TODO Auto-generated method stub
 			return false;

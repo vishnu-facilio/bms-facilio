@@ -903,6 +903,67 @@ public enum DateOperators implements Operator<String> {
 			return false;
 		}
 	},
+	
+	NEXT_N_MONTHS(59, "Next N Months") {
+		@Override
+		public String getWhereClause(String columnName, String value) {
+			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
+				StringBuilder builder = new StringBuilder();
+				builder.append(DateTimeUtil.getMonthStartTime())
+						.append("<=")
+						.append(columnName)
+						.append(" AND ")
+						.append(columnName)
+						.append("<")
+						.append(DateTimeUtil.getMonthStartTime(Integer.parseInt(value) + 1));
+				return builder.toString();
+			}
+			return null;
+		}
+		
+		@Override
+		public boolean isDynamicOperator() {
+			return true;
+		}
+		
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						if(object != null && object instanceof Long) {
+							long currentVal = (long) object;
+							return DateTimeUtil.getMonthStartTime() <= currentVal && currentVal < DateTimeUtil.getMonthStartTime(Integer.parseInt(value) + 1);
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
+
+		@Override
+		public DateRange getRange(String value) {
+			// TODO Auto-generated method stub
+			return new DateRange(DateTimeUtil.getMonthStartTime(), DateTimeUtil.getMonthStartTime(Integer.parseInt(value) + 1));
+		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+		
+	},
+	
 	CURRENT_YEAR(44, "Current Year") {
 		@Override
 		public String getWhereClause(String columnName, String value) {
@@ -1332,6 +1393,66 @@ public enum DateOperators implements Operator<String> {
 		}
 	},
 	
+	NEXT_N_WEEKS(60, "Next N Weeks") {
+		@Override
+		public String getWhereClause(String columnName, String value) {
+			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
+				StringBuilder builder = new StringBuilder();
+				builder.append(DateTimeUtil.getWeekStartTime())
+						.append("<=")
+						.append(columnName)
+						.append(" AND ")
+						.append(columnName)
+						.append("<")
+						.append(DateTimeUtil.getWeekStartTime(Integer.parseInt(value) + 1));
+				return builder.toString();
+			}
+			return null;
+		}
+		
+		@Override
+		public boolean isDynamicOperator() {
+			return true;
+		}
+		
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						if(object != null && object instanceof Long) {
+							long currentVal = (long) object;
+							return DateTimeUtil.getWeekStartTime() <= currentVal && currentVal < DateTimeUtil.getWeekStartTime(Integer.parseInt(value) + 1);
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
+
+		@Override
+		public DateRange getRange(String value) {
+			// TODO Auto-generated method stub
+			return new DateRange(DateTimeUtil.getWeekStartTime(), DateTimeUtil.getWeekStartTime(Integer.parseInt(value) + 1));
+		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+		
+	},
+	
 	AGE_IN_DAYS(33, "Age in Days") {
 		@Override
 		public String getWhereClause(String columnName, String value) {
@@ -1442,6 +1563,66 @@ public enum DateOperators implements Operator<String> {
 		}
 	},
 	
+	NEXT_N_DAYS(61, "Next N Days") {
+		@Override
+		public String getWhereClause(String columnName, String value) {
+			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
+				StringBuilder builder = new StringBuilder();
+				builder.append(DateTimeUtil.getDayStartTime())
+						.append("<=")
+						.append(columnName)
+						.append(" AND ")
+						.append(columnName)
+						.append("<")
+						.append(DateTimeUtil.getDayStartTime(Integer.parseInt(value)));
+				return builder.toString();
+			}
+			return null;
+		}
+		
+		@Override
+		public boolean isDynamicOperator() {
+			return true;
+		}
+		
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						if(object != null && object instanceof Long) {
+							long currentVal = (long) object;
+							return DateTimeUtil.getDayStartTime() <= currentVal && currentVal < DateTimeUtil.getDayStartTime(Integer.parseInt(value));
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
+
+		@Override
+		public DateRange getRange(String value) {
+			// TODO Auto-generated method stub
+			return new DateRange(DateTimeUtil.getDayStartTime(), DateTimeUtil.getDayStartTime(Integer.parseInt(value))-1);
+		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+		
+	},
+	
 	LAST_MONTHS(39, "Last Months") {
 		@Override
 		public String getWhereClause(String columnName, String value) {
@@ -1501,7 +1682,7 @@ public enum DateOperators implements Operator<String> {
 		}
 	},
 	
-	WITHIN_HOURS(40, "Within Hours") {
+	WITHIN_HOURS(40, "Within N Hours") {	// eg: If current time is 5:30 => 2:00 - 5:59
 		@Override
 		public String getWhereClause(String columnName, String value) {
 			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
@@ -1560,7 +1741,7 @@ public enum DateOperators implements Operator<String> {
 		}
 	},
 	
-	NEXT_HOURS(41, "Next Hours") {
+	NEXT_HOURS(41, "Next N Hours") {
 		@Override
 		public String getWhereClause(String columnName, String value) {
 			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {

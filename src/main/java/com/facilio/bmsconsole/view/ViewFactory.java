@@ -415,17 +415,17 @@ public class ViewFactory {
 		userFieldCondition.setField(userField);
 		userFieldCondition.setOperator(CommonOperators.IS_EMPTY);
 		
-		LookupField groupField = (LookupField) FieldFactory.getField("assignmentGroup", "ASSIGNMENT_GROUP_ID", workOrdersModule, FieldType.LOOKUP);
-		groupField.setExtendedModule(ModuleFactory.getTicketsModule());
-		groupField.setSpecialType(FacilioConstants.ContextNames.GROUPS);
-		
-		Condition groupFieldCondition = new Condition();
-		groupFieldCondition.setField(groupField);
-		groupFieldCondition.setOperator(CommonOperators.IS_EMPTY);
+//		LookupField groupField = (LookupField) FieldFactory.getField("assignmentGroup", "ASSIGNMENT_GROUP_ID", workOrdersModule, FieldType.LOOKUP);
+//		groupField.setExtendedModule(ModuleFactory.getTicketsModule());
+//		groupField.setSpecialType(FacilioConstants.ContextNames.GROUPS);
+//		
+//		Condition groupFieldCondition = new Condition();
+//		groupFieldCondition.setField(groupField);
+//		groupFieldCondition.setOperator(CommonOperators.IS_EMPTY);
 		
 		Criteria unassignedWOCriteria = new Criteria();
 		unassignedWOCriteria.addAndCondition(userFieldCondition);
-		unassignedWOCriteria.addAndCondition(groupFieldCondition);
+		// unassignedWOCriteria.addAndCondition(groupFieldCondition);
 		unassignedWOCriteria.addAndCondition(getOpenStatusCondition(workOrdersModule));
 		
 		FacilioField createdTime = new FacilioField();

@@ -636,6 +636,22 @@ public class AccountConstants {
 		return userSession;
 	}
 
+	public static FacilioModule getLicenseModule() {
+		FacilioModule license = new FacilioModule();
+		license.setName("license");
+		license.setDisplayName("License");
+		license.setTableName("License");
+
+		return license;
+	}
+	public static FacilioModule getUserLicenseModule() {
+		FacilioModule userLicense = new FacilioModule();
+		userLicense.setName("userlicense");
+		userLicense.setDisplayName("User License");
+		userLicense.setTableName("UserLicense");
+
+		return userLicense;
+	}
 	public static FacilioModule getOrgInfoModule() {
 		FacilioModule orgModule = new FacilioModule();
 		orgModule.setName("orginfo");
@@ -821,12 +837,7 @@ public class AccountConstants {
 		FacilioModule module = getFacilioUserModule();
 		List<FacilioField> fields = new ArrayList<>();
 
-		FacilioField uid = new FacilioField();
-		uid.setName("uid");
-		uid.setDataType(FieldType.NUMBER);
-		uid.setColumnName("USERID");
-		uid.setModule(module);
-		fields.add(uid);
+		fields.add(getUserIdField(module));
 
 		FacilioField name = new FacilioField();
 		name.setName("username");
@@ -852,6 +863,15 @@ public class AccountConstants {
 		return fields;
 	}
 
+	public static FacilioField getUserIdField(FacilioModule module) {
+		FacilioField uid = new FacilioField();
+		uid.setName("uid");
+		uid.setDataType(FieldType.NUMBER);
+		uid.setColumnName("USERID");
+		uid.setModule(module);
+		return uid;
+	}
+
 	public static FacilioField getUserPasswordField() {
 		FacilioField password = new FacilioField();
 		password.setName("password");
@@ -865,12 +885,7 @@ public class AccountConstants {
 		FacilioModule module = getUserModule();
 		List<FacilioField> fields = new ArrayList<>();
 
-		FacilioField uid = new FacilioField();
-		uid.setName("uid");
-		uid.setDataType(FieldType.NUMBER);
-		uid.setColumnName("USERID");
-		uid.setModule(module);
-		fields.add(uid);
+		fields.add(getUserIdField(module));
 
 		FacilioField name = new FacilioField();
 		name.setName("name");
@@ -1073,12 +1088,7 @@ public class AccountConstants {
 		ouid.setModule(module);
 		fields.add(ouid);
 
-		FacilioField uid = new FacilioField();
-		uid.setName("uid");
-		uid.setDataType(FieldType.NUMBER);
-		uid.setColumnName("USERID");
-		uid.setModule(module);
-		fields.add(uid);
+		fields.add(getUserIdField(module));
 
 		FacilioField orgId = new FacilioField();
 		orgId.setName("orgId");
@@ -1087,6 +1097,12 @@ public class AccountConstants {
 		orgId.setModule(module);
 		fields.add(orgId);
 		
+		FacilioField license = new FacilioField();
+		license.setName("license");
+		license.setDataType(FieldType.NUMBER);
+		license.setColumnName("LICENSE");
+		license.setModule(module);
+		fields.add(license);
 	/*	FacilioField otp = new FacilioField();
 		otp.setName("otp");
 		otp.setDataType(FieldType.STRING);
@@ -1146,6 +1162,89 @@ public class AccountConstants {
 		return fields;
 	}
 	
+	public static List<FacilioField> getLicenseFields() {
+		FacilioModule module = getLicenseModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		FacilioField id = new FacilioField();
+		id.setName("id");
+		id.setDataType(FieldType.NUMBER);
+		id.setColumnName("ID");
+		id.setModule(module);
+		fields.add(id);
+		
+		FacilioField orgId = new FacilioField();
+		orgId.setName("orgId");
+		orgId.setDataType(FieldType.NUMBER);
+		orgId.setColumnName("ORGID");
+		orgId.setModule(module);
+		fields.add(orgId);
+		
+		FacilioField license = new FacilioField();
+		license.setName("license");
+		license.setDataType(FieldType.NUMBER);
+		license.setColumnName("LICENSE");
+		license.setModule(module);
+		fields.add(license);
+		
+		FacilioField totalLicense = new FacilioField();
+		totalLicense.setName("totalLicense");
+		totalLicense.setDataType(FieldType.NUMBER);
+		totalLicense.setColumnName("TOTAL_LICENSE");
+		totalLicense.setModule(module);
+		fields.add(totalLicense);
+		
+		FacilioField usedLicense = new FacilioField();
+		usedLicense.setName("usedLicense");
+		usedLicense.setDataType(FieldType.NUMBER);
+		usedLicense.setColumnName("USED_LICENSE");
+		usedLicense.setModule(module);
+		fields.add(usedLicense);
+		
+		FacilioField expiryDate = new FacilioField();
+		expiryDate.setName("expiryDate");
+		expiryDate.setDataType(FieldType.NUMBER);
+		expiryDate.setColumnName("EXPIRY_DATE ");
+		expiryDate.setModule(module);
+		fields.add(expiryDate);
+		
+		return fields;
+	}
+	public static List<FacilioField> getUserLicenseFields() {
+		FacilioModule module = getUserLicenseModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		FacilioField id = new FacilioField();
+		id.setName("id");
+		id.setDataType(FieldType.NUMBER);
+		id.setColumnName("ID");
+		id.setModule(module);
+		fields.add(id);
+		
+		FacilioField orgId = new FacilioField();
+		orgId.setName("orgId");
+		orgId.setDataType(FieldType.NUMBER);
+		orgId.setColumnName("ORGID");
+		orgId.setModule(module);
+		fields.add(orgId);
+		
+		FacilioField roleId = new FacilioField();
+		roleId.setName("roleId");
+		roleId.setDataType(FieldType.NUMBER);
+		roleId.setColumnName("ROLE_ID");
+		roleId.setModule(module);
+		fields.add(roleId);
+		
+		FacilioField numberofusers = new FacilioField();
+		numberofusers.setName("numberofusers");
+		numberofusers.setDataType(FieldType.NUMBER);
+		numberofusers.setColumnName("NUMBER_OF_USERS");
+		numberofusers.setModule(module);
+		fields.add(numberofusers);
+		
+		return fields;
+	}
+	
 	public static List<FacilioField> getUserSessionFields() {
 		FacilioModule module = getUserSessionModule();
 		List<FacilioField> fields = new ArrayList<>();
@@ -1157,12 +1256,7 @@ public class AccountConstants {
 		id.setModule(module);
 		fields.add(id);
 		
-		FacilioField uid = new FacilioField();
-		uid.setName("uid");
-		uid.setDataType(FieldType.NUMBER);
-		uid.setColumnName("USERID");
-		uid.setModule(module);
-		fields.add(uid);
+		fields.add(getUserIdField(module));
 		
 		FacilioField token = new FacilioField();
 		token.setName("token");

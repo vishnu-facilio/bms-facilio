@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.PickListOperators;
+import com.facilio.license.LicenseContext.FacilioLicense;
 
 public class User {
 	
@@ -37,13 +38,31 @@ public class User {
 	private boolean facilioAuth;
 	private long portalId;
 	private String serverName;
-
+	private FacilioLicense license;
+	private Long shiftId;
 	public long getUid() {
 		return uid;
 	}
 	public void setUid(long uid) {
 		this.uid = uid;
 	}
+	public FacilioLicense getLicenseEnum() {
+		return license;
+	}
+	public void setLicense(FacilioLicense license) {
+		this.license = license;
+	}
+	public int getLicense() {
+		if (license != null) {
+			return license.getValue();
+		}
+		return -1;
+	}
+	public void setLicense(int licenseValue) {
+		this.license = FacilioLicense.valueOf(licenseValue);
+	}
+
+	
 	public String getName() {
 		if (this.name == null && this.email != null && !this.email.isEmpty()) {
 			return this.email.substring(0, this.email.indexOf("@"));
@@ -329,5 +348,12 @@ public class User {
 	}
 	public void setServerName(String serverName) {
 		this.serverName = serverName;
+	}
+
+	public Long getShiftId() {
+		return shiftId;
+	}
+	public void setShiftId(Long shiftId) {
+		this.shiftId = shiftId;
 	}
 }

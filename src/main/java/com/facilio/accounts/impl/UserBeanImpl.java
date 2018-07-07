@@ -1,5 +1,6 @@
 package com.facilio.accounts.impl;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -27,6 +28,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.ShiftUserRelContext;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -46,6 +48,7 @@ import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.LRUCache;
+import com.facilio.license.LicenseApi;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -172,12 +175,23 @@ public class UserBeanImpl implements UserBean {
 				.table(AccountConstants.getUserModule().getTableName())
 				.fields(fields)
 				.andCustomWhere("USERID = ?", user.getUid());
+		
 
 		Map<String, Object> props = FieldUtil.getAsProperties(user);
 		int updatedRows = updateBuilder.update(props);
+		
+		GenericDeleteRecordBuilder relDeleteBuilder = new GenericDeleteRecordBuilder()
+				.table(ModuleFactory.getShiftUserRelModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(user.getUid()), NumberOperators.EQUALS));
+		
+		if (user.getShiftId() != null) {
+			insertShiftRel(user.getOuid(), user.getShiftId());
+		}
+		
 		if (updatedRows > 0) {
 			return true;
 		}
+		
 		return false;
 	}
 	
@@ -238,7 +252,7 @@ public class UserBeanImpl implements UserBean {
 		context.put(FacilioConstants.ContextNames.MODULE_LIST, modBean.getSubModules(FacilioConstants.ContextNames.USERS, FacilioModule.ModuleType.READING));
 		
 		Chain addRDMChain = FacilioChainFactory.addResourceRDMChain();
-		addRDMChain.execute(context);
+ 		addRDMChain.execute(context);
 		
 		return id;
 	}
@@ -247,7 +261,7 @@ public class UserBeanImpl implements UserBean {
 	public long inviteUser(long orgId, User user) throws Exception {
 		
 		User orgUser = getFacilioUser(orgId, user.getEmail());
-		// System.out.println("----------------->>>>"+orgUser.getEmail());
+		//System.out.println("----------------->>>>"+orgUser.getEmail());
 		if (orgUser != null) {
 			if (orgUser.getUserType() == AccountConstants.UserType.REQUESTER.getValue()) {
 				orgUser.setUserType(AccountConstants.UserType.USER.getValue());
@@ -278,14 +292,34 @@ public class UserBeanImpl implements UserBean {
 		user.setInviteAcceptStatus(false);
 		user.setInvitedTime(System.currentTimeMillis());
 		user.setUserType(AccountConstants.UserType.USER.getValue());
-
 		long ouid = addToORGUsers(user);
+
 		user.setOuid(ouid);
+		Long shiftId = user.getShiftId();
+		
+		if (shiftId != null) {
+			insertShiftRel(ouid, shiftId);
+		}
 		
 		sendInvitation(ouid, user);
 		addAccessibleSpace(user.getOuid(), user.getAccessibleSpace());
 
 		return ouid;
+	}
+
+	private void insertShiftRel(long uid, Long shiftId)
+			throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
+		GenericInsertRecordBuilder shiftRelInsertBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getShiftUserRelModule().getTableName())
+				.fields(FieldFactory.getShiftUserRelModuleFields());
+		
+		ShiftUserRelContext rel = new ShiftUserRelContext();
+		rel.setOuid(uid);
+		rel.setShiftId(shiftId);
+		
+		Map<String, Object> relProps = FieldUtil.getAsProperties(rel);
+		shiftRelInsertBuilder.addRecord(relProps);
+		shiftRelInsertBuilder.save();
 	}
 	
 public long inviteRequester(long orgId, User user) throws Exception {
@@ -507,6 +541,7 @@ public long inviteRequester(long orgId, User user) throws Exception {
 				user.setUserVerified(true);
 				user.setPassword(password);
 				updateUser(user);
+				LicenseApi.updateUsedLicense(user.getLicenseEnum());
 				return true;
 			}
 		}
@@ -1083,6 +1118,123 @@ public long inviteRequester(long orgId, User user) throws Exception {
 
 	}
 
+/*	@Override
+	public long addUserLicense(long orgId, long roleid, Integer number_of_users) throws Exception {
+
+		List<FacilioField> fields = AccountConstants.getUserLicenseFields();
+
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(AccountConstants.getUserLicenseModule().getTableName())
+				.fields(fields);
+
+		Map<String, Object> props = new HashMap<>();
+		props.put("orgId", orgId);
+		props.put("roleId", roleid);
+		props.put("numberofusers", number_of_users);
+
+		insertBuilder.addRecord(props);
+		insertBuilder.save();
+		long Id = (Long) props.get("id");
+		return Id;
+	}
+	
+	@Override
+	public void deleteUserLicense(long id) throws Exception {
+
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+				.table(AccountConstants.getUserLicenseModule().getTableName())
+				.andCustomWhere("id = ?", id);
+
+		builder.delete();
+	}
+
+	
+	@Override
+	public boolean updateUserLicense(long id, Integer number_of_users) throws Exception {
+
+		List<FacilioField> fields = AccountConstants.getUserLicenseFields();
+		
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(AccountConstants.getUserLicenseModule().getTableName())
+				.fields(fields)
+				.andCustomWhere("ID = ?", id);
+
+		Map<String, Object> props = new HashMap<>();
+		props.put("numberofusers", number_of_users);
+		int updatedRows = updateBuilder.update(props);
+		if (updatedRows > 0) {
+			return true;
+		}
+		return false;
+	}
+	
+	
+	public Map<Long, Integer> getUserRoleLicenseMap(long orgid) throws Exception {
+		
+		List<FacilioField> fields = AccountConstants.getUserLicenseFields();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(AccountConstants.getUserLicenseModule().getTableName())
+				.andCustomWhere("ORGID = ?", orgid);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			Map<Long, Integer> map = new HashMap<>();  
+			for (Map<String, Object> prop : props) {
+				map.put((Long) prop.get("roleId"), (Integer) prop.get("numberofusers"));
+			}
+			return map;
+		}
+		return null;
+	}
+
+	public Integer getAvailableRoleLicense(long orgid, long roleid) throws Exception {
+		
+		List<FacilioField> fields = AccountConstants.getUserLicenseFields();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(AccountConstants.getUserLicenseModule().getTableName())
+				.andCustomWhere("ORGID = ? AND ROLE_ID = ?", orgid, roleid );
+		
+		List<FacilioField> orgfields = AccountConstants.getOrgUserFields();
+		GenericSelectRecordBuilder selectBuilder1 = new GenericSelectRecordBuilder()
+		.select(orgfields)
+		.table(AccountConstants.getOrgUserModule().getTableName())
+		.andCustomWhere("ORGID = ? AND ROLE_ID = ? AND USER_STATUS = 1 AND DELETED_TIME = -1", orgid, roleid );
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		List<Map<String, Object>> props2 = selectBuilder1.get();
+		if (props != null && !props.isEmpty()) {
+			Integer allowedUsers =  (Integer) props.get(0).get("numberofusers");
+			Integer activeUsers =	 props2.size();
+			return (allowedUsers - activeUsers);
+		}
+		return Integer.MAX_VALUE;
+	}
+	
+	public Integer getAvailableUserLicense(long orgid) throws Exception {
+		
+		
+		List<FacilioField> orgfields = AccountConstants.getOrgUserFields();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+		.select(orgfields)
+		.table(AccountConstants.getOrgUserModule().getTableName())
+		.andCustomWhere("ORGID = ? AND USER_STATUS = 1 AND DELETED_TIME = -1", orgid );
+		
+		Map<String, Object> orgStaff = CommonCommandUtil.getOrgInfo(AccountUtil.getCurrentOrg().getOrgId(), "staff");
+		List<Map<String, Object>> props = selectBuilder.get();
+		Integer activeUsers = 0;
+		Integer overallLicensedUsers = 1; // how many max users can be allowed in trail period
+		if (props != null) {
+			activeUsers = props.size();			
+		}
+		if (orgStaff.get("value") != null) {
+			overallLicensedUsers = (Integer) orgStaff.get("value");
+		}
+		return ( overallLicensedUsers - activeUsers );
+		
+	}*/
+	
 	@Override
 	public long startUserSession(long uid, String email, String token, String ipAddress, String userAgent) throws Exception {
 

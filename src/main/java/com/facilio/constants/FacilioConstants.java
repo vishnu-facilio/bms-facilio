@@ -2,10 +2,8 @@ package com.facilio.constants;
 
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.json.simple.JSONObject;
@@ -53,6 +51,8 @@ public class FacilioConstants {
 	public static final SimpleDateFormat HTML5_DATE_FORMAT_1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 	
 	public static final DateTimeFormatter READABLE_DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm:ss");
+	
+	public static final String ERROR_MESSAGE = "Error Occured";
 	
 	public static class CognitoUserPool {
 		
@@ -172,6 +172,9 @@ public class FacilioConstants {
 		public static final String READING_ALARM = "readingalarm";
 		public static final String ALARM_LIST = "alarms";
 		public static final String ALARM_ENTITY_ID = "alarmentityid";
+		
+		
+		public static final String EVENT = "event";
 		
 		public static final String TASK = "task";
 		public static final String TASK_LIST = "tasks";
@@ -489,6 +492,8 @@ public class FacilioConstants {
 		public static final String DEL_READING_RULE_IDS = "delReadingRuleIDs";
 		public static final String DO_VALIDTION = "doValidation";
 		public static final String BENCHMARK_DATE_VAL = "benchmarkDateVal";
+		public static final String SHIFT = "shift";
+		public static final String SHIFTS = "shifts";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {

@@ -23,4 +23,9 @@
 	 <job name='RefreshAnomalyModel' classname = 'com.facilio.bmsconsole.jobs.RefreshAnomalyModelJob' />
 	 <job name='importData' classname = 'com.facilio.bmsconsole.jobs.ImportDataJob' />
 	 <job name='assetActionJob' classname = 'com.facilio.bmsconsole.jobs.AssetActionJob' />
+	 
+	 <!-- Shift jobs -->
+	 <job name='StartShift' classname= 'com.facilio.bmsconsole.jobs.ShiftStartJob'/>
+	 <job name='EndShift' classname= 'com.facilio.bmsconsole.jobs.ShiftEndJob'/>
+	 <job name='EndShiftOTJ' classname= 'com.facilio.bmsconsole.jobs.ShiftEndOneTimeJob'/>
 </scheduler>

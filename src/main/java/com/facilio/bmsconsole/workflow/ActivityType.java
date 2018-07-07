@@ -27,7 +27,7 @@ public enum ActivityType {
 			return "created Work Order";
 		}
 	},
-	EDIT(2) {
+	EDIT(1 << 1) {
 		@Override
 		public String getMessage(JSONObject json) {
 			// TODO Auto-generated method stub
@@ -36,7 +36,7 @@ public enum ActivityType {
 			return "updated Work Order";
 		}
 	},
-	DELETE(4) {
+	DELETE(1 << 2) {
 		@Override
 		public String getMessage(JSONObject json) {
 			// TODO Auto-generated method stub
@@ -50,14 +50,14 @@ public enum ActivityType {
 			return null;
 		}
 	},
-	APPROVE_WORK_ORDER_REQUEST(8) {
+	APPROVE_WORK_ORDER_REQUEST(1 << 3) {
 		@Override
 		public String getMessage(JSONObject json) {
 			// TODO Auto-generated method stub
 			return "approved the request";
 		}
 	},
-	ASSIGN_TICKET(16) {
+	ASSIGN_TICKET(1 << 4) {
 		@Override
 		public String getMessage(JSONObject json) {
 			// TODO Auto-generated method stub
@@ -66,14 +66,14 @@ public enum ActivityType {
 			return "assigned the Work Order to ";
 		}
 	},
-	ADD_TICKET_NOTE(32) {
+	ADD_TICKET_NOTE(1 << 5) {
 		@Override
 		public String getMessage(JSONObject json) {
 			// TODO Auto-generated method stub
 			return "added a comment";
 		}
 	},
-	CLOSE_WORK_ORDER(64) {
+	CLOSE_WORK_ORDER(1 << 6) {
 		@Override
 		public String getMessage(JSONObject json) {
 			// TODO Auto-generated method stub
@@ -81,28 +81,28 @@ public enum ActivityType {
 			return "closed the "+moduleName;
 		}
 	},
-	ADD_TICKET_ATTACHMENTS(128) {
+	ADD_TICKET_ATTACHMENTS(1 << 7) {
 		@Override
 		public String getMessage(JSONObject json) {
 			// TODO Auto-generated method stub
 			return "attached";
 		}
 	},
-	ADD_TICKET_TASKS(256) {
+	ADD_TICKET_TASKS(1 << 8) {
 		@Override
 		public String getMessage(JSONObject json) {
 			// TODO Auto-generated method stub
 			return "added the task.";
 		}
 	},
-	ADD_TASK_INPUT(512) {
+	ADD_TASK_INPUT(1 << 9) {
 		@Override
 		public String getMessage(JSONObject json) {
 			// TODO Auto-generated method stub
 			return "added the reading value";
 		}
 	},
-	UPDATED_ALARM_SEVERITY(1024) {
+	UPDATED_ALARM_SEVERITY(1 << 10) {
 
 		@Override
 		public String getMessage(JSONObject json) {
@@ -111,7 +111,7 @@ public enum ActivityType {
 		}
 		
 	},
-	ALARM_CLEARED(2048) {
+	ALARM_CLEARED(1 << 11) {
 
 		@Override
 		public String getMessage(JSONObject json) {
@@ -120,14 +120,14 @@ public enum ActivityType {
 		}
 		
 	},
-	REJECT_WORK_ORDER_REQUEST(4096) {
+	REJECT_WORK_ORDER_REQUEST(1 << 12) {
 		@Override
 		public String getMessage(JSONObject json) {
 			// TODO Auto-generated method stub
 			return "rejected the request";
 		}
 	},
-	SOLVE_WORK_ORDER(8192) {
+	SOLVE_WORK_ORDER(1 << 13) {
 		@Override
 		public String getMessage(JSONObject json) {
 			// TODO Auto-generated method stub
@@ -135,7 +135,7 @@ public enum ActivityType {
 			return "solved the "+moduleName;
 		}
 	},
-	UPDATE_TICKET_TASK(16384) {
+	UPDATE_TICKET_TASK(1 << 14) {
 
 		@Override
 		public String getMessage(JSONObject json) {
@@ -144,21 +144,21 @@ public enum ActivityType {
 		}
 		
 	},
-	CLOSE_WORK_ORDER_REQUEST(32768) {
+	CLOSE_WORK_ORDER_REQUEST(1 << 15) {
 		@Override
 		public String getMessage(JSONObject json) {
 			// TODO Auto-generated method stub
 			return "Closed the request";
 		}
 	},
-	CREATE_WORK_REQUEST(65536) {
+	CREATE_WORK_REQUEST(1 << 16) {
 		@Override
 		public String getMessage(JSONObject json) {
 			// TODO Auto-generated method stub
 			return "Create work request";
 		}
 	},
-	CLOSE_ALL_TASK(131072) {
+	CLOSE_ALL_TASK(1 << 17) {
 		@Override
 		public String getMessage(JSONObject json) {
 			// TODO Auto-generated method stub
@@ -172,6 +172,14 @@ public enum ActivityType {
 			return null;
 		}
 	},
+	HOLD_WORK_ORDER(262144) {
+		@Override
+		public String getMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			String moduleName = (String) json.get(FacilioConstants.ContextNames.MODULE_NAME);
+			return "put on hold the "+moduleName;
+		}
+	}
 	;
 
     private int eventType;

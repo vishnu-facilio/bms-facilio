@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.constants.FacilioConstants;
 
 public class FieldFactory {
@@ -57,6 +58,18 @@ public class FieldFactory {
 		public static List<String> energyFieldsInclude = new ArrayList<String>();
 		static {
 			energyFieldsInclude.add("id");
+		}
+		public static List<String> entityFieldsInclucde = new ArrayList<String>();
+		static {
+			entityFieldsInclucde.add("entity");
+			entityFieldsInclucde.add("source");
+			entityFieldsInclucde.add("resourceId");
+			entityFieldsInclucde.add("eventMessage");
+			entityFieldsInclucde.add("severity");
+			entityFieldsInclucde.add("createdTime");
+			entityFieldsInclucde.add("priority");
+			entityFieldsInclucde.add("alarmClass");
+			entityFieldsInclucde.add("state");
 		}
 	}
 
@@ -841,6 +854,13 @@ public class FieldFactory {
 		orgid.setColumnName("ORGID");
 		orgid.setModule(module);
 		fields.add(orgid);
+		
+		FacilioField license = new FacilioField();
+		license.setName("license");
+		license.setDataType(FieldType.NUMBER);
+		license.setColumnName("LICENSE");
+		license.setModule(module);
+		fields.add(license);
 
 		FacilioField userstatus = new FacilioField();
 		userstatus.setName("userStatus");
@@ -1897,6 +1917,57 @@ public class FieldFactory {
 		fields.add(getIdField(module));
 		fields.add(getOrgIdField(module));
 
+		return fields;
+	}
+	
+	public static List<FacilioField> getShiftField() {
+		FacilioModule module = ModuleFactory.getShiftModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		
+		FacilioField name = new FacilioField();
+		name.setName("name");
+		name.setDataType(FieldType.STRING);
+		name.setColumnName("NAME");
+		name.setModule(module);
+		fields.add(name);
+		
+		FacilioField siteId = new FacilioField();
+		siteId.setName("siteId");
+		siteId.setDataType(FieldType.STRING);
+		siteId.setColumnName("SITEID");
+		siteId.setModule(module);
+		fields.add(siteId);
+		
+		FacilioField isSameTime = new FacilioField();
+		isSameTime.setName("isSameTime");
+		isSameTime.setDataType(FieldType.BOOLEAN);
+		isSameTime.setColumnName("ISSAMETIME");
+		isSameTime.setModule(module);
+		fields.add(isSameTime);
+		
+		FacilioField startTime = new FacilioField();
+		startTime.setName("startTime");
+		startTime.setDataType(FieldType.MISC);
+		startTime.setColumnName("START_TIME");
+		startTime.setModule(module);
+		fields.add(startTime);
+		
+		FacilioField endTime = new FacilioField();
+		endTime.setName("endTime");
+		endTime.setDataType(FieldType.MISC);
+		endTime.setColumnName("END_TIME");
+		endTime.setModule(module);
+		fields.add(endTime);
+		
+		FacilioField businessHoursId = new FacilioField();
+		businessHoursId.setName("businessHoursId");
+		businessHoursId.setDataType(FieldType.MISC);
+		businessHoursId.setColumnName("BUSINESSHOURSID");
+		businessHoursId.setModule(module);
+		fields.add(businessHoursId);
+		
 		return fields;
 	}
 
@@ -3861,6 +3932,15 @@ public class FieldFactory {
 
 		fields.add(getField("reportId", "REPORT_ID", module, FieldType.NUMBER));
 		fields.add(getField("benchmarkId", "BENCHMARK_ID", module, FieldType.NUMBER));
+		return fields;
+	}
+	
+	public static List<FacilioField> getShiftUserRelModuleFields() {
+		FacilioModule module = ModuleFactory.getShiftUserRelModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getField("ouid", "ORG_USERID", module, FieldType.NUMBER));
+		fields.add(getField("shiftId", "SHIFTID", module, FieldType.NUMBER));
 		return fields;
 	}
 

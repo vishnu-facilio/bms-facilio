@@ -64,7 +64,7 @@ public class Criteria extends ExpressionEvaluator<Predicate> {
 				if (condition == null) {
 					throw new IllegalArgumentException("Pattern and conditions don't match");
 				}
-				String computedCondition = condition.getComputedWhereClause();
+				String computedCondition = condition.computeAndGetWhereClause();
 				builder.append(pattern.substring(i, matcher.start()));
 				builder.append(computedCondition);
 				i = matcher.end();

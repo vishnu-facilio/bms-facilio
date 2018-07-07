@@ -155,9 +155,7 @@ public class AddPMReadingsForTasks implements Command {
 	private List<FacilioModule> createAndAddReadings(String pmTitle, Map<FieldType, List<FacilioField>> fieldMap) throws Exception {
 		if (!fieldMap.isEmpty()) {
 			List<FacilioField> fieldList = new ArrayList<>();
-			String abbrevatedTitle = StringUtils.abbreviate(pmTitle, MAX_LENGTH_OF_MODULE_NAME);
-			String moduleName = abbrevatedTitle;
-			int moduleCount = 1;
+			String moduleName = StringUtils.abbreviate(pmTitle, MAX_LENGTH_OF_MODULE_NAME);
 			List<FacilioModule> modules = new ArrayList<>();
 			while (!fieldMap.isEmpty()) {
 				Iterator<List<FacilioField>> fieldsItr = fieldMap.values().iterator();
@@ -178,7 +176,6 @@ public class AddPMReadingsForTasks implements Command {
 				if (!fieldList.isEmpty()) {
 					modules.add(addReading(moduleName, fieldList));
 					fieldList = new ArrayList<>();
-					moduleName = abbrevatedTitle + "_" + (++moduleCount);
 				}
 				else {
 					break;

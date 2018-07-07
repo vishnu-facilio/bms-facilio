@@ -28,6 +28,7 @@ import com.chargebee.models.Subscription;
 import com.chargebee.models.enums.Gateway;
 import com.facilio.accounts.dto.GroupMember;
 import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
 import com.facilio.accounts.exception.AccountException;
@@ -41,6 +42,9 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.auth.LoginUtil;
+import com.facilio.license.LicenseApi;
+import com.facilio.license.LicenseContext;
+import com.facilio.license.LicenseContext.FacilioLicense;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionContext;
@@ -140,24 +144,31 @@ public class UserAction extends ActionSupport {
 //		        .withField("AgentNameVersionMajor")
 //		        .build();
 		
-		
-		List<Map<String, Object>> sessions = AccountUtil.getUserBean().getUserSessions(AccountUtil.getCurrentUser().getUid(), true);
-		
-		UserAgentAnalyzer uaa = UserAgentAnalyzer
-                .newBuilder()
-                .hideMatcherLoadStats()
-                .withCache(25000)
-                .build();
-		
-		if (sessions != null) {
-			for (Map<String, Object> session : sessions) {
-				UserAgent agent = uaa.parse((String) session.get("userAgent"));
-				
-				for (String fieldName: agent.getAvailableFieldNamesSorted()) {
-			        System.out.println(fieldName + " = " + agent.getValue(fieldName));
-			    }
-			}
-		}
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
+		List<Role> roles = AccountUtil.getRoleBean().getRoles(orgId);
+		// AccountUtil.getUserBean().updateUserLicense(2, 4);
+		Role admin = AccountUtil.getRoleBean().getRole(orgId, "Administrator");
+		System.out.println(admin.getId());
+//		for ( Role role : roles){
+//		AccountUtil.getUserBean().addUserLicense(orgId, role.getRoleId(), 2);
+//		}
+//		List<Map<String, Object>> sessions = AccountUtil.getUserBean().getUserSessions(AccountUtil.getCurrentUser().getUid(), true);
+//		
+//		UserAgentAnalyzer uaa = UserAgentAnalyzer
+//                .newBuilder()
+//                .hideMatcherLoadStats()
+//                .withCache(25000)
+//                .build();
+//		
+//		if (sessions != null) {
+//			for (Map<String, Object> session : sessions) {
+//				UserAgent agent = uaa.parse((String) session.get("userAgent"));
+//				
+//				for (String fieldName: agent.getAvailableFieldNamesSorted()) {
+//			        System.out.println(fieldName + " = " + agent.getValue(fieldName));
+//			    }
+//			}
+//		}
 		
 			return SUCCESS;
 	}
@@ -240,6 +251,18 @@ public class UserAction extends ActionSupport {
 			return ERROR;
 
 		}
+//		Integer availableLicensedUsers = AccountUtil.getUserBean().getAvailableUserLicense(AccountUtil.getCurrentOrg().getOrgId());
+//		if (availableLicensedUsers < 1)
+//		{
+//			addFieldError("License", " Users license exceeded in your organization.");
+//			return ERROR;
+//		}
+//		Integer availableLicensedRoles = AccountUtil.getUserBean().getAvailableRoleLicense(AccountUtil.getCurrentOrg().getOrgId(), user.getRoleId());
+//		if (availableLicensedRoles < 1)
+//		{
+//			addFieldError("License", "This Role license exceeded in your organization.");
+//			return ERROR;	
+//		}
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.USER, user);
 		context.put(FacilioConstants.ContextNames.ACCESSIBLE_SPACE, accessibleSpace);
@@ -355,7 +378,7 @@ public class UserAction extends ActionSupport {
 		Environment.configure(site, api);
 		
 		Map<String, Object> cusid = CommonCommandUtil.getOrgInfo(orgId, "Customer_id");
-		System.out.println("*****************customer  ID *********************" +cusid);
+		// System.out.println("*****************customer  ID *********************" +cusid);
 		ListResult result = Subscription.list()
                           .limit(5)
                           .customerId().is((String) cusid.get("value"))
@@ -413,10 +436,7 @@ public class UserAction extends ActionSupport {
             
 	
 	public String updateMyProfile() throws Exception{
-		// System.out.println("***************** calling Subscription Info *********************");
-		// userAgent();
 		subscriptionInfo();
-		// System.out.println("!@@!@!@!!!!!!!!!!! user"+user);
 		boolean status = AccountUtil.getUserBean().updateUser(AccountUtil.getCurrentUser().getId(), user);
 		
 		return SUCCESS;

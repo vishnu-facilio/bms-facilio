@@ -110,6 +110,10 @@ public class FacilioTimer {
 		return JobStore.getJob(jobId, jobName);
 	}
 	
+	public static List<JobContext> getJobs(List<Long> jobIds, String jobName) throws JsonParseException, JsonMappingException, SQLException, IOException, ParseException {
+		return JobStore.getJobs(jobIds, jobName);
+	}
+	
 	private static long getCurrentOrgId() {
 		long orgId = -1;
 		if(AccountUtil.getCurrentOrg() != null) {
