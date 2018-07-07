@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.criteria;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,7 +14,6 @@ import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
-import com.facilio.transaction.FacilioConnectionPool;
 
 public enum BuildingOperator implements Operator<String> {
 	
@@ -123,7 +121,6 @@ public enum BuildingOperator implements Operator<String> {
 	}
 	
 	private static List<ResourceContext> getAllResources(String value) throws NumberFormatException, Exception {
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
 			List<BaseSpaceContext> spaces = null;
 			if(value.contains(",")) {
 				List<Long> ids = new ArrayList<>();
@@ -146,10 +143,5 @@ public enum BuildingOperator implements Operator<String> {
 											
 			}
 			return null;
-		}
-		catch(SQLException e) {
-			log.info("Exception occurred ", e);
-			throw e;
-		}
 	}
 }
