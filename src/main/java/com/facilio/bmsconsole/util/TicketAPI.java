@@ -439,7 +439,12 @@ public class TicketAPI {
 		
 		if (oldTicket != null) {
 			if (oldTicket.getAssignedTo() != null) {
-				handleWorkHoursReading(oldTicket.getAssignedTo().getOuid(), oldTicket.getId(), oldTicket.getStatus(), statusObj);
+				try {
+					handleWorkHoursReading(oldTicket.getAssignedTo().getOuid(), oldTicket.getId(), oldTicket.getStatus(), statusObj);
+				}
+				catch(Exception e) {
+					log.info("Exception occurred while handling work hours", e);
+				}
 			}
 			if ("Work in Progress".equalsIgnoreCase(statusObj.getStatus())) {
 				if (oldTicket.getActualWorkStart() != -1) {

@@ -144,11 +144,13 @@ public class AddPMReadingsForTasks implements Command {
 	private void checkAndUpdateField (TaskContext task, ModuleBean modBean) throws Exception {
 		String displayName = StringUtils.abbreviate(task.getSubject(), MAX_LENGTH_OF_FIELD_NAME);
 		FacilioField field = modBean.getField(task.getReadingFieldId());
+		task.setReadingField(field);
 		if (!field.getDisplayName().equals(displayName)) {
 			FacilioField updateField = new FacilioField();
 			updateField.setFieldId(task.getReadingFieldId());
 			updateField.setDisplayName(displayName);
 			modBean.updateField(updateField);
+			field.setDisplayName(displayName);
 		}
 	}
 	
