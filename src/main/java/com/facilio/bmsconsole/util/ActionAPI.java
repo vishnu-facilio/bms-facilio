@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,11 +22,10 @@ import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
-import com.facilio.transaction.FacilioConnectionPool;
 
 public class ActionAPI {
 
-    private static Logger log = LogManager.getLogger(ActionAPI.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(ActionAPI.class.getName());
 	public static List<ActionContext> getAllActionsFromWorkflowRule(long orgId, long workflowRuleId) throws Exception {
 		GenericSelectRecordBuilder actionBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getActionFields())
@@ -124,21 +122,15 @@ public class ActionAPI {
 	}
 	
 	public static int updateAction(long orgId, ActionContext action, long id) throws Exception {
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
-			Map<String, Object> actionProps = FieldUtil.getAsProperties(action);
-			
-			GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
-																.table("Action")
-																.fields(FieldFactory.getActionFields())
-																.andCustomWhere("ORGID = ? AND ID = ?", orgId, id);
+		Map<String, Object> actionProps = FieldUtil.getAsProperties(action);
+		
+		GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
+															.table("Action")
+															.fields(FieldFactory.getActionFields())
+															.andCustomWhere("ORGID = ? AND ID = ?", orgId, id);
 
-			return updateRecordBuilder.update(actionProps);
+		return updateRecordBuilder.update(actionProps);
 
-		}
-		catch(Exception e) {
-			log.info("Exception occurred ", e);
-			throw e;
-		}
 	}
 	
 	private static List<ActionContext> getActionsFromPropList(List<Map<String, Object>> props) throws Exception {
