@@ -240,7 +240,7 @@ public class ProcessXLS implements Command {
 						}
 						
 						try {
-							if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER) && (facilioField.getDataTypeEnum().equals(FieldType.DATE_TIME) || facilioField.getDataTypeEnum().equals(FieldType.DATE))) {
+							if(facilioField.getDataTypeEnum().equals(FieldType.DATE_TIME) || facilioField.getDataTypeEnum().equals(FieldType.DATE)) {
 								if(!(cellValue instanceof Long)) {
 									long millis = DateTimeUtil.getTime(cellValue.toString(), "dd-MM-yyyy HH:mm");
 									props.put(key, millis);
