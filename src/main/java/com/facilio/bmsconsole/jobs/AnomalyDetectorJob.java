@@ -62,13 +62,15 @@ public class AnomalyDetectorJob extends FacilioJob {
 			
 			// Uncomment below code for DEV testing only
 			//long correction = System.currentTimeMillis() - 1524720891689L;
+			
 			long endTime = System.currentTimeMillis() - correction;
 			long startTime = endTime - (2 * anomalyPeriodicity *  60 * 1000L);
 
+			logger.log(Level.INFO, "  " + startTime + " " + endTime + " " + anomalyPeriodicity);
 			logger.log(Level.INFO, "selected Meters ");
 			for (EnergyMeterContext energyMeter : allEnergyMeters) {
-
-				// logger.log(Level.INFO, "" + energyMeter.getId());
+				
+				logger.log(Level.INFO, "" + energyMeter.getId() + "  " + startTime + " " + endTime);
 				doEnergyMeterAnomalyDetection(energyMeter, startTime, endTime);
 			}
 		} catch (Exception e) {
@@ -91,7 +93,6 @@ public class AnomalyDetectorJob extends FacilioJob {
 	
 	private void doEnergyMeterAnomalyDetection(EnergyMeterContext  energyMeterContext, long startTime, long endTime) {
 		String moduleName="dummyModuleName";
-		String url=AwsUtil.getConfig("dataScienceUrl");
 		ObjectMapper mapper = new ObjectMapper();
 		
 		try {
@@ -102,7 +103,6 @@ public class AnomalyDetectorJob extends FacilioJob {
 				return;
 			}
 				
-			String readingsList = mapper.writeValueAsString(meterReadings);
 			List<TemperatureContext> temperatureContext = AnomalySchedulerUtil.getAllTemperatureReadings(moduleName,
 					startTime, endTime, energyMeterContext.getOrgId());
 
