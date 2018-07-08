@@ -2477,7 +2477,11 @@ public class DashboardUtil {
 		return frequency;
 	}
 	
-	public static Map<Long, Long> calculateWorkHours (List<Map<String, Object>> props, long startTime, long endTime) { //Expects it to be in order by time
+	public static Map<Long, Long> calculateWorkHours (List<Map<String, Object>> props, long startTime, long endTime) {
+		return calculateWorkHours(props,startTime,endTime,false,false);
+	}
+	
+	public static Map<Long, Long> calculateWorkHours (List<Map<String, Object>> props, long startTime, long endTime,boolean isAvgResoultionTime,boolean ispercent) { //Expects it to be in order by time
 		if (props != null && !props.isEmpty()) {
 			Map<Long, List<Map<String, Object>>> userWiseProps = new HashMap<>();
 			for (Map<String, Object> prop : props) {
@@ -2495,7 +2499,11 @@ public class DashboardUtil {
 				Long userId = entry.getKey();
 				long workTime = 0;
 				long prevTime = startTime;
+				List<Long> workordersId = new ArrayList<>();
 				for (Map<String, Object> prop : entry.getValue()) {
+					if(!workordersId.contains(prop.get("woId"))) {
+						workordersId.add((Long) prop.get("woId"));
+					}
 					Boolean hasManualEntry = (Boolean) prop.get("hasManualEntry");
 					if (hasManualEntry == null || !hasManualEntry) {
 						long currentTime = (long) prop.get("actualTtime");
@@ -2513,6 +2521,13 @@ public class DashboardUtil {
 								break;
 						}
 					}
+				}
+				if(isAvgResoultionTime) {
+					workTime = workTime/workordersId.size();
+				}
+				if(ispercent) {
+					//get his shift time;
+					//workTime = workTime / shift * 100;
 				}
 				workDuration.put(userId, workTime);
 			}

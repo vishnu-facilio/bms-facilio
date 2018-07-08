@@ -2564,7 +2564,7 @@ public class DashboardAction extends ActionSupport {
 				
 				builder.andCondition(spaceCondition);
 			}
-			if("workhour".equals(report.getReportSpaceFilterContext().getGroupBy())) {
+			if(report.getReportSpaceFilterContext().getGroupBy() != null && report.getReportSpaceFilterContext().getGroupBy().contains("workhour")) {
 				
 				isWorkHourRepoort = true;
 				FacilioModule whModule = modBean.getModule(FacilioConstants.ContextNames.USER_WORK_HOURS_READINGS);
@@ -2575,8 +2575,18 @@ public class DashboardAction extends ActionSupport {
 				selectRecordBuilder.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId());
 				
 				List<Map<String, Object>> props = selectRecordBuilder.get();
-				
-				Map<Long, Long> workhoursProp = DashboardUtil.calculateWorkHours(props, startTime, endTime);
+				Map<Long, Long> workhoursProp = null;
+				if(report.getReportSpaceFilterContext().getGroupBy().contains("avgworkhour")) {
+					
+					workhoursProp = DashboardUtil.calculateWorkHours(props, startTime, endTime,true,false);
+				}
+				if(report.getReportSpaceFilterContext().getGroupBy().contains("percentworkhour")) {
+					
+					workhoursProp = DashboardUtil.calculateWorkHours(props, startTime, endTime,false,true);
+				}
+				else {
+					workhoursProp = DashboardUtil.calculateWorkHours(props, startTime, endTime,false,false);
+				}
 				if(workhoursProp != null && !workhoursProp.isEmpty()) {
 					rs = DashboardUtil.convertMapToProps(workhoursProp);
 				}
