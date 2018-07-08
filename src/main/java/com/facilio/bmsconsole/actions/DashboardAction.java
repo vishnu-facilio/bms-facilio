@@ -2510,17 +2510,30 @@ public class DashboardAction extends ActionSupport {
 				dateRange = report.getDateFilter().getOperator().getRange(report.getDateFilter().getValue());
 			}
 			LOGGER.severe("start -- "+dateRange.getStartTime() +" end -- "+dateRange.getEndTime());
-			Condition condition = baseLineContext.getBaseLineCondition(report.getDateFilter().getField(), dateRange);
-			String baseLineStartValue = condition.getValue().substring(0,condition.getValue().indexOf(","));
+			dateCondition = baseLineContext.getBaseLineCondition(report.getDateFilter().getField(), dateRange);
+			String baseLineStartValue = dateCondition.getValue().substring(0,dateCondition.getValue().indexOf(","));
 			this.baseLineComparisionDiff = dateRange.getStartTime() - Long.parseLong(baseLineStartValue);
-			LOGGER.severe(""+condition);
-			builder.andCondition(condition);
+			LOGGER.severe(""+dateCondition);
+			builder.andCondition(dateCondition);
 		}
 		else if(report.getDateFilter() != null) {
 			dateCondition = DashboardUtil.getDateCondition(report, dateFilter, module);
 			builder.andCondition(dateCondition);
 		}
-		
+		if(dateCondition != null) {
+			if(dateCondition.getValue() != null && dateCondition.getValue().contains(",")) {
+				String startTimeString  = dateCondition.getValue().substring(0, dateCondition.getValue().indexOf(",")).trim();
+				String endTimeString  = dateCondition.getValue().substring( dateCondition.getValue().indexOf(",")+1,dateCondition.getValue().length()).trim();
+				this.startTime = Long.parseLong(startTimeString);
+				this.endTime = Long.parseLong(endTimeString);
+			}
+			else if(dateCondition.getOperator() != null && dateCondition.getOperator() instanceof DateOperators) {
+				DateOperators dateOpp = (DateOperators)dateCondition.getOperator();
+				DateRange range = dateOpp.getRange(dateCondition.getValue());
+				this.startTime = range.getStartTime();
+				this.endTime = range.getEndTime();
+			}
+		}
 		if(criteriaId != -1) {
 			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), criteriaId);
 		}
