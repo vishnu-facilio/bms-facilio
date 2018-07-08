@@ -2530,7 +2530,7 @@ public class DashboardUtil {
 				Long value = map.get(lable);
 				
 				Map<String, Object> map1 = new HashMap<>();
-				map1.put("lable", lable);
+				map1.put("label", lable);
 				map1.put("value", value);
 				
 				rs.add(map1);
