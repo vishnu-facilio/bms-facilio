@@ -9,6 +9,9 @@ import org.apache.commons.chain.Context;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.ActionContext;
 import com.facilio.constants.FacilioConstants;
@@ -49,6 +52,19 @@ public class AddFieldsCommand implements Command {
 					long fieldId = modBean.addField(field);
 					field.setFieldId(fieldId);
 					fieldIds.add(fieldId);
+					
+					if ((field.getDataTypeEnum() == FieldType.NUMBER) && field instanceof NumberField) {
+						NumberField numberField = (NumberField) field;
+						if (numberField.isCounterField()) {
+							NumberField deltaField = FieldUtil.cloneBean(numberField, NumberField.class);
+							deltaField.setCounterField(null);
+							deltaField.setName(deltaField.getName()+"Delta");
+							deltaField.setDisplayName(deltaField.getDisplayName()+" Delta");
+							fields.add(deltaField);
+						}
+					}
+					
+					//The following code has to be moved somewhere else
 					List<ReadingRuleContext> rule = field.getReadingRules();
 					List<List<ActionContext>> actions = new ArrayList<>();
 					

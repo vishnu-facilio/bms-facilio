@@ -34,6 +34,20 @@ public class NumberField extends FacilioField {
 		this.metric = metric;
 	}
 	
+	private Boolean counterField;
+	public Boolean getCounterField() {
+		return counterField;
+	}
+	public void setCounterField(Boolean counterField) {
+		this.counterField = counterField;
+	}
+	public boolean isCounterField() {
+		if (counterField != null) {
+			return counterField.booleanValue();
+		}
+		return false;
+	}
+	
 	public Metric getMetricEnum() {
 		if(metric != -1) {
 			return Metric.valueOf(metric);

@@ -1925,6 +1925,7 @@ public class FacilioChainFactory {
 		c.addCommand(new GetReadingDataMetaCommand());
 		c.addCommand(new ReadingUnitConversionCommand());
 		c.addCommand(new DeltaCalculationCommand());
+		c.addCommand(new CalculateDeltaCommand());
 		c.addCommand(new CalculatePreFormulaCommand());
 		c.addCommand(new ExecuteValidationRule());
 		c.addCommand(new AddOrUpdateReadingValuesCommand());

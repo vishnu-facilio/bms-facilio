@@ -145,6 +145,7 @@ public class FieldFactory {
 		fields.add(unit);
 
 		fields.add(getField("metric", "METRIC", module, FieldType.NUMBER));
+		fields.add(getField("counterField", "IS_COUNTER_FIELD", module, FieldType.BOOLEAN));
 
 		return fields;
 	}

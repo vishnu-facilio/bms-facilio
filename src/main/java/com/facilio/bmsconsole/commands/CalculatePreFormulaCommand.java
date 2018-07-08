@@ -46,7 +46,7 @@ public class CalculatePreFormulaCommand implements Command {
 						List<FormulaFieldContext> formulas = formulaMap.get(moduleName);
 						if (formulas != null && !formulas.isEmpty()) {
 							List<ReadingContext> readings = entry.getValue();
-							Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(entry.getKey()));
+							Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(moduleName));
 							if (readings != null && !readings.isEmpty()) {
 								for (ReadingContext reading : readings) {
 									calculateFormulas(reading, fieldMap, formulas, rdm, newRdmPairs);
