@@ -2485,6 +2485,7 @@ public class DashboardUtil {
 				List<Map<String, Object>> userWiseList = userWiseProps.get(userId);
 				if (userWiseList == null) {
 					userWiseList = new ArrayList<>();
+					userWiseProps.put(userId, userWiseList);
 				}
 				userWiseList.add(prop);
 			}
