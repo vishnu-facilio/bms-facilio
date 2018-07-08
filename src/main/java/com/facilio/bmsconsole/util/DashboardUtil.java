@@ -2519,4 +2519,23 @@ public class DashboardUtil {
 		}
 		return null;
 	}
+	
+	public static List<Map<String, Object>> convertMapToProps(Map<Long, Long> map) {
+		
+		if(map != null && !map.isEmpty()) {
+			List<Map<String, Object>> rs = new ArrayList<>();
+			for(Long lable: map.keySet()) {
+				
+				Long value = map.get(lable);
+				
+				Map<String, Object> map1 = new HashMap<>();
+				map1.put("lable", lable);
+				map1.put("value", value);
+				
+				rs.add(map1);
+			}
+			return rs;
+		}
+		return null;
+	}
 }

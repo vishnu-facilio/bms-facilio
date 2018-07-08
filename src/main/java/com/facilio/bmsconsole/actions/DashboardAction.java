@@ -2543,6 +2543,9 @@ public class DashboardAction extends ActionSupport {
 		if(report.getCriteria() != null) {
 			builder.andCriteria(report.getCriteria());
 		}
+		
+		List<Map<String, Object>> rs = new ArrayList<>();
+		boolean isWorkHourRepoort = false;
 		if(report.getReportSpaceFilterContext() != null) {
 			if(report.getReportSpaceFilterContext().getBuildingId() != null) {
 				
@@ -2561,12 +2564,31 @@ public class DashboardAction extends ActionSupport {
 				
 				builder.andCondition(spaceCondition);
 			}
+			if("workhour".equals(report.getReportSpaceFilterContext().getGroupBy())) {
+				
+				isWorkHourRepoort = true;
+				FacilioModule whModule = modBean.getModule(FacilioConstants.ContextNames.USER_WORK_HOURS_READINGS);
+				GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder();
+				selectRecordBuilder.select(modBean.getAllFields(FacilioConstants.ContextNames.USER_WORK_HOURS_READINGS));
+				selectRecordBuilder.table(whModule.getTableName());
+				selectRecordBuilder.andCustomWhere("TTIME between ? and ?", startTime,endTime);
+				selectRecordBuilder.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId());
+				
+				List<Map<String, Object>> props = selectRecordBuilder.get();
+				
+				Map<Long, Long> workhoursProp = DashboardUtil.calculateWorkHours(props, startTime, endTime);
+				if(workhoursProp != null && !workhoursProp.isEmpty()) {
+					rs = DashboardUtil.convertMapToProps(workhoursProp);
+				}
+			}
 		}
 		
 		fields.add(y1AxisField);
 		fields.add(xAxisField);
 		builder.select(fields);
-		List<Map<String, Object>> rs = builder.get();
+		if(rs == null && !isWorkHourRepoort) {
+			rs = builder.get();
+		}
 		LOGGER.info("builder --- "+reportContext.getId() +"   "+baseLineId);
 		LOGGER.info("builder --- "+builder);
 		
