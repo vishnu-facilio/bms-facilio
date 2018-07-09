@@ -2486,7 +2486,7 @@ public class DashboardUtil {
 	public static Map<Long, Double> calculateWorkHours (List<Map<String, Object>> props, long startTime, long endTime,boolean isAvgResoultionTime,boolean ispercent) { //Expects it to be in order by time
 		if (props != null && !props.isEmpty()) {
 			Map<Long, List<Map<String, Object>>> userWiseProps = new HashMap<>();
-			for (Map<String, Object> prop : props) {
+			for(Map<String, Object> prop : props) {
 				Long userId = (Long) prop.get("parentId");
 				List<Map<String, Object>> userWiseList = userWiseProps.get(userId);
 				if (userWiseList == null) {

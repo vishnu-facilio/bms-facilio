@@ -403,7 +403,7 @@ public class AssetsAPI {
 		if (searchText != null && !searchText.isEmpty()) {
 			Criteria criteria = new Criteria();
 			criteria.addAndCondition(CriteriaAPI.getCondition(assetFieldMap.get("name"), searchText, StringOperators.CONTAINS));
-			criteria.addAndCondition(CriteriaAPI.getCondition(readingFieldsMap.get("name"), searchText, StringOperators.CONTAINS));
+			criteria.addAndCondition(CriteriaAPI.getCondition(readingFieldsMap.get("displayName"), searchText, StringOperators.CONTAINS));
 			builder.andCriteria(criteria);
 		}
 		

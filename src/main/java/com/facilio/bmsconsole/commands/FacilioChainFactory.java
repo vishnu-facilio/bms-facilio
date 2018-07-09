@@ -125,7 +125,15 @@ public class FacilioChainFactory {
 		addCleanUpCommand(c);
 		return c;
 	}
-	
+	public static Chain calculateTenantBill() {
+		
+		Chain c = new ChainBase();
+		c.addCommand(new CalculateUtilityService());
+		c.addCommand(new CalculateFormulaService());
+		c.addCommand(new CalculateFinalResult());
+		addCleanUpCommand(c);
+		return c;
+	}
 	public static Chain getAssignTicketChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForTicket());
@@ -1933,7 +1941,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getAddOrUpdateReadingValuesChain() {
-		Chain c = new ChainBase();
+		Chain c = new TransactionChain();
 		c.addCommand(new GetReadingDataMetaCommand());
 		c.addCommand(new ReadingUnitConversionCommand());
 		c.addCommand(new DeltaCalculationCommand());

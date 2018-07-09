@@ -168,6 +168,7 @@ public class TaskAction extends ActionSupport {
 	private String updateTask(FacilioContext context) throws Exception {
 		context.put(FacilioConstants.ContextNames.TASK, task);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
+		context.put(FacilioConstants.ContextNames.SKIP_LAST_READING_CHECK, true);
 		Map<Long, Map<String, String>> errorMap = new HashMap<>();
 		Chain updateTask = FacilioChainFactory.getUpdateTaskChain();
 		try {
@@ -240,6 +241,7 @@ public class TaskAction extends ActionSupport {
 			if (AccountUtil.getCurrentAccount().getDeviceType() != null) {
 				context.put(FacilioConstants.ContextNames.DO_VALIDTION, getDoValidation());
 			}
+			context.put(FacilioConstants.ContextNames.SKIP_LAST_READING_CHECK, true);
 			Chain updateTask = FacilioChainFactory.getUpdateTaskChain();
 			try {
 				updateTask.execute(context);
@@ -247,7 +249,7 @@ public class TaskAction extends ActionSupport {
 				Map<String, String> msgMap = new HashMap<>();
 				msgMap.put("message", ex.getMessage());
 				msgMap.put("evaluator", ex.getResultEvaluator());
-				errorMap.put(ex.getReadingFieldId(), msgMap);
+				errorMap.put(singleTask.getId(), msgMap);
 				setError(errorMap);
 			}
 			Object count = context.get(FacilioConstants.ContextNames.ROWS_UPDATED);

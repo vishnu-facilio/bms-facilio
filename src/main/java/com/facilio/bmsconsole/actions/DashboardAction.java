@@ -1231,6 +1231,7 @@ public class DashboardAction extends ActionSupport {
 		this.variance = variance;
 	}
 	public String getData() throws Exception {
+		
 		if (reportContext == null) {
 			reportContext = DashboardUtil.getReportContext(reportId);
 		}
@@ -2545,7 +2546,7 @@ public class DashboardAction extends ActionSupport {
 		}
 		
 		List<Map<String, Object>> rs = new ArrayList<>();
-		boolean isWorkHourRepoort = false;
+		boolean isWorkHourReport = false;
 		if(report.getReportSpaceFilterContext() != null) {
 			if(report.getReportSpaceFilterContext().getBuildingId() != null) {
 				
@@ -2566,13 +2567,14 @@ public class DashboardAction extends ActionSupport {
 			}
 			if(report.getReportSpaceFilterContext().getGroupBy() != null && report.getReportSpaceFilterContext().getGroupBy().contains("workhour")) {
 				
-				isWorkHourRepoort = true;
+				isWorkHourReport = true;
 				FacilioModule whModule = modBean.getModule(FacilioConstants.ContextNames.USER_WORK_HOURS_READINGS);
 				GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder();
 				selectRecordBuilder.select(modBean.getAllFields(FacilioConstants.ContextNames.USER_WORK_HOURS_READINGS));
 				selectRecordBuilder.table(whModule.getTableName());
 				selectRecordBuilder.andCustomWhere("TTIME between ? and ?", startTime,endTime);
 				selectRecordBuilder.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId());
+				selectRecordBuilder.orderBy("TTIME");
 				
 				List<Map<String, Object>> props = selectRecordBuilder.get();
 				Map<Long, Double> workhoursProp = null;
@@ -2580,7 +2582,7 @@ public class DashboardAction extends ActionSupport {
 					
 					workhoursProp = DashboardUtil.calculateWorkHours(props, startTime, endTime,true,false);
 				}
-				if(report.getReportSpaceFilterContext().getGroupBy().contains("percentworkhour")) {
+				else if(report.getReportSpaceFilterContext().getGroupBy().contains("percentworkhour")) {
 					
 					workhoursProp = DashboardUtil.calculateWorkHours(props, startTime, endTime,false,true);
 				}
@@ -2596,7 +2598,7 @@ public class DashboardAction extends ActionSupport {
 		fields.add(y1AxisField);
 		fields.add(xAxisField);
 		builder.select(fields);
-		if(rs == null && !isWorkHourRepoort) {
+		if(!isWorkHourReport) {
 			rs = builder.get();
 		}
 		LOGGER.info("builder --- "+reportContext.getId() +"   "+baseLineId);
@@ -2789,6 +2791,27 @@ public class DashboardAction extends ActionSupport {
 	public void setSafelimit(JSONArray safelimit) {
 		this.safelimit = safelimit;
 	}
+	
+	private Double getTotalKwh(FacilioModule module, long parentId, FacilioField sumField, Condition dateCondition) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+			.table(module.getTableName())
+			.andCustomWhere(module.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId())
+			.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
+			;
+		
+		builder.andCondition(CriteriaAPI.getCondition(modBean.getField("parentId", module.getName()), String.valueOf(parentId), PickListOperators.IS));
+		builder.andCondition(dateCondition);
+		
+		List<Map<String, Object>> rs = builder.get();
+		if (rs != null && rs.size() > 0) {
+			return (Double) rs.get(0).get("value");
+		}
+		return 0d;
+	}
+	
 	private JSONArray getDataForReadings(ReportContext report, FacilioModule module, JSONArray dateFilter, JSONObject userFilterValues, long baseLineId, long criteriaId) throws Exception {
 		JSONArray readingData = null;
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -3543,6 +3566,32 @@ public class DashboardAction extends ActionSupport {
 			
 			if(!"eui".equalsIgnoreCase(report.getY1AxisUnit())) {
 				variance = DashboardUtil.getStandardVariance(rs,meterIdsUsed);
+			}
+			else {
+				variance = DashboardUtil.getStandardVariance(rs,meterIdsUsed);
+				try {
+					if (report.getY1AxisField().getField().getName().equalsIgnoreCase("cost") || (reportFieldLabelMap != null && reportFieldLabelMap.get(report.getY1AxisField().getField().getName()).toString().equalsIgnoreCase("cost"))) {
+						
+						
+						Double totalKwh = getTotalKwh(module, this.parentId, y1AxisField, dateCondition);
+						Double totalCost = (Double) variance.get("sum");
+						
+						Long yesterdayTime = (Long) rs.get(rs.size() - 1).get("label");
+						Long startTime = DateTimeUtil.getDayStartTimeOf(DateTimeUtil.getZonedDateTime(yesterdayTime)).toInstant().toEpochMilli();
+						Long endTime = DateTimeUtil.getDayEndTimeOf(DateTimeUtil.getZonedDateTime(yesterdayTime)).toInstant().toEpochMilli();
+						Double yesterdayKwh = getTotalKwh(module, this.parentId, y1AxisField, CriteriaAPI.getCondition(report.getDateFilter().getField(), startTime+","+endTime, DateOperators.BETWEEN));
+						Double yesterdayCost = (Double) rs.get(rs.size() - 1).get("value");
+						
+						variance = new JSONObject();
+						variance.put("total_kwh", totalKwh);
+						variance.put("total_cost", totalCost);
+						variance.put("yesterday_kwh", yesterdayKwh);
+						variance.put("yesterday_cost", yesterdayCost);
+					}
+				}
+				catch (Exception e) {
+					LOGGER.log(Level.SEVERE, "Exception in variance calculation for cost report ", e);
+				}
 			}
 			
 			for(int i=0;i<rs.size();i++) {

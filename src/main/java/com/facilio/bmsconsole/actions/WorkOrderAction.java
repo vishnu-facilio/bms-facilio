@@ -32,6 +32,7 @@ import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.ViewLayout;
@@ -246,6 +247,12 @@ public class WorkOrderAction extends ActionSupport {
 								taskResourceCOntext.setId(assetId);
 							}
 						}
+						
+						TicketAPI.setTasksInputData(Collections.singletonList(taskContext));
+						if (taskContext.getInputTypeEnum() != InputType.NONE && taskContext.getInputTypeEnum() != InputType.READING) {
+							taskContext.setReadingFieldId(-1);
+						}
+						
 						taskContext.setId(-1);
 					    taskContext.setSectionId(-1);
 					}

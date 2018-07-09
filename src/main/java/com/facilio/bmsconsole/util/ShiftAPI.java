@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.util;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -33,6 +35,7 @@ import com.facilio.bmsconsole.context.ShiftContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -414,6 +417,47 @@ public class ShiftAPI {
 		JSONObject obj = new JSONObject();
 		obj.put("shiftId", shift.getId());
 		scheduleOneTimeJobs(jcs, obj);
+	}
+	
+	private static final BigDecimal SIXTY = new BigDecimal("60");
+	private static final BigDecimal THOUSAND = new BigDecimal("1000");
+	
+	public static BigDecimal getUserShiftHours(long userId, long startTime, long endTime) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule shrModule = modBean.getModule(FacilioConstants.ContextNames.USER_SHIFT_READING);
+		
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder();
+		selectRecordBuilder.select(modBean.getAllFields(FacilioConstants.ContextNames.USER_SHIFT_READING));
+		selectRecordBuilder.table(shrModule.getTableName());
+		selectRecordBuilder.andCustomWhere("TTIME between ? and ?", startTime, endTime);
+		selectRecordBuilder.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
+		.orderBy("TTIME ASC");
+		
+		List<Map<String, Object>> props = selectRecordBuilder.get();
+		if (props == null || props.isEmpty()) {
+			return BigDecimal.ZERO;
+		}
+		long result = 0;
+		
+		ArrayList<Long> readings = new ArrayList<>();
+		
+		if ((Integer) props.get(0).get("shiftEntry") == 2) {
+			readings.add(startTime);
+		}
+		
+		readings.addAll(props.stream().map(e -> (Long) e.get("ttime")).collect(Collectors.toList()));
+		
+		if ((Integer) props.get(props.size() - 1).get("shiftEntry") == 1) {
+			readings.add(endTime);
+		}
+		
+		for (int i = 0; i < readings.size(); i += 2) {
+			result +=  (long) props.get(i+1).get("ttime") - (long) props.get(i).get("ttime");
+		}
+
+		BigDecimal res = (new BigDecimal(result)).divide(THOUSAND);
+		res = res.divide(SIXTY.multiply(SIXTY), RoundingMode.HALF_UP);
+		return res.setScale(2, RoundingMode.HALF_UP);
 	}
 
 }

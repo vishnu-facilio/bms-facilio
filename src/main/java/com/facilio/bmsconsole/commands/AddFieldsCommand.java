@@ -53,7 +53,7 @@ public class AddFieldsCommand implements Command {
 					field.setFieldId(fieldId);
 					fieldIds.add(fieldId);
 					
-					if ((field.getDataTypeEnum() == FieldType.NUMBER) && field instanceof NumberField) {
+					if ((field.getDataTypeEnum() == FieldType.NUMBER || field.getDataTypeEnum() == FieldType.DECIMAL) && field instanceof NumberField) {
 						NumberField numberField = (NumberField) field;
 						if (numberField.isCounterField()) {
 							NumberField deltaField = FieldUtil.cloneBean(numberField, NumberField.class);

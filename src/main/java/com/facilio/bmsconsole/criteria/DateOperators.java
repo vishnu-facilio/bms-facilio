@@ -2076,7 +2076,7 @@ public enum DateOperators implements Operator<String> {
 		@Override
 		public DateRange getRange(String value) {
 			// TODO Auto-generated method stub
-			return new DateRange(DateTimeUtil.getDayStartTime(Integer.valueOf(value)), DateTimeUtil.getDayStartTime(Integer.valueOf(value)+1));
+			return new DateRange(DateTimeUtil.getDayStartTime(Integer.valueOf(value)), DateTimeUtil.getDayStartTime(Integer.valueOf(value)+1)-1);
 		}
 		
 		@Override

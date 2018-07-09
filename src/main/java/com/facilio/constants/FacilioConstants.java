@@ -457,6 +457,7 @@ public class FacilioConstants {
 		public static final String PAY_LOAD = "payLoad";
 		public static final String MODELED_DATA="modeledData";
 		public static final String UPDATE_LAST_READINGS = "updateLastReadings";
+		public static final String SKIP_LAST_READING_CHECK = "skipLastReadingCheck";
 		public static final String READING_DATA_META = "readingDataMeta";
 		public static final String READING_DATA_META_LIST = "readingDataMetaList";
 		public static final String READING_DATA_META_TYPE = "readingDataMetaType";
