@@ -28,9 +28,11 @@ import com.facilio.bmsconsole.context.TicketPriorityContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.TicketTypeContext;
 import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.DeleteRecordBuilder;
+import com.facilio.bmsconsole.modules.EnumField;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -38,12 +40,15 @@ import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.view.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.ActivityType;
+import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.facilio.workflows.util.WorkflowUtil;
 
 public class TicketAPI {
 	
@@ -787,5 +792,52 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 			return statusVsActivityType.get(status.getStatus());
 		}
 		return null;
+	}
+	
+	public static void setTasksInputData (List<TaskContext> tasks) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		for(TaskContext task : tasks) {
+			switch(task.getInputTypeEnum()) {
+			case NUMBER:
+				Criteria criteria = new Criteria();
+				criteria.addAndCondition(CriteriaAPI.getCondition("READING_FIELD_ID", "readingFieldId", Long.toString(task.getReadingFieldId()), NumberOperators.EQUALS));
+				criteria.addAndCondition(CriteriaAPI.getCondition("RULE_TYPE", "ruleType", String.valueOf(RuleType.VALIDATION_RULE.getIntVal()), NumberOperators.EQUALS));
+				List<ReadingRuleContext> readingRules = WorkflowRuleAPI.getReadingRules(criteria);
+				if (readingRules != null && !readingRules.isEmpty()) {
+					for (ReadingRuleContext r:  readingRules) {
+						long workflowId = r.getWorkflowId();
+						if (workflowId != -1) {
+							r.setWorkflow(WorkflowUtil.getWorkflowContext(workflowId, true));
+						}
+					}
+				}
+				task.setReadingRules(readingRules);
+			case TEXT:
+			case READING:
+			case BOOLEAN:
+				task.setReadingField(modBean.getField(task.getReadingFieldId()));
+				break;
+			case RADIO:
+				if (task.getReadingFieldId() != -1) {
+					task.setReadingField(modBean.getField(task.getReadingFieldId()));
+					task.setOptions(((EnumField)task.getReadingField()).getValues());
+				}
+				else {
+					task.setOptions(TicketAPI.getTaskInputOptions(task.getId()));
+				}
+				break;
+//			case CHECKBOX:
+//				task.setOptions(TicketAPI.getTaskInputOptions(task.getId()));
+//				if(task.getInputValue() != null && !task.getInputValue().isEmpty()) {
+//					task.setInputValues(Arrays.asList(task.getInputValue().split("\\s*,\\s*")));
+//				}
+//				else {
+//					task.setInputValues(Collections.emptyList());
+//				}
+//				break;
+			default:
+				break;
+		}
+		}
 	}
 }

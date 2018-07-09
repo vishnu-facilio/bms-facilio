@@ -248,6 +248,7 @@ public class WorkOrderAction extends ActionSupport {
 							}
 						}
 						
+						TicketAPI.setTasksInputData(Collections.singletonList(taskContext));
 						if (taskContext.getInputTypeEnum() != InputType.NONE && taskContext.getInputTypeEnum() != InputType.READING) {
 							taskContext.setReadingFieldId(-1);
 						}
