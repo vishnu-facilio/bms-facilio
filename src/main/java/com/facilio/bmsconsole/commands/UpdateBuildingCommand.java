@@ -1,6 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -8,11 +11,14 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
@@ -27,33 +33,26 @@ public class UpdateBuildingCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		BuildingContext building = (BuildingContext) context.get(FacilioConstants.ContextNames.BUILDING);
+		BaseSpaceContext building = (BaseSpaceContext) context.get(FacilioConstants.ContextNames.BUILDING);
 		if(building != null) 
 		{
-			building.setSpaceType(SpaceType.BUILDING);
 			
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule buildingModule = modBean.getModule(FacilioConstants.ContextNames.BUILDING); 
-			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-			try {
-			UpdateRecordBuilder<BuildingContext> builder = new UpdateRecordBuilder<BuildingContext>()
-					.moduleName(moduleName)
-					.table(dataTableName)
-					.fields(fields)
-					.andCondition(CriteriaAPI.getIdCondition(building.getId(),buildingModule));
+			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);				
 			
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(moduleName);
+				
+				UpdateRecordBuilder<BaseSpaceContext> builder = new UpdateRecordBuilder<BaseSpaceContext>()
+						.moduleName(moduleName)
+						.table(module.getTableName())
+						.fields(module.getFields())
+						.andCondition(CriteriaAPI.getIdCondition(Collections.singletonList(building.getId()) ,module));
 															
 			long id = builder.update(building);
 			building.setId(id);
-			SpaceAPI.updateHelperFields(building);
+//			SpaceAPI.updateHelperFields(building);
 			context.put(FacilioConstants.ContextNames.RECORD_ID, id);
-			
-			}catch(Exception e)
-			{
-				log.info("Exception occurred ", e);
-			}
 		}
 		else 
 		{

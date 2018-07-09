@@ -54,12 +54,15 @@ public class UpdateCampusCommand implements Command {
 		if(building != null) 
 		{
 			
-			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);				
-			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
+			String moduleName = (String) context.get(FacilioConstants.ContextNames.SPACE_TYPE);
+			String moduleNameSpace = (String) context.get(FacilioConstants.ContextNames.SPACE_TYPE);
+			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);	
+
 
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
+			String dataTableName =  module.getTableName();
+
 				
 				UpdateRecordBuilder<BaseSpaceContext> builder = new UpdateRecordBuilder<BaseSpaceContext>()
 						.moduleName(moduleName)

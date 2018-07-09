@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.FormLayout;
+import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -69,6 +70,17 @@ public class FloorAction extends ActionSupport {
 		
 		setFloorId(floor.getId());
 		
+		return SUCCESS;
+	}
+	// updateFloor
+	public String updateFloor() throws Exception 
+	{
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.SITE, floor);
+		context.put(FacilioConstants.ContextNames.SPACE_TYPE, "floor");
+		Chain updateCampus = FacilioChainFactory.getUpdateCampusChain();
+		updateCampus.execute(context);
+		setFloor(floor);
 		return SUCCESS;
 	}
 	

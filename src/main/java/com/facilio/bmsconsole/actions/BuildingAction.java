@@ -37,6 +37,7 @@ public class BuildingAction extends ActionSupport {
 		Chain getAllBuilding = FacilioChainFactory.getAllBuildingChain();
 		getAllBuilding.execute(context);
 		
+		
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
 		setBuildings((List<BuildingContext>) context.get(FacilioConstants.ContextNames.BUILDING_LIST));
 		
@@ -98,8 +99,10 @@ public class BuildingAction extends ActionSupport {
 			location.setName(building.getName()+"_Location");
 			context.put(FacilioConstants.ContextNames.RECORD, location);
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, java.util.Collections.singletonList(location.getId()));
+			FacilioChainFactory.updateLocationChain();
 		}
 		context.put(FacilioConstants.ContextNames.SITE, building);
+		context.put(FacilioConstants.ContextNames.SPACE_TYPE, "building");
 		Chain updateCampus = FacilioChainFactory.getUpdateCampusChain();
 		updateCampus.execute(context);
 		setBuilding(building);
