@@ -89,27 +89,20 @@ public class BuildingAction extends ActionSupport {
 	
 	public String updateBuilding() throws Exception 
 	{
-		FacilioContext context = new FacilioContext();	
+		
+		
+		FacilioContext context = new FacilioContext();
 		LocationContext location = building.getLocation();
-		if(location != null && (location.getLat() != null && location.getLng() != null))
+		if(location != null && location.getLat() != null && location.getLng() != null)
 		{
-			//In Building Update flow, we are adding new location if the lat long params are changed. 
-			//Instead, we need to update if any previous same coordinate locations are present and add if they are not present. 
-			//This is pending work. - Suresh
-			
 			location.setName(building.getName()+"_Location");
-			context.put(FacilioConstants.ContextNames.RECORD, location);			
-			Chain addLocation = FacilioChainFactory.addLocationChain();
-			addLocation.execute(context);
-			long locationId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
-			location.setId(locationId);
+			context.put(FacilioConstants.ContextNames.RECORD, location);
+			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, java.util.Collections.singletonList(location.getId()));
 		}
-		context.put(FacilioConstants.ContextNames.BUILDING, building);
-		Chain addBuilding = FacilioChainFactory.getUpdateBuildingChain();
-		addBuilding.execute(context);
-		
-		setBuildingId(building.getId());
-		
+		context.put(FacilioConstants.ContextNames.SITE, building);
+		Chain updateCampus = FacilioChainFactory.getUpdateCampusChain();
+		updateCampus.execute(context);
+		setBuilding(building);
 		return SUCCESS;
 	}
 	

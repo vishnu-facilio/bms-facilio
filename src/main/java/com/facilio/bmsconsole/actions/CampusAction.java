@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +20,8 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
+
+import io.jsonwebtoken.lang.Collections;
 
 @SuppressWarnings("serial")
 public class CampusAction extends ActionSupport {
@@ -80,6 +83,22 @@ public class CampusAction extends ActionSupport {
 		
 		setCampusId(site.getId());
 		
+		return SUCCESS;
+	}
+	
+	public String updateCampus() throws Exception {
+		FacilioContext context = new FacilioContext();
+		LocationContext location = site.getLocation();
+		if(location != null && location.getLat() != null && location.getLng() != null)
+		{
+			location.setName(site.getName()+"_Location");
+			context.put(FacilioConstants.ContextNames.RECORD, location);
+			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, java.util.Collections.singletonList(location.getId()));
+		}
+		context.put(FacilioConstants.ContextNames.SITE, site);
+		Chain updateCampus = FacilioChainFactory.getUpdateCampusChain();
+		updateCampus.execute(context);
+		setSite(site);
 		return SUCCESS;
 	}
 	

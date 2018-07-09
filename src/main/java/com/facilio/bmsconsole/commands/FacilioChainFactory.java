@@ -823,6 +823,18 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getUpdateCampusChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new ValidateCampusFieldsCommand());
+		c.addCommand(FacilioChainFactory.updateLocationChain());
+//		c.addCommand(SetTableNamesCommand.getForSite());
+		c.addCommand(SetTableNamesCommand.getForBuilding());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new UpdateCampusCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getCampusDetailsChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForSite());

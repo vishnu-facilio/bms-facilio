@@ -2712,6 +2712,17 @@
 				<param name="includeProperties">campusId</param>
 			</result>
 		</action>
+		
+		
+		<action name="update" class="com.facilio.bmsconsole.actions.CampusAction"
+			method="updateCampus">
+			<param name="moduleName">space</param>
+			<param name="permission">CREATE</param>
+			<!-- <param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param> -->
+			<result name="success" type="json">
+				<param name="includeProperties">campusId</param>
+			</result>
+		</action>
 
 		<action name="reportcards" class="com.facilio.bmsconsole.actions.CampusAction"
 			method="reportCards">

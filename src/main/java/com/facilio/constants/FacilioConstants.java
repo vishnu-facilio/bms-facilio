@@ -278,7 +278,8 @@ public class FacilioConstants {
 		public static final String FLOOR = "floor";
 		public static final String FLOOR_LIST = "floors";
 		public static final String FLOOR_ID = "floorId";
-		
+		public static final String SPACE_MODULE_NAME ="spacemodulename";
+		public static final String SPACE_TABLE_NAME = "spacetablename";
 		public static final String SPACE = "space";
 		public static final String SPACE_LIST = "spaces";
 		public static final String SPACE_ID = "spaceId";
