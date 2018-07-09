@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -19,9 +21,11 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.tenant.RateCardContext;
 import com.facilio.bmsconsole.tenant.RateCardServiceContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsole.tenant.TenantUtility;
 import com.facilio.bmsconsole.tenant.UtilityAsset;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
@@ -33,6 +37,80 @@ import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class TenantsAPI {
+	
+	private static final Logger LOGGER = Logger.getLogger(TenantsAPI.class.getName());
+	
+	public static void generateBill(Long tenantId,Long rateCardId,Long startTime,Long endTime) throws Exception {
+		
+		TenantContext tenant = getTenant(tenantId);
+		RateCardContext rateCard = getRateCard(rateCardId);
+		
+		List<RateCardServiceContext> utilityServices = rateCard.getServiceOfType(RateCardServiceContext.ServiceType.UTILITY.getValue());
+		List<RateCardServiceContext> formulaServices = rateCard.getServiceOfType(RateCardServiceContext.ServiceType.FORMULA.getValue());
+		
+		if(utilityServices != null && !utilityServices.isEmpty()) {
+			
+			Map<Integer,Double> utilityVsValue = new HashMap<>();
+			double finalValue = 0.0;
+			for(RateCardServiceContext utilityService : utilityServices) {
+				
+				List<UtilityAsset> utilityAssets = tenant.getUtilityAssetsOfUtility(utilityService.getUtility());
+				
+				TenantUtility.ENERGY.getValue();
+				for(UtilityAsset utilityAsset :utilityAssets) {
+					
+					switch(TenantUtility.valueOf(utilityAsset.getUtility())) {
+					
+					case ENERGY:
+						Double value = 0.0;
+						
+						if(utilityVsValue.containsKey(utilityAsset.getUtility())) {
+							value = utilityVsValue.get(utilityAsset.getUtility());
+						}
+						
+						long assetId = utilityAsset.getAssetId();
+						List<Map<String, Object>> props = ReportsUtil.fetchMeterData(assetId+"", startTime, endTime);
+						LOGGER.log(Level.SEVERE, "props --- "+props);
+						if(props != null && !props.isEmpty()) {
+							Double consumption = (Double) props.get(0).get("CONSUMPTION");
+							consumption = consumption * utilityService.getPrice();
+							value = value + consumption;
+						}
+						utilityVsValue.put(utilityAsset.getUtility(), value);
+						break;
+						
+					case WATER:
+						break;
+						
+					case NATURAL_GAS:
+						break;
+						
+					case BTU:
+						break;
+						
+					}
+				}
+			}
+			LOGGER.log(Level.SEVERE, "utilityVsValue --- "+utilityVsValue);
+			for(Integer key : utilityVsValue.keySet()) {
+				finalValue = finalValue + utilityVsValue.get(key);
+			}
+			
+			if(formulaServices != null && !formulaServices.isEmpty()) {
+				
+				for(RateCardServiceContext formulaService :formulaServices) {
+
+					Map<String,Object> params = new HashMap<>();
+					params.put("value", finalValue);
+					
+					String finalValueString = WorkflowUtil.getResult(formulaService.getWorkflowId(), params).toString();
+					
+					finalValue = Double.parseDouble(finalValueString);
+				}
+			}
+			LOGGER.log(Level.SEVERE, "finalValue --- "+finalValue);
+		}
+	}
 	
 	public static List<TenantContext> getAllTenants() throws Exception {
 		FacilioModule module = ModuleFactory.getTenantsModule();

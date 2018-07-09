@@ -2566,7 +2566,7 @@ public class DashboardAction extends ActionSupport {
 			}
 			if(report.getReportSpaceFilterContext().getGroupBy() != null && report.getReportSpaceFilterContext().getGroupBy().contains("workhour")) {
 				
-				isWorkHourRepoort = true;
+				isWorkHourReport = true;
 				FacilioModule whModule = modBean.getModule(FacilioConstants.ContextNames.USER_WORK_HOURS_READINGS);
 				GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder();
 				selectRecordBuilder.select(modBean.getAllFields(FacilioConstants.ContextNames.USER_WORK_HOURS_READINGS));
@@ -2596,7 +2596,7 @@ public class DashboardAction extends ActionSupport {
 		fields.add(y1AxisField);
 		fields.add(xAxisField);
 		builder.select(fields);
-		if(!isWorkHourRepoort) {
+		if(!isWorkHourReport) {
 			rs = builder.get();
 		}
 		LOGGER.info("builder --- "+reportContext.getId() +"   "+baseLineId);

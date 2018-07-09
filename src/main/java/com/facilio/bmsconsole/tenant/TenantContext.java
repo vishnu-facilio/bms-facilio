@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.tenant;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.facilio.bmsconsole.context.BaseSpaceContext;
@@ -75,5 +76,23 @@ public class TenantContext {
 	}
 	public void setUtilityAssets(List<UtilityAsset> utilityAssets) {
 		this.utilityAssets = utilityAssets;
+	}
+	public List<UtilityAsset> getUtilityAssetsOfUtility(int utilityId) {
+		
+		List<UtilityAsset> utilityAssets1 = null;
+		
+		if(utilityAssets != null && !utilityAssets.isEmpty()) {
+			
+			for(UtilityAsset utilityAsset :utilityAssets) {
+				
+				if(utilityId == utilityAsset.getUtility()) {
+					if(utilityAssets1 == null) {
+						utilityAssets1 = new ArrayList<>();
+					}
+					utilityAssets1.add(utilityAsset);
+				}
+			}
+		}
+		return utilityAssets1;
 	}
 }
