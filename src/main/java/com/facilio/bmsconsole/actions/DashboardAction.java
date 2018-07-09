@@ -2575,7 +2575,7 @@ public class DashboardAction extends ActionSupport {
 				selectRecordBuilder.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId());
 				
 				List<Map<String, Object>> props = selectRecordBuilder.get();
-				Map<Long, Long> workhoursProp = null;
+				Map<Long, Double> workhoursProp = null;
 				if(report.getReportSpaceFilterContext().getGroupBy().contains("avgworkhour")) {
 					
 					workhoursProp = DashboardUtil.calculateWorkHours(props, startTime, endTime,true,false);

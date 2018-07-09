@@ -8,7 +8,7 @@ import java.util.Map;
 
 public enum Unit {
 	
-	// last id -- 79
+	// last id -- 80
 	
 	KWH(1,"Kilo Watt Hour","kWh",Metric.ENERGY),
 	HECTOWH(76,"Hecto Watt Hour","hWh",Metric.ENERGY,"si*10","this/10"),
@@ -38,6 +38,7 @@ public enum Unit {
 	DAY(21,"Day","D",Metric.DURATION,"si/24","this*24"),
 	WEEK(22,"Week","W",Metric.DURATION,"si/(24*7)","this*(24*7)"),
 	YEAR(24,"Year","Y",Metric.DURATION,"si/(24*365)","this*(24*365)"),
+	MILLIS(80,"Milli Second","ms",Metric.DURATION,"si*3600000","this/3600000"),
 	
 	KILOGRAM(25,"Kilo Gram","kg",Metric.MASS),
 	HECTOGRAM(26,"Minute","hg",Metric.MASS,"si*10","this/10"),

@@ -84,6 +84,8 @@ import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.facilio.unitconversion.Unit;
+import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowFieldContext;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -2477,11 +2479,11 @@ public class DashboardUtil {
 		return frequency;
 	}
 	
-	public static Map<Long, Long> calculateWorkHours (List<Map<String, Object>> props, long startTime, long endTime) {
+	public static Map<Long, Double> calculateWorkHours (List<Map<String, Object>> props, long startTime, long endTime) {
 		return calculateWorkHours(props,startTime,endTime,false,false);
 	}
 	
-	public static Map<Long, Long> calculateWorkHours (List<Map<String, Object>> props, long startTime, long endTime,boolean isAvgResoultionTime,boolean ispercent) { //Expects it to be in order by time
+	public static Map<Long, Double> calculateWorkHours (List<Map<String, Object>> props, long startTime, long endTime,boolean isAvgResoultionTime,boolean ispercent) { //Expects it to be in order by time
 		if (props != null && !props.isEmpty()) {
 			Map<Long, List<Map<String, Object>>> userWiseProps = new HashMap<>();
 			for (Map<String, Object> prop : props) {
@@ -2494,7 +2496,7 @@ public class DashboardUtil {
 				userWiseList.add(prop);
 			}
 			
-			Map<Long, Long> workDuration = new HashMap<>();
+			Map<Long, Double> workDuration = new HashMap<>();
 			for (Map.Entry<Long, List<Map<String, Object>>> entry : userWiseProps.entrySet()) {
 				Long userId = entry.getKey();
 				long workTime = 0;
@@ -2522,27 +2524,28 @@ public class DashboardUtil {
 						}
 					}
 				}
+				Double convertedValue = UnitsUtil.convert(workTime, Unit.MILLIS, Unit.HOUR);
 				if(isAvgResoultionTime) {
-					workTime = workTime/workordersId.size();
+					convertedValue = convertedValue/workordersId.size();
 				}
 				if(ispercent) {
 					//get his shift time;
-					//workTime = workTime / shift * 100;
+					//workTime = convertedValue / shift * 100;
 				}
-				workDuration.put(userId, workTime);
+				workDuration.put(userId, convertedValue);
 			}
 			return workDuration;
 		}
 		return null;
 	}
 	
-	public static List<Map<String, Object>> convertMapToProps(Map<Long, Long> map) {
+	public static List<Map<String, Object>> convertMapToProps(Map<Long, Double> map) {
 		
 		if(map != null && !map.isEmpty()) {
 			List<Map<String, Object>> rs = new ArrayList<>();
 			for(Long lable: map.keySet()) {
 				
-				Long value = map.get(lable);
+				Double value = map.get(lable);
 				
 				Map<String, Object> map1 = new HashMap<>();
 				map1.put("label", lable);
