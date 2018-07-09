@@ -2574,6 +2574,7 @@ public class DashboardAction extends ActionSupport {
 				selectRecordBuilder.table(whModule.getTableName());
 				selectRecordBuilder.andCustomWhere("TTIME between ? and ?", startTime,endTime);
 				selectRecordBuilder.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId());
+				selectRecordBuilder.orderBy("TTIME");
 				
 				List<Map<String, Object>> props = selectRecordBuilder.get();
 				Map<Long, Double> workhoursProp = null;

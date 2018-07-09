@@ -10,9 +10,12 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.PickListOperators;
@@ -40,76 +43,32 @@ public class TenantsAPI {
 	
 	private static final Logger LOGGER = Logger.getLogger(TenantsAPI.class.getName());
 	
+	public static final String TENANT_CONTEXT = "tenantContext";
+	public static final String RATECARD_CONTEXT = "rateCardContext";
+	public static final String START_TIME = "startTime";
+	public static final String END_TIME = "endTime";
+	public static final String UTILITY_SUM_VALUE = "utilitySumValue";
+	public static final String UTILITY_VALUES = "utilityValues";
+	public static final String FORMULA_SUM_VALUE = "formulaSumValue";
+	public static final String FORMULA_VALUES = "formulaValues";
+	public static final String FINAL_VALUES = "finalValue";
+	
 	public static void generateBill(Long tenantId,Long rateCardId,Long startTime,Long endTime) throws Exception {
 		
 		TenantContext tenant = getTenant(tenantId);
 		RateCardContext rateCard = getRateCard(rateCardId);
 		
-		List<RateCardServiceContext> utilityServices = rateCard.getServiceOfType(RateCardServiceContext.ServiceType.UTILITY.getValue());
-		List<RateCardServiceContext> formulaServices = rateCard.getServiceOfType(RateCardServiceContext.ServiceType.FORMULA.getValue());
+		FacilioContext context = new FacilioContext();
 		
-		if(utilityServices != null && !utilityServices.isEmpty()) {
-			
-			Map<Integer,Double> utilityVsValue = new HashMap<>();
-			double finalValue = 0.0;
-			for(RateCardServiceContext utilityService : utilityServices) {
-				
-				List<UtilityAsset> utilityAssets = tenant.getUtilityAssetsOfUtility(utilityService.getUtility());
-				
-				TenantUtility.ENERGY.getValue();
-				for(UtilityAsset utilityAsset :utilityAssets) {
-					
-					switch(TenantUtility.valueOf(utilityAsset.getUtility())) {
-					
-					case ENERGY:
-						Double value = 0.0;
-						
-						if(utilityVsValue.containsKey(utilityAsset.getUtility())) {
-							value = utilityVsValue.get(utilityAsset.getUtility());
-						}
-						
-						long assetId = utilityAsset.getAssetId();
-						List<Map<String, Object>> props = ReportsUtil.fetchMeterData(assetId+"", startTime, endTime);
-						LOGGER.log(Level.SEVERE, "props --- "+props);
-						if(props != null && !props.isEmpty()) {
-							Double consumption = (Double) props.get(0).get("CONSUMPTION");
-							consumption = consumption * utilityService.getPrice();
-							value = value + consumption;
-						}
-						utilityVsValue.put(utilityAsset.getUtility(), value);
-						break;
-						
-					case WATER:
-						break;
-						
-					case NATURAL_GAS:
-						break;
-						
-					case BTU:
-						break;
-						
-					}
-				}
-			}
-			LOGGER.log(Level.SEVERE, "utilityVsValue --- "+utilityVsValue);
-			for(Integer key : utilityVsValue.keySet()) {
-				finalValue = finalValue + utilityVsValue.get(key);
-			}
-			
-			if(formulaServices != null && !formulaServices.isEmpty()) {
-				
-				for(RateCardServiceContext formulaService :formulaServices) {
-
-					Map<String,Object> params = new HashMap<>();
-					params.put("value", finalValue);
-					
-					String finalValueString = WorkflowUtil.getResult(formulaService.getWorkflowId(), params).toString();
-					
-					finalValue = Double.parseDouble(finalValueString);
-				}
-			}
-			LOGGER.log(Level.SEVERE, "finalValue --- "+finalValue);
-		}
+		Chain chain = FacilioChainFactory.calculateTenantBill();
+		
+		context.put(TENANT_CONTEXT, tenant);
+		context.put(RATECARD_CONTEXT, rateCard);
+		context.put(START_TIME, startTime);
+		context.put(END_TIME, endTime);
+		
+		chain.execute(context);
+		
 	}
 	
 	public static List<TenantContext> getAllTenants() throws Exception {
