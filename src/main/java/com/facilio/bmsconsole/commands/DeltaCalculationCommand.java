@@ -57,11 +57,15 @@ public class DeltaCalculationCommand implements Command {
 				long moduleId=bean.getModule(moduleName).getModuleId();
 				Map<String,FacilioField>  fieldMap = FieldFactory.getAsMap(allFields);
 				List<Pair<Long, FacilioField>> deltaRdmPairs = new ArrayList<>();
+				Boolean skipLastReadingCheck = (Boolean) context.get(FacilioConstants.ContextNames.SKIP_LAST_READING_CHECK);
+				if (skipLastReadingCheck == null) {
+					skipLastReadingCheck = false;
+				}
 				for(ReadingContext reading:readings) {
-					setDelta(fieldMap,"totalEnergyConsumption",moduleId, reading,metaMap,markedList, deltaRdmPairs);
-					setDelta(fieldMap,"phaseEnergyR",moduleId,reading,metaMap,markedList, deltaRdmPairs);
-					setDelta(fieldMap,"phaseEnergyY",moduleId,reading,metaMap,markedList, deltaRdmPairs);
-					setDelta(fieldMap,"phaseEnergyB",moduleId,reading,metaMap,markedList, deltaRdmPairs);
+					setDelta(fieldMap,"totalEnergyConsumption",moduleId, reading,metaMap,markedList, deltaRdmPairs, skipLastReadingCheck);
+					setDelta(fieldMap,"phaseEnergyR",moduleId,reading,metaMap,markedList, deltaRdmPairs, skipLastReadingCheck);
+					setDelta(fieldMap,"phaseEnergyY",moduleId,reading,metaMap,markedList, deltaRdmPairs, skipLastReadingCheck);
+					setDelta(fieldMap,"phaseEnergyB",moduleId,reading,metaMap,markedList, deltaRdmPairs, skipLastReadingCheck);
 				}
 				
 				if (!deltaRdmPairs.isEmpty()) {
@@ -84,7 +88,7 @@ public class DeltaCalculationCommand implements Command {
 	}
 
 	private void setDelta(Map<String,FacilioField>  fieldMap, String fieldName,long moduleId, ReadingContext reading,Map<String, 
-			ReadingDataMeta> metaMap,List<MarkedReadingContext> markedList,List<Pair<Long, FacilioField>> deltaRdmPairs ) {
+			ReadingDataMeta> metaMap,List<MarkedReadingContext> markedList,List<Pair<Long, FacilioField>> deltaRdmPairs, Boolean skipLastReadingCheck ) {
 			
 			FacilioField readingField=fieldMap.get(fieldName);
 			FieldType dataType=readingField.getDataTypeEnum();
@@ -122,12 +126,13 @@ public class DeltaCalculationCommand implements Command {
 			}
 			else if(currentReading<lastReading) {
 				type=MarkType.DECREMENTAL_VALUE;
-				reading.addReading(fieldName, lastReading);
-				
 				long deltaFieldId=fieldMap.get(deltaFieldName).getFieldId();
 				markedList.add(getMarkedReading(reading,energyFieldId,moduleId,type,currentReading,lastReading));
 				markedList.add(getMarkedReading(reading,deltaFieldId,moduleId,type,currentReading,lastReading));
-				currentReading=lastReading;
+				if (!skipLastReadingCheck) {
+					reading.addReading(fieldName, lastReading);
+					currentReading=lastReading;
+				}
 			}
 			Double delta= currentReading-lastReading;
 			reading.addReading(deltaFieldName, ReportsUtil.roundOff(delta,4));

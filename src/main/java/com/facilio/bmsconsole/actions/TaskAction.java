@@ -240,6 +240,7 @@ public class TaskAction extends ActionSupport {
 			if (AccountUtil.getCurrentAccount().getDeviceType() != null) {
 				context.put(FacilioConstants.ContextNames.DO_VALIDTION, getDoValidation());
 			}
+			context.put(FacilioConstants.ContextNames.SKIP_LAST_READING_CHECK, true);
 			Chain updateTask = FacilioChainFactory.getUpdateTaskChain();
 			try {
 				updateTask.execute(context);

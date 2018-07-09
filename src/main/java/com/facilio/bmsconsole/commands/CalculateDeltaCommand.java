@@ -40,18 +40,29 @@ public class CalculateDeltaCommand implements Command {
 					if (readings != null && !readings.isEmpty()) {
 						List<FacilioField> fields = modBean.getAllFields(moduleName);
 						Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-						List<FacilioField> counterFields = fields.stream().filter(field -> (field.getDataTypeEnum() == FieldType.NUMBER) && ((NumberField) field).isCounterField()).collect(Collectors.toList());
+						List<FacilioField> counterFields = fields.stream().filter(field -> (field.getDataTypeEnum() == FieldType.NUMBER || field.getDataTypeEnum() == FieldType.DECIMAL) && ((NumberField) field).isCounterField()).collect(Collectors.toList());
 						if (counterFields != null && !counterFields.isEmpty()) {
 							for (ReadingContext reading : readings) {
 								for (FacilioField field : counterFields) {
 									Object val = FieldUtil.castOrParseValueAsPerType(field, reading.getReading(field.getName()));
 									if (val != null) {
 										ReadingDataMeta rdm = rdmMap.get(reading.getParentId()+"_"+field.getFieldId());
-										Long prevVal = (Long) FieldUtil.castOrParseValueAsPerType(field, rdm.getValue());
-										if (prevVal != -1) {
+										Object deltaVal = null;
+										if (field.getDataTypeEnum() == FieldType.DECIMAL) {
+											Double prevVal = (Double) FieldUtil.castOrParseValueAsPerType(field, rdm.getValue());
+											if (prevVal != -1) {
+												deltaVal = (Double) val - prevVal;
+											}
+										}
+										else {
+											Long prevVal = (Long) FieldUtil.castOrParseValueAsPerType(field, rdm.getValue());
+											if (prevVal != -1) {
+												deltaVal = (Long) val - prevVal;
+											}
+										}
+										
+										if (deltaVal != null) {
 											String fieldName = field.getName()+"Delta";
-											Long deltaVal = ((Long) val - prevVal);
-											
 											reading.addReading(fieldName, deltaVal);
 											newRdmPairs.add(Pair.of(reading.getParentId(), fieldMap.get(fieldName)));
 										}
