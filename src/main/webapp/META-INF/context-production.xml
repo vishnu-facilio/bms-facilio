@@ -53,6 +53,7 @@
              username="faciliouser"
              password="facilio96"
              poolName="faciliohikari"
+             registerMbeans="true"
              name="jdbc/pcmDB"
              jdbcUrl="jdbc:mysql://facilioae.cojqex4akzz6.us-west-2.rds.amazonaws.com:3306/bms"
              type="javax.sql.DataSource"
