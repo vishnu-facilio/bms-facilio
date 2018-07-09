@@ -1231,6 +1231,7 @@ public class DashboardAction extends ActionSupport {
 		this.variance = variance;
 	}
 	public String getData() throws Exception {
+		
 		if (reportContext == null) {
 			reportContext = DashboardUtil.getReportContext(reportId);
 		}
@@ -2545,7 +2546,7 @@ public class DashboardAction extends ActionSupport {
 		}
 		
 		List<Map<String, Object>> rs = new ArrayList<>();
-		boolean isWorkHourRepoort = false;
+		boolean isWorkHourReport = false;
 		if(report.getReportSpaceFilterContext() != null) {
 			if(report.getReportSpaceFilterContext().getBuildingId() != null) {
 				
