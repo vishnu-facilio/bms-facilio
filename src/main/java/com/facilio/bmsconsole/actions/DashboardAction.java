@@ -2580,7 +2580,7 @@ public class DashboardAction extends ActionSupport {
 					
 					workhoursProp = DashboardUtil.calculateWorkHours(props, startTime, endTime,true,false);
 				}
-				if(report.getReportSpaceFilterContext().getGroupBy().contains("percentworkhour")) {
+				else if(report.getReportSpaceFilterContext().getGroupBy().contains("percentworkhour")) {
 					
 					workhoursProp = DashboardUtil.calculateWorkHours(props, startTime, endTime,false,true);
 				}
