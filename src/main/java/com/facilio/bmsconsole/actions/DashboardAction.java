@@ -2596,7 +2596,7 @@ public class DashboardAction extends ActionSupport {
 		fields.add(y1AxisField);
 		fields.add(xAxisField);
 		builder.select(fields);
-		if(rs == null && !isWorkHourRepoort) {
+		if(!isWorkHourRepoort) {
 			rs = builder.get();
 		}
 		LOGGER.info("builder --- "+reportContext.getId() +"   "+baseLineId);
