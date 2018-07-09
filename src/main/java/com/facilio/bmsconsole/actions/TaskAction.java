@@ -168,6 +168,7 @@ public class TaskAction extends ActionSupport {
 	private String updateTask(FacilioContext context) throws Exception {
 		context.put(FacilioConstants.ContextNames.TASK, task);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
+		context.put(FacilioConstants.ContextNames.SKIP_LAST_READING_CHECK, true);
 		Map<Long, Map<String, String>> errorMap = new HashMap<>();
 		Chain updateTask = FacilioChainFactory.getUpdateTaskChain();
 		try {
