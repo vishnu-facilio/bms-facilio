@@ -1898,7 +1898,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getGetLatestSpaceReadingValuesChain() {
-		Chain c = new TransactionChain();
+		Chain c = new ChainBase();
 		c.addCommand(getSpaceReadingsChain());
 		c.addCommand(new GetLatestCategoryReadingValuesCommand());
 		addCleanUpCommand(c);
