@@ -3615,6 +3615,15 @@ public class DashboardAction extends ActionSupport {
 	 			JSONObject component = new JSONObject();
 	 			if(thisMap!=null) {
 	 				// checking and excluding the violated points
+	 				if(AccountUtil.getCurrentOrg().getOrgId() == 116l) {
+	 					if(thisMap.get("dummyField") != null) {
+	 						Long currtime = (Long) thisMap.get("dummyField");
+	 						DateRange range = DateOperators.TODAY.getRange(null);
+	 						if(currtime < range.getEndTime() && currtime >= range.getStartTime()) {
+	 							continue;
+	 						}
+	 					}
+	 				}
 	 				if (violatedReadings != null && violatedReadings.containsKey(thisMap.get("label").toString())) {
 	 					Double violatedValue = violatedReadings.get(thisMap.get("label").toString());
 	 					Double d = (Double) thisMap.get("value");
