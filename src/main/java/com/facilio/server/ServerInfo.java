@@ -24,8 +24,12 @@ public class ServerInfo extends TimerTask {
     private static final String INSERT_IP = "insert into server_info (private_ip, environment, status, pingtime, in_use, leader) values (?,?,?,?,?,?)";
     private static final String UPDATE_TIME = "update server_info set status = 1, pingtime = ? where id = ?";
     private static final String UPDATE_LEADER = "update server_info set leader = ? where id = ?";
+    private static final String UPDATE_STATUS = "update server_info set status = ? where id = ?";
     private static final String GET_SERVERS = "select id, pingtime from server_info where status = 1 order by asc desc";
     private static final String GET_LEADER = "select id, pingtime from server_info where leader = 1";
+
+    private static final String PING_TIME = "pingtime";
+    private static final String ID = "id";
 
     static {
         assignConnection();
@@ -35,7 +39,7 @@ public class ServerInfo extends TimerTask {
         try {
             connection = FacilioConnectionPool.getInstance().getConnection();
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.info("Exception while assigning connection ", e);
         }
     }
 
@@ -58,10 +62,10 @@ public class ServerInfo extends TimerTask {
             statement.setString(1, ip);
             resultSet = statement.executeQuery();
             if(resultSet.next()) {
-                return resultSet.getLong("id");
+                return resultSet.getLong(ID);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.info("Exception while getting server id ", e);
         } finally {
             DBUtil.closeAll(null, resultSet);
         }
@@ -83,13 +87,26 @@ public class ServerInfo extends TimerTask {
             insertQuery.setBoolean(6, false);
             insertQuery.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.info("Exception while adding server info ", e);
         }
         return getServerId(ip);
     }
 
     private static void markDownOutdatedServers () {
-
+        ResultSet resultSet = null;
+        try (PreparedStatement statement = connection.prepareStatement(GET_SERVERS)) {
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                long lastPingFromServer = resultSet.getLong(PING_TIME);
+                lastPingFromServer = lastPingFromServer + (4 * PING_TIME_INTERVAL);
+                if (lastPingFromServer < System.currentTimeMillis()) {
+                    long id = resultSet.getLong(ID);
+                    updateStatus(id, false);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.info("Exception while marking servers down ", e);
+        }
     }
 
     private static void checkAndAssignLeader () {
@@ -98,8 +115,8 @@ public class ServerInfo extends TimerTask {
             resultSet = selectQuery.executeQuery();
             long leaderId = -1;
             while(resultSet.next()){
-                leaderId = resultSet.getLong("id");
-                long lastPingFromLeader =  resultSet.getLong("pingtime");
+                leaderId = resultSet.getLong(ID);
+                long lastPingFromLeader =  resultSet.getLong(PING_TIME);
                 lastPingFromLeader = lastPingFromLeader + PING_TIME_INTERVAL;
                 if(lastPingFromLeader < System.currentTimeMillis()) {
                     markLeaderDownAndChooseNewLeader(leaderId);
@@ -109,12 +126,14 @@ public class ServerInfo extends TimerTask {
                     }
                 }
             }
-
+            if(localServerLeader) {
+                markDownOutdatedServers();
+            }
             if(leaderId == -1) {
                 updateLeader(serverId, true);
             }
         } catch (SQLException e) {
-
+            LOGGER.info("Exception in checkAndAssignLeader ", e);
         }
     }
 
@@ -124,17 +143,16 @@ public class ServerInfo extends TimerTask {
         try (PreparedStatement statement = connection.prepareStatement(GET_SERVERS)) {
             resultSet = statement.executeQuery();
             while(resultSet.next()) {
-                long newLeaderId = resultSet.getLong("id");
-                long newLeaderLastPingTime = resultSet.getLong("pingtime");
+                long newLeaderId = resultSet.getLong(ID);
+                long newLeaderLastPingTime = resultSet.getLong(PING_TIME);
                 newLeaderLastPingTime = newLeaderLastPingTime + PING_TIME_INTERVAL;
                 if(newLeaderLastPingTime > System.currentTimeMillis()) {
                     updateLeader(newLeaderId, true);
                     return;
                 }
             }
-            Thread.sleep(30000L);
-        } catch (SQLException | InterruptedException e) {
-
+        } catch (SQLException e) {
+            LOGGER.info("Exception in markLeaderDownAndChooseNewLeader ", e);
         }
 
     }
@@ -146,7 +164,19 @@ public class ServerInfo extends TimerTask {
                 updateQuery.setLong(2, id);
                 updateQuery.executeUpdate();
             } catch (SQLException e) {
-                e.printStackTrace();
+                LOGGER.info("Exception while updating leader for id : " + id , e);
+            }
+        }
+    }
+
+    private static void updateStatus(long id, boolean status) {
+        if(id > 0) {
+            try (PreparedStatement updateQuery = connection.prepareStatement(UPDATE_STATUS)) {
+                updateQuery.setBoolean(1, status);
+                updateQuery.setLong(2, id);
+                updateQuery.executeUpdate();
+            } catch (SQLException e) {
+                LOGGER.info("Exception while updating server status for id : " + id, e);
             }
         }
     }
@@ -158,7 +188,7 @@ public class ServerInfo extends TimerTask {
                 updateQuery.setLong(2, serverId);
                 updateQuery.executeUpdate();
             } catch (SQLException e) {
-                e.printStackTrace();
+                LOGGER.info("Exception while updating ping time ", e);
             }
         }
     }
