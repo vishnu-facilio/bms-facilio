@@ -2723,6 +2723,16 @@
 				<param name="includeProperties">campusId</param>
 			</result>
 		</action>
+		
+		<action name="delete" class="com.facilio.bmsconsole.actions.CampusAction"
+			method="deleteCampus">
+			<param name="moduleName">space</param>
+			<param name="permission">UPDATE</param>
+			<!-- <param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param> -->
+			<result name="success" type="json">
+				<param name="includeProperties">campusId</param>
+			</result>
+		</action>
 
 		<action name="reportcards" class="com.facilio.bmsconsole.actions.CampusAction"
 			method="reportCards">
@@ -2768,7 +2778,16 @@
 		<action name="update" class="com.facilio.bmsconsole.actions.BuildingAction"
 			method="updateBuilding">
 			<param name="moduleName">space</param>
-			<param name="permission">CREATE</param>
+			<param name="permission">UPDATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">buildingId</param>
+			</result>
+		</action>
+		
+		<action name="delete" class="com.facilio.bmsconsole.actions.BuildingAction"
+			method="deleteBuilding">
+			<param name="moduleName">space</param>
+			<param name="permission">UPDATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">buildingId</param>
 			</result>
@@ -2815,6 +2834,15 @@
 		</action>
 		<action name="update" class="com.facilio.bmsconsole.actions.FloorAction"
 			method="updateFloor">
+			<param name="moduleName">space</param>
+			<param name="permission">UPDATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">floorId</param>
+			</result>
+		</action>
+		
+		<action name="delete" class="com.facilio.bmsconsole.actions.FloorAction"
+			method="deleteFloor">
 			<param name="moduleName">space</param>
 			<param name="permission">UPDATE</param>
 			<result name="success" type="json">
@@ -2877,7 +2905,15 @@
 				<param name="includeProperties">spaceId</param>
 			</result>
 		</action>
-
+		<action name="delete" class="com.facilio.bmsconsole.actions.SpaceAction"
+			method="deleteSpace">
+			<param name="moduleName">space</param>
+			<param name="permission">UPDATE</param>
+			<!-- <param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param> -->
+			<result name="success" type="json">
+				<param name="includeProperties">spaceId</param>
+			</result>
+		</action>
 		<action name="reportcards" class="com.facilio.bmsconsole.actions.SpaceAction"
 			method="reportCards">
 			<param name="moduleName">space</param>

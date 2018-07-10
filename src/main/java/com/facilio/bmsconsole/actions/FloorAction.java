@@ -9,6 +9,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.SetTableNamesCommand;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.FormLayout;
@@ -81,6 +82,13 @@ public class FloorAction extends ActionSupport {
 		Chain updateCampus = FacilioChainFactory.getUpdateCampusChain();
 		updateCampus.execute(context);
 		setFloor(floor);
+		return SUCCESS;
+	}
+	public String deleteFloor() throws Exception {
+		FacilioContext context = new FacilioContext();
+		SetTableNamesCommand.getForFloor();
+		Chain deleteCampus = FacilioChainFactory.deleteSpaceChain();
+		deleteCampus.execute(context);
 		return SUCCESS;
 	}
 	

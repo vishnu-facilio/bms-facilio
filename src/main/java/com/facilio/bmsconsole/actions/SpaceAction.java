@@ -9,6 +9,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.SetTableNamesCommand;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
@@ -115,6 +116,14 @@ public class SpaceAction extends ActionSupport {
 		Chain updateCampus = FacilioChainFactory.getUpdateCampusChain();
 		updateCampus.execute(context);
 		setSpace(space);
+		return SUCCESS;
+	}
+	
+	public String deleteSpace() throws Exception {
+		FacilioContext context = new FacilioContext();
+		SetTableNamesCommand.getForSpace();
+		Chain deleteCampus = FacilioChainFactory.deleteSpaceChain();
+		deleteCampus.execute(context);
 		return SUCCESS;
 	}
 	

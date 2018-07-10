@@ -11,6 +11,7 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.SetTableNamesCommand;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.FormLayout;
@@ -106,6 +107,13 @@ public class BuildingAction extends ActionSupport {
 		Chain updateCampus = FacilioChainFactory.getUpdateCampusChain();
 		updateCampus.execute(context);
 		setBuilding(building);
+		return SUCCESS;
+	}
+	public String deleteBuilding() throws Exception {
+		FacilioContext context = new FacilioContext();
+		SetTableNamesCommand.getForBuilding();
+		Chain deleteCampus = FacilioChainFactory.deleteSpaceChain();
+		deleteCampus.execute(context);
 		return SUCCESS;
 	}
 	

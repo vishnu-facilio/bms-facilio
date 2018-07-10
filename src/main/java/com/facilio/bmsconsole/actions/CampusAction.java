@@ -10,6 +10,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.SetTableNamesCommand;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.LocationContext;
@@ -103,7 +104,14 @@ public class CampusAction extends ActionSupport {
 		setSite(site);
 		return SUCCESS;
 	}
-	
+	public String deleteCampus() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE, site);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, "site");
+		Chain deleteCampus = FacilioChainFactory.deleteSpaceChain();
+		deleteCampus.execute(context);
+		return SUCCESS;
+	}
 	public String viewCampus() throws Exception 
 	{
 		FacilioContext context = new FacilioContext();

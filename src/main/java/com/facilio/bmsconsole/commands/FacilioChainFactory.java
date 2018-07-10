@@ -844,6 +844,13 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain deleteSpaceChain () {
+		Chain c = new ChainBase();
+		c.addCommand(new GenericDeleteForSpaces());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getCampusDetailsChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForSite());
