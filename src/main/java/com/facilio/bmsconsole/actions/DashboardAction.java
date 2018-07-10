@@ -79,6 +79,7 @@ import com.facilio.bmsconsole.context.WidgetWebContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext.WORUrgency;
+import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -2925,7 +2926,7 @@ public class DashboardAction extends ActionSupport {
 			
 			subBuilder.innerJoin(resourceModule.getTableName())
 			.on(baseSpaceModule.getTableName()+".ID="+resourceModule.getTableName()+".ID")
-			.andCustomWhere(resourceModule.getTableName()+".SYS_DELETED != 1")
+			.andCondition(CriteriaAPI.getCondition("SYS_DELETED", "deleted", String.valueOf(false), BooleanOperators.IS))
 			.andCustomWhere(baseSpaceModule.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId());
 			
 			if(xAggregateOpperator.equals(SpaceAggregateOperator.BUILDING) || xAggregateOpperator.equals(SpaceAggregateOperator.SITE)) {
