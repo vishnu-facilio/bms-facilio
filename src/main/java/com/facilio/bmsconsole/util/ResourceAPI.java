@@ -131,6 +131,8 @@ public class ResourceAPI {
 							spaceIds.add(resource.getSpaceId());
 						}
 						break;
+					default:
+						break;
 				}
 			}
 			Map<Long, BaseSpaceContext> spaceMap = getSpaces(spaceIds, fetchDeleted);
@@ -149,6 +151,8 @@ public class ResourceAPI {
 							asset.setSpace(spaceMap.get(asset.getSpaceId()));
 						}
 						resources.set(i, asset);
+						break;
+					default:
 						break;
 				}
 			}

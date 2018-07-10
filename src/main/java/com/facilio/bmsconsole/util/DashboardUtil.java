@@ -66,6 +66,7 @@ import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.criteria.PickListOperators;
@@ -462,11 +463,26 @@ public class DashboardUtil {
 		return false;
 	}
 	
-	public static JSONObject getStandardVariance(List<Map<String, Object>> props,List<String> meterList) {
+	public static JSONObject getStandardVariance(ReportContext report,List<Map<String, Object>> props,List<String> meterList) {
 		
 		try {
 			Double min = null ,max = null,avg = null,sum = (double) 0;
 			for(Map<String, Object> prop:props) {
+				
+				if(AccountUtil.getCurrentOrg().getOrgId() == 116l) {
+					if(prop.get("dummyField") != null) {
+ 						
+ 						Long currtime = (Long) prop.get("dummyField");
+ 						
+ 						if(report.getxAxisaggregateFunction() != null && report.getxAxisaggregateFunction().equals(DateAggregateOperator.FULLDATE.getValue())) {
+ 							
+ 							DateRange range = DateOperators.TODAY.getRange(null);
+	 						if(currtime < range.getEndTime() && currtime >= range.getStartTime()) {
+	 							continue;
+	 						}
+ 						}
+ 					}
+				}
 				if(prop.get("value") != null) {
 					double value = Double.parseDouble(prop.get("value").toString());
 					

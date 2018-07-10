@@ -77,7 +77,7 @@ public class FloorAction extends ActionSupport {
 	public String updateFloor() throws Exception 
 	{
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.SITE, floor);
+		context.put(FacilioConstants.ContextNames.BASE_SPACE, floor);
 		context.put(FacilioConstants.ContextNames.SPACE_TYPE, "floor");
 		Chain updateCampus = FacilioChainFactory.getUpdateCampusChain();
 		updateCampus.execute(context);

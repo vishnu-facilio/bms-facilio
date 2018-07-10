@@ -372,7 +372,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getWorkOrderListChain() {
-		Chain c = new TransactionChain();
+		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForWorkOrder());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadViewCommand());
@@ -487,7 +487,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getAddAlarmTemplateChain() {
-		Chain c = new ChainBase();
+		Chain c = new TransactionChain();
 		c.addCommand(new AddAlarmTemplateCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -834,12 +834,8 @@ public class FacilioChainFactory {
 	public static Chain getUpdateCampusChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new ValidateCampusFieldsCommand());
-//		c.addCommand(FacilioChainFactory.updateLocationChain());
-//		c.addCommand(SetTableNamesCommand.getForSite());
-//		c.addCommand(SetTableNamesCommand.getForFloor());
-		c.addCommand(SetTableNamesCommand.getForSpace());
-		c.addCommand(new LoadAllFieldsCommand());
-		c.addCommand(new UpdateCampusCommand());
+		c.addCommand(FacilioChainFactory.updateLocationChain());
+		c.addCommand(new UpdateBaseSpaceCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

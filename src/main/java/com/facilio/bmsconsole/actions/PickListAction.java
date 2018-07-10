@@ -19,9 +19,8 @@ import com.facilio.bmsconsole.context.TicketPriorityContext;
 import com.facilio.bmsconsole.context.TicketTypeContext;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
-import com.opensymphony.xwork2.ActionSupport;
 
-public class PickListAction extends ActionSupport {
+public class PickListAction extends FacilioAction {
 	
 	@Override
 	public String execute() throws Exception {
@@ -204,15 +203,6 @@ public class PickListAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	
-	private String result;
-	public String getResult() {
-		return result;
-	}
-	public void setResult(String result) {
-		this.result = result;
-	}
-	
 	private List<String> relatedModules;
 	public List<String> getRelatedModules() {
 		return relatedModules;
@@ -232,7 +222,6 @@ public class PickListAction extends ActionSupport {
 		if (!this.relatedModules.isEmpty()) {
 			return ERROR;
 		}
-		this.result = "success";
 		return SUCCESS;
 	}
 	
@@ -284,7 +273,6 @@ public class PickListAction extends ActionSupport {
 		if (!this.relatedModules.isEmpty()) {
 			return ERROR;
 		}
-		this.result = "success";
 		return SUCCESS;
 	}
 	
@@ -335,7 +323,6 @@ public class PickListAction extends ActionSupport {
 		if (!this.relatedModules.isEmpty()) {
 			return ERROR;
 		}
-		this.result = "success";
 		return SUCCESS;
 	}
 	
@@ -355,4 +342,20 @@ public class PickListAction extends ActionSupport {
 		
 		return SUCCESS;
 	}
+	
+/******************      V2 Api    ******************/
+	
+	public String v2pickList() {
+		try {
+			String response = execute();
+			setResult(FacilioConstants.ContextNames.PICKLIST, pickList);
+			return response;
+		}
+		catch(Exception e) {
+			setResponseCode(1);
+			setMessage(FacilioConstants.ERROR_MESSAGE);
+			return ERROR;
+		}
+	}
+	
 }

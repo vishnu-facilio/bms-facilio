@@ -11,10 +11,9 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.constants.FacilioConstants;
-import com.opensymphony.xwork2.ActionSupport;
 
 @SuppressWarnings("serial")
-public class BaseSpaceAction extends ActionSupport {
+public class BaseSpaceAction extends FacilioAction {
 	
 	@SuppressWarnings("unchecked")
 	public String baseSpaceList() throws Exception 
@@ -164,4 +163,21 @@ public class BaseSpaceAction extends ActionSupport {
 	public String getSearch() {
 		return this.search;
 	}
+	
+	
+/******************      V2 Api    ******************/
+	
+	public String v2baseSpaceList() {
+		try {
+			String response = baseSpaceList();
+			setResult(FacilioConstants.ContextNames.BASE_SPACE_LIST, basespaces);
+			return response;
+		}
+		catch(Exception e) {
+			setResponseCode(1);
+			setMessage(FacilioConstants.ERROR_MESSAGE);
+			return ERROR;
+		}
+	}
+	
 }

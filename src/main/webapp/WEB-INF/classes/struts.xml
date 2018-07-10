@@ -21,6 +21,7 @@
 	<include file="leedconsole.xml" />
 	<include file="setup.xml" />
 	<include file="api.xml" />
+	<include file="apiv2.xml" />
 	<include file="eventconsole.xml" />
 	
 	

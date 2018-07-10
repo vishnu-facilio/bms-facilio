@@ -68,7 +68,7 @@ public class LoginUtil {
 		Account account = new Account(org, user);
 		
 		account.setDeviceType(request.getHeader("X-Device-Type"));
-		account.setDeviceVersion(request.getHeader("X-App-Version"));
+		account.setAppVersion(request.getHeader("X-App-Version"));
 		
 		return account;
 	}
