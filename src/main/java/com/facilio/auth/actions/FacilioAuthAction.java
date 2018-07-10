@@ -494,12 +494,17 @@ public class FacilioAuthAction extends ActionSupport {
         PortalInfoAction authAction = new PortalInfoAction();
         authAction.getPortalInfo();
         PortalInfoContext portalInfo = authAction.getProtalInfo(); 
-        String domains = (String) portalInfo.getWhiteListed_domains();
-        ArrayList<String> items = 
-        		new  ArrayList<String>(Arrays.asList(domains.split(",")));
+       
         Boolean temp = portalInfo.is_anyDomain_allowed();
         Boolean signupAllowed = false;
         if(!temp){
+        	 String domains = (String) portalInfo.getWhiteListed_domains();
+        	 
+             ArrayList<String> items = new ArrayList<String>();
+             if(domains!=null)
+             {
+            	 items = new  ArrayList<String>(Arrays.asList(domains.split(",")));
+             }
         	for (String item: items){
         		if(emailaddress.endsWith(item.trim())) {
         			signupAllowed = true;
