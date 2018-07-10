@@ -68,7 +68,7 @@ public class SiteContext extends BaseSpaceContext {
 		this.weatherStation = weatherStation;
 	}
 	
-	private double cddBaseTemperature;
+	private double cddBaseTemperature = -1;
 	public double getCddBaseTemperature() {
 		return cddBaseTemperature;
 	}
@@ -76,7 +76,7 @@ public class SiteContext extends BaseSpaceContext {
 		this.cddBaseTemperature = cddBaseTemperature;
 	}
 	
-	private double hddBaseTemperature;
+	private double hddBaseTemperature = -1;
 	public double getHddBaseTemperature() {
 		return hddBaseTemperature;
 	}
@@ -84,7 +84,7 @@ public class SiteContext extends BaseSpaceContext {
 		this.hddBaseTemperature = hddBaseTemperature;
 	}
 
-	private double wddBaseTemperature;
+	private double wddBaseTemperature = -1;
 	public double getWddBaseTemperature() {
 		return wddBaseTemperature;
 	}
