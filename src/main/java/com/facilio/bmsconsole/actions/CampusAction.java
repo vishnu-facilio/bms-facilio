@@ -104,9 +104,16 @@ public class CampusAction extends ActionSupport {
 		setSite(site);
 		return SUCCESS;
 	}
+	private long id;
+	public long getID() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
 	public String deleteCampus() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.MODULE, site);
+		context.put(FacilioConstants.ContextNames.ID, id);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, "site");
 		Chain deleteCampus = FacilioChainFactory.deleteSpaceChain();
 		deleteCampus.execute(context);
