@@ -2720,7 +2720,7 @@
 			<param name="permission">CREATE</param>
 			<!-- <param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param> -->
 			<result name="success" type="json">
-				<param name="includeProperties">^campus.*</param>
+				<param name="includeProperties">^site.*</param>
 			</result>
 		</action>
 		
