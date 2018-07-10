@@ -3616,11 +3616,17 @@ public class DashboardAction extends ActionSupport {
 	 			if(thisMap!=null) {
 	 				// checking and excluding the violated points
 	 				if(AccountUtil.getCurrentOrg().getOrgId() == 116l) {
+	 					
 	 					if(thisMap.get("dummyField") != null) {
+	 						
 	 						Long currtime = (Long) thisMap.get("dummyField");
-	 						DateRange range = DateOperators.TODAY.getRange(null);
-	 						if(currtime < range.getEndTime() && currtime >= range.getStartTime()) {
-	 							continue;
+	 						
+	 						if(report.getxAxisaggregateFunction() != null && report.getxAxisaggregateFunction().equals(DateAggregateOperator.FULLDATE.getValue())) {
+	 							
+	 							DateRange range = DateOperators.TODAY.getRange(null);
+		 						if(currtime < range.getEndTime() && currtime >= range.getStartTime()) {
+		 							continue;
+		 						}
 	 						}
 	 					}
 	 				}
