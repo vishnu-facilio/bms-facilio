@@ -106,6 +106,8 @@ public class ServerInfo extends TimerTask {
             }
         } catch (SQLException e) {
             LOGGER.info("Exception while marking servers down ", e);
+        } finally {
+            DBUtil.closeAll(null, resultSet);
         }
     }
 
@@ -134,6 +136,8 @@ public class ServerInfo extends TimerTask {
             }
         } catch (SQLException e) {
             LOGGER.info("Exception in checkAndAssignLeader ", e);
+        } finally {
+            DBUtil.closeAll(null, resultSet);
         }
     }
 
@@ -153,6 +157,8 @@ public class ServerInfo extends TimerTask {
             }
         } catch (SQLException e) {
             LOGGER.info("Exception in markLeaderDownAndChooseNewLeader ", e);
+        } finally {
+            DBUtil.closeAll(null, resultSet);
         }
 
     }
@@ -187,6 +193,7 @@ public class ServerInfo extends TimerTask {
                 updateQuery.setLong(1, System.currentTimeMillis());
                 updateQuery.setLong(2, serverId);
                 updateQuery.executeUpdate();
+                checkAndAssignLeader();
             } catch (SQLException e) {
                 LOGGER.info("Exception while updating ping time ", e);
             }
