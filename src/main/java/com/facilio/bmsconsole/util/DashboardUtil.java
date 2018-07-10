@@ -820,6 +820,7 @@ public class DashboardUtil {
 					s.add(382l);
 					dashboard.setBuildingExcludeList(s);
 				}
+				dashboard.setReportSpaceFilterContext(getDashboardSpaceFilter(dashboard.getId()));
 				dashboardMap.put(dashboard.getId(), dashboard);
 				dashboardIds.add(dashboard.getId());
 			}
