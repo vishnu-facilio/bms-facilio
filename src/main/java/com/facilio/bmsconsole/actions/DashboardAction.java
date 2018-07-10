@@ -2693,7 +2693,7 @@ public class DashboardAction extends ActionSupport {
 			ticketData = finalres;
 		}
 		else {
-			variance = DashboardUtil.getStandardVariance(rs,null);
+			variance = DashboardUtil.getStandardVariance(report,rs,null);
 			JSONArray res = new JSONArray();
 			Map<Long, Long> buildingResult = new HashMap<>();
 			for(int i=0;i<rs.size();i++) {
@@ -3583,7 +3583,7 @@ public class DashboardAction extends ActionSupport {
 			JSONObject purposeIndexMapping = new JSONObject();
 			
 			if(!"eui".equalsIgnoreCase(report.getY1AxisUnit())) {
-				variance = DashboardUtil.getStandardVariance(rs,meterIdsUsed);
+				variance = DashboardUtil.getStandardVariance(report,rs,meterIdsUsed);
 				try {
 					if (report.getY1AxisField().getField().getName().contains("cost") || (reportFieldLabelMap != null && reportFieldLabelMap.get(report.getY1AxisField().getField().getName()).toString().contains("cost"))) {
 						
@@ -3615,6 +3615,21 @@ public class DashboardAction extends ActionSupport {
 	 			JSONObject component = new JSONObject();
 	 			if(thisMap!=null) {
 	 				// checking and excluding the violated points
+	 				if(AccountUtil.getCurrentOrg().getOrgId() == 116l) {
+	 					
+	 					if(thisMap.get("dummyField") != null) {
+	 						
+	 						Long currtime = (Long) thisMap.get("dummyField");
+	 						
+	 						if(report.getxAxisaggregateFunction() != null && report.getxAxisaggregateFunction().equals(DateAggregateOperator.FULLDATE.getValue())) {
+	 							
+	 							DateRange range = DateOperators.TODAY.getRange(null);
+		 						if(currtime < range.getEndTime() && currtime >= range.getStartTime()) {
+		 							continue;
+		 						}
+	 						}
+	 					}
+	 				}
 	 				if (violatedReadings != null && violatedReadings.containsKey(thisMap.get("label").toString())) {
 	 					Double violatedValue = violatedReadings.get(thisMap.get("label").toString());
 	 					Double d = (Double) thisMap.get("value");
