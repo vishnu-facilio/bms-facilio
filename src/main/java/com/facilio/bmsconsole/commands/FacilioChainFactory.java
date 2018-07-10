@@ -372,7 +372,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getWorkOrderListChain() {
-		Chain c = new TransactionChain();
+		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForWorkOrder());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadViewCommand());
@@ -487,7 +487,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getAddAlarmTemplateChain() {
-		Chain c = new ChainBase();
+		Chain c = new TransactionChain();
 		c.addCommand(new AddAlarmTemplateCommand());
 		addCleanUpCommand(c);
 		return c;

@@ -3270,6 +3270,19 @@ public class DashboardAction extends ActionSupport {
 					
 					report.setGroupBy(-1L);
 				}
+				else if ("cost".equalsIgnoreCase(report.getReportSpaceFilterContext().getGroupBy())) {
+					List<EnergyMeterContext> meters = DashboardUtil.getMainEnergyMeter(report.getReportSpaceFilterContext().getBuildingId()+"");
+					if (meters != null && meters.size() > 0) {
+						List<Long> meterIds = new ArrayList<Long>();
+						for (EnergyMeterContext meter : meters) {
+							meterIds.add(meter.getId());
+						}
+						
+						String meterIdStr = StringUtils.join(meterIds, ",");
+						energyMeterValue = meterIdStr;
+						buildingCondition = CriteriaAPI.getCondition("PARENT_ID","PARENT_ID", meterIdStr, NumberOperators.EQUALS);
+					}
+				}
 				else {
 					List<EnergyMeterContext> meters = DashboardUtil.getMainEnergyMeter(report.getReportSpaceFilterContext().getBuildingId()+"");
 					if (meters != null && meters.size() > 0) {
