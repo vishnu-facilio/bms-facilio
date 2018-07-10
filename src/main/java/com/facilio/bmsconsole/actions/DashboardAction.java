@@ -2792,9 +2792,10 @@ public class DashboardAction extends ActionSupport {
 		this.safelimit = safelimit;
 	}
 	
-	private Double getTotalKwh(FacilioModule module, long parentId, FacilioField sumField, Condition dateCondition) throws Exception {
+	private Double getTotalKwh(List<String> parentIds, long startTime, long endTime) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule("energydata");
 		
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 			.table(module.getTableName())
@@ -2802,8 +2803,12 @@ public class DashboardAction extends ActionSupport {
 			.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
 			;
 		
-		builder.andCondition(CriteriaAPI.getCondition(modBean.getField("parentId", module.getName()), String.valueOf(parentId), PickListOperators.IS));
-		builder.andCondition(dateCondition);
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(FieldFactory.getField("value", "sum(TOTAL_ENERGY_CONSUMPTION_DELTA)", FieldType.NUMBER));
+		builder.select(fields);
+		
+		builder.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID", "parentMeterId", parentIds.get(0), NumberOperators.EQUALS));
+		builder.andCondition(CriteriaAPI.getCondition("TTIME", "ttime", startTime+","+endTime, DateOperators.BETWEEN));
 		
 		List<Map<String, Object>> rs = builder.get();
 		if (rs != null && rs.size() > 0) {
@@ -3566,20 +3571,17 @@ public class DashboardAction extends ActionSupport {
 			
 			if(!"eui".equalsIgnoreCase(report.getY1AxisUnit())) {
 				variance = DashboardUtil.getStandardVariance(rs,meterIdsUsed);
-			}
-			else {
-				variance = DashboardUtil.getStandardVariance(rs,meterIdsUsed);
 				try {
-					if (report.getY1AxisField().getField().getName().equalsIgnoreCase("cost") || (reportFieldLabelMap != null && reportFieldLabelMap.get(report.getY1AxisField().getField().getName()).toString().equalsIgnoreCase("cost"))) {
+					if (report.getY1AxisField().getField().getName().contains("cost") || (reportFieldLabelMap != null && reportFieldLabelMap.get(report.getY1AxisField().getField().getName()).toString().contains("cost"))) {
 						
-						
-						Double totalKwh = getTotalKwh(module, this.parentId, y1AxisField, dateCondition);
+						Criteria parentCriteria = criteria != null ? criteria : report.getCriteria();
+						Double totalKwh = getTotalKwh(meterIdsUsed, this.startTime, this.endTime);
 						Double totalCost = (Double) variance.get("sum");
 						
-						Long yesterdayTime = (Long) rs.get(rs.size() - 1).get("label");
+						Long yesterdayTime = (rs.get(rs.size() - 1).get("dummyField") != null) ? (Long) rs.get(rs.size() - 1).get("dummyField") : (Long) rs.get(rs.size() - 1).get("label");
 						Long startTime = DateTimeUtil.getDayStartTimeOf(DateTimeUtil.getZonedDateTime(yesterdayTime)).toInstant().toEpochMilli();
 						Long endTime = DateTimeUtil.getDayEndTimeOf(DateTimeUtil.getZonedDateTime(yesterdayTime)).toInstant().toEpochMilli();
-						Double yesterdayKwh = getTotalKwh(module, this.parentId, y1AxisField, CriteriaAPI.getCondition(report.getDateFilter().getField(), startTime+","+endTime, DateOperators.BETWEEN));
+						Double yesterdayKwh = getTotalKwh(meterIdsUsed, startTime, endTime);
 						Double yesterdayCost = (Double) rs.get(rs.size() - 1).get("value");
 						
 						variance = new JSONObject();
