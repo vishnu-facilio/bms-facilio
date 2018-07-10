@@ -182,7 +182,12 @@
                 <param name="includeProperties">^account.*</param>
             </result>
         </action>
-
+	
+		<action name="picklist" class="com.facilio.bmsconsole.actions.PickListAction">
+			<result name="success" type="json">
+				<param name="root">pickList</param>
+			</result>
+		</action>
 
 	</package>
 	

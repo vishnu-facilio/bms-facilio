@@ -16,7 +16,7 @@ public class PortalInfoContext  {
 	private boolean is_anyDomain_allowed = false;
 	private boolean captcha_enabled = false;
 	private String customDomain;
-	private ArrayList whiteListed_domains;
+	private String whiteListed_domains;
 	private boolean saml_enabled = true;
 	private String login_url = "http://orgdomainname."+PortalAuthInterceptor.PORTALDOMAIN+"/idplogin";
 	private String logout_url = "http://orgdomainname."+PortalAuthInterceptor.PORTALDOMAIN+"/idplogout";
@@ -61,13 +61,13 @@ public class PortalInfoContext  {
 	public void setGmailLogin_allowed(boolean gmailLogin_allowed) {
 		this.gmailLogin_allowed = gmailLogin_allowed;
 	}
-	public boolean isIs_public_create_allowed() {
+	public boolean is_public_create_allowed() {
 		return is_public_create_allowed;
 	}
 	public void setIs_public_create_allowed(boolean is_public_create_allowed) {
 		this.is_public_create_allowed = is_public_create_allowed;
 	}
-	public boolean isIs_anyDomain_allowed() {
+	public boolean is_anyDomain_allowed() {
 		return is_anyDomain_allowed;
 	}
 	public void setIs_anyDomain_allowed(boolean is_anyDomain_allowed) {
@@ -80,10 +80,10 @@ public class PortalInfoContext  {
 	public void setCaptcha_enabled(boolean captcha_enabled) {
 		this.captcha_enabled = captcha_enabled;
 	}
-	public ArrayList getWhiteListed_domains() {
+	public String getWhiteListed_domains() {
 		return whiteListed_domains;
 	}
-	public void setWhiteListed_domains(ArrayList whiteListed_domains) {
+	public void setWhiteListed_domains(String whiteListed_domains) {
 		this.whiteListed_domains = whiteListed_domains;
 	}
 	public boolean isSaml_enabled() {

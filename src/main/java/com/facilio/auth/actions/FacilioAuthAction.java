@@ -6,6 +6,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -23,8 +25,10 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.actions.PortalInfoAction;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.fw.auth.LoginUtil;
@@ -486,11 +490,34 @@ public class FacilioAuthAction extends ActionSupport {
         user.setEmail(emailaddress);
         user.setPortalId(portalId);
         user.setPassword(password);
-
+        
+        PortalInfoAction authAction = new PortalInfoAction();
+        authAction.getPortalInfo();
+        PortalInfoContext portalInfo = authAction.getProtalInfo(); 
+        String domains = (String) portalInfo.getWhiteListed_domains();
+        ArrayList<String> items = 
+        		new  ArrayList<String>(Arrays.asList(domains.split(",")));
+        Boolean temp = portalInfo.is_anyDomain_allowed();
+        Boolean signupAllowed = false;
+        if(!temp){
+        	for (String item: items){
+        		if(emailaddress.endsWith(item.trim())) {
+        			signupAllowed = true;
+        		}
+        	}
+        	if (!signupAllowed)
+        	setJsonresponse("message", "Signup out of Domain");
+        }
+        if(temp || signupAllowed)
+        {
         AccountUtil.getUserBean().addRequester(AccountUtil.getCurrentOrg().getId(), user);
 
         setJsonresponse("message", "success");
         return SUCCESS;
+        }
+       
+        
+        return ERROR;
     }
 
     public String changePortalPassword() {

@@ -651,6 +651,7 @@ public class LoginAction extends ActionSupport{
 		Map<String, Object> data = new HashMap<>();
 		data.put("users", users);
 		data.put("ticketStatus", getTicketStatus());
+		data.put("ticketCategory", TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId()));
 		account.put("data", data);
 		return SUCCESS;
 	}
