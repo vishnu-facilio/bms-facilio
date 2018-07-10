@@ -55,6 +55,7 @@ import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowFieldContext;
 import com.facilio.workflows.context.WorkflowFunctionContext;
+import com.facilio.workflows.functions.FacilioCostFunction;
 import com.facilio.workflows.functions.FacilioDateFunction;
 import com.facilio.workflows.functions.FacilioDefaultFunction;
 import com.facilio.workflows.functions.FacilioMathFunction;
@@ -1151,6 +1152,10 @@ public class WorkflowUtil {
 		case "thermoPhysical.R134a" :
 			
 			facilioWorkflowFunction = ThermoPhysicalR134aFunctions.getThermoPhysicalR134aFunction(functionName);
+			break;
+			
+		case "cost" :
+			facilioWorkflowFunction = FacilioCostFunction.getFacilioCostFunction(functionName);
 			break;
 		}
 		

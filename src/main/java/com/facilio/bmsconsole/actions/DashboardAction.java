@@ -2916,11 +2916,16 @@ public class DashboardAction extends ActionSupport {
 			
 		if(xAggregateOpperator instanceof SpaceAggregateOperator) {
 			isGroupBySpace = true;
+			FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
 			FacilioModule baseSpaceModule = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
 			FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
 			
 			subBuilder.innerJoin(baseSpaceModule.getTableName())
-			.on(baseSpaceModule.getTableName()+".ID=Energy_Meter.PURPOSE_SPACE_ID")
+			.on(baseSpaceModule.getTableName()+".ID=Energy_Meter.PURPOSE_SPACE_ID");
+			
+			subBuilder.innerJoin(resourceModule.getTableName())
+			.on(baseSpaceModule.getTableName()+".ID="+resourceModule.getTableName()+".ID")
+			.andCustomWhere(resourceModule.getTableName()+".SYS_DELETED != 1")
 			.andCustomWhere(baseSpaceModule.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId());
 			
 			if(xAggregateOpperator.equals(SpaceAggregateOperator.BUILDING) || xAggregateOpperator.equals(SpaceAggregateOperator.SITE)) {
@@ -2929,6 +2934,7 @@ public class DashboardAction extends ActionSupport {
 				.on(assetModule.getTableName()+".ID = Energy_Meter.ID");
 
 				subBuilder.andCustomWhere(baseSpaceModule.getTableName()+".SPACE_TYPE = " + BaseSpaceContext.SpaceType.BUILDING.getIntVal());
+				
 				EnergyMeterPurposeContext energyMeterPurpose = DeviceAPI.getEnergyMetersPurposeByName(DashboardUtil.ENERGY_METER_PURPOSE_MAIN);
 				subBuilder.andCustomWhere("Energy_Meter.PURPOSE_ID = "+energyMeterPurpose.getId());
 				subBuilder.andCustomWhere("Energy_Meter.IS_ROOT = 1");
@@ -3585,7 +3591,7 @@ public class DashboardAction extends ActionSupport {
 			if(!"eui".equalsIgnoreCase(report.getY1AxisUnit())) {
 				variance = DashboardUtil.getStandardVariance(report,rs,meterIdsUsed);
 				try {
-					if (report.getY1AxisField().getField().getName().contains("cost") || (reportFieldLabelMap != null && reportFieldLabelMap.get(report.getY1AxisField().getField().getName()).toString().contains("cost"))) {
+					if (report.getY1AxisField() != null && report.getY1AxisField().getField().getName().contains("cost") || (reportFieldLabelMap != null && reportFieldLabelMap.containsKey(report.getY1AxisField().getField().getName()) &&reportFieldLabelMap.get(report.getY1AxisField().getField().getName()).toString().contains("cost"))) {
 						
 						Criteria parentCriteria = criteria != null ? criteria : report.getCriteria();
 						Double totalKwh = getTotalKwh(meterIdsUsed, this.startTime, this.endTime);
