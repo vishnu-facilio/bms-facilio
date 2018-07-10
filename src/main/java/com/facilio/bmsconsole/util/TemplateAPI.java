@@ -12,15 +12,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.bind.JAXBContext;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -61,15 +61,14 @@ import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
-import com.facilio.wms.endpoints.SessionManager;
+import com.facilio.transaction.FacilioTransactionManager;
 import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class TemplateAPI {
-	private static final Logger logger = Logger.getLogger(SessionManager.class.getName());
-	private static org.apache.log4j.Logger log = LogManager.getLogger(TemplateAPI.class.getName());
+	private static Logger log = LogManager.getLogger(TemplateAPI.class.getName());
 
 	private static final String[] LANG = new String[]{"en"};
 	private static final Map<String, Map<Integer,DefaultTemplate>> DEFAULT_TEMPLATES = Collections.unmodifiableMap(loadDefaultTemplates());
@@ -117,7 +116,7 @@ public class TemplateAPI {
 			return defaultTemplates;
 		}
 		catch (Exception e) {
-			logger.log(Level.SEVERE, "Error in Parsing default templates");
+			log.log(Level.ERROR, "Error in Parsing default templates",e);
 			throw new IllegalArgumentException(e);
 		}
 	}
