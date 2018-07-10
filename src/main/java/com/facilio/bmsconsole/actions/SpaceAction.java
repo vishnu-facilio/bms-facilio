@@ -111,7 +111,7 @@ public class SpaceAction extends ActionSupport {
 	{
 		
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.SITE, space);
+		context.put(FacilioConstants.ContextNames.BASE_SPACE, space);
 		context.put(FacilioConstants.ContextNames.SPACE_TYPE, "space");
 		Chain updateCampus = FacilioChainFactory.getUpdateCampusChain();
 		updateCampus.execute(context);

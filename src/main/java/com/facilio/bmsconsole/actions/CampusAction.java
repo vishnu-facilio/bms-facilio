@@ -97,7 +97,7 @@ public class CampusAction extends ActionSupport {
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, java.util.Collections.singletonList(location.getId()));
 			FacilioChainFactory.updateLocationChain();
 		}
-		context.put(FacilioConstants.ContextNames.SITE, site);
+		context.put(FacilioConstants.ContextNames.BASE_SPACE, site);
 		context.put(FacilioConstants.ContextNames.SPACE_TYPE, "site");
 		Chain updateCampus = FacilioChainFactory.getUpdateCampusChain();
 		updateCampus.execute(context);
@@ -105,7 +105,7 @@ public class CampusAction extends ActionSupport {
 		return SUCCESS;
 	}
 	private long id;
-	public long getID() {
+	public long getId() {
 		return id;
 	}
 	public void setId(long id) {
@@ -117,6 +117,7 @@ public class CampusAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, "site");
 		Chain deleteCampus = FacilioChainFactory.deleteSpaceChain();
 		deleteCampus.execute(context);
+		setId(id);
 		return SUCCESS;
 	}
 	public String viewCampus() throws Exception 

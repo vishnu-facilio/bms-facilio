@@ -102,7 +102,7 @@ public class BuildingAction extends ActionSupport {
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, java.util.Collections.singletonList(location.getId()));
 			FacilioChainFactory.updateLocationChain();
 		}
-		context.put(FacilioConstants.ContextNames.SITE, building);
+		context.put(FacilioConstants.ContextNames.BASE_SPACE, building);
 		context.put(FacilioConstants.ContextNames.SPACE_TYPE, "building");
 		Chain updateCampus = FacilioChainFactory.getUpdateCampusChain();
 		updateCampus.execute(context);

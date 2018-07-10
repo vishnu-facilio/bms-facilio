@@ -835,11 +835,7 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(new ValidateCampusFieldsCommand());
 		c.addCommand(FacilioChainFactory.updateLocationChain());
-//		c.addCommand(SetTableNamesCommand.getForSite());
-//		c.addCommand(SetTableNamesCommand.getForFloor());
-		c.addCommand(SetTableNamesCommand.getForSpace());
-		c.addCommand(new LoadAllFieldsCommand());
-		c.addCommand(new UpdateCampusCommand());
+		c.addCommand(new UpdateBaseSpaceCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
