@@ -9,7 +9,6 @@ import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -26,9 +25,8 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.exception.ReadingValidationException;
-import com.opensymphony.xwork2.ActionSupport;
 
-public class TaskAction extends ActionSupport {
+public class TaskAction extends FacilioAction {
 
 	private static Logger log = LogManager.getLogger(TaskAction.class.getName());
 	//New Task Props
@@ -426,40 +424,8 @@ public class TaskAction extends ActionSupport {
 	}
 	
 	
-	
-	
-	
-	
 /******************      V2 Api    ******************/
 	
-	private int responseCode = 0;
-	public int getResponseCode() {
-		return responseCode;
-	}
-	public void setResponseCode(int responseCode) {
-		this.responseCode = responseCode;
-	}
-	
-	private String message;
-	public String getMessage() {
-		return message;
-	}
-	public void setMessage(String message) {
-		this.message = message;
-	}
-	
-	private JSONObject result;
-	public JSONObject getResult() {
-		return result;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public void setResult(String key, Object result) {
-		if (this.result == null) {
-			this.result = new JSONObject();
-		}
-		this.result.put(key, result);			
-	}
 	
 	public String v2viewTask() {
 		try {

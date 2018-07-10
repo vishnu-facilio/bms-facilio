@@ -76,9 +76,8 @@ import com.facilio.fw.auth.SAMLUtil;
 import com.facilio.integration.actions.Home;
 import com.facilio.wms.util.WmsApi;
 import com.opensymphony.xwork2.ActionContext;
-import com.opensymphony.xwork2.ActionSupport;
 
-public class LoginAction extends ActionSupport{
+public class LoginAction extends FacilioAction{
 	static
 	{
 		System.out.println("Login action loaded");
@@ -909,4 +908,25 @@ public class LoginAction extends ActionSupport{
 	public void setEmailaddress(String emailaddress) {
 		this.emailaddress = emailaddress;
 	}
+	
+	
+
+/******************      V2 Api    ******************/
+	
+	public String v2currentAccount() {
+		try {
+			String response = currentAccount();
+			if (response != null) {
+				throw new IllegalArgumentException("testong");
+			}
+			setResult("account", account);
+			return response;
+		}
+		catch(Exception e) {
+			setResponseCode(1);
+			setMessage(FacilioConstants.ERROR_MESSAGE);
+			return ERROR;
+		}
+	}
+	
 }

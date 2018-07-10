@@ -15,11 +15,11 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
+import com.facilio.bmsconsole.context.AttachmentContext.AttachmentType;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
-import com.facilio.bmsconsole.context.AttachmentContext.AttachmentType;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -30,9 +30,8 @@ import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.bmsconsole.workflow.TicketActivity;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.opensymphony.xwork2.ActionSupport;
 
-public class WorkOrderRequestAction extends ActionSupport {
+public class WorkOrderRequestAction extends FacilioAction {
 	private static Logger log = LogManager.getLogger(WorkOrderRequestAction.class.getName());
 
 	public String newWorkOrderRequest() throws Exception {
@@ -480,5 +479,61 @@ public class WorkOrderRequestAction extends ActionSupport {
 	
 	public String getSearch() {
 		return this.search;
+	}
+	
+	
+	
+/******************      V2 Api    ******************/
+	
+	public String v2viewWorkOrderRequest() {
+		try {
+			String response = viewWorkOrderRequest();
+			setResult(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, workorderrequest);
+			return response;
+		}
+		catch(Exception e) {
+			setResponseCode(1);
+			setMessage(FacilioConstants.ERROR_MESSAGE);
+			return ERROR;
+		}
+	}
+	
+	public String v2approveWorkOrderRequest() {
+		try {
+			String response = approveWorkOrderRequest();
+			setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
+			return response;
+		}
+		catch(Exception e) {
+			setResponseCode(1);
+			setMessage(FacilioConstants.ERROR_MESSAGE);
+			return ERROR;
+		}
+	}
+	
+	public String v2rejectWorkOrderRequest() {
+		try {
+			String response = rejectWorkOrderRequest();
+			setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
+			return response;
+		}
+		catch(Exception e) {
+			setResponseCode(1);
+			setMessage(FacilioConstants.ERROR_MESSAGE);
+			return ERROR;
+		}
+	}
+	
+	public String v2workOrderRequestList() {
+		try {
+			String response = workOrderRequestList();
+			setResult(FacilioConstants.ContextNames.WORK_ORDER_REQUEST_LIST, workOrderRequests);
+			return response;
+		}
+		catch(Exception e) {
+			setResponseCode(1);
+			setMessage(FacilioConstants.ERROR_MESSAGE);
+			return ERROR;
+		}
 	}
 }

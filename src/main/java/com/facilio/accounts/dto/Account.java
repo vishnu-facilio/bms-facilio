@@ -6,7 +6,7 @@ public class Account {
 	private User user;
 	
 	private String deviceType;
-	private String deviceVersion;
+	private String appVersion;
 	
 	public Account(Organization org, User user) {
 		this.org = org;
@@ -49,12 +49,12 @@ public class Account {
 		this.deviceType = deviceType;
 	}
 
-	public String getDeviceVersion() {
-		return deviceVersion;
+	public String getAppVersion() {
+		return appVersion;
 	}
 
-	public void setDeviceVersion(String deviceVersion) {
-		this.deviceVersion = deviceVersion;
+	public void setAppVersion(String appVersion) {
+		this.appVersion = appVersion;
 	}
 	
 	

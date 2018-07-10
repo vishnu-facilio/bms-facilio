@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+    "http://struts.apache.org/dtds/struts-2.5.dtd">
+
+<struts>
+
+	<package name="v2Api" strict-method-invocation="false"
+		namespace="/api/v2" extends="struts-default,json-default">
+		<result-types>
+			<result-type name="tiles"
+				class="org.apache.struts2.views.tiles.TilesResult" />
+			<result-type name="json"
+				class="com.facilio.bmsconsole.interceptors.CacheResult" />
+		</result-types>
+		<interceptors>
+			<interceptor name="cacheinterceptor"
+				class="com.facilio.bmsconsole.interceptors.CacheInterceptor" />
+			<interceptor name="authinterceptor"
+				class="com.facilio.bmsconsole.interceptors.AuthInterceptor" />
+			<interceptor-stack name="defaultInterceptor">
+				<interceptor-ref name="defaultStack" />
+				<interceptor-ref name="authinterceptor" />
+				<interceptor-ref name="cacheinterceptor" />				
+				<interceptor-ref name="json">
+					<param name="enableSMD">true</param>
+				</interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+
+		<default-interceptor-ref name="defaultInterceptor" />
+		<global-results>
+			<result name="login" type="redirect">
+				<param name="location">/app/login</param>
+				<param name="parse">false</param>
+			</result>
+			<result name="unauthorized" type="redirect">
+				<param name="location">/jsps/unauthorized.jsp</param>
+				<param name="parse">false</param>
+			</result>
+			<result name="error" type="json">
+				<param name="includeProperties">responseCode, message</param>
+			</result>
+			<result name="success" type="json">
+				<param name="includeProperties">responseCode, ^result.*</param>
+			</result>
+		</global-results>
+		
+		<action name="account" class="com.facilio.bmsconsole.actions.LoginAction"
+			method="v2currentAccount">
+		</action>
+		
+		<action name="basespace" class="com.facilio.bmsconsole.actions.BaseSpaceAction"
+			method="v2baseSpaceList">
+		</action>
+		
+	</package>
+
+
+	<package name="workOrderApiV2" namespace="/api/v2/workorders" extends="v2Api">
+	
+		<action name="add" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="v2addWorkOrder">
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
+		</action>
+		
+		<action name="update" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="v2updateWorkOrder">
+			<param name="moduleName">workorder</param>
+			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+		</action>
+		
+		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+				method="v2viewWorkOrder">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<param name="workOrderId">{1}</param>
+		</action>
+		
+	</package>
+	<package name="workOrderListApiV2" namespace="/api/v2/workorders/view" extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="v2workOrderList">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+		</action>
+	</package>
+	
+	
+	<package name="workOrderRequestApiV2" namespace="/api/v2/workorderrequest" extends="v2Api">
+		
+		<action name="approve"
+			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="v2approveWorkOrderRequest">
+			<param name="moduleName">workorderrequest</param>
+			<param name="permission">APPROVE_REJECT_WORKREQUEST</param>
+		</action>
+
+		<action name="reject"
+			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="v2rejectWorkOrderRequest">
+			<param name="moduleName">workorderrequest</param>
+			<param name="permission">APPROVE_REJECT_WORKREQUEST</param>
+		</action>
+		
+		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="v2viewWorkOrderRequest">
+			<param name="moduleName">workorderrequest</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<param name="workOrderRequestId">{1}</param>
+		</action>
+		
+	</package>
+	<package name="workOrderRequestListApiV2" namespace="/api/v2/workorderrequest/view" extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="v2workOrderRequestList">
+			<param name="moduleName">workorderrequest</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
+	
+	
+	<package name="taskApiv2" namespace="/api/v2/task" extends="v2Api">
+	
+		<action name="updatestatus" class="com.facilio.bmsconsole.actions.TaskAction" method="v2updateStatus">
+			<param name="moduleName">workorder</param>
+			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
+		</action>
+		
+		<action name="closeAllTask" class="com.facilio.bmsconsole.actions.TaskAction" method="v2closeAllTask">
+			<param name="permission">TASK_CREATE</param>
+		</action>
+		
+		<action name="updateAllTask" class="com.facilio.bmsconsole.actions.TaskAction" method="v2updateAllTask">
+			<param name="permission">TASK_CREATE</param>
+		</action>
+		
+		<action name="update" class="com.facilio.bmsconsole.actions.TaskAction" method="v2updateTask">
+			<param name="moduleName">workorder</param>
+			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
+		</action>
+	
+		<action name="*" class="com.facilio.bmsconsole.actions.TaskAction" method="v2viewTask">
+			<param name="moduleName">workorder</param>
+			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
+			<param name="taskId">{1}</param>
+		</action>
+	
+	</package>
+	<package name="taskApiv2" namespace="/api/v2/task/view" extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.TaskAction" method="v2taskList">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">tasks.*,sections.*</param>
+			</result>
+		</action>
+	</package>
+	
+	<package name="picklistApiv2" namespace="/api/v2/picklist" extends="v2Api">
+	
+		<action name="*" class="com.facilio.bmsconsole.actions.PickListAction" method="v2pickList">
+			<param name="moduleName">{1}</param>
+		</action>
+		
+	</package>
+	
+	
+</struts>
