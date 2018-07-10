@@ -1962,7 +1962,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getGetLatestReadingValuesChain() {
-		Chain c = new TransactionChain();
+		Chain c = new ChainBase();
 		c.addCommand(getCategoryReadingsChain());
 		c.addCommand(new GetLatestCategoryReadingValuesCommand());
 		addCleanUpCommand(c);
