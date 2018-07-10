@@ -1,20 +1,14 @@
 package com.facilio.filters;
 
-
-import com.facilio.timeseries.TimeSeriesAPI;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 public class IotFilter implements Filter {
 
-    private static final Logger LOGGER = LogManager.getLogger(IotFilter.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(IotFilter.class.getName());
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
 
@@ -23,14 +17,18 @@ public class IotFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
-        JSONParser parser = new JSONParser();
-        JSONObject data = null;
-        try {
-            data = (JSONObject) parser.parse(request.getParameter("data"));
-            LOGGER.info(data);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+            StringBuilder builder = new StringBuilder();
+            String line = null;
+            try {
+                BufferedReader reader = request.getReader();
+                while ((line = reader.readLine()) != null)
+                    builder.append(line);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            LOGGER.info(builder.toString());
+
     }
 
     @Override
