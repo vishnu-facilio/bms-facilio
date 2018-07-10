@@ -28,11 +28,6 @@ public class FacilioTransaction implements Transaction {
 		connections.add(c);
 	}
 
-	private void disAssociateConnection(java.sql.Connection c)
-	{
-		connections.remove(c);
-	}
-	
 	public Connection getConnection() throws SQLException
 	{
 		for(int i=0;i< connections.size();i++)
@@ -43,7 +38,6 @@ public class FacilioTransaction implements Transaction {
 				fc.setFree(false);
 				return fc;
 			}
-			
 		}
 		java.sql.Connection fc = new  FacilioConnection(FacilioConnectionPool.getInstance().getConnectionFromPool());
 		fc.setAutoCommit(false);
@@ -60,13 +54,13 @@ public class FacilioTransaction implements Transaction {
 			try {
 					fc.getPhysicalConnection().commit();
 					fc.getPhysicalConnection().close();
-					disAssociateConnection(fc);
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				log.info("Exception occurred ", e);
 			}
 			
 		}
+		connections.clear();
 		this.status =Status.STATUS_COMMITTED;
 
 	}
@@ -109,9 +103,8 @@ public class FacilioTransaction implements Transaction {
 			} catch (SQLException e) {
 				log.info("Exception occurred ", e);
 			}
-			disAssociateConnection(fc);
-			
 		}
+		connections.clear();
 		this.status = Status.STATUS_ROLLEDBACK;
 		
 
