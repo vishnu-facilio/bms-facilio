@@ -20,7 +20,7 @@ public enum FacilioCostFunction implements FacilioWorkflowFunctionInterface {
 				return false;
 			}
 			
-			double kwh = (double) objects[0];
+			Double kwh = Double.parseDouble(objects[0].toString());
 			
 			double temp = kwh;
 			double total = 0.0;
@@ -29,11 +29,16 @@ public enum FacilioCostFunction implements FacilioWorkflowFunctionInterface {
 				double cost = FunctionUtil.getCostValueForSlab(i);
 				temp = kwh - 2000;
 				if(temp < 0) {
-					total = total + kwh * cost;
+					total = total + (kwh * cost);
 					break;
 				}
 				else {
-					total = total + 2000 * cost;
+					if(i == 4) {
+						total = total + (kwh * cost);
+					}
+					else {
+						total = total + (2000 * cost);
+					}
 					kwh = temp;
 				}
 			}
