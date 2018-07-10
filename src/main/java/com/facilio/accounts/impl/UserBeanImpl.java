@@ -1023,12 +1023,11 @@ public long inviteRequester(long orgId, User user) throws Exception {
 		PreparedStatement pstmt = null;
 		try {
 			conn = FacilioConnectionPool.getInstance().getConnection();
-			pstmt = conn.prepareStatement("INSERT INTO faciliorequestors(PORTALID, username, email, password, USERID) VALUES(?,?,?,?,?)");
+			pstmt = conn.prepareStatement("INSERT INTO faciliorequestors(PORTALID, username, email,  USERID) VALUES(?,?,?,?)");
 			pstmt.setLong(1, user.getPortalId());
 			pstmt.setString(2, user.getEmail());
 			pstmt.setString(3, user.getEmail());
-			pstmt.setString(4, user.getPassword());
-			pstmt.setLong(5, user.getUid());
+			pstmt.setLong(4, user.getUid());
 			pstmt.executeUpdate();
 		} catch (Exception e){
 			log.info("Exception occurred ", e);
