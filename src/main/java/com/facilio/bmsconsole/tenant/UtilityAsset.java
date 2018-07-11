@@ -25,11 +25,11 @@ public class UtilityAsset {
 		this.tenantId = tenantId;
 	}
 	
-	private TenantUtility utility;
-	public TenantUtility getUtilityEnum() {
+	private FacilioUtility utility;
+	public FacilioUtility getUtilityEnum() {
 		return utility;
 	}
-	public void setUtility(TenantUtility utility) {
+	public void setUtility(FacilioUtility utility) {
 		this.utility = utility;
 	}
 	public int getUtility() {
@@ -39,7 +39,7 @@ public class UtilityAsset {
 		return -1;
 	}
 	public void setUtility(int utility) {
-		this.utility = TenantUtility.valueOf(utility);
+		this.utility = FacilioUtility.valueOf(utility);
 	}
 
 	private long assetId = -1;

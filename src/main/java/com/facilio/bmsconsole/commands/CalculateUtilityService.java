@@ -13,7 +13,7 @@ import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.tenant.RateCardContext;
 import com.facilio.bmsconsole.tenant.RateCardServiceContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
-import com.facilio.bmsconsole.tenant.TenantUtility;
+import com.facilio.bmsconsole.tenant.FacilioUtility;
 import com.facilio.bmsconsole.tenant.UtilityAsset;
 import com.facilio.bmsconsole.util.TenantsAPI;
 
@@ -39,10 +39,10 @@ public class CalculateUtilityService implements Command {
 				
 				List<UtilityAsset> utilityAssets = tenant.getUtilityAssetsOfUtility(utilityService.getUtility());
 				
-				TenantUtility.ENERGY.getValue();
+				FacilioUtility.ENERGY.getValue();
 				for(UtilityAsset utilityAsset :utilityAssets) {
 					
-					switch(TenantUtility.valueOf(utilityAsset.getUtility())) {
+					switch(FacilioUtility.valueOf(utilityAsset.getUtility())) {
 					
 					case ENERGY:
 						Double value = 0.0;

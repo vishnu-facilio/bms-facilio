@@ -4,7 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.fw.BeanFactory;
 
-public enum TenantUtility {
+public enum FacilioUtility {
 
 	ENERGY {
 		@Override
@@ -43,7 +43,7 @@ public enum TenantUtility {
 		return ordinal() + 1;
 	}
 	
-	public static TenantUtility valueOf (int value) {
+	public static FacilioUtility valueOf (int value) {
 		if (value > 0 && value <= values().length) {
 			return values()[value - 1];
 		}

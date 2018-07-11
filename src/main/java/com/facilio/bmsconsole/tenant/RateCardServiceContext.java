@@ -52,11 +52,11 @@ public class RateCardServiceContext {
 		this.serviceType = ServiceType.valueOf(serviceType);
 	}
 
-	private TenantUtility utility;
-	public TenantUtility getUtilityEnum() {
+	private FacilioUtility utility;
+	public FacilioUtility getUtilityEnum() {
 		return utility;
 	}
-	public void setUtility(TenantUtility utility) {
+	public void setUtility(FacilioUtility utility) {
 		this.utility = utility;
 	}
 	public int getUtility() {
@@ -66,7 +66,7 @@ public class RateCardServiceContext {
 		return -1;
 	}
 	public void setUtility(int utility) {
-		this.utility = TenantUtility.valueOf(utility);
+		this.utility = FacilioUtility.valueOf(utility);
 	}
 	
 	private double price = -1;

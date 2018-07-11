@@ -28,7 +28,7 @@ import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.tenant.RateCardContext;
 import com.facilio.bmsconsole.tenant.RateCardServiceContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
-import com.facilio.bmsconsole.tenant.TenantUtility;
+import com.facilio.bmsconsole.tenant.FacilioUtility;
 import com.facilio.bmsconsole.tenant.UtilityAsset;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
