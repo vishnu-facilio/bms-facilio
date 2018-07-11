@@ -538,7 +538,7 @@ public class DashboardUtil {
 			        	long meterID = Long.parseLong(uniqueList.get(0));
 			        	
 			        	EnergyMeterContext energyMeter = DeviceAPI.getEnergyMeter(meterID);
-			        	if(energyMeter.isRoot()) {
+			        	if(energyMeter != null && energyMeter.isRoot()) {
 			        		BaseSpaceContext purposeSpace = SpaceAPI.getBaseSpace(energyMeter.getPurposeSpace().getId());
 			        		variance.put("space", purposeSpace.getId());
 			        		double grossFloorArea = 0.0;
