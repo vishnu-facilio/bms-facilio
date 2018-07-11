@@ -8,7 +8,7 @@ import java.util.Map;
 
 public enum Unit {
 	
-	// last id -- 80
+	// last id -- 81
 	
 	KWH(1,"Kilo Watt Hour","kWh",Metric.ENERGY),
 	HECTOWH(76,"Hecto Watt Hour","hWh",Metric.ENERGY,"si*10","this/10"),
@@ -99,6 +99,7 @@ public enum Unit {
 	MILILITRE(71,"Mili Litre","ml",Metric.LIQUID,"si*1000","this/1000"),
 	DECALITRE(77,"Deca Litre","dl",Metric.LIQUID,"si/10","this*10"),
 	KILOLITRE(78,"Kilo Litre","kl",Metric.LIQUID,"si/1000","this*1000"),
+	CUBICMETER(81,"Cubic Meter","m<sup>3</sup>",Metric.LIQUID,"si/1000","this*1000"),
 	CUBICFOOT(72,"Cubic Foot","ft<sup>3</sup>",Metric.LIQUID,"si/28.3168","this*28.3168"),
 	CUBICINCH(73,"Cubic Inch","in<sup>3</sup>",Metric.LIQUID,"si*61.0237","this/61.0237"),
 	USGALLON(74,"US Gallon","G",Metric.LIQUID,"si/3.78541","this*3.78541"),
