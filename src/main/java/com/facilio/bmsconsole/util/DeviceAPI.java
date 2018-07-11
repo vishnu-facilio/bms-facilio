@@ -7,12 +7,13 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.stat.StatUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -45,7 +46,7 @@ import com.facilio.util.ExpressionEvaluator;
 
 public class DeviceAPI 
 {
-	private static Logger logger = Logger.getLogger(DeviceAPI.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(DeviceAPI.class.getName());
 	
 	public static final int VM_HISTORICAL_DATA_CALCULATION_INTERVAL = -3;
 
@@ -457,6 +458,9 @@ public class DeviceAPI
 					break;
 				}
 			}
+			
+			LOGGER.info("Calculating Consumption for VM : "+meter.getName());
+			LOGGER.info("Intervals : "+interval);
 			ReadingContext virtualMeterReading = calculateVMReading(meter,intervalReadings, childMeterIds);
 //			System.out.println("Vm : ");
 //			System.out.println(intervalReadings.size());
@@ -464,11 +468,13 @@ public class DeviceAPI
 //			System.out.println(completeReadings.size());
 //			completeReadings.removeAll(intervalReadings);
 			if(virtualMeterReading != null) {
+				LOGGER.info("Adding VM reading for time : "+virtualMeterReading.getTtime());
 				vmReadings.add(virtualMeterReading);
 				intervalReadings=new ArrayList<ReadingContext>();
 			}
 		}
 
+		LOGGER.info("VM Readings size : "+vmReadings.size());
 		if (!vmReadings.isEmpty()) {
 
 			long firstReadingTime =vmReadings.get(0).getTtime();
@@ -537,7 +543,6 @@ public class DeviceAPI
 	
 	
 	private static ReadingContext calculateVMReading(EnergyMeterContext meter,List<ReadingContext> readings, List<Long> childIds) throws Exception {
-
 		if(readings.isEmpty()) {
 			return null;
 		}
@@ -553,6 +558,9 @@ public class DeviceAPI
 			readingList.add(reading);
 			timestamps.add(reading.getTtime());
 		}
+		
+		LOGGER.info("Child Meter IDs : "+childIds);
+		LOGGER.info("Meter wise readings : "+readingMap);
 		for(Long childId : childIds) {
 			if(!readingMap.containsKey(childId)) {
 				return null;
@@ -615,7 +623,7 @@ public class DeviceAPI
 		public ReadingContext applyOp(String operator, ReadingContext rightOperand, ReadingContext leftOperand)  {
 			// TODO Auto-generated method stub
 			if(operator == null || rightOperand == null || leftOperand == null) {
-			    logger.info("opertor " + operator + "  left operand " + leftOperand +" right operand " + rightOperand );
+			    LOGGER.info("opertor " + operator + " : left operand " + leftOperand +" right operand " + rightOperand );
 				return null;
 			}
 			ReadingContext reading = new ReadingContext();
@@ -624,8 +632,13 @@ public class DeviceAPI
 			if(delta==null && demand==null) {
 				return null;
 			}
-			reading.addReading(TOTAL_ENERGY_CONSUMPTION_DELTA,delta);
-			reading.addReading(TOTAL_DEMAND, demand);
+			
+			if (delta != null) {
+				reading.addReading(TOTAL_ENERGY_CONSUMPTION_DELTA,delta);
+			}
+			if (demand != null) {
+				reading.addReading(TOTAL_DEMAND, demand);
+			}
 			return reading;
 		}
 		
