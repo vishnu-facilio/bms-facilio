@@ -101,6 +101,9 @@ public class CampusAction extends ActionSupport {
 				location.setId(locationId);
 			}
 		}
+		else {
+			site.setLocation(null);
+		}
 		
 		context.put(FacilioConstants.ContextNames.BASE_SPACE, site);
 		context.put(FacilioConstants.ContextNames.SPACE_TYPE, "site");

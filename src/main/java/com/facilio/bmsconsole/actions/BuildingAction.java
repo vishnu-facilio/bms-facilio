@@ -110,6 +110,10 @@ public class BuildingAction extends ActionSupport {
 				location.setId(locationId);
 			}
 		}
+		else {
+			building.setLocation(null);
+		}
+		
 		context.put(FacilioConstants.ContextNames.BASE_SPACE, building);
 		context.put(FacilioConstants.ContextNames.SPACE_TYPE, "building");
 		Chain updateCampus = FacilioChainFactory.getUpdateCampusChain();
