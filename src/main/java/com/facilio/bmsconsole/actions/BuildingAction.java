@@ -103,6 +103,12 @@ public class BuildingAction extends ActionSupport {
 				context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, java.util.Collections.singletonList(location.getId()));
 				building.setLocation(null);
 			}
+			else {
+				Chain addLocation = FacilioChainFactory.addLocationChain();
+				addLocation.execute(context);
+				long locationId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+				location.setId(locationId);
+			}
 		}
 		context.put(FacilioConstants.ContextNames.BASE_SPACE, building);
 		context.put(FacilioConstants.ContextNames.SPACE_TYPE, "building");

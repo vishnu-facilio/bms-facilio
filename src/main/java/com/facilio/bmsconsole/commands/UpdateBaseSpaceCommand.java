@@ -8,9 +8,6 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.LocationContext;
-import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -26,19 +23,7 @@ public class UpdateBaseSpaceCommand implements Command {
 		BaseSpaceContext baseSpace = (BaseSpaceContext) context.get(FacilioConstants.ContextNames.BASE_SPACE);
 		if(baseSpace != null) 
 		{
-			
-			Long locationId = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID);
-			if (locationId != null) {
-				LocationContext location = new LocationContext();
-				location.setId(locationId);
-				if (baseSpace instanceof SiteContext) {
-					((SiteContext)baseSpace).setLocation(location);
-				}
-				else if (baseSpace instanceof BuildingContext) {
-					((BuildingContext)baseSpace).setLocation(location);
-				}
-			}
-			
+
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.SPACE_TYPE);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);	
 
