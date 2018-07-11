@@ -392,7 +392,13 @@ public long inviteRequester(long orgId, User user) throws Exception {
 		if (user.getEmail().equals(user.getMobile())) {
 			
 			System.out.println("@@@@@@@@@@@@@@@@@@@@@@ SMS invite Sent");
+			try{
 			SMSUtil.sendUserLink(user, inviteLink);
+			}
+			catch (Exception e)
+			{
+			CommonCommandUtil.emailException(user.getEmail(), "cannot send sms for the user", e, null);
+			}
 		} else {
 			AccountEmailTemplate.INVITE_USER.send(placeholders);
 		}
