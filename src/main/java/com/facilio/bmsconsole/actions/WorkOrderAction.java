@@ -224,16 +224,25 @@ public class WorkOrderAction extends FacilioAction {
 			assetLists = assetids;	
 		}
 		System.out.printf("addBulkPreventiveMaintenance" + assetLists.size());
+		
+		
+		Map<String, List<TaskContext>> taskPm1 = pm.getWoTemplate().getTasks();
+		List<PMTriggerContext> pmTriggers = pm.getTriggers();
+		
 		for (Long assetId : assetLists) {
+			
 			pm.setId(-1);
+			
 			WorkOrderContext wo = pm.getWoTemplate().getWorkorder();
-			wo.setId(-1);
 			ResourceContext resourceContext = wo.getResource();
 			long oldAssetId = resourceContext.getId();
+			
+			wo.setId(-1);
+			
 			resourceContext.setId(assetId);
+			pm.getWoTemplate().setResourceId(assetId);
 			wo.setResource(resourceContext);
 			
-			Map<String, List<TaskContext>> taskPm1 = pm.getWoTemplate().getTasks();
 			
 			if (taskPm1 != null) {
 				for (String key : taskPm1.keySet()) {
@@ -241,9 +250,12 @@ public class WorkOrderAction extends FacilioAction {
 					for(TaskContext taskContext :taskContexts) {
 						ResourceContext taskResourceCOntext = taskContext.getResource();
 						if (taskResourceCOntext != null) {
-							if (oldAssetId == taskResourceCOntext.getId())
-							{
+							if (oldAssetId == taskResourceCOntext.getId()) {
 								taskResourceCOntext.setId(assetId);
+							}
+							else if (taskContext.getInputTypeEnum() == InputType.READING) {
+								taskContext.setReadingFieldId(-1);
+								taskContext.setInputType(InputType.NONE);
 							}
 						}
 						
@@ -254,25 +266,23 @@ public class WorkOrderAction extends FacilioAction {
 						
 						taskContext.setId(-1);
 					    taskContext.setSectionId(-1);
+					    
+					    taskContext.setReadingRules(null);	// Temporary
 					}
 				}
 			}
-			List<PMTriggerContext> pmTriggers = pm.getTriggers();
+			
 			if (pmTriggers != null ) {
 				Iterator<PMTriggerContext> iterator = pmTriggers.iterator();
-				List<PMTriggerContext> rMpmTriggers = null;
 				while (iterator.hasNext()) {
 					PMTriggerContext pmTContext = iterator.next();
 					pmTContext.setId(-1);
 					if (pmTContext.getReadingRuleId() != -1) {
-//						rMpmTriggers.add(pmTContext);
 						iterator.remove();
 					}
 				}
 			}
-//			if (pmTriggers != null) {
-//				pmTriggers.removeAll(rMpmTriggers);
-//			}
+
 			if (pm.getReminders() != null)
 			{
 				List<PMReminder> newReminder = new ArrayList<PMReminder>();
@@ -287,6 +297,8 @@ public class WorkOrderAction extends FacilioAction {
 				}
 				pm.setReminders(newReminder);
 			}
+
+			
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 			context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
@@ -895,6 +907,17 @@ public class WorkOrderAction extends FacilioAction {
 		return workOrderList();	
 	}
 	
+	private Boolean showCount;
+	public Boolean getShowCount() {
+		if (showCount == null) {
+			return false;
+		}
+		return showCount;
+	}
+	public void setShowCount(Boolean showCount) {
+		this.showCount = showCount;
+	}
+
 	private List<File> attachedFiles;
 	private List<String> attachedFilesFileName;
 	private List<String> attachedFilesContentType;
@@ -1059,14 +1082,18 @@ public class WorkOrderAction extends FacilioAction {
 	}
 	
 
+	@SuppressWarnings("unchecked")
 	public String workOrderList() throws Exception {
 		// TODO Auto-generated method stub
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
 		context.put(FacilioConstants.ContextNames.WO_DUE_STARTTIME, getStartTime());
 		context.put(FacilioConstants.ContextNames.WO_DUE_ENDTIME, getEndTime());
-		if (getCount() != null) {
+		if (getCount() != null) {	// only count
 			context.put(FacilioConstants.ContextNames.WO_LIST_COUNT, getCount());
+		}
+		if(getShowCount()) {
+			context.put(FacilioConstants.ContextNames.WO_LIST_AND_COUNT, true);
 		}
 		if (getFilters() != null) {
 			JSONParser parser = new JSONParser();
