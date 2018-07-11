@@ -403,7 +403,7 @@ public class FacilioConstants {
 		public static final String WO_DUE_STARTTIME = "woDueStarttime";
 		public static final String WO_DUE_ENDTIME = "woDueEndtime";
 		public static final String WO_LIST_COUNT = "woListCount";
-		public static final String WO_LIST_AND_COUNT = "woListAndCount";
+		public static final String WO_VIEW_COUNT = "woListAndCount";
 		
 		public static final String CV_NAME = "cvName";
 		public static final String CUSTOM_VIEW = "customView";

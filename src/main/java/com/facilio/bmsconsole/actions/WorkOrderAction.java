@@ -907,15 +907,23 @@ public class WorkOrderAction extends FacilioAction {
 		return workOrderList();	
 	}
 	
-	private Boolean showCount;
-	public Boolean getShowCount() {
-		if (showCount == null) {
+	private Boolean showViewsCount;
+	public Boolean getShowViewsCount() {
+		if (showViewsCount == null) {
 			return false;
 		}
-		return showCount;
+		return showViewsCount;
 	}
-	public void setShowCount(Boolean showCount) {
-		this.showCount = showCount;
+	public void setShowViewsCount(Boolean showViewsCount) {
+		this.showViewsCount = showViewsCount;
+	}
+	
+	Map<String, Integer> subViewsCount;
+	public Map<String, Integer> getSubViewsCount() {
+		return subViewsCount;
+	}
+	public void setSubViewsCount(Map<String, Integer> subViewsCount) {
+		this.subViewsCount = subViewsCount;
 	}
 
 	private List<File> attachedFiles;
@@ -1092,8 +1100,11 @@ public class WorkOrderAction extends FacilioAction {
 		if (getCount() != null) {	// only count
 			context.put(FacilioConstants.ContextNames.WO_LIST_COUNT, getCount());
 		}
-		if(getShowCount()) {
-			context.put(FacilioConstants.ContextNames.WO_LIST_AND_COUNT, true);
+		if(getShowViewsCount()) {
+			context.put(FacilioConstants.ContextNames.WO_VIEW_COUNT, true);
+		}
+		if( getSubView() != null) {
+			context.put(FacilioConstants.ContextNames.SUB_VIEW, getSubView());
 		}
 		if (getFilters() != null) {
 			JSONParser parser = new JSONParser();
@@ -1137,6 +1148,10 @@ public class WorkOrderAction extends FacilioAction {
 			System.out.println("data" + getWoCount() + getViewName());
 		}
 		else {
+			if(getShowViewsCount()) {
+				setSubViewsCount((Map<String, Integer>) context.get(FacilioConstants.ContextNames.WORK_ORDER_COUNT));
+				setSubView((String) context.get(FacilioConstants.ContextNames.SUB_VIEW));
+			}
 			setWorkOrders((List<WorkOrderContext>) context.get(FacilioConstants.ContextNames.WORK_ORDER_LIST));
 		}
 		FacilioView cv = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
@@ -1225,6 +1240,14 @@ public class WorkOrderAction extends FacilioAction {
 
 	public void setViewName(String viewName) {
 		this.viewName = viewName;
+	}
+	
+	private String subView;
+	public String getSubView() {
+		return subView;
+	}
+	public void setSubView(String subView) {
+		this.subView = subView;
 	}
 
 	private boolean includeParentFilter;
@@ -1439,13 +1462,50 @@ public class WorkOrderAction extends FacilioAction {
 		try {
 			String response = workOrderList();
 			setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
+			if (getSubView() != null) {
+				setResult(FacilioConstants.ContextNames.SUB_VIEW, subView);
+			}
+			if (getShowViewsCount()) {
+				setResult(FacilioConstants.ContextNames.WO_VIEW_COUNT, subViewsCount);
+			}
+			setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
 			return response;
 		}
 		catch(Exception e) {
 			setResponseCode(1);
 			setMessage(FacilioConstants.ERROR_MESSAGE);
+			e.printStackTrace();
 			return ERROR;
 		}
+	}
+	
+	private int responseCode = 0;
+	public int getResponseCode() {
+		return responseCode;
+	}
+	public void setResponseCode(int responseCode) {
+		this.responseCode = responseCode;
+	}
+	
+	private String message;
+	public String getMessage() {
+		return message;
+	}
+	public void setMessage(String message) {
+		this.message = message;
+	}
+	
+	private JSONObject result;
+	public JSONObject getResult() {
+		return result;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void setResult(String key, Object result) {
+		if (this.result == null) {
+			this.result = new JSONObject();
+		}
+		this.result.put(key, result);			
 	}
 
 }

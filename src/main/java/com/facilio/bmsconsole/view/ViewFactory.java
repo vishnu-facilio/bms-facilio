@@ -829,23 +829,7 @@ public class ViewFactory {
 	}
 	
 	private static FacilioView getMyOverdueWorkOrders() {
-		
-		FacilioField dueField = new FacilioField();
-		dueField.setName("dueDate");
-		dueField.setColumnName("DUE_DATE");
-		dueField.setDataType(FieldType.DATE_TIME);
 		FacilioModule workOrdersModule = ModuleFactory.getWorkOrdersModule();
-		dueField.setModule(workOrdersModule);
-		dueField.setExtendedModule(ModuleFactory.getTicketsModule());
-		
-		Condition overdue = new Condition();
-		overdue.setField(dueField);
-		overdue.setOperator(DateOperators.TILL_YESTERDAY);
-		
-		Criteria criteria = new Criteria();
-		criteria.addAndCondition(overdue);
-		criteria.addAndCondition(getMyUserCondition(workOrdersModule));
-		criteria.addAndCondition(getOpenStatusCondition(workOrdersModule));
 		
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("createdTime");
@@ -855,6 +839,8 @@ public class ViewFactory {
 		
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
 		
+		Criteria criteria = getMyOverdueCriteria(workOrdersModule);
+		criteria.addAndCondition(getOpenStatusCondition(workOrdersModule));
 		FacilioView view = new FacilioView();
 		view.setName("myoverdue");
 		view.setDisplayName("My Overdue");
@@ -862,6 +848,25 @@ public class ViewFactory {
 		view.setSortFields(sortFields);
 		
 		return view;
+	}
+	
+	private static Criteria getMyOverdueCriteria(FacilioModule module) {
+		FacilioField dueField = new FacilioField();
+		dueField.setName("dueDate");
+		dueField.setColumnName("DUE_DATE");
+		dueField.setDataType(FieldType.DATE_TIME);
+		
+		dueField.setModule(module);
+		dueField.setExtendedModule(ModuleFactory.getTicketsModule());
+		
+		Condition overdue = new Condition();
+		overdue.setField(dueField);
+		overdue.setOperator(DateOperators.TILL_YESTERDAY);
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(overdue);
+		criteria.addAndCondition(getMyUserCondition(module));
+		return criteria;
 	}
 	
 	private static FacilioView getMyWorkOrders() {
@@ -886,7 +891,7 @@ public class ViewFactory {
 		return openTicketsView;
 	}
 		
-	private static Condition getMyUserCondition(FacilioModule module) {
+	public static Condition getMyUserCondition(FacilioModule module) {
 		LookupField userField = new LookupField();
 		userField.setName("assignedTo");
 		userField.setColumnName("ASSIGNED_TO_ID");
@@ -1312,6 +1317,70 @@ public class ViewFactory {
 		reportView.setHidden(true);
 		
 		return reportView;
+	}
+	
+	public static Criteria getCriteriaForView(String viewName, FacilioModule module) {
+		Criteria criteria = new Criteria();
+		switch(viewName) {
+			case "myopen": 
+				Condition myOpen = getMyUserCondition(module);
+				criteria.addAndCondition(myOpen);
+			break;
+			
+			case "myoverdue": 
+				criteria = getMyOverdueCriteria(module);
+			break;
+			
+			case "unassigned": 
+				Condition unAssigned = getMyUserCondition(module);
+				criteria.addAndCondition(unAssigned);
+			break;
+		}
+		return !criteria.isEmpty() ? criteria : null; 
+	}
+	
+	private static final Map<String, Map<String, Criteria>> subViews = Collections.unmodifiableMap(initSubViews());
+
+	private static Map<String, Map<String, Criteria>> initSubViews() {
+		Map<String, Map<String, Criteria>> subViewsMap = new HashMap<String, Map<String, Criteria>>();
+		
+		FacilioModule workorderModule = ModuleFactory.getWorkOrdersModule();
+		
+		// My Team SubViews
+		Map<String, Criteria> subViews = new LinkedHashMap<String, Criteria>();
+		subViews.put("myopen", getCriteriaForView("myopen", workorderModule));
+		subViews.put("myoverdue", getCriteriaForView("myoverdue", workorderModule));
+		subViews.put("unassigned", getCriteriaForView("unassigned", workorderModule));
+		subViewsMap.put("workorder-myteamopen", subViews);
+		
+		// My SubViews
+		subViews = new LinkedHashMap<String, Criteria>();
+		subViews.put("myoverdue", getCriteriaForView("myoverdue", workorderModule));
+		subViews.put("duetoday", getCriteriaForView("duetoday", workorderModule));
+		subViewsMap.put("workorder-myopen", subViews);
+		
+//		// Resolved
+//		subViews = new LinkedHashMap<String, Criteria>();
+//		subViews.put("myopen", getCriteriaForView("myopen", workorderModule));
+//		subViews.put("myteamopen", getCriteriaForView("myteamopen", workorderModule));
+//		subViewsMap.put("workorder-resolved", subViews);
+//		
+//		// Closed
+//		subViews = new LinkedHashMap<String, Criteria>();
+//		subViews.put("myclosed", getCriteriaForView("my", workorderModule));
+//		subViews.put("myteamclosed", getCriteriaForView("myteamopen", workorderModule));
+//		subViewsMap.put("workorder-closed", subViews);
+
+		
+		return subViewsMap;
+	}
+	
+	public static Map<String, Criteria> getSubViewsCriteria(String moduleName, String viewName) {
+		String name = moduleName + "-" + viewName;
+		if (!subViews.containsKey(name)) {
+			return null;
+		}
+		return new LinkedHashMap<String, Criteria>(subViews.get(name));
 	}
 
 }
