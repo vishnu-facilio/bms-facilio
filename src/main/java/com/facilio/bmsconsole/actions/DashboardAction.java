@@ -3493,7 +3493,11 @@ public class DashboardAction extends ActionSupport {
 							for(EnergyMeterContext energyMeter:energyMeterList) {
 								for(Map<String, Object> prop:rs) {
 									if(label.equals(prop.get("label").toString()) && energyMeter.getId() == (long)prop.get("groupBy")) {
-										sumValue = sumValue + (Double) prop.get("value");
+										Double value1 = 0.0d;
+										if(prop.get("value") != null) {
+											value1 = (Double) prop.get("value");
+										}
+										sumValue = sumValue + value1;
 										labelDummyValue = (Long) prop.get("dummyField");
 									}
 								}
