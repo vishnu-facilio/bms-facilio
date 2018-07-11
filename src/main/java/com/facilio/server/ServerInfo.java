@@ -25,7 +25,7 @@ public class ServerInfo extends TimerTask {
     private static final String UPDATE_TIME = "update server_info set status = 1, pingtime = ? where id = ?";
     private static final String UPDATE_LEADER = "update server_info set leader = ? where id = ?";
     private static final String UPDATE_STATUS = "update server_info set status = ? where id = ?";
-    private static final String GET_SERVERS = "select id, pingtime from server_info where status = 1 order by asc desc";
+    private static final String GET_SERVERS = "select id, pingtime from server_info where status = 1 order by id asc";
     private static final String GET_LEADER = "select id, pingtime from server_info where leader = 1";
 
     private static final String PING_TIME = "pingtime";
