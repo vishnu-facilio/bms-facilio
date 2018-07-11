@@ -3,8 +3,9 @@ package com.facilio.bmsconsole.jobs;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -15,14 +16,13 @@ import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
-import com.facilio.wms.endpoints.SessionManager;
 
 public class HistoricalVMEnergyDataCalculatorJob extends FacilioJob {
-	private static final Logger logger = Logger.getLogger(SessionManager.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(HistoricalVMEnergyDataCalculatorJob.class.getName());
 	@Override
 	public void execute(JobContext jc) {
+		long jobId = jc.getJobId();
 		try {
-			long jobId = jc.getJobId();
 			FacilioModule module=ModuleFactory.getHistoricalVMModule();
 
 			GenericSelectRecordBuilder jobBuilder = new GenericSelectRecordBuilder()
@@ -50,10 +50,10 @@ public class HistoricalVMEnergyDataCalculatorJob extends FacilioJob {
 				return;
 			}
 			DeviceAPI.insertVirtualMeterReadings(vmList.get(0), startTime, endTime, interval,updateReading);
-			logger.info("Time Taken for jobid "+jobId+" : "+(System.currentTimeMillis()-processStartTime));
+			LOGGER.info("Time Taken for jobid "+jobId+" : " + (System.currentTimeMillis() - processStartTime));
 		}
 		catch (Exception e) {
-			logger.log(Level.SEVERE, e.getMessage(), e);
+			LOGGER.error("Error occurred while doing historical calculation for VM : "+jobId, e);
 		}
 	}
 
