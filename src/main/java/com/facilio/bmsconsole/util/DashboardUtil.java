@@ -369,6 +369,23 @@ public class DashboardUtil {
 		return selectBuilder.get();
 	}
 	
+	public static List<EnergyMeterContext> getRootServiceMeters(String buildingList) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER);
+
+		EnergyMeterPurposeContext energyMeterPurpose = DeviceAPI.getEnergyMetersPurposeByName(DashboardUtil.ENERGY_METER_PURPOSE_MAIN);
+		SelectRecordsBuilder<EnergyMeterContext> selectBuilder = 
+				new SelectRecordsBuilder<EnergyMeterContext>()
+				.select(modBean.getAllFields(module.getName()))
+				.module(module)
+				.beanClass(EnergyMeterContext.class)
+				.andCustomWhere("IS_ROOT= ?", true)
+				.andCustomWhere("PURPOSE_ID !="+energyMeterPurpose.getId())
+				.andCondition(CriteriaAPI.getCondition("PURPOSE_SPACE_ID","PURPOSE-SPACE_ID",buildingList,NumberOperators.EQUALS))
+				.maxLevel(0);
+		return selectBuilder.get();
+	}
+	
 	public static boolean deleteDashboard(Long dashboardId) throws SQLException {
 		
 		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();

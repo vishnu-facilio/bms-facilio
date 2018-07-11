@@ -3308,7 +3308,7 @@ public class DashboardAction extends ActionSupport {
 				
 				if ("service".equalsIgnoreCase(report.getReportSpaceFilterContext().getGroupBy())) {
 					
-					List<EnergyMeterContext> meters = DeviceAPI.getRootServiceMeters(report.getReportSpaceFilterContext().getSiteId()+"");
+					List<EnergyMeterContext> meters = DashboardUtil.getRootServiceMeters(report.getReportSpaceFilterContext().getSiteId()+"");
 					if(report.getId() == 2957l || report.getId() == 2795l) {
 						List<EnergyMeterContext> omitmeters = new ArrayList<>();
 						for(EnergyMeterContext meter :meters) {
