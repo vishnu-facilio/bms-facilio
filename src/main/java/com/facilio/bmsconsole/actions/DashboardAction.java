@@ -32,6 +32,7 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReportsChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
@@ -3291,6 +3292,29 @@ public class DashboardAction extends ActionSupport {
 						energyMeterValue = meterIdStr;
 						buildingCondition = CriteriaAPI.getCondition("PARENT_ID","PARENT_ID", meterIdStr, NumberOperators.EQUALS);
 					}
+				}
+				else if ("lpg".equalsIgnoreCase(report.getReportSpaceFilterContext().getGroupBy())) {
+					AssetCategoryContext category = AssetsAPI.getCategory("LPG");
+					if(category != null) {
+						
+						List<AssetContext> assets = AssetsAPI.getAssetListOfCategory(category.getId());
+						
+
+						if (assets != null && assets.size() > 0) {
+							
+							List<Long> meterIds = new ArrayList<Long>();
+							for (AssetContext asset : assets) {
+								if(report.getReportSpaceFilterContext().getBuildingId().equals(asset.getSpace().getId())) {
+									meterIds.add(asset.getId());
+								}
+							}
+							
+							String meterIdStr = StringUtils.join(meterIds, ",");
+							energyMeterValue = meterIdStr;
+							buildingCondition = CriteriaAPI.getCondition("PARENT_ID","PARENT_ID", meterIdStr, NumberOperators.EQUALS);
+						}
+					}
+					
 				}
 				else {
 					List<EnergyMeterContext> meters = DashboardUtil.getMainEnergyMeter(report.getReportSpaceFilterContext().getBuildingId()+"");
