@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -10,7 +9,6 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
-import com.facilio.bmsconsole.commands.SetTableNamesCommand;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.LocationContext;
@@ -21,8 +19,6 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
-
-import io.jsonwebtoken.lang.Collections;
 
 @SuppressWarnings("serial")
 public class CampusAction extends ActionSupport {
@@ -94,9 +90,12 @@ public class CampusAction extends ActionSupport {
 		{
 			location.setName(site.getName()+"_Location");
 			context.put(FacilioConstants.ContextNames.RECORD, location);
-			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, java.util.Collections.singletonList(location.getId()));
-			FacilioChainFactory.updateLocationChain();
+			if (location.getId() > 0) {
+				context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, java.util.Collections.singletonList(location.getId()));
+				site.setLocation(null);
+			}
 		}
+		
 		context.put(FacilioConstants.ContextNames.BASE_SPACE, site);
 		context.put(FacilioConstants.ContextNames.SPACE_TYPE, "site");
 		Chain updateCampus = FacilioChainFactory.getUpdateCampusChain();
