@@ -101,6 +101,7 @@ public class FacilioConstants {
 		public static final String RECORD_MAP = "recordMap";
 		public static final String RECORD_ID = "recordId";
 		public static final String RECORD_ID_LIST = "recordIds";
+		public static final String RECORD_COUNT = "recordCount";
 		public static final String ROWS_UPDATED = "rowsUpdated";
 		public static final String ACTIVITY_TYPE = "activityType";
 		public static final String IS_BULK_ACTION = "isBulkAction";
@@ -402,6 +403,7 @@ public class FacilioConstants {
 		public static final String WO_DUE_STARTTIME = "woDueStarttime";
 		public static final String WO_DUE_ENDTIME = "woDueEndtime";
 		public static final String WO_LIST_COUNT = "woListCount";
+		public static final String WO_LIST_AND_COUNT = "woListAndCount";
 		
 		public static final String CV_NAME = "cvName";
 		public static final String CUSTOM_VIEW = "customView";
@@ -434,6 +436,7 @@ public class FacilioConstants {
 		public static final String VIEW_LIST = "views";
 		public static final String VIEWCOLUMNS = "viewColumns";
 		public static final String PARENT_VIEW = "parentView";
+		public static final String SUB_VIEW = "subView";
 		public static final String RESOURCE_ID = "RESOURCE_ID";
 		
 		public static final String SPACECATEGORY = "SPACECATEGORY";
