@@ -42,6 +42,7 @@
 				<param name="includeProperties">responseCode, message</param>
 			</result>
 			<result name="success" type="json">
+				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">responseCode, ^result.*</param>
 			</result>
 		</global-results>
@@ -151,9 +152,6 @@
 		<action name="*" class="com.facilio.bmsconsole.actions.TaskAction" method="v2taskList">
 			<param name="moduleName">workorder</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
-			<result name="success" type="json">
-				<param name="includeProperties">tasks.*,sections.*</param>
-			</result>
 		</action>
 	</package>
 	
