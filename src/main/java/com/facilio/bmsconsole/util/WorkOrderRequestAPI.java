@@ -3,17 +3,16 @@ package com.facilio.bmsconsole.util;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 
 public class WorkOrderRequestAPI {
 	
-	private static Logger logger = Logger.getLogger(WorkOrderRequestAPI.class.getName());
-	private static org.apache.log4j.Logger log = LogManager.getLogger(WorkOrderRequestAPI.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(WorkOrderRequestAPI.class.getName());
 
 	public static long addS3MessageId(String s3Id) throws SQLException {
 		try {
@@ -30,7 +29,7 @@ public class WorkOrderRequestAPI {
 			return (long) workOrderEmailProps.get("id");
 		}
 		catch(SQLException e) {
-			log.info("Exception occurred ", e);
+			LOGGER.error("Exception occurred during adding Workorder request email S3 id to DB ", e);
 			throw e;
 		}
 	}

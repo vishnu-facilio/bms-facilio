@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.util.WorkOrderRequestAPI;
@@ -7,11 +9,13 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class SupportMailParseAction extends ActionSupport {
 	
+	private static final Logger LOGGER = LogManager.getLogger(SupportMailParseAction.class.getName());
+	
 	@Override
 	public String execute() throws Exception {
 		// TODO Auto-generated method stub
 		//System.out.println(s3.toJSONString());
-		System.out.println("Added to WorkorderEmail table with id : "+WorkOrderRequestAPI.addS3MessageId((String) s3.get("messageId")));
+		LOGGER.info("Added to WorkorderEmail table with id : "+WorkOrderRequestAPI.addS3MessageId((String) s3.get("messageId")));
 		return SUCCESS;
 	}
 	
