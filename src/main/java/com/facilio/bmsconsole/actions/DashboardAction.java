@@ -2842,10 +2842,15 @@ public class DashboardAction extends ActionSupport {
 		GenericSelectRecordBuilder subBuilder = null;
 		FacilioModule energyMeterModule = modBean.getModule("energymeter");
 		
+		FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
 		if(!module.getName().equals(xAxisField.getModule().getName())) {
 
 			subBuilder = new GenericSelectRecordBuilder();
 			subBuilder.table(energyMeterModule.getTableName());
+			
+			subBuilder.innerJoin(resourceModule.getTableName())
+			.on(energyMeterModule.getTableName()+".ID="+resourceModule.getTableName()+".ID")
+			.andCondition(CriteriaAPI.getCondition("SYS_DELETED", "deleted", String.valueOf(false), BooleanOperators.IS));
 			
 			xAxisField.setColumnName("PARENT_METER_ID");
 			xAxisField.setName("parentId");
@@ -2917,17 +2922,14 @@ public class DashboardAction extends ActionSupport {
 			
 		if(xAggregateOpperator instanceof SpaceAggregateOperator) {
 			isGroupBySpace = true;
-			FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+			
 			FacilioModule baseSpaceModule = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
 			FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
 			
 			subBuilder.innerJoin(baseSpaceModule.getTableName())
 			.on(baseSpaceModule.getTableName()+".ID=Energy_Meter.PURPOSE_SPACE_ID");
 			
-			subBuilder.innerJoin(resourceModule.getTableName())
-			.on(baseSpaceModule.getTableName()+".ID="+resourceModule.getTableName()+".ID")
-			.andCondition(CriteriaAPI.getCondition("SYS_DELETED", "deleted", String.valueOf(false), BooleanOperators.IS))
-			.andCustomWhere(baseSpaceModule.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId());
+			subBuilder.andCustomWhere(baseSpaceModule.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId());
 			
 			if(xAggregateOpperator.equals(SpaceAggregateOperator.BUILDING) || xAggregateOpperator.equals(SpaceAggregateOperator.SITE)) {
 				
