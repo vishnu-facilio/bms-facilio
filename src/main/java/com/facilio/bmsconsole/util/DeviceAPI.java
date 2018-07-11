@@ -459,8 +459,8 @@ public class DeviceAPI
 				}
 			}
 			
-			LOGGER.info("Calculating Consumption for VM : "+meter.getName());
-			LOGGER.info("Intervals : "+interval);
+			LOGGER.debug("Calculating Consumption for VM : "+meter.getName());
+			LOGGER.debug("Intervals : "+interval);
 			ReadingContext virtualMeterReading = calculateVMReading(meter,intervalReadings, childMeterIds);
 //			System.out.println("Vm : ");
 //			System.out.println(intervalReadings.size());
@@ -468,7 +468,7 @@ public class DeviceAPI
 //			System.out.println(completeReadings.size());
 //			completeReadings.removeAll(intervalReadings);
 			if(virtualMeterReading != null) {
-				LOGGER.info("Adding VM reading for time : "+virtualMeterReading.getTtime());
+				LOGGER.debug("Adding VM reading for time : "+virtualMeterReading.getTtime());
 				vmReadings.add(virtualMeterReading);
 				intervalReadings=new ArrayList<ReadingContext>();
 			}
@@ -559,8 +559,8 @@ public class DeviceAPI
 			timestamps.add(reading.getTtime());
 		}
 		
-		LOGGER.info("Child Meter IDs : "+childIds);
-		LOGGER.info("Meter wise readings : "+readingMap);
+		LOGGER.debug("Child Meter IDs : "+childIds);
+		LOGGER.debug("Meter wise readings : "+readingMap);
 		for(Long childId : childIds) {
 			if(!readingMap.containsKey(childId)) {
 				return null;
@@ -623,7 +623,7 @@ public class DeviceAPI
 		public ReadingContext applyOp(String operator, ReadingContext rightOperand, ReadingContext leftOperand)  {
 			// TODO Auto-generated method stub
 			if(operator == null || rightOperand == null || leftOperand == null) {
-			    LOGGER.info("opertor " + operator + " : left operand " + leftOperand +" right operand " + rightOperand );
+			    LOGGER.debug("opertor " + operator + " : left operand " + leftOperand +" right operand " + rightOperand );
 				return null;
 			}
 			ReadingContext reading = new ReadingContext();
