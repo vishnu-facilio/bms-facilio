@@ -437,6 +437,7 @@ public class FacilioConstants {
 		public static final String VIEWCOLUMNS = "viewColumns";
 		public static final String PARENT_VIEW = "parentView";
 		public static final String SUB_VIEW = "subView";
+		public static final String SUB_VIEW_COUNT = "subViewCount";
 		public static final String RESOURCE_ID = "RESOURCE_ID";
 		
 		public static final String SPACECATEGORY = "SPACECATEGORY";

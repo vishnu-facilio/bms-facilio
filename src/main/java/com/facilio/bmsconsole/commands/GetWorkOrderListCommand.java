@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,7 +35,7 @@ public class GetWorkOrderListCommand implements Command {
 		String count = (String) context.get(FacilioConstants.ContextNames.WO_LIST_COUNT);
 		List<FacilioField> fields = null;
 		
-		Map<String, Integer> subViewsCount = null;
+		 List<Map<String, Object>> subViewsCount = null;
 		
 		if (count != null) {
 			FacilioField countFld = new FacilioField();
@@ -49,7 +48,7 @@ public class GetWorkOrderListCommand implements Command {
 			Boolean getSubViewCount = (Boolean) context.get(FacilioConstants.ContextNames.WO_VIEW_COUNT);
 			if (getSubViewCount != null && getSubViewCount) {
 				subViewsCount = setSubViewCount(view);
-				context.put(FacilioConstants.ContextNames.WORK_ORDER_COUNT, subViewsCount);
+				context.put(FacilioConstants.ContextNames.SUB_VIEW_COUNT, subViewsCount);
 			}
 			fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		}
@@ -78,7 +77,7 @@ public class GetWorkOrderListCommand implements Command {
 			selectBuilder.andCriteria(ViewFactory.getCriteriaForView(subView, ModuleFactory.getWorkOrdersModule()));
 		}
 		else if (subViewsCount != null && !subViewsCount.isEmpty()) {
-			String defaultSubView = subViewsCount.keySet().stream().findFirst().get();
+			String defaultSubView = (String) subViewsCount.get(0).get("name");
 			selectBuilder.andCriteria(ViewFactory.getCriteriaForView(defaultSubView, ModuleFactory.getWorkOrdersModule()));
 			context.put(FacilioConstants.ContextNames.SUB_VIEW, defaultSubView);
 		}
@@ -187,21 +186,18 @@ public class GetWorkOrderListCommand implements Command {
 		
 	}*/
 	
-	private Map<String, Integer> setSubViewCount(FacilioView view) throws Exception {
-		Map<String, Criteria> subViews = ViewFactory.getSubViewsCriteria(FacilioConstants.ContextNames.WORK_ORDER, view.getName());
-		Map<String, Integer> viewsCount = new LinkedHashMap<>();
-		if (subViews != null && !subViews.isEmpty()) {
-			FacilioModule module = ModuleFactory.getWorkOrdersModule();
-			for (Map.Entry<String, Criteria> entry : subViews.entrySet()) {
-				setWorkOrderCount(entry.getKey(), entry.getValue(), view.getCriteria(), viewsCount);
-		    }
+	private List<Map<String, Object>> setSubViewCount(FacilioView view) throws Exception {
+		List<Map<String, Object>> subViews = ViewFactory.getSubViewsCriteria(FacilioConstants.ContextNames.WORK_ORDER, view.getName());
+		for(Map<String, Object> subView: subViews) {
+			setWorkOrderCount(subView, view.getCriteria());
+			subView.remove("criteria");
 		}
-		setWorkOrderCount("all", null, view.getCriteria(), viewsCount);
-		return viewsCount;
+		return subViews;
 	}
 	
-	private void setWorkOrderCount (String viewName, Criteria subViewcriteria,Criteria viewCriteria, Map<String, Integer> viewsCount) throws Exception {
-		String woTable = ModuleFactory.getWorkOrdersModule().getTableName();
+	private void setWorkOrderCount (Map<String, Object>subView, Criteria viewCriteria) throws Exception {
+		FacilioModule workorderModule = ModuleFactory.getWorkOrdersModule();
+		String woTable = workorderModule.getTableName();
 		String ticketTable = ModuleFactory.getTicketsModule().getTableName();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.table(woTable)
@@ -210,8 +206,20 @@ public class GetWorkOrderListCommand implements Command {
 				.select(Collections.singletonList( FieldFactory.getField("count", "COUNT(WorkOrders.ID)", FieldType.NUMBER)))
 				.andCriteria(viewCriteria);
 		
+		Criteria subViewcriteria = (Criteria) subView.get("criteria");
 		if (subViewcriteria != null && !subViewcriteria.isEmpty()) {
 			selectBuilder.andCriteria(subViewcriteria);
+		}
+		
+		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(workorderModule.getName());
+		if(scopeCriteria != null)
+		{
+			selectBuilder.andCriteria(scopeCriteria);
+		}
+
+		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(workorderModule.getName(),"read");
+		if(permissionCriteria != null) {
+			selectBuilder.andCriteria(permissionCriteria);
 		}
 		
 		long count = 0;
@@ -219,7 +227,7 @@ public class GetWorkOrderListCommand implements Command {
 		if (props != null && !props.isEmpty()) {
 			count = (long) props.get(0).get("count");
 		}
-		viewsCount.put(viewName, (int) count);
+		subView.put("count", count);
 	}
 	
 }

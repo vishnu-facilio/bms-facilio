@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.view;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -79,6 +80,7 @@ public class ViewFactory {
 		views.put("myduetoday", getMyDueTodayWorkOrders().setOrder(order++));
 		views.put("openfirealarms", getFireSafetyWOs().setOrder(order++));
 		views.put("all", getAllWorkOrders().setOrder(order++));
+//		views.put("resolved", getAllClosedWorkOrders().setOrder(order++));
 		views.put("closed", getAllClosedWorkOrders().setOrder(order++));
 		views.put("report", getReportView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.WORK_ORDER, views);
@@ -401,31 +403,8 @@ public class ViewFactory {
 	}
 	
 	private static FacilioView getUnassignedWorkorders() {
-		
-		LookupField userField = new LookupField();
-		userField.setName("assignedTo");
-		userField.setColumnName("ASSIGNED_TO_ID");
-		userField.setDataType(FieldType.LOOKUP);
 		FacilioModule workOrdersModule = ModuleFactory.getWorkOrdersModule();
-		userField.setModule(workOrdersModule);
-		userField.setExtendedModule(ModuleFactory.getTicketsModule());
-		userField.setSpecialType(FacilioConstants.ContextNames.USERS);
-		
-		Condition userFieldCondition = new Condition();
-		userFieldCondition.setField(userField);
-		userFieldCondition.setOperator(CommonOperators.IS_EMPTY);
-		
-//		LookupField groupField = (LookupField) FieldFactory.getField("assignmentGroup", "ASSIGNMENT_GROUP_ID", workOrdersModule, FieldType.LOOKUP);
-//		groupField.setExtendedModule(ModuleFactory.getTicketsModule());
-//		groupField.setSpecialType(FacilioConstants.ContextNames.GROUPS);
-//		
-//		Condition groupFieldCondition = new Condition();
-//		groupFieldCondition.setField(groupField);
-//		groupFieldCondition.setOperator(CommonOperators.IS_EMPTY);
-		
-		Criteria unassignedWOCriteria = new Criteria();
-		unassignedWOCriteria.addAndCondition(userFieldCondition);
-		// unassignedWOCriteria.addAndCondition(groupFieldCondition);
+		Criteria unassignedWOCriteria = getUnAssignedCriteria(workOrdersModule);
 		unassignedWOCriteria.addAndCondition(getOpenStatusCondition(workOrdersModule));
 		
 		FacilioField createdTime = new FacilioField();
@@ -443,6 +422,33 @@ public class ViewFactory {
 		unassignedWOView.setSortFields(sortFields);
 		
 		return unassignedWOView;
+	}
+	
+	private static Criteria getUnAssignedCriteria (FacilioModule module) {
+		LookupField userField = new LookupField();
+		userField.setName("assignedTo");
+		userField.setColumnName("ASSIGNED_TO_ID");
+		userField.setDataType(FieldType.LOOKUP);
+		
+		userField.setModule(module);
+		userField.setExtendedModule(ModuleFactory.getTicketsModule());
+		userField.setSpecialType(FacilioConstants.ContextNames.USERS);
+		
+		Condition userFieldCondition = new Condition();
+		userFieldCondition.setField(userField);
+		userFieldCondition.setOperator(CommonOperators.IS_EMPTY);
+		
+//		LookupField groupField = (LookupField) FieldFactory.getField("assignmentGroup", "ASSIGNMENT_GROUP_ID", workOrdersModule, FieldType.LOOKUP);
+//		groupField.setExtendedModule(ModuleFactory.getTicketsModule());
+//		groupField.setSpecialType(FacilioConstants.ContextNames.GROUPS);
+//		
+//		Condition groupFieldCondition = new Condition();
+//		groupFieldCondition.setField(groupField);
+//		groupFieldCondition.setOperator(CommonOperators.IS_EMPTY);
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(userFieldCondition);
+		// criteria.addAndCondition(groupFieldCondition);
+		return criteria;
 	}
 	
 	private static FacilioView getMyWorkorderRequests() {
@@ -568,23 +574,8 @@ public class ViewFactory {
 	}
 	
 	private static FacilioView getAllClosedWorkOrders() {
-		//All Open Tickets
-		LookupField statusField = new LookupField();
-		statusField.setName("status");
-		statusField.setColumnName("STATUS_ID");
-		statusField.setDataType(FieldType.LOOKUP);
+		
 		FacilioModule workOrdersModule = ModuleFactory.getWorkOrdersModule();
-		statusField.setModule(workOrdersModule);
-		statusField.setExtendedModule(ModuleFactory.getTicketsModule());
-		statusField.setLookupModule(ModuleFactory.getTicketStatusModule());
-		
-		Condition ticketClose = new Condition();
-		ticketClose.setField(statusField);
-		ticketClose.setOperator(LookupOperator.LOOKUP);
-		ticketClose.setCriteriaValue(getCloseStatusCriteria());
-		
-		Criteria criteria = new Criteria();
-		criteria.addAndCondition(ticketClose);
 		
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("createdTime");
@@ -597,10 +588,71 @@ public class ViewFactory {
 		FacilioView openTicketsView = new FacilioView();
 		openTicketsView.setName("closed");
 		openTicketsView.setDisplayName("Closed Workorders");
-		openTicketsView.setCriteria(criteria);
+		openTicketsView.setCriteria(getClosedTicketsCriteria(workOrdersModule));
 		openTicketsView.setSortFields(sortFields);
 		
 		return openTicketsView;
+	}
+	
+	private static Criteria getClosedTicketsCriteria (FacilioModule module) {
+		LookupField statusField = new LookupField();
+		statusField.setName("status");
+		statusField.setColumnName("STATUS_ID");
+		statusField.setDataType(FieldType.LOOKUP);
+		
+		statusField.setModule(module);
+		statusField.setExtendedModule(ModuleFactory.getTicketsModule());
+		statusField.setLookupModule(ModuleFactory.getTicketStatusModule());
+		
+		Condition ticketClose = new Condition();
+		ticketClose.setField(statusField);
+		ticketClose.setOperator(LookupOperator.LOOKUP);
+		ticketClose.setCriteriaValue(getCloseStatusCriteria());
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(ticketClose);
+		return criteria;
+	}
+	
+	private static FacilioView getAllResolvedWorkOrders() {
+		
+		FacilioModule workOrdersModule = ModuleFactory.getWorkOrdersModule();
+		
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(workOrdersModule);
+		
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		
+		FacilioView resolvedTicketsView = new FacilioView();
+		resolvedTicketsView.setName("resolved");
+		resolvedTicketsView.setDisplayName("Resolved Workorders");
+		resolvedTicketsView.setCriteria(getResolvedTicketsCriteria(workOrdersModule));
+		resolvedTicketsView.setSortFields(sortFields);
+		
+		return resolvedTicketsView;
+	}
+	
+	private static Criteria getResolvedTicketsCriteria (FacilioModule module) {
+		LookupField statusField = new LookupField();
+		statusField.setName("status");
+		statusField.setColumnName("STATUS_ID");
+		statusField.setDataType(FieldType.LOOKUP);
+		
+		statusField.setModule(module);
+		statusField.setExtendedModule(ModuleFactory.getTicketsModule());
+		statusField.setLookupModule(ModuleFactory.getTicketStatusModule());
+		
+		Condition ticketClose = new Condition();
+		ticketClose.setField(statusField);
+		ticketClose.setOperator(LookupOperator.LOOKUP);
+		ticketClose.setCriteriaValue(getCloseStatusCriteria());
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(ticketClose);
+		return criteria;
 	}
 	
 	private static FacilioView getMyOpenWorkOrders() {
@@ -628,20 +680,9 @@ public class ViewFactory {
 	}
 	
 	private static FacilioView getAllDueTodayWorkOrders() {
-		FacilioField dueField = new FacilioField();
-		dueField.setName("dueDate");
-		dueField.setColumnName("DUE_DATE");
-		dueField.setDataType(FieldType.DATE_TIME);
 		FacilioModule workOrdersModule = ModuleFactory.getWorkOrdersModule();
-		dueField.setModule(workOrdersModule);
-		dueField.setExtendedModule(ModuleFactory.getTicketsModule());
 		
-		Condition overdue = new Condition();
-		overdue.setField(dueField);
-		overdue.setOperator(DateOperators.TODAY);
-		
-		Criteria criteria = new Criteria();
-		criteria.addAndCondition(overdue);
+		Criteria criteria = getDueTodayCriteria(workOrdersModule);
 		criteria.addAndCondition(getOpenStatusCondition(workOrdersModule));
 		
 		FacilioField createdTime = new FacilioField();
@@ -659,6 +700,25 @@ public class ViewFactory {
 		overdueView.setSortFields(sortFields);
 		
 		return overdueView;
+	}
+	
+	private static Criteria getDueTodayCriteria(FacilioModule workOrdersModule) {
+		FacilioField dueField = new FacilioField();
+		dueField.setName("dueDate");
+		dueField.setColumnName("DUE_DATE");
+		dueField.setDataType(FieldType.DATE_TIME);
+		
+		dueField.setModule(workOrdersModule);
+		dueField.setExtendedModule(ModuleFactory.getTicketsModule());
+		
+		Condition overdue = new Condition();
+		overdue.setField(dueField);
+		overdue.setOperator(DateOperators.TODAY);
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(overdue);
+		
+		return criteria;
 	}
 
 	private static FacilioView getMyTeamOpenWorkOrders() {
@@ -839,8 +899,10 @@ public class ViewFactory {
 		
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
 		
-		Criteria criteria = getMyOverdueCriteria(workOrdersModule);
+		Criteria criteria = getOverdueCriteria(workOrdersModule);
 		criteria.addAndCondition(getOpenStatusCondition(workOrdersModule));
+		criteria.addAndCondition(getMyUserCondition(workOrdersModule));
+		
 		FacilioView view = new FacilioView();
 		view.setName("myoverdue");
 		view.setDisplayName("My Overdue");
@@ -850,7 +912,7 @@ public class ViewFactory {
 		return view;
 	}
 	
-	private static Criteria getMyOverdueCriteria(FacilioModule module) {
+	private static Criteria getOverdueCriteria(FacilioModule module) {
 		FacilioField dueField = new FacilioField();
 		dueField.setName("dueDate");
 		dueField.setColumnName("DUE_DATE");
@@ -865,7 +927,7 @@ public class ViewFactory {
 		
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(overdue);
-		criteria.addAndCondition(getMyUserCondition(module));
+		
 		return criteria;
 	}
 	
@@ -1320,67 +1382,130 @@ public class ViewFactory {
 	}
 	
 	public static Criteria getCriteriaForView(String viewName, FacilioModule module) {
+		
+		// For sub views, parent criteria can be taken from views. It is not included here. eg: for closed view, closed criteria is not applied for its subviews
+		
 		Criteria criteria = new Criteria();
 		switch(viewName) {
-			case "myopen": 
-				Condition myOpen = getMyUserCondition(module);
-				criteria.addAndCondition(myOpen);
+			case "my": 
+				Condition myUser = getMyUserCondition(module);
+				criteria.addAndCondition(myUser);
 			break;
 			
-			case "myoverdue": 
-				criteria = getMyOverdueCriteria(module);
+			case "overdue":
+				criteria = getOverdueCriteria(module);
 			break;
 			
+			case "duetoday":
+				criteria = getDueTodayCriteria(module);
+			break;
+				
 			case "unassigned": 
-				Condition unAssigned = getMyUserCondition(module);
-				criteria.addAndCondition(unAssigned);
+				criteria = getUnAssignedCriteria(module);
 			break;
 		}
 		return !criteria.isEmpty() ? criteria : null; 
 	}
 	
-	private static final Map<String, Map<String, Criteria>> subViews = Collections.unmodifiableMap(initSubViews());
+	private static final Map<String, List<Map<String, Object>>> subViews = Collections.unmodifiableMap(initSubViews());
 
-	private static Map<String, Map<String, Criteria>> initSubViews() {
-		Map<String, Map<String, Criteria>> subViewsMap = new HashMap<String, Map<String, Criteria>>();
+	private static Map<String,List<Map<String, Object>>> initSubViews() {
+		Map<String,List<Map<String, Object>>> subViewsMap = new HashMap<String, List<Map<String, Object>>>();
 		
 		FacilioModule workorderModule = ModuleFactory.getWorkOrdersModule();
 		
+		// For sub views, parent criteria can be taken from views. It is not included here. eg: for closed view, closed criteria is not applied for its subviews
+		
 		// My Team SubViews
-		Map<String, Criteria> subViews = new LinkedHashMap<String, Criteria>();
-		subViews.put("myopen", getCriteriaForView("myopen", workorderModule));
-		subViews.put("myoverdue", getCriteriaForView("myoverdue", workorderModule));
-		subViews.put("unassigned", getCriteriaForView("unassigned", workorderModule));
+		List<Map<String, Object>> subViews = new ArrayList<>();
+//		Map<String, Criteria> subViews = new LinkedHashMap<String, Criteria>();
+		Map<String, Object> subviewDetail = new HashMap<>(); 
+		subviewDetail.put("name", "my");
+		subviewDetail.put("displayName", "My Open");
+		subviewDetail.put("criteria", getCriteriaForView("my", workorderModule));
+		subViews.add(subviewDetail);
+		subviewDetail = new HashMap<>(); 
+		subviewDetail.put("name", "overdue");
+		subviewDetail.put("displayName", "Overdue");
+		subviewDetail.put("criteria", getCriteriaForView("overdue", workorderModule));
+		subViews.add(subviewDetail);
+		subviewDetail = new HashMap<>(); 
+		subviewDetail.put("name", "unassigned");
+		subviewDetail.put("displayName", "Unassigned");
+		subviewDetail.put("criteria", getCriteriaForView("unassigned", workorderModule));
+		subViews.add(subviewDetail);
+		subViews.add(getAllSubViewDetail(workorderModule));
+		
 		subViewsMap.put("workorder-myteamopen", subViews);
 		
 		// My SubViews
-		subViews = new LinkedHashMap<String, Criteria>();
-		subViews.put("myoverdue", getCriteriaForView("myoverdue", workorderModule));
-		subViews.put("duetoday", getCriteriaForView("duetoday", workorderModule));
+		subViews = new ArrayList<>();
+		
+		subviewDetail = new HashMap<>(); 
+		subviewDetail.put("name", "overdue");
+		subviewDetail.put("displayName", "Overdue");
+		subviewDetail.put("criteria", getCriteriaForView("overdue", workorderModule));
+		subViews.add(subviewDetail);
+		subviewDetail = new HashMap<>(); 
+		subviewDetail.put("name", "duetoday");
+		subviewDetail.put("displayName", "Due Today");
+		subviewDetail.put("criteria", getCriteriaForView("duetoday", workorderModule));
+		subViews.add(subviewDetail);
+		subViews.add(getAllSubViewDetail(workorderModule));
+		
 		subViewsMap.put("workorder-myopen", subViews);
 		
-//		// Resolved
-//		subViews = new LinkedHashMap<String, Criteria>();
-//		subViews.put("myopen", getCriteriaForView("myopen", workorderModule));
-//		subViews.put("myteamopen", getCriteriaForView("myteamopen", workorderModule));
-//		subViewsMap.put("workorder-resolved", subViews);
-//		
-//		// Closed
-//		subViews = new LinkedHashMap<String, Criteria>();
-//		subViews.put("myclosed", getCriteriaForView("my", workorderModule));
-//		subViews.put("myteamclosed", getCriteriaForView("myteamopen", workorderModule));
-//		subViewsMap.put("workorder-closed", subViews);
-
+		// Resolved
+		subViews = new ArrayList<>();
+		
+		subviewDetail = new HashMap<>(); 
+		subviewDetail.put("name", "my");
+		subviewDetail.put("displayName", "My Resolved");
+		subviewDetail.put("criteria", getCriteriaForView("my", workorderModule));
+		subViews.add(subviewDetail);
+		subviewDetail = new HashMap<>(); 
+		subviewDetail.put("name", "myteam");
+		subviewDetail.put("displayName", "My Team Resolved");
+		subviewDetail.put("criteria", getCriteriaForView("myteam", workorderModule));
+		subViews.add(subviewDetail);
+		subViews.add(getAllSubViewDetail(workorderModule));
+		
+		subViewsMap.put("workorder-resolved", subViews);
+		
+		// Closed
+		subViews = new ArrayList<>();
+		
+		subviewDetail = new HashMap<>(); 
+		subviewDetail.put("name", "my");
+		subviewDetail.put("displayName", "My Closed");
+		subviewDetail.put("criteria", getCriteriaForView("my", workorderModule));
+		subViews.add(subviewDetail);
+		subviewDetail = new HashMap<>(); 
+		subviewDetail.put("name", "myteam");
+		subviewDetail.put("displayName", "My Team Closed");
+		subviewDetail.put("criteria", getCriteriaForView("myteam", workorderModule));
+		subViews.add(subviewDetail);
+		subViews.add(getAllSubViewDetail(workorderModule));
+		
+		subViewsMap.put("workorder-closed", subViews);
 		
 		return subViewsMap;
 	}
 	
-	public static Map<String, Criteria> getSubViewsCriteria(String moduleName, String viewName) {
+	public static List<Map<String, Object>> getSubViewsCriteria(String moduleName, String viewName) {
 		String name = moduleName + "-" + viewName;
 		if (!subViews.containsKey(name)) {
 			return null;
 		}
-		return new LinkedHashMap<String, Criteria>(subViews.get(name));
+		return new ArrayList(subViews.get(name));
+	}
+	
+	private static Map<String, Object> getAllSubViewDetail(FacilioModule module) {
+		Map<String, Object> subviewDetail = new HashMap<>(); 
+		subviewDetail.put("name", "all");
+		subviewDetail.put("displayName", "All");
+		subviewDetail.put("criteria", null);
+		return subviewDetail;
 	}
 
 }
