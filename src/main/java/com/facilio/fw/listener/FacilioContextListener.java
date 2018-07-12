@@ -163,7 +163,7 @@ public class FacilioContextListener implements ServletContextListener {
 PortalAuthInterceptor.PORTALDOMAIN = com.facilio.aws.util.AwsUtil.getConfig("portal.domain");// event.getServletContext().getInitParameter("SERVICEPORTAL_DOMAIN");
 			System.out.println("Loading the domain name as ######"+PortalAuthInterceptor.PORTALDOMAIN );
 			
-			
+			initLocalHostName();
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -248,7 +248,7 @@ PortalAuthInterceptor.PORTALDOMAIN = com.facilio.aws.util.AwsUtil.getConfig("por
 		return null;
 	}
 	public static String INSTANCEID = null;
-	private void initLostHostName()
+	private void initLocalHostName()
 	{
 	
 		String instanceid = null;
