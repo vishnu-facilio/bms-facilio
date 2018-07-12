@@ -39,7 +39,6 @@ public class AddTaskTicketActivityCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		ActivityType activityType = (ActivityType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
 		TaskContext task = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
 		List<TaskContext> tasks = (List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST);
 		List<TaskContext> oldTickets = (List<TaskContext>) context.get(FacilioConstants.TicketActivity.OLD_TICKETS);
@@ -83,7 +82,7 @@ public class AddTaskTicketActivityCommand implements Command {
 			if(context.get(FacilioConstants.ContextNames.IS_BULK_ACTION) != null) {
 				bulkAction = (boolean) context.get(FacilioConstants.ContextNames.IS_BULK_ACTION);
 			}
-			if(bulkAction == true) {
+			if(bulkAction) {
 				TicketActivity activity = new TicketActivity();
 				long parentTicketId = (long) context.get(FacilioConstants.ContextNames.PARENT_ID);
 				activity.setTicketId(parentTicketId);

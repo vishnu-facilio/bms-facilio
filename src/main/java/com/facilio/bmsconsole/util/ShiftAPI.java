@@ -35,6 +35,7 @@ import com.facilio.bmsconsole.context.BusinessHoursList;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ShiftContext;
+import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.EnumField;
@@ -44,6 +45,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
@@ -277,7 +279,7 @@ public class ShiftAPI {
 		}).collect(Collectors.toList());
 	}
 	
-	public static void pauseWorkOrderForUser(long userId, long currentWOId, long now) throws Exception {
+	public static void pauseWorkOrderForUser(long userId, ActivityType activityType, long currentWOId, long now) throws Exception {
 		List<ReadingDataMeta> metaList = getUserWorkHoursRDM(Arrays.asList(userId));
 		if (metaList == null || metaList.isEmpty()) {
 			return;
@@ -306,11 +308,15 @@ public class ShiftAPI {
 		long woId = (long) woIdMeta.getValue();
 		
 		if ((value == 1 || value == 3 || value == 5) && woId != currentWOId) {
-			addUserWorkHoursReading(userId, woId, "Pause", now);
+			addUserWorkHoursReading(userId, woId, activityType, currentWOId, "Pause", now);
 		}
 	}
 	
-	public static void addUserWorkHoursReading(long assignedToUserId, long workOrderId, String reading, long time) throws Exception {
+	public static void addUserWorkHoursReading(long assignedToUserId, long workOrderId, ActivityType activityType, String reading, long time) throws Exception {
+		addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, workOrderId, reading, time);
+	}
+	
+	public static void addUserWorkHoursReading(long assignedToUserId, long workOrderId, ActivityType activityType, long sourceWoId, String reading, long time) throws Exception {
 		boolean addReading = allowAddReading(assignedToUserId, workOrderId, reading);
 		if (!addReading) {
 			return;
@@ -321,6 +327,10 @@ public class ShiftAPI {
 		rContext.setParentId(assignedToUserId);
 		rContext.addReading("woId", workOrderId);
 		rContext.addReading("workHoursEntry", reading);
+		if (activityType != null) {
+			rContext.addReading("sourceActivity", activityType.getValue());
+			rContext.addReading("sourceActivityWoId", sourceWoId);
+		}
 		rContext.setTtime(time);
 		readingMap.put("userworkhoursreading", Arrays.asList(rContext));
 		
@@ -347,16 +357,19 @@ public class ShiftAPI {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		
-		if (props == null || props.isEmpty()) {
-			return true;
-		}
-		
 		Optional<FacilioField> whEntry = fields.stream().filter(e -> e.getName().equals("workHoursEntry")).findFirst();
 		int currentValue = -1;
 		if (whEntry.isPresent()) {
 			currentValue = ((EnumField) whEntry.get()).getIndex(currentReading);
 		} else {
 			throw new IllegalStateException();
+		}
+		
+		if (props == null || props.isEmpty()) {
+			if (currentValue == 1) {
+				return true;
+			}
+			return false;
 		}
 				
 		Integer previousValue = (Integer) props.get(0).get("workHoursEntry");
@@ -550,6 +563,32 @@ public class ShiftAPI {
 		BigDecimal res = (new BigDecimal(result)).divide(THOUSAND);
 		res = res.divide(SIXTY.multiply(SIXTY), RoundingMode.HALF_UP);
 		return res.setScale(2, RoundingMode.HALF_UP);
+	}
+
+	public static void handleWorkHoursReading(ActivityType activityType, long assignedToUserId, long workOrderId, TicketStatusContext oldTicketStatus, TicketStatusContext newTicketStatus) throws Exception {
+		long now = System.currentTimeMillis();
+		if (newTicketStatus.getStatus().equals("Work in Progress")) {
+			if (oldTicketStatus.getId() == TicketAPI.getStatus("Assigned").getId() 
+					|| oldTicketStatus.getId() == TicketAPI.getStatus("Closed").getId() 
+					|| oldTicketStatus.getId() == TicketAPI.getStatus("Resolved").getId()) {
+				pauseWorkOrderForUser(assignedToUserId, activityType, workOrderId, now);
+				addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Start", now);
+			} else if (oldTicketStatus.getId() == TicketAPI.getStatus("On Hold").getId() || oldTicketStatus.getId() == TicketAPI.getStatus("Work in Progress").getId()) {
+				pauseWorkOrderForUser(assignedToUserId, activityType, workOrderId, now);
+				addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Resume", now);
+			}
+		}  else if (newTicketStatus.getStatus().equals("Resolved")) {
+			addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Close", now);
+		} else if (newTicketStatus.getStatus().equals("On Hold")) {
+			addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Pause", now);
+		} else if (newTicketStatus.getStatus().equals("Closed")) {
+			if (oldTicketStatus.getId() == TicketAPI.getStatus("On Hold").getId()) {
+				addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Resume", now);
+				addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Close", now);
+			} else if (oldTicketStatus.getId() == TicketAPI.getStatus("Work in Progress").getId()) {
+				addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Close", now);
+			}
+		}
 	}
 
 }

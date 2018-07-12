@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -19,12 +20,15 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
 public class UpdateTaskCommand implements Command {
+	
+	private static org.apache.log4j.Logger log = LogManager.getLogger(UpdateTaskCommand.class.getName());
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -32,9 +36,6 @@ public class UpdateTaskCommand implements Command {
 		TaskContext task = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		if(task != null && recordIds != null && !recordIds.isEmpty()) {
-			List<TaskContext> oldTasks = getTasks(recordIds);
-			updateParentTicketStatus(oldTasks.get(0));
-			
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			
@@ -50,6 +51,26 @@ public class UpdateTaskCommand implements Command {
 					task.setReadingDataId(reading.getId());
 				}
 			}
+			
+			List<TaskContext> oldTasks = getTasks(recordIds);
+			
+			ActivityType taskActivity = null;
+			ReadingContext reading = (ReadingContext) context.get(FacilioConstants.ContextNames.READING);
+			if (recordIds.size() == 1 && reading != null) {
+				taskActivity = ActivityType.ADD_TASK_INPUT;
+			} else if (task != null && (task.getParentTicketId() != -1 || oldTasks != null)) {
+				if (context.get(FacilioConstants.ContextNames.IS_BULK_ACTION) != null) {
+					boolean bulkAction = (boolean) context.get(FacilioConstants.ContextNames.IS_BULK_ACTION);
+					if (bulkAction) {
+						taskActivity = ActivityType.CLOSE_ALL_TASK;
+					}
+				} else {
+					taskActivity = ActivityType.ADD_TASK_INPUT;
+				}
+			} 
+			
+			
+			updateParentTicketStatus(taskActivity, oldTasks.get(0));
 			
 			String ids = StringUtils.join(recordIds, ",");
 			Condition idCondition = new Condition();
@@ -84,7 +105,7 @@ public class UpdateTaskCommand implements Command {
 		return null;
 	}
 	
-	private void updateParentTicketStatus(TaskContext task) throws Exception {
+	private void updateParentTicketStatus(ActivityType activityType, TaskContext task) throws Exception {
 		
 		//TaskContext completeRecord = getTask(taskId);
 		
@@ -112,7 +133,7 @@ public class UpdateTaskCommand implements Command {
 			if (!("Work in Progress".equalsIgnoreCase(statusObj.getStatus()))) {
 				TicketContext newTicket = new TicketContext();
 				newTicket.setStatus(TicketAPI.getStatus("Work in Progress"));
-				TicketAPI.updateTicketStatus(newTicket, ticket, false);
+				TicketAPI.updateTicketStatus(activityType, newTicket, ticket, false);
 				
 				UpdateRecordBuilder<TicketContext> updateBuilder = new UpdateRecordBuilder<TicketContext>()
 															.module(module)
@@ -121,6 +142,15 @@ public class UpdateTaskCommand implements Command {
 				
 				updateBuilder.update(newTicket);
 			}
+			try {
+				if (ticket.getAssignedTo() != null) {
+					ShiftAPI.handleWorkHoursReading(activityType, ticket.getAssignedTo().getOuid(), ticket.getId(), ticket.getStatus(), TicketAPI.getStatus("Work in Progress"));
+				}
+			}
+			catch(Exception e) {
+				log.info("Exception occurred while handling work hours", e);
+			}
+			
 		}
 	}
 }

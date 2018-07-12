@@ -6,11 +6,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Triple;
 import org.apache.log4j.LogManager;
 
 import com.facilio.accounts.dto.Group;
@@ -20,7 +18,6 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.CalendarColorContext;
 import com.facilio.bmsconsole.context.NoteContext;
-import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TaskContext;
@@ -55,11 +52,9 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.workflows.util.WorkflowUtil;
-import com.mysql.jdbc.Field;
 
 public class TicketAPI {
 	
-	private static Logger logger = Logger.getLogger(TicketAPI.class.getName());
 	private static org.apache.log4j.Logger log = LogManager.getLogger(TicketAPI.class.getName());
 
 
@@ -126,6 +121,13 @@ public class TicketAPI {
 						map.put("woId", (Long) e.get("woId"));
 						map.put("workHoursEntry", new Long((Integer) e.get("workHoursEntry")));
 						map.put("id", (Long) e.get("id"));
+						if (e.get("sourceActivity") != null) {
+							map.put("sourceActivity", new Long((Integer) e.get("sourceActivity")));
+							map.put("sourceActivityWoId", (Long) e.get("sourceActivityWoId"));
+						} else {
+							map.put("sourceActivity", -1l);
+							map.put("sourceActivityWoId", -1l);
+						}
 						userIDvsReadings.put((Long) e.get("parentId"), map);
 					});
 				}
@@ -136,7 +138,7 @@ public class TicketAPI {
 				FacilioField rdmresourceId = fieldMap.get("resourceId");
 				FacilioField rdmfieldId = fieldMap.get("fieldId");
 				
-				List<Long> readingFields = Arrays.asList(uwhFieldMap.get("woId").getFieldId(), uwhFieldMap.get("workHoursEntry").getFieldId());
+				List<Long> readingFields = Arrays.asList(uwhFieldMap.get("woId").getFieldId(), uwhFieldMap.get("workHoursEntry").getFieldId(), uwhFieldMap.get("sourceActivity").getFieldId(), uwhFieldMap.get("sourceActivityWoId").getFieldId());
 				
 				FacilioModule rdmModule = ModuleFactory.getReadingDataMetaModule();
 				GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
@@ -161,6 +163,8 @@ public class TicketAPI {
 						map.put("woId", -1l);
 						map.put("workHoursEntry", -1l);
 						map.put("id", -1l);
+						map.put("sourceActivityWoId", -1l);
+						map.put("sourceActivity", -1l);
 					}
 					
 					ReadingDataMeta woId = new ReadingDataMeta();
@@ -182,6 +186,26 @@ public class TicketAPI {
 					whe.setInputType(type);
 					whe.setReadingDataId(map.get("id"));
 					insertBuilder.addRecord(FieldUtil.getAsProperties(whe));
+					
+					ReadingDataMeta sourceActivity = new ReadingDataMeta();
+					sourceActivity.setOrgId(orgId);
+					sourceActivity.setTtime(map.get("ttime"));
+					sourceActivity.setValue(map.get("sourceActivity"));
+					sourceActivity.setFieldId(uwhFieldMap.get("sourceActivity").getId());
+					sourceActivity.setResourceId(userId);
+					sourceActivity.setInputType(type);
+					sourceActivity.setReadingDataId(map.get("id"));
+					insertBuilder.addRecord(FieldUtil.getAsProperties(sourceActivity));
+					
+					ReadingDataMeta sourceActivityWoId = new ReadingDataMeta();
+					sourceActivityWoId.setOrgId(orgId);
+					sourceActivityWoId.setTtime(map.get("ttime"));
+					sourceActivityWoId.setValue(map.get("sourceActivityWoId"));
+					sourceActivityWoId.setFieldId(uwhFieldMap.get("sourceActivityWoId").getId());
+					sourceActivityWoId.setResourceId(userId);
+					sourceActivityWoId.setInputType(type);
+					sourceActivityWoId.setReadingDataId(map.get("id"));
+					insertBuilder.addRecord(FieldUtil.getAsProperties(sourceActivityWoId));
 				}
 				insertBuilder.save();
 			}
@@ -539,10 +563,10 @@ public class TicketAPI {
 	}
 	
 	public static void updateTicketStatus(TicketContext ticket) throws Exception {
-		updateTicketStatus(ticket, null, false);
+		updateTicketStatus(null, ticket, null, false);
 	}
 	
-	public static void updateTicketStatus(TicketContext ticket, TicketContext oldTicket, boolean isWorkDurationChangeAllowed) throws Exception {
+	public static void updateTicketStatus(ActivityType activityType, TicketContext ticket, TicketContext oldTicket, boolean isWorkDurationChangeAllowed) throws Exception {
 		TicketStatusContext statusObj = ticket.getStatus();
 		
 		if(statusObj != null) {
@@ -557,14 +581,6 @@ public class TicketAPI {
 		}
 		
 		if (oldTicket != null) {
-			if (oldTicket.getAssignedTo() != null) {
-				try {
-					handleWorkHoursReading(oldTicket.getAssignedTo().getOuid(), oldTicket.getId(), oldTicket.getStatus(), statusObj);
-				}
-				catch(Exception e) {
-					log.info("Exception occurred while handling work hours", e);
-				}
-			}
 			if ("Work in Progress".equalsIgnoreCase(statusObj.getStatus())) {
 				if (oldTicket.getActualWorkStart() != -1) {
 					ticket.setResumedWorkStart(System.currentTimeMillis());
@@ -599,32 +615,6 @@ public class TicketAPI {
 			}
 		}
 		
-	}
-	
-	private static void handleWorkHoursReading(long assignedToUserId, long workOrderId, TicketStatusContext oldTicketStatus, TicketStatusContext newTicketStatus) throws Exception {
-		long now = System.currentTimeMillis();
-		if (newTicketStatus.getStatus().equals("Work in Progress")) {
-			if (oldTicketStatus.getId() == TicketAPI.getStatus("Assigned").getId() 
-					|| oldTicketStatus.getId() == TicketAPI.getStatus("Closed").getId() 
-					|| oldTicketStatus.getId() == TicketAPI.getStatus("Resolved").getId()) {
-				ShiftAPI.pauseWorkOrderForUser(assignedToUserId, workOrderId, now);
-				ShiftAPI.addUserWorkHoursReading(assignedToUserId, workOrderId, "Start", now);
-			} else if (oldTicketStatus.getId() == TicketAPI.getStatus("On Hold").getId()) {
-				ShiftAPI.pauseWorkOrderForUser(assignedToUserId, workOrderId, now);
-				ShiftAPI.addUserWorkHoursReading(assignedToUserId, workOrderId, "Resume", now);
-			}
-		}  else if (newTicketStatus.getStatus().equals("Resolved")) {
-			ShiftAPI.addUserWorkHoursReading(assignedToUserId, workOrderId, "Close", now);
-		} else if (newTicketStatus.getStatus().equals("On Hold")) {
-			ShiftAPI.addUserWorkHoursReading(assignedToUserId, workOrderId, "Pause", now);
-		} else if (newTicketStatus.getStatus().equals("Closed")) {
-			if (oldTicketStatus.getId() == TicketAPI.getStatus("On Hold").getId()) {
-				ShiftAPI.addUserWorkHoursReading(assignedToUserId, workOrderId, "Resume", now);
-				ShiftAPI.addUserWorkHoursReading(assignedToUserId, workOrderId, "Close", now);
-			} else if (oldTicketStatus.getId() == TicketAPI.getStatus("Work in Progress").getId()) {
-				ShiftAPI.addUserWorkHoursReading(assignedToUserId, workOrderId, "Close", now);
-			}
-		}
 	}
 	
 	private static void assignTicketToCurrentUser(TicketContext ticket, TicketContext oldTicket) {

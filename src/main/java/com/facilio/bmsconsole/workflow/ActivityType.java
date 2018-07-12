@@ -172,7 +172,7 @@ public enum ActivityType {
 			return null;
 		}
 	},
-	HOLD_WORK_ORDER(262144) {
+	HOLD_WORK_ORDER(1 << 18) {
 		@Override
 		public String getMessage(JSONObject json) {
 			// TODO Auto-generated method stub

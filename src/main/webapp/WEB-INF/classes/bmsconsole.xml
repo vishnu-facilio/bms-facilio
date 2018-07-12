@@ -4260,6 +4260,11 @@
 				<param name="includeProperties">shift.*</param>
 			</result>
 		</action>
+		<action name="delete" class="com.facilio.bmsconsole.actions.ShiftAction" method="delete">
+			<result name="success" type="json">
+				<param name="includeProperties">result,users.*</param>
+			</result>
+		</action>
 	</package>
 	<package name="sample" namespace="/api/sample" extends="homeApi">
 		<action name="*">

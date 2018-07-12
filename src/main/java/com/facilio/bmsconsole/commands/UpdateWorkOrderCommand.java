@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -24,6 +25,7 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
@@ -31,6 +33,8 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class UpdateWorkOrderCommand implements Command {
+	
+	private static org.apache.log4j.Logger log = LogManager.getLogger(UpdateTaskCommand.class.getName());
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -51,8 +55,20 @@ public class UpdateWorkOrderCommand implements Command {
 			
 			TicketAPI.updateTicketAssignedBy(workOrder);
 			updateWODetails(workOrder);
+			ActivityType activityType = (ActivityType)context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
 			if(workOrder.getAssignedTo() != null || workOrder.getAssignmentGroup() != null) {
 				workOrder.setStatus(TicketAPI.getStatus("Assigned"));
+				try {
+					for (WorkOrderContext oldWo: oldWos) {
+						if (oldWo.getAssignedTo() != null) {
+							if (oldWo.getAssignedTo().getOuid() != workOrder.getAssignedTo().getOuid()) {
+								ShiftAPI.addUserWorkHoursReading(oldWo.getAssignedTo().getOuid(), oldWo.getId(), activityType, oldWo.getId(), "Pause", System.currentTimeMillis());
+							}
+						}
+					}
+				} catch (Exception e) {
+					log.info("Exception occurred while handling work hours", e);
+				}
 			}
 			else if(workOrder.getStatus() != null) {
 				TicketStatusContext statusObj = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), workOrder.getStatus().getId());
@@ -67,7 +83,15 @@ public class UpdateWorkOrderCommand implements Command {
 					newWo.setId(oldWo.getId());
 					newWos.add(newWo);
 					
-					TicketAPI.updateTicketStatus(newWo, oldWo, newWo.isWorkDurationChangeAllowed() || (newWo.getIsWorkDurationChangeAllowed() == null && oldWo.isWorkDurationChangeAllowed()));
+					TicketAPI.updateTicketStatus(activityType, newWo, oldWo, newWo.isWorkDurationChangeAllowed() || (newWo.getIsWorkDurationChangeAllowed() == null && oldWo.isWorkDurationChangeAllowed()));
+					try {
+						if (oldWo.getAssignedTo() != null) {
+							ShiftAPI.handleWorkHoursReading(activityType, oldWo.getAssignedTo().getOuid(), oldWo.getId(), oldWo.getStatus(), newWo.getStatus());
+						}
+					}
+					catch(Exception e) {
+						log.info("Exception occurred while handling work hours", e);
+					}
 				}
 			}
 			
@@ -94,7 +118,7 @@ public class UpdateWorkOrderCommand implements Command {
 			}
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
 			
-			ActivityType activityType = (ActivityType)context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
+			
 			List<ActivityType> types = Arrays.asList(ActivityType.ASSIGN_TICKET, ActivityType.CLOSE_WORK_ORDER,  ActivityType.SOLVE_WORK_ORDER, ActivityType.HOLD_WORK_ORDER);
 			if(types.contains(activityType)) {
 				SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
