@@ -570,7 +570,7 @@
 	"68": {
 		"name": "ASSET_TOBEEXPIRED_EMAIL",
 		"sender": "noreply@${org.domain}.facilio.com",
-		"subject": "KDM Expiry Notification",
+		"subject": "KDM Expiry Notification for ${site.name}",
 		"to": "${org.superAdmin.email:-}",
 		"message":"This is to inform you that the following KDM of your facility ${site.name}'s movie has expired on ${expired.date}. Kindly update the latest warrenty date for the following KDM for the provided list given below ${asset.url} \n\nRegards,\nTeam Facilio."
 	},

@@ -3316,6 +3316,34 @@ public class DashboardAction extends ActionSupport {
 					}
 					
 				}
+				else if ("main_nv".equalsIgnoreCase(report.getReportSpaceFilterContext().getGroupBy())) {
+					
+					FacilioModule module123 = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER);
+					
+					EnergyMeterPurposeContext energyMeterPurpose = DeviceAPI.getEnergyMetersPurposeByName(DashboardUtil.ENERGY_METER_PURPOSE_MAIN);
+					SelectRecordsBuilder<EnergyMeterContext> selectBuilder = 
+							new SelectRecordsBuilder<EnergyMeterContext>()
+							.select(modBean.getAllFields(module123.getName()))
+							.module(module123)
+							.beanClass(EnergyMeterContext.class)
+							.andCustomWhere("IS_ROOT= ?", false)
+							.andCondition(CriteriaAPI.getCondition("PURPOSE_SPACE_ID","PURPOSE_SPACE_ID",report.getReportSpaceFilterContext().getBuildingId()+"",NumberOperators.EQUALS))
+							.andCondition(CriteriaAPI.getCondition("PURPOSE_ID","PURPOSE_ID",energyMeterPurpose.getId()+"",NumberOperators.EQUALS))
+							.maxLevel(0);
+					
+					List<EnergyMeterContext> meters = selectBuilder.get();
+					if (meters != null && meters.size() > 0) {
+						List<Long> meterIds = new ArrayList<Long>();
+						for (EnergyMeterContext meter : meters) {
+							meterIds.add(meter.getId());
+						}
+						
+						String meterIdStr = StringUtils.join(meterIds, ",");
+						energyMeterValue = meterIdStr;
+						buildingCondition = CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", meterIdStr, NumberOperators.EQUALS);
+					}
+					
+				}
 				else {
 					List<EnergyMeterContext> meters = DashboardUtil.getMainEnergyMeter(report.getReportSpaceFilterContext().getBuildingId()+"");
 					if (meters != null && meters.size() > 0) {
