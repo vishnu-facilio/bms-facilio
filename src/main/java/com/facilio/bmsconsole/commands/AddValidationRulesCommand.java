@@ -31,7 +31,11 @@ public class AddValidationRulesCommand implements Command {
 		Chain updateChain = FacilioChainFactory.updateWorkflowRuleChain();
 		
 		for (int i = 0; i < readingRules.size(); ++i) {
-			for (int j = 0; j < readingRules.get(i).size(); ++j) {
+			if (readingRules.get(i) == null) {
+				continue;
+			}
+			int len = readingRules.get(i).size();
+			for (int j = 0; j < len; ++j) {
 				ReadingRuleContext rule = readingRules.get(i).get(j);
 				rule.setRuleType(WorkflowRuleContext.RuleType.VALIDATION_RULE);
 				if (resourceID != null) {

@@ -61,14 +61,16 @@ public class AddPMReadingsForTasks implements Command {
 	private List<List<ReadingRuleContext>> getReadingRules(List<TaskContext> tasks) {
 		List<List<ReadingRuleContext>> readingRules = tasks.stream().map(t -> {
 			List<ReadingRuleContext> r = t.getReadingRules();
-			r.stream().forEach(rule -> {
-				long id = t.getReadingField().getFieldId();
-				rule.setReadingFieldId(id);
-				FacilioField f = t.getReadingField();
-				if (f != null) {
-					rule.getEvent().setModuleId(f.getModuleId());
-				}
-			});
+			if (r != null && !r.isEmpty()) {
+				r.stream().forEach(rule -> {
+					long id = t.getReadingField().getFieldId();
+					rule.setReadingFieldId(id);
+					FacilioField f = t.getReadingField();
+					if (f != null) {
+						rule.getEvent().setModuleId(f.getModuleId());
+					}
+				});
+			}
 			return r;
 		}).collect(Collectors.toList());
 		
