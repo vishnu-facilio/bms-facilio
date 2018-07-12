@@ -8,6 +8,7 @@ import org.apache.commons.chain.Chain;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
@@ -28,7 +29,7 @@ public class AssetActionJob extends FacilioJob {
 			assetAction.execute(context);
 		}
 		catch(Exception e) {
-			
+			CommonCommandUtil.emailException("asset notification Failed", "asset notification Failed -- "+AccountUtil.getCurrentOrg().getId(), e);
 		}
 	}
 

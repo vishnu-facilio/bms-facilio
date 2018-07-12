@@ -572,7 +572,7 @@
 		"sender": "noreply@${org.domain}.facilio.com",
 		"subject": "Asset Expired",
 		"to": "${org.superAdmin.email:-}",
-		"message": "This is to notify you that your facility ${site.name}'s ${asset.names} will expire on ${expired.date}. We hope you take the neccessary action and update the latest warrenty date for the asset here ${asset.url} \n\nRegards,\nTeam Facilio."
+		"message": "This is to notify you that the following assets of your facility ${site.name}'s will expire on ${expired.date}. We hope you take the neccessary action and update the latest warrenty date for the following asset given below ${asset.url} \n\nRegards,\nTeam Facilio."
 	},
 	"69": {
 		"name": "ON_HOLD_WO_EMAIL",

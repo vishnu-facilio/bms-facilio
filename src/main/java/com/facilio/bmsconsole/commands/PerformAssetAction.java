@@ -85,7 +85,7 @@ public class PerformAssetAction implements Command {
 			String domain = AwsUtil.getConfig("clientapp.url");
 			for(AssetContext asset :assets) {
 				assetNameList.add(asset.getName()+"(#"+asset.getId()+")");
-				assetUrlList.add(asset.getName()+"(#"+asset.getId()+")" +" - "+ domain+"/app/at/asset/"+asset.getId()+"/overview");
+				assetUrlList.add(asset.getName()+"(#"+asset.getId()+")" +"\t"+ asset.getDatum("screenname") +"\t"+ asset.getDatum("serverno") +"\t " +domain+"/app/at/asset/"+asset.getId()+"/overview");
 			}
 			if(!assetNameList.isEmpty()) {
 				
@@ -93,7 +93,7 @@ public class PerformAssetAction implements Command {
 				
 				Map<String, Object> placeHolders = new HashMap<>();
 				CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeHolders);
-				placeHolders.put("org.superAdmin.email", superAdmin.getEmail());
+				placeHolders.put("org.superAdmin.email", "krishnan.e@facilio.com");
 				placeHolders.put("org.superAdmin.phone", superAdmin.getPhone());
 				placeHolders.put("asset.names", assetNames);
 				placeHolders.put("asset.url", "\n"+StringUtils.join(assetUrlList,"\n"));
