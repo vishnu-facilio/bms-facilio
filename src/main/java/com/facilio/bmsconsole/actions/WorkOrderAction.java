@@ -918,11 +918,11 @@ public class WorkOrderAction extends FacilioAction {
 		this.showViewsCount = showViewsCount;
 	}
 	
-	Map<String, Integer> subViewsCount;
-	public Map<String, Integer> getSubViewsCount() {
+	List<Map<String, Object>> subViewsCount;
+	public List<Map<String, Object>> getSubViewsCount() {
 		return subViewsCount;
 	}
-	public void setSubViewsCount(Map<String, Integer> subViewsCount) {
+	public void setSubViewsCount(List<Map<String, Object>> subViewsCount) {
 		this.subViewsCount = subViewsCount;
 	}
 
@@ -1149,7 +1149,7 @@ public class WorkOrderAction extends FacilioAction {
 		}
 		else {
 			if(getShowViewsCount()) {
-				setSubViewsCount((Map<String, Integer>) context.get(FacilioConstants.ContextNames.WORK_ORDER_COUNT));
+				setSubViewsCount((List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.SUB_VIEW_COUNT));
 				setSubView((String) context.get(FacilioConstants.ContextNames.SUB_VIEW));
 			}
 			setWorkOrders((List<WorkOrderContext>) context.get(FacilioConstants.ContextNames.WORK_ORDER_LIST));
@@ -1466,7 +1466,7 @@ public class WorkOrderAction extends FacilioAction {
 				setResult(FacilioConstants.ContextNames.SUB_VIEW, subView);
 			}
 			if (getShowViewsCount()) {
-				setResult(FacilioConstants.ContextNames.WO_VIEW_COUNT, subViewsCount);
+				setResult(FacilioConstants.ContextNames.SUB_VIEW_COUNT, subViewsCount);
 			}
 			setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
 			return response;
@@ -1477,35 +1477,6 @@ public class WorkOrderAction extends FacilioAction {
 			e.printStackTrace();
 			return ERROR;
 		}
-	}
-	
-	private int responseCode = 0;
-	public int getResponseCode() {
-		return responseCode;
-	}
-	public void setResponseCode(int responseCode) {
-		this.responseCode = responseCode;
-	}
-	
-	private String message;
-	public String getMessage() {
-		return message;
-	}
-	public void setMessage(String message) {
-		this.message = message;
-	}
-	
-	private JSONObject result;
-	public JSONObject getResult() {
-		return result;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public void setResult(String key, Object result) {
-		if (this.result == null) {
-			this.result = new JSONObject();
-		}
-		this.result.put(key, result);			
 	}
 
 }

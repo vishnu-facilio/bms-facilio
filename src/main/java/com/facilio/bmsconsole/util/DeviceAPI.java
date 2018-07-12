@@ -49,6 +49,8 @@ public class DeviceAPI
 	private static final Logger LOGGER = LogManager.getLogger(DeviceAPI.class.getName());
 	
 	public static final int VM_HISTORICAL_DATA_CALCULATION_INTERVAL = -3;
+	private static final String TOTAL_ENERGY_CONSUMPTION_DELTA = "totalEnergyConsumptionDelta";
+	private static final String TOTAL_DEMAND = "totalDemand";
 
 	public static List<ControllerContext> getAllControllers() throws Exception {
 		FacilioModule module = ModuleFactory.getControllerModule();
@@ -437,9 +439,9 @@ public class DeviceAPI
 			childMeterIds.add((Long) childProp.get("childMeterId"));
 		}
 		List<ReadingContext> completeReadings = new LinkedList<>(getChildMeterReadings(childMeterIds, startTime, endTime, minutesInterval));
-		if(completeReadings.isEmpty()) {
-			return;
-		}
+//		if(completeReadings.isEmpty()) {
+//			return;
+//		}
 		List<ReadingContext> vmReadings = new ArrayList<ReadingContext>();
 		List<ReadingContext> intervalReadings=new ArrayList<ReadingContext>();
 		for(Pair<Long, Long> interval : intervals) {
@@ -461,17 +463,17 @@ public class DeviceAPI
 			
 			LOGGER.debug("Calculating Consumption for VM : "+meter.getName());
 			LOGGER.debug("Intervals : "+interval);
-			ReadingContext virtualMeterReading = calculateVMReading(meter,intervalReadings, childMeterIds);
+			ReadingContext virtualMeterReading = calculateVMReading(meter,intervalReadings, childMeterIds, interval);
 //			System.out.println("Vm : ");
 //			System.out.println(intervalReadings.size());
 //			System.out.println(virtualMeterReading);
 //			System.out.println(completeReadings.size());
 //			completeReadings.removeAll(intervalReadings);
-			if(virtualMeterReading != null) {
+//			if(virtualMeterReading != null) {
 				LOGGER.debug("Adding VM reading for time : "+virtualMeterReading.getTtime());
 				vmReadings.add(virtualMeterReading);
 				intervalReadings=new ArrayList<ReadingContext>();
-			}
+//			}
 		}
 
 		LOGGER.info("VM Readings size : "+vmReadings.size());
@@ -542,38 +544,37 @@ public class DeviceAPI
 	}
 	
 	
-	private static ReadingContext calculateVMReading(EnergyMeterContext meter,List<ReadingContext> readings, List<Long> childIds) throws Exception {
-		if(readings.isEmpty()) {
-			return null;
-		}
-
-		Map<Long, List<ReadingContext>> readingMap = new HashMap<>();
-		List<Long> timestamps = new ArrayList<>();
-		for(ReadingContext reading : readings) {
-			List<ReadingContext> readingList = readingMap.get(reading.getParentId());
-			if(readingList == null) {
-				readingList = new ArrayList<>();
-				readingMap.put(reading.getParentId(), readingList);
+	private static ReadingContext calculateVMReading(EnergyMeterContext meter,List<ReadingContext> readings, List<Long> childIds, Pair<Long, Long> interval) throws Exception {
+		ReadingContext virtualMeterReading = null;
+		if (!readings.isEmpty()) {
+			Map<Long, List<ReadingContext>> readingMap = new HashMap<>();
+			List<Long> timestamps = new ArrayList<>();
+			for(ReadingContext reading : readings) {
+				List<ReadingContext> readingList = readingMap.get(reading.getParentId());
+				if(readingList == null) {
+					readingList = new ArrayList<>();
+					readingMap.put(reading.getParentId(), readingList);
+				}
+				readingList.add(reading);
+				timestamps.add(reading.getTtime());
 			}
-			readingList.add(reading);
-			timestamps.add(reading.getTtime());
-		}
-		
-		LOGGER.debug("Child Meter IDs : "+childIds);
-		LOGGER.debug("Meter wise readings : "+readingMap);
-		for(Long childId : childIds) {
-			if(!readingMap.containsKey(childId)) {
+			
+			LOGGER.debug("Child Meter IDs : "+childIds);
+			LOGGER.debug("Meter wise readings : "+readingMap);
+			EnergyDataEvaluator evaluator = new EnergyDataEvaluator(readingMap);
+			String expression = meter.getChildMeterExpression();
+			virtualMeterReading = evaluator.evaluateExpression(expression);
+			if(virtualMeterReading==null) {
 				return null;
 			}
+			virtualMeterReading.setTtime(((Double)StatUtils.max(timestamps.stream().mapToDouble(Long::doubleValue).toArray())).longValue());
 		}
-
-		EnergyDataEvaluator evaluator = new EnergyDataEvaluator(readingMap);
-		String expression = meter.getChildMeterExpression();
-		ReadingContext virtualMeterReading = evaluator.evaluateExpression(expression);
-		if(virtualMeterReading==null) {
-			return null;
+		else {
+			virtualMeterReading = new ReadingContext();
+			virtualMeterReading.addReading(TOTAL_ENERGY_CONSUMPTION_DELTA, 0d);
+			virtualMeterReading.addReading(TOTAL_DEMAND, 0d);
+			virtualMeterReading.setTtime(interval.getLeft());
 		}
-		virtualMeterReading.setTtime(((Double)StatUtils.max(timestamps.stream().mapToDouble(Long::doubleValue).toArray())).longValue());
 		virtualMeterReading.setParentId(meter.getId());
 		return virtualMeterReading;
 	}
@@ -581,8 +582,6 @@ public class DeviceAPI
 	private static class EnergyDataEvaluator extends ExpressionEvaluator<ReadingContext> {
 
 		private Map<Long, List<ReadingContext>> readingMap;
-		private static final String TOTAL_ENERGY_CONSUMPTION_DELTA = "totalEnergyConsumptionDelta";
-		private static final String TOTAL_DEMAND = "totalDemand";
 		public EnergyDataEvaluator(Map<Long, List<ReadingContext>> readingMap) {
 			super.setRegEx(EnergyMeterContext.EXP_FORMAT);
 			this.readingMap = readingMap;
@@ -592,16 +591,22 @@ public class DeviceAPI
 		public ReadingContext getOperand(String operand) {
 			// TODO Auto-generated method stub
 			List<ReadingContext> readings = readingMap.get(Long.parseLong(operand));
+			
+			if (readings == null || readings.size() == 0) {
+				ReadingContext reading = new ReadingContext();
+				reading.addReading(TOTAL_ENERGY_CONSUMPTION_DELTA, 0d);
+				reading.addReading(TOTAL_DEMAND, 0d);
+				return reading;
+			}
 			if(readings.size() == 1) {
 				return readings.get(0);
 			}
 			ReadingContext aggregatedReading = new ReadingContext();
-			
 			double deltaSum = -1d;
 			double demandSum = -1d;
 			for(ReadingContext reading : readings) {
-				Double delta=(Double) reading.getReading(TOTAL_ENERGY_CONSUMPTION_DELTA);
-				Double demand=(Double) reading.getReading(TOTAL_DEMAND);
+				Double delta = (Double) reading.getReading(TOTAL_ENERGY_CONSUMPTION_DELTA);
+				Double demand = (Double) reading.getReading(TOTAL_DEMAND);
 				
 			    if(delta != null) {
                     deltaSum += delta;
@@ -622,14 +627,16 @@ public class DeviceAPI
 		@Override
 		public ReadingContext applyOp(String operator, ReadingContext rightOperand, ReadingContext leftOperand)  {
 			// TODO Auto-generated method stub
-			if(operator == null || rightOperand == null || leftOperand == null) {
-			    LOGGER.debug("opertor " + operator + " : left operand " + leftOperand +" right operand " + rightOperand );
-				return null;
-			}
+//			if(operator == null || rightOperand == null || leftOperand == null) {
+//			    LOGGER.debug("opertor " + operator + " : left operand " + leftOperand +" right operand " + rightOperand );
+//				return null;
+//			}
 			ReadingContext reading = new ReadingContext();
-			Double delta=getValue(TOTAL_ENERGY_CONSUMPTION_DELTA,operator,rightOperand,leftOperand);
-			Double demand=getValue(TOTAL_DEMAND,operator,rightOperand,leftOperand);
-			if(delta==null && demand==null) {
+			double delta=getValue(TOTAL_ENERGY_CONSUMPTION_DELTA,operator,rightOperand,leftOperand);
+			double demand=getValue(TOTAL_DEMAND,operator,rightOperand,leftOperand);
+			reading.addReading(TOTAL_ENERGY_CONSUMPTION_DELTA,delta);
+			reading.addReading(TOTAL_DEMAND, demand);
+			/*if(delta==null && demand==null) {
 				return null;
 			}
 			
@@ -638,18 +645,26 @@ public class DeviceAPI
 			}
 			if (demand != null) {
 				reading.addReading(TOTAL_DEMAND, demand);
-			}
+			}*/
 			return reading;
 		}
 		
-		private Double getValue(String key,String operator, ReadingContext rightOperand, ReadingContext leftOperand) {
+		private double getValue(String key,String operator, ReadingContext rightOperand, ReadingContext leftOperand) {
 			
-			Double left = (Double)leftOperand.getReading(key);
-			Double right =(Double)rightOperand.getReading(key);
-			if(left == null || right == null) {
-			    return null;
-            }
-			Double total = 0d;
+			Double left = (Double) leftOperand.getReading(key);
+			Double right = (Double) rightOperand.getReading(key);
+			
+			if (left == null) {
+				left = 0d;
+			}
+			if (right == null) {
+				right = 0d;
+			}
+			
+//			if(left == null || right == null) {
+//			    return null;
+//            }
+			double total = 0d;
 			if("+".equals(operator)) {
 				total = left + right;
 			} else if("-".equals(operator)) {

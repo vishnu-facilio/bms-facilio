@@ -334,7 +334,14 @@ public class AwsUtil
 			Destination destination = new Destination().withToAddresses(toAddress.split("\\s*,\\s*"));
 			Content subjectContent = new Content().withData((String) mailJson.get("subject"));
 			Content bodyContent = new Content().withData((String) mailJson.get("message"));
-			Body body = new Body().withText(bodyContent);
+			
+			Body body = null;
+			if(mailJson.get("mailType") != null && mailJson.get("mailType").equals("html")) {
+				body = new Body().withHtml(bodyContent);
+			}
+			else {
+				body = new Body().withText(bodyContent);
+			}
 
 			Message message = new Message().withSubject(subjectContent).withBody(body);
 

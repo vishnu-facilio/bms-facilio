@@ -16,6 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.fw.listener.FacilioContextListener;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -72,11 +74,9 @@ public class FacilioCorsFilter implements Filter {
     }
 
     private void setServerIp() {
-        try {
-            ip = InetAddress.getLocalHost().getHostAddress();
-        } catch (UnknownHostException e) {
-            LOGGER.info("Unable to set IP ");
-        }
+       
+            ip = FacilioContextListener.INSTANCEID;
+      
     }
 
     private void initialize(HashSet<String> origins, String values) {
@@ -97,7 +97,11 @@ public class FacilioCorsFilter implements Filter {
         if(customdomains==null) {
         	customdomains = (HashMap)(request.getServletContext()).getAttribute("customdomains");
         }
+        if(ip!=null)
+        {
         response.addHeader("internal", ip);
+        }
+        
         String forwardedProtocol = request.getHeader("X-Forwarded-Proto");
         if(forwardedProtocol != null) {
             if ("http".equalsIgnoreCase(forwardedProtocol)){
