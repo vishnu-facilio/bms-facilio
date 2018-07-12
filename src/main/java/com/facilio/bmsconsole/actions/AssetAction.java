@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
@@ -95,7 +96,7 @@ public class AssetAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
 		context.put(FacilioConstants.ContextNames.RECORD, asset);
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(asset.getId()));
 		
 		Chain updateAssetChain = FacilioChainFactory.getUpdateAssetChain();
 		updateAssetChain.execute(context);
