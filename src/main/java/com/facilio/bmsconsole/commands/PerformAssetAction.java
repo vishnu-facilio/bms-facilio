@@ -118,7 +118,7 @@ public class PerformAssetAction implements Command {
 				
 				Map<String, Object> placeHolders = new HashMap<>();
 				CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeHolders);
-				placeHolders.put("org.superAdmin.email", "krishnan.e@facilio.com,"+superAdmin.getEmail());
+				placeHolders.put("org.superAdmin.email", "shivaraj@facilio.com,"+superAdmin.getEmail()+",murugesan.k@spicinemas.in,manjula.np@spicinemas.in");
 				placeHolders.put("org.superAdmin.phone", superAdmin.getPhone());
 				placeHolders.put("asset.names", assetNames);
 				placeHolders.put("asset.url", "\n"+table);
