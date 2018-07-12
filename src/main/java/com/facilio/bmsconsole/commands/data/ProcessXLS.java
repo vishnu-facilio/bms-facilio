@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands.data;
 
 import java.io.InputStream;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -143,8 +144,8 @@ public class ProcessXLS implements Command {
 					else if (cell.getCellTypeEnum() == CellType.NUMERIC || cell.getCellTypeEnum() == CellType.FORMULA) {
 						if(HSSFDateUtil.isCellDateFormatted(cell)) {
 							Date date = cell.getDateCellValue();
-							 ZonedDateTime date1 = date.toInstant().atZone(DateTimeUtil.getZoneId(AccountUtil.getCurrentOrg().getTimezone()));
-							 val = (Long) date1.toEpochSecond()*1000;
+							 Instant date1 = date.toInstant();
+							 val = (Long) date1.getEpochSecond()*1000;
 						}
 						else {
 							val = cell.getNumericCellValue();
