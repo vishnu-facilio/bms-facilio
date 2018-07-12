@@ -1052,7 +1052,7 @@ public class WorkOrderAction extends FacilioAction {
 	}
 	public List<PMReminder> convertReminder(String reminder_string)
 	{
-		List<PMReminder> re = new ArrayList<>();
+		List<PMReminder> re = null;
 		JSONParser parser = new JSONParser();
 		try {
 			JSONArray obj = (JSONArray) parser.parse(reminder_string);
