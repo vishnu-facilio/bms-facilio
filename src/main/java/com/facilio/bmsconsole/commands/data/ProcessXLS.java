@@ -196,6 +196,9 @@ public class ProcessXLS implements Command {
 					colVal.remove("spaceName");
 				}
 				
+				LOGGER.severe("\n\n importProcessContext.getFacilioFieldMapping() --- "+ importProcessContext.getFacilioFieldMapping());
+				
+				LOGGER.severe("\n\n colVal --- "+ colVal);
 				fieldMapping.forEach((key,value) -> 
 				{
 					Object cellValue=colVal.get(value);
@@ -205,6 +208,7 @@ public class ProcessXLS implements Command {
 						
 						FacilioField facilioField = null;
 						try {
+							LOGGER.severe("\n\n key --- "+key);
 							facilioField = importProcessContext.getFacilioFieldMapping().get(key);
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
