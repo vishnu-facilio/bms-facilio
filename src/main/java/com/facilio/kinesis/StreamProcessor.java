@@ -26,7 +26,7 @@ public class StreamProcessor {
             String applicationName = clientName + environment;
             java.security.Security.setProperty("networkaddress.cache.ttl", "60");
 
-            String workerId = clientName + InetAddress.getLocalHost().getCanonicalHostName();
+            String workerId = InetAddress.getLocalHost().getHostAddress();
             KinesisClientLibConfiguration kinesisClientLibConfiguration =
                         new KinesisClientLibConfiguration(applicationName, streamName, AwsUtil.getAWSCredentialsProvider(), workerId)
                                 .withRegionName(AwsUtil.getRegion())
