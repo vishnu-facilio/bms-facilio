@@ -83,20 +83,45 @@ public class PerformAssetAction implements Command {
 			List<String> assetNameList = new ArrayList<>();
 			List<String> assetUrlList = new ArrayList<>();
 			String domain = AwsUtil.getConfig("clientapp.url");
+			int i = 1;
+			
+			String table = "<table>"+
+					"  <tr>"+
+					"  	<th>S.No</th>"+
+					"    <th>Asset Name</th>"+
+					"    <th>Screen Name</th>"+
+					"    <th>Server Name</th>"+
+					"  </tr>";
+
 			for(AssetContext asset :assets) {
+				
 				assetNameList.add(asset.getName()+"(#"+asset.getId()+")");
-				assetUrlList.add(asset.getName()+"(#"+asset.getId()+")" +"\t"+ asset.getDatum("screenname") +"\t"+ asset.getDatum("serverno") +"\t " +domain+"/app/at/asset/"+asset.getId()+"/overview");
+				
+				String link = domain+"/app/at/asset/"+asset.getId()+"/overview";
+				String name = asset.getName()+"(#"+asset.getId()+")";
+				name = "<a href="+link+">"+name+"</a>";
+				
+				String serverName = asset.getDatum("screenname") != null ? asset.getDatum("screenname").toString() : "-";
+				String serverno = asset.getDatum("serverno") != null ? asset.getDatum("serverno").toString() : "-";
+				table = table + "<tr>"+
+				"    <td>"+ i++ +".</td>"+
+				"    <td>"+name+"</td>"+
+				"    <td>"+serverName+"</td>"+
+				"    <td>"+serverno+"</td>"+
+				"  </tr>";
 			}
+			table = table + "</table>";
+			
 			if(!assetNameList.isEmpty()) {
 				
 				String assetNames = StringUtils.join(assetNameList,",");
 				
 				Map<String, Object> placeHolders = new HashMap<>();
 				CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeHolders);
-				placeHolders.put("org.superAdmin.email", "krishnan.e@facilio.com");
+				placeHolders.put("org.superAdmin.email", "krishnan.e@facilio.com,"+superAdmin.getEmail());
 				placeHolders.put("org.superAdmin.phone", superAdmin.getPhone());
 				placeHolders.put("asset.names", assetNames);
-				placeHolders.put("asset.url", "\n"+StringUtils.join(assetUrlList,"\n"));
+				placeHolders.put("asset.url", "\n"+table);
 				if(expiryDay != null) {
 					Long millis = null;
 					if(operatorId == DateOperators.PAST_N_DAY.getOperatorId()) {
@@ -112,7 +137,7 @@ public class PerformAssetAction implements Command {
 					SiteContext site = SpaceAPI.getSiteSpace(siteId);
 					placeHolders.put("site.name", site.getName());
 				}
-				
+				placeHolders.put("mailType", "html");
 				for(ActionContext action :workflowRule.getActions()) {
 					
 					action.executeAction(placeHolders, context, workflowRule, null);

@@ -95,6 +95,8 @@ public class ActionContext {
 	public boolean executeAction(Map<String, Object> placeHolders, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
 		if(template != null) {
 			JSONObject actionObj = template.getTemplate(placeHolders);
+			String type = placeHolders.get("mailType") != null ? placeHolders.get("mailType").toString() : null;
+			actionObj.put("mailType", type);
 			actionType.performAction(actionObj, context, currentRule, currentRecord);
 		}
 		else {
