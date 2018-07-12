@@ -85,7 +85,7 @@ public class PerformAssetAction implements Command {
 			String domain = AwsUtil.getConfig("clientapp.url");
 			for(AssetContext asset :assets) {
 				assetNameList.add(asset.getName()+"(#"+asset.getId()+")");
-				assetUrlList.add(domain+"/app/at/asset/"+asset.getId()+"/overview");
+				assetUrlList.add(asset.getName()+"(#"+asset.getId()+")" +" - "+ domain+"/app/at/asset/"+asset.getId()+"/overview");
 			}
 			if(!assetNameList.isEmpty()) {
 				
