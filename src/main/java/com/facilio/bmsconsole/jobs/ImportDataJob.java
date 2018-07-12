@@ -4,9 +4,11 @@ import java.util.logging.Logger;
 
 import org.apache.log4j.LogManager;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.actions.ImportProcessContext.ImportStatus;
 import com.facilio.bmsconsole.commands.data.ProcessXLS;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
@@ -42,6 +44,7 @@ public class ImportDataJob extends FacilioJob {
 			ImportAPI.updateImportProcess(importProcessContext,ImportStatus.IMPORTED);
 		}
 		catch(Exception e) {
+			CommonCommandUtil.emailException("Import Failed", "Import failed - orgid -- "+AccountUtil.getCurrentOrg().getId(), e);
 			log.info("Exception occurred ", e);
 		}
 	}
