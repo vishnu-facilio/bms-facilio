@@ -3327,6 +3327,7 @@ public class DashboardAction extends ActionSupport {
 							.module(module123)
 							.beanClass(EnergyMeterContext.class)
 							.andCustomWhere("IS_ROOT= ?", false)
+							.andCustomWhere("IS_VIRTUAL= ?", false)
 							.andCondition(CriteriaAPI.getCondition("PURPOSE_SPACE_ID","PURPOSE_SPACE_ID",report.getReportSpaceFilterContext().getBuildingId()+"",NumberOperators.EQUALS))
 							.andCondition(CriteriaAPI.getCondition("PURPOSE_ID","PURPOSE_ID",energyMeterPurpose.getId()+"",NumberOperators.EQUALS))
 							.maxLevel(0);

@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,7 +47,6 @@ public class PerformAssetAction implements Command {
 			if(!workflowRule.isActive()) {
 				continue;
 			}
-			
 			Criteria criteria = workflowRule.getCriteria();
 			
 			SelectRecordsBuilder<AssetContext> selectBuilder = new SelectRecordsBuilder<AssetContext>()
@@ -91,6 +92,7 @@ public class PerformAssetAction implements Command {
 					"    <th>Asset Name</th>"+
 					"    <th>Screen Name</th>"+
 					"    <th>Server Name</th>"+
+					"    <th>Expire On</th>"+
 					"  </tr>";
 
 			for(AssetContext asset :assets) {
@@ -103,11 +105,14 @@ public class PerformAssetAction implements Command {
 				
 				String serverName = asset.getDatum("screenname") != null ? asset.getDatum("screenname").toString() : "-";
 				String serverno = asset.getDatum("serverno") != null ? asset.getDatum("serverno").toString() : "-";
+				
+				ZonedDateTime expityDate = DateTimeUtil.getDateTime(asset.getWarrantyExpiryDate());
 				table = table + "<tr>"+
 				"    <td>"+ i++ +".</td>"+
 				"    <td>"+name+"</td>"+
 				"    <td>"+serverName+"</td>"+
 				"    <td>"+serverno+"</td>"+
+				"    <td>"+DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm").format(expityDate)+"</td>"+
 				"  </tr>";
 			}
 			table = table + "</table>";
