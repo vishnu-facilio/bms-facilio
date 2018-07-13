@@ -11,9 +11,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.websocket.EncodeException;
 
 import org.apache.struts2.ServletActionContext;
+import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.util.AdminAPI;
 import com.facilio.fw.LRUCache;
+import com.facilio.license.FreshsalesUtil;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.wms.message.Message;
 import com.facilio.wms.message.MessageType;
@@ -49,6 +51,47 @@ public class AdminAction extends ActionSupport
 		}
 		return SUCCESS;
 	}
+	
+	public String updateCRM()
+	{
+		HttpServletRequest request = ServletActionContext.getRequest();
+		String orgid = request.getParameter("orgid");
+		String domainame = ((String[])getFreshsales().get("faciliodomainname"))[0];
+		String amount = ((String[])getFreshsales().get("amount"))[0];
+
+		JSONObject data = new JSONObject();
+		data.put("name", domainame);
+		data.put("amount", amount);
+		
+		JSONObject salesacct = new JSONObject();
+		salesacct.put("name", domainame);
+		data.put("sales_account", salesacct);
+		
+		JSONObject customfield = new JSONObject();
+		customfield.put("ORGID", orgid);
+		customfield.put("faciliodomainname", domainame);
+
+		data.put("custom_field", customfield);
+		
+		System.out.println("Final data to freshsales"+data);
+		
+			try {
+				FreshsalesUtil.createLead("deals", data);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+		return SUCCESS;
+	}
+	public JSONObject getFreshsales() {
+		return freshsales;
+	}
+
+	public void setFreshsales(JSONObject freshsales) {
+		this.freshsales = freshsales;
+	}
+	private JSONObject freshsales = new JSONObject();
 	
 	public void addJob()
 	{

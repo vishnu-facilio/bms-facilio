@@ -96,5 +96,24 @@ No Of Users In OrgId  <%= org.getOrgId() %> :  <%= users.size() %>
 </div>
 </div>
 </form>
+
+<% if (org != null) { %>
+<form action="updateCRM">
+<input type="hidden" name="orgid" value="<%= org.getOrgId() %>">
+<input type="hidden" name="freshsales.faciliodomainname" value="<%= org.getDomain() %>">
+<input type="hidden" name="freshsales.name" value="<%= org.getDomain() %>">
+
+<input type="hidden" name="freshsales.ORGID" value="<%= org.getOrgId() %>">
+<input type="text" name="freshsales.amount" value="1000">
+<input type="hidden" name="freshsales.sales_account" value="<%=  "{\"name\":\"Sample Account\"}" %>">
+
+
+
+<input type="submit" name="update CRM" value="update FreshSales">
+
+</form>
+
+<% } %>
+
 </body>
 </html>

@@ -7,6 +7,7 @@ import java.util.Map;
 import org.json.simple.JSONObject;
 
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.license.FreshsalesUtil;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class LeadTracker extends ActionSupport {
@@ -14,7 +15,7 @@ public class LeadTracker extends ActionSupport {
 	@Override
 	public String execute() throws Exception {
 		
-		createLead(getData());
+		FreshsalesUtil.createLead("leads",getData());
 		
 		return SUCCESS;
 	}
@@ -31,20 +32,5 @@ public class LeadTracker extends ActionSupport {
 		return this.data;
 	}
 	
-	private void createLead(JSONObject lead) throws IOException {
-		
-		if (lead == null || lead.size() == 0) {
-			return;
-		}
-		
-		JSONObject postData = new JSONObject();
-		postData.put("lead", lead);
-		
-		Map<String, String> headers = new HashMap<>();
-		headers.put("Content-Type","application/json");
-		headers.put("Authorization", "Token token=erLKqferUgGcY6sy_4qVJw");
-		 
-		String url = "https://facilio.freshsales.io/api/leads";
-		AwsUtil.doHttpPost(url, headers, null, postData.toJSONString());
-	}
+	
 }
