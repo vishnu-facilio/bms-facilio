@@ -327,7 +327,6 @@ public long inviteRequester(long orgId, User user) throws Exception {
 		Organization portalOrg = AccountUtil.getOrgBean().getPortalOrg(AccountUtil.getCurrentOrg().getDomain());
 		user.setPortalId(portalOrg.getPortalId());
 		long ouid = addRequester(orgId, user, false);
-		sendInvitation(ouid, user);
 		return ouid;
 	}
 
@@ -1020,7 +1019,8 @@ public long inviteRequester(long orgId, User user) throws Exception {
 		long ouid = addToORGUsers(user);
 		
 		addFacilioRequestor(user);
-				
+		
+		sendInvitation(ouid, user);
 		return ouid;
 	}
 
