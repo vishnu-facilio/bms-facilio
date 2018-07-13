@@ -3797,7 +3797,7 @@ public class DashboardAction extends ActionSupport {
 						calculateBenchmarkValue();
 						BenchmarkContext benchmark = BenchmarkAPI.getBenchmark(benchmarkId);
 						benchmark.setValue(value);
-						String unit = "/"+Unit.SQUARE_FOOT.getSymbol();
+						String unit = "/"+Unit.SQUARE_METER.getSymbol();
 						benchmark.setDisplayUnit(unit);
 						addBenchmarks(benchmark);
 						
