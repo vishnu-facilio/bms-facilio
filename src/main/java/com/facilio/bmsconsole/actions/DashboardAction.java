@@ -3787,12 +3787,6 @@ public class DashboardAction extends ActionSupport {
 					for(ReportBenchmarkRelContext reportBenchmarkRel : reportContext.getReportBenchmarkRelContexts()) {
 						
 						benchmarkId = reportBenchmarkRel.getBenchmarkId();
-						BenchmarkUnit benchmarkUnit = new BenchmarkUnit();
-						benchmarkUnit.setFromUnit(Unit.SQUARE_METER);
-						benchmarkUnit.setToUnit(Unit.SQUARE_FOOT);
-						List<BenchmarkUnit> units1 = new ArrayList<>();
-						units1.add(benchmarkUnit);
-						units = units1;
 						
 						calculateBenchmarkValue();
 						BenchmarkContext benchmark = BenchmarkAPI.getBenchmark(benchmarkId);
