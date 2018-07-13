@@ -469,6 +469,9 @@ public class DeviceAPI
 //			System.out.println(virtualMeterReading);
 //			System.out.println(completeReadings.size());
 //			completeReadings.removeAll(intervalReadings);
+			if (AccountUtil.getCurrentOrg().getId() == 116) {
+				LOGGER.info("Calculated VM Reading : "+virtualMeterReading);
+			}
 			if(virtualMeterReading != null) {
 				LOGGER.info("Adding VM reading for time : "+virtualMeterReading.getTtime());
 				vmReadings.add(virtualMeterReading);
