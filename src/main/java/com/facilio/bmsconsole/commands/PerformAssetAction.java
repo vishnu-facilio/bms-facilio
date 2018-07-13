@@ -50,10 +50,10 @@ public class PerformAssetAction implements Command {
 			Criteria criteria = workflowRule.getCriteria();
 			
 			SelectRecordsBuilder<AssetContext> selectBuilder = new SelectRecordsBuilder<AssetContext>()
-					.moduleName(module.getName())
+					.module(module)
 					.beanClass(AssetContext.class)
 					.select(modBean.getAllFields(module.getName()))
-					.table(module.getTableName());
+					;
 			
 			String expiryDay  = null;
 			Long siteId = null;
