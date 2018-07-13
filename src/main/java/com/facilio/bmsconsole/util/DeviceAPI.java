@@ -559,8 +559,10 @@ public class DeviceAPI
 				timestamps.add(reading.getTtime());
 			}
 			
-			LOGGER.debug("Child Meter IDs : "+childIds);
-			LOGGER.debug("Meter wise readings : "+readingMap);
+			if (AccountUtil.getCurrentOrg().getId() == 116) {
+				LOGGER.info("Child Meter IDs : "+childIds);
+				LOGGER.info("Meter wise readings : "+readingMap);
+			}
 			EnergyDataEvaluator evaluator = new EnergyDataEvaluator(readingMap);
 			String expression = meter.getChildMeterExpression();
 			virtualMeterReading = evaluator.evaluateExpression(expression);
