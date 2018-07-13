@@ -1,9 +1,10 @@
 package com.facilio.bmsconsole.jobs;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.apache.commons.chain.Chain;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -17,7 +18,7 @@ import com.facilio.tasker.job.JobContext;
 
 public class AssetActionJob extends FacilioJob {
 
-	private static final Logger LOGGER = Logger.getLogger(AssetActionJob.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(AssetActionJob.class.getName());
 	@Override
 	public void execute(JobContext jc) {
 		try {
@@ -29,7 +30,8 @@ public class AssetActionJob extends FacilioJob {
 			assetAction.execute(context);
 		}
 		catch(Exception e) {
-			CommonCommandUtil.emailException("asset notification Failed", "asset notification Failed -- "+AccountUtil.getCurrentOrg().getId(), e);
+			LOGGER.error("Asset notification job failed", e);
+			CommonCommandUtil.emailException(AssetActionJob.class.getName(), "asset notification Failed -- "+AccountUtil.getCurrentOrg().getId(), e);
 		}
 	}
 

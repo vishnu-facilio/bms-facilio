@@ -461,7 +461,7 @@ public class DeviceAPI
 				}
 			}
 			
-			LOGGER.debug("Calculating Consumption for VM : "+meter.getName());
+			LOGGER.info("Calculating Consumption for VM : "+meter.getName());
 			LOGGER.info("Intervals : "+interval);
 			ReadingContext virtualMeterReading = calculateVMReading(meter,intervalReadings, childMeterIds, interval);
 //			System.out.println("Vm : ");
@@ -470,7 +470,7 @@ public class DeviceAPI
 //			System.out.println(completeReadings.size());
 //			completeReadings.removeAll(intervalReadings);
 			if(virtualMeterReading != null) {
-				LOGGER.debug("Adding VM reading for time : "+virtualMeterReading.getTtime());
+				LOGGER.info("Adding VM reading for time : "+virtualMeterReading.getTtime());
 				vmReadings.add(virtualMeterReading);
 				intervalReadings=new ArrayList<ReadingContext>();
 			}
