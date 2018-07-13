@@ -206,6 +206,8 @@ public class UserAction extends ActionSupport {
 		
 		// setting necessary fields
 		long orgid = AccountUtil.getCurrentOrg().getOrgId();
+//		long portalid = AccountUtil.getPortalInfo().getPortalId();
+//		System.out.println(portalid);
 		user.setOrgId(orgid);
 		if(user.getEmail() == null || user.getEmail().isEmpty()) {
 			user.setEmail(user.getMobile());
