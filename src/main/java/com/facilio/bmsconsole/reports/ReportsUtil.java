@@ -40,6 +40,9 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.unitconversion.Metric;
+import com.facilio.unitconversion.Unit;
+import com.facilio.unitconversion.UnitsUtil;
 import com.google.gson.Gson;
 
 public class ReportsUtil 
@@ -398,12 +401,16 @@ public class ReportsUtil
 		return meterVsPurpose;
 	}
 	
-	public static double getEUI(Double currentKwh, Double buildingArea) {
+	public static double getEUI(Double currentKwh, Double buildingArea) throws Exception {
 
 		if(currentKwh==null || currentKwh==0 || buildingArea==null || buildingArea==0)
 		{
 			return 0;
 		}
+		
+		Unit displayUnit = UnitsUtil.getOrgDisplayUnit(AccountUtil.getCurrentOrg().getId(), Metric.AREA);
+		buildingArea = UnitsUtil.convert(buildingArea, Unit.SQUARE_FOOT, displayUnit);
+		
 		double convertedVal=currentKwh*conversionMultiplier;
 		double eui= convertedVal/buildingArea;
 		return roundOff(eui, 2);
