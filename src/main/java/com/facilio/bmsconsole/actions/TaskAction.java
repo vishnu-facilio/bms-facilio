@@ -249,7 +249,7 @@ public class TaskAction extends ActionSupport {
 				Map<String, String> msgMap = new HashMap<>();
 				msgMap.put("message", ex.getMessage());
 				msgMap.put("evaluator", ex.getResultEvaluator());
-				errorMap.put(ex.getReadingFieldId(), msgMap);
+				errorMap.put(singleTask.getId(), msgMap);
 				setError(errorMap);
 			}
 			Object count = context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
