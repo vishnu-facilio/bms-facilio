@@ -150,11 +150,29 @@ public class DeviceAPI
 				.maxLevel(0);
 		return selectBuilder.get();
 	}
-	
 	public static Map<Long, Long> getMainEnergyMeterForAllBuildings() throws Exception {
 		
+		return getMainEnergyMeterForAllBuildings(null);
+	}
+	public static Map<Long, Long> getMainEnergyMeterForAllBuildings(List<Long> siteids) throws Exception {
+		
 		String idList = "";
-		for(BuildingContext building :SpaceAPI.getAllBuildings()) {
+		List<BuildingContext> buildings = null;
+		if(siteids != null && !siteids.isEmpty()) {
+			for(Long siteId :siteids) {
+				
+				List<BuildingContext> buildings1 = SpaceAPI.getSiteBuildings(siteId);
+				if(buildings == null) {
+					buildings = new ArrayList<>();
+				}
+				buildings.addAll(buildings1);
+				
+			}
+		}
+		else {
+			buildings = SpaceAPI.getAllBuildings();
+		}
+		for(BuildingContext building :buildings) {
 			idList = idList +building.getId()+",";
 		}
 		idList = idList.substring(0, idList.length()-1);

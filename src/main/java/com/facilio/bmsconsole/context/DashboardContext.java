@@ -1,7 +1,10 @@
 package com.facilio.bmsconsole.context;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -114,6 +117,44 @@ public class DashboardContext extends ModuleBaseWithCustomFields {
 		SUBMITTED,
 		REJECTED,
 		PUBLISHED
+	}
+	public static enum DashboardType {
+		SITE_PORTFOLIO(1,"Site Portfolio"),
+		BUILDING_PORTFOLIO(2,"Building Portfolio"),
+		BUILDING(3,"Building"),
+		ZONE(4,"Zone");
+		
+		private int intVal;
+		private String strVal;
+		
+		private DashboardType(int intVal, String strVal) {
+			this.intVal = intVal;
+			this.strVal = strVal;
+		}
+		
+		public int getIntVal() {
+			return intVal;
+		}
+		public String getStringVal() {
+			return strVal;
+		}
+		
+		public static DashboardType getType(int val) {
+			return typeMap.get(val);
+		}
+		
+		private static final Map<Integer, DashboardType> typeMap = Collections.unmodifiableMap(initTypeMap());
+		private static Map<Integer, DashboardType> initTypeMap() {
+			Map<Integer, DashboardType> typeMap = new HashMap<>();
+			
+			for(DashboardType type : values()) {
+				typeMap.put(type.getIntVal(), type);
+			}
+			return typeMap;
+		}
+		public Map<Integer, DashboardType> getAllTypes() {
+			return typeMap;
+		}
 	}
 	//	@Override
 	//	public int compareTo(DashboardContext o) {

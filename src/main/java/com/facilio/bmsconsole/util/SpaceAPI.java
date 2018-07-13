@@ -490,6 +490,20 @@ public class SpaceAPI {
 		return sites;
 	}
 	
+	public static List<SiteContext> getAllSitesOfType(int siteType) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SITE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SITE);
+		
+		SelectRecordsBuilder<SiteContext> selectBuilder = new SelectRecordsBuilder<SiteContext>()
+																	.select(fields)
+																	.module(module)
+																	.andCustomWhere("SITE_TYPE = ?", siteType)
+																	.beanClass(SiteContext.class);
+		List<SiteContext> sites = selectBuilder.get();
+		return sites;
+	}
+	
 	public static List<SiteContext> getAllSites() throws Exception {
 		return getAllSites(0);
 	}

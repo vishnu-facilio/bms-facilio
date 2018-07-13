@@ -13,6 +13,8 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.context.SiteContext.SiteType;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
@@ -44,7 +46,17 @@ public class PortfolioAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String dashboardKey;
 	
+	public String getDashboardKey() {
+		return dashboardKey;
+	}
+
+	public void setDashboardKey(String dashboardKey) {
+		this.dashboardKey = dashboardKey;
+	}
+
+
 	@SuppressWarnings("unchecked")
 	public String getAllBuildings() throws Exception
 	{
@@ -54,7 +66,32 @@ public class PortfolioAction extends ActionSupport {
 		
 //		List<EnergyMeterContext> energyMeters = DeviceAPI.getAllMainEnergyMeters();
 //		Map <Long, Long> buildingVsMeter = ReportsUtil.getBuildingVsMeter(energyMeters);
-		Map <Long, Long> buildingVsMeter= DeviceAPI.getMainEnergyMeterForAllBuildings();
+		List<Long> siteIds = null;
+		if(dashboardKey != null) {
+			if(dashboardKey.equals("commercial")) {
+				List<SiteContext> sites = SpaceAPI.getAllSitesOfType(SiteType.COMMERCIAL.getIntVal());
+				if(sites != null) {
+					for(SiteContext site :sites) {
+						if(siteIds == null) {
+							siteIds = new ArrayList<>();
+						}
+						siteIds.add(site.getId());
+					}
+				}
+			}
+			else if (dashboardKey.equals("residential")) {
+				List<SiteContext> sites = SpaceAPI.getAllSitesOfType(SiteType.RESIDENTIAL.getIntVal());
+				if(sites != null) {
+					for(SiteContext site :sites) {
+						if(siteIds == null) {
+							siteIds = new ArrayList<>();
+						}
+						siteIds.add(site.getId());
+					}
+				}
+			}
+		}
+		Map <Long, Long> buildingVsMeter = DeviceAPI.getMainEnergyMeterForAllBuildings(siteIds);
 		String deviceList=StringUtils.join(buildingVsMeter.values(),",");
 		String buildingList=StringUtils.join(buildingVsMeter.keySet(),",");
 		List<BuildingContext> buildings=SpaceAPI.getBuildingSpace(buildingList);
