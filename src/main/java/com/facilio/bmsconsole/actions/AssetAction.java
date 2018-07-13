@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
@@ -97,6 +98,7 @@ public class AssetAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
 		context.put(FacilioConstants.ContextNames.RECORD, asset);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(asset.getId()));
+		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, asset.getCategory().getId());
 		
 		Chain updateAssetChain = FacilioChainFactory.getUpdateAssetChain();
 		updateAssetChain.execute(context);
@@ -112,7 +114,7 @@ public class AssetAction extends ActionSupport {
 		
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.DELETE);
 		context.put(FacilioConstants.ContextNames.RECORD, asset);
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(assetId));
 		
 		Chain deleteAssetChain = FacilioChainFactory.getDeleteAssetChain();
 		deleteAssetChain.execute(context);
@@ -157,11 +159,13 @@ public class AssetAction extends ActionSupport {
 	public String assetDetails() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getAssetId());
-		
+		AssetContext asset= AssetsAPI.getAssetInfo(assetId, true);
+		AssetCategoryContext category= asset.getCategory();
+		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, category.getId());
 		Chain assetDetailsChain = FacilioChainFactory.getAssetDetailsChain();
 		assetDetailsChain.execute(context);
 		
-		asset = (AssetContext) context.get(FacilioConstants.ContextNames.RECORD);
+		setAsset((AssetContext) context.get(FacilioConstants.ContextNames.RECORD));
 		
 		return SUCCESS;
 	}
@@ -227,7 +231,6 @@ public class AssetAction extends ActionSupport {
 	public void setId(List<Long> id) {
 		this.id = id;
 	}
-	
 	private int rowsUpdated;
 	public int getRowsUpdated() {
 		return rowsUpdated;

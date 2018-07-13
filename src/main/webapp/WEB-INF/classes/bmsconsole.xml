@@ -732,7 +732,7 @@
 			<param name="moduleName">asset</param>
 			<param name="permission">DELETE</param>
 			<result name="success" type="json">
-				<param name="includeProperties">rowsUpdated</param>
+				<param name="includeProperties">assetId</param>
 			</result>
 		</action>
 
