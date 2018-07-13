@@ -36,6 +36,7 @@ public class ColumnFactory {
 		columnMap.put("workorder-myteamopen", getDefaultViewColumns());
 		columnMap.put("workorder-unassigned", getDefaultViewColumns());
 		columnMap.put("workorder-closed", getDefaultViewColumns());
+		columnMap.put("workorder-resolved", getDefaultViewColumns());
 		columnMap.put("workorder-openfirealarms", getDefaultViewColumns());
 		columnMap.put("workorder-myoverdue", getDefaultViewColumns());
 		columnMap.put("workorder-myduetoday", getDefaultViewColumns());

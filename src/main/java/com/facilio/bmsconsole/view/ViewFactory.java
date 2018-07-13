@@ -80,7 +80,7 @@ public class ViewFactory {
 		views.put("myduetoday", getMyDueTodayWorkOrders().setOrder(order++));
 		views.put("openfirealarms", getFireSafetyWOs().setOrder(order++));
 		views.put("all", getAllWorkOrders().setOrder(order++));
-//		views.put("resolved", getAllClosedWorkOrders().setOrder(order++));
+		views.put("resolved", getAllResolvedWorkOrders().setOrder(order++));
 		views.put("closed", getAllClosedWorkOrders().setOrder(order++));
 		views.put("report", getReportView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.WORK_ORDER, views);
@@ -628,19 +628,32 @@ public class ViewFactory {
 		
 		FacilioView resolvedTicketsView = new FacilioView();
 		resolvedTicketsView.setName("resolved");
-		resolvedTicketsView.setDisplayName("Resolved Workorders");
-		resolvedTicketsView.setCriteria(getResolvedTicketsCriteria(workOrdersModule));
+		resolvedTicketsView.setDisplayName("Resolved");
+		resolvedTicketsView.setCriteria(getTicketStatusCriteria("Resolved", workOrdersModule));
 		resolvedTicketsView.setSortFields(sortFields);
 		
 		return resolvedTicketsView;
 	}
 	
-	private static Criteria getResolvedTicketsCriteria (FacilioModule module) {
+	private static Criteria getTicketStatusCriteria (String status, FacilioModule module) {
+		FacilioField statusTypeField = new FacilioField();
+		statusTypeField.setName("status");
+		statusTypeField.setColumnName("STATUS");
+		statusTypeField.setDataType(FieldType.STRING);
+		statusTypeField.setModule(ModuleFactory.getTicketStatusModule());
+		
+		Condition statusClose = new Condition();
+		statusClose.setField(statusTypeField);
+		statusClose.setOperator(StringOperators.IS);
+		statusClose.setValue(status);
+		
+		Criteria statusCriteria = new Criteria();
+		statusCriteria.addAndCondition(statusClose);
+		
 		LookupField statusField = new LookupField();
 		statusField.setName("status");
 		statusField.setColumnName("STATUS_ID");
 		statusField.setDataType(FieldType.LOOKUP);
-		
 		statusField.setModule(module);
 		statusField.setExtendedModule(ModuleFactory.getTicketsModule());
 		statusField.setLookupModule(ModuleFactory.getTicketStatusModule());
@@ -648,7 +661,7 @@ public class ViewFactory {
 		Condition ticketClose = new Condition();
 		ticketClose.setField(statusField);
 		ticketClose.setOperator(LookupOperator.LOOKUP);
-		ticketClose.setCriteriaValue(getCloseStatusCriteria());
+		ticketClose.setCriteriaValue(statusCriteria);
 		
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(ticketClose);
@@ -1390,6 +1403,11 @@ public class ViewFactory {
 			case "my": 
 				Condition myUser = getMyUserCondition(module);
 				criteria.addAndCondition(myUser);
+			break;
+			
+			case "myTeam": 
+				Condition myTeam = getMyTeamCondition(module);
+				criteria.addAndCondition(myTeam);
 			break;
 			
 			case "overdue":
