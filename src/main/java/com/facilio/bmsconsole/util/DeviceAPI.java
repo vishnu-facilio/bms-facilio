@@ -439,9 +439,9 @@ public class DeviceAPI
 			childMeterIds.add((Long) childProp.get("childMeterId"));
 		}
 		List<ReadingContext> completeReadings = new LinkedList<>(getChildMeterReadings(childMeterIds, startTime, endTime, minutesInterval));
-//		if(completeReadings.isEmpty()) {
-//			return;
-//		}
+		if(completeReadings.isEmpty()) {
+			return;
+		}
 		List<ReadingContext> vmReadings = new ArrayList<ReadingContext>();
 		List<ReadingContext> intervalReadings=new ArrayList<ReadingContext>();
 		for(Pair<Long, Long> interval : intervals) {
@@ -462,18 +462,18 @@ public class DeviceAPI
 			}
 			
 			LOGGER.debug("Calculating Consumption for VM : "+meter.getName());
-			LOGGER.debug("Intervals : "+interval);
+			LOGGER.info("Intervals : "+interval);
 			ReadingContext virtualMeterReading = calculateVMReading(meter,intervalReadings, childMeterIds, interval);
 //			System.out.println("Vm : ");
 //			System.out.println(intervalReadings.size());
 //			System.out.println(virtualMeterReading);
 //			System.out.println(completeReadings.size());
 //			completeReadings.removeAll(intervalReadings);
-//			if(virtualMeterReading != null) {
+			if(virtualMeterReading != null) {
 				LOGGER.debug("Adding VM reading for time : "+virtualMeterReading.getTtime());
 				vmReadings.add(virtualMeterReading);
 				intervalReadings=new ArrayList<ReadingContext>();
-//			}
+			}
 		}
 
 		LOGGER.info("VM Readings size : "+vmReadings.size());
@@ -568,14 +568,8 @@ public class DeviceAPI
 				return null;
 			}
 			virtualMeterReading.setTtime(((Double)StatUtils.max(timestamps.stream().mapToDouble(Long::doubleValue).toArray())).longValue());
+			virtualMeterReading.setParentId(meter.getId());
 		}
-		else {
-			virtualMeterReading = new ReadingContext();
-			virtualMeterReading.addReading(TOTAL_ENERGY_CONSUMPTION_DELTA, 0d);
-			virtualMeterReading.addReading(TOTAL_DEMAND, 0d);
-			virtualMeterReading.setTtime(interval.getLeft());
-		}
-		virtualMeterReading.setParentId(meter.getId());
 		return virtualMeterReading;
 	}
 	
