@@ -3517,7 +3517,9 @@ public class DashboardAction extends ActionSupport {
 		if (this.entityName != null && baseLineName != null) {
 			this.entityName += " - " + baseLineName;
 		}
-		
+		if(this.reportContext.getReportEntityId().equals(2912l)) {
+			this.entityName = report.getName();
+		}
 		Map<String, Double> violatedReadings = getViolatedReadings(report, dateFilter, baseLineId);
 		
 		if(report.getGroupBy() != null) {
