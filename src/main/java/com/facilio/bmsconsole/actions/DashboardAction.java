@@ -3074,6 +3074,9 @@ public class DashboardAction extends ActionSupport {
 			else {
 				dateRange = report.getDateFilter().getOperator().getRange(report.getDateFilter().getValue());
 			}
+			if(!isEnergyDataWithTimeFrame && ((DateTimeUtil.getDayStartTime(1) - 5) < dateRange.getEndTime() && dateRange.getEndTime() <= DateTimeUtil.getDayStartTime(1)) ) {
+				dateRange.setEndTime(DateTimeUtil.getCurrenTime());
+			}
 			LOGGER.severe("start -- "+dateRange.getStartTime() +" end -- "+dateRange.getEndTime());
 			dateCondition = baseLineContext.getBaseLineCondition(report.getDateFilter().getField(), dateRange);
 			String baseLineStartValue = dateCondition.getValue().substring(0,dateCondition.getValue().indexOf(","));
