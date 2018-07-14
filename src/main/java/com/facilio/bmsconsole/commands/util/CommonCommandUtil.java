@@ -227,6 +227,10 @@ public class CommonCommandUtil {
 		emailException(fromClass, msg, e, null);
 	}
 	
+	public static void emailException(String fromClass, String msg, String info) {
+		emailException(fromClass, msg, null, info);
+	}
+	
 	public static void emailException(String fromClass, String msg, Throwable e, String info) {
 		try {
 			JSONObject json = new JSONObject();
@@ -248,7 +252,9 @@ public class CommonCommandUtil {
 						.append(" - ");
 			}
 			
-			subject.append(e.getMessage());
+			if (e != null) {
+				subject.append(e.getMessage());
+			}
 			json.put("subject", subject.toString());
 			
 			StringBuilder body = new StringBuilder();
@@ -260,18 +266,23 @@ public class CommonCommandUtil {
 
 			body.append(fromClass).append(DELIMITER);
 			
-			body.append("\n Time").append(System.currentTimeMillis()).append("\n\nMsg : ")
+			body.append("\n Time : ").append(System.currentTimeMillis()).append("\n\nMsg : ")
 				.append(msg)
 				.append("\n\nApp Url : ")
-				.append(AwsUtil.getConfig("app.url"))
-				.append("\n\nTrace : \n--------\n")
-				.append(ExceptionUtils.getStackTrace(e));
+				.append(AwsUtil.getConfig("app.url"));
+			
+			if (e != null) {
+				body.append("\n\nTrace : \n--------\n")
+					.append(ExceptionUtils.getStackTrace(e));
+			}
 			
 			if (info != null && !info.isEmpty()) {
 				body.append(info);
 			}
 			
-			checkDB(e.getMessage(), body);
+			if (e != null) {
+				checkDB(e.getMessage(), body);
+			}
 			String message = body.toString();
 			json.put("message", message);
 			//AwsUtil.sendEmail(json);

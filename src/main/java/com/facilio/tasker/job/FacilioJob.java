@@ -68,9 +68,8 @@ public abstract class FacilioJob implements Runnable {
 				LOGGER.error("Exception occurred ", e1);
 			}
 			executor.removeJob(jc);
-			System.out.println("Exception occurred during execution of job : "+jc);
 			LOGGER.error("Job execution failed for Job :"+jc.getJobId()+" : "+ jc.getJobName(),e);
-			CommonCommandUtil.emailException("FacilioJob", "Job execution failed for Job :"+jc.getJobId()+" : "+ jc.getJobName(), e);
+			CommonCommandUtil.emailException(FacilioJob.class.getName(), "Job execution failed for Job :"+jc.getJobId()+" : "+ jc.getJobName(), e);
 			reschedule();
 		}
 	}
@@ -104,6 +103,7 @@ public abstract class FacilioJob implements Runnable {
 		}
 		else {
 			LOGGER.error("Max retry exceeded for : "+jc+".\nSo making it inactive");
+			CommonCommandUtil.emailException(FacilioJob.class.getName(), "Max retry exceeded for Job : "+jc.getJobId()+" : "+ jc.getJobName(), "Since max retries exceeded for job : "+jc.getJobId()+"-"+jc.getJobName()+", making it inactive.");
 			try {
 				JobStore.setInActive(jc.getJobId(), jc.getJobName());
 			} catch (SQLException e) {
