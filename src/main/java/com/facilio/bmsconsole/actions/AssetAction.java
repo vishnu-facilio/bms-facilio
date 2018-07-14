@@ -16,7 +16,6 @@ import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.AssetsAPI;
-import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
@@ -82,7 +81,7 @@ public class AssetAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
 		AssetCategoryContext assetCategory= asset.getCategory();
 		long categoryId=-1;
-		if(assetCategory!=null || assetCategory.getId() != 0) {
+		if(assetCategory!=null && assetCategory.getId() != 0) {
 			categoryId=assetCategory.getId();
 		}
 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, categoryId);
@@ -98,7 +97,12 @@ public class AssetAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
 		context.put(FacilioConstants.ContextNames.RECORD, asset);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(asset.getId()));
-		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, asset.getCategory().getId());
+		long categoryId=-1;
+		AssetCategoryContext assetCategory= asset.getCategory();
+		if(assetCategory!=null && assetCategory.getId() > 0) {
+			categoryId=assetCategory.getId();
+		}
+		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, categoryId);
 		
 		Chain updateAssetChain = FacilioChainFactory.getUpdateAssetChain();
 		updateAssetChain.execute(context);
@@ -161,7 +165,9 @@ public class AssetAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.ID, getAssetId());
 		AssetContext asset= AssetsAPI.getAssetInfo(assetId, true);
 		AssetCategoryContext category= asset.getCategory();
-		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, category.getId());
+		if (category != null && category.getId() != -1) {
+			context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, category.getId());
+		}
 		Chain assetDetailsChain = FacilioChainFactory.getAssetDetailsChain();
 		assetDetailsChain.execute(context);
 		

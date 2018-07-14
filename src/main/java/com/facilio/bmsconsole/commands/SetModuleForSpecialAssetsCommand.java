@@ -13,8 +13,8 @@ public class SetModuleForSpecialAssetsCommand implements Command{
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		long categoryId = (long)context.get(FacilioConstants.ContextNames.PARENT_CATEGORY_ID);
-		if (categoryId == 0 || categoryId == -1)
+		Long categoryId = (Long)context.get(FacilioConstants.ContextNames.PARENT_CATEGORY_ID);
+		if (categoryId == null || categoryId <= 0)
 		{
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, "asset");
 			context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Assets");

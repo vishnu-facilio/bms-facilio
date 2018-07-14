@@ -1190,8 +1190,8 @@ public class FacilioChainFactory {
 	
 	public static Chain getUpdateAssetChain() {
 		Chain c = new TransactionChain();
-//		c.addCommand(new SetModuleForSpecialAssetsCommand());
-		c.addCommand(SetTableNamesCommand.getForAsset());
+		c.addCommand(new SetModuleForSpecialAssetsCommand());
+//		c.addCommand(SetTableNamesCommand.getForAsset());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenericUpdateModuleDataCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
