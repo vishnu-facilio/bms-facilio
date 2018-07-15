@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -21,6 +20,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.bmsconsole.util.DateTimeUtil;
@@ -64,7 +64,7 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 									ZonedDateTime zdt = DateTimeUtil.getDateTime(lastReadingTime).plusHours(1).truncatedTo(ChronoUnit.HOURS);
 									long startTime = DateTimeUtil.getMillis(zdt, true);
 									ScheduleInfo schedule = FormulaFieldAPI.getSchedule(enpi.getFrequencyEnum());
-									List<Pair<Long, Long>> intervals = DateTimeUtil.getTimeIntervals(startTime, endTime, schedule);
+									List<DateRange> intervals = DateTimeUtil.getTimeIntervals(startTime, endTime, schedule);
 									List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(resourceId, enpi.getReadingField().getName(), intervals, enpi.getWorkflow());
 									if (currentReadings != null && !currentReadings.isEmpty()) {
 										readings.addAll(currentReadings);

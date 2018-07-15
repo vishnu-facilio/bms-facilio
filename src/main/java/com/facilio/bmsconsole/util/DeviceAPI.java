@@ -27,6 +27,7 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.criteria.BuildingOperator;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.DeleteRecordBuilder;
@@ -443,7 +444,7 @@ public class DeviceAPI
 
 	public static void insertVirtualMeterReadings(EnergyMeterContext meter, long startTime, long endTime, int minutesInterval,boolean updateReading) throws Exception {
 
-		List<Pair<Long, Long>> intervals= DateTimeUtil.getTimeIntervals(startTime, endTime, minutesInterval);
+		List<DateRange> intervals= DateTimeUtil.getTimeIntervals(startTime, endTime, minutesInterval);
 		GenericSelectRecordBuilder childMeterBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getVirtualMeterRelFields())
 				.table(ModuleFactory.getVirtualMeterRelModule().getTableName())
@@ -462,9 +463,9 @@ public class DeviceAPI
 		}
 		List<ReadingContext> vmReadings = new ArrayList<ReadingContext>();
 		List<ReadingContext> intervalReadings=new ArrayList<ReadingContext>();
-		for(Pair<Long, Long> interval : intervals) {
-			double iStartTime = Math.floor(interval.getLeft()/1000);
-			double iEndTime = Math.floor(interval.getRight()/1000);
+		for(DateRange interval : intervals) {
+			double iStartTime = Math.floor(interval.getStartTime()/1000);
+			double iEndTime = Math.floor(interval.getEndTime()/1000);
 			
 			Iterator<ReadingContext> itr = completeReadings.iterator();
 			while (itr.hasNext()) {
@@ -565,7 +566,7 @@ public class DeviceAPI
 	}
 	
 	
-	private static ReadingContext calculateVMReading(EnergyMeterContext meter,List<ReadingContext> readings, List<Long> childIds, Pair<Long, Long> interval) throws Exception {
+	private static ReadingContext calculateVMReading(EnergyMeterContext meter,List<ReadingContext> readings, List<Long> childIds, DateRange interval) throws Exception {
 		ReadingContext virtualMeterReading = null;
 		if (!readings.isEmpty()) {
 			Map<Long, List<ReadingContext>> readingMap = new HashMap<>();

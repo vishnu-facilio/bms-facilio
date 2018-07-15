@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Chain;
-import org.apache.commons.lang3.tuple.Pair;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
@@ -20,6 +19,7 @@ import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
+import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.ModuleFactory;
@@ -671,8 +671,8 @@ public class ReadingAction extends ActionSupport {
 	}
 	
 	public String calculateFormulField() throws Exception {
-		List<Pair<Long, Long>> intervalMap= DateTimeUtil.getTimeIntervals(startTime, endTime, minuteInterval);
-		readingValues = FormulaFieldAPI.calculateFormulaReadings(resourceId, fieldName, intervalMap, workflow);
+		List<DateRange> intervals = DateTimeUtil.getTimeIntervals(startTime, endTime, minuteInterval);
+		readingValues = FormulaFieldAPI.calculateFormulaReadings(resourceId, fieldName, intervals, workflow);
 		return SUCCESS;
 	}
 	

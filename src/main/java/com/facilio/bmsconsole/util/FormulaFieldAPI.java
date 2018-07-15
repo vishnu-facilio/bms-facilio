@@ -212,15 +212,15 @@ public class FormulaFieldAPI {
 		return null;
 	}
 	
-	public static List<ReadingContext> calculateFormulaReadings(long resourceId, String fieldName, List<Pair<Long, Long>> intervals, WorkflowContext workflow) throws Exception {
+	public static List<ReadingContext> calculateFormulaReadings(long resourceId, String fieldName, List<DateRange> intervals, WorkflowContext workflow) throws Exception {
 		if (intervals != null && !intervals.isEmpty()) {
-			long minTime = intervals.get(0).getLeft();
-			long maxTime = intervals.get(intervals.size() - 1).getRight();
+			long minTime = intervals.get(0).getStartTime();
+			long maxTime = intervals.get(intervals.size() - 1).getEndTime();
 			
 			List<ReadingContext> readings = new ArrayList<>();
-			for(Pair<Long, Long> interval : intervals) {
-				long iStartTime = interval.getLeft();
-				long iEndTime = interval.getRight();
+			for(DateRange interval : intervals) {
+				long iStartTime = interval.getStartTime();
+				long iEndTime = interval.getEndTime();
 				try {
 					Map<String, Object> params = new HashMap<>();
 					params.put("startTime", iStartTime);
@@ -630,7 +630,7 @@ public class FormulaFieldAPI {
 	}
 	
 	public static void historicalCalculation(FormulaFieldContext formula, DateRange range, long singleResourceId) throws Exception {
-		List<Pair<Long, Long>> intervals = getIntervals(formula, range);
+		List<DateRange> intervals = getIntervals(formula, range);
 		if (intervals != null && !intervals.isEmpty()) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			List<ReadingContext> readings = new ArrayList<>();
@@ -710,7 +710,7 @@ public class FormulaFieldAPI {
 		return deleteBuilder.delete();
 	}
 	
-	private static List<Pair<Long, Long>> getIntervals(FormulaFieldContext formula, DateRange range) {
+	private static List<DateRange> getIntervals(FormulaFieldContext formula, DateRange range) {
 		switch (formula.getTriggerTypeEnum()) {
 			case PRE_LIVE_READING:
 				return null;

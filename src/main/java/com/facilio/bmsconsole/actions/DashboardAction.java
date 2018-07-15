@@ -797,7 +797,7 @@ public class DashboardAction extends ActionSupport {
 	private String getDerivationData() throws Exception {
 		WorkflowContext workflow = WorkflowUtil.getWorkflowContext(derivation.getWorkflowId(), true);
 //		workflow.setFromDerivation(true);
-		List<Pair<Long, Long>> intervals;
+		List<DateRange> intervals;
 		if (xAggr != 0) {
 			FacilioFrequency frequency = DashboardUtil.getAggrFrequency(xAggr);
 			ScheduleInfo schedule = FormulaFieldAPI.getSchedule(frequency);

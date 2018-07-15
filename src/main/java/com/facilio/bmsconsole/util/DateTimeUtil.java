@@ -26,6 +26,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.ScheduleInfo;
 
@@ -599,7 +600,7 @@ public class DateTimeUtil
 	}
 	
 	
-	public static List<Pair<Long, Long>> getTimeIntervals(long startTime, long endTime, int minutesInterval){
+	public static List<DateRange> getTimeIntervals(long startTime, long endTime, int minutesInterval){
 
 //		startTime=removeMillisPrecision(startTime, true);
 //		endTime=removeMillisPrecision(endTime, false);
@@ -609,27 +610,27 @@ public class DateTimeUtil
 		if(startTime>=endTime) {
 			return null;
 		}
-		List<Pair<Long, Long>> intervals = new ArrayList<>();
+		List<DateRange> intervals = new ArrayList<>();
 
 		while(modTime<endTime) {
-			intervals.add(Pair.of(startTime, modTime - 1));
+			intervals.add(new DateRange(startTime, modTime - 1));
 			startTime=modTime;
 			modTime=modTime+interval;
 		}
 		if(startTime<endTime) {
-			intervals.add(Pair.of(startTime,endTime));
+			intervals.add(new DateRange(startTime, endTime));
 		}
 		return intervals;
 	}
 	
-	public static List<Pair<Long, Long>> getTimeIntervals(long startTime, long endTime, ScheduleInfo schedule) {
-		List<Pair<Long, Long>> intervals = new ArrayList<>();
+	public static List<DateRange> getTimeIntervals(long startTime, long endTime, ScheduleInfo schedule) {
+		List<DateRange> intervals = new ArrayList<>();
 		startTime = startTime/1000;
 		endTime = endTime/1000;
 		
 		long currentEndTime = schedule.nextExecutionTime(startTime);
 		while (currentEndTime <= endTime) {
-			intervals.add(Pair.of(startTime*1000, (currentEndTime*1000)-1));
+			intervals.add(new DateRange(startTime*1000, (currentEndTime*1000)-1));
 			startTime = currentEndTime;
 			currentEndTime = schedule.nextExecutionTime(startTime);
 		}

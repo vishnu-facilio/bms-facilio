@@ -28,6 +28,7 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -113,12 +114,12 @@ public class CalculatePostFormulaCommand implements Command {
 					FacilioField field = fieldMap.get(fieldName);
 					if (field != null && formula.getWorkflow().getDependentFieldIds().contains(field.getId())) {
 						ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(reading.getParentId(), formula.getReadingField());
-						List<Pair<Long, Long>> intervals = DateTimeUtil.getTimeIntervals(meta.getTtime()+1, System.currentTimeMillis(), formula.getInterval());
+						List<DateRange> intervals = DateTimeUtil.getTimeIntervals(meta.getTtime()+1, System.currentTimeMillis(), formula.getInterval());
 						LOGGER.info("Intervals for calculation of : "+formula.getName()+" for "+reading.getParentId()+" is "+intervals);
 						long startTime = System.currentTimeMillis();
 						if (intervals.size() > 1) { //If more than one interval has to be calculated, only the last interval will be calculated here. Previous intervals will be done via scheduler
-							long minTime = intervals.get(0).getLeft();
-							long maxTime = intervals.get(intervals.size() - 2).getRight();
+							long minTime = intervals.get(0).getStartTime();
+							long maxTime = intervals.get(intervals.size() - 2).getEndTime();
 							FormulaFieldAPI.calculateHistoricalDataForSingleResource(formula.getId(), reading.getParentId(), minTime, maxTime);
 							intervals = Collections.singletonList(intervals.get(intervals.size() - 1));
 						}
@@ -156,7 +157,7 @@ public class CalculatePostFormulaCommand implements Command {
 					FacilioField field = fieldMap.get(fieldName);
 					if (formula.getWorkflow().getDependentFieldIds().contains(field.getId())) {
 						oldReading = getOldReading(formula, startTime, endTime);
-						List<Pair<Long, Long>> intervals = Collections.singletonList(Pair.of(startTime, endTime));
+						List<DateRange> intervals = Collections.singletonList(new DateRange(startTime, endTime));
 						List<ReadingContext> formulaReadings = FormulaFieldAPI.calculateFormulaReadings(reading.getParentId(), formula.getReadingField().getName(), intervals, formula.getWorkflow());
 						if (formulaReadings != null && !formulaReadings.isEmpty()) {
 							ReadingContext newReading = formulaReadings.get(0);
