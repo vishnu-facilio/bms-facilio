@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+    "http://struts.apache.org/dtds/struts-2.5.dtd">
+
+<struts>
+	<package name="setupApiV2" namespace="/api/v2/setup" extends="v2Api">
+	</package>
+
+	<package name="costSetupApiV2" namespace="/api/v2/setup/cost" extends="setupApiV2">
+	</package>
+</struts>
