@@ -3061,6 +3061,10 @@ public class DashboardAction extends ActionSupport {
 		String baseLineName = null;
 		if(baseLineId != -1) {
 			
+			if(report != null && AccountUtil.getCurrentOrg().getId() == 116l) {
+				report.setReportColor("#ec598c");
+			}
+			
 			BaseLineContext baseLineContext = BaseLineAPI.getBaseLine(baseLineId);
 			if(baseLineContext.getAdjustType() <= 0) {
 				baseLineContext.setAdjustType(1);
