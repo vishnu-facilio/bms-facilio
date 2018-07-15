@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +9,8 @@ import java.util.Map;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Triple;
 import org.apache.log4j.LogManager;
 
 import com.facilio.accounts.dto.Group;
@@ -17,6 +20,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.CalendarColorContext;
 import com.facilio.bmsconsole.context.NoteContext;
+import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TaskContext;
@@ -27,6 +31,7 @@ import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketPriorityContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.TicketTypeContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -45,10 +50,12 @@ import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.workflows.util.WorkflowUtil;
+import com.mysql.jdbc.Field;
 
 public class TicketAPI {
 	
@@ -69,11 +76,118 @@ public class TicketAPI {
 		DeleteRecordBuilder<TicketContext> builder = new DeleteRecordBuilder<TicketContext>()
 															.module(module)
 															.andCondition(CriteriaAPI.getIdCondition(recordIds, module));
-															;
+
 		if (level != -1) {
 			builder.level(level);
 		}
-		return builder.delete();
+		
+		List<Map<String, Object>> props = null;
+		if (module.getName().equals("workorder")) {
+			FacilioModule ticketModule = ModuleFactory.getTicketsModule();
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+					.table(ticketModule.getTableName())
+					.select(FieldFactory.getTicketFields(ticketModule))
+					.andCondition(CriteriaAPI.getIdCondition(recordIds, ticketModule));
+			props = selectBuilder.get();
+		}
+		
+		int deletedRows = builder.delete();
+	
+		if (props != null && !props.isEmpty()) {
+			List<Long> userIds = props.stream().map(e -> (Long) e.get("assignedTo")).filter(e -> e != null).collect(Collectors.toList());
+			if (userIds != null && !userIds.isEmpty()) {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				List<FacilioField> uwhFields = modBean.getAllFields("userworkhoursreading");
+				FacilioModule uwhModule = modBean.getModule("userworkhoursreading");
+				String tableName = uwhModule.getTableName();
+				
+				Map<String, FacilioField> uwhFieldMap = FieldFactory.getAsMap(uwhFields); 
+				
+				uwhFields = new ArrayList<>(uwhFields); //mutable
+				uwhFields.add(FieldFactory.getField("second_id", "second_table.ID", FieldType.NUMBER));
+				uwhFields.add(FieldFactory.getIdField(uwhModule));
+				
+				
+				GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+						.table(tableName)
+						.select(uwhFields)
+						.leftJoin(tableName + " second_table")
+						.on("second_table.ORGID = ? AND second_table.PARENT_ID="+tableName+".PARENT_ID AND "+tableName+".TTIME < second_table.TTIME")
+						.andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getOrgId(), uwhModule))
+						.andCondition(CriteriaAPI.getCondition("User_Workhour_Readings.PARENT_ID", "parentId", StringUtils.join(userIds, ","), NumberOperators.EQUALS))
+						.andCustomWhere("second_table.ID IS NULL", AccountUtil.getCurrentOrg().getOrgId());
+				
+				List<Map<String, Object>> readingProps = selectBuilder.get();
+				Map<Long, Map<String, Long>> userIDvsReadings = new HashMap<>();
+				if (readingProps != null && !readingProps.isEmpty()) {
+					readingProps.stream().forEach(e -> {
+						Map<String, Long> map = new HashMap<>();
+						map.put("ttime", (Long) e.get("ttime"));
+						map.put("woId", (Long) e.get("woId"));
+						map.put("workHoursEntry", new Long((Integer) e.get("workHoursEntry")));
+						map.put("id", (Long) e.get("id"));
+						userIDvsReadings.put((Long) e.get("parentId"), map);
+					});
+				}
+				
+				List<FacilioField> rdmFields = FieldFactory.getReadingDataMetaFields();
+				Map<String, FacilioField> fieldMap =  FieldFactory.getAsMap(rdmFields);
+				
+				FacilioField rdmresourceId = fieldMap.get("resourceId");
+				FacilioField rdmfieldId = fieldMap.get("fieldId");
+				
+				List<Long> readingFields = Arrays.asList(uwhFieldMap.get("woId").getFieldId(), uwhFieldMap.get("workHoursEntry").getFieldId());
+				
+				FacilioModule rdmModule = ModuleFactory.getReadingDataMetaModule();
+				GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+						.table(rdmModule.getTableName())
+						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(rdmModule))
+						.andCondition(CriteriaAPI.getCondition(rdmresourceId, userIds, NumberOperators.EQUALS))
+						.andCondition(CriteriaAPI.getCondition(rdmfieldId, readingFields, NumberOperators.EQUALS));
+				deleteBuilder.delete();
+				
+				
+				GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+						.table(ModuleFactory.getReadingDataMetaModule().getTableName())
+						.fields(FieldFactory.getReadingDataMetaFields());
+				
+				long orgId = AccountUtil.getCurrentOrg().getId();
+				ReadingInputType type = ReadingsAPI.getRDMInputTypeFromModuleType(uwhModule.getTypeEnum());
+				for (long userId: userIds) {
+					Map<String, Long> map = userIDvsReadings.get(userId);
+					if (map == null) {
+						map = new HashMap<>();
+						map.put("ttime", System.currentTimeMillis());
+						map.put("woId", -1l);
+						map.put("workHoursEntry", -1l);
+						map.put("id", -1l);
+					}
+					
+					ReadingDataMeta woId = new ReadingDataMeta();
+					woId.setOrgId(orgId);
+					woId.setTtime(map.get("ttime"));
+					woId.setValue(map.get("woId"));
+					woId.setFieldId(uwhFieldMap.get("woId").getId());
+					woId.setResourceId(userId);
+					woId.setInputType(type);
+					woId.setReadingDataId(map.get("id"));
+					insertBuilder.addRecord(FieldUtil.getAsProperties(woId));
+					
+					ReadingDataMeta whe = new ReadingDataMeta();
+					whe.setOrgId(orgId);
+					whe.setTtime(map.get("ttime"));
+					whe.setValue(map.get("workHoursEntry"));
+					whe.setFieldId(uwhFieldMap.get("workHoursEntry").getId());
+					whe.setResourceId(userId);
+					whe.setInputType(type);
+					whe.setReadingDataId(map.get("id"));
+					insertBuilder.addRecord(FieldUtil.getAsProperties(whe));
+				}
+				insertBuilder.save();
+			}
+		}
+		
+		return deletedRows;
 	}
 	
 	public static TicketStatusContext getStatus(String status) throws Exception
@@ -488,25 +602,27 @@ public class TicketAPI {
 	}
 	
 	private static void handleWorkHoursReading(long assignedToUserId, long workOrderId, TicketStatusContext oldTicketStatus, TicketStatusContext newTicketStatus) throws Exception {
+		long now = System.currentTimeMillis();
 		if (newTicketStatus.getStatus().equals("Work in Progress")) {
 			if (oldTicketStatus.getId() == TicketAPI.getStatus("Assigned").getId() 
 					|| oldTicketStatus.getId() == TicketAPI.getStatus("Closed").getId() 
 					|| oldTicketStatus.getId() == TicketAPI.getStatus("Resolved").getId()) {
-				ShiftAPI.addUserWorkHoursReading(assignedToUserId, workOrderId, "Start", System.currentTimeMillis());
+				ShiftAPI.pauseWorkOrderForUser(assignedToUserId, workOrderId, now);
+				ShiftAPI.addUserWorkHoursReading(assignedToUserId, workOrderId, "Start", now);
 			} else if (oldTicketStatus.getId() == TicketAPI.getStatus("On Hold").getId()) {
-				ShiftAPI.addUserWorkHoursReading(assignedToUserId, workOrderId, "Resume", System.currentTimeMillis());
+				ShiftAPI.pauseWorkOrderForUser(assignedToUserId, workOrderId, now);
+				ShiftAPI.addUserWorkHoursReading(assignedToUserId, workOrderId, "Resume", now);
 			}
 		}  else if (newTicketStatus.getStatus().equals("Resolved")) {
-			ShiftAPI.addUserWorkHoursReading(assignedToUserId, workOrderId, "Close", System.currentTimeMillis());
+			ShiftAPI.addUserWorkHoursReading(assignedToUserId, workOrderId, "Close", now);
 		} else if (newTicketStatus.getStatus().equals("On Hold")) {
-			ShiftAPI.addUserWorkHoursReading(assignedToUserId, workOrderId, "Pause", System.currentTimeMillis());
+			ShiftAPI.addUserWorkHoursReading(assignedToUserId, workOrderId, "Pause", now);
 		} else if (newTicketStatus.getStatus().equals("Closed")) {
 			if (oldTicketStatus.getId() == TicketAPI.getStatus("On Hold").getId()) {
-				long now = System.currentTimeMillis();
 				ShiftAPI.addUserWorkHoursReading(assignedToUserId, workOrderId, "Resume", now);
 				ShiftAPI.addUserWorkHoursReading(assignedToUserId, workOrderId, "Close", now);
 			} else if (oldTicketStatus.getId() == TicketAPI.getStatus("Work in Progress").getId()) {
-				ShiftAPI.addUserWorkHoursReading(assignedToUserId, workOrderId, "Close", System.currentTimeMillis());
+				ShiftAPI.addUserWorkHoursReading(assignedToUserId, workOrderId, "Close", now);
 			}
 		}
 	}

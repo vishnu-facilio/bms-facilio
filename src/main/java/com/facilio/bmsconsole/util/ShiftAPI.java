@@ -11,8 +11,11 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
@@ -34,6 +37,7 @@ import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ShiftContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.EnumField;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -116,19 +120,19 @@ public class ShiftAPI {
 			startShiftschedule.addValue(d.getDayOfWeek());
 			startShiftschedule.addTime(d.getStartTime());
 			startShiftschedule.setFrequencyType(FrequencyType.WEEKLY);
-			FacilioTimer.scheduleCalendarJob(d.getId(), "StartShift", ShiftAPI.getShiftStartScheduleExecutionTime(d.getDayOfWeekEnum(), startTime, endTime), startShiftschedule, "priority");
+			FacilioTimer.scheduleCalendarJob(d.getId(), "StartShift", ShiftAPI.getShiftStartScheduleExecutionTime(d.getDayOfWeekEnum(), startTime, endTime), startShiftschedule, "facilio");
 			
 			ScheduleInfo endShiftschedule = new ScheduleInfo();
 			endShiftschedule.addValue(d.getDayOfWeek());
 			endShiftschedule.addTime(d.getEndTime());
 			endShiftschedule.setFrequencyType(FrequencyType.WEEKLY);
-			FacilioTimer.scheduleCalendarJob(d.getId(), "EndShift", getShiftEndScheduleExecutionTime(d.getDayOfWeekEnum(), startTime, endTime), endShiftschedule, "priority");			
+			FacilioTimer.scheduleCalendarJob(d.getId(), "EndShift", getShiftEndScheduleExecutionTime(d.getDayOfWeekEnum(), startTime, endTime), endShiftschedule, "facilio");			
 		}
 	}
 	
 	public static void scheduleOneTimeJobs(List<JobContext> jcs, JSONObject obj) throws Exception {
 		for (JobContext jc: jcs) {
-			BmsJobUtil.scheduleOneTimeJobWithProps(jc.getJobId(), "EndShiftOTJ", jc.getExecutionTime(), "priority", obj);
+			BmsJobUtil.scheduleOneTimeJobWithProps(jc.getJobId(), "EndShiftOTJ", jc.getExecutionTime(), "facilio", obj);
 		}
 	}
 
@@ -178,22 +182,7 @@ public class ShiftAPI {
 	}
 	
 	public static List<ReadingContext> getUserWorkHoursReading(List<Long> userIds, String eventType, long executionTime) throws Exception {
-		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		List<FacilioField> allFields= bean.getAllFields("userworkhoursreading");
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
-		List<Pair<Long, FacilioField>> rdmPairs = new ArrayList<>();
-		
-		for (long parentId: userIds) {
-			for (String fieldName : Arrays.asList("workHoursEntry", "woId")) {
-				FacilioField field = fieldMap.get(fieldName);
-				if (field != null) {
-					Pair<Long, FacilioField> pair = Pair.of(parentId, field);
-					rdmPairs.add(pair);
-				}
-			}
-		}
-		
-		List<ReadingDataMeta> metaList = ReadingsAPI.getReadingDataMetaList(rdmPairs) ;
+		List<ReadingDataMeta> metaList = getUserWorkHoursRDM(userIds);
 		
 		if (metaList == null || metaList.isEmpty()) {
 			return null;
@@ -255,6 +244,27 @@ public class ShiftAPI {
 			}
 		}
 		return rContexts;
+	}
+
+	public static List<ReadingDataMeta> getUserWorkHoursRDM(List<Long> userIds)
+			throws InstantiationException, IllegalAccessException, Exception {
+		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioField> allFields= bean.getAllFields("userworkhoursreading");
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
+		List<Pair<Long, FacilioField>> rdmPairs = new ArrayList<>();
+		
+		for (long parentId: userIds) {
+			for (String fieldName : Arrays.asList("workHoursEntry", "woId")) {
+				FacilioField field = fieldMap.get(fieldName);
+				if (field != null) {
+					Pair<Long, FacilioField> pair = Pair.of(parentId, field);
+					rdmPairs.add(pair);
+				}
+			}
+		}
+		
+		List<ReadingDataMeta> metaList = ReadingsAPI.getReadingDataMetaList(rdmPairs);
+		return metaList;
 	} 
 
 	public static List<ReadingContext> getUserShiftReading(List<Long> userIds, String entry, long executionTime) throws Exception {
@@ -267,7 +277,45 @@ public class ShiftAPI {
 		}).collect(Collectors.toList());
 	}
 	
+	public static void pauseWorkOrderForUser(long userId, long currentWOId, long now) throws Exception {
+		List<ReadingDataMeta> metaList = getUserWorkHoursRDM(Arrays.asList(userId));
+		if (metaList == null || metaList.isEmpty()) {
+			return;
+		}
+	
+		ReadingDataMeta meta = null;
+		ReadingDataMeta woIdMeta = null;
+		for(ReadingDataMeta m : metaList) {
+			String fieldName = m.getField().getName();
+			if (fieldName.equals("workHoursEntry")) {
+				meta = m;
+			} else if (fieldName.equals("woId")) {
+				woIdMeta = m;
+			}
+		}
+		
+		if (meta == null || woIdMeta == null) {
+			throw new IllegalStateException();
+		}
+		
+		Integer value = (Integer) meta.getValue();
+		if (value == null) {
+			return;
+		}
+		
+		long woId = (long) woIdMeta.getValue();
+		
+		if ((value == 1 || value == 3 || value == 5) && woId != currentWOId) {
+			addUserWorkHoursReading(userId, woId, "Pause", now);
+		}
+	}
+	
 	public static void addUserWorkHoursReading(long assignedToUserId, long workOrderId, String reading, long time) throws Exception {
+		boolean addReading = allowAddReading(assignedToUserId, workOrderId, reading);
+		if (!addReading) {
+			return;
+		}
+		
 		Map<String, List<ReadingContext>> readingMap = new HashMap<>();
 		ReadingContext rContext = new ReadingContext();
 		rContext.setParentId(assignedToUserId);
@@ -281,6 +329,50 @@ public class ShiftAPI {
 		context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
 		Chain c = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
 		c.execute(context);
+	}
+
+	private static boolean allowAddReading(long assignedToUserId, long workOrderId, String currentReading)
+			throws InstantiationException, IllegalAccessException, Exception {
+		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = bean.getModule("userworkhoursreading");
+		List<FacilioField> fields = bean.getAllFields("userworkhoursreading");
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getId(), module))
+				.andCustomWhere("User_Workhour_Readings.WO_ID = ? AND User_Workhour_Readings.PARENT_ID = ?", workOrderId, assignedToUserId)
+				.orderBy("User_Workhour_Readings.TTIME DESC")
+				.limit(1);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		if (props == null || props.isEmpty()) {
+			return true;
+		}
+		
+		Optional<FacilioField> whEntry = fields.stream().filter(e -> e.getName().equals("workHoursEntry")).findFirst();
+		int currentValue = -1;
+		if (whEntry.isPresent()) {
+			currentValue = ((EnumField) whEntry.get()).getIndex(currentReading);
+		} else {
+			throw new IllegalStateException();
+		}
+				
+		Integer previousValue = (Integer) props.get(0).get("workHoursEntry");
+		if (previousValue == null) {
+			return true;
+		}
+		
+		Set<Integer> starts = new HashSet<>(Arrays.asList(1, 3, 5));
+		Set<Integer> halts = new HashSet<>(Arrays.asList(2, 4, 6));
+		
+		if ((starts.contains(currentValue) && halts.contains(previousValue)) 
+				|| (starts.contains(previousValue) && halts.contains(currentValue))) {
+			return true;
+		}
+		
+		return false;
 	}
 	
 	public static List<Long> getOuidFromShift(long shiftId) throws Exception {
@@ -430,7 +522,7 @@ public class ShiftAPI {
 		selectRecordBuilder.select(modBean.getAllFields(FacilioConstants.ContextNames.USER_SHIFT_READING));
 		selectRecordBuilder.table(shrModule.getTableName());
 		selectRecordBuilder.andCustomWhere("TTIME between ? and ?", startTime, endTime);
-		selectRecordBuilder.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
+		selectRecordBuilder.andCustomWhere("ORGID = ? AND PARENT_ID = ?", AccountUtil.getCurrentOrg().getOrgId(), userId)
 		.orderBy("TTIME ASC");
 		
 		List<Map<String, Object>> props = selectRecordBuilder.get();

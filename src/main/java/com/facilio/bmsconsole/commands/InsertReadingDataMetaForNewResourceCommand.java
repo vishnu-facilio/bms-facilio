@@ -56,7 +56,7 @@ public class InsertReadingDataMetaForNewResourceCommand implements Command {
 			}
 		}
 		builder.save();
-		// TODO Auto-generated method stub
+
 		return false;
 	}
 	
