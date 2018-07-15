@@ -42,16 +42,10 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.auth.LoginUtil;
-import com.facilio.license.LicenseApi;
-import com.facilio.license.LicenseContext;
-import com.facilio.license.LicenseContext.FacilioLicense;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
-
-import nl.basjes.parse.useragent.UserAgent;
-import nl.basjes.parse.useragent.UserAgentAnalyzer;
 
 public class UserAction extends ActionSupport {
 

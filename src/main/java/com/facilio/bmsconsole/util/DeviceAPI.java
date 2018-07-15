@@ -10,7 +10,6 @@ import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.stat.StatUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;

@@ -13,8 +13,6 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.license.LicenseContext;
-import com.facilio.license.LicenseContext.FacilioLicense;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;

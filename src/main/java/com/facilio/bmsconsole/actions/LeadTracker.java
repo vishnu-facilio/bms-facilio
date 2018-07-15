@@ -1,12 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.json.simple.JSONObject;
 
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.license.FreshsalesUtil;
 import com.opensymphony.xwork2.ActionSupport;
 

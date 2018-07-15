@@ -9,7 +9,6 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.AttachmentContext.AttachmentType;
-import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 
 public class AttachmentContextCommand implements Command {

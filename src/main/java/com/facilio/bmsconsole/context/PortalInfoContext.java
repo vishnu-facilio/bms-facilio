@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.context;
 
 import java.io.File;
-import java.util.ArrayList;
 
 import com.facilio.serviceportal.actions.PortalAuthInterceptor;
 

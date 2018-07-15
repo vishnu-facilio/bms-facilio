@@ -1,8 +1,6 @@
 package com.facilio.filters;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -15,11 +13,11 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.fw.listener.FacilioContextListener;
-
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.fw.listener.FacilioContextListener;
 
 public class FacilioCorsFilter implements Filter {
 

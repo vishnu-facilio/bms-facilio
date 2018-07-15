@@ -8,7 +8,6 @@ import org.apache.commons.chain.Context;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.license.LicenseApi;
 import com.facilio.license.LicenseContext;

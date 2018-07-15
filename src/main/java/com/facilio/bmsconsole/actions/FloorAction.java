@@ -13,7 +13,6 @@ import com.facilio.bmsconsole.commands.SetTableNamesCommand;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.FormLayout;
-import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;

@@ -1,20 +1,25 @@
 
 package com.facilio.bmsconsole.interceptors;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
+
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
+
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.fw.auth.CognitoUtil.CognitoUser;
 import com.facilio.fw.auth.LoginUtil;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.util.AuthenticationUtil;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;

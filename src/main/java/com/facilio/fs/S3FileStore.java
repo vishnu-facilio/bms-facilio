@@ -16,8 +16,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.amazonaws.HttpMethod;
-
-import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;

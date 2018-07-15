@@ -9,17 +9,12 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
-
 import com.facilio.bmsconsole.context.AnalyticsAnomalyContext;
-
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.TemperatureContext;
-
 import com.facilio.bmsconsole.util.AnomalySchedulerUtil;
-
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.fs.S3FileStore;

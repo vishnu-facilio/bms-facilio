@@ -1,8 +1,5 @@
 package com.facilio.license;
 
-import com.facilio.bmsconsole.context.FormulaFieldContext.ResourceType;
-import com.facilio.bmsconsole.context.FormulaFieldContext.TriggerType;
-
 public class LicenseContext {
 	
 	
