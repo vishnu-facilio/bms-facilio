@@ -158,8 +158,32 @@ public class ReadingsAPI {
 													.table(module.getTableName())
 													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCriteria(pkCriteriaList);
-		List<Map<String, Object>> stats = builder.get();	
-		return getReadingDataFromProps(stats, fieldIdMap);
+		return getReadingDataFromProps(builder.get(), fieldIdMap);
+	}
+	
+	public static Map<String, ReadingDataMeta> getReadingDataMetaMap(List<Pair<Long, FacilioField>> rdmPairs) throws Exception {
+		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
+		List<FacilioField> fields = FieldFactory.getReadingDataMetaFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioField resourceIdField = fieldMap.get("resourceId");
+		FacilioField fieldIdField = fieldMap.get("fieldId");
+		
+		Map<Long, FacilioField> fieldIdMap = new HashMap<>();
+		Criteria pkCriteriaList = new Criteria();
+		for (Pair<Long, FacilioField> pair : rdmPairs) {
+			Criteria pkCriteria = new Criteria();
+			pkCriteria.addAndCondition(CriteriaAPI.getCondition(resourceIdField, String.valueOf(pair.getLeft()), PickListOperators.IS));
+			pkCriteria.addAndCondition(CriteriaAPI.getCondition(fieldIdField, String.valueOf(pair.getRight().getFieldId()), PickListOperators.IS));
+			pkCriteriaList.orCriteria(pkCriteria);
+			fieldIdMap.put(pair.getRight().getFieldId(), pair.getRight());
+		}
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+													.select(fields)
+													.table(module.getTableName())
+													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+													.andCriteria(pkCriteriaList);
+		return getRDMMapFromProps(builder.get(), fieldIdMap);
 	}
 	
 	public static List<ReadingDataMeta> getReadingDataMetaList(Long resourceId, Collection<FacilioField> fieldList) throws Exception {
@@ -197,21 +221,38 @@ public class ReadingsAPI {
 		if(props != null && !props.isEmpty()) {
 			List<ReadingDataMeta> metaList = new ArrayList<>();
 			for (Map<String, Object> prop : props) {
-				ReadingDataMeta meta = FieldUtil.getAsBeanFromMap(prop, ReadingDataMeta.class);
-				Object value = meta.getValue();
-				FacilioField field = fieldMap.get(meta.getFieldId());
-				if (field.getDataTypeEnum() == FieldType.ENUM) {
-					if (value != null && value instanceof String) {
-						value = Integer.valueOf((String) value);
-					}
-				}
-				meta.setValue(FieldUtil.castOrParseValueAsPerType(field, value));
-				meta.setField(field);
+				ReadingDataMeta meta = getRDMFromProp(prop, fieldMap);
 				metaList.add(meta);
 			}
 			return metaList;
 		}
 		return null;
+	}
+	
+	private static Map<String, ReadingDataMeta> getRDMMapFromProps (List<Map<String, Object>> props, Map<Long, FacilioField> fieldMap) {
+		if(props != null && !props.isEmpty()) {
+			Map<String, ReadingDataMeta> rdmMap = new HashMap<>();
+			for (Map<String, Object> prop : props) {
+				ReadingDataMeta meta = getRDMFromProp(prop, fieldMap);
+				rdmMap.put(meta.getResourceId()+"_"+meta.getFieldId(), meta);
+			}
+			return rdmMap;
+		}
+		return null;
+	}
+	
+	private static ReadingDataMeta getRDMFromProp (Map<String, Object> prop, Map<Long, FacilioField> fieldMap) {
+		ReadingDataMeta meta = FieldUtil.getAsBeanFromMap(prop, ReadingDataMeta.class);
+		Object value = meta.getValue();
+		FacilioField field = fieldMap.get(meta.getFieldId());
+		if (field.getDataTypeEnum() == FieldType.ENUM) {
+			if (value != null && value instanceof String) {
+				value = Integer.valueOf((String) value);
+			}
+		}
+		meta.setValue(FieldUtil.castOrParseValueAsPerType(field, value));
+		meta.setField(field);
+		return meta;
 	}
 	
 	private static String getReadingTypes(ReadingInputType... types) {

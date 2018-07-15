@@ -33,14 +33,12 @@ public class GetReadingDataMetaCommand implements Command {
 		
 		if (readingMap != null && !readingMap.isEmpty()) {
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			Map<String, ReadingDataMeta> readingDataMeta = new HashMap<> ();
-			
+			List<Pair<Long, FacilioField>> rdmPairs = new ArrayList<>();
 			for (Map.Entry<String, List<ReadingContext>> entry : readingMap.entrySet()) {
 				String moduleName = entry.getKey();
 				List<ReadingContext> readings = entry.getValue();
 				List<FacilioField> allFields= bean.getAllFields(moduleName);
 				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
-				List<Pair<Long, FacilioField>> rdmPairs = new ArrayList<>();
 				for(ReadingContext reading : readings) {
 					Map<String, Object> readingData = reading.getReadings();
 					if (readingData != null && !readingData.isEmpty()) {
@@ -57,14 +55,8 @@ public class GetReadingDataMetaCommand implements Command {
 //					logger.log(Level.INFO, "Readings : "+readings);
 //					logger.log(Level.INFO, "RDM Pairs : "+rdmPairs);
 //				}
-				List<ReadingDataMeta> metaList = ReadingsAPI.getReadingDataMetaList(rdmPairs) ;
-				
-				for(ReadingDataMeta meta : metaList) {
-					long resourceId = meta.getResourceId();
-					long fieldId = meta.getField().getFieldId();
-					readingDataMeta.put(resourceId+"_"+fieldId, meta);
-				}
 			}
+			Map<String, ReadingDataMeta> readingDataMeta = ReadingsAPI.getReadingDataMetaMap(rdmPairs);
 			context.put(FacilioConstants.ContextNames.READING_DATA_META, readingDataMeta);
 		}
 		return false;
