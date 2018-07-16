@@ -1178,6 +1178,9 @@
 			<action name="userlicense" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/userlicense.jsp</result>
 			</action>
+			<action name="updateCRM" class="com.facilio.bmsconsole.actions.AdminAction" method="updateCRM">
+			<result type="tiles">adminpage/orginfo.jsp</result>
+			</action>
 			</package>
 
 
