@@ -279,6 +279,35 @@ public class ShiftAPI {
 		}).collect(Collectors.toList());
 	}
 	
+	public static boolean isUserWorking(long userId) throws Exception {
+		List<ReadingDataMeta> metaList = getUserWorkHoursRDM(Arrays.asList(userId));
+		if (metaList == null || metaList.isEmpty()) {
+			return false;
+		}
+	
+		ReadingDataMeta meta = null;
+		ReadingDataMeta woIdMeta = null;
+		for(ReadingDataMeta m : metaList) {
+			String fieldName = m.getField().getName();
+			if (fieldName.equals("workHoursEntry")) {
+				meta = m;
+			} else if (fieldName.equals("woId")) {
+				woIdMeta = m;
+			}
+		}
+		
+		if (meta == null || woIdMeta == null) {
+			throw new IllegalStateException();
+		}
+		
+		Integer value = (Integer) meta.getValue();
+		if (value == null) {
+			return false;
+		}
+		
+		return value == 1 || value == 3 || value == 5;
+	}
+	
 	public static void pauseWorkOrderForUser(long userId, ActivityType activityType, long currentWOId, long now) throws Exception {
 		List<ReadingDataMeta> metaList = getUserWorkHoursRDM(Arrays.asList(userId));
 		if (metaList == null || metaList.isEmpty()) {

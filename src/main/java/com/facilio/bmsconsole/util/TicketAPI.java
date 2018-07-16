@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -89,7 +90,7 @@ public class TicketAPI {
 		int deletedRows = builder.delete();
 	
 		if (props != null && !props.isEmpty()) {
-			List<Long> userIds = props.stream().map(e -> (Long) e.get("assignedTo")).filter(e -> e != null).collect(Collectors.toList());
+			Set<Long> userIds = props.stream().map(e -> (Long) e.get("assignedTo")).filter(e -> e != null).collect(Collectors.toSet());
 			if (userIds != null && !userIds.isEmpty()) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				List<FacilioField> uwhFields = modBean.getAllFields("userworkhoursreading");
