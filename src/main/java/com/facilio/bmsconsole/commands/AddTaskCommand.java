@@ -27,6 +27,8 @@ public class AddTaskCommand implements Command {
 															.moduleName(moduleName)
 															.table(dataTableName)
 															.fields(fields);
+			
+			builder.setWithLocalIdModule(true);
 			long taskId = builder.insert(task);
 			task.setId(taskId);
 			context.put(FacilioConstants.ContextNames.RECORD_ID, taskId);

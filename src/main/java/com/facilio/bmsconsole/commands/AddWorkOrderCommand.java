@@ -49,6 +49,7 @@ public class AddWorkOrderCommand implements Command {
 				builder.level(insertLevel);
 			}
 			
+			builder.setWithLocalIdModule(true);
 			long workOrderId = builder.insert(workOrder);
 			workOrder.setId(workOrderId);
 			if(context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE) == null) {

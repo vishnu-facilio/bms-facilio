@@ -36,7 +36,7 @@ public class AddWorkOrderRequestCommand implements Command {
 																.moduleName(moduleName)
 																.table(dataTableName)
 																.fields(fields);
-																
+			builder.setWithLocalIdModule(true);					
 			long workOrderId = builder.insert(workOrderRequest);
 			workOrderRequest.setId(workOrderId);
 			context.put(FacilioConstants.ContextNames.RECORD, workOrderRequest);

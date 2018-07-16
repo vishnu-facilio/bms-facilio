@@ -66,7 +66,7 @@ public class AddAlarmCommand implements Command {
 			InsertRecordBuilder<AlarmContext> builder = new InsertRecordBuilder<AlarmContext>()
 																.moduleName(moduleName)
 																.fields(fields);
-			
+			builder.setWithLocalIdModule(true);
 			AlarmAPI.updateAlarmDetailsInTicket(alarm, alarm);
 			TicketAPI.updateTicketStatus(alarm);
 			TicketAPI.updateTicketStatus(alarm);

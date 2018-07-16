@@ -168,12 +168,11 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.duration = duration;
 	}
 	
-	private long serialNumber = -1;
 	public long getSerialNumber() {
-		return serialNumber;
+		return super.getLocalId();
 	}
 	public void setSerialNumber(long serialNumber) {
-		this.serialNumber = serialNumber;
+		super.setLocalId(serialNumber);
 	}
 	
 	private long entityId = -1;

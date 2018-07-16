@@ -22,6 +22,11 @@ public class ModuleLocalIdUtil {
 	static {
 		modulesWithLocalId.add(FacilioConstants.ContextNames.ASSET);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.ENERGY_METER);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.WORK_ORDER);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.WORK_ORDER_REQUEST);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.TASK);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.ALARM);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.READING_ALARM);
 	}
 	
 	public static ModuleLocalIdContext getModuleLocalContext(Long orgId,String moduleName) throws Exception {

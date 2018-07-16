@@ -107,8 +107,16 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		List<FacilioModule> modules = splitModules();
 		Map<Long, List<FacilioField>> fieldMap = splitFields();
 		
+		Long localId = null;
+		if(isWithLocalIdModule && module != null) {
+			localId = ModuleLocalIdUtil.getModuleLocalId(module.getName());
+		}
+		
 		List<Map<String, Object>> beanProps = new ArrayList<>();
 		for(E bean : records) {
+			if(isWithLocalIdModule && localId != null) {
+				bean.setLocalId(++localId);
+			}
 			bean.setSysCreatedTime(System.currentTimeMillis());
 			beanProps.add(getAsProps(bean));
 		}
@@ -116,10 +124,6 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		int currentLevel = 1;
 		for(FacilioModule currentModule : modules) {
 			
-			Long localId = null;
-			if(isWithLocalIdModule) {
-				localId = ModuleLocalIdUtil.getModuleLocalId(currentModule.getName());
-			}
 			if(currentLevel >= level) {
 				List<FacilioField> currentFields = fieldMap.get(currentModule.getModuleId());
 				if(currentFields == null) {
@@ -135,18 +139,15 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 				
 				for(Map<String, Object> beanProp : beanProps) {
 					beanProp.put("moduleId", currentModule.getModuleId());
-					if(isWithLocalIdModule && localId != null) {
-						beanProp.put("localId", ++localId);
-					}
 					insertBuilder.addRecord(beanProp);
 				}
 				
 				insertBuilder.save();
-				if(isWithLocalIdModule && localId != null) {
-					ModuleLocalIdUtil.updateModuleLocalId(currentModule.getName(), localId);
-				}
 			}
 			currentLevel++;
+		}
+		if(isWithLocalIdModule && localId != null) {
+			ModuleLocalIdUtil.updateModuleLocalId(module.getName(), localId);
 		}
 		
 		for(int itr = 0; itr < records.size(); itr++) {

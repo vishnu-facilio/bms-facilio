@@ -2493,3 +2493,11 @@ INSERT INTO BaseLines (ORGID, NAME, RANGE_TYPE) VALUES (${orgId}, 'Previous Day'
 INSERT INTO BaseLines (ORGID, NAME, RANGE_TYPE) VALUES (${orgId}, 'Previous Week', 4);
 INSERT INTO BaseLines (ORGID, NAME, RANGE_TYPE) VALUES (${orgId}, 'Previous Month', 5);
 INSERT INTO BaseLines (ORGID, NAME, RANGE_TYPE) VALUES (${orgId}, 'Previous Year', 6);
+
+
+INSERT INTO BaseLines (ORGID, MODULE_NAME, LAST_LOCAL_ID) VALUES (${orgId}, 'asset', 0);
+INSERT INTO BaseLines (ORGID, MODULE_NAME, LAST_LOCAL_ID) VALUES (${orgId}, 'workorder', 0);
+INSERT INTO BaseLines (ORGID, MODULE_NAME, LAST_LOCAL_ID) VALUES (${orgId}, 'workorder', 0);
+INSERT INTO BaseLines (ORGID, MODULE_NAME, LAST_LOCAL_ID) VALUES (${orgId}, 'task', 0);
+INSERT INTO BaseLines (ORGID, MODULE_NAME, LAST_LOCAL_ID) VALUES (${orgId}, 'alarm', 0);
+INSERT INTO BaseLines (ORGID, MODULE_NAME, LAST_LOCAL_ID) VALUES (${orgId}, 'readingalarm', 0);
