@@ -2,15 +2,16 @@
     pageEncoding="UTF-8"%>
     <%@page import="com.facilio.accounts.util.AccountUtil, com.facilio.accounts.dto.User, java.util.*, java.util.Iterator ,org.json.simple.JSONObject,org.json.simple.JSONArray,java.util.List, com.facilio.accounts.dto.Organization ,org.json.simple.JSONObject,com.facilio.accounts.impl.OrgBeanImpl, com.facilio.bmsconsole.commands.util.CommonCommandUtil"%>
   <%
-  	String orgid = request.getParameter("orgid");
+  	
+  String orgid = request.getParameter("orgid");
     Organization org = null;
     JSONObject result = null;
-     List<User> users = null;
+    Boolean verified = null;
+    List<User> users = null;
     if (orgid != null) {
   	  org = AccountUtil.getOrgBean().getOrg(Long.parseLong(orgid));
   	  result = CommonCommandUtil.getOrgInfo(Long.parseLong(orgid));
   	  users = AccountUtil.getOrgBean().getAllOrgUsers(Long.parseLong(orgid));
-  	  
   	}
   %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -19,6 +20,19 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Insert title here</title>
 </head>
+<script>
+
+function view(userId){
+	console.log(userId)
+	FacilioApp.ajax({
+		method : "get",
+		url : contextPath + "/internal/verifyUsers?userid="+userId,
+		done: function(data) {
+			
+		}
+	})
+}
+</script>
 <body>
  <form action="" method="GET">
  <h2><i class=" fa fa-building-o  fa-fw"></i>Org Info</h2>
@@ -31,7 +45,7 @@
     <div style="margin-top:30px;">
 
 <button  id="show" type="submit"  >Submit</button>
-<% if (org != null) { %>
+<% if (org != null) {  %>
 <table style=" margin-top:40px;"  class="table table-bordered" >
 <tr> <th>orgId</th>
 <th> Name </th>
@@ -91,8 +105,29 @@
 <% } %>
 </table>
 <%}%>
-No Of Users In OrgId  <%= org.getOrgId() %> :  <%= users.size() %>
+<h4> No Of Users In OrgId  <%= org.getOrgId() %> :  <%= users.size() %> </h4>
 <% } %>
+<table style=" margin-top:40px;"  class="table table-bordered">
+	<tr>
+	<th class="org-th" style="text-align:center;max-width: 350px;width:350px;"> Id </th>
+	<th class="org-th" style="text-align:center;max-width: 350px;width:350px;"> Name </th>
+	<th class="org-th" style="text-align:center;max-width: 350px;width:350px;"> Email  </th>
+	<th class="org-th" style="text-align:center;max-width: 350px;width:350px;"> UserVerified</th>
+	<th class="org-th" style="max-width: 350px;width:350px;text-align: center;">Status</th>
+	</tr>
+	 <% Iterator a = users.iterator();
+		while( a.hasNext() ) { 
+	User b = (User) a.next();  %>
+	<tr id="id">
+	<td  style="max-width: 350px;width:350px;" align="center"><%=b.getId() %></td>
+	<td  style="max-width: 350px;width:350px;" align="center"><%=b.getName() %></td>
+	<td  style="max-width: 350px;width:350px;"  align="center"><%=b.getEmail() %></td>
+	<td  style="max-width: 350px;width:350px;" align="center"><%=b.getUserVerified() %></td>
+	<td style="max-width: 350px;width:350px;text-align: center;"> <button type="button" onclick="view(<%=b.getId()%>)">Update</button> </td>
+	</tr>
+<%}%>
+</table>
+
 </div>
 </div>
 </form>
@@ -115,5 +150,20 @@ No Of Users In OrgId  <%= org.getOrgId() %> :  <%= users.size() %>
 
 <% } %>
 
+<style>
+.org-th{
+  background-color: #f0f2f4;
+  font-size: 14px;
+  color: #717b85;
+  font-weight: 500;
+  padding: 18px 20px !important;
+}
+.org-td{
+  color: #333;
+  font-size: 13px;
+  padding: 15px 20px !important;
+}
+</style>
 </body>
+
 </html>

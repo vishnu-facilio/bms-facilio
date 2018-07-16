@@ -19,6 +19,8 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.bean.UserBean;
+import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
@@ -40,6 +42,7 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.FacilioTablePrinter;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
@@ -377,7 +380,37 @@ public class CommonCommandUtil {
 		}
 		return result;		
 	}
-public static JSONObject getOrgInfo() throws Exception {
+    public static Boolean verifiedUser(long userID) throws Exception {
+//    	GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+//    	.andCustomWhere("", userID)
+//    	
+    	
+    	// System.out.println("TableNAme " + AccountConstants.getUserModule().getTableName());
+    //	System.out.println("ID" + userID);
+    	
+    	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(AccountConstants.getOrgUserFields())
+				.table(AccountConstants.getOrgUserModule().getTableName())
+				.andCustomWhere("ORG_USERID = ?", userID);
+    	
+    	List<Map<String, Object>> props = selectBuilder.get();
+    	Long ouid = null;
+		if (props != null && !props.isEmpty()) {
+			Map<String, Object> prop = props.get(0);
+			ouid = (Long) prop.get("uid");
+		}
+    	
+    	GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+		.table(AccountConstants.getUserModule().getTableName())
+		.fields(AccountConstants.getUserFields())
+		.andCustomWhere("USERID = ?", ouid );
+    	Map<String, Object> prop = new HashMap<>();
+	    prop.put("userVerified", true);
+	    updateBuilder.update(prop);
+    	
+    	return true;
+    }
+    public static JSONObject getOrgInfo() throws Exception {
     	
     	JSONObject result = new JSONObject();
     	FacilioModule module = AccountConstants.getOrgInfoModule();

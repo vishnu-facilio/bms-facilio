@@ -3625,6 +3625,9 @@
 		<action name="migration">
 			<result name="success">/jsps/Migration.jsp</result>
 		</action>
+		<action name="verifyUsers">
+			<result name="success">/jsps/admin/VerifyUsers.jsp</result>
+		</action>
 		
 		<action name="addAlarm" class="com.facilio.bmsconsole.actions.InternalActions"
 			method="addAlarmFromEvent">
