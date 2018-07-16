@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.User;
@@ -16,7 +18,7 @@ import com.twilio.sdk.type.PhoneNumber;
 public class SMSUtil {
 	private static final String ACCOUNTS_ID = "AC49fd18185d9f484739aa73b648ba2090"; // Your Account SID from www.twilio.com/user/account
 	private static final String AUTH_TOKEN = "3683aa0033af81877501961dc886a52b"; // Your Auth Token from www.twilio.com/user/account
-	
+	private static final Logger LOGGER = LogManager.getLogger(SMSUtil.class.getName());
 	static {
 		Twilio.init(ACCOUNTS_ID, AUTH_TOKEN);
 	}
@@ -34,8 +36,8 @@ public class SMSUtil {
 		
 		//com.twilio.sdk.resource.lookups.v1.PhoneNumber
 	//	com.twilio.sdk.resource.api.v2010.account.Message.create(accountSid, to, from, mediaUrl)
-		System.out.println(tmessage.getSid());
-		System.out.println(to+"=>"+message);
+		LOGGER.info("SMS sent successfully. ID : "+tmessage.getSid());
+		LOGGER.info(to+"=>"+message);
 		return tmessage.getSid();
 		
 		//AwsUtil.sendEmail(obj);
@@ -60,7 +62,7 @@ public class SMSUtil {
 		Map<String, Object> prop = props.get(0);
 		Long ouid = (Long) prop.get("ouid");
 		
-		System.out.println("###############3The Org-User id is "+ouid);
+		LOGGER.info("###############3The Org-User id is "+ouid);
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(AccountConstants.getOrgUserModule().getTableName())
