@@ -522,7 +522,7 @@ public enum ActionType {
 			// TODO Auto-generated method stub
 			try {
 				WorkOrderContext wo = WorkOrderAPI.getWorkOrder(((AlarmContext) currentRecord).getId());
-				if (wo == null) {
+				if (wo != null) {
 					FacilioContext updateContext = new FacilioContext();
 					updateContext.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CLOSE_WORK_ORDER);
 
