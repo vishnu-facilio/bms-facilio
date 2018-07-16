@@ -94,62 +94,6 @@ public class PreventiveMaintenance extends ResourceContext {
 	public void setTemplateId(long templateId) {
 		this.templateId = templateId;
 	}
-
-	private long resourceId = -1;
-	public long getResourceId() {
-		return resourceId;
-	}
-	public void setResourceId(long resourceId) {
-		this.resourceId = resourceId;
-	}
-	
-	private long spaceId = -1;
-	public long getSpaceId() {
-		return spaceId;
-	}
-	public void setSpaceId(long spaceId) {
-		this.spaceId = spaceId;
-	}
-
-	private long assetId = -1;
-	public long getAssetId() {
-		return assetId;
-	}
-	public void setAssetId(long assetId) {
-		this.assetId = assetId;
-	}
-
-	private ResourceContext resource;
-	public ResourceContext getResource() {
-		return resource;
-	}
-	public void setResource(ResourceContext resource) {
-		this.resource = resource;
-	}
-
-	private long assignedToid = -1;
-	public long getAssignedToid() {
-		return assignedToid;
-	}
-	public void setAssignedToid(long assignedToid) {
-		this.assignedToid = assignedToid;
-	}
-
-	private long assignmentGroupId = -1;
-	public long getAssignmentGroupId() {
-		return assignmentGroupId;
-	}
-	public void setAssignmentGroupId(long assignmentGroupId) {
-		this.assignmentGroupId = assignmentGroupId;
-	}
-
-	private long typeId = -1;
-	public long getTypeId() {
-		return typeId;
-	}
-	public void setTypeId(long typeId) {
-		this.typeId = typeId;
-	}
 	
 	WorkorderTemplate woTemplate; 
 	public WorkorderTemplate getWoTemplate() {

@@ -1,19 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMJobsContext.PMJobsStatus;
 import com.facilio.bmsconsole.context.TaskContext;
-import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -21,7 +17,6 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.DateTimeUtil;
@@ -77,35 +72,8 @@ public class UpdatePreventiveMaintenanceJobCommand implements Command {
 	private long addWOTemplate(long templateId, long resourceId) throws Exception {
 		Template template = TemplateAPI.getTemplate(templateId);
 		long newTemplateId = -1;
-		WorkOrderContext wo = null;
-		Map<String, List<TaskContext>> taskMap = null;
-		if (template instanceof JSONTemplate) {
-			JSONObject content = template.getTemplate(null);
-			JSONObject woJson = (JSONObject) content.get(FacilioConstants.ContextNames.WORK_ORDER);
-			
-			wo = FieldUtil.getAsBeanFromJson(woJson, WorkOrderContext.class);
-			wo.setSourceType(TicketContext.SourceType.PREVENTIVE_MAINTENANCE);
-			FacilioContext context = new FacilioContext();
-			
-			JSONObject taskContent = (JSONObject) content.get(FacilioConstants.ContextNames.TASK_MAP);
-			if(taskContent != null) {
-				taskMap = PreventiveMaintenanceAPI.getTaskMapFromJson(taskContent);
-			}
-			else {
-				JSONArray taskJson = (JSONArray) content.get(FacilioConstants.ContextNames.TASK_LIST);
-				if (taskJson != null) {
-					List<TaskContext> tasks = FieldUtil.getAsBeanListFromJsonArray(taskJson, TaskContext.class);
-					if(tasks != null && !tasks.isEmpty()) {
-						taskMap = new HashMap<>();
-						taskMap.put(FacilioConstants.ContextNames.DEFAULT_TASK_SECTION, tasks);
-					}
-				}
-			}
-		}
-		else {
-			wo = ((WorkorderTemplate)template).getWorkorder();
-			taskMap = ((WorkorderTemplate)template).getTasks();
-		}
+		WorkOrderContext wo = ((WorkorderTemplate)template).getWorkorder();
+		Map<String, List<TaskContext>> taskMap = ((WorkorderTemplate)template).getTasks();
 		
 		User user = new User();
 		user.setId(resourceId);
