@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -40,6 +42,8 @@ public class EventAPI {
 //        return (long) context.get(EventConstants.EventContextNames.EVENT_LAST_TIMESTAMP);
 //    }
 	
+	private static final Logger LOGGER = LogManager.getLogger(EventAPI.class.getName());
+	
 	public static void populateProcessEventParams(FacilioContext context, long timestamp, JSONObject object, List<EventRuleContext> eventRules, Map<String, Integer> eventCountMap, long lastEventTime) {
     	context.put(EventConstants.EventContextNames.EVENT_RULE_LIST, eventRules);
     	context.put(EventConstants.EventContextNames.EVENT_TIMESTAMP, timestamp);
@@ -69,44 +73,48 @@ public class EventAPI {
 	@SuppressWarnings({ "unchecked"})
 	public static EventContext processPayload(long timestamp, JSONObject payload, long orgId) throws Exception 
 	{
-	    System.out.println("EventSyncJob Payload:::" + payload);
+		if (orgId == 75) {
+			LOGGER.info("EventSyncJob Payload:::" + payload);
+		}
 	    EventContext event = new EventContext();
 	    Iterator<String> iterator = payload.keySet().iterator();
 	    while(iterator.hasNext())
 	    {
 	    	String key = iterator.next();
-	    	String value = payload.get(key).toString();
-	    	if(key.equalsIgnoreCase("entity"))
-	    	{
-	    		event.setEntity(value);
-	    	}
-	    	else if(key.equalsIgnoreCase("source"))
-	    	{
-	    		event.setSource(value);
-	    	}
-	    	else if(key.equalsIgnoreCase("message") || key.equalsIgnoreCase("eventMessage"))
-	    	{
-	    		event.setEventMessage(value);
-	    	}
-	    	else if(key.equalsIgnoreCase("severity"))
-	    	{
-	    		event.setSeverity(value);
-	    	}
-	    	else if(key.equalsIgnoreCase("priority")) {
-	    		event.setPriority(value);
-	    	}
-	    	else if(key.equalsIgnoreCase("alarmClass")) {
-	    		event.setAlarmClass(value);
-	    	}
-	    	else if(key.equals("state")) {
-	    		event.setState(value);
-	    	}
-	    	else if(key.equals("timestamp")) {
-	    		event.setCreatedTime(Long.parseLong(value));
-	    	}
-	    	else
-	    	{
-	    		event.addAdditionInfo(key, value);
+	    	if (payload.get(key) != null) {
+		    	String value = payload.get(key).toString();
+		    	if(key.equalsIgnoreCase("entity"))
+		    	{
+		    		event.setEntity(value);
+		    	}
+		    	else if(key.equalsIgnoreCase("source"))
+		    	{
+		    		event.setSource(value);
+		    	}
+		    	else if(key.equalsIgnoreCase("message") || key.equalsIgnoreCase("eventMessage"))
+		    	{
+		    		event.setEventMessage(value);
+		    	}
+		    	else if(key.equalsIgnoreCase("severity"))
+		    	{
+		    		event.setSeverity(value);
+		    	}
+		    	else if(key.equalsIgnoreCase("priority")) {
+		    		event.setPriority(value);
+		    	}
+		    	else if(key.equalsIgnoreCase("alarmClass")) {
+		    		event.setAlarmClass(value);
+		    	}
+		    	else if(key.equals("state")) {
+		    		event.setState(value);
+		    	}
+		    	else if(key.equals("timestamp")) {
+		    		event.setCreatedTime(Long.parseLong(value));
+		    	}
+		    	else
+		    	{
+		    		event.addAdditionInfo(key, value);
+		    	}
 	    	}
 	    }
 	    if(event.getCreatedTime() == -1) {
