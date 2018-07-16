@@ -115,7 +115,9 @@ function view(userId){
 	<th class="org-th" style="text-align:center;max-width: 350px;width:350px;"> UserVerified</th>
 	<th class="org-th" style="max-width: 350px;width:350px;text-align: center;">Status</th>
 	</tr>
-	 <% Iterator a = users.iterator();
+	 <% 
+	 if(users!=null){
+	 Iterator a = users.iterator();
 		while( a.hasNext() ) { 
 	User b = (User) a.next();  %>
 	<tr id="id">
@@ -125,7 +127,9 @@ function view(userId){
 	<td  style="max-width: 350px;width:350px;" align="center"><%=b.getUserVerified() %></td>
 	<td style="max-width: 350px;width:350px;text-align: center;"> <button type="button" onclick="view(<%=b.getId()%>)">Update</button> </td>
 	</tr>
-<%}%>
+<%
+}
+}%>
 </table>
 
 </div>
