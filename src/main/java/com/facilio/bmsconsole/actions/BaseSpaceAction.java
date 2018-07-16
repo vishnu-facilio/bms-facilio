@@ -175,7 +175,7 @@ public class BaseSpaceAction extends FacilioAction {
 		}
 		catch(Exception e) {
 			setResponseCode(1);
-			setMessage(FacilioConstants.ERROR_MESSAGE);
+			setMessage(e);
 			return ERROR;
 		}
 	}

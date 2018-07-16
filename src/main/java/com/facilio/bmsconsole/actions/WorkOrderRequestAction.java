@@ -80,6 +80,9 @@ public class WorkOrderRequestAction extends FacilioAction {
 	}
 	
 	public String approveWorkOrderRequest() throws Exception {
+		if (workorderrequest == null) {
+			workorderrequest = new WorkOrderRequestContext();
+		}
 		workorderrequest.setRequestStatus(WorkOrderRequestContext.RequestStatus.APPROVED);
 		FacilioContext context = new FacilioContext();
 		//set Event
@@ -493,7 +496,7 @@ public class WorkOrderRequestAction extends FacilioAction {
 		}
 		catch(Exception e) {
 			setResponseCode(1);
-			setMessage(FacilioConstants.ERROR_MESSAGE);
+			setMessage(e);
 			return ERROR;
 		}
 	}
@@ -506,7 +509,7 @@ public class WorkOrderRequestAction extends FacilioAction {
 		}
 		catch(Exception e) {
 			setResponseCode(1);
-			setMessage(FacilioConstants.ERROR_MESSAGE);
+			setMessage(e);
 			return ERROR;
 		}
 	}
@@ -519,7 +522,7 @@ public class WorkOrderRequestAction extends FacilioAction {
 		}
 		catch(Exception e) {
 			setResponseCode(1);
-			setMessage(FacilioConstants.ERROR_MESSAGE);
+			setMessage(e);
 			return ERROR;
 		}
 	}
@@ -532,7 +535,7 @@ public class WorkOrderRequestAction extends FacilioAction {
 		}
 		catch(Exception e) {
 			setResponseCode(1);
-			setMessage(FacilioConstants.ERROR_MESSAGE);
+			setMessage(e);
 			return ERROR;
 		}
 	}

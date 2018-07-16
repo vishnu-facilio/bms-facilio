@@ -1,7 +1,10 @@
 package com.facilio.bmsconsole.actions;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
 
+import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class FacilioAction extends ActionSupport {
@@ -22,6 +25,16 @@ public class FacilioAction extends ActionSupport {
 		this.message = message;
 	}
 	
+	public void setMessage(Exception e) {
+		if (e instanceof IllegalArgumentException || e instanceof RuntimeException) {
+			this.message = e.getMessage();			
+		}
+		else {
+			this.message = FacilioConstants.ERROR_MESSAGE;
+		}
+		setStackTrace(e);
+	}
+	
 	private JSONObject result;
 	public JSONObject getResult() {
 		return result;
@@ -33,6 +46,15 @@ public class FacilioAction extends ActionSupport {
 			this.result = new JSONObject();
 		}
 		this.result.put(key, result);			
+	}
+	
+	private String stackTrace;
+	public String getStackTrace() {
+		return stackTrace;
+	}
+	public void setStackTrace(Exception e) {
+		this.stackTrace = ExceptionUtils.getStackTrace(e);
+		LogManager.getLogger(this.getClass().getName()).error("Exception occured: - ", e);
 	}
 
 }

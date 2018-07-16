@@ -323,10 +323,9 @@ public class TaskAction extends FacilioAction {
 	public String taskList() throws Exception {
 		// TODO Auto-generated method stub
 
-		if (this.module != null && this.recordId > 0 && getViewName() == null) {
+		if (this.recordId > 0 && getViewName() == null) {
 			try {
 				FacilioContext context = new FacilioContext();
-				context.put(FacilioConstants.ContextNames.MODULE_NAME, this.module);
 				context.put(FacilioConstants.ContextNames.RECORD_ID, this.recordId);
 
 				Chain getRelatedTasksChain = FacilioChainFactory.getRelatedTasksChain();
@@ -435,7 +434,7 @@ public class TaskAction extends FacilioAction {
 		}
 		catch(Exception e) {
 			setResponseCode(1);
-			setMessage(FacilioConstants.ERROR_MESSAGE);
+			setMessage(e);
 			return ERROR;
 		}
 	}
@@ -448,7 +447,7 @@ public class TaskAction extends FacilioAction {
 		}
 		catch(Exception e) {
 			setResponseCode(1);
-			setMessage(FacilioConstants.ERROR_MESSAGE);
+			setMessage(e);
 			return ERROR;
 		}
 	}
@@ -461,7 +460,7 @@ public class TaskAction extends FacilioAction {
 		}
 		catch(Exception e) {
 			setResponseCode(1);
-			setMessage(FacilioConstants.ERROR_MESSAGE);
+			setMessage(e);
 			return ERROR;
 		}
 	}
@@ -475,7 +474,7 @@ public class TaskAction extends FacilioAction {
 		}
 		catch(Exception e) {
 			setResponseCode(1);
-			setMessage(FacilioConstants.ERROR_MESSAGE);
+			setMessage(e);
 			return ERROR;
 		}
 	}
@@ -489,7 +488,7 @@ public class TaskAction extends FacilioAction {
 		}
 		catch(Exception e) {
 			setResponseCode(1);
-			setMessage(FacilioConstants.ERROR_MESSAGE);
+			setMessage(e);
 			return ERROR;
 		}
 	}
@@ -503,7 +502,7 @@ public class TaskAction extends FacilioAction {
 		}
 		catch(Exception e) {
 			setResponseCode(1);
-			setMessage(FacilioConstants.ERROR_MESSAGE);
+			setMessage(e);
 			return ERROR;
 		}
 	}

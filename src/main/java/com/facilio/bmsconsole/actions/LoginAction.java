@@ -917,15 +917,12 @@ public class LoginAction extends FacilioAction{
 	public String v2currentAccount() {
 		try {
 			String response = currentAccount();
-			if (response != null) {
-				throw new IllegalArgumentException("testong");
-			}
 			setResult("account", account);
 			return response;
 		}
 		catch(Exception e) {
 			setResponseCode(1);
-			setMessage(FacilioConstants.ERROR_MESSAGE);
+			setMessage(e);
 			return ERROR;
 		}
 	}

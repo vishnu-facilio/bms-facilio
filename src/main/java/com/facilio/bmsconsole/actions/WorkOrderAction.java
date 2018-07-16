@@ -1427,7 +1427,7 @@ public class WorkOrderAction extends FacilioAction {
 		}
 		catch(Exception e) {
 			setResponseCode(1);
-			setMessage(FacilioConstants.ERROR_MESSAGE);
+			setMessage(e);
 			return ERROR;
 		}
 	}
@@ -1440,7 +1440,7 @@ public class WorkOrderAction extends FacilioAction {
 		}
 		catch(Exception e) {
 			setResponseCode(1);
-			setMessage(FacilioConstants.ERROR_MESSAGE);
+			setMessage(e);
 			return ERROR;
 		}
 	}
@@ -1453,7 +1453,7 @@ public class WorkOrderAction extends FacilioAction {
 		}
 		catch(Exception e) {
 			setResponseCode(1);
-			setMessage(FacilioConstants.ERROR_MESSAGE);
+			setMessage(e);
 			return ERROR;
 		}
 	}
@@ -1473,8 +1473,7 @@ public class WorkOrderAction extends FacilioAction {
 		}
 		catch(Exception e) {
 			setResponseCode(1);
-			setMessage(FacilioConstants.ERROR_MESSAGE);
-			e.printStackTrace();
+			setMessage(e);
 			return ERROR;
 		}
 	}

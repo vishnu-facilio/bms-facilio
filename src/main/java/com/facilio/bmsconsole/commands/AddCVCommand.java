@@ -44,7 +44,7 @@ public class AddCVCommand implements Command {
 				view.setName(view.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
 			}
 			if (ColumnFactory.getColumns(moduleName, view.getName()) != null) {
-				throw new Exception("Name already taken");
+				throw new IllegalArgumentException("Name already taken");
 			}
 			view.setDefault(false);
 			

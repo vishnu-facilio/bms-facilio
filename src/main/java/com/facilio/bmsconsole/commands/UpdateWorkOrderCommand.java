@@ -76,7 +76,7 @@ public class UpdateWorkOrderCommand implements Command {
 				for(WorkOrderContext oldWo: oldWos) {
 					
 					if (!validateWorkorderStatus(statusObj, oldWo)) {
-						throw new Exception("Please close all tasks before closing/resolving the workorder");
+						throw new RuntimeException("Please close all tasks before closing/resolving the workorder");
 					}
 					
 					WorkOrderContext newWo = FieldUtil.cloneBean(workOrder, WorkOrderContext.class);

@@ -45,9 +45,8 @@ import com.facilio.fw.auth.LoginUtil;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionContext;
-import com.opensymphony.xwork2.ActionSupport;
 
-public class UserAction extends ActionSupport {
+public class UserAction extends FacilioAction {
 
 	private static Logger log = LogManager.getLogger(UserAction.class.getName());
 	private SetupLayout setup;
@@ -119,7 +118,7 @@ public class UserAction extends ActionSupport {
 			statement.execute(sql);
 		} catch (SQLException | RuntimeException e) {
 			log.info("Exception occurred ", e);
-			result = "User cannot be deleted.";
+			error = "User cannot be deleted.";
 			return ERROR;
 		} finally {
 			DBUtil.closeAll(conn, statement);
@@ -562,9 +561,9 @@ public class UserAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	private String result;
-	public String getResult() {
-		return result;
+	private String error;
+	public String getError() {
+		return error;
 	}
 
 	public JSONObject getCard() {
@@ -575,4 +574,31 @@ public class UserAction extends ActionSupport {
 		this.card = card;
 	}
 	
+	/******************      V2 Api    ******************/
+	
+	public String v2addMobileSetting() {
+		try {
+			String response = addMobileSetting();
+			setResult(FacilioConstants.ContextNames.USER_MOBILE_SETTING, userMobileSetting);
+			return response;
+		}
+		catch(Exception e) {
+			setResponseCode(1);
+			setMessage(e);
+			return ERROR;
+		}
+	}
+	
+	public String v2removeMobileSetting() {
+		try {
+			String response = removeMobileSetting();
+			setResult(FacilioConstants.ContextNames.USER_MOBILE_SETTING, userMobileSetting);
+			return response;
+		}
+		catch(Exception e) {
+			setResponseCode(1);
+			setMessage(e);
+			return ERROR;
+		}
+	}
 }

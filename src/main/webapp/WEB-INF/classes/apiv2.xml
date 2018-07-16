@@ -39,7 +39,8 @@
 				<param name="parse">false</param>
 			</result>
 			<result name="error" type="json">
-				<param name="includeProperties">responseCode, message</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, message, stackTrace</param>
 			</result>
 			<result name="success" type="json">
 				<param name="ignoreHierarchy">false</param>
@@ -53,6 +54,10 @@
 		
 		<action name="basespace" class="com.facilio.bmsconsole.actions.BaseSpaceAction"
 			method="v2baseSpaceList">
+		</action>
+		
+		<action name="attachments" class="com.facilio.bmsconsole.actions.AttachmentAction"
+			method="v2attachmentList">
 		</action>
 		
 	</package>
@@ -90,7 +95,7 @@
 	</package>
 	
 	
-	<package name="workOrderRequestApiV2" namespace="/api/v2/workorderrequest" extends="v2Api">
+	<package name="workOrderRequestApiV2" namespace="/api/v2/workorderrequests" extends="v2Api">
 		
 		<action name="approve"
 			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="v2approveWorkOrderRequest">
@@ -111,7 +116,7 @@
 		</action>
 		
 	</package>
-	<package name="workOrderRequestListApiV2" namespace="/api/v2/workorderrequest/view" extends="v2Api">
+	<package name="workOrderRequestListApiV2" namespace="/api/v2/workorderrequests/view" extends="v2Api">
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="v2workOrderRequestList">
 			<param name="moduleName">workorderrequest</param>
@@ -121,7 +126,7 @@
 	</package>
 	
 	
-	<package name="taskApiv2" namespace="/api/v2/task" extends="v2Api">
+	<package name="taskApiv2" namespace="/api/v2/tasks" extends="v2Api">
 	
 		<action name="updatestatus" class="com.facilio.bmsconsole.actions.TaskAction" method="v2updateStatus">
 			<param name="moduleName">workorder</param>
@@ -148,10 +153,11 @@
 		</action>
 	
 	</package>
-	<package name="taskApiv2" namespace="/api/v2/task/view" extends="v2Api">
+	<package name="taskApiListv2" namespace="/api/v2/tasks/parent" extends="v2Api">
 		<action name="*" class="com.facilio.bmsconsole.actions.TaskAction" method="v2taskList">
 			<param name="moduleName">workorder</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<param name="recordId">{1}</param>
 		</action>
 	</package>
 	

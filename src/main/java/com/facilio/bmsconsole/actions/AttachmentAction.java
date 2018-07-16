@@ -16,9 +16,8 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
-import com.opensymphony.xwork2.ActionSupport;
 
-public class AttachmentAction  extends ActionSupport {
+public class AttachmentAction  extends FacilioAction {
 
 	private static Logger log = LogManager.getLogger(AttachmentAction.class.getName());
 	private String module;
@@ -193,5 +192,21 @@ public class AttachmentAction  extends ActionSupport {
 		}
 		
 		return SUCCESS;
+	}
+	
+	
+	/******************      V2 Api    ******************/
+	
+	public String v2attachmentList() {
+		try {
+			String response = attachmentList();
+			setResult(FacilioConstants.ContextNames.ATTACHMENT_LIST, getAttachments());
+			return response;
+		}
+		catch(Exception e) {
+			setResponseCode(1);
+			setMessage(e);
+			return ERROR;
+		}
 	}
 }

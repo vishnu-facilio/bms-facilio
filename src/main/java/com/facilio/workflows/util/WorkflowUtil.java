@@ -286,7 +286,7 @@ public class WorkflowUtil {
 				for(String match :allMatch) {
 					String variable = match.substring(2, match.length()-1);
 					if(!params.contains(variable)) {
-						throw new Exception("Variable - "+variable+" is not declared in params");
+						throw new IllegalArgumentException("Variable - "+variable+" is not declared in params");
 					}
 				}
 			}
@@ -572,10 +572,10 @@ public class WorkflowUtil {
 			
 			if(!workflowContext.isIgnoreNullParams()) {
 				if(paramMap == null || paramMap.isEmpty()) {
-					throw new Exception("No paramters match found");
+					throw new IllegalArgumentException("No paramters match found");
 				}
 				if(paramterContexts.size() > paramMap.size()) {
-					throw new Exception("No. of arguments mismatched");
+					throw new IllegalArgumentException("No. of arguments mismatched");
 				}
 			}
 			for(ParameterContext parameterContext:paramterContexts) {

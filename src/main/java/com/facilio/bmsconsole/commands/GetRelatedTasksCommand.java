@@ -17,9 +17,8 @@ public class GetRelatedTasksCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		Long recordId = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID);
-		if(moduleName == null || recordId == null) {
+		if(recordId == null) {
 			return false;
 		}
 		
