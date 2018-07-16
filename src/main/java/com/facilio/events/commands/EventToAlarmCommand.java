@@ -122,14 +122,13 @@ public class EventToAlarmCommand implements Command {
 		event = FieldUtil.getAsBeanFromMap(eventProp, EventContext.class);
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void updateAlarm(long alarmId, EventContext event) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		List<FacilioField> alarmFields = modBean.getAllFields(FacilioConstants.ContextNames.ALARM);
-		
 		JSONObject alarm = new JSONObject();
 		List<Long> ids = new ArrayList<>();
 		ids.add(alarmId);
 		alarm.put("severityString", event.getSeverity());
+		alarm.put("subject", event.getEventMessage());
 		alarm.put("orgId", event.getOrgId());
 		alarm.put("modifiedTime", event.getCreatedTime());
 		
@@ -160,6 +159,7 @@ public class EventToAlarmCommand implements Command {
 		event.setEventState(EventState.ALARM_UPDATED);
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void addAlarm(long entityId, EventContext event) throws Exception {
 		JSONObject json = new JSONObject();
 		json.put("orgId", event.getOrgId());
