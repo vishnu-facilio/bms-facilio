@@ -530,7 +530,7 @@ public enum ActionType {
 					workorder.setStatus(TicketAPI.getStatus("Closed"));
 					
 					context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
-					context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, wo.getId());
+					context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(wo.getId()));
 
 					Chain updateWorkOrder = FacilioChainFactory.getUpdateWorkOrderChain();
 					updateWorkOrder.execute(context);
@@ -539,6 +539,12 @@ public enum ActionType {
 			catch (Exception e) {
 				LOGGER.error("Exception occurred during closing Workorder from Alarm", e);
 			}
+		}
+		
+		@Override
+		public boolean isTemplateNeeded() {
+			// TODO Auto-generated method stub
+			return false;
 		}
 		
 	}
@@ -552,6 +558,10 @@ public enum ActionType {
 
 	public int getVal() {
 		return val;
+	}
+	
+	public boolean isTemplateNeeded() {
+		return true;
 	}
 
 	abstract public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,

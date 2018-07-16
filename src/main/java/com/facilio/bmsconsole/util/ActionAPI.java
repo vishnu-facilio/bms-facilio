@@ -73,12 +73,18 @@ public class ActionAPI {
 			action.setOrgId(orgId);
 			action.setStatus(true);
 			
-			if (action.getTemplateId() == -1 && action.getDefaultTemplateId() == -1) {
-				throw new IllegalArgumentException("Either template ID / default template has to be set for Action during addition");
+			if (action.getActionTypeEnum() == null) {
+				throw new IllegalArgumentException("Action Type cannot be null during addition of action");
 			}
 			
-			if (action.getTemplateId() == -1 && TemplateAPI.getDefaultTemplate(action.getDefaultTemplateId()) == null) {
-				throw new IllegalArgumentException("Invalid default template id for action during addition.");
+			if (action.getActionTypeEnum().isTemplateNeeded()) {
+				if (action.getTemplateId() == -1 && action.getDefaultTemplateId() == -1) {
+					throw new IllegalArgumentException("Either template ID / default template has to be set for Action during addition");
+				}
+				
+				if (action.getTemplateId() == -1 && TemplateAPI.getDefaultTemplate(action.getDefaultTemplateId()) == null) {
+					throw new IllegalArgumentException("Invalid default template id for action during addition.");
+				}
 			}
 			
 			actionProps.add(FieldUtil.getAsProperties(action));
@@ -141,7 +147,7 @@ public class ActionAPI {
 				if(action.getTemplateId() != -1) {
 					action.setTemplate(TemplateAPI.getTemplate(action.getTemplateId())); //Template should be obtained from some api
 				}
-				if(action.getTemplate() == null) {
+				if(action.getActionTypeEnum().isTemplateNeeded() && action.getTemplate() == null) {
 					throw new IllegalArgumentException("Invalid template for action : "+action.getId());
 				}
 				actions.add(action);
