@@ -19,9 +19,10 @@ public class PdfUtil {
     private static final String RENDER_JS = System.getProperty("user.home")+"/render.js";
     private static final String SERVER_NAME = AwsUtil.getConfig("api.servername");
     private static Logger log = LogManager.getLogger(PdfUtil.class.getName());
-    public static String convertUrlToPdf(long orgId, String username, String url, FileFormat format) {
-    		if (format == null) {
-			format = FileFormat.PDF;
+    public static String convertUrlToPdf(long orgId, String username, String url, FileFormat... formats) {
+    		FileFormat format = FileFormat.PDF;
+		if (formats != null && formats.length > 0) {
+			format = formats[0];
 		}
         File pdfDirectory = new File(System.getProperty("java.io.tmpdir")+"/"+orgId+"/");
         String pdfFileLocation = null;
@@ -49,9 +50,10 @@ public class PdfUtil {
         return pdfFileLocation;
     }
 
-    public static String exportUrlAsPdf(long orgId, String username, String url, FileFormat format){
-    		if (format == null) {
-    			format = FileFormat.PDF;
+    public static String exportUrlAsPdf(long orgId, String username, String url, FileFormat... formats){
+    		FileFormat format = FileFormat.PDF;
+    		if (formats != null && formats.length > 0) {
+    			format = formats[0];
     		}
         String pdfFileLocation = convertUrlToPdf(orgId, username, url, format);
         File pdfFile = new File(pdfFileLocation);

@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,19 +24,23 @@ public class CalculateFormulaService implements Command {
 		
 		
 		double utilitySumValue = (double) context.get(TenantsAPI.UTILITY_SUM_VALUE);
-		
+		Long startTime = (Long) context.get(TenantsAPI.START_TIME);
+		Long endTime = (Long) context.get(TenantsAPI.END_TIME);
 		
 		List<RateCardServiceContext> formulaServices = rateCard.getServiceOfType(RateCardServiceContext.ServiceType.FORMULA.getValue());
 		
 		double formulaSumValue = 0.0;
 		if(formulaServices != null && !formulaServices.isEmpty()) {
-			
+			Map<String, Object> item = new HashMap<>();
 			Map<Long,Double> formulaVsValue = new HashMap<>();
+			List<Map<String, Object>> itemDetails = new ArrayList<>();
 			
 			for(RateCardServiceContext formulaService :formulaServices) {
 
 				Map<String,Object> params = new HashMap<>();
 				params.put("value", utilitySumValue);
+				params.put("startTime", startTime);
+				params.put("endTime", endTime);
 				
 				String workflowValueString = WorkflowUtil.getResult(formulaService.getWorkflowId(), params).toString();
 				
@@ -44,9 +49,13 @@ public class CalculateFormulaService implements Command {
 				formulaSumValue = formulaSumValue + workflowValue;
 				
 				formulaVsValue.put(formulaService.getId(), formulaSumValue);
+				
+				item.put("name", formulaService.getName());
+				item.put("cost", workflowValue);
+				itemDetails.add(item);
 			}
 			
-			context.put(TenantsAPI.FORMULA_VALUES, formulaVsValue);
+			context.put(TenantsAPI.FORMULA_VALUES, itemDetails);
 		}
 		context.put(TenantsAPI.FORMULA_SUM_VALUE, formulaSumValue);
 		return false;

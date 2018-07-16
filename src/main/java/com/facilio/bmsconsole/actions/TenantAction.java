@@ -1,10 +1,20 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.chain.Chain;
+
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.tenant.RateCardContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.TenantsAPI;
+import com.facilio.pdf.PdfUtil;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class TenantAction extends ActionSupport {
@@ -109,6 +119,111 @@ public class TenantAction extends ActionSupport {
 	public String fetchAllRateCards() throws Exception {
 		rateCards = TenantsAPI.getAllRateCards();
 		return SUCCESS;
+	}
+	
+	private long startTime;
+	public long getStartTime() {
+		return startTime;
+	}
+	public void setStartTime(long startTime) {
+		this.startTime = startTime;
+	}
+	
+	private long endTime;
+	public long getEndTime() {
+		return endTime;
+	}
+	public void setEndTime(long endTime) {
+		this.endTime = endTime;
+	}
+	
+	private long tenantId;
+	public long getTenantId() {
+		return tenantId;
+	}
+	public void setTenantId(long tenantId) {
+		this.tenantId = tenantId;
+	}
+	
+	private long rateCardId;
+	public long getRateCardId() {
+		return rateCardId;
+	}
+	public void setRateCardId(long rateCardId) {
+		this.rateCardId = rateCardId;
+	}
+	
+	private Boolean convertToPdf;
+	public Boolean getConvertToPdf() {
+		if (convertToPdf == null) {
+			return false;
+		}
+		return convertToPdf;
+	}
+	public void setConvertToPdf(Boolean convertToPdf) {
+		this.convertToPdf = convertToPdf;
+	}
+	
+	private String fileUrl;
+	public String getFileUrl() {
+		return fileUrl;
+	}
+	public void setFileUrl(String url) {
+		this.fileUrl = url;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public String generateBill() throws Exception {
+		
+		if (getConvertToPdf()) {
+			StringBuilder url = new StringBuilder(AwsUtil.getConfig("clientapp.url")).append("/app/pdf/billing?")
+					.append("tenanatId=").append(tenantId).append("&rateCardId=").append(rateCardId)
+					.append("&startTime=").append(startTime).append("&endTime=").append(endTime);
+			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(),url.toString());
+			return SUCCESS;
+		}
+		
+		TenantContext tenant = TenantsAPI.getTenant(tenantId);
+		RateCardContext rateCard = TenantsAPI.getRateCard(rateCardId);
+		
+		FacilioContext context = new FacilioContext();
+		
+		Chain chain = FacilioChainFactory.calculateTenantBill();
+		
+		context.put(TenantsAPI.TENANT_CONTEXT, tenant);
+		context.put(TenantsAPI.RATECARD_CONTEXT, rateCard);
+		context.put(TenantsAPI.START_TIME, startTime);
+		context.put(TenantsAPI.END_TIME, endTime);
+		
+		chain.execute(context);
+		
+		List<Map<String,Object>> items = new ArrayList<>();
+		List<Map<String,Object>> utilityItems = (List<Map<String,Object>>) context.get(TenantsAPI.UTILITY_VALUES);
+		if (utilityItems != null) {
+			items.addAll(utilityItems);
+		}
+		List<Map<String,Object>> formulaItems = (List<Map<String,Object>>) context.get(TenantsAPI.FORMULA_VALUES);
+		if (formulaItems != null) {
+			items.addAll(formulaItems);
+		}
+		
+		Double total = (Double)context.get(TenantsAPI.FINAL_VALUES);
+		
+		this.billDetails = new HashMap<>();
+		this.billDetails.put("items", items);
+		this.billDetails.put("tenant", tenant);
+		this.billDetails.put("total", total != null ? total : 0);
+		
+				
+		return SUCCESS;
+	}
+	
+	private Map<String,Object> billDetails;
+	public Map<String, Object> getBillDetails() {
+		return billDetails;
+	}
+	public void setBillDetails(Map<String, Object> billDetails) {
+		this.billDetails = billDetails;
 	}
 	
 }

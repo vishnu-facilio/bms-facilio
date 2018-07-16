@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,19 +35,28 @@ public class CalculateUtilityService implements Command {
 		if(utilityServices != null && !utilityServices.isEmpty()) {
 			
 			Map<Long,Double> utilityVsValue = new HashMap<>();
+			List<Map<String, Object>> itemDetails = new ArrayList<>();
+			
 			double utilitySumValue = 0.0;
 			for(RateCardServiceContext utilityService : utilityServices) {
 				
 				List<UtilityAsset> utilityAssets = tenant.getUtilityAssetsOfUtility(utilityService.getUtility());
 				
-				FacilioUtility.ENERGY.getValue();
+				if (utilityAssets == null) {
+					continue;
+				}
+				
 				for(UtilityAsset utilityAsset :utilityAssets) {
+					
+					Map<String, Object> item = new HashMap<>();
+					Double consumption = 0.0;
+					Double itemCost = 0.0;
 					
 					switch(FacilioUtility.valueOf(utilityAsset.getUtility())) {
 					
 					case ENERGY:
-						Double value = 0.0;
 						
+						Double value = 0.0;
 						if(utilityVsValue.containsKey(utilityService.getId())) {
 							value = utilityVsValue.get(utilityService.getId());
 						}
@@ -55,9 +65,9 @@ public class CalculateUtilityService implements Command {
 						List<Map<String, Object>> props = ReportsUtil.fetchMeterData(assetId+"", startTime, endTime);
 						LOGGER.log(Level.SEVERE, "props --- "+props);
 						if(props != null && !props.isEmpty()) {
-							Double consumption = (Double) props.get(0).get("CONSUMPTION");
-							consumption = consumption * utilityService.getPrice();
-							value = value + consumption;
+							consumption = (Double) props.get(0).get("CONSUMPTION");
+							itemCost = consumption * utilityService.getPrice();
+							value = value + itemCost;
 						}
 						utilityVsValue.put(utilityService.getId(), value);
 						break;
@@ -72,6 +82,11 @@ public class CalculateUtilityService implements Command {
 						break;
 						
 					}
+					item.put("name", utilityService.getName());
+					item.put("consumption", consumption);
+					item.put("costPerUnit", utilityService.getPrice());
+					item.put("cost", itemCost);
+					itemDetails.add(item);
 				}
 			}
 			LOGGER.log(Level.SEVERE, "utilityVsValue --- "+utilityVsValue);
@@ -81,7 +96,7 @@ public class CalculateUtilityService implements Command {
 			
 			LOGGER.log(Level.SEVERE, "utilitySumValue --- "+utilitySumValue);
 			
-			context.put(TenantsAPI.UTILITY_VALUES, utilityVsValue);
+			context.put(TenantsAPI.UTILITY_VALUES, itemDetails);
 			context.put(TenantsAPI.UTILITY_SUM_VALUE, utilitySumValue);
 			
 		}

@@ -9,12 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.PickListOperators;
@@ -49,24 +46,6 @@ public class TenantsAPI {
 	public static final String FORMULA_SUM_VALUE = "formulaSumValue";
 	public static final String FORMULA_VALUES = "formulaValues";
 	public static final String FINAL_VALUES = "finalValue";
-	
-	public static void generateBill(Long tenantId,Long rateCardId,Long startTime,Long endTime) throws Exception {
-		
-		TenantContext tenant = getTenant(tenantId);
-		RateCardContext rateCard = getRateCard(rateCardId);
-		
-		FacilioContext context = new FacilioContext();
-		
-		Chain chain = FacilioChainFactory.calculateTenantBill();
-		
-		context.put(TENANT_CONTEXT, tenant);
-		context.put(RATECARD_CONTEXT, rateCard);
-		context.put(START_TIME, startTime);
-		context.put(END_TIME, endTime);
-		
-		chain.execute(context);
-		
-	}
 	
 	public static List<TenantContext> getAllTenants() throws Exception {
 		FacilioModule module = ModuleFactory.getTenantsModule();
