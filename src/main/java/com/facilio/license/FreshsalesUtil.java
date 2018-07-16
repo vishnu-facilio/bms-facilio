@@ -27,4 +27,18 @@ public static void createLead(String module,JSONObject data) throws IOException 
 		System.out.println("Ther final data to be posted is "+postData.toJSONString());
 		AwsUtil.doHttpPost(url, headers, null, postData.toJSONString());
 	}
+
+public static void main(String args[]) throws Exception
+{
+	JSONObject data = new JSONObject();
+	data.put("first_name", "yoge");
+	data.put("last_name", "babu");
+	data.put("email", "yogebabu+312@gmail.com");
+	
+	
+	createLead("leads", data);
+	
+	
+	
+}
 }
