@@ -76,7 +76,7 @@ public class AdminAction extends ActionSupport
 		System.out.println("Final data to freshsales"+data);
 		
 			try {
-				FreshsalesUtil.createLead("deals", data);
+				FreshsalesUtil.createLead("deals","deal", data);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

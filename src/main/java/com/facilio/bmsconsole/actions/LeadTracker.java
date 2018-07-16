@@ -10,7 +10,7 @@ public class LeadTracker extends ActionSupport {
 	@Override
 	public String execute() throws Exception {
 		
-		FreshsalesUtil.createLead("leads",getData());
+		FreshsalesUtil.createLead("leads","lead",getData());
 		
 		return SUCCESS;
 	}

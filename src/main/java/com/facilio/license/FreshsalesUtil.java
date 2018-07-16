@@ -10,14 +10,14 @@ import com.facilio.aws.util.AwsUtil;
 
 public class FreshsalesUtil {
 
-public static void createLead(String module,JSONObject data) throws IOException {
+public static void createLead(String module,String modulekey , JSONObject data) throws IOException {
 		
 		if (data == null || data.size() == 0) {
 			return;
 		}
 		
 		JSONObject postData = new JSONObject();
-		postData.put(module, data);
+		postData.put(modulekey, data);
 		
 		Map<String, String> headers = new HashMap<>();
 		headers.put("Content-Type","application/json");
@@ -36,7 +36,7 @@ public static void main(String args[]) throws Exception
 	data.put("email", "yogebabu+312@gmail.com");
 	
 	
-	createLead("leads", data);
+	createLead("leads","lead", data);
 	
 	
 	
