@@ -12,6 +12,7 @@ import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -70,7 +71,7 @@ public enum ActionType {
 						}
 					}
 				} catch (Exception e) {
-					log.info("Exception occurred ", e);
+					LOGGER.error("Exception occurred ", e);
 				}
 			}
 		}
@@ -93,7 +94,7 @@ public enum ActionType {
 						}
 					}
 				} catch (Exception e) {
-					log.info("Exception occurred ", e);
+					LOGGER.error("Exception occurred ", e);
 				}
 			}
 		}
@@ -130,7 +131,7 @@ public enum ActionType {
 						}
 					}
 				} catch (Exception e) {
-					log.info("Exception occurred ", e);
+					LOGGER.error("Exception occurred ", e);
 				}
 			}
 		}
@@ -167,7 +168,7 @@ public enum ActionType {
 						}
 					}
 				} catch (Exception e) {
-					log.info("Exception occurred ", e);
+					LOGGER.error("Exception occurred ", e);
 				}
 			}
 		}
@@ -200,7 +201,7 @@ public enum ActionType {
 					}
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
-					log.info("Exception occurred ", e);
+					LOGGER.error("Exception occurred ", e);
 				}
 			}
 		}
@@ -228,7 +229,7 @@ public enum ActionType {
 					Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
 					getAddEventChain.execute(addEventContext);
 				} catch (Exception e) {
-					log.info("Exception occurred ", e);
+					LOGGER.error("Exception occurred ", e);
 				}
 			}
 		}
@@ -269,7 +270,7 @@ public enum ActionType {
 					}
 				}
 			} catch (Exception e) {
-				log.info("Exception occurred ", e);
+				LOGGER.error("Exception occurred ", e);
 			}
 		}
 
@@ -346,7 +347,7 @@ public enum ActionType {
 				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				log.info("Exception occurred ", e);
+				LOGGER.error("Exception occurred ", e);
 			}
 
 		}
@@ -391,7 +392,7 @@ public enum ActionType {
 						.andCondition(CriteriaAPI.getIdCondition(workOrder.getId(), woModule));
 				updateBuilder.update(updateWO);
 			} catch (Exception e) {
-				log.info("Exception occurred ", e);
+				LOGGER.error("Exception occurred ", e);
 			}
 
 		}
@@ -441,7 +442,7 @@ public enum ActionType {
 					updateBuilder.update(updateWO);
 
 				} catch (Exception e) {
-					log.info("Exception occurred ", e);
+					LOGGER.error("Exception occurred ", e);
 				}
 
 			}
@@ -483,7 +484,7 @@ public enum ActionType {
 				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				log.info("Exception occurred ", e);
+				LOGGER.error("Exception occurred during creating Workorder from Alarm", e);
 			}
 		}
 		
@@ -512,7 +513,36 @@ public enum ActionType {
 			alarm.setSeverity(severityMap.get(alarm.getSeverity().getId()));
 		}
 
-	};
+	},
+	CLOSE_WO_FROM_ALARM(12) {
+
+		@Override
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
+				Object currentRecord) throws Exception {
+			// TODO Auto-generated method stub
+			try {
+				WorkOrderContext wo = WorkOrderAPI.getWorkOrder(((AlarmContext) currentRecord).getId());
+				if (wo == null) {
+					FacilioContext updateContext = new FacilioContext();
+					updateContext.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CLOSE_WORK_ORDER);
+
+					WorkOrderContext workorder = new WorkOrderContext();
+					workorder.setStatus(TicketAPI.getStatus("Closed"));
+					
+					context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
+					context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, wo.getId());
+
+					Chain updateWorkOrder = FacilioChainFactory.getUpdateWorkOrderChain();
+					updateWorkOrder.execute(context);
+				}
+			}
+			catch (Exception e) {
+				LOGGER.error("Exception occurred during closing Workorder from Alarm", e);
+			}
+		}
+		
+	}
+	;
 
 	private int val;
 
@@ -533,7 +563,7 @@ public enum ActionType {
 
 	private static final Map<Integer, ActionType> TYPE_MAP = Collections.unmodifiableMap(initTypeMap());
 
-	private static org.apache.log4j.Logger log = LogManager.getLogger(ActionType.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(ActionType.class.getName());
 
 	private static Map<Integer, ActionType> initTypeMap() {
 		Map<Integer, ActionType> typeMap = new HashMap<>();
