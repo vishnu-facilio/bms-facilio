@@ -109,6 +109,7 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		
 		List<Map<String, Object>> beanProps = new ArrayList<>();
 		for(E bean : records) {
+			bean.setSysCreatedTime(System.currentTimeMillis());
 			beanProps.add(getAsProps(bean));
 		}
 		

@@ -88,4 +88,12 @@ public class ModuleBaseWithCustomFields {
 		}
 		return data.get(key);
 	}
+	
+	private long sysCreatedTime = -1;
+	public long getSysCreatedTime() {
+		return sysCreatedTime;
+	}
+	public void setSysCreatedTime(long sysCreatedTime) {
+		this.sysCreatedTime = sysCreatedTime;
+	}
 }
