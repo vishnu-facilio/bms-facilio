@@ -1136,7 +1136,7 @@ public class ModuleFactory {
 		FacilioModule additionalCosts = new FacilioModule();
 		additionalCosts.setName("additionalCost");
 		additionalCosts.setDisplayName("Additional Costs");
-		additionalCosts.setTableName("Additonal_Costs");
+		additionalCosts.setTableName("Additional_Costs");
 		return additionalCosts;
 	}
 	
