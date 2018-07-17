@@ -31,11 +31,11 @@ public class CalculateFormulaService implements Command {
 		
 		double formulaSumValue = 0.0;
 		if(formulaServices != null && !formulaServices.isEmpty()) {
-			Map<String, Object> item = new HashMap<>();
 			Map<Long,Double> formulaVsValue = new HashMap<>();
 			List<Map<String, Object>> itemDetails = new ArrayList<>();
 			
 			for(RateCardServiceContext formulaService :formulaServices) {
+				Map<String, Object> item = new HashMap<>();
 
 				Map<String,Object> params = new HashMap<>();
 				params.put("value", utilitySumValue);
