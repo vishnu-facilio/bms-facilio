@@ -3284,6 +3284,13 @@
 			</result>
 		</action>
 		
+		<action name="generatebill" class="com.facilio.bmsconsole.actions.TenantAction"
+			method="generateBill">
+			<result name="success" type="json">
+				<param name="includeProperties">^billDetails.*</param>
+			</result>
+		</action>
+		
 		<action name="*" class="com.facilio.bmsconsole.actions.TenantAction"
 			method="fetchTenant">
 			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
