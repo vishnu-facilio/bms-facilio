@@ -52,6 +52,12 @@
 				<param name="includeProperties">response</param>
 			</result>
 		</action>
+		<action name="verifyusers" class="com.facilio.bmsconsole.actions.UserAction"
+				method="userVerify">
+			<result name="success" type="json">
+				<param name="includeProperties">users.*</param>
+			</result>
+		</action>
 		<action name="validateInviteLink" class="com.facilio.auth.actions.FacilioAuthAction"
 			method="validateInviteLink">
 			<param name="auth">false</param>
@@ -3406,6 +3412,7 @@
 	</package>
 
 	<package name="users" namespace="/app/setup/users" extends="home">
+	
 		<action name="list" class="com.facilio.bmsconsole.actions.UserAction"
 			method="userList">
 			<param name="permission">USER_ACCESS_ADMINISTER</param>
@@ -3632,10 +3639,8 @@
 		<action name="migration">
 			<result name="success">/jsps/Migration.jsp</result>
 		</action>
-		<action name="verifyUsers">
-			<result name="success">/jsps/admin/VerifyUsers.jsp</result>
-		</action>
 		
+				
 		<action name="addAlarm" class="com.facilio.bmsconsole.actions.InternalActions"
 			method="addAlarmFromEvent">
 			<result name="success" type="json">
