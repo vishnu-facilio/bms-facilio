@@ -109,28 +109,24 @@ public class WorkOrderAction extends FacilioAction {
 		return addWorkOrder(workorder);
 	}
 
-	public String addWorkOrder(WorkOrderContext workorder) {
-		try {
-			workorder.setSourceType(TicketContext.SourceType.WEB_ORDER);
-			FacilioContext context = new FacilioContext();
-			
-			context.put(FacilioConstants.ContextNames.REQUESTER, workorder.getRequester());
-			context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
-			context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
-			
-			context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, this.attachedFiles);
-	 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, this.attachedFilesFileName);
-	 		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.attachedFilesContentType);
-	 		context.put(FacilioConstants.ContextNames.ATTACHMENT_TYPE, this.attachmentType);
-	 		context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
-			
-			Command addWorkOrder = FacilioChainFactory.getAddWorkOrderChain();
-			addWorkOrder.execute(context);
-			
-			setWorkOrderId(workorder.getId());
-		} catch (Exception e) {
-			log.info("Exception occurred ", e);
-		}
+	public String addWorkOrder(WorkOrderContext workorder) throws Exception {
+		workorder.setSourceType(TicketContext.SourceType.WEB_ORDER);
+		FacilioContext context = new FacilioContext();
+		
+		context.put(FacilioConstants.ContextNames.REQUESTER, workorder.getRequester());
+		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
+		context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
+		
+		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, this.attachedFiles);
+ 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, this.attachedFilesFileName);
+ 		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.attachedFilesContentType);
+ 		context.put(FacilioConstants.ContextNames.ATTACHMENT_TYPE, this.attachmentType);
+ 		context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
+		
+		Command addWorkOrder = FacilioChainFactory.getAddWorkOrderChain();
+		addWorkOrder.execute(context);
+		
+		setWorkOrderId(workorder.getId());
 		return SUCCESS;
 	}
 
