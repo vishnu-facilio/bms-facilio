@@ -455,7 +455,7 @@ public class ReadingsAPI {
 					+ "READING_DATA_ID = CASE "+idBuilder.toString() + " END "
 					+ "WHERE ORGID = "+orgId+" AND RESOURCE_ID IN ("+resourceList+") AND FIELD_ID IN ("+fieldList+")";
 			if(sql != null && !sql.isEmpty()) {
-				LOGGER.info("################ Update RDM sql : "+sql);
+				LOGGER.debug("################ Update RDM sql : "+sql);
 				try(PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
 					int rowCount = pstmt.executeUpdate();
 					return rowCount;

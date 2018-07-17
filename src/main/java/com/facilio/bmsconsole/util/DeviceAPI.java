@@ -481,17 +481,17 @@ public class DeviceAPI
 			}
 			
 			LOGGER.info("Calculating Consumption for VM : "+meter.getName() + " between " + interval);
-			if (AccountUtil.getCurrentOrg().getId() == 116) {
-				LOGGER.info("Intervals : "+interval);
-			}
+//			if (AccountUtil.getCurrentOrg().getId() == 116) {
+				LOGGER.debug("Intervals : "+interval);
+//			}
 			ReadingContext virtualMeterReading = calculateVMReading(meter,intervalReadings, childMeterIds, interval, isHistorical || i != (intervals.size() - 1));
-			if (AccountUtil.getCurrentOrg().getId() == 116) {
-				LOGGER.info("Calculated VM Reading : "+virtualMeterReading);
-			}
+//			if (AccountUtil.getCurrentOrg().getId() == 116) {
+				LOGGER.debug("Calculated VM Reading : "+virtualMeterReading);
+//			}
 			if(virtualMeterReading != null) {
-				if (AccountUtil.getCurrentOrg().getId() == 116) {
-					LOGGER.info("Adding VM reading for time : "+virtualMeterReading.getTtime());
-				}
+//				if (AccountUtil.getCurrentOrg().getId() == 116) {
+					LOGGER.debug("Adding VM reading for time : "+virtualMeterReading.getTtime());
+//				}
 				vmReadings.add(virtualMeterReading);
 				intervalReadings=new ArrayList<ReadingContext>();
 			}
@@ -580,10 +580,10 @@ public class DeviceAPI
 				timestamps.add(reading.getTtime());
 			}
 			
-			if (AccountUtil.getCurrentOrg().getId() == 116) {
-				LOGGER.info("Child Meter IDs : "+childIds);
-				LOGGER.info("Meter wise readings : "+readingMap);
-			}
+//			if (AccountUtil.getCurrentOrg().getId() == 116) {
+				LOGGER.debug("Child Meter IDs : "+childIds);
+				LOGGER.debug("Meter wise readings : "+readingMap);
+//			}
 			
 			if (!ignoreNullValues) {
 				for(Long childId : childIds) {
