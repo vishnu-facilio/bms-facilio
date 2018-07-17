@@ -584,6 +584,15 @@ public class DeviceAPI
 				LOGGER.info("Child Meter IDs : "+childIds);
 				LOGGER.info("Meter wise readings : "+readingMap);
 			}
+			
+			if (!ignoreNullValues) {
+				for(Long childId : childIds) {
+					if(!readingMap.containsKey(childId)) {
+						return null;
+					}
+				}
+			}
+			
 			EnergyDataEvaluator evaluator = new EnergyDataEvaluator(readingMap, ignoreNullValues);
 			String expression = meter.getChildMeterExpression();
 			virtualMeterReading = evaluator.evaluateExpression(expression);
