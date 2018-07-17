@@ -409,7 +409,7 @@ public class ReadingsAPI {
 							fields.add(fieldId);
 							String value = val.toString();
 							
-							String uniqueKey = resourceId + "|" + fieldId;
+							String uniqueKey = resourceId + "_" + fieldId;
 							ReadingDataMeta rdm = uniqueRDMs.get(uniqueKey);
 							if (rdm == null || rdm.getTtime() < timeStamp) {
 								rdm = new ReadingDataMeta();
@@ -429,6 +429,7 @@ public class ReadingsAPI {
 				}
 			}
 			
+			LOGGER.info("Unique RDMs : "+uniqueRDMs);
 			if (uniqueRDMs.size() == 0) {
 				return 0;
 			}
