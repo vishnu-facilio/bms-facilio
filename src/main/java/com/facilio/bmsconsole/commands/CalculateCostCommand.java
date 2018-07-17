@@ -59,7 +59,9 @@ public class CalculateCostCommand implements Command {
 						totalPrevDayUnits += (double) reading.getReading(utilityField.getName());
 					}
 				}
-				
+				LOGGER.info("Calculating '"+cost.getName()+"' cost for : "+asset.getAssetId()+" between "+interval);
+				LOGGER.info("Current Total Units : "+totalUnits);
+				LOGGER.info("Prev Day Total Units : "+totalPrevDayUnits);
 				ReadingContext reading = getCostReading(cost, asset, interval, totalUnits, totalPrevDayUnits, totalCostField, slabCostField, fieldIdMap);
 				LOGGER.info("Cost reading : "+reading);
 				if (reading != null) {
@@ -76,11 +78,13 @@ public class CalculateCostCommand implements Command {
 		if (totalUnits != 0) {
 			Map<Double, List<CostSlabContext>> maxUnitWiseSlabs = getMaxUnitWiseSlabe(cost);
 			double totalCost = calculateSlabCost(totalUnits, maxUnitWiseSlabs);
+			LOGGER.info("Slab Cost : "+totalCost);
 			if (totalCost != 0) {
 				ReadingContext reading = new ReadingContext();
 				reading.setTtime(interval.getEndTime());
 				reading.setParentId(asset.getAssetId());
 				double prevDayTotalCost = calculateSlabCost(totalPrevDayUnits, maxUnitWiseSlabs);
+				LOGGER.info("Prev day slab Cost : "+prevDayTotalCost);
 				reading.addReading(slabCostField.getName(), totalCost - prevDayTotalCost);
 				Map<CostType, List<AdditionalCostContext>> typeWiseAdditionalCosts = getTypeWiseAdditionalCosts(cost);
 				if (typeWiseAdditionalCosts != null && !typeWiseAdditionalCosts.isEmpty()) {
