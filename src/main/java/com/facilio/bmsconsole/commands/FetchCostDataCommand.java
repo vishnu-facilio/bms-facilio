@@ -45,6 +45,7 @@ public class FetchCostDataCommand implements Command {
 		SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
 																	.select(selectFields)
 																	.module(utilityField.getModule())
+																	.beanClass(ReadingContext.class)
 																	.andCondition(CriteriaAPI.getCondition(parentId, String.valueOf(asset.getAssetId()), PickListOperators.IS))
 																	.andCondition(CriteriaAPI.getCondition(ttime, firstBillTime+", "+range.getEndTime(), DateOperators.BETWEEN))
 																	.orderBy("ttime")

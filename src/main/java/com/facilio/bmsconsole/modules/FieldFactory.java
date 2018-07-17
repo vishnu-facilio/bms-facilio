@@ -4002,7 +4002,7 @@ public class FieldFactory {
 	}
 	
 	public static List<FacilioField> getCostAssetsFields() {
-		FacilioModule module = ModuleFactory.getAdditionalCostModule();
+		FacilioModule module = ModuleFactory.getCostAssetsModule();
 		List<FacilioField> fields = new ArrayList<>();
 		
 		fields.add(getIdField(module));
