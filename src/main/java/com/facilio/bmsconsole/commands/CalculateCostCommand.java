@@ -183,18 +183,17 @@ public class CalculateCostCommand implements Command {
 		for (Map.Entry<Double, List<CostSlabContext>> entry : maxUnitWiseSlabs.entrySet()) {
 			double maxUnit = entry.getKey();
 			if (maxUnit == -1 || totalUnits <= maxUnit) {
-				for (CostSlabContext slab : entry.getValue()) {
+				List<CostSlabContext> slabs = entry.getValue();
+				
+				for (int i = slabs.size() - 1; i >= 0; i--) {
+					CostSlabContext slab = slabs.get(i);
 					if (slab.getStartRange() == -1) {
 						totalCost += totalUnits * slab.getCost();
 						break;
 					}
-					else if (slab.getEndRange() == -1 || totalUnits <= slab.getEndRange()) {
-						totalCost += totalUnits * slab.getCost();
-						break;
-					}
-					else {
-						double slabUnits = slab.getEndRange() - slab.getStartRange()  + 1;
-						totalUnits -= slabUnits;
+					if (totalUnits >= slab.getStartRange() && (slab.getEndRange() == -1 || totalUnits <= slab.getEndRange())) {
+						double slabUnits = totalUnits - slab.getStartRange() + 1;
+						totalUnits = slab.getStartRange() - 1;
 						totalCost += slabUnits * slab.getCost();
 					}
 				}
