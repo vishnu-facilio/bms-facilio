@@ -6,7 +6,6 @@
   String orgid = request.getParameter("orgid");
     Organization org = null;
     JSONObject result = null;
-    Boolean verified = null;
     List<User> users = null;
     if (orgid != null) {
   	  org = AccountUtil.getOrgBean().getOrg(Long.parseLong(orgid));
@@ -20,15 +19,14 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Insert title here</title>
 </head>
-<script>
-
+<script>			
 function view(userId){
 	console.log(userId)
 	FacilioApp.ajax({
 		method : "get",
-		url : contextPath + "/internal/verifyUsers?userid="+userId,
+		url : contextPath + "/api/verifyusers?userid="+userId,
 		done: function(data) {
-			
+			document.getElementById(userId).innerHTML = 'true'
 		}
 	})
 }
@@ -107,6 +105,7 @@ function view(userId){
 <%}%>
 <h4> No Of Users In OrgId  <%= org.getOrgId() %> :  <%= users.size() %> </h4>
 <% } %>
+<%if(users!=null){ %>
 <table style=" margin-top:40px;"  class="table table-bordered">
 	<tr>
 	<th class="org-th" style="text-align:center;max-width: 350px;width:350px;"> Id </th>
@@ -124,7 +123,7 @@ function view(userId){
 	<td  style="max-width: 350px;width:350px;" align="center"><%=b.getId() %></td>
 	<td  style="max-width: 350px;width:350px;" align="center"><%=b.getName() %></td>
 	<td  style="max-width: 350px;width:350px;"  align="center"><%=b.getEmail() %></td>
-	<td  style="max-width: 350px;width:350px;" align="center"><%=b.getUserVerified() %></td>
+	<td  style="max-width: 350px;width:350px;" align="center" id=<%=b.getId() %>><%=b.getUserVerified() %></td>
 	<td style="max-width: 350px;width:350px;text-align: center;"> <button type="button" onclick="view(<%=b.getId()%>)">Update</button> </td>
 	</tr>
 <%
@@ -153,6 +152,7 @@ function view(userId){
 </form>
 
 <% } %>
+<%} %>
 
 <style>
 .org-th{
@@ -167,6 +167,7 @@ function view(userId){
   font-size: 13px;
   padding: 15px 20px !important;
 }
+
 </style>
 </body>
 

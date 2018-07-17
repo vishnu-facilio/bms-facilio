@@ -90,9 +90,11 @@ public class UserAction extends FacilioAction {
 		}
 		return SUCCESS;
 	}
-	
-	public String userList() throws Exception 
-	{
+	public String userVerify() throws Exception{
+		Boolean verified = CommonCommandUtil.verifiedUser(getUserId()); 
+		return SUCCESS;
+	}
+	public String userList() throws Exception {
 		setSetup(SetupLayout.getUsersListLayout());
 		setUsers(AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId()));
 		
@@ -104,6 +106,7 @@ public class UserAction extends FacilioAction {
 		setUsers(AccountUtil.getOrgBean().getOrgPortalUsers(AccountUtil.getCurrentOrg().getOrgId()));
 		return SUCCESS;
 	}
+	
 
 	public String deletePortalUser() throws Exception {
 		System.out.println("### Delete portal user :"+user.getEmail());
@@ -323,8 +326,8 @@ public class UserAction extends FacilioAction {
 		this.accessibleSpace = accessibleSpace;
 	}
 
-	private long userId;
-	public long getUserId() {
+	private  long userId;
+	public  long getUserId() {
 		return userId;
 	}
 	public void setUserId(long userId) {
