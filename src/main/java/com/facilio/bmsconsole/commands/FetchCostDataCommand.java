@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.CostAssetsContext;
@@ -23,6 +25,8 @@ import com.facilio.fw.BeanFactory;
 
 public class FetchCostDataCommand implements Command {
 
+	private static final Logger LOGGER = LogManager.getLogger(FetchCostDataCommand.class.getName());
+	
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -30,6 +34,9 @@ public class FetchCostDataCommand implements Command {
 		CostAssetsContext asset = (CostAssetsContext) context.get(FacilioConstants.ContextNames.COST_ASSET);
 		long firstBillTime = (long) context.get(FacilioConstants.ContextNames.COST_FIRST_BILL_TIME);
 		DateRange range = (DateRange) context.get(FacilioConstants.ContextNames.DATE_RANGE);
+		
+		LOGGER.info("Firstbill Time : "+firstBillTime);
+		LOGGER.info("Range : "+range);
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioField utilityField = cost.getUtilityEnum().getReadingField();
@@ -45,12 +52,16 @@ public class FetchCostDataCommand implements Command {
 		SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
 																	.select(selectFields)
 																	.module(utilityField.getModule())
+																	.beanClass(ReadingContext.class)
 																	.andCondition(CriteriaAPI.getCondition(parentId, String.valueOf(asset.getAssetId()), PickListOperators.IS))
 																	.andCondition(CriteriaAPI.getCondition(ttime, firstBillTime+", "+range.getEndTime(), DateOperators.BETWEEN))
 																	.orderBy("ttime")
 																	;
 		
 		List<ReadingContext> readings = selectBuilder.get();
+		
+		LOGGER.info("Cost data size : "+readings.size());
+		
 		context.put(FacilioConstants.ContextNames.READINGS, readings);
 		return false;
 	}
