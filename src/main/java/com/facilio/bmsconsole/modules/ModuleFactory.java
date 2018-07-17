@@ -1115,4 +1115,36 @@ public class ModuleFactory {
 		shiftUserRel.setTableName("Shift_User_Rel");
 		return shiftUserRel;
 	}
+	
+	public static FacilioModule getCostsModule() {
+		FacilioModule costs = new FacilioModule();
+		costs.setName("cost");
+		costs.setDisplayName("Costs");
+		costs.setTableName("Costs");
+		return costs;
+	}
+	
+	public static FacilioModule getCostSlabsModule() {
+		FacilioModule costSlabs = new FacilioModule();
+		costSlabs.setName("costSlab");
+		costSlabs.setDisplayName("Cost Slabs");
+		costSlabs.setTableName("Cost_Slabs");
+		return costSlabs;
+	}
+	
+	public static FacilioModule getAdditionalCostModule() {
+		FacilioModule additionalCosts = new FacilioModule();
+		additionalCosts.setName("additionalCost");
+		additionalCosts.setDisplayName("Additional Costs");
+		additionalCosts.setTableName("Additonal_Costs");
+		return additionalCosts;
+	}
+	
+	public static FacilioModule getCostAssetsModule() {
+		FacilioModule costAssets = new FacilioModule();
+		costAssets.setName("costAssets");
+		costAssets.setDisplayName("Cost Assets");
+		costAssets.setTableName("Cost_Assets");
+		return costAssets;
+	}
 }

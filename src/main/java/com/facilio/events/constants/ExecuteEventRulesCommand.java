@@ -32,11 +32,11 @@ public class ExecuteEventRulesCommand implements Command {
 			Map<String, Object> placeHolders = new HashMap<>();
 			CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeHolders);
 			CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeHolders);
-			CommonCommandUtil.appendModuleNameInKey(null, "event", FieldUtil.getAsProperties(event), placeHolders);
+//			CommonCommandUtil.appendModuleNameInKey(null, "event", FieldUtil.getAsProperties(event), placeHolders);
 			for (EventRuleContext eventRule : eventRules) {
 				try {
 					Map<String, Object> rulePlaceHolders = new HashMap<>(placeHolders);
-					CommonCommandUtil.appendModuleNameInKey(null, "event", FieldUtil.getAsProperties(event), placeHolders);
+					CommonCommandUtil.appendModuleNameInKey(null, "event", FieldUtil.getAsProperties(event), rulePlaceHolders);
 					if (isRulePassed(event, eventRule, rulePlaceHolders)) {
 						event = executeRule(event, eventRule, rulePlaceHolders);
 						context.put(EventConstants.EventContextNames.EVENT, event);

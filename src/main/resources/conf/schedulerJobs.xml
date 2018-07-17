@@ -23,6 +23,7 @@
 	 <job name='RefreshAnomalyModel' classname = 'com.facilio.bmsconsole.jobs.RefreshAnomalyModelJob' />
 	 <job name='importData' classname = 'com.facilio.bmsconsole.jobs.ImportDataJob' />
 	 <job name='assetActionJob' classname = 'com.facilio.bmsconsole.jobs.AssetActionJob' />
+	 <job name='costCalculator' classname = 'com.facilio.bmsconsole.jobs.CostCalculatorJob' />
 	 
 	 <!-- Shift jobs -->
 	 <job name='StartShift' classname= 'com.facilio.bmsconsole.jobs.ShiftStartJob'/>

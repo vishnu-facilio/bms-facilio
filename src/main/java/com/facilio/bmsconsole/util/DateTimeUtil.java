@@ -59,7 +59,7 @@ public class DateTimeUtil
 	
 	private static ZonedDateTime getMidnight(ZoneId zoneId)
 	{
-		return ZonedDateTime.of(LocalDate.now(zoneId), LocalTime.MIDNIGHT,zoneId);
+		return LocalDate.now(zoneId).atStartOfDay(zoneId).withLaterOffsetAtOverlap();// ZonedDateTime.of(LocalDate.now(zoneId), LocalTime.MIDNIGHT,zoneId);
 	}
 	
 	private static LocalDate getWeekFirst(ZoneId zoneId, Locale locale)
@@ -259,6 +259,9 @@ public class DateTimeUtil
 		ZonedDateTime zdt=getMidnight(zoneId);
 		return getLong(zdt,true,seconds);
 	}
+	public static long getDayStartTime(ZonedDateTime zdt, Boolean... seconds) {
+		return getLong(getDayStartZDT(zdt), true, seconds);
+	}
 	
 	
 	public static ZonedDateTime getDayStartZDT(int interval) {	
@@ -273,6 +276,9 @@ public class DateTimeUtil
 	}
 	public static ZonedDateTime getDayStartZDT(ZoneId zoneId) {
 		return getDayStartZDT(getZoneId(), 0);
+	}
+	public static ZonedDateTime getDayStartZDT(ZonedDateTime zdt) {
+		return zdt.toLocalDate().atStartOfDay().atZone(zdt.getZone()).withLaterOffsetAtOverlap();
 	}
 
 	public static long getMonthStartTime(Boolean... seconds)

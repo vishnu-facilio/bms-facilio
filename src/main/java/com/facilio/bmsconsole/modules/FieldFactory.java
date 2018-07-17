@@ -371,6 +371,22 @@ public class FieldFactory {
 		}
 		return field;
 	}
+	
+	public static FacilioField getSiteIdField() {
+		return getSiteIdField(null);
+	}
+
+	public static FacilioField getSiteIdField(FacilioModule module) {
+		FacilioField field = new FacilioField();
+		field.setName("siteId");
+		field.setDisplayName("Site Id");
+		field.setDataType(FieldType.NUMBER);
+		field.setColumnName("SITE_ID");
+		if (module != null) {
+			field.setModule(module);
+		}
+		return field;
+	}
 
 	public static FacilioField getKinesisField() {
 		return getKinesisField(null);
@@ -1933,12 +1949,7 @@ public class FieldFactory {
 		name.setModule(module);
 		fields.add(name);
 		
-		FacilioField siteId = new FacilioField();
-		siteId.setName("siteId");
-		siteId.setDataType(FieldType.STRING);
-		siteId.setColumnName("SITEID");
-		siteId.setModule(module);
-		fields.add(siteId);
+		fields.add(getSiteIdField(module));
 		
 		FacilioField isSameTime = new FacilioField();
 		isSameTime.setName("isSameTime");
@@ -3941,6 +3952,67 @@ public class FieldFactory {
 		
 		fields.add(getField("ouid", "ORG_USERID", module, FieldType.NUMBER));
 		fields.add(getField("shiftId", "SHIFTID", module, FieldType.NUMBER));
+		return fields;
+	}
+	
+	public static List<FacilioField> getCostFields() {
+		FacilioModule module = ModuleFactory.getCostsModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getSiteIdField(module));
+		fields.add(getNameField(module));
+		fields.add(getField("utility", "UTILITY_ID", module, FieldType.NUMBER));
+		fields.add(getField("utilityProvider", "UTILITY_PROVIDER", module, FieldType.NUMBER));
+		fields.add(getField("readingId", "READING_ID", module, FieldType.LOOKUP));
+		return fields;
+	}
+	
+	public static List<FacilioField> getCostSlabFields() {
+		FacilioModule module = ModuleFactory.getCostSlabsModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getSiteIdField(module));
+		fields.add(getField("costId", "COST_ID", module, FieldType.LOOKUP));
+		fields.add(getNameField(module));
+		fields.add(getField("cost", "UNIT_COST", module, FieldType.DECIMAL));
+		fields.add(getField("startRange", "START_RANGE", module, FieldType.DECIMAL));
+		fields.add(getField("endRange", "END_RANGE", module, FieldType.DECIMAL));
+		fields.add(getField("maxUnit", "MAX_UNIT", module, FieldType.DECIMAL));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getAdditionalCostFields() {
+		FacilioModule module = ModuleFactory.getAdditionalCostModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getSiteIdField(module));
+		fields.add(getField("costId", "COST_ID", module, FieldType.LOOKUP));
+		fields.add(getField("cost", "COST", module, FieldType.DECIMAL));
+		fields.add(getField("type", "COST_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("readingFieldId", "READING_FIELD_ID", module, FieldType.LOOKUP));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getCostAssetsFields() {
+		FacilioModule module = ModuleFactory.getAdditionalCostModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getSiteIdField(module));
+		fields.add(getField("costId", "COST_ID", module, FieldType.LOOKUP));
+		fields.add(getField("assetId", "ASSET_ID", module, FieldType.LOOKUP));
+		fields.add(getField("billStartDay", "BILL_START_DAY", module, FieldType.NUMBER));
+		fields.add(getField("noOfBillMonths", "NO_OF_BILL_MONTHS", module, FieldType.NUMBER));
+		
 		return fields;
 	}
 
