@@ -429,7 +429,7 @@ public class ReadingsAPI {
 				}
 			}
 			
-			LOGGER.info("Unique RDMs : "+uniqueRDMs);
+			LOGGER.debug("Unique RDMs : "+uniqueRDMs);
 			if (uniqueRDMs.size() == 0) {
 				return 0;
 			}

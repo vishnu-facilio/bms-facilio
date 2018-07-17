@@ -82,6 +82,7 @@ public class CostCalculatorJob extends FacilioJob {
 						}
 						
 						if (!readings.isEmpty()) {
+							LOGGER.info(cost.getName() + " Cost Readings size : " + readings.size());
 							costReadings.put(costReadingModule.getName(), readings);
 						}
 					}
@@ -93,6 +94,8 @@ public class CostCalculatorJob extends FacilioJob {
 					context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
 					Chain addReading = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
 					addReading.execute(context);
+					
+					LOGGER.info("Successfully added Cost Readings!!");
 				}
 			}
 		}
