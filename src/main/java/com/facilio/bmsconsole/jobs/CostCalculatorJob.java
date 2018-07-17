@@ -90,6 +90,7 @@ public class CostCalculatorJob extends FacilioJob {
 				if (!costReadings.isEmpty()) {
 					FacilioContext context = new FacilioContext();
 					context.put(FacilioConstants.ContextNames.READINGS_MAP, costReadings);
+					context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
 					Chain addReading = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
 					addReading.execute(context);
 				}

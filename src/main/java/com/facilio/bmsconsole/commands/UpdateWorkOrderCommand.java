@@ -57,20 +57,35 @@ public class UpdateWorkOrderCommand implements Command {
 			updateWODetails(workOrder);
 			ActivityType activityType = (ActivityType)context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
 			if(workOrder.getAssignedTo() != null || workOrder.getAssignmentGroup() != null) {
-				workOrder.setStatus(TicketAPI.getStatus("Assigned"));
-				try {
-					for (WorkOrderContext oldWo: oldWos) {
+				TicketStatusContext submittedStatus = TicketAPI.getStatus("Submitted");
+				TicketStatusContext assignedStatus = TicketAPI.getStatus("Assigned"); 
+				TicketStatusContext wipStatus = TicketAPI.getStatus("Work in Progress"); 
+				long submittedId = submittedStatus.getId();
+				for (WorkOrderContext oldWo: oldWos) {
+					WorkOrderContext newWo = FieldUtil.cloneBean(workOrder, WorkOrderContext.class);
+					newWos.add(newWo);
+					newWo.setId(oldWo.getId());
+					if (oldWo.getStatus().getId() == submittedId) {
+						newWo.setStatus(assignedStatus);
+					} else {
 						if (oldWo.getAssignedTo() != null) {
-							if (oldWo.getAssignedTo().getOuid() != workOrder.getAssignedTo().getOuid()) {
-								ShiftAPI.addUserWorkHoursReading(oldWo.getAssignedTo().getOuid(), oldWo.getId(), activityType, oldWo.getId(), "Pause", System.currentTimeMillis());
+							if (workOrder.getAssignedTo().getOuid() == -1) {
+								ShiftAPI.addUserWorkHoursReading(oldWo.getAssignedTo().getOuid(), oldWo.getId(), activityType, oldWo.getId(), "Close", System.currentTimeMillis());
+								newWo.setStatus(submittedStatus);
+							} else if (oldWo.getAssignedTo().getOuid() != workOrder.getAssignedTo().getOuid()) {
+								try {
+									ShiftAPI.addUserWorkHoursReading(oldWo.getAssignedTo().getOuid(), oldWo.getId(), activityType, oldWo.getId(), "Pause", System.currentTimeMillis());
+									if (oldWo.getStatus().getId() == wipStatus.getId() && !ShiftAPI.isUserWorking(newWo.getAssignedTo().getOuid())) {
+										ShiftAPI.addUserWorkHoursReading(newWo.getAssignedTo().getOuid(), oldWo.getId(), activityType, oldWo.getId(), "Start", System.currentTimeMillis());
+									} 
+								} catch (Exception e) {
+									log.info("Exception occurred while handling work hours", e);
+								}
 							}
 						}
 					}
-				} catch (Exception e) {
-					log.info("Exception occurred while handling work hours", e);
 				}
-			}
-			else if(workOrder.getStatus() != null) {
+			} else if(workOrder.getStatus() != null) {
 				TicketStatusContext statusObj = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), workOrder.getStatus().getId());
 				
 				for(WorkOrderContext oldWo: oldWos) {

@@ -8,9 +8,11 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
-import com.facilio.bmsconsole.context.AdditionalCostContext.CostType;
 import com.facilio.bmsconsole.context.AdditionalCostContext;
+import com.facilio.bmsconsole.context.AdditionalCostContext.CostType;
 import com.facilio.bmsconsole.context.CostAssetsContext;
 import com.facilio.bmsconsole.context.CostContext;
 import com.facilio.bmsconsole.context.CostSlabContext;
@@ -24,6 +26,8 @@ import com.facilio.constants.FacilioConstants;
 
 public class CalculateCostCommand implements Command {
 
+	private static final Logger LOGGER = LogManager.getLogger(CalculateCostCommand.class.getName());
+	
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -40,7 +44,8 @@ public class CalculateCostCommand implements Command {
 			FacilioField slabCostField = fieldMap.get("slabCost");
 			List<ReadingContext> costReadings = new ArrayList<>();
 			FacilioField utilityField = cost.getUtilityEnum().getReadingField();
-			
+			Map<Double, List<CostSlabContext>> maxUnitWiseSlabs = getMaxUnitWiseSlabe(cost);
+			LOGGER.info("Max Unit wise Slabs : "+maxUnitWiseSlabs);
 			List<DateRange> intervals = DateTimeUtil.getTimeIntervals(range.getStartTime(), range.getEndTime(), 24 * 60);
 			for (DateRange interval : intervals) {
 				double totalPrevDayUnits = 0;
@@ -55,26 +60,31 @@ public class CalculateCostCommand implements Command {
 						totalPrevDayUnits += (double) reading.getReading(utilityField.getName());
 					}
 				}
-				
-				ReadingContext reading = getCostReading(cost, asset, interval, totalUnits, totalPrevDayUnits, totalCostField, slabCostField, fieldIdMap);
+				LOGGER.info("Calculating '"+cost.getName()+"' cost for : "+asset.getAssetId()+" between "+interval);
+				LOGGER.info("Current Total Units : "+totalUnits);
+				LOGGER.info("Prev Day Total Units : "+totalPrevDayUnits);
+				ReadingContext reading = getCostReading(cost, asset, maxUnitWiseSlabs, interval, totalUnits, totalPrevDayUnits, totalCostField, slabCostField, fieldIdMap);
+				LOGGER.info("Cost reading : "+reading);
 				if (reading != null) {
 					costReadings.add(reading);
 				}
 			}
+			LOGGER.info("Cost Reading size : "+costReadings.size());
 			context.put(FacilioConstants.ContextNames.COST_READINGS, costReadings);
 		}
 		return false;
 	}
 	
-	private ReadingContext getCostReading (CostContext cost, CostAssetsContext asset, DateRange interval, double totalUnits, double totalPrevDayUnits, FacilioField totalCostField, FacilioField slabCostField, Map<Long, FacilioField> fieldIdMap) {
+	private ReadingContext getCostReading (CostContext cost, CostAssetsContext asset, Map<Double, List<CostSlabContext>> maxUnitWiseSlabs, DateRange interval, double totalUnits, double totalPrevDayUnits, FacilioField totalCostField, FacilioField slabCostField, Map<Long, FacilioField> fieldIdMap) {
 		if (totalUnits != 0) {
-			Map<Double, List<CostSlabContext>> maxUnitWiseSlabs = getMaxUnitWiseSlabe(cost);
 			double totalCost = calculateSlabCost(totalUnits, maxUnitWiseSlabs);
+			LOGGER.info("Slab Cost : "+totalCost);
 			if (totalCost != 0) {
 				ReadingContext reading = new ReadingContext();
 				reading.setTtime(interval.getEndTime());
 				reading.setParentId(asset.getAssetId());
 				double prevDayTotalCost = calculateSlabCost(totalPrevDayUnits, maxUnitWiseSlabs);
+				LOGGER.info("Prev day slab Cost : "+prevDayTotalCost);
 				reading.addReading(slabCostField.getName(), totalCost - prevDayTotalCost);
 				Map<CostType, List<AdditionalCostContext>> typeWiseAdditionalCosts = getTypeWiseAdditionalCosts(cost);
 				if (typeWiseAdditionalCosts != null && !typeWiseAdditionalCosts.isEmpty()) {
@@ -165,9 +175,14 @@ public class CalculateCostCommand implements Command {
 	
 	private double calculateSlabCost(double totalUnits, Map<Double, List<CostSlabContext>> maxUnitWiseSlabs) {
 		double totalCost = 0;
+		
+		if (totalUnits == 0) {
+			return totalCost;
+		}
+		
 		for (Map.Entry<Double, List<CostSlabContext>> entry : maxUnitWiseSlabs.entrySet()) {
 			double maxUnit = entry.getKey();
-			if (totalUnits <= maxUnit) {
+			if (maxUnit == -1 || totalUnits <= maxUnit) {
 				for (CostSlabContext slab : entry.getValue()) {
 					if (slab.getStartRange() == -1) {
 						totalCost += totalUnits * slab.getCost();

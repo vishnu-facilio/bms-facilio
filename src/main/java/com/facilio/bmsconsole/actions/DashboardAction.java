@@ -3734,7 +3734,7 @@ public class DashboardAction extends ActionSupport {
 	 							newPurpose = true;
 	 						}
 	 					}
-	 					else if((report.getId() == 1963l || report.getId() == 3481l) && xAxisField != null && xAxisField.getColumnName().equals("PARENT_METER_ID")) {
+	 					else if((report.getId() == 1963l || report.getId() == 3481l || report.getId() == 3653) && xAxisField != null) {
 	 						AssetContext context = AssetsAPI.getAssetInfo((Long) lbl);
 	 						if(context != null) {
 	 							lbl = context.getName();

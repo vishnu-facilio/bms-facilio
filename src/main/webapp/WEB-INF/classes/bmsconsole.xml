@@ -3293,7 +3293,7 @@
 		<action name="generatebill" class="com.facilio.bmsconsole.actions.TenantAction"
 			method="generateBill">
 			<result name="success" type="json">
-				<param name="includeProperties">^billDetails.*</param>
+				<param name="includeProperties">^billDetails.*, fileUrl</param>
 			</result>
 		</action>
 		

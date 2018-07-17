@@ -177,7 +177,7 @@ public class TenantAction extends ActionSupport {
 		
 		if (getConvertToPdf()) {
 			StringBuilder url = new StringBuilder(AwsUtil.getConfig("clientapp.url")).append("/app/pdf/billing?")
-					.append("tenanatId=").append(tenantId).append("&rateCardId=").append(rateCardId)
+					.append("tenantId=").append(tenantId).append("&rateCardId=").append(rateCardId)
 					.append("&startTime=").append(startTime).append("&endTime=").append(endTime);
 			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(),url.toString());
 			return SUCCESS;
