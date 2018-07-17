@@ -134,8 +134,8 @@ public class AuthInterceptor extends AbstractInterceptor {
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
 			logger.log(Level.SEVERE, "error thrown from action class", e);
+			throw e;
 		}
-		return null;
 	}
 	private static Logger logger = Logger.getLogger(AuthInterceptor.class.getName());
 
