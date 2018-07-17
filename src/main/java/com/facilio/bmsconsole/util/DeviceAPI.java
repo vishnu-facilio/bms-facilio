@@ -441,7 +441,7 @@ public class DeviceAPI
 
 	
 
-	public static void insertVirtualMeterReadings(EnergyMeterContext meter, long startTime, long endTime, int minutesInterval,boolean updateReading) throws Exception {
+	public static void insertVirtualMeterReadings(EnergyMeterContext meter, long startTime, long endTime, int minutesInterval,boolean updateReading, boolean isHistorical) throws Exception {
 
 		List<DateRange> intervals= DateTimeUtil.getTimeIntervals(startTime, endTime, minutesInterval);
 		GenericSelectRecordBuilder childMeterBuilder = new GenericSelectRecordBuilder()
@@ -462,7 +462,8 @@ public class DeviceAPI
 		}
 		List<ReadingContext> vmReadings = new ArrayList<ReadingContext>();
 		List<ReadingContext> intervalReadings=new ArrayList<ReadingContext>();
-		for(DateRange interval : intervals) {
+		for(int i = 0; i < intervals.size(); i++) {
+			DateRange interval = intervals.get(i);
 			double iStartTime = Math.floor(interval.getStartTime()/1000);
 			double iEndTime = Math.floor(interval.getEndTime()/1000);
 			
@@ -481,12 +482,7 @@ public class DeviceAPI
 			
 			LOGGER.info("Calculating Consumption for VM : "+meter.getName() + " between " + interval);
 			LOGGER.debug("Intervals : "+interval);
-			ReadingContext virtualMeterReading = calculateVMReading(meter,intervalReadings, childMeterIds, interval);
-//			System.out.println("Vm : ");
-//			System.out.println(intervalReadings.size());
-//			System.out.println(virtualMeterReading);
-//			System.out.println(completeReadings.size());
-//			completeReadings.removeAll(intervalReadings);
+			ReadingContext virtualMeterReading = calculateVMReading(meter,intervalReadings, childMeterIds, interval, isHistorical || i != (intervals.size() - 1));
 			LOGGER.debug("Calculated VM Reading : "+virtualMeterReading);
 			if(virtualMeterReading != null) {
 				LOGGER.debug("Adding VM reading for time : "+virtualMeterReading.getTtime());
@@ -563,7 +559,7 @@ public class DeviceAPI
 	}
 	
 	
-	private static ReadingContext calculateVMReading(EnergyMeterContext meter,List<ReadingContext> readings, List<Long> childIds, DateRange interval) throws Exception {
+	private static ReadingContext calculateVMReading(EnergyMeterContext meter,List<ReadingContext> readings, List<Long> childIds, DateRange interval, boolean ignoreNullValues) throws Exception {
 		ReadingContext virtualMeterReading = null;
 		if (!readings.isEmpty()) {
 			Map<Long, List<ReadingContext>> readingMap = new HashMap<>();
@@ -580,7 +576,7 @@ public class DeviceAPI
 			
 			LOGGER.debug("Child Meter IDs : "+childIds);
 			LOGGER.debug("Meter wise readings : "+readingMap);
-			EnergyDataEvaluator evaluator = new EnergyDataEvaluator(readingMap);
+			EnergyDataEvaluator evaluator = new EnergyDataEvaluator(readingMap, ignoreNullValues);
 			String expression = meter.getChildMeterExpression();
 			virtualMeterReading = evaluator.evaluateExpression(expression);
 			if(virtualMeterReading==null) {
@@ -595,9 +591,11 @@ public class DeviceAPI
 	private static class EnergyDataEvaluator extends ExpressionEvaluator<ReadingContext> {
 
 		private Map<Long, List<ReadingContext>> readingMap;
-		public EnergyDataEvaluator(Map<Long, List<ReadingContext>> readingMap) {
+		private boolean ignoreNullValues;
+		public EnergyDataEvaluator(Map<Long, List<ReadingContext>> readingMap, boolean ignoreNullValues) {
 			super.setRegEx(EnergyMeterContext.EXP_FORMAT);
 			this.readingMap = readingMap;
+			this.ignoreNullValues = ignoreNullValues;
 		}
 		
 		@Override
@@ -606,10 +604,15 @@ public class DeviceAPI
 			List<ReadingContext> readings = readingMap.get(Long.parseLong(operand));
 			
 			if (readings == null || readings.size() == 0) {
-				ReadingContext reading = new ReadingContext();
-				reading.addReading(TOTAL_ENERGY_CONSUMPTION_DELTA, 0d);
-				reading.addReading(TOTAL_DEMAND, 0d);
-				return reading;
+				if (ignoreNullValues) {
+					ReadingContext reading = new ReadingContext();
+					reading.addReading(TOTAL_ENERGY_CONSUMPTION_DELTA, 0d);
+					reading.addReading(TOTAL_DEMAND, 0d);
+					return reading;
+				}
+				else {
+					return null;
+				}
 			}
 			if(readings.size() == 1) {
 				return readings.get(0);
@@ -640,16 +643,16 @@ public class DeviceAPI
 		@Override
 		public ReadingContext applyOp(String operator, ReadingContext rightOperand, ReadingContext leftOperand)  {
 			// TODO Auto-generated method stub
-//			if(operator == null || rightOperand == null || leftOperand == null) {
-//			    LOGGER.debug("opertor " + operator + " : left operand " + leftOperand +" right operand " + rightOperand );
-//				return null;
-//			}
+			if( rightOperand == null || leftOperand == null) {
+			    LOGGER.debug("opertor " + operator + " : left operand " + leftOperand +" right operand " + rightOperand + " : ignoreNUll" + ignoreNullValues);
+				return null;
+			}
 			ReadingContext reading = new ReadingContext();
-			double delta=getValue(TOTAL_ENERGY_CONSUMPTION_DELTA,operator,rightOperand,leftOperand);
-			double demand=getValue(TOTAL_DEMAND,operator,rightOperand,leftOperand);
-			reading.addReading(TOTAL_ENERGY_CONSUMPTION_DELTA,delta);
-			reading.addReading(TOTAL_DEMAND, demand);
-			/*if(delta==null && demand==null) {
+			Double delta=getValue(TOTAL_ENERGY_CONSUMPTION_DELTA,operator,rightOperand,leftOperand);
+			Double demand=getValue(TOTAL_DEMAND,operator,rightOperand,leftOperand);
+//			reading.addReading(TOTAL_ENERGY_CONSUMPTION_DELTA,delta);
+//			reading.addReading(TOTAL_DEMAND, demand);
+			if(delta == null && demand == null) {
 				return null;
 			}
 			
@@ -658,25 +661,26 @@ public class DeviceAPI
 			}
 			if (demand != null) {
 				reading.addReading(TOTAL_DEMAND, demand);
-			}*/
+			}
 			return reading;
 		}
 		
-		private double getValue(String key,String operator, ReadingContext rightOperand, ReadingContext leftOperand) {
+		private Double getValue(String key,String operator, ReadingContext rightOperand, ReadingContext leftOperand) {
 			
 			Double left = (Double) leftOperand.getReading(key);
 			Double right = (Double) rightOperand.getReading(key);
 			
-			if (left == null) {
-				left = 0d;
+			if (ignoreNullValues) {
+				if (left == null) {
+					left = 0d;
+				}
+				if (right == null) {
+					right = 0d;
+				}
 			}
-			if (right == null) {
-				right = 0d;
-			}
-			
-//			if(left == null || right == null) {
-//			    return null;
-//            }
+			if(left == null || right == null) {
+			    return null;
+            }
 			double total = 0d;
 			if("+".equals(operator)) {
 				total = left + right;

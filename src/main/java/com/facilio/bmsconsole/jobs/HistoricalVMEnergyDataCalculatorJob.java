@@ -49,7 +49,7 @@ public class HistoricalVMEnergyDataCalculatorJob extends FacilioJob {
 			if(vmList.isEmpty()) {
 				return;
 			}
-			DeviceAPI.insertVirtualMeterReadings(vmList.get(0), startTime, endTime, interval,updateReading);
+			DeviceAPI.insertVirtualMeterReadings(vmList.get(0), startTime, endTime, interval, updateReading, true);
 			LOGGER.info("Time Taken for jobid "+jobId+" : " + (System.currentTimeMillis() - processStartTime));
 		}
 		catch (Exception e) {
