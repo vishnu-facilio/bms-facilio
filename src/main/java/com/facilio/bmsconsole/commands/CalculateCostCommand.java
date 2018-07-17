@@ -8,9 +8,11 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
-import com.facilio.bmsconsole.context.AdditionalCostContext.CostType;
 import com.facilio.bmsconsole.context.AdditionalCostContext;
+import com.facilio.bmsconsole.context.AdditionalCostContext.CostType;
 import com.facilio.bmsconsole.context.CostAssetsContext;
 import com.facilio.bmsconsole.context.CostContext;
 import com.facilio.bmsconsole.context.CostSlabContext;
@@ -24,6 +26,8 @@ import com.facilio.constants.FacilioConstants;
 
 public class CalculateCostCommand implements Command {
 
+	private static final Logger LOGGER = LogManager.getLogger(CalculateCostCommand.class.getName());
+	
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -57,10 +61,12 @@ public class CalculateCostCommand implements Command {
 				}
 				
 				ReadingContext reading = getCostReading(cost, asset, interval, totalUnits, totalPrevDayUnits, totalCostField, slabCostField, fieldIdMap);
+				LOGGER.info("Cost reading : "+reading);
 				if (reading != null) {
 					costReadings.add(reading);
 				}
 			}
+			LOGGER.info("Cost Reading size : "+costReadings.size());
 			context.put(FacilioConstants.ContextNames.COST_READINGS, costReadings);
 		}
 		return false;
