@@ -60,7 +60,7 @@ import com.facilio.workflows.context.WorkflowFieldContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class ReadingsAPI {
-	private static final Logger logger = LogManager.getLogger(ReadingsAPI.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(ReadingsAPI.class.getName());
 	public static final int DEFAULT_DATA_INTERVAL = 15; //In Minutes
 	public static final SecondsChronoUnit DEFAULT_DATA_INTERVAL_UNIT = new SecondsChronoUnit(DEFAULT_DATA_INTERVAL * 60); 
 	
@@ -285,7 +285,7 @@ public class ReadingsAPI {
 				}
 			}
 			catch(Exception e) {
-				logger.info("Exception occurred ", e);
+				LOGGER.info("Exception occurred ", e);
 				throw e;
 			}
 		}
@@ -423,7 +423,7 @@ public class ReadingsAPI {
 							}
 						}
 						else {
-							logger.log(Level.INFO, "Not updating RDM for "+fField.getName()+" from "+readingContext+" because after parsing, value is null");
+							LOGGER.log(Level.INFO, "Not updating RDM for "+fField.getName()+" from "+readingContext+" because after parsing, value is null");
 						}
 					}
 				}
@@ -454,7 +454,7 @@ public class ReadingsAPI {
 					+ "READING_DATA_ID = CASE "+idBuilder.toString() + " END "
 					+ "WHERE ORGID = "+orgId+" AND RESOURCE_ID IN ("+resourceList+") AND FIELD_ID IN ("+fieldList+")";
 			if(sql != null && !sql.isEmpty()) {
-				System.out.println("################ sql: "+sql);
+				LOGGER.info("################ Update RDM sql : "+sql);
 				try(PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
 					int rowCount = pstmt.executeUpdate();
 					return rowCount;
@@ -462,7 +462,7 @@ public class ReadingsAPI {
 			}
 		}
 		catch(SQLException e) {
-			logger.info("Exception occurred ", e);
+			LOGGER.info("Exception occurred ", e);
 			throw new SQLException("Query failed : "+sql, e);
 		}
 
