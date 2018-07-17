@@ -165,6 +165,11 @@ public class CalculateCostCommand implements Command {
 	
 	private double calculateSlabCost(double totalUnits, Map<Double, List<CostSlabContext>> maxUnitWiseSlabs) {
 		double totalCost = 0;
+		
+		if (totalUnits == 0) {
+			return totalCost;
+		}
+		
 		for (Map.Entry<Double, List<CostSlabContext>> entry : maxUnitWiseSlabs.entrySet()) {
 			double maxUnit = entry.getKey();
 			if (totalUnits <= maxUnit) {
