@@ -102,9 +102,9 @@ public class CalculateCostCommand implements Command {
 					List<AdditionalCostContext> flatCosts = typeWiseAdditionalCosts.get(CostType.FLAT);
 					if (flatCosts != null && !flatCosts.isEmpty()) {
 						for (AdditionalCostContext flatCost : flatCosts) {
-							double currentDay = calculateFlatAdditionalCost(flatCost);
+							double currentDay = calculateFlatAdditionalCost(totalUnits, flatCost);
 							totalCost += currentDay;
-							double prevDay = calculateFlatAdditionalCost(flatCost);
+							double prevDay = calculateFlatAdditionalCost(totalPrevDayUnits, flatCost);
 							prevDayTotalCost += prevDay;
 							reading.addReading(fieldIdMap.get(flatCost.getReadingFieldId()).getName(), currentDay - prevDay);
 						}
@@ -128,8 +128,8 @@ public class CalculateCostCommand implements Command {
 		return null;
 	}
 	
-	private double calculateFlatAdditionalCost (AdditionalCostContext cost) {
-		return cost.getCost();
+	private double calculateFlatAdditionalCost (double totalUnits, AdditionalCostContext cost) {
+		return totalUnits > 0 ? cost.getCost() : 0;
 	}
 	
 	private double calculatePercentageAdditionalCost (double totalCost, AdditionalCostContext cost) {
