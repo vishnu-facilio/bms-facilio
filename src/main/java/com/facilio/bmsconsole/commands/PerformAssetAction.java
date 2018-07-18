@@ -6,10 +6,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
@@ -34,6 +38,7 @@ import com.facilio.fw.BeanFactory;
 
 public class PerformAssetAction implements Command {
 
+	private static final Logger LOGGER = LogManager.getLogger(PerformAssetAction.class.getName());
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -62,19 +67,19 @@ public class PerformAssetAction implements Command {
 				 Condition condition = criteria.getConditions().get(1);
 				 expiryDay = condition.getValue();
 				 operatorId = condition.getOperatorId();
-				 if(criteria.getConditions().get(2) != null) {
-					 condition = criteria.getConditions().get(2);
-					 if(condition.getValue() != null) {
-						 siteId = Long.parseLong(condition.getValue());
-						 List<BaseSpaceContext> baseSpaces = SpaceAPI.getBaseSpaceWithChildren(siteId);
-						 List<Long> baseSpaceids = new ArrayList<>();
-						 baseSpaceids.add(siteId);
-						 for(BaseSpaceContext baseSpace :baseSpaces) {
-							 baseSpaceids.add(baseSpace.getId());
-						 }
-						 condition.setValue(StringUtils.join(baseSpaceids,","));
-					 }
-				 }
+//				 if(criteria.getConditions().get(2) != null) {
+//					 condition = criteria.getConditions().get(2);
+//					 if(condition.getValue() != null) {
+//						 siteId = Long.parseLong(condition.getValue());
+//						 List<BaseSpaceContext> baseSpaces = SpaceAPI.getBaseSpaceWithChildren(siteId);
+//						 List<Long> baseSpaceids = new ArrayList<>();
+//						 baseSpaceids.add(siteId);
+//						 for(BaseSpaceContext baseSpace :baseSpaces) {
+//							 baseSpaceids.add(baseSpace.getId());
+//						 }
+//						 condition.setValue(StringUtils.join(baseSpaceids,","));
+//					 }
+//				 }
 			}
 			selectBuilder.andCriteria(criteria);
 			
@@ -82,7 +87,6 @@ public class PerformAssetAction implements Command {
 			
 			User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getId());
 			List<String> assetNameList = new ArrayList<>();
-			List<String> assetUrlList = new ArrayList<>();
 			String domain = AwsUtil.getConfig("clientapp.url");
 			int i = 1;
 			
@@ -90,6 +94,7 @@ public class PerformAssetAction implements Command {
 					"  <tr>"+
 					"  	<th>S.No</th>"+
 					"    <th>Asset Name</th>"+
+					"    <th>Site Name</th>"+
 					"    <th>Screen Name</th>"+
 					"    <th>Server Name</th>"+
 					"    <th>Expire On</th>"+
@@ -106,10 +111,24 @@ public class PerformAssetAction implements Command {
 				String serverName = asset.getDatum("screenname") != null ? asset.getDatum("screenname").toString() : "-";
 				String serverno = asset.getDatum("serverno") != null ? asset.getDatum("serverno").toString() : "-";
 				
+				String siteName = null;
+				if(asset.getSpace() != null) {
+					BaseSpaceContext space = SpaceAPI.getBaseSpace(asset.getSpace().getId());
+					if(space != null) {
+						SiteContext site = SpaceAPI.getSiteSpace(space.getSiteId());
+						if(site != null) {
+							siteName = site.getName(); 
+						}
+					}
+				}
+				if(siteName == null) {
+					siteName = "---";
+				}
 				ZonedDateTime expityDate = DateTimeUtil.getDateTime(asset.getWarrantyExpiryDate());
 				table = table + "<tr>"+
 				"    <td>"+ i++ +".</td>"+
 				"    <td>"+name+"</td>"+
+				"    <td>"+siteName+"</td>"+
 				"    <td>"+serverName+"</td>"+
 				"    <td>"+serverno+"</td>"+
 				"    <td>"+DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm").format(expityDate)+"</td>"+
@@ -123,7 +142,8 @@ public class PerformAssetAction implements Command {
 				
 				Map<String, Object> placeHolders = new HashMap<>();
 				CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeHolders);
-				placeHolders.put("org.superAdmin.email", "shivaraj@facilio.com,"+superAdmin.getEmail()+",murugesan.k@spicinemas.in,manjula.np@spicinemas.in");
+				//placeHolders.put("org.superAdmin.email", "shivaraj@facilio.com,"+superAdmin.getEmail()+",murugesan.k@spicinemas.in,manjula.np@spicinemas.in");
+				placeHolders.put("org.superAdmin.email", "krishnan.e@facilio.com");
 				placeHolders.put("org.superAdmin.phone", superAdmin.getPhone());
 				placeHolders.put("asset.names", assetNames);
 				placeHolders.put("asset.url", "\n"+table);
