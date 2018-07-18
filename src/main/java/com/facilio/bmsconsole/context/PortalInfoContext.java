@@ -63,10 +63,17 @@ public class PortalInfoContext  {
 	public boolean is_public_create_allowed() {
 		return is_public_create_allowed;
 	}
+	public boolean getIs_public_create_allowed()
+	{
+		return  is_public_create_allowed();
+	}
 	public void setIs_public_create_allowed(boolean is_public_create_allowed) {
 		this.is_public_create_allowed = is_public_create_allowed;
 	}
 	public boolean is_anyDomain_allowed() {
+		return is_anyDomain_allowed;
+	}
+	public boolean getIs_anyDomain_allowed() {
 		return is_anyDomain_allowed;
 	}
 	public void setIs_anyDomain_allowed(boolean is_anyDomain_allowed) {

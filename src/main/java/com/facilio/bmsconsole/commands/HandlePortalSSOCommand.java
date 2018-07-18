@@ -38,14 +38,17 @@ public class HandlePortalSSOCommand implements Command{
 		mapper.setSerializationInclusion(Include.NON_DEFAULT);
 		Map<String, Object> serviceProtalProps = (Map<String, Object>) mapper.convertValue(servicePortal, PortalInfoContext.class);
 		
-		
+
 		FacilioModule module = ModuleFactory.getServicePortalModule();
 		
 		List<FacilioField> fields = FieldFactory.getServicePortalFields();
+		
+        Object portalid = serviceProtalProps.remove("portalId");
 		GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
 												.table(module.getTableName())
 												.fields(fields)
-												.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+												.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+												.andCustomWhere("PORTALID = ? ", portalid);
 		builder.update(serviceProtalProps);
 		
 		context.put(FacilioConstants.ContextNames.RESULT, "success");
