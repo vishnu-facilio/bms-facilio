@@ -600,10 +600,10 @@ public class ShiftAPI {
 			if (oldTicketStatus.getId() == TicketAPI.getStatus("Assigned").getId() 
 					|| oldTicketStatus.getId() == TicketAPI.getStatus("Closed").getId() 
 					|| oldTicketStatus.getId() == TicketAPI.getStatus("Resolved").getId()) {
-				pauseWorkOrderForUser(assignedToUserId, activityType, workOrderId, now);
+				//pauseWorkOrderForUser(assignedToUserId, activityType, workOrderId, now);
 				addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Start", now);
 			} else if (oldTicketStatus.getId() == TicketAPI.getStatus("On Hold").getId() || oldTicketStatus.getId() == TicketAPI.getStatus("Work in Progress").getId()) {
-				pauseWorkOrderForUser(assignedToUserId, activityType, workOrderId, now);
+				//pauseWorkOrderForUser(assignedToUserId, activityType, workOrderId, now);
 				addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Resume", now);
 			}
 		}  else if (newTicketStatus.getStatus().equals("Resolved")) {

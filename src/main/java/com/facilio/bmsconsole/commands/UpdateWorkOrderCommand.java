@@ -58,8 +58,8 @@ public class UpdateWorkOrderCommand implements Command {
 			ActivityType activityType = (ActivityType)context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
 			if(workOrder.getAssignedTo() != null || workOrder.getAssignmentGroup() != null) {
 				TicketStatusContext submittedStatus = TicketAPI.getStatus("Submitted");
-				TicketStatusContext assignedStatus = TicketAPI.getStatus("Assigned"); 
-				TicketStatusContext wipStatus = TicketAPI.getStatus("Work in Progress"); 
+				TicketStatusContext assignedStatus = TicketAPI.getStatus("Assigned");  
+				TicketStatusContext onHoldStatus = TicketAPI.getStatus("On Hold");
 				long submittedId = submittedStatus.getId();
 				for (WorkOrderContext oldWo: oldWos) {
 					WorkOrderContext newWo = FieldUtil.cloneBean(workOrder, WorkOrderContext.class);
@@ -74,10 +74,8 @@ public class UpdateWorkOrderCommand implements Command {
 								newWo.setStatus(submittedStatus);
 							} else if (oldWo.getAssignedTo().getOuid() != workOrder.getAssignedTo().getOuid()) {
 								try {
-									ShiftAPI.addUserWorkHoursReading(oldWo.getAssignedTo().getOuid(), oldWo.getId(), activityType, oldWo.getId(), "Pause", System.currentTimeMillis());
-									if (oldWo.getStatus().getId() == wipStatus.getId() && !ShiftAPI.isUserWorking(newWo.getAssignedTo().getOuid())) {
-										ShiftAPI.addUserWorkHoursReading(newWo.getAssignedTo().getOuid(), oldWo.getId(), activityType, oldWo.getId(), "Start", System.currentTimeMillis());
-									} 
+									newWo.setStatus(onHoldStatus);
+									ShiftAPI.addUserWorkHoursReading(oldWo.getAssignedTo().getOuid(), oldWo.getId(), activityType, oldWo.getId(), "Pause", System.currentTimeMillis()); 
 								} catch (Exception e) {
 									log.info("Exception occurred while handling work hours", e);
 								}
