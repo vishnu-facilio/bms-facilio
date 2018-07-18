@@ -86,6 +86,7 @@ public class CalculateUtilityService implements Command {
 					item.put("consumption", consumption);
 					item.put("costPerUnit", utilityService.getPrice());
 					item.put("cost", itemCost);
+					item.put("utilityId", utilityAsset.getUtility());
 					itemDetails.add(item);
 				}
 			}

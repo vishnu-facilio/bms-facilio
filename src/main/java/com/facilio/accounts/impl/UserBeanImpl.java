@@ -1363,6 +1363,9 @@ public long inviteRequester(long orgId, User user) throws Exception {
 			FileStore fs = FileStoreFactory.getInstance().getFileStoreFromOrg(user.getOrgId(), user.getOuid());
 			user.setAvatarUrl(fs.getPrivateUrl(user.getPhotoId()));
 		}
+		if (user.getRoleId() > 0) {
+			user.setRole(AccountUtil.getRoleBean().getRole(user.getRoleId()));
+		}
 		return user;
 	}
 }

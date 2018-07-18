@@ -35,8 +35,8 @@ public class FetchCostDataCommand implements Command {
 		long firstBillTime = (long) context.get(FacilioConstants.ContextNames.COST_FIRST_BILL_TIME);
 		DateRange range = (DateRange) context.get(FacilioConstants.ContextNames.DATE_RANGE);
 		
-		LOGGER.info("Firstbill Time : "+firstBillTime);
-		LOGGER.info("Range : "+range);
+		LOGGER.debug("Firstbill Time : "+firstBillTime);
+		LOGGER.debug("Range : "+range);
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioField utilityField = cost.getUtilityEnum().getReadingField();
@@ -60,7 +60,7 @@ public class FetchCostDataCommand implements Command {
 		
 		List<ReadingContext> readings = selectBuilder.get();
 		
-		LOGGER.info("Cost data size : "+readings.size());
+		LOGGER.debug("Cost data size : "+readings.size());
 		
 		context.put(FacilioConstants.ContextNames.READINGS, readings);
 		return false;
