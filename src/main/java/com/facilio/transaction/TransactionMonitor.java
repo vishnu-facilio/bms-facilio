@@ -21,7 +21,7 @@ public class TransactionMonitor extends TimerTask {
     private void markRolledBack(Map.Entry<FacilioTransaction, Long> entry){
         if((System.currentTimeMillis()-entry.getValue()) > entry.getKey().getTransactionTimeout()){
             try {
-                entry.getKey().setRollbackOnly();
+                entry.getKey().rollback();
             } catch (SystemException e) {
                 LOGGER.info("Exception while setting transaction as rolled back. ", e);
             }
