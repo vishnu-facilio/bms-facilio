@@ -84,6 +84,27 @@ public class ZoneAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String updateZone() throws Exception 
+	{
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ZONE, zone);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, spaceId);
+		Chain updateZone = FacilioChainFactory.getUpdateZoneChain();
+		updateZone.execute(context);
+		
+		setZoneId(zone.getId());
+		
+		return SUCCESS;
+	}
+	public String deleteZone() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ID, zoneId);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, "zone");
+		Chain deleteZone = FacilioChainFactory.deleteSpaceChain();
+		deleteZone.execute(context);
+		setZoneId(zoneId);
+		return SUCCESS;
+	}
 	private List<Long> spaceId;
 	public List<Long> getSpaceId() {
 		return spaceId;

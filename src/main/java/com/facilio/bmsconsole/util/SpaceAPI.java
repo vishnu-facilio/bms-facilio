@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.util;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -18,12 +20,14 @@ import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.bmsconsole.context.ZoneContext;
 import com.facilio.bmsconsole.criteria.BuildingOperator;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
+import com.facilio.bmsconsole.modules.DeleteRecordBuilder;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
@@ -35,6 +39,8 @@ import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericDeleteRecordBuilder;
+import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class SpaceAPI {
@@ -286,6 +292,82 @@ public class SpaceAPI {
 		List<Long> ids = new ArrayList<>();
 		ids.add(id);
 		return getBaseSpaceWithChildren(ids);
+	}
+	
+	public static void addZoneChildren(ZoneContext zone, List<Long> childrenIds) throws SQLException, RuntimeException {
+		List<Map<String, Object>> childProps = new ArrayList<>();
+		for(long childId : childrenIds) {
+			Map<String, Object> prop = new HashMap<>();
+			prop.put("zoneId", zone.getId());
+			prop.put("basespaceId", childId);
+			childProps.add(prop);
+		}
+		
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+														.table(ModuleFactory.getZoneRelModule().getTableName())
+														.fields(FieldFactory.getZoneRelFields())
+														.addRecords(childProps);
+		
+		insertBuilder.save();
+	}
+	public static void deleteZoneChildren(long zoneId) throws Exception {
+		FacilioModule mod = ModuleFactory.getZoneRelModule();
+		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+				.table(mod.getTableName())
+				.andCondition(CriteriaAPI.getCondition("ZONE_ID", "zoneId", String.valueOf(zoneId), NumberOperators.EQUALS));
+		
+		deleteBuilder.delete();
+	}
+	
+	public static void updateZoneInfo(ZoneContext zone, List<Long> childrenIds) throws Exception {
+		List<BaseSpaceContext> children = SpaceAPI.getBaseSpaces(childrenIds);
+		
+		long siteId = -1, buildingId = -1, floorId = -1;
+		boolean isFirst = true;
+		for(BaseSpaceContext child : children) {
+			if(isFirst) {
+				siteId = child.getSiteId();
+				isFirst = false;
+			}
+			else if(siteId != child.getSiteId()) {
+				siteId = -1;
+				break;
+			}
+		}
+		
+		isFirst = true;
+		for(BaseSpaceContext child : children) {
+			if(isFirst) {
+				buildingId = child.getBuildingId();
+				isFirst = false;
+			}
+			else if(siteId != child.getBuildingId()) {
+				buildingId = -1;
+				break;
+			}
+		}
+		
+		isFirst = true;
+		for(BaseSpaceContext child : children) {
+			if(isFirst) {
+				floorId = child.getFloorId();
+				isFirst = false;
+			}
+			else if(floorId != child.getFloorId()) {
+				floorId = -1;
+				break;
+			}
+		}
+		
+		if(siteId != -1) {
+			zone.setSiteId(siteId);
+		}
+		if(buildingId != -1) {
+			zone.setBuildingId(buildingId);
+		}
+		if(floorId != -1) {
+			zone.setFloorId(floorId);
+		}
 	}
 	
 	public static List<BaseSpaceContext> getBaseSpaceWithChildren(List<Long> ids) throws Exception

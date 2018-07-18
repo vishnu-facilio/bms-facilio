@@ -888,4 +888,24 @@ public class ModuleBeanImpl implements ModuleBean {
 	public FacilioField getFieldFromDB(long fieldId) throws Exception {
 		return this.getField(fieldId);
 	}
+
+	@Override
+	public List<FacilioField> getAllCustomFields(String moduleName) throws Exception {
+		// TODO Auto-generated method stub
+		
+		if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {
+			return (ArrayList<FacilioField>) LookupSpecialTypeUtil.getAllFields(moduleName);
+		}
+		
+		FacilioModule module = getMod(moduleName);
+		System.out.println(">>>>>><<<<<<<"+ module);
+		Map<Long, FacilioModule> moduleMap = splitModules(module);
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(FieldFactory.getSelectFieldFields())
+														.table("Fields")
+															.andCustomWhere("Fields.ORGID = ? AND Fields.MODULEID = ? AND (IS_DEFAULT IS NULL OR IS_DEFAULT = false)", getOrgId(), module.getModuleId());
+		List<Map<String, Object>> fieldProps = selectBuilder.get();
+		List<FacilioField> fields = getFieldFromPropList(fieldProps, moduleMap);
+		return fields;
+	}
 }

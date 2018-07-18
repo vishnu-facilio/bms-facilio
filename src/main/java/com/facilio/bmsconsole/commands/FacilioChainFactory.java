@@ -846,7 +846,6 @@ public class FacilioChainFactory {
 		addCleanUpCommand(c);
 		return c;
 	}
-	
 	public static Chain getCampusDetailsChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForSite());
@@ -1107,6 +1106,16 @@ public class FacilioChainFactory {
 		c.addCommand(SetTableNamesCommand.getForZone());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddZoneCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getUpdateZoneChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new ValidateZoneFieldsCommand());
+		c.addCommand(SetTableNamesCommand.getForZone());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new UpdateZoneCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

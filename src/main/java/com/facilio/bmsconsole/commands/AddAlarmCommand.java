@@ -69,7 +69,6 @@ public class AddAlarmCommand implements Command {
 			builder.setWithLocalIdModule(true);
 			AlarmAPI.updateAlarmDetailsInTicket(alarm, alarm);
 			TicketAPI.updateTicketStatus(alarm);
-			TicketAPI.updateTicketStatus(alarm);
 			long alarmId = builder.insert(alarm);
 			alarm.setId(alarmId);
 			context.put(FacilioConstants.ContextNames.RECORD, alarm);
