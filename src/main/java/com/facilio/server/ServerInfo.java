@@ -48,7 +48,7 @@ public class ServerInfo extends TimerTask {
     public static void registerServer() {
         String ip;
         try {
-            ip = InetAddress.getLocalHost().getHostName()+AwsUtil.getConfig("port");
+            ip = InetAddress.getLocalHost().getHostName();
             serverId = getServerId(ip);
             if(serverId == -1L) {
                 serverId = addServerInfo(ip);
