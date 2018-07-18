@@ -4053,7 +4053,7 @@
 		<action name="getData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getData">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
-				<param name="includeProperties">^reportData.*,^reportContext.*,^baseLineComparisionDiff.*,^entityName.*,^meterIds.*,^readingAlarms.*,^reportColumns.*,^reportFieldLabelMap.*,^variance.*,^safelimit.*,^benchmarks.*</param>
+				<param name="includeProperties">^reportData.*,^reportContext.*,^baseLineComparisionDiff.*,^entityName.*,^meterIds.*,^readingAlarms.*,^reportColumns.*,^reportFieldLabelMap.*,^variance.*,^safelimit.*,^benchmarks.*,^heatMapRange.*</param>
 			</result>
 		</action>
 		<action name="getAswaqData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getAswaqData">
@@ -4086,7 +4086,7 @@
 		<action name="getReadingReportData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getReadingReportData">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
-				<param name="includeProperties">^reportData.*,^reportContext.*,^baseLineComparisionDiff.*,^entityName.*,^readingAlarms.*</param>
+				<param name="includeProperties">^reportData.*,^reportContext.*,^baseLineComparisionDiff.*,^entityName.*,^readingAlarms.*,^heatMapRange.*</param>
 			</result>
 		</action>
 		<action name="getTabularData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getTabularData">

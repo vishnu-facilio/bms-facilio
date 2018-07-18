@@ -6,6 +6,7 @@ import java.util.List;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.SpaceContext;
+import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -44,7 +45,9 @@ public class ImportSpaceAction {
 		space.setSpaceType(SpaceType.SPACE);
 		space.setName(spaceName);
 		space.setSiteId(siteId);
-		space.setBuildingId(buildingId);
+		if(buildingId != null) {
+			space.setBuildingId(buildingId);
+		}
 		
 	
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -65,6 +68,8 @@ public class ImportSpaceAction {
 		return id;
 		
 	}
+    
+    
     public Long addSpace(String spaceName, Long siteId, Long buildingId , Long floorId) throws Exception
 	{
 		SpaceContext space = new SpaceContext();
@@ -134,6 +139,63 @@ public class ImportSpaceAction {
 																	.beanClass(SpaceContext.class)
 																	.andCondition(CriteriaAPI.getCondition(field, spaceName, StringOperators.IS))
 																	.andCondition(CriteriaAPI.getCondition(field1, ""+floorId, StringOperators.IS))
+																	;
+		List<SpaceContext> spaces = selectBuilder.get();
+		
+		if(spaces != null && !spaces.isEmpty()) {
+			return spaces.get(0).getId();
+		}
+		return null;
+		
+	}
+	
+	public Long getSpaceIdFromBuilding(Long buildingId,String spaceName) throws Exception
+	{
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SPACE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SPACE);
+		FacilioField field = modBean.getField("name", FacilioConstants.ContextNames.SPACE);
+		FacilioField field1 = modBean.getField("building", FacilioConstants.ContextNames.SPACE);
+		FacilioField field2 = modBean.getField("floor", FacilioConstants.ContextNames.SPACE);
+		
+		SelectRecordsBuilder<SpaceContext> selectBuilder = new SelectRecordsBuilder<SpaceContext>()
+																	.select(fields)
+																	.table(module.getTableName())
+																	.moduleName(module.getName())
+																	.maxLevel(0)
+																	.beanClass(SpaceContext.class)
+																	.andCondition(CriteriaAPI.getCondition(field, spaceName, StringOperators.IS))
+																	.andCondition(CriteriaAPI.getCondition(field1, ""+buildingId, StringOperators.IS))
+																	.andCondition(CriteriaAPI.getCondition(field2, "", CommonOperators.IS_EMPTY))
+																	;
+		List<SpaceContext> spaces = selectBuilder.get();
+		
+		if(spaces != null && !spaces.isEmpty()) {
+			return spaces.get(0).getId();
+		}
+		return null;
+		
+	}
+	public Long getSpaceIdFromSite(Long siteId,String spaceName) throws Exception
+	{
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SPACE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SPACE);
+		FacilioField field = modBean.getField("name", FacilioConstants.ContextNames.SPACE);
+		FacilioField field1 = modBean.getField("siteId", FacilioConstants.ContextNames.SPACE);
+		FacilioField field2 = modBean.getField("building", FacilioConstants.ContextNames.SPACE);
+		FacilioField field3 = modBean.getField("floor", FacilioConstants.ContextNames.SPACE);
+		
+		SelectRecordsBuilder<SpaceContext> selectBuilder = new SelectRecordsBuilder<SpaceContext>()
+																	.select(fields)
+																	.table(module.getTableName())
+																	.moduleName(module.getName())
+																	.maxLevel(0)
+																	.beanClass(SpaceContext.class)
+																	.andCondition(CriteriaAPI.getCondition(field, spaceName, StringOperators.IS))
+																	.andCondition(CriteriaAPI.getCondition(field1, ""+siteId, StringOperators.IS))
+																	.andCondition(CriteriaAPI.getCondition(field2, "", CommonOperators.IS_EMPTY))
+																	.andCondition(CriteriaAPI.getCondition(field3, "", CommonOperators.IS_EMPTY))
 																	;
 		List<SpaceContext> spaces = selectBuilder.get();
 		

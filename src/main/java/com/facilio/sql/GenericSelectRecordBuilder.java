@@ -213,7 +213,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		}
 	}
 	
-	private String constructSelectStatement() {
+	public String constructSelectStatement() {
 		
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT ");

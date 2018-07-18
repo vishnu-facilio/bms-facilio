@@ -150,47 +150,10 @@ public class GetWorkOrderListCommand implements Command {
 		return false;
 	}
 	
-	/*private void setSubViewCount(Context context, FacilioView view) throws Exception {
-		FacilioModule module = ModuleFactory.getWorkOrdersModule();
-		Map<String, Integer> viewsCount = new LinkedHashMap<>();
-		switch(view.getName()) {
-		
-			// Sub Views - My open, Overdue, Unassigned
-			case "myteamopen": 
-				Criteria criteria = ViewFactory.getCriteriaForView("myopen", module);
-				setWorkOrderCount("myopen", criteria, view, viewsCount, module);
-				
-				criteria = ViewFactory.getCriteriaForView("myoverdue", module);
-				setWorkOrderCount("myoverdue", criteria, view, viewsCount, module);
-				
-				criteria = ViewFactory.getCriteriaForView("unassigned", module);
-				setWorkOrderCount("unassigned", criteria, view, viewsCount, module);
-				
-				break;
-				
-			// Sub Views - My Overdue, Due Today
-			case "myopen":
-				Condition myOpen = ViewFactory.getMyUserCondition(module);
-				break;
-				
-			case "resolved":
-				break;
-				
-			case "closed":
-				break;
-		}
-		
-		setWorkOrderCount("all", null, view, viewsCount, module);
-		
-		context.put(FacilioConstants.ContextNames.RECORD_COUNT, viewsCount);
-		
-	}*/
-	
 	private List<Map<String, Object>> setSubViewCount(FacilioView view) throws Exception {
 		List<Map<String, Object>> subViews = ViewFactory.getSubViewsCriteria(FacilioConstants.ContextNames.WORK_ORDER, view.getName());
 		for(Map<String, Object> subView: subViews) {
 			setWorkOrderCount(subView, view.getCriteria());
-			subView.remove("criteria");
 		}
 		return subViews;
 	}
