@@ -2538,8 +2538,9 @@ public class DashboardUtil {
 				Stack<Long> startTimeStack = new Stack<>();
 				List<Long> workordersId = new ArrayList<>();
 				for (Map<String, Object> prop : entry.getValue()) {
-					if(!workordersId.contains(prop.get("woId"))) {
-						workordersId.add((Long) prop.get("woId"));
+					Long woId = (Long) prop.get("woId");
+					if(!workordersId.contains(woId)) {
+						workordersId.add(woId);
 					}
 					Boolean hasManualEntry = (Boolean) prop.get("hasManualEntry");
 					if (hasManualEntry == null || !hasManualEntry) {
@@ -2561,11 +2562,11 @@ public class DashboardUtil {
 								}
 								break;
 						}
-						if (!startTimeStack.isEmpty()) {
-							Long time = startTimeStack.firstElement();
-							workTime += (endTime - time);
-						}
 					}
+				}
+				if (!startTimeStack.isEmpty()) {
+					Long time = startTimeStack.firstElement();
+					workTime += (endTime - time);
 				}
 				Double convertedValue = UnitsUtil.convert(workTime, Unit.MILLIS, Unit.HOUR);
 				if(isAvgResoultionTime) {
