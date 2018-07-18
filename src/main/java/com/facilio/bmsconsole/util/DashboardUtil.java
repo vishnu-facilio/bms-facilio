@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalDouble;
+import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -2534,7 +2535,7 @@ public class DashboardUtil {
 			for (Map.Entry<Long, List<Map<String, Object>>> entry : userWiseProps.entrySet()) {
 				Long userId = entry.getKey();
 				long workTime = 0;
-				long prevTime = startTime;
+				Stack<Long> startTimeStack = new Stack<>();
 				List<Long> workordersId = new ArrayList<>();
 				for (Map<String, Object> prop : entry.getValue()) {
 					if(!workordersId.contains(prop.get("woId"))) {
@@ -2547,14 +2548,22 @@ public class DashboardUtil {
 						switch (workHour) {
 							case START:
 							case RESUME:
-							case SHIFT_RESUME:
-								prevTime = currentTime;
+								startTimeStack.push(currentTime);
 								break;
 							case PAUSE:
-							case SHIFT_PAUSE:
 							case CLOSE:
-								workTime += (currentTime - prevTime);
+								if (startTimeStack.isEmpty()) {
+									workTime = currentTime - startTime;
+								}
+								else {
+									Long prevTime = startTimeStack.pop();
+									workTime += (currentTime - prevTime);
+								}
 								break;
+						}
+						if (!startTimeStack.isEmpty()) {
+							Long time = startTimeStack.firstElement();
+							workTime += (endTime - time);
 						}
 					}
 				}
