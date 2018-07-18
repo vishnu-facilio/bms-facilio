@@ -94,7 +94,7 @@
 			<result name="success" type="json">
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">responseCode, ^result.*</param>
-				<param name="excludeProperties">responseCode, result.subViewCount.*\.criteria</param>
+				<param name="excludeProperties">result.subViewCount.*\.criteria</param>
 			</result>
 		</action>
 	</package>
