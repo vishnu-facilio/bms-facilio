@@ -1165,7 +1165,9 @@ public class DashboardAction extends ActionSupport {
 			//LOGGER.info(column.getReportId()+"  ----  "+column.getData());
 		}
 		Multimap<Integer, Object> resultMap = ArrayListMultimap.create();
+		Multimap<String, Object> resultMap1 = ArrayListMultimap.create();
 		Map<Integer,Long> dateMap = new HashMap<>();
+		
 		JSONArray dataJsonArray = new JSONArray();
 		
 		for (ReportColumnContext column : reportColumns) {
@@ -1174,22 +1176,50 @@ public class DashboardAction extends ActionSupport {
 			Iterator dataIterator = datas.iterator();
 			while(dataIterator.hasNext()) {
 				JSONObject data = (JSONObject) dataIterator.next();
-				Long time = (Long) data.get("label");
-				int timeValue = DashboardUtil.getDataFromValue(time, column.getReport().getXAxisAggregateOpperator());
-				if(column.getSequence() == 1) {
-					dateMap.put(timeValue, time);
+				
+				if(reportContext.getId() == 3755l) {
+					
+					String asset = (String) data.get("label");
+					resultMap1.put(asset, data.get("value"));
 				}
 				else {
-					resultMap.put(timeValue, data.get("value"));
+					
+					Long time = (Long) data.get("label");
+					
+					int timeValue = DashboardUtil.getDataFromValue(time, column.getReport().getXAxisAggregateOpperator());
+					if(column.getSequence() == 1) {
+						dateMap.put(timeValue, time);
+					}
+					else {
+						resultMap.put(timeValue, data.get("value"));
+					}
 				}
 			}
 		}
-		List<Integer> keys = new ArrayList<>(dateMap.keySet());
-		Collections.sort(keys);
-		//LOGGER.info("keys --- "+ keys);
-		 for(Integer key:keys){
-			 Collection<Object> d = resultMap.get(key);
-			 JSONArray data = new JSONArray();
+		if(reportContext.getId() == 3755l) {
+			for(String key :resultMap1.keySet()) {
+				
+				Collection<Object> d = resultMap1.get(key);
+				
+				JSONArray data = new JSONArray();
+				data.add(key);
+				for(Object s:d) {
+					if(s == null) {
+						data.add("null");
+					}
+					data.add(s);
+				}
+				dataJsonArray.add(data);
+			}
+		}
+		else {
+			
+			List<Integer> keys = new ArrayList<>(dateMap.keySet());
+			Collections.sort(keys);
+			//LOGGER.info("keys --- "+ keys);
+			 for(Integer key:keys){
+				Collection<Object> d = resultMap.get(key);
+				JSONArray data = new JSONArray();
 				data.add(dateMap.get(key));
 				for(Object s:d) {
 					if(s == null) {
@@ -1198,7 +1228,8 @@ public class DashboardAction extends ActionSupport {
 					data.add(s);
 				}
 				dataJsonArray.add(data);
-		 }
+			 }
+		}
 
 		//LOGGER.info("datas --- "+dataJsonArray);
 		
@@ -3106,8 +3137,10 @@ public class DashboardAction extends ActionSupport {
 		else if(report.getDateFilter() != null) {
 			
 			dateCondition = DashboardUtil.getDateCondition(report, dateFilter, module);
+			LOGGER.log(Level.SEVERE, "dateCondition -- "+dateCondition);
 			builder.andCondition(dateCondition);
 		}
+		LOGGER.log(Level.SEVERE, "report.getDateFilter() -- "+report.getDateFilter());
 		if(dateCondition != null) {
 			if(dateCondition.getValue() != null && dateCondition.getValue().contains(",")) {
 				String startTimeString  = dateCondition.getValue().substring(0, dateCondition.getValue().indexOf(",")).trim();
@@ -3709,7 +3742,6 @@ public class DashboardAction extends ActionSupport {
 			
 			if(report.getId() == 3668l || report.getId() == 3754l) {
 				
-				report.setGroupBy(report.getxAxis());
 				Map<Long,Long> groupingData = new HashMap<>();
 				
 				groupingData.put(895467l, 895378l);
@@ -3743,9 +3775,13 @@ public class DashboardAction extends ActionSupport {
 						JSONObject temp = new JSONObject();
 						Long label = (Long) thisMap.get("label");
 						
-						AssetContext asset = AssetsAPI.getAssetInfo(label);
+						if(groupingData.containsKey(label)) {
+							temp.put("label", "Dewa Meter");
+						}
+						else {
+							temp.put("label", "Sub Meter");
+						}
 						
-						temp.put("label", asset.getName());
 						temp.put("value", thisMap.get("value"));
 						
 						result1.put(label, temp);
@@ -3770,13 +3806,9 @@ public class DashboardAction extends ActionSupport {
 							res1.add(jsonMeter);
 						}
 						
-						if(jsonDewa != null) {
-							finalResult.put("label", jsonDewa.get("label"));
-						}
-						else {
-							AssetContext asset = AssetsAPI.getAssetInfo(key);
-							finalResult.put("label",asset.getName());
-						}
+						AssetContext asset = AssetsAPI.getAssetInfo(key);
+						finalResult.put("label",asset.getName());
+						
 						finalResult.put("value", res1);
 						
 					}
@@ -3784,6 +3816,9 @@ public class DashboardAction extends ActionSupport {
 					res.add(finalResult);
 				}
 				xAxisField.setDataType(1);
+				report.setGroupBy(report.getxAxis());
+				report.getGroupByField().getField().setDataType(1);
+				
 			}
 			else {
 				for(int i=0;i<rs.size();i++) {
@@ -3836,7 +3871,7 @@ public class DashboardAction extends ActionSupport {
 		 							newPurpose = true;
 		 						}
 		 					}
-		 					else if((report.getId() == 1963l || report.getId() == 3481l || report.getId() == 3653l || report.getId() == 3664l || report.getId() == 3663l || report.getId() == 3748l || report.getId() == 3754l) && xAxisField != null) {
+		 					else if((report.getId() == 1963l || report.getId() == 3481l || report.getId() == 3653l || report.getId() == 3664l || report.getId() == 3663l || report.getId() == 3748l || report.getId() == 3754l || report.getId() == 3755l || report.getId() == 3756l) && xAxisField != null) {
 		 						AssetContext context = AssetsAPI.getAssetInfo((Long) lbl);
 		 						if(context != null) {
 		 							lbl = context.getName();
