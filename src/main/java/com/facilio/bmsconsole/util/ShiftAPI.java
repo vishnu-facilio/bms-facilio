@@ -45,11 +45,13 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.tasker.ScheduleInfo.FrequencyType;
@@ -619,6 +621,25 @@ public class ShiftAPI {
 				addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Close", now);
 			}
 		}
+	}
+	
+	public static void markAutoEntriesAsInvalid(long assignedToUserId, long workOrderId) throws Exception {
+		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = bean.getModule("userworkhoursreading");
+		List<FacilioField> fields = bean.getAllFields("userworkhoursreading");
+		Optional<FacilioField> hasManualEntry = fields.stream().filter(e -> e.getName().equals("hasManualEntry")).findFirst();
+		if (!hasManualEntry.isPresent()) {
+			throw new IllegalStateException();
+		}
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(module.getTableName())
+				.fields(Arrays.asList(hasManualEntry.get()))
+				.andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getOrgId(), module))
+				.andCondition(CriteriaAPI.getCondition("PARENT_ID", "parentId", String.valueOf(assignedToUserId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("WO_ID", "woId", String.valueOf(workOrderId), NumberOperators.EQUALS));
+		Map<String, Object> props = new HashMap<>();
+		props.put("hasManualEntry", true);
+		updateBuilder.update(props);
 	}
 
 	public static void addActualWorkHoursReading(long assignedToUserId, long workOrderId, ActivityType activityType, List<List<Long>> actualTimings) throws Exception {
