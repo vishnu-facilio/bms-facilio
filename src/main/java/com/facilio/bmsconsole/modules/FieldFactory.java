@@ -2867,7 +2867,7 @@ public class FieldFactory {
 
 	public static List<FacilioField> getReportSpaceFilterFields() {
 		List<FacilioField> fields = new ArrayList<>();
-		FacilioModule module = ModuleFactory.getReportSpaceFilterModule();
+		FacilioModule module = ModuleFactory.getReportSpaceFilter();
 
 		fields.add(getIdField(module));
 

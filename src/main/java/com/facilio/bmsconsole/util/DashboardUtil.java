@@ -396,7 +396,7 @@ public class DashboardUtil {
 		deleteRecordBuilder.delete();
 		
 		deleteRecordBuilder = new GenericDeleteRecordBuilder();
-		deleteRecordBuilder.table(ModuleFactory.getReportSpaceFilterModule().getTableName())
+		deleteRecordBuilder.table(ModuleFactory.getReportSpaceFilter().getTableName())
 		.andCustomWhere("DASHBOARD_ID = ?", dashboardId);
 		deleteRecordBuilder.delete();
 		
@@ -417,13 +417,29 @@ public class DashboardUtil {
 	}
 	public static Integer getDataFromValue(Long timeValue,AggregateOperator aggregateOperator) {
 		
-		if(aggregateOperator.getValue().equals(10) || aggregateOperator.getValue().equals(12)) {
+		if(aggregateOperator.getValue().equals(10)) {
 			ZonedDateTime dateTime = DateTimeUtil.getDateTime(timeValue);
 			return dateTime.getMonth().getValue();
+		}
+		else if (aggregateOperator.getValue().equals(12)) {
+			ZonedDateTime dateTime = DateTimeUtil.getDateTime(timeValue);
+			return Integer.parseInt(dateTime.getMonth().getValue() + "" + dateTime.getDayOfMonth());
 		}
 		else if(aggregateOperator.getValue().equals(18)) {
 			ZonedDateTime dateTime = DateTimeUtil.getDateTime(timeValue);
 			return dateTime.getDayOfMonth();
+		}
+		else if(aggregateOperator.getValue().equals(19)) {
+			ZonedDateTime dateTime = DateTimeUtil.getDateTime(timeValue);
+			return dateTime.getHour();
+		}
+		else if(aggregateOperator.getValue().equals(20)) {
+			ZonedDateTime dateTime = DateTimeUtil.getDateTime(timeValue);
+			return Integer.parseInt(dateTime.getHour() + "" + Integer.parseInt(dateTime.getMonth().getValue() + "" + dateTime.getDayOfMonth()) + "" + dateTime.getYear()); 
+		}
+		else if(aggregateOperator.getValue().equals(8)) {
+			ZonedDateTime dateTime = DateTimeUtil.getDateTime(timeValue);
+			return dateTime.getYear();
 		}
 		return null;
 	}
@@ -819,7 +835,7 @@ public class DashboardUtil {
 	public static ReportSpaceFilterContext getDashboardSpaceFilter(Long dashboardId) throws Exception {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getReportSpaceFilterFields())
-				.table(ModuleFactory.getReportSpaceFilterModule().getTableName())
+				.table(ModuleFactory.getReportSpaceFilter().getTableName())
 				.andCustomWhere("DASHBOARD_ID = ?", dashboardId);
 		
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -1302,8 +1318,8 @@ public class DashboardUtil {
 			
 			selectBuilder = new GenericSelectRecordBuilder()
 					.select(FieldFactory.getReportSpaceFilterFields())
-					.table(ModuleFactory.getReportSpaceFilterModule().getTableName())
-					.andCustomWhere(ModuleFactory.getReportSpaceFilterModule().getTableName()+".REPORT_ID = ?", reportId);
+					.table(ModuleFactory.getReportSpaceFilter().getTableName())
+					.andCustomWhere(ModuleFactory.getReportSpaceFilter().getTableName()+".REPORT_ID = ?", reportId);
 			
 			List<Map<String, Object>> spaceFilterProps = selectBuilder.get();
 			if (spaceFilterProps != null && !spaceFilterProps.isEmpty()) {
@@ -1463,7 +1479,7 @@ public class DashboardUtil {
 		deleteRecordBuilder.delete();
 		
 		deleteRecordBuilder = new GenericDeleteRecordBuilder();
-		deleteRecordBuilder.table(ModuleFactory.getReportSpaceFilterModule().getTableName())
+		deleteRecordBuilder.table(ModuleFactory.getReportSpaceFilter().getTableName())
 		.andCustomWhere("REPORT_ID = ?", reportId);
 		deleteRecordBuilder.delete();
 		
@@ -1685,7 +1701,7 @@ public class DashboardUtil {
 				prop.put("reportId", reportContext.getId());
 				
 				insertBuilder = new GenericInsertRecordBuilder()
-						.table(ModuleFactory.getReportSpaceFilterModule().getTableName())
+						.table(ModuleFactory.getReportSpaceFilter().getTableName())
 						.fields(FieldFactory.getReportSpaceFilterFields());
 				
 				insertBuilder.addRecord(prop).save();

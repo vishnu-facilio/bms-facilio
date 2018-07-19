@@ -142,6 +142,7 @@ import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.google.gson.JsonObject;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class DashboardAction extends ActionSupport {
@@ -3681,7 +3682,7 @@ public class DashboardAction extends ActionSupport {
 			if(!"eui".equalsIgnoreCase(report.getY1AxisUnit())) {
 				variance = DashboardUtil.getStandardVariance(report,rs,meterIdsUsed);
 				try {
-					if (report.getY1AxisField() != null && report.getY1AxisField().getField().getName().contains("cost") || (reportFieldLabelMap != null && reportFieldLabelMap.containsKey(report.getY1AxisField().getField().getName()) &&reportFieldLabelMap.get(report.getY1AxisField().getField().getName()).toString().contains("cost"))) {
+					if ((report.getY1AxisField() != null && report.getY1AxisField().getField().getName().contains("cost")) || (reportFieldLabelMap != null && reportFieldLabelMap.containsKey(report.getY1AxisField().getField().getName()) && reportFieldLabelMap.get(report.getY1AxisField().getField().getName()) != null && reportFieldLabelMap.get(report.getY1AxisField().getField().getName()).toString().contains("cost"))) {
 						
 						Criteria parentCriteria = criteria != null ? criteria : report.getCriteria();
 						Double totalKwh = getTotalKwh(meterIdsUsed, this.startTime, this.endTime);
@@ -3705,100 +3706,180 @@ public class DashboardAction extends ActionSupport {
 				}
 			}
 			
-			for(int i=0;i<rs.size();i++) {
-				boolean newPurpose = false;
-	 			Map<String, Object> thisMap = rs.get(i);
-	 			JSONObject component = new JSONObject();
-	 			if(thisMap!=null) {
-	 				// checking and excluding the violated points
-	 				if(AccountUtil.getCurrentOrg().getOrgId() == 116l) {
-	 					
-	 					if(thisMap.get("dummyField") != null) {
-	 						
-	 						Long currtime = (Long) thisMap.get("dummyField");
-	 						
-	 						if(report.getxAxisaggregateFunction() != null && report.getxAxisaggregateFunction().equals(DateAggregateOperator.FULLDATE.getValue())) {
-	 							
-	 							DateRange range = DateOperators.TODAY.getRange(null);
-		 						if(currtime < range.getEndTime() && currtime >= range.getStartTime()) {
-		 							continue;
+			
+			
+			if(report.getId() == 3668l) {
+				Map<Long,Long> groupingData = new HashMap<>();
+				
+				groupingData.put(895467l, 895378l);
+				groupingData.put(895470l, 895379l);
+				groupingData.put(895457l, 895380l);
+				groupingData.put(895471l, 895381l);
+				groupingData.put(895469l, 895382l);
+				groupingData.put(895458l, 895384l);
+				groupingData.put(895465l, 895385l);
+				groupingData.put(895466l, 895386l);
+				groupingData.put(895482l, 890464l);
+				groupingData.put(895486l, 890473l);
+				groupingData.put(895487l, 890474l);
+				groupingData.put(895484l, 890475l);
+				groupingData.put(895479l, 890476l);
+				groupingData.put(895480l, 890465l);
+				groupingData.put(895478l, 890466l);
+				groupingData.put(895481l, 890467l);
+				groupingData.put(895483l, 890468l);
+				groupingData.put(895485l, 890469l);
+				groupingData.put(895477l, 890470l);
+				groupingData.put(895475l, 890471l);
+				groupingData.put(895476l, 890472l);
+				
+				Map<Long,JSONObject> result1 = new HashMap<>();
+				
+				for(int i=0;i<rs.size();i++) {
+					Map<String, Object> thisMap = rs.get(i);
+					if(thisMap!=null) {
+						
+						JSONObject temp = new JSONObject();
+						Long label = (Long) thisMap.get("label");
+						
+						AssetContext asset = AssetsAPI.getAssetInfo(label);
+						
+						temp.put("label", asset.getName());
+						temp.put("value", thisMap.get("value"));
+						
+						result1.put(label, temp);
+					}
+				}
+				
+				for(Long key :groupingData.keySet()) {
+					
+					JSONObject finalResult = new JSONObject(); 
+					
+					JSONObject jsonDewa = result1.get(key);
+					JSONObject jsonMeter = result1.get(groupingData.get(key));
+					
+					JSONArray res1 = new JSONArray();
+					
+					if(jsonMeter != null || jsonDewa != null) {
+						
+						if(jsonDewa != null) {
+							res1.add(jsonDewa);
+						}
+						if(jsonMeter != null) {
+							res1.add(jsonMeter);
+						}
+						
+						if(jsonDewa != null) {
+							finalResult.put("label", jsonDewa.get("label"));
+						}
+						else {
+							AssetContext asset = AssetsAPI.getAssetInfo(key);
+							finalResult.put("label",asset.getName());
+						}
+						finalResult.put("value", res1);
+						
+					}
+					
+					res.add(finalResult);
+				}
+				xAxisField.setDataType(1);
+			}
+			else {
+				for(int i=0;i<rs.size();i++) {
+					boolean newPurpose = false;
+		 			Map<String, Object> thisMap = rs.get(i);
+		 			JSONObject component = new JSONObject();
+		 			if(thisMap!=null) {
+		 				// checking and excluding the violated points
+		 				if(AccountUtil.getCurrentOrg().getOrgId() == 116l) {
+		 					
+		 					if(thisMap.get("dummyField") != null) {
+		 						
+		 						Long currtime = (Long) thisMap.get("dummyField");
+		 						
+		 						if(report.getxAxisaggregateFunction() != null && report.getxAxisaggregateFunction().equals(DateAggregateOperator.FULLDATE.getValue())) {
+		 							
+		 							DateRange range = DateOperators.TODAY.getRange(null);
+			 						if(currtime < range.getEndTime() && currtime >= range.getStartTime()) {
+			 							continue;
+			 						}
 		 						}
-	 						}
-	 					}
-	 				}
-	 				if (violatedReadings != null && violatedReadings.containsKey(thisMap.get("label").toString())) {
-	 					Double violatedValue = violatedReadings.get(thisMap.get("label").toString());
-	 					Double d = (Double) thisMap.get("value");
-	 					if (d != null) {
-//	 						Double newValue = d - violatedValue;
-//	 						if (newValue < 0) {
-//	 							newValue = 0d;
-//	 						}
-	 						thisMap.put("value", 0d);
-	 						component.put("violated_value", d);
-	 						component.put("marked_value", violatedValue);
-	 					}
-	 				}
-	 				
-	 				if(thisMap.get("dummyField") != null) {
-	 					component.put("label", thisMap.get("dummyField"));
-	 				}
-	 				else {
-	 					Object lbl = thisMap.get("label");
-	 					if (buildingVsMeter.containsKey(thisMap.get("label"))) {
-	 						lbl = buildingVsMeter.get(thisMap.get("label"));
-	 					}
-	 					else if (purposeVsMeter1.containsKey(thisMap.get("label"))) {
-	 						lbl = purposeVsMeter1.get(thisMap.get("label"));
-	 						if (!purposeIndexMapping.containsKey(lbl)) {
-	 							purposeIndexMapping.put(lbl, res.size());
-	 							newPurpose = true;
-	 						}
-	 					}
-	 					else if((report.getId() == 1963l || report.getId() == 3481l || report.getId() == 3653l || report.getId() == 3664l || report.getId() == 3663l) && xAxisField != null) {
-	 						AssetContext context = AssetsAPI.getAssetInfo((Long) lbl);
-	 						if(context != null) {
-	 							lbl = context.getName();
-	 						}
-	 						xAxisField.setDataType(1);
-	 					}
-	 					component.put("label", lbl);
-	 				}
-	 				if (!newPurpose && purposeIndexMapping.containsKey(component.get("label"))) {
-	 					JSONObject tmpComp = (JSONObject) res.get((Integer) purposeIndexMapping.get(component.get("label")));
-	 					if ("cost".equalsIgnoreCase(report.getY1AxisUnit())) {
-	 						Double d = (Double) thisMap.get("value");
-	 						Double concatVal = d + (Double) tmpComp.get("orig_value");
-	 						tmpComp.put("value", concatVal*ReportsUtil.getUnitCost(AccountUtil.getCurrentOrg().getOrgId()));
-	 						tmpComp.put("orig_value", concatVal);
-	 					}
-	 					else {
-	 						Double d = (Double) thisMap.get("value");
-	 						Double concatVal = d + (Double) tmpComp.get("value");
-	 						tmpComp.put("value", thisMap.get("value"));
-	 					}
-	 				}
-	 				else {
-	 					if ("cost".equalsIgnoreCase(report.getY1AxisUnit())) {
-	 						Double d = (Double) thisMap.get("value");
-	 						component.put("value", d*ReportsUtil.getUnitCost(AccountUtil.getCurrentOrg().getOrgId()));
-	 						component.put("orig_value", d);
-	 					}
-	 					else if ("eui".equalsIgnoreCase(report.getY1AxisUnit())) {
-	 						Double d = (Double) thisMap.get("value");
-	 						LOGGER.severe("(Long) component.get -- "+(Long) component.get("label"));
-	 						Double buildingArea = buildingVsArea.get((Long) component.get("label"));
-	 						double eui = ReportsUtil.getEUI(d, buildingArea);
-	 						component.put("value", eui);
-	 						component.put("orig_value", d);
-	 					}
-	 					else {
-	 						component.put("value", thisMap.get("value"));
-	 					}
-	 					res.add(component);
-	 				}
-	 			}
-		 	}
+		 					}
+		 				}
+		 				if (violatedReadings != null && violatedReadings.containsKey(thisMap.get("label").toString())) {
+		 					Double violatedValue = violatedReadings.get(thisMap.get("label").toString());
+		 					Double d = (Double) thisMap.get("value");
+		 					if (d != null) {
+//		 						Double newValue = d - violatedValue;
+//		 						if (newValue < 0) {
+//		 							newValue = 0d;
+//		 						}
+		 						thisMap.put("value", 0d);
+		 						component.put("violated_value", d);
+		 						component.put("marked_value", violatedValue);
+		 					}
+		 				}
+		 				
+		 				if(thisMap.get("dummyField") != null) {
+		 					component.put("label", thisMap.get("dummyField"));
+		 				}
+		 				else {
+		 					Object lbl = thisMap.get("label");
+		 					if (buildingVsMeter.containsKey(thisMap.get("label"))) {
+		 						lbl = buildingVsMeter.get(thisMap.get("label"));
+		 					}
+		 					else if (purposeVsMeter1.containsKey(thisMap.get("label"))) {
+		 						lbl = purposeVsMeter1.get(thisMap.get("label"));
+		 						if (!purposeIndexMapping.containsKey(lbl)) {
+		 							purposeIndexMapping.put(lbl, res.size());
+		 							newPurpose = true;
+		 						}
+		 					}
+		 					else if((report.getId() == 1963l || report.getId() == 3481l || report.getId() == 3653l || report.getId() == 3664l || report.getId() == 3663l) && xAxisField != null) {
+		 						AssetContext context = AssetsAPI.getAssetInfo((Long) lbl);
+		 						if(context != null) {
+		 							lbl = context.getName();
+		 						}
+		 						xAxisField.setDataType(1);
+		 					}
+		 					component.put("label", lbl);
+		 				}
+		 				if (!newPurpose && purposeIndexMapping.containsKey(component.get("label"))) {
+		 					JSONObject tmpComp = (JSONObject) res.get((Integer) purposeIndexMapping.get(component.get("label")));
+		 					if ("cost".equalsIgnoreCase(report.getY1AxisUnit())) {
+		 						Double d = (Double) thisMap.get("value");
+		 						Double concatVal = d + (Double) tmpComp.get("orig_value");
+		 						tmpComp.put("value", concatVal*ReportsUtil.getUnitCost(AccountUtil.getCurrentOrg().getOrgId()));
+		 						tmpComp.put("orig_value", concatVal);
+		 					}
+		 					else {
+		 						Double d = (Double) thisMap.get("value");
+		 						Double concatVal = d + (Double) tmpComp.get("value");
+		 						tmpComp.put("value", thisMap.get("value"));
+		 					}
+		 				}
+		 				else {
+		 					if ("cost".equalsIgnoreCase(report.getY1AxisUnit())) {
+		 						Double d = (Double) thisMap.get("value");
+		 						component.put("value", d*ReportsUtil.getUnitCost(AccountUtil.getCurrentOrg().getOrgId()));
+		 						component.put("orig_value", d);
+		 					}
+		 					else if ("eui".equalsIgnoreCase(report.getY1AxisUnit())) {
+		 						Double d = (Double) thisMap.get("value");
+		 						LOGGER.severe("(Long) component.get -- "+(Long) component.get("label"));
+		 						Double buildingArea = buildingVsArea.get((Long) component.get("label"));
+		 						double eui = ReportsUtil.getEUI(d, buildingArea);
+		 						component.put("value", eui);
+		 						component.put("orig_value", d);
+		 					}
+		 					else {
+		 						component.put("value", thisMap.get("value"));
+		 					}
+		 					res.add(component);
+		 				}
+		 			}
+			 	}
+			}
 			readingData = res;
 		}
 		
