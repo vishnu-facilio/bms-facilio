@@ -3706,6 +3706,8 @@ public class DashboardAction extends ActionSupport {
 				}
 			}
 			
+			
+			
 			if(report.getId() == 3668l) {
 				Map<Long,Long> groupingData = new HashMap<>();
 				
@@ -3757,14 +3759,30 @@ public class DashboardAction extends ActionSupport {
 					JSONObject jsonMeter = result1.get(groupingData.get(key));
 					
 					JSONArray res1 = new JSONArray();
-					res1.add(jsonDewa);
-					res1.add(jsonMeter);
 					
-					finalResult.put("label", jsonDewa.get("label"));
-					finalResult.put("value", res1);
+					if(jsonMeter != null || jsonDewa != null) {
+						
+						if(jsonDewa != null) {
+							res1.add(jsonDewa);
+						}
+						if(jsonMeter != null) {
+							res1.add(jsonMeter);
+						}
+						
+						if(jsonDewa != null) {
+							finalResult.put("label", jsonDewa.get("label"));
+						}
+						else {
+							AssetContext asset = AssetsAPI.getAssetInfo(key);
+							finalResult.put("label",asset.getName());
+						}
+						finalResult.put("value", res1);
+						
+					}
 					
 					res.add(finalResult);
 				}
+				xAxisField.setDataType(1);
 			}
 			else {
 				for(int i=0;i<rs.size();i++) {
