@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.templates.JSONTemplate;
+import com.facilio.bmsconsole.templates.PushNotificationTemplate;
 import com.facilio.bmsconsole.templates.SMSTemplate;
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.Template.Type;
@@ -45,6 +46,9 @@ public class AddActionsForWorkflowRule implements Command {
 					case SMS_NOTIFICATION:
 					case BULK_SMS_NOTIFICATION:
 						setSMSTemplate(action);
+						break;
+					case PUSH_NOTIFICATION:
+						setMobileTemplate(action);
 						break;
 					case ADD_ALARM:
 						setAlarmTemplate(action, rule);
@@ -101,6 +105,17 @@ public class AddActionsForWorkflowRule implements Command {
 		smsTemplate.setType(Type.SMS);
 		action.setTemplate(smsTemplate);
 		checkAndSetWorkflow(action.getTemplateJson(), smsTemplate);
+	}
+	
+	private void setMobileTemplate(ActionContext action) {
+		PushNotificationTemplate pushNotificationTemplate = new PushNotificationTemplate();
+		pushNotificationTemplate.setTo((String) action.getTemplateJson().get("id"));
+		pushNotificationTemplate.setBody((String) action.getTemplateJson().get("body"));	// TODO needs to save only message...now saving entire json structure
+		pushNotificationTemplate.setName((String) action.getTemplateJson().get("name"));
+		pushNotificationTemplate.setType(Type.PUSH_NOTIFICATION);
+		
+		action.setTemplate(pushNotificationTemplate);
+		checkAndSetWorkflow(action.getTemplateJson(), pushNotificationTemplate);
 	}
 	
 	private void checkAndSetWorkflow(JSONObject templateJson, Template template) {
