@@ -51,33 +51,39 @@ public class CostCalculatorJob extends FacilioJob {
 						
 						Map<String, ReadingDataMeta> rdmMap = getRDMMap(cost, totalCostField);
 						for (CostAssetsContext asset : cost.getAssets()) {
-							ReadingDataMeta rdm = rdmMap.get(asset.getAssetId()+"_"+totalCostField.getFieldId());
-							ZonedDateTime startZdt = DateTimeUtil.getZonedDateTime(rdm.getTtime()).plusDays(1); //Calculating from next day after last calculated day
-							long startTime = -1; 
-							long firstBillTime = -1;
-							if ((Double)rdm.getValue() == -1) {
-								startTime = DateTimeUtil.getDayStartTime(getBillStartZdt(asset));
-								firstBillTime = startTime;
+							try {
+								ReadingDataMeta rdm = rdmMap.get(asset.getAssetId()+"_"+totalCostField.getFieldId());
+								ZonedDateTime startZdt = DateTimeUtil.getZonedDateTime(rdm.getTtime()).plusDays(1); //Calculating from next day after last calculated day
+								long startTime = -1; 
+								long firstBillTime = -1;
+								if ((Double)rdm.getValue() == -1) {
+									startTime = DateTimeUtil.getDayStartTime(getBillStartZdt(asset));
+									firstBillTime = startTime;
+								}
+								else {
+									startTime = DateTimeUtil.getDayStartTime(startZdt);
+									firstBillTime = DateTimeUtil.getDayStartTime(CostAPI.getBillStartTime(asset, startZdt));
+								}
+								long endTime = DateTimeUtil.getDayStartTime() - 1;
+								FacilioContext context = new FacilioContext();
+								context.put(FacilioConstants.ContextNames.COST_FIRST_BILL_TIME, firstBillTime);
+								context.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(startTime, endTime));
+								context.put(FacilioConstants.ContextNames.COST, cost);
+								context.put(FacilioConstants.ContextNames.COST_ASSET, asset);
+								context.put(FacilioConstants.ContextNames.READING_DATA_META, rdmMap);
+								context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fields);
+								
+								Chain calculateCostChain = FacilioChainFactory.calculateCostChain();
+								calculateCostChain.execute(context);
+								
+								List<ReadingContext> assetCostReadings = (List<ReadingContext>) context.get(FacilioConstants.ContextNames.COST_READINGS);
+								if (assetCostReadings != null && !assetCostReadings.isEmpty()) {
+									readings.addAll(assetCostReadings);
+								}
 							}
-							else {
-								startTime = DateTimeUtil.getDayStartTime(startZdt);
-								firstBillTime = DateTimeUtil.getDayStartTime(CostAPI.getBillStartTime(asset, startZdt));
-							}
-							long endTime = DateTimeUtil.getDayStartTime() - 1;
-							FacilioContext context = new FacilioContext();
-							context.put(FacilioConstants.ContextNames.COST_FIRST_BILL_TIME, firstBillTime);
-							context.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(startTime, endTime));
-							context.put(FacilioConstants.ContextNames.COST, cost);
-							context.put(FacilioConstants.ContextNames.COST_ASSET, asset);
-							context.put(FacilioConstants.ContextNames.READING_DATA_META, rdmMap);
-							context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fields);
-							
-							Chain calculateCostChain = FacilioChainFactory.calculateCostChain();
-							calculateCostChain.execute(context);
-							
-							List<ReadingContext> assetCostReadings = (List<ReadingContext>) context.get(FacilioConstants.ContextNames.COST_READINGS);
-							if (assetCostReadings != null && !assetCostReadings.isEmpty()) {
-								readings.addAll(assetCostReadings);
+							catch (Exception e) {
+								LOGGER.error(cost.getName()+" Cost Calculation failed for asset : "+asset.getAssetId(), e);
+								CommonCommandUtil.emailException(CostCalculatorJob.class.getName(), cost.getName()+" Cost Calculation failed for asset : "+asset.getAssetId(), e);
 							}
 						}
 						
