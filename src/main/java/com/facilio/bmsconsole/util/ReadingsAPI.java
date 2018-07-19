@@ -401,7 +401,7 @@ public class ReadingsAPI {
 									Object lastReading = meta.getValue();
 									long lastTimeStamp = meta.getTtime();
 									if (lastReading != null && lastTimeStamp != -1 && 
-											!"-1".equals(lastReading.toString()) && timeStamp < lastTimeStamp) {
+											!"-1".equals(lastReading.toString()) && !"-1.0".equals(lastReading.toString()) && timeStamp < lastTimeStamp) { //-1.0 for Decimal values
 										continue;
 									}
 								}
