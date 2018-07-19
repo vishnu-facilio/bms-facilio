@@ -43,11 +43,10 @@ public class UpdateZoneCommand implements Command {
 					.fields(fields)
 					.andCondition(CriteriaAPI.getIdCondition(zone.getId(), module));
 															
-			long zoneId = updateBuilder.update(zone);
-			zone.setId(zoneId);
-//			SpaceAPI.deleteZoneChildren(zoneId);
-//			SpaceAPI.updateHelperFields(zone);
-//			SpaceAPI.addZoneChildren(zone, children);
+			updateBuilder.update(zone);
+			SpaceAPI.deleteZoneChildren(zone.getId());
+			SpaceAPI.updateHelperFields(zone);
+			SpaceAPI.addZoneChildren(zone, children);
 		}
 		else 
 		{
