@@ -521,8 +521,6 @@ public class ReadingsAPI {
 		long orgId=AccountUtil.getCurrentOrg().getOrgId();
 		
 		
-		Map<Long,List<FacilioModule>> categoryVsModule= new HashMap<Long,List<FacilioModule>>();
-		
 		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getReadingDataMetaModule().getTableName())
 				.fields(FieldFactory.getReadingDataMetaFields());
@@ -538,30 +536,16 @@ public class ReadingsAPI {
 				Chain getSpaceSpecifcReadingsChain = FacilioChainFactory.getSpaceReadingsChain();
 				getSpaceSpecifcReadingsChain.execute(context);
 				moduleList = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
-				
-				
 			}
 			else if(resourceType==ResourceContext.ResourceType.ASSET.getValue()) {
-				
-				
-				long category=getParentCategoryId(resource.getId());
-				moduleList= categoryVsModule.get(category);
-				
-				if(moduleList==null) {
-					context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
-					context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, category);
-					Chain getCategoryReadingChain = FacilioChainFactory.getCategoryReadingsChain();
-					getCategoryReadingChain.execute(context);
-					moduleList = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
-					categoryVsModule.put(category, moduleList);
-				}
-				
+				context.put(FacilioConstants.ContextNames.PARENT_ID, resourceId);
+				Chain getSpaceSpecifcReadingsChain = FacilioChainFactory.getAssetReadingsChain();
+				getSpaceSpecifcReadingsChain.execute(context);
+				moduleList = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
 			}
 			if(moduleList==null || moduleList.isEmpty()) {
 				continue;
 			}
-			
-			
 			for(FacilioModule module:moduleList) {
 				
 				List<FacilioField> fieldList= module.getFields();
@@ -585,16 +569,6 @@ public class ReadingsAPI {
 		builder.save();
 	}
 
-	private static long getParentCategoryId(long assetId) throws Exception {
-
-		AssetContext asset= AssetsAPI.getAssetInfo(assetId, true);
-		AssetCategoryContext category= asset.getCategory();
-		if(category!=null) {
-			return category.getId();
-		}
-		return -1;
-	}
-	
 	public static int getDataInterval(long resourceId, FacilioModule module) throws Exception {
 		ReadingContext readingContext = new ReadingContext();
 		readingContext.setParentId(resourceId);
