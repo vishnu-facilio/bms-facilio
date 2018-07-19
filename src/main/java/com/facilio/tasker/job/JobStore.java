@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.tasker.FacilioScheduler;
+import com.facilio.tasker.config.SchedulerJobConf;
 import org.json.simple.parser.ParseException;
 
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -42,7 +44,7 @@ public class JobStore {
 			
 			try {
 				conn = FacilioConnectionPool.INSTANCE.getConnection();
-				pstmt = conn.prepareStatement("INSERT INTO Jobs (JOBID, ORGID, JOBNAME, IS_ACTIVE, TRANSACTION_TIMEOUT, IS_PERIODIC, PERIOD, SCHEDULE_INFO, NEXT_EXECUTION_TIME, EXECUTOR_NAME, END_EXECUTION_TIME, MAX_EXECUTION) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+				pstmt = conn.prepareStatement("INSERT INTO Jobs (JOBID, ORGID, JOBNAME, IS_ACTIVE, TRANSACTION_TIMEOUT, IS_PERIODIC, PERIOD, SCHEDULE_INFO, NEXT_EXECUTION_TIME, EXECUTOR_NAME, END_EXECUTION_TIME, MAX_EXECUTION, STATUS, JOB_SERVER_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 				
 				pstmt.setLong(1, job.getJobId());
 				
@@ -60,7 +62,8 @@ public class JobStore {
 					pstmt.setInt(5, job.getTransactionTimeout());
 				}
 				else {
-					pstmt.setNull(5, Types.INTEGER);
+                    SchedulerJobConf.Job schedulerJob = FacilioScheduler.JOBS_MAP.get(job.getJobName());
+                    pstmt.setInt(5, schedulerJob.getTransactionTimeout());
 				}
 				
 				pstmt.setBoolean(6, job.isPeriodic());
@@ -95,6 +98,10 @@ public class JobStore {
 				else {
 					pstmt.setNull(12, Types.INTEGER);
 				}
+
+				pstmt.setInt(13, JobConstants.JOB_COMPLETED);
+				pstmt.setLong(14, job.getJobServerId());
+
 				
 				if(pstmt.executeUpdate() < 1) {
 					throw new Exception("Unable to schedule");
@@ -144,13 +151,14 @@ public class JobStore {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("UPDATE Jobs set NEXT_EXECUTION_TIME = ?, CURRENT_EXECUTION_COUNT = ? where JOBID = ? AND JOBNAME = ?");
+			pstmt = conn.prepareStatement("UPDATE Jobs set NEXT_EXECUTION_TIME = ?, CURRENT_EXECUTION_COUNT = ?, STATUS = ?, EXECUTION_ERROR_COUNT = ? where JOBID = ? AND JOBNAME = ?");
 			
 			pstmt.setLong(1, nextExecutionTime);
 			pstmt.setInt(2, executionCount);
-			pstmt.setLong(3, jobId);
-			pstmt.setString(4, jobName);
-			
+			pstmt.setInt(3, JobConstants.JOB_COMPLETED);
+			pstmt.setInt(4, JobConstants.INITIAL_EXECUTION_COUNT);
+			pstmt.setLong(5, jobId);
+			pstmt.setString(6, jobName);
 			return pstmt.executeUpdate();
 		}
 		catch(SQLException e) {
@@ -170,13 +178,16 @@ public class JobStore {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("UPDATE Jobs set IS_ACTIVE = ?, CURRENT_EXECUTION_COUNT = ? where JOBID = ? AND JOBNAME = ?");
+			pstmt = conn.prepareStatement("UPDATE Jobs set IS_ACTIVE = ?, CURRENT_EXECUTION_COUNT = ?, STATUS = ?, JOB_SERVER_ID= ?, EXECUTION_ERROR_COUNT = ? where JOBID = ? AND JOBNAME = ?");
 			
-			pstmt.setBoolean(1, false);
+			pstmt.setBoolean(1, JobConstants.DISABLED);
 			pstmt.setInt(2, executionCount);
-			pstmt.setLong(3, jobId);
-			pstmt.setString(4, jobName);
-			return pstmt.executeUpdate();
+			pstmt.setInt(3, JobConstants.JOB_COMPLETED);
+			pstmt.setLong(4, JobConstants.DEFAULT_SERVER_ID);
+			pstmt.setInt(5, JobConstants.INITIAL_EXECUTION_COUNT);
+			pstmt.setLong(6, jobId);
+			pstmt.setString(7, jobName);
+            return pstmt.executeUpdate();
 		}
 		catch(SQLException e) {
 			logger.log(Level.SEVERE,"Error for job id "+jobId+ " : Jobname : "+jobName);
@@ -195,11 +206,14 @@ public class JobStore {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("UPDATE Jobs set IS_ACTIVE = ? where JOBID = ? AND JOBNAME = ?");
+			pstmt = conn.prepareStatement("UPDATE Jobs set IS_ACTIVE = ?, STATUS = ?, JOB_SERVER_ID= ?, EXECUTION_ERROR_COUNT = ? where JOBID = ? AND JOBNAME = ?");
 			
-			pstmt.setBoolean(1, false);
-			pstmt.setLong(2, jobId);
-			pstmt.setString(3, jobName);
+			pstmt.setBoolean(1, JobConstants.DISABLED);
+			pstmt.setInt(2, JobConstants.JOB_COMPLETED);
+			pstmt.setLong(3, JobConstants.DEFAULT_SERVER_ID);
+			pstmt.setInt(4, JobConstants.INITIAL_EXECUTION_COUNT);
+			pstmt.setLong(5, jobId);
+			pstmt.setString(6, jobName);
 			return pstmt.executeUpdate();
 		}
 		catch(SQLException e) {
@@ -211,7 +225,7 @@ public class JobStore {
 		
 	}
 	
-	public static List<JobContext> getJobs(String executorName, long startTime, long endTime) throws SQLException, JsonParseException, JsonMappingException, IOException, ParseException {
+	public static List<JobContext> getJobs(String executorName, long startTime, long endTime, int maxRetry) throws SQLException, JsonParseException, JsonMappingException, IOException, ParseException {
 		Connection conn = null;
 		PreparedStatement getPstmt = null;
 		ResultSet rs = null;
@@ -220,11 +234,13 @@ public class JobStore {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			getPstmt = conn.prepareStatement("SELECT * FROM Jobs WHERE NEXT_EXECUTION_TIME < ? and EXECUTOR_NAME = ? AND IS_ACTIVE = ?");
+			getPstmt = conn.prepareStatement("SELECT * FROM Jobs WHERE NEXT_EXECUTION_TIME < ? and EXECUTOR_NAME = ? AND IS_ACTIVE = ? AND STATUS = ? AND EXECUTION_ERROR_COUNT < ?");
 			getPstmt.setLong(1, endTime);
 			getPstmt.setString(2, executorName);
-			getPstmt.setBoolean(3, true);
-			
+			getPstmt.setBoolean(3, JobConstants.ENABLED);
+			getPstmt.setInt(4, JobConstants.JOB_COMPLETED);
+			getPstmt.setInt(5, maxRetry);
+
 			rs = getPstmt.executeQuery();
 			while(rs.next()) {
 				jcs.add(getJobFromRS(rs));
@@ -237,6 +253,39 @@ public class JobStore {
 			DBUtil.closeAll(conn, getPstmt, rs);
 		}
 		
+		return jcs;
+	}
+
+	public static List<JobContext> getIncompletedJobs(String executorName, long startTime, long endTime, int maxRetry) throws SQLException, JsonParseException, JsonMappingException, IOException, ParseException {
+		Connection conn = null;
+		PreparedStatement getPstmt = null;
+		ResultSet rs = null;
+
+		List<JobContext> jcs = new ArrayList<JobContext>();
+
+		try {
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			getPstmt = conn.prepareStatement("SELECT * FROM Jobs WHERE NEXT_EXECUTION_TIME < ? and EXECUTOR_NAME = ? AND IS_ACTIVE = ? AND STATUS = ? AND (CURRENT_EXECUTION_TIME + TRANSACTION_TIMEOUT) < ? AND EXECUTION_ERROR_COUNT < ?");
+			getPstmt.setLong(1, endTime);
+			getPstmt.setString(2, executorName);
+			getPstmt.setBoolean(3, JobConstants.ENABLED);
+			getPstmt.setInt(4, JobConstants.JOB_IN_PROGRESS);
+			getPstmt.setLong(5, System.currentTimeMillis());
+			getPstmt.setInt(6, maxRetry);
+
+
+			rs = getPstmt.executeQuery();
+			while(rs.next()) {
+				jcs.add(getJobFromRS(rs));
+			}
+		}
+		catch(SQLException e) {
+			throw e;
+		}
+		finally {
+			DBUtil.closeAll(conn, getPstmt, rs);
+		}
+
 		return jcs;
 	}
 	
@@ -281,6 +330,22 @@ public class JobStore {
 		
 		if(rs.getObject("CURRENT_EXECUTION_COUNT") != null) {
 			jc.setCurrentExecutionCount(rs.getInt("CURRENT_EXECUTION_COUNT"));
+		}
+
+		if(rs.getObject("STATUS") != null) {
+			jc.setStatus(rs.getInt("STATUS"));
+		}
+
+		if(rs.getObject("JOB_SERVER_ID") != null) {
+			jc.setJobServerId(rs.getLong("JOB_SERVER_ID"));
+		}
+
+		if(rs.getObject("CURRENT_EXECUTION_TIME") != null) {
+			jc.setJobStartTime(rs.getLong("CURRENT_EXECUTION_TIME"));
+		}
+
+		if(rs.getObject("EXECUTION_ERROR_COUNT") != null) {
+			jc.setJobExecutionCount(rs.getInt("EXECUTION_ERROR_COUNT"));
 		}
 		
 		return jc;

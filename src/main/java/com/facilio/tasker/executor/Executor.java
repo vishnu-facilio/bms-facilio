@@ -7,6 +7,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import com.facilio.tasker.config.SchedulerJobConf;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -52,10 +53,10 @@ public class Executor implements Runnable {
 				long startTime = System.currentTimeMillis()/1000;
 				long endTime = startTime+bufferPeriod;
 				
-				System.out.println(name+"::"+startTime+"::"+endTime);
+				log.info(name+"::"+startTime+"::"+endTime);
 				
-				List<JobContext> jobs = JobStore.getJobs(name, startTime, endTime);
-				
+				List<JobContext> jobs = JobStore.getJobs(name, startTime, endTime, getMaxRetry());
+				jobs.addAll(JobStore.getIncompletedJobs(name, startTime, endTime, getMaxRetry()));
 				for(JobContext jc : jobs) {
 					try {
 						String uniqueJobId = jc.getJobId()+"_"+jc.getJobName();
@@ -65,7 +66,7 @@ public class Executor implements Runnable {
 						}
 					}
 					catch(Exception e) {
-						System.err.println("Unable to schedule job : "+jc.getJobName());
+						log.info("Unable to schedule job : "+jc.getJobName());
 						log.info("Exception occurred ", e);
 					}
 				}
@@ -79,16 +80,18 @@ public class Executor implements Runnable {
 	}
 	
 	private void scheduleJob(JobContext jc) throws InstantiationException, IllegalAccessException  {
-		Class<? extends FacilioJob> jobClass = FacilioScheduler.JOBS_MAP.get(jc.getJobName());
+		SchedulerJobConf.Job schedulerJobs = FacilioScheduler.JOBS_MAP.get(jc.getJobName());
+		Class<? extends FacilioJob> jobClass = schedulerJobs.getClassObject();
 		if(jobClass != null) {
 			FacilioJob job = jobClass.newInstance();
 			job.setJobContext(jc);
 			job.setExecutor(this);
-			System.out.println("Scheduling : "+jc);
+
+			log.info("Scheduling : "+jc);
 			schedule(job, (jc.getExecutionTime()-(System.currentTimeMillis()/1000)));
 		}
 		else {
-			System.err.println(String.format("No such Job with jobname : %s", jc.getJobName()));
+			log.info("No such Job with jobname : "+ jc.getJobName());
 		}
 	}
 	

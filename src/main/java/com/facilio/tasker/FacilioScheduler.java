@@ -20,7 +20,7 @@ import com.facilio.tasker.job.FacilioJob;
 
 public class FacilioScheduler {
 	
-	public static final Map<String, Class<? extends FacilioJob>> JOBS_MAP = new HashMap<>();
+	public static final Map<String, SchedulerJobConf.Job> JOBS_MAP = new HashMap<>();
 	
 	private static final List<Executor> executors = new ArrayList<>();
 	public static void initScheduler() throws IOException, InterruptedException, JAXBException {
@@ -45,11 +45,9 @@ public class FacilioScheduler {
 		if(schedulerConf.getJobs() != null) {
 			for(SchedulerJobConf.Job jobConf : schedulerConf.getJobs()) {
 				String name = jobConf.getName();
-				String className = jobConf.getClassName();
-				if(name != null && !name.isEmpty() && className != null && !className.isEmpty()) { 
+				if(name != null && !name.isEmpty() && jobConf.getClassObject() != null) {
 					try {
-						
-						JOBS_MAP.put(name, (Class<? extends FacilioJob>) Class.forName(className));
+						JOBS_MAP.put(name, jobConf);
 					}
 					catch(Exception e) {
 						

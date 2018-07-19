@@ -148,9 +148,49 @@ public class JobContext {
 	public void setCurrentExecutionCount(int currentExecutionCount) {
 		this.currentExecutionCount = currentExecutionCount;
 	}
-	
+
+	private long jobServerId = 0L;
+	private int status = 1;
+	private long jobStartTime = 0L;
+	private int jobExecutionCount =0;
+
+	public long getJobServerId() {
+		return jobServerId;
+	}
+
+	public void setJobServerId(long jobServerId) {
+		this.jobServerId = jobServerId;
+	}
+
+
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
+
+	public long getJobStartTime() {
+		return jobStartTime;
+	}
+
+	public void setJobStartTime(long jobStartTime) {
+		this.jobStartTime = jobStartTime;
+	}
+
+	public int getJobExecutionCount() {
+		return jobExecutionCount;
+	}
+
+	public void setJobExecutionCount(int jobExecutionCount) {
+		this.jobExecutionCount = jobExecutionCount;
+	}
+
 	@Override
 	public String toString() {
 		return jobId+"::"+jobId+"::"+orgId+"::"+jobName+"::"+period+"::"+isPeriodic+"::"+executionTime;
 	}
+
+
 }

@@ -5,28 +5,28 @@
 	<job classname='test.Test2' />
 	 <job name='DeviceDataExtractor' classname='com.facilio.tasker.tasks.DeviceDataExtractorJob' />
 	 <job name='IotConnector' classname='com.facilio.tasker.tasks.IotConnectorJob' /> -->
-	 <job name='WorkOrderRequestEmailParser' classname='com.facilio.bmsconsole.jobs.WorkOrderRequestEmailParser' />
-	 <job name='PreventiveMaintenance' classname='com.facilio.bmsconsole.jobs.PMToWorkOrder' />
-	 <job name='PMScheduler' classname='com.facilio.bmsconsole.jobs.PMScheduler' />
-	 <job name='VirtualMeterCalculation' classname = 'com.facilio.bmsconsole.jobs.VirtualMeterEnergyDataCalculator' />
-	 <job name='HistoricalVMCalculation' classname = 'com.facilio.bmsconsole.jobs.HistoricalVMEnergyDataCalculatorJob' />
-	 <job name='PrePMReminder' classname = 'com.facilio.bmsconsole.jobs.PrePMReminderJob' />
-	 <job name='PostPMReminder' classname = 'com.facilio.bmsconsole.jobs.PostPMReminderJob' />
-	 <job name='TestVMCalculation' classname = 'com.facilio.bmsconsole.jobs.DummyVMCalculator' />
-	 <job name='ReportScheduler' classname = 'com.facilio.bmsconsole.jobs.ReportScheduler' />
-	 <job name='ScheduledFormulaCalculator' classname = 'com.facilio.bmsconsole.jobs.ScheduledFormulaCalculatorJob' />
-	 <job name='HistoricalFormulaFieldCalculator' classname = 'com.facilio.bmsconsole.jobs.HistoricalFormulaFieldCalculatorJob' />
-	 <job name='SingleResourceHistoricalFormulaFieldCalculator' classname = 'com.facilio.bmsconsole.jobs.SingleResourceHistoricalFormulaCalculatorJob' />
-	 <job name='WeatherData' classname = 'com.facilio.bmsconsole.jobs.WeatherDataJob' />
-	 <job name='DegreeDaysCalculator' classname = 'com.facilio.bmsconsole.jobs.DegreeDaysCalculatorJob' />
-	 <job name='AnomalyDetector' classname = 'com.facilio.bmsconsole.jobs.AnomalyDetectorJob' />
-	 <job name='RefreshAnomalyModel' classname = 'com.facilio.bmsconsole.jobs.RefreshAnomalyModelJob' />
-	 <job name='importData' classname = 'com.facilio.bmsconsole.jobs.ImportDataJob' />
-	 <job name='assetActionJob' classname = 'com.facilio.bmsconsole.jobs.AssetActionJob' />
-	 <job name='costCalculator' classname = 'com.facilio.bmsconsole.jobs.CostCalculatorJob' />
+	 <job name='WorkOrderRequestEmailParser' classname='com.facilio.bmsconsole.jobs.WorkOrderRequestEmailParser' transactionTimeout='300000'/>
+	 <job name='PreventiveMaintenance' classname='com.facilio.bmsconsole.jobs.PMToWorkOrder' transactionTimeout='300000'/>
+	 <job name='PMScheduler' classname='com.facilio.bmsconsole.jobs.PMScheduler' transactionTimeout='300000'/>
+	 <job name='VirtualMeterCalculation' classname = 'com.facilio.bmsconsole.jobs.VirtualMeterEnergyDataCalculator' transactionTimeout='300000'/>
+	 <job name='HistoricalVMCalculation' classname = 'com.facilio.bmsconsole.jobs.HistoricalVMEnergyDataCalculatorJob' transactionTimeout='900000'/>
+	 <job name='PrePMReminder' classname = 'com.facilio.bmsconsole.jobs.PrePMReminderJob' transactionTimeout='300000'/>
+	 <job name='PostPMReminder' classname = 'com.facilio.bmsconsole.jobs.PostPMReminderJob' transactionTimeout='300000'/>
+	 <job name='TestVMCalculation' classname = 'com.facilio.bmsconsole.jobs.DummyVMCalculator' transactionTimeout='300000'/>
+	 <job name='ReportScheduler' classname = 'com.facilio.bmsconsole.jobs.ReportScheduler' transactionTimeout='300000'/>
+	 <job name='ScheduledFormulaCalculator' classname = 'com.facilio.bmsconsole.jobs.ScheduledFormulaCalculatorJob' transactionTimeout='300000'/>
+	 <job name='HistoricalFormulaFieldCalculator' classname = 'com.facilio.bmsconsole.jobs.HistoricalFormulaFieldCalculatorJob' transactionTimeout='900000'/>
+	 <job name='SingleResourceHistoricalFormulaFieldCalculator' classname = 'com.facilio.bmsconsole.jobs.SingleResourceHistoricalFormulaCalculatorJob' transactionTimeout='300000'/>
+	 <job name='WeatherData' classname = 'com.facilio.bmsconsole.jobs.WeatherDataJob' transactionTimeout='300000'/>
+	 <job name='DegreeDaysCalculator' classname = 'com.facilio.bmsconsole.jobs.DegreeDaysCalculatorJob' transactionTimeout='300000'/>
+	 <job name='AnomalyDetector' classname = 'com.facilio.bmsconsole.jobs.AnomalyDetectorJob' transactionTimeout='300000'/>
+	 <job name='RefreshAnomalyModel' classname = 'com.facilio.bmsconsole.jobs.RefreshAnomalyModelJob' transactionTimeout='300000'/>
+	 <job name='importData' classname = 'com.facilio.bmsconsole.jobs.ImportDataJob' transactionTimeout='300000'/>
+	 <job name='assetActionJob' classname = 'com.facilio.bmsconsole.jobs.AssetActionJob' transactionTimeout='300000'/>
+	 <job name='costCalculator' classname = 'com.facilio.bmsconsole.jobs.CostCalculatorJob' transactionTimeout='300000'/>
 	 
 	 <!-- Shift jobs -->
-	 <job name='StartShift' classname= 'com.facilio.bmsconsole.jobs.ShiftStartJob'/>
-	 <job name='EndShift' classname= 'com.facilio.bmsconsole.jobs.ShiftEndJob'/>
-	 <job name='EndShiftOTJ' classname= 'com.facilio.bmsconsole.jobs.ShiftEndOneTimeJob'/>
+	 <job name='StartShift' classname= 'com.facilio.bmsconsole.jobs.ShiftStartJob' transactionTimeout='300000'/>
+	 <job name='EndShift' classname= 'com.facilio.bmsconsole.jobs.ShiftEndJob' transactionTimeout='300000'/>
+	 <job name='EndShiftOTJ' classname= 'com.facilio.bmsconsole.jobs.ShiftEndOneTimeJob' transactionTimeout='300000'/>
 </scheduler>
