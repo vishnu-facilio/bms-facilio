@@ -3708,6 +3708,8 @@ public class DashboardAction extends ActionSupport {
 			
 			
 			if(report.getId() == 3668l || report.getId() == 3754l) {
+				
+				report.setGroupBy(report.getxAxis());
 				Map<Long,Long> groupingData = new HashMap<>();
 				
 				groupingData.put(895467l, 895378l);
