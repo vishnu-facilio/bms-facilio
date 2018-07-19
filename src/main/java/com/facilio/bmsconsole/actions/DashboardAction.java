@@ -3706,7 +3706,17 @@ public class DashboardAction extends ActionSupport {
 				}
 			}
 			
-			
+			if(report.getId() == 3748l) {
+				
+//				DashboardAction d = new DashboardAction();
+//				
+//				ReportContext newReport = DashboardUtil.getReportContext(3754l); 
+//				FacilioModule newModule = modBean.getModule(newReport.getModuleId());
+//				
+//				JSONArray readingDataNew = d.getDataForReadings(newReport, newModule, dateFilter, userFilterValues, baseLineId, criteriaId);
+//				
+//				LOGGER.log(Level.SEVERE, "readingDataNew --- "+readingDataNew);
+			}
 			
 			if(report.getId() == 3668l) {
 				Map<Long,Long> groupingData = new HashMap<>();
@@ -3835,7 +3845,7 @@ public class DashboardAction extends ActionSupport {
 		 							newPurpose = true;
 		 						}
 		 					}
-		 					else if((report.getId() == 1963l || report.getId() == 3481l || report.getId() == 3653l || report.getId() == 3664l || report.getId() == 3663l) && xAxisField != null) {
+		 					else if((report.getId() == 1963l || report.getId() == 3481l || report.getId() == 3653l || report.getId() == 3664l || report.getId() == 3663l || report.getId() == 3748l || report.getId() == 3754l) && xAxisField != null) {
 		 						AssetContext context = AssetsAPI.getAssetInfo((Long) lbl);
 		 						if(context != null) {
 		 							lbl = context.getName();
