@@ -60,7 +60,7 @@ public class CostAPI {
 	}
 	
 	private static <T> Map<Long, List<T>> getCostChildren( Class<T> classObj, FacilioModule module, List<FacilioField> fields, List<Long> costIds, String orderBy) throws Exception {
-		FacilioField costField = FieldFactory.getAsIdMap(fields).get("costId");
+		FacilioField costField = FieldFactory.getAsMap(fields).get("costId");
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)

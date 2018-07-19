@@ -121,14 +121,21 @@ public class AuthInterceptor extends AbstractInterceptor {
 			return Action.LOGIN;
 		}
 		
-		/* let us call action or next interceptor */
-		String result = arg0.invoke();
+		try {
+			/* let us call action or next interceptor */
+			String result = arg0.invoke();
 
-		/* let us do some post-processing */
-		//output = "Post-Processing";
-		//System.out.println(output);
+			/* let us do some post-processing */
+			//output = "Post-Processing";
+			//System.out.println(output);
 
-		return result;
+			return result;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+			logger.log(Level.SEVERE, "error thrown from action class", e);
+			throw e;
+		}
 	}
 	private static Logger logger = Logger.getLogger(AuthInterceptor.class.getName());
 

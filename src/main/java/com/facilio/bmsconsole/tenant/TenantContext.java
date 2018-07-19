@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.tenant;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -94,5 +95,29 @@ public class TenantContext {
 			}
 		}
 		return utilityAssets1;
+	}
+	
+	private File tenantLogo;
+	public File getTenantLogo() {
+		return tenantLogo;
+	}
+	public void setTenantLogo(File tenantLogo) {
+		this.tenantLogo = tenantLogo;
+	}
+	
+	private String tenantLogoFileName;
+	public String getTenantLogoFileName() {
+		return tenantLogoFileName;
+	}
+	public void setTenantLogoFileName(String tenantLogoFileName) {
+		this.tenantLogoFileName = tenantLogoFileName;
+	}
+	
+	private  String tenantLogoContentType;
+	public String getTenantLogoContentType() {
+		return tenantLogoContentType;
+	}
+	public void setTenantLogoContentType(String tenantLogoContentType) {
+		this.tenantLogoContentType = tenantLogoContentType;
 	}
 }

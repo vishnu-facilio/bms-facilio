@@ -19,7 +19,7 @@ import org.apache.log4j.Logger;
 public class FacilioTransaction implements Transaction {
 
 	private int status=Status.STATUS_ACTIVE;
-	private long transactionTimeout = 60L;
+	private long transactionTimeout = 300_000L;
 	private static Logger log = LogManager.getLogger(FacilioTransaction.class.getName());
 
 	private ArrayList<Connection> connections = new ArrayList<Connection>();
@@ -53,7 +53,12 @@ public class FacilioTransaction implements Transaction {
 			FacilioConnection fc = (FacilioConnection)connections.get(i);
 			try {
 					fc.getPhysicalConnection().commit();
-					fc.getPhysicalConnection().close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				log.info("Exception occurred ", e);
+			}
+			try {
+				fc.getPhysicalConnection().close();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				log.info("Exception occurred ", e);
@@ -99,6 +104,12 @@ public class FacilioTransaction implements Transaction {
 			FacilioConnection fc = (FacilioConnection)connections.get(i);
 			try {
 				fc.getPhysicalConnection().rollback();
+
+			} catch (SQLException e) {
+				log.info("Exception occurred ", e);
+			}
+
+			try {
 				fc.getPhysicalConnection().close();
 			} catch (SQLException e) {
 				log.info("Exception occurred ", e);

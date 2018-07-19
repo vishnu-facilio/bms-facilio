@@ -52,6 +52,12 @@
 				<param name="includeProperties">response</param>
 			</result>
 		</action>
+		<action name="verifyusers" class="com.facilio.bmsconsole.actions.UserAction"
+				method="userVerify">
+			<result name="success" type="json">
+				<param name="includeProperties">users.*</param>
+			</result>
+		</action>
 		<action name="validateInviteLink" class="com.facilio.auth.actions.FacilioAuthAction"
 			method="validateInviteLink">
 			<param name="auth">false</param>
@@ -3287,7 +3293,7 @@
 		<action name="generatebill" class="com.facilio.bmsconsole.actions.TenantAction"
 			method="generateBill">
 			<result name="success" type="json">
-				<param name="includeProperties">^billDetails.*</param>
+				<param name="includeProperties">^billDetails.*, fileUrl</param>
 			</result>
 		</action>
 		
@@ -3406,6 +3412,7 @@
 	</package>
 
 	<package name="users" namespace="/app/setup/users" extends="home">
+	
 		<action name="list" class="com.facilio.bmsconsole.actions.UserAction"
 			method="userList">
 			<param name="permission">USER_ACCESS_ADMINISTER</param>
@@ -3632,10 +3639,8 @@
 		<action name="migration">
 			<result name="success">/jsps/Migration.jsp</result>
 		</action>
-		<action name="verifyUsers">
-			<result name="success">/jsps/admin/VerifyUsers.jsp</result>
-		</action>
 		
+				
 		<action name="addAlarm" class="com.facilio.bmsconsole.actions.InternalActions"
 			method="addAlarmFromEvent">
 			<result name="success" type="json">
@@ -4048,7 +4053,7 @@
 		<action name="getData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getData">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
-				<param name="includeProperties">^reportData.*,^reportContext.*,^baseLineComparisionDiff.*,^entityName.*,^meterIds.*,^readingAlarms.*,^reportColumns.*,^reportFieldLabelMap.*,^variance.*,^safelimit.*,^benchmarks.*</param>
+				<param name="includeProperties">^reportData.*,^reportContext.*,^baseLineComparisionDiff.*,^entityName.*,^meterIds.*,^readingAlarms.*,^reportColumns.*,^reportFieldLabelMap.*,^variance.*,^safelimit.*,^benchmarks.*,^heatMapRange.*</param>
 			</result>
 		</action>
 		<action name="getAswaqData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getAswaqData">
@@ -4081,7 +4086,7 @@
 		<action name="getReadingReportData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getReadingReportData">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
-				<param name="includeProperties">^reportData.*,^reportContext.*,^baseLineComparisionDiff.*,^entityName.*,^readingAlarms.*</param>
+				<param name="includeProperties">^reportData.*,^reportContext.*,^baseLineComparisionDiff.*,^entityName.*,^readingAlarms.*,^heatMapRange.*</param>
 			</result>
 		</action>
 		<action name="getTabularData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getTabularData">

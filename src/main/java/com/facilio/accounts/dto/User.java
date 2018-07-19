@@ -56,7 +56,7 @@ public class User {
 		if (license != null) {
 			return license.getValue();
 		}
-		return -1;
+		return 0;
 	}
 	public void setLicense(int licenseValue) {
 		this.license = FacilioLicense.valueOf(licenseValue);
@@ -240,9 +240,15 @@ public class User {
 	public long getRoleId() {
 		return roleId;
 	}
-	public Role getRole() throws Exception {
-		return AccountUtil.getRoleBean().getRole(roleId);
+	
+	private Role role;
+	public Role getRole() {
+		return role;
 	}
+	public void setRole(Role role) {
+		this.role = role;
+	}
+	
 	public void setRoleId(long roleId) {
 		this.roleId = roleId;
 	}

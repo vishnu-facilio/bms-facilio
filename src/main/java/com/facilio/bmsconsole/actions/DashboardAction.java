@@ -1,5 +1,8 @@
 package com.facilio.bmsconsole.actions;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.time.ZonedDateTime;
@@ -124,11 +127,13 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
 import com.facilio.pdf.PdfUtil;
+import com.facilio.sql.DBUtil;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.timeseries.TimeSeriesAPI;
+import com.facilio.transaction.FacilioConnectionPool;
 import com.facilio.unitconversion.Metric;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
@@ -159,7 +164,7 @@ public class DashboardAction extends ActionSupport {
 	public void setBaseLineComparisionDiff(Long baseLineComparisionDiff) {
 		this.baseLineComparisionDiff = baseLineComparisionDiff;
 	}
-	boolean isHeatMap;
+	boolean isHeatMap = false;
 	public boolean getIsHeatMap() {
 		return isHeatMap;
 	}
@@ -738,6 +743,16 @@ public class DashboardAction extends ActionSupport {
 	
 	public boolean getCost() {
 		return this.cost;
+	}
+	
+	private JSONObject heatMapRange;
+	
+	public void setHeatMapRange(JSONObject heatMapRange) {
+		this.heatMapRange = heatMapRange;
+	}
+	
+	public JSONObject getHeatMapRange() {
+		return this.heatMapRange;
 	}
 	
 	public String getReadingReportData() throws Exception {
@@ -3467,9 +3482,15 @@ public class DashboardAction extends ActionSupport {
 		}
 		else {
 			rs = builder.get();
+			
+			if (getIsHeatMap() || (report != null && report.getChartType() != null && report.getChartType() == ReportContext.ReportChartType.HEATMAP.getValue())) {
+				builder.orderBy("value");
+				String reportDataSQL = builder.constructSelectStatement();
+				this.calculateHeatMapRange(reportDataSQL, fields);
+			}
 		}
 		
-		LOGGER.severe("builder --- "+reportContext.getId() +"   "+baseLineId);
+//		LOGGER.severe("builder --- "+reportContext.getId() +"   "+baseLineId);
 		LOGGER.severe("builder --- "+builder);
 		
 		if (report.getCriteria() != null) {
@@ -3734,7 +3755,7 @@ public class DashboardAction extends ActionSupport {
 	 							newPurpose = true;
 	 						}
 	 					}
-	 					else if((report.getId() == 1963l || report.getId() == 3481l) && xAxisField != null && xAxisField.getColumnName().equals("PARENT_METER_ID")) {
+	 					else if((report.getId() == 1963l || report.getId() == 3481l || report.getId() == 3653l || report.getId() == 3664l || report.getId() == 3663l) && xAxisField != null) {
 	 						AssetContext context = AssetsAPI.getAssetInfo((Long) lbl);
 	 						if(context != null) {
 	 							lbl = context.getName();
@@ -3867,6 +3888,57 @@ public class DashboardAction extends ActionSupport {
 		}
 		this.reportFieldLabelMap = reportFieldLabelMap;
 		return readingData;
+	}
+	
+	private void calculateHeatMapRange(String reportDataSQL, List<FacilioField> fields) throws Exception {
+		double leastPercent = 0.05;
+		double highestPercent = 0.95;
+		
+		String sql = "select * from (SELECT temp.*, @row_num :=@row_num + 1 AS row_num FROM (" + reportDataSQL + ") temp, (SELECT @row_num:=0) counter) as temp1 where temp1.row_num = ROUND (? * @row_num) or temp1.row_num = ROUND (? * @row_num)";
+		
+		PreparedStatement pstmt = null;
+		ResultSet rs1 = null;
+		Connection conn = FacilioConnectionPool.INSTANCE.getConnection();
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setDouble(1, leastPercent);
+			pstmt.setDouble(2, highestPercent);
+			
+			rs1 = pstmt.executeQuery();
+			List<Map<String, Object>> records = new ArrayList<>();
+			while(rs1.next()) {
+				Map<String, Object> record = new HashMap<>();
+				for(FacilioField field : fields) {
+					Object val = FieldUtil.getObjectFromRS(field, rs1);
+					if(field != null &&  field instanceof NumberField) {
+						NumberField numberField =  (NumberField)field;
+						if(numberField.getMetric() > 0) {
+							val = UnitsUtil.convertToOrgDisplayUnitFromSi(val, numberField.getMetric());
+						}
+					}
+					if(val != null) {
+						record.put(field.getName(), val);
+					}
+				}
+				if(!record.isEmpty()) {
+					records.add(record);
+				}
+			}
+			
+			if (records.size() >= 2) {
+				JSONObject heatMapRangeObj = new JSONObject();
+				heatMapRangeObj.put("min", records.get(0).get("value"));
+				heatMapRangeObj.put("max", records.get(1).get("value"));
+				this.setHeatMapRange(heatMapRangeObj);
+			}
+		}
+		catch(SQLException e) {
+			LOGGER.log(Level.SEVERE, "Exception " ,e);
+			throw e;
+		}
+		finally {
+			DBUtil.closeAll(conn,pstmt, rs1);
+		}
 	}
 	
 	private List<ReadingAlarmContext> readingAlarms;

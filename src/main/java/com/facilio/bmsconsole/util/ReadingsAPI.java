@@ -60,7 +60,7 @@ import com.facilio.workflows.context.WorkflowFieldContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class ReadingsAPI {
-	private static final Logger logger = LogManager.getLogger(ReadingsAPI.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(ReadingsAPI.class.getName());
 	public static final int DEFAULT_DATA_INTERVAL = 15; //In Minutes
 	public static final SecondsChronoUnit DEFAULT_DATA_INTERVAL_UNIT = new SecondsChronoUnit(DEFAULT_DATA_INTERVAL * 60); 
 	
@@ -285,7 +285,7 @@ public class ReadingsAPI {
 				}
 			}
 			catch(Exception e) {
-				logger.info("Exception occurred ", e);
+				LOGGER.info("Exception occurred ", e);
 				throw e;
 			}
 		}
@@ -401,7 +401,7 @@ public class ReadingsAPI {
 									Object lastReading = meta.getValue();
 									long lastTimeStamp = meta.getTtime();
 									if (lastReading != null && lastTimeStamp != -1 && 
-											!"-1".equals(lastReading.toString()) && timeStamp < lastTimeStamp) {
+											!"-1".equals(lastReading.toString()) && !"-1.0".equals(lastReading.toString()) && timeStamp < lastTimeStamp) { //-1.0 for Decimal values
 										continue;
 									}
 								}
@@ -409,7 +409,7 @@ public class ReadingsAPI {
 							fields.add(fieldId);
 							String value = val.toString();
 							
-							String uniqueKey = resourceId + "|" + fieldId;
+							String uniqueKey = resourceId + "_" + fieldId;
 							ReadingDataMeta rdm = uniqueRDMs.get(uniqueKey);
 							if (rdm == null || rdm.getTtime() < timeStamp) {
 								rdm = new ReadingDataMeta();
@@ -423,12 +423,13 @@ public class ReadingsAPI {
 							}
 						}
 						else {
-							logger.log(Level.INFO, "Not updating RDM for "+fField.getName()+" from "+readingContext+" because after parsing, value is null");
+							LOGGER.log(Level.INFO, "Not updating RDM for "+fField.getName()+" from "+readingContext+" because after parsing, value is null");
 						}
 					}
 				}
 			}
 			
+			LOGGER.debug("Unique RDMs : "+uniqueRDMs);
 			if (uniqueRDMs.size() == 0) {
 				return 0;
 			}
@@ -454,7 +455,7 @@ public class ReadingsAPI {
 					+ "READING_DATA_ID = CASE "+idBuilder.toString() + " END "
 					+ "WHERE ORGID = "+orgId+" AND RESOURCE_ID IN ("+resourceList+") AND FIELD_ID IN ("+fieldList+")";
 			if(sql != null && !sql.isEmpty()) {
-				System.out.println("################ sql: "+sql);
+				LOGGER.debug("################ Update RDM sql : "+sql);
 				try(PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
 					int rowCount = pstmt.executeUpdate();
 					return rowCount;
@@ -462,7 +463,7 @@ public class ReadingsAPI {
 			}
 		}
 		catch(SQLException e) {
-			logger.info("Exception occurred ", e);
+			LOGGER.info("Exception occurred ", e);
 			throw new SQLException("Query failed : "+sql, e);
 		}
 
@@ -520,8 +521,6 @@ public class ReadingsAPI {
 		long orgId=AccountUtil.getCurrentOrg().getOrgId();
 		
 		
-		Map<Long,List<FacilioModule>> categoryVsModule= new HashMap<Long,List<FacilioModule>>();
-		
 		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getReadingDataMetaModule().getTableName())
 				.fields(FieldFactory.getReadingDataMetaFields());
@@ -537,30 +536,16 @@ public class ReadingsAPI {
 				Chain getSpaceSpecifcReadingsChain = FacilioChainFactory.getSpaceReadingsChain();
 				getSpaceSpecifcReadingsChain.execute(context);
 				moduleList = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
-				
-				
 			}
 			else if(resourceType==ResourceContext.ResourceType.ASSET.getValue()) {
-				
-				
-				long category=getParentCategoryId(resource.getId());
-				moduleList= categoryVsModule.get(category);
-				
-				if(moduleList==null) {
-					context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
-					context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, category);
-					Chain getCategoryReadingChain = FacilioChainFactory.getCategoryReadingsChain();
-					getCategoryReadingChain.execute(context);
-					moduleList = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
-					categoryVsModule.put(category, moduleList);
-				}
-				
+				context.put(FacilioConstants.ContextNames.PARENT_ID, resourceId);
+				Chain getSpaceSpecifcReadingsChain = FacilioChainFactory.getAssetReadingsChain();
+				getSpaceSpecifcReadingsChain.execute(context);
+				moduleList = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
 			}
 			if(moduleList==null || moduleList.isEmpty()) {
 				continue;
 			}
-			
-			
 			for(FacilioModule module:moduleList) {
 				
 				List<FacilioField> fieldList= module.getFields();
@@ -584,16 +569,6 @@ public class ReadingsAPI {
 		builder.save();
 	}
 
-	private static long getParentCategoryId(long assetId) throws Exception {
-
-		AssetContext asset= AssetsAPI.getAssetInfo(assetId, true);
-		AssetCategoryContext category= asset.getCategory();
-		if(category!=null) {
-			return category.getId();
-		}
-		return -1;
-	}
-	
 	public static int getDataInterval(long resourceId, FacilioModule module) throws Exception {
 		ReadingContext readingContext = new ReadingContext();
 		readingContext.setParentId(resourceId);

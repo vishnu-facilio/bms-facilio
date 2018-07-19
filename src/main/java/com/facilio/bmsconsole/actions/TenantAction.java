@@ -177,7 +177,7 @@ public class TenantAction extends ActionSupport {
 		
 		if (getConvertToPdf()) {
 			StringBuilder url = new StringBuilder(AwsUtil.getConfig("clientapp.url")).append("/app/pdf/billing?")
-					.append("tenanatId=").append(tenantId).append("&rateCardId=").append(rateCardId)
+					.append("tenantId=").append(tenantId).append("&rateCardId=").append(rateCardId)
 					.append("&startTime=").append(startTime).append("&endTime=").append(endTime);
 			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(),url.toString());
 			return SUCCESS;
@@ -208,11 +208,14 @@ public class TenantAction extends ActionSupport {
 		}
 		
 		Double total = (Double)context.get(TenantsAPI.FINAL_VALUES);
+		Double tax = (Double)context.get(TenantsAPI.TAX_VALUE);
 		
 		this.billDetails = new HashMap<>();
 		this.billDetails.put("items", items);
-		this.billDetails.put("tenant", tenant);
+		this.billDetails.put("tax", tax != null ? tax : 0);
 		this.billDetails.put("total", total != null ? total : 0);
+		this.billDetails.put("tenant", tenant);
+		this.billDetails.put("rateCard", rateCard);
 		
 				
 		return SUCCESS;

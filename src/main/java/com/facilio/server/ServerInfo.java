@@ -1,19 +1,17 @@
 package com.facilio.server;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.TimerTask;
-
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.sql.DBUtil;
+import com.facilio.transaction.FTransactionManager;
+import com.facilio.transaction.FacilioConnectionPool;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.sql.DBUtil;
-import com.facilio.transaction.FacilioConnectionPool;
+import javax.transaction.*;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.sql.*;
+import java.util.TimerTask;
 
 public class ServerInfo extends TimerTask {
 
@@ -27,8 +25,8 @@ public class ServerInfo extends TimerTask {
     private static final String SELECT_ID = "select id from server_info where private_ip = ?";
     private static final String INSERT_IP = "insert into server_info (private_ip, environment, status, pingtime, in_use, leader) values (?,?,?,?,?,?)";
     private static final String UPDATE_TIME = "update server_info set status = 1, pingtime = ? where id = ?";
-    private static final String UPDATE_LEADER = "update server_info set leader = ? where id = ?";
-    private static final String UPDATE_STATUS = "update server_info set status = ? where id = ?";
+    private static final String UPDATE_LEADER = "update server_info set leader = ? where id = ? and leader = ?";
+    private static final String UPDATE_STATUS = "update server_info set status = ? where id = ? and status = ?";
     private static final String GET_SERVERS = "select id, pingtime from server_info where status = 1 order by id asc";
     private static final String GET_LEADER = "select id, pingtime from server_info where leader = 1";
 
@@ -50,7 +48,7 @@ public class ServerInfo extends TimerTask {
     public static void registerServer() {
         String ip;
         try {
-            ip = InetAddress.getLocalHost().getHostAddress();
+            ip = InetAddress.getLocalHost().getHostName();
             serverId = getServerId(ip);
             if(serverId == -1L) {
                 serverId = addServerInfo(ip);
@@ -79,9 +77,12 @@ public class ServerInfo extends TimerTask {
     private static long addServerInfo(String ip) {
         try (PreparedStatement insertQuery = connection.prepareStatement(INSERT_IP)){
             LOGGER.info("Server id is empty ");
-            String environment = AwsUtil.getConfig("environment");
-            if(environment != null) {
-                environment = environment.trim().toLowerCase();
+            String environment = "user";
+            String scheduler = AwsUtil.getConfig("schedulerServer");
+            if(scheduler != null) {
+                if (Boolean.parseBoolean(scheduler.trim().toLowerCase())) {
+                    environment = "scheduler";
+                }
             }
             insertQuery.setString(1, ip);
             insertQuery.setString(2, environment);
@@ -136,7 +137,10 @@ public class ServerInfo extends TimerTask {
                 markDownOutdatedServers();
             }
             if(leaderId == -1) {
-                updateLeader(serverId, true);
+                int updatedRows = updateLeader(serverId, true);
+                if(updatedRows == 1) {
+                    localServerLeader = true;
+                }
             }
         } catch (SQLException e) {
             LOGGER.info("Exception in checkAndAssignLeader ", e);
@@ -146,49 +150,73 @@ public class ServerInfo extends TimerTask {
     }
 
     private static void markLeaderDownAndChooseNewLeader(long leaderId) {
-        updateLeader(leaderId, false);
+        FTransactionManager transaction = (FTransactionManager) FTransactionManager.getTransactionManager();
+        PreparedStatement statement = null;
         ResultSet resultSet = null;
-        try (PreparedStatement statement = connection.prepareStatement(GET_SERVERS)) {
-            resultSet = statement.executeQuery();
-            while(resultSet.next()) {
-                long newLeaderId = resultSet.getLong(ID);
-                long newLeaderLastPingTime = resultSet.getLong(PING_TIME);
-                newLeaderLastPingTime = newLeaderLastPingTime + PING_TIME_INTERVAL;
-                if(newLeaderLastPingTime > System.currentTimeMillis()) {
-                    updateLeader(newLeaderId, true);
-                    return;
+        try {
+            transaction.begin();
+            int updatedRows = updateLeader(leaderId, false);
+            if(updatedRows == 1) {
+                LOGGER.info("Marked old leader as subject id: " + leaderId);
+                statement = connection.prepareStatement(GET_SERVERS);
+                resultSet = statement.executeQuery();
+                while (resultSet.next()) {
+                    long newLeaderId = resultSet.getLong(ID);
+                    long newLeaderLastPingTime = resultSet.getLong(PING_TIME);
+                    newLeaderLastPingTime = newLeaderLastPingTime + PING_TIME_INTERVAL;
+                    if (newLeaderLastPingTime > System.currentTimeMillis()) {
+                        updatedRows = updateLeader(newLeaderId, true);
+                        if (updatedRows == 1) {
+                            return;
+                        }
+                    }
                 }
             }
-        } catch (SQLException e) {
+
+            transaction.commit();
+        } catch (SQLException | NotSupportedException | HeuristicMixedException | SystemException | RollbackException | HeuristicRollbackException e) {
             LOGGER.info("Exception in markLeaderDownAndChooseNewLeader ", e);
+            try {
+                transaction.rollback();
+            } catch (SystemException e1) {
+                LOGGER.info("Exception while rolling back in markLeaderDownAndChooseNewLeader ", e1);
+            }
         } finally {
-            DBUtil.closeAll(null, resultSet);
+                DBUtil.closeAll(statement, resultSet);
         }
 
     }
 
-    private static void updateLeader(long id, boolean status) {
+    private static int updateLeader(long id, boolean status) {
         if(id > 0) {
             try (PreparedStatement updateQuery = connection.prepareStatement(UPDATE_LEADER)) {
                 updateQuery.setBoolean(1, status);
                 updateQuery.setLong(2, id);
-                updateQuery.executeUpdate();
+                updateQuery.setBoolean(3, !status);
+                return updateQuery.executeUpdate();
             } catch (SQLException e) {
                 LOGGER.info("Exception while updating leader for id : " + id , e);
             }
         }
+        return 0;
     }
 
-    private static void updateStatus(long id, boolean status) {
+    private static int updateStatus(long id, boolean status) {
         if(id > 0) {
             try (PreparedStatement updateQuery = connection.prepareStatement(UPDATE_STATUS)) {
                 updateQuery.setBoolean(1, status);
                 updateQuery.setLong(2, id);
-                updateQuery.executeUpdate();
+                updateQuery.setBoolean(3, !status);
+                return updateQuery.executeUpdate();
             } catch (SQLException e) {
                 LOGGER.info("Exception while updating server status for id : " + id, e);
             }
         }
+        return 0;
+    }
+
+    public static long getServerId() {
+        return serverId;
     }
 
     public void run() {

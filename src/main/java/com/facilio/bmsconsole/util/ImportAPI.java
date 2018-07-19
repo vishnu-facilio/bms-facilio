@@ -297,18 +297,12 @@ public class ImportAPI {
 			 if(floorId != null) {
 				 spaceId = spaceMeta.getSpaceId(floorId,spaceName);
 			 }
-			 else {
-				 List<SpaceContext> spaces = SpaceAPI.getAllSpaces();
-				 HashMap<String, Long> spaceMap = new HashMap();
-				 for (SpaceContext spaceContext : spaces)
-				 {
-					 spaceMap.put(spaceContext.getName().trim().toLowerCase(), spaceContext.getId());
-				 }
-				 if(spaceMap.containsKey(spaceName.trim().toLowerCase()))
-				 {
-					 spaceId = spaceMeta.getSpaceId(spaceName);
-				 }
-			}
+			 else if (buildingId != null) {
+				 spaceId = spaceMeta.getSpaceIdFromBuilding(buildingId,spaceName);
+			 }
+			 else if (siteId != null) {
+				 spaceId = spaceMeta.getSpaceIdFromSite(siteId,spaceName);
+			 }
 			if(spaceId == null) {
 				 if (floorName == null)
 				 {

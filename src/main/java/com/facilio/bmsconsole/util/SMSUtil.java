@@ -22,7 +22,7 @@ public class SMSUtil {
 	static {
 		Twilio.init(ACCOUNTS_ID, AUTH_TOKEN);
 	}
-	
+	private final static String FROM = "facilio";
 	public static String sendSMS(JSONObject obj) {
 		String message = (String) obj.get("message");
 		String to = (String) obj.get("to");
@@ -95,9 +95,11 @@ public class SMSUtil {
 	{
 		PhoneNumber tophone = new com.twilio.sdk.type.PhoneNumber(user.getMobile());
 		PhoneNumber fromphone = new com.twilio.sdk.type.PhoneNumber("+16106248741");
+		String message = "Your OTP is " +link;
+		System.out.println(message);
 		
 		com.twilio.sdk.resource.api.v2010.account.Message tmessage = com.twilio.sdk.resource.api.v2010.account.Message.create(ACCOUNTS_ID,tophone , 
-				fromphone,"Your OTP is " +link).execute();
+				fromphone,message).execute();
 		
 		System.out.println(tmessage.getSid());
 		
@@ -196,5 +198,14 @@ public class SMSUtil {
 
 	private String phonenumber;
 	private long expiryTime;
+	
+	public static void main(String args[])
+	{
+		JSONObject obj = new JSONObject();
+		obj.put("to", "919840425388");
+		obj.put("message", "Hello world");
+		sendSMS(obj);
+
+	}
 	
 }

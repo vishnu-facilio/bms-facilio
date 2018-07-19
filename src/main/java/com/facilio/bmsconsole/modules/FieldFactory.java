@@ -4002,7 +4002,7 @@ public class FieldFactory {
 	}
 	
 	public static List<FacilioField> getCostAssetsFields() {
-		FacilioModule module = ModuleFactory.getAdditionalCostModule();
+		FacilioModule module = ModuleFactory.getCostAssetsModule();
 		List<FacilioField> fields = new ArrayList<>();
 		
 		fields.add(getIdField(module));
@@ -4012,6 +4012,7 @@ public class FieldFactory {
 		fields.add(getField("assetId", "ASSET_ID", module, FieldType.LOOKUP));
 		fields.add(getField("billStartDay", "BILL_START_DAY", module, FieldType.NUMBER));
 		fields.add(getField("noOfBillMonths", "NO_OF_BILL_MONTHS", module, FieldType.NUMBER));
+		fields.add(getField("firstBillTime", "FIRST_BILL_TIME", module, FieldType.DATE_TIME));
 		
 		return fields;
 	}

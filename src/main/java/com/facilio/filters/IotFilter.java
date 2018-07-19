@@ -23,18 +23,18 @@ public class IotFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
-            StringBuilder builder = new StringBuilder();
-            String line = null;
-            try {
-                BufferedReader reader = request.getReader();
-                while ((line = reader.readLine()) != null)
-                    builder.append(line);
-            } catch (Exception e) {
-                e.printStackTrace();
+        StringBuilder builder = new StringBuilder();
+        String line = null;
+        try {
+            BufferedReader reader = request.getReader();
+            while ((line = reader.readLine()) != null) {
+                builder.append(line);
+                builder.append(System.lineSeparator());
             }
-
-            LOGGER.info(builder.toString());
-
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        LOGGER.info(builder.toString());
     }
 
     @Override

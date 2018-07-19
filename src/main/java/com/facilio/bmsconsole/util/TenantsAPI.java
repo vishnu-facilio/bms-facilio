@@ -45,6 +45,7 @@ public class TenantsAPI {
 	public static final String UTILITY_VALUES = "utilityValues";
 	public static final String FORMULA_SUM_VALUE = "formulaSumValue";
 	public static final String FORMULA_VALUES = "formulaValues";
+	public static final String TAX_VALUE = "taxValue";
 	public static final String FINAL_VALUES = "finalValue";
 	
 	public static List<TenantContext> getAllTenants() throws Exception {
@@ -134,6 +135,7 @@ public class TenantsAPI {
 	}
 	
 	public static long addTenant (TenantContext tenant) throws Exception {
+		
 		if (tenant.getName() == null || tenant.getName().isEmpty()) {
 			throw new IllegalArgumentException("Invalid name during addition of Tenant");
 		}
@@ -141,6 +143,8 @@ public class TenantsAPI {
 		if (tenant.getSpaceId() == -1) {
 			throw new IllegalArgumentException("Invalid space id during addition of Tenant");
 		}
+		
+		addTenantLogo(tenant);
 		
 		tenant.setOrgId(AccountUtil.getCurrentOrg().getId());
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
@@ -167,6 +171,15 @@ public class TenantsAPI {
 			insertBuilder.addRecord(FieldUtil.getAsProperties(util));
 		}
 		insertBuilder.save();
+	}
+	
+	private static void addTenantLogo(TenantContext tenant) throws Exception {
+		if (tenant.getTenantLogo() != null) {
+			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			long fileId = fs.addFile(tenant.getTenantLogoFileName(), tenant.getTenantLogo(), tenant.getTenantLogoContentType());
+			tenant.setLogoId(fileId);
+			tenant.setTenantLogo(null);
+		}
 	}
 	
 	public static int updateTenant (TenantContext tenant) throws Exception {

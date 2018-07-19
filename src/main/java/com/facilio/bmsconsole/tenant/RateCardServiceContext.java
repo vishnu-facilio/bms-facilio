@@ -95,7 +95,8 @@ public class RateCardServiceContext {
 
 	public static enum ServiceType {
 		UTILITY,
-		FORMULA
+		FORMULA,
+		TAX_FORMULA
 		;
 		
 		public int getValue() {

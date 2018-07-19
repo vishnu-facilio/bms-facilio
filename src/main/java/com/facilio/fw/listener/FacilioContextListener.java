@@ -4,9 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
+import java.net.*;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -23,6 +21,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import com.facilio.server.ServerInfo;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.flywaydb.core.Flyway;
@@ -71,7 +70,7 @@ public class FacilioContextListener implements ServletContextListener {
 			// TODO Auto-generated catch block
 			log.info("Exception occurred ", e1);
 		}
-		if("true".equals(AwsUtil.getConfig("enable.transaction")) && false) {
+		if("true".equals(AwsUtil.getConfig("enable.transaction"))) {
 			timer.schedule(new TransactionMonitor(), 0L, 3000L);
 		}
 
@@ -90,6 +89,9 @@ public class FacilioContextListener implements ServletContextListener {
 			catch(Exception e) {
 				log.info("Exception occurred ", e);
 			}
+			ServerInfo.registerServer();
+			//timer.schedule(new ServerInfo(), 30000L, 30000L);
+
 			BeanFactory.initBeans();
 			
 			if(Boolean.parseBoolean(AwsUtil.getConfig("schedulerServer"))) {
@@ -133,11 +135,6 @@ public class FacilioContextListener implements ServletContextListener {
 				
 			}*/
 
-
-
-			/*ServerInfo.registerServer();
-			timer.schedule(new ServerInfo(), 30000L, 30000L);
-*/
 			try {
 				if(("true".equalsIgnoreCase(AwsUtil.getConfig("enable.kinesis"))) && "true".equalsIgnoreCase(AwsUtil.getConfig("kinesisServer"))) {
 					new Thread(KinesisProcessor::startProcessor).start();
@@ -235,45 +232,22 @@ PortalAuthInterceptor.PORTALDOMAIN = com.facilio.aws.util.AwsUtil.getConfig("por
 			}
 			return customdomains;
 
-		} catch (SAXException e) {
+		} catch (SAXException | IOException | ParserConfigurationException e) {
 			// TODO Auto-generated catch block
 			log.info("Exception occurred ", e);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			log.info("Exception occurred ", e);
-		} catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
-			log.info("Exception occurred ", e);
-		} 
+		}
 		return null;
 	}
 	public static String INSTANCEID = null;
-	private void initLocalHostName()
-	{
+
+	private void initLocalHostName() {
 	
-		String instanceid = null;
 		try {
-			URL url = new URL("http://169.254.169.254/latest/meta-data/instance-id");
-			URLConnection conn = url.openConnection();
-			Scanner s = new Scanner(conn.getInputStream());
-			if (s.hasNext()) {
-			  //System.out.println(s.next());
-			  instanceid = s.next();
-			}
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			log.fatal("Exception occurred ", e);
-			
-			} catch (IOException e) {
-			// TODO Auto-generated catch block
-			log.fatal("Exception occurred ", e);
-			} 
-		catch (Exception e) {
-			// TODO Auto-generated catch block
-			log.fatal("Exception occurred ", e);
-			} 
-		INSTANCEID = instanceid;
-		//return instanceid;
+			INSTANCEID = InetAddress.getLocalHost().getHostName();
+
+		} catch (UnknownHostException e) {
+			log.info("Exception occurred ", e);
+		}
 	}
 
 }

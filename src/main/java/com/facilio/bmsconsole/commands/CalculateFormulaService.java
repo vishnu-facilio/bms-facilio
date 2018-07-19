@@ -27,12 +27,12 @@ public class CalculateFormulaService implements Command {
 		Long startTime = (Long) context.get(TenantsAPI.START_TIME);
 		Long endTime = (Long) context.get(TenantsAPI.END_TIME);
 		
-		List<RateCardServiceContext> formulaServices = rateCard.getServiceOfType(RateCardServiceContext.ServiceType.FORMULA.getValue());
+		List<RateCardServiceContext> formulaServices = rateCard.getServiceOfType(RateCardServiceContext.ServiceType.FORMULA.getValue(), RateCardServiceContext.ServiceType.TAX_FORMULA.getValue());
 		
 		double formulaSumValue = 0.0;
 		if(formulaServices != null && !formulaServices.isEmpty()) {
-			Map<String, Object> item = new HashMap<>();
 			Map<Long,Double> formulaVsValue = new HashMap<>();
+			double tax = 0;
 			List<Map<String, Object>> itemDetails = new ArrayList<>();
 			
 			for(RateCardServiceContext formulaService :formulaServices) {
@@ -46,13 +46,19 @@ public class CalculateFormulaService implements Command {
 				
 				double workflowValue = Double.parseDouble(workflowValueString);
 				
-				formulaSumValue = formulaSumValue + workflowValue;
-				
-				formulaVsValue.put(formulaService.getId(), formulaSumValue);
-				
-				item.put("name", formulaService.getName());
-				item.put("cost", workflowValue);
-				itemDetails.add(item);
+				if (formulaService.getServiceTypeEnum() == RateCardServiceContext.ServiceType.TAX_FORMULA) {
+					context.put(TenantsAPI.TAX_VALUE, workflowValue);
+				}
+				else {
+					Map<String, Object> item = new HashMap<>();
+					formulaSumValue = formulaSumValue + workflowValue;
+					
+					formulaVsValue.put(formulaService.getId(), formulaSumValue);
+					
+					item.put("name", formulaService.getName());
+					item.put("cost", workflowValue);
+					itemDetails.add(item);
+				}
 			}
 			
 			context.put(TenantsAPI.FORMULA_VALUES, itemDetails);

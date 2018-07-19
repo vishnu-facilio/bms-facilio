@@ -139,7 +139,7 @@ public class CommonCommandUtil {
 					for(FacilioField field : fields) {
 						if(field.getDataTypeEnum() == FieldType.LOOKUP) {
 							Map<String, Object> props = (Map<String, Object>) beanMap.remove(field.getName());
-							if(props != null && !props.isEmpty()) {
+							if(props != null && !props.isEmpty() && props.get("id") != null) {
 								LookupField lookupField = (LookupField) field;
 								//Commenting out because max level is set as 0 by default and anyway we need this. And also because of the change in library of mapper
 //								if(props.size() <= 3) {
