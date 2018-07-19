@@ -181,6 +181,21 @@ public class ReadingAction extends ActionSupport {
 		Chain addCurrentOccupancy = FacilioChainFactory.getGetLatestSpaceReadingValuesChain();
 		addCurrentOccupancy.execute(context);
 		
+		return setReadingValues(context);
+	}
+	
+	public String getAssetSpecificLatestReadingData() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.LIMIT_VALUE, count);
+		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
+		
+		Chain latestAssetData = FacilioChainFactory.getGetLatestAssetReadingValuesChain();
+		latestAssetData.execute(context);
+		
+		return setReadingValues(context);
+	}
+	
+	private String setReadingValues(FacilioContext context) {
 		readingData = (Map<String, List<ReadingContext>>) context.get(FacilioConstants.ContextNames.READINGS);
 		readings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
 		

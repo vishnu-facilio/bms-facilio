@@ -1900,6 +1900,14 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getGetLatestAssetReadingValuesChain() {
+		Chain c = new ChainBase();
+		c.addCommand(getAssetReadingsChain());
+		c.addCommand(new GetLatestReadingValuesCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getSpaceReadingsChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new GetSpaceSpecifcReadingsCommand());
@@ -1912,7 +1920,7 @@ public class FacilioChainFactory {
 	public static Chain getGetLatestSpaceReadingValuesChain() {
 		Chain c = new ChainBase();
 		c.addCommand(getSpaceReadingsChain());
-		c.addCommand(new GetLatestCategoryReadingValuesCommand());
+		c.addCommand(new GetLatestReadingValuesCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -1976,14 +1984,14 @@ public class FacilioChainFactory {
 	public static Chain getGetLatestReadingValuesChain() {
 		Chain c = new ChainBase();
 		c.addCommand(getCategoryReadingsChain());
-		c.addCommand(new GetLatestCategoryReadingValuesCommand());
+		c.addCommand(new GetLatestReadingValuesCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain getGetReadingValuesChain() {
 		Chain c = new TransactionChain();
-		c.addCommand(new GetLatestCategoryReadingValuesCommand());
+		c.addCommand(new GetLatestReadingValuesCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
