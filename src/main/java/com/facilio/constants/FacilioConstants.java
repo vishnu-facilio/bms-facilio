@@ -506,6 +506,7 @@ public class FacilioConstants {
 		public static final String BENCHMARK_DATE_VAL = "benchmarkDateVal";
 		public static final String SHIFT = "shift";
 		public static final String SHIFTS = "shifts";
+		public static final String ACTUAL_TIMINGS = "actualTimings";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {

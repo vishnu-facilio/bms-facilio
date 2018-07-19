@@ -741,6 +741,16 @@ public class WorkOrderAction extends FacilioAction {
 	public void setPmResourcesMap(Map<Long, ResourceContext> pmResourcesMap) {
 		this.pmResourcesMap = pmResourcesMap;
 	}
+	
+	private List<List<Long>> actualTimings;
+	
+	public List<List<Long>> getActualTimings() {
+		return this.actualTimings;
+	}
+	
+	public void setActualTimings(List<List<Long>> actualTimings) {
+		this.actualTimings = actualTimings;
+	}
 
 	public String assignWorkOrder() throws Exception {
 
@@ -752,6 +762,7 @@ public class WorkOrderAction extends FacilioAction {
 	public String closeWorkOrder() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CLOSE_WORK_ORDER);
+		context.put(FacilioConstants.ContextNames.ACTUAL_TIMINGS, actualTimings);
 
 		workorder = new WorkOrderContext();
 		workorder.setStatus(TicketAPI.getStatus("Closed")); // We shouldn't
@@ -767,6 +778,7 @@ public class WorkOrderAction extends FacilioAction {
 	public String resolveWorkOrder() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.SOLVE_WORK_ORDER);
+		context.put(FacilioConstants.ContextNames.ACTUAL_TIMINGS, actualTimings);
 
 		workorder = new WorkOrderContext();
 		workorder.setStatus(TicketAPI.getStatus("Resolved")); // We shouldn't
