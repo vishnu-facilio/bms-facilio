@@ -62,7 +62,7 @@ public class JobStore {
 					pstmt.setInt(5, job.getTransactionTimeout());
 				}
 				else {
-                    SchedulerJobConf.Job schedulerJob = FacilioScheduler.JOBS_MAP.get(job.getJobName());
+                    SchedulerJobConf.Job schedulerJob = FacilioScheduler.getSchedulerJob(job.getJobName());
                     pstmt.setInt(5, schedulerJob.getTransactionTimeout());
 				}
 				
@@ -125,6 +125,10 @@ public class JobStore {
 	private static void checkForNull(JobContext job) {
 		if(job.getJobId() == -1) {
 			throw new IllegalArgumentException("Job ID cannot be null");
+		}
+
+		if(FacilioScheduler.getSchedulerJob(job.getJobName()) == null) {
+			throw new IllegalArgumentException("Scheduled Job is not configured");
 		}
 		
 		if(job.getJobName() == null || job.getJobName().isEmpty()) {
