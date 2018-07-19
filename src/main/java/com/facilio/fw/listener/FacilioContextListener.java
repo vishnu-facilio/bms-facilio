@@ -94,9 +94,7 @@ public class FacilioContextListener implements ServletContextListener {
 
 			BeanFactory.initBeans();
 			
-			if(Boolean.parseBoolean(AwsUtil.getConfig("schedulerServer"))) {
-				FacilioScheduler.initScheduler();
-			}
+			FacilioScheduler.initScheduler();
 		//	FacilioTransactionManager.INSTANCE.getTransactionManager();
 			
 			RedisManager.getInstance().connect(); // creating redis connection pool

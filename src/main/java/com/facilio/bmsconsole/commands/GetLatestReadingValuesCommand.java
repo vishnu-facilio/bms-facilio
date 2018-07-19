@@ -19,7 +19,7 @@ import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
-public class GetLatestCategoryReadingValuesCommand implements Command {
+public class GetLatestReadingValuesCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {

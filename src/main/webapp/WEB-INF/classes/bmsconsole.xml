@@ -1629,6 +1629,14 @@
 				<param name="root">readings</param>
 			</result>
 		</action>
+		
+		<action name="getassetspecificlatestdata" class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="getAssetSpecificLatestReadingData">
+			<result name="success" type="json">
+				<param name="excludeProperties">readingAndValue.readingData.*\.orgId,readingAndValue.readingData.*\.moduleId,readingAndValue.readingData.*\.data,readingAndValue.readingData.*\.readings.*\.(date|week|hour|month|day)</param>
+				<param name="includeProperties">readingAndValue.*</param>
+			</result>
+		</action>
 
 		<action name="getallassetreadings" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="getAllAssetReadings">

@@ -337,18 +337,20 @@ public class ShiftAPI {
 		long woId = (long) woIdMeta.getValue();
 		
 		if ((value == 1 || value == 3 || value == 5) && woId != currentWOId) {
-			addUserWorkHoursReading(userId, woId, activityType, currentWOId, "Pause", now);
+			addUserWorkHoursReading(userId, woId, activityType, "Pause", now);
 		}
 	}
 	
 	public static void addUserWorkHoursReading(long assignedToUserId, long workOrderId, ActivityType activityType, String reading, long time) throws Exception {
-		addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, workOrderId, reading, time);
+		addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, reading, time, false);
 	}
 	
-	public static void addUserWorkHoursReading(long assignedToUserId, long workOrderId, ActivityType activityType, long sourceWoId, String reading, long time) throws Exception {
-		boolean addReading = allowAddReading(assignedToUserId, workOrderId, reading);
-		if (!addReading) {
-			return;
+	public static void addUserWorkHoursReading(long assignedToUserId, long workOrderId, ActivityType activityType, String reading, long time, boolean skipCheck) throws Exception {
+		if (!skipCheck) {
+			boolean addReading = allowAddReading(assignedToUserId, workOrderId, reading);
+			if (!addReading) {
+				return;
+			}
 		}
 		
 		Map<String, List<ReadingContext>> readingMap = new HashMap<>();
@@ -358,7 +360,6 @@ public class ShiftAPI {
 		rContext.addReading("workHoursEntry", reading);
 		if (activityType != null) {
 			rContext.addReading("sourceActivity", activityType.getValue());
-			rContext.addReading("sourceActivityWoId", sourceWoId);
 		}
 		rContext.setTtime(time);
 		readingMap.put("userworkhoursreading", Arrays.asList(rContext));
@@ -394,8 +395,11 @@ public class ShiftAPI {
 			throw new IllegalStateException();
 		}
 		
+		Set<Integer> starts = new HashSet<>(Arrays.asList(1, 3, 5));
+		Set<Integer> halts = new HashSet<>(Arrays.asList(2, 4, 6));
+		
 		if (props == null || props.isEmpty()) {
-			if (currentValue == 1) {
+			if (starts.contains(currentValue)) {
 				return true;
 			}
 			return false;
@@ -405,9 +409,6 @@ public class ShiftAPI {
 		if (previousValue == null) {
 			return true;
 		}
-		
-		Set<Integer> starts = new HashSet<>(Arrays.asList(1, 3, 5));
-		Set<Integer> halts = new HashSet<>(Arrays.asList(2, 4, 6));
 		
 		if ((starts.contains(currentValue) && halts.contains(previousValue)) 
 				|| (starts.contains(previousValue) && halts.contains(currentValue))) {
@@ -600,10 +601,10 @@ public class ShiftAPI {
 			if (oldTicketStatus.getId() == TicketAPI.getStatus("Assigned").getId() 
 					|| oldTicketStatus.getId() == TicketAPI.getStatus("Closed").getId() 
 					|| oldTicketStatus.getId() == TicketAPI.getStatus("Resolved").getId()) {
-				pauseWorkOrderForUser(assignedToUserId, activityType, workOrderId, now);
+				//pauseWorkOrderForUser(assignedToUserId, activityType, workOrderId, now);
 				addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Start", now);
 			} else if (oldTicketStatus.getId() == TicketAPI.getStatus("On Hold").getId() || oldTicketStatus.getId() == TicketAPI.getStatus("Work in Progress").getId()) {
-				pauseWorkOrderForUser(assignedToUserId, activityType, workOrderId, now);
+				//pauseWorkOrderForUser(assignedToUserId, activityType, workOrderId, now);
 				addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Resume", now);
 			}
 		}  else if (newTicketStatus.getStatus().equals("Resolved")) {
@@ -617,6 +618,35 @@ public class ShiftAPI {
 			} else if (oldTicketStatus.getId() == TicketAPI.getStatus("Work in Progress").getId()) {
 				addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Close", now);
 			}
+		}
+	}
+
+	public static void addActualWorkHoursReading(long assignedToUserId, long workOrderId, ActivityType activityType, List<List<Long>> actualTimings) throws Exception {
+		if (actualTimings.size() == 1) {
+			List<Long> readings = actualTimings.get(0);
+			
+			long startTime = readings.get(0);
+			long endTime = readings.get(1);
+			addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Start", startTime, true);
+			addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Close", endTime, true);
+		} else {
+			List<Long> readings = actualTimings.get(0);
+			long startTime = readings.get(0);
+			long endTime = readings.get(1);
+			addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Start", startTime, true);
+			addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Pause", endTime, true);
+			for (int i = 1; i < actualTimings.size() - 1; i++) {
+				List<Long> r = actualTimings.get(i);
+				long s = r.get(0);
+				long e = r.get(1);
+				addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Resume", s, true);
+				addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Pause", e, true);
+			}
+			readings = actualTimings.get(readings.size() - 1);
+			startTime = readings.get(0);
+			endTime = readings.get(1);
+			addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Resume", startTime, true);
+			addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Close", endTime, true);
 		}
 	}
 

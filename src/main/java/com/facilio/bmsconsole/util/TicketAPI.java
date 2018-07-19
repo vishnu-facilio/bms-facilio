@@ -123,11 +123,9 @@ public class TicketAPI {
 						map.put("workHoursEntry", new Long((Integer) e.get("workHoursEntry")));
 						map.put("id", (Long) e.get("id"));
 						if (e.get("sourceActivity") != null) {
-							map.put("sourceActivity", new Long((Integer) e.get("sourceActivity")));
-							map.put("sourceActivityWoId", (Long) e.get("sourceActivityWoId"));
+							map.put("sourceActivity", (Long) e.get("sourceActivity"));
 						} else {
 							map.put("sourceActivity", -1l);
-							map.put("sourceActivityWoId", -1l);
 						}
 						userIDvsReadings.put((Long) e.get("parentId"), map);
 					});
@@ -139,7 +137,7 @@ public class TicketAPI {
 				FacilioField rdmresourceId = fieldMap.get("resourceId");
 				FacilioField rdmfieldId = fieldMap.get("fieldId");
 				
-				List<Long> readingFields = Arrays.asList(uwhFieldMap.get("woId").getFieldId(), uwhFieldMap.get("workHoursEntry").getFieldId(), uwhFieldMap.get("sourceActivity").getFieldId(), uwhFieldMap.get("sourceActivityWoId").getFieldId());
+				List<Long> readingFields = Arrays.asList(uwhFieldMap.get("woId").getFieldId(), uwhFieldMap.get("workHoursEntry").getFieldId(), uwhFieldMap.get("sourceActivity").getFieldId());
 				
 				FacilioModule rdmModule = ModuleFactory.getReadingDataMetaModule();
 				GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
@@ -164,7 +162,6 @@ public class TicketAPI {
 						map.put("woId", -1l);
 						map.put("workHoursEntry", -1l);
 						map.put("id", -1l);
-						map.put("sourceActivityWoId", -1l);
 						map.put("sourceActivity", -1l);
 					}
 					
@@ -197,16 +194,6 @@ public class TicketAPI {
 					sourceActivity.setInputType(type);
 					sourceActivity.setReadingDataId(map.get("id"));
 					insertBuilder.addRecord(FieldUtil.getAsProperties(sourceActivity));
-					
-					ReadingDataMeta sourceActivityWoId = new ReadingDataMeta();
-					sourceActivityWoId.setOrgId(orgId);
-					sourceActivityWoId.setTtime(map.get("ttime"));
-					sourceActivityWoId.setValue(map.get("sourceActivityWoId"));
-					sourceActivityWoId.setFieldId(uwhFieldMap.get("sourceActivityWoId").getId());
-					sourceActivityWoId.setResourceId(userId);
-					sourceActivityWoId.setInputType(type);
-					sourceActivityWoId.setReadingDataId(map.get("id"));
-					insertBuilder.addRecord(FieldUtil.getAsProperties(sourceActivityWoId));
 				}
 				insertBuilder.save();
 			}

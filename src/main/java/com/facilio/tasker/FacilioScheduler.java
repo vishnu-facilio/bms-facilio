@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -16,22 +14,28 @@ import com.facilio.aws.util.AwsUtil;
 import com.facilio.tasker.config.ExecutorsConf;
 import com.facilio.tasker.config.SchedulerJobConf;
 import com.facilio.tasker.executor.Executor;
-import com.facilio.tasker.job.FacilioJob;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class FacilioScheduler {
 	
-	public static final Map<String, SchedulerJobConf.Job> JOBS_MAP = new HashMap<>();
-	
+	private static final Map<String, SchedulerJobConf.Job> JOBS_MAP = new HashMap<>();
+
+	private static final Logger LOGGER = LogManager.getLogger(FacilioScheduler.class.getName());
+
 	private static final List<Executor> executors = new ArrayList<>();
 	public static void initScheduler() throws IOException, InterruptedException, JAXBException {
 		
 		getJobObjectsFromConf();
-		System.out.println(JOBS_MAP);
+		LOGGER.info(JOBS_MAP);
 		
 //		Executor executor = new Executor("facilio", 15, 600);
-		startExecutors();
+		if(Boolean.parseBoolean(AwsUtil.getConfig("schedulerServer"))) {
+			startExecutors();
+		}
 	}
-	
+
+
 	private static void getJobObjectsFromConf() throws JAXBException {
 		//Get file from resources folder
 		ClassLoader classLoader = FacilioScheduler.class.getClassLoader();
@@ -47,23 +51,18 @@ public class FacilioScheduler {
 				String name = jobConf.getName();
 				if(name != null && !name.isEmpty() && jobConf.getClassObject() != null) {
 					try {
-						JOBS_MAP.put(name, jobConf);
+						addJobToMap(name, jobConf);
 					}
 					catch(Exception e) {
-						
-						logger.log(Level.SEVERE, "The folowing error occurred while parsing job name : "+name, e);
-						
+						LOGGER.error("The folowing error occurred while parsing job name : "+name, e);
 					}
 				}
 				else {
-					
-					logger.log(Level.SEVERE, "Invalid job configuration : "+jobConf);
-
+					LOGGER.error("Invalid job configuration : "+jobConf);
 				}
 			}
 		}
 	}
-	private static Logger logger = Logger.getLogger("FacilioScheduler");
 
 	private static void startExecutors() throws JAXBException {
 		ClassLoader classLoader = FacilioScheduler.class.getClassLoader();
@@ -92,5 +91,13 @@ public class FacilioScheduler {
 		for(Executor executor : executors) {
 			executor.shutdown();
 		}
+	}
+
+	private static void addJobToMap(String jobName, SchedulerJobConf.Job job){
+		JOBS_MAP.put(jobName, job);
+	}
+
+	public static SchedulerJobConf.Job getSchedulerJob(String jobName){
+		return JOBS_MAP.get(jobName);
 	}
 }
