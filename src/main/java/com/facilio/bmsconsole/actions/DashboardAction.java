@@ -3755,7 +3755,7 @@ public class DashboardAction extends ActionSupport {
 	 							newPurpose = true;
 	 						}
 	 					}
-	 					else if((report.getId() == 1963l || report.getId() == 3481l || report.getId() == 3653) && xAxisField != null) {
+	 					else if((report.getId() == 1963l || report.getId() == 3481l || report.getId() == 3653l || report.getId() == 3664l || report.getId() == 3663l) && xAxisField != null) {
 	 						AssetContext context = AssetsAPI.getAssetInfo((Long) lbl);
 	 						if(context != null) {
 	 							lbl = context.getName();
