@@ -934,7 +934,7 @@ public class ModuleFactory {
 		return enpi;
 	}
 
-	public static FacilioModule getReportSpaceFilterModule() {
+	public static FacilioModule getReportSpaceFilter() {
 		FacilioModule repSpaceFilter = new FacilioModule();
 		repSpaceFilter.setName("reportspacefilter");
 		repSpaceFilter.setDisplayName("Report Space Filter");
