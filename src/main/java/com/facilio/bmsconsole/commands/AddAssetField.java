@@ -22,7 +22,10 @@ public class AddAssetField implements Command {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
 		List<FacilioField> fields = new ArrayList(modBean.getAllFields(moduleName));
-		fields.addAll(modBean.getAllCustomFields("asset"));
+		List<FacilioField> assetField = modBean.getAllCustomFields("asset");
+		if (assetField != null) {
+			fields.addAll(modBean.getAllCustomFields("asset"));
+		}
 		context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, fields);
 
 		
