@@ -1143,7 +1143,8 @@ public class FacilioChainFactory {
 		Chain c = new TransactionChain();
 		//c.addCommand(SetTableNamesCommand.getForAsset());
 		c.addCommand(new SetModuleForSpecialAssetsCommand());
-		c.addCommand(new LoadAllFieldsCommand());
+//		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new AddAssetField());
 		c.addCommand(new GenericAddModuleDataCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
 		c.addCommand(getCategoryReadingsChain());
@@ -1201,7 +1202,8 @@ public class FacilioChainFactory {
 		Chain c = new TransactionChain();
 		c.addCommand(new SetModuleForSpecialAssetsCommand());
 //		c.addCommand(SetTableNamesCommand.getForAsset());
-		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new AddAssetField());
+//		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenericUpdateModuleDataCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
 		addCleanUpCommand(c);
@@ -1245,9 +1247,8 @@ public class FacilioChainFactory {
 	
 	public static Chain getAssetDetailsChain() {
 		Chain c = new ChainBase();
-//		c.addCommand(SetTableNamesCommand.getForAsset());
-//		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new SetModuleForSpecialAssetsCommand());
+		c.addCommand(new AddAssetField());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		addCleanUpCommand(c);
 		return c;
