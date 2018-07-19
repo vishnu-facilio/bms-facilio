@@ -36,15 +36,10 @@ public class ShiftEndOneTimeJob extends FacilioJob {
 			
 			long execTime = jc.getExecutionTime()*1000;
 			List<ReadingContext> userShiftReadings = ShiftAPI.getUserShiftReading(userIds, "Check-Out", execTime);
-			List<ReadingContext> userWorkHoursReadings = ShiftAPI.getUserWorkHoursReading(userIds, "shiftend", execTime);
 			
 			Map<String, List<ReadingContext>> readingMap = new HashMap<>();
 			if(userShiftReadings != null && !userShiftReadings.isEmpty()) {
 				readingMap.put("usershiftreading", userShiftReadings);
-			}
-			
-			if(userWorkHoursReadings != null && !userWorkHoursReadings.isEmpty()) {
-				readingMap.put("userworkhoursreading", userWorkHoursReadings);
 			}
 			
 			if(readingMap.isEmpty()) {
