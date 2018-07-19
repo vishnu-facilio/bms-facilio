@@ -26,7 +26,7 @@ public class GenericUpdateModuleDataCommand implements Command {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
-			List<FacilioField> fields = modBean.getAllFields(moduleName);
+			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			UpdateRecordBuilder<ModuleBaseWithCustomFields> updateBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
 																					.module(module)
 																					.fields(fields)

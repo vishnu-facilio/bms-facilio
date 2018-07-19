@@ -28,10 +28,7 @@ public class GenericGetModuleDataDetailCommand implements Command {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
 			
-			List<FacilioField> fields = new ArrayList(modBean.getAllFields(moduleName));
-			fields.addAll(modBean.getAllCustomFields("asset"));
-			
-			
+			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			
 			SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 																	.module(module)
