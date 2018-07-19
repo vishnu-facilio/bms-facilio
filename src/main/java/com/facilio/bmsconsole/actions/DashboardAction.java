@@ -3682,7 +3682,7 @@ public class DashboardAction extends ActionSupport {
 			if(!"eui".equalsIgnoreCase(report.getY1AxisUnit())) {
 				variance = DashboardUtil.getStandardVariance(report,rs,meterIdsUsed);
 				try {
-					if (report.getY1AxisField() != null && report.getY1AxisField().getField().getName().contains("cost") || (reportFieldLabelMap != null && reportFieldLabelMap.containsKey(report.getY1AxisField().getField().getName()) &&reportFieldLabelMap.get(report.getY1AxisField().getField().getName()).toString().contains("cost"))) {
+					if ((report.getY1AxisField() != null && report.getY1AxisField().getField().getName().contains("cost")) || (reportFieldLabelMap != null && reportFieldLabelMap.containsKey(report.getY1AxisField().getField().getName()) && reportFieldLabelMap.get(report.getY1AxisField().getField().getName()) != null && reportFieldLabelMap.get(report.getY1AxisField().getField().getName()).toString().contains("cost"))) {
 						
 						Criteria parentCriteria = criteria != null ? criteria : report.getCriteria();
 						Double totalKwh = getTotalKwh(meterIdsUsed, this.startTime, this.endTime);

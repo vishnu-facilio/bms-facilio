@@ -417,13 +417,29 @@ public class DashboardUtil {
 	}
 	public static Integer getDataFromValue(Long timeValue,AggregateOperator aggregateOperator) {
 		
-		if(aggregateOperator.getValue().equals(10) || aggregateOperator.getValue().equals(12)) {
+		if(aggregateOperator.getValue().equals(10)) {
 			ZonedDateTime dateTime = DateTimeUtil.getDateTime(timeValue);
 			return dateTime.getMonth().getValue();
+		}
+		else if (aggregateOperator.getValue().equals(12)) {
+			ZonedDateTime dateTime = DateTimeUtil.getDateTime(timeValue);
+			return Integer.parseInt(dateTime.getMonth().getValue() + "" + dateTime.getDayOfMonth());
 		}
 		else if(aggregateOperator.getValue().equals(18)) {
 			ZonedDateTime dateTime = DateTimeUtil.getDateTime(timeValue);
 			return dateTime.getDayOfMonth();
+		}
+		else if(aggregateOperator.getValue().equals(19)) {
+			ZonedDateTime dateTime = DateTimeUtil.getDateTime(timeValue);
+			return dateTime.getHour();
+		}
+		else if(aggregateOperator.getValue().equals(20)) {
+			ZonedDateTime dateTime = DateTimeUtil.getDateTime(timeValue);
+			return Integer.parseInt(dateTime.getHour() + "" + Integer.parseInt(dateTime.getMonth().getValue() + "" + dateTime.getDayOfMonth()) + "" + dateTime.getYear()); 
+		}
+		else if(aggregateOperator.getValue().equals(8)) {
+			ZonedDateTime dateTime = DateTimeUtil.getDateTime(timeValue);
+			return dateTime.getYear();
 		}
 		return null;
 	}
