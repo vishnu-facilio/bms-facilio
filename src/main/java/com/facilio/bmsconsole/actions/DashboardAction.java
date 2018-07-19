@@ -1178,9 +1178,10 @@ public class DashboardAction extends ActionSupport {
 				JSONObject data = (JSONObject) dataIterator.next();
 				
 				if(reportContext.getId() == 3755l) {
-					
-					String asset = (String) data.get("label");
-					resultMap1.put(asset, data.get("value"));
+					if(column.getSequence() != 1) {
+						String asset = (String) data.get("label");
+						resultMap1.put(asset, data.get("value"));
+					}
 				}
 				else {
 					
