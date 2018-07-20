@@ -1147,4 +1147,59 @@ public class ModuleFactory {
 		costAssets.setTableName("Cost_Assets");
 		return costAssets;
 	}
+	
+	public static FacilioModule getReportFolderModule() {
+		FacilioModule costAssets = new FacilioModule();
+		costAssets.setName("reportFolder");
+		costAssets.setDisplayName("Report Folder");
+		costAssets.setTableName("Report1_Folder");
+		return costAssets;
+	}
+	public static FacilioModule getReportModule() {
+		FacilioModule costAssets = new FacilioModule();
+		costAssets.setName("report");
+		costAssets.setDisplayName("Report");
+		costAssets.setTableName("Report1");
+		return costAssets;
+	}
+	
+	public static FacilioModule getReportDataPointModule() {
+		FacilioModule costAssets = new FacilioModule();
+		costAssets.setName("reportDataPoint");
+		costAssets.setDisplayName("Report Data Point");
+		costAssets.setTableName("Report_Data_Point");
+		return costAssets;
+	}
+	
+	public static FacilioModule getReportXCriteriaModule() {
+		FacilioModule costAssets = new FacilioModule();
+		costAssets.setName("ReportXCriteria");
+		costAssets.setDisplayName("Report X Criteria");
+		costAssets.setTableName("Report_X_Criteria");
+		return costAssets;
+	}
+	
+	public static FacilioModule getReportMetaModule() {
+		FacilioModule costAssets = new FacilioModule();
+		costAssets.setName("ReportMeta");
+		costAssets.setDisplayName("Report Meta");
+		costAssets.setTableName("Report_Meta");
+		return costAssets;
+	}
+	
+	public static FacilioModule getReportBaselineModule() {
+		FacilioModule costAssets = new FacilioModule();
+		costAssets.setName("ReportBaseLineRel");
+		costAssets.setDisplayName("Report1 BaseLine Rel");
+		costAssets.setTableName("Report1_BaseLine_Rel");
+		return costAssets;
+	}
+	public static FacilioModule getReportBenchmarkModule() {
+		FacilioModule costAssets = new FacilioModule();
+		costAssets.setName("ReportBenchmarkRel");
+		costAssets.setDisplayName("Report Benchmark Rel");
+		costAssets.setTableName("Report1_Benchmark_Rel");
+		return costAssets;
+	}
+	
 }
