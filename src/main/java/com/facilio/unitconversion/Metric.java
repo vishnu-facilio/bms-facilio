@@ -17,7 +17,7 @@ public enum Metric {
 	POWER(8,"Power",46),
 	FREQUENCY(9,"Frequency",51),
 	REACTIVEPOWER(10,"Reactive Power",58),
-	PRESSURE(11,"Presure",61),
+	PRESSURE(11,"Pressure",61),
 	DEGREE(12,"Degree",62),
 	AREA(12,"Area",63),
 	TORQUE(13,"Torque",69),
