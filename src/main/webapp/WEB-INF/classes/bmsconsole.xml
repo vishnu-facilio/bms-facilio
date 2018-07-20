@@ -2980,6 +2980,25 @@
 				<param name="includeProperties">zoneId</param>
 			</result>
 		</action>
+		
+		<action name= "update" class= "com.facilio.bmsconsole.actions.ZoneAction" method= "updateZone">
+		<param name="moduleName">space</param>
+			<param name="permission">CREATE</param>
+			<!-- <param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param> -->
+			<result name="success" type="json">
+				<param name="includeProperties">zoneId</param>
+			</result>
+		</action>
+		
+		<action name="delete" class="com.facilio.bmsconsole.actions.ZoneAction"
+			method="deleteZone">
+			<param name="moduleName">space</param>
+			<param name="permission">UPDATE</param>
+			<!-- <param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param> -->
+			<result name="success" type="json">
+				<param name="includeProperties">zoneId</param>
+			</result>
+		</action>
 
 		<action name="children" class="com.facilio.bmsconsole.actions.ZoneAction"
 			method="zoneChildrenList">
