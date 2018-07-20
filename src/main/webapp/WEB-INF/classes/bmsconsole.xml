@@ -3008,6 +3008,15 @@
 				<param name="includeProperties">children,children\[\d+\],children\[\d+\].*</param>
 			</result>
 		</action>
+		<action name="*" class="com.facilio.bmsconsole.actions.ZoneAction"
+			method="viewZone">
+			<param name="moduleName">space</param>
+			<param name="permission">READ</param>
+			<param name="zoneId">{1}</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^zone.*</param>
+			</result>
+		</action>
 	</package>
 
 	<package name="setupApi" namespace="/api/settings" extends="home">
@@ -3973,6 +3982,8 @@
 			<result name="success">/jsps/recordsummary.jsp</result>
 		</action>
 	</package>
+	
+	
 
 	<package name="space" namespace="/app/space" extends="home">
 		<action name="new" class="com.facilio.bmsconsole.actions.SpaceAction"
