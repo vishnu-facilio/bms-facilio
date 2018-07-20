@@ -25,6 +25,7 @@ public class GetBaseSpaceChildrenCommand implements Command{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE);
+		Boolean isZOne = (Boolean) context.get(FacilioConstants.ContextNames.IS_ZONE);
 		
 		SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
 																	.select(fields)
@@ -33,13 +34,33 @@ public class GetBaseSpaceChildrenCommand implements Command{
 																	.beanClass(BaseSpaceContext.class);
 		
 		if (BaseSpaceContext.SpaceType.SITE.getStringVal().equalsIgnoreCase(spaceType)) {
-			selectBuilder.andCustomWhere("BaseSpace.SITE_ID = ? AND BaseSpace.SPACE_TYPE = ?", spaceId, SpaceType.BUILDING.getIntVal());
+			StringBuilder builder = new StringBuilder("BaseSpace.SITE_ID = ? AND (BaseSpace.SPACE_TYPE = ? ");
+			if(isZOne) {
+				builder.append("OR (BaseSpace.SPACE_TYPE = ").append(SpaceType.ZONE.getIntVal());
+				builder.append(" AND BaseSpace.FLOOR_ID IS NULL AND BaseSpace.BUILDING_ID IS NULL)");
+			}
+			builder.append(")");				
+			selectBuilder.andCustomWhere(builder.toString(), spaceId, SpaceType.BUILDING.getIntVal());
 		}
 		else if (BaseSpaceContext.SpaceType.BUILDING.getStringVal().equalsIgnoreCase(spaceType)) {
-			selectBuilder.andCustomWhere("BaseSpace.BUILDING_ID = ? AND BaseSpace.SPACE_TYPE = ?", spaceId, SpaceType.FLOOR.getIntVal());
+			StringBuilder builder = new StringBuilder("BaseSpace.BUILDING_ID = ? AND (BaseSpace.SPACE_TYPE = ? ");
+			if(isZOne) {
+				builder.append("OR BaseSpace.SPACE_TYPE = ").append(SpaceType.ZONE.getIntVal());
+				builder.append(" AND BaseSpace.FLOOR_ID IS NULL)");
+			}
+			builder.append(")");
+			selectBuilder.andCustomWhere(builder.toString(), spaceId, SpaceType.FLOOR.getIntVal());
 		}
 		else if (BaseSpaceContext.SpaceType.FLOOR.getStringVal().equalsIgnoreCase(spaceType)) {
-			selectBuilder.andCustomWhere("BaseSpace.FLOOR_ID = ? AND BaseSpace.SPACE_TYPE = ?", spaceId, SpaceType.SPACE.getIntVal());
+			StringBuilder builder = new StringBuilder("BaseSpace.FLOOR_ID = ? AND (BaseSpace.SPACE_TYPE = ? ");
+			if(isZOne) {
+				builder.append("OR BaseSpace.SPACE_TYPE = ").append(SpaceType.ZONE.getIntVal());
+			}
+			builder.append(")");
+			selectBuilder.andCustomWhere(builder.toString(), spaceId, SpaceType.SPACE.getIntVal());
+		}
+		else if (BaseSpaceContext.SpaceType.ZONE.getStringVal().equalsIgnoreCase(spaceType)) {
+			selectBuilder.andCustomWhere("BaseSpace.FLOOR_ID = ? AND BaseSpace.SPACE_TYPE = ?", spaceId, SpaceType.ZONE.getIntVal());
 		}
 		List<BaseSpaceContext> spaces = selectBuilder.get();
 		System.out.println(selectBuilder.toString());

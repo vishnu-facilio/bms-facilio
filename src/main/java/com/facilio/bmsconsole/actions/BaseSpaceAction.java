@@ -47,12 +47,19 @@ public class BaseSpaceAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
-	
+	private boolean isZone;
+	public boolean getIsZone() {
+		return isZone;
+	}
+	public void setIsZone(boolean isZone) {
+		this.isZone = isZone;
+	}
 	public String childrenList() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.SPACE_ID, getSpaceId());
 		context.put(FacilioConstants.ContextNames.SPACE_TYPE, getSpaceType());
+		context.put(FacilioConstants.ContextNames.IS_ZONE, getIsZone());
 		
 		Chain getAllSpace = FacilioChainFactory.getBaseSpaceChildrenChain();
 		getAllSpace.execute(context);
