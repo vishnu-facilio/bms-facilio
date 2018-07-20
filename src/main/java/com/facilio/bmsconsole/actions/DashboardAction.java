@@ -3130,6 +3130,9 @@ public class DashboardAction extends ActionSupport {
 			if(!isEnergyDataWithTimeFrame && ((DateTimeUtil.getDayStartTime(1) - 5000) < dateRange.getEndTime() && dateRange.getEndTime() <= DateTimeUtil.getDayStartTime(1)) ) {
 				dateRange.setEndTime(DateTimeUtil.getCurrenTime());
 			}
+			if(module != null && module.getName().equals("dewabill")) {
+				dateRange.setEndTime(dateRange.getEndTime()+1001);
+			}
 			LOGGER.severe("start -- "+dateRange.getStartTime() +" end -- "+dateRange.getEndTime());
 			dateCondition = baseLineContext.getBaseLineCondition(report.getDateFilter().getField(), dateRange);
 			String baseLineStartValue = dateCondition.getValue().substring(0,dateCondition.getValue().indexOf(","));

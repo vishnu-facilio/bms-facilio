@@ -2268,6 +2268,9 @@ public class DashboardUtil {
 				if(module.getName().equals("energydata") && toValue > DateTimeUtil.getCurrenTime()) {
 					toValue = DateTimeUtil.getCurrenTime();
 				}
+				if(module != null && module.getName().equals("dewabill")) {
+					toValue = toValue + 1001;
+				}
 				dateCondition.setValue(fromValue+","+toValue);
 			}
 		}
