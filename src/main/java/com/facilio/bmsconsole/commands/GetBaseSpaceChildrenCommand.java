@@ -45,7 +45,7 @@ public class GetBaseSpaceChildrenCommand implements Command{
 		else if (BaseSpaceContext.SpaceType.BUILDING.getStringVal().equalsIgnoreCase(spaceType)) {
 			StringBuilder builder = new StringBuilder("BaseSpace.BUILDING_ID = ? AND (BaseSpace.SPACE_TYPE = ? ");
 			if(isZOne) {
-				builder.append("OR BaseSpace.SPACE_TYPE = ").append(SpaceType.ZONE.getIntVal());
+				builder.append("OR (BaseSpace.SPACE_TYPE = ").append(SpaceType.ZONE.getIntVal());
 				builder.append(" AND BaseSpace.FLOOR_ID IS NULL)");
 			}
 			builder.append(")");
