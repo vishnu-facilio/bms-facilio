@@ -1,6 +1,7 @@
 
 package com.facilio.bmsconsole.util;
 
+import java.io.Closeable;
 import java.sql.SQLException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -2267,6 +2268,9 @@ public class DashboardUtil {
 				if(module.getName().equals("energydata") && toValue > DateTimeUtil.getCurrenTime()) {
 					toValue = DateTimeUtil.getCurrenTime();
 				}
+				if(module != null && module.getName().equals("dewabill")) {
+					toValue = toValue + 1001;
+				}
 				dateCondition.setValue(fromValue+","+toValue);
 			}
 		}
@@ -2553,6 +2557,7 @@ public class DashboardUtil {
 				long workTime = 0;
 				Stack<Long> startTimeStack = new Stack<>();
 				List<Long> workordersId = new ArrayList<>();
+				Map<Long, UserWorkHourReading> lastAactivity = new HashMap<>();
 				for (Map<String, Object> prop : entry.getValue()) {
 					Long woId = (Long) prop.get("woId");
 					if(!workordersId.contains(woId)) {
@@ -2569,15 +2574,19 @@ public class DashboardUtil {
 								break;
 							case PAUSE:
 							case CLOSE:
-								if (startTimeStack.isEmpty()) {
-									workTime = currentTime - startTime;
-								}
-								else {
-									Long prevTime = startTimeStack.pop();
-									workTime += (currentTime - prevTime);
+								UserWorkHourReading prevActivity = lastAactivity.get((Long) prop.get("woId"));
+								if (prevActivity == null || (prevActivity != UserWorkHourReading.CLOSE && prevActivity != UserWorkHourReading.PAUSE)) {
+									if (startTimeStack.isEmpty()) {
+										workTime = currentTime - startTime;
+									}
+									else {
+										Long prevTime = startTimeStack.pop();
+										workTime += (currentTime - prevTime);
+									}
 								}
 								break;
 						}
+						lastAactivity.put((Long) prop.get("woId"), workHour);
 					}
 				}
 				if (!startTimeStack.isEmpty()) {

@@ -4016,6 +4016,111 @@ public class FieldFactory {
 		
 		return fields;
 	}
+	
+	public static List<FacilioField> getReport1FolderFields() {
+		FacilioModule module = ModuleFactory.getReportFolderModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getModuleIdField(module));
+		fields.add(getField("parentFolderId", "PARENT_FOLDER_ID", module, FieldType.NUMBER));
+		fields.add(getField("name", "NAME", module, FieldType.STRING));
+		
+		return fields;
+	}
+	public static List<FacilioField> getReport1Fields() {
+		FacilioModule module = ModuleFactory.getReportModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getSiteIdField(module));
+		fields.add(getField("reportFolderId", "REPORT_FOLDER_ID", module, FieldType.NUMBER));
+		fields.add(getField("name", "NAME", module, FieldType.STRING));
+		fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
+		fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.NUMBER));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getReportDataPointFields() {
+		FacilioModule module = ModuleFactory.getReportDataPointModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getModuleIdField(module));
+		fields.add(getField("reportId", "REPORT_ID", module, FieldType.NUMBER));
+		fields.add(getField("name", "NAME", module, FieldType.STRING));
+		fields.add(getField("moduleName", "MODULE_NAME", module, FieldType.STRING));
+		fields.add(getField("xAxisField", "X_AXIS_FIELD", module, FieldType.NUMBER));
+		fields.add(getField("xAxisFieldName", "X_AXIS", module, FieldType.STRING));
+		fields.add(getField("xAxisAggr", "X_AXIS_AGGREGATE_FUNCTION", module, FieldType.NUMBER));
+		fields.add(getField("xAxisLabel", "X_AXIS_LABEL", module, FieldType.STRING));
+		fields.add(getField("xAxisUnit", "X_AXIS_UNIT", module, FieldType.NUMBER));
+		fields.add(getField("yAxisField", "Y_AXIS_FIELD", module, FieldType.NUMBER));
+		fields.add(getField("yAxisFieldName", "Y_AXIS", module, FieldType.STRING));
+		fields.add(getField("yAxisAggr", "Y_AXIS_AGGREGATE_FUNCTION", module, FieldType.NUMBER));
+		fields.add(getField("yAxisLabel", "Y_AXIS_LABEL", module, FieldType.STRING));
+		fields.add(getField("yAxisUnit", "Y_AXIS_UNIT", module, FieldType.NUMBER));
+		fields.add(getField("limit", "FETCH_LIMIT", module, FieldType.NUMBER));
+		fields.add(getField("orderBy", "ORDER_BY", module, FieldType.STRING));
+		fields.add(getField("orderByFunc", "ORDER_BY_FUNCTION", module, FieldType.NUMBER));
+		fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.NUMBER));
+		fields.add(getField("transformCriteriaId", "TRANSFORM_CRITERIA_ID", module, FieldType.NUMBER));
+		fields.add(getField("transformWorkflowId", "TRANSFORM_WORKFLOW_ID", module, FieldType.NUMBER));
+		
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getReportXCriteriaFields() {
+		FacilioModule module = ModuleFactory.getReportXCriteriaModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getModuleIdField(module));
+		fields.add(getField("reportId", "REPORT_ID", module, FieldType.NUMBER));
+		fields.add(getField("moduleName", "MODULE_NAME", module, FieldType.STRING));
+		fields.add(getField("xFieldId", "X_FIELD_ID", module, FieldType.NUMBER));
+		fields.add(getField("xFieldName", "X_FIELD_NAME", module, FieldType.STRING));
+		fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.NUMBER));
+		fields.add(getField("transformWorkflowId", "WORKFLOW_ID", module, FieldType.NUMBER));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getReportMetaFields() {
+		FacilioModule module = ModuleFactory.getReportMetaModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getField("reportId", "REPORT_ID", module, FieldType.NUMBER));
+		fields.add(getField("chartMetaString", "CHART_META", module, FieldType.STRING));
+		fields.add(getField("tabularMetaString", "TABULAR_META", module, FieldType.STRING));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getReportBaselineFields() {
+		FacilioModule module = ModuleFactory.getReportBaselineModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getField("baseLineId", "BASE_LINE_ID", module, FieldType.NUMBER));
+		fields.add(getField("reportDataPointId", "REPORT_DATA_POINT_ID", module, FieldType.NUMBER));
+		fields.add(getField("adjustType", "ADJUST_TYPE", module, FieldType.NUMBER));
+		
+		return fields;
+	}
+	public static List<FacilioField> getReportBenchmarkFields() {
+		FacilioModule module = ModuleFactory.getReportBenchmarkModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getField("benchmark", "BENCHMARK_ID", module, FieldType.NUMBER));
+		fields.add(getField("reportDataPointId", "REPORT_DATA_POINT_ID", module, FieldType.NUMBER));
+		
+		return fields;
+	}
 
 	public static FacilioField getField(String name, String colName, FacilioModule module, FieldType type) {
 		return getField(name, null, colName, module, type);
