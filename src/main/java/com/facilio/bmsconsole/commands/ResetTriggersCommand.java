@@ -143,7 +143,7 @@ public class ResetTriggersCommand implements Command {
 	}
 	
 	private long getLatestReading(long readingRuleId) throws Exception {
-		ReadingRuleContext rule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(readingRuleId);
+		ReadingRuleContext rule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(readingRuleId, true);
 		WorkflowEventContext event = rule.getEvent();
 		
 		Criteria criteria = rule.getCriteria();
