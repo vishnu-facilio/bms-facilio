@@ -1,3 +1,4 @@
+<%@page import="java.net.Inet4Address"%>
 <%@taglib uri="/struts-tags" prefix="s" %>
 <%@taglib uri="facilio-tags" prefix="f" %>
 <%@page import="java.util.Properties, org.apache.struts2.ServletActionContext" %>
@@ -73,11 +74,33 @@
          </ul>
         
       <div class="nav  sidebar-footer-btn  ">
-        <div class="col-lg-12 col-centered" style="margin-bottom:30px">
-		<a href="#" data-toggle="tooltip" data-placement="bottom" title="Build Version" > Build Date: <%= buildinfo.get("build.date") %> </a>
-		<br> <a href="#" data-toggle="tooltip" data-placement="bottom" title="Build Version" > Version: <%= buildinfo.get("version") %></a>
-			
-        </div>
+      <div class="col-lg-12 col-centered build-details" style="margin:10px; font-size: 12px;">
+	    <table>
+	        <tbody><tr>
+	            <td>
+	                Build Date:
+	            </td>
+	            <td>
+	                <%= buildinfo.get("build.date") %>
+	            </td>
+	        </tr>
+	        <tr>
+	            <td>
+	                Version:
+	            </td>
+	            <td>
+	                <%= buildinfo.get("version") %>
+	            </td>
+	        </tr>
+	        <tr>
+	            <td>
+	                Serving IP:
+	            </td>
+	            <td>
+	                <%= Inet4Address.getLocalHost().getHostAddress() %>
+	            </td>
+	        </tr></tbody></table>
+	      </div>
         </div>
     </div>
     
@@ -93,7 +116,13 @@ $(document).ready(function(){
 });
 
 </script>
-        
-  
+       
 
 </div>
+<style>
+  .build-details table tr td {
+    color: #fff;
+    padding: 2px;
+    text-align: left;
+}
+  </style>
