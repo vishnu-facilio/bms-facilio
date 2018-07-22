@@ -4025,7 +4025,7 @@ public class FieldFactory {
 		fields.add(getOrgIdField(module));
 		fields.add(getSiteIdField(module));
 		fields.add(getModuleIdField(module));
-		fields.add(getField("parentFolderId", "PARENT_FOLDER_ID", module, FieldType.NUMBER));
+		fields.add(getField("parentFolderId", "PARENT_FOLDER_ID", module, FieldType.LOOKUP));
 		fields.add(getField("name", "NAME", module, FieldType.STRING));
 		
 		return fields;
@@ -4037,7 +4037,7 @@ public class FieldFactory {
 		fields.add(getIdField(module));
 		fields.add(getOrgIdField(module));
 		fields.add(getSiteIdField(module));
-		fields.add(getField("reportFolderId", "REPORT_FOLDER_ID", module, FieldType.NUMBER));
+		fields.add(getField("reportFolderId", "REPORT_FOLDER_ID", module, FieldType.LOOKUP));
 		fields.add(getField("name", "NAME", module, FieldType.STRING));
 		fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
 		fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.NUMBER));
@@ -4057,13 +4057,13 @@ public class FieldFactory {
 		fields.add(getNameField(module));
 		fields.add(getField("moduleName", "MODULE_NAME", module, FieldType.STRING));
 		fields.add(getModuleIdField(module));
-		fields.add(getField("reportId", "REPORT_ID", module, FieldType.NUMBER));
-		fields.add(getField("xAxisFieldId", "X_AXIS_FIELD", module, FieldType.NUMBER));
+		fields.add(getField("reportId", "REPORT_ID", module, FieldType.LOOKUP));
+		fields.add(getField("xAxisFieldId", "X_AXIS_FIELD", module, FieldType.LOOKUP));
 		fields.add(getField("xAxisFieldName", "X_AXIS", module, FieldType.STRING));
 		fields.add(getField("xAxisLabel", "X_AXIS_LABEL", module, FieldType.STRING));
 		fields.add(getField("xAxisAggr", "X_AXIS_AGGREGATE_FUNCTION", module, FieldType.NUMBER));
 		fields.add(getField("xAxisUnit", "X_AXIS_UNIT", module, FieldType.NUMBER));
-		fields.add(getField("yAxisFieldId", "Y_AXIS_FIELD", module, FieldType.NUMBER));
+		fields.add(getField("yAxisFieldId", "Y_AXIS_FIELD", module, FieldType.LOOKUP));
 		fields.add(getField("yAxisFieldName", "Y_AXIS", module, FieldType.STRING));
 		fields.add(getField("yAxisLabel", "Y_AXIS_LABEL", module, FieldType.STRING));
 		fields.add(getField("yAxisAggr", "Y_AXIS_AGGREGATE_FUNCTION", module, FieldType.NUMBER));
@@ -4071,9 +4071,9 @@ public class FieldFactory {
 		fields.add(getField("limit", "FETCH_LIMIT", module, FieldType.NUMBER));
 		fields.add(getField("orderBy", "ORDER_BY", module, FieldType.STRING));
 		fields.add(getField("orderByFunc", "ORDER_BY_FUNCTION", module, FieldType.NUMBER));
-		fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.NUMBER));
-		fields.add(getField("transformCriteriaId", "TRANSFORM_CRITERIA_ID", module, FieldType.NUMBER));
-		fields.add(getField("transformWorkflowId", "TRANSFORM_WORKFLOW_ID", module, FieldType.NUMBER));
+		fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.LOOKUP));
+		fields.add(getField("transformCriteriaId", "TRANSFORM_CRITERIA_ID", module, FieldType.LOOKUP));
+		fields.add(getField("transformWorkflowId", "TRANSFORM_WORKFLOW_ID", module, FieldType.LOOKUP));
 		
 		
 		return fields;
@@ -4087,7 +4087,7 @@ public class FieldFactory {
 		fields.add(getOrgIdField(module));
 		fields.add(getSiteIdField(module));
 		fields.add(getModuleIdField(module));
-		fields.add(getField("reportId", "REPORT_ID", module, FieldType.NUMBER));
+		fields.add(getField("reportId", "REPORT_ID", module, FieldType.LOOKUP));
 		fields.add(getField("moduleName", "MODULE_NAME", module, FieldType.STRING));
 		fields.add(getField("xFieldId", "X_FIELD_ID", module, FieldType.NUMBER));
 		fields.add(getField("xFieldName", "X_FIELD_NAME", module, FieldType.STRING));
@@ -4104,8 +4104,8 @@ public class FieldFactory {
 		fields.add(getIdField(module));
 		fields.add(getOrgIdField(module));
 		fields.add(getSiteIdField(module));
-		fields.add(getField("baseLineId", "BASE_LINE_ID", module, FieldType.NUMBER));
-		fields.add(getField("reportDataPointId", "REPORT_DATA_POINT_ID", module, FieldType.NUMBER));
+		fields.add(getField("baseLineId", "BASE_LINE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("reportDataPointId", "REPORT_DATA_POINT_ID", module, FieldType.LOOKUP));
 		fields.add(getField("adjustType", "ADJUST_TYPE", module, FieldType.NUMBER));
 		
 		return fields;
@@ -4117,8 +4117,8 @@ public class FieldFactory {
 		fields.add(getIdField(module));
 		fields.add(getOrgIdField(module));
 		fields.add(getSiteIdField(module));
-		fields.add(getField("benchmark", "BENCHMARK_ID", module, FieldType.NUMBER));
-		fields.add(getField("reportDataPointId", "REPORT_DATA_POINT_ID", module, FieldType.NUMBER));
+		fields.add(getField("benchmarkId", "BENCHMARK_ID", module, FieldType.LOOKUP));
+		fields.add(getField("reportDataPointId", "REPORT_DATA_POINT_ID", module, FieldType.LOOKUP));
 		
 		return fields;
 	}
