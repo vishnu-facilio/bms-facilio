@@ -4,9 +4,9 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.chain.Filter;
 import org.apache.log4j.LogManager;
 
-public class TransactionExceptionHandler implements Filter{
+public class FacilioChainExceptionHandler implements Filter{
 
-	private static org.apache.log4j.Logger log = LogManager.getLogger(TransactionExceptionHandler.class.getName());
+	private static org.apache.log4j.Logger log = LogManager.getLogger(FacilioChainExceptionHandler.class.getName());
 
 	@Override
 	public boolean execute(Context context) throws Exception {

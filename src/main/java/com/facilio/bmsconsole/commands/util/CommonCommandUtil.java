@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
+import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
@@ -28,6 +29,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.FacilioChainExceptionHandler;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -521,4 +523,9 @@ public class CommonCommandUtil {
         }
     	return Pair.of(min, max);
     }
+    
+    public static void addCleanUpCommand(Chain c)
+	{
+		c.addCommand(new FacilioChainExceptionHandler());
+	}
 }

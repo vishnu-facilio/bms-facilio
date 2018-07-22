@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.commands;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.impl.ChainBase;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+
 public class ReportsChainFactory {
 	
 	private static void addReportCommands(Chain c) {
@@ -23,21 +25,21 @@ public class ReportsChainFactory {
 		Chain c = new ChainBase();
 		addReportCommands(c);
 		addSummaryReportCommand(c);
-		addCleanUpCommand(c);
+		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	public static Chain getNumericReportChain() {
 		Chain c = new ChainBase();
 		addReportCommands(c);
 		addSummaryReportCommand(c);
-		addCleanUpCommand(c);
+		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	public static Chain getTabularReportChain() {
 		Chain c = new ChainBase();
 		addReportCommands(c);
 		addSummaryReportCommand(c);
-		addCleanUpCommand(c);
+		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	public static Chain getTopNTabularReportChain() {
@@ -45,7 +47,7 @@ public class ReportsChainFactory {
 		addTopNReportCommand(c);
 		addReportCommands(c);
 		addSummaryReportCommand(c);
-		addCleanUpCommand(c);
+		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	public static Chain getTopNSummaryReportChain() {
@@ -53,7 +55,7 @@ public class ReportsChainFactory {
 		addTopNReportCommand(c);
 		addReportCommands(c);
 		addSummaryReportCommand(c);
-		addCleanUpCommand(c);
+		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	public static Chain getWorkOrderReportChain() {
@@ -63,7 +65,7 @@ public class ReportsChainFactory {
 		c.addCommand(new SetJoinsCommand());
 		c.addCommand(new SetOrgIdConditionCommand());
 		c.addCommand(new LoadReportTypeChainCommand());
-		addCleanUpCommand(c);
+		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	public static Chain getWorkOrderRequestReportChain() {
@@ -73,7 +75,7 @@ public class ReportsChainFactory {
 		c.addCommand(new SetJoinsCommand());
 		c.addCommand(new SetOrgIdConditionCommand());
 		c.addCommand(new LoadReportTypeChainCommand());
-		addCleanUpCommand(c);
+		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
@@ -82,7 +84,7 @@ public class ReportsChainFactory {
 //		c.addCommand(new LoadViewCommand());
 //		c.addCommand(new GetReportUnderlyingDataCommand());
 		c.addCommand(new SendReportMailCommand());
-		addCleanUpCommand(c);
+		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
@@ -90,7 +92,7 @@ public class ReportsChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(new LoadViewCommand());
 		c.addCommand(new GetReportUnderlyingDataCommand());
-		addCleanUpCommand(c);
+		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
@@ -98,21 +100,21 @@ public class ReportsChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(new AddTemplateCommand());
 		c.addCommand(new ScheduleReportCommand());
-		addCleanUpCommand(c);
+		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain getScheduledReportsChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new ReportScheduledListCommand());
-		addCleanUpCommand(c);
+		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain deleteScheduledReportsChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new DeleteScheduledReportsCommand());
-		addCleanUpCommand(c);
+		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
@@ -121,13 +123,8 @@ public class ReportsChainFactory {
 		c.addCommand(new AddTemplateCommand());
 		c.addCommand(new DeleteScheduledReportsCommand());
 		c.addCommand(new ScheduleReportCommand());
-		addCleanUpCommand(c);
+		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 
-	private static void addCleanUpCommand(Chain c)
-	{
-		c.addCommand(new TransactionExceptionHandler());
-	}
-	
 }
