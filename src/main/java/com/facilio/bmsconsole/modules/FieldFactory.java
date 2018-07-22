@@ -4049,19 +4049,21 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 		
 		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getSiteIdField(module));
+		fields.add(getNameField(module));
+		fields.add(getField("moduleName", "MODULE_NAME", module, FieldType.STRING));
 		fields.add(getModuleIdField(module));
 		fields.add(getField("reportId", "REPORT_ID", module, FieldType.NUMBER));
-		fields.add(getField("name", "NAME", module, FieldType.STRING));
-		fields.add(getField("moduleName", "MODULE_NAME", module, FieldType.STRING));
-		fields.add(getField("xAxisField", "X_AXIS_FIELD", module, FieldType.NUMBER));
+		fields.add(getField("xAxisFieldId", "X_AXIS_FIELD", module, FieldType.NUMBER));
 		fields.add(getField("xAxisFieldName", "X_AXIS", module, FieldType.STRING));
-		fields.add(getField("xAxisAggr", "X_AXIS_AGGREGATE_FUNCTION", module, FieldType.NUMBER));
 		fields.add(getField("xAxisLabel", "X_AXIS_LABEL", module, FieldType.STRING));
+		fields.add(getField("xAxisAggr", "X_AXIS_AGGREGATE_FUNCTION", module, FieldType.NUMBER));
 		fields.add(getField("xAxisUnit", "X_AXIS_UNIT", module, FieldType.NUMBER));
-		fields.add(getField("yAxisField", "Y_AXIS_FIELD", module, FieldType.NUMBER));
+		fields.add(getField("yAxisFieldId", "Y_AXIS_FIELD", module, FieldType.NUMBER));
 		fields.add(getField("yAxisFieldName", "Y_AXIS", module, FieldType.STRING));
-		fields.add(getField("yAxisAggr", "Y_AXIS_AGGREGATE_FUNCTION", module, FieldType.NUMBER));
 		fields.add(getField("yAxisLabel", "Y_AXIS_LABEL", module, FieldType.STRING));
+		fields.add(getField("yAxisAggr", "Y_AXIS_AGGREGATE_FUNCTION", module, FieldType.NUMBER));
 		fields.add(getField("yAxisUnit", "Y_AXIS_UNIT", module, FieldType.NUMBER));
 		fields.add(getField("limit", "FETCH_LIMIT", module, FieldType.NUMBER));
 		fields.add(getField("orderBy", "ORDER_BY", module, FieldType.STRING));
