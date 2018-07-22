@@ -18,7 +18,7 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
-public class GetAllAssetsWithReadingsCommand implements Command {
+public class GetAssetListCommand implements Command {
 	
 	@SuppressWarnings("unchecked")
 	@Override
@@ -34,6 +34,7 @@ public class GetAllAssetsWithReadingsCommand implements Command {
 															.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName))
 															.select(fields)
 															;
+		
 		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
 		if (orderBy != null && !orderBy.isEmpty()) {
 			builder.orderBy(orderBy);
@@ -83,9 +84,8 @@ public class GetAllAssetsWithReadingsCommand implements Command {
 			builder.limit(perPage);
 		}
 		
-		boolean withReadings = (Boolean) context.get(FacilioConstants.ContextNames.WITH_READINGS);
-		
-		if (withReadings) {
+		Boolean withReadings = (Boolean) context.get(FacilioConstants.ContextNames.WITH_READINGS);
+		if (withReadings != null && withReadings) {
 			builder.andCustomWhere("exists(select 1 from Reading_Data_Meta r where r.ORGID=? and r.RESOURCE_ID=Assets.ID and r.VALUE <> -1)", AccountUtil.getCurrentOrg().getId());
 		}
 		

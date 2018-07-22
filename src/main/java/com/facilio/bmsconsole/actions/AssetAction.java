@@ -43,37 +43,6 @@ public class AssetAction extends ActionSupport {
 	private Boolean withReadings;
 	
 	
-	
-	public String withReadings() throws Exception {
-		FacilioContext context = new FacilioContext();
- 		context.put(FacilioConstants.ContextNames.CV_NAME, "all");
- 		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Assets.LOCAL_ID desc");
- 		context.put(FacilioConstants.ContextNames.WITH_READINGS, this.getWithReadings());
- 		if(getFilters() != null)
- 		{	
-	 		JSONParser parser = new JSONParser();
-	 		JSONObject json = (JSONObject) parser.parse(getFilters());
-	 		context.put(FacilioConstants.ContextNames.FILTERS, json);
- 		}
- 		if (getSearch() != null) {
- 			JSONObject searchObj = new JSONObject();
- 			searchObj.put("fields", "asset.name");
- 			searchObj.put("query", getSearch());
-	 		context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
- 		}
- 		
- 		JSONObject pagination = new JSONObject();
- 		pagination.put("page", getPage());
- 		pagination.put("perPage", getPerPage());
- 		context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
- 		
- 		Chain assetList = FacilioChainFactory.getAssetWithReadingsListChain();
- 		assetList.execute(context);
- 		assets = (List<AssetContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
-		
-		return SUCCESS;
-	}
-	
 	public String addAsset() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
@@ -152,11 +121,14 @@ public class AssetAction extends ActionSupport {
  		}
  		
  		context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+ 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, categoryId);
+ 		
+ 		context.put(FacilioConstants.ContextNames.WITH_READINGS, this.getWithReadings());
  		
  		Chain assetList = FacilioChainFactory.getAssetListChain();
  		assetList.execute(context);
  		assets = (List<AssetContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
-		
+ 		
 		return SUCCESS;
 	}
 	
@@ -176,6 +148,14 @@ public class AssetAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	private long categoryId;
+	public long getCategoryId() {
+		return categoryId;
+	}
+	public void setCategoryId(long categoryId) {
+		this.categoryId = categoryId;
+	}
+
 	private JSONObject reports;
 	public JSONObject getReports() {
 		return reports;

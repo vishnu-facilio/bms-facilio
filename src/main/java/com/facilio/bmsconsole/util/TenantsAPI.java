@@ -57,7 +57,7 @@ public class TenantsAPI {
 		return getTenantsFromProps(selectBuilder.get());
 	}
 	
-	public static TenantContext getTenant(long id) throws Exception {
+	public static TenantContext getTenant(long id, Boolean...fetchTenantOnly) throws Exception {
 		
 		if (id <= 0) {
 			return null;
@@ -69,27 +69,34 @@ public class TenantsAPI {
 														.table(module.getTableName())
 														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getIdCondition(id, module));
-		List<TenantContext> tenants = getTenantsFromProps(selectBuilder.get());
+		List<TenantContext> tenants = getTenantsFromProps(selectBuilder.get(), fetchTenantOnly);
 		if (tenants != null && !tenants.isEmpty()) {
 			return tenants.get(0);
 		}
 		return null;
 	}
 	
-	private static List<TenantContext> getTenantsFromProps(List<Map<String, Object>> props) throws Exception {
+	private static List<TenantContext> getTenantsFromProps(List<Map<String, Object>> props, Boolean...fetchTenantOnly) throws Exception {
 		if (props != null && !props.isEmpty()) {
 			List<TenantContext> tenants = new ArrayList<>();
 			List<Long> ids = new ArrayList<>();
 			List<Long> spaceIds = new ArrayList<>();
+			boolean fetchExtendedProps = fetchTenantOnly.length == 0 || fetchTenantOnly[0];
 			for (Map<String, Object> prop : props) {
 				TenantContext tenant = FieldUtil.getAsBeanFromMap(prop, TenantContext.class);
 				tenants.add(tenant);
+				if (!fetchExtendedProps) {
+					continue;
+				}
 				ids.add(tenant.getId());
 				spaceIds.add(tenant.getSpaceId());
 				if (tenant.getLogoId()  != -1) {
 					FileStore fs = FileStoreFactory.getInstance().getFileStore();
 					tenant.setLogoUrl(fs.getPrivateUrl(tenant.getLogoId()));
 				}
+			}
+			if (!fetchExtendedProps) {
+				return tenants;
 			}
 			Map<Long, List<UtilityAsset>> utilMap = getUtilityAssets(ids);
 			Map<Long, BaseSpaceContext> spaceMap = SpaceAPI.getBaseSpaceMap(spaceIds);
@@ -182,6 +189,13 @@ public class TenantsAPI {
 		}
 	}
 	
+	private static void deleteTenantLogo(long logoId) throws Exception {
+		if (logoId != -1) {
+			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			fs.deleteFile(logoId);
+		}
+	}
+	
 	public static int updateTenant (TenantContext tenant) throws Exception {
 		if (tenant.getId() == -1) {
 			throw new IllegalArgumentException("Invalid ID during updation of tenant");
@@ -192,13 +206,25 @@ public class TenantsAPI {
 			addUtilityMapping(tenant);
 		}
 		
+		TenantContext oldTenant = null;
+		if (tenant.getTenantLogo() != null) {
+			addTenantLogo(tenant);
+			oldTenant = getTenant(tenant.getId(), true);
+		}
+		
 		FacilioModule module = ModuleFactory.getTenantsModule();
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 														.table(module.getTableName())
 														.fields(FieldFactory.getTenantsFields())
 														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getIdCondition(tenant.getId(), module));
-		return updateBuilder.update(FieldUtil.getAsProperties(tenant));
+		int count = updateBuilder.update(FieldUtil.getAsProperties(tenant));
+		
+		if (oldTenant != null) {
+			deleteTenantLogo(oldTenant.getLogoId());
+		}
+		
+		return count;
 	}
 	
 	private static int deleteUtilityMapping(TenantContext tenant) throws SQLException {
@@ -220,12 +246,16 @@ public class TenantsAPI {
 			throw new IllegalArgumentException("Invalid ID during deletion of tenant");
 		}
 		
+		TenantContext oldTenant = getTenant(id, true);
+
 		FacilioModule module = ModuleFactory.getTenantsModule();
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 														.table(module.getTableName())
 														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getIdCondition(id, module));
-		return deleteBuilder.delete();
+		int count = deleteBuilder.delete();
+		deleteTenantLogo(oldTenant.getLogoId());
+		return count;
 	}
 	
 	public static List<RateCardContext> getAllRateCards() throws Exception {
@@ -298,7 +328,7 @@ public class TenantsAPI {
 				services.add(service);
 				
 				if (!workflowIds.isEmpty()) {
-					Map<Long, WorkflowContext> workflowMap = WorkflowUtil.getWorkflowsAsMap(workflowIds);
+					Map<Long, WorkflowContext> workflowMap = WorkflowUtil.getWorkflowsAsMap(workflowIds, true);
 					for (List<RateCardServiceContext> serviceList : serviceMap.values()) {
 						for (RateCardServiceContext serviceObj : serviceList) {
 							if (serviceObj.getWorkflowId() != -1) {

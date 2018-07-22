@@ -102,6 +102,19 @@ public class GenerateCriteriaFromFilterCommand implements Command {
 					}
 				}
 				condition.setValue(values.toString());
+				if (fieldJson.containsKey("orFilters")) {	// To have or condition for different fields..eg: (space=1 OR purposeSpace=1)
+					JSONArray orFilters = (JSONArray) fieldJson.get("orFilters");
+					for(int i=0;i<orFilters.size();i++) {
+						JSONObject fieldJsonObj = (JSONObject) orFilters.get(i);
+						if (!fieldJsonObj.containsKey("operator")) {
+							fieldJsonObj.put("operator", operatorName);
+						}
+						if (!fieldJsonObj.containsKey("value")) {
+							fieldJsonObj.put("value", value);
+						}
+						setConditions(moduleName, (String)fieldJsonObj.get("field"), fieldJsonObj, conditionList);
+					}
+				}
 			}
 			conditionList.add(condition);
 		}

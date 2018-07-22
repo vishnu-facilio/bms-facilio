@@ -68,12 +68,22 @@ public class TenantAction extends ActionSupport {
 	}
 	
 	public String addTenant() throws Exception {
-		TenantsAPI.addTenant(tenant);
+		
+		FacilioContext context = new FacilioContext();
+		context.put(TenantsAPI.TENANT_CONTEXT, tenant);
+		Chain newTenant = FacilioChainFactory.addTenantChain();
+		newTenant.execute(context);
+
 		return SUCCESS;
 	}
 	
 	public String updateTenant() throws Exception {
-		TenantsAPI.updateTenant(tenant);
+
+		FacilioContext context = new FacilioContext();
+		context.put(TenantsAPI.TENANT_CONTEXT, tenant);
+		Chain updateTenant = FacilioChainFactory.updateTenantChain();
+		updateTenant.execute(context);
+		
 		result = SUCCESS;
 		return SUCCESS;
 	}
@@ -95,12 +105,19 @@ public class TenantAction extends ActionSupport {
 	}
 	
 	public String addRateCard() throws Exception {
-		TenantsAPI.addRateCard(rateCard);
+		FacilioContext context = new FacilioContext();
+		context.put(TenantsAPI.RATECARD_CONTEXT, rateCard);
+		Chain updateTenant = FacilioChainFactory.addRateCardChain();
+		updateTenant.execute(context);
 		return SUCCESS;
 	}
 	
 	public String updateRateCard() throws Exception {
-		TenantsAPI.updateRateCard(rateCard);
+		FacilioContext context = new FacilioContext();
+		context.put(TenantsAPI.RATECARD_CONTEXT, rateCard);
+		Chain updateTenant = FacilioChainFactory.updateRateCardChain();
+		updateTenant.execute(context);
+		
 		result = SUCCESS;
 		return SUCCESS;
 	}

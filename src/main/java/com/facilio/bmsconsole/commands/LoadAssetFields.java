@@ -12,7 +12,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
-public class AddAssetField implements Command {
+public class LoadAssetFields implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -22,9 +22,11 @@ public class AddAssetField implements Command {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
 		List<FacilioField> fields = new ArrayList(modBean.getAllFields(moduleName));
-		List<FacilioField> assetField = modBean.getAllCustomFields("asset");
-		if (assetField != null) {
-			fields.addAll(modBean.getAllCustomFields("asset"));
+		if (!moduleName.equals(FacilioConstants.ContextNames.ASSET)) {
+			List<FacilioField> customFields = modBean.getAllCustomFields("asset");
+			if (customFields != null) {
+				fields.addAll(modBean.getAllCustomFields("asset"));
+			}
 		}
 		context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, fields);
 
