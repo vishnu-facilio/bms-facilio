@@ -4023,6 +4023,7 @@ public class FieldFactory {
 		
 		fields.add(getIdField(module));
 		fields.add(getOrgIdField(module));
+		fields.add(getSiteIdField(module));
 		fields.add(getModuleIdField(module));
 		fields.add(getField("parentFolderId", "PARENT_FOLDER_ID", module, FieldType.NUMBER));
 		fields.add(getField("name", "NAME", module, FieldType.STRING));
@@ -4083,6 +4084,8 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 		
 		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getSiteIdField(module));
 		fields.add(getModuleIdField(module));
 		fields.add(getField("reportId", "REPORT_ID", module, FieldType.NUMBER));
 		fields.add(getField("moduleName", "MODULE_NAME", module, FieldType.STRING));
@@ -4098,6 +4101,9 @@ public class FieldFactory {
 		FacilioModule module = ModuleFactory.getReportBaselineModule();
 		List<FacilioField> fields = new ArrayList<>();
 		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getSiteIdField(module));
 		fields.add(getField("baseLineId", "BASE_LINE_ID", module, FieldType.NUMBER));
 		fields.add(getField("reportDataPointId", "REPORT_DATA_POINT_ID", module, FieldType.NUMBER));
 		fields.add(getField("adjustType", "ADJUST_TYPE", module, FieldType.NUMBER));
@@ -4108,6 +4114,9 @@ public class FieldFactory {
 		FacilioModule module = ModuleFactory.getReportBenchmarkModule();
 		List<FacilioField> fields = new ArrayList<>();
 		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getSiteIdField(module));
 		fields.add(getField("benchmark", "BENCHMARK_ID", module, FieldType.NUMBER));
 		fields.add(getField("reportDataPointId", "REPORT_DATA_POINT_ID", module, FieldType.NUMBER));
 		
