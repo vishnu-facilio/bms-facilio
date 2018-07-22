@@ -26,22 +26,6 @@ public class ReportContext {
 		this.siteId = siteId;
 	}
 	
-	private long reportFolderId = -1;
-	public long getReportFolderId() {
-		return reportFolderId;
-	}
-	public void setReportFolderId(long reportFolderId) {
-		this.reportFolderId = reportFolderId;
-	}
-	
-	private long workflowId = -1;
-	public long getWorkflowId() {
-		return workflowId;
-	}
-	public void setWorkflowId(long workflowId) {
-		this.workflowId = workflowId;
-	}
-	
 	private String name;
 	public String getName() {
 		return name;
@@ -58,5 +42,35 @@ public class ReportContext {
 		this.description = description;
 	}
 	
+	private long reportFolderId = -1;
+	public long getReportFolderId() {
+		return reportFolderId;
+	}
+	public void setReportFolderId(long reportFolderId) {
+		this.reportFolderId = reportFolderId;
+	}
 	
+	private long workflowId = -1;
+	public long getWorkflowId() {
+		return workflowId;
+	}
+	public void setWorkflowId(long workflowId) {
+		this.workflowId = workflowId;
+	}
+	
+	private String tabularState;
+	public String getTabularState() {
+		return tabularState;
+	}
+	public void setTabularState(String tabularState) {
+		this.tabularState = tabularState;
+	}
+	
+	private String chartState;
+	public String getChartState() {
+		return chartState;
+	}
+	public void setChartState(String chartState) {
+		this.chartState = chartState;
+	}
 }

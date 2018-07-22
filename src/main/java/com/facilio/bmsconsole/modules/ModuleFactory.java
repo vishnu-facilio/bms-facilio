@@ -1179,14 +1179,6 @@ public class ModuleFactory {
 		return costAssets;
 	}
 	
-	public static FacilioModule getReportMetaModule() {
-		FacilioModule costAssets = new FacilioModule();
-		costAssets.setName("ReportMeta");
-		costAssets.setDisplayName("Report Meta");
-		costAssets.setTableName("Report_Meta");
-		return costAssets;
-	}
-	
 	public static FacilioModule getReportBaselineModule() {
 		FacilioModule costAssets = new FacilioModule();
 		costAssets.setName("ReportBaseLineRel");

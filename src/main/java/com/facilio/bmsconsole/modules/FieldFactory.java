@@ -4040,6 +4040,8 @@ public class FieldFactory {
 		fields.add(getField("name", "NAME", module, FieldType.STRING));
 		fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
 		fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.NUMBER));
+		fields.add(getField("chartState", "CHART_STATE", module, FieldType.STRING));
+		fields.add(getField("tabularState", "TABULAR_STATE", module, FieldType.STRING));
 		
 		return fields;
 	}
@@ -4088,18 +4090,6 @@ public class FieldFactory {
 		fields.add(getField("xFieldName", "X_FIELD_NAME", module, FieldType.STRING));
 		fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.NUMBER));
 		fields.add(getField("transformWorkflowId", "WORKFLOW_ID", module, FieldType.NUMBER));
-		
-		return fields;
-	}
-	
-	public static List<FacilioField> getReportMetaFields() {
-		FacilioModule module = ModuleFactory.getReportMetaModule();
-		List<FacilioField> fields = new ArrayList<>();
-		
-		fields.add(getIdField(module));
-		fields.add(getField("reportId", "REPORT_ID", module, FieldType.NUMBER));
-		fields.add(getField("chartMetaString", "CHART_META", module, FieldType.STRING));
-		fields.add(getField("tabularMetaString", "TABULAR_META", module, FieldType.STRING));
 		
 		return fields;
 	}
