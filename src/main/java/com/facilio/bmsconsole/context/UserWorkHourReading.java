@@ -4,8 +4,6 @@ public enum UserWorkHourReading {
 	START,
 	PAUSE,
 	RESUME,
-	SHIFT_PAUSE,
-	SHIFT_RESUME,
 	CLOSE
 	;
 	
