@@ -2581,7 +2581,9 @@ public class DashboardUtil {
 									}
 									else {
 										Long prevTime = startTimeStack.pop();
-										workTime += (currentTime - prevTime);
+										if (startTimeStack.isEmpty()) { //Calculate time only for the longest WO. e.g : 1 1 6 6
+											workTime += (currentTime - prevTime);
+										}
 									}
 								}
 								break;
