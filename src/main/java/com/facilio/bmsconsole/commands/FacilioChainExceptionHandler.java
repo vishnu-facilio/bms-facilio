@@ -11,7 +11,7 @@ public class FacilioChainExceptionHandler implements Filter{
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		return true;
+		return false;
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class FacilioChainExceptionHandler implements Filter{
 			log.info("Exception occurred ", e);
 		}
 		
-		return true;
+		return false;
 	}
 
 }

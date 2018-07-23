@@ -72,27 +72,6 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(new LoadMainFieldCommand());
 		c.addCommand(new GetPickListCommand());
-	//	CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
-	private static Chain getNewTicketChain() {
-		Chain c = new ChainBase();
-		c.addCommand(SetTableNamesCommand.getForTicket());
-		c.addCommand(new LoadModuleNameCommand());
-		c.addCommand(new LoadAllFieldsCommand());
-//		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
-	private static Chain getAddTicketChain() {
-		Chain c = new TransactionChain();
-		c.addCommand(new ValidateWorkOrderFieldsCommand());
-		c.addCommand(SetTableNamesCommand.getForTicket());
-		c.addCommand(new LoadAllFieldsCommand());
-		c.addCommand(new AddTicketCommand());
-		c.addCommand(new AttachmentContextCommand());
-		c.addCommand(new AddAttachmentRelationshipCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
