@@ -3,9 +3,8 @@ package com.facilio.logging;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.facilio.aws.util.AwsUtil;
 
@@ -18,7 +17,7 @@ public class SysOutLogger extends PrintStream {
     public SysOutLogger(String loggerName) throws FileNotFoundException {
         super(loggerName);
         this.loggerName = loggerName;
-        this.logger = LogManager.getLogger(loggerName);
+        this.logger = Logger.getLogger(loggerName);
         if("production".equals(AwsUtil.getConfig("environment")) && "SysOut".equals(loggerName)) {
             productionEnvironment = true;
         }
