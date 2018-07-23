@@ -36,14 +36,14 @@ public class ReportBaselineContext {
 		this.baseLineId = baseLineId;
 	}
 	
-	private long reportDataPointId = -1;
-	public long getReportDataPointId() {
-		return reportDataPointId;
+	private long reportId = -1;
+	public long getReportId() {
+		return reportId;
 	}
-	public void setReportDataPointId(long reportDataPointId) {
-		this.reportDataPointId = reportDataPointId;
+	public void setReportId(long reportId) {
+		this.reportId = reportId;
 	}
-	
+
 	private AdjustType adjustType;
 	public AdjustType getAdjustTypeEnum() {
 		return adjustType;

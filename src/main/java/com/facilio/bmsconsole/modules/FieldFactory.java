@@ -4105,7 +4105,7 @@ public class FieldFactory {
 		fields.add(getOrgIdField(module));
 		fields.add(getSiteIdField(module));
 		fields.add(getField("baseLineId", "BASE_LINE_ID", module, FieldType.LOOKUP));
-		fields.add(getField("reportDataPointId", "REPORT_DATA_POINT_ID", module, FieldType.LOOKUP));
+		fields.add(getField("reportId", "REPORT_ID", module, FieldType.LOOKUP));
 		fields.add(getField("adjustType", "ADJUST_TYPE", module, FieldType.NUMBER));
 		
 		return fields;
@@ -4118,7 +4118,7 @@ public class FieldFactory {
 		fields.add(getOrgIdField(module));
 		fields.add(getSiteIdField(module));
 		fields.add(getField("benchmarkId", "BENCHMARK_ID", module, FieldType.LOOKUP));
-		fields.add(getField("reportDataPointId", "REPORT_DATA_POINT_ID", module, FieldType.LOOKUP));
+		fields.add(getField("reportId", "REPORT_ID", module, FieldType.LOOKUP));
 		
 		return fields;
 	}
