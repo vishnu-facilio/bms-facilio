@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -294,15 +295,33 @@ public class SpaceAPI {
 		return getBaseSpaceWithChildren(ids);
 	}
 	
-	public static void addZoneChildren(ZoneContext zone, List<Long> childrenIds) throws SQLException, RuntimeException {
+	public static void addZoneChildren(ZoneContext zone, List<Long> childrenIds) throws SQLException, RuntimeException, Exception {
 		List<Map<String, Object>> childProps = new ArrayList<>();
+		List<ZoneContext> parentSpaces = getAllZone();
+		List<Long> zoneIds = null;
+		if (parentSpaces != null) {
+			zoneIds = parentSpaces.stream().map(existingZone -> existingZone.getId()).filter(id -> childrenIds.contains(id)).collect(Collectors.toList());
+		}
+		List<Long> isZones = null;
 		for(long childId : childrenIds) {
 			Map<String, Object> prop = new HashMap<>();
 			prop.put("zoneId", zone.getId());
 			prop.put("basespaceId", childId);
+			prop.put("isImmediate", true);
 			childProps.add(prop);
 		}
-		
+		if (parentSpaces != null) {
+			List<BaseSpaceContext> zoneChildren = getZoneChildren(zoneIds, false);
+			for(BaseSpaceContext zoneChild : zoneChildren) {
+				if (zoneChild.getSpaceTypeEnum() != SpaceType.ZONE) {
+					Map<String, Object> prop = new HashMap<>();
+					prop.put("zoneId", zone.getId());
+					prop.put("basespaceId", zoneChild.getId());
+					prop.put("isImmediate", false);
+					childProps.add(prop);
+				}
+			}
+		}
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 														.table(ModuleFactory.getZoneRelModule().getTableName())
 														.fields(FieldFactory.getZoneRelFields())
@@ -542,6 +561,20 @@ public class SpaceAPI {
 		List<FloorContext> floors = selectBuilder.get();
 		return floors;
 	}
+	public static List<ZoneContext> getAllZone() throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ZONE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ZONE);
+		
+		SelectRecordsBuilder<ZoneContext> selectBuilder = new SelectRecordsBuilder<ZoneContext>()
+																	.select(fields)
+																	.module(module)
+																	.maxLevel(0)
+																	.beanClass(ZoneContext.class)
+																	.andCustomWhere("SPACE_TYPE=?",BaseSpaceContext.SpaceType.ZONE.getIntVal());
+		List<ZoneContext> zones = selectBuilder.get();
+		return zones;
+	}
 	
 	public static List<SpaceContext> getAllSpaces() throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -657,10 +690,10 @@ public static long getSitesCount() throws Exception {
 	public static List<BaseSpaceContext> getZoneChildren(long zoneId) throws Exception {
 		List<Long> zoneIds = new ArrayList<>();
 		zoneIds.add(zoneId);
-		return getZoneChildren(zoneIds);
+		return getZoneChildren(zoneIds, true);
 	}
 	
-	private static List<BaseSpaceContext> getZoneChildren(List<Long> zoneIds) throws Exception {
+	private static List<BaseSpaceContext> getZoneChildren(List<Long> zoneIds, Boolean isImmediate) throws Exception {
 		if(zoneIds != null && !zoneIds.isEmpty()) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
@@ -688,7 +721,9 @@ public static long getSitesCount() throws Exception {
 																		.moduleName(module.getName())
 																		.beanClass(BaseSpaceContext.class)
 																		.andCustomWhere(ids.toString());
-																		
+			if (isImmediate) {
+				selectBuilder.andCustomWhere("Zone_Space.IS_IMMEDIATE = ?", isImmediate);
+			}									
 			List<BaseSpaceContext> spaces = selectBuilder.get();
 			return spaces;
 		}

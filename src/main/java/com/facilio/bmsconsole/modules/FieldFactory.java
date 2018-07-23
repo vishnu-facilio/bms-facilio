@@ -2083,6 +2083,13 @@ public class FieldFactory {
 		basespaceId.setColumnName("BASE_SPACE_ID");
 		basespaceId.setModule(module);
 		fields.add(basespaceId);
+		
+		FacilioField isImmediate = new FacilioField();
+		isImmediate.setName("isImmediate");
+		isImmediate.setDataType(FieldType.BOOLEAN);
+		isImmediate.setColumnName("IS_IMMEDIATE");
+		isImmediate.setModule(module);
+		fields.add(isImmediate);
 
 		return fields;
 	}
