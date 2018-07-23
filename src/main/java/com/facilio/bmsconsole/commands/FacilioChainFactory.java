@@ -1919,9 +1919,9 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getAllFieldsChain () {
-		Chain c = new TransactionChain();
-		CommonCommandUtil.addCleanUpCommand(c);
+		Chain c = new ChainBase();
 		c.addCommand(new GetAllFieldsCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
