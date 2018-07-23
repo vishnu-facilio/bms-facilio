@@ -1,5 +1,7 @@
 package com.facilio.report.context;
 
+import java.util.List;
+
 public class ReportContext {
 
 	private long id = -1;
@@ -72,5 +74,13 @@ public class ReportContext {
 	}
 	public void setChartState(String chartState) {
 		this.chartState = chartState;
+	}
+	
+	private List<ReportDataPointContext> dataPoints;
+	public List<ReportDataPointContext> getDataPoints() {
+		return dataPoints;
+	}
+	public void setDataPoints(List<ReportDataPointContext> dataPoints) {
+		this.dataPoints = dataPoints;
 	}
 }

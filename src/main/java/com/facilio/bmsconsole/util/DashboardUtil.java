@@ -992,7 +992,7 @@ public class DashboardUtil {
 		if(formulaContext != null) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioField selectField = formulaContext.getAggregateOperator().getSelectField(modBean.getFieldFromDB(formulaContext.getSelectFieldId()));
-			
+			selectField.setName("value");
 			List<FacilioField> selectFields = new ArrayList<>();
 			selectFields.add(selectField);
 			GenericSelectRecordBuilder selectValueBuilder = new GenericSelectRecordBuilder()

@@ -31,6 +31,6 @@ public class DateRange {
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return startTime+" and "+endTime;
+		return startTime+", "+endTime;
 	}
 }

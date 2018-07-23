@@ -2442,13 +2442,13 @@ public class DashboardAction extends ActionSupport {
 		if(xAxisField.getDataTypeEnum().equals(FieldType.DATE_TIME)) {
 			FacilioField dummyField = new FacilioField();
 			dummyField.setColumnName(xAxisField.getColumnName());
+			dummyField.setName("dummyField");
 			if (report.getXAxisAggregateOpperator() == FormulaContext.DateAggregateOperator.ACTUAL) {
 				dummyField = DateAggregateOperator.ACTUAL.getSelectField(dummyField);
 			}
 			else {
 				dummyField = NumberAggregateOperator.MAX.getSelectField(dummyField);
 			}
-			dummyField.setName("dummyField");
 			fields.add(dummyField);
 		}
 		
@@ -2914,13 +2914,13 @@ public class DashboardAction extends ActionSupport {
 		if(xAxisField.getDataTypeEnum().equals(FieldType.DATE_TIME)) {
 			FacilioField dummyField = new FacilioField();
 			dummyField.setColumnName(xAxisField.getColumnName());
+			dummyField.setName("dummyField");
 			if (report.getXAxisAggregateOpperator() == FormulaContext.DateAggregateOperator.ACTUAL) {
 				dummyField = DateAggregateOperator.ACTUAL.getSelectField(dummyField);
 			}
 			else {
 				dummyField = NumberAggregateOperator.MAX.getSelectField(dummyField);
 			}
-			dummyField.setName("dummyField");
 			fields.add(dummyField);
 		}
 		
@@ -4131,8 +4131,8 @@ public class DashboardAction extends ActionSupport {
 			
 			FacilioField label = new FacilioField();
 			label.setColumnName("TTIME");
-			label = reportContext.getXAxisAggregateOpperator().getSelectField(label);
 			label.setName("label");
+			label = reportContext.getXAxisAggregateOpperator().getSelectField(label);
 			
 			FacilioField value = new FacilioField();
 			value.setColumnName("ACTUAL_VALUE");

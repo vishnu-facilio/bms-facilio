@@ -162,7 +162,8 @@ public class FormulaContext {
 			String selectFieldString = expr.replace("{$place_holder$}", field.getColumnName());
 			
 			FacilioField selectField = new FacilioField();
-			selectField.setDisplayName(this.name());
+			selectField.setName(field.getName());
+			selectField.setDisplayName(field.getDisplayName());
 			selectField.setColumnName(selectFieldString);
 			selectField.setFieldId(field.getFieldId());
 			return selectField;
@@ -193,6 +194,8 @@ public class FormulaContext {
 			String selectFieldString =expr.replace("{$place_holder$}", field.getColumnName());
 			
 			FacilioField selectField = new FacilioField();
+			selectField.setName(field.getName());
+			selectField.setDisplayName(field.getDisplayName());
 			selectField.setColumnName(selectFieldString);
 			selectField.setFieldId(field.getFieldId());
 			return selectField;
@@ -253,6 +256,8 @@ public class FormulaContext {
 			selectFieldString = selectFieldString.replace("{$place_holder1$}",timeZone);
 			
 			FacilioField selectField = new FacilioField();
+			selectField.setName(field.getName());
+			selectField.setDisplayName(field.getDisplayName());
 			selectField.setColumnName(selectFieldString);
 			selectField.setFieldId(field.getFieldId());
 			return selectField;
@@ -323,12 +328,15 @@ public class FormulaContext {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule baseSpaceModule = modBean.getModule("basespace");
 			
-			field.setColumnName(getcolumnName());
-			field.setModule(baseSpaceModule);
-			field.setFieldId(field.getFieldId());
-			field.setExtendedModule(null);
+			FacilioField selectField = new FacilioField();
+			selectField.setName(field.getName());
+			selectField.setDisplayName(field.getDisplayName());
+			selectField.setColumnName(getcolumnName());
+			selectField.setModule(baseSpaceModule);
+			selectField.setFieldId(field.getFieldId());
+			selectField.setExtendedModule(null);
 			
-			return field;
+			return selectField;
 		}
 	}
 }
