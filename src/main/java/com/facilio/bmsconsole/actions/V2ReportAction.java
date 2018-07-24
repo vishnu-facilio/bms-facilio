@@ -3,7 +3,7 @@ package com.facilio.bmsconsole.actions;
 import org.apache.commons.chain.Chain;
 
 import com.facilio.bmsconsole.commands.FacilioContext;
-import com.facilio.bmsconsole.commands.NonTransacionChainFactory;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.constants.FacilioConstants;
@@ -18,7 +18,7 @@ public class V2ReportAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.REPORT_X_AGGR, xAggr);
 			context.put(FacilioConstants.ContextNames.REPORT_Y_AGGR, yAggr);
 			
-			Chain fetchReadingDataChain = NonTransacionChainFactory.fetchReadingReportChain();
+			Chain fetchReadingDataChain = ReadOnlyChainFactory.fetchReadingReportChain();
 			fetchReadingDataChain.execute(context);
 			
 			setResult("report", context.get(FacilioConstants.ContextNames.REPORT));

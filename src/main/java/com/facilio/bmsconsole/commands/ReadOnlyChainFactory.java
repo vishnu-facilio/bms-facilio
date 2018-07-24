@@ -7,8 +7,12 @@ import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 
-public class NonTransacionChainFactory {
-	private static Logger LOGGER = LogManager.getLogger(NonTransacionChainFactory.class.getName());
+public class ReadOnlyChainFactory extends FacilioChainFactory {
+	private static Logger LOGGER = LogManager.getLogger(ReadOnlyChainFactory.class.getName());
+	   protected static Chain getDefaultChain()
+	    {
+	    	    return new ChainBase();
+	    }
 	
 	public static Chain fetchReportDataChain() {
 		Chain c = new ChainBase();
