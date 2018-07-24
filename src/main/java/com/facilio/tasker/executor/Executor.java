@@ -81,17 +81,18 @@ public class Executor implements Runnable {
 	
 	private void scheduleJob(JobContext jc) throws InstantiationException, IllegalAccessException  {
 		SchedulerJobConf.Job schedulerJobs = FacilioScheduler.getSchedulerJob(jc.getJobName());
-		Class<? extends FacilioJob> jobClass = schedulerJobs.getClassObject();
-		if(jobClass != null) {
-			FacilioJob job = jobClass.newInstance();
-			job.setJobContext(jc);
-			job.setExecutor(this);
+		if(schedulerJobs != null) {
+			Class<? extends FacilioJob> jobClass = schedulerJobs.getClassObject();
+			if (jobClass != null) {
+				FacilioJob job = jobClass.newInstance();
+				job.setJobContext(jc);
+				job.setExecutor(this);
 
-			log.info("Scheduling : "+jc);
-			schedule(job, (jc.getExecutionTime()-(System.currentTimeMillis()/1000)));
-		}
-		else {
-			log.info("No such Job with jobname : "+ jc.getJobName());
+				log.info("Scheduling : " + jc);
+				schedule(job, (jc.getExecutionTime() - (System.currentTimeMillis() / 1000)));
+			} else {
+				log.info("No such Job with jobname : " + jc.getJobName());
+			}
 		}
 	}
 	
