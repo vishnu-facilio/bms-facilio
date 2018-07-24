@@ -94,11 +94,11 @@ public abstract class FacilioJob implements Runnable {
 			statement.setLong(6, jobStartTime);
 			statement.setInt(7, jobExecutionCount);
 			rowsUpdated = statement.executeUpdate();
-			LOGGER.info("query : " + statement.toString());
+			LOGGER.debug("query : " + statement.toString());
 		} catch (SQLException e) {
 			LOGGER.error("Exception while updating Job " + jobName + "_" + jobId, e);
 		}
-		LOGGER.info("Updated Job " + jobName + " " + rowsUpdated );
+		LOGGER.debug("Updated Job " + jobName + " " + rowsUpdated );
 		return rowsUpdated;
 	}
 
@@ -136,7 +136,7 @@ public abstract class FacilioJob implements Runnable {
 				JobStore.setInActive(jc.getJobId(), jc.getJobName());
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
-				LOGGER.error("Error",e);
+				LOGGER.error("Error ",e);
 			}
 		}
 	}
