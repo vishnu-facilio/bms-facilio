@@ -2,6 +2,30 @@ package com.facilio.bmsconsole.context;
 
 public class SpaceContext extends BaseSpaceContext {
 	
+	private SiteContext site;
+	public SiteContext getSite() {
+		if ((site == null || site.getId() == -1) && super.getSiteId() != -1) {
+			SiteContext site = new SiteContext();
+			site.setId(super.getSiteId());
+			return site;
+		}
+		return site;
+	}
+	public void setSite(SiteContext site) {
+		this.site = site;
+		if(site != null) {
+			super.setSiteId(site.getId());
+		}
+	}
+	
+	@Override
+	public long getSiteId() {
+		if(site != null) {
+			return site.getId();
+		}
+		return super.getSiteId();
+	}
+	
 	private BuildingContext building;
 	public BuildingContext getBuilding() {
 		if ((building == null || building.getId() == -1) && super.getBuildingId() != -1) {
