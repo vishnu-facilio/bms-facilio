@@ -11,6 +11,7 @@ import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
 
 import com.facilio.util.ExpressionEvaluator;
+import com.google.common.base.Objects;
 
 public class Criteria extends ExpressionEvaluator<Predicate> {
 	
@@ -291,5 +292,22 @@ public class Criteria extends ExpressionEvaluator<Predicate> {
 	public String toString() {
 		// TODO Auto-generated method stub
 		return "ID : "+criteriaId+"\nPattern : "+pattern+"\nConditions : "+conditions;
+	}
+	
+	@Override
+	public boolean equals(Object other) {
+		// TODO Auto-generated method stub
+		if (this == other) {
+            return true;
+        }
+		if (other != null && other instanceof Criteria ) {
+			Criteria otherCriteria = (Criteria) other;
+			if (Objects.equal(this.pattern, otherCriteria.pattern) &&
+					Objects.equal(this.conditions, otherCriteria.conditions)
+					) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

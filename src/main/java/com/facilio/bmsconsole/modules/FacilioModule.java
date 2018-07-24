@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.struts2.json.annotations.JSON;
 
+import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.time.SecondsChronoUnit;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -118,10 +119,12 @@ public class FacilioModule implements Serializable {
 	
 	
 	@Override
-	public boolean equals(Object obj) {
-
-		if (obj!=null && obj instanceof FacilioModule ) {
-			return this.name.equals(((FacilioModule)obj).name);
+	public boolean equals(Object other) {
+		if (this == other) {
+            return true;
+        }
+		if (other!=null && other instanceof FacilioModule ) {
+			return this.name.equals(((FacilioModule)other).name);
 		}
 		return false;
 	}

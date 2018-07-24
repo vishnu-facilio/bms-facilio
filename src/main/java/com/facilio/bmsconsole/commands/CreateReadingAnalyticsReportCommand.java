@@ -42,7 +42,6 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 			
 			Criteria criteria = new Criteria();
 			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(parentId), NumberOperators.EQUALS));
-			criteria.addAndCondition(CriteriaAPI.getCondition(xField, range.toString(), DateOperators.BETWEEN));
 			dataPoint.setCriteria(criteria);
 			
 			AggregateOperator xAggr = (AggregateOperator) context.get(FacilioConstants.ContextNames.REPORT_X_AGGR);
@@ -61,6 +60,7 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 			report.setDataPoints(Collections.singletonList(dataPoint));		
 			
 			context.put(FacilioConstants.ContextNames.REPORT, report);
+			context.put(FacilioConstants.ContextNames.REPORT_DATE_FILTER, CriteriaAPI.getCondition(xField, range.toString(), DateOperators.BETWEEN));
 		}
 		else {
 			throw new IllegalArgumentException("In sufficient params for Reaging Analysis");

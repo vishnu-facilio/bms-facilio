@@ -231,10 +231,12 @@ public class FacilioField implements Serializable {
 	}
 	
 	@Override
-	public boolean equals(Object obj) {
-
-		if (obj != null && obj instanceof FacilioField ) {
-			FacilioField iObj = (FacilioField) obj;
+	public boolean equals(Object other) {
+		if (this == other) {
+            return true;
+        }
+		if (other != null && other instanceof FacilioField ) {
+			FacilioField iObj = (FacilioField) other;
 			FacilioModule iModule = iObj.module;
 			if(iModule == null && this.module == null) {
 				return this.name.equals(iObj.name);

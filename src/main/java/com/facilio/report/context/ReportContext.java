@@ -83,4 +83,12 @@ public class ReportContext {
 	public void setDataPoints(List<ReportDataPointContext> dataPoints) {
 		this.dataPoints = dataPoints;
 	}
+	
+	private ReportXCriteriaContext xCriteria;
+	public ReportXCriteriaContext getxCriteria() {
+		return xCriteria;
+	}
+	public void setxCriteria(ReportXCriteriaContext xCriteria) {
+		this.xCriteria = xCriteria;
+	}
 }

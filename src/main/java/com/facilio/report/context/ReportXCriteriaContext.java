@@ -1,5 +1,6 @@
 package com.facilio.report.context;
 
+import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
 
 public class ReportXCriteriaContext {
@@ -84,6 +85,14 @@ public class ReportXCriteriaContext {
 		this.criteriaId = criteriaId;
 	}
 	
+	private Criteria criteria;
+	public Criteria getCriteria() {
+		return criteria;
+	}
+	public void setCriteria(Criteria criteria) {
+		this.criteria = criteria;
+	}
+
 	private long transformWorkflowId = -1;
 	public long getTransformWorkflowId() {
 		return transformWorkflowId;

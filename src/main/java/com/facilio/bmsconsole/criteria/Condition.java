@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.collections.Predicate;
 
@@ -211,5 +212,24 @@ public class Condition {
 	public String toString() {
 		// TODO Auto-generated method stub
 		return fieldName+"::"+operator.getOperator()+"::"+value;
+	}
+	
+	@Override
+	public boolean equals(Object other) {
+		// TODO Auto-generated method stub
+		if (this == other) {
+            return true;
+        }
+		if (other != null && other instanceof Condition ) {
+			Condition otherCondition = (Condition) other;
+			if (Objects.equals(operator, operator) &&
+					Objects.equals(this.columnName, otherCondition.columnName) &&
+					Objects.equals(this.fieldName, otherCondition.fieldName) &&
+					Objects.equals(this.value, otherCondition.value) &&
+					Objects.equals(this.criteriaValue, otherCondition.criteriaValue) ) {
+						return true;
+			}
+		}
+		return false;
 	}
 }

@@ -16,6 +16,7 @@ public class ReadOnlyChainFactory extends FacilioChainFactory {
 	
 	public static Chain fetchReportDataChain() {
 		Chain c = new ChainBase();
+		c.addCommand(new FilterXFieldCommand());
 		c.addCommand(new FetchReportDataCommand());
 		c.addCommand(new TransformReportDataCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
