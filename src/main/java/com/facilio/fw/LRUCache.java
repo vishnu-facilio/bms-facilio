@@ -54,7 +54,7 @@ System.out.println("Before "+testcache);
 		return moduleCache;
 	}
 	public String toString() {
-		double hitc =  ((hitcount*100)/(hitcount+misscount) );
+		double hitc =  ((hitcount*100d)/(hitcount+misscount) );
 
 		 return (" The current size "+currentSize+"\n hitcount "+hitcount+"\n Cache Hit Ratio= "+ hitc +"\n\n"+cache );
 	}
@@ -223,10 +223,10 @@ System.out.println("Before "+testcache);
     }
 
     public void put(K key, V value){
-     	logger.log(Level.INFO,"PUT ###############adding data to cache "+key);
+     	logger.debug("PUT ###############adding data to cache "+key);
 
         if (cache.containsKey(key)){
-        	logger.log(Level.INFO,"PUT ############### data already exist cache "+key);
+        	logger.debug("PUT ############### data already exist cache "+key);
 
             return;
         }
