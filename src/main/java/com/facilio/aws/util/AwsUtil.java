@@ -17,8 +17,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -43,6 +41,8 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -96,7 +96,7 @@ import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 public class AwsUtil 
 {
 
-	private static Logger logger = Logger.getLogger(AwsUtil.class.getName());
+	private static Logger logger = LogManager.getLogger(AwsUtil.class.getName());
 	
 	private static final String AWS_PROPERTY_FILE = "conf/awsprops.properties";
 	
@@ -265,9 +265,9 @@ public class AwsUtil
 		    }
 			
 		    CloseableHttpResponse response = client.execute(post);
-			System.out.println("\nSending 'POST' request to URL : " + url);
-			System.out.println("Post parameters : " + post.getEntity());
-			System.out.println("Response Code : " +  response.getStatusLine().getStatusCode());
+			logger.info("\nSending 'POST' request to URL : " + url);
+			logger.info("Post parameters : " + post.getEntity());
+			logger.info("Response Code : " +  response.getStatusLine().getStatusCode());
 	 
 			BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 			String line = "";
@@ -279,7 +279,7 @@ public class AwsUtil
     	}
 		catch (Exception e) 
     	{
-			logger.log(Level.SEVERE, "Executing doHttpPost ::::url:::" + url, e);
+			logger.info("Executing doHttpPost ::::url:::" + url, e);
 		} 
     	finally 
     	{
@@ -385,10 +385,10 @@ public class AwsUtil
 				AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
 						.withRegion(Regions.US_WEST_2).withCredentials(getAWSCredentialsProvider()).build();
 				client.sendRawEmail(request);
-				System.out.println("Email sent!");
+				logger.info("Email sent!");
 			} catch (Exception ex) {
-				System.out.println("The email was not sent.");
-				System.out.println("Error message: " + ex.getMessage());
+				logger.info("The email was not sent.");
+				logger.info("Error message: " + ex.getMessage());
 				throw ex;
 			}
 		}
@@ -497,7 +497,7 @@ public class AwsUtil
 			CreatePolicyVersionResult versionResult = client.createPolicyVersion(versionRequest);
 			logger.info("Policy updated for " + policyName + ", with " + versionResult.getPolicyDocument() + ", status: " + versionResult.getSdkHttpMetadata().getHttpStatusCode());
 		} catch (Exception e){
-    		logger.log(Level.SEVERE,"Error",e);
+    		logger.info("Error ",e);
 		}
 	}
 

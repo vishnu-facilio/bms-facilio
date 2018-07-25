@@ -53,11 +53,11 @@ public enum AccountEmailTemplate {
 	}
 	
 	public void send(Map<String, Object> placeHolders) throws Exception {
-		if(AwsUtil.getConfig("accessKeyId") == null) {
+		/*if(AwsUtil.getConfig("accessKeyId") == null) {
 			EmailUtil.sendEmail(getTemplate(placeHolders));
 		} else {
-			AwsUtil.sendEmail(getTemplate(placeHolders));
-		}
+		}*/
+		AwsUtil.sendEmail(getTemplate(placeHolders));
 	}
 	
 	public static AccountEmailTemplate getEmailTemplate(int val) {
