@@ -298,7 +298,7 @@ public class FacilioAuthAction extends ActionSupport {
         ResultSet rs;
         try {
             conn = FacilioConnectionPool.INSTANCE.getConnection();
-            pstmt = conn.prepareStatement("SELECT Users.password FROM Users inner join faciliousers on Users.USERID=faciliousers.USERID WHERE (faciliousers.email = ? or faciliousers.mobile = ?) and USER_VERIFIED=1");
+            pstmt = conn.prepareStatement("SELECT Users.password FROM Users inner join faciliousers on Users.USERID=faciliousers.USERID WHERE (faciliousers.email = ? or faciliousers.username = ?) and USER_VERIFIED=1");
             pstmt.setString(1, emailaddress);
             pstmt.setString(2, emailaddress);
             rs = pstmt.executeQuery();
