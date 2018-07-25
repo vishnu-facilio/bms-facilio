@@ -22,6 +22,7 @@ public class V2ReportAction extends FacilioAction {
 			fetchReadingDataChain.execute(context);
 			
 			setResult("report", context.get(FacilioConstants.ContextNames.REPORT));
+			setResult("reportXValues", context.get(FacilioConstants.ContextNames.REPORT_X_VALUES));
 			setResult("reportData", context.get(FacilioConstants.ContextNames.REPORT_DATA));
 			return SUCCESS;
 		}

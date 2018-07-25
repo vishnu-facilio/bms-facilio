@@ -2,8 +2,12 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -20,27 +24,26 @@ public class TransformReportDataCommand implements Command {
 		// TODO Auto-generated method stub
 		List<Pair<List<ReportDataPointContext>, List<Map<String, Object>>>> reportData = (List<Pair<List<ReportDataPointContext>, List<Map<String, Object>>>>) context.get(FacilioConstants.ContextNames.REPORT_DATA);
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
-		Map<String, List<Map<String, Object>>> transformedData = new HashMap<>();
-		
+		Map<String, Map<Object, Object>> transformedData = new HashMap<>();
+		Set<Object> xValues = new LinkedHashSet<>();
 		for (Pair<List<ReportDataPointContext>, List<Map<String, Object>>> pair : reportData ) {
 			for (ReportDataPointContext dataPoint : pair.getLeft()) {
-				List<Map<String, Object>> dataPoints = new ArrayList<>();
+				Map<Object, Object> dataPoints = new LinkedHashMap<>();
 				List<Map<String, Object>> props = pair.getRight();
 				if (props != null && !props.isEmpty()) {
 					for (Map<String, Object> prop : props) {
 						Object xVal = prop.get(dataPoint.getxAxisField().getName());
 						Object yVal = prop.get(dataPoint.getyAxisField().getName());
 						if (xVal != null && yVal != null) {
-							Map<String, Object> singlePoint = new HashMap<>();
-							singlePoint.put("x", xVal);
-							singlePoint.put("y", yVal);
-							dataPoints.add(singlePoint);
+							xValues.add(xVal);
+							dataPoints.put(xVal, yVal);
 						}
 					}
 				}
 				transformedData.put(dataPoint.getName(), dataPoints);
 			}
 		}
+		context.put(FacilioConstants.ContextNames.REPORT_X_VALUES, xValues);
 		context.put(FacilioConstants.ContextNames.REPORT_DATA, transformedData);
 		return false;
 	}
