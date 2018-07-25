@@ -33,6 +33,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 
+import com.amazonaws.auth.*;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -46,10 +47,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagement;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClientBuilder;
@@ -159,8 +156,7 @@ public class AwsUtil
     
     public static CreateKeysAndCertificateResult getCertificateResult()
     {
-    	BasicAWSCredentials awsCreds = new BasicAWSCredentials(AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));
-    	AWSIot awsIot = AWSIotClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
+    	AWSIot awsIot = AWSIotClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(getBasicAwsCredentials())).build();
     
     	CreateKeysAndCertificateRequest cr = new CreateKeysAndCertificateRequest().withSetAsActive(true);
     	CreateKeysAndCertificateResult certResult = awsIot.createKeysAndCertificate(cr);
@@ -184,16 +180,14 @@ public class AwsUtil
     
     public static AmazonS3 getAmazonS3Client() {
     	if (AWS_S3_CLIENT == null) {
-    		BasicAWSCredentials awsCreds = new BasicAWSCredentials(AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));
-        	AWS_S3_CLIENT = AmazonS3ClientBuilder.standard().withRegion(AwsUtil.getConfig("region")).withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
+        	AWS_S3_CLIENT = AmazonS3ClientBuilder.standard().withRegion(AwsUtil.getConfig("region")).withCredentials(getAWSCredentialsProvider()).build();
     	}
     	return AWS_S3_CLIENT;
     }
     
     public static AmazonRekognition getAmazonRekognitionClient() {
     	if (AWS_REKOGNITION_CLIENT == null) {
-    		BasicAWSCredentials awsCreds = new BasicAWSCredentials(AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));
-    		AWS_REKOGNITION_CLIENT = AmazonRekognitionClientBuilder.standard().withRegion(AwsUtil.getConfig("region")).withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
+    		AWS_REKOGNITION_CLIENT = AmazonRekognitionClientBuilder.standard().withRegion(AwsUtil.getConfig("region")).withCredentials(getAWSCredentialsProvider()).build();
     	}
     	return AWS_REKOGNITION_CLIENT;
     }
@@ -294,7 +288,7 @@ public class AwsUtil
     	return result.toString();
     }
     
-    public static byte[] HmacSHA256(String data, byte[] key) throws Exception 
+    private static byte[] HmacSHA256(String data, byte[] key) throws Exception
 	{
         String algorithm = "HmacSHA256";
         Mac mac = Mac.getInstance(algorithm);
@@ -302,23 +296,24 @@ public class AwsUtil
         return mac.doFinal(data.getBytes("UTF8"));
     }
 	
-	public static String hash256(String data) throws NoSuchAlgorithmException 
+	private static String hash256(String data) throws NoSuchAlgorithmException
 	{
         MessageDigest md = MessageDigest.getInstance("SHA-256");
         md.update(data.getBytes());
         return bytesToHex(md.digest());
     }
 	
-	public static String bytesToHex(byte[] bytes) 
+	private static String bytesToHex(byte[] bytes)
 	{
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         for (byte byt : bytes) result.append(Integer.toString((byt & 0xff) + 0x100, 16).substring(1));
         return result.toString();
     }
 	
 	public static void sendEmail(JSONObject mailJson) throws Exception 
 	{
-		if(AwsUtil.getConfig("app.url").contains("localhost")) {
+		String appUrl = AwsUtil.getConfig("app.url");
+		if(appUrl == null || appUrl.contains("localhost")) {
 //			mailJson.put("subject", "Local - "+mailJson.get("subject"));
 			return;
 		}
@@ -403,7 +398,7 @@ public class AwsUtil
     	if(basicCredentials == null) {
     		synchronized (LOCK) {
 				if (basicCredentials == null) {
-					basicCredentials = new BasicAWSCredentials(AwsUtil.getConfig(AWS_ACCESS_KEY_ID), AwsUtil.getConfig(AWS_SECRET_KEY_ID));
+					basicCredentials = new InstanceProfileCredentialsProvider().getCredentials();
 				}
 			}
 		}

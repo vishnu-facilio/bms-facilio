@@ -113,18 +113,14 @@ public class CognitoUtil {
 	
 	public static AWSCognitoIdentityProvider getIdpProvider() {
 		if (IDP_PROVIDER == null) {
-			BasicAWSCredentials awsCreds = new BasicAWSCredentials(AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));
-		
-			IDP_PROVIDER = AWSCognitoIdentityProviderClientBuilder.standard().withRegion("us-west-2").withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
+			IDP_PROVIDER = AWSCognitoIdentityProviderClientBuilder.standard().withRegion("us-west-2").withCredentials(AwsUtil.getAWSCredentialsProvider()).build();
 		}
 		return IDP_PROVIDER;
 	}
 	
 	public static AmazonCognitoIdentity getIdentityClient() {
 		if (IDENTITY_CLIENT == null) {
-			BasicAWSCredentials awsCreds = new BasicAWSCredentials(AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));
-
-			IDENTITY_CLIENT = AmazonCognitoIdentityClientBuilder.standard().withRegion("us-west-2").withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
+			IDENTITY_CLIENT = AmazonCognitoIdentityClientBuilder.standard().withRegion("us-west-2").withCredentials(AwsUtil.getAWSCredentialsProvider()).build();
 		}
 		return IDENTITY_CLIENT;
 	}
