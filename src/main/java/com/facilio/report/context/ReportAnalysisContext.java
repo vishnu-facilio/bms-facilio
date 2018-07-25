@@ -1,16 +1,18 @@
 package com.facilio.report.context;
 
+import java.util.List;
+
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 
 public class ReportAnalysisContext {
-	private long parentId = -1;
-	public long getParentId() {
+	private List<Long> parentId;
+	public List<Long> getParentId() {
 		return parentId;
 	}
-	public void setParentId(long parentId) {
+	public void setParentId(List<Long> parentId) {
 		this.parentId = parentId;
 	}
-	
+
 	private long fieldId = -1;
 	public long getFieldId() {
 		return fieldId;
@@ -39,7 +41,8 @@ public class ReportAnalysisContext {
 
 	public static enum ReportMode {
 		TIMESERIES,
-		SERIES
+		SERIES,
+		CONSOLIDATED
 		;
 		
 		public int getValue() {

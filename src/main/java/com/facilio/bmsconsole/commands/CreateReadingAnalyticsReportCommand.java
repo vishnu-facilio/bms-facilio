@@ -1,9 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.StringJoiner;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -44,32 +46,9 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 				FacilioField yField = modBean.getField(metric.getFieldId());
 				dataPoint.setyAxisField(yField);
 				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(yField.getModule().getName()));
-				FacilioField xField = null;
-				switch (mode) {
-					case SERIES:
-						xField = fieldMap.get("parentId");
-						break;
-					case TIMESERIES:
-						xField = fieldMap.get("ttime");
-						break;
-				}
-				dataPoint.setxAxisField(xField);
-				dataPoint.setDateField(fieldMap.get("ttime"));
-				
-				Criteria criteria = new Criteria();
-				criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(metric.getParentId()), NumberOperators.EQUALS));
-				dataPoint.setCriteria(criteria);
-				
-				if (xAggr != null) {
-					dataPoint.setxAxisAggr(xAggr);
-				}
-				AggregateOperator yAggr = metric.getyAggrEnum();
-				if (yAggr != null) {
-					dataPoint.setyAxisAggr(yAggr);
-				}
-				
-				ResourceContext resource = resourceMap.get(metric.getParentId());
-				dataPoint.setName(resource.getName()+" ("+yField.getDisplayName()+")");
+				setFields(dataPoint, mode, fieldMap);
+				setCriteriaAndAggr(dataPoint, xAggr, fieldMap, metric);
+				setName(dataPoint, yField, mode, resourceMap, metric);
 				dataPoints.add(dataPoint);
 			}
 			ReportContext report = new ReportContext();
@@ -86,11 +65,56 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 		return false;
 	}
 	
+	private void setFields (ReportDataPointContext dataPoint, ReportMode mode, Map<String, FacilioField> fieldMap) {
+		FacilioField xField = null;
+		switch (mode) {
+			case SERIES:
+				xField = fieldMap.get("parentId");
+				break;
+			case TIMESERIES:
+			case CONSOLIDATED:
+				xField = fieldMap.get("ttime");
+				break;
+		}
+		dataPoint.setxAxisField(xField);
+		dataPoint.setDateField(fieldMap.get("ttime"));
+	}
+	
+	private void setName(ReportDataPointContext dataPoint, FacilioField yField, ReportMode mode, Map<Long, ResourceContext> resourceMap, ReportAnalysisContext metric) {
+		if (mode == ReportMode.CONSOLIDATED) {
+			dataPoint.setName(yField.getDisplayName());
+		}
+		else {
+			StringJoiner joiner = new StringJoiner(", ");
+			for (Long parentId : metric.getParentId()) {
+				ResourceContext resource = resourceMap.get(parentId);
+				joiner.add(resource.getName());
+			}
+			dataPoint.setName(joiner.toString()+" ("+yField.getDisplayName()+")");
+		}
+	}
+	
+	private void setCriteriaAndAggr(ReportDataPointContext dataPoint, AggregateOperator xAggr, Map<String, FacilioField> fieldMap, ReportAnalysisContext metric) {
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), metric.getParentId(), NumberOperators.EQUALS));
+		dataPoint.setCriteria(criteria);
+		
+		if (xAggr != null) {
+			dataPoint.setxAxisAggr(xAggr);
+		}
+		AggregateOperator yAggr = metric.getyAggrEnum();
+		if (yAggr != null) {
+			dataPoint.setyAxisAggr(yAggr);
+		}
+	}
+	
 	private Map<Long, ResourceContext> getResourceMap(List<ReportAnalysisContext> metrics) throws Exception {
-		List<Long> resourceIds = new ArrayList<>();
+		Set<Long> resourceIds = new HashSet<>();
 		for (ReportAnalysisContext metric : metrics) {
-			if (metric.getFieldId() != -1 && metric.getParentId() != -1) {
-				resourceIds.add(metric.getParentId());
+			if (metric.getFieldId() != -1 && metric.getParentId() != null) {
+				for (Long parentId : metric.getParentId()) {
+					resourceIds.add(parentId);
+				}
 			}
 			else {
 				throw new IllegalArgumentException("In sufficient params for Reading Analysis for one of the metrics");
