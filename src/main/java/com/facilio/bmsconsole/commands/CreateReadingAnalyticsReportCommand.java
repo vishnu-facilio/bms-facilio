@@ -35,46 +35,42 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 		DateRange range = (DateRange) context.get(FacilioConstants.ContextNames.DATE_RANGE);
 		ReportMode mode = (ReportMode) context.get(FacilioConstants.ContextNames.REPORT_MODE);
 		if (metrics != null && !metrics.isEmpty() && range != null) {
+			Map<Long, ResourceContext> resourceMap = getResourceMap(metrics);
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			AggregateOperator xAggr = (AggregateOperator) context.get(FacilioConstants.ContextNames.REPORT_X_AGGR);
 			List<ReportDataPointContext> dataPoints = new ArrayList<>();
 			for (ReportAnalysisContext metric : metrics) {
-				if (metric.getFieldId() != -1 && metric.getParentId() != -1) {
-					ReportDataPointContext dataPoint = new ReportDataPointContext();
-					FacilioField yField = modBean.getField(metric.getFieldId());
-					dataPoint.setyAxisField(yField);
-					Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(yField.getModule().getName()));
-					FacilioField xField = null;
-					switch (mode) {
-						case SERIES:
-							xField = fieldMap.get("parentId");
-							break;
-						case TIMESERIES:
-							xField = fieldMap.get("ttime");
-							break;
-					}
-					dataPoint.setxAxisField(xField);
-					dataPoint.setDateField(fieldMap.get("ttime"));
-					
-					Criteria criteria = new Criteria();
-					criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(metric.getParentId()), NumberOperators.EQUALS));
-					dataPoint.setCriteria(criteria);
-					
-					if (xAggr != null) {
-						dataPoint.setxAxisAggr(xAggr);
-					}
-					AggregateOperator yAggr = metric.getyAggrEnum();
-					if (yAggr != null) {
-						dataPoint.setyAxisAggr(yAggr);
-					}
-					
-					ResourceContext resource = ResourceAPI.getResource(metric.getParentId());
-					dataPoint.setName(resource.getName()+" ("+yField.getDisplayName()+")");
-					dataPoints.add(dataPoint);
+				ReportDataPointContext dataPoint = new ReportDataPointContext();
+				FacilioField yField = modBean.getField(metric.getFieldId());
+				dataPoint.setyAxisField(yField);
+				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(yField.getModule().getName()));
+				FacilioField xField = null;
+				switch (mode) {
+					case SERIES:
+						xField = fieldMap.get("parentId");
+						break;
+					case TIMESERIES:
+						xField = fieldMap.get("ttime");
+						break;
 				}
-				else {
-					throw new IllegalArgumentException("In sufficient params for Reaging Analysis for one of the metrics");
+				dataPoint.setxAxisField(xField);
+				dataPoint.setDateField(fieldMap.get("ttime"));
+				
+				Criteria criteria = new Criteria();
+				criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(metric.getParentId()), NumberOperators.EQUALS));
+				dataPoint.setCriteria(criteria);
+				
+				if (xAggr != null) {
+					dataPoint.setxAxisAggr(xAggr);
 				}
+				AggregateOperator yAggr = metric.getyAggrEnum();
+				if (yAggr != null) {
+					dataPoint.setyAxisAggr(yAggr);
+				}
+				
+				ResourceContext resource = resourceMap.get(metric.getParentId());
+				dataPoint.setName(resource.getName()+" ("+yField.getDisplayName()+")");
+				dataPoints.add(dataPoint);
 			}
 			ReportContext report = new ReportContext();
 			report.setDataPoints(dataPoints);
@@ -84,10 +80,23 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 			context.put(FacilioConstants.ContextNames.REPORT, report);
 		}
 		else {
-			throw new IllegalArgumentException("In sufficient params for Reaging Analysis");
+			throw new IllegalArgumentException("In sufficient params for Reading Analysis");
 		}
 		
 		return false;
+	}
+	
+	private Map<Long, ResourceContext> getResourceMap(List<ReportAnalysisContext> metrics) throws Exception {
+		List<Long> resourceIds = new ArrayList<>();
+		for (ReportAnalysisContext metric : metrics) {
+			if (metric.getFieldId() != -1 && metric.getParentId() != -1) {
+				resourceIds.add(metric.getParentId());
+			}
+			else {
+				throw new IllegalArgumentException("In sufficient params for Reading Analysis for one of the metrics");
+			}
+		}
+		return ResourceAPI.getResourceAsMapFromIds(resourceIds);
 	}
 
 }
