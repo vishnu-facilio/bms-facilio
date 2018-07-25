@@ -139,6 +139,7 @@ public class EventRulesAPI {
 	
 	public static void updateChildIds (EventRuleContext rule) throws Exception {
 		if (rule.getCriteria() != null) {
+			rule.getCriteria().validatePattern();
 			long criteriaId = CriteriaAPI.addCriteria(rule.getCriteria(), AccountUtil.getCurrentOrg().getId());
 			rule.setCriteriaId(criteriaId);
 		}

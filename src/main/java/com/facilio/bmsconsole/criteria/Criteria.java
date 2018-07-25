@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.util.ExpressionEvaluator;
 
@@ -90,6 +92,141 @@ public class Criteria extends ExpressionEvaluator<Predicate> {
 		return list;
 	}
 	
+	public void validatePattern() {
+		String[] tokens = this.tokenize();
+		postfix(tokens);
+	}
+	
+	public String postfix(String[] tokens) {
+		Stack<String> stack = new Stack<>();
+		List<String> outPut = new ArrayList<>();
+		String prev = null;
+		for (String e: tokens) {
+			boolean pass = isNumber(e) || e.equals("and") || e.equals("or") || e.equals(")") || e.equals("(");
+			if (!pass) {
+				throw new IllegalArgumentException("Invalid Character");
+		    }
+			if (e.equals("(") && prev != null && !prev.equals("(") && !prev.equals("and") && prev.equals("or")) {
+		       throw new IllegalArgumentException("Invalid Expression");
+		    }
+	        else if (e.equals(")") && !prev.equals(')') && !isNumber(prev)) {
+	        	throw new IllegalArgumentException("Invalid Expression");
+	        }
+		    else if ((e.equals("and") || e.equals("or")) && !prev.equals(")") && !isNumber(prev)) {
+		    	throw new IllegalArgumentException("Invalid Expression");
+		    }
+		    else if (isNumber(e) && !prev.equals("(") && !prev.equals("and") && !prev.equals("or")) {
+		    	throw new IllegalArgumentException("Invalid Expression");
+		    }
+			
+			if (e.equals("(")) {
+				stack.push(e);
+			} else if (isNumber(e)) {
+				outPut.add(e);
+			} else if (e.equals("and")) {
+				while (!stack.isEmpty()) {
+					String p = stack.peek();
+					if (p.equals("(") || p.equals("or")) {
+						break;
+					}
+					outPut.add(stack.pop());
+				}
+				stack.add(e);
+			} else if (e.equals("or")) {
+				while (!stack.isEmpty()) {
+					String p = stack.peek();
+					if (p.equals("(")) {
+						break;
+					}
+					outPut.add(stack.pop());
+				}
+				stack.add(e);
+			} else if (e.equals(")")) {
+				while (!stack.isEmpty()) {
+					String p = stack.pop();
+					if (p.equals("(")) {
+						break;
+					}
+					outPut.add(p);
+				}
+			}
+			prev = e;  
+		}
+		if (!stack.isEmpty()) {
+			throw new IllegalArgumentException("Invalid Expression");
+		}
+		return StringUtils.join(outPut.toArray(new String[outPut.size()]));
+	}
+	
+	private String[] tokenize() {
+		List<String> tokens = new ArrayList<>();
+		String curr = "";
+		for (int i = 0; i < this.pattern.length(); i++) {
+			String c = Character.toString(this.pattern.charAt(i));
+			if (c.equals("(")) {
+				tokens.add(c);
+			} else if (c.equals(")")) {
+				if (!curr.isEmpty()) {
+					tokens.add(curr);
+					curr = "";
+				}
+				tokens.add(c);
+			} else if (isNumber(c)) {
+				if (curr.equals("and") || curr.equals("or") || curr.equals("(")) {
+		            tokens.add(curr);
+		            curr = "";
+		        } else if (curr.isEmpty()) {
+		            curr += c;
+		        } else {
+		        	if (isNumber(curr.charAt(curr.length() - 1))) {
+		        		curr += c;
+		        	} else {
+		        		tokens.add(curr);
+		        		curr = c;
+		        	}
+		        }
+			} else if (isAlphabet(c)) {
+				if (!curr.isEmpty() && isNumber(curr.charAt(curr.length() - 1))) {
+		            tokens.add(curr);
+		            curr = "";
+		        }
+				curr += c;
+				if (curr.equals("and") || curr.equals("or")) {
+					tokens.add(curr);
+					curr = "";
+				}
+			} else if (isSpace(c)) {
+				if (!curr.isEmpty()) {
+		            tokens.add(curr);
+		            curr = "";
+		        }
+			} else {
+	          if (!curr.isEmpty()) {
+		        tokens.add(curr);
+		      }
+		      curr = "";
+		      tokens.add(c);
+			}
+		}
+		if (!curr.isEmpty()) {
+			tokens.add(curr);
+		}
+		return tokens.toArray(new String[tokens.size()]);
+	}
+	
+	private boolean isSpace(String c) {
+		return StringUtils.isBlank(c);
+	}
+	private boolean isAlphabet(String c) {
+		return StringUtils.isAlpha(c);
+	}
+	private boolean isNumber(char c) {
+		return isNumber(Character.toString(c));
+	}
+	private boolean isNumber(String c) {
+		return StringUtils.isNumeric(c);
+	}
+
 	private static final Pattern SPLIT_REG_EX = Pattern.compile("([1-9]\\d*)|(\\()|(\\))|(and)|(or)", Pattern.CASE_INSENSITIVE);
 	public Predicate computePredicate() {
 		return computePredicate(null);
