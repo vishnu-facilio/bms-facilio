@@ -259,7 +259,7 @@ public class CognitoUtil {
 			faciliouser.setPortaluser(decodedjwt.getClaim("portaluser").asBoolean());
 			
 			if (!isPortalUser) {
-				String email = faciliouser.getEmail();
+				//String email = faciliouser.getEmail();
 //				String sessionVerify = AwsUtil.getConfig("enable.sessionverify");
 //			if (sessionVerify != null) {
 //					if (Arrays.asList(sessionVerify.split(",")).contains(email)) {

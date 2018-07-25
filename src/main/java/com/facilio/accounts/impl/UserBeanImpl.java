@@ -809,7 +809,7 @@ public long inviteRequester(long orgId, User user) throws Exception {
 				.on("Users.USERID = faciliousers.USERID")
 				.innerJoin("ORG_Users")
 				.on("Users.USERID = ORG_Users.USERID")
-				.andCustomWhere("(faciliousers.email = ? or faciliousers.mobile = ?) AND USER_STATUS = 1 AND DELETED_TIME = -1 and ISDEFAULT = ?", email, email, true);
+				.andCustomWhere("(faciliousers.email = ? or faciliousers.username = ?) AND USER_STATUS = 1 AND DELETED_TIME = -1 and ISDEFAULT = ?", email, email, true);
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -1322,7 +1322,7 @@ public long inviteRequester(long orgId, User user) throws Exception {
 				.on("Users.USERID = faciliousers.USERID")
 				.innerJoin("UserSessions")
 				.on("Users.USERID = UserSessions.USERID")
-				.andCustomWhere("(faciliousers.email = ? or faciliousers.mobile = ? ) AND UserSessions.TOKEN = ? AND UserSessions.IS_ACTIVE = ?",email, email, token, true);
+				.andCustomWhere("(faciliousers.email = ? or faciliousers.username = ? ) AND UserSessions.TOKEN = ? AND UserSessions.IS_ACTIVE = ?",email, email, token, true);
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
