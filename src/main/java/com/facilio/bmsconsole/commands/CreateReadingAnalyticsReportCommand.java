@@ -16,7 +16,6 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
-import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -34,9 +33,10 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<ReportAnalysisContext> metrics = (List<ReportAnalysisContext>) context.get(FacilioConstants.ContextNames.REPORT_Y_FIELDS);
-		DateRange range = (DateRange) context.get(FacilioConstants.ContextNames.DATE_RANGE);
+		long startTime = (long) context.get(FacilioConstants.ContextNames.START_TIME);
+		long endTime = (long) context.get(FacilioConstants.ContextNames.END_TIME);
 		ReportMode mode = (ReportMode) context.get(FacilioConstants.ContextNames.REPORT_MODE);
-		if (metrics != null && !metrics.isEmpty() && range != null) {
+		if (metrics != null && !metrics.isEmpty() && startTime != -1 && endTime != -1) {
 			Map<Long, ResourceContext> resourceMap = getResourceMap(metrics);
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			AggregateOperator xAggr = (AggregateOperator) context.get(FacilioConstants.ContextNames.REPORT_X_AGGR);
@@ -54,7 +54,7 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 			ReportContext report = new ReportContext();
 			report.setDataPoints(dataPoints);
 			report.setDateOperator(DateOperators.BETWEEN);
-			report.setDateValue(range.toString());
+			report.setDateValue(startTime+", "+endTime);
 			
 			context.put(FacilioConstants.ContextNames.REPORT, report);
 		}
