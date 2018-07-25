@@ -1,5 +1,7 @@
 package com.facilio.report.context;
 
+import java.util.List;
+
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -276,8 +278,32 @@ public class ReportDataPointContext {
 	public void setOrderByFunc(int orderByFunc) {
 		this.orderByFunc = OrderByFunction.valueOf(orderByFunc);
 	}
+	
+	private List<FacilioField> groupByFields;
+	public List<FacilioField> getGroupByFields() {
+		return groupByFields;
+	}
+	public void setGroupByFields(List<FacilioField> groupByFields) {
+		this.groupByFields = groupByFields;
+	}
+	
+	private long dateFieldId = -1;
+	public long getDateFieldId() {
+		return dateFieldId;
+	}
+	public void setDateFieldId(long dateFieldId) {
+		this.dateFieldId = dateFieldId;
+	}
 
-	public enum OrderByFunction {
+	private FacilioField dateField;
+	public FacilioField getDateField() {
+		return dateField;
+	}
+	public void setDateField(FacilioField dateField) {
+		this.dateField = dateField;
+	}
+
+	public static enum OrderByFunction {
 		ACCENDING ("ASC"),
 		DESCENDING ("DESC");
 		

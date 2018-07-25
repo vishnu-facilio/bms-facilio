@@ -2,6 +2,8 @@ package com.facilio.report.context;
 
 import java.util.List;
 
+import com.facilio.bmsconsole.criteria.Operator;
+
 public class ReportContext {
 
 	private long id = -1;
@@ -90,5 +92,30 @@ public class ReportContext {
 	}
 	public void setxCriteria(ReportXCriteriaContext xCriteria) {
 		this.xCriteria = xCriteria;
+	}
+	
+	private Operator dateOperator;
+	public Operator getDateOperatorEnum() {
+		return dateOperator;
+	}
+	public void setDateOperator(Operator dateOperator) {
+		this.dateOperator = dateOperator;
+	}
+	public int getDateOperator() {
+		if (dateOperator != null) {
+			return dateOperator.getOperatorId();
+		}
+		return -1;
+	}
+	public void setDateOperator(int dateOperator) {
+		this.dateOperator = Operator.OPERATOR_MAP.get(dateOperator);
+	}
+	
+	private String dateValue;
+	public String getDateValue() {
+		return dateValue;
+	}
+	public void setDateValue(String dateValue) {
+		this.dateValue = dateValue;
 	}
 }

@@ -36,7 +36,6 @@ public class FetchReportDataCommand implements Command {
 			return false;
 		}
 		
-		Condition dateFilter = (Condition) context.get(FacilioConstants.ContextNames.DATE_FILTER);
 		List<List<ReportDataPointContext>> groupedDataPoints = groupDataPoints(report.getDataPoints());
 		List<Pair<List<ReportDataPointContext>, List<Map<String, Object>>>> reportData = new ArrayList<>();
 		for (List<ReportDataPointContext> dataPointList : groupedDataPoints) {
@@ -46,8 +45,14 @@ public class FetchReportDataCommand implements Command {
 																					.andCriteria(dp.getCriteria())
 																					;
 			applyOrderBy(dp, selectBuilder);
-			if (dateFilter != null) {
-				selectBuilder.andCondition(dateFilter);
+			if (report.getDateOperatorEnum() != null) {
+				if (dp.getDateField() == null) {
+					throw new IllegalArgumentException("Date Field for datapoint cannot be null when report has date filter");
+				}
+				if (report.getDateOperatorEnum().isValueNeeded() && (report.getDateValue() == null || report.getDateValue().isEmpty())) {
+					throw new IllegalArgumentException("Date Filter value cannot be null for the Date Operator :  "+report.getDateOperatorEnum());
+				}
+				selectBuilder.andCondition(CriteriaAPI.getCondition(dp.getDateField(), report.getDateValue(), report.getDateOperatorEnum()));
 			}
 			List<FacilioField> fields = new ArrayList<>();
 			if (dp.getyAxisAggrEnum() != null) {

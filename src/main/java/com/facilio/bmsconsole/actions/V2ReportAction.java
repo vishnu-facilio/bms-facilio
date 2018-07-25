@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.List;
+
 import org.apache.commons.chain.Chain;
 
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -7,16 +9,17 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.report.context.ReportAnalysisContext;
+import com.facilio.report.context.ReportAnalysisContext.ReportMode;
 
 public class V2ReportAction extends FacilioAction {
 	public String fetchReadingsData() {
 		try {
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.DATE_RANGE, range);
-			context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
-			context.put(FacilioConstants.ContextNames.READING_FIELD, fieldId);
 			context.put(FacilioConstants.ContextNames.REPORT_X_AGGR, xAggr);
-			context.put(FacilioConstants.ContextNames.REPORT_Y_AGGR, yAggr);
+			context.put(FacilioConstants.ContextNames.REPORT_Y_FIELDS, fields);
+			context.put(FacilioConstants.ContextNames.REPORT_MODE, mode);
 			
 			Chain fetchReadingDataChain = ReadOnlyChainFactory.fetchReadingReportChain();
 			fetchReadingDataChain.execute(context);
@@ -41,22 +44,6 @@ public class V2ReportAction extends FacilioAction {
 		this.range = range;
 	}
 	
-	private long parentId = -1;
-	public long getParentId() {
-		return parentId;
-	}
-	public void setParentId(long parentId) {
-		this.parentId = parentId;
-	}
-	
-	private long fieldId = -1;
-	public long getFieldId() {
-		return fieldId;
-	}
-	public void setFieldId(long fieldId) {
-		this.fieldId = fieldId;
-	}
-	
 	private AggregateOperator xAggr;
 	public int getxAggr() {
 		if (xAggr != null) {
@@ -68,14 +55,22 @@ public class V2ReportAction extends FacilioAction {
 		this.xAggr = AggregateOperator.getAggregateOperator(xAggr);
 	}
 	
-	private AggregateOperator yAggr;
-	public int getyAggr() {
-		if (yAggr != null) {
-			return yAggr.getValue();
+	private List<ReportAnalysisContext> fields;
+	public List<ReportAnalysisContext> getFields() {
+		return fields;
+	}
+	public void setFields(List<ReportAnalysisContext> fields) {
+		this.fields = fields;
+	}
+	
+	private ReportAnalysisContext.ReportMode mode = ReportMode.TIMESERIES;
+	public int getMode() {
+		if (mode != null) {
+			return mode.getValue();
 		}
 		return -1;
 	}
-	public void setyAggr(int yAggr) {
-		this.yAggr = AggregateOperator.getAggregateOperator(yAggr);
+	public void setMode(int mode) {
+		this.mode = ReportMode.valueOf(mode);
 	}
 }
