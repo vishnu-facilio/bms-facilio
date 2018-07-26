@@ -24,10 +24,12 @@ public class FacilioLogHandler extends Handler {
     }
 
     public void publish(LogRecord record) {
-        String loggerName = record.getLoggerName();
-        Logger logger = LOGGER_MAP.getOrDefault(loggerName, LogManager.getLogger(loggerName));
-        logger.log(LEVEL_MAP.getOrDefault(record.getLevel(), Priority.INFO), record.getMessage(), record.getThrown());
-        LOGGER_MAP.put(loggerName, logger);
+        if(record.getLevel().intValue() > Level.INFO.intValue()) {
+            String loggerName = record.getLoggerName();
+            Logger logger = LOGGER_MAP.getOrDefault(loggerName, LogManager.getLogger(loggerName));
+            logger.log(LEVEL_MAP.getOrDefault(record.getLevel(), Priority.INFO), record.getMessage(), record.getThrown());
+            LOGGER_MAP.put(loggerName, logger);
+        }
     }
 
     public void flush() {
