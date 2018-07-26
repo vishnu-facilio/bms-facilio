@@ -115,7 +115,6 @@ public class AwsUtil
 	private static AmazonS3 AWS_S3_CLIENT = null;
 	private static AmazonRekognition AWS_REKOGNITION_CLIENT = null;
 
-	private static volatile AWSCredentials basicCredentials = null;
 	private static volatile AWSCredentialsProvider credentialsProvider = null;
 	private static volatile AWSIot awsIot = null;
 	private static volatile AmazonSQS awsSQS = null;
@@ -156,7 +155,7 @@ public class AwsUtil
     
     public static CreateKeysAndCertificateResult getCertificateResult()
     {
-    	AWSIot awsIot = AWSIotClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(getBasicAwsCredentials())).build();
+    	AWSIot awsIot = AWSIotClientBuilder.standard().withCredentials(InstanceProfileCredentialsProvider.createAsyncRefreshingProvider(false)).build();
     
     	CreateKeysAndCertificateRequest cr = new CreateKeysAndCertificateRequest().withSetAsActive(true);
     	CreateKeysAndCertificateResult certResult = awsIot.createKeysAndCertificate(cr);
@@ -346,10 +345,9 @@ public class AwsUtil
 				AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
 						.withRegion(Regions.US_WEST_2).withCredentials(getAWSCredentialsProvider()).build();
 				client.sendEmail(request);
-				System.out.println("Email sent!");
+				logger.debug("Email sent!");
 			} catch (Exception ex) {
-				System.out.println("The email was not sent.");
-				System.out.println("Error message: " + ex.getMessage());
+				logger.info("Error message: " + ex.getMessage());
 				throw ex;
 			}
 		}
@@ -394,22 +392,11 @@ public class AwsUtil
 		}
 	}
 
-	private static AWSCredentials getBasicAwsCredentials() {
-    	if(basicCredentials == null) {
-    		synchronized (LOCK) {
-				if (basicCredentials == null) {
-					basicCredentials = new InstanceProfileCredentialsProvider().getCredentials();
-				}
-			}
-		}
-		return basicCredentials;
-	}
-
 	public static AWSCredentialsProvider getAWSCredentialsProvider() {
     	if(credentialsProvider == null){
     		synchronized (LOCK) {
     			if(credentialsProvider == null){
-					credentialsProvider = new AWSStaticCredentialsProvider(getBasicAwsCredentials());
+					credentialsProvider = InstanceProfileCredentialsProvider.createAsyncRefreshingProvider(false);
 				}
 			}
 		}
