@@ -102,20 +102,20 @@ public class Criteria extends ExpressionEvaluator<Predicate> {
 		List<String> outPut = new ArrayList<>();
 		String prev = null;
 		for (String e: tokens) {
-			boolean pass = isNumber(e) || e.equals("and") || e.equals("or") || e.equals(")") || e.equals("(");
+			boolean pass = isNumber(e) || e.equalsIgnoreCase("and") || e.equalsIgnoreCase("or") || e.equals(")") || e.equals("(");
 			if (!pass) {
 				throw new IllegalArgumentException("Invalid Character");
 		    }
-			if (e.equals("(") && prev != null && !prev.equals("(") && !prev.equals("and") && prev.equals("or")) {
+			if (e.equals("(") && prev != null && !prev.equals("(") && !prev.equalsIgnoreCase("and") && prev.equalsIgnoreCase("or")) {
 		       throw new IllegalArgumentException("Invalid Expression");
 		    }
 	        else if (e.equals(")") && !prev.equals(')') && !isNumber(prev)) {
 	        	throw new IllegalArgumentException("Invalid Expression");
 	        }
-		    else if ((e.equals("and") || e.equals("or")) && !prev.equals(")") && !isNumber(prev)) {
+		    else if ((e.equalsIgnoreCase("and") || e.equalsIgnoreCase("or")) && !prev.equals(")") && !isNumber(prev)) {
 		    	throw new IllegalArgumentException("Invalid Expression");
 		    }
-		    else if (isNumber(e) && !prev.equals("(") && !prev.equals("and") && !prev.equals("or")) {
+		    else if (isNumber(e) && !prev.equals("(") && !prev.equalsIgnoreCase("and") && !prev.equalsIgnoreCase("or")) {
 		    	throw new IllegalArgumentException("Invalid Expression");
 		    }
 			
@@ -123,16 +123,16 @@ public class Criteria extends ExpressionEvaluator<Predicate> {
 				stack.push(e);
 			} else if (isNumber(e)) {
 				outPut.add(e);
-			} else if (e.equals("and")) {
+			} else if (e.equalsIgnoreCase("and")) {
 				while (!stack.isEmpty()) {
 					String p = stack.peek();
-					if (p.equals("(") || p.equals("or")) {
+					if (p.equals("(") || p.equalsIgnoreCase("or")) {
 						break;
 					}
 					outPut.add(stack.pop());
 				}
 				stack.add(e);
-			} else if (e.equals("or")) {
+			} else if (e.equalsIgnoreCase("or")) {
 				while (!stack.isEmpty()) {
 					String p = stack.peek();
 					if (p.equals("(")) {
@@ -172,7 +172,7 @@ public class Criteria extends ExpressionEvaluator<Predicate> {
 				}
 				tokens.add(c);
 			} else if (isNumber(c)) {
-				if (curr.equals("and") || curr.equals("or") || curr.equals("(")) {
+				if (curr.equalsIgnoreCase("and") || curr.equalsIgnoreCase("or") || curr.equalsIgnoreCase("(")) {
 		            tokens.add(curr);
 		            curr = "";
 		        } else if (curr.isEmpty()) {
@@ -191,7 +191,7 @@ public class Criteria extends ExpressionEvaluator<Predicate> {
 		            curr = "";
 		        }
 				curr += c;
-				if (curr.equals("and") || curr.equals("or")) {
+				if (curr.equalsIgnoreCase("and") || curr.equalsIgnoreCase("or")) {
 					tokens.add(curr);
 					curr = "";
 				}
