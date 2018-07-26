@@ -421,7 +421,7 @@ public long inviteRequester(long orgId, User user) throws Exception {
 		CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(user), placeholders);
 		placeholders.put("invitelink", inviteLink);
 		
-		AccountEmailTemplate.EMAIL_VERIFICATION.send(placeholders);
+		 // AccountEmailTemplate.EMAIL_VERIFICATION.send(placeholders);
 
 	}
 
