@@ -295,7 +295,7 @@ public class FacilioAuthAction extends ActionSupport {
         boolean passwordValid = false;
         Connection conn = null;
         PreparedStatement pstmt = null;
-        ResultSet rs;
+        ResultSet rs=null;
         try {
             conn = FacilioConnectionPool.INSTANCE.getConnection();
             pstmt = conn.prepareStatement("SELECT Users.password FROM Users inner join faciliousers on Users.USERID=faciliousers.USERID WHERE (faciliousers.email = ? or faciliousers.username = ?) and USER_VERIFIED=1");
@@ -310,11 +310,15 @@ public class FacilioAuthAction extends ActionSupport {
                     passwordValid = true;
                 }
             }
+            else
+            {
+            	LOGGER.log(Level.INFO, "No records found for  "+emailaddress);
+            }
 
         } catch(SQLException | RuntimeException e) {
             LOGGER.log(Level.INFO, "Exception while verifying password, ", e);
         } finally {
-            DBUtil.closeAll(conn, pstmt);
+            DBUtil.closeAll(conn, pstmt,rs);
         }
 
         return passwordValid;
