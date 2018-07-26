@@ -80,12 +80,12 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 		
 		//Temp code. To be removed later
 		startTime = System.currentTimeMillis();
-		Record record = (Record) context.get(FacilioConstants.ContextNames.KINESIS_RECORD);
-		if (record != null) {
-			IRecordProcessorCheckpointer checkPointer = (IRecordProcessorCheckpointer) context.get(FacilioConstants.ContextNames.KINESIS_CHECK_POINTER);
-			checkPointer.checkpoint(record);
-			LOGGER.info("Time taken to update checkpoint : "+(System.currentTimeMillis() - startTime));
-		}
+//		Record record = (Record) context.get(FacilioConstants.ContextNames.KINESIS_RECORD);
+//		if (record != null) {
+//			IRecordProcessorCheckpointer checkPointer = (IRecordProcessorCheckpointer) context.get(FacilioConstants.ContextNames.KINESIS_CHECK_POINTER);
+//			checkPointer.checkpoint(record);
+//			LOGGER.info("Time taken to update checkpoint : "+(System.currentTimeMillis() - startTime));
+//		}
 		return false;
 	}
 	

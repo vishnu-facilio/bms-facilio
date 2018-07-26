@@ -59,10 +59,10 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 					long startTime = System.currentTimeMillis();
 		            LOGGER.info("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + " TIME::::" +timeStamp);
 					ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-					bean.processTimeSeries(timeStamp, payLoad, record,processRecordsInput.getCheckpointer());
+					bean.processTimeSeries(timeStamp, payLoad);
 					LOGGER.info("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + "COMPLETED:::::::TIME TAKEN : "+(System.currentTimeMillis() - startTime));
 //					Temp fix
-//					processRecordsInput.getCheckpointer().checkpoint(record);
+					processRecordsInput.getCheckpointer().checkpoint(record);
 				}
             }
             catch (Exception e) {

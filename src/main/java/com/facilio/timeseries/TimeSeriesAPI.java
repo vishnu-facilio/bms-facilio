@@ -35,21 +35,21 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class TimeSeriesAPI {
 
-	public static void processPayLoad(long ttime, JSONObject payLoad) throws Exception {
-		processPayLoad(ttime, payLoad, null, null);
-	}
+//	public static void processPayLoad(long ttime, JSONObject payLoad) throws Exception {
+//		processPayLoad(ttime, payLoad, null, null);
+//	}
 	
-	public static void processPayLoad(long ttime, JSONObject payLoad, Record record, IRecordProcessorCheckpointer checkpointer) throws Exception {
+	public static void processPayLoad(long ttime, JSONObject payLoad) throws Exception {
 		
 		long timeStamp = getTimeStamp(ttime, payLoad);
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TIMESTAMP , timeStamp);
 		context.put(FacilioConstants.ContextNames.PAY_LOAD , payLoad);
 		//Temp code. To be removed later *START*
-		if (record != null) {
-			context.put(FacilioConstants.ContextNames.KINESIS_RECORD, record);
-			context.put(FacilioConstants.ContextNames.KINESIS_CHECK_POINTER, checkpointer);
-		}
+//		if (record != null) {
+//			context.put(FacilioConstants.ContextNames.KINESIS_RECORD, record);
+//			context.put(FacilioConstants.ContextNames.KINESIS_CHECK_POINTER, checkpointer);
+//		}
 		//Temp code. To be removed later *END*
 		Chain processDataChain = FacilioChainFactory.getProcessDataChain();
 		processDataChain.execute(context);
