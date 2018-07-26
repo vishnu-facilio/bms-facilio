@@ -1,8 +1,9 @@
 package com.facilio.tasker.job;
 
+import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.queue.ObjectQueue;
 
-public abstract class InstantJob extends FacilioJob {
+public abstract class InstantJob {
 
     private String receiptHandle;
 
@@ -10,15 +11,15 @@ public abstract class InstantJob extends FacilioJob {
         this.receiptHandle = receiptHandle;
     }
 
-    public String getReceiptHandle() {
+    private String getReceiptHandle() {
         return receiptHandle;
     }
 
-    public abstract void execute();
-
-    public void run() {
-        execute();
+    public final void _execute(FacilioContext context) {
+        execute(context);
         ObjectQueue.deleteObject("instantJob", getReceiptHandle());
     }
+
+    public abstract void execute(FacilioContext context);
 
 }
