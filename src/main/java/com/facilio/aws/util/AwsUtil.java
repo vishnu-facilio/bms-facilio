@@ -179,14 +179,14 @@ public class AwsUtil
     
     public static AmazonS3 getAmazonS3Client() {
     	if (AWS_S3_CLIENT == null) {
-        	AWS_S3_CLIENT = AmazonS3ClientBuilder.standard().withRegion(AwsUtil.getConfig("region")).withCredentials(getAWSCredentialsProvider()).build();
+        	AWS_S3_CLIENT = AmazonS3ClientBuilder.standard().withRegion(region).withCredentials(getAWSCredentialsProvider()).build();
     	}
     	return AWS_S3_CLIENT;
     }
     
     public static AmazonRekognition getAmazonRekognitionClient() {
     	if (AWS_REKOGNITION_CLIENT == null) {
-    		AWS_REKOGNITION_CLIENT = AmazonRekognitionClientBuilder.standard().withRegion(AwsUtil.getConfig("region")).withCredentials(getAWSCredentialsProvider()).build();
+    		AWS_REKOGNITION_CLIENT = AmazonRekognitionClientBuilder.standard().withRegion(region).withCredentials(getAWSCredentialsProvider()).build();
     	}
     	return AWS_REKOGNITION_CLIENT;
     }
