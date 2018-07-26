@@ -112,6 +112,7 @@ public class WorkflowRuleAPI {
 	
 	private static final void updateWorkflowRuleChildIds(WorkflowRuleContext workflowRuleContext) throws Exception {
 		if(workflowRuleContext.getCriteria() != null) {
+			workflowRuleContext.getCriteria().validatePattern();
 			long criteriaId = CriteriaAPI.addCriteria(workflowRuleContext.getCriteria(),AccountUtil.getCurrentOrg().getId());
 			workflowRuleContext.setCriteriaId(criteriaId);
 		}
