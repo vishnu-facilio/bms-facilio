@@ -46,7 +46,6 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 			long midnightTimeInMillisec = DateTimeUtil.getDayStartTime();
 			long startTime = midnightTimeInMillisec - (anomalyDuration * 24 * 60 * 60 * 1000L);
 
-			logger.log(Level.INFO, "selected Meters ");
 			for (EnergyMeterContext energyMeter : allEnergyMeters) {
 
 				// logger.log(Level.INFO, "" + energyMeter.getId());
