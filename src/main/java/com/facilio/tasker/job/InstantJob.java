@@ -1,6 +1,8 @@
 package com.facilio.tasker.job;
 
-public abstract class InstantJob implements Runnable {
+import com.facilio.queue.ObjectQueue;
+
+public abstract class InstantJob extends FacilioJob {
 
     private String receiptHandle;
 
@@ -11,4 +13,12 @@ public abstract class InstantJob implements Runnable {
     public String getReceiptHandle() {
         return receiptHandle;
     }
+
+    public abstract void execute();
+
+    public void run() {
+        execute();
+        ObjectQueue.deleteObject("instantJob", getReceiptHandle());
+    }
+
 }
