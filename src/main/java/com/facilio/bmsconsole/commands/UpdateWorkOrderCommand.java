@@ -12,6 +12,7 @@ import org.apache.log4j.LogManager;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -83,6 +84,7 @@ public class UpdateWorkOrderCommand implements Command {
 									}
 								} catch (Exception e) {
 									log.info("Exception occurred while handling work hours", e);
+									CommonCommandUtil.emailException(ShiftAPI.class.getName(), "Exception occurred while handling work hours", e);
 								}
 							}
 						}
@@ -116,6 +118,7 @@ public class UpdateWorkOrderCommand implements Command {
 					}
 					catch(Exception e) {
 						log.info("Exception occurred while handling work hours", e);
+						CommonCommandUtil.emailException(ShiftAPI.class.getName(), "Exception occurred while handling work hours", e);
 					}
 				}
 			}
