@@ -60,5 +60,30 @@ public class AddSpaceCommand implements Command {
 			space.setSiteId(floor.getSiteId());
 			space.setBuilding(floor.getBuilding());
 		}
+		if (space.getParentSpace() != null && space.getParentSpace().getId() > -1) {
+			long spaceId = space.getParentSpace().getId();
+			SpaceContext spaces = SpaceAPI.getSpace(spaceId);
+			space.setSiteId(spaces.getSiteId());
+			space.setBuilding(spaces.getBuilding());
+			space.setFloorId(spaces.getFloorId());
+			if (spaces.getSpaceId3() > 0) {
+				space.setSpaceId4(spaceId);
+				space.setSpaceId3(spaces.getSpaceId3());
+				space.setSpaceId2(spaces.getSpaceId2());
+				space.setSpaceId1(spaces.getSpaceId1());
+			}
+			else if (spaces.getSpaceId2() > 0) {
+				space.setSpaceId3(spaceId);
+				space.setSpaceId2(spaces.getSpaceId2());
+				space.setSpaceId1(spaces.getSpaceId1());
+			}
+			else if (spaces.getSpaceId1() > 0) {
+				space.setSpaceId2(spaceId);
+				space.setSpaceId1(spaces.getSpaceId1());
+			}
+			else {
+				space.setSpaceId1(spaceId);
+			}
+		}
 	}
 }

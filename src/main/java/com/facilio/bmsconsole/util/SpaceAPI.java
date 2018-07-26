@@ -115,6 +115,10 @@ public class SpaceAPI {
 				updateSpace.setFloorId(space.getId());
 				space.setFloorId(space.getId());
 				break;
+			case SPACE:
+				updateSpace.setSpaceId(space.getId());
+				space.setSpaceId(space.getId());
+				break;
 			default:
 				break;
 		}
