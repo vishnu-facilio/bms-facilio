@@ -115,6 +115,7 @@ public class AwsUtil
 	private static AmazonS3 AWS_S3_CLIENT = null;
 	private static AmazonRekognition AWS_REKOGNITION_CLIENT = null;
 
+	private static volatile AWSCredentials basicCredentials = null;
 	private static volatile AWSCredentialsProvider credentialsProvider = null;
 	private static volatile AWSIot awsIot = null;
 	private static volatile AmazonSQS awsSQS = null;
@@ -392,11 +393,26 @@ public class AwsUtil
 		}
 	}
 
+	private static AWSCredentials getBasicAwsCredentials() {
+		if(basicCredentials == null) {
+			synchronized (LOCK) {
+				if (basicCredentials == null) {
+					basicCredentials = new BasicAWSCredentials(AwsUtil.getConfig(AWS_ACCESS_KEY_ID), AwsUtil.getConfig(AWS_SECRET_KEY_ID));
+				}
+			}
+		}
+		return basicCredentials;
+	}
+
 	public static AWSCredentialsProvider getAWSCredentialsProvider() {
-    	if(credentialsProvider == null){
-    		synchronized (LOCK) {
-    			if(credentialsProvider == null){
-					credentialsProvider = InstanceProfileCredentialsProvider.createAsyncRefreshingProvider(false);
+		if(credentialsProvider == null){
+			synchronized (LOCK) {
+				if(credentialsProvider == null){
+					if("stage".equalsIgnoreCase(AwsUtil.getConfig("environment"))) {
+						credentialsProvider = InstanceProfileCredentialsProvider.createAsyncRefreshingProvider(false);
+					} else {
+						credentialsProvider = new AWSStaticCredentialsProvider(getBasicAwsCredentials());
+					}
 				}
 			}
 		}

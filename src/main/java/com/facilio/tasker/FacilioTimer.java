@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.queue.ObjectQueue;
 import org.json.simple.parser.ParseException;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -79,7 +81,12 @@ public class FacilioTimer {
 		}
 		JobStore.addJob(jc);
 	}
-	
+
+	public static void scheduleInstantJob(String jobName, FacilioContext context){
+		context.put("JOB", jobName);
+		ObjectQueue.sendMessage("instantJob", context);
+	}
+
 	public static void scheduleOneTimeJob(long jobId, String jobName, int delayInSec, String executorName) throws Exception {
 		long nextExecutionTime = (System.currentTimeMillis()/1000)+delayInSec;
 		scheduleOneTimeJob(jobId, jobName, nextExecutionTime, executorName);
