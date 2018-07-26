@@ -49,7 +49,8 @@ public interface ModuleCRUDBean {
 	public long processEvents(long timeStamp, JSONObject payLoad, List<EventRuleContext> eventRules, 
 			Map<String, Integer> eventCountMap, long lastEventTime) throws Exception ;
 	
-	public void processTimeSeries(long timeStamp, JSONObject payLoad) throws Exception;
+	public void processTimeSeries(long timeStamp, JSONObject payLoad, Record record, 
+			IRecordProcessorCheckpointer checkpointer) throws Exception;
 	
 	public List<EventRuleContext> getActiveEventRules() throws Exception;
 }
