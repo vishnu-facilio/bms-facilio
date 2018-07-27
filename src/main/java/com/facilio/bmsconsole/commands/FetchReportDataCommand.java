@@ -9,6 +9,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.tuple.Pair;
 
+import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -156,11 +157,17 @@ public class FetchReportDataCommand implements Command {
 				xAggrField = dp.getxAxisField();
 			}
 			groupBy.add(xAggrField.getColumnName());
+			if (dp.getxAxisAggrEnum() instanceof DateAggregateOperator) {
+				fields.add(((DateAggregateOperator)dp.getxAxisAggrEnum()).getTimestampField(dp.getxAxisField()));
+			}
+			else {
+				fields.add(xAggrField);
+			}
 		}
 		else {
 			xAggrField = dp.getxAxisField();
+			fields.add(xAggrField);
 		}
-		fields.add(xAggrField);
 		return xAggrField;
 	}
 	

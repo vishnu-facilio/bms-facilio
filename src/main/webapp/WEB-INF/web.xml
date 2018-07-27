@@ -39,6 +39,15 @@
     </filter-mapping>
 
     <filter>
+        <filter-name>HealthFilter</filter-name>
+        <filter-class>com.facilio.filters.HealthCheckFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>HealthFilter</filter-name>
+        <url-pattern>/api/health</url-pattern>
+    </filter-mapping>
+    <filter>
         <filter-name>AccessLogFilter</filter-name>
         <filter-class>com.facilio.filters.AccessLogFilter</filter-class>
     </filter>

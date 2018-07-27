@@ -20,6 +20,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import com.facilio.filters.HealthCheckFilter;
 import com.facilio.server.ServerInfo;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -158,6 +159,7 @@ PortalAuthInterceptor.PORTALDOMAIN = com.facilio.aws.util.AwsUtil.getConfig("por
 			System.out.println("Loading the domain name as ######"+PortalAuthInterceptor.PORTALDOMAIN );
 			
 			initLocalHostName();
+			HealthCheckFilter.setStatus(200);
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
