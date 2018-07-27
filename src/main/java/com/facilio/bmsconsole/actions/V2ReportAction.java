@@ -9,8 +9,8 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.report.context.ReportAnalysisContext;
-import com.facilio.report.context.ReportAnalysisContext.ReportMode;
+import com.facilio.report.context.ReadingAnalysisContext;
+import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
 
 public class V2ReportAction extends FacilioAction {
 	public String fetchReadingsData() {
@@ -23,22 +23,60 @@ public class V2ReportAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.START_TIME, startTime);
 			context.put(FacilioConstants.ContextNames.END_TIME, endTime);
 			context.put(FacilioConstants.ContextNames.REPORT_X_AGGR, xAggr);
-			context.put(FacilioConstants.ContextNames.REPORT_Y_FIELDS, FieldUtil.getAsBeanListFromJsonArray(fieldArray, ReportAnalysisContext.class));
+			context.put(FacilioConstants.ContextNames.REPORT_Y_FIELDS, FieldUtil.getAsBeanListFromJsonArray(fieldArray, ReadingAnalysisContext.class));
 			context.put(FacilioConstants.ContextNames.REPORT_MODE, mode);
 			
 			Chain fetchReadingDataChain = ReadOnlyChainFactory.fetchReadingReportChain();
 			fetchReadingDataChain.execute(context);
 			
-			setResult("report", context.get(FacilioConstants.ContextNames.REPORT));
-			setResult("reportXValues", context.get(FacilioConstants.ContextNames.REPORT_X_VALUES));
-			setResult("reportData", context.get(FacilioConstants.ContextNames.REPORT_DATA));
-			return SUCCESS;
+			return setReportResult(context);
 		}
 		catch (Exception e) {
 			setResponseCode(1);
 			setMessage(e);
 			return ERROR;
 		}
+	}
+	
+	private ReadingAnalysisContext.ReportMode mode = ReportMode.TIMESERIES;
+	public int getMode() {
+		if (mode != null) {
+			return mode.getValue();
+		}
+		return -1;
+	}
+	public void setMode(int mode) {
+		this.mode = ReportMode.valueOf(mode);
+	}
+	
+	public String fetchWorkorderData() {
+		try {
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.START_TIME, startTime);
+			context.put(FacilioConstants.ContextNames.END_TIME, endTime);
+			context.put(FacilioConstants.ContextNames.REPORT_X_AGGR, xAggr);
+			return setReportResult(context);
+		}
+		catch (Exception e) {
+			setResponseCode(1);
+			setMessage(e);
+			return ERROR;
+		}
+	}
+	
+	private String setReportResult(FacilioContext context) {
+		setResult("report", context.get(FacilioConstants.ContextNames.REPORT));
+		setResult("reportXValues", context.get(FacilioConstants.ContextNames.REPORT_X_VALUES));
+		setResult("reportData", context.get(FacilioConstants.ContextNames.REPORT_DATA));
+		return SUCCESS;
+	}
+	
+	private String fields;
+	public String getFields() {
+		return fields;
+	}
+	public void setFields(String fields) {
+		this.fields = fields;
 	}
 	
 	private long startTime = -1;
@@ -68,22 +106,4 @@ public class V2ReportAction extends FacilioAction {
 		this.xAggr = AggregateOperator.getAggregateOperator(xAggr);
 	}
 	
-	private String fields;
-	public String getFields() {
-		return fields;
-	}
-	public void setFields(String fields) {
-		this.fields = fields;
-	}
-
-	private ReportAnalysisContext.ReportMode mode = ReportMode.TIMESERIES;
-	public int getMode() {
-		if (mode != null) {
-			return mode.getValue();
-		}
-		return -1;
-	}
-	public void setMode(int mode) {
-		this.mode = ReportMode.valueOf(mode);
-	}
 }
