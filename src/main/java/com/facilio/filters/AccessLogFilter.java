@@ -22,7 +22,7 @@ public class AccessLogFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         long startTime = System.currentTimeMillis();
-        LoggingEvent event = new LoggingEvent(LOGGER.getName(), LOGGER.getParent(), Priority.INFO, "", null);
+        LoggingEvent event = new LoggingEvent(LOGGER.getName(), LOGGER.getParent(), Level.INFO, "", null);
         String remoteIp = request.getHeader("X-Forwarded-For");
         if(remoteIp == null) {
             remoteIp = request.getRemoteAddr();
@@ -40,6 +40,7 @@ public class AccessLogFilter implements Filter {
         event.setProperty("query", queryString);
         filterChain.doFilter(servletRequest, response);
         long timeTaken = System.currentTimeMillis()-startTime;
+        event.setProperty("responseCode", String.valueOf(response.getStatus()));
         event.setProperty("timetaken", String.valueOf(timeTaken/1000));
         event.setProperty("timeInMillis", String.valueOf(timeTaken));
         LOGGER.callAppenders(event);
