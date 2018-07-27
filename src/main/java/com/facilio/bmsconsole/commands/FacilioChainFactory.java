@@ -990,12 +990,12 @@ public class FacilioChainFactory {
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
-	
 	public static Chain getAllSpaceChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForSpace());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GetAllSpaceCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;

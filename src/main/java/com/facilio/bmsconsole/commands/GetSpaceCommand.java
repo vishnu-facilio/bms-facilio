@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -63,6 +64,30 @@ public class GetSpaceCommand implements Command {
 				{
 					space.setSpaceCategory(getSpaceCategoryContext(spaceCategory.getId()));
 				}
+				long spaceId1 = space.getSpaceId1();
+				if(spaceId1 != -1)
+				{
+					SpaceContext childSpaces1 = SpaceAPI.getSpace(spaceId1);
+					space.setSpace1(childSpaces1);
+				}
+				long spaceId2 = space.getSpaceId2();
+				if(spaceId2 != -1)
+				{
+					SpaceContext childSpaces2 = SpaceAPI.getSpace(spaceId2);
+					space.setSpace2(childSpaces2);
+				}
+				long spaceId3 = space.getSpaceId3();
+				if(spaceId3 != -1)
+				{
+					SpaceContext childSpaces1 = SpaceAPI.getSpace(spaceId3);
+					space.setSpace3(childSpaces1);
+				}
+				SpaceContext tempSpace4 = space.getSpace4();
+				if(tempSpace4 != null)
+				{
+					SpaceContext childSpaces1 = SpaceAPI.getSpace(tempSpace4.getId());
+					space.setSpace4(childSpaces1);
+				}
 				context.put(FacilioConstants.ContextNames.SPACE, space);
 			}
 			
@@ -74,6 +99,25 @@ public class GetSpaceCommand implements Command {
 		return false;
 	}
 	
+//	public SpaceContext getSpaceContext(long Id) throws Exception
+//	{
+//		SpaceContext spaceContext = null;
+//		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+//		FacilioModule module  = modBean.getModule(FacilioConstants.ContextNames.SPACE);
+//		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SPACE);
+//		SelectRecordsBuilder<SpaceContext> builder = new SelectRecordsBuilder<SpaceContext>()
+//				.module(module)
+//				.beanClass(SpaceContext.class)
+//				.select(fields)
+//				.andCondition(CriteriaAPI.getIdCondition(Id, module));
+//		List<SpaceContext> spaceContexts = builder.get();
+//		if(spaceContexts.size() > 0)
+//		{
+//			spaceContext = spaceContexts.get(0);
+//		}
+//		return spaceContext;
+//	}
+//	
 	public SpaceCategoryContext getSpaceCategoryContext(long Id) throws Exception
 	{
 		SpaceCategoryContext spaceCategory = null;

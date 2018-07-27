@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.commons.chain.Chain;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -29,6 +30,12 @@ public class SpaceAction extends ActionSupport {
 	public String spaceList() throws Exception 
 	{
 		FacilioContext context = new FacilioContext();
+		if(getFilters() != null)
+ 		{	
+	 		JSONParser parser = new JSONParser();
+	 		JSONObject json = (JSONObject) parser.parse(getFilters());
+	 		context.put(FacilioConstants.ContextNames.FILTERS, json);
+ 		}
 		if (getSiteId() > 0) {
 			context.put(FacilioConstants.ContextNames.SITE_ID, getSiteId());
 		}
@@ -197,6 +204,13 @@ public class SpaceAction extends ActionSupport {
 		this.actionForm = actionForm;
 	}
 	
+	String filters;
+	public void setFilters(String filters){
+		this.filters = filters;
+	}
+	public String getFilters(){
+		return this.filters;
+	}
 	private List<String> customFieldNames;
 	public List<String> getCustomFieldNames() 
 	{

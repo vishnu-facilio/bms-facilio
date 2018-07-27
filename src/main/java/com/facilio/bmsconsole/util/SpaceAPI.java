@@ -808,8 +808,7 @@ public static long getSitesCount() throws Exception {
 		
 		SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
 																	.select(fields)
-																	.table(module.getTableName())
-																	.moduleName(module.getName())
+																	.module(module)
 																	.beanClass(BaseSpaceContext.class);
 		if (filterCriteria != null) {
 			selectBuilder.andCriteria(filterCriteria);
@@ -820,6 +819,7 @@ public static long getSitesCount() throws Exception {
 		if (orderBy != null && !orderBy.isEmpty()) {
 			selectBuilder.orderBy(orderBy);
 		}
+		
 		
 		List<BaseSpaceContext> spaces = selectBuilder.get();
 		return spaces;

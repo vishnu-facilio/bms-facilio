@@ -91,7 +91,7 @@ public class SpaceContext extends BaseSpaceContext {
 		return space2;
 	}
 	public void setSpace2(SpaceContext space2) {
-		this.space2 = space1;
+		this.space2 = space2;
 		if(space2 != null) {
 			super.setSpaceId2(space2.getId());
 		}
