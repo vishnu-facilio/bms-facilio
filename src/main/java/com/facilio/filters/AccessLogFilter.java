@@ -11,9 +11,22 @@ import java.io.IOException;
 public class AccessLogFilter implements Filter {
 
     private static final Logger LOGGER = LogManager.getLogger(AccessLogFilter.class.getName());
+    private static final String X_FORWARDED_FOR = "X-Forwarded-For";
+    private static final String DUMMY_REMOTE_IP = "0.0.0.1";
+    private static final String REMOTE_IP = "remoteIp";
+    private static final String REQUEST_METHOD = "req_method";
+    private static final String REQUEST_URL = "req_uri";
+    private static final String DEFAULT_QUERY_STRING = "-";
+    private static final String QUERY = "query";
+    private static final String RESPONSE_CODE = "responseCode";
+    private static final String TIME_TAKEN = "timetaken";
+    private static final String TIME_TAKEN_IN_MILLIS = "timeInMillis";
+    private static final String DUMMY_MSG = "accesslog";
+    private static final String APPENDER_NAME = "graylog2";
+    private static Appender appender;
 
     public void init(FilterConfig filterConfig) throws ServletException {
-
+        appender = LOGGER.getAppender(APPENDER_NAME);
     }
 
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
@@ -22,28 +35,32 @@ public class AccessLogFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         long startTime = System.currentTimeMillis();
-        LoggingEvent event = new LoggingEvent(LOGGER.getName(), LOGGER, Level.INFO, "", null);
-        String remoteIp = request.getHeader("X-Forwarded-For");
+        LoggingEvent event = new LoggingEvent(LOGGER.getName(), LOGGER, Level.INFO, DUMMY_MSG, null);
+        String remoteIp = request.getHeader(X_FORWARDED_FOR);
         if(remoteIp == null) {
             remoteIp = request.getRemoteAddr();
         }
         if(remoteIp == null) {
-            remoteIp = "1.1.1.1";
+            remoteIp = DUMMY_REMOTE_IP;
         }
-        event.setProperty("remoteIp", remoteIp);
-        event.setProperty("method", request.getMethod());
-        event.setProperty("uri", request.getRequestURI());
+        event.setProperty(REMOTE_IP, remoteIp);
+        event.setProperty(REQUEST_METHOD, request.getMethod());
+        event.setProperty(REQUEST_URL, request.getRequestURI());
         String queryString = request.getQueryString();
         if(queryString == null) {
-            queryString = "-";
+            queryString = DEFAULT_QUERY_STRING;
         }
-        event.setProperty("query", queryString);
+        event.setProperty(QUERY, queryString);
         filterChain.doFilter(servletRequest, response);
         long timeTaken = System.currentTimeMillis()-startTime;
-        event.setProperty("responseCode", String.valueOf(response.getStatus()));
-        event.setProperty("timetaken", String.valueOf(timeTaken/1000));
-        event.setProperty("timeInMillis", String.valueOf(timeTaken));
-        LOGGER.callAppenders(event);
+        event.setProperty(RESPONSE_CODE, String.valueOf(response.getStatus()));
+        event.setProperty(TIME_TAKEN, String.valueOf(timeTaken/1000));
+        event.setProperty(TIME_TAKEN_IN_MILLIS, String.valueOf(timeTaken));
+        if(appender != null) {
+            appender.doAppend(event);
+        } else {
+            LOGGER.callAppenders(event);
+        }
     }
 
     public void destroy() {
