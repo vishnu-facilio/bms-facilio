@@ -50,7 +50,6 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 	@Override
 	public void execute(JobContext jc) {
 		// TODO Auto-generated method stub
-		System.out.println("Workorder Request Email Parser");
 		try {
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 															.select(FieldFactory.getWorkorderEmailFields())
@@ -110,7 +109,7 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 			List<String> attachedFilesFileName = null;
 			List<String> attachedFilesContentType = null;
 			if (attachments != null && !attachments.isEmpty()) {
-				LOGGER.info("Attachment List : "+attachments);
+				LOGGER.debug("Attachment List : "+attachments);
 				attachedFiles = new ArrayList<>();
 				attachedFilesFileName = new ArrayList<>();
 				attachedFilesContentType = new ArrayList<>();
@@ -129,7 +128,7 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 						attachedFiles.add(file);
 					}
 				}
-				LOGGER.info("Parsed Attachments : "+attachedFiles);
+				LOGGER.debug("Parsed Attachments : "+attachedFiles);
 			}
 			
 			if(supportEmail.getAutoAssignGroup() != null) {
@@ -139,7 +138,7 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 			
 			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", supportEmail.getOrgId());
 			long requestId = bean.addWorkOrderRequest(workOrderRequest, attachedFiles, attachedFilesFileName, attachedFilesContentType);
-			LOGGER.info("Added Workorder from Email Parser : " + requestId );
+			LOGGER.debug("Added Workorder from Email Parser : " + requestId );
 			return requestId;
 		}
 		return -1;
@@ -166,12 +165,12 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 	
 	private SupportEmailContext getSupportEmail(List<Address> toAddresses) throws Exception {
 		if(toAddresses != null) {
-			LOGGER.info("Support email addresses : "+toAddresses);
+			LOGGER.debug("Support email addresses : "+toAddresses);
 			for(Address address : toAddresses) {
 				String email = ((InternetAddress) address).getAddress();
 				if(email.endsWith(".facilio.com")) {
 					SupportEmailContext supportEmail = SupportEmailAPI.getSupportEmailFromFwdEmail(email);
-					LOGGER.info("Support email object : "+supportEmail);
+					LOGGER.debug("Support email object : "+supportEmail);
 					return supportEmail;
 				}
 			}
