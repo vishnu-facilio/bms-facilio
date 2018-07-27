@@ -316,7 +316,7 @@ public class WorkflowUtil {
 		
 		workflow.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		
-		LOGGER.severe("ADDING WORKFLOW STRING--- "+workflowContext.getWorkflowString());
+		LOGGER.fine("ADDING WORKFLOW STRING--- "+workflowContext.getWorkflowString());
 		
 		workflowContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		
@@ -359,7 +359,7 @@ public class WorkflowUtil {
 			String moduleName = expression.getModuleName();
 			
 			if(moduleName != null && fieldName != null) {
-				LOGGER.severe("moduleName -- "+moduleName +" fieldName -- "+fieldName);
+				LOGGER.fine("moduleName -- "+moduleName +" fieldName -- "+fieldName);
 				FacilioModule module = modBean.getModule(moduleName);
 				FacilioField field = modBean.getField(fieldName, moduleName);
 				if(field != null) {
@@ -405,7 +405,7 @@ public class WorkflowUtil {
 			String moduleName = expression.getModuleName();
 			
 			if(moduleName != null && fieldName != null) {
-				LOGGER.severe("moduleName -- "+moduleName +" fieldName -- "+fieldName);
+				LOGGER.fine("moduleName -- "+moduleName +" fieldName -- "+fieldName);
 				FacilioModule module = modBean.getModule(moduleName);
 				FacilioField field = modBean.getField(fieldName, moduleName);
 				if(field != null) {
@@ -562,7 +562,7 @@ public class WorkflowUtil {
 		return getResult(workflowId, paramMap, true);
 	}
 	public static Object getResult(Long workflowId,Map<String,Object> paramMap, boolean ignoreNullExpressions)  throws Exception  {
-		LOGGER.severe("getResult() -- workflowid - "+workflowId+" params -- "+paramMap);
+		LOGGER.fine("getResult() -- workflowid - "+workflowId+" params -- "+paramMap);
 		WorkflowContext workflowContext = getWorkflowContext(workflowId);
 		return getWorkflowExpressionResult(workflowContext.getWorkflowString(),paramMap, ignoreNullExpressions);
 	}
@@ -739,7 +739,7 @@ public class WorkflowUtil {
 		 LSSerializer lsSerializer = domImplementation.createLSSerializer();
 		 
 		 String result = lsSerializer.writeToString(doc);
-		 LOGGER.severe("result -- "+result);
+		 LOGGER.fine("result -- "+result);
 		 return result;
 	}
 	public static List<ParameterContext> getParameterListFromWorkflowString(String workflow) throws Exception {
@@ -1123,10 +1123,10 @@ public class WorkflowUtil {
 			}
 		}
 		if(objects == null) {
-			LOGGER.severe("function params--- IS NULL");
+			LOGGER.fine("function params--- IS NULL");
 		}
 		else {
-			LOGGER.severe("function params---"+Arrays.toString(objects));
+			LOGGER.fine("function params---"+Arrays.toString(objects));
 		}
 		
 		return defaultFunctions.execute(objects);
