@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.queue.ObjectQueue;
+import com.facilio.tasker.config.InstantJobConf;
 import org.json.simple.parser.ParseException;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -83,8 +84,9 @@ public class FacilioTimer {
 	}
 
 	public static void scheduleInstantJob(String jobName, FacilioContext context){
-		context.put("JOB", jobName);
-		ObjectQueue.sendMessage("instantJob", context);
+		context.put(InstantJobConf.getJobNameKey(), jobName);
+		context.put(InstantJobConf.getAccountKey(), AccountUtil.getCurrentAccount());
+		ObjectQueue.sendMessage(InstantJobConf.getInstantJobQueue(), context);
 	}
 
 	public static void scheduleOneTimeJob(long jobId, String jobName, int delayInSec, String executorName) throws Exception {

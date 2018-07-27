@@ -23,16 +23,26 @@ public class AccessLogFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         long startTime = System.currentTimeMillis();
         LoggingEvent event = new LoggingEvent("", LOGGER.getParent(), Priority.INFO, "", null);
-        event.setProperty("remoteIp", request.getHeader("X-Forwarded-For"));
+        String remoteIp = request.getHeader("X-Forwarded-For");
+        if(remoteIp == null) {
+            remoteIp = request.getRemoteAddr();
+        }
+        if(remoteIp == null) {
+            remoteIp = "1.1.1.1";
+        }
+        event.setProperty("remoteIp", remoteIp);
         event.setProperty("method", request.getMethod());
         event.setProperty("uri", request.getRequestURI());
-        event.setProperty("query", request.getQueryString());
+        String queryString = request.getQueryString();
+        if(queryString == null) {
+            queryString = "-";
+        }
+        event.setProperty("query", queryString);
         filterChain.doFilter(servletRequest, response);
         long timeTaken = System.currentTimeMillis()-startTime;
         event.setProperty("timetaken", String.valueOf(timeTaken/1000));
         event.setProperty("timeInMillis", String.valueOf(timeTaken));
-        Appender appender = LOGGER.getAppender("AccessLogAppender");
-        appender.doAppend(event);
+        LOGGER.callAppenders(event);
     }
 
     public void destroy() {

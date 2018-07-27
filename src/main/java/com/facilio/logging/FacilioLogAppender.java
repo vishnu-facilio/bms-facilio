@@ -17,6 +17,9 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 
 public class FacilioLogAppender extends DailyRollingFileAppender {
+
+    private static final String DEFAULT_ORG_USER_ID = "-1";
+
     public FacilioLogAppender() {
         super();
     }
@@ -101,10 +104,14 @@ public class FacilioLogAppender extends DailyRollingFileAppender {
         Organization org = AccountUtil.getCurrentOrg();
         if(org != null) {
             event.setProperty("orgId", String.valueOf(org.getOrgId()));
+        } else {
+            event.setProperty("orgId", DEFAULT_ORG_USER_ID);
         }
         User user = AccountUtil.getCurrentUser();
         if (user != null) {
         	event.setProperty("userId", String.valueOf(user.getOuid()));
+        } else {
+            event.setProperty("userId", DEFAULT_ORG_USER_ID);
         }
         super.append(event);
     }

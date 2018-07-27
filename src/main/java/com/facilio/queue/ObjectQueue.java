@@ -2,6 +2,7 @@ package com.facilio.queue;
 
 import com.amazonaws.services.sqs.model.Message;
 import com.amazonaws.util.Base64;
+import org.apache.commons.lang.SerializationException;
 import org.apache.log4j.Logger;
 
 import java.io.*;
@@ -12,7 +13,7 @@ public class ObjectQueue {
 
     private static final Logger LOGGER = Logger.getLogger(ObjectQueue.class.getName());
 
-    public static void sendMessage(String queueName, Serializable serializable) {
+    public static void sendMessage(String queueName, Serializable serializable) throws SerializationException {
         if (serializable == null) {
             return;
         }
@@ -27,6 +28,7 @@ public class ObjectQueue {
             FAWSQueue.sendMessage(queueName, serializedString);
         } catch (IOException e) {
             LOGGER.error("IOException: cannot serialize objectMessage", e);
+            throw new SerializationException("Unable to serialize Object :  " + serializable.toString());
         } finally {
             if (objectOutputStream != null) {
                 try {
