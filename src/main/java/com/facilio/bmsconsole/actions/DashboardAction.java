@@ -2614,6 +2614,25 @@ public class DashboardAction extends ActionSupport {
 				
 				builder.andCondition(spaceCondition);
 			}
+			
+			else if(report.getReportSpaceFilterContext().getSiteId() != null) {
+				
+				Long siteId = report.getReportSpaceFilterContext().getSiteId();
+				
+				if(siteId.equals(-1l)) {
+					List<SiteContext> sites = SpaceAPI.getAllSites();
+					if(sites != null && !sites.isEmpty()) {
+						siteId = sites.get(0).getId();
+					}
+				}
+				
+				List<Long> resourceList = DashboardUtil.getAllResources(siteId);
+				
+				Condition spaceCondition = CriteriaAPI.getCondition("RESOURCE_ID", "resourceId",  StringUtils.join(resourceList, ","), NumberOperators.EQUALS);
+				
+				builder.andCondition(spaceCondition);
+			}
+			
 			if(report.getReportSpaceFilterContext().getGroupBy() != null && report.getReportSpaceFilterContext().getGroupBy().contains("workhour")) {
 				
 				isWorkHourReport = true;
