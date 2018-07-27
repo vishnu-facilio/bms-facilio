@@ -22,7 +22,7 @@ public class AccessLogFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         long startTime = System.currentTimeMillis();
-        LoggingEvent event = new LoggingEvent(LOGGER.getName(), LOGGER.getParent(), Level.INFO, "", null);
+        LoggingEvent event = new LoggingEvent(LOGGER.getName(), LOGGER, Level.INFO, "", null);
         String remoteIp = request.getHeader("X-Forwarded-For");
         if(remoteIp == null) {
             remoteIp = request.getRemoteAddr();
