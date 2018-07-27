@@ -2424,17 +2424,26 @@ public class DashboardAction extends ActionSupport {
 			}
 		}
 		
-		Multimap<Long, Long> buildingResourceMap = ArrayListMultimap.create();
+		Multimap<Long, Long> spaceResourceMap = ArrayListMultimap.create();
 		
 		if(xAxisField.getName().equals("resource")) {
 			if(reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.BUILDING.getValue())) {
 				
 				for(BuildingContext building:SpaceAPI.getAllBuildings()) {
 					List<Long> resourceList = DashboardUtil.getAllResources(building.getId());
-					buildingResourceMap.putAll(building.getId(), resourceList);
+					spaceResourceMap.putAll(building.getId(), resourceList);
 				}
 				report.getxAxisField().getField().setDisplayName("Building");
 				report.getxAxisField().getField().setName("building");
+			}
+			else if(reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.SITE.getValue())) {
+				
+				for( SiteContext site:SpaceAPI.getAllSites()) {
+					List<Long> resourceList = DashboardUtil.getAllResources(site.getId());
+					spaceResourceMap.putAll(site.getId(), resourceList);
+				}
+				report.getxAxisField().getField().setDisplayName("Site");
+				report.getxAxisField().getField().setName("Site");
 			}
 		}
 		
@@ -2687,9 +2696,9 @@ public class DashboardAction extends ActionSupport {
 						Object groupBy = thisMap.get("groupBy");
 						Double value = Double.parseDouble(thisMap.get("value").toString());
 						
-						for(Long buildingId : buildingResourceMap.keySet()) {
+						for(Long buildingId : spaceResourceMap.keySet()) {
 							
-							if(buildingResourceMap.get(buildingId).contains(spaceId)) {
+							if(spaceResourceMap.get(buildingId).contains(spaceId)) {
 								
 								if(buildingRes.get(buildingId) != null) {
 									JSONObject map = (JSONObject) buildingRes.get(buildingId);
@@ -2768,18 +2777,18 @@ public class DashboardAction extends ActionSupport {
 
 				Map<String, Object> thisMap = rs.get(i);
 				JSONObject component = new JSONObject();
-				if(reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.BUILDING.getValue())) {
+				if(reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.BUILDING.getValue()) || reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.SITE.getValue())) {
 					
 					Object label = thisMap.get("label");
 					Object value = thisMap.get("value");
-					for(Long buildingId : buildingResourceMap.keySet()) {
+					for(Long spaceId : spaceResourceMap.keySet()) {
 						
-						if(buildingResourceMap.get(buildingId).contains(label)) {
-							Long buildingValue = buildingResult.get(buildingId);
+						if(spaceResourceMap.get(spaceId).contains(label)) {
+							Long buildingValue = buildingResult.get(spaceId);
 							
 							buildingValue = buildingValue != null ? buildingValue += (Long)value:(Long)value;
 							
-							buildingResult.put(buildingId, buildingValue);
+							buildingResult.put(spaceId, buildingValue);
 							break;
 						}
 					}
@@ -2816,7 +2825,14 @@ public class DashboardAction extends ActionSupport {
 		 	}
 			for( Long key:buildingResult.keySet()) {
 				JSONObject component = new JSONObject();
-				component.put("label", key);
+				Object key1 = key;
+				if(reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.SITE.getValue())) {
+					SiteContext site = SpaceAPI.getSiteSpace(key);
+					if(site != null) {
+						key1 = site.getName();
+					}
+				}
+				component.put("label", key1);
 				component.put("value", buildingResult.get(key));
 				res.add(component);
 			}
