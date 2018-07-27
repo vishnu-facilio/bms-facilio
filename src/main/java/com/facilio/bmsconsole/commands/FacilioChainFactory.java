@@ -2457,6 +2457,13 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain addOfflineSyncErrorChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new AddOfflineSyncErrorCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
 	private static  long createOrg(Organization org) throws Exception {
 		
 		Organization existingOrg = getOrg(org.getDomain());

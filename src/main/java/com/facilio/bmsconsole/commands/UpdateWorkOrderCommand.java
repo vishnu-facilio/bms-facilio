@@ -35,7 +35,7 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class UpdateWorkOrderCommand implements Command {
 	
-	private static org.apache.log4j.Logger log = LogManager.getLogger(UpdateTaskCommand.class.getName());
+	private static org.apache.log4j.Logger log = LogManager.getLogger(UpdateWorkOrderCommand.class.getName());
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -52,6 +52,12 @@ public class UpdateWorkOrderCommand implements Command {
 			
 			Condition idCondition = CriteriaAPI.getIdCondition(recordIds, module);
 			List<WorkOrderContext> oldWos = getOldWOs(idCondition, fields);
+			
+			Long lastSyncTime = (Long) context.get(FacilioConstants.ContextNames.LAST_SYNC_TIME);
+			if (lastSyncTime != null && oldWos.get(0).getModifiedTime() > lastSyncTime ) {
+				throw new RuntimeException("The workorder was modified after the last sync");
+			}
+			
 			List<WorkOrderContext> newWos = new ArrayList<WorkOrderContext>();
 			
 			TicketAPI.updateTicketAssignedBy(workOrder);

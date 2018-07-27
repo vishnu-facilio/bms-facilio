@@ -55,6 +55,11 @@ public class UpdateTaskCommand implements Command {
 			
 			List<TaskContext> oldTasks = getTasks(recordIds);
 			
+			Long lastSyncTime = (Long) context.get(FacilioConstants.ContextNames.LAST_SYNC_TIME);
+			if (lastSyncTime != null && oldTasks.get(0).getModifiedTime() > lastSyncTime ) {
+				throw new RuntimeException("The task was modified after the last sync");
+			}
+			
 			ActivityType taskActivity = null;
 			ReadingContext reading = (ReadingContext) context.get(FacilioConstants.ContextNames.READING);
 			if (recordIds.size() == 1 && reading != null) {
@@ -78,6 +83,8 @@ public class UpdateTaskCommand implements Command {
 			idCondition.setField(FieldFactory.getIdField(module));
 			idCondition.setOperator(NumberOperators.EQUALS);
 			idCondition.setValue(ids);
+			
+			task.setModifiedTime(System.currentTimeMillis());
 			
 			UpdateRecordBuilder<TaskContext> updateBuilder = new UpdateRecordBuilder<TaskContext>()
 																		.moduleName(moduleName)
