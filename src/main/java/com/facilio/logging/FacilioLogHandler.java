@@ -14,20 +14,20 @@ public class FacilioLogHandler extends Handler {
     private static final HashMap<Level, Priority> LEVEL_MAP = new HashMap<>();
 
     static {
-        LEVEL_MAP.put(Level.INFO, Priority.INFO);
-        LEVEL_MAP.put(Level.FINE, Priority.DEBUG);
-        LEVEL_MAP.put(Level.FINER, Priority.DEBUG);
-        LEVEL_MAP.put(Level.FINEST, Priority.DEBUG);
-        LEVEL_MAP.put(Level.ALL, Priority.DEBUG);
-        LEVEL_MAP.put(Level.WARNING, Priority.WARN);
-        LEVEL_MAP.put(Level.SEVERE, Priority.ERROR);
+        LEVEL_MAP.put(Level.INFO, org.apache.log4j.Level.INFO);
+        LEVEL_MAP.put(Level.FINE, org.apache.log4j.Level.DEBUG);
+        LEVEL_MAP.put(Level.FINER, org.apache.log4j.Level.DEBUG);
+        LEVEL_MAP.put(Level.FINEST, org.apache.log4j.Level.DEBUG);
+        LEVEL_MAP.put(Level.ALL, org.apache.log4j.Level.DEBUG);
+        LEVEL_MAP.put(Level.WARNING, org.apache.log4j.Level.WARN);
+        LEVEL_MAP.put(Level.SEVERE, org.apache.log4j.Level.ERROR);
     }
 
     public void publish(LogRecord record) {
         if(record.getLevel().intValue() > Level.INFO.intValue()) {
             String loggerName = record.getLoggerName();
             Logger logger = LOGGER_MAP.getOrDefault(loggerName, LogManager.getLogger(loggerName));
-            logger.log(LEVEL_MAP.getOrDefault(record.getLevel(), Priority.INFO), record.getMessage(), record.getThrown());
+            logger.log(LEVEL_MAP.getOrDefault(record.getLevel(), org.apache.log4j.Level.INFO), record.getMessage(), record.getThrown());
             LOGGER_MAP.put(loggerName, logger);
         }
     }
