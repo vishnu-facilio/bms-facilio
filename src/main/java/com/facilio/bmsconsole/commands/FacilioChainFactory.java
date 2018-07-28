@@ -1080,7 +1080,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getAddZoneChain() {
-		Chain c = new ChainBase();
+		Chain c = new TransactionChain();
 		c.addCommand(new ValidateZoneFieldsCommand());
 		c.addCommand(SetTableNamesCommand.getForZone());
 		c.addCommand(new LoadAllFieldsCommand());
@@ -1090,7 +1090,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getUpdateZoneChain() {
-		Chain c = new ChainBase();
+		Chain c = new TransactionChain();
 		c.addCommand(new ValidateZoneFieldsCommand());
 		c.addCommand(SetTableNamesCommand.getForZone());
 		c.addCommand(new LoadAllFieldsCommand());
