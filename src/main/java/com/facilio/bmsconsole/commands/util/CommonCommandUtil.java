@@ -300,7 +300,7 @@ public class CommonCommandUtil {
 	
 	private static void checkDB(String msg, StringBuilder body) {
 		if (msg != null) {
-			if(msg.toLowerCase().contains("deadlock")) {
+			if(msg.toLowerCase().contains("deadlock") || body.toString().toLowerCase().contains("deadlock")) {
 				String sql = "show engine innodb status";
 				try (Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql);ResultSet rs = pstmt.executeQuery()) {
 					rs.first();
