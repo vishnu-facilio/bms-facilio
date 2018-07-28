@@ -2512,9 +2512,9 @@ INSERT INTO BaseLines (ORGID, NAME, RANGE_TYPE) VALUES (${orgId}, 'Previous Mont
 INSERT INTO BaseLines (ORGID, NAME, RANGE_TYPE) VALUES (${orgId}, 'Previous Year', 6);
 
 
-INSERT INTO BaseLines (ORGID, MODULE_NAME, LAST_LOCAL_ID) VALUES (${orgId}, 'asset', 0);
-INSERT INTO BaseLines (ORGID, MODULE_NAME, LAST_LOCAL_ID) VALUES (${orgId}, 'workorder', 0);
-INSERT INTO BaseLines (ORGID, MODULE_NAME, LAST_LOCAL_ID) VALUES (${orgId}, 'workorder', 0);
-INSERT INTO BaseLines (ORGID, MODULE_NAME, LAST_LOCAL_ID) VALUES (${orgId}, 'task', 0);
-INSERT INTO BaseLines (ORGID, MODULE_NAME, LAST_LOCAL_ID) VALUES (${orgId}, 'alarm', 0);
-INSERT INTO BaseLines (ORGID, MODULE_NAME, LAST_LOCAL_ID) VALUES (${orgId}, 'readingalarm', 0);
+INSERT INTO Module_Local_ID (ORGID, MODULE_NAME, LAST_LOCAL_ID) VALUES (${orgId}, 'asset', 0);
+INSERT INTO Module_Local_ID (ORGID, MODULE_NAME, LAST_LOCAL_ID) VALUES (${orgId}, 'workorder', 0);
+INSERT INTO Module_Local_ID (ORGID, MODULE_NAME, LAST_LOCAL_ID) VALUES (${orgId}, 'workorderrequest', 0);
+INSERT INTO Module_Local_ID (ORGID, MODULE_NAME, LAST_LOCAL_ID) VALUES (${orgId}, 'task', 0);
+INSERT INTO Module_Local_ID (ORGID, MODULE_NAME, LAST_LOCAL_ID) VALUES (${orgId}, 'alarm', 0);
+INSERT INTO Module_Local_ID (ORGID, MODULE_NAME, LAST_LOCAL_ID) VALUES (${orgId}, 'readingalarm', 0);
