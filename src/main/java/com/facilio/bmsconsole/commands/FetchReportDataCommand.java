@@ -82,7 +82,7 @@ public class FetchReportDataCommand implements Command {
 	private List<Map<String, Object>> fetchReportData(ReportContext report, ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, ReportBaseLineContext reportBaseLine) throws Exception {
 		SelectRecordsBuilder<ModuleBaseWithCustomFields> newSelectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>(selectBuilder);
 		applyDateCondition(report, dp, newSelectBuilder, reportBaseLine);
-		return selectBuilder.getAsProps();
+		return newSelectBuilder.getAsProps();
 	}
 	
 	private void setYFieldsAndGroupByFields(List<ReportDataPointContext> dataPointList, List<FacilioField> fields, FacilioField xAggrField, StringJoiner groupBy, ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder) throws Exception {
@@ -99,7 +99,10 @@ public class FetchReportDataCommand implements Command {
 				groupBy.add(field.getCompleteColumnName());
 			}
 		}
-		selectBuilder.groupBy(groupBy.toString());
+		
+		if (groupBy.length() > 0) {
+			selectBuilder.groupBy(groupBy.toString());
+		}
 	}
 	
 	private void applyDateCondition(ReportContext report, ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, ReportBaseLineContext baseLine) {
@@ -174,8 +177,8 @@ public class FetchReportDataCommand implements Command {
 	
 	private FacilioField applyXAggregation(ReportDataPointContext dp, StringJoiner groupBy, List<FacilioField> fields) throws Exception {
 		FacilioField xAggrField = null;
-		if (dp.getyAxisAggrEnum() != null) {
-			if (dp.getxAxisAggrEnum() != null) {
+		if (dp.getyAxisAggrEnum() != null && dp.getyAxisAggr() != 0) {
+			if (dp.getxAxisAggrEnum() != null&& dp.getxAxisAggr() != 0 ) {
 				xAggrField = dp.getxAxisAggrEnum().getSelectField(dp.getxAxisField());
 			}
 			else {
@@ -190,26 +193,24 @@ public class FetchReportDataCommand implements Command {
 			}
 		}
 		else {
-			xAggrField = dp.getxAxisField();
-			fields.add(xAggrField);
+			if (dp.getyAxisAggrEnum() == null || dp.getxAxisAggr() == 0) {
+				xAggrField = dp.getxAxisField();
+				fields.add(xAggrField);
+			}
+			else {
+				throw new IllegalArgumentException("You can't apply X Aggr when Y Aggr is empty");
+			}
 		}
 		return xAggrField;
 	}
 	
 	private boolean applyYAggregation (ReportDataPointContext dataPoint, List<FacilioField> fields) throws Exception {
-		if (dataPoint.getyAxisAggrEnum() == null) { 
-			fields.add(dataPoint.getxAxisField());
+		if (dataPoint.getyAxisAggrEnum() == null || dataPoint.getyAxisAggr() == 0) { 
+			fields.add(dataPoint.getyAxisField());
 			return false;
 		}
 		else {
-			FacilioField yAggrField;
-			if (dataPoint.getyAxisAggrEnum() != null) {
-				yAggrField = dataPoint.getyAxisAggrEnum().getSelectField(dataPoint.getyAxisField());
-			}
-			else {
-				yAggrField = dataPoint.getyAxisField();
-			}
-			fields.add(yAggrField);
+			fields.add(dataPoint.getyAxisAggrEnum().getSelectField(dataPoint.getyAxisField()));
 			return true;
 		}
 	}
