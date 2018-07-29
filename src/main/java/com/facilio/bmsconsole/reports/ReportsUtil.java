@@ -411,8 +411,7 @@ public class ReportsUtil
 		Unit displayUnit = UnitsUtil.getOrgDisplayUnit(AccountUtil.getCurrentOrg().getId(), Metric.AREA);
 		buildingArea = UnitsUtil.convert(buildingArea, Unit.SQUARE_FOOT, displayUnit);
 		
-		double convertedVal=currentKwh*conversionMultiplier;
-		double eui= convertedVal/buildingArea;
+		double eui= currentKwh/buildingArea;
 		return roundOff(eui, 2);
 	}
 	

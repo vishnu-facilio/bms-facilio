@@ -591,8 +591,6 @@ public class DashboardUtil {
 			        					Double value = ress.get(hour);
 			        					
 			        					double eui = value/grossFloorArea;
-					        			eui = eui * ReportsUtil.conversionMultiplier;
-					        			
 					        			hourlyeuis.add(eui);
 					        			LOGGER.log(Level.SEVERE, "hour -- "+hour +" eui --"+eui);
 			        				}
@@ -608,7 +606,6 @@ public class DashboardUtil {
 			        			
 			        			if(grossFloorArea > 0 && sum > 0) {
 				        			double eui = sum/grossFloorArea;
-				        			eui = eui * ReportsUtil.conversionMultiplier;
 				        			variance.put("eui", eui);
 				        		}
 			        			
