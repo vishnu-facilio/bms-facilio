@@ -58,7 +58,6 @@ public class FetchReportDataCommand implements Command {
 			FacilioField xAggrField = applyXAggregation(dp, groupBy, fields);
 			setYFieldsAndGroupByFields(dataPointList, fields, xAggrField, groupBy, dp, selectBuilder);
 			selectBuilder.select(fields);
-			selectBuilder.andCriteria(dp.getCriteria());
 			if (report.getxCriteria() != null) {
 				selectBuilder.andCondition(getEqualsCondition(dp.getxAxisField(), xValues));
 			}
