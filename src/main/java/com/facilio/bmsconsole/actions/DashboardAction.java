@@ -2857,10 +2857,10 @@ public class DashboardAction extends ActionSupport {
 						continue;
 					}
 					
-					JSONObject buildingres = new JSONObject();
-						
-						int passed = 0,failed = 0;
 						for(WorkOrderContext workorder:workorders) {
+							
+							int passed = 0,failed = 0;
+							JSONObject buildingres = new JSONObject();
 							
 							if(workorder.getResource().getId() != report.getReportSpaceFilterContext().getBuildingId()) {
 								continue;
