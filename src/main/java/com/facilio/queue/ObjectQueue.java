@@ -1,13 +1,19 @@
 package com.facilio.queue;
 
-import com.amazonaws.services.sqs.model.Message;
-import com.amazonaws.util.Base64;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.SerializationException;
 import org.apache.log4j.Logger;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import com.amazonaws.services.sqs.model.Message;
+import com.amazonaws.util.Base64;
 
 public class ObjectQueue {
 

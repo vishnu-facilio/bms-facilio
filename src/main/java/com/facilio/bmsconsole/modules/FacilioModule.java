@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.apache.struts2.json.annotations.JSON;
 
-import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.time.SecondsChronoUnit;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

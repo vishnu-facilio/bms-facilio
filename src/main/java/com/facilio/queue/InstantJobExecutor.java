@@ -1,12 +1,14 @@
 package com.facilio.queue;
 
+import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.tasker.FacilioScheduler;
 import com.facilio.tasker.config.InstantJobConf;
 import com.facilio.tasker.job.InstantJob;
-
-import java.util.List;
-import java.util.concurrent.*;
 
 public class InstantJobExecutor implements Runnable {
 

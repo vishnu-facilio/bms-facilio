@@ -1,7 +1,8 @@
 package com.facilio.queue;
 
-import com.amazonaws.services.sqs.model.Message;
 import java.io.Serializable;
+
+import com.amazonaws.services.sqs.model.Message;
 
 public class QueueMessage {
 

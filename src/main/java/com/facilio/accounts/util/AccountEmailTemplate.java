@@ -12,7 +12,6 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.facilio.aws.util.AwsUtil;
-import com.facilio.email.EmailUtil;
 
 public enum AccountEmailTemplate {
 	WELCOME_EMAIL(1),
