@@ -1,8 +1,9 @@
 package com.facilio.report.context;
 
+import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.context.BaseLineContext.AdjustType;
 
-public class ReportBaselineContext {
+public class ReportBaseLineContext {
 
 	private long id = -1;
 	public long getId() {
@@ -36,6 +37,14 @@ public class ReportBaselineContext {
 		this.baseLineId = baseLineId;
 	}
 	
+	private BaseLineContext baseLine;
+	public BaseLineContext getBaseLine() {
+		return baseLine;
+	}
+	public void setBaseLine(BaseLineContext baseLine) {
+		this.baseLine = baseLine;
+	}
+
 	private long reportId = -1;
 	public long getReportId() {
 		return reportId;

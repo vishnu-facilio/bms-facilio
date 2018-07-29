@@ -34,6 +34,29 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 	private int limit = -1;
 	private int offset = -1;
 	
+	public GenericSelectRecordBuilder() {
+		
+	}
+	
+	public GenericSelectRecordBuilder(GenericSelectRecordBuilder selectBuilder) { //Do not call after calling getProps
+		// TODO Auto-generated constructor stub
+		this.tableName = selectBuilder.tableName;
+		this.groupBy = selectBuilder.groupBy;
+		this.having = selectBuilder.having;
+		this.orderBy = selectBuilder.orderBy;
+		this.limit = selectBuilder.limit;
+		this.offset = selectBuilder.offset;
+		
+		this.joinBuilder = new StringBuilder(selectBuilder.joinBuilder);
+		if (selectBuilder.selectFields != null) {
+			this.selectFields = new ArrayList<>(selectBuilder.selectFields);
+		}
+		this.selectFields = selectBuilder.selectFields;
+		if (selectBuilder.where != null) {
+			this.where = new WhereBuilder(selectBuilder.where);
+		}
+	}
+	
 	@Override
 	public GenericSelectRecordBuilder select(List<FacilioField> fields) {
 		this.selectFields = fields;

@@ -118,6 +118,14 @@ public class BaseLineContext {
 		return null;
 	}
 	
+	public Condition getBaseLineCondition(FacilioField field, DateRange range, AdjustType type) {
+		String blRange = calculateRange(range.getStartTime(), range.getEndTime(), type);
+		if (blRange != null && !blRange.isEmpty()) {
+			return CriteriaAPI.getCondition(field, blRange, DateOperators.BETWEEN);
+		}
+		return null;
+	}
+	
 	private RangeType getDynamicPreviousType(ZonedDateTime dataStartZdt, ZonedDateTime dataEndZdt) {
 		if (DateTimeUtil.isSameHour(dataStartZdt, dataEndZdt)) {
 			return RangeType.PREVIOUS_HOUR;

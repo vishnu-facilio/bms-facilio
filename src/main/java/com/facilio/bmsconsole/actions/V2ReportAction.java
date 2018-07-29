@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.report.context.ReadingAnalysisContext;
 import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
+import com.facilio.report.context.ReportBaseLineContext;
 
 public class V2ReportAction extends FacilioAction {
 	public String fetchReadingsData() {
@@ -18,6 +19,10 @@ public class V2ReportAction extends FacilioAction {
 			
 			JSONParser parser = new JSONParser();
 			JSONArray fieldArray = (JSONArray) parser.parse(fields);
+			JSONArray baseLineList = null;
+			if (baseLines != null && !baseLines.isEmpty()) {
+				baseLineList = (JSONArray) parser.parse(baseLines);
+			}
 			
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.START_TIME, startTime);
@@ -25,6 +30,7 @@ public class V2ReportAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.REPORT_X_AGGR, xAggr);
 			context.put(FacilioConstants.ContextNames.REPORT_Y_FIELDS, FieldUtil.getAsBeanListFromJsonArray(fieldArray, ReadingAnalysisContext.class));
 			context.put(FacilioConstants.ContextNames.REPORT_MODE, mode);
+			context.put(FacilioConstants.ContextNames.BASE_LINE_LIST, FieldUtil.getAsBeanListFromJsonArray(baseLineList, ReportBaseLineContext.class));
 			
 			Chain fetchReadingDataChain = ReadOnlyChainFactory.fetchReadingReportChain();
 			fetchReadingDataChain.execute(context);
@@ -106,4 +112,11 @@ public class V2ReportAction extends FacilioAction {
 		this.xAggr = AggregateOperator.getAggregateOperator(xAggr);
 	}
 	
+	private String baseLines;
+	public String getBaseLines() {
+		return baseLines;
+	}
+	public void setBaseLines(String baseLines) {
+		this.baseLines = baseLines;
+	}
 }

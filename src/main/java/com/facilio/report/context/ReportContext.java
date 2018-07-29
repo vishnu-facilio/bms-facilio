@@ -118,4 +118,12 @@ public class ReportContext {
 	public void setDateValue(String dateValue) {
 		this.dateValue = dateValue;
 	}
+	
+	private List<ReportBaseLineContext> baseLines;
+	public List<ReportBaseLineContext> getBaseLines() {
+		return baseLines;
+	}
+	public void setBaseLines(List<ReportBaseLineContext> baseLines) {
+		this.baseLines = baseLines;
+	}
 }
