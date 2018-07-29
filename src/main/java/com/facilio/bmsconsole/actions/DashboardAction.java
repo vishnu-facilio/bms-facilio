@@ -2588,6 +2588,9 @@ public class DashboardAction extends ActionSupport {
 										inTime++;
 									}
 								}
+								else {
+									inTime++;
+								}
 							}
 //							else {
 //								if(workorder.getEstimatedEnd() != -1) {
