@@ -2781,9 +2781,10 @@ public class DashboardAction extends ActionSupport {
 					
 					JSONObject buildingres = new JSONObject();
 						
-						int buildingScore = 0;
+						
 						for(WorkOrderContext workorder:workorders) {
 							
+							int buildingScore = 0;
 							if(workorder.getResource().getId() != report.getReportSpaceFilterContext().getBuildingId()) {
 								continue;
 							}
