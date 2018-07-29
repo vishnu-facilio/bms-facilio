@@ -2404,6 +2404,7 @@ public class DashboardAction extends ActionSupport {
 
 				for(TicketCategoryContext category:categories) {
 					
+					
 					List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrders(category.getId());
 					
 					if(workorders.isEmpty()) {
@@ -2949,7 +2950,6 @@ public class DashboardAction extends ActionSupport {
 						continue;
 					}
 					
-					JSONObject buildingres = new JSONObject();
 					for(BuildingContext building : SpaceAPI.getAllBuildings()) {
 						
 						int passed = 0,failed = 0;
@@ -2998,20 +2998,21 @@ public class DashboardAction extends ActionSupport {
 									}
 								}
 							}
-							
-							JSONObject res = new JSONObject();
-							res.put("label", "Passed");
-							res.put("value", passed);
-							resArray.add(res);
-							
-							res = new JSONObject();
-							res.put("label", "Failed");
-							res.put("value", failed);
-							resArray.add(res);
-							
 						}
+						JSONObject res = new JSONObject();
+						res.put("label", "Passed");
+						res.put("value", passed);
+						resArray.add(res);
+						
+						res = new JSONObject();
+						res.put("label", "Failed");
+						res.put("value", failed);
+						resArray.add(res);
+						
+						JSONObject buildingres = new JSONObject();
 						buildingres.put("label", building.getName());
 						buildingres.put("value", resArray);
+						
 						ticketData.add(buildingres);
 					}
 					
