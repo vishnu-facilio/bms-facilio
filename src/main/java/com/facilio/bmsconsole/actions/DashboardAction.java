@@ -2840,7 +2840,7 @@ public class DashboardAction extends ActionSupport {
 				}
 			}
 			
-			if(report.getId() == 2349l) { 	//8
+			if(report.getId() == 3946l) { 	//8
 
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				
