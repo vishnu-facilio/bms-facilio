@@ -634,7 +634,7 @@ public class DashboardUtil {
 			
 			LOGGER.log(Level.SEVERE, "getHourlyAggregatedData prop ---- "+prop);
 			long ttime = Long.parseLong(prop.get("label").toString());
-			Double value = Double.parseDouble(prop.get("label").toString());
+			Double value = Double.parseDouble(prop.get("value").toString());
 			
 			ZonedDateTime zdt = DateTimeUtil.getZonedDateTime(ttime);
 			
