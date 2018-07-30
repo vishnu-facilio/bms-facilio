@@ -77,6 +77,12 @@
 			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 		</action>
 		
+		<action name="sync" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="syncOfflineWorkOrders">
+			<param name="moduleName">workorder</param>
+			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+		</action>
+		
 		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 				method="v2viewWorkOrder">
 			<param name="moduleName">workorder</param>
@@ -147,6 +153,11 @@
 		</action>
 		
 		<action name="update" class="com.facilio.bmsconsole.actions.TaskAction" method="v2updateTask">
+			<param name="moduleName">workorder</param>
+			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
+		</action>
+		
+		<action name="sync" class="com.facilio.bmsconsole.actions.TaskAction" method="syncOfflineTasks">
 			<param name="moduleName">workorder</param>
 			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
 		</action>

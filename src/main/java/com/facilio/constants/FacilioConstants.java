@@ -515,6 +515,9 @@ public class FacilioConstants {
 		public static final String SHIFTS = "shifts";
 		public static final String ACTUAL_TIMINGS = "actualTimings";
 		
+		public static final String LAST_SYNC_TIME = "lastSyncTime";
+		public static final String CUSTOM_OBJECT = "customObject";
+		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();

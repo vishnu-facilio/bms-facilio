@@ -41,6 +41,26 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		// TODO Auto-generated constructor stub
 	}
 	
+	public SelectRecordsBuilder (SelectRecordsBuilder<E> selectBuilder) { //Do not call after calling getProps
+		this.beanClass = selectBuilder.beanClass;
+		this.level = selectBuilder.level;
+		this.maxLevel = selectBuilder.maxLevel;
+		this.moduleName = selectBuilder.moduleName;
+		this.module = selectBuilder.module;
+		this.fetchDeleted = selectBuilder.fetchDeleted;
+		this.groupBy = selectBuilder.groupBy;
+		
+		if (selectBuilder.builder != null) {
+			this.builder = new GenericSelectRecordBuilder(selectBuilder.builder);
+		}
+		if (selectBuilder.select != null) {
+			this.select = new ArrayList<>(selectBuilder.select);
+		}
+		if (selectBuilder.where != null) {
+			this.where = new WhereBuilder(selectBuilder.where);
+		}
+	}
+	
 	public SelectRecordsBuilder (int level) {
 		this.level = level;
 	}

@@ -54,7 +54,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 	public String intercept(ActionInvocation arg0) throws Exception {
 
 		try {
-			System.out.println("intercept() : arg0 :"+arg0);
+			//System.out.println("intercept() : arg0 :"+arg0);
 
 			HttpServletRequest request = ServletActionContext.getRequest();
 			CognitoUser cognitoUser = AuthenticationUtil.getCognitoUser(request,false);
@@ -72,7 +72,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 			if(AuthenticationUtil.checkIfSameUser(currentAccount, cognitoUser)) {
 				AccountUtil.cleanCurrentAccount();
 				AccountUtil.setCurrentAccount(currentAccount);
-				logger.log(Level.INFO, "##################################"+AccountUtil.getCurrentUser().getEmail());
+				//logger.log(Level.INFO, "##################################"+AccountUtil.getCurrentUser().getEmail());
 				request.setAttribute("ORGID", currentAccount.getOrg().getOrgId());
 				request.setAttribute("USERID", currentAccount.getUser().getOuid());
 
@@ -142,7 +142,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 	private boolean isAuthorizedAccess(String moduleName, String permissions) throws Exception {
 		
 		if (permissions == null || "".equals(permissions.trim())) {
-			System.out.println("WARNING: Configured permission is empty");
+			//System.out.println("WARNING: Configured permission is empty");
 			return true;
 		}
 

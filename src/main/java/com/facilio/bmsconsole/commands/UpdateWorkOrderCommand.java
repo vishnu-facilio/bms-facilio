@@ -12,6 +12,7 @@ import org.apache.log4j.LogManager;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -34,7 +35,7 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class UpdateWorkOrderCommand implements Command {
 	
-	private static org.apache.log4j.Logger log = LogManager.getLogger(UpdateTaskCommand.class.getName());
+	private static org.apache.log4j.Logger log = LogManager.getLogger(UpdateWorkOrderCommand.class.getName());
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -51,6 +52,12 @@ public class UpdateWorkOrderCommand implements Command {
 			
 			Condition idCondition = CriteriaAPI.getIdCondition(recordIds, module);
 			List<WorkOrderContext> oldWos = getOldWOs(idCondition, fields);
+			
+			Long lastSyncTime = (Long) context.get(FacilioConstants.ContextNames.LAST_SYNC_TIME);
+			if (lastSyncTime != null && oldWos.get(0).getModifiedTime() > lastSyncTime ) {
+				throw new RuntimeException("The workorder was modified after the last sync");
+			}
+			
 			List<WorkOrderContext> newWos = new ArrayList<WorkOrderContext>();
 			
 			TicketAPI.updateTicketAssignedBy(workOrder);
@@ -83,6 +90,7 @@ public class UpdateWorkOrderCommand implements Command {
 									}
 								} catch (Exception e) {
 									log.info("Exception occurred while handling work hours", e);
+									CommonCommandUtil.emailException(ShiftAPI.class.getName(), "Exception occurred while handling work hours", e);
 								}
 							}
 						}
@@ -116,6 +124,7 @@ public class UpdateWorkOrderCommand implements Command {
 					}
 					catch(Exception e) {
 						log.info("Exception occurred while handling work hours", e);
+						CommonCommandUtil.emailException(ShiftAPI.class.getName(), "Exception occurred while handling work hours", e);
 					}
 				}
 			}

@@ -805,6 +805,11 @@ public class WorkOrderAction extends FacilioAction {
 
 	public String updateWorkOrder() throws Exception {
 		FacilioContext context = new FacilioContext();
+		setUpdateWorkorderContext(context);
+		return updateWorkOrder(context);
+	}
+	
+	private void setUpdateWorkorderContext(FacilioContext context) throws Exception {
 		ActivityType activityType = ActivityType.EDIT;
 		if (workorder.getStatus() != null) {
 			ActivityType type = TicketAPI.getActivityTypeForTicketStatus(workorder.getStatus().getId());
@@ -813,7 +818,6 @@ public class WorkOrderAction extends FacilioAction {
 			}
 		}
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, activityType);
-		return updateWorkOrder(context);
 	}
 
 	private String updateWorkOrder(FacilioContext context) throws Exception {
@@ -1409,7 +1413,7 @@ public class WorkOrderAction extends FacilioAction {
 		WorkOrderContext workorder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.RECORD);
 
 		if (workorder != null) {
-			long duration = TicketAPI.getEstimatedWorkDuration(workorder);
+			long duration = TicketAPI.getEstimatedWorkDuration(workorder, System.currentTimeMillis());
 			setEstimatedDuration(duration);
 		}
 
@@ -1484,6 +1488,61 @@ public class WorkOrderAction extends FacilioAction {
 			setMessage(e);
 			return ERROR;
 		}
+	}
+	
+	public String syncOfflineWorkOrders() {
+		try {
+			if (lastSyncTime == null || lastSyncTime <= 0 ) {
+				throw new IllegalArgumentException("Workorder last synced time is mandatory");
+			}
+			Map<Long, Map<String, Object>> errors = new HashMap<>();
+			int rowsUpdated = 0; 
+			for(WorkOrderContext wo: workOrders) {
+				try {
+					setWorkorder(wo);
+					setId(Collections.singletonList(wo.getId()));
+					
+					FacilioContext context = new FacilioContext();
+					context.put(FacilioConstants.ContextNames.LAST_SYNC_TIME, lastSyncTime);
+					setUpdateWorkorderContext(context);
+					
+					updateWorkOrder(context);
+					rowsUpdated += this.rowsUpdated;
+				}
+				catch(Exception e) {
+					Map<String, Object> obj = new HashMap<>();
+					obj.put("data", FieldUtil.getAsJSON(wo).toJSONString());
+					obj.put("error", e.getMessage());
+					errors.put(wo.getId(), obj);
+				}
+			}
+			if (!errors.isEmpty()) {
+				FacilioContext context = new FacilioContext();
+				context.put(FacilioConstants.ContextNames.LAST_SYNC_TIME, lastSyncTime);
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WORK_ORDER);
+				context.put(FacilioConstants.ContextNames.CUSTOM_OBJECT, errors);
+				
+				Chain offlineSync = FacilioChainFactory.addOfflineSyncErrorChain();
+				offlineSync.execute(context);
+				
+				setResult("error", errors.size() + " workorder(s) sync failed");
+			}
+			setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
+			return SUCCESS;
+		}
+		catch(Exception e) {
+			setResponseCode(1);
+			setMessage(e);
+			return ERROR;
+		}
+	}
+	
+	private Long lastSyncTime;
+	public Long getLastSyncTime() {
+		return lastSyncTime;
+	}
+	public void setLastSyncTime(Long lastSyncTime) {
+		this.lastSyncTime = lastSyncTime;
 	}
 
 }

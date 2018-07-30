@@ -14,8 +14,6 @@ import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
-import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ControllerContext;
@@ -78,14 +76,6 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 		context.put(FacilioConstants.ContextNames.RECORD_MAP, readingMap);
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
 		
-		//Temp code. To be removed later
-		startTime = System.currentTimeMillis();
-		Record record = (Record) context.get(FacilioConstants.ContextNames.KINESIS_RECORD);
-		if (record != null) {
-			IRecordProcessorCheckpointer checkPointer = (IRecordProcessorCheckpointer) context.get(FacilioConstants.ContextNames.KINESIS_CHECK_POINTER);
-			checkPointer.checkpoint(record);
-			LOGGER.info("Time taken to update checkpoint : "+(System.currentTimeMillis() - startTime));
-		}
 		return false;
 	}
 	

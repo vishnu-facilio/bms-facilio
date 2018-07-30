@@ -34,7 +34,7 @@ public class IotFilter implements Filter {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        LOGGER.info(builder.toString());
+        LOGGER.warning(builder.toString());
     }
 
     @Override

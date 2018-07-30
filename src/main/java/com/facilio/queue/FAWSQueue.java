@@ -35,7 +35,7 @@ public class FAWSQueue {
             nameVsURL.put(queueName, url);
         }
         List<Message> messageList = new ArrayList<>();
-        while (true) {
+        while (messageList.size() < 20) {
             ReceiveMessageRequest request = new ReceiveMessageRequest().withMaxNumberOfMessages(10).withVisibilityTimeout(1800).withQueueUrl(url);
             ReceiveMessageResult result = sqs.receiveMessage(request);
             if(result.getMessages().size() == 0) {

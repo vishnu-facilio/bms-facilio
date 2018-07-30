@@ -2357,6 +2357,676 @@ public class DashboardAction extends ActionSupport {
 				}
 			}
 		}
+		
+		if(AccountUtil.getCurrentOrg().getOrgId() == 129l) {
+			
+			if(dateFilter == null && report.getDateFilter() != null) {
+				
+				DateOperators dateOperator = report.getDateFilter().getOperator();
+				DateRange range = dateOperator.getRange(report.getDateFilter().getValue());
+				dateFilter = new JSONArray();
+				dateFilter.add(range.getStartTime());
+				dateFilter.add(range.getEndTime());
+			}
+			
+			if(baseLineId != -1) {
+				BaseLineContext baseLineContext = BaseLineAPI.getBaseLine(baseLineId);
+				DateRange dateRange;
+				if(dateFilter != null) {
+					LOGGER.severe("dateFilter --- "+dateFilter);
+					dateRange = new DateRange((long)dateFilter.get(0), (long)dateFilter.get(1));
+				}
+				else {
+					dateRange = report.getDateFilter().getOperator().getRange(report.getDateFilter().getValue());
+				}
+				Condition dateCondition = baseLineContext.getBaseLineCondition(report.getDateFilter().getField(), dateRange);
+				
+				if(dateCondition != null) {
+					if(dateCondition.getValue() != null && dateCondition.getValue().contains(",")) {
+						String startTimeString  = dateCondition.getValue().substring(0, dateCondition.getValue().indexOf(",")).trim();
+						String endTimeString  = dateCondition.getValue().substring( dateCondition.getValue().indexOf(",")+1,dateCondition.getValue().length()).trim();
+						this.startTime = Long.parseLong(startTimeString);
+						this.endTime = Long.parseLong(endTimeString);
+						
+						dateFilter = new JSONArray();
+						dateFilter.add(this.startTime);
+						dateFilter.add(this.endTime);
+					}
+				}
+			}
+			
+			if(report.getId() == 3940l) { 	//1
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				
+				List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
+				
+				ticketData = new JSONArray();
+
+				for(TicketCategoryContext category:categories) {
+					
+					
+					List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrders(category.getId());
+					
+					if(workorders.isEmpty()) {
+						continue;
+					}
+					
+					JSONObject buildingres = new JSONObject();
+					for(BuildingContext building : SpaceAPI.getAllBuildings()) {
+						
+						int buildingScore = 0;
+						for(WorkOrderContext workorder:workorders) {
+							
+							if(workorder.getResource().getId() != building.getId()) {
+								continue;
+							}
+							if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
+								continue;
+							}
+							
+							Command chain = FacilioChainFactory.getGetTasksOfTicketCommand();
+							FacilioContext context = new FacilioContext();
+							
+							context.put(FacilioConstants.ContextNames.ID, workorder.getId());
+							context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
+							context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME,"Tasks");
+							context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(FacilioConstants.ContextNames.TASK));
+							context.put("isAsMap", true);
+							chain.execute(context);
+							
+							List<Map<String, Object>> taskMap = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
+							
+							for(Map<String, Object> task : taskMap) {
+								
+								if(task.get("inputValue") != null) {
+									
+									String stringValue = task.get("inputValue").toString();
+									
+									Integer value = 0;
+									if("YES".equals(stringValue) ) {
+										value = 5;
+									}
+									else if ("NO".equals(stringValue)) {
+										value = 0;
+									}
+									else {
+										value = Integer.parseInt(stringValue);
+									}
+									
+									buildingScore = buildingScore +value;
+								}
+							}
+						}
+						
+						buildingres = new JSONObject();
+						
+						buildingres.put("label", building.getName());
+						buildingres.put("value", buildingScore);
+						
+						ticketData.add(buildingres);
+					}
+					
+					LOGGER.log(Level.INFO, "23611l buildingres ----"+ticketData);
+					
+					return ticketData;
+				}
+			}
+			
+			if(report.getId() == 3941l) { // 2
+
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				
+				List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
+				
+				ticketData = new JSONArray();
+
+				for(TicketCategoryContext category:categories) {
+					
+					List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrders(category.getId());
+					
+					if(workorders.isEmpty()) {
+						continue;
+					}
+					
+					for(BuildingContext building : SpaceAPI.getAllBuildings()) {
+						
+						int completed = 0,pending = 0;
+						for(WorkOrderContext workorder:workorders) {
+							
+							if(workorder.getResource().getId() != building.getId()) {
+								continue;
+							}
+							LOGGER.log(Level.INFO, "dateFilter --- "+dateFilter);
+							if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
+								continue;
+							}
+							Command chain = FacilioChainFactory.getGetTasksOfTicketCommand();
+							FacilioContext context = new FacilioContext();
+							
+							context.put(FacilioConstants.ContextNames.ID, workorder.getId());
+							context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
+							context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME,"Tasks");
+							context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(FacilioConstants.ContextNames.TASK));
+							context.put("isAsMap", true);
+							chain.execute(context);
+							
+							List<Map<String, Object>> taskMap = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
+							
+							LOGGER.log(Level.INFO, "passed1 --- "+taskMap.size());
+							for(Map<String, Object> task : taskMap) {
+								
+								if(task.get("inputValue") != null) {
+									completed ++;
+								}
+								else {
+									pending ++;
+								}
+							}
+						}
+						
+						JSONObject buildingres = new JSONObject();
+						
+						JSONArray resArray = new JSONArray();
+						
+						JSONObject res = new JSONObject();
+						res.put("label", "Completed");
+						res.put("value", completed);
+						resArray.add(res);
+						
+						res = new JSONObject();
+						res.put("label", "Pending");
+						res.put("value", pending);
+						resArray.add(res);
+						
+						buildingres.put("label", building.getName());
+						buildingres.put("value", resArray);
+						ticketData.add(buildingres);
+					}
+					return ticketData;
+				}
+			}
+			
+			else if (report.getId() == 3942l) {	//3
+
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				
+				List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
+				
+				ticketData = new JSONArray();
+
+				for(TicketCategoryContext category:categories) {
+					
+					List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrders(category.getId());
+					
+					if(workorders.isEmpty()) {
+						continue;
+					}
+					
+					for(BuildingContext building : SpaceAPI.getAllBuildings()) {
+						
+						int inTime = 0,overdue = 0;
+						for(WorkOrderContext workorder:workorders) {
+							
+							if(workorder.getResource().getId() != building.getId()) {
+								continue;
+							}
+							LOGGER.log(Level.INFO, "dateFilter --- "+dateFilter);
+							if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
+								continue;
+							}
+							if(workorder.getStatus() != null && workorder.getStatus().getId() > 0) {
+								TicketStatusContext status = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getId(), workorder.getStatus().getId());
+								workorder.setStatus(status);
+							}
+							if(workorder.getStatus() != null && workorder.getStatus().getType() != null && workorder.getStatus().getType().equals(StatusType.CLOSED)) {
+								
+								if(workorder.getEstimatedEnd() != -1 && workorder.getActualWorkEnd() != -1) {
+									if(workorder.getEstimatedEnd() < workorder.getActualWorkEnd()) {
+										overdue++;
+									}
+									else {
+										inTime++;
+									}
+								}
+								else {
+									inTime++;
+								}
+							}
+//							else {
+//								if(workorder.getEstimatedEnd() != -1) {
+//									if(workorder.getEstimatedEnd() < DateTimeUtil.getCurrenTime()) {
+//										overdue++;
+//									}
+//									else {
+//										inTime++;
+//									}
+//								}
+//							}
+						}
+						
+						JSONObject buildingres = new JSONObject();
+						
+						JSONArray resArray = new JSONArray();
+						
+						JSONObject res = new JSONObject();
+						res.put("label", "In Time");
+						res.put("value", inTime);
+						resArray.add(res);
+						
+						res = new JSONObject();
+						res.put("label", "Overdue");
+						res.put("value", overdue);
+						resArray.add(res);
+						
+						buildingres.put("label", building.getName());
+						buildingres.put("value", resArray);
+						ticketData.add(buildingres);
+					}
+					return ticketData;
+				}
+			}
+			
+			if(report.getId() == 3943l) { 	//4
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				
+				List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
+				
+				ticketData = new JSONArray();
+
+				for(TicketCategoryContext category:categories) {
+					
+					List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrders(category.getId());
+					
+					if(workorders.isEmpty()) {
+						continue;
+					}
+					
+					JSONObject buildingres = new JSONObject();
+					for(BuildingContext building : SpaceAPI.getAllBuildings()) {
+						
+						int buildingScore = 0;
+						for(WorkOrderContext workorder:workorders) {
+							
+							if(workorder.getResource().getId() != building.getId()) {
+								continue;
+							}
+							if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
+								continue;
+							}
+							
+							Command chain = FacilioChainFactory.getGetTasksOfTicketCommand();
+							FacilioContext context = new FacilioContext();
+							
+							context.put(FacilioConstants.ContextNames.ID, workorder.getId());
+							context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
+							context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME,"Tasks");
+							context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(FacilioConstants.ContextNames.TASK));
+							context.put("isAsMap", true);
+							chain.execute(context);
+							
+							List<Map<String, Object>> taskMap = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
+							
+							for(Map<String, Object> task : taskMap) {
+								
+								if(task.get("inputValue") != null) {
+									
+									String stringValue = task.get("inputValue").toString();
+									
+									Integer value = 0;
+									if("YES".equals(stringValue) ) {
+										value = 5;
+									}
+									else if ("NO".equals(stringValue)) {
+										value = 0;
+									}
+									else {
+										value = Integer.parseInt(stringValue);
+									}
+									
+									buildingScore = buildingScore +value;
+								}
+							}
+						}
+						
+						buildingres = new JSONObject();
+						
+						buildingres.put("label", building.getName());
+						buildingres.put("value", buildingScore);
+						
+						ticketData.add(buildingres);
+					}
+					
+					LOGGER.log(Level.INFO, "23611l buildingres ----"+ticketData);
+					
+					return ticketData;
+				}
+			}
+			// building
+			if(report.getId() == 3944l) { 	//5
+
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				
+				List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
+				
+				ticketData = new JSONArray();
+
+				for(TicketCategoryContext category:categories) {
+					
+					List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrders(category.getId());
+					
+					if(workorders.isEmpty()) {
+						continue;
+					}
+					
+					int completed = 0,pending = 0;
+					for(WorkOrderContext workorder:workorders) {
+						
+						if(workorder.getResource().getId() != report.getReportSpaceFilterContext().getBuildingId()) {
+							continue;
+						}
+						LOGGER.log(Level.INFO, "dateFilter --- "+dateFilter);
+						if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
+							continue;
+						}
+						Command chain = FacilioChainFactory.getGetTasksOfTicketCommand();
+						FacilioContext context = new FacilioContext();
+						
+						context.put(FacilioConstants.ContextNames.ID, workorder.getId());
+						context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
+						context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME,"Tasks");
+						context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(FacilioConstants.ContextNames.TASK));
+						context.put("isAsMap", true);
+						chain.execute(context);
+						
+						List<Map<String, Object>> taskMap = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
+						
+						for(Map<String, Object> task : taskMap) {
+							
+							if(task.get("inputValue") != null) {
+								completed ++;
+							}
+							else {
+								pending ++;
+							}
+						}
+					}
+					
+					JSONObject res = new JSONObject();
+					res.put("label", "Completed");
+					res.put("value", completed);
+					ticketData.add(res);
+					
+					res = new JSONObject();
+					res.put("label", "Pending");
+					res.put("value", pending);
+					ticketData.add(res);
+					
+					return ticketData;
+				}
+			}
+			
+			if(report.getId() == 3945l) { 	//7
+
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				
+				
+				List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
+				
+				ticketData = new JSONArray();
+
+				for(TicketCategoryContext category:categories) {
+					
+					List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrders(category.getId());
+					
+					if(workorders.isEmpty()) {
+						continue;
+					}
+					
+					JSONObject buildingres = new JSONObject();
+						
+						
+						for(WorkOrderContext workorder:workorders) {
+							
+							int buildingScore = 0;
+							if(workorder.getResource().getId() != report.getReportSpaceFilterContext().getBuildingId()) {
+								continue;
+							}
+							
+							if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
+								continue;
+							}
+							
+							Command chain = FacilioChainFactory.getGetTasksOfTicketCommand();
+							FacilioContext context = new FacilioContext();
+							
+							context.put(FacilioConstants.ContextNames.ID, workorder.getId());
+							context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
+							context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME,"Tasks");
+							context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(FacilioConstants.ContextNames.TASK));
+							context.put("isAsMap", true);
+							chain.execute(context);
+							
+							List<Map<String, Object>> taskMap = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
+							
+							for(Map<String, Object> task : taskMap) {
+								
+								if(task.get("inputValue") != null) {
+									
+									String stringValue = task.get("inputValue").toString();
+									
+									Integer value = 0;
+									if("YES".equals(stringValue) ) {
+										value = 5;
+									}
+									else if ("NO".equals(stringValue)) {
+										value = 0;
+									}
+									else {
+										value = Integer.parseInt(stringValue);
+									}
+									
+									buildingScore = buildingScore +value;
+								}
+							}
+							buildingres = new JSONObject();
+							
+							buildingres.put("label", workorder.getCreatedTime());
+							buildingres.put("value", buildingScore);
+							
+							ticketData.add(buildingres);
+						}
+						
+					
+					LOGGER.log(Level.INFO, "23611l buildingres ----"+ticketData);
+					
+					return ticketData;
+				}
+			}
+			
+			if(report.getId() == 3946l) { 	//8
+
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				
+				
+				List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
+				
+				ticketData = new JSONArray();
+
+				for(TicketCategoryContext category:categories) {
+					
+					List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrders(category.getId());
+					
+					if(workorders.isEmpty()) {
+						continue;
+					}
+					
+						for(WorkOrderContext workorder:workorders) {
+							
+							int passed = 0,failed = 0;
+							JSONObject buildingres = new JSONObject();
+							
+							if(workorder.getResource().getId() != report.getReportSpaceFilterContext().getBuildingId()) {
+								continue;
+							}
+							
+							if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
+								continue;
+							}
+							
+							Command chain = FacilioChainFactory.getGetTasksOfTicketCommand();
+							FacilioContext context = new FacilioContext();
+							
+							context.put(FacilioConstants.ContextNames.ID, workorder.getId());
+							context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
+							context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME,"Tasks");
+							context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(FacilioConstants.ContextNames.TASK));
+							context.put("isAsMap", true);
+							chain.execute(context);
+							
+							List<Map<String, Object>> taskMap = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
+							
+							for(Map<String, Object> task : taskMap) {
+								
+								if(task.get("inputValue") != null) {
+									
+									String stringValue = task.get("inputValue").toString();
+									
+									Integer value = 0;
+									if("YES".equals(stringValue) ) {
+										passed = passed + 1;
+									}
+									else if ("NO".equals(stringValue)) {
+										failed = failed + 1;
+									}
+									else {
+										value = Integer.parseInt(stringValue);
+										if(value <= 2) {
+											failed = failed + 1;
+										}else {
+											passed = passed + 1;
+										}
+									}
+								}
+							}
+							
+							JSONArray resArray = new JSONArray();
+							
+							JSONObject res = new JSONObject();
+							res.put("label", "Passed");
+							res.put("value", passed);
+							resArray.add(res);
+							
+							res = new JSONObject();
+							res.put("label", "Failed");
+							res.put("value", failed);
+							resArray.add(res);
+							
+							buildingres.put("label", workorder.getCreatedTime());
+							buildingres.put("value", resArray);
+							ticketData.add(buildingres);
+							
+							ticketData.add(buildingres);
+						}
+						
+					
+					LOGGER.log(Level.INFO, "23611l buildingres ----"+ticketData);
+					
+					return ticketData;
+				}
+			}
+			
+			if(report.getId() == 3947l)	//9
+			{
+			 	
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				
+				int tcompliance = 0,tnonCompliance = 0,trepeatFinding = 0,total = 0;
+				
+				List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
+				
+				ticketData = new JSONArray();
+
+				for(TicketCategoryContext category:categories) {
+					
+					List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrders(category.getId());
+					
+					if(workorders.isEmpty()) {
+						continue;
+					}
+					
+					for(BuildingContext building : SpaceAPI.getAllBuildings()) {
+						
+						int passed = 0,failed = 0;
+						JSONArray resArray = new JSONArray();
+						for(WorkOrderContext workorder:workorders) {
+							
+							if(workorder.getResource().getId() != building.getId()) {
+								continue;
+							}
+							if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
+								continue;
+							}
+							
+							Command chain = FacilioChainFactory.getGetTasksOfTicketCommand();
+							FacilioContext context = new FacilioContext();
+							
+							context.put(FacilioConstants.ContextNames.ID, workorder.getId());
+							context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
+							context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME,"Tasks");
+							context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(FacilioConstants.ContextNames.TASK));
+							context.put("isAsMap", true);
+							chain.execute(context);
+							
+							List<Map<String, Object>> taskMap = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
+							
+							for(Map<String, Object> task : taskMap) {
+								
+								if(task.get("inputValue") != null) {
+									
+									String stringValue = task.get("inputValue").toString();
+									
+									Integer value = 0;
+									if("YES".equals(stringValue) ) {
+										passed = passed + 1;
+									}
+									else if ("NO".equals(stringValue)) {
+										failed = failed + 1;
+									}
+									else {
+										value = Integer.parseInt(stringValue);
+										if(value <= 2) {
+											failed = failed + 1;
+										}else {
+											passed = passed + 1;
+										}
+									}
+								}
+							}
+						}
+						JSONObject res = new JSONObject();
+						res.put("label", "Passed");
+						res.put("value", passed);
+						resArray.add(res);
+						
+						res = new JSONObject();
+						res.put("label", "Failed");
+						res.put("value", failed);
+						resArray.add(res);
+						
+						JSONObject buildingres = new JSONObject();
+						buildingres.put("label", building.getName());
+						buildingres.put("value", resArray);
+						
+						ticketData.add(buildingres);
+					}
+					
+					LOGGER.log(Level.INFO, "23611l buildingres ----"+ticketData);
+					
+					return ticketData;
+				}
+			}
+		}
+		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
@@ -2424,17 +3094,26 @@ public class DashboardAction extends ActionSupport {
 			}
 		}
 		
-		Multimap<Long, Long> buildingResourceMap = ArrayListMultimap.create();
+		Multimap<Long, Long> spaceResourceMap = ArrayListMultimap.create();
 		
 		if(xAxisField.getName().equals("resource")) {
 			if(reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.BUILDING.getValue())) {
 				
 				for(BuildingContext building:SpaceAPI.getAllBuildings()) {
 					List<Long> resourceList = DashboardUtil.getAllResources(building.getId());
-					buildingResourceMap.putAll(building.getId(), resourceList);
+					spaceResourceMap.putAll(building.getId(), resourceList);
 				}
 				report.getxAxisField().getField().setDisplayName("Building");
 				report.getxAxisField().getField().setName("building");
+			}
+			else if(reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.SITE.getValue())) {
+				
+				for( SiteContext site:SpaceAPI.getAllSites()) {
+					List<Long> resourceList = DashboardUtil.getAllResources(site.getId());
+					spaceResourceMap.putAll(site.getId(), resourceList);
+				}
+				report.getxAxisField().getField().setDisplayName("Site");
+				report.getxAxisField().getField().setName("Site");
 			}
 		}
 		
@@ -2614,6 +3293,25 @@ public class DashboardAction extends ActionSupport {
 				
 				builder.andCondition(spaceCondition);
 			}
+			
+			else if(report.getReportSpaceFilterContext().getSiteId() != null) {
+				
+				Long siteId = report.getReportSpaceFilterContext().getSiteId();
+				
+				if(siteId.equals(-1l)) {
+					List<SiteContext> sites = SpaceAPI.getAllSites();
+					if(sites != null && !sites.isEmpty()) {
+						siteId = sites.get(0).getId();
+					}
+				}
+				
+				List<Long> resourceList = DashboardUtil.getAllResources(siteId);
+				
+				Condition spaceCondition = CriteriaAPI.getCondition("RESOURCE_ID", "resourceId",  StringUtils.join(resourceList, ","), NumberOperators.EQUALS);
+				
+				builder.andCondition(spaceCondition);
+			}
+			
 			if(report.getReportSpaceFilterContext().getGroupBy() != null && report.getReportSpaceFilterContext().getGroupBy().contains("workhour")) {
 				
 				isWorkHourReport = true;
@@ -2668,9 +3366,9 @@ public class DashboardAction extends ActionSupport {
 						Object groupBy = thisMap.get("groupBy");
 						Double value = Double.parseDouble(thisMap.get("value").toString());
 						
-						for(Long buildingId : buildingResourceMap.keySet()) {
+						for(Long buildingId : spaceResourceMap.keySet()) {
 							
-							if(buildingResourceMap.get(buildingId).contains(spaceId)) {
+							if(spaceResourceMap.get(buildingId).contains(spaceId)) {
 								
 								if(buildingRes.get(buildingId) != null) {
 									JSONObject map = (JSONObject) buildingRes.get(buildingId);
@@ -2749,18 +3447,18 @@ public class DashboardAction extends ActionSupport {
 
 				Map<String, Object> thisMap = rs.get(i);
 				JSONObject component = new JSONObject();
-				if(reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.BUILDING.getValue())) {
+				if(reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.BUILDING.getValue()) || reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.SITE.getValue())) {
 					
 					Object label = thisMap.get("label");
 					Object value = thisMap.get("value");
-					for(Long buildingId : buildingResourceMap.keySet()) {
+					for(Long spaceId : spaceResourceMap.keySet()) {
 						
-						if(buildingResourceMap.get(buildingId).contains(label)) {
-							Long buildingValue = buildingResult.get(buildingId);
+						if(spaceResourceMap.get(spaceId).contains(label)) {
+							Long buildingValue = buildingResult.get(spaceId);
 							
 							buildingValue = buildingValue != null ? buildingValue += (Long)value:(Long)value;
 							
-							buildingResult.put(buildingId, buildingValue);
+							buildingResult.put(spaceId, buildingValue);
 							break;
 						}
 					}
@@ -2797,7 +3495,14 @@ public class DashboardAction extends ActionSupport {
 		 	}
 			for( Long key:buildingResult.keySet()) {
 				JSONObject component = new JSONObject();
-				component.put("label", key);
+				Object key1 = key;
+				if(reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.SITE.getValue())) {
+					SiteContext site = SpaceAPI.getSiteSpace(key);
+					if(site != null) {
+						key1 = site.getName();
+					}
+				}
+				component.put("label", key1);
 				component.put("value", buildingResult.get(key));
 				res.add(component);
 			}

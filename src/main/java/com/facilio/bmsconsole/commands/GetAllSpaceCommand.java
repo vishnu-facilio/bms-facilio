@@ -34,6 +34,10 @@ public class GetAllSpaceCommand implements Command{
 				.beanClass(SpaceContext.class)
 				.select(fields)
 				.orderBy("ID");
+		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
+		if (filterCriteria != null) {
+			builder.andCriteria(filterCriteria);
+		}
 		
 		if (siteId != null && siteId > 0) {
 			builder.andCustomWhere("BaseSpace.SITE_ID = ?", siteId);

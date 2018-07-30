@@ -1,17 +1,20 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.StringJoiner;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.tuple.Pair;
 
+import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.EnumOperators;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
@@ -20,10 +23,11 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
+import com.facilio.report.context.ReportDataContext;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportDataPointContext.OrderByFunction;
-import com.google.common.base.Objects;
 
 public class FetchReportDataCommand implements Command {
 
@@ -38,31 +42,46 @@ public class FetchReportDataCommand implements Command {
 		}
 		
 		List<List<ReportDataPointContext>> groupedDataPoints = groupDataPoints(report.getDataPoints());
-		List<Pair<List<ReportDataPointContext>, List<Map<String, Object>>>> reportData = new ArrayList<>();
+		List<ReportDataContext> reportData = new ArrayList<>();
 		for (List<ReportDataPointContext> dataPointList : groupedDataPoints) {
+			ReportDataContext data = new ReportDataContext();
+			data.setDataPoints(dataPointList);
+			
 			ReportDataPointContext dp = dataPointList.get(0); //Since order by, criteria are same for all dataPoints in a group, we can consider only one for the builder
 			SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 																					.module(dp.getxAxisField().getModule()) //Assuming both x and y will be from same module in a datapoint
 																					.andCriteria(dp.getCriteria())
 																					;
 			applyOrderBy(dp, selectBuilder);
-			applyDateCondition(report, dp, selectBuilder);
 			List<FacilioField> fields = new ArrayList<>();
 			StringJoiner groupBy = new StringJoiner(",");
 			FacilioField xAggrField = applyXAggregation(dp, groupBy, fields);
 			setYFieldsAndGroupByFields(dataPointList, fields, xAggrField, groupBy, dp, selectBuilder);
-			
 			selectBuilder.select(fields);
-			selectBuilder.andCriteria(dp.getCriteria());
-			
 			if (report.getxCriteria() != null) {
 				selectBuilder.andCondition(getEqualsCondition(dp.getxAxisField(), xValues));
 			}
 			
-			reportData.add(Pair.of(dataPointList, selectBuilder.getAsProps()));
+			Map<String, List<Map<String, Object>>> props = new HashMap<>();
+			props.put("actual", fetchReportData(report, dp, selectBuilder, null));
+			
+			if (report.getBaseLines() != null && !report.getBaseLines().isEmpty()) {
+				for (ReportBaseLineContext reportBaseLine : report.getBaseLines()) {
+					props.put(reportBaseLine.getBaseLine().getName(), fetchReportData(report, dp, selectBuilder, reportBaseLine));
+				}
+			}
+			
+			data.setProps(props);
+			reportData.add(data);
 		}
 		context.put(FacilioConstants.ContextNames.REPORT_DATA, reportData);
 		return false;
+	}
+	
+	private List<Map<String, Object>> fetchReportData(ReportContext report, ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, ReportBaseLineContext reportBaseLine) throws Exception {
+		SelectRecordsBuilder<ModuleBaseWithCustomFields> newSelectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>(selectBuilder);
+		applyDateCondition(report, dp, newSelectBuilder, reportBaseLine);
+		return newSelectBuilder.getAsProps();
 	}
 	
 	private void setYFieldsAndGroupByFields(List<ReportDataPointContext> dataPointList, List<FacilioField> fields, FacilioField xAggrField, StringJoiner groupBy, ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder) throws Exception {
@@ -79,10 +98,13 @@ public class FetchReportDataCommand implements Command {
 				groupBy.add(field.getCompleteColumnName());
 			}
 		}
-		selectBuilder.groupBy(groupBy.toString());
+		
+		if (groupBy.length() > 0) {
+			selectBuilder.groupBy(groupBy.toString());
+		}
 	}
 	
-	private void applyDateCondition(ReportContext report, ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder) {
+	private void applyDateCondition(ReportContext report, ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, ReportBaseLineContext baseLine) {
 		if (report.getDateOperatorEnum() != null) {
 			if (dp.getDateField() == null) {
 				throw new IllegalArgumentException("Date Field for datapoint cannot be null when report has date filter");
@@ -90,7 +112,13 @@ public class FetchReportDataCommand implements Command {
 			if (report.getDateOperatorEnum().isValueNeeded() && (report.getDateValue() == null || report.getDateValue().isEmpty())) {
 				throw new IllegalArgumentException("Date Filter value cannot be null for the Date Operator :  "+report.getDateOperatorEnum());
 			}
-			selectBuilder.andCondition(CriteriaAPI.getCondition(dp.getDateField(), report.getDateValue(), report.getDateOperatorEnum()));
+			
+			if (baseLine != null) {
+				selectBuilder.andCondition(baseLine.getBaseLine().getBaseLineCondition(dp.getDateField(), ((DateOperators) report.getDateOperatorEnum()).getRange(report.getDateValue()), baseLine.getAdjustTypeEnum()));
+			}
+			else {
+				selectBuilder.andCondition(CriteriaAPI.getCondition(dp.getDateField(), report.getDateValue(), report.getDateOperatorEnum()));
+			}
 		}
 	}
 	
@@ -126,16 +154,16 @@ public class FetchReportDataCommand implements Command {
 		for (List<ReportDataPointContext> dataPointList : groupedList) {
 			ReportDataPointContext rdp = dataPointList.get(0);
 			if (rdp.getxAxisField().equals(dataPoint.getxAxisField()) &&
-					Objects.equal(rdp.getOrderBy(), dataPoint.getOrderBy())) {
+					Objects.equals(rdp.getOrderBy(), dataPoint.getOrderBy())) {
 				OrderByFunction rdpFunc = rdp.getOrderByFuncEnum() == null ? OrderByFunction.ACCENDING : rdp.getOrderByFuncEnum();
 				OrderByFunction dataPointFunc = dataPoint.getOrderByFuncEnum() == null ? OrderByFunction.ACCENDING : dataPoint.getOrderByFuncEnum();
 				int rdpAggr = rdp.getxAxisAggrEnum() == null && rdp.getyAxisAggrEnum() == null ? 0 : 1;
 				int dataPointAggr = dataPoint.getxAxisAggrEnum() == null && dataPoint.getyAxisAggrEnum() == null ? 0 : 1;
 				if (rdpFunc == dataPointFunc && 
-						Objects.equal(rdp.getCriteria(), dataPoint.getCriteria()) && 
+						Objects.equals(rdp.getCriteria(), dataPoint.getCriteria()) && 
 						rdpAggr == dataPointAggr &&
 						(rdpAggr == 0 || (rdp.getxAxisAggrEnum() == dataPoint.getxAxisAggrEnum() && rdp.getxAxisField().equals(dataPoint.getxAxisField()))) &&
-						Objects.equal(rdp.getGroupByFields(), dataPoint.getGroupByFields())) {
+						Objects.equals(rdp.getGroupByFields(), dataPoint.getGroupByFields())) {
 					dataPointList.add(dataPoint);
 					return;
 				}
@@ -148,36 +176,40 @@ public class FetchReportDataCommand implements Command {
 	
 	private FacilioField applyXAggregation(ReportDataPointContext dp, StringJoiner groupBy, List<FacilioField> fields) throws Exception {
 		FacilioField xAggrField = null;
-		if (dp.getyAxisAggrEnum() != null) {
-			if (dp.getxAxisAggrEnum() != null) {
+		if (dp.getyAxisAggrEnum() != null && dp.getyAxisAggr() != 0) {
+			if (dp.getxAxisAggrEnum() != null&& dp.getxAxisAggr() != 0 ) {
 				xAggrField = dp.getxAxisAggrEnum().getSelectField(dp.getxAxisField());
 			}
 			else {
 				xAggrField = dp.getxAxisField();
 			}
 			groupBy.add(xAggrField.getColumnName());
+			if (dp.getxAxisAggrEnum() instanceof DateAggregateOperator) {
+				fields.add(((DateAggregateOperator)dp.getxAxisAggrEnum()).getTimestampField(dp.getxAxisField()));
+			}
+			else {
+				fields.add(xAggrField);
+			}
 		}
 		else {
-			xAggrField = dp.getxAxisField();
+			if (dp.getyAxisAggrEnum() == null || dp.getxAxisAggr() == 0) {
+				xAggrField = dp.getxAxisField();
+				fields.add(xAggrField);
+			}
+			else {
+				throw new IllegalArgumentException("You can't apply X Aggr when Y Aggr is empty");
+			}
 		}
-		fields.add(xAggrField);
 		return xAggrField;
 	}
 	
 	private boolean applyYAggregation (ReportDataPointContext dataPoint, List<FacilioField> fields) throws Exception {
-		if (dataPoint.getyAxisAggrEnum() == null) { 
-			fields.add(dataPoint.getxAxisField());
+		if (dataPoint.getyAxisAggrEnum() == null || dataPoint.getyAxisAggr() == 0) { 
+			fields.add(dataPoint.getyAxisField());
 			return false;
 		}
 		else {
-			FacilioField yAggrField;
-			if (dataPoint.getyAxisAggrEnum() != null) {
-				yAggrField = dataPoint.getyAxisAggrEnum().getSelectField(dataPoint.getyAxisField());
-			}
-			else {
-				yAggrField = dataPoint.getyAxisField();
-			}
-			fields.add(yAggrField);
+			fields.add(dataPoint.getyAxisAggrEnum().getSelectField(dataPoint.getyAxisField()));
 			return true;
 		}
 	}

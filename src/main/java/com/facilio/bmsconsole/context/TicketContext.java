@@ -334,6 +334,22 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 	public void setActualWorkDuration(long actualWorkDuration) {
 		this.actualWorkDuration = actualWorkDuration;
 	}
+	
+	private long offlineWorkStart = -1;
+	public long getOfflineWorkStart() {
+		return offlineWorkStart;
+	}
+	public void setOfflineWorkStart(long offlineWorkStart) {
+		this.offlineWorkStart = offlineWorkStart;
+	}
+	
+	private long offlineWorkEnd = -1;
+	public long getOfflineWorkEnd() {
+		return offlineWorkEnd;
+	}
+	public void setOfflineWorkEnd(long offlineWorkEnd) {
+		this.offlineWorkEnd = offlineWorkEnd;
+	}
 
 	private ResourceContext resource;
 	public ResourceContext getResource() {

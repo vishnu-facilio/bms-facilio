@@ -2,7 +2,6 @@ package com.facilio.logging;
 
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

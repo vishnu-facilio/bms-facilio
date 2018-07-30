@@ -23,7 +23,6 @@ public class HistoricalFormulaFieldCalculatorJob extends FacilioJob {
 		try {
 			long formulaId = jc.getJobId();
 			FormulaFieldContext formula = FormulaFieldAPI.getFormulaField(formulaId);
-			logger.log(Level.INFO, "Calculating Formula for "+formula.getName());
 			DateRange range = getRange(jc, formula);
 			
 			if (range == null) {

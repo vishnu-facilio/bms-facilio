@@ -7,7 +7,6 @@ import java.time.temporal.WeekFields;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -112,6 +111,14 @@ public class BaseLineContext {
 	
 	public Condition getBaseLineCondition(FacilioField field, DateRange range) {
 		String blRange = calculateRange(range.getStartTime(), range.getEndTime(), adjustType);
+		if (blRange != null && !blRange.isEmpty()) {
+			return CriteriaAPI.getCondition(field, blRange, DateOperators.BETWEEN);
+		}
+		return null;
+	}
+	
+	public Condition getBaseLineCondition(FacilioField field, DateRange range, AdjustType type) {
+		String blRange = calculateRange(range.getStartTime(), range.getEndTime(), type);
 		if (blRange != null && !blRange.isEmpty()) {
 			return CriteriaAPI.getCondition(field, blRange, DateOperators.BETWEEN);
 		}

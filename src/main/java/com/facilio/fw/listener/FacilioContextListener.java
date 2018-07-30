@@ -4,14 +4,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.*;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Properties;
-import java.util.Scanner;
 import java.util.Timer;
 
 import javax.servlet.ServletContextEvent;
@@ -21,7 +21,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import com.facilio.server.ServerInfo;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.flywaydb.core.Flyway;
@@ -34,10 +33,12 @@ import org.xml.sax.SAXException;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.cache.RedisManager;
+import com.facilio.filters.HealthCheckFilter;
 import com.facilio.fw.BeanFactory;
 import com.facilio.kinesis.KinesisProcessor;
 import com.facilio.logging.SysOutLogger;
 import com.facilio.queue.FacilioExceptionProcessor;
+import com.facilio.server.ServerInfo;
 import com.facilio.serviceportal.actions.PortalAuthInterceptor;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.SQLScriptRunner;
@@ -159,6 +160,7 @@ PortalAuthInterceptor.PORTALDOMAIN = com.facilio.aws.util.AwsUtil.getConfig("por
 			System.out.println("Loading the domain name as ######"+PortalAuthInterceptor.PORTALDOMAIN );
 			
 			initLocalHostName();
+			HealthCheckFilter.setStatus(200);
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

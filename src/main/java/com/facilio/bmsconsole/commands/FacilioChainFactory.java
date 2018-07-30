@@ -990,12 +990,12 @@ public class FacilioChainFactory {
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
-	
 	public static Chain getAllSpaceChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForSpace());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GetAllSpaceCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
@@ -1080,7 +1080,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getAddZoneChain() {
-		Chain c = new ChainBase();
+		Chain c = new TransactionChain();
 		c.addCommand(new ValidateZoneFieldsCommand());
 		c.addCommand(SetTableNamesCommand.getForZone());
 		c.addCommand(new LoadAllFieldsCommand());
@@ -1090,7 +1090,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getUpdateZoneChain() {
-		Chain c = new ChainBase();
+		Chain c = new TransactionChain();
 		c.addCommand(new ValidateZoneFieldsCommand());
 		c.addCommand(SetTableNamesCommand.getForZone());
 		c.addCommand(new LoadAllFieldsCommand());
@@ -1933,6 +1933,13 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getAddOrUpdateReadingValuesChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new AddOrUpdateReadingsCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain onlyAddOrUpdateReadingsChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new GetReadingDataMetaCommand());
 		c.addCommand(new ReadingUnitConversionCommand());
@@ -1942,9 +1949,21 @@ public class FacilioChainFactory {
 		c.addCommand(new ExecuteValidationRule());
 		c.addCommand(new AddOrUpdateReadingValuesCommand());
 		c.addCommand(new AddMarkedReadingValuesCommand());
-		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.READING_RULE, RuleType.PM_READING_RULE, RuleType.VALIDATION_RULE));
-		c.addCommand(new CalculatePostFormulaCommand());
 		c.addCommand(new SpaceBudIntegrationCommand());	//For RMZ-SpaceBud Integration
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain executeWorkflowsForReadingChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.READING_RULE, RuleType.PM_READING_RULE, RuleType.VALIDATION_RULE));
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain calculateFormulaChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new CalculatePostFormulaCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
@@ -2434,6 +2453,13 @@ public class FacilioChainFactory {
 	public static Chain updateRateCardChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(new UpdateRateCardCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain addOfflineSyncErrorChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new AddOfflineSyncErrorCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}

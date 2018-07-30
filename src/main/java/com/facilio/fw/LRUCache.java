@@ -112,7 +112,6 @@ System.out.println("Before "+testcache);
 
     private void clearTenPercentile()
     {
-    	LOGGER.debug("Removing ten percent for "+name);
     	   long mintime = 0;
     	   long maxtime = 0;
     	   long totalcount = cache.size();
@@ -223,10 +222,8 @@ System.out.println("Before "+testcache);
     }
 
     public void put(K key, V value){
-     	logger.debug("PUT ###############adding data to cache "+key);
 
         if (cache.containsKey(key)){
-        	logger.debug("PUT ############### data already exist cache "+key);
 
             return;
         }

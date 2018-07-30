@@ -1,7 +1,6 @@
 
 package com.facilio.bmsconsole.util;
 
-import java.io.Closeable;
 import java.sql.SQLException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -79,7 +78,6 @@ import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
@@ -578,10 +576,37 @@ public class DashboardUtil {
 			        				grossFloorArea = floor.getArea();
 			        			}
 							}
-			        		if(grossFloorArea > 0 && sum > 0) {
-			        			double eui = sum/grossFloorArea;
-			        			eui = eui * ReportsUtil.conversionMultiplier;
-			        			variance.put("eui", eui);
+			        		
+			        		if(report.getId() == 1012l && grossFloorArea > 0) {
+			        			
+			        			Map<Integer, Double> ress = getHourlyAggregatedData(props);
+			        			
+			        			List <Double> hourlyeuis = new ArrayList<>();
+			        			if(ress != null && !ress.isEmpty()) {
+			        				
+			        				for(Integer hour : ress.keySet()) {
+			        					
+			        					Double value = ress.get(hour);
+			        					
+			        					double eui = value/grossFloorArea;
+					        			hourlyeuis.add(eui);
+					        			LOGGER.log(Level.SEVERE, "hour -- "+hour +" eui --"+eui);
+			        				}
+			        				LOGGER.log(Level.SEVERE, "hourlyeuis -- "+hourlyeuis);
+			        				sum = 0d;
+			        				for(Double hourlyeui :hourlyeuis) {
+			        					sum = sum + hourlyeui;
+			        				}
+			        				variance.put("eui", sum/hourlyeuis.size());
+			        			}
+			        		}
+			        		else {
+			        			
+			        			if(grossFloorArea > 0 && sum > 0) {
+				        			double eui = sum/grossFloorArea;
+				        			variance.put("eui", eui);
+				        		}
+			        			
 			        		}
 			        	}
 			        }
@@ -596,6 +621,38 @@ public class DashboardUtil {
 		return null;
 	}
 	
+	public static Map<Integer, Double> getHourlyAggregatedData(List<Map<String, Object>> props ) {
+		
+		
+		Map<Integer, Double> res = new HashMap<>();
+		for(Map<String, Object> prop :props) {
+			
+			LOGGER.log(Level.SEVERE, "getHourlyAggregatedData prop ---- "+prop);
+			long ttime = Long.parseLong(prop.get("label").toString());
+			Double value = Double.parseDouble(prop.get("value").toString());
+			
+			ZonedDateTime zdt = DateTimeUtil.getZonedDateTime(ttime);
+			
+			ZonedDateTime currentzdt = DateTimeUtil.getZonedDateTime(DateTimeUtil.getCurrenTime());
+			
+			if(zdt.getHour() == currentzdt.getHour()) {
+				continue;
+			}
+			if(res.containsKey(zdt.getHour())) {
+				
+				Double value1 = res.get(zdt.getHour());
+				
+				value1 = value1 +value;
+				res.put(zdt.getHour(), value1);
+			}
+			else {
+				res.put(zdt.getHour(), value);
+			}
+			
+			LOGGER.log(Level.SEVERE, "getHourlyAggregatedData res ---- "+res);
+		}
+		return res;
+	}
 	public static List<DashboardWidgetContext> getDashboardWidgetsFormDashboardId(Long dashboardId) throws Exception {
 		
 		List<FacilioField> fields = FieldFactory.getWidgetFields();

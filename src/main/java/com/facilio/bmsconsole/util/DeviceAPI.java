@@ -175,7 +175,10 @@ public class DeviceAPI
 		for(BuildingContext building :buildings) {
 			idList = idList +building.getId()+",";
 		}
-		idList = idList.substring(0, idList.length()-1);
+
+		if(idList.length() > 0) {
+			idList = idList.substring(0, idList.length() - 1);
+		}
 		
 		List<EnergyMeterContext> energyMeters = DashboardUtil.getMainEnergyMeter(idList);
 		Map <Long, Long> buildingVsMeter = new HashMap<>();

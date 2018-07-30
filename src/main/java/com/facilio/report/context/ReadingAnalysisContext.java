@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 
-public class ReportAnalysisContext {
+public class ReadingAnalysisContext {
 	private List<Long> parentId;
 	public List<Long> getParentId() {
 		return parentId;

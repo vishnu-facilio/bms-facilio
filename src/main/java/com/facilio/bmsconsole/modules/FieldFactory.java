@@ -4129,6 +4129,25 @@ public class FieldFactory {
 		
 		return fields;
 	}
+	
+	public static List<FacilioField> getOfflineSyncErrorFields() {
+		FacilioModule module = ModuleFactory.getOfflineSyncErrorModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getOrgIdField(module));
+		fields.add(getField("moduleName", "MODULE_NAME", module, FieldType.STRING));
+		
+		LookupField userField = (LookupField) getField("syncedBy", "SYNCED_BY", module, FieldType.LOOKUP);
+		userField.setSpecialType(FacilioConstants.ContextNames.USERS);
+		fields.add(userField);
+		
+		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.DATE_TIME));
+		fields.add(getField("lastSyncTime", "LAST_SYNC_TIME", module, FieldType.DATE_TIME));
+		fields.add(getField("errorInfo", "ERROR_INFO", module, FieldType.STRING));
+		
+		return fields;
+	}
+
 
 	public static FacilioField getField(String name, String colName, FacilioModule module, FieldType type) {
 		return getField(name, null, colName, module, type);

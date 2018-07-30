@@ -26,7 +26,7 @@ import com.facilio.workflows.util.WorkflowUtil;
 
 public class ExpressionContext {
 	
-	private static final Logger LOGGER = Logger.getLogger(WorkflowUtil.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(ExpressionContext.class.getName());
 	
 	String expressionString;
 	String name;
@@ -345,8 +345,8 @@ public class ExpressionContext {
 				}
 			}
 		}
-		LOGGER.severe("selectBuilder -- "+selectBuilder);
-		LOGGER.severe("selectBuilder result -- "+props);
+		LOGGER.fine("selectBuilder -- "+selectBuilder);
+		LOGGER.fine("selectBuilder result -- "+props);
 		if(props != null && !props.isEmpty()) {
 			
 			if(isManualAggregateQuery()) {
@@ -405,7 +405,7 @@ public class ExpressionContext {
 				exprResult = props.get(0).get(name);
 			}
 		}
-		LOGGER.severe("EXP -- "+toString()+" RESULT -- "+exprResult);
+		LOGGER.fine("EXP -- "+toString()+" RESULT -- "+exprResult);
 		return exprResult;
 	}
 	

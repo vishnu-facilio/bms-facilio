@@ -196,17 +196,17 @@ public class WorkflowContext {
 				}
 			}
 		}
-		LOGGER.severe("variableToExpresionMap --- "+variableResultMap+" \n\n"+"expString --- "+getResultEvaluator());
+		LOGGER.fine("variableToExpresionMap --- "+variableResultMap+" \n\n"+"expString --- "+getResultEvaluator());
 		
 		result =  evaluateExpression(getResultEvaluator(),variableResultMap, ignoreNullValues);
-		LOGGER.severe("result --- "+result);
+		LOGGER.fine("result --- "+result);
 		return result;
 	}
 	
 	private ExpressionContext fillParamterAndParseExpressionContext(ExpressionContext expressionContext) throws Exception {
 		
 		String expressionString = expressionContext.getExpressionString();
-		LOGGER.severe("BEFORE STRING --- "+expressionString);
+		LOGGER.fine("BEFORE STRING --- "+expressionString);
 		
 		if(expressionContext.getExpressionString().split(VARIABLE_PLACE_HOLDER).length > 1) {
 			for(ParameterContext parameter :parameters) {
@@ -225,7 +225,7 @@ public class WorkflowContext {
 				}
 			}
 		}
-		LOGGER.severe("AFTER STRING --- "+expressionString);
+		LOGGER.fine("AFTER STRING --- "+expressionString);
 		expressionContext = WorkflowUtil.getExpressionContextFromExpressionString(expressionString);
 		
 		return expressionContext;
@@ -233,7 +233,7 @@ public class WorkflowContext {
 	
 	private Object evaluateExpression(String exp,Map<String,Object> variablesMap, boolean ignoreNullValues) {
 
-		LOGGER.severe("EXPRESSION STRING IS -- "+exp+" variablesMap -- "+variablesMap);
+		LOGGER.fine("EXPRESSION STRING IS -- "+exp+" variablesMap -- "+variablesMap);
 		if(exp == null) {
 			return null;
 		}

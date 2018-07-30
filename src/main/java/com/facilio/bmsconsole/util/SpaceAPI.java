@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -28,7 +27,6 @@ import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
-import com.facilio.bmsconsole.modules.DeleteRecordBuilder;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
@@ -114,6 +112,10 @@ public class SpaceAPI {
 			case FLOOR:
 				updateSpace.setFloorId(space.getId());
 				space.setFloorId(space.getId());
+				break;
+			case SPACE:
+				updateSpace.setSpaceId(space.getId());
+				space.setSpaceId(space.getId());
 				break;
 			default:
 				break;
@@ -297,12 +299,7 @@ public class SpaceAPI {
 	
 	public static void addZoneChildren(ZoneContext zone, List<Long> childrenIds) throws SQLException, RuntimeException, Exception {
 		List<Map<String, Object>> childProps = new ArrayList<>();
-		List<ZoneContext> parentSpaces = getAllZone();
-		List<Long> zoneIds = null;
-		if (parentSpaces != null) {
-			zoneIds = parentSpaces.stream().map(existingZone -> existingZone.getId()).filter(id -> childrenIds.contains(id)).collect(Collectors.toList());
-		}
-		List<Long> isZones = null;
+
 		for(long childId : childrenIds) {
 			Map<String, Object> prop = new HashMap<>();
 			prop.put("zoneId", zone.getId());
@@ -310,18 +307,28 @@ public class SpaceAPI {
 			prop.put("isImmediate", true);
 			childProps.add(prop);
 		}
+		// Needs to open for Zone inside zone only
+		/*  
+		List<ZoneContext> parentSpaces = getAllZone();
+		List<Long> zoneIds = null;
+		if (parentSpaces != null) {
+			zoneIds = parentSpaces.stream().map(existingZone -> existingZone.getId()).filter(id -> childrenIds.contains(id)).collect(Collectors.toList());
+		}
+		
 		if (parentSpaces != null) {
 			List<BaseSpaceContext> zoneChildren = getZoneChildren(zoneIds, false);
-			for(BaseSpaceContext zoneChild : zoneChildren) {
-				if (zoneChild.getSpaceTypeEnum() != SpaceType.ZONE) {
-					Map<String, Object> prop = new HashMap<>();
-					prop.put("zoneId", zone.getId());
-					prop.put("basespaceId", zoneChild.getId());
-					prop.put("isImmediate", false);
-					childProps.add(prop);
+			if (zoneChildren != null) {
+				for(BaseSpaceContext zoneChild : zoneChildren) {
+					if (zoneChild.getSpaceTypeEnum() != SpaceType.ZONE) {
+						Map<String, Object> prop = new HashMap<>();
+						prop.put("zoneId", zone.getId());
+						prop.put("basespaceId", zoneChild.getId());
+						prop.put("isImmediate", false);
+						childProps.add(prop);
+					}
 				}
 			}
-		}
+		}*/
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 														.table(ModuleFactory.getZoneRelModule().getTableName())
 														.fields(FieldFactory.getZoneRelFields())
@@ -804,8 +811,7 @@ public static long getSitesCount() throws Exception {
 		
 		SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
 																	.select(fields)
-																	.table(module.getTableName())
-																	.moduleName(module.getName())
+																	.module(module)
 																	.beanClass(BaseSpaceContext.class);
 		if (filterCriteria != null) {
 			selectBuilder.andCriteria(filterCriteria);
@@ -816,6 +822,7 @@ public static long getSitesCount() throws Exception {
 		if (orderBy != null && !orderBy.isEmpty()) {
 			selectBuilder.orderBy(orderBy);
 		}
+		
 		
 		List<BaseSpaceContext> spaces = selectBuilder.get();
 		return spaces;

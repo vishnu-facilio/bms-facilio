@@ -31,7 +31,6 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 
-import com.amazonaws.auth.*;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -47,6 +46,11 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagement;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClientBuilder;
@@ -115,6 +119,7 @@ public class AwsUtil
 	private static AmazonS3 AWS_S3_CLIENT = null;
 	private static AmazonRekognition AWS_REKOGNITION_CLIENT = null;
 
+	private static volatile AWSCredentials basicCredentials = null;
 	private static volatile AWSCredentialsProvider credentialsProvider = null;
 	private static volatile AWSIot awsIot = null;
 	private static volatile AmazonSQS awsSQS = null;
@@ -179,14 +184,14 @@ public class AwsUtil
     
     public static AmazonS3 getAmazonS3Client() {
     	if (AWS_S3_CLIENT == null) {
-        	AWS_S3_CLIENT = AmazonS3ClientBuilder.standard().withRegion(AwsUtil.getConfig("region")).withCredentials(getAWSCredentialsProvider()).build();
+        	AWS_S3_CLIENT = AmazonS3ClientBuilder.standard().withRegion(region).withCredentials(getAWSCredentialsProvider()).build();
     	}
     	return AWS_S3_CLIENT;
     }
     
     public static AmazonRekognition getAmazonRekognitionClient() {
     	if (AWS_REKOGNITION_CLIENT == null) {
-    		AWS_REKOGNITION_CLIENT = AmazonRekognitionClientBuilder.standard().withRegion(AwsUtil.getConfig("region")).withCredentials(getAWSCredentialsProvider()).build();
+    		AWS_REKOGNITION_CLIENT = AmazonRekognitionClientBuilder.standard().withRegion(region).withCredentials(getAWSCredentialsProvider()).build();
     	}
     	return AWS_REKOGNITION_CLIENT;
     }
@@ -392,11 +397,26 @@ public class AwsUtil
 		}
 	}
 
+	private static AWSCredentials getBasicAwsCredentials() {
+		if(basicCredentials == null) {
+			synchronized (LOCK) {
+				if (basicCredentials == null) {
+					basicCredentials = new BasicAWSCredentials(AwsUtil.getConfig(AWS_ACCESS_KEY_ID), AwsUtil.getConfig(AWS_SECRET_KEY_ID));
+				}
+			}
+		}
+		return basicCredentials;
+	}
+
 	public static AWSCredentialsProvider getAWSCredentialsProvider() {
-    	if(credentialsProvider == null){
-    		synchronized (LOCK) {
-    			if(credentialsProvider == null){
-					credentialsProvider = InstanceProfileCredentialsProvider.createAsyncRefreshingProvider(false);
+		if(credentialsProvider == null){
+			synchronized (LOCK) {
+				if(credentialsProvider == null){
+					if("stage".equalsIgnoreCase(AwsUtil.getConfig("environment"))) {
+						credentialsProvider = InstanceProfileCredentialsProvider.createAsyncRefreshingProvider(false);
+					} else {
+						credentialsProvider = new AWSStaticCredentialsProvider(getBasicAwsCredentials());
+					}
 				}
 			}
 		}
