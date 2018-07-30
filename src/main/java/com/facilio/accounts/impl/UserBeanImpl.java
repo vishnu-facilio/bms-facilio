@@ -420,8 +420,12 @@ public long inviteRequester(long orgId, User user) throws Exception {
 		Map<String, Object> placeholders = new HashMap<>();
 		CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(user), placeholders);
 		placeholders.put("invitelink", inviteLink);
-		
-		 // AccountEmailTemplate.EMAIL_VERIFICATION.send(placeholders);
+		if (user.getEmail().contains("@facilio.com")) {
+			 AccountEmailTemplate.EMAIL_VERIFICATION.send(placeholders);
+		}
+		else {
+			AccountEmailTemplate.ALERT_EMAIL_VERIFICATION.send(placeholders);	
+		}
 
 	}
 
