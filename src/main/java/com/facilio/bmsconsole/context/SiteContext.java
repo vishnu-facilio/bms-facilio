@@ -24,14 +24,6 @@ public class SiteContext extends BaseSpaceContext {
 		this.managedBy = managedBy;
 	}
 	
-	private User maintainedBy;
-	public User getMaintainedBy() {
-		return maintainedBy;
-	}
-	public void setMaintainedBy(User maintainedBy) {
-		this.maintainedBy = maintainedBy;
-	}
-	
 	private int noOfBuildings = -1;
 	public int getNoOfBuildings() {
 		return noOfBuildings;
