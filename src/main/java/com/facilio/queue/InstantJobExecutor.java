@@ -20,11 +20,11 @@ public class InstantJobExecutor implements Runnable {
     private static final ThreadPoolExecutor THREAD_POOL_EXECUTOR = new ThreadPoolExecutor(CORE_POOL_SIZE, MAX_POOL_SIZE, KEEP_ALIVE, TimeUnit.SECONDS, new LinkedBlockingQueue<>(QUEUE_SIZE));
 
     public void run(){
-        List<QueueMessage> messageList = ObjectQueue.getObjects("instantJob");
+        List<ObjectMessage> messageList = ObjectQueue.getObjects("instantJob");
         if(messageList != null) {
-            for (QueueMessage message : messageList) {
+            for (ObjectMessage message : messageList) {
                 while (THREAD_POOL_EXECUTOR.getQueue().size() < 15) {
-                    FacilioContext context = (FacilioContext) message.getObject();
+                    FacilioContext context = (FacilioContext) message.getSerializable();
                     String jobName = (String) context.get("JOB");
                     if (jobName != null) {
                         InstantJobConf.Job instantJob = FacilioScheduler.getInstantJob(jobName);
