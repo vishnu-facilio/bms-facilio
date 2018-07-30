@@ -2265,6 +2265,13 @@ public class FieldFactory {
 		dashboardUrl.setColumnName("DASHBOARD_URL");
 		dashboardUrl.setModule(module);
 		fields.add(dashboardUrl);
+		
+		FacilioField baseSpaceId = new FacilioField();
+		baseSpaceId.setName("baseSpaceId");
+		baseSpaceId.setDataType(FieldType.LOOKUP);
+		baseSpaceId.setColumnName("BASE_SPACE_ID");
+		baseSpaceId.setModule(module);
+		fields.add(baseSpaceId);
 
 		FacilioField displayOrder = new FacilioField();
 		displayOrder.setName("displayOrder");

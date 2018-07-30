@@ -5477,6 +5477,10 @@ public class DashboardAction extends ActionSupport {
 	}
 	
 	public String viewDashboard() throws Exception {
+		if(buildingId != null) {
+			dashboard = DashboardUtil.getDashboardForBaseSpace(buildingId);
+			linkName = (dashboard != null) ? dashboard.getLinkName() : linkName;
+		}
 		dashboard = DashboardUtil.getDashboardWithWidgets(linkName, moduleName);
 		setDashboardJson(DashboardUtil.getDashboardResponseJson(dashboard));
 		return SUCCESS;
