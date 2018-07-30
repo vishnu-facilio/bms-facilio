@@ -1,5 +1,6 @@
 package com.facilio.queue;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TimerTask;
@@ -18,11 +19,13 @@ public class FacilioExceptionProcessor extends TimerTask {
     private static final String QUEUE = "Exception";
     private static final HashMap<String, Integer> EXCEPTION_COUNT = new HashMap<>();
     private static final HashMap<String, String> EXCEPTION_MESSAGES = new HashMap<>();
+    private static final List<String> RECEIPT_HANDLE_LIST = new ArrayList<>();
     private static final Logger LOGGER = LogManager.getLogger(FacilioExceptionProcessor.class.getName());
 
 
     public void run() {
         List<Message> messageList = FAWSQueue.receiveMessages(QUEUE);
+
 
         while(messageList.size() > 0 && EXCEPTION_MESSAGES.size() < 20) {
             processMessages(messageList);
@@ -48,17 +51,21 @@ public class FacilioExceptionProcessor extends TimerTask {
                 }
             }
 
-            for (Message msg : messageList) {
-                FAWSQueue.deleteMessage(QUEUE, msg.getReceiptHandle());
-            }
-            EXCEPTION_MESSAGES.clear();
-            EXCEPTION_COUNT.clear();
+            FAWSQueue.deleteMessage(QUEUE, new ArrayList<>(RECEIPT_HANDLE_LIST));
+            resetFields();
         }
+    }
+
+    private void resetFields() {
+        EXCEPTION_MESSAGES.clear();
+        EXCEPTION_COUNT.clear();
+        RECEIPT_HANDLE_LIST.clear();
     }
 
     private void processMessages(List<Message> messageList) {
         for(Message msg : messageList) {
             String body = msg.getBody();
+            RECEIPT_HANDLE_LIST.add(msg.getReceiptHandle());
             int index = body.indexOf(CommonCommandUtil.DELIMITER);
             String orgWithClassName = "";
             if(index > 1) {

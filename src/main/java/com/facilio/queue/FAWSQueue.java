@@ -5,10 +5,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.model.GetQueueUrlResult;
-import com.amazonaws.services.sqs.model.Message;
-import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
-import com.amazonaws.services.sqs.model.ReceiveMessageResult;
+import com.amazonaws.services.sqs.model.*;
 import com.facilio.aws.util.AwsUtil;
 
 public class FAWSQueue {
@@ -55,5 +52,23 @@ public class FAWSQueue {
             nameVsURL.put(queueName, url);
         }
         sqs.deleteMessage(queueName, receiptHandle);
+    }
+
+    static void deleteMessage(String queueName, List<String> receiptHandles) {
+        String url = nameVsURL.get(queueName);
+        AmazonSQS sqs = AwsUtil.getSQSClient();
+        if(url == null) {
+            GetQueueUrlResult result = sqs.getQueueUrl(queueName);
+            url = result.getQueueUrl();
+            nameVsURL.put(queueName, url);
+        }
+        List<DeleteMessageBatchRequestEntry> deleteMessageBatchRequestEntries = new ArrayList<>();
+        for(String receiptHandle : receiptHandles ) {
+            DeleteMessageBatchRequestEntry entry = new DeleteMessageBatchRequestEntry().withReceiptHandle(receiptHandle);
+            deleteMessageBatchRequestEntries.add(entry);
+        }
+        if(receiptHandles.size() > 0) {
+            sqs.deleteMessageBatch(queueName, deleteMessageBatchRequestEntries);
+        }
     }
 }

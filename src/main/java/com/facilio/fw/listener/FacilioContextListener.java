@@ -76,7 +76,7 @@ public class FacilioContextListener implements ServletContextListener {
 		}
 
 		if("true".equals(AwsUtil.getConfig("schedulerServer")) && "production".equals(AwsUtil.getConfig("environment"))) {
-			timer.schedule(new FacilioExceptionProcessor(), 0L, 1800000L); // 30 minutes
+			timer.schedule(new FacilioExceptionProcessor(), 0L, 900000L); // 30 minutes
 		}
 
 

@@ -31,7 +31,8 @@ public class ObjectQueue {
             objectOutputStream.writeObject(serializable);
             objectOutputStream.flush();
             serializedString = Base64.encodeAsString(bytesOut.toByteArray());
-            FAWSQueue.sendMessage(queueName, serializedString);
+            // FAWSQueue.sendMessage(queueName, serializedString);
+            QueueFactory.getQueue().push(queueName, serializedString);
         } catch (IOException e) {
             LOGGER.error("IOException: cannot serialize objectMessage", e);
             throw new SerializationException("Unable to serialize Object :  " + serializable.toString());
@@ -46,9 +47,9 @@ public class ObjectQueue {
         }
     }
 
-    public static List<QueueMessage> getObjects(String queueName) {
+    public static List<ObjectMessage> getObjects(String queueName) {
         List<Message> receivedMessages = FAWSQueue.receiveMessages(queueName);
-        List<QueueMessage> serializableList = new ArrayList<>();
+        List<ObjectMessage> serializableList = new ArrayList<>();
         for (Message message: receivedMessages) {
             String serialized = message.getBody();
             if (serialized == null) {
@@ -60,7 +61,10 @@ public class ObjectQueue {
                 byte[] bytes = Base64.decode(serialized);
                 objectInputStream = new ObjectInputStream(new ByteArrayInputStream(bytes));
                 deserializedObject = (Serializable) objectInputStream.readObject();
-                serializableList.add(new QueueMessage(message.getReceiptHandle(), deserializedObject));
+                ObjectMessage objectMessage = new ObjectMessage(message.getMessageId(), message.getBody());
+                objectMessage.setSerializable(deserializedObject);
+                objectMessage.setReceiptHandle(message.getReceiptHandle());
+                serializableList.add(objectMessage);
             } catch (IOException e) {
                 LOGGER.error("IOException: Message cannot be written", e);
             } catch (Exception e) {
@@ -78,7 +82,7 @@ public class ObjectQueue {
         return serializableList;
     }
 
-    public static void deleteObject(String queueName, String reciptHandle) {
-        FAWSQueue.deleteMessage(queueName, reciptHandle);
+    public static void deleteObject(String queueName, String receiptHandle) {
+        FAWSQueue.deleteMessage(queueName, receiptHandle);
     }
 }

@@ -1,22 +1,34 @@
 package com.facilio.queue;
 
-import java.io.Serializable;
-
-import com.amazonaws.services.sqs.model.Message;
-
 public class QueueMessage {
 
+    private String message;
+    private final String id;
+    private long visibilityTimeout;
     private String receiptHandle;
-    private Serializable object;
-    private Message message;
 
-    public QueueMessage(String receiptHandle, Serializable object) {
-        this(receiptHandle, object, null);
+    public QueueMessage(String id, String message){
+        this.message = message;
+        this.id = id;
     }
 
-    public QueueMessage(String receiptHandle, Serializable object, Message message) {
-        this.receiptHandle = receiptHandle;
-        this.object = object;
+    public String getMessage() {
+        return message;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public long getVisibilityTimeout() {
+        return visibilityTimeout;
+    }
+
+    void setVisibilityTimeout(long visibilityTimeout) {
+        this.visibilityTimeout = visibilityTimeout;
+    }
+
+    public void setMessage(String message) {
         this.message = message;
     }
 
@@ -28,19 +40,7 @@ public class QueueMessage {
         this.receiptHandle = receiptHandle;
     }
 
-    public Serializable getObject() {
-        return object;
-    }
-
-    public void setObject(Serializable object) {
-        this.object = object;
-    }
-
-    public Message getMessage() {
-        return message;
-    }
-
-    public void setMessage(Message message) {
-        this.message = message;
+    public String toString() {
+        return getId() + ":" + getMessage() +":"+ getVisibilityTimeout();
     }
 }
