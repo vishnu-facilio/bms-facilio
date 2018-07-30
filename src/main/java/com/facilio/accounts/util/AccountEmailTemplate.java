@@ -18,7 +18,8 @@ public enum AccountEmailTemplate {
 	INVITE_USER(2),
 	EMAIL_VERIFICATION(3),
 	RESET_PASSWORD(4),
-	ALERT_EMAIL_VERIFICATION(5);
+	ALERT_EMAIL_VERIFICATION(5),
+	PORTAL_SIGNUP(6);
 	
 	private static Logger log = LogManager.getLogger(AccountEmailTemplate.class.getName());
 	private int val;
@@ -108,6 +109,12 @@ public enum AccountEmailTemplate {
 				json.put("message", "Hi ${user.name}, Please click the below link to verify your email address. ${invitelink}\n" 
 						+ "Name:" + "${user.name}\n" + "Email:" + "${user.email}" + "Timezone:" + "${user.timezone}" );
 				break;
+			case 6:
+				json.put("sender", "support@facilio.com");
+				json.put("to", "${user.email}");
+				json.put("subject","[${org.name}] Welcome and confirm your email" );
+				json.put("message", "Hi ${user.name}, Please click the below link to verify your email address. ${invitelink}" );
+				break;				
 		}
 		return json;
 	}
