@@ -211,7 +211,7 @@ public class FormulaFieldAPI {
 		return null;
 	}
 	
-	public static List<ReadingContext> calculateFormulaReadings(long resourceId, String fieldName, List<DateRange> intervals, WorkflowContext workflow) throws Exception {
+	public static List<ReadingContext> calculateFormulaReadings(long resourceId, String moduleName, String fieldName, List<DateRange> intervals, WorkflowContext workflow, boolean ignoreNullValues) throws Exception {
 		if (intervals != null && !intervals.isEmpty()) {
 			long minTime = intervals.get(0).getStartTime();
 			long maxTime = intervals.get(intervals.size() - 1).getEndTime();
@@ -225,11 +225,13 @@ public class FormulaFieldAPI {
 					params.put("startTime", iStartTime);
 					params.put("endTime", iEndTime);
 					params.put("resourceId", resourceId);
+					params.put("currentModule", moduleName);
+					params.put("currentField", fieldName);
 					
 					if (workflow.getWorkflowString() == null) {
 						workflow.setWorkflowString(WorkflowUtil.getXmlStringFromWorkflow(workflow));
 					}
-					Double resultVal = (Double) WorkflowUtil.getWorkflowExpressionResult(workflow.getWorkflowString(), params, false);
+					Double resultVal = (Double) WorkflowUtil.getWorkflowExpressionResult(workflow.getWorkflowString(), params, ignoreNullValues);
 					
 					if (resultVal != null) {
 						ReadingContext reading = new ReadingContext();
@@ -637,7 +639,7 @@ public class FormulaFieldAPI {
 			
 			if (singleResourceId != -1) {
 				if (formula.getMatchedResources().contains(singleResourceId)) {
-					List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(singleResourceId, formula.getReadingField().getName(), intervals, formula.getWorkflow());
+					List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(singleResourceId, formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), formula.getTriggerTypeEnum() == TriggerType.SCHEDULE);
 					if (currentReadings != null && !currentReadings.isEmpty()) {
 						readings.addAll(currentReadings);
 						lastReadings.add(readings.get(readings.size() - 1));
@@ -646,7 +648,7 @@ public class FormulaFieldAPI {
 			}
 			else {
 				for (Long resourceId : formula.getMatchedResources()) {
-					List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(resourceId, formula.getReadingField().getName(), intervals, formula.getWorkflow());
+					List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(resourceId, formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), formula.getTriggerTypeEnum() == TriggerType.SCHEDULE);
 					if (currentReadings != null && !currentReadings.isEmpty()) {
 						readings.addAll(currentReadings);
 						lastReadings.add(readings.get(readings.size() - 1));

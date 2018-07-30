@@ -687,7 +687,7 @@ public class ReadingAction extends ActionSupport {
 	
 	public String calculateFormulField() throws Exception {
 		List<DateRange> intervals = DateTimeUtil.getTimeIntervals(startTime, endTime, minuteInterval);
-		readingValues = FormulaFieldAPI.calculateFormulaReadings(resourceId, fieldName, intervals, workflow);
+		readingValues = FormulaFieldAPI.calculateFormulaReadings(resourceId, fieldName, fieldName, intervals, workflow, false);
 		return SUCCESS;
 	}
 	
