@@ -23,23 +23,13 @@ public class FacilioExceptionProcessor extends TimerTask {
 
     public void run() {
         List<Message> messageList = FAWSQueue.receiveMessages(QUEUE);
-        for(Message msg : messageList) {
-            String body = msg.getBody();
-            int index = body.indexOf(CommonCommandUtil.DELIMITER);
-            String orgWithClassName = "";
-            if(index > 1) {
-                orgWithClassName = body.substring(0, index);
-                int count = EXCEPTION_COUNT.getOrDefault(orgWithClassName, 0);
-                EXCEPTION_COUNT.put(orgWithClassName, count+1);
-                if(count == 0) {
-                    EXCEPTION_MESSAGES.put(orgWithClassName, body);
-                }
-            }
 
+        while(messageList.size() > 0 && EXCEPTION_MESSAGES.size() < 20) {
+            processMessages(messageList);
+            messageList = FAWSQueue.receiveMessages(QUEUE);;
         }
 
-
-        if(messageList.size() > 0 ) {
+        if(EXCEPTION_MESSAGES.size() > 0 ) {
         	JSONObject json = new JSONObject();
 
             json.put("sender", "error@facilio.com");
@@ -65,4 +55,21 @@ public class FacilioExceptionProcessor extends TimerTask {
             EXCEPTION_COUNT.clear();
         }
     }
+
+    private void processMessages(List<Message> messageList) {
+        for(Message msg : messageList) {
+            String body = msg.getBody();
+            int index = body.indexOf(CommonCommandUtil.DELIMITER);
+            String orgWithClassName = "";
+            if(index > 1) {
+                orgWithClassName = body.substring(0, index);
+                int count = EXCEPTION_COUNT.getOrDefault(orgWithClassName, 0);
+                EXCEPTION_COUNT.put(orgWithClassName, count+1);
+                if(count == 0) {
+                    EXCEPTION_MESSAGES.put(orgWithClassName, body);
+                }
+            }
+        }
+    }
+
 }
