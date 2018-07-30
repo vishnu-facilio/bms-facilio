@@ -399,7 +399,14 @@ public long inviteRequester(long orgId, User user) throws Exception {
 			CommonCommandUtil.emailException(user.getEmail(), "cannot send sms for the user", e, null);
 			}
 		} else {
+			if(user.isPortalUser()) {
+				//System.out.println("Adding portal users"+user);
+				AccountEmailTemplate.PORTAL_SIGNUP.send(placeholders);
+
+			}
+			else {
 			AccountEmailTemplate.INVITE_USER.send(placeholders);
+			}
 		}
 	}
 	
