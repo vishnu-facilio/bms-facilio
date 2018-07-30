@@ -110,17 +110,17 @@ public class BaseLineContext {
 	}
 	
 	public Condition getBaseLineCondition(FacilioField field, DateRange range) {
-		String blRange = calculateRange(range.getStartTime(), range.getEndTime(), adjustType);
-		if (blRange != null && !blRange.isEmpty()) {
-			return CriteriaAPI.getCondition(field, blRange, DateOperators.BETWEEN);
+		DateRange blRange = calculateBaseLineRange(range, adjustType);
+		if (blRange != null) {
+			return CriteriaAPI.getCondition(field, blRange.toString(), DateOperators.BETWEEN);
 		}
 		return null;
 	}
 	
 	public Condition getBaseLineCondition(FacilioField field, DateRange range, AdjustType type) {
-		String blRange = calculateRange(range.getStartTime(), range.getEndTime(), type);
-		if (blRange != null && !blRange.isEmpty()) {
-			return CriteriaAPI.getCondition(field, blRange, DateOperators.BETWEEN);
+		DateRange blRange = calculateBaseLineRange(range, type);
+		if (blRange != null) {
+			return CriteriaAPI.getCondition(field, blRange.toString(), DateOperators.BETWEEN);
 		}
 		return null;
 	}
@@ -178,7 +178,9 @@ public class BaseLineContext {
 		return new ImmutablePair<ZonedDateTime, ZonedDateTime>(blStartZdt, blEndZdt);
 	}
 	
-	private String calculateRange(long dataStartTime, long dataEndTime, AdjustType adjustType) {
+	public DateRange calculateBaseLineRange(DateRange dataRange, AdjustType adjustType) {
+		long dataStartTime = dataRange.getStartTime(), dataEndTime = dataRange.getEndTime();
+		
 		ZonedDateTime dataStartZdt = DateTimeUtil.getDateTime(dataStartTime);
 		ZonedDateTime dataEndZdt = DateTimeUtil.getDateTime(dataEndTime);
 		
@@ -227,7 +229,7 @@ public class BaseLineContext {
 			logger.debug("Base Line Range : ");
 			logger.debug(blStartZdt+" - "+blStartZdt.getDayOfWeek());
 			logger.debug(blEndZdt+" - "+blEndZdt.getDayOfWeek());
-			return blStartZdt.toInstant().toEpochMilli()+", "+blEndZdt.toInstant().toEpochMilli();
+			return new DateRange(blStartZdt.toInstant().toEpochMilli(), blEndZdt.toInstant().toEpochMilli());
 		}
 		return null;
 	}

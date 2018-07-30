@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.criteria.EnumOperators;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
@@ -41,6 +42,7 @@ public class FetchReportDataCommand implements Command {
 			return false;
 		}
 		
+		calculateBaseLineRange(report);
 		List<List<ReportDataPointContext>> groupedDataPoints = groupDataPoints(report.getDataPoints());
 		List<ReportDataContext> reportData = new ArrayList<>();
 		for (List<ReportDataPointContext> dataPointList : groupedDataPoints) {
@@ -114,10 +116,10 @@ public class FetchReportDataCommand implements Command {
 			}
 			
 			if (baseLine != null) {
-				selectBuilder.andCondition(baseLine.getBaseLine().getBaseLineCondition(dp.getDateField(), ((DateOperators) report.getDateOperatorEnum()).getRange(report.getDateValue()), baseLine.getAdjustTypeEnum()));
+				selectBuilder.andCondition(CriteriaAPI.getCondition(dp.getDateField(), baseLine.getBaseLineRange().toString(), DateOperators.BETWEEN));
 			}
 			else {
-				selectBuilder.andCondition(CriteriaAPI.getCondition(dp.getDateField(), report.getDateValue(), report.getDateOperatorEnum()));
+				selectBuilder.andCondition(CriteriaAPI.getCondition(dp.getDateField(), report.getDateRange().toString(), DateOperators.BETWEEN));
 			}
 		}
 	}
@@ -222,6 +224,22 @@ public class FetchReportDataCommand implements Command {
 						.append(dataPoint.getOrderByFuncEnum().getStringValue());
 			}
 			selectBuilder.orderBy(orderBy.toString());
+		}
+	}
+	
+	private void calculateBaseLineRange (ReportContext report) {
+		if (report.getDateOperatorEnum() != null) {
+			DateRange actualRange = ((DateOperators) report.getDateOperatorEnum()).getRange(report.getDateValue());
+			report.setDateRange(actualRange);
+			if (report.getBaseLines() != null && !report.getBaseLines().isEmpty()) {
+				for (ReportBaseLineContext baseLine : report.getBaseLines()) {
+					DateRange baseLineRange = baseLine.getBaseLine().calculateBaseLineRange(actualRange, baseLine.getAdjustTypeEnum());
+					long diff = actualRange.getStartTime() - baseLineRange.getStartTime();
+					
+					baseLine.setBaseLineRange(baseLineRange);
+					baseLine.setDiff(diff);
+				}
+			}
 		}
 	}
 }

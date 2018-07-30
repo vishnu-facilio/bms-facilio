@@ -2,6 +2,7 @@ package com.facilio.report.context;
 
 import java.util.List;
 
+import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.criteria.Operator;
 
 public class ReportContext {
@@ -119,6 +120,14 @@ public class ReportContext {
 		this.dateValue = dateValue;
 	}
 	
+	private DateRange dateRange;
+	public DateRange getDateRange() {
+		return dateRange;
+	}
+	public void setDateRange(DateRange dateRange) {
+		this.dateRange = dateRange;
+	}
+
 	private List<ReportBaseLineContext> baseLines;
 	public List<ReportBaseLineContext> getBaseLines() {
 		return baseLines;
@@ -126,4 +135,5 @@ public class ReportContext {
 	public void setBaseLines(List<ReportBaseLineContext> baseLines) {
 		this.baseLines = baseLines;
 	}
+	
 }

@@ -2,6 +2,7 @@ package com.facilio.report.context;
 
 import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.context.BaseLineContext.AdjustType;
+import com.facilio.bmsconsole.criteria.DateRange;
 
 public class ReportBaseLineContext {
 
@@ -70,4 +71,19 @@ public class ReportBaseLineContext {
 		this.adjustType = AdjustType.valueOf(adjustType);
 	}
 	
+	private DateRange baseLineRange;
+	public DateRange getBaseLineRange() {
+		return baseLineRange;
+	}
+	public void setBaseLineRange(DateRange baseLineRange) {
+		this.baseLineRange = baseLineRange;
+	}
+
+	private long diff = -1;
+	public long getDiff() {
+		return diff;
+	}
+	public void setDiff(long diff) {
+		this.diff = diff;
+	}
 }
