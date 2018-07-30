@@ -37,6 +37,7 @@ import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -358,7 +359,7 @@ public class WorkflowUtil {
 			String fieldName = expression.getFieldName();
 			String moduleName = expression.getModuleName();
 			
-			if(moduleName != null && fieldName != null) {
+			if(moduleName != null && fieldName != null && !moduleName.startsWith("$")) {
 				LOGGER.fine("moduleName -- "+moduleName +" fieldName -- "+fieldName);
 				FacilioModule module = modBean.getModule(moduleName);
 				FacilioField field = modBean.getField(fieldName, moduleName);
@@ -404,7 +405,7 @@ public class WorkflowUtil {
 			String fieldName = expression.getFieldName();
 			String moduleName = expression.getModuleName();
 			
-			if(moduleName != null && fieldName != null) {
+			if(moduleName != null && fieldName != null && !moduleName.startsWith("$")) {
 				LOGGER.fine("moduleName -- "+moduleName +" fieldName -- "+fieldName);
 				FacilioModule module = modBean.getModule(moduleName);
 				FacilioField field = modBean.getField(fieldName, moduleName);
@@ -1002,7 +1003,6 @@ public class WorkflowUtil {
 	}
 	
 	private static Condition getConditionObjectFromConditionString(ExpressionContext expressionContext,String conditionString,String moduleName,Integer sequence) throws Exception {
-
 		Pattern condtionStringpattern = Pattern.compile(CONDITION_FORMATTER);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -1010,9 +1010,25 @@ public class WorkflowUtil {
 		Condition condition = null;
 		while (matcher.find()) {
 			String fieldName = matcher.group(2);
-			FacilioField field = modBean.getField(fieldName, moduleName);
-			Operator operator = field.getDataTypeEnum().getOperator(matcher.group(7));		// 7
-			String conditionValue = matcher.group(8);										// 8
+			FacilioField field = null;
+			String operatorString = matcher.group(7);		// 7
+			Operator operator = null;
+			
+			// For current enpi, module will be param
+			if (moduleName.startsWith("$")) {
+				if (operatorString.equals("=")) {
+					operator = NumberOperators.EQUALS;
+				}
+				else if (operatorString.equals("between")) {
+					operator = DateOperators.BETWEEN;
+				}
+			}
+			else {
+				field = modBean.getField(fieldName, moduleName);
+				operator = field.getDataTypeEnum().getOperator(operatorString);
+			}
+			
+			String conditionValue = matcher.group(8); // 8
 			
 			condition = new Condition();
 			
@@ -1031,7 +1047,9 @@ public class WorkflowUtil {
 					else {
 						baseLine.setAdjustType(AdjustType.WEEK);
 					}
-					condition = baseLine.getBaseLineCondition(field, ((DateOperators)operator).getRange(conditionValue));
+					if (field != null) {	// For current Enpi
+						condition = baseLine.getBaseLineCondition(field, ((DateOperators)operator).getRange(conditionValue));
+					}
 					if(sequence != null) {
 						expressionContext.addConditionSeqVsBaselineId(sequence, baseLine.getId());
 					}
@@ -1042,7 +1060,12 @@ public class WorkflowUtil {
 			}
 			else {
 				condition = new Condition();
-				condition.setField(field);
+				if (field != null) {
+					condition.setField(field);
+				}
+				else {
+					condition.setFieldName(fieldName);
+				}
 				condition.setOperator(operator);
 				condition.setValue(conditionValue);
 				if(matcher.group(3) != null && sequence != null) {

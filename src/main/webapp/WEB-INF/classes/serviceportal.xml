@@ -138,7 +138,7 @@
 			</result>
 		</action>
 		
-		<action name="assets" class="com.facilio.bmsconsole.actions.AssetAction" method="withReadings">
+		<action name="assets" class="com.facilio.bmsconsole.actions.AssetAction" method="assetList">
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
 			<result name="success" type="json">
