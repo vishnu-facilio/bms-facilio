@@ -564,7 +564,12 @@ public class ReadingAction extends ActionSupport {
 	
 	public String getAllAssetReadings() throws Exception {
 			
-		List<Long> assetCategoryIds = getAssetCategoryIds();
+		List<Long> assetCategoryIds;
+		if (this.parentCategoryIds != null && !this.parentCategoryIds.isEmpty()) {
+			assetCategoryIds = this.parentCategoryIds;
+		} else {
+			assetCategoryIds = getAssetCategoryIds();
+		}
 		
 		FacilioModule module = ModuleFactory.getAssetCategoryReadingRelModule();
 		
@@ -580,6 +585,15 @@ public class ReadingAction extends ActionSupport {
 		System.out.println(">>>>>>> readings : "+readings);
 		System.out.println(">>>>>>> moduleMap : "+moduleMap);
 		return SUCCESS;
+	}
+	
+	private List<Long> parentCategoryIds;
+	public List<Long> getParentCategoryIds() {
+		return this.parentCategoryIds;
+	}
+	
+	public void setParentCategoryIds(List<Long> ids) {
+		this.parentCategoryIds = ids;
 	}
 	
 	Map<Long,List<FacilioModule>> moduleMap;
