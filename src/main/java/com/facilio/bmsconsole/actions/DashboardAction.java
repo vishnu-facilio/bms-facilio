@@ -2446,10 +2446,10 @@ public class DashboardAction extends ActionSupport {
 									String stringValue = task.get("inputValue").toString();
 									
 									Integer value = 0;
-									if("YES".equals(stringValue) ) {
+									if("Met".equals(stringValue) ) {
 										value = 5;
 									}
-									else if ("NO".equals(stringValue)) {
+									else if ("Not Met".equals(stringValue)) {
 										value = 0;
 									}
 									else {
@@ -2595,16 +2595,6 @@ public class DashboardAction extends ActionSupport {
 									inTime++;
 								}
 							}
-//							else {
-//								if(workorder.getEstimatedEnd() != -1) {
-//									if(workorder.getEstimatedEnd() < DateTimeUtil.getCurrenTime()) {
-//										overdue++;
-//									}
-//									else {
-//										inTime++;
-//									}
-//								}
-//							}
 						}
 						
 						JSONObject buildingres = new JSONObject();
@@ -2676,10 +2666,10 @@ public class DashboardAction extends ActionSupport {
 									String stringValue = task.get("inputValue").toString();
 									
 									Integer value = 0;
-									if("YES".equals(stringValue) ) {
+									if("Met".equals(stringValue) ) {
 										value = 5;
 									}
-									else if ("NO".equals(stringValue)) {
+									else if ("Not Met".equals(stringValue)) {
 										value = 0;
 									}
 									else {
@@ -2818,10 +2808,10 @@ public class DashboardAction extends ActionSupport {
 									String stringValue = task.get("inputValue").toString();
 									
 									Integer value = 0;
-									if("YES".equals(stringValue) ) {
+									if("Met".equals(stringValue) ) {
 										value = 5;
 									}
-									else if ("NO".equals(stringValue)) {
+									else if ("Not Met".equals(stringValue)) {
 										value = 0;
 									}
 									else {
@@ -2895,10 +2885,10 @@ public class DashboardAction extends ActionSupport {
 									String stringValue = task.get("inputValue").toString();
 									
 									Integer value = 0;
-									if("YES".equals(stringValue) ) {
+									if("Met".equals(stringValue) ) {
 										passed = passed + 1;
 									}
-									else if ("NO".equals(stringValue)) {
+									else if ("Not Met".equals(stringValue)) {
 										failed = failed + 1;
 									}
 									else {
@@ -2989,10 +2979,10 @@ public class DashboardAction extends ActionSupport {
 									String stringValue = task.get("inputValue").toString();
 									
 									Integer value = 0;
-									if("YES".equals(stringValue) ) {
+									if("Met".equals(stringValue) ) {
 										passed = passed + 1;
 									}
-									else if ("NO".equals(stringValue)) {
+									else if ("Not Met".equals(stringValue)) {
 										failed = failed + 1;
 									}
 									else {
