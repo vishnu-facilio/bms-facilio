@@ -8,6 +8,7 @@ import java.text.DecimalFormat;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -72,6 +73,8 @@ import com.facilio.bmsconsole.context.ReportThreshold;
 import com.facilio.bmsconsole.context.ReportUserFilterContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.TicketStatusContext.StatusType;
@@ -4990,6 +4993,281 @@ public class DashboardAction extends ActionSupport {
 		resultJSON.put("overallRating", df.format(overallRating));
 		
 		return SUCCESS;
+	}
+	
+	public String getUTCData() throws Exception {
+	
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
+		
+		reportData = new JSONArray();
+		if(reportSpaceFilterContext != null) {
+			buildingId = reportSpaceFilterContext.getBuildingId();
+		}
+		
+		DecimalFormat df = new DecimalFormat(".##");
+		Map<String,Double> daily = new HashMap<>();
+		Map<String,Double> forthnightly = new HashMap<>();
+		Map<String,Double> monthly = new HashMap<>();
+		
+		int criticalCount = 0, tatCount =0, pdCount = 0, fasCountdaily = 0,fasCountforthnight = 0,fasCountmonthly = 0;
+		
+		Map<String,Double> finalRes = new HashMap<>();
+		Map<String,Double> finalpercentRes = new HashMap<>();
+		for(TicketCategoryContext category:categories) {
+			
+			List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrders(category.getId());
+			
+			if(workorders.isEmpty()) {
+				continue;
+			}
+			
+			for(WorkOrderContext workorder:workorders) {
+				
+				LOGGER.log(Level.SEVERE, "buildingId --- "+buildingId);
+				if(workorder.getResource() != null) {
+					LOGGER.log(Level.SEVERE, "workorder.getResource().getId() --- "+workorder.getResource().getId());
+				}
+				if(buildingId != null && workorder.getResource() != null && workorder.getResource().getId() != buildingId) {
+					continue;
+				}
+				LOGGER.log(Level.SEVERE, "dateFilter --- "+dateFilter);
+				LOGGER.log(Level.SEVERE, "workorder.getResource().getId() --- "+workorder.getCreatedTime());
+				
+				if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
+					continue;
+				}
+				
+				Command chain = FacilioChainFactory.getGetTasksOfTicketCommand();
+				FacilioContext context = new FacilioContext();
+				
+				context.put(FacilioConstants.ContextNames.ID, workorder.getId());
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
+				context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME,"Tasks");
+				context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(FacilioConstants.ContextNames.TASK));
+				chain.execute(context);
+				
+				Map<Long, List<TaskContext>> taksSectionMap = (Map<Long, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
+				
+				for(Long sectionid :taksSectionMap.keySet()) {
+					
+					TaskSectionContext section = TicketAPI.getTaskSection(sectionid);
+					
+					for(TaskContext task : taksSectionMap.get(sectionid)) {
+						
+						if(task.getInputValue() != null) {
+							
+							if(task.getInputValue().equals("Met")) {
+								value = 5.0;
+							}
+							else if(task.getInputValue().equals("Not Met")) {
+								value = 0d;
+							}
+							
+							if(workorder.getSubject().contains("Daily")) {
+								
+								if(section.getName().contains("Critical Service")) {
+									
+									criticalCount++;
+									double value1 = 0;
+									if(daily.containsKey("Critical Service")) {
+										value1 = daily.get("Critical Service");
+									}
+									value1 = value1 + value;
+									daily.put("Critical Service", value1);
+								}
+								else if(section.getName().contains("TAT")) {
+									
+									tatCount++;
+									double value1 = 0;
+									if(daily.containsKey("TAT")) {
+										value1 = daily.get("TAT");
+									}
+									value1 = value1 + value;
+									daily.put("TAT", value1);
+								}
+								else if(section.getName().contains("PD&PSI")) {
+									
+									pdCount++;
+									double value1 = 0;
+									if(daily.containsKey("PD&PSI")) {
+										value1 = daily.get("PD&PSI");
+									}
+									value1 = value1 + value;
+									daily.put("PD&PSI", value1);
+								}
+								else if(section.getName().contains("Financials & Ops")) {
+									
+									fasCountdaily++;
+									double value1 = 0;
+									if(daily.containsKey("Financials & Ops")) {
+										value1 = daily.get("Financials & Ops");
+									}
+									value1 = value1 + value;
+									daily.put("Financials & Ops", value1);
+								}
+							}
+							else if(workorder.getSubject().contains("Fortnightly")) {
+								
+								if(section.getName().contains("Financials & Ops")) {
+									
+									fasCountforthnight++;
+									double value1 = 0;
+									if(forthnightly.containsKey("Financials & Ops")) {
+										value1 = forthnightly.get("Financials & Ops");
+									}
+									value1 = value1 + value;
+									forthnightly.put("Financials & Ops", value1);
+								}
+							}
+							else if(workorder.getSubject().contains("Monthly")) {
+								
+								if(section.getName().contains("Financials & Ops")) {
+									
+									fasCountmonthly++;
+									double value1 = 0;
+									if(monthly.containsKey("Financials & Ops")) {
+										value1 = monthly.get("Financials & Ops");
+									}
+									value1 = value1 + value;
+									monthly.put("Financials & Ops", value1);
+								}
+							}
+						}
+					}
+				}
+			}
+			
+			JSONObject finalresJson = new JSONObject();
+			reportData = new JSONArray();
+			finalRes.put("Critical Service", 0d);
+			finalRes.put("TAT", 0d);
+			finalRes.put("PD&PSI", 0d);
+			finalRes.put("Financials & Ops", 0d);
+			
+			if(daily.containsKey("Critical Service")) {
+				value = daily.get("Critical Service");
+				if(value > 0) {
+					value = value / criticalCount;
+				}
+				finalRes.put("Critical Service", value);
+				
+				finalresJson.put("Criteria", "Critical Service");
+				finalresJson.put("A", "40%");
+				finalresJson.put("B", df.format(value));
+				
+				finalpercentRes.put("Critical Service", value * (40.0d/100.0d));
+				finalresJson.put("C", df.format(value * (40.0d/100.0d)));
+				
+				reportData.add(finalresJson);
+				
+			}
+			
+			if(daily.containsKey("TAT")) {
+				value = daily.get("TAT");
+				if(value > 0) {
+					value = value / tatCount;
+				}
+				finalRes.put("TAT", value);
+				
+				finalresJson = new JSONObject();
+				finalresJson.put("Criteria", "Turn Around Time (TAT)");
+				finalresJson.put("A", "25%");
+				finalresJson.put("B", df.format(value));
+				
+				finalpercentRes.put("TAT", value * (25.0d/100.0d));
+				
+				finalresJson.put("C", df.format(value * (25.0d/100.0d)));
+				
+				reportData.add(finalresJson);
+				
+			}
+			if(daily.containsKey("PD&PSI")) {
+				value = daily.get("PD&PSI");
+				if(value > 0) {
+					value = value / pdCount;
+				}
+				finalRes.put("PD&PSI", value);
+				
+				finalresJson = new JSONObject();
+				finalresJson.put("Criteria", "PD&PSI");
+				finalresJson.put("A", "10%");
+				finalresJson.put("B", df.format(value));
+				
+				finalpercentRes.put("PD&PSI", value * (10.0d/100.0d));
+				
+				finalresJson.put("C", df.format(value * (10.0d/100.0d)));
+				
+				reportData.add(finalresJson);
+			}
+			
+			int financialOpsCount = 0;
+			double finValue = 0;
+			if(daily.containsKey("Financials & Ops")) {
+				value = daily.get("Financials & Ops");
+				if(value > 0) {
+					value = value / fasCountdaily;
+				}
+				financialOpsCount++;
+				daily.put("Financials & Ops", value);
+				finValue = finValue + value;
+			}
+			
+			if(forthnightly.containsKey("Financials & Ops")) {
+				value = forthnightly.get("Financials & Ops");
+				if(value > 0) {
+					value = value / fasCountforthnight;
+				}
+				financialOpsCount++;
+				forthnightly.put("Financials & Ops", value);
+				finValue = finValue + value;
+			}
+			
+			if(monthly.containsKey("Financials & Ops")) {
+				value = monthly.get("Financials & Ops");
+				if(value > 0) {
+					value = value / fasCountmonthly;
+				}
+				financialOpsCount++;
+				monthly.put("Financials & Ops", value);
+				finValue = finValue + value;
+			}
+			
+			if(financialOpsCount > 0) {
+				finalRes.put("Financials & Ops", finValue/financialOpsCount);
+				
+				finalpercentRes.put("Financials & Ops", finValue * (25.0d/100.0d));
+				
+				finalresJson = new JSONObject();
+				finalresJson.put("Criteria", "PD&PSI");
+				finalresJson.put("A", "10%");
+				finalresJson.put("B", df.format(finValue/financialOpsCount));
+				finalresJson.put("C", df.format(finValue * (25.0d/100.0d)));
+				
+				reportData.add(finalresJson);
+			}
+		}
+		double total =  0;
+		for(double value :finalpercentRes.values()) {
+			total = total + value;
+		}
+		double achievedPercentage =  (total/5) * 100;
+		
+		double overallRating = 0;
+		
+		overallRating = overallRating * 100;
+		
+		resultJSON = new JSONObject();
+		resultJSON.put("tableData", reportData);
+		
+		resultJSON.put("Maximum Score", 5.0);
+		resultJSON.put("Total Weightage Score Achieved", df.format(total));
+		resultJSON.put("Performance Score", df.format(achievedPercentage));
+		
+		return SUCCESS;
+	
 	}
 	public JSONObject resultJSON;
 	
