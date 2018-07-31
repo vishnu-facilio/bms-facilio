@@ -25,6 +25,7 @@ import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.ReadingAnalysisContext;
+import com.facilio.report.context.ReportAxisContext;
 import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
@@ -46,8 +47,11 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 			List<ReportDataPointContext> dataPoints = new ArrayList<>();
 			for (ReadingAnalysisContext metric : metrics) {
 				ReportDataPointContext dataPoint = new ReportDataPointContext();
+				
+				ReportAxisContext yAxis = new ReportAxisContext();
 				FacilioField yField = modBean.getField(metric.getFieldId());
-				dataPoint.setyAxisField(yField);
+				yAxis.setField(yField);
+				dataPoint.setyAxis(yAxis);
 				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(yField.getModule().getName()));
 				setFields(dataPoint, mode, fieldMap);
 				setCriteriaAndAggr(dataPoint, xAggr, fieldMap, metric);
@@ -80,7 +84,9 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 				xField = fieldMap.get("ttime");
 				break;
 		}
-		dataPoint.setxAxisField(xField);
+		ReportAxisContext xAxis = new ReportAxisContext();
+		xAxis.setField(xField);
+		dataPoint.setxAxis(xAxis);
 		dataPoint.setDateField(fieldMap.get("ttime"));
 	}
 	
@@ -104,11 +110,11 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 		dataPoint.setCriteria(criteria);
 		
 		if (xAggr != null) {
-			dataPoint.setxAxisAggr(xAggr);
+			dataPoint.getxAxis().setAggr(xAggr);
 		}
 		AggregateOperator yAggr = metric.getyAggrEnum();
 		if (yAggr != null) {
-			dataPoint.setyAxisAggr(yAggr);
+			dataPoint.getyAxis().setAggr(yAggr);
 		}
 	}
 	

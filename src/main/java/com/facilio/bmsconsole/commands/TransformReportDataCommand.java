@@ -48,10 +48,10 @@ public class TransformReportDataCommand implements Command {
 		if (props != null && !props.isEmpty()) {
 			Map<Object, Object> dataPoints = new LinkedHashMap<>();
 			for (Map<String, Object> prop : props) {
-				Object xVal = prop.get(dataPoint.getxAxisField().getName());
+				Object xVal = prop.get(dataPoint.getxAxis().getField().getName());
 				if (xVal != null) {
 					xValues.add(xVal);
-					Object yVal = prop.get(dataPoint.getyAxisField().getName());
+					Object yVal = prop.get(dataPoint.getyAxis().getField().getName());
 					yVal = yVal == null ? "" : yVal;
 					if (dataPoint.getGroupByFields() == null || dataPoint.getGroupByFields().isEmpty()) {
 						dataPoints.put(xVal, yVal.toString());
