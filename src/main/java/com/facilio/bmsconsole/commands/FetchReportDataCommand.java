@@ -2,9 +2,11 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.StringJoiner;
 
 import org.apache.commons.chain.Command;
@@ -29,6 +31,7 @@ import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataContext;
 import com.facilio.report.context.ReportDataPointContext;
+import com.facilio.report.context.ReportGroupByField;
 import com.facilio.report.context.ReportDataPointContext.OrderByFunction;
 
 public class FetchReportDataCommand implements Command {
@@ -55,7 +58,7 @@ public class FetchReportDataCommand implements Command {
 																					.module(dp.getxAxis().getField().getModule()) //Assuming X to be the base module
 																					.andCriteria(dp.getCriteria())
 																					;
-			applyJoin(dp, selectBuilder);
+			joinYModuleIfRequred(dp, selectBuilder);
 			applyOrderBy(dp, selectBuilder);
 			List<FacilioField> fields = new ArrayList<>();
 			StringJoiner groupBy = new StringJoiner(",");
@@ -82,22 +85,26 @@ public class FetchReportDataCommand implements Command {
 		return false;
 	}
 	
-	private void applyJoin(ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder) {
+	private void joinYModuleIfRequred(ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder) {
 		if (!dp.getxAxis().getField().getModule().equals(dp.getyAxis().getField().getModule())) {
-			selectBuilder.innerJoin(dp.getyAxis().getField().getModule().getTableName())
-							.on(dp.getyAxis().getJoinOn());
-			
-			FacilioModule prevModule = dp.getyAxis().getField().getModule();
-			FacilioModule extendedModule = prevModule.getExtendModule();
-			while(extendedModule != null) {
-				selectBuilder.innerJoin(extendedModule.getTableName())
-						.on(prevModule.getTableName()+".ID = "+extendedModule.getTableName()+".ID");
-				prevModule = extendedModule;
-				extendedModule = extendedModule.getExtendModule();
-			}
+			applyJoin(dp.getyAxis().getJoinOn(), dp.getyAxis().getField().getModule(), selectBuilder);
 		}
 	}
 	
+	private void applyJoin (String on, FacilioModule joinModule, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder) {
+		selectBuilder.innerJoin(joinModule.getTableName())
+									.on(on);
+
+		FacilioModule prevModule = joinModule;
+		FacilioModule extendedModule = prevModule.getExtendModule();
+		while(extendedModule != null) {
+			selectBuilder.innerJoin(extendedModule.getTableName())
+							.on(prevModule.getTableName()+".ID = "+extendedModule.getTableName()+".ID");
+			prevModule = extendedModule;
+			extendedModule = extendedModule.getExtendModule();
+		}
+	}
+ 	
 	private List<Map<String, Object>> fetchReportData(ReportContext report, ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, ReportBaseLineContext reportBaseLine) throws Exception {
 		SelectRecordsBuilder<ModuleBaseWithCustomFields> newSelectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>(selectBuilder);
 		applyDateCondition(report, dp, newSelectBuilder, reportBaseLine);
@@ -113,9 +120,19 @@ public class FetchReportDataCommand implements Command {
 		}
 		
 		if (dp.getGroupByFields() != null && !dp.getGroupByFields().isEmpty()) {
-			for (FacilioField field : dp.getGroupByFields()) {
-				fields.add(field);
-				groupBy.add(field.getCompleteColumnName());
+			Set<FacilioModule> addedModules = new HashSet<>();
+			for (ReportGroupByField groupByField : dp.getGroupByFields()) {
+				fields.add(groupByField.getField());
+				
+				FacilioModule groupByModule = groupByField.getField().getModule();
+				if (!addedModules.contains(groupByModule) && 
+						!dp.getxAxis().getField().getModule().equals(groupByModule) && 
+						!dp.getyAxis().getField().getModule().equals(groupByModule)) {
+					
+					applyJoin(groupByField.getJoinOn(), groupByModule, selectBuilder);
+					addedModules.add(groupByModule);
+				}
+				groupBy.add(groupByField.getField().getCompleteColumnName());
 			}
 		}
 		

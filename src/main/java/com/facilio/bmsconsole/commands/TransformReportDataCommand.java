@@ -63,7 +63,7 @@ public class TransformReportDataCommand implements Command {
 							dataPoints.put(xVal, currentMap);
 						}
 						for (int i = 0; i < dataPoint.getGroupByFields().size(); i++) {
-							FacilioField field = dataPoint.getGroupByFields().get(i);
+							FacilioField field = dataPoint.getGroupByFields().get(i).getField();
 							Object groupByVal = prop.get(field.getName());
 							groupByVal = groupByVal == null ? "" : groupByVal;
 							if (i == dataPoint.getGroupByFields().size() - 1) {
