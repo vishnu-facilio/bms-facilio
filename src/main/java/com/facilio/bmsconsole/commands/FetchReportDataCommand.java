@@ -21,6 +21,7 @@ import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
@@ -51,9 +52,10 @@ public class FetchReportDataCommand implements Command {
 			
 			ReportDataPointContext dp = dataPointList.get(0); //Since order by, criteria are same for all dataPoints in a group, we can consider only one for the builder
 			SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
-																					.module(dp.getxAxisField().getModule()) //Assuming both x and y will be from same module in a datapoint
+																					.module(dp.getxAxis().getField().getModule()) //Assuming X to be the base module
 																					.andCriteria(dp.getCriteria())
 																					;
+			applyJoin(dp, selectBuilder);
 			applyOrderBy(dp, selectBuilder);
 			List<FacilioField> fields = new ArrayList<>();
 			StringJoiner groupBy = new StringJoiner(",");
@@ -61,7 +63,7 @@ public class FetchReportDataCommand implements Command {
 			setYFieldsAndGroupByFields(dataPointList, fields, xAggrField, groupBy, dp, selectBuilder);
 			selectBuilder.select(fields);
 			if (report.getxCriteria() != null) {
-				selectBuilder.andCondition(getEqualsCondition(dp.getxAxisField(), xValues));
+				selectBuilder.andCondition(getEqualsCondition(dp.getxAxis().getField(), xValues));
 			}
 			
 			Map<String, List<Map<String, Object>>> props = new HashMap<>();
@@ -78,6 +80,22 @@ public class FetchReportDataCommand implements Command {
 		}
 		context.put(FacilioConstants.ContextNames.REPORT_DATA, reportData);
 		return false;
+	}
+	
+	private void applyJoin(ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder) {
+		if (!dp.getxAxis().getField().getModule().equals(dp.getyAxis().getField().getModule())) {
+			selectBuilder.innerJoin(dp.getyAxis().getField().getModule().getTableName())
+							.on(dp.getyAxis().getJoinOn());
+			
+			FacilioModule prevModule = dp.getyAxis().getField().getModule();
+			FacilioModule extendedModule = prevModule.getExtendModule();
+			while(extendedModule != null) {
+				selectBuilder.innerJoin(extendedModule.getTableName())
+						.on(prevModule.getTableName()+".ID = "+extendedModule.getTableName()+".ID");
+				prevModule = extendedModule;
+				extendedModule = extendedModule.getExtendModule();
+			}
+		}
 	}
 	
 	private List<Map<String, Object>> fetchReportData(ReportContext report, ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, ReportBaseLineContext reportBaseLine) throws Exception {
@@ -155,16 +173,17 @@ public class FetchReportDataCommand implements Command {
 	private void addToMatchedList (ReportDataPointContext dataPoint, List<List<ReportDataPointContext>> groupedList) {
 		for (List<ReportDataPointContext> dataPointList : groupedList) {
 			ReportDataPointContext rdp = dataPointList.get(0);
-			if (rdp.getxAxisField().equals(dataPoint.getxAxisField()) &&
+			if (rdp.getxAxis().getField().equals(dataPoint.getxAxis().getField()) &&
+					rdp.getyAxis().getField().getModule().equals(dataPoint.getyAxis().getField().getModule()) &&
 					Objects.equals(rdp.getOrderBy(), dataPoint.getOrderBy())) {
 				OrderByFunction rdpFunc = rdp.getOrderByFuncEnum() == null ? OrderByFunction.ACCENDING : rdp.getOrderByFuncEnum();
 				OrderByFunction dataPointFunc = dataPoint.getOrderByFuncEnum() == null ? OrderByFunction.ACCENDING : dataPoint.getOrderByFuncEnum();
-				int rdpAggr = rdp.getxAxisAggrEnum() == null && rdp.getyAxisAggrEnum() == null ? 0 : 1;
-				int dataPointAggr = dataPoint.getxAxisAggrEnum() == null && dataPoint.getyAxisAggrEnum() == null ? 0 : 1;
+				int rdpAggr = rdp.getxAxis().getAggrEnum() == null && rdp.getyAxis().getAggrEnum() == null ? 0 : 1;
+				int dataPointAggr = dataPoint.getxAxis().getAggrEnum() == null && dataPoint.getyAxis().getAggrEnum() == null ? 0 : 1;
 				if (rdpFunc == dataPointFunc && 
 						Objects.equals(rdp.getCriteria(), dataPoint.getCriteria()) && 
 						rdpAggr == dataPointAggr &&
-						(rdpAggr == 0 || (rdp.getxAxisAggrEnum() == dataPoint.getxAxisAggrEnum() && rdp.getxAxisField().equals(dataPoint.getxAxisField()))) &&
+						(rdpAggr == 0 || (rdp.getxAxis().getAggrEnum() == dataPoint.getxAxis().getAggrEnum())) &&
 						Objects.equals(rdp.getGroupByFields(), dataPoint.getGroupByFields())) {
 					dataPointList.add(dataPoint);
 					return;
@@ -178,24 +197,24 @@ public class FetchReportDataCommand implements Command {
 	
 	private FacilioField applyXAggregation(ReportDataPointContext dp, StringJoiner groupBy, List<FacilioField> fields) throws Exception {
 		FacilioField xAggrField = null;
-		if (dp.getyAxisAggrEnum() != null && dp.getyAxisAggr() != 0) {
-			if (dp.getxAxisAggrEnum() != null&& dp.getxAxisAggr() != 0 ) {
-				xAggrField = dp.getxAxisAggrEnum().getSelectField(dp.getxAxisField());
+		if (dp.getyAxis().getAggrEnum() != null && dp.getyAxis().getAggr() != 0) {
+			if (dp.getxAxis().getAggrEnum() != null&& dp.getxAxis().getAggr() != 0 ) {
+				xAggrField = dp.getxAxis().getAggrEnum().getSelectField(dp.getxAxis().getField());
 			}
 			else {
-				xAggrField = dp.getxAxisField();
+				xAggrField = dp.getxAxis().getField();
 			}
 			groupBy.add(xAggrField.getColumnName());
-			if (dp.getxAxisAggrEnum() instanceof DateAggregateOperator) {
-				fields.add(((DateAggregateOperator)dp.getxAxisAggrEnum()).getTimestampField(dp.getxAxisField()));
+			if (dp.getxAxis().getAggrEnum() instanceof DateAggregateOperator) {
+				fields.add(((DateAggregateOperator)dp.getxAxis().getAggrEnum()).getTimestampField(dp.getxAxis().getField()));
 			}
 			else {
 				fields.add(xAggrField);
 			}
 		}
 		else {
-			if (dp.getyAxisAggrEnum() == null || dp.getxAxisAggr() == 0) {
-				xAggrField = dp.getxAxisField();
+			if (dp.getyAxis().getAggrEnum() == null || dp.getxAxis().getAggr() == 0) {
+				xAggrField = dp.getxAxis().getField();
 				fields.add(xAggrField);
 			}
 			else {
@@ -206,12 +225,12 @@ public class FetchReportDataCommand implements Command {
 	}
 	
 	private boolean applyYAggregation (ReportDataPointContext dataPoint, List<FacilioField> fields) throws Exception {
-		if (dataPoint.getyAxisAggrEnum() == null || dataPoint.getyAxisAggr() == 0) { 
-			fields.add(dataPoint.getyAxisField());
+		if (dataPoint.getyAxis().getAggrEnum() == null || dataPoint.getyAxis().getAggr() == 0) { 
+			fields.add(dataPoint.getyAxis().getField());
 			return false;
 		}
 		else {
-			fields.add(dataPoint.getyAxisAggrEnum().getSelectField(dataPoint.getyAxisField()));
+			fields.add(dataPoint.getyAxis().getAggrEnum().getSelectField(dataPoint.getyAxis().getField()));
 			return true;
 		}
 	}

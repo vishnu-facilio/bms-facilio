@@ -328,7 +328,6 @@ public class FacilioAuthAction extends ActionSupport {
     
     public long portalId() {
         if(AccountUtil.getCurrentOrg() != null) {
-        	System.out.println("()))))))))PortalID in facilio Auth Action"+ AccountUtil.getCurrentOrg().getDomain());
             return AccountUtil.getCurrentOrg().getPortalId();
         }
         return -1L;
@@ -517,7 +516,7 @@ public class FacilioAuthAction extends ActionSupport {
         		}
         	}
         	if (!signupAllowed)
-        	setJsonresponse("message", "Signup out of Domain");
+        	setJsonresponse("message", "Only whitelisted domains allowed");
         }
         if(temp || signupAllowed)
         {

@@ -25,7 +25,7 @@ public class FacilioLogHandler extends Handler {
     }
 
     public void publish(LogRecord record) {
-        if(record.getLevel().intValue() > Level.INFO.intValue()) {
+        if(record.getLevel().intValue() > Level.FINE.intValue()) {
             String loggerName = record.getLoggerName();
             Logger logger = LOGGER_MAP.getOrDefault(loggerName, LogManager.getLogger(loggerName));
             logger.log(LEVEL_MAP.getOrDefault(record.getLevel(), org.apache.log4j.Level.INFO), record.getMessage(), record.getThrown());
