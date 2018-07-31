@@ -70,7 +70,6 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 		try {
 
 			String actionname = ActionContext.getContext().getName();
-		//	System.out.println("inside if"+actionname);
 
 			boolean bypassauth = actionname.equals("login") || actionname.equals("samllogin");
 			intercept0();
@@ -145,7 +144,6 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 						} else {
 							org = AccountUtil.getOrgBean().getPortalOrg(subDomain);
 						}
-						System.out.println("___+_++_+______ Org"+org);
 						if (org != null) {
 							Long portalId = org.getPortalId();
 							System.out.println("Portal Domain ......"+portalId);
