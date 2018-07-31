@@ -145,14 +145,14 @@ public class ReportDataPointContext {
 		this.orderByFunc = OrderByFunction.valueOf(orderByFunc);
 	}
 	
-	private List<FacilioField> groupByFields;
-	public List<FacilioField> getGroupByFields() {
+	private List<ReportGroupByField> groupByFields;
+	public List<ReportGroupByField> getGroupByFields() {
 		return groupByFields;
 	}
-	public void setGroupByFields(List<FacilioField> groupByFields) {
+	public void setGroupByFields(List<ReportGroupByField> groupByFields) {
 		this.groupByFields = groupByFields;
 	}
-	
+
 	private long dateFieldId = -1;
 	public long getDateFieldId() {
 		return dateFieldId;

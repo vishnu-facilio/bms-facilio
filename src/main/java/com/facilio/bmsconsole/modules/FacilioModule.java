@@ -2,6 +2,7 @@
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.struts2.json.annotations.JSON;
 
@@ -126,6 +127,12 @@ public class FacilioModule implements Serializable {
 			return this.name.equals(((FacilioModule)other).name);
 		}
 		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		// TODO Auto-generated method stub
+		return Objects.hashCode(this.name);
 	}
 	
 	public static enum ModuleType {

@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +14,7 @@ import org.apache.log4j.LogManager;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -42,6 +44,7 @@ public class UpdateWorkOrderCommand implements Command {
 		// TODO Auto-generated method stub
 		WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
+		List<ReadingContext> readings = new ArrayList<>();
 		if(workOrder != null && recordIds != null && !recordIds.isEmpty()) {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			
@@ -59,7 +62,6 @@ public class UpdateWorkOrderCommand implements Command {
 			}
 			
 			List<WorkOrderContext> newWos = new ArrayList<WorkOrderContext>();
-			
 			TicketAPI.updateTicketAssignedBy(workOrder);
 			updateWODetails(workOrder);
 			ActivityType activityType = (ActivityType)context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
@@ -78,13 +80,13 @@ public class UpdateWorkOrderCommand implements Command {
 					} else {
 						if (oldWo.getAssignedTo() != null) {
 							if (workOrder.getAssignedTo().getOuid() == -1) {
-								ShiftAPI.addUserWorkHoursReading(oldWo.getAssignedTo().getOuid(), oldWo.getId(), activityType, "Close", System.currentTimeMillis());
+								readings.addAll(ShiftAPI.addUserWorkHoursReading(oldWo.getAssignedTo().getOuid(), oldWo.getId(), activityType, "Close", System.currentTimeMillis()));
 								newWo.setStatus(submittedStatus);
 							} else if (oldWo.getAssignedTo().getOuid() != workOrder.getAssignedTo().getOuid()) {
 								try {
 									if (oldWo.getStatus().getId() == wipStatus.getId()) {
 										newWo.setStatus(onHoldStatus);
-										ShiftAPI.addUserWorkHoursReading(oldWo.getAssignedTo().getOuid(), oldWo.getId(), activityType, "Pause", System.currentTimeMillis());
+										readings.addAll(ShiftAPI.addUserWorkHoursReading(oldWo.getAssignedTo().getOuid(), oldWo.getId(), activityType, "Pause", System.currentTimeMillis()));
 									} else {
 										newWo.setStatus(oldWo.getStatus());
 									}
@@ -111,15 +113,13 @@ public class UpdateWorkOrderCommand implements Command {
 					
 					TicketAPI.updateTicketStatus(activityType, newWo, oldWo, newWo.isWorkDurationChangeAllowed() || (newWo.getIsWorkDurationChangeAllowed() == null && oldWo.isWorkDurationChangeAllowed()));
 					try {
-						if (oldWo.getAssignedTo() != null) {
-							ShiftAPI.handleWorkHoursReading(activityType, oldWo.getAssignedTo().getOuid(), oldWo.getId(), oldWo.getStatus(), newWo.getStatus());
-						}
-						if (newWo.isWorkDurationChangeAllowed() || (newWo.getIsWorkDurationChangeAllowed() == null && oldWo.isWorkDurationChangeAllowed())) {
-							List<List<Long>> actualTimings = (List<List<Long>>) context.get(FacilioConstants.ContextNames.ACTUAL_TIMINGS);
-							if (actualTimings != null && !actualTimings.isEmpty()) {
-								ShiftAPI.markAutoEntriesAsInvalid(oldWo.getAssignedTo().getOuid(), oldWo.getId());
-								ShiftAPI.addActualWorkHoursReading(oldWo.getAssignedTo().getOuid(), oldWo.getId(), activityType, actualTimings);
-							}
+						List<List<Long>> actualTimings = (List<List<Long>>) context.get(FacilioConstants.ContextNames.ACTUAL_TIMINGS);
+						if (actualTimings != null && !actualTimings.isEmpty() && (newWo.isWorkDurationChangeAllowed() || (newWo.getIsWorkDurationChangeAllowed() == null && oldWo.isWorkDurationChangeAllowed()))) {
+							readings.addAll(ShiftAPI.handleWorkHoursReading(activityType, oldWo.getAssignedTo().getOuid(), oldWo.getId(), oldWo.getStatus(), newWo.getStatus(), true));
+							ShiftAPI.markAutoEntriesAsInvalid(oldWo.getAssignedTo().getOuid(), oldWo.getId());
+							readings.addAll(ShiftAPI.addActualWorkHoursReading(oldWo.getAssignedTo().getOuid(), oldWo.getId(), activityType, actualTimings));
+						} else if (oldWo.getAssignedTo() != null) {
+							readings.addAll(ShiftAPI.handleWorkHoursReading(activityType, oldWo.getAssignedTo().getOuid(), oldWo.getId(), oldWo.getStatus(), newWo.getStatus()));
 						}
 					}
 					catch(Exception e) {
@@ -165,6 +165,13 @@ public class UpdateWorkOrderCommand implements Command {
 				List<WorkOrderContext> workOrders = builder.get();
 				context.put(FacilioConstants.ContextNames.RECORD, workOrders.get(0));
 			}
+		}
+		
+		if (!readings.isEmpty()) {
+			Map<String, List<ReadingContext>> readingMap = new HashMap<>();
+			readingMap.put("userworkhoursreading", readings);
+			context.put(FacilioConstants.ContextNames.READINGS_MAP, readingMap);
+			context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
 		}
 		return false;
 	}
