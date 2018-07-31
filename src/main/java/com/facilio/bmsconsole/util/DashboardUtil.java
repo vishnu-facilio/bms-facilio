@@ -933,6 +933,7 @@ public class DashboardUtil {
 				.select(FieldFactory.getDashboardFields())
 				.table(ModuleFactory.getDashboardModule().getTableName())
 				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
+				.andCustomWhere("BASE_SPACE_ID IS NULL")
 				.andCustomWhere("MODULEID = ?", module.getModuleId());
 		
 		List<Map<String, Object>> props = selectBuilder.get();
