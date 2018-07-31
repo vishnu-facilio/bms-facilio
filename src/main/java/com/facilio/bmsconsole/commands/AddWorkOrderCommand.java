@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
@@ -31,6 +32,9 @@ public class AddWorkOrderCommand implements Command {
 			workOrder.setModifiedTime(workOrder.getCreatedTime());
 			workOrder.setScheduledStart(workOrder.getCreatedTime());
 			workOrder.setEstimatedStart(workOrder.getCreatedTime());
+			if (workOrder.getPriority() == null) {
+				workOrder.setPriority(TicketAPI.getPriority(AccountUtil.getCurrentOrg().getId(), "Low"));
+			}
 			
 			if(workOrder.getDuration() != -1) {
 				workOrder.setDueDate(workOrder.getCreatedTime()+(workOrder.getDuration()*1000));
