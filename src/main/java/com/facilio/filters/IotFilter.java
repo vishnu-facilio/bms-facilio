@@ -44,7 +44,7 @@ public class IotFilter implements Filter {
             }
             if(builder.length() > 0) {
             		String data = builder.toString();
-	        	    if (!data.startsWith("-OPERATOR COMMAND-")) {
+	        	    if (!data.contains("-OPERATOR COMMAND-")) {
 	        	    		AccountUtil.setCurrentAccount(78L);
 	        	    	
 		    		    	String source = data.substring(data.lastIndexOf("\n") + 1);
@@ -52,10 +52,10 @@ public class IotFilter implements Filter {
 		    	    		String timeStamp = data.substring(data.indexOf("::") + 3, data.indexOf("P:") - 1);
 		    	    		
 		    	    		JSONObject payload = new JSONObject();
-		    	    		payload.put("source", source);
-		    	    		payload.put("entity", source);
-		    	    		payload.put("message", message);
-		    	    		payload.put("timestamp", DateTimeUtil.getTime(timeStamp, "HH:mm:ss dd/MM/yyyy"));
+		    	    		payload.put("source", source.trim());
+		    	    		payload.put("entity", source.trim());
+		    	    		payload.put("message", message.trim());
+		    	    		payload.put("timestamp", DateTimeUtil.getTime(timeStamp.trim(), "HH:mm:ss dd/MM/yyyy"));
 		    	    		
 		    	    		LOGGER.warn(payload.toString());
 		    	    		
