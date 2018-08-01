@@ -197,8 +197,11 @@ public class ReadingsAPI {
 				.select(FieldFactory.getReadingDataMetaFields())
 				.table(module.getTableName())
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("resourceId"), String.valueOf(resourceId), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("fieldId"), StringUtils.join(fieldMap.keySet(), ","), NumberOperators.EQUALS));
+		
+		if(resourceId != null) {
+			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("resourceId"), String.valueOf(resourceId), NumberOperators.EQUALS));
+		}
 		
 		if (excludeEmptyFields) {
 			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), "-1", StringOperators.ISN_T));

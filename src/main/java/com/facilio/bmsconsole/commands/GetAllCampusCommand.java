@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
@@ -35,7 +36,10 @@ public class GetAllCampusCommand implements Command{
 		{
 			builder.andCriteria(scopeCriteria);
 		}
+
 		List<SiteContext> campuses = builder.get();
+		List<Long> spaceId = new ArrayList<Long>();
+		campuses.forEach((e) -> spaceId.add(e.getId()));
 		context.put(FacilioConstants.ContextNames.SITE_LIST, campuses);
 		
 		return false;

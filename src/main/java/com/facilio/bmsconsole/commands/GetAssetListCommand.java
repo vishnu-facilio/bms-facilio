@@ -8,6 +8,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -87,8 +88,15 @@ public class GetAssetListCommand implements Command {
 		Boolean withReadings = (Boolean) context.get(FacilioConstants.ContextNames.WITH_READINGS);
 		if (withReadings != null && withReadings) {
 			builder.andCustomWhere("exists(select 1 from Reading_Data_Meta r where r.ORGID=? and r.RESOURCE_ID=Assets.ID and r.VALUE <> -1)", AccountUtil.getCurrentOrg().getId());
+		} 
+		Long readingId = (Long) context.get(FacilioConstants.ContextNames.READING_ID);
+		ReadingInputType inputType = (ReadingInputType) context.get(FacilioConstants.ContextNames.INPUT_TYPE);
+		if (readingId != null && readingId > 0)
+		{
+			builder.andCustomWhere("exists(select 1 from Reading_Data_Meta r where r.ORGID=? and r.RESOURCE_ID=Assets.ID and r.FIELD_ID = ? and r.INPUT_TYPE = ? )",
+					AccountUtil.getCurrentOrg().getId(), readingId, String.valueOf(inputType.getValue()));
 		}
-		
+		// String.valueOf(inputType.getValue())
 		List<? extends ModuleBaseWithCustomFields> records = builder.get();
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, records);
 		
