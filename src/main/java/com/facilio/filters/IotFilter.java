@@ -2,7 +2,6 @@ package com.facilio.filters;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.time.ZonedDateTime;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -44,10 +43,10 @@ public class IotFilter implements Filter {
             }
             if(builder.length() > 0) {
             		String data = builder.toString();
-	        	    if (!data.contains("-OPERATOR COMMAND-")) {
+	        	    if (!data.contains("-OPERATOR COMMAND-") && !data.contains("$WTPING")) {
 	        	    		AccountUtil.setCurrentAccount(78L);
 	        	    	
-		    		    	String source = data.substring(data.indexOf("\n") + 1);
+		    		    	String source = data.substring(data.indexOf(System.lineSeparator()) + 1);
 		    	    		String message = data.substring(0, data.indexOf("::") - 1);
 		    	    		String timeStamp = data.substring(data.indexOf("::") + 3, data.indexOf("P:") - 1);
 		    	    		
