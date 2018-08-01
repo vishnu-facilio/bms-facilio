@@ -71,9 +71,10 @@ public class FAWSQueue {
             deleteMessageBatchRequestEntries.add(entry);
         }
         if(receiptHandles.size() > 0) {
+            LOGGER.info("Deleting messages with size " + receiptHandles.size());
             DeleteMessageBatchResult  result = sqs.deleteMessageBatch(queueName, deleteMessageBatchRequestEntries);
             List<DeleteMessageBatchResultEntry> resultList = result.getSuccessful();
-            LOGGER.info("Sucessfully deleted " + resultList.size());
+            LOGGER.info("Successfully deleted " + resultList.size());
         }
     }
 }

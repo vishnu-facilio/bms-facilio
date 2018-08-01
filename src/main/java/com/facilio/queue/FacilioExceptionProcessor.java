@@ -43,6 +43,7 @@ public class FacilioExceptionProcessor extends TimerTask {
                 json.put("message", builder.toString());
                 try {
                     AwsUtil.sendEmail(json);
+                    LOGGER.info("calling delete msg with "+ RECEIPT_HANDLE_LIST.get(orgWithClass).size());
                     FAWSQueue.deleteMessage(QUEUE, RECEIPT_HANDLE_LIST.get(orgWithClass));
                 } catch (Exception e) {
                     LOGGER.info("Exception while sending email ", e);
@@ -65,7 +66,9 @@ public class FacilioExceptionProcessor extends TimerTask {
             String orgWithClassName = "";
             if(index > 1) {
                 orgWithClassName = body.substring(0, index);
-                RECEIPT_HANDLE_LIST.getOrDefault(orgWithClassName, new ArrayList<>()).add(msg.getReceiptHandle());
+                List<String> receiptHandleList = RECEIPT_HANDLE_LIST.getOrDefault(orgWithClassName, new ArrayList<>());
+                receiptHandleList.add(msg.getReceiptHandle());
+                RECEIPT_HANDLE_LIST.put(orgWithClassName, receiptHandleList);
                 int count = EXCEPTION_COUNT.getOrDefault(orgWithClassName, 0);
                 EXCEPTION_COUNT.put(orgWithClassName, count+1);
                 if(count == 0) {
