@@ -19,7 +19,7 @@ public class RedisManager {
 	
 	private RedisManager() {}
 	
-	public final static RedisManager getInstance() {
+	public static RedisManager getInstance() {
 		return instance;
 	}
 	
@@ -33,7 +33,7 @@ public class RedisManager {
 			LOGGER.log(Level.WARNING, "Redis disabled, so redis connection pool not initilized.");
 			return;
 		}
-		
+
 		// Create and set a JedisPoolConfig
 		JedisPoolConfig poolConfig = new JedisPoolConfig();
 		// Maximum active connections to Redis instance
