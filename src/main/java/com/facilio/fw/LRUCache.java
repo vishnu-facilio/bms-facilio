@@ -200,7 +200,14 @@ public class LRUCache<K, V>{
     private long getFromRedis(K key) {
 	    if(redis != null) {
             String value = redis.get(getRedisKey((String) key));
-            return Long.parseLong(value);
+            if(value == null) {
+				return Long.MAX_VALUE;
+			}
+            try {
+                return Long.parseLong(value);
+            } catch (NumberFormatException e) {
+                return Long.MAX_VALUE;
+            }
         }
         return -1L;
     }
