@@ -211,6 +211,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 			long queryTime = System.currentTimeMillis() - queryStartTime;
 			
 			if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 114 && tableName.equals("Assets")) {
+				LOGGER.info("SQL : "+sql);
 				LOGGER.info("Time taken to execute query in GenericSelectBuilder : "+queryTime);
 			}
 			
