@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -76,7 +78,7 @@ public class UpdateTaskCommand implements Command {
 			} 
 			
 			
-			updateParentTicketStatus(taskActivity, oldTasks.get(0));
+			updateParentTicketStatus(context, taskActivity, oldTasks.get(0));
 			
 			String ids = StringUtils.join(recordIds, ",");
 			Condition idCondition = new Condition();
@@ -113,7 +115,7 @@ public class UpdateTaskCommand implements Command {
 		return null;
 	}
 	
-	private void updateParentTicketStatus(ActivityType activityType, TaskContext task) throws Exception {
+	private void updateParentTicketStatus(Context context, ActivityType activityType, TaskContext task) throws Exception {
 		
 		//TaskContext completeRecord = getTask(taskId);
 		
@@ -152,7 +154,11 @@ public class UpdateTaskCommand implements Command {
 			}
 			try {
 				if (ticket.getAssignedTo() != null) {
-					ShiftAPI.handleWorkHoursReading(activityType, ticket.getAssignedTo().getOuid(), ticket.getId(), ticket.getStatus(), TicketAPI.getStatus("Work in Progress"));
+					List<ReadingContext> readings = ShiftAPI.handleWorkHoursReading(activityType, ticket.getAssignedTo().getOuid(), ticket.getId(), ticket.getStatus(), TicketAPI.getStatus("Work in Progress"));
+					Map<String, List<ReadingContext>> readingMap = new HashMap<>();
+					readingMap.put("userworkhoursreading", readings);
+					context.put(FacilioConstants.ContextNames.READINGS_MAP, readingMap);
+					context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
 				}
 			}
 			catch(Exception e) {

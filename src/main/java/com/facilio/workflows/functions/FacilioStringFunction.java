@@ -4,125 +4,116 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.workflow.exceptions.FunctionParamException;
 
-public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
+public enum FacilioStringFunction implements FacilioWorkflowFunctionInterface {
 
-	MINS_TO_HOUR(1,"minsToHour") {
+	STRING_EQUALS(1,"stringEquals") {
+
 		@Override
 		public Object execute(Object... objects) throws Exception {
-			
+			// TODO Auto-generated method stub
 			checkParam(objects);
-			
-			if(objects[0] == null) {
-				return false;
-			}
-			Double mins = Double.parseDouble(objects[0].toString());
-			Double hours = UnitsUtil.convert(mins, Unit.MIN, Unit.HOUR);
-			return hours;
-		};
-		
+			return (objects[0] == null ? objects[1] == null : objects[0].toString().equals(objects[1].toString()));
+		}
 		public void checkParam(Object... objects) throws Exception {
-			if(objects.length <= 0) {
+			if(objects.length < 2) {
 				throw new FunctionParamException("Required Object is null");
 			}
 		}
 	},
-	
-	SEC_TO_HOUR(2,"secToHour") {
+	STRING_CONTAINS(2,"stringContains") {
+
 		@Override
 		public Object execute(Object... objects) throws Exception {
-			
+			// TODO Auto-generated method stub
 			checkParam(objects);
 			
-			if(objects[0] == null) {
-				return false;
-			}
-			Double secs = Double.parseDouble(objects[0].toString());
-			Double hours = UnitsUtil.convert(secs, Unit.SEC, Unit.HOUR);
-			return hours;
-		};
-		
+			return (objects[0] == null ? objects[1] == null : objects[0].toString().contains(objects[1].toString()));
+		}
 		public void checkParam(Object... objects) throws Exception {
-			if(objects.length <= 0) {
+			if(objects.length < 2) {
 				throw new FunctionParamException("Required Object is null");
 			}
 		}
 	},
-	
-	HOUR_TO_DAY(3,"hourToDay") {
+	CHAR_AT(3,"charAt") {
+
 		@Override
 		public Object execute(Object... objects) throws Exception {
+			// TODO Auto-generated method stub
 			
 			checkParam(objects);
 			
-			if(objects[0] == null) {
-				return false;
-			}
-			Double hours = Double.parseDouble(objects[0].toString());
-			Double day = UnitsUtil.convert(hours, Unit.HOUR, Unit.DAY);
-			return day;
-		};
-		
+			String string = objects[0].toString();
+			int index = (int) objects[1];
+			
+			return string.charAt(index);
+		}
 		public void checkParam(Object... objects) throws Exception {
-			if(objects.length <= 0) {
+			if(objects.length < 2) {
 				throw new FunctionParamException("Required Object is null");
 			}
 		}
 	},
-	
-	CURRENT_MONTH_DAYS(4,"getCurrentMonthDays") {
+	LENGTH(4,"length") {
+
 		@Override
 		public Object execute(Object... objects) throws Exception {
+			// TODO Auto-generated method stub
 			
 			checkParam(objects);
 			
-			int days = DateTimeUtil.getDaysBetween(DateTimeUtil.getMonthStartTime(), DateTimeUtil.getMonthStartTime(1)-1);
+			String string = objects[0].toString();
 			
-			return days;
-		};
-		
-		public void checkParam(Object... objects) throws Exception {
-			
+			return string.length();
 		}
-	},
-	LAST_MONTH_DAYS(5,"getLastMonthDays") {
-		@Override
-		public Object execute(Object... objects) throws Exception {
-			
-			checkParam(objects);
-			
-			int days = DateTimeUtil.getDaysBetween(DateTimeUtil.getMonthStartTime(-1), DateTimeUtil.getMonthStartTime()-1);
-			
-			return days;
-		};
-		
 		public void checkParam(Object... objects) throws Exception {
-			
-		}
-	},
-	DAYS_BETWEEN(6,"getDaysBetween") {
-		@Override
-		public Object execute(Object... objects) throws Exception {
-			
-			checkParam(objects);
-			
-			if(objects[0] == null || objects[1] == null) {
-				return null;
+			if(objects.length < 1) {
+				throw new FunctionParamException("Required Object is null");
 			}
+		}
+	},
+	SUB_STRING(5,"subString") {
+
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			// TODO Auto-generated method stub
 			
-			Long startTime = Long.parseLong(objects[0].toString());
-			Long endTime = Long.parseLong(objects[1].toString());
-			int days = DateTimeUtil.getDaysBetween(startTime, endTime);
+			checkParam(objects);
 			
-			return days;
-		};
-		
+			String string = objects[0].toString();
+			int index1 = (int) objects[1];
+			
+			if(objects[2] != null) {
+				int index2 = (int) objects[2];
+				return string.substring(index1, index2);
+			}
+			return string.substring(index1);
+		}
 		public void checkParam(Object... objects) throws Exception {
-			if(objects.length <= 0) {
+			if(objects.length < 2) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+	CONTAINS(6,"contains") {
+
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			
+			checkParam(objects);
+			
+			String string = objects[0].toString();
+			String string1 = objects[1].toString();
+			
+			return string.contains(string1);
+		}
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length < 2) {
 				throw new FunctionParamException("Required Object is null");
 			}
 		}
@@ -157,17 +148,17 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	public void setParams(String params) {
 		this.params = params;
 	}
-	FacilioDateFunction(Integer value,String functionName) {
+	FacilioStringFunction(Integer value,String functionName) {
 		this.value = value;
 		this.functionName = functionName;
 	}
-	public static FacilioDateFunction getFacilioDateFunction(String functionName) {
-		return DATE_FUNCTIONS.get(functionName);
+	public static FacilioStringFunction getFacilioStringFunction(String functionName) {
+		return STRING_FUNCTIONS.get(functionName);
 	}
-	static final Map<String, FacilioDateFunction> DATE_FUNCTIONS = Collections.unmodifiableMap(initTypeMap());
-	static Map<String, FacilioDateFunction> initTypeMap() {
-		Map<String, FacilioDateFunction> typeMap = new HashMap<>();
-		for(FacilioDateFunction type : FacilioDateFunction.values()) {
+	static final Map<String, FacilioStringFunction> STRING_FUNCTIONS = Collections.unmodifiableMap(initTypeMap());
+	static Map<String, FacilioStringFunction> initTypeMap() {
+		Map<String, FacilioStringFunction> typeMap = new HashMap<>();
+		for(FacilioStringFunction type : FacilioStringFunction.values()) {
 			typeMap.put(type.getFunctionName(), type);
 		}
 		return typeMap;

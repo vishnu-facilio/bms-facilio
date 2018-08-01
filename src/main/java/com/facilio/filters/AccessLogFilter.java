@@ -11,6 +11,9 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -32,6 +35,8 @@ public class AccessLogFilter implements Filter {
     private static final String TIME_TAKEN_IN_MILLIS = "timeInMillis";
     private static final String DUMMY_MSG = "accesslog";
     private static final String APPENDER_NAME = "graylog2";
+    private static final String DEFAULT_ORG_USER_ID = "-1";
+
     private static Appender appender;
 
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -58,6 +63,18 @@ public class AccessLogFilter implements Filter {
         String queryString = request.getQueryString();
         if(queryString == null) {
             queryString = DEFAULT_QUERY_STRING;
+        }
+        Organization org = AccountUtil.getCurrentOrg();
+        if(org != null) {
+            event.setProperty("orgId", String.valueOf(org.getOrgId()));
+        } else {
+            event.setProperty("orgId", DEFAULT_ORG_USER_ID);
+        }
+        User user = AccountUtil.getCurrentUser();
+        if (user != null) {
+            event.setProperty("userId", String.valueOf(user.getOuid()));
+        } else {
+            event.setProperty("userId", DEFAULT_ORG_USER_ID);
         }
         event.setProperty(QUERY, queryString);
         filterChain.doFilter(servletRequest, response);

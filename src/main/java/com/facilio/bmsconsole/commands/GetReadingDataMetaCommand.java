@@ -22,15 +22,15 @@ import com.facilio.fw.BeanFactory;
 
 public class GetReadingDataMetaCommand implements Command {
 	private static final Logger LOGGER = LogManager.getLogger(GetReadingDataMetaCommand.class.getName());
+	private static final int BATCH_SIZE = 100;
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean execute(Context context) throws Exception {
-		
-		
-		
 		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
 		
 		if (readingMap != null && !readingMap.isEmpty()) {
+			Map<String, ReadingDataMeta> readingDataMeta = null;
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			List<Pair<Long, FacilioField>> rdmPairs = new ArrayList<>();
 			for (Map.Entry<String, List<ReadingContext>> entry : readingMap.entrySet()) {
@@ -46,6 +46,11 @@ public class GetReadingDataMetaCommand implements Command {
 							if (field != null) {
 								Pair<Long, FacilioField> pair = Pair.of(reading.getParentId(), field);
 								rdmPairs.add(pair);
+								
+								if (rdmPairs.size() == BATCH_SIZE) {
+									readingDataMeta = fetchRDM(readingDataMeta, rdmPairs);
+									rdmPairs.clear();
+								}
 							}
 						}		
 					}
@@ -55,11 +60,24 @@ public class GetReadingDataMetaCommand implements Command {
 //					logger.log(Level.INFO, "RDM Pairs : "+rdmPairs);
 //				}
 			}
-			Map<String, ReadingDataMeta> readingDataMeta = ReadingsAPI.getReadingDataMetaMap(rdmPairs);
+			if (!rdmPairs.isEmpty()) {
+				readingDataMeta = fetchRDM(readingDataMeta, rdmPairs);
+			}
 			context.put(FacilioConstants.ContextNames.READING_DATA_META, readingDataMeta);
 		}
 		return false;
 	}
 	
+	
+	private Map<String, ReadingDataMeta> fetchRDM(Map<String, ReadingDataMeta> readingDataMeta, List<Pair<Long, FacilioField>> rdmPairs) throws Exception {
+		Map<String, ReadingDataMeta> rdm = ReadingsAPI.getReadingDataMetaMap(rdmPairs);
+		if (readingDataMeta == null) {
+			readingDataMeta = rdm;
+		}
+		else {
+			readingDataMeta.putAll(rdm);
+		}
+		return readingDataMeta;
+	}
 
 }

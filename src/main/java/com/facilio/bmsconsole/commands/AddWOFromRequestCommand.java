@@ -67,13 +67,17 @@ public class AddWOFromRequestCommand implements Command {
 		WorkOrderContext wo = new WorkOrderContext();
 		BeanUtils.copyProperties(wo, request);
 		wo.setCreatedTime(System.currentTimeMillis());
-		wo.setStatus(TicketAPI.getStatus("Submitted"));
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
 		context.put(FacilioConstants.ContextNames.INSERT_LEVEL, 2);
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.APPROVE_WORK_ORDER_REQUEST);
-		
+		if (wo.getAssignedTo() != null || wo.getAssignmentGroup() != null) {
+			wo.setStatus(TicketAPI.getStatus("Assigned"));
+			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.ASSIGN_TICKET);
+		}
+		else {
+			wo.setStatus(TicketAPI.getStatus("Submitted"));
+		}
 		
 		Command addWorkOrder = FacilioChainFactory.getAddWorkOrderChain();
 		addWorkOrder.execute(context);

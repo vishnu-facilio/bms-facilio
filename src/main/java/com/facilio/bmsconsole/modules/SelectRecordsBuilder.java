@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
@@ -23,6 +26,7 @@ import com.facilio.sql.WhereBuilder;
 
 public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implements SelectBuilderIfc<E> {
 	
+	private static final Logger LOGGER = LogManager.getLogger(SelectRecordsBuilder.class.getName());
 	private static final int LEVEL = 0;
 	
 	private GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
@@ -195,10 +199,15 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	@Override
 	public List<E> get() throws Exception {
 		checkForNull(true);
+		long getStartTime = System.currentTimeMillis();
 		List<Map<String, Object>> propList = getAsJustProps();
+		long getTimeTaken = System.currentTimeMillis() - getStartTime;
+		if (AccountUtil.getCurrentOrg().getId() == 114 && module.getName().equals("asset")) {
+			LOGGER.info("Time Taken to get props in SelectBuilder : "+getTimeTaken);
+		}
 		
-		List<E> beans = new ArrayList<>();
-		if(propList != null && propList.size() > 0) {
+		if(propList != null) {
+			long lookupStartTime = System.currentTimeMillis();
 			List<FacilioField> lookupFields = getLookupFields();
 			for(Map<String, Object> props : propList) {
 				for(FacilioField lookupField : lookupFields) {
@@ -216,9 +225,17 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 						}
 					}
 				}
-				E bean = FieldUtil.getAsBeanFromMap(props, beanClass);
-				beans.add(bean);
 			}
+			long lookupTimeTaken = System.currentTimeMillis() - lookupStartTime;
+			if (AccountUtil.getCurrentOrg().getId() == 114 && module.getName().equals("asset")) {
+				LOGGER.info("Time Taken to convert lookup Fields in SelectBuilder : "+lookupTimeTaken);
+			}
+		}
+		long startTime = System.currentTimeMillis();
+		List<E> beans = FieldUtil.getAsBeanListFromMapList(propList, beanClass);
+		long timeTaken = System.currentTimeMillis() - startTime;
+		if (AccountUtil.getCurrentOrg().getId() == 114 && module.getName().equals("asset")) {
+			LOGGER.info("Time Taken to convert to bean list in SelectBuilder : "+timeTaken);
 		}
 		return beans;
 	}

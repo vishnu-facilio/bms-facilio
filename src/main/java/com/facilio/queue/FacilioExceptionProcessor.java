@@ -1,9 +1,6 @@
 package com.facilio.queue;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.TimerTask;
+import java.util.*;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -19,7 +16,7 @@ public class FacilioExceptionProcessor extends TimerTask {
     private static final String QUEUE = "Exception";
     private static final HashMap<String, Integer> EXCEPTION_COUNT = new HashMap<>();
     private static final HashMap<String, String> EXCEPTION_MESSAGES = new HashMap<>();
-    private static final List<String> RECEIPT_HANDLE_LIST = new ArrayList<>();
+    private static final HashMap<String, List<String>> RECEIPT_HANDLE_LIST = new HashMap<>();
     private static final Logger LOGGER = LogManager.getLogger(FacilioExceptionProcessor.class.getName());
 
 
@@ -46,12 +43,11 @@ public class FacilioExceptionProcessor extends TimerTask {
                 json.put("message", builder.toString());
                 try {
                     AwsUtil.sendEmail(json);
+                    FAWSQueue.deleteMessage(QUEUE, RECEIPT_HANDLE_LIST.get(orgWithClass));
                 } catch (Exception e) {
                     LOGGER.info("Exception while sending email ", e);
                 }
             }
-
-            FAWSQueue.deleteMessage(QUEUE, new ArrayList<>(RECEIPT_HANDLE_LIST));
             resetFields();
         }
     }
@@ -65,11 +61,11 @@ public class FacilioExceptionProcessor extends TimerTask {
     private void processMessages(List<Message> messageList) {
         for(Message msg : messageList) {
             String body = msg.getBody();
-            RECEIPT_HANDLE_LIST.add(msg.getReceiptHandle());
             int index = body.indexOf(CommonCommandUtil.DELIMITER);
             String orgWithClassName = "";
             if(index > 1) {
                 orgWithClassName = body.substring(0, index);
+                RECEIPT_HANDLE_LIST.getOrDefault(orgWithClassName, new ArrayList<>()).add(msg.getReceiptHandle());
                 int count = EXCEPTION_COUNT.getOrDefault(orgWithClassName, 0);
                 EXCEPTION_COUNT.put(orgWithClassName, count+1);
                 if(count == 0) {
