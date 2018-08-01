@@ -199,9 +199,15 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	@Override
 	public List<E> get() throws Exception {
 		checkForNull(true);
+		long getStartTime = System.currentTimeMillis();
 		List<Map<String, Object>> propList = getAsJustProps();
+		long getTimeTaken = System.currentTimeMillis() - getStartTime;
+		if (AccountUtil.getCurrentOrg().getId() == 114 && module.getName().equals("asset")) {
+			LOGGER.info("Time Taken to get props in SelectBuilder : "+getTimeTaken);
+		}
 		
 		if(propList != null) {
+			long lookupStartTime = System.currentTimeMillis();
 			List<FacilioField> lookupFields = getLookupFields();
 			for(Map<String, Object> props : propList) {
 				for(FacilioField lookupField : lookupFields) {
@@ -219,6 +225,10 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 						}
 					}
 				}
+			}
+			long lookupTimeTaken = System.currentTimeMillis() - lookupStartTime;
+			if (AccountUtil.getCurrentOrg().getId() == 114 && module.getName().equals("asset")) {
+				LOGGER.info("Time Taken to convert lookup Fields in SelectBuilder : "+lookupTimeTaken);
 			}
 		}
 		long startTime = System.currentTimeMillis();
