@@ -50,9 +50,7 @@ public class GenerateSearchConditionCommand implements Command {
 			context.put(FacilioConstants.ContextNames.SEARCH_CRITERIA, criteria);
 		}
 		long timeTaken = System.currentTimeMillis() - startTime;
-		if (AccountUtil.getCurrentOrg().getId() == 114) {
-			LOGGER.info("Time taken to execute GenerateSearchConditionCommand : "+timeTaken);
-		}
+		LOGGER.debug("Time taken to execute GenerateSearchConditionCommand : "+timeTaken);
 		return false;
 	}
 

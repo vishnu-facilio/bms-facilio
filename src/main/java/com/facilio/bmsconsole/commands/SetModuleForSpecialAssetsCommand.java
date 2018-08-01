@@ -81,9 +81,7 @@ public class SetModuleForSpecialAssetsCommand implements Command{
 			}
 		}
 		long timeTaken = System.currentTimeMillis() - startTime;
-		if (AccountUtil.getCurrentOrg().getId() == 114) {
-			LOGGER.info("Time taken to execute SetModuleForSpecialAssetsCommand : "+timeTaken);
-		}
+		LOGGER.debug("Time taken to execute SetModuleForSpecialAssetsCommand : "+timeTaken);
 		return false;
 	}
 }

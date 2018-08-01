@@ -92,7 +92,6 @@ public class GetAssetListCommand implements Command {
 		if (withReadings != null && withReadings) {
 			builder.andCustomWhere("exists(select 1 from Reading_Data_Meta r where r.ORGID=? and r.RESOURCE_ID=Assets.ID and r.VALUE <> -1 and r.VALUE IS NOT NULL)", AccountUtil.getCurrentOrg().getId());
 		}
-		long getStartTime = System.currentTimeMillis();
 		Long readingId = (Long) context.get(FacilioConstants.ContextNames.READING_ID);
 		ReadingInputType inputType = (ReadingInputType) context.get(FacilioConstants.ContextNames.INPUT_TYPE);
 		if (readingId != null && readingId > 0)
@@ -101,18 +100,15 @@ public class GetAssetListCommand implements Command {
 					AccountUtil.getCurrentOrg().getId(), readingId, String.valueOf(inputType.getValue()));
 		}
 		// String.valueOf(inputType.getValue())
+		long getStartTime = System.currentTimeMillis();
 		List<? extends ModuleBaseWithCustomFields> records = builder.get();
 		long getTimeTaken = System.currentTimeMillis() - getStartTime;
-		if (AccountUtil.getCurrentOrg().getId() == 114) {
-			LOGGER.info("Time taken to execute Fetch assets in GetAssetListCommand : "+getTimeTaken);
-		}
+		LOGGER.debug("Time taken to execute Fetch assets in GetAssetListCommand : "+getTimeTaken);
 		
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, records);
 		
 		long timeTaken = System.currentTimeMillis() - startTime;
-		if (AccountUtil.getCurrentOrg().getId() == 114) {
-			LOGGER.info("Time taken to execute GetAssetListCommand : "+timeTaken);
-		}
+		LOGGER.debug("Time taken to execute GetAssetListCommand : "+timeTaken);
 		return false;
 	}
 }
