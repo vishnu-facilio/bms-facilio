@@ -26,7 +26,7 @@ public class FacilioAction extends ActionSupport {
 	}
 	
 	public void setMessage(Exception e) {
-		if (e instanceof IllegalArgumentException || e instanceof RuntimeException) {
+		if (e instanceof IllegalArgumentException) {
 			this.message = e.getMessage();			
 		}
 		else {
