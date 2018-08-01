@@ -1089,49 +1089,54 @@ public class DashboardAction extends ActionSupport {
 				
 				for(WidgetVsWorkflowContext widgetVsWorkflowContext : dashboardWidgetContext.getWidgetVsWorkflowContexts()) {
 					
-					Map<String,Object> paramMap = null;
-					if(widgetVsWorkflowContext.getBaseSpaceId() != null) {
-						if(paramMap == null) {
-							paramMap = new HashMap<>();
+					try {
+						Map<String,Object> paramMap = null;
+						if(widgetVsWorkflowContext.getBaseSpaceId() != null) {
+							if(paramMap == null) {
+								paramMap = new HashMap<>();
+							}
+							paramMap.put("parentId", widgetVsWorkflowContext.getBaseSpaceId());
 						}
-						paramMap.put("parentId", widgetVsWorkflowContext.getBaseSpaceId());
-					}
-					if(reportSpaceFilterContext != null) {
-						if(paramMap == null) {
-							paramMap = new HashMap<>();
-						}
-						if(reportSpaceFilterContext.getBuildingId() != null) {
-							paramMap.put("parentId", reportSpaceFilterContext.getBuildingId());
-						}
-						if(widgetStaticContext != null && widgetStaticContext.getStaticKey().equals("weathercard") && widgetVsWorkflowContext.getWorkflowName().equals("weather")) {
-							BaseSpaceContext basespace = SpaceAPI.getBaseSpace(reportSpaceFilterContext.getBuildingId());
-							if(basespace != null) {
-								paramMap.put("parentId", basespace.getSiteId());
+						if(reportSpaceFilterContext != null) {
+							if(paramMap == null) {
+								paramMap = new HashMap<>();
+							}
+							if(reportSpaceFilterContext.getBuildingId() != null) {
+								paramMap.put("parentId", reportSpaceFilterContext.getBuildingId());
+							}
+							if(widgetStaticContext != null && ( (widgetStaticContext.getStaticKey().equals("weathercard") && widgetVsWorkflowContext.getWorkflowName().equals("weather"))  || (widgetStaticContext.getStaticKey().equals("weathercardaltayer") && widgetVsWorkflowContext.getWorkflowName().equals("weather")) )) {
+								BaseSpaceContext basespace = SpaceAPI.getBaseSpace(reportSpaceFilterContext.getBuildingId());
+								if(basespace != null) {
+									paramMap.put("parentId", basespace.getSiteId());
+								}
 							}
 						}
-					}
-					if (widgetVsWorkflowContext.getWorkflowName().equals("lastMonthThisDate") || widgetVsWorkflowContext.getWorkflowName().equals("lastMonthDate")){
-						if(paramMap == null) {
-							paramMap = new HashMap<>();
+						if (widgetVsWorkflowContext.getWorkflowName().equals("lastMonthThisDate") || widgetVsWorkflowContext.getWorkflowName().equals("lastMonthDate")){
+							if(paramMap == null) {
+								paramMap = new HashMap<>();
+							}
+							DateRange rang1e = DateOperators.CURRENT_MONTH_UPTO_NOW.getRange(null);
+							paramMap.put("startTime", rang1e.getStartTime());
+							paramMap.put("endTime", rang1e.getEndTime());
 						}
-						DateRange rang1e = DateOperators.CURRENT_MONTH_UPTO_NOW.getRange(null);
-						paramMap.put("startTime", rang1e.getStartTime());
-						paramMap.put("endTime", rang1e.getEndTime());
-					}
-					Object wfResult = WorkflowUtil.getResult(widgetVsWorkflowContext.getWorkflowId(), paramMap);
-					
-					if(widgetStaticContext != null && widgetStaticContext.getStaticKey().equals("weathercard") && widgetVsWorkflowContext.getWorkflowName().equals("weather")) {
-						Map<String,Object> ss = (Map<String, Object>) wfResult;
-						Object temprature = ss.get("temperature");
-						if(AccountUtil.getCurrentOrg().getOrgId() == 104l) {
-							temprature = UnitsUtil.convert(temprature, Unit.CELSIUS, Unit.FAHRENHEIT);
+						Object wfResult = WorkflowUtil.getResult(widgetVsWorkflowContext.getWorkflowId(), paramMap);
+						
+						if(widgetStaticContext != null && widgetStaticContext.getStaticKey().equals("weathercard") && widgetVsWorkflowContext.getWorkflowName().equals("weather")) {
+							Map<String,Object> ss = (Map<String, Object>) wfResult;
+							Object temprature = ss.get("temperature");
+							if(AccountUtil.getCurrentOrg().getOrgId() == 104l) {
+								temprature = UnitsUtil.convert(temprature, Unit.CELSIUS, Unit.FAHRENHEIT);
+							}
+							DecimalFormat f = new DecimalFormat("##.0");
+							ss.put("temperature", f.format(temprature));
 						}
-						DecimalFormat f = new DecimalFormat("##.0");
-						ss.put("temperature", f.format(temprature));
+						
+						LOGGER.severe("widgetVsWorkflowContext.getWorkflowId() --- "+widgetVsWorkflowContext.getWorkflowId() +" wfResult --  "+wfResult);
+						result.put(widgetVsWorkflowContext.getWorkflowName(), wfResult);
 					}
-					
-					LOGGER.severe("widgetVsWorkflowContext.getWorkflowId() --- "+widgetVsWorkflowContext.getWorkflowId() +" wfResult --  "+wfResult);
-					result.put(widgetVsWorkflowContext.getWorkflowName(), wfResult);
+					catch(Exception e) {
+						LOGGER.severe(e.getMessage());
+					}
 				}
 			}
 			LOGGER.severe("result --- "+result);
