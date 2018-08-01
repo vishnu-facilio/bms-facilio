@@ -47,7 +47,7 @@ public class IotFilter implements Filter {
 	        	    if (!data.contains("-OPERATOR COMMAND-")) {
 	        	    		AccountUtil.setCurrentAccount(78L);
 	        	    	
-		    		    	String source = data.substring(data.lastIndexOf("\n") + 1);
+		    		    	String source = data.substring(data.indexOf("\n") + 1);
 		    	    		String message = data.substring(0, data.indexOf("::") - 1);
 		    	    		String timeStamp = data.substring(data.indexOf("::") + 3, data.indexOf("P:") - 1);
 		    	    		
