@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -19,11 +21,12 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
 public class GetAssetListCommand implements Command {
-	
+	private static final Logger LOGGER = LogManager.getLogger(GetAssetListCommand.class.getName());
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
+		long startTime = System.currentTimeMillis();
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
@@ -89,9 +92,19 @@ public class GetAssetListCommand implements Command {
 			builder.andCustomWhere("exists(select 1 from Reading_Data_Meta r where r.ORGID=? and r.RESOURCE_ID=Assets.ID and r.VALUE <> -1 and r.VALUE IS NOT NULL)", AccountUtil.getCurrentOrg().getId());
 		}
 		
+		long getStartTime = System.currentTimeMillis();
 		List<? extends ModuleBaseWithCustomFields> records = builder.get();
+		long getTimeTaken = System.currentTimeMillis() - getStartTime;
+		if (AccountUtil.getCurrentOrg().getId() == 114) {
+			LOGGER.info("Time taken to execute Fetch assets in GetAssetListCommand : "+getTimeTaken);
+		}
+		
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, records);
 		
+		long timeTaken = System.currentTimeMillis() - startTime;
+		if (AccountUtil.getCurrentOrg().getId() == 114) {
+			LOGGER.info("Time taken to execute GetAssetListCommand : "+timeTaken);
+		}
 		return false;
 	}
 }

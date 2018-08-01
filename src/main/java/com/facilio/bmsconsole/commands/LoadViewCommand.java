@@ -9,6 +9,8 @@ import java.util.StringJoiner;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -31,10 +33,11 @@ import com.google.common.collect.Lists;
 
 public class LoadViewCommand implements Command {
 
+	private static final Logger LOGGER = LogManager.getLogger(LoadViewCommand.class.getName());
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		
+		long startTime = System.currentTimeMillis();
 		String viewName = (String) context.get(FacilioConstants.ContextNames.CV_NAME);
 		if(viewName != null && !viewName.isEmpty()) {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
@@ -88,7 +91,10 @@ public class LoadViewCommand implements Command {
 				context.put(FacilioConstants.ContextNames.CUSTOM_VIEW, view);
 			}
 		}
-		
+		long timeTaken = System.currentTimeMillis() - startTime;
+		if (AccountUtil.getCurrentOrg().getId() == 114) {
+			LOGGER.info("Time taken to execute LoadViewCommand : "+timeTaken);
+		}
 		return false;
 	}
 	
