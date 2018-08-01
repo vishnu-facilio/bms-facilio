@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.context;
 
 import java.time.Duration;
 import java.time.ZonedDateTime;
+import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
 
@@ -205,10 +206,13 @@ public class BaseLineContext {
 						baseLineRange = weeklyAdjustment(type, blStartZdt, blEndZdt, dataStartZdt, dataEndZdt, dataDuration);
 						break;
 					case DATE:
-						baseLineRange = dateAdjustment(type, blStartZdt, blEndZdt, dataStartZdt, dataEndZdt, dataDuration);
+						baseLineRange = dateAdjustment(type, blStartZdt, blEndZdt, dataStartZdt, dataEndZdt, dataDuration, false);
 						break;
 					case MONTH_AND_DATE:
 						baseLineRange = monthAndDateAdjustment(type, blStartZdt, blEndZdt, dataStartZdt, dataEndZdt, dataDuration);
+						break;
+					case FULL_MONTH:
+						baseLineRange = dateAdjustment(type, blStartZdt, blEndZdt, dataStartZdt, dataEndZdt, dataDuration, true);
 						break;
 					default:
 						break;
@@ -240,19 +244,19 @@ public class BaseLineContext {
 				throw new RuntimeException("Cannot be here!!");
 			case PREVIOUS_YEAR:
 				blStartZdt = blStartZdt.withMonth(dataStartZdt.getMonthValue());
-				blStartZdt = withDate(blStartZdt, dataStartZdt.getDayOfMonth());
+				blStartZdt = withDate(blStartZdt, dataStartZdt,false);
 				blStartZdt = adjustStartTime(dataStartZdt, blStartZdt);
-				blEndZdt = blStartZdt.plusYears(dataEndZdt.getYear() - dataStartZdt.getYear());
+				blEndZdt = blStartZdt.plusYears(dataEndZdt.getYear() - dataStartZdt.getYear()).with(blEndZdt.toLocalTime());
 				blEndZdt = blEndZdt.withMonth(dataEndZdt.getMonthValue());
-				blEndZdt = withDate(blEndZdt, dataEndZdt.getDayOfMonth());
+				blEndZdt = withDate(blEndZdt, dataEndZdt,false);
 				blEndZdt = adjustEndTime(dataEndZdt, blEndZdt);
 			case ANY_YEAR:
 				blStartZdt = blStartZdt.withMonth(dataStartZdt.getMonthValue());
-				blStartZdt = withDate(blStartZdt, dataStartZdt.getDayOfMonth());
+				blStartZdt = withDate(blStartZdt, dataStartZdt,false);
 				blStartZdt = adjustStartTime(dataStartZdt, blStartZdt);
 				if (DateTimeUtil.isSameYear(dataStartZdt, dataEndZdt)) {
 					blEndZdt = blEndZdt.withMonth(dataEndZdt.getMonthValue());
-					blEndZdt = withDate(blEndZdt, dataEndZdt.getDayOfMonth());
+					blEndZdt = withDate(blEndZdt, dataEndZdt,false);
 				}
 				blEndZdt = adjustEndTime(dataEndZdt, blEndZdt);
 				break;
@@ -262,22 +266,22 @@ public class BaseLineContext {
 		return Pair.of(blStartZdt, blEndZdt);
 	}
 	
-	private Pair<ZonedDateTime, ZonedDateTime> dateAdjustment(RangeType type, ZonedDateTime blStartZdt, ZonedDateTime blEndZdt, ZonedDateTime dataStartZdt, ZonedDateTime dataEndZdt, Duration dataDuration) {
+	private Pair<ZonedDateTime, ZonedDateTime> dateAdjustment(RangeType type, ZonedDateTime blStartZdt, ZonedDateTime blEndZdt, ZonedDateTime dataStartZdt, ZonedDateTime dataEndZdt, Duration dataDuration, boolean lastDayCheck) {
 		switch (type) {
 			case PREVIOUS:
 				throw new RuntimeException("Cannot be here!!");
 			case PREVIOUS_MONTH:
-				blStartZdt = withDate(blStartZdt, dataStartZdt.getDayOfMonth());
+				blStartZdt = withDate(blStartZdt, dataStartZdt,false);
 				blStartZdt = adjustStartTime(dataStartZdt, blStartZdt);
-				blEndZdt = blStartZdt.plusMonths(dataEndZdt.getMonthValue() - dataStartZdt.getMonthValue());
-				blEndZdt = withDate(blEndZdt, dataEndZdt.getDayOfMonth());
+				blEndZdt = blStartZdt.plusMonths(dataEndZdt.getMonthValue() - dataStartZdt.getMonthValue()).with(blEndZdt.toLocalTime());
+				blEndZdt = withDate(blEndZdt, dataEndZdt,lastDayCheck);
 				blEndZdt = adjustEndTime(dataEndZdt, blEndZdt);
 				break;
 			case ANY_MONTH:
-				blStartZdt = withDate(blStartZdt, dataStartZdt.getDayOfMonth());
+				blStartZdt = withDate(blStartZdt, dataStartZdt,false);
 				blStartZdt = adjustStartTime(dataStartZdt, blStartZdt);
 				if (DateTimeUtil.isSameMonth(dataStartZdt, dataEndZdt)) {
-					blEndZdt = withDate(blEndZdt, dataEndZdt.getDayOfMonth());
+					blEndZdt = withDate(blEndZdt, dataEndZdt,lastDayCheck);
 				}
 				blEndZdt = adjustEndTime(dataEndZdt, blEndZdt);
 				break;
@@ -420,12 +424,18 @@ public class BaseLineContext {
 		return blEndZdt;
 	}
 	
-	private ZonedDateTime withDate(ZonedDateTime zdt, int monthVal) {
-		ZonedDateTime lastDayZdt = zdt.with(TemporalAdjusters.lastDayOfMonth());
-		if (monthVal > lastDayZdt.getDayOfMonth()) {
-			return zdt.with(TemporalAdjusters.lastDayOfMonth());
+	private ZonedDateTime withDate(ZonedDateTime blZdt, ZonedDateTime dataZdt, boolean lastDayCheck) {
+		ZonedDateTime blLastDayZdt = blZdt.with(TemporalAdjusters.lastDayOfMonth());
+		if (lastDayCheck) {
+			ZonedDateTime dataLastDayZdt = dataZdt.with(TemporalAdjusters.lastDayOfMonth());
+			if (dataZdt.getDayOfMonth() == dataLastDayZdt.getDayOfMonth()) {
+				return blLastDayZdt;
+			}
 		}
-		return zdt.withDayOfMonth(monthVal);
+		if (dataZdt.getDayOfMonth() > blLastDayZdt.getDayOfMonth()) {
+			return blLastDayZdt;
+		}
+		return blZdt.withDayOfMonth(dataZdt.getDayOfMonth());
 	}
 	
 	public static enum RangeType {
@@ -459,7 +469,8 @@ public class BaseLineContext {
 		NONE,
 		WEEK,
 		DATE,
-		MONTH_AND_DATE
+		MONTH_AND_DATE,
+		FULL_MONTH
 		;
 		
 		public int getValue() {
