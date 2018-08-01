@@ -7,10 +7,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.model.*;
 import com.facilio.aws.util.AwsUtil;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class FAWSQueue {
 
     private static final ConcurrentHashMap<String, String> nameVsURL = new ConcurrentHashMap<>();
+    private static final Logger LOGGER = LogManager.getLogger(FAWSQueue.class.getName());
 
     public static void sendMessage(String queueName,  String message) {
         String url = nameVsURL.get(queueName);
@@ -68,7 +71,9 @@ public class FAWSQueue {
             deleteMessageBatchRequestEntries.add(entry);
         }
         if(receiptHandles.size() > 0) {
-            sqs.deleteMessageBatch(queueName, deleteMessageBatchRequestEntries);
+            DeleteMessageBatchResult  result = sqs.deleteMessageBatch(queueName, deleteMessageBatchRequestEntries);
+            List<DeleteMessageBatchResultEntry> resultList = result.getSuccessful();
+            LOGGER.info("Sucessfully deleted " + resultList.size());
         }
     }
 }
