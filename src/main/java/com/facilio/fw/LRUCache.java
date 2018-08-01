@@ -48,7 +48,7 @@ public class LRUCache<K, V>{
     private long hitcount = 0;
     private long misscount = 1;
 	private String name;
-	private Jedis redis;
+	private RedisManager redis;
 	private ConcurrentHashMap<K, Node<K, V>> cache;
 	private int maxSize;
 	private int currentSize;
@@ -58,7 +58,7 @@ public class LRUCache<K, V>{
 		this.maxSize = maxSize;
 		this.currentSize = 0;
 		cache = new ConcurrentHashMap<K, Node<K, V>>();
-		redis = RedisManager.getInstance().getJedis();
+		redis = RedisManager.getInstance();;
 	}
 
 
@@ -199,7 +199,7 @@ public class LRUCache<K, V>{
 
     private long getFromRedis(K key) {
 	    if(redis != null) {
-            String value = redis.get(getRedisKey((String) key));
+            String value = redis.getJedis().get(getRedisKey((String) key));
             if(value == null) {
 				return Long.MAX_VALUE;
 			}
@@ -247,13 +247,13 @@ public class LRUCache<K, V>{
 
     private void deleteInRedis(K key) {
 	    if(redis != null){
-            redis.del(getRedisKey((String) key));
+            redis.getJedis().del(getRedisKey((String) key));
         }
     }
 
     private void putInRedis(K key, Node<K, V> node) {
 	    if(redis != null) {
-            redis.set(getRedisKey((String) key), String.valueOf(node.addedTime));
+            redis.getJedis().set(getRedisKey((String) key), String.valueOf(node.addedTime));
         }
     }
 

@@ -47,10 +47,10 @@ public class RedisManager {
 		poolConfig.setTestOnReturn(true);
 		// Number of connections to Redis that just sit there
 		// and do nothing
-		poolConfig.setMaxIdle(5);
+		poolConfig.setMaxIdle(10);
 		// Minimum number of idle connections to Redis
 		// These can be seen as always open and ready to serve
-		poolConfig.setMinIdle(1);
+		poolConfig.setMinIdle(5);
 		// Tests whether connections are dead during idle periods
 		poolConfig.setTestWhileIdle(true);
 		// Maximum number of connections to test in each idle check
