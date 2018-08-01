@@ -54,7 +54,9 @@ public class FAWSQueue {
             url = result.getQueueUrl();
             nameVsURL.put(queueName, url);
         }
-        sqs.deleteMessage(queueName, receiptHandle);
+        if(url != null) {
+            sqs.deleteMessage(url, receiptHandle);
+        }
     }
 
     static void deleteMessage(String queueName, List<String> receiptHandles) {
@@ -72,9 +74,11 @@ public class FAWSQueue {
         }
         if(receiptHandles.size() > 0) {
             LOGGER.info("Deleting messages with size " + receiptHandles.size());
-            DeleteMessageBatchResult  result = sqs.deleteMessageBatch(queueName, deleteMessageBatchRequestEntries);
-            List<DeleteMessageBatchResultEntry> resultList = result.getSuccessful();
-            LOGGER.info("Successfully deleted " + resultList.size());
+            if(url != null) {
+                DeleteMessageBatchResult result = sqs.deleteMessageBatch(url, deleteMessageBatchRequestEntries);
+                List<DeleteMessageBatchResultEntry> resultList = result.getSuccessful();
+                LOGGER.info("Successfully deleted " + resultList.size());
+            }
         }
     }
 }
