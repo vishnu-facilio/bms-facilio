@@ -197,8 +197,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		checkForNull(true);
 		List<Map<String, Object>> propList = getAsJustProps();
 		
-		List<E> beans = new ArrayList<>();
-		if(propList != null && propList.size() > 0) {
+		if(propList != null) {
 			List<FacilioField> lookupFields = getLookupFields();
 			for(Map<String, Object> props : propList) {
 				for(FacilioField lookupField : lookupFields) {
@@ -216,11 +215,9 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 						}
 					}
 				}
-				E bean = FieldUtil.getAsBeanFromMap(props, beanClass);
-				beans.add(bean);
 			}
 		}
-		return beans;
+		return FieldUtil.getAsBeanListFromMapList(propList, beanClass);
 	}
 	
 	public Map<Long, E> getAsMap() throws Exception {

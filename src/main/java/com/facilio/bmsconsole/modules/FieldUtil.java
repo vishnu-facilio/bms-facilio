@@ -310,6 +310,14 @@ public class FieldUtil {
 		}
 		return null;
 	}
+	public static <E> List<E> getAsBeanListFromMapList(List<Map<String, Object>> props, Class<E> classObj) 
+	{
+		if (props != null) {
+			ObjectMapper mapper = getMapper(classObj);
+			return mapper.convertValue(props, mapper.getTypeFactory().constructCollectionType(List.class, classObj));
+		}
+		return null;
+	}
 	
 	@SuppressWarnings("unchecked")
 	public static Map<String, Object> getAsProperties(Object bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException 
