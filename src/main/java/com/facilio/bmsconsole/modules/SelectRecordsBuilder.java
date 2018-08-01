@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
@@ -23,6 +26,7 @@ import com.facilio.sql.WhereBuilder;
 
 public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implements SelectBuilderIfc<E> {
 	
+	private static final Logger LOGGER = LogManager.getLogger(SelectRecordsBuilder.class.getName());
 	private static final int LEVEL = 0;
 	
 	private GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
@@ -217,7 +221,13 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 				}
 			}
 		}
-		return FieldUtil.getAsBeanListFromMapList(propList, beanClass);
+		long startTime = System.currentTimeMillis();
+		List<E> beans = FieldUtil.getAsBeanListFromMapList(propList, beanClass);
+		long timeTaken = System.currentTimeMillis() - startTime;
+		if (AccountUtil.getCurrentOrg().getId() == 114 && module.getName().equals("asset")) {
+			LOGGER.info("Time Taken to convert to bean list in SelectBuilder : "+timeTaken);
+		}
+		return beans;
 	}
 	
 	public Map<Long, E> getAsMap() throws Exception {
