@@ -58,7 +58,8 @@ public class LRUCache<K, V>{
 		this.maxSize = maxSize;
 		this.currentSize = 0;
 		cache = new ConcurrentHashMap<K, Node<K, V>>();
-		redis = RedisManager.getInstance();;
+		redis = null;
+		// redis = RedisManager.getInstance();
 	}
 
 
