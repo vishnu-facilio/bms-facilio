@@ -185,9 +185,11 @@ public class BaseLineContext {
 		ZonedDateTime dataStartZdt = DateTimeUtil.getDateTime(dataStartTime);
 		ZonedDateTime dataEndZdt = DateTimeUtil.getDateTime(dataEndTime);
 		
-		logger.debug("Data Range : ");;
-		logger.debug(dataStartZdt+" - "+dataStartZdt.getDayOfWeek());
-		logger.debug(dataEndZdt+" - "+dataEndZdt.getDayOfWeek());
+		logger.info("Data Range : ");;
+		logger.info(dataStartZdt+" - "+dataStartZdt.getDayOfWeek());
+		logger.info(dataEndZdt+" - "+dataEndZdt.getDayOfWeek());
+		logger.info("Range Type : "+rangeType);
+		logger.info("Adjust Type : "+adjustType);
 		
 		Duration dataDuration = Duration.between(dataStartZdt, dataEndZdt);
 		RangeType type = rangeType;
@@ -230,9 +232,9 @@ public class BaseLineContext {
 					blEndZdt = blStartZdt.plus(dataDuration);
 				}
 			}
-			logger.debug("Base Line Range : ");
-			logger.debug(blStartZdt+" - "+blStartZdt.getDayOfWeek());
-			logger.debug(blEndZdt+" - "+blEndZdt.getDayOfWeek());
+			logger.info("Base Line Range : ");
+			logger.info(blStartZdt+" - "+blStartZdt.getDayOfWeek());
+			logger.info(blEndZdt+" - "+blEndZdt.getDayOfWeek());
 			return new DateRange(blStartZdt.toInstant().toEpochMilli(), blEndZdt.toInstant().toEpochMilli());
 		}
 		return null;
