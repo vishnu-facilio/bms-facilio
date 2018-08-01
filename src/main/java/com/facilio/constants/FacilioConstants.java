@@ -502,6 +502,8 @@ public class FacilioConstants {
 		
 		public static final String EXCLUDE_EMPTY_FIELDS = "exludeEmptyFields";
 		public static final String WITH_READINGS = "withReadings";
+		public static final String READING_ID = "readingId";
+		public static final String INPUT_TYPE = "inputtype";
 		
 		public static final String BENCHMARK_UNITS = "benchmarkUnits";
 		public static final String BENCHMARK_VALUE = "benchmarkValue";
