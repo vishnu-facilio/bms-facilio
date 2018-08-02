@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.util;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -160,6 +161,9 @@ public class ExportUtil {
 				List<Object> record = (List<Object>) recordObj;
 				for (int j = 0, rowLen = record.size(); j < rowLen; j++) {
 					Object value = record.get(j);
+					if(value instanceof Double) {
+						value = BigDecimal.valueOf((Double)value).toPlainString();
+					}
 					row.createCell((short) j).setCellValue(value != null ? value.toString() : "");
 				}
 			}
@@ -176,6 +180,9 @@ public class ExportUtil {
 	    	    	    					value=val;
 	    	    	    				}
 	    					}
+					}
+					if(value instanceof Double) {
+						value = BigDecimal.valueOf((Double)value).toPlainString();
 					}
 					row.createCell((short) j).setCellValue(value.toString());
 	    			}
@@ -312,6 +319,9 @@ public class ExportUtil {
     				List<Object> record = (List<Object>) recordObj;
     				for (int j = 0, rowLen = record.size(); j < rowLen; j++) {
         				Object value = record.get(j);
+        				if(value instanceof Double) {
+    						value = BigDecimal.valueOf((Double)value).toPlainString();
+    					}
         				str.append(value != null ? value.toString() : "").append(',');
         			}
     			}
@@ -328,6 +338,9 @@ public class ExportUtil {
 	    	    	    					value=val;
 	    	    	    				}
     	    					}
+    					}
+    					if(value instanceof Double) {
+    						value = BigDecimal.valueOf((Double)value).toPlainString();
     					}
     					str.append("\""+value+"\"").append(',');
     	    			}
@@ -384,6 +397,9 @@ public class ExportUtil {
 			return DateTimeUtil.getFormattedTime((long)value);
 		}
 		case NUMBER: {
+			if(value instanceof Double) {
+				return BigDecimal.valueOf((Double)value).toPlainString();
+			}
 			return getValueFromEnum(field, value);
 		}
 		case BOOLEAN:case DECIMAL:case MISC:case STRING:
