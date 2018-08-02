@@ -1126,6 +1126,7 @@ public class DashboardAction extends ActionSupport {
 							Object temprature = ss.get("temperature");
 							if(AccountUtil.getCurrentOrg().getOrgId() == 104l) {
 								temprature = UnitsUtil.convert(temprature, Unit.CELSIUS, Unit.FAHRENHEIT);
+								ss.put("temperatureUnit", Unit.FAHRENHEIT.getSymbol());
 							}
 							DecimalFormat f = new DecimalFormat("##.0");
 							ss.put("temperature", f.format(temprature));
