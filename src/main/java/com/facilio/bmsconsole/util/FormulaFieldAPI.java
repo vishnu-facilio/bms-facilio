@@ -194,14 +194,18 @@ public class FormulaFieldAPI {
 	}
 	
 	public static FormulaFieldContext getFormulaField (FacilioField readingField) throws Exception {
+		return getFormulaFieldFromReadingField(readingField.getFieldId());
+	}
+	
+	public static FormulaFieldContext getFormulaFieldFromReadingField (Long readingFieldId) throws Exception {
 		FacilioModule module = ModuleFactory.getFormulaFieldModule();
 		List<FacilioField> fields = FieldFactory.getFormulaFieldFields();
-		FacilioField readingFieldId = FieldFactory.getAsMap(fields).get("readingFieldId");
+		FacilioField readingField = FieldFactory.getAsMap(fields).get("readingFieldId");
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(module.getTableName())
 														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-														.andCondition(CriteriaAPI.getCondition(readingFieldId, String.valueOf(readingField.getFieldId()), PickListOperators.IS))
+														.andCondition(CriteriaAPI.getCondition(readingField, String.valueOf(readingFieldId), PickListOperators.IS))
 														;
 		
 		List<FormulaFieldContext> enpiList = getFormulaFieldsFromProps(selectBuilder.get());

@@ -210,9 +210,8 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 			rs = pstmt.executeQuery();
 			long queryTime = System.currentTimeMillis() - queryStartTime;
 			
-			if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 114 && tableName.equals("Assets")) {
-				LOGGER.info("Time taken to execute query in GenericSelectBuilder : "+queryTime);
-			}
+			LOGGER.debug("SQL : "+sql);
+			LOGGER.debug("Time taken to execute query in GenericSelectBuilder : "+queryTime);
 			
 			this.sql = pstmt.toString();
 			
@@ -237,14 +236,10 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 				}
 			}
 			long mapTimeTaken = System.currentTimeMillis() - mapStartTime;
-			if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 114 && tableName.equals("Assets")) {
-				LOGGER.info("Time taken to create map in GenericSelectBuilder : "+mapTimeTaken);
-			}
+			LOGGER.debug("Time taken to create map in GenericSelectBuilder : "+mapTimeTaken);
 			
 			long timeTaken = System.currentTimeMillis() - startTime;
-			if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 114 && tableName.equals("Assets")) {
-				LOGGER.info("Time taken to get records in GenericSelectBuilder : "+timeTaken);
-			}
+			LOGGER.debug("Time taken to get records in GenericSelectBuilder : "+timeTaken);
 			return records;
 		}
 		catch(SQLException e) {

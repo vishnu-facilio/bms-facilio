@@ -14,16 +14,25 @@ public class RedisManager {
 	private static final Logger LOGGER = Logger.getLogger(RedisManager.class.getName());
 	
 	private static final RedisManager instance = new RedisManager();
-	
+
+	private static boolean isRedisEnabled = false;
 	private static JedisPool pool;
 	
 	private RedisManager() {}
-	
-	public static RedisManager getInstance() {
-		return instance;
+
+	static {
+		isRedisEnabled = Boolean.parseBoolean(AwsUtil.getConfig("redis.enabled"));
 	}
 	
-	public boolean isRedisEnabled() {
+	public static RedisManager getInstance() {
+		if(isRedisEnabled) {
+			return instance;
+		} else {
+			return null;
+		}
+	}
+	
+	boolean isRedisEnabled() {
 		return Boolean.parseBoolean(AwsUtil.getConfig("redis.enabled"));
 	}
 	

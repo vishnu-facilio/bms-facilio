@@ -364,6 +364,7 @@ public class FacilioConstants {
 		
 		public static final String CONFIG = "config";
 		public static final String RESULT = "result";
+		public static final String MESSAGE = "message";
 		
 		public static final String COMSUMPTIONDATA_LIST = "comsumptionDataList";
 		

@@ -250,7 +250,7 @@ public class ProcessXLS implements Command {
 									
 									Object millis = null;
 									try {
-										millis = DateTimeUtil.getTime(cellValue.toString(), "dd-MM-yyyy HH:mm");
+										millis = DateTimeUtil.getTime(cellValue.toString().trim(), "dd-MM-yyyy HH:mm");
 									}
 									catch(Exception e) {
 										millis = cellValue;

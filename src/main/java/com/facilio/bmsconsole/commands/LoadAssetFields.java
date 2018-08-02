@@ -35,9 +35,7 @@ public class LoadAssetFields implements Command {
 		}
 		context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, fields);
 		long timeTaken = System.currentTimeMillis() - startTime;
-		if (AccountUtil.getCurrentOrg().getId() == 114) {
-			LOGGER.info("Time taken to execute LoadAssetFields : "+timeTaken);
-		}
+		LOGGER.debug("Time taken to execute LoadAssetFields : "+timeTaken);
 		
 //		fields.addAll(modBean.getAllCustomFields("asset"));
 		

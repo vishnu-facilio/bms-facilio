@@ -202,9 +202,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		long getStartTime = System.currentTimeMillis();
 		List<Map<String, Object>> propList = getAsJustProps();
 		long getTimeTaken = System.currentTimeMillis() - getStartTime;
-		if (AccountUtil.getCurrentOrg().getId() == 114 && module.getName().equals("asset")) {
-			LOGGER.info("Time Taken to get props in SelectBuilder : "+getTimeTaken);
-		}
+		LOGGER.debug("Time Taken to get props in SelectBuilder : "+getTimeTaken);
 		
 		if(propList != null) {
 			long lookupStartTime = System.currentTimeMillis();
@@ -227,16 +225,12 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 				}
 			}
 			long lookupTimeTaken = System.currentTimeMillis() - lookupStartTime;
-			if (AccountUtil.getCurrentOrg().getId() == 114 && module.getName().equals("asset")) {
-				LOGGER.info("Time Taken to convert lookup Fields in SelectBuilder : "+lookupTimeTaken);
-			}
+			LOGGER.debug("Time Taken to convert lookup Fields in SelectBuilder : "+lookupTimeTaken);
 		}
 		long startTime = System.currentTimeMillis();
 		List<E> beans = FieldUtil.getAsBeanListFromMapList(propList, beanClass);
 		long timeTaken = System.currentTimeMillis() - startTime;
-		if (AccountUtil.getCurrentOrg().getId() == 114 && module.getName().equals("asset")) {
-			LOGGER.info("Time Taken to convert to bean list in SelectBuilder : "+timeTaken);
-		}
+		LOGGER.debug("Time Taken to convert to bean list in SelectBuilder : "+timeTaken);
 		return beans;
 	}
 	

@@ -73,7 +73,8 @@ public class CacheUtil {
 	}
 	
 	public static boolean isCacheEnabled() {
-		return RedisManager.getInstance().isRedisEnabled();
+		// return RedisManager.getInstance().isRedisEnabled();
+        return false;
 	}
 	
 	public static boolean set(String key, Serializable obj) {

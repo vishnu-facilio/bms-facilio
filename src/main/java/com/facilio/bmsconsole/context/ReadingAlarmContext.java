@@ -9,6 +9,14 @@ public class ReadingAlarmContext extends AlarmContext {
 	public void setReadingFieldId(long readingFieldId) {
 		this.readingFieldId = readingFieldId;
 	}
+	
+	private long readingDataId = -1;
+	public long getReadingDataId() {
+		return readingDataId;
+	}
+	public void setReadingDataId(long readingDataId) {
+		this.readingDataId = readingDataId;
+	}
 
 	private long baselineId = -1;
 	public long getBaselineId() {

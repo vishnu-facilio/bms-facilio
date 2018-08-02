@@ -316,7 +316,7 @@ public class FacilioChainFactory {
 		c.addCommand(new SendNotificationCommand());
 		c.addCommand(new ClearAlarmOnWOCloseCommand());
 		c.addCommand(new AddTicketActivityCommand());
-		c.addCommand(getAddOrUpdateReadingValuesChain());
+//		c.addCommand(getAddOrUpdateReadingValuesChain());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
@@ -587,8 +587,8 @@ public class FacilioChainFactory {
 		c.addCommand(new UpdateTaskCommand());
 		c.addCommand(new UpdateClosedTasksCounterCommand());
 		c.addCommand(new AddTaskTicketActivityCommand());
-		// c.addCommand(new ExecuteAllWorkflowsCommand());
-		c.addCommand(getAddOrUpdateReadingValuesChain());
+		c.addCommand(new ExecuteAllWorkflowsCommand());
+//		c.addCommand(getAddOrUpdateReadingValuesChain());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}

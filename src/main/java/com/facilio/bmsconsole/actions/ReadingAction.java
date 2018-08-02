@@ -32,9 +32,8 @@ import com.facilio.bmsconsole.workflow.ActionContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.workflows.context.WorkflowContext;
-import com.opensymphony.xwork2.ActionSupport;
 
-public class ReadingAction extends ActionSupport {
+public class ReadingAction extends FacilioAction {
 	
 	public String addReading() throws Exception {
 		FacilioContext context = new FacilioContext();
@@ -213,7 +212,7 @@ public class ReadingAction extends ActionSupport {
 	
 	public String updateReadingDataMeta() throws Exception{
 		ReadingsAPI.updateReadingDataMeta();
-		result = "success";
+		setResult(FacilioConstants.ContextNames.MESSAGE, "success");
 		return SUCCESS;
 	}
 	
@@ -634,7 +633,7 @@ public class ReadingAction extends ActionSupport {
 		Chain updateEnPIChain = FacilioChainFactory.updateFormulaChain();
 		updateEnPIChain.execute(context);
 		
-		result = (String) context.get(FacilioConstants.ContextNames.RESULT);
+		setResult(FacilioConstants.ContextNames.MESSAGE, context.get(FacilioConstants.ContextNames.RESULT));
 		
 		return SUCCESS;
 	}
@@ -646,14 +645,6 @@ public class ReadingAction extends ActionSupport {
 	public void setId(long id) {
 		this.id = id;
 	}
-	
-	private String result;
-	public String getResult() {
-		return result;
-	}
-	public void setResult(String result) {
-		this.result = result;
-	}
 
 	public String deleteFormula() throws Exception {
 		FacilioContext context = new FacilioContext();
@@ -662,7 +653,7 @@ public class ReadingAction extends ActionSupport {
 		Chain deleteEnPIChain = FacilioChainFactory.deleteFormulaChain();
 		deleteEnPIChain.execute(context);
 		
-		result = (String) context.get(FacilioConstants.ContextNames.RESULT);
+		setResult(FacilioConstants.ContextNames.MESSAGE, context.get(FacilioConstants.ContextNames.RESULT));
 		
 		return SUCCESS;
 	}
@@ -777,5 +768,35 @@ public class ReadingAction extends ActionSupport {
 	
 	public List<Long> getDelReadingRulesIds() {
 		return this.delReadingRulesIds;
+	}
+	
+	
+	
+	/**********  V2 apis *************/
+	
+	public String getFormulaField () {
+		try {
+			formula = FormulaFieldAPI.getFormulaField(id);
+			setResult(FacilioConstants.ContextNames.FORMULA_FIELD, formula);			
+			return SUCCESS;
+		}
+		catch(Exception e) {
+			setResponseCode(1);
+			setMessage(e);
+			return ERROR;
+		}
+	}
+	
+	public String getFormulaFromReadingField () {
+		try {
+			formula = FormulaFieldAPI.getFormulaFieldFromReadingField(id);
+			setResult(FacilioConstants.ContextNames.FORMULA_FIELD, formula);			
+			return SUCCESS;
+		}
+		catch(Exception e) {
+			setResponseCode(1);
+			setMessage(e);
+			return ERROR;
+		}
 	}
  }

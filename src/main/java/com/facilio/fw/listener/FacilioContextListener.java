@@ -54,7 +54,9 @@ public class FacilioContextListener implements ServletContextListener {
 	public void contextDestroyed(ServletContextEvent event) {
 		// TODO Auto-generated method stub
 //		System.out.println("Listener Destroyed");
-		RedisManager.getInstance().release(); // destroying redis connection pool
+		if(RedisManager.getInstance() != null) {
+			RedisManager.getInstance().release();// destroying redis connection pool
+		}
 		FacilioScheduler.stopSchedulers();
 	}
 
@@ -97,8 +99,9 @@ public class FacilioContextListener implements ServletContextListener {
 			
 			FacilioScheduler.initScheduler();
 		//	FacilioTransactionManager.INSTANCE.getTransactionManager();
-			
-			RedisManager.getInstance().connect(); // creating redis connection pool
+			if(RedisManager.getInstance() != null) {
+				RedisManager.getInstance().connect(); // creating redis connection pool
+			}
 			HashMap customdomains = getCustomDomains();
 			
 			if(customdomains!=null)

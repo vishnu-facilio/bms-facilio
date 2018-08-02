@@ -55,9 +55,7 @@ public class GenerateCriteriaFromFilterCommand implements Command {
 			context.put(FacilioConstants.ContextNames.FILTER_CRITERIA, criteria);
 		}
 		long timeTaken = System.currentTimeMillis() - startTime;
-		if (AccountUtil.getCurrentOrg().getId() == 114) {
-			LOGGER.info("Time taken to execute GenerateCriteriaFromFilterCommand : "+timeTaken);
-		}
+		LOGGER.debug("Time taken to execute GenerateCriteriaFromFilterCommand : "+timeTaken);
 		return false;
 	}
 	

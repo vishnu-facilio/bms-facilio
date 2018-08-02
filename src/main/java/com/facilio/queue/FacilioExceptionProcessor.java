@@ -2,6 +2,7 @@ package com.facilio.queue;
 
 import java.util.*;
 
+import com.amazonaws.services.sqs.model.DeleteMessageBatchRequestEntry;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -16,7 +17,7 @@ public class FacilioExceptionProcessor extends TimerTask {
     private static final String QUEUE = "Exception";
     private static final HashMap<String, Integer> EXCEPTION_COUNT = new HashMap<>();
     private static final HashMap<String, String> EXCEPTION_MESSAGES = new HashMap<>();
-    private static final HashMap<String, List<String>> RECEIPT_HANDLE_LIST = new HashMap<>();
+    private static final HashMap<String, List<DeleteMessageBatchRequestEntry>> RECEIPT_HANDLE_LIST = new HashMap<>();
     private static final Logger LOGGER = LogManager.getLogger(FacilioExceptionProcessor.class.getName());
 
 
@@ -66,8 +67,8 @@ public class FacilioExceptionProcessor extends TimerTask {
             String orgWithClassName = "";
             if(index > 1) {
                 orgWithClassName = body.substring(0, index);
-                List<String> receiptHandleList = RECEIPT_HANDLE_LIST.getOrDefault(orgWithClassName, new ArrayList<>());
-                receiptHandleList.add(msg.getReceiptHandle());
+                List<DeleteMessageBatchRequestEntry> receiptHandleList = RECEIPT_HANDLE_LIST.getOrDefault(orgWithClassName, new ArrayList<>());
+                receiptHandleList.add(new DeleteMessageBatchRequestEntry().withId(msg.getMessageId()).withReceiptHandle(msg.getReceiptHandle()));
                 RECEIPT_HANDLE_LIST.put(orgWithClassName, receiptHandleList);
                 int count = EXCEPTION_COUNT.getOrDefault(orgWithClassName, 0);
                 EXCEPTION_COUNT.put(orgWithClassName, count+1);
