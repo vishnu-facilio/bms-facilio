@@ -1635,7 +1635,7 @@
 			<param name="moduleName">setup</param>
 			<param name="permission">ASSET_SETTINGS</param>
 			<result name="success" type="json">
-				<param name="root">moduleMap</param>
+				<param name="includeProperties">moduleMap.*, assetCount.*</param>
 			</result>
 		</action>
 		

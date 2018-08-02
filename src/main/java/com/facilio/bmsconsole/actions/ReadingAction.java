@@ -581,8 +581,7 @@ public class ReadingAction extends FacilioAction {
 		
 		readings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
 		moduleMap = (Map<Long,List<FacilioModule>>)context.get(FacilioConstants.ContextNames.MODULE_MAP);
-		System.out.println(">>>>>>> readings : "+readings);
-		System.out.println(">>>>>>> moduleMap : "+moduleMap);
+		assetCount = (Map<String, Long>)context.get(FacilioConstants.ContextNames.COUNT);
 		return SUCCESS;
 	}
 	
@@ -604,6 +603,14 @@ public class ReadingAction extends FacilioAction {
 		this.moduleMap = moduleMap;
 	}
 	
+	private Map<String,Long> assetCount;
+	public Map<String, Long> getAssetCount() {
+		return assetCount;
+	}
+	public void setAssetCount(Map<String, Long> assetCount) {
+		this.assetCount = assetCount;
+	}
+
 	private FormulaFieldContext formula;
 	public FormulaFieldContext getFormula() {
 		return formula;

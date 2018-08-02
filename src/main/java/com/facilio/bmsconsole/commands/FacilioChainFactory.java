@@ -1913,6 +1913,7 @@ public class FacilioChainFactory {
 	public static Chain getAllCategoryReadingsChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new GetAllCategoryReadingsCommand());
+		c.addCommand(new GetAllAssetSpecificReadingsCommand());
 		c.addCommand(new GetReadingFieldsCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
