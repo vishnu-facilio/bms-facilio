@@ -738,7 +738,7 @@
 			<param name="moduleName">asset</param>
 			<param name="permission">DELETE</param>
 			<result name="success" type="json">
-				<param name="includeProperties">assetId</param>
+				<param name="includeProperties">assetsId\[\d+\],assetsId\[\d+\].*</param>
 			</result>
 		</action>
 

@@ -97,10 +97,11 @@ public class AssetAction extends ActionSupport {
 		
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.DELETE);
 		context.put(FacilioConstants.ContextNames.RECORD, asset);
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(assetId));
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, assetsId);
 		
 		Chain deleteAssetChain = FacilioChainFactory.getDeleteAssetChain();
 		deleteAssetChain.execute(context);
+		setAssetsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
 		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 		
 		return SUCCESS;
@@ -209,6 +210,16 @@ public class AssetAction extends ActionSupport {
 	}
 	public void setAssets(List<AssetContext> assets) {
 		this.assets = assets;
+	}
+	
+	private List<Long> assetsId;
+
+	public List<Long> getAssetsId() {
+		return assetsId;
+	}
+
+	public void setAssetsId(List<Long> assetsId) {
+		this.assetsId = assetsId;
 	}
 
 	private AssetContext asset;
