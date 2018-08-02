@@ -209,4 +209,17 @@ public class AttachmentAction  extends FacilioAction {
 			return ERROR;
 		}
 	}
+	public String v2addAttachment() throws Exception {
+		try {
+			String response = addAttachment();
+			setResult(FacilioConstants.ContextNames.ATTACHMENT, attachments);
+			return response;
+		}
+		catch(Exception e) {
+			setResponseCode(1);
+			setMessage(e);
+			return ERROR;
+		}
+	}
+	
 }

@@ -12,7 +12,7 @@ import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
 
-public class NoteAction extends ActionSupport {
+public class NoteAction extends FacilioAction {
 
     private static Logger log = LogManager.getLogger(NoteAction.class.getName());
 	
@@ -46,14 +46,13 @@ public class NoteAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.TICKET_MODULE, ticketModuleName);
 		context.put(FacilioConstants.ContextNames.NOTE, note);
-
 		Chain addNote = FacilioChainFactory.getAddNoteChain();
 		addNote.execute(context);
 		
 		setNoteId(note.getId());
 		
 		return SUCCESS;
-	}
+	} 
 	
 	private String module;
 	public String getModule() {
@@ -125,6 +124,34 @@ public class NoteAction extends ActionSupport {
 			log.info("Exception occurred ", e);
 		}
 		return SUCCESS;
+	}
+	
+	/******************      V2 Api    ******************/
+
+	public String v2noteList() {
+		try {
+			String response = getNotesList();
+			setResult(FacilioConstants.ContextNames.NOTE_LIST, notes);
+			return response;
+		}
+		catch(Exception e) {
+			setResponseCode(1);
+			setMessage(e);
+			return ERROR;
+		}
+	}
+	
+	public String v2addNote() throws Exception {
+		try {
+			String response = addNote();
+			setResult(FacilioConstants.ContextNames.NOTE, noteId);
+			return response;
+		}
+		catch(Exception e) {
+			setResponseCode(1);
+			setMessage(e);
+			return ERROR;
+		}
 	}
  }
 
