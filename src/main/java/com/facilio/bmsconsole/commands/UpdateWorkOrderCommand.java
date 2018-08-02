@@ -154,16 +154,16 @@ public class UpdateWorkOrderCommand implements Command {
 			
 			
 			List<ActivityType> types = Arrays.asList(ActivityType.ASSIGN_TICKET, ActivityType.CLOSE_WORK_ORDER,  ActivityType.SOLVE_WORK_ORDER, ActivityType.HOLD_WORK_ORDER);
-			if(types.contains(activityType)) {
+			if(types.contains(activityType) || workOrder.getPriority() != null) {
 				SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
 						.moduleName(moduleName)
 						.beanClass(WorkOrderContext.class)
 						.select(fields)
-						.andCustomWhere(module.getTableName()+".ID = ?", recordIds.get(0))
+						.andCondition(CriteriaAPI.getIdCondition(recordIds, module))
 						.orderBy("ID");
 
 				List<WorkOrderContext> workOrders = builder.get();
-				context.put(FacilioConstants.ContextNames.RECORD, workOrders.get(0));
+				context.put(FacilioConstants.ContextNames.RECORD_LIST, workOrders);
 			}
 		}
 		

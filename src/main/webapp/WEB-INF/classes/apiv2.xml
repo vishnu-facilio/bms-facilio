@@ -175,7 +175,26 @@
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<param name="recordId">{1}</param>
 		</action>
+		<action name="closeAllTask" class="com.facilio.bmsconsole.actions.TaskAction" method="v2closeAllTask">
+			<param name="permission">TASK_CREATE</param>
+		</action>
+	</package> 
+	
+	<package name="noteApiv2" namespace="/api/v2/notes" extends="v2Api">
+		<action name="add" class="com.facilio.bmsconsole.actions.NoteAction" method="v2addNote">
+		</action>
+	</package> 
+	
+	<package name="noteApiListv2" namespace="/api/v2/notes/parent" extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.NoteAction" method="v2noteList">
+			<param name="parentId">{1}</param>
+		</action>
 	</package>
+	
+	<package name="attachmentApiv2" namespace="/api/v2/attachments" extends="v2Api">
+		<action name="add" class="com.facilio.bmsconsole.actions.AttachmentAction" method="v2addAttachment">
+		</action>
+	</package> 
 	
 	<package name="picklistApiv2" namespace="/api/v2/picklist" extends="v2Api">
 	
