@@ -8,7 +8,6 @@ import java.text.DecimalFormat;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -4064,16 +4063,14 @@ public class DashboardAction extends ActionSupport {
 					AssetCategoryContext category = AssetsAPI.getCategory("LPG");
 					if(category != null) {
 						
-						List<AssetContext> assets = AssetsAPI.getAssetListOfCategory(category.getId());
+						List<AssetContext> assets = AssetsAPI.getAssetListOfCategory(category.getId(),report.getReportSpaceFilterContext().getBuildingId());
 						
-
 						if (assets != null && assets.size() > 0) {
 							
 							List<Long> meterIds = new ArrayList<Long>();
 							for (AssetContext asset : assets) {
-								if(report.getReportSpaceFilterContext().getBuildingId().equals(asset.getSpace().getId())) {
-									meterIds.add(asset.getId());
-								}
+								
+								meterIds.add(asset.getId());
 							}
 							
 							String meterIdStr = StringUtils.join(meterIds, ",");

@@ -260,6 +260,11 @@ public class AssetsAPI {
 	
 	public static List<AssetContext> getAssetListOfCategory(long category) throws Exception
 	{
+		return getAssetListOfCategory(category,-1);
+	}
+	
+	public static List<AssetContext> getAssetListOfCategory(long category,long buildingId) throws Exception
+	{
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
@@ -271,6 +276,10 @@ public class AssetsAPI {
 				.moduleName(module.getName())
 				.beanClass(AssetContext.class)
 				.andCondition(CriteriaAPI.getCondition(categoryField, String.valueOf(category), PickListOperators.IS));
+		
+		if(buildingId > 0) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("SPACE_ID", "space", ""+buildingId, BuildingOperator.BUILDING_IS));
+		}
 		List<AssetContext> assets = selectBuilder.get();
 		return assets;
 		
