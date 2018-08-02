@@ -37,7 +37,10 @@ public class IotFilter implements Filter {
         try {
         		AccountUtil.cleanCurrentAccount();
             BufferedReader reader = request.getReader();
+            String[] list = new String[2];
+            int i = 0;
             while ((line = reader.readLine()) != null) {
+            	 	list[i++] = line;
                 builder.append(line);
                 builder.append(System.lineSeparator());
             }
@@ -46,9 +49,9 @@ public class IotFilter implements Filter {
 	        	    if (!data.contains("-OPERATOR COMMAND-") && !data.contains("$WTPING")) {
 	        	    		AccountUtil.setCurrentAccount(78L);
 	        	    	
-		    		    	String source = data.substring(data.indexOf(System.lineSeparator()) + 1);
-		    	    		String message = data.substring(0, data.indexOf("::") - 1);
-		    	    		String timeStamp = data.substring(data.indexOf("::") + 3, data.indexOf("P:") - 1);
+		    		    	String source = list[1];
+		    	    		String message = list[0].substring(0, list[0].indexOf("::") - 1);
+		    	    		String timeStamp = list[0].substring(list[0].indexOf("::") + 3, list[0].indexOf("P:") - 1);
 		    	    		
 		    	    		JSONObject payload = new JSONObject();
 		    	    		payload.put("source", source.trim());
