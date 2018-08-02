@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.cache.RedisManager;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -54,7 +55,7 @@ public class LRUCache<K, V>{
 	private int currentSize;
 
 	private LRUCache(String name, int maxSize){
-		this.name = name;
+		this.name = AwsUtil.getConfig("environment")+'_'+name;
 		this.maxSize = maxSize;
 		this.currentSize = 0;
 		cache = new ConcurrentHashMap<K, Node<K, V>>();
