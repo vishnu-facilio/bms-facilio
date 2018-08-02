@@ -25,7 +25,7 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "pre_production" ]; then
     sed -i'' "s%schedulerServer=.*%schedulerServer=false%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%enable.transaction=.*%enable.transaction=true%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%enable.kinesis=.*%enable.kinesis=true%g" $CONF_DIR/awsprops.properties
-    sed -i'' "s%redis.enabled=.*%redis.enabled=false%g" $CONF_DIR/awsprops.properties
+    sed -i'' "s%redis.enabled=.*%redis.enabled=true%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%s3.bucket.name=.*%s3.bucket.name=facilio-stage-data%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%enableeventjob=.*%enableeventjob=false%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%servername=.*%servername=stage-330328973.us-west-2.elb.amazonaws.com%g" $CONF_DIR/awsprops.properties
@@ -53,6 +53,7 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "production_deployment" ]; then
     sed -i -e 's/localhost:9090/app.facilio.ae/g' $CONF_DIR/awsprops.properties
     sed -i -e 's/localhost:8080/facilio.ae/g' $CONF_DIR/awsprops.properties
     sed -i'' "s%environment=.*%environment=production%g" $CONF_DIR/awsprops.properties
+    sed -i'' "s%redis.enabled=.*%redis.enabled=false%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%servername=.*%servername=user-production-1756879720.us-west-2.elb.amazonaws.com%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%s3.bucket.name=.*%s3.bucket.name=facilio-ae-data%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%api.servername=.*%api.servername=api.facilio.ae%g" $CONF_DIR/awsprops.properties
@@ -72,6 +73,7 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "production-scheduler" ]; then
     sed -i'' "s%schedulerServer=.*%schedulerServer=true%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%kinesisServer=.*%kinesisServer=true%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%enable.kinesis=.*%enable.kinesis=true%g" $CONF_DIR/awsprops.properties
+    sed -i'' "s%redis.enabled=.*%redis.enabled=false%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%environment=.*%environment=production%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%servername=.*%servername=user-production-1756879720.us-west-2.elb.amazonaws.com%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%api.servername=.*%api.servername=api.facilio.ae%g" $CONF_DIR/awsprops.properties

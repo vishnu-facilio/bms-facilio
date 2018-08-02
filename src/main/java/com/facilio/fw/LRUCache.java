@@ -58,8 +58,7 @@ public class LRUCache<K, V>{
 		this.maxSize = maxSize;
 		this.currentSize = 0;
 		cache = new ConcurrentHashMap<K, Node<K, V>>();
-		redis = null;
-		// redis = RedisManager.getInstance();
+		redis = RedisManager.getInstance();
 	}
 
 
@@ -187,9 +186,13 @@ public class LRUCache<K, V>{
     	try {
             long redisTimeStamp = getFromRedis(key);
             Node<K, V> tempNode = cache.get(key);
-            if (tempNode != null && (tempNode.addedTime >= redisTimeStamp)) {
-                hitcount++;
-                return tempNode.getValue();
+            if (tempNode != null) {
+            	if(tempNode.addedTime >= redisTimeStamp){
+					hitcount++;
+					return tempNode.getValue();
+				} else {
+            		cache.remove(key);
+				}
             }
     	} catch (Exception e) {
     		LOGGER.info("Exception occurred ", e);
@@ -200,7 +203,9 @@ public class LRUCache<K, V>{
 
     private long getFromRedis(K key) {
 	    if(redis != null) {
-            String value = redis.getJedis().get(getRedisKey((String) key));
+	        Jedis jedis = redis.getJedis();
+            String value = jedis.get(getRedisKey((String) key));
+            jedis.close();
             if(value == null) {
 				return Long.MAX_VALUE;
 			}
@@ -247,20 +252,26 @@ public class LRUCache<K, V>{
     }
 
     private void deleteInRedis(K key) {
-	    if(redis != null){
-            redis.getJedis().del(getRedisKey((String) key));
+	    if(redis != null) {
+	        Jedis jedis = redis.getJedis();
+            jedis.del(getRedisKey((String) key));
+            jedis.close();
         }
     }
 
     private void putInRedis(K key, Node<K, V> node) {
 	    if(redis != null) {
-            redis.getJedis().set(getRedisKey((String) key), String.valueOf(node.addedTime));
+	        Jedis jedis = redis.getJedis();
+            jedis.set(getRedisKey((String) key), String.valueOf(node.addedTime));
+            jedis.close();
         }
     }
 
     private void purgeInRedis() {
 		if(redis != null) {
-			cache.forEach((k, v) -> deleteInRedis(k));
+		    Jedis jedis = redis.getJedis();
+		    jedis.flushAll();
+		    jedis.close();
 		}
 	}
 }
