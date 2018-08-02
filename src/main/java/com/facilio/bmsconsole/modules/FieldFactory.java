@@ -663,6 +663,9 @@ public class FieldFactory {
 		fields.add(getField("percentage", "PERCENTAGE", module, FieldType.STRING));
 		fields.add(getField("readingFieldId", "READING_FIELD_ID", module, FieldType.NUMBER));
 		fields.add(getField("thresholdType", "THRESHOLD_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("occurences", "OCCURENCES", module, FieldType.NUMBER));
+		fields.add(getField("overPeriod", "OVER_PERIOD", module, FieldType.NUMBER));
+		fields.add(getField("consecutive", "IS_CONSECUTIVE", module, FieldType.BOOLEAN));
 		fields.add(getField("flapCount", "FLAP_COUNT", module, FieldType.NUMBER));
 		fields.add(getField("flapInterval", "FLAP_INTERVAL", module, FieldType.NUMBER));
 		fields.add(getField("minFlapValue", "MIN_FLAP_VAL", module, FieldType.NUMBER));
@@ -3586,6 +3589,7 @@ public class FieldFactory {
 		fields.add(getIdField(module));
 		fields.add(getField("ruleId", "RULE_ID", module, FieldType.LOOKUP));
 		fields.add(getField("flapTime", "FLAP_TIME", module, FieldType.DATE_TIME));
+		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.LOOKUP));
 		return fields;
 	}
 

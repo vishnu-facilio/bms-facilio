@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -221,6 +222,36 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 	public void setFlapFrequency(int flapFrequency) {
 		this.flapFrequency = flapFrequency;
 	}
+	
+	private int occurences = -1;
+	public int getOccurences() {
+		return occurences;
+	}
+	public void setOccurences(int occurences) {
+		this.occurences = occurences;
+	}
+	
+	private long overPeriod = -1; //In Seconds
+	public long getOverPeriod() {
+		return overPeriod;
+	}
+	public void setOverPeriod(long overPeriod) {
+		this.overPeriod = overPeriod;
+	}
+	
+	private Boolean consecutive;
+	public Boolean getConsecutive() {
+		return consecutive;
+	}
+	public void setConsecutive(Boolean consecutive) {
+		this.consecutive = consecutive;
+	}
+	public boolean isConsecutive() {
+		if (consecutive != null) {
+			return consecutive.booleanValue();
+		}
+		return false;
+	}
 
 	public enum ThresholdType {
 		SIMPLE,
@@ -251,6 +282,102 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 			updateLastValueForReadingRule((ReadingContext) record);
 		}
 		return criteriaFlag;
+	}
+	
+	@Override
+	public boolean evaluateWorkflowExpression(String moduleName, Object record, Map<String, Object> placeHolders,
+			FacilioContext context) throws Exception {
+		// TODO Auto-generated method stub
+		boolean workflowFlag = super.evaluateWorkflowExpression(moduleName, record, placeHolders, context);
+		if (overPeriod != -1 && occurences == -1) {
+			return evalOverPeriod(workflowFlag, (ReadingContext) record);
+		}
+		else if (overPeriod != -1 && occurences != -1) {
+			return evalOverPeriodAndOccurences(workflowFlag, (ReadingContext) record);
+		}
+		else if (isConsecutive() && occurences != -1) {
+			return evalConsecutive(workflowFlag, (ReadingContext) record);
+		}
+		else {
+			return workflowFlag;
+		}
+	}
+	
+	private static final int OVER_PERIOD_BUFFER = 20 * 60 * 1000;
+	private boolean evalOverPeriod(boolean workflowFlag, ReadingContext reading) throws Exception {
+		if (workflowFlag) { ////If there is no prev flap, add flap and return false
+			List<Map<String, Object>> flaps = getFlaps(reading.getParentId());
+			if (flaps.isEmpty()) {
+				addFlap(reading.getTtime(), reading.getParentId());
+				return false;
+			}
+			else {
+				long firstFlapDiff = reading.getTtime() - (long)flaps.get(0).get("flapTime");
+				if (firstFlapDiff < (overPeriod * 1000)) { // If the first flap is within over period, add flap and return false
+					addFlap(reading.getTtime(), reading.getParentId());
+					return false;
+				}
+				else if (firstFlapDiff <= ((overPeriod * 1000) + OVER_PERIOD_BUFFER)) {
+					deleteAllFlaps(reading.getParentId());
+					return true;
+				}
+				else {
+					deleteAllFlaps(reading.getParentId());
+					addFlap(reading.getTtime(), reading.getParentId());
+					return false;
+				}
+			}
+		}
+		else {
+			deleteAllFlaps(reading.getParentId());
+			return false;
+		}
+	}
+	
+	private boolean evalOverPeriodAndOccurences(boolean workflowFlag, ReadingContext reading) throws Exception {
+		if (workflowFlag) {
+			List<Map<String, Object>> flaps = getFlaps(reading.getParentId());
+			List<Long> flapsToBeDeleted = new ArrayList<>();
+			Iterator<Map<String, Object>> itr = flaps.iterator();
+			while (itr.hasNext()) {
+				Map<String, Object> flap = itr.next();
+				long flapTime = (long) flap.get("flapTime");
+				if ((reading.getTtime() - flapTime) > (overPeriod * 1000)) {
+					flapsToBeDeleted.add((Long) flap.get("id"));
+					itr.remove();
+				}
+			}
+			boolean flag = checkOccurences(flaps, reading);
+			if (!flag) {
+				deleteOldFlaps(flapsToBeDeleted);
+			}
+			return flag;
+		}
+		else {
+			return false;
+		}
+	}
+	
+	private boolean evalConsecutive(boolean workflowFlag, ReadingContext reading) throws Exception {
+		if (workflowFlag) {
+			List<Map<String, Object>> flaps = getFlaps(reading.getParentId());
+			return checkOccurences(flaps, reading);
+		}
+		else {
+			deleteAllFlaps(reading.getParentId());
+			return false;
+		}
+	}
+	
+	private boolean checkOccurences(List<Map<String, Object>> flaps, ReadingContext reading) throws Exception {
+		if (flaps.size() + 1 == occurences) { //Old flaps + current flap
+			deleteAllFlaps(reading.getParentId());
+			return true;
+		}
+		else {
+			addFlap(reading.getTtime(), reading.getParentId());
+			return false;
+		}
 	}
 	
 	private void updateLastValueForReadingRule(ReadingContext record) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
@@ -322,7 +449,7 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 	private boolean isFlappedNTimes(ReadingContext record) throws Exception {
 		boolean flapThreshold = false;
 		List<Long> flapsToBeDeleted = new ArrayList<>();
-		List<Map<String, Object>> flaps = getFlaps(getId());
+		List<Map<String, Object>> flaps = getFlaps(record.getParentId());
 		int flapCount = 0;
 		if (flaps != null && !flaps.isEmpty()) {
 			flapCount = flaps.size();
@@ -344,32 +471,36 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 			flapCount = 0;
 		}
 		else {
-			addFlap(getId(), record.getTtime());
+			addFlap(record.getTtime(), record.getParentId());
 		}
 		updateFlapCount(getId(), flapCount);
 		deleteOldFlaps(flapsToBeDeleted);
 		return flapThreshold;
 	}
 	
-	private List<Map<String, Object>> getFlaps(long ruleId) throws Exception {
+	private List<Map<String, Object>> getFlaps(long resourceId) throws Exception {
 		// TODO Auto-generated method stub
 		FacilioModule module = ModuleFactory.getReadingRuleFlapsModule();
 		List<FacilioField> fields = FieldFactory.getReadingRuleFlapsFields();
 		FacilioField ruleIdField = FieldFactory.getAsMap(fields).get("ruleId");
+		FacilioField resourceIdField = FieldFactory.getAsMap(fields).get("resourceId");
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.table(module.getTableName())
 														.select(fields)
 														.orderBy("flapTime")
-														.andCondition(CriteriaAPI.getCondition(ruleIdField, String.valueOf(ruleId), PickListOperators.IS));
+														.andCondition(CriteriaAPI.getCondition(ruleIdField, String.valueOf(getId()), PickListOperators.IS))
+														.andCondition(CriteriaAPI.getCondition(resourceIdField, String.valueOf(resourceId), PickListOperators.IS))
+														;
 		
 		return selectBuilder.get();
 	}
 	
-	private long addFlap(long ruleId, long flapTime) throws Exception {
+	private long addFlap(long flapTime, long resourceId) throws Exception {
 		Map<String, Object> newFlap = new HashMap<>();
-		newFlap.put("ruleId", ruleId);
+		newFlap.put("ruleId", getId());
 		newFlap.put("flapTime", flapTime);
+		newFlap.put("resourceId", resourceId);
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 														.fields(FieldFactory.getReadingRuleFlapsFields())
@@ -402,6 +533,20 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 															;
 			deleteBuilder.delete();
 		}
+	}
+	
+	private void deleteAllFlaps(long resourceId) throws SQLException {
+		// TODO Auto-generated method stub
+		FacilioModule module = ModuleFactory.getReadingRuleFlapsModule();
+		List<FacilioField> fields = FieldFactory.getReadingRuleFlapsFields();
+		FacilioField ruleIdField = FieldFactory.getAsMap(fields).get("ruleId");
+		FacilioField resourceIdField = FieldFactory.getAsMap(fields).get("resourceId");
+		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCondition(ruleIdField, String.valueOf(getId()), PickListOperators.IS))
+														.andCondition(CriteriaAPI.getCondition(resourceIdField, String.valueOf(resourceId), PickListOperators.IS))
+														;
+		deleteBuilder.delete();
 	}
 	
 	@Override
