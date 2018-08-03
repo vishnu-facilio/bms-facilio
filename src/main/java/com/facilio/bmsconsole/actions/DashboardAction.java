@@ -2432,9 +2432,9 @@ public class DashboardAction extends ActionSupport {
 						int buildingScore = 0;
 						for(WorkOrderContext workorder:workorders) {
 							
-							if( !(workorder.getSubject().contains("Daily Maintenance") || workorder.getSubject().contains("Fortnightly Maintenance") || workorder.getSubject().contains(" Monthly Maintenance"))) {
-								continue;
-							}
+//							if( !(workorder.getSubject().contains("Daily Maintenance") || workorder.getSubject().contains("Fortnightly Maintenance") || workorder.getSubject().contains(" Monthly Maintenance"))) {
+//								continue;
+//							}
 							
 							if(workorder.getResource().getId() != building.getId()) {
 								continue;
@@ -2722,10 +2722,10 @@ public class DashboardAction extends ActionSupport {
 						int buildingScore = 0;
 						for(WorkOrderContext workorder:workorders) {
 							
-							if( !(workorder.getSubject().contains("Daily Maintenance") || workorder.getSubject().contains("Fortnightly Maintenance") || workorder.getSubject().contains(" Monthly Maintenance"))) {
-								
-								continue;
-							}
+//							if( !(workorder.getSubject().contains("Daily Maintenance") || workorder.getSubject().contains("Fortnightly Maintenance") || workorder.getSubject().contains(" Monthly Maintenance"))) {
+//								
+//								continue;
+//							}
 							if(workorder.getResource().getId() != building.getId()) {
 								continue;
 							}
@@ -2867,10 +2867,10 @@ public class DashboardAction extends ActionSupport {
 					for(WorkOrderContext workorder:workorders) {
 						
 						int buildingScore = 0;
-						if( !(workorder.getSubject().contains("Daily Maintenance") || workorder.getSubject().contains("Fortnightly Maintenance") || workorder.getSubject().contains(" Monthly Maintenance"))) {
-							
-							continue;
-						}
+//						if( !(workorder.getSubject().contains("Daily Maintenance") || workorder.getSubject().contains("Fortnightly Maintenance") || workorder.getSubject().contains(" Monthly Maintenance"))) {
+//							
+//							continue;
+//						}
 						if(workorder.getResource().getId() != report.getReportSpaceFilterContext().getBuildingId()) {
 							continue;
 						}
@@ -2943,77 +2943,77 @@ public class DashboardAction extends ActionSupport {
 						continue;
 					}
 					
-						for(WorkOrderContext workorder:workorders) {
+					for(WorkOrderContext workorder:workorders) {
+						
+						int passed = 0,failed = 0;
+						JSONObject buildingres = new JSONObject();
+						
+//						if( !(workorder.getSubject().contains("Daily Maintenance") || workorder.getSubject().contains("Fortnightly Maintenance") || workorder.getSubject().contains("Monthly Maintenance"))) {
+//							
+//							continue;
+//						}
+						if(workorder.getResource().getId() != report.getReportSpaceFilterContext().getBuildingId()) {
+							continue;
+						}
+						
+						if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
+							continue;
+						}
+						
+						Command chain = FacilioChainFactory.getGetTasksOfTicketCommand();
+						FacilioContext context = new FacilioContext();
+						
+						context.put(FacilioConstants.ContextNames.ID, workorder.getId());
+						context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
+						context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME,"Tasks");
+						context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(FacilioConstants.ContextNames.TASK));
+						context.put("isAsMap", true);
+						chain.execute(context);
+						
+						List<Map<String, Object>> taskMap = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
+						
+						for(Map<String, Object> task : taskMap) {
 							
-							int passed = 0,failed = 0;
-							JSONObject buildingres = new JSONObject();
-							
-							if( !(workorder.getSubject().contains("Daily Maintenance") || workorder.getSubject().contains("Fortnightly Maintenance") || workorder.getSubject().contains(" Monthly Maintenance"))) {
+							if(task.get("inputValue") != null) {
 								
-								continue;
-							}
-							if(workorder.getResource().getId() != report.getReportSpaceFilterContext().getBuildingId()) {
-								continue;
-							}
-							
-							if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
-								continue;
-							}
-							
-							Command chain = FacilioChainFactory.getGetTasksOfTicketCommand();
-							FacilioContext context = new FacilioContext();
-							
-							context.put(FacilioConstants.ContextNames.ID, workorder.getId());
-							context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
-							context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME,"Tasks");
-							context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(FacilioConstants.ContextNames.TASK));
-							context.put("isAsMap", true);
-							chain.execute(context);
-							
-							List<Map<String, Object>> taskMap = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
-							
-							for(Map<String, Object> task : taskMap) {
+								String stringValue = task.get("inputValue").toString();
 								
-								if(task.get("inputValue") != null) {
-									
-									String stringValue = task.get("inputValue").toString();
-									
-									Integer value = 0;
-									if("Met".equals(stringValue) ) {
-										passed = passed + 1;
-									}
-									else if ("Not Met".equals(stringValue)) {
+								Integer value = 0;
+								if("Met".equals(stringValue) ) {
+									passed = passed + 1;
+								}
+								else if ("Not Met".equals(stringValue)) {
+									failed = failed + 1;
+								}
+								else {
+									value = Integer.parseInt(stringValue);
+									if(value <= 2) {
 										failed = failed + 1;
-									}
-									else {
-										value = Integer.parseInt(stringValue);
-										if(value <= 2) {
-											failed = failed + 1;
-										}else {
-											passed = passed + 1;
-										}
+									}else {
+										passed = passed + 1;
 									}
 								}
 							}
-							
-							JSONArray resArray = new JSONArray();
-							
-							JSONObject res = new JSONObject();
-							res.put("label", "Passed");
-							res.put("value", passed);
-							resArray.add(res);
-							
-							res = new JSONObject();
-							res.put("label", "Failed");
-							res.put("value", failed);
-							resArray.add(res);
-							
-							buildingres.put("label", workorder.getCreatedTime());
-							buildingres.put("value", resArray);
-							ticketData.add(buildingres);
-							
-							ticketData.add(buildingres);
 						}
+						
+						JSONArray resArray = new JSONArray();
+						
+						JSONObject res = new JSONObject();
+						res.put("label", "Met");
+						res.put("value", passed);
+						resArray.add(res);
+						
+						res = new JSONObject();
+						res.put("label", "Not Met");
+						res.put("value", failed);
+						resArray.add(res);
+						
+						buildingres.put("label", workorder.getCreatedTime());
+						buildingres.put("value", resArray);
+						ticketData.add(buildingres);
+						
+						ticketData.add(buildingres);
+					}
 						
 					
 					LOGGER.log(Level.INFO, "23611l buildingres ----"+ticketData);
@@ -3047,10 +3047,10 @@ public class DashboardAction extends ActionSupport {
 						JSONArray resArray = new JSONArray();
 						for(WorkOrderContext workorder:workorders) {
 							
-							if( !(workorder.getSubject().contains("Daily Maintenance") || workorder.getSubject().contains("Fortnightly Maintenance") || workorder.getSubject().contains(" Monthly Maintenance"))) {
-								
-								continue;
-							}
+//							if( !(workorder.getSubject().contains("Daily Maintenance") || workorder.getSubject().contains("Fortnightly Maintenance") || workorder.getSubject().contains(" Monthly Maintenance"))) {
+//								
+//								continue;
+//							}
 							if(workorder.getResource().getId() != building.getId()) {
 								continue;
 							}
@@ -3318,6 +3318,7 @@ public class DashboardAction extends ActionSupport {
 				
 				Map<Long,Integer> passedMap = new HashMap<>();
 				Map<Long,Integer> failedMap = new HashMap<>();
+				ticketData = new JSONArray();
 				for(PreventiveMaintenance pm :pms) {
 					
 					if(!(pm.getName().contains("Daily : Cross verify BMS readings with Meter Readings") || pm.getName().contains("Daily : Cleaning of IBMS equipments") || pm.getName().contains("Daily : BMS hardware/software problems checking") || pm.getName().contains("Daily : Ensure that all equipment operate at design"))) {
