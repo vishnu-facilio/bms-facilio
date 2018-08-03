@@ -215,7 +215,7 @@ public class FormulaFieldAPI {
 		return null;
 	}
 	
-	public static List<ReadingContext> calculateFormulaReadings(long resourceId, String moduleName, String fieldName, List<DateRange> intervals, WorkflowContext workflow, boolean ignoreNullValues) throws Exception {
+	public static List<ReadingContext> calculateFormulaReadings(long resourceId, String moduleName, String fieldName, List<DateRange> intervals, WorkflowContext workflow, boolean ignoreNullValues, boolean addValue) throws Exception {
 		if (intervals != null && !intervals.isEmpty()) {
 			long minTime = intervals.get(0).getStartTime();
 			long maxTime = intervals.get(intervals.size() - 1).getEndTime();
@@ -244,6 +244,16 @@ public class FormulaFieldAPI {
 						reading.addReading("startTime", iStartTime);
 						reading.setTtime(iEndTime);
 						readings.add(reading);
+						
+						if (addValue) {
+							FacilioContext context = new FacilioContext();
+							context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+							context.put(FacilioConstants.ContextNames.READING, reading);
+	//						context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS, false);
+							
+							Chain addReadingChain = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
+							addReadingChain.execute(context);
+						}
 					}
 				}
 				catch (Exception e) {
@@ -654,62 +664,44 @@ public class FormulaFieldAPI {
 	public static void historicalCalculation(FormulaFieldContext formula, DateRange range, long singleResourceId) throws Exception {
 		List<DateRange> intervals = getIntervals(formula, range);
 		if (intervals != null && !intervals.isEmpty()) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			List<ReadingContext> readings = new ArrayList<>();
-			List<ReadingContext> lastReadings = new ArrayList<>();
+			int deletedData = deleteOlderData(range.getStartTime(), range.getEndTime(), formula.getMatchedResourcesIds(), formula.getReadingField().getModule().getName());
+			LOGGER.info("Deleted rows for formula : "+formula.getName()+" between "+range+" is : "+deletedData);
 			
+			List<ReadingContext> readings = new ArrayList<>();
 			if (singleResourceId != -1) {
 				if (formula.getMatchedResourcesIds().contains(singleResourceId)) {
-					List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(singleResourceId, formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), formula.getTriggerTypeEnum() == TriggerType.SCHEDULE);
+					List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(singleResourceId, formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), formula.getTriggerTypeEnum() == TriggerType.SCHEDULE, true);
 					if (currentReadings != null && !currentReadings.isEmpty()) {
 						readings.addAll(currentReadings);
-						lastReadings.add(readings.get(readings.size() - 1));
 					}
 				}
 			}
 			else {
 				for (Long resourceId : formula.getMatchedResourcesIds()) {
-					List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(resourceId, formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), formula.getTriggerTypeEnum() == TriggerType.SCHEDULE);
+					List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(resourceId, formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), formula.getTriggerTypeEnum() == TriggerType.SCHEDULE, true);
 					if (currentReadings != null && !currentReadings.isEmpty()) {
 						readings.addAll(currentReadings);
-						lastReadings.add(readings.get(readings.size() - 1));
 					}
 				}
 			}
 			
-			if (!readings.isEmpty()) {
-				int deletedData = deleteOlderData(range.getStartTime(), range.getEndTime(), formula.getMatchedResourcesIds(), formula.getReadingField().getModule().getName());
-				LOGGER.info("Deleted rows for formula : "+formula.getName()+" between "+range+" is : "+deletedData);
-				LOGGER.info("Historical Data to be added for formula "+readings.size());
-				
-				FacilioContext context = new FacilioContext();
-				context.put(FacilioConstants.ContextNames.MODULE_NAME, formula.getReadingField().getModule().getName());
-				context.put(FacilioConstants.ContextNames.READINGS, readings);
-//				context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS, false);
-				
-				Chain addReadingChain = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
-				addReadingChain.execute(context);
-			
-				List<FacilioField> fieldsList = modBean.getAllFields(formula.getReadingField().getModule().getName());
-				ReadingsAPI.updateReadingDataMeta(fieldsList, lastReadings, null);
-				
-				if (formula.getTriggerTypeEnum() == TriggerType.SCHEDULE) {
-					List<FormulaFieldContext> dependentFormulas = FormulaFieldAPI.getActiveFormulasDependingOnFields(TriggerType.SCHEDULE, Collections.singletonList(formula.getReadingField().getId()));
-					if (dependentFormulas != null && !dependentFormulas.isEmpty()) {
-						for (FormulaFieldContext currentFormula : dependentFormulas) {
-							if (singleResourceId != -1 ) {
-								if (currentFormula.getMatchedResourcesIds().contains(singleResourceId)) {
-									List<Long> dependentFieldIds = currentFormula.getWorkflow().getDependentFieldIds();
-									if (dependentFieldIds.contains(formula.getReadingField().getFieldId())) {
-										calculateHistoricalDataForSingleResource(currentFormula.getId(), singleResourceId, range.getStartTime(), range.getEndTime());
-									}
-								}
-							}
-							else{
+			LOGGER.info("Historical Data to be added for formula "+readings.size());
+			if (formula.getTriggerTypeEnum() == TriggerType.SCHEDULE) {
+				List<FormulaFieldContext> dependentFormulas = FormulaFieldAPI.getActiveFormulasDependingOnFields(TriggerType.SCHEDULE, Collections.singletonList(formula.getReadingField().getId()));
+				if (dependentFormulas != null && !dependentFormulas.isEmpty()) {
+					for (FormulaFieldContext currentFormula : dependentFormulas) {
+						if (singleResourceId != -1 ) {
+							if (currentFormula.getMatchedResourcesIds().contains(singleResourceId)) {
 								List<Long> dependentFieldIds = currentFormula.getWorkflow().getDependentFieldIds();
 								if (dependentFieldIds.contains(formula.getReadingField().getFieldId())) {
-									recalculateHistoricalData(currentFormula.getId(), range);
+									calculateHistoricalDataForSingleResource(currentFormula.getId(), singleResourceId, range.getStartTime(), range.getEndTime());
 								}
+							}
+						}
+						else{
+							List<Long> dependentFieldIds = currentFormula.getWorkflow().getDependentFieldIds();
+							if (dependentFieldIds.contains(formula.getReadingField().getFieldId())) {
+								recalculateHistoricalData(currentFormula.getId(), range);
 							}
 						}
 					}

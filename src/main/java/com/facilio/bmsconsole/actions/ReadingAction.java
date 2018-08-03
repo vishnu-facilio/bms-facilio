@@ -699,7 +699,7 @@ public class ReadingAction extends FacilioAction {
 	
 	public String calculateFormulField() throws Exception {
 		List<DateRange> intervals = DateTimeUtil.getTimeIntervals(startTime, endTime, minuteInterval);
-		readingValues = FormulaFieldAPI.calculateFormulaReadings(resourceId, fieldName, fieldName, intervals, workflow, false);
+		readingValues = FormulaFieldAPI.calculateFormulaReadings(resourceId, fieldName, fieldName, intervals, workflow, false, false);
 		return SUCCESS;
 	}
 	
