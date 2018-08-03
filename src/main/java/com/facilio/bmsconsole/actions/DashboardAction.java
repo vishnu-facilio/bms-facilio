@@ -3384,9 +3384,11 @@ public class DashboardAction extends ActionSupport {
 					}
 				}
 				
-				JSONArray resArray = new JSONArray();
+				
 				
 				for(BuildingContext building :SpaceAPI.getAllBuildings()) {
+					
+					JSONArray resArray = new JSONArray();
 					
 					Integer passed = passedMap.get(building.getId());
 					Integer failed = failedMap.get(building.getId());
