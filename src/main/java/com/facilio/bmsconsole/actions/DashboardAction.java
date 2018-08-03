@@ -3168,23 +3168,25 @@ public class DashboardAction extends ActionSupport {
 						}
 					}
 					
-					JSONArray resArray = new JSONArray();
+					if(passed >0 || failed >0) {
+						JSONArray resArray = new JSONArray();
 						
-					JSONObject res = new JSONObject();
-					res.put("label", "Ok");
-					res.put("value", passed);
-					resArray.add(res);
-					
-					res = new JSONObject();
-					res.put("label", "Not Ok");
-					res.put("value", failed);
-					resArray.add(res);
-					
-					JSONObject buildingres = new JSONObject();
-					buildingres.put("label", pm.getName());
-					buildingres.put("value", resArray);
-					
-					ticketData.add(buildingres);
+						JSONObject res = new JSONObject();
+						res.put("label", "Ok");
+						res.put("value", passed);
+						resArray.add(res);
+						
+						res = new JSONObject();
+						res.put("label", "Not Ok");
+						res.put("value", failed);
+						resArray.add(res);
+						
+						JSONObject buildingres = new JSONObject();
+						buildingres.put("label", pm.getName());
+						buildingres.put("value", resArray);
+						
+						ticketData.add(buildingres);
+					}
 				}
 				return ticketData;
 			}
@@ -3260,7 +3262,7 @@ public class DashboardAction extends ActionSupport {
 					if(!(pm.getName().contains("Daily : Cross verify BMS readings with Meter Readings") || pm.getName().contains("Daily : Cleaning of IBMS equipments") || pm.getName().contains("Daily : BMS hardware/software problems checking") || pm.getName().contains("Daily : Ensure that all equipment operate at design"))) {
 						continue;
 					}
-					int failed =0,passed = 0;
+					int failed =0;
 					 List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrderFromPMId(pm.getId());
 					 
 					 for(WorkOrderContext workorder : workorders) {
@@ -3292,18 +3294,17 @@ public class DashboardAction extends ActionSupport {
 								if (subject.startsWith("Not")) {
 									failed++;
 								}
-								else {
-									passed++;
-								}
 							}
 						}
 					}
 					 
-					JSONObject buildingres = new JSONObject();
-					buildingres.put("label", pm.getName());
-					buildingres.put("value", passed);
-					
-					ticketData.add(buildingres);
+					if(failed > 0) {
+						JSONObject buildingres = new JSONObject();
+						buildingres.put("label", pm.getName());
+						buildingres.put("value", failed);
+						
+						ticketData.add(buildingres);
+					}
 				}
 				return ticketData;
 			}
