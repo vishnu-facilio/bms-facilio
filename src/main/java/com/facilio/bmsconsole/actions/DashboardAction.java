@@ -3186,7 +3186,7 @@ public class DashboardAction extends ActionSupport {
 				return ticketData;
 			}
 			
-			if(report.getId() == 2382l) { // B4a
+			if(report.getId() == 1234l) { // B4a
 
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				
@@ -3303,7 +3303,7 @@ public class DashboardAction extends ActionSupport {
 				}
 			}
 			
-			if(report.getId() == 2382l) { // 3P
+			if(report.getId() == 4060l) { // 3P
 
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				
@@ -3400,7 +3400,7 @@ public class DashboardAction extends ActionSupport {
 				return ticketData;
 			}
 			
-			if(report.getId() == 2382l) { // 4Pa
+			if(report.getId() == 4061l) { // 4Pa
 
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				
@@ -3475,7 +3475,7 @@ public class DashboardAction extends ActionSupport {
 				return ticketData;
 			}
 			
-			if(report.getId() == 2382l) { // 4Pb
+			if(report.getId() == 1234l) { // 4Pb
 
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				
