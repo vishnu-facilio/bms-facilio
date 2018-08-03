@@ -2468,9 +2468,9 @@ public class DashboardAction extends ActionSupport {
 									else if ("Not Met".equals(stringValue)) {
 										value = 0;
 									}
-									else {
-										value = Integer.parseInt(stringValue);
-									}
+//									else {
+//										value = Integer.parseInt(stringValue);
+//									}
 									
 									buildingScore = buildingScore +value;
 								}
@@ -2758,9 +2758,9 @@ public class DashboardAction extends ActionSupport {
 									else if ("Not Met".equals(stringValue)) {
 										value = 0;
 									}
-									else {
-										value = Integer.parseInt(stringValue);
-									}
+//									else {
+//										value = Integer.parseInt(stringValue);
+//									}
 									
 									buildingScore = buildingScore +value;
 								}
@@ -2907,9 +2907,9 @@ public class DashboardAction extends ActionSupport {
 								else if ("Not Met".equals(stringValue)) {
 									value = 0;
 								}
-								else {
-									value = Integer.parseInt(stringValue);
-								}
+//								else {
+//									value = Integer.parseInt(stringValue);
+//								}
 								
 								buildingScore = buildingScore +value;
 							}
@@ -2988,14 +2988,14 @@ public class DashboardAction extends ActionSupport {
 								else if ("Not Met".equals(stringValue)) {
 									failed = failed + 1;
 								}
-								else {
-									value = Integer.parseInt(stringValue);
-									if(value <= 2) {
-										failed = failed + 1;
-									}else {
-										passed = passed + 1;
-									}
-								}
+//								else {
+//									value = Integer.parseInt(stringValue);
+//									if(value <= 2) {
+//										failed = failed + 1;
+//									}else {
+//										passed = passed + 1;
+//									}
+//								}
 							}
 						}
 						
@@ -3086,14 +3086,14 @@ public class DashboardAction extends ActionSupport {
 									else if ("Not Met".equals(stringValue)) {
 										failed = failed + 1;
 									}
-									else {
-										value = Integer.parseInt(stringValue);
-										if(value <= 2) {
-											failed = failed + 1;
-										}else {
-											passed = passed + 1;
-										}
-									}
+//									else {
+//										value = Integer.parseInt(stringValue);
+//										if(value <= 2) {
+//											failed = failed + 1;
+//										}else {
+//											passed = passed + 1;
+//										}
+//									}
 								}
 							}
 						}
