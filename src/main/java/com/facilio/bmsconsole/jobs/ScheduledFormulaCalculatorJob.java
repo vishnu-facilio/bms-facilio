@@ -58,7 +58,7 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 							try {
 								List<ReadingContext> readings = new ArrayList<>();
 								List<ReadingContext> lastReadings = new ArrayList<>();
-								for (Long resourceId : enpi.getMatchedResources()) {
+								for (Long resourceId : enpi.getMatchedResourcesIds()) {
 									ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(resourceId, enpi.getReadingField());
 									long lastReadingTime = meta.getTtime();
 									ZonedDateTime zdt = DateTimeUtil.getDateTime(lastReadingTime).plusHours(1).truncatedTo(ChronoUnit.HOURS);

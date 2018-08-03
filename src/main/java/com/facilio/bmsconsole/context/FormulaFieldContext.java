@@ -201,11 +201,19 @@ public class FormulaFieldContext {
 		this.includedResources = includedResources;
 	}
 	
-	private List<Long> matchedResources;
-	public List<Long> getMatchedResources() {
+	private List<Long> matchedResourcesIds;
+	public List<Long> getMatchedResourcesIds() {
+		return matchedResourcesIds;
+	}
+	public void setMatchedResourcesIds(List<Long> matchedResourcesIds) {
+		this.matchedResourcesIds = matchedResourcesIds;
+	}
+	
+	private List<? extends ResourceContext> matchedResources;
+	public List<? extends ResourceContext> getMatchedResources() {
 		return matchedResources;
 	}
-	public void setMatchedResources(List<Long> matchedResources) {
+	public void setMatchedResources(List<? extends ResourceContext> matchedResources) {
 		this.matchedResources = matchedResources;
 	}
 

@@ -88,7 +88,7 @@ public class CalculatePostFormulaCommand implements Command {
 	private void calculateDependentFormulas(ReadingContext reading, Map<String, List<ReadingContext>> formulaMap, Set<String> completedFormulas, List<FormulaFieldContext> formulas, Map<String, FacilioField> fieldMap) throws Exception {
 		// TODO Auto-generated method stub
 		for (FormulaFieldContext formula : formulas) {
-			if (formula.getMatchedResources().contains(reading.getParentId())) {
+			if (formula.getMatchedResourcesIds().contains(reading.getParentId())) {
 				try {
 					if (reading.isNewReading()) {
 						calculateNewFormula(formula, reading, formulaMap, completedFormulas, fieldMap);
