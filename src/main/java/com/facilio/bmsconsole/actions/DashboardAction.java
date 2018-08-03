@@ -2432,7 +2432,7 @@ public class DashboardAction extends ActionSupport {
 						int buildingScore = 0;
 						for(WorkOrderContext workorder:workorders) {
 							
-							if( !(workorder.getSubject().contains("Daily Maintenance for IBMS Ops") || workorder.getSubject().contains("Fortnightly Maintenance for IBMS Ops") || workorder.getSubject().contains(" Monthly Maintenance for IBMS Ops"))) {
+							if( !(workorder.getSubject().contains("Daily Maintenance") || workorder.getSubject().contains("Fortnightly Maintenance") || workorder.getSubject().contains(" Monthly Maintenance"))) {
 								
 								continue;
 							}
@@ -2535,7 +2535,8 @@ public class DashboardAction extends ActionSupport {
 							LOGGER.log(Level.INFO, "passed1 --- "+taskMap.size());
 							for(Map<String, Object> task : taskMap) {
 								
-								if(task.get("inputValue") != null) {
+								Long statusId = (Long) task.get("status");
+								if(statusId != null && statusId.equals(628l)) {
 									completed ++;
 								}
 								else {
@@ -2720,7 +2721,7 @@ public class DashboardAction extends ActionSupport {
 						int buildingScore = 0;
 						for(WorkOrderContext workorder:workorders) {
 							
-							if( !(workorder.getSubject().contains("Daily Maintenance for IBMS Ops") || workorder.getSubject().contains("Fortnightly Maintenance for IBMS Ops") || workorder.getSubject().contains(" Monthly Maintenance for IBMS Ops"))) {
+							if( !(workorder.getSubject().contains("Daily Maintenance") || workorder.getSubject().contains("Fortnightly Maintenance") || workorder.getSubject().contains(" Monthly Maintenance"))) {
 								
 								continue;
 							}
@@ -2819,7 +2820,8 @@ public class DashboardAction extends ActionSupport {
 						
 						for(Map<String, Object> task : taskMap) {
 							
-							if(task.get("inputValue") != null) {
+							Long statusId = (Long) task.get("status");
+							if(statusId != null && statusId.equals(628l)) {
 								completed ++;
 							}
 							else {
@@ -2864,7 +2866,8 @@ public class DashboardAction extends ActionSupport {
 					for(WorkOrderContext workorder:workorders) {
 						
 						int buildingScore = 0;
-						if( !(workorder.getSubject().contains("Daily Maintenance for IBMS Ops") || workorder.getSubject().contains("Fortnightly Maintenance for IBMS Ops") || workorder.getSubject().contains("Monthly Maintenance for IBMS Ops"))) {
+						if( !(workorder.getSubject().contains("Daily Maintenance") || workorder.getSubject().contains("Fortnightly Maintenance") || workorder.getSubject().contains(" Monthly Maintenance"))) {
+							
 							continue;
 						}
 						if(workorder.getResource().getId() != report.getReportSpaceFilterContext().getBuildingId()) {
@@ -2944,7 +2947,7 @@ public class DashboardAction extends ActionSupport {
 							int passed = 0,failed = 0;
 							JSONObject buildingres = new JSONObject();
 							
-							if( !(workorder.getSubject().contains("Daily Maintenance for IBMS Ops") || workorder.getSubject().contains("Fortnightly Maintenance for IBMS Ops") || workorder.getSubject().contains(" Monthly Maintenance for IBMS Ops"))) {
+							if( !(workorder.getSubject().contains("Daily Maintenance") || workorder.getSubject().contains("Fortnightly Maintenance") || workorder.getSubject().contains(" Monthly Maintenance"))) {
 								
 								continue;
 							}
@@ -3043,7 +3046,7 @@ public class DashboardAction extends ActionSupport {
 						JSONArray resArray = new JSONArray();
 						for(WorkOrderContext workorder:workorders) {
 							
-							if( !(workorder.getSubject().contains("Daily Maintenance for IBMS Ops") || workorder.getSubject().contains("Fortnightly Maintenance for IBMS Ops") || workorder.getSubject().contains(" Monthly Maintenance for IBMS Ops"))) {
+							if( !(workorder.getSubject().contains("Daily Maintenance") || workorder.getSubject().contains("Fortnightly Maintenance") || workorder.getSubject().contains(" Monthly Maintenance"))) {
 								
 								continue;
 							}
@@ -3073,7 +3076,7 @@ public class DashboardAction extends ActionSupport {
 									String stringValue = task.get("inputValue").toString();
 									
 									Integer value = 0;
-									if("Met".equals(stringValue) ) {
+									if("Met".equals(stringValue)) {
 										passed = passed + 1;
 									}
 									else if ("Not Met".equals(stringValue)) {
