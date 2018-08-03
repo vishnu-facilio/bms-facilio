@@ -2433,7 +2433,6 @@ public class DashboardAction extends ActionSupport {
 						for(WorkOrderContext workorder:workorders) {
 							
 							if( !(workorder.getSubject().contains("Daily Maintenance") || workorder.getSubject().contains("Fortnightly Maintenance") || workorder.getSubject().contains(" Monthly Maintenance"))) {
-								
 								continue;
 							}
 							
@@ -2591,15 +2590,15 @@ public class DashboardAction extends ActionSupport {
 							if(workorder.getResource().getId() != building.getId()) {
 								continue;
 							}
+							if(workorder.getStatus() != null && workorder.getStatus().getId() > 0) {
+								TicketStatusContext status = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getId(), workorder.getStatus().getId());
+								workorder.setStatus(status);
+							}
 							if(workorder.getStatus() != null && workorder.getStatus().getType() != null && workorder.getStatus().getType().equals(StatusType.CLOSED)) {
 								
 								LOGGER.log(Level.INFO, "dateFilter --- "+dateFilter);
 								if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getActualWorkEnd() && workorder.getActualWorkEnd() < (Long)dateFilter.get(1))) {
 									continue;
-								}
-								if(workorder.getStatus() != null && workorder.getStatus().getId() > 0) {
-									TicketStatusContext status = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getId(), workorder.getStatus().getId());
-									workorder.setStatus(status);
 								}
 								
 								if(workorder.getEstimatedEnd() != -1 && workorder.getActualWorkEnd() != -1) {
@@ -2660,15 +2659,15 @@ public class DashboardAction extends ActionSupport {
 						if(workorder.getResource().getId() != report.getReportSpaceFilterContext().getBuildingId()) {
 							continue;
 						}
+						if(workorder.getStatus() != null && workorder.getStatus().getId() > 0) {
+							TicketStatusContext status = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getId(), workorder.getStatus().getId());
+							workorder.setStatus(status);
+						}
 						if(workorder.getStatus() != null && workorder.getStatus().getType() != null && workorder.getStatus().getType().equals(StatusType.CLOSED)) {
 							
 							LOGGER.log(Level.INFO, "dateFilter --- "+dateFilter);
 							if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getActualWorkEnd() && workorder.getActualWorkEnd() < (Long)dateFilter.get(1))) {
 								continue;
-							}
-							if(workorder.getStatus() != null && workorder.getStatus().getId() > 0) {
-								TicketStatusContext status = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getId(), workorder.getStatus().getId());
-								workorder.setStatus(status);
 							}
 							
 							if(workorder.getEstimatedEnd() != -1 && workorder.getActualWorkEnd() != -1) {
