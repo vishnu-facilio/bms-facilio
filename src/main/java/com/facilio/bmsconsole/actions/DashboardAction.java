@@ -2821,7 +2821,10 @@ public class DashboardAction extends ActionSupport {
 						
 						for(Map<String, Object> task : taskMap) {
 							
-							Long statusId = (Long) task.get("status");
+							Long statusId = null;
+							if(task.get("status") != null) {
+								statusId = (Long) ((Map<String, Object>)task.get("status")).get("id");
+							}
 							if(statusId != null && statusId.equals(628l)) {
 								completed ++;
 							}
