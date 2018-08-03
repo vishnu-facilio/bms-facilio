@@ -21,6 +21,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import com.facilio.wms.message.NotificationProcessor;
+import com.facilio.wms.message.NotificationProcessorFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.flywaydb.core.Flyway;
@@ -94,6 +96,9 @@ public class FacilioContextListener implements ServletContextListener {
 			}
 			ServerInfo.registerServer();
 			//timer.schedule(new ServerInfo(), 30000L, 30000L);
+			if("stage".equalsIgnoreCase(AwsUtil.getConfig("environment"))) {
+				NotificationProcessor.run(new NotificationProcessorFactory());
+			}
 
 			BeanFactory.initBeans();
 			
