@@ -2419,6 +2419,9 @@ public class DashboardAction extends ActionSupport {
 
 				for(TicketCategoryContext category:categories) {
 					
+					if(!(category.getName().equals("Auditing"))) {
+						continue;
+					}
 					
 					List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrders(category.getId());
 					
@@ -2487,8 +2490,8 @@ public class DashboardAction extends ActionSupport {
 					
 					LOGGER.log(Level.INFO, "23611l buildingres ----"+ticketData);
 					
-					return ticketData;
 				}
+				return ticketData;
 			}
 			
 			if(report.getId() == 3941l) { // 1P
@@ -2710,6 +2713,9 @@ public class DashboardAction extends ActionSupport {
 
 				for(TicketCategoryContext category:categories) {
 					
+					if( !(category.getName().equals("Auditing"))) {
+						continue;
+					}
 					List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrders(category.getId());
 					
 					if(workorders.isEmpty()) {
@@ -2777,8 +2783,8 @@ public class DashboardAction extends ActionSupport {
 					
 					LOGGER.log(Level.INFO, "23611l buildingres ----"+ticketData);
 					
-					return ticketData;
 				}
+				return ticketData;
 			}
 			// building
 			if(report.getId() == 3944l) { 	//1B
@@ -2859,6 +2865,10 @@ public class DashboardAction extends ActionSupport {
 
 				for(TicketCategoryContext category:categories) {
 					
+					if( !(category.getName().equals("Auditing"))) {
+						continue;
+					}
+					
 					List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrders(category.getId());
 					
 					if(workorders.isEmpty()) {
@@ -2870,7 +2880,7 @@ public class DashboardAction extends ActionSupport {
 					for(WorkOrderContext workorder:workorders) {
 						
 						int buildingScore = 0;
-//						if( !(workorder.getSubject().contains("Daily Maintenance") || workorder.getSubject().contains("Fortnightly Maintenance") || workorder.getSubject().contains(" Monthly Maintenance"))) {
+//						if( !(workorder.getSubject().contains(s)("Daily Maintenance") || workorder.getSubject().contains("Fortnightly Maintenance") || workorder.getSubject().contains(" Monthly Maintenance"))) {
 //							
 //							continue;
 //						}
@@ -2922,11 +2932,9 @@ public class DashboardAction extends ActionSupport {
 						ticketData.add(buildingres);
 					}
 						
-					
 					LOGGER.log(Level.INFO, "23611l buildingres ----"+ticketData);
-					
-					return ticketData;
 				}
+				return ticketData;
 			}
 			
 			if(report.getId() == 3946l) { 	//6B
@@ -2940,6 +2948,9 @@ public class DashboardAction extends ActionSupport {
 
 				for(TicketCategoryContext category:categories) {
 					
+					if( !(category.getName().equals("Auditing"))) {
+						continue;
+					}
 					List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrders(category.getId());
 					
 					if(workorders.isEmpty()) {
@@ -3021,8 +3032,8 @@ public class DashboardAction extends ActionSupport {
 					
 					LOGGER.log(Level.INFO, "23611l buildingres ----"+ticketData);
 					
-					return ticketData;
 				}
+				return ticketData;
 			}
 			
 			if(report.getId() == 3947l)	//6P
@@ -3030,14 +3041,15 @@ public class DashboardAction extends ActionSupport {
 			 	
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				
-				int tcompliance = 0,tnonCompliance = 0,trepeatFinding = 0,total = 0;
 				
 				List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
 				
 				ticketData = new JSONArray();
 
 				for(TicketCategoryContext category:categories) {
-					
+					if( !(category.getName().equals("Auditing"))) {
+						continue;
+					}
 					List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrders(category.getId());
 					
 					if(workorders.isEmpty()) {
@@ -3116,8 +3128,8 @@ public class DashboardAction extends ActionSupport {
 					
 					LOGGER.log(Level.INFO, "23611l buildingres ----"+ticketData);
 					
-					return ticketData;
 				}
+				return ticketData;
 			}
 			if(report.getId() == 4057l) { // B3
 
