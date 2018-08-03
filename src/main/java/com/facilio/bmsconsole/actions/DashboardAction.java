@@ -2696,6 +2696,7 @@ public class DashboardAction extends ActionSupport {
 					
 					return ticketData;
 				}
+				
 			}
 			
 			if(report.getId() == 3943l) { 	// 7P baseline
@@ -2860,61 +2861,59 @@ public class DashboardAction extends ActionSupport {
 					
 					JSONObject buildingres = new JSONObject();
 						
+					for(WorkOrderContext workorder:workorders) {
 						
-						for(WorkOrderContext workorder:workorders) {
-							
-							int buildingScore = 0;
-							if( !(workorder.getSubject().contains("Daily Maintenance for IBMS Ops") || workorder.getSubject().contains("Fortnightly Maintenance for IBMS Ops") || workorder.getSubject().contains(" Monthly Maintenance for IBMS Ops"))) {
-								
-								continue;
-							}
-							if(workorder.getResource().getId() != report.getReportSpaceFilterContext().getBuildingId()) {
-								continue;
-							}
-							
-							if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
-								continue;
-							}
-							
-							Command chain = FacilioChainFactory.getGetTasksOfTicketCommand();
-							FacilioContext context = new FacilioContext();
-							
-							context.put(FacilioConstants.ContextNames.ID, workorder.getId());
-							context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
-							context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME,"Tasks");
-							context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(FacilioConstants.ContextNames.TASK));
-							context.put("isAsMap", true);
-							chain.execute(context);
-							
-							List<Map<String, Object>> taskMap = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
-							
-							for(Map<String, Object> task : taskMap) {
-								
-								if(task.get("inputValue") != null) {
-									
-									String stringValue = task.get("inputValue").toString();
-									
-									Integer value = 0;
-									if("Met".equals(stringValue) ) {
-										value = 5;
-									}
-									else if ("Not Met".equals(stringValue)) {
-										value = 0;
-									}
-									else {
-										value = Integer.parseInt(stringValue);
-									}
-									
-									buildingScore = buildingScore +value;
-								}
-							}
-							buildingres = new JSONObject();
-							
-							buildingres.put("label", workorder.getCreatedTime());
-							buildingres.put("value", buildingScore);
-							
-							ticketData.add(buildingres);
+						int buildingScore = 0;
+						if( !(workorder.getSubject().contains("Daily Maintenance for IBMS Ops") || workorder.getSubject().contains("Fortnightly Maintenance for IBMS Ops") || workorder.getSubject().contains("Monthly Maintenance for IBMS Ops"))) {
+							continue;
 						}
+						if(workorder.getResource().getId() != report.getReportSpaceFilterContext().getBuildingId()) {
+							continue;
+						}
+						
+						if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
+							continue;
+						}
+						
+						Command chain = FacilioChainFactory.getGetTasksOfTicketCommand();
+						FacilioContext context = new FacilioContext();
+						
+						context.put(FacilioConstants.ContextNames.ID, workorder.getId());
+						context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
+						context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME,"Tasks");
+						context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(FacilioConstants.ContextNames.TASK));
+						context.put("isAsMap", true);
+						chain.execute(context);
+						
+						List<Map<String, Object>> taskMap = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
+						
+						for(Map<String, Object> task : taskMap) {
+							
+							if(task.get("inputValue") != null) {
+								
+								String stringValue = task.get("inputValue").toString();
+								
+								Integer value = 0;
+								if("Met".equals(stringValue) ) {
+									value = 5;
+								}
+								else if ("Not Met".equals(stringValue)) {
+									value = 0;
+								}
+								else {
+									value = Integer.parseInt(stringValue);
+								}
+								
+								buildingScore = buildingScore +value;
+							}
+						}
+						buildingres = new JSONObject();
+						
+						buildingres.put("label", workorder.getCreatedTime());
+						buildingres.put("value", buildingScore);
+						
+						ticketData.add(buildingres);
+					}
 						
 					
 					LOGGER.log(Level.INFO, "23611l buildingres ----"+ticketData);
@@ -3120,6 +3119,7 @@ public class DashboardAction extends ActionSupport {
 				
 				List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getAllPMs(AccountUtil.getCurrentOrg().getId(),true);
 					
+				ticketData = new JSONArray();
 				for(PreventiveMaintenance pm :pms) {
 					
 					if(!(pm.getName().contains("Daily : Cross verify BMS readings with Meter Readings") || pm.getName().contains("Daily : Cleaning of IBMS equipments") || pm.getName().contains("Daily : BMS hardware/software problems checking") || pm.getName().contains("Daily : Ensure that all equipment operate at design"))) {
@@ -3251,6 +3251,7 @@ public class DashboardAction extends ActionSupport {
 				
 				List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getAllPMs(AccountUtil.getCurrentOrg().getId(),true);
 				
+				ticketData = new JSONArray();
 				for(PreventiveMaintenance pm :pms) {
 					
 					if(!(pm.getName().contains("Daily : Cross verify BMS readings with Meter Readings") || pm.getName().contains("Daily : Cleaning of IBMS equipments") || pm.getName().contains("Daily : BMS hardware/software problems checking") || pm.getName().contains("Daily : Ensure that all equipment operate at design"))) {
@@ -3301,6 +3302,7 @@ public class DashboardAction extends ActionSupport {
 					
 					ticketData.add(buildingres);
 				}
+				return ticketData;
 			}
 			
 			if(report.getId() == 4060l) { // 3P
