@@ -3415,6 +3415,7 @@ public class DashboardAction extends ActionSupport {
 				List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getAllPMs(AccountUtil.getCurrentOrg().getId(),true);
 				
 				Map<Long,Integer> failedMap = new HashMap<>();
+				ticketData = new JSONArray();
 				for(PreventiveMaintenance pm :pms) {
 					
 					if(!(pm.getName().contains("Daily : Cross verify BMS readings with Meter Readings") || pm.getName().contains("Daily : Cleaning of IBMS equipments") || pm.getName().contains("Daily : BMS hardware/software problems checking") || pm.getName().contains("Daily : Ensure that all equipment operate at design"))) {
