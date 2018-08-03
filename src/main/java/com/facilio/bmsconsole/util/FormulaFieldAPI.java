@@ -622,7 +622,8 @@ public class FormulaFieldAPI {
 			case HOURLY:
 				return DateTimeUtil.getMonthStartTime();
 			case DAILY:
-				return DateTimeUtil.getDayStartTime(-90);
+				//return DateTimeUtil.getDayStartTime(-90);
+				return DateTimeUtil.getYearStartTime(); //Temp for Al Seef
 			case WEEKLY:
 			case MONTHLY:
 				return DateTimeUtil.getMonthStartTime(-12);
