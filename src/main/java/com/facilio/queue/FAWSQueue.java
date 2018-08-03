@@ -73,11 +73,11 @@ public class FAWSQueue {
                 int entriesCount = 0;
                 List<DeleteMessageBatchRequestEntry> deleteMessages = new ArrayList<>();
                 while(entriesCount < receiptHandles.size()) {
-                    for(int i = 0; i < 10; i++) {
+                    for(int i = 0; ( (i < 10) && (entriesCount < receiptHandles.size()) ); i++) {
                         deleteMessages.add(receiptHandles.get(entriesCount));
                         entriesCount++;
                     }
-                    DeleteMessageBatchResult result = sqs.deleteMessageBatch(url, receiptHandles);
+                    DeleteMessageBatchResult result = sqs.deleteMessageBatch(url, deleteMessages);
                     List<DeleteMessageBatchResultEntry> resultList = result.getSuccessful();
                     LOGGER.info("Successfully deleted " + resultList.size());
                     deleteMessages.clear();
