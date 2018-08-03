@@ -2533,8 +2533,10 @@ public class DashboardAction extends ActionSupport {
 							
 							LOGGER.log(Level.INFO, "passed1 --- "+taskMap.size());
 							for(Map<String, Object> task : taskMap) {
-								
-								Long statusId = (Long) task.get("status");
+								Long statusId = null;
+								if(task.get("status") != null) {
+									statusId = (Long) ((Map<String, Object>)task.get("status")).get("id");
+								}
 								if(statusId != null && statusId.equals(628l)) {
 									completed ++;
 								}
