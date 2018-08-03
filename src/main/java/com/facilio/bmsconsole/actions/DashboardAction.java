@@ -2637,7 +2637,7 @@ public class DashboardAction extends ActionSupport {
 				}
 			}
 			
-			else if (report.getId() == 3942l) {	//2B
+			else if (report.getId() == 4056l) {	//2B
 
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				
@@ -3113,7 +3113,7 @@ public class DashboardAction extends ActionSupport {
 					return ticketData;
 				}
 			}
-			if(report.getId() == 2382l) { // B3
+			if(report.getId() == 4057l) { // B3
 
 				
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -3168,12 +3168,12 @@ public class DashboardAction extends ActionSupport {
 					JSONArray resArray = new JSONArray();
 						
 					JSONObject res = new JSONObject();
-					res.put("label", "Passed");
+					res.put("label", "Ok");
 					res.put("value", passed);
 					resArray.add(res);
 					
 					res = new JSONObject();
-					res.put("label", "Failed");
+					res.put("label", "Not Ok");
 					res.put("value", failed);
 					resArray.add(res);
 					
@@ -3184,67 +3184,6 @@ public class DashboardAction extends ActionSupport {
 					ticketData.add(buildingres);
 				}
 				return ticketData;
-			}
-			if(true && true) {
-				
-				
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				
-				List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getAllPMs(AccountUtil.getCurrentOrg().getId(),true);
-					
-				for(BuildingContext building : SpaceAPI.getAllBuildings()) {
-					
-					for(PreventiveMaintenance pm :pms) {
-						
-						int failed =0,passed = 0;
-						
-						if(pm.getWoTemplate().getResourceId() !=  building.getId()) {
-							continue;
-						}
-						
-						if(pm.getTitle().contains("Fortnightly Maintenance") || pm.getTitle().contains("Monthly Maintenance") || pm.getTitle().contains("Weekly :")) {
-							continue;
-						}
-						
-						Long millis[] = {1533267000000l,1533180600000l,1533094200000l,1533007800000l,1532921400000l,1532835000000l,1532748600000l,1532662200000l,1532575800000l,1532489400000l,1532403000000l,1532316600000l,1532230200000l,1532143800000l,1532057400000l,1531971000000l};
-						
-						Long fourHourMillis = 14400000l;
-						 List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrderFromPMId(pm.getId());
-						 
-						 for(int i=0; i < workorders.size() ;i++) {
-							 
-							 WorkOrderContext workorder =  workorders.get(i);
-							 
-							 if(workorder.getResource().getId() != report.getReportSpaceFilterContext().getBuildingId()) {
-									continue;
-							 }
-							 long createdTime = millis[i];	//wo
-							 
-							 long estStartTime = createdTime;				//tick
-							 long accStartTime = createdTime;				//tick
-							 long estEndTime = createdTime+fourHourMillis;	//tick
-							 long accEndTime = estEndTime - 100000;			//tick
-							 
-							 long modtime = accEndTime;		//wo
-							 
-							 workorder.setCreatedTime(createdTime);
-							 workorder.setModifiedTime(modtime);
-							 
-							 workorder.setEstimatedStart(estStartTime);
-							 workorder.setActualWorkStart(accStartTime);
-							 
-							 workorder.setEstimatedEnd(estEndTime);
-							 workorder.setActualWorkEnd(accEndTime);
-							 
-							 UpdateRecordBuilder<WorkOrderContext> updateBuilder = new UpdateRecordBuilder<WorkOrderContext>()
-										.moduleName(FacilioConstants.ContextNames.WORK_ORDER)
-										.fields(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER))
-										.andCondition(CriteriaAPI.getIdCondition(workorder.getId(), module));
-								
-							updateBuilder.update(workorder);
-						 }
-					}
-				}
 			}
 			
 			if(report.getId() == 2382l) { // B4a
@@ -3306,7 +3245,7 @@ public class DashboardAction extends ActionSupport {
 					ticketData.add(buildingres);
 				}
 			}
-			if(report.getId() == 2382l) { // B3b
+			if(report.getId() == 4058l) { // B4b
 
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				
