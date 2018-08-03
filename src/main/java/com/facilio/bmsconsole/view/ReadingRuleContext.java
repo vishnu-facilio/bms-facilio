@@ -482,8 +482,9 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		// TODO Auto-generated method stub
 		FacilioModule module = ModuleFactory.getReadingRuleFlapsModule();
 		List<FacilioField> fields = FieldFactory.getReadingRuleFlapsFields();
-		FacilioField ruleIdField = FieldFactory.getAsMap(fields).get("ruleId");
-		FacilioField resourceIdField = FieldFactory.getAsMap(fields).get("resourceId");
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioField ruleIdField = fieldMap.get("ruleId");
+		FacilioField resourceIdField = fieldMap.get("resourceId");
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.table(module.getTableName())
@@ -538,9 +539,9 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 	private void deleteAllFlaps(long resourceId) throws SQLException {
 		// TODO Auto-generated method stub
 		FacilioModule module = ModuleFactory.getReadingRuleFlapsModule();
-		List<FacilioField> fields = FieldFactory.getReadingRuleFlapsFields();
-		FacilioField ruleIdField = FieldFactory.getAsMap(fields).get("ruleId");
-		FacilioField resourceIdField = FieldFactory.getAsMap(fields).get("resourceId");
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getReadingRuleFlapsFields());
+		FacilioField ruleIdField = fieldMap.get("ruleId");
+		FacilioField resourceIdField = fieldMap.get("resourceId");
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 														.table(module.getTableName())
 														.andCondition(CriteriaAPI.getCondition(ruleIdField, String.valueOf(getId()), PickListOperators.IS))
