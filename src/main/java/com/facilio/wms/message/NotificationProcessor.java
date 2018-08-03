@@ -42,6 +42,7 @@ public class NotificationProcessor implements IRecordProcessor {
                 JSONParser parser = new JSONParser();
                 JSONObject payLoad = (JSONObject) parser.parse(data);
                 Message message = Message.getMessage(payLoad);
+                LOGGER.info("Going to send message to " + message.getTo() + " from " + message.getFrom());
                 SessionManager.getInstance().sendMessage(message);
             }
             catch (Exception e) {
