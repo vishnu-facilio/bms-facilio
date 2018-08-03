@@ -56,6 +56,7 @@ import com.facilio.bmsconsole.context.FormulaContext.EnergyPurposeAggregateOpera
 import com.facilio.bmsconsole.context.FormulaContext.NumberAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.SpaceAggregateOperator;
 import com.facilio.bmsconsole.context.MarkedReadingContext;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReportBenchmarkRelContext;
@@ -103,6 +104,7 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.reports.ReportExportUtil;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.templates.EMailTemplate;
@@ -117,6 +119,7 @@ import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.ExportUtil;
 import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
+import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
@@ -2367,6 +2370,7 @@ public class DashboardAction extends ActionSupport {
 					return ticketData;
 				}
 			}
+			
 		}
 		
 		if(AccountUtil.getCurrentOrg().getOrgId() == 129l) {
@@ -2406,7 +2410,7 @@ public class DashboardAction extends ActionSupport {
 				}
 			}
 			
-			if(report.getId() == 3940l) { 	//1
+			if(report.getId() == 3940l) { 	// 7P 
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				
 				List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
@@ -2427,6 +2431,11 @@ public class DashboardAction extends ActionSupport {
 						
 						int buildingScore = 0;
 						for(WorkOrderContext workorder:workorders) {
+							
+							if( !(workorder.getSubject().contains("Daily Maintenance for IBMS Ops") || workorder.getSubject().contains("Fortnightly Maintenance for IBMS Ops") || workorder.getSubject().contains(" Monthly Maintenance for IBMS Ops"))) {
+								
+								continue;
+							}
 							
 							if(workorder.getResource().getId() != building.getId()) {
 								continue;
@@ -2483,7 +2492,7 @@ public class DashboardAction extends ActionSupport {
 				}
 			}
 			
-			if(report.getId() == 3941l) { // 2
+			if(report.getId() == 3941l) { // 1P
 
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				
@@ -2557,7 +2566,7 @@ public class DashboardAction extends ActionSupport {
 				}
 			}
 			
-			else if (report.getId() == 3942l) {	//3
+			else if (report.getId() == 3942l) {	//2P
 
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				
@@ -2581,15 +2590,16 @@ public class DashboardAction extends ActionSupport {
 							if(workorder.getResource().getId() != building.getId()) {
 								continue;
 							}
-							LOGGER.log(Level.INFO, "dateFilter --- "+dateFilter);
-							if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
-								continue;
-							}
-							if(workorder.getStatus() != null && workorder.getStatus().getId() > 0) {
-								TicketStatusContext status = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getId(), workorder.getStatus().getId());
-								workorder.setStatus(status);
-							}
 							if(workorder.getStatus() != null && workorder.getStatus().getType() != null && workorder.getStatus().getType().equals(StatusType.CLOSED)) {
+								
+								LOGGER.log(Level.INFO, "dateFilter --- "+dateFilter);
+								if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getActualWorkEnd() && workorder.getActualWorkEnd() < (Long)dateFilter.get(1))) {
+									continue;
+								}
+								if(workorder.getStatus() != null && workorder.getStatus().getId() > 0) {
+									TicketStatusContext status = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getId(), workorder.getStatus().getId());
+									workorder.setStatus(status);
+								}
 								
 								if(workorder.getEstimatedEnd() != -1 && workorder.getActualWorkEnd() != -1) {
 									if(workorder.getEstimatedEnd() < workorder.getActualWorkEnd()) {
@@ -2627,7 +2637,68 @@ public class DashboardAction extends ActionSupport {
 				}
 			}
 			
-			if(report.getId() == 3943l) { 	//4
+			else if (report.getId() == 3942l) {	//2B
+
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				
+				List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
+				
+				ticketData = new JSONArray();
+
+				for(TicketCategoryContext category:categories) {
+					
+					List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrders(category.getId());
+					
+					if(workorders.isEmpty()) {
+						continue;
+					}
+					
+					int inTime = 0,overdue = 0;
+					for(WorkOrderContext workorder:workorders) {
+						
+						if(workorder.getResource().getId() != report.getReportSpaceFilterContext().getBuildingId()) {
+							continue;
+						}
+						if(workorder.getStatus() != null && workorder.getStatus().getType() != null && workorder.getStatus().getType().equals(StatusType.CLOSED)) {
+							
+							LOGGER.log(Level.INFO, "dateFilter --- "+dateFilter);
+							if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getActualWorkEnd() && workorder.getActualWorkEnd() < (Long)dateFilter.get(1))) {
+								continue;
+							}
+							if(workorder.getStatus() != null && workorder.getStatus().getId() > 0) {
+								TicketStatusContext status = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getId(), workorder.getStatus().getId());
+								workorder.setStatus(status);
+							}
+							
+							if(workorder.getEstimatedEnd() != -1 && workorder.getActualWorkEnd() != -1) {
+								if(workorder.getEstimatedEnd() < workorder.getActualWorkEnd()) {
+									overdue++;
+								}
+								else {
+									inTime++;
+								}
+							}
+							else {
+								inTime++;
+							}
+						}
+					}
+					
+					JSONObject res = new JSONObject();
+					res.put("label", "In Time");
+					res.put("value", inTime);
+					ticketData.add(res);
+					
+					res = new JSONObject();
+					res.put("label", "Overdue");
+					res.put("value", overdue);
+					ticketData.add(res);
+					
+					return ticketData;
+				}
+			}
+			
+			if(report.getId() == 3943l) { 	// 7P baseline
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				
 				List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
@@ -2648,6 +2719,10 @@ public class DashboardAction extends ActionSupport {
 						int buildingScore = 0;
 						for(WorkOrderContext workorder:workorders) {
 							
+							if( !(workorder.getSubject().contains("Daily Maintenance for IBMS Ops") || workorder.getSubject().contains("Fortnightly Maintenance for IBMS Ops") || workorder.getSubject().contains(" Monthly Maintenance for IBMS Ops"))) {
+								
+								continue;
+							}
 							if(workorder.getResource().getId() != building.getId()) {
 								continue;
 							}
@@ -2703,7 +2778,7 @@ public class DashboardAction extends ActionSupport {
 				}
 			}
 			// building
-			if(report.getId() == 3944l) { 	//5
+			if(report.getId() == 3944l) { 	//1B
 
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				
@@ -2766,7 +2841,7 @@ public class DashboardAction extends ActionSupport {
 				}
 			}
 			
-			if(report.getId() == 3945l) { 	//7
+			if(report.getId() == 3945l) { 	//7B
 
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				
@@ -2789,6 +2864,10 @@ public class DashboardAction extends ActionSupport {
 						for(WorkOrderContext workorder:workorders) {
 							
 							int buildingScore = 0;
+							if( !(workorder.getSubject().contains("Daily Maintenance for IBMS Ops") || workorder.getSubject().contains("Fortnightly Maintenance for IBMS Ops") || workorder.getSubject().contains(" Monthly Maintenance for IBMS Ops"))) {
+								
+								continue;
+							}
 							if(workorder.getResource().getId() != report.getReportSpaceFilterContext().getBuildingId()) {
 								continue;
 							}
@@ -2844,7 +2923,7 @@ public class DashboardAction extends ActionSupport {
 				}
 			}
 			
-			if(report.getId() == 3946l) { 	//8
+			if(report.getId() == 3946l) { 	//6B
 
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				
@@ -2866,6 +2945,10 @@ public class DashboardAction extends ActionSupport {
 							int passed = 0,failed = 0;
 							JSONObject buildingres = new JSONObject();
 							
+							if( !(workorder.getSubject().contains("Daily Maintenance for IBMS Ops") || workorder.getSubject().contains("Fortnightly Maintenance for IBMS Ops") || workorder.getSubject().contains(" Monthly Maintenance for IBMS Ops"))) {
+								
+								continue;
+							}
 							if(workorder.getResource().getId() != report.getReportSpaceFilterContext().getBuildingId()) {
 								continue;
 							}
@@ -2936,7 +3019,7 @@ public class DashboardAction extends ActionSupport {
 				}
 			}
 			
-			if(report.getId() == 3947l)	//9
+			if(report.getId() == 3947l)	//6P
 			{
 			 	
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -2961,6 +3044,10 @@ public class DashboardAction extends ActionSupport {
 						JSONArray resArray = new JSONArray();
 						for(WorkOrderContext workorder:workorders) {
 							
+							if( !(workorder.getSubject().contains("Daily Maintenance for IBMS Ops") || workorder.getSubject().contains("Fortnightly Maintenance for IBMS Ops") || workorder.getSubject().contains(" Monthly Maintenance for IBMS Ops"))) {
+								
+								continue;
+							}
 							if(workorder.getResource().getId() != building.getId()) {
 								continue;
 							}
@@ -3005,12 +3092,12 @@ public class DashboardAction extends ActionSupport {
 							}
 						}
 						JSONObject res = new JSONObject();
-						res.put("label", "Passed");
+						res.put("label", "Met");
 						res.put("value", passed);
 						resArray.add(res);
 						
 						res = new JSONObject();
-						res.put("label", "Failed");
+						res.put("label", "Not Met");
 						res.put("value", failed);
 						resArray.add(res);
 						
@@ -3025,6 +3112,504 @@ public class DashboardAction extends ActionSupport {
 					
 					return ticketData;
 				}
+			}
+			if(report.getId() == 2382l) { // B3
+
+				
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				
+				List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getAllPMs(AccountUtil.getCurrentOrg().getId(),true);
+					
+				for(PreventiveMaintenance pm :pms) {
+					
+					if(!(pm.getName().contains("Daily : Cross verify BMS readings with Meter Readings") || pm.getName().contains("Daily : Cleaning of IBMS equipments") || pm.getName().contains("Daily : BMS hardware/software problems checking") || pm.getName().contains("Daily : Ensure that all equipment operate at design"))) {
+						continue;
+					}
+					
+					int failed =0,passed = 0;
+					 List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrderFromPMId(pm.getId());
+					 
+					 for(WorkOrderContext workorder : workorders) {
+						 
+						if(workorder.getResource().getId() != report.getReportSpaceFilterContext().getBuildingId()) {
+							continue;
+						}
+						if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
+							continue;
+						}
+						Command chain = FacilioChainFactory.getGetTasksOfTicketCommand();
+						FacilioContext context = new FacilioContext();
+						
+						context.put(FacilioConstants.ContextNames.ID, workorder.getId());
+						context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
+						context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME,"Tasks");
+						context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(FacilioConstants.ContextNames.TASK));
+						context.put("isAsMap", true);
+						chain.execute(context);
+						
+						List<Map<String, Object>> taskMap = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
+						for(Map<String, Object> task : taskMap) {
+							
+							if(task.get("inputValue") != null) {
+								
+								String subject = (String) task.get("inputValue");
+								subject = subject.trim();
+								
+								if (subject.startsWith("Not")) {
+									failed++;
+								}
+								else {
+									passed++;
+								}
+							}
+						}
+					}
+					
+					JSONArray resArray = new JSONArray();
+						
+					JSONObject res = new JSONObject();
+					res.put("label", "Passed");
+					res.put("value", passed);
+					resArray.add(res);
+					
+					res = new JSONObject();
+					res.put("label", "Failed");
+					res.put("value", failed);
+					resArray.add(res);
+					
+					JSONObject buildingres = new JSONObject();
+					buildingres.put("label", pm.getName());
+					buildingres.put("value", resArray);
+					
+					ticketData.add(buildingres);
+				}
+				return ticketData;
+			}
+			if(true && true) {
+				
+				
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				
+				List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getAllPMs(AccountUtil.getCurrentOrg().getId(),true);
+					
+				for(BuildingContext building : SpaceAPI.getAllBuildings()) {
+					
+					for(PreventiveMaintenance pm :pms) {
+						
+						int failed =0,passed = 0;
+						
+						if(pm.getWoTemplate().getResourceId() !=  building.getId()) {
+							continue;
+						}
+						
+						if(pm.getTitle().contains("Fortnightly Maintenance") || pm.getTitle().contains("Monthly Maintenance") || pm.getTitle().contains("Weekly :")) {
+							continue;
+						}
+						
+						Long millis[] = {1533267000000l,1533180600000l,1533094200000l,1533007800000l,1532921400000l,1532835000000l,1532748600000l,1532662200000l,1532575800000l,1532489400000l,1532403000000l,1532316600000l,1532230200000l,1532143800000l,1532057400000l,1531971000000l};
+						
+						Long fourHourMillis = 14400000l;
+						 List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrderFromPMId(pm.getId());
+						 
+						 for(int i=0; i < workorders.size() ;i++) {
+							 
+							 WorkOrderContext workorder =  workorders.get(i);
+							 
+							 if(workorder.getResource().getId() != report.getReportSpaceFilterContext().getBuildingId()) {
+									continue;
+							 }
+							 long createdTime = millis[i];	//wo
+							 
+							 long estStartTime = createdTime;				//tick
+							 long accStartTime = createdTime;				//tick
+							 long estEndTime = createdTime+fourHourMillis;	//tick
+							 long accEndTime = estEndTime - 100000;			//tick
+							 
+							 long modtime = accEndTime;		//wo
+							 
+							 workorder.setCreatedTime(createdTime);
+							 workorder.setModifiedTime(modtime);
+							 
+							 workorder.setEstimatedStart(estStartTime);
+							 workorder.setActualWorkStart(accStartTime);
+							 
+							 workorder.setEstimatedEnd(estEndTime);
+							 workorder.setActualWorkEnd(accEndTime);
+							 
+							 UpdateRecordBuilder<WorkOrderContext> updateBuilder = new UpdateRecordBuilder<WorkOrderContext>()
+										.moduleName(FacilioConstants.ContextNames.WORK_ORDER)
+										.fields(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER))
+										.andCondition(CriteriaAPI.getIdCondition(workorder.getId(), module));
+								
+							updateBuilder.update(workorder);
+						 }
+					}
+				}
+			}
+			
+			if(report.getId() == 2382l) { // B4a
+
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				
+				List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getAllPMs(AccountUtil.getCurrentOrg().getId(),true);
+				
+				for(PreventiveMaintenance pm :pms) {
+					
+					if(!(pm.getName().contains("Daily : Cross verify BMS readings with Meter Readings") || pm.getName().contains("Daily : Cleaning of IBMS equipments") || pm.getName().contains("Daily : BMS hardware/software problems checking") || pm.getName().contains("Daily : Ensure that all equipment operate at design"))) {
+						continue;
+					}
+					int failed =0,passed = 0;
+					 List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrderFromPMId(pm.getId());
+					 
+					 for(WorkOrderContext workorder : workorders) {
+						
+						if(workorder.getResource().getId() != report.getReportSpaceFilterContext().getBuildingId()) {
+							continue;
+						}
+						
+						if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
+							continue;
+						}
+									
+						Command chain = FacilioChainFactory.getGetTasksOfTicketCommand();
+						FacilioContext context = new FacilioContext();
+						
+						context.put(FacilioConstants.ContextNames.ID, workorder.getId());
+						context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
+						context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME,"Tasks");
+						context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(FacilioConstants.ContextNames.TASK));
+						context.put("isAsMap", true);
+						chain.execute(context);
+						
+						List<Map<String, Object>> taskMap = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
+						for(Map<String, Object> task : taskMap) {
+							
+							if(task.get("inputValue") != null) {
+								
+								String subject = (String) task.get("inputValue");
+								subject = subject.trim();
+								
+								if (subject.startsWith("Not")) {
+									failed++;
+								}
+								else {
+									passed++;
+								}
+							}
+						}
+					}
+					 
+					JSONObject buildingres = new JSONObject();
+					buildingres.put("label", pm.getName());
+					buildingres.put("value", failed);
+					
+					ticketData.add(buildingres);
+				}
+			}
+			if(report.getId() == 2382l) { // B3b
+
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				
+				List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getAllPMs(AccountUtil.getCurrentOrg().getId(),true);
+				
+				for(PreventiveMaintenance pm :pms) {
+					
+					if(!(pm.getName().contains("Daily : Cross verify BMS readings with Meter Readings") || pm.getName().contains("Daily : Cleaning of IBMS equipments") || pm.getName().contains("Daily : BMS hardware/software problems checking") || pm.getName().contains("Daily : Ensure that all equipment operate at design"))) {
+						continue;
+					}
+					int failed =0,passed = 0;
+					 List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrderFromPMId(pm.getId());
+					 
+					 for(WorkOrderContext workorder : workorders) {
+						 if(workorder.getResource().getId() != report.getReportSpaceFilterContext().getBuildingId()) {
+								continue;
+							}
+						if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
+							continue;
+						}
+									
+						Command chain = FacilioChainFactory.getGetTasksOfTicketCommand();
+						FacilioContext context = new FacilioContext();
+						
+						context.put(FacilioConstants.ContextNames.ID, workorder.getId());
+						context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
+						context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME,"Tasks");
+						context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(FacilioConstants.ContextNames.TASK));
+						context.put("isAsMap", true);
+						chain.execute(context);
+						
+						List<Map<String, Object>> taskMap = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
+						for(Map<String, Object> task : taskMap) {
+							
+							if(task.get("inputValue") != null) {
+								
+								String subject = (String) task.get("inputValue");
+								subject = subject.trim();
+								
+								if (subject.startsWith("Not")) {
+									failed++;
+								}
+								else {
+									passed++;
+								}
+							}
+						}
+					}
+					 
+					JSONObject buildingres = new JSONObject();
+					buildingres.put("label", pm.getName());
+					buildingres.put("value", passed);
+					
+					ticketData.add(buildingres);
+				}
+			}
+			
+			if(report.getId() == 2382l) { // 3P
+
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				
+				List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getAllPMs(AccountUtil.getCurrentOrg().getId(),true);
+				
+				Map<Long,Integer> passedMap = new HashMap<>();
+				Map<Long,Integer> failedMap = new HashMap<>();
+				for(PreventiveMaintenance pm :pms) {
+					
+					if(!(pm.getName().contains("Daily : Cross verify BMS readings with Meter Readings") || pm.getName().contains("Daily : Cleaning of IBMS equipments") || pm.getName().contains("Daily : BMS hardware/software problems checking") || pm.getName().contains("Daily : Ensure that all equipment operate at design"))) {
+						continue;
+					}
+					int failed =0,passed = 0;
+					 List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrderFromPMId(pm.getId());
+					 
+					 for(WorkOrderContext workorder : workorders) {
+						 
+						if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
+							continue;
+						}
+						Command chain = FacilioChainFactory.getGetTasksOfTicketCommand();
+						FacilioContext context = new FacilioContext();
+						
+						context.put(FacilioConstants.ContextNames.ID, workorder.getId());
+						context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
+						context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME,"Tasks");
+						context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(FacilioConstants.ContextNames.TASK));
+						context.put("isAsMap", true);
+						chain.execute(context);
+						
+						List<Map<String, Object>> taskMap = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
+						for(Map<String, Object> task : taskMap) {
+							
+							if(task.get("inputValue") != null) {
+								
+								String subject = (String) task.get("inputValue");
+								subject = subject.trim();
+								
+								if (subject.startsWith("Not")) {
+									failed++;
+								}
+								else {
+									passed++;
+								}
+							}
+						}
+						
+						if(passedMap.containsKey(workorder.getResource().getId())) {
+							
+							Integer passedValue = passedMap.get(workorder.getResource().getId());
+							passedValue = passedValue + passed;
+							passedMap.put(workorder.getResource().getId(), passedValue);
+						}
+						else {
+							passedMap.put(workorder.getResource().getId(), passed);
+						}
+						
+						if(failedMap.containsKey(workorder.getResource().getId())) {
+							
+							Integer failedValue = failedMap.get(workorder.getResource().getId());
+							failedValue = failedValue + failed;
+							failedMap.put(workorder.getResource().getId(), failedValue);
+						}
+						else {
+							failedMap.put(workorder.getResource().getId(), failed);
+						}
+					}
+				}
+				
+				JSONArray resArray = new JSONArray();
+				
+				for(BuildingContext building :SpaceAPI.getAllBuildings()) {
+					
+					Integer passed = passedMap.get(building.getId());
+					Integer failed = failedMap.get(building.getId());
+					
+					JSONObject res = new JSONObject();
+					res.put("label", "Passed");
+					res.put("value", passed);
+					resArray.add(res);
+					
+					res = new JSONObject();
+					res.put("label", "Failed");
+					res.put("value", failed);
+					resArray.add(res);
+					
+					JSONObject buildingres = new JSONObject();
+					buildingres.put("label", building.getName());
+					buildingres.put("value", resArray);
+					
+					ticketData.add(buildingres);
+				}
+				
+				return ticketData;
+			}
+			
+			if(report.getId() == 2382l) { // 4Pa
+
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				
+				List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getAllPMs(AccountUtil.getCurrentOrg().getId(),true);
+				
+				Map<Long,Integer> failedMap = new HashMap<>();
+				for(PreventiveMaintenance pm :pms) {
+					
+					if(!(pm.getName().contains("Daily : Cross verify BMS readings with Meter Readings") || pm.getName().contains("Daily : Cleaning of IBMS equipments") || pm.getName().contains("Daily : BMS hardware/software problems checking") || pm.getName().contains("Daily : Ensure that all equipment operate at design"))) {
+						continue;
+					}
+					int failed =0,passed = 0;
+					 List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrderFromPMId(pm.getId());
+					 
+					 for(WorkOrderContext workorder : workorders) {
+						 
+						if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
+							continue;
+						}
+						Command chain = FacilioChainFactory.getGetTasksOfTicketCommand();
+						FacilioContext context = new FacilioContext();
+						
+						context.put(FacilioConstants.ContextNames.ID, workorder.getId());
+						context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
+						context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME,"Tasks");
+						context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(FacilioConstants.ContextNames.TASK));
+						context.put("isAsMap", true);
+						chain.execute(context);
+						
+						List<Map<String, Object>> taskMap = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
+						for(Map<String, Object> task : taskMap) {
+							
+							if(task.get("inputValue") != null) {
+								
+								String subject = (String) task.get("inputValue");
+								subject = subject.trim();
+								
+								if (subject.startsWith("Not")) {
+									failed++;
+								}
+								else {
+									passed++;
+								}
+							}
+						}
+						
+						if(failedMap.containsKey(workorder.getResource().getId())) {
+							
+							Integer failedValue = failedMap.get(workorder.getResource().getId());
+							failedValue = failedValue + failed;
+							failedMap.put(workorder.getResource().getId(), failedValue);
+						}
+						else {
+							failedMap.put(workorder.getResource().getId(), failed);
+						}
+					}
+				}
+				
+				JSONArray resArray = new JSONArray();
+				
+				for(BuildingContext building :SpaceAPI.getAllBuildings()) {
+					
+					Integer failed = failedMap.get(building.getId());
+					
+					JSONObject buildingres = new JSONObject();
+					buildingres.put("label", building.getName());
+					buildingres.put("value", failed);
+					
+					ticketData.add(buildingres);
+				}
+				
+				return ticketData;
+			}
+			
+			if(report.getId() == 2382l) { // 4Pb
+
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				
+				List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getAllPMs(AccountUtil.getCurrentOrg().getId(),true);
+				
+				Map<Long,Integer> passedMap = new HashMap<>();
+				for(PreventiveMaintenance pm :pms) {
+					
+					if(!(pm.getName().contains("Daily : Cross verify BMS readings with Meter Readings") || pm.getName().contains("Daily : Cleaning of IBMS equipments") || pm.getName().contains("Daily : BMS hardware/software problems checking") || pm.getName().contains("Daily : Ensure that all equipment operate at design"))) {
+						continue;
+					}
+					int failed =0,passed = 0;
+					 List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrderFromPMId(pm.getId());
+					 
+					 for(WorkOrderContext workorder : workorders) {
+						 
+						if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
+							continue;
+						}
+						Command chain = FacilioChainFactory.getGetTasksOfTicketCommand();
+						FacilioContext context = new FacilioContext();
+						
+						context.put(FacilioConstants.ContextNames.ID, workorder.getId());
+						context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
+						context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME,"Tasks");
+						context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(FacilioConstants.ContextNames.TASK));
+						context.put("isAsMap", true);
+						chain.execute(context);
+						
+						List<Map<String, Object>> taskMap = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
+						for(Map<String, Object> task : taskMap) {
+							
+							if(task.get("inputValue") != null) {
+								
+								String subject = (String) task.get("inputValue");
+								subject = subject.trim();
+								
+								if (subject.startsWith("Not")) {
+									failed++;
+								}
+								else {
+									passed++;
+								}
+							}
+						}
+						
+						if(passedMap.containsKey(workorder.getResource().getId())) {
+							
+							Integer passedValue = passedMap.get(workorder.getResource().getId());
+							passedValue = passedValue + passed;
+							passedMap.put(workorder.getResource().getId(), passedValue);
+						}
+						else {
+							passedMap.put(workorder.getResource().getId(), passed);
+						}
+						
+					}
+				}
+				
+				JSONArray resArray = new JSONArray();
+				
+				for(BuildingContext building :SpaceAPI.getAllBuildings()) {
+					
+					Integer passed = passedMap.get(building.getId());
+					
+					JSONObject buildingres = new JSONObject();
+					buildingres.put("label", building.getName());
+					buildingres.put("value", passed);
+					
+					ticketData.add(buildingres);
+				}
+				
+				return ticketData;
 			}
 		}
 		
