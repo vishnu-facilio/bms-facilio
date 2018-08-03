@@ -2086,7 +2086,7 @@ public class DashboardAction extends ActionSupport {
 						JSONArray resArray = new JSONArray();
 						
 						JSONObject res = new JSONObject();
-						res.put("label", "In Time");
+						res.put("label", "On Time");
 						res.put("value", inTime);
 						resArray.add(res);
 						
@@ -2625,7 +2625,7 @@ public class DashboardAction extends ActionSupport {
 						JSONArray resArray = new JSONArray();
 						
 						JSONObject res = new JSONObject();
-						res.put("label", "In Time");
+						res.put("label", "On Time");
 						res.put("value", inTime);
 						resArray.add(res);
 						
@@ -2690,7 +2690,7 @@ public class DashboardAction extends ActionSupport {
 					}
 					
 					JSONObject res = new JSONObject();
-					res.put("label", "In Time");
+					res.put("label", "On Time");
 					res.put("value", inTime);
 					ticketData.add(res);
 					
