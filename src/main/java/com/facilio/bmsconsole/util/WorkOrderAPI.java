@@ -34,6 +34,19 @@ public class WorkOrderAPI {
 		}
 		return null;
 	}
+	public static List<WorkOrderContext> getWorkOrderFromPMId(long pmid) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+		SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
+														.module(module)
+														.beanClass(WorkOrderContext.class)
+														.select(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER))
+														.andCondition(CriteriaAPI.getCondition("PM_ID", "pmId", pmid+"", NumberOperators.EQUALS))
+														;
+		
+		return builder.get();
+	}
 	
 public static List<WorkOrderContext> getWorkOrders(long categoryId) throws Exception {
 		
