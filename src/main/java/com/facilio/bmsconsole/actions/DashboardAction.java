@@ -3814,51 +3814,53 @@ public class DashboardAction extends ActionSupport {
 						}
 						
 						JSONArray resList = new JSONArray();
-						for(String key:daily.keySet()) {
 							
+						LOGGER.log(Level.SEVERE, "daily --- "+daily);
+							
+						if(daily.containsKey("Critical Service")) {
+							value = daily.get("Critical Service");
+							if(value > 0) {
+								value = value / criticalCount;
+							}
 							JSONObject json = new JSONObject();
-							
-							if(daily.containsKey("Critical Service")) {
-								value = daily.get("Critical Service");
-								if(value > 0) {
-									value = value / criticalCount;
-								}
-								json.put("label", "Critical Service");
-								json.put("value", df.format(value * (40.0d/100.0d)));
-							}
-							
-							if(daily.containsKey("TAT")) {
-								value = daily.get("TAT");
-								if(value > 0) {
-									value = value / tatCount;
-								}
-								
-								json.put("label", "TAT");
-								json.put("value", df.format(value * (25.0d/100.0d)));
-								
-							}
-							if(daily.containsKey("PD&PSI")) {
-								value = daily.get("PD&PSI");
-								if(value > 0) {
-									value = value / pdCount;
-								}
-								json.put("label", "PD&PSI");
-								json.put("value", df.format(value * (10.0d/100.0d)));
-								
-							}
-							
-							if(daily.containsKey("Financials & Ops")) {
-								value = daily.get("Financials & Ops");
-								if(value > 0) {
-									value = value / fasCountdaily;
-								}
-								json.put("label", "Financials & Ops");
-								json.put("value", df.format(value * (25.0d/100.0d)));
-							}
-							
+							json.put("label", "Critical Service");
+							json.put("value", df.format(value * (40.0d/100.0d)));
 							resList.add(json);
 						}
 						
+						if(daily.containsKey("TAT")) {
+							value = daily.get("TAT");
+							if(value > 0) {
+								value = value / tatCount;
+							}
+							JSONObject json = new JSONObject();
+							json.put("label", "TAT");
+							json.put("value", df.format(value * (25.0d/100.0d)));
+							resList.add(json);
+							
+						}
+						if(daily.containsKey("PD&PSI")) {
+							value = daily.get("PD&PSI");
+							if(value > 0) {
+								value = value / pdCount;
+							}
+							JSONObject json = new JSONObject();
+							json.put("label", "PD&PSI");
+							json.put("value", df.format(value * (10.0d/100.0d)));
+							resList.add(json);
+						}
+						
+						if(daily.containsKey("Financials & Ops")) {
+							value = daily.get("Financials & Ops");
+							if(value > 0) {
+								value = value / fasCountdaily;
+							}
+							JSONObject json = new JSONObject();
+							json.put("label", "Financials & Ops");
+							json.put("value", df.format(value * (25.0d/100.0d)));
+							resList.add(json);
+						}
+							
 						JSONObject finalRes1 = new JSONObject();
 						
 						finalRes1.put("label", workorder.getCreatedTime());
