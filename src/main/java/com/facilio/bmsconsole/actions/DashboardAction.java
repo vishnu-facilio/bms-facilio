@@ -5909,7 +5909,7 @@ public class DashboardAction extends ActionSupport {
 				finalresJson.put("Criteria", "FAS");
 				finalresJson.put("A", "25%");
 				finalresJson.put("B", df.format(finValue/financialOpsCount));
-				finalresJson.put("C", df.format(finValue * (25.0d/100.0d)));
+				finalresJson.put("C", df.format((finValue/financialOpsCount) * (25.0d/100.0d)));
 				
 				reportData.add(finalresJson);
 			}
