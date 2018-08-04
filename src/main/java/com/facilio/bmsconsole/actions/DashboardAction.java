@@ -2409,7 +2409,7 @@ public class DashboardAction extends ActionSupport {
 					}
 				}
 			}
-			
+			this.dateFilter = dateFilter;
 			if(report.getId() == 3940l) { 	// 7P 
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				
@@ -3682,7 +3682,7 @@ public class DashboardAction extends ActionSupport {
 					
 					JSONObject newJSON = new JSONObject();
 					
-					newJSON.put("label", newJSON);
+					newJSON.put("label", name);
 					newJSON.put("value", json.get("C"));
 					
 					ticketData.add(newJSON);
