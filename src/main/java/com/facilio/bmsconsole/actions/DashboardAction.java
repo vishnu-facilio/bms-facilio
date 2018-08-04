@@ -3501,77 +3501,194 @@ public class DashboardAction extends ActionSupport {
 				return ticketData;
 			}
 			
-			if(report.getId() == 1234l) { // 4Pb
+			if(report.getId() == 4062l) { // 1NP
 
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				
-				List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getAllPMs(AccountUtil.getCurrentOrg().getId(),true);
-				
-				Map<Long,Integer> passedMap = new HashMap<>();
-				for(PreventiveMaintenance pm :pms) {
+				for( BuildingContext building :SpaceAPI.getAllBuildings()) {
 					
-					if(!(pm.getName().contains("Daily : Cross verify BMS readings with Meter Readings") || pm.getName().contains("Daily : Cleaning of IBMS equipments") || pm.getName().contains("Daily : BMS hardware/software problems checking") || pm.getName().contains("Daily : Ensure that all equipment operate at design"))) {
-						continue;
-					}
-					int failed =0,passed = 0;
-					 List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrderFromPMId(pm.getId());
-					 
-					 for(WorkOrderContext workorder : workorders) {
-						 
-						if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
-							continue;
-						}
-						Command chain = FacilioChainFactory.getGetTasksOfTicketCommand();
-						FacilioContext context = new FacilioContext();
-						
-						context.put(FacilioConstants.ContextNames.ID, workorder.getId());
-						context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
-						context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME,"Tasks");
-						context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(FacilioConstants.ContextNames.TASK));
-						context.put("isAsMap", true);
-						chain.execute(context);
-						
-						List<Map<String, Object>> taskMap = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
-						for(Map<String, Object> task : taskMap) {
-							
-							if(task.get("inputValue") != null) {
-								
-								String subject = (String) task.get("inputValue");
-								subject = subject.trim();
-								
-								if (subject.startsWith("Not")) {
-									failed++;
-								}
-								else {
-									passed++;
-								}
-							}
-						}
-						
-						if(passedMap.containsKey(workorder.getResource().getId())) {
-							
-							Integer passedValue = passedMap.get(workorder.getResource().getId());
-							passedValue = passedValue + passed;
-							passedMap.put(workorder.getResource().getId(), passedValue);
-						}
-						else {
-							passedMap.put(workorder.getResource().getId(), passed);
-						}
-						
-					}
-				}
-				
-				JSONArray resArray = new JSONArray();
-				
-				for(BuildingContext building :SpaceAPI.getAllBuildings()) {
+					buildingId = building.getId();
 					
-					Integer passed = passedMap.get(building.getId());
+					getUTCData();
+					
+					Iterator ittr = reportData.iterator();
+					
+					JSONArray newList = new JSONArray();
+					while(ittr.hasNext()) {
+						
+						JSONObject json = (JSONObject) ittr.next();
+						
+						Double score = (Double) json.get("C");
+						
+						String name = (String) json.get("Criteria");
+						
+						JSONObject newJSON = new JSONObject();
+						
+						newJSON.put("label", newJSON);
+						newJSON.put("value", score);
+						
+						newList.add(newJSON);
+					}
 					
 					JSONObject buildingres = new JSONObject();
 					buildingres.put("label", building.getName());
-					buildingres.put("value", passed);
-					
+					buildingres.put("value", newList);
 					ticketData.add(buildingres);
+				}
+				return ticketData;
+			}
+			
+			if(report.getId() == 4063l) { // 2NP
+
+				
+				for( BuildingContext building :SpaceAPI.getAllBuildings()) {
+					
+					buildingId = building.getId();
+					
+					getUTCData();
+					
+					Iterator ittr = reportData.iterator();
+					
+					Double score =  null;
+					while(ittr.hasNext()) {
+						
+						JSONObject json = (JSONObject) ittr.next();
+						
+						String name = (String) json.get("Criteria");
+						
+						if(name.contains("Critical Service")) {
+							score = (Double) json.get("B");
+							break;
+						}
+					}
+					
+					JSONObject buildingres = new JSONObject();
+					buildingres.put("label", building.getName());
+					buildingres.put("value", score);
+					ticketData.add(buildingres);
+				}
+				return ticketData;
+			}
+			
+			if(report.getId() == 4064l) { // 3NP
+
+				
+				for( BuildingContext building :SpaceAPI.getAllBuildings()) {
+					
+					buildingId = building.getId();
+					
+					getUTCData();
+					
+					Iterator ittr = reportData.iterator();
+					
+					Double score =  null;
+					while(ittr.hasNext()) {
+						
+						JSONObject json = (JSONObject) ittr.next();
+						
+						String name = (String) json.get("Criteria");
+						
+						if(name.contains("(TAT)")) {
+							score = (Double) json.get("B");
+							break;
+						}
+					}
+					
+					JSONObject buildingres = new JSONObject();
+					buildingres.put("label", building.getName());
+					buildingres.put("value", score);
+					ticketData.add(buildingres);
+				}
+				return ticketData;
+			}
+
+			if(report.getId() == 4065l) { // 4NP
+			
+				
+				for( BuildingContext building :SpaceAPI.getAllBuildings()) {
+					
+					buildingId = building.getId();
+					
+					getUTCData();
+					
+					Iterator ittr = reportData.iterator();
+					
+					Double score =  null;
+					while(ittr.hasNext()) {
+						
+						JSONObject json = (JSONObject) ittr.next();
+						
+						String name = (String) json.get("Criteria");
+						
+						if(name.contains("PD&PSI")) {
+							score = (Double) json.get("B");
+							break;
+						}
+					}
+					
+					JSONObject buildingres = new JSONObject();
+					buildingres.put("label", building.getName());
+					buildingres.put("value", score);
+					ticketData.add(buildingres);
+				}
+				return ticketData;
+			}
+			
+			if(report.getId() == 4066l) { // 5NP
+			
+				
+				for( BuildingContext building :SpaceAPI.getAllBuildings()) {
+					
+					buildingId = building.getId();
+					
+					getUTCData();
+					
+					Iterator ittr = reportData.iterator();
+					
+					Double score =  null;
+					while(ittr.hasNext()) {
+						
+						JSONObject json = (JSONObject) ittr.next();
+						
+						String name = (String) json.get("Criteria");
+						
+						if(name.contains("FAS")) {
+							score = (Double) json.get("B");
+							break;
+						}
+					}
+					
+					JSONObject buildingres = new JSONObject();
+					buildingres.put("label", building.getName());
+					buildingres.put("value", score);
+					ticketData.add(buildingres);
+				}
+				return ticketData;
+			}
+			
+			if(report.getId() == 4067l) { // 1NB
+
+				buildingId = report.getReportSpaceFilterContext().getBuildingId();
+				
+				BuildingContext building = SpaceAPI.getBuildingSpace(buildingId);
+				
+				getUTCData();
+				
+				Iterator ittr = reportData.iterator();
+				
+				while(ittr.hasNext()) {
+					
+					JSONObject json = (JSONObject) ittr.next();
+					
+					Double score = (Double) json.get("C");
+					
+					String name = (String) json.get("Criteria");
+					
+					JSONObject newJSON = new JSONObject();
+					
+					newJSON.put("label", newJSON);
+					newJSON.put("value", score);
+					
+					ticketData.add(newJSON);
 				}
 				
 				return ticketData;
@@ -5573,7 +5690,6 @@ public class DashboardAction extends ActionSupport {
 			if(workorders.isEmpty()) {
 				continue;
 			}
-			
 			for(WorkOrderContext workorder:workorders) {
 				
 				LOGGER.log(Level.SEVERE, "buildingId --- "+buildingId);
@@ -5793,8 +5909,8 @@ public class DashboardAction extends ActionSupport {
 				finalpercentRes.put("Financials & Ops", finValue * (25.0d/100.0d));
 				
 				finalresJson = new JSONObject();
-				finalresJson.put("Criteria", "PD&PSI");
-				finalresJson.put("A", "10%");
+				finalresJson.put("Criteria", "FAS");
+				finalresJson.put("A", "25%");
 				finalresJson.put("B", df.format(finValue/financialOpsCount));
 				finalresJson.put("C", df.format(finValue * (25.0d/100.0d)));
 				
