@@ -3503,7 +3503,7 @@ public class DashboardAction extends ActionSupport {
 			
 			if(report.getId() == 4062l) { // 1NP
 
-				
+				ticketData = new JSONArray();
 				for( BuildingContext building :SpaceAPI.getAllBuildings()) {
 					
 					buildingId = building.getId();
@@ -3537,7 +3537,7 @@ public class DashboardAction extends ActionSupport {
 			
 			if(report.getId() == 4063l) { // 2NP
 
-				
+				ticketData = new JSONArray();
 				for( BuildingContext building :SpaceAPI.getAllBuildings()) {
 					
 					buildingId = building.getId();
@@ -3569,7 +3569,7 @@ public class DashboardAction extends ActionSupport {
 			
 			if(report.getId() == 4064l) { // 3NP
 
-				
+				ticketData = new JSONArray();
 				for( BuildingContext building :SpaceAPI.getAllBuildings()) {
 					
 					buildingId = building.getId();
@@ -3601,7 +3601,7 @@ public class DashboardAction extends ActionSupport {
 
 			if(report.getId() == 4065l) { // 4NP
 			
-				
+				ticketData = new JSONArray();
 				for( BuildingContext building :SpaceAPI.getAllBuildings()) {
 					
 					buildingId = building.getId();
@@ -3633,7 +3633,7 @@ public class DashboardAction extends ActionSupport {
 			
 			if(report.getId() == 4066l) { // 5NP
 			
-				
+				ticketData = new JSONArray();
 				for( BuildingContext building :SpaceAPI.getAllBuildings()) {
 					
 					buildingId = building.getId();
@@ -3673,6 +3673,7 @@ public class DashboardAction extends ActionSupport {
 				
 				Iterator ittr = reportData.iterator();
 				
+				ticketData = new JSONArray();
 				while(ittr.hasNext()) {
 					
 					JSONObject json = (JSONObject) ittr.next();
