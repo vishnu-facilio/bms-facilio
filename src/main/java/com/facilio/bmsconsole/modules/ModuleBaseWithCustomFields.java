@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.modules;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.fw.BeanFactory;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.opensymphony.xwork2.util.Element;
@@ -20,6 +22,13 @@ public class ModuleBaseWithCustomFields {
 	private long moduleId = -1;
 	public long getModuleId() {
 		return moduleId;
+	}
+	public FacilioModule getModule() throws Exception {
+		if(moduleId > 0 ) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			return modBean.getModule(moduleId);
+		}
+		return null;
 	}
 	public void setModuleId(long moduleId) {
 		this.moduleId = moduleId;

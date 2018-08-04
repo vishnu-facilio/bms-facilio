@@ -26,6 +26,7 @@ public class ReportFieldContext {
 			FacilioField facilioField = new FacilioField();
 			facilioField.setName(reportFormulaContext.getName());
 			facilioField.setColumnName(reportFormulaContext.getFormula());
+			facilioField.setModule(reportFormulaContext.getModule());
 			if(reportFormulaContext.getDataType() != null) {
 				facilioField.setDataType(reportFormulaContext.getDataType());
 			}
