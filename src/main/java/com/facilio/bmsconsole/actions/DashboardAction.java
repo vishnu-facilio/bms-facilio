@@ -828,7 +828,7 @@ public class DashboardAction extends ActionSupport {
 			intervals= DateTimeUtil.getTimeIntervals((Long)dateFilter.get(0),(Long) dateFilter.get(1), minuteInterval);
 		}
 		
-		List<ReadingContext> readingValues = FormulaFieldAPI.calculateFormulaReadings(-1, derivation.getName(), derivation.getName(), intervals, workflow, false);
+		List<ReadingContext> readingValues = FormulaFieldAPI.calculateFormulaReadings(-1, derivation.getName(), derivation.getName(), intervals, workflow, false, false);
 		reportData = new JSONArray();
 		if (readingValues != null) {
 			readingValues.forEach(value -> {

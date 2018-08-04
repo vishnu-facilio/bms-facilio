@@ -28,6 +28,7 @@ public class ServerInfo extends TimerTask {
     private static long serverId = -1L;
     private static Connection connection;
     private static boolean localServerLeader = false;
+    private static String hostname;
 
     private static final long PING_TIME_INTERVAL = 65_000L;
 
@@ -58,6 +59,7 @@ public class ServerInfo extends TimerTask {
         String ip;
         try {
             ip = InetAddress.getLocalHost().getHostName();
+            hostname = ip;
             serverId = getServerId(ip);
             if(serverId == -1L) {
                 serverId = addServerInfo(ip);
@@ -65,6 +67,10 @@ public class ServerInfo extends TimerTask {
         } catch (UnknownHostException e) {
             LOGGER.info("Unable to set IP ");
         }
+    }
+
+    public static String getHostname() {
+        return hostname;
     }
 
     private static long getServerId(String ip) {

@@ -88,7 +88,7 @@ public class CalculatePostFormulaCommand implements Command {
 	private void calculateDependentFormulas(ReadingContext reading, Map<String, List<ReadingContext>> formulaMap, Set<String> completedFormulas, List<FormulaFieldContext> formulas, Map<String, FacilioField> fieldMap) throws Exception {
 		// TODO Auto-generated method stub
 		for (FormulaFieldContext formula : formulas) {
-			if (formula.getMatchedResources().contains(reading.getParentId())) {
+			if (formula.getMatchedResourcesIds().contains(reading.getParentId())) {
 				try {
 					if (reading.isNewReading()) {
 						calculateNewFormula(formula, reading, formulaMap, completedFormulas, fieldMap);
@@ -122,7 +122,7 @@ public class CalculatePostFormulaCommand implements Command {
 							FormulaFieldAPI.calculateHistoricalDataForSingleResource(formula.getId(), reading.getParentId(), minTime, maxTime);
 							intervals = Collections.singletonList(intervals.get(intervals.size() - 1));
 						}
-						List<ReadingContext> formulaReadings = FormulaFieldAPI.calculateFormulaReadings(reading.getParentId(), formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), false);
+						List<ReadingContext> formulaReadings = FormulaFieldAPI.calculateFormulaReadings(reading.getParentId(), formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), false, false);
 						LOGGER.info("Time taken for formula calculation of : "+formula.getName()+" for "+reading.getParentId()+" is "+(System.currentTimeMillis() - startTime));
 						if (formulaReadings != null && !formulaReadings.isEmpty()) {
 							List<ReadingContext> existingReadings = formulaMap.get(formula.getReadingField().getModule().getName());
@@ -157,7 +157,7 @@ public class CalculatePostFormulaCommand implements Command {
 					if (formula.getWorkflow().getDependentFieldIds().contains(field.getId())) {
 						oldReading = getOldReading(formula, startTime, endTime);
 						List<DateRange> intervals = Collections.singletonList(new DateRange(startTime, endTime));
-						List<ReadingContext> formulaReadings = FormulaFieldAPI.calculateFormulaReadings(reading.getParentId(), formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), false);
+						List<ReadingContext> formulaReadings = FormulaFieldAPI.calculateFormulaReadings(reading.getParentId(), formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), false, false);
 						if (formulaReadings != null && !formulaReadings.isEmpty()) {
 							ReadingContext newReading = formulaReadings.get(0);
 							if (oldReading != null) {

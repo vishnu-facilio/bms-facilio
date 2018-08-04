@@ -14,7 +14,7 @@ public class GetAllFormulasOfTypeCommand implements Command {
 		// TODO Auto-generated method stub
 		FormulaFieldType type = (FormulaFieldType) context.get(FacilioConstants.ContextNames.FORMULA_FIELD_TYPE);
 		if (type != null) {
-			context.put(FacilioConstants.ContextNames.FORMULA_LIST, FormulaFieldAPI.getAllFormulaFieldsOfType(type));
+			context.put(FacilioConstants.ContextNames.FORMULA_LIST, FormulaFieldAPI.getAllFormulaFieldsOfType(type, true));
 		}
 		else {
 			throw new IllegalArgumentException("Type cannot be null");

@@ -75,7 +75,7 @@ public class CalculatePreFormulaCommand implements Command {
 		Map<String, Object> data = reading.getReadings();
 		if (formulas != null && !formulas.isEmpty() && data != null && !data.isEmpty()) {
 			for (FormulaFieldContext formula : formulas) {
-				if (formula.getMatchedResources().contains(reading.getParentId())) {
+				if (formula.getMatchedResourcesIds().contains(reading.getParentId())) {
 					formula.getWorkflow().setIgnoreNullParams(true);
 					Map<String, Object> params = FieldUtil.getAsProperties(reading);
 					params.put("resourceId", reading.getParentId());

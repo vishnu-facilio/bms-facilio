@@ -186,7 +186,7 @@ public class FormulaFieldAPI {
 														.andCondition(CriteriaAPI.getIdCondition(id, module))
 														;
 		
-		List<FormulaFieldContext> enpiList = getFormulaFieldsFromProps(selectBuilder.get());
+		List<FormulaFieldContext> enpiList = getFormulaFieldsFromProps(selectBuilder.get(), false);
 		if (enpiList != null && !enpiList.isEmpty()) {
 			return enpiList.get(0);
 		}
@@ -208,14 +208,14 @@ public class FormulaFieldAPI {
 														.andCondition(CriteriaAPI.getCondition(readingField, String.valueOf(readingFieldId), PickListOperators.IS))
 														;
 		
-		List<FormulaFieldContext> enpiList = getFormulaFieldsFromProps(selectBuilder.get());
+		List<FormulaFieldContext> enpiList = getFormulaFieldsFromProps(selectBuilder.get(), false);
 		if (enpiList != null && !enpiList.isEmpty()) {
 			return enpiList.get(0);
 		}
 		return null;
 	}
 	
-	public static List<ReadingContext> calculateFormulaReadings(long resourceId, String moduleName, String fieldName, List<DateRange> intervals, WorkflowContext workflow, boolean ignoreNullValues) throws Exception {
+	public static List<ReadingContext> calculateFormulaReadings(long resourceId, String moduleName, String fieldName, List<DateRange> intervals, WorkflowContext workflow, boolean ignoreNullValues, boolean addValue) throws Exception {
 		if (intervals != null && !intervals.isEmpty()) {
 			long minTime = intervals.get(0).getStartTime();
 			long maxTime = intervals.get(intervals.size() - 1).getEndTime();
@@ -244,6 +244,16 @@ public class FormulaFieldAPI {
 						reading.addReading("startTime", iStartTime);
 						reading.setTtime(iEndTime);
 						readings.add(reading);
+						
+						if (addValue) {
+							FacilioContext context = new FacilioContext();
+							context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+							context.put(FacilioConstants.ContextNames.READING, reading);
+	//						context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS, false);
+							
+							Chain addReadingChain = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
+							addReadingChain.execute(context);
+						}
 					}
 				}
 				catch (Exception e) {
@@ -258,7 +268,7 @@ public class FormulaFieldAPI {
 		return null;
 	}
 	
-	public static List<FormulaFieldContext> getAllFormulaFieldsOfType(FormulaFieldType type) throws Exception {
+	public static List<FormulaFieldContext> getAllFormulaFieldsOfType(FormulaFieldType type, boolean fetchResources) throws Exception {
 		FacilioModule module = ModuleFactory.getFormulaFieldModule();
 		List<FacilioField> fields = FieldFactory.getFormulaFieldFields();
 		FacilioField formulaType = FieldFactory.getAsMap(fields).get("formulaFieldType");
@@ -269,7 +279,7 @@ public class FormulaFieldAPI {
 														.andCondition(CriteriaAPI.getCondition(formulaType, String.valueOf(type.getValue()), NumberOperators.EQUALS))
 														;
 		
-		return getFormulaFieldsFromProps(selectBuilder.get());
+		return getFormulaFieldsFromProps(selectBuilder.get(), fetchResources);
 	}
 	
 	public static List<FormulaFieldContext> getActiveScheduledFormulasOfFrequencyType(List<Integer> types) throws Exception {
@@ -289,7 +299,7 @@ public class FormulaFieldAPI {
 														.andCondition(CriteriaAPI.getCondition(active, String.valueOf(true), BooleanOperators.IS))
 														;
 		
-		return getFormulaFieldsFromProps(selectBuilder.get());
+		return getFormulaFieldsFromProps(selectBuilder.get(), false);
 		
 	}
 	
@@ -309,7 +319,7 @@ public class FormulaFieldAPI {
 													.andCustomWhere("WORKFLOW_ID IN (SELECT WORKFLOW_ID FROM Workflow_Field WHERE ORGID = ? AND FIELD_ID IN ("+StringUtils.join(fieldIds, ",")+"))", AccountUtil.getCurrentOrg().getId())
 													;
 
-		return getFormulaFieldsFromProps(selectBuilder.get());
+		return getFormulaFieldsFromProps(selectBuilder.get(), false);
 	}
 	
 	public static Map<String, List<FormulaFieldContext>> getActivePreFormulasOfModule(Collection<String> moduleNames) throws Exception {
@@ -336,7 +346,7 @@ public class FormulaFieldAPI {
 				.andCondition(CriteriaAPI.getCondition(moduleIdField, moduleIds, PickListOperators.IS))
 				;
 
-		List<FormulaFieldContext> formulas = getFormulaFieldsFromProps(selectBuilder.get());
+		List<FormulaFieldContext> formulas = getFormulaFieldsFromProps(selectBuilder.get(), false);
 		if (formulas != null && !formulas.isEmpty()) {
 			Map<String, List<FormulaFieldContext>> formulaMap = new HashMap<>();
 			for (FormulaFieldContext formula : formulas) {
@@ -439,40 +449,53 @@ public class FormulaFieldAPI {
 		return null;
 	}
 	
-	private static List<FormulaFieldContext> getFormulaFieldsFromProps (List<Map<String, Object>> props) throws Exception {
+	private static List<FormulaFieldContext> getFormulaFieldsFromProps (List<Map<String, Object>> props, boolean fetchResources) throws Exception {
 		if( props != null && !props.isEmpty()) {
-			List<FormulaFieldContext> enpiList = new ArrayList<>();
+			List<FormulaFieldContext> formulaList = new ArrayList<>();
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			List<Long> workflowIds = new ArrayList<>();
+			List<Long> resourceIds = new ArrayList<>();
 			for (Map<String, Object> prop : props) {
 				FormulaFieldContext formula = FieldUtil.getAsBeanFromMap(prop, FormulaFieldContext.class);
 				formula.setReadingField(modBean.getField(formula.getReadingFieldId()));
-				enpiList.add(formula);
+				formulaList.add(formula);
 				workflowIds.add(formula.getWorkflowId());
 				fetchInclusions(formula);
-				fetchMatchedResources(formula);
+				fetchMatchedResources(formula, fetchResources);
 				FacilioModule module = modBean.getModule(formula.getModuleId());
 				formula.setModuleName(module.getName());
+				if (fetchResources && formula.getResourceId() != -1) {
+					resourceIds.add(formula.getResourceId());
+				}
 			}
 			
 			Map<Long, WorkflowContext> workflowMap = WorkflowUtil.getWorkflowsAsMap(workflowIds, true);
 			Map<Long, List<Long>> dependentFieldMap = WorkflowUtil.getDependentFieldsIdsAsMap(workflowIds);
-			for (FormulaFieldContext enpi : enpiList) {
-				WorkflowContext workflow = workflowMap.get(enpi.getWorkflowId());
+			
+			Map<Long, ResourceContext> resourceMap = null;
+			if (fetchResources && !resourceIds.isEmpty()) {
+				resourceMap = ResourceAPI.getResourceAsMapFromIds(resourceIds);
+			}
+			
+			for (FormulaFieldContext formula : formulaList) {
+				WorkflowContext workflow = workflowMap.get(formula.getWorkflowId());
 				if (dependentFieldMap != null && !dependentFieldMap.isEmpty()) {
 					workflow.setDependentFieldIds(dependentFieldMap.get(workflow.getId()));
 				}
-				enpi.setWorkflow(workflow);
+				formula.setWorkflow(workflow);
+				if (fetchResources && formula.getResourceId() != -1) {
+					formula.setMatchedResources(Collections.singletonList(resourceMap.get(formula.getResourceId())));
+				}
 			}
 			
-			return enpiList;
+			return formulaList;
 		}
 		return null;
 	}
 	
-	private static void fetchMatchedResources (FormulaFieldContext field) throws Exception {
+	private static void fetchMatchedResources (FormulaFieldContext field, boolean fetchResources) throws Exception {
 		if (field.getResourceTypeEnum() == ResourceType.ONE_RESOURCE) {
-			field.setMatchedResources(Collections.singletonList(field.getResourceId()));
+			field.setMatchedResourcesIds(Collections.singletonList(field.getResourceId()));
 			return;
 		}
 		else {
@@ -503,7 +526,10 @@ public class FormulaFieldAPI {
 			}
 			if (matchedResources != null && !matchedResources.isEmpty()) {
 				List<Long> resourceIds = matchedResources.stream().map(ResourceContext::getId).collect(Collectors.toList());
-				field.setMatchedResources(resourceIds);
+				field.setMatchedResourcesIds(resourceIds);
+				if (fetchResources) {
+					field.setMatchedResources(matchedResources);
+				}
 			}
 		}
 	}
@@ -606,7 +632,8 @@ public class FormulaFieldAPI {
 			case HOURLY:
 				return DateTimeUtil.getMonthStartTime();
 			case DAILY:
-				return DateTimeUtil.getDayStartTime(-90);
+				//return DateTimeUtil.getDayStartTime(-90);
+				return DateTimeUtil.getYearStartTime(); //Temp for Al Seef
 			case WEEKLY:
 			case MONTHLY:
 				return DateTimeUtil.getMonthStartTime(-12);
@@ -637,62 +664,44 @@ public class FormulaFieldAPI {
 	public static void historicalCalculation(FormulaFieldContext formula, DateRange range, long singleResourceId) throws Exception {
 		List<DateRange> intervals = getIntervals(formula, range);
 		if (intervals != null && !intervals.isEmpty()) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			List<ReadingContext> readings = new ArrayList<>();
-			List<ReadingContext> lastReadings = new ArrayList<>();
+			int deletedData = deleteOlderData(range.getStartTime(), range.getEndTime(), formula.getMatchedResourcesIds(), formula.getReadingField().getModule().getName());
+			LOGGER.info("Deleted rows for formula : "+formula.getName()+" between "+range+" is : "+deletedData);
 			
+			List<ReadingContext> readings = new ArrayList<>();
 			if (singleResourceId != -1) {
-				if (formula.getMatchedResources().contains(singleResourceId)) {
-					List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(singleResourceId, formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), formula.getTriggerTypeEnum() == TriggerType.SCHEDULE);
+				if (formula.getMatchedResourcesIds().contains(singleResourceId)) {
+					List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(singleResourceId, formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), formula.getTriggerTypeEnum() == TriggerType.SCHEDULE, true);
 					if (currentReadings != null && !currentReadings.isEmpty()) {
 						readings.addAll(currentReadings);
-						lastReadings.add(readings.get(readings.size() - 1));
 					}
 				}
 			}
 			else {
-				for (Long resourceId : formula.getMatchedResources()) {
-					List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(resourceId, formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), formula.getTriggerTypeEnum() == TriggerType.SCHEDULE);
+				for (Long resourceId : formula.getMatchedResourcesIds()) {
+					List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(resourceId, formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), formula.getTriggerTypeEnum() == TriggerType.SCHEDULE, true);
 					if (currentReadings != null && !currentReadings.isEmpty()) {
 						readings.addAll(currentReadings);
-						lastReadings.add(readings.get(readings.size() - 1));
 					}
 				}
 			}
 			
-			if (!readings.isEmpty()) {
-				int deletedData = deleteOlderData(range.getStartTime(), range.getEndTime(), formula.getMatchedResources(), formula.getReadingField().getModule().getName());
-				LOGGER.info("Deleted rows for formula : "+formula.getName()+" between "+range+" is : "+deletedData);
-				LOGGER.info("Historical Data to be added for formula "+readings.size());
-				
-				FacilioContext context = new FacilioContext();
-				context.put(FacilioConstants.ContextNames.MODULE_NAME, formula.getReadingField().getModule().getName());
-				context.put(FacilioConstants.ContextNames.READINGS, readings);
-//				context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS, false);
-				
-				Chain addReadingChain = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
-				addReadingChain.execute(context);
-			
-				List<FacilioField> fieldsList = modBean.getAllFields(formula.getReadingField().getModule().getName());
-				ReadingsAPI.updateReadingDataMeta(fieldsList, lastReadings, null);
-				
-				if (formula.getTriggerTypeEnum() == TriggerType.SCHEDULE) {
-					List<FormulaFieldContext> dependentFormulas = FormulaFieldAPI.getActiveFormulasDependingOnFields(TriggerType.SCHEDULE, Collections.singletonList(formula.getReadingField().getId()));
-					if (dependentFormulas != null && !dependentFormulas.isEmpty()) {
-						for (FormulaFieldContext currentFormula : dependentFormulas) {
-							if (singleResourceId != -1 ) {
-								if (currentFormula.getMatchedResources().contains(singleResourceId)) {
-									List<Long> dependentFieldIds = currentFormula.getWorkflow().getDependentFieldIds();
-									if (dependentFieldIds.contains(formula.getReadingField().getFieldId())) {
-										calculateHistoricalDataForSingleResource(currentFormula.getId(), singleResourceId, range.getStartTime(), range.getEndTime());
-									}
-								}
-							}
-							else{
+			LOGGER.info("Historical Data to be added for formula "+readings.size());
+			if (formula.getTriggerTypeEnum() == TriggerType.SCHEDULE) {
+				List<FormulaFieldContext> dependentFormulas = FormulaFieldAPI.getActiveFormulasDependingOnFields(TriggerType.SCHEDULE, Collections.singletonList(formula.getReadingField().getId()));
+				if (dependentFormulas != null && !dependentFormulas.isEmpty()) {
+					for (FormulaFieldContext currentFormula : dependentFormulas) {
+						if (singleResourceId != -1 ) {
+							if (currentFormula.getMatchedResourcesIds().contains(singleResourceId)) {
 								List<Long> dependentFieldIds = currentFormula.getWorkflow().getDependentFieldIds();
 								if (dependentFieldIds.contains(formula.getReadingField().getFieldId())) {
-									recalculateHistoricalData(currentFormula.getId(), range);
+									calculateHistoricalDataForSingleResource(currentFormula.getId(), singleResourceId, range.getStartTime(), range.getEndTime());
 								}
+							}
+						}
+						else{
+							List<Long> dependentFieldIds = currentFormula.getWorkflow().getDependentFieldIds();
+							if (dependentFieldIds.contains(formula.getReadingField().getFieldId())) {
+								recalculateHistoricalData(currentFormula.getId(), range);
 							}
 						}
 					}
