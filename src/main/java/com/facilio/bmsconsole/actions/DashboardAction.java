@@ -3517,14 +3517,12 @@ public class DashboardAction extends ActionSupport {
 						
 						JSONObject json = (JSONObject) ittr.next();
 						
-						Double score = (Double) json.get("C");
-						
 						String name = (String) json.get("Criteria");
 						
 						JSONObject newJSON = new JSONObject();
 						
 						newJSON.put("label", newJSON);
-						newJSON.put("value", score);
+						newJSON.put("value", json.get("C"));
 						
 						newList.add(newJSON);
 					}
@@ -3548,7 +3546,7 @@ public class DashboardAction extends ActionSupport {
 					
 					Iterator ittr = reportData.iterator();
 					
-					Double score =  null;
+					Object score =  null;
 					while(ittr.hasNext()) {
 						
 						JSONObject json = (JSONObject) ittr.next();
@@ -3556,7 +3554,7 @@ public class DashboardAction extends ActionSupport {
 						String name = (String) json.get("Criteria");
 						
 						if(name.contains("Critical Service")) {
-							score = (Double) json.get("B");
+							score = json.get("B");
 							break;
 						}
 					}
@@ -3580,7 +3578,7 @@ public class DashboardAction extends ActionSupport {
 					
 					Iterator ittr = reportData.iterator();
 					
-					Double score =  null;
+					Object score =  null;
 					while(ittr.hasNext()) {
 						
 						JSONObject json = (JSONObject) ittr.next();
@@ -3588,7 +3586,7 @@ public class DashboardAction extends ActionSupport {
 						String name = (String) json.get("Criteria");
 						
 						if(name.contains("(TAT)")) {
-							score = (Double) json.get("B");
+							score = json.get("B");
 							break;
 						}
 					}
@@ -3612,7 +3610,7 @@ public class DashboardAction extends ActionSupport {
 					
 					Iterator ittr = reportData.iterator();
 					
-					Double score =  null;
+					Object score =  null;
 					while(ittr.hasNext()) {
 						
 						JSONObject json = (JSONObject) ittr.next();
@@ -3620,7 +3618,7 @@ public class DashboardAction extends ActionSupport {
 						String name = (String) json.get("Criteria");
 						
 						if(name.contains("PD&PSI")) {
-							score = (Double) json.get("B");
+							score = json.get("B");
 							break;
 						}
 					}
@@ -3644,7 +3642,7 @@ public class DashboardAction extends ActionSupport {
 					
 					Iterator ittr = reportData.iterator();
 					
-					Double score =  null;
+					Object score =  null;
 					while(ittr.hasNext()) {
 						
 						JSONObject json = (JSONObject) ittr.next();
@@ -3652,7 +3650,7 @@ public class DashboardAction extends ActionSupport {
 						String name = (String) json.get("Criteria");
 						
 						if(name.contains("FAS")) {
-							score = (Double) json.get("B");
+							score = json.get("B");
 							break;
 						}
 					}
@@ -3679,14 +3677,12 @@ public class DashboardAction extends ActionSupport {
 					
 					JSONObject json = (JSONObject) ittr.next();
 					
-					Double score = (Double) json.get("C");
-					
 					String name = (String) json.get("Criteria");
 					
 					JSONObject newJSON = new JSONObject();
 					
 					newJSON.put("label", newJSON);
-					newJSON.put("value", score);
+					newJSON.put("value", json.get("C"));
 					
 					ticketData.add(newJSON);
 				}
