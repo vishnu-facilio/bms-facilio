@@ -5903,7 +5903,7 @@ public class DashboardAction extends ActionSupport {
 			if(financialOpsCount > 0) {
 				finalRes.put("Financials & Ops", finValue/financialOpsCount);
 				
-				finalpercentRes.put("Financials & Ops", finValue * (25.0d/100.0d));
+				finalpercentRes.put("Financials & Ops", (finValue/financialOpsCount) * (25.0d/100.0d));
 				
 				finalresJson = new JSONObject();
 				finalresJson.put("Criteria", "FAS");
