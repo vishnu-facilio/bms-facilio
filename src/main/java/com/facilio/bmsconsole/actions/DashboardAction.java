@@ -5549,7 +5549,7 @@ public class DashboardAction extends ActionSupport {
 		List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
 		
 		reportData = new JSONArray();
-		if(reportSpaceFilterContext != null) {
+		if(reportSpaceFilterContext != null && reportSpaceFilterContext.getBuildingId() != null) {
 			buildingId = reportSpaceFilterContext.getBuildingId();
 		}
 		
@@ -5558,12 +5558,16 @@ public class DashboardAction extends ActionSupport {
 		Map<String,Double> forthnightly = new HashMap<>();
 		Map<String,Double> monthly = new HashMap<>();
 		
-		int criticalCount = 0, tatCount =0, pdCount = 0, fasCountdaily = 0,fasCountforthnight = 0,fasCountmonthly = 0;
+		int criticalCount = 0, tatCount =0, pdCount = 0, fasCountdaily = 0, 
+			fasCountforthnight = 0,fasCountmonthly = 0;
 		
 		Map<String,Double> finalRes = new HashMap<>();
 		Map<String,Double> finalpercentRes = new HashMap<>();
 		for(TicketCategoryContext category:categories) {
 			
+			if(!(category.getName().equals("Auditing"))) {
+				continue;
+			}
 			List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrders(category.getId());
 			
 			if(workorders.isEmpty()) {
@@ -5576,9 +5580,11 @@ public class DashboardAction extends ActionSupport {
 				if(workorder.getResource() != null) {
 					LOGGER.log(Level.SEVERE, "workorder.getResource().getId() --- "+workorder.getResource().getId());
 				}
+				
 				if(buildingId != null && workorder.getResource() != null && workorder.getResource().getId() != buildingId) {
 					continue;
 				}
+				
 				LOGGER.log(Level.SEVERE, "dateFilter --- "+dateFilter);
 				LOGGER.log(Level.SEVERE, "workorder.getResource().getId() --- "+workorder.getCreatedTime());
 				
