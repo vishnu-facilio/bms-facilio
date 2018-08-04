@@ -2,6 +2,8 @@ package com.facilio.filters;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -37,10 +39,11 @@ public class IotFilter implements Filter {
         try {
         		AccountUtil.cleanCurrentAccount();
             BufferedReader reader = request.getReader();
-            String[] list = new String[2];
-            int i = 0;
+            List<String> list = new ArrayList<>();
             while ((line = reader.readLine()) != null) {
-            	 	list[i++] = line;
+            		if (!line.trim().isEmpty()) {
+            			list.add(line.trim());
+            		}
                 builder.append(line);
                 builder.append(System.lineSeparator());
             }
@@ -49,22 +52,25 @@ public class IotFilter implements Filter {
 	        	    if (!data.contains("-OPERATOR COMMAND-") && !data.contains("$WTPING")) {
 	        	    		AccountUtil.setCurrentAccount(78L);
 	        	    	
-		    		    	String source = list[1];
-		    	    		String message = list[0].substring(0, list[0].indexOf("::") - 1);
-		    	    		String timeStamp = list[0].substring(list[0].indexOf("::") + 3, list[0].indexOf("P:") - 1);
-		    	    		
-		    	    		JSONObject payload = new JSONObject();
-		    	    		payload.put("source", source.trim());
-		    	    		payload.put("entity", source.trim());
-		    	    		payload.put("message", message.trim());
-		    	    		payload.put("timestamp", DateTimeUtil.getTime(timeStamp.trim(), "HH:mm:ss dd/MM/yyyy"));
-		    	    		
-		    	    		LOGGER.warn(payload.toString());
-		    	    		
-		    	    		FacilioContext context = new FacilioContext();
-		    	    		context.put(EventConstants.EventContextNames.EVENT_PAYLOAD, payload);
-		    	    		Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
-		    	    		getAddEventChain.execute(context);
+	        	    		for(int i = 0; i < list.size(); i+=2) {
+	        	    			String info = list.get(i);
+	        	    			String source = list.get(i+1);
+			    	    		String message = info.substring(0, info.indexOf("::") - 1);
+			    	    		String timeStamp = info.substring(info.indexOf("::") + 3, info.indexOf("P:") - 1);
+			    	    		
+			    	    		JSONObject payload = new JSONObject();
+			    	    		payload.put("source", source.trim());
+			    	    		payload.put("entity", source.trim());
+			    	    		payload.put("message", message.trim());
+			    	    		payload.put("timestamp", DateTimeUtil.getTime(timeStamp.trim(), "HH:mm:ss dd/MM/yyyy"));
+			    	    		
+			    	    		LOGGER.warn(payload.toString());
+			    	    		
+			    	    		FacilioContext context = new FacilioContext();
+			    	    		context.put(EventConstants.EventContextNames.EVENT_PAYLOAD, payload);
+			    	    		Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
+			    	    		getAddEventChain.execute(context);
+	        	    		}
 		    	    }
             }
         } catch (Exception e) {
