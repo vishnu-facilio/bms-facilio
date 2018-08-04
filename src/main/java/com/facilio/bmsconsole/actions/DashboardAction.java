@@ -3521,7 +3521,7 @@ public class DashboardAction extends ActionSupport {
 						
 						JSONObject newJSON = new JSONObject();
 						
-						newJSON.put("label", newJSON);
+						newJSON.put("label", name);
 						newJSON.put("value", json.get("C"));
 						
 						newList.add(newJSON);
