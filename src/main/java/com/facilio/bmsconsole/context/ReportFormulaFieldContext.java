@@ -1,6 +1,9 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.fw.BeanFactory;
 
 public class ReportFormulaFieldContext extends ModuleBaseWithCustomFields {
 
@@ -24,5 +27,12 @@ public class ReportFormulaFieldContext extends ModuleBaseWithCustomFields {
 	}
 	public void setFormula(String formula) {
 		this.formula = formula;
+	}
+	public FacilioModule getModule() throws Exception {
+		if(super.getModuleId() > 0 ) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			return modBean.getModule(super.getModuleId());
+		}
+		return null;
 	}
 }
