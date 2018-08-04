@@ -41,9 +41,7 @@ public class IotFilter implements Filter {
             BufferedReader reader = request.getReader();
             List<String> list = new ArrayList<>();
             while ((line = reader.readLine()) != null) {
-            		if (!line.trim().isEmpty()) {
-            			list.add(line.trim());
-            		}
+            	    list.add(line.trim());
                 builder.append(line);
                 builder.append(System.lineSeparator());
             }
@@ -52,24 +50,34 @@ public class IotFilter implements Filter {
 	        	    if (!data.contains("-OPERATOR COMMAND-") && !data.contains("$WTPING")) {
 	        	    		AccountUtil.setCurrentAccount(78L);
 	        	    	
-	        	    		for(int i = 0; i < list.size(); i+=2) {
+	        	    		for(int i = 0; i < list.size(); i++) {
 	        	    			String info = list.get(i);
 	        	    			String source = list.get(i+1);
-			    	    		String message = info.substring(0, info.indexOf("::") - 1);
-			    	    		String timeStamp = info.substring(info.indexOf("::") + 3, info.indexOf("P:") - 1);
-			    	    		
-			    	    		JSONObject payload = new JSONObject();
-			    	    		payload.put("source", source.trim());
-			    	    		payload.put("entity", source.trim());
-			    	    		payload.put("message", message.trim());
-			    	    		payload.put("timestamp", DateTimeUtil.getTime(timeStamp.trim(), "HH:mm:ss dd/MM/yyyy"));
-			    	    		
-			    	    		LOGGER.warn(payload.toString());
-			    	    		
-			    	    		FacilioContext context = new FacilioContext();
-			    	    		context.put(EventConstants.EventContextNames.EVENT_PAYLOAD, payload);
-			    	    		Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
-			    	    		getAddEventChain.execute(context);
+	        	    			if (info.isEmpty() || source.isEmpty()) {
+	        	    				continue;
+	        	    			}
+	        	    			i++;
+	        	    			try {
+				    	    		String message = info.substring(0, info.indexOf("::") - 1);
+				    	    		String timeStamp = info.substring(info.indexOf("::") + 3, info.indexOf("P:") - 1);
+				    	    		
+				    	    		JSONObject payload = new JSONObject();
+				    	    		payload.put("source", source.trim());
+				    	    		payload.put("entity", source.trim());
+				    	    		payload.put("message", message.trim());
+				    	    		payload.put("timestamp", DateTimeUtil.getTime(timeStamp.trim(), "HH:mm:ss dd/MM/yyyy"));
+				    	    		
+				    	    		LOGGER.warn(payload.toString());
+				    	    		System.out.println(payload.toString());
+				    	    		
+				    	    		FacilioContext context = new FacilioContext();
+				    	    		context.put(EventConstants.EventContextNames.EVENT_PAYLOAD, payload);
+				    	    		Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
+				    	    		getAddEventChain.execute(context);
+	        	    			}
+			    	    		catch (Exception e) {
+			    	        		LOGGER.error("IOTFilter Exception :", e);
+			    	        }
 	        	    		}
 		    	    }
             }

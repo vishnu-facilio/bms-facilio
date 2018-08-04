@@ -21,6 +21,9 @@ public class ColumnFactory {
 		if (LookupSpecialTypeUtil.isSpecialType(moduleName)) {
 			name = moduleName;
 		}
+		if (!columns.containsKey(name)) {
+			name = moduleName + "-default";
+		}
 		if (columns.containsKey(name)) {
 			return new ArrayList(columns.get(name));
 		}
@@ -29,44 +32,17 @@ public class ColumnFactory {
 	
 	private static Map<String, List<ViewField>> initColumns() {
 		Map<String, List<ViewField>> columnMap = new HashMap<>();
-		columnMap.put("workorder-open", getDefaultViewColumns());
-		columnMap.put("workorder-overdue", getDefaultViewColumns());
-		columnMap.put("workorder-duetoday", getDefaultViewColumns());
 		columnMap.put("workorder-myopen", getMyWorkorderColumns());
-		columnMap.put("workorder-myteamopen", getDefaultViewColumns());
-		columnMap.put("workorder-unassigned", getDefaultViewColumns());
-		columnMap.put("workorder-closed", getDefaultViewColumns());
-		columnMap.put("workorder-resolved", getDefaultViewColumns());
-		columnMap.put("workorder-openfirealarms", getDefaultViewColumns());
-		columnMap.put("workorder-myoverdue", getDefaultViewColumns());
-		columnMap.put("workorder-myduetoday", getDefaultViewColumns());
-		columnMap.put("workorder-my", getDefaultViewColumns());
-		columnMap.put("workorder-all", getDefaultViewColumns());
-		columnMap.put("workorder-planned", getDefaultViewColumns());
-		columnMap.put("workorder-unplanned", getDefaultViewColumns());
 		
-		columnMap.put("alarm-active", getDefaultAlarmColumns());
-		columnMap.put("alarm-cleared", getDefaultAlarmColumns());
-		columnMap.put("alarm-critical", getDefaultAlarmColumns());
-		columnMap.put("alarm-major", getDefaultAlarmColumns());
-		columnMap.put("alarm-minor", getDefaultAlarmColumns());
-		columnMap.put("alarm-myalarms", getDefaultAlarmColumns());
-		columnMap.put("alarm-unassigned", getDefaultAlarmColumns());
-		columnMap.put("alarm-unacknowledged", getDefaultAlarmColumns());
-		columnMap.put("alarm-fire", getDefaultAlarmColumns());
-		columnMap.put("alarm-energy", getDefaultAlarmColumns());
-		columnMap.put("alarm-hvac", getDefaultAlarmColumns());
+//		columnMap.put("alarm-active", getDefaultAlarmColumns());
 		
-		columnMap.put("asset-all", getDefaultAssetsColumns());
-		columnMap.put("asset-energy", getDefaultAssetsColumns());
-		columnMap.put("asset-hvac", getDefaultAssetsColumns());
-		columnMap.put("asset-active", getDefaultAssetsColumns());
-		columnMap.put("asset-retired", getDefaultAssetsColumns());
+//		columnMap.put("asset-energy", getDefaultAssetsColumns());
 		
 		// For getting default columns for a module
 		columnMap.put("workorder-default", getDefaultViewColumns());
 		columnMap.put("alarm-default", getDefaultAlarmColumns());
 		columnMap.put("energy-default", getDefaultEnergyColumns());
+		columnMap.put("asset-default", getDefaultAssetsColumns());
 		
 		// Default report columns 
 		columnMap.put("workorder-report", getWorkOrderReportColumns());
