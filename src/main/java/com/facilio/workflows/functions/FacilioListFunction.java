@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.workflow.exceptions.FunctionParamException;
+import com.facilio.workflows.exceptions.FunctionParamException;
 
 public enum FacilioListFunction implements FacilioWorkflowFunctionInterface {
 
@@ -168,6 +168,7 @@ public enum FacilioListFunction implements FacilioWorkflowFunctionInterface {
 	private String functionName;
 	private String namespace = "list";
 	private String params;
+	private FacilioFunctionNameSpace nameSpaceEnum = FacilioFunctionNameSpace.LIST;
 	
 	public Integer getValue() {
 		return value;
@@ -197,6 +198,10 @@ public enum FacilioListFunction implements FacilioWorkflowFunctionInterface {
 		this.value = value;
 		this.functionName = functionName;
 	}
+	public static Map<String, FacilioListFunction> getAllFunctions() {
+		return DEFAULT_FUNCTIONS;
+	}
+	
 	public static FacilioListFunction getFacilioListFunction(String functionName) {
 		return DEFAULT_FUNCTIONS.get(functionName);
 	}

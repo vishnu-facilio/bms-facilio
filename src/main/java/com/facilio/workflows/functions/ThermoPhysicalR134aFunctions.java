@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeSet;
 
-import com.facilio.workflow.exceptions.FunctionParamException;
+import com.facilio.workflows.exceptions.FunctionParamException;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public enum ThermoPhysicalR134aFunctions implements FacilioWorkflowFunctionInterface {
@@ -70,6 +70,7 @@ public enum ThermoPhysicalR134aFunctions implements FacilioWorkflowFunctionInter
 	private String functionName;
 	private String namespace = "thermoPhysical.R134a";
 	private String params;
+	private FacilioFunctionNameSpace nameSpaceEnum = FacilioFunctionNameSpace.THERMOPHYSICALR134A;
 	
 	public Integer getValue() {
 		return value;
@@ -98,6 +99,9 @@ public enum ThermoPhysicalR134aFunctions implements FacilioWorkflowFunctionInter
 	ThermoPhysicalR134aFunctions(Integer value,String functionName) {
 		this.value = value;
 		this.functionName = functionName;
+	}
+	public static Map<String, ThermoPhysicalR134aFunctions> getAllFunctions() {
+		return DEFAULT_FUNCTIONS;
 	}
 	public static ThermoPhysicalR134aFunctions getThermoPhysicalR134aFunction(String functionName) {
 		return DEFAULT_FUNCTIONS.get(functionName);

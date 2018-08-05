@@ -62,6 +62,7 @@ import com.facilio.workflows.functions.FacilioDefaultFunction;
 import com.facilio.workflows.functions.FacilioListFunction;
 import com.facilio.workflows.functions.FacilioMapFunction;
 import com.facilio.workflows.functions.FacilioMathFunction;
+import com.facilio.workflows.functions.FacilioStringFunction;
 import com.facilio.workflows.functions.FacilioWorkflowFunctionInterface;
 import com.facilio.workflows.functions.ThermoPhysicalR134aFunctions;
 import com.google.common.collect.ArrayListMultimap;
@@ -1187,6 +1188,46 @@ public class WorkflowUtil {
 			break;
 		case "list" :
 			facilioWorkflowFunction = FacilioListFunction.getFacilioListFunction(functionName);
+			break;
+		}
+		
+		
+		return facilioWorkflowFunction;
+	}
+	
+	public static List<FacilioWorkflowFunctionInterface> getFacilioFunctions(String nameSpace) {
+		
+		List<FacilioWorkflowFunctionInterface> facilioWorkflowFunction = null;
+		
+		switch(nameSpace) {
+		case "default":
+
+			facilioWorkflowFunction = new ArrayList<>( FacilioDefaultFunction.getAllFunctions().values());
+			break;
+		case "math" :
+			
+			facilioWorkflowFunction = new ArrayList<>( FacilioMathFunction.getAllFunctions().values());
+			break;
+		case "date" :
+			
+			facilioWorkflowFunction = new ArrayList<>( FacilioDateFunction.getAllFunctions().values());
+			break;
+		case "thermoPhysical.R134a" :
+			
+			facilioWorkflowFunction = new ArrayList<>( ThermoPhysicalR134aFunctions.getAllFunctions().values());
+			break;
+			
+		case "cost" :
+			facilioWorkflowFunction = new ArrayList<>( FacilioCostFunction.getAllFunctions().values());
+			break;
+		case "map" :
+			facilioWorkflowFunction = new ArrayList<>( FacilioMapFunction.getAllFunctions().values());
+			break;
+		case "list" :
+			facilioWorkflowFunction = new ArrayList<>( FacilioListFunction.getAllFunctions().values());
+			break;
+		case "string" :
+			facilioWorkflowFunction = new ArrayList<>( FacilioStringFunction.getAllFunctions().values());
 			break;
 		}
 		

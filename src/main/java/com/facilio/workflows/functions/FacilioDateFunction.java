@@ -7,7 +7,7 @@ import java.util.Map;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
-import com.facilio.workflow.exceptions.FunctionParamException;
+import com.facilio.workflows.exceptions.FunctionParamException;
 
 public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 
@@ -132,6 +132,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	private String functionName;
 	private String namespace = "date";
 	private String params;
+	private FacilioFunctionNameSpace nameSpaceEnum = FacilioFunctionNameSpace.DATE;
 	
 	public Integer getValue() {
 		return value;
@@ -160,6 +161,9 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	FacilioDateFunction(Integer value,String functionName) {
 		this.value = value;
 		this.functionName = functionName;
+	}
+	public static Map<String, FacilioDateFunction> getAllFunctions() {
+		return DATE_FUNCTIONS;
 	}
 	public static FacilioDateFunction getFacilioDateFunction(String functionName) {
 		return DATE_FUNCTIONS.get(functionName);

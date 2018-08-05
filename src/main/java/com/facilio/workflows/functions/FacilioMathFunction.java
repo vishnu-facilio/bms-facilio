@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.facilio.workflow.exceptions.FunctionParamException;
+import com.facilio.workflows.exceptions.FunctionParamException;
 
 public enum FacilioMathFunction implements FacilioWorkflowFunctionInterface  {
 
@@ -58,6 +58,7 @@ public enum FacilioMathFunction implements FacilioWorkflowFunctionInterface  {
 	private String functionName;
 	private String namespace = "math";
 	private String params;
+	private FacilioFunctionNameSpace nameSpaceEnum = FacilioFunctionNameSpace.MATH;
 	
 	public Integer getValue() {
 		return value;
@@ -86,6 +87,9 @@ public enum FacilioMathFunction implements FacilioWorkflowFunctionInterface  {
 	FacilioMathFunction(Integer value,String functionName) {
 		this.value = value;
 		this.functionName = functionName;
+	}
+	public static Map<String, FacilioMathFunction> getAllFunctions() {
+		return MATH_FUNCTIONS;
 	}
 	public static FacilioMathFunction getFacilioMathFunction(String functionName) {
 		return MATH_FUNCTIONS.get(functionName);

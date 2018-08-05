@@ -16,7 +16,7 @@ import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
-import com.facilio.workflow.exceptions.FunctionParamException;
+import com.facilio.workflows.exceptions.FunctionParamException;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
@@ -171,6 +171,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 	private String functionName;
 	private String namespace = "default";
 	private String params;
+	private FacilioFunctionNameSpace nameSpaceEnum = FacilioFunctionNameSpace.DEFAULT;
 	
 	public Integer getValue() {
 		return value;
@@ -199,6 +200,10 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 	FacilioDefaultFunction(Integer value,String functionName) {
 		this.value = value;
 		this.functionName = functionName;
+	}
+	
+	public static Map<String, FacilioDefaultFunction> getAllFunctions() {
+		return DEFAULT_FUNCTIONS;
 	}
 	public static FacilioDefaultFunction getFacilioDefaultFunction(String functionName) {
 		return DEFAULT_FUNCTIONS.get(functionName);

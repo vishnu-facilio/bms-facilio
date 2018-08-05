@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.facilio.workflow.exceptions.FunctionParamException;
+import com.facilio.workflows.exceptions.FunctionParamException;
 import com.facilio.workflows.util.FunctionUtil;
 
 public enum FacilioCostFunction implements FacilioWorkflowFunctionInterface {
@@ -55,6 +55,7 @@ public enum FacilioCostFunction implements FacilioWorkflowFunctionInterface {
 	private String functionName;
 	private String namespace = "cost";
 	private String params;
+	private FacilioFunctionNameSpace nameSpaceEnum = FacilioFunctionNameSpace.COST;
 	
 	public Integer getValue() {
 		return value;
@@ -83,6 +84,9 @@ public enum FacilioCostFunction implements FacilioWorkflowFunctionInterface {
 	FacilioCostFunction(Integer value,String functionName) {
 		this.value = value;
 		this.functionName = functionName;
+	}
+	public static Map<String, FacilioCostFunction> getAllFunctions() {
+		return DEFAULT_FUNCTIONS;
 	}
 	public static FacilioCostFunction getFacilioCostFunction(String functionName) {
 		return DEFAULT_FUNCTIONS.get(functionName);
