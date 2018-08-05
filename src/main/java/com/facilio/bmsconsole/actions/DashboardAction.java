@@ -4240,16 +4240,33 @@ public class DashboardAction extends ActionSupport {
 				}
 				for(Long buildingId :buildingRes.keySet()) {
 					JSONObject json = buildingRes.get(buildingId);
-					if(json != null) {
-						for(Object jsonKey : json.keySet()) {
-							
-							JSONObject value = new JSONObject();
-							value.put("label", jsonKey);
-			 				value.put("value", json.get(jsonKey));
-			 				
-			 				res.put(buildingId, value);
-						}
- 					}
+					
+					if(report.getId() == 4131l) {
+						
+						JSONObject value = new JSONObject();
+						value.put("label", "Ontime");
+		 				value.put("value", json.get("Ontime"));
+		 				
+		 				res.put(buildingId, value);
+		 				
+		 				value = new JSONObject();
+		 				value.put("label", "Overdue");
+		 				value.put("value", json.get("Overdue"));
+		 				
+		 				res.put(buildingId, value);
+					}
+					else {
+						if(json != null) {
+							for(Object jsonKey : json.keySet()) {
+								
+								JSONObject value = new JSONObject();
+								value.put("label", jsonKey);
+				 				value.put("value", json.get(jsonKey));
+				 				
+				 				res.put(buildingId, value);
+							}
+	 					}
+					}
 				}
 			}
 			else {
