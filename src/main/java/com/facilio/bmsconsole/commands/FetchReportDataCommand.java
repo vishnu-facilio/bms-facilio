@@ -56,8 +56,12 @@ public class FetchReportDataCommand implements Command {
 			ReportDataPointContext dp = dataPointList.get(0); //Since order by, criteria are same for all dataPoints in a group, we can consider only one for the builder
 			SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 																					.module(dp.getxAxis().getField().getModule()) //Assuming X to be the base module
-																					.andCriteria(dp.getCriteria())
 																					;
+			
+			if (dp.getCriteria() != null) {
+				selectBuilder.andCriteria(dp.getCriteria());
+			}
+			
 			joinYModuleIfRequred(dp, selectBuilder);
 			applyOrderBy(dp, selectBuilder);
 			List<FacilioField> fields = new ArrayList<>();

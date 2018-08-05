@@ -11,7 +11,6 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -20,13 +19,12 @@ import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.ReadingAnalysisContext;
-import com.facilio.report.context.ReportAxisContext;
 import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
+import com.facilio.report.context.ReportAxisContext;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
@@ -62,7 +60,7 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 			report.setDataPoints(dataPoints);
 			report.setDateOperator(DateOperators.BETWEEN);
 			report.setDateValue(startTime+", "+endTime);
-			fetchBaseLines(report, (List<ReportBaseLineContext>) context.get(FacilioConstants.ContextNames.BASE_LINE_LIST));
+			CommonReportUtil.fetchBaseLines(report, (List<ReportBaseLineContext>) context.get(FacilioConstants.ContextNames.BASE_LINE_LIST));
 			
 			context.put(FacilioConstants.ContextNames.REPORT, report);
 		}
@@ -109,13 +107,8 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), metric.getParentId(), NumberOperators.EQUALS));
 		dataPoint.setCriteria(criteria);
 		
-		if (xAggr != null) {
-			dataPoint.getxAxis().setAggr(xAggr);
-		}
-		AggregateOperator yAggr = metric.getyAggrEnum();
-		if (yAggr != null) {
-			dataPoint.getyAxis().setAggr(yAggr);
-		}
+		dataPoint.getxAxis().setAggr(xAggr);
+		dataPoint.getyAxis().setAggr(metric.getyAggrEnum());
 	}
 	
 	private Map<Long, ResourceContext> getResourceMap(List<ReadingAnalysisContext> metrics) throws Exception {
@@ -132,32 +125,4 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 		}
 		return ResourceAPI.getResourceAsMapFromIds(resourceIds);
 	}
-	
-	private void fetchBaseLines (ReportContext report, List<ReportBaseLineContext> reportBaseLines) throws Exception {
-		if (reportBaseLines != null && !reportBaseLines.isEmpty()) {
-			List<Long> baseLineIds = new ArrayList<>();
-			for (ReportBaseLineContext baseLine : reportBaseLines) {
-				if (baseLine.getBaseLineId() != -1) {
-					baseLineIds.add(baseLine.getBaseLineId());
-				}
-				else {
-					throw new IllegalArgumentException("Give valid baseline id");
-				}
-			}
-			Map<Long, BaseLineContext> baseLines = BaseLineAPI.getBaseLinesAsMap(baseLineIds);
-			
-			if (baseLines == null || baseLines.isEmpty()) {
-				throw new IllegalArgumentException("Give valid baseline id");
-			}
-			
-			for (ReportBaseLineContext baseLine : reportBaseLines) {
-				baseLine.setBaseLine(baseLines.get(baseLine.getBaseLineId()));
-				if (baseLine.getBaseLine() == null) {
-					throw new IllegalArgumentException("Give valid baseline id. "+baseLine.getBaseLineId()+" is invalid");
-				}
-			}
-			report.setBaseLines(reportBaseLines);
-		}
-	}
-
 }
