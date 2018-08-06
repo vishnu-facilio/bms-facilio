@@ -97,7 +97,14 @@ public class FacilioContextListener implements ServletContextListener {
 			ServerInfo.registerServer();
 			//timer.schedule(new ServerInfo(), 30000L, 30000L);
 			String environment = AwsUtil.getConfig("environment");
-			if("stage".equalsIgnoreCase(environment) || "production".equalsIgnoreCase(environment)) {
+			String schedulerProp = AwsUtil.getConfig("schedulerServer");
+			boolean scheduler = false;
+			if(schedulerProp != null) {
+			 scheduler = Boolean.parseBoolean(schedulerProp.trim());
+			}
+
+			//handle if server is both user and scheduler.
+			if( ("stage".equalsIgnoreCase(environment) || "production".equalsIgnoreCase(environment)) && ( ! scheduler)) {
 				new Thread(() -> NotificationProcessor.run(new NotificationProcessorFactory())).start();
 			}
 

@@ -84,7 +84,7 @@ public class SessionManager {
 			}
 		}
 		else {
-			logger.log(Level.INFO, "No active sessions exists for the user: "+message.getTo());
+			logger.log(Level.FINE, "No active sessions exists for the user: "+message.getTo());
 		}
 	}
 	
@@ -114,7 +114,7 @@ public class SessionManager {
 				}
 			}
 			else {
-				logger.log(Level.INFO, "No active sessions exists for the user: "+message.getTo());
+				logger.log(Level.FINE, "No active sessions exists for the user: "+message.getTo());
 			}
 		}
 		
