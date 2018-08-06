@@ -3925,6 +3925,9 @@ public class DashboardAction extends ActionSupport {
 				.on(module.getTableName()+".Id="+module.getExtendModule().getTableName()+".Id");
 		}
 		
+		if(report.getId() == 4144l) {
+			builder.having("value is not null");
+		}
 		ReportFieldContext reportXAxisField = DashboardUtil.getReportField(report.getxAxisField());
 		report.setxAxisField(reportXAxisField);
 		FacilioField xAxisField = reportXAxisField.getField();
@@ -4204,7 +4207,7 @@ public class DashboardAction extends ActionSupport {
 			Multimap<Object, JSONObject> res = ArrayListMultimap.create();
 			HashMap<String, Object> labelMapping = new HashMap<>();
 			HashMap<Long, JSONObject> buildingRes = new HashMap<>();
-			if(reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.BUILDING.getValue())) {
+			if(reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.BUILDING.getValue()) || reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.SITE.getValue())) {
 				for(int i=0;i<rs.size();i++) {
 					Map<String, Object> thisMap = rs.get(i);
 					if(thisMap.get("label") != null) {
