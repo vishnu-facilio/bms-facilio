@@ -143,13 +143,13 @@ public class TenantsAPI {
 	
 	public static long addTenant (TenantContext tenant) throws Exception {
 		
-//		if (tenant.getName() == null || tenant.getName().isEmpty()) {
-//			throw new IllegalArgumentException("Invalid name during addition of Tenant");
-//		}
-//		
-//		if (tenant.getSpaceId() == -1) {
-//			throw new IllegalArgumentException("Invalid space id during addition of Tenant");
-//		}
+		if (tenant.getName() == null || tenant.getName().isEmpty()) {
+			throw new IllegalArgumentException("Invalid name during addition of Tenant");
+		}
+		
+		if (tenant.getSpaceId() == -1) {
+			throw new IllegalArgumentException("Invalid space id during addition of Tenant");
+		}
 		
 		addTenantLogo(tenant);
 		
