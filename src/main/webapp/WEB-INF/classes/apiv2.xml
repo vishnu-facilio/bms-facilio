@@ -222,6 +222,8 @@
 	<package name="reportApiv2" namespace="/api/v2/report" extends="v2Api">
 		<action name="readingReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReadingsData">
 		</action>
+		<action name="workorderReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchWorkorderData">
+		</action>
 	</package>
 	
 	

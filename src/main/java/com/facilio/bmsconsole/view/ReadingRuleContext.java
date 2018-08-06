@@ -246,6 +246,9 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 	public void setConsecutive(Boolean consecutive) {
 		this.consecutive = consecutive;
 	}
+	public void setConsecutive(boolean consecutive) {
+		this.consecutive = consecutive;
+	}
 	public boolean isConsecutive() {
 		if (consecutive != null) {
 			return consecutive.booleanValue();

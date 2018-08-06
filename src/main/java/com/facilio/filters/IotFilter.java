@@ -52,10 +52,10 @@ public class IotFilter implements Filter {
 	        	    	
 	        	    		for(int i = 0; i < list.size(); i++) {
 	        	    			String info = list.get(i);
-	        	    			String source = list.get(i+1);
-	        	    			if (info.isEmpty() || source.isEmpty()) {
+	        	    			if (info.isEmpty() || i == list.size() || list.get(i+1).isEmpty()) {
 	        	    				continue;
 	        	    			}
+	        	    			String source = list.get(i+1);
 	        	    			i++;
 	        	    			try {
 				    	    		String message = info.substring(0, info.indexOf("::") - 1);
@@ -68,7 +68,6 @@ public class IotFilter implements Filter {
 				    	    		payload.put("timestamp", DateTimeUtil.getTime(timeStamp.trim(), "HH:mm:ss dd/MM/yyyy"));
 				    	    		
 				    	    		LOGGER.warn(payload.toString());
-				    	    		System.out.println(payload.toString());
 				    	    		
 				    	    		FacilioContext context = new FacilioContext();
 				    	    		context.put(EventConstants.EventContextNames.EVENT_PAYLOAD, payload);

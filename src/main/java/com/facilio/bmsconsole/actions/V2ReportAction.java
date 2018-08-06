@@ -12,6 +12,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.report.context.ReadingAnalysisContext;
 import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
 import com.facilio.report.context.ReportBaseLineContext;
+import com.facilio.report.context.WorkorderAnalysisContext;
 
 public class V2ReportAction extends FacilioAction {
 	public String fetchReadingsData() {
@@ -57,10 +58,24 @@ public class V2ReportAction extends FacilioAction {
 	
 	public String fetchWorkorderData() {
 		try {
+			JSONParser parser = new JSONParser();
+			JSONArray fieldArray = (JSONArray) parser.parse(fields);
+			JSONArray baseLineList = null;
+			if (baseLines != null && !baseLines.isEmpty()) {
+				baseLineList = (JSONArray) parser.parse(baseLines);
+			}
+			
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.START_TIME, startTime);
 			context.put(FacilioConstants.ContextNames.END_TIME, endTime);
+			context.put(FacilioConstants.ContextNames.REPORT_X_FIELD, xFieldId);
 			context.put(FacilioConstants.ContextNames.REPORT_X_AGGR, xAggr);
+			context.put(FacilioConstants.ContextNames.REPORT_Y_FIELDS, FieldUtil.getAsBeanListFromJsonArray(fieldArray, WorkorderAnalysisContext.class));
+			context.put(FacilioConstants.ContextNames.BASE_LINE_LIST, FieldUtil.getAsBeanListFromJsonArray(baseLineList, ReportBaseLineContext.class));
+			
+			Chain fetchReadingDataChain = ReadOnlyChainFactory.fetchWorkorderReportChain();
+			fetchReadingDataChain.execute(context);
+			
 			return setReportResult(context);
 		}
 		catch (Exception e) {
@@ -99,6 +114,14 @@ public class V2ReportAction extends FacilioAction {
 	}
 	public void setEndTime(long endTime) {
 		this.endTime = endTime;
+	}
+	
+	private long xFieldId = -1;
+	public long getxFieldId() {
+		return xFieldId;
+	}
+	public void setxFieldId(long xFieldId) {
+		this.xFieldId = xFieldId;
 	}
 
 	private AggregateOperator xAggr;

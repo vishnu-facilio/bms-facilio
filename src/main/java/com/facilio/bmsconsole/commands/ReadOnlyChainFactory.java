@@ -29,4 +29,11 @@ public class ReadOnlyChainFactory extends FacilioChainFactory {
 		c.addCommand(fetchReportDataChain());
 		return c;
 	}
+	
+	public static Chain fetchWorkorderReportChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new CreateWorkOrderAnalyticsReportCommand());
+		c.addCommand(fetchReportDataChain());
+		return c;
+	}
 }
