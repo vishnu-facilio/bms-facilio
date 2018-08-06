@@ -257,11 +257,15 @@ public class LRUCache<K, V>{
     }
 
     private void deleteInRedis(K key) {
-	    if(redis != null) {
-	        Jedis jedis = redis.getJedis();
-            jedis.del(getRedisKey((String) key));
-            jedis.close();
-        }
+		try {
+			if (redis != null) {
+				Jedis jedis = redis.getJedis();
+				jedis.del(getRedisKey((String) key));
+				jedis.close();
+			}
+		} catch (Exception e) {
+			LOGGER.debug("Exception while removing key in Redis. ");
+		}
     }
 
     private void putInRedis(K key, Node<K, V> node) {
