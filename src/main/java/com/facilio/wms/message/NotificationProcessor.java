@@ -2,6 +2,7 @@ package com.facilio.wms.message;
 
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.v2.IRecordProcessor;
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.v2.IRecordProcessorFactory;
+import com.amazonaws.services.kinesis.clientlibrary.lib.worker.InitialPositionInStream;
 import com.amazonaws.services.kinesis.clientlibrary.lib.worker.KinesisClientLibConfiguration;
 import com.amazonaws.services.kinesis.clientlibrary.lib.worker.Worker;
 import com.amazonaws.services.kinesis.clientlibrary.types.InitializationInput;
@@ -44,6 +45,7 @@ public class NotificationProcessor implements IRecordProcessor {
                 Message message = Message.getMessage(payLoad);
                 LOGGER.debug("Going to send message to " + message.getTo() + " from " + message.getFrom());
                 SessionManager.getInstance().sendMessage(message);
+                processRecordsInput.getCheckpointer().checkpoint(record);
             }
             catch (Exception e) {
                 LOGGER.info("Exception occurred "+ data + " , " , e);
@@ -69,6 +71,7 @@ public class NotificationProcessor implements IRecordProcessor {
                             .withRegionName(AwsUtil.getRegion())
                             .withKinesisEndpoint(AwsUtil.getConfig("kinesisEndpoint"))
                             .withMaxLeaseRenewalThreads(3)
+                            .withInitialPositionInStream(InitialPositionInStream.TRIM_HORIZON)
                             .withInitialLeaseTableReadCapacity(1)
                             .withInitialLeaseTableWriteCapacity(1);
 
