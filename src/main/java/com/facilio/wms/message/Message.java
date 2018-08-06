@@ -3,8 +3,6 @@ package com.facilio.wms.message;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 /**
  * Created by Shivaraj on 16/05/2017.
@@ -125,7 +123,7 @@ public class Message
 		}
 		if(object.containsKey(TO)) {
 			try {
-				message.setFrom((Long) object.get(TO));
+				message.setTo((Long) object.get(TO));
 			} catch (NumberFormatException e) {
 				LOGGER.info("Exception while parsing message to ", e);
 			}
@@ -139,14 +137,10 @@ public class Message
 		}
 
 		if(object.containsKey(CONTENT)) {
-			JSONParser parser = new JSONParser();
-			try {
-				message.setContent((JSONObject) parser.parse((String) object.get(TO)));
-			} catch (ParseException e) {
-				LOGGER.info("Exception while parsing message content ", e);
-			}
+			message.setContent((JSONObject) object.get(CONTENT));
 		}
 
 		return message;
 	}
+
 }
