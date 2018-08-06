@@ -1,5 +1,6 @@
 package com.facilio.auth.actions;
 
+import java.lang.reflect.InvocationTargetException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
@@ -520,7 +521,21 @@ public class FacilioAuthAction extends ActionSupport {
         }
         if(temp || signupAllowed)
         {
-        AccountUtil.getUserBean().addRequester(AccountUtil.getCurrentOrg().getId(), user);
+        try {
+			AccountUtil.getUserBean().addRequester(AccountUtil.getCurrentOrg().getId(), user);
+		} catch (InvocationTargetException ie) {
+			Throwable e= ie.getTargetException();
+			if(e.getMessage()!=null && e.getMessage().equals("Email Already Registered"))
+			{
+			setJsonresponse("message", "Email Already Registered");
+			return SUCCESS;
+			}else
+			{
+				
+				throw ie;
+			}
+		
+		}
 
         setJsonresponse("message", "success");
         return SUCCESS;
