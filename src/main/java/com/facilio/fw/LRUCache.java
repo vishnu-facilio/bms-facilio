@@ -203,19 +203,23 @@ public class LRUCache<K, V>{
     }
 
     private long getFromRedis(K key) {
-	    if(redis != null) {
-	        Jedis jedis = redis.getJedis();
-            String value = jedis.get(getRedisKey((String) key));
-            jedis.close();
-            if(value == null) {
-				return Long.MAX_VALUE;
+		try {
+			if (redis != null) {
+				Jedis jedis = redis.getJedis();
+				String value = jedis.get(getRedisKey((String) key));
+				jedis.close();
+				if (value == null) {
+					return Long.MAX_VALUE;
+				}
+				try {
+					return Long.parseLong(value);
+				} catch (NumberFormatException e) {
+					return Long.MAX_VALUE;
+				}
 			}
-            try {
-                return Long.parseLong(value);
-            } catch (NumberFormatException e) {
-                return Long.MAX_VALUE;
-            }
-        }
+		} catch (Exception e) {
+			LOGGER.debug("Exception while getting key from Redis");
+		}
         return -1L;
     }
 
@@ -261,18 +265,26 @@ public class LRUCache<K, V>{
     }
 
     private void putInRedis(K key, Node<K, V> node) {
-	    if(redis != null) {
-	        Jedis jedis = redis.getJedis();
-            jedis.set(getRedisKey((String) key), String.valueOf(node.addedTime));
-            jedis.close();
-        }
+		try {
+			if (redis != null) {
+				Jedis jedis = redis.getJedis();
+				jedis.set(getRedisKey((String) key), String.valueOf(node.addedTime));
+				jedis.close();
+			}
+		} catch (Exception e) {
+			LOGGER.debug("Exception while putting key in Redis. ");
+		}
     }
 
     private void purgeInRedis() {
-		if(redis != null) {
-		    Jedis jedis = redis.getJedis();
-		    jedis.flushAll();
-		    jedis.close();
+		try {
+			if (redis != null) {
+				Jedis jedis = redis.getJedis();
+				jedis.flushAll();
+				jedis.close();
+			}
+		} catch (Exception e) {
+			LOGGER.info("Exception while purging data in Redis. ", e);
 		}
 	}
 }
