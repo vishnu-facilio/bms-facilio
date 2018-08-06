@@ -118,19 +118,18 @@ public class Message
 		}
 		if(object.containsKey(FROM)) {
 			try {
-				message.setFrom(Long.parseLong((String) object.get(FROM)));
+				message.setFrom((Long) object.get(FROM));
 			} catch (NumberFormatException e) {
 				LOGGER.info("Exception while parsing message from ", e);
 			}
 		}
 		if(object.containsKey(TO)) {
 			try {
-				message.setFrom(Long.parseLong((String) object.get(TO)));
+				message.setFrom((Long) object.get(TO));
 			} catch (NumberFormatException e) {
 				LOGGER.info("Exception while parsing message to ", e);
 			}
 		}
-
 		if(object.containsKey(NAMESPACE)) {
 			message.setNamespace((String)object.get(NAMESPACE));
 		}
