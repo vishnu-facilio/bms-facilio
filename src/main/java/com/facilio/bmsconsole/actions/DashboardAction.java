@@ -2880,10 +2880,10 @@ public class DashboardAction extends ActionSupport {
 					for(WorkOrderContext workorder:workorders) {
 						
 						int buildingScore = 0;
-//						if( !(workorder.getSubject().contains(s)("Daily Maintenance") || workorder.getSubject().contains("Fortnightly Maintenance") || workorder.getSubject().contains(" Monthly Maintenance"))) {
-//							
-//							continue;
-//						}
+						if(!(workorder.getSubject().contains("Daily Maintenance"))) {
+							
+							continue;
+						}
 						if(workorder.getResource().getId() != report.getReportSpaceFilterContext().getBuildingId()) {
 							continue;
 						}
@@ -2962,10 +2962,10 @@ public class DashboardAction extends ActionSupport {
 						int passed = 0,failed = 0;
 						JSONObject buildingres = new JSONObject();
 						
-//						if( !(workorder.getSubject().contains("Daily Maintenance") || workorder.getSubject().contains("Fortnightly Maintenance") || workorder.getSubject().contains("Monthly Maintenance"))) {
-//							
-//							continue;
-//						}
+						if(!(workorder.getSubject().contains("Daily Maintenance"))) {
+						
+						continue;
+						}
 						if(workorder.getResource().getId() != report.getReportSpaceFilterContext().getBuildingId()) {
 							continue;
 						}
