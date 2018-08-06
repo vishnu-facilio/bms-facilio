@@ -102,7 +102,7 @@ public class WmsApi
 				message.setFrom(AccountUtil.getCurrentUser().getId());
 			}
 			sendToKinesis(message.toJson());
-			SessionManager.getInstance().sendMessage(message);
+			// SessionManager.getInstance().sendMessage(message);
 		}
 	}
 
