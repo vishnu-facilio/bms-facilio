@@ -71,7 +71,6 @@ public class NotificationProcessor implements IRecordProcessor {
                             .withRegionName(AwsUtil.getRegion())
                             .withKinesisEndpoint(AwsUtil.getConfig("kinesisEndpoint"))
                             .withMaxLeaseRenewalThreads(3)
-                            .withInitialPositionInStream(InitialPositionInStream.TRIM_HORIZON)
                             .withInitialLeaseTableReadCapacity(1)
                             .withInitialLeaseTableWriteCapacity(1);
 
