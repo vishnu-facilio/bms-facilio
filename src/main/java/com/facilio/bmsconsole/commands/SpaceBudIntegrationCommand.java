@@ -45,12 +45,12 @@ public class SpaceBudIntegrationCommand implements Command {
 			JSONObject postdata = new JSONObject();
 			try {
 				Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
+				JSONArray attributes = new JSONArray();
 				if (readingMap.containsKey(FacilioConstants.ContextNames.ENERGY_DATA_READING)) {
 					postdata.put("zone_id", 1);
 					postdata.put("hardware_type", "ENERGY_METER");
 					JSONObject eventInfo = new JSONObject();
 					eventInfo.put("eventType", "ENERGY_CONSUMPTION");
-					JSONArray attributes = new JSONArray();
 					List<ReadingContext> readings = readingMap.get(FacilioConstants.ContextNames.ENERGY_DATA_READING);
 					for (ReadingContext reading : readings) {
 						if (reading.getParentId() == 2266 && reading.getReading("totalEnergyConsumptionDelta") != null) {
@@ -183,13 +183,12 @@ public class SpaceBudIntegrationCommand implements Command {
 					postdata.put("eventInfo", eventinfoarray); // eventInfo always array of one element
 					postdata.put("timestamp", System.currentTimeMillis()); 
 				}
-				logger.log(Level.INFO, "SpaceBudIntegrationCommand POST content " + postdata.toJSONString());
-				if (!postdata.isEmpty()) {
+				logger.log(Level.DEBUG, "SpaceBudIntegrationCommand POST content " + postdata.toJSONString());
+				if (! attributes.isEmpty()) {
 					String result = AwsUtil.doHttpPost(POST_URL, headers, null, postdata.toJSONString());
 					logger.log(Level.INFO, "SpaceBudIntegrationCommand POST DONE " + result);
 				}
 			} catch (Exception e) {
-				
 				logger.log(Level.FATAL, "SpaceBudIntegrationCommand POST DONE " ,e);
 			}
 		}
