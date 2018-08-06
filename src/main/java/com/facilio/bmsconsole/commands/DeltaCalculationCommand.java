@@ -18,10 +18,12 @@ import com.facilio.bmsconsole.context.MarkedReadingContext.MarkType;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.reports.ReportsUtil;
+import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -54,7 +56,7 @@ public class DeltaCalculationCommand implements Command {
 				}
 				ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				List<FacilioField> allFields= bean.getAllFields(moduleName);
-				long moduleId=bean.getModule(moduleName).getModuleId();
+				FacilioModule module=bean.getModule(moduleName);
 				Map<String,FacilioField>  fieldMap = FieldFactory.getAsMap(allFields);
 				List<Pair<Long, FacilioField>> deltaRdmPairs = new ArrayList<>();
 				Boolean skipLastReadingCheck = (Boolean) context.get(FacilioConstants.ContextNames.SKIP_LAST_READING_CHECK);
@@ -62,10 +64,10 @@ public class DeltaCalculationCommand implements Command {
 					skipLastReadingCheck = false;
 				}
 				for(ReadingContext reading:readings) {
-					setDelta(fieldMap,"totalEnergyConsumption",moduleId, reading,metaMap,markedList, deltaRdmPairs, skipLastReadingCheck);
-					setDelta(fieldMap,"phaseEnergyR",moduleId,reading,metaMap,markedList, deltaRdmPairs, skipLastReadingCheck);
-					setDelta(fieldMap,"phaseEnergyY",moduleId,reading,metaMap,markedList, deltaRdmPairs, skipLastReadingCheck);
-					setDelta(fieldMap,"phaseEnergyB",moduleId,reading,metaMap,markedList, deltaRdmPairs, skipLastReadingCheck);
+					setDelta(fieldMap,"totalEnergyConsumption",module, reading,metaMap,markedList, deltaRdmPairs, skipLastReadingCheck);
+					setDelta(fieldMap,"phaseEnergyR",module,reading,metaMap,markedList, deltaRdmPairs, skipLastReadingCheck);
+					setDelta(fieldMap,"phaseEnergyY",module,reading,metaMap,markedList, deltaRdmPairs, skipLastReadingCheck);
+					setDelta(fieldMap,"phaseEnergyB",module,reading,metaMap,markedList, deltaRdmPairs, skipLastReadingCheck);
 				}
 				
 				if (!deltaRdmPairs.isEmpty()) {
@@ -87,7 +89,7 @@ public class DeltaCalculationCommand implements Command {
 		return false;
 	}
 
-	private void setDelta(Map<String,FacilioField>  fieldMap, String fieldName,long moduleId, ReadingContext reading,Map<String, 
+	private void setDelta(Map<String,FacilioField>  fieldMap, String fieldName,FacilioModule module, ReadingContext reading,Map<String, 
 			ReadingDataMeta> metaMap,List<MarkedReadingContext> markedList,List<Pair<Long, FacilioField>> deltaRdmPairs, Boolean skipLastReadingCheck ) {
 			
 			FacilioField readingField=fieldMap.get(fieldName);
@@ -95,6 +97,7 @@ public class DeltaCalculationCommand implements Command {
 			Object readingVal=reading.getReading(fieldName);
 			String deltaFieldName = fieldName+"Delta";
 			Object deltaVal=reading.getReading(deltaFieldName);
+			
 
 			if( deltaVal!=null || readingVal==null) {// delta already set in reading or reading is null..
 				return;
@@ -114,43 +117,43 @@ public class DeltaCalculationCommand implements Command {
 			}
 			Double currentReading = (Double) FieldUtil.castOrParseValueAsPerType(dataType, readingVal);
 			
-			
+			long moduleId=module.getModuleId();
 			MarkType type = MarkType.NEGATIVE_VALUE;
 			if(currentReading<=0) {
 				reading.addReading(fieldName, lastReading);
 				if(currentReading == 0) {
 					type=MarkType.ZERO_VALUE;
 				}
-				markedList.add(getMarkedReading(reading,energyFieldId,moduleId,type,currentReading,lastReading));
+				markedList.add(DeviceAPI.getMarkedReading(reading,energyFieldId,moduleId,type,currentReading,lastReading));
 				currentReading=lastReading;
 			}
 			else if(currentReading<lastReading) {
 				type=MarkType.DECREMENTAL_VALUE;
 				long deltaFieldId=fieldMap.get(deltaFieldName).getFieldId();
-				markedList.add(getMarkedReading(reading,energyFieldId,moduleId,type,currentReading,lastReading));
-				markedList.add(getMarkedReading(reading,deltaFieldId,moduleId,type,currentReading,lastReading));
+				markedList.add(DeviceAPI.getMarkedReading(reading,energyFieldId,moduleId,type,currentReading,lastReading));
+				markedList.add(DeviceAPI.getMarkedReading(reading,deltaFieldId,moduleId,type,currentReading,lastReading));
 				if (!skipLastReadingCheck) {
 					reading.addReading(fieldName, lastReading);
 					currentReading=lastReading;
 				}
 			}
+			
 			Double delta= currentReading-lastReading;
 			reading.addReading(deltaFieldName, ReportsUtil.roundOff(delta,4));
 			deltaRdmPairs.add(Pair.of(reading.getParentId(), fieldMap.get(deltaFieldName)));
+			long currentTime=(reading.getTtime()!=-1)? reading.getTtime():System.currentTimeMillis() ;
+			boolean dataGap= DeviceAPI.isDataGap(resourceId, module,currentTime, consumptionMeta.getTtime());
+			
+			if(dataGap)	 
+			{
+				//need to mark as hourly violation..
+				type=MarkType.HIGH_VALUE_HOURLY_VIOLATION;
+				markedList.add(DeviceAPI.getMarkedReading(reading,energyFieldId,moduleId,type,currentReading,lastReading));
+				reading.addReading("marked", 1);
+			}
+			
 	}
 
-	private MarkedReadingContext getMarkedReading(ReadingContext reading,long fieldId,long moduleId, MarkType markType, Object currentReading, Object lastReading) {
-		
-		MarkedReadingContext mReading= new MarkedReadingContext();
-		mReading.setReading(reading);
-		mReading.setFieldId(fieldId);
-		mReading.setModuleId(moduleId);
-		mReading.setMarkType(markType);
-		mReading.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-		mReading.setActualValue(String.valueOf(currentReading));
-		mReading.setModifiedValue(String.valueOf(lastReading));
-		return mReading;
-		
-	}
+	
 
 }
