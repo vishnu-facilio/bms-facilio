@@ -113,7 +113,7 @@ public class WmsApi
 				partitionKey = kinesisNotificationTopic;
 			}
 			PutRecordResult result = AwsUtil.getKinesisClient().putRecord(kinesisNotificationTopic, ByteBuffer.wrap(object.toJSONString().getBytes(Charset.defaultCharset())), partitionKey);
-			LOGGER.info("Sent notification message to kinesis :  " + result.getSequenceNumber());
+			LOGGER.info("Sent notification message to kinesis :  " + object.toJSONString() + " , " + result.getSequenceNumber());
 		} catch (Exception e) {
 			LOGGER.log(Level.INFO, "Exception while sending messages to kinesis ", e);
 		}

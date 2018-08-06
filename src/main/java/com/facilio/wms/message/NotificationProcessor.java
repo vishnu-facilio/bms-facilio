@@ -46,7 +46,7 @@ public class NotificationProcessor implements IRecordProcessor {
                 SessionManager.getInstance().sendMessage(message);
             }
             catch (Exception e) {
-                LOGGER.info("Exception occurred ", e);
+                LOGGER.info("Exception occurred "+ data + " , " , e);
             }
         }
     }
