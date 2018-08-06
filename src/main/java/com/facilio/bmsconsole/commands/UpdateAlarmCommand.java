@@ -121,7 +121,7 @@ public class UpdateAlarmCommand implements Command {
 				event.addData("record", record);
 				event.addData("sound", true);
 				
-				List<User> users = AccountUtil.getOrgBean().getOrgUsers(AccountUtil.getCurrentOrg().getId(), true);
+				List<User> users = AccountUtil.getOrgBean().getActiveOrgUsers(AccountUtil.getCurrentOrg().getId());
 				List<Long> recipients = new ArrayList<>();
 				for (User user : users) {
 					recipients.add(user.getId());

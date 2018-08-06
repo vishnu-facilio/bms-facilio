@@ -96,7 +96,8 @@ public class FacilioContextListener implements ServletContextListener {
 			}
 			ServerInfo.registerServer();
 			//timer.schedule(new ServerInfo(), 30000L, 30000L);
-			if("stage".equalsIgnoreCase(AwsUtil.getConfig("environment"))) {
+			String environment = AwsUtil.getConfig("environment");
+			if("stage".equalsIgnoreCase(environment) || "production".equalsIgnoreCase(environment)) {
 				new Thread(() -> NotificationProcessor.run(new NotificationProcessorFactory())).start();
 			}
 

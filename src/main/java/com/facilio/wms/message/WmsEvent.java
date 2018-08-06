@@ -7,7 +7,7 @@ public class WmsEvent extends Message {
 	}
 	
 	public WmsEvent setEventType(WmsEventType eventType) {
-		super.addData("eventType", eventType);
+		super.addData("eventType", eventType.toString());
 		return this;
 	}
 	

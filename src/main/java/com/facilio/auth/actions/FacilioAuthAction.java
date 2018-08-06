@@ -501,25 +501,38 @@ public class FacilioAuthAction extends ActionSupport {
         authAction.getPortalInfo();
         PortalInfoContext portalInfo = authAction.getProtalInfo(); 
        
-        Boolean temp = portalInfo.is_anyDomain_allowed();
-        Boolean signupAllowed = false;
-        if(!temp){
-        	 String domains = (String) portalInfo.getWhiteListed_domains();
-        	 
-             ArrayList<String> items = new ArrayList<String>();
-             if(domains!=null)
-             {
-            	 items = new  ArrayList<String>(Arrays.asList(domains.split(",")));
-             }
-        	for (String item: items){
-        		if(emailaddress.endsWith(item.trim())) {
-        			signupAllowed = true;
-        		}
-        	}
-        	if (!signupAllowed)
-        	setJsonresponse("message", "Only whitelisted domains allowed");
+        Boolean opensignup = portalInfo.isSignup_allowed();  // SIGNUP_ALLOWED
+        Boolean anydomain_allowedforsignup = portalInfo.is_anyDomain_allowed();
+
+        System.out.println("Is signup allowed for all "+opensignup);
+        
+        if(!opensignup)
+        {
+        	setJsonresponse("message", "Signup not allowed for this portal");
+			return SUCCESS;
         }
-        if(temp || signupAllowed)
+        
+        boolean signupAllowed = false;
+
+		if (opensignup && !anydomain_allowedforsignup) {
+			String domains = (String) portalInfo.getWhiteListed_domains();
+
+			ArrayList<String> items = new ArrayList<String>();
+			if (domains != null) {
+				items = new ArrayList<String>(Arrays.asList(domains.split(",")));
+			}
+			for (String item : items) {
+				if (emailaddress.endsWith(item.trim())) {
+					signupAllowed = true;
+				}
+			}
+			if (!signupAllowed || !anydomain_allowedforsignup) {
+				setJsonresponse("message", "Only whitelisted domains allowed");
+				return SUCCESS;
+			}
+
+		}
+        if(anydomain_allowedforsignup || signupAllowed)
         {
         try {
 			AccountUtil.getUserBean().addRequester(AccountUtil.getCurrentOrg().getId(), user);

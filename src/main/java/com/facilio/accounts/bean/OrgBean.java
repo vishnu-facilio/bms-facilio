@@ -24,7 +24,9 @@ public interface OrgBean {
 	public List<User> getAllOrgUsers(long orgId) throws Exception;
 	
 	public List<User> getOrgUsers(long orgId, boolean status) throws Exception;
-	
+
+	public List<User> getActiveOrgUsers(long orgId) throws Exception;
+
 	public List<User> getRequesters(long orgId) throws Exception;
 	
 	public User getSuperAdmin(long orgId) throws Exception;
