@@ -468,6 +468,18 @@ public class FieldFactory {
 
 		return name;
 	}
+	
+	public static FacilioField getEmailField(FacilioModule module) {
+		FacilioField email = new FacilioField();
+		email.setName("email");
+		email.setDataType(FieldType.STRING);
+		email.setColumnName("EMAIL");
+		if (module != null) {
+			email.setModule(module);
+		}
+
+		return email;
+	}
 
 	public static FacilioField getIsDeletedField() {
 		return getField("deleted", "SYS_DELETED", FieldType.BOOLEAN);
@@ -3871,6 +3883,7 @@ public class FieldFactory {
 		fields.add(getOrgIdField(module));
 		fields.add(getNameField(module));
 		fields.add(getDescriptionField(module));
+		fields.add(getEmailField(module));
 		fields.add(getField("logoId", "LOGO_ID", module, FieldType.LOOKUP));
 		fields.add(getField("spaceId", "SPACE", module, FieldType.LOOKUP));
 

@@ -30,13 +30,21 @@ public class TenantContext {
 	public void setName(String name) {
 		this.name = name;
 	}
-
+	
 	private String description;
 	public String getDescription() {
 		return description;
 	}
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	
+	private String email;
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	private long logoId = -1;
