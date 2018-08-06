@@ -59,6 +59,7 @@ import com.facilio.workflows.context.WorkflowFunctionContext;
 import com.facilio.workflows.functions.FacilioCostFunction;
 import com.facilio.workflows.functions.FacilioDateFunction;
 import com.facilio.workflows.functions.FacilioDefaultFunction;
+import com.facilio.workflows.functions.FacilioFunctionsParamType;
 import com.facilio.workflows.functions.FacilioListFunction;
 import com.facilio.workflows.functions.FacilioMapFunction;
 import com.facilio.workflows.functions.FacilioMathFunction;
@@ -1233,5 +1234,11 @@ public class WorkflowUtil {
 		
 		
 		return facilioWorkflowFunction;
+	}
+	
+	public static FacilioFunctionsParamType getFacilioFunctionParam(int value,String fieldName) {
+		FacilioFunctionsParamType param = FacilioFunctionsParamType.getFacilioDefaultFunction(value);
+		param.setFieldName(fieldName);
+		return param;
 	}
 }
