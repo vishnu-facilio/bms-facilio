@@ -38,8 +38,17 @@
 				<param name="location">/jsps/unauthorized.jsp</param>
 				<param name="parse">false</param>
 			</result>
+            <result name="exception" type="httpheader">
+                <param name="error">500</param>
+            </result>
 		</global-results>
-		<action name="tracklead" class="com.facilio.bmsconsole.actions.LeadTracker">
+
+        <global-exception-mappings>
+            <exception-mapping exception="java.lang.Exception" result="exception" />
+        </global-exception-mappings>
+
+
+        <action name="tracklead" class="com.facilio.bmsconsole.actions.LeadTracker">
 			<param name="auth">false</param>
 			<result name="success" type="json">
 				<param name="includeProperties">response</param>

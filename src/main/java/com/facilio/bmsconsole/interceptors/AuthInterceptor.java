@@ -28,7 +28,8 @@ import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 
 public class AuthInterceptor extends AbstractInterceptor {
 
-	private static final HashSet<String> ADMIN_IDS = new HashSet<>();
+    private static final Logger LOGGER = Logger.getLogger(AuthInterceptor.class.getName());
+    private static final HashSet<String> ADMIN_IDS = new HashSet<>();
 
 	static {
 		loadIds();
@@ -54,25 +55,20 @@ public class AuthInterceptor extends AbstractInterceptor {
 	public String intercept(ActionInvocation arg0) throws Exception {
 
 		try {
-			//System.out.println("intercept() : arg0 :"+arg0);
-
 			HttpServletRequest request = ServletActionContext.getRequest();
 			CognitoUser cognitoUser = AuthenticationUtil.getCognitoUser(request,false);
 			Account currentAccount = null;
 			if (! AuthenticationUtil.checkIfSameUser(currentAccount, cognitoUser)) {
 				try {
 					currentAccount = LoginUtil.getAccount(cognitoUser, false);
-					//ActionContext.getContext().getSession().put("CURRENT_ACCOUNT", currentAccount);
 				} catch (Exception e){
-					logger.log(Level.SEVERE, "Invalid users", e);
-
+					LOGGER.log(Level.SEVERE, "Invalid users", e);
 					currentAccount = null;
 				}
 			}
 			if(AuthenticationUtil.checkIfSameUser(currentAccount, cognitoUser)) {
 				AccountUtil.cleanCurrentAccount();
 				AccountUtil.setCurrentAccount(currentAccount);
-				//logger.log(Level.INFO, "##################################"+AccountUtil.getCurrentUser().getEmail());
 				request.setAttribute("ORGID", currentAccount.getOrg().getOrgId());
 				request.setAttribute("USERID", currentAccount.getUser().getOuid());
 
@@ -110,14 +106,14 @@ public class AuthInterceptor extends AbstractInterceptor {
 				if(currentAccount != null) {
 					String useremail = currentAccount.getUser().getEmail();
 					if ( ! ADMIN_IDS.contains(useremail)) {
-						logger.log(Level.SEVERE, "you are not allowed to access this page from");
+						LOGGER.log(Level.SEVERE, "you are not allowed to access this page from");
 						return Action.LOGIN;
 					}
 				}
 			}
 		}
 		catch (Exception e) {
-			logger.log(Level.SEVERE, "error in auth interceptor", e);
+			LOGGER.log(Level.SEVERE, "error in auth interceptor", e);
 			return Action.LOGIN;
 		}
 		
@@ -131,27 +127,25 @@ public class AuthInterceptor extends AbstractInterceptor {
 
 			return result;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
-			logger.log(Level.SEVERE, "error thrown from action class", e);
+			LOGGER.log(Level.SEVERE, "error thrown from action class", e);
 			throw e;
 		}
 	}
-	private static Logger logger = Logger.getLogger(AuthInterceptor.class.getName());
 
 	private boolean isAuthorizedAccess(String moduleName, String permissions) throws Exception {
 		
 		if (permissions == null || "".equals(permissions.trim())) {
-			//System.out.println("WARNING: Configured permission is empty");
 			return true;
 		}
 
+		if(AccountUtil.getCurrentUser() == null) {
+		    return false;
+        }
 		Role role = AccountUtil.getCurrentUser().getRole();
 		if(role.getName().equals(AccountConstants.DefaultSuperAdmin.SUPER_ADMIN) || role.getName().equals("Administrator")) {
 			return true;
 		} else {
 			return role.hasPermission(moduleName, permissions);
 		}
-
 	}
 }
