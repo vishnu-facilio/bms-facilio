@@ -33,10 +33,7 @@ public class PortalInfoAction extends ActionSupport
 	}
 	public String saveSSOConfiguration() throws Exception 
 	{
-		System.out.println(">>>>>>>>> portalInfoStr : "+portalInfoStr);
-		System.out.println(">>>>>>>>> publicKeyFile : "+publicKeyFile);
-		System.out.println(">>>>>>>>> publicKeyFileFileName : "+publicKeyFileFileName);
-		System.out.println(">>>>>>>>> publicKeyFileContentType : "+publicKeyFileContentType);
+		
 		
 		JSONParser parser = new JSONParser();
 		JSONObject json = (JSONObject) parser.parse(portalInfoStr);
