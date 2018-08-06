@@ -12,7 +12,9 @@ import java.util.StringJoiner;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
+import com.facilio.bmsconsole.context.FormulaContext.SpaceAggregateOperator;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -24,15 +26,19 @@ import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataContext;
 import com.facilio.report.context.ReportDataPointContext;
-import com.facilio.report.context.ReportGroupByField;
 import com.facilio.report.context.ReportDataPointContext.OrderByFunction;
+import com.facilio.report.context.ReportGroupByField;
 
 public class FetchReportDataCommand implements Command {
 
@@ -62,12 +68,15 @@ public class FetchReportDataCommand implements Command {
 				selectBuilder.andCriteria(dp.getCriteria());
 			}
 			
-			joinYModuleIfRequred(dp, selectBuilder);
+			Set<FacilioModule> addedModules = new HashSet<>();
+			addedModules.add(dp.getxAxis().getField().getModule());
+			
+			joinYModuleIfRequred(dp, selectBuilder, addedModules);
 			applyOrderBy(dp, selectBuilder);
 			List<FacilioField> fields = new ArrayList<>();
 			StringJoiner groupBy = new StringJoiner(",");
-			FacilioField xAggrField = applyXAggregation(dp, groupBy, fields);
-			setYFieldsAndGroupByFields(dataPointList, fields, xAggrField, groupBy, dp, selectBuilder);
+			FacilioField xAggrField = applyXAggregation(dp, groupBy, selectBuilder, fields, addedModules);
+			setYFieldsAndGroupByFields(dataPointList, fields, xAggrField, groupBy, dp, selectBuilder, addedModules);
 			selectBuilder.select(fields);
 			if (report.getxCriteria() != null) {
 				selectBuilder.andCondition(getEqualsCondition(dp.getxAxis().getField(), xValues));
@@ -89,9 +98,10 @@ public class FetchReportDataCommand implements Command {
 		return false;
 	}
 	
-	private void joinYModuleIfRequred(ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder) {
+	private void joinYModuleIfRequred(ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, Set<FacilioModule> addedModules) {
 		if (!dp.getxAxis().getField().getModule().equals(dp.getyAxis().getField().getModule())) {
 			applyJoin(dp.getyAxis().getJoinOn(), dp.getyAxis().getField().getModule(), selectBuilder);
+			addedModules.add(dp.getyAxis().getField().getModule());
 		}
 	}
 	
@@ -115,7 +125,7 @@ public class FetchReportDataCommand implements Command {
 		return newSelectBuilder.getAsProps();
 	}
 	
-	private void setYFieldsAndGroupByFields(List<ReportDataPointContext> dataPointList, List<FacilioField> fields, FacilioField xAggrField, StringJoiner groupBy, ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder) throws Exception {
+	private void setYFieldsAndGroupByFields(List<ReportDataPointContext> dataPointList, List<FacilioField> fields, FacilioField xAggrField, StringJoiner groupBy, ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, Set<FacilioModule> addedModules) throws Exception {
 		for (ReportDataPointContext dataPoint : dataPointList) {
 			boolean isAggr = applyYAggregation(dataPoint, fields);
 			if (isAggr && groupBy.length() == 0) {
@@ -124,14 +134,11 @@ public class FetchReportDataCommand implements Command {
 		}
 		
 		if (dp.getGroupByFields() != null && !dp.getGroupByFields().isEmpty()) {
-			Set<FacilioModule> addedModules = new HashSet<>();
 			for (ReportGroupByField groupByField : dp.getGroupByFields()) {
 				fields.add(groupByField.getField());
 				
 				FacilioModule groupByModule = groupByField.getField().getModule();
-				if (!addedModules.contains(groupByModule) && 
-						!dp.getxAxis().getField().getModule().equals(groupByModule) && 
-						!dp.getyAxis().getField().getModule().equals(groupByModule)) {
+				if (!addedModules.contains(groupByModule)) {
 					
 					applyJoin(groupByField.getJoinOn(), groupByModule, selectBuilder);
 					addedModules.add(groupByModule);
@@ -216,16 +223,46 @@ public class FetchReportDataCommand implements Command {
 		groupedList.add(dataPointList);
 	}
 	
-	private FacilioField applyXAggregation(ReportDataPointContext dp, StringJoiner groupBy, List<FacilioField> fields) throws Exception {
+	private FacilioField applySpaceAggregation(ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, Set<FacilioModule> addedModules) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+		FacilioModule baseSpaceModule = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE));
+		
+		selectBuilder.innerJoin(resourceModule.getTableName())
+					.on(resourceModule.getTableName()+".ID = "+dp.getxAxis().getField().getCompleteColumnName())
+					.innerJoin(baseSpaceModule.getTableName())
+					.on(resourceModule.getTableName()+".SPACE_ID = "+baseSpaceModule.getTableName()+".ID");
+		addedModules.add(resourceModule);
+		addedModules.add(baseSpaceModule);
+		
+		switch ((SpaceAggregateOperator)dp.getxAxis().getAggrEnum()) {
+			case SITE:
+				return fieldMap.get("siteId");
+			case BUILDING:
+				return fieldMap.get("buildingId");
+			case FLOOR:
+				return fieldMap.get("floorId");
+			default:
+				throw new RuntimeException("Cannot be here!!");
+		}
+	}
+	
+	private FacilioField applyXAggregation(ReportDataPointContext dp, StringJoiner groupBy, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, List<FacilioField> fields, Set<FacilioModule> addedModules) throws Exception {
 		FacilioField xAggrField = null;
 		if (dp.getyAxis().getAggrEnum() != null && dp.getyAxis().getAggr() != 0) {
-			if (dp.getxAxis().getAggrEnum() != null&& dp.getxAxis().getAggr() != 0 ) {
-				xAggrField = dp.getxAxis().getAggrEnum().getSelectField(dp.getxAxis().getField());
+			if (dp.getxAxis().getAggrEnum() != null && dp.getxAxis().getAggr() != 0 ) {
+				if (dp.getxAxis().getAggrEnum() == SpaceAggregateOperator.SITE || dp.getxAxis().getAggrEnum() == SpaceAggregateOperator.BUILDING || dp.getxAxis().getAggrEnum() == SpaceAggregateOperator.FLOOR) {
+					xAggrField = applySpaceAggregation(dp, selectBuilder, addedModules);
+				}
+				else {
+					xAggrField = dp.getxAxis().getAggrEnum().getSelectField(dp.getxAxis().getField());
+				}
 			}
 			else {
 				xAggrField = dp.getxAxis().getField();
 			}
-			groupBy.add(xAggrField.getColumnName());
+			groupBy.add(xAggrField.getCompleteColumnName());
 			if (dp.getxAxis().getAggrEnum() instanceof DateAggregateOperator) {
 				fields.add(((DateAggregateOperator)dp.getxAxis().getAggrEnum()).getTimestampField(dp.getxAxis().getField()));
 			}
