@@ -4266,7 +4266,13 @@ public class DashboardAction extends ActionSupport {
 								value.put("label", jsonKey);
 				 				value.put("value", json.get(jsonKey));
 				 				
-				 				res.put(buildingId, value);
+				 				if(reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.SITE.getValue())) {
+				 					SiteContext site = SpaceAPI.getSiteSpace(buildingId);
+				 					res.put(site.getName(), value);
+				 				}
+				 				else {
+				 					res.put(buildingId, value);
+				 				}
 							}
 	 					}
 					}
@@ -4303,6 +4309,7 @@ public class DashboardAction extends ActionSupport {
 				j1.put("value", res.get(key));
 				finalres.add(j1);
 			}
+			
 			ticketData = finalres;
 		}
 		else {
