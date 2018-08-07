@@ -30,28 +30,33 @@ public class CreateWorkOrderAnalyticsReportCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		List<WorkorderAnalysisContext> metrics = (List<WorkorderAnalysisContext>) context.get(FacilioConstants.ContextNames.REPORT_Y_FIELDS);
+		List<WorkorderAnalysisContext> metrics = (List<WorkorderAnalysisContext>) context.get(FacilioConstants.ContextNames.REPORT_FIELDS);
 		long startTime = (long) context.get(FacilioConstants.ContextNames.START_TIME);
 		long endTime = (long) context.get(FacilioConstants.ContextNames.END_TIME);
-		long xFieldId = (long) context.get(FacilioConstants.ContextNames.REPORT_X_FIELD);
-		if (metrics != null && !metrics.isEmpty() && startTime != -1 && endTime != -1 && xFieldId != -1) {
+		if (metrics != null && !metrics.isEmpty()) {
+			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioField xField = modBean.getField(xFieldId);
-			ReportAxisContext xAxis = new ReportAxisContext();
-			xAxis.setField(xField);
-			List<FacilioField> fields = modBean.getAllFields(xField.getModule().getName());
-			Map<Long, FacilioField> xfieldIdMap = FieldFactory.getAsIdMap(fields);
-			Map<String, LookupField> xlookupFields = getLookupFields(fields);
-			AggregateOperator xAggr = (AggregateOperator) context.get(FacilioConstants.ContextNames.REPORT_X_AGGR);
-			xAxis.setAggr(xAggr);
 			List<ReportDataPointContext> dataPoints = new ArrayList<>();
 			for (WorkorderAnalysisContext metric : metrics) {
+				
+				if (metric.getxFieldId() == -1 || metric.getyFieldId() == -1 || (startTime != -1 && endTime != -1 && metric.getDateFieldId() == -1)) {
+					throw new IllegalArgumentException("In sufficient params for WorkOrder Analysis data point");
+				}
+				
 				ReportDataPointContext dataPoint = new ReportDataPointContext();
+				
+				FacilioField xField = modBean.getField(metric.getxFieldId());
+				ReportAxisContext xAxis = new ReportAxisContext();
+				xAxis.setField(xField);
+				List<FacilioField> fields = modBean.getAllFields(xField.getModule().getName());
+				Map<Long, FacilioField> xfieldIdMap = FieldFactory.getAsIdMap(fields);
+				Map<String, LookupField> xlookupFields = getLookupFields(fields);
+				xAxis.setAggr(metric.getxAggr());
 				dataPoint.setxAxis(xAxis);
 				
 				setYAxis(modBean, metric, dataPoint, xfieldIdMap, xlookupFields);
 				dataPoint.setCriteria(metric.getCriteria());
-				createReportGroupByFields(modBean, metric, dataPoint, xfieldIdMap, xlookupFields);
+				createReportGroupByAndDateFields(modBean, metric, dataPoint, xfieldIdMap, xlookupFields);
 				
 				dataPoints.add(dataPoint);
 			}
@@ -69,33 +74,48 @@ public class CreateWorkOrderAnalyticsReportCommand implements Command {
 		return false;
 	}
 	
-	private void createReportGroupByFields(ModuleBean modBean, WorkorderAnalysisContext metric, ReportDataPointContext dataPoint, Map<Long, FacilioField> xFieldIdMap, Map<String, LookupField> xLookupFields) throws Exception {
-		if (metric.getGroupBy() != null && !metric.getGroupBy().isEmpty()) {
+	private void createReportGroupByAndDateFields(ModuleBean modBean, WorkorderAnalysisContext metric, ReportDataPointContext dataPoint, Map<Long, FacilioField> xFieldIdMap, Map<String, LookupField> xLookupFields) throws Exception {
+		if ((metric.getGroupBy() != null && !metric.getGroupBy().isEmpty()) || metric.getDateFieldId() != -1) {
 			List<FacilioField> yFields = modBean.getAllFields(dataPoint.getyAxis().getField().getModule().getName());
 			Map<Long, FacilioField> yFieldIdMap = FieldFactory.getAsIdMap(yFields);
-			Map<String, LookupField> yLookupFields = getLookupFields(yFields);
-			List<ReportGroupByField> groupBy = new ArrayList<>();
-			for (Long groupById : metric.getGroupBy()) {
-				ReportGroupByField reportGroupBy = new ReportGroupByField();
-				FacilioField groupByField = xFieldIdMap.get(groupById);
-				if (groupByField == null) {
-					groupByField = yFieldIdMap.get(groupByField);
+			
+			if (metric.getGroupBy() != null && !metric.getGroupBy().isEmpty()) {
+				Map<String, LookupField> yLookupFields = getLookupFields(yFields);
+				List<ReportGroupByField> groupBy = new ArrayList<>();
+				for (Long groupById : metric.getGroupBy()) {
+					ReportGroupByField reportGroupBy = new ReportGroupByField();
+					FacilioField groupByField = xFieldIdMap.get(groupById);
 					if (groupByField == null) {
-						groupByField = modBean.getField(groupById);
-						LookupField lookupField = xLookupFields.get(groupByField.getModule().getName());
-						if (lookupField == null) {
-							lookupField = yLookupFields.get(groupByField.getModule().getName());
+						groupByField = yFieldIdMap.get(groupByField);
+						if (groupByField == null) {
+							groupByField = modBean.getField(groupById);
+							LookupField lookupField = xLookupFields.get(groupByField.getModule().getName());
+							if (lookupField == null) {
+								lookupField = yLookupFields.get(groupByField.getModule().getName());
+							}
+							if (lookupField == null) {
+								throw new IllegalArgumentException("Invalid Y Field ID : "+metric.getyFieldId()+" for WorkOrder Analysis as there is no relation with X Field : "+dataPoint.getxAxis().getField().getName()+" or with Y Field : "+dataPoint.getyAxis().getField().getName());
+							}
+							reportGroupBy.setJoinOn(getJoinOn(lookupField));
 						}
-						if (lookupField == null) {
-							throw new IllegalArgumentException("Invalid Y Field ID : "+metric.getyFieldId()+" for WorkOrder Analysis as there is no relation with X Field : "+dataPoint.getxAxis().getField().getName()+" or with Y Field : "+dataPoint.getyAxis().getField().getName());
-						}
-						reportGroupBy.setJoinOn(getJoinOn(lookupField));
 					}
+					reportGroupBy.setField(groupByField);
+					groupBy.add(reportGroupBy);
 				}
-				reportGroupBy.setField(groupByField);
-				groupBy.add(reportGroupBy);
+				dataPoint.setGroupByFields(groupBy);
 			}
-			dataPoint.setGroupByFields(groupBy);
+			
+			if (metric.getDateFieldId() != -1) {
+				FacilioField dateField = xFieldIdMap.get(metric.getDateFieldId());
+				if (dateField == null) {
+					dateField = yFieldIdMap.get(metric.getDateFieldId());
+				}
+				
+				if (dateField == null) {
+					throw new IllegalArgumentException("Date Field is not one of X Axis Module or Y Axis Module fields");
+				}
+				dataPoint.setDateField(dateField);
+			}
 		}
 	}
 	

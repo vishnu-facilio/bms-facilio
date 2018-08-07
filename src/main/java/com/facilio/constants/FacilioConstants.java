@@ -244,6 +244,7 @@ public class FacilioConstants {
 		public static final String REPORT_LABEL_FIELD_TEXT = "label";
 		public static final String REPORT_VALUE_FIELD_TEXT = "value";
 		public static final String REPORT_DATE_FILTER = "dateFilter";
+		public static final String REPORT_DATE_FIELD = "reportDateField";
 		public static final String REPORT_SELECT_FIELDS = "selectFields";
 		public static final String REPORT_GROUP_BY = "groupBy";
 		public static final String REPORT_LIMIT = "limit";
@@ -256,6 +257,7 @@ public class FacilioConstants {
 		public static final String REPORT_X_VALUES = "reportXValues";
 		public static final String REPORT_X_FIELD = "reportXField";
 		public static final String REPORT_Y_FIELDS = "reportYFields";
+		public static final String REPORT_FIELDS = "reportFields";
 		public static final String REPORT_MODE = "reportMode";
 		
 		public static final String NOTE = "note";

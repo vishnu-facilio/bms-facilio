@@ -6,6 +6,25 @@ import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.criteria.Criteria;
 
 public class WorkorderAnalysisContext {
+	private long xFieldId = -1;
+	public long getxFieldId() {
+		return xFieldId;
+	}
+	public void setxFieldId(long xFieldId) {
+		this.xFieldId = xFieldId;
+	}
+	
+	private AggregateOperator xAggr;
+	public int getxAggr() {
+		if (xAggr != null) {
+			return xAggr.getValue();
+		}
+		return -1;
+	}
+	public void setxAggr(int xAggr) {
+		this.xAggr = AggregateOperator.getAggregateOperator(xAggr);
+	}
+	
 	private long yFieldId = -1;
 	public long getyFieldId() {
 		return yFieldId;
@@ -37,6 +56,14 @@ public class WorkorderAnalysisContext {
 	}
 	public void setGroupBy(List<Long> groupBy) {
 		this.groupBy = groupBy;
+	}
+	
+	private long dateFieldId = -1;
+	public long getDateFieldId() {
+		return dateFieldId;
+	}
+	public void setDateFieldId(long dateFieldId) {
+		this.dateFieldId = dateFieldId;
 	}
 	
 	private Criteria criteria;

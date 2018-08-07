@@ -68,9 +68,7 @@ public class V2ReportAction extends FacilioAction {
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.START_TIME, startTime);
 			context.put(FacilioConstants.ContextNames.END_TIME, endTime);
-			context.put(FacilioConstants.ContextNames.REPORT_X_FIELD, xFieldId);
-			context.put(FacilioConstants.ContextNames.REPORT_X_AGGR, xAggr);
-			context.put(FacilioConstants.ContextNames.REPORT_Y_FIELDS, FieldUtil.getAsBeanListFromJsonArray(fieldArray, WorkorderAnalysisContext.class));
+			context.put(FacilioConstants.ContextNames.REPORT_FIELDS, FieldUtil.getAsBeanListFromJsonArray(fieldArray, WorkorderAnalysisContext.class));
 			context.put(FacilioConstants.ContextNames.BASE_LINE_LIST, FieldUtil.getAsBeanListFromJsonArray(baseLineList, ReportBaseLineContext.class));
 			
 			Chain fetchReadingDataChain = ReadOnlyChainFactory.fetchWorkorderReportChain();
@@ -116,14 +114,6 @@ public class V2ReportAction extends FacilioAction {
 		this.endTime = endTime;
 	}
 	
-	private long xFieldId = -1;
-	public long getxFieldId() {
-		return xFieldId;
-	}
-	public void setxFieldId(long xFieldId) {
-		this.xFieldId = xFieldId;
-	}
-
 	private AggregateOperator xAggr;
 	public int getxAggr() {
 		if (xAggr != null) {
