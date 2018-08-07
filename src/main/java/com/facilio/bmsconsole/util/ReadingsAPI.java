@@ -644,7 +644,7 @@ public class ReadingsAPI {
 		
 		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		for (ReadingContext reading : readings) {
-			FacilioModule module = moduleMap != null ? moduleMap.get(reading.getId()) : bean.getModule(reading.getModuleId());
+			FacilioModule module = moduleMap != null ? moduleMap.get(reading.getModuleId()) : bean.getModule(reading.getModuleId());
 			int minuteInterval = defaultInterval;
 			if (module.getDataInterval() != -1) {
 				minuteInterval = module.getDataInterval();

@@ -48,7 +48,7 @@ public class ValidateAndCreateValuesForInputTaskCommand implements Command {
 						if(task.getStatus() != null && task.getStatus().getId() != -1) {
 							TicketStatusContext status = TicketAPI.getStatus("Closed");
 							if(status.getId() == task.getStatus().getId()) {
-								if (completeRecord.getInputTypeEnum() != InputType.NONE && (completeRecord.getInputValue() == null || completeRecord.getInputValue().isEmpty())) {
+								if (completeRecord.getInputTypeEnum() != InputType.NONE && ((completeRecord.getInputValue() == null || completeRecord.getInputValue().isEmpty())) && (task.getInputValue() == null || task.getInputValue().isEmpty())) {
 									throw new UnsupportedOperationException("Input task cannot be closed without entering input value");
 								}
 								
