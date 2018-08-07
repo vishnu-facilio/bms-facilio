@@ -40,6 +40,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.kinesis.KinesisProcessor;
 import com.facilio.logging.SysOutLogger;
 import com.facilio.queue.FacilioExceptionProcessor;
+import com.facilio.queue.InstantJobExecutor;
 import com.facilio.server.ServerInfo;
 import com.facilio.serviceportal.actions.PortalAuthInterceptor;
 import com.facilio.sql.DBUtil;
@@ -60,6 +61,7 @@ public class FacilioContextListener implements ServletContextListener {
 			RedisManager.getInstance().release();// destroying redis connection pool
 		}
 		FacilioScheduler.stopSchedulers();
+		InstantJobExecutor.INSTANCE.stopExecutor();
 	}
 
 	public void contextInitialized(ServletContextEvent event) {
@@ -111,6 +113,7 @@ public class FacilioContextListener implements ServletContextListener {
 			BeanFactory.initBeans();
 			
 			FacilioScheduler.initScheduler();
+			InstantJobExecutor.INSTANCE.startExecutor();
 		//	FacilioTransactionManager.INSTANCE.getTransactionManager();
 			if(RedisManager.getInstance() != null) {
 				RedisManager.getInstance().connect(); // creating redis connection pool

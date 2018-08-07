@@ -47,11 +47,11 @@ public class ObjectQueue {
         }
     }
 
-    public static List<ObjectMessage> getObjects(String queueName) {
-        List<Message> receivedMessages = FAWSQueue.receiveMessages(queueName);
+    public static List<ObjectMessage> getObjects(String queueName, int limit) {
+        List<QueueMessage> receivedMessages = QueueFactory.getQueue().pull(queueName, limit);
         List<ObjectMessage> serializableList = new ArrayList<>();
-        for (Message message: receivedMessages) {
-            String serialized = message.getBody();
+        for (QueueMessage message: receivedMessages) {
+            String serialized = message.getMessage();
             if (serialized == null) {
                 return null;
             }
@@ -61,7 +61,7 @@ public class ObjectQueue {
                 byte[] bytes = Base64.decode(serialized);
                 objectInputStream = new ObjectInputStream(new ByteArrayInputStream(bytes));
                 deserializedObject = (Serializable) objectInputStream.readObject();
-                ObjectMessage objectMessage = new ObjectMessage(message.getMessageId(), message.getBody());
+                ObjectMessage objectMessage = new ObjectMessage(message.getId(), message.getMessage());
                 objectMessage.setSerializable(deserializedObject);
                 objectMessage.setReceiptHandle(message.getReceiptHandle());
                 serializableList.add(objectMessage);
