@@ -523,7 +523,8 @@ public class DeviceAPI
 			//data Gap implementation starts here..
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_DATA_READING);
-			FacilioField energyField=FieldFactory.getField("energyDelta", "TOTAL_ENERGY_CONSUMPTION_DELTA", module, FieldType.DECIMAL);
+			
+			FacilioField energyField=modBean.getField(TOTAL_ENERGY_CONSUMPTION_DELTA, module.getName());
 			ReadingDataMeta rdm= ReadingsAPI.getReadingDataMeta(meter.getId(),energyField);
 			if(!isHistorical && isDataGap(meter.getId(),module,firstReadingTime, rdm.getTtime())) {
 				
