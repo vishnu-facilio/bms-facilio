@@ -512,7 +512,7 @@ public class FacilioAuthAction extends ActionSupport {
 			return SUCCESS;
         }
         
-        boolean signupAllowed = false;
+        boolean whitelisteddomain = false;
 
 		if (opensignup && !anydomain_allowedforsignup) {
 			String domains = (String) portalInfo.getWhiteListed_domains();
@@ -523,16 +523,17 @@ public class FacilioAuthAction extends ActionSupport {
 			}
 			for (String item : items) {
 				if (emailaddress.endsWith(item.trim())) {
-					signupAllowed = true;
+					whitelisteddomain = true;
+					break;
 				}
 			}
-			if (!signupAllowed || !anydomain_allowedforsignup) {
+			if (!anydomain_allowedforsignup && !whitelisteddomain  ) {
 				setJsonresponse("message", "Only whitelisted domains allowed");
 				return SUCCESS;
 			}
 
 		}
-        if(anydomain_allowedforsignup || signupAllowed)
+        if(anydomain_allowedforsignup || opensignup || whitelisteddomain)
         {
         try {
 			AccountUtil.getUserBean().addRequester(AccountUtil.getCurrentOrg().getId(), user);
