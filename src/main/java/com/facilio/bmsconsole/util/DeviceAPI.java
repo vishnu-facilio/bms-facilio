@@ -528,7 +528,7 @@ public class DeviceAPI
 			ReadingDataMeta rdm= ReadingsAPI.getReadingDataMeta(meter.getId(),energyField);
 			if(!isHistorical && isDataGap(meter.getId(),module,firstReadingTime, rdm.getTtime())) {
 				
-				firstReading.addReading("marked", 1);
+				firstReading.setMarked(true);
 				List<MarkedReadingContext> markedList=new ArrayList<MarkedReadingContext> ();
 				markedList.add(getMarkedReading(firstReading,energyField.getFieldId(),module.getModuleId(),MarkType.HIGH_VALUE_HOURLY_VIOLATION,firstReading,firstReading));
 				context.put(FacilioConstants.ContextNames.MARKED_READINGS, markedList);

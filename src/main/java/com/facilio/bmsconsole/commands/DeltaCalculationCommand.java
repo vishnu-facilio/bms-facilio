@@ -149,7 +149,8 @@ public class DeltaCalculationCommand implements Command {
 				//need to mark as hourly violation..
 				type=MarkType.HIGH_VALUE_HOURLY_VIOLATION;
 				markedList.add(DeviceAPI.getMarkedReading(reading,energyFieldId,moduleId,type,currentReading,lastReading));
-				reading.addReading("marked", 1);
+				reading.setMarked(true);
+
 			}
 			
 	}
