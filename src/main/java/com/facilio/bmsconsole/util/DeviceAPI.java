@@ -519,6 +519,7 @@ public class DeviceAPI
 			context.put(FacilioConstants.ContextNames.MODULE_NAME,FacilioConstants.ContextNames.ENERGY_DATA_READING );
 			context.put(FacilioConstants.ContextNames.READINGS, vmReadings);
 			context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS, false);
+			context.put(FacilioConstants.ContextNames.HISTORY_READINGS, isHistorical);
 			
 			//data Gap implementation starts here..
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
