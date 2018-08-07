@@ -1,5 +1,7 @@
 package com.facilio.workflows.functions;
 
+import java.time.YearMonth;
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -80,7 +82,19 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 			
 			checkParam(objects);
 			
-			int days = DateTimeUtil.getDaysBetween(DateTimeUtil.getMonthStartTime(), DateTimeUtil.getMonthStartTime(1)-1);
+			int days = 0;
+			if(objects == null) {
+				
+				ZonedDateTime zdt = DateTimeUtil.getZonedDateTime(DateTimeUtil.getMonthStartTime());
+				YearMonth yearMonthObject = YearMonth.of(zdt.getYear(), zdt.getMonthValue());
+				days = yearMonthObject.lengthOfMonth();
+			}
+			else {
+				Long startTime = Long.parseLong( objects[0].toString());
+				ZonedDateTime zdt = DateTimeUtil.getZonedDateTime(startTime);
+				YearMonth yearMonthObject = YearMonth.of(zdt.getYear(), zdt.getMonthValue());
+				days = yearMonthObject.lengthOfMonth();
+			}
 			
 			return days;
 		};
