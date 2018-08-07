@@ -15,9 +15,7 @@ public class CacheResult extends JSONResult {
 	public void execute(ActionInvocation invocation)
             throws Exception
             {
-			System.out.println("before result execution");
 			   super.execute(invocation);
-				System.out.println("after result execution");
 
             }
 	protected void writeToResponse(javax.servlet.http.HttpServletResponse response,
@@ -31,7 +29,6 @@ public class CacheResult extends JSONResult {
 		if(cacheurl !=null)
 		{
 			// TODO : save the JSON data in cache
-		System.out.println("Cache for url : "+request.getAttribute("cacheurl")+"Writing data to "+json);
 		}
 		else
 		{

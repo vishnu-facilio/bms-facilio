@@ -175,7 +175,7 @@ LRUCache modulecache = LRUCache.getModuleCache();
 			
 			CacheUtil.set(CacheUtil.PRIMARY_FIELD_KEY(getOrgId(), moduleName), fieldObj);
 			
-			LOGGER.log(Level.INFO, "getPrimaryField result from DB for module: "+moduleName);
+			//LOGGER.log(Level.INFO, "getPrimaryField result from DB for module: "+moduleName);
 		}
 		else {
 			//LOGGER.log(Level.INFO, "getPrimaryField result from CACHE for module: "+moduleName);
