@@ -15,10 +15,9 @@ public abstract class InstantJob {
 
     private String receiptHandle;
 
-    public InstantJob (String receiptHandle) {
+    public void setReceiptHandle(String receiptHandle) {
         this.receiptHandle = receiptHandle;
     }
-
     private String getReceiptHandle() {
         return receiptHandle;
     }

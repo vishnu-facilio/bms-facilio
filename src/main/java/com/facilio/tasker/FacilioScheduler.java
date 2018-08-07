@@ -33,6 +33,7 @@ public class FacilioScheduler {
 		
 		getJobObjectsFromConf();
 		LOGGER.info(JOBS_MAP);
+		getInstanceJobFromConf();
 		
 //		Executor executor = new Executor("facilio", 15, 600);
 		if(Boolean.parseBoolean(AwsUtil.getConfig("schedulerServer"))) {

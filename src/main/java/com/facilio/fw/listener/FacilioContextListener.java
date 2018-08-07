@@ -21,8 +21,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import com.facilio.wms.message.NotificationProcessor;
-import com.facilio.wms.message.NotificationProcessorFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.flywaydb.core.Flyway;
@@ -40,14 +38,16 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.kinesis.KinesisProcessor;
 import com.facilio.logging.SysOutLogger;
 import com.facilio.queue.FacilioExceptionProcessor;
-import com.facilio.queue.InstantJobExecutor;
 import com.facilio.server.ServerInfo;
 import com.facilio.serviceportal.actions.PortalAuthInterceptor;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.SQLScriptRunner;
 import com.facilio.tasker.FacilioScheduler;
+import com.facilio.tasker.executor.InstantJobExecutor;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.facilio.transaction.TransactionMonitor;
+import com.facilio.wms.message.NotificationProcessor;
+import com.facilio.wms.message.NotificationProcessorFactory;
 
 public class FacilioContextListener implements ServletContextListener {
 

@@ -1,4 +1,4 @@
-package com.facilio.queue;
+package com.facilio.tasker.executor;
 
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -6,6 +6,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.queue.ObjectMessage;
+import com.facilio.queue.ObjectQueue;
 import com.facilio.tasker.FacilioScheduler;
 import com.facilio.tasker.config.InstantJobConf;
 import com.facilio.tasker.job.InstantJob;
@@ -39,7 +41,7 @@ public enum InstantJobExecutor implements Runnable {
 	
     public void run(){
     	while (isRunning) {
-	        List<ObjectMessage> messageList = ObjectQueue.getObjects("instantJob", 10);
+	        List<ObjectMessage> messageList = ObjectQueue.getObjects(InstantJobConf.getInstantJobQueue(), 10);
 	        if(messageList != null) {
 	            for (ObjectMessage message : messageList) {
 	                while (THREAD_POOL_EXECUTOR.getQueue().size() < 15) {
@@ -52,6 +54,7 @@ public enum InstantJobExecutor implements Runnable {
 	                            if (jobClass != null) {
 	                                try {
 	                                    final InstantJob job = jobClass.newInstance();
+	                                    job.setReceiptHandle(message.getReceiptHandle());
 	                                    THREAD_POOL_EXECUTOR.execute(() -> job._execute(context));
 	                                } catch (InstantiationException | IllegalAccessException e) {
 	                                    e.printStackTrace();
