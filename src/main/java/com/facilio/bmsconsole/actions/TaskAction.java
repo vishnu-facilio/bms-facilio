@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.ActivityType;
@@ -530,7 +531,7 @@ public class TaskAction extends FacilioAction {
 				}
 				catch(Exception e) {
 					Map<String, Object> obj = new HashMap<>();
-					obj.put("data", task);
+					obj.put("data", FieldUtil.getAsJSON(task).toJSONString());
 					obj.put("error", e.getMessage());
 					errors.put(task.getId(), obj);
 				}
