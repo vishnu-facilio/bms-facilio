@@ -660,7 +660,12 @@ public class WorkflowUtil {
 				 else if(expressionContext.getDefaultFunctionContext() != null) {
 					 WorkflowFunctionContext function = expressionContext.getDefaultFunctionContext();
 					 Element valueElement = doc.createElement(FUNCTION_STRING);
-					 valueElement.setTextContent(function.getNameSpace()+"."+function.getFunctionName()+"("+function.getParams()+")");
+					 if(function.getParams() != null) {
+						 valueElement.setTextContent(function.getNameSpace()+"."+function.getFunctionName()+"("+function.getParams()+")");
+					 }
+					 else {
+						 valueElement.setTextContent(function.getNameSpace()+"."+function.getFunctionName()+"()");
+					 }
 					 expressionElement.appendChild(valueElement);
 				 }
 				 else {
