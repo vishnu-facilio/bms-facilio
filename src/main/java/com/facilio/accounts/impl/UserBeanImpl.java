@@ -1014,8 +1014,9 @@ public long inviteRequester(long orgId, User user) throws Exception {
 	public long addRequester(long orgId, User user, boolean emailVerification) throws Exception {
 		User orgUser = getPortalUser(user.getEmail(), user.getPortalId());
 		if (orgUser != null) {
-			Exception e = new Exception("Email Already Registered");
-			throw e;
+			log.info("Email Already Registered ");
+//			Exception e = new Exception("Email Already Registered");
+//			throw e;
 			
 		}
 		
