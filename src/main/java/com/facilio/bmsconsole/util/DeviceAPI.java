@@ -488,7 +488,7 @@ public class DeviceAPI
 				}
 			}
 			
-			LOGGER.info("Calculating Consumption for VM : "+meter.getName() + " between " + interval);
+			LOGGER.debug("Calculating Consumption for VM : "+meter.getName() + " between " + interval);
 //			if (AccountUtil.getCurrentOrg().getId() == 116) {
 				LOGGER.debug("Intervals : "+interval);
 //			}
@@ -505,7 +505,7 @@ public class DeviceAPI
 			}
 		}
 
-		LOGGER.info("VM Readings size : "+vmReadings.size());
+		LOGGER.debug("VM Readings size : "+vmReadings.size());
 		if (!vmReadings.isEmpty()) {
 
 			ReadingContext firstReading=vmReadings.get(0);
