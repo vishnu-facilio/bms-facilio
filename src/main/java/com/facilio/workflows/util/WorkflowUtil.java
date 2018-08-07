@@ -831,8 +831,9 @@ public class WorkflowUtil {
              			else {
              				defaultFunctionContext.setFunctionName(matcher.group(3));
              			}
-             			
-             			defaultFunctionContext.setParams(matcher.group(5));
+             			if(matcher.group(5) != null) {
+             				defaultFunctionContext.setParams(matcher.group(5));
+             			}
              			expressionContext.setDefaultFunctionContext(defaultFunctionContext);
              		}
             	}
