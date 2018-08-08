@@ -39,6 +39,7 @@ public class PostFormulaCalculationJob extends InstantJob {
 		FormulaFieldContext formula = (FormulaFieldContext) context.get(FacilioConstants.ContextNames.FORMULA_FIELD);
 		Map<String, FacilioField> fieldMap = (Map<String, FacilioField>) context.get(FacilioConstants.ContextNames.MODULE_FIELD_MAP);
 		try {
+			LOGGER.info("Gonna calculate post formula for : "+reading.getParentId()+"_"+formula.getName());
 			List<ReadingContext> formulaReadings = null;
 			if (reading.isNewReading()) {
 				formulaReadings = calculateNewFormula(formula, reading, fieldMap);

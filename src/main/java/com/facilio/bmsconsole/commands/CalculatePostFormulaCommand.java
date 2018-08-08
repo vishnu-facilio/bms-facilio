@@ -94,6 +94,7 @@ public class CalculatePostFormulaCommand implements Command {
 						context.put(FacilioConstants.ContextNames.MODULE_FIELD_MAP, fieldMap);
 						
 						FacilioTimer.scheduleInstantJob("PostFormulaCalculationJob", context);
+						LOGGER.info("Adding instant job for Post formula calculation for  : "+completedKey);
 						
 						completedFormulas.add(completedKey);
 					}
