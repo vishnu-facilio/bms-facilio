@@ -261,6 +261,40 @@ public class WorkflowUtil {
 		deleteBuilder.delete();
 	}
 	
+	public static void validateWorkflow(WorkflowContext workflow) throws Exception {
+		
+		checkParamsDeclaration(workflow);
+		checkDuplicateParams(workflow);
+	}
+	
+	public static void checkDuplicateParams(WorkflowContext workflow) throws Exception {
+		
+		List<String> params = new ArrayList<String>();
+		
+		for(ParameterContext parameter :workflow.getParameters()) {
+			
+			if(params.contains(parameter.getName())) {
+				throw new IllegalArgumentException("param - "+parameter.getName()+" is declared more than once");
+			}
+			else {
+				params.add(parameter.getName());
+			}
+		}
+		for(ExpressionContext expressionContext : workflow.getExpressions()) {
+			
+			String expString = expressionContext.getExpressionString();
+			
+			int nameStartIndex = expString.indexOf("<expression name=\"")+"<expression name=\"".length();
+			String name = expString.substring(nameStartIndex, expString.indexOf('"', nameStartIndex));
+			
+			if(params.contains(name)) {
+				throw new IllegalArgumentException("param - "+name+" is declared more than once");
+			}
+			else {
+				params.add(name);
+			}
+		}
+	}
 	public static void checkParamsDeclaration(WorkflowContext workflow) throws Exception {
 		
 		List<String> params = new ArrayList<String>();
@@ -311,7 +345,7 @@ public class WorkflowUtil {
 		
 		parseStringToWorkflowObject(workflow.getWorkflowString(),workflow);
 		
-		checkParamsDeclaration(workflow);
+		validateWorkflow(workflow);
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
