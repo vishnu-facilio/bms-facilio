@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<instantjob>
+    <!--  job name='test' classname= 'com.facilio.bmsconsole.jobs.TestJob'/ -->
+    <job name='PostFormulaCalculationJob' classname= 'com.facilio.bmsconsole.instant.jobs.PostFormulaCalculationJob'/>
+</instantjob>
