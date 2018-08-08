@@ -30,10 +30,12 @@ public class GetExportValueField implements Command{
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
+		int type= (int) context.get(EventConstants.EventContextNames.TYPE);
 		List<EventContext> events = (List<EventContext>) context.get(EventConstants.EventContextNames.EVENT_LIST);
 		List<Long> fieldIds = (List<Long>) context.get(EventConstants.EventContextNames.FIELD_ID);
 		ModuleBean  modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		Map<FacilioModule, List<FacilioField>> fieldMap = mapModuleFields(modBean, fieldIds);
+		
 		List<Long> times = events.stream().map(event -> event.getCreatedTime()).collect(Collectors.toList());
 		List<ReadingContext> readings = new ArrayList<ReadingContext>();
 		for (Map.Entry<FacilioModule, List<FacilioField>> entry : fieldMap.entrySet()) {
@@ -47,7 +49,7 @@ public class GetExportValueField implements Command{
 			readings.addAll(builder.get());
 		}	
 		Map<String,Object> table = exportFormatObject(fieldMap, events, readings);
-		String fileUrl = ExportUtil.exportData(FileFormat.XLS, "Alarm Summary", table);
+		String fileUrl = ExportUtil.exportData(FileFormat.getFileFormat(type), "Alarm Summary", table);
 		context.put(EventConstants.EventContextNames.FILEURL, fileUrl);
 		return false;
 	}
@@ -82,8 +84,12 @@ public class GetExportValueField implements Command{
 		headerFields.put("Severity", eventField.get("severity"));
 		for (Map.Entry<FacilioModule, List<FacilioField>> entry : fieldMap.entrySet()) {
 		for(FacilioField fiel: entry.getValue()) {
-			header.add(fiel.getDisplayName());
-			headerFields.put(fiel.getDisplayName(), fiel);
+			if (fiel.getDisplayName().equals("Actual Timestamp")) {
+				
+			} else {
+				header.add(fiel.getDisplayName());
+				headerFields.put(fiel.getDisplayName(), fiel);
+			}
 		}
 		for (EventContext event : events) {
 			for(ReadingContext reading : readings) {
@@ -99,13 +105,16 @@ public class GetExportValueField implements Command{
 				    	  Object val = "";
 				    	  if (reading.getDatum(fiel.getName()) != null)
 				    	  {
-				    		  if (fiel.getName().equals("Actual Timestamp")) {
+				    		  if (fiel.getDisplayName().equals("Actual Timestamp")) {
 				    			  val = reading.getActualTtime();
 				    		  }
 				    		  val = reading.getDatum(fiel.getName());
 				    	  }
-			
-							hmap.put(fiel.getDisplayName(), val);
+				    	  if (fiel.getDisplayName().equals("Actual Timestamp")) {
+				    		  
+				    	  } else {
+				    		  hmap.put(fiel.getDisplayName(), val);
+				    	  }
 						}
 					readingList.put(event.getId(), reading);
 				}
@@ -115,7 +124,6 @@ public class GetExportValueField implements Command{
 		Map<String,Object> table = new HashMap<String, Object>();
 		table.put("headers", header);
 		table.put("records", records);
-//		table.put("headerField", headerFields);
 		return table;
 	}
 }

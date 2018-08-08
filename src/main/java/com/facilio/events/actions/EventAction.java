@@ -62,6 +62,7 @@ public class EventAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(EventConstants.EventContextNames.ALARM_ID, alarmId);
  		context.put(EventConstants.EventContextNames.FIELD_ID, fieldId);
+ 		context.put(EventConstants.EventContextNames.TYPE, type);
  		
 		Chain eventListChain = EventConstants.EventChainFactory.getExportFieldsValue();
 		eventListChain.execute(context);
@@ -147,7 +148,13 @@ public class EventAction extends ActionSupport {
 	public void setEventProperty(EventProperty eventProperty) {
 		this.eventProperty = eventProperty;
 	}
-	
+	private int type=1;
+	public int getType() {
+		return type;
+	}
+	public void setType(int type) {
+		this.type = type;
+	}
 //	private List<EventRule> eventRules;
 //	public List<EventRule> getEventRules() {
 //		return eventRules;
