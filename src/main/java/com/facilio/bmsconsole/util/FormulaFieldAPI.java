@@ -636,7 +636,7 @@ public class FormulaFieldAPI {
 				return DateTimeUtil.getYearStartTime(); //Temp for Al Seef
 			case WEEKLY:
 			case MONTHLY:
-				return DateTimeUtil.getMonthStartTime(-12);
+				return DateTimeUtil.getMonthStartTime(-6); //Temp for Al Seef
 			case HALF_YEARLY:
 			case QUARTERTLY:
 				return DateTimeUtil.getYearStartTime(-1);
