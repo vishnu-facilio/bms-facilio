@@ -43,11 +43,15 @@ public enum InstantJobExecutor implements Runnable {
 	public void stopExecutor() {
 		isRunning = false;
 	}
-	
+
+	private int getNoOfFreeThreads(){
+		return MAX_POOL_SIZE - THREAD_POOL_EXECUTOR.getActiveCount();
+	}
+
     public void run(){
     	LOGGER.info("Executor run status : "+isRunning);
     	while (isRunning) {
-	        List<ObjectMessage> messageList = ObjectQueue.getObjects(InstantJobConf.getInstantJobQueue(), MAX_POOL_SIZE - THREAD_POOL_EXECUTOR.getQueue().size());
+	        List<ObjectMessage> messageList = ObjectQueue.getObjects(InstantJobConf.getInstantJobQueue(), getNoOfFreeThreads());
 	        if(messageList != null) {
 	            for (ObjectMessage message : messageList) {
                     FacilioContext context = (FacilioContext) message.getSerializable();
