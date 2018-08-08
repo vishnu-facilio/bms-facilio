@@ -266,6 +266,7 @@ public class FacilioConstants {
 		public static final String MODULE_FIELD = "moduleField";
 		public static final String MODULE_FIELD_NAME = "fieldName";
 		public static final String MODULE_FIELD_LIST = "moduleFields";
+		public static final String MODULE_FIELD_MAP = "moduleFieldMap";
 		public static final String EXISTING_FIELD_LIST = "existingFields";
 		public static final String FIELD_NAME_LIST = "fieldList";
 		public static final String DEFAULT_FIELD = "defaultField";

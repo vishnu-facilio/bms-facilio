@@ -5,6 +5,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.queue.ObjectMessage;
 import com.facilio.queue.ObjectQueue;
@@ -14,6 +17,8 @@ import com.facilio.tasker.job.InstantJob;
 
 public enum InstantJobExecutor implements Runnable {
 	INSTANCE;
+	
+	private static final Logger LOGGER = LogManager.getLogger(InstantJobExecutor.class.getName());
 	
 	private static final int CORE_POOL_SIZE = 10;
     private static final int MAX_POOL_SIZE = 10;
@@ -40,13 +45,15 @@ public enum InstantJobExecutor implements Runnable {
 	}
 	
     public void run(){
+    	LOGGER.info("Executor run status : "+isRunning);
     	while (isRunning) {
 	        List<ObjectMessage> messageList = ObjectQueue.getObjects(InstantJobConf.getInstantJobQueue(), 10);
 	        if(messageList != null) {
 	            for (ObjectMessage message : messageList) {
 	                while (THREAD_POOL_EXECUTOR.getQueue().size() < 15) {
 	                    FacilioContext context = (FacilioContext) message.getSerializable();
-	                    String jobName = (String) context.get("JOB");
+	                    String jobName = (String) context.get(InstantJobConf.getJobNameKey());
+	                    LOGGER.info("Gonna Execute job : "+jobName);
 	                    if (jobName != null) {
 	                        InstantJobConf.Job instantJob = FacilioScheduler.getInstantJob(jobName);
 	                        if (instantJob != null) {
@@ -55,6 +62,7 @@ public enum InstantJobExecutor implements Runnable {
 	                                try {
 	                                    final InstantJob job = jobClass.newInstance();
 	                                    job.setReceiptHandle(message.getReceiptHandle());
+	                                    LOGGER.info("Executing job : "+jobName);
 	                                    THREAD_POOL_EXECUTOR.execute(() -> job._execute(context));
 	                                } catch (InstantiationException | IllegalAccessException e) {
 	                                    e.printStackTrace();
