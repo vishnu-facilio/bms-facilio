@@ -1,6 +1,7 @@
 
 package com.facilio.bmsconsole.criteria;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
@@ -12,7 +13,7 @@ import org.apache.commons.collections.Predicate;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.util.FacilioExpressionWrapper;
 
-public class Condition {
+public class Condition implements Serializable {
 	
 	private long conditionId = -1;
 	public long getConditionId() {

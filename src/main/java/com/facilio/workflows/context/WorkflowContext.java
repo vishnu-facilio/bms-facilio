@@ -1,5 +1,6 @@
 package com.facilio.workflows.context;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,7 +14,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.udojava.evalex.Expression;
 
-public class WorkflowContext {
+public class WorkflowContext implements Serializable {
 	
 	private static final Logger LOGGER = Logger.getLogger(WorkflowContext.class.getName());
 	

@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.modules;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.opensymphony.xwork2.util.Element;
 
-public class ModuleBaseWithCustomFields {
+public class ModuleBaseWithCustomFields implements Serializable {
 	
 	private long orgId = -1;
 	public long getOrgId() {

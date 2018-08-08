@@ -1,5 +1,6 @@
 package com.facilio.accounts.dto;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -16,7 +17,7 @@ import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.constants.FacilioConstants;
 
-public class Role {
+public class Role implements Serializable {
 	
 	private static final Logger LOGGER = Logger.getLogger(Role.class.getName());
 	private static org.apache.log4j.Logger log = LogManager.getLogger(Role.class.getName());

@@ -1,6 +1,8 @@
 package com.facilio.accounts.dto;
 
-public class Account {
+import java.io.Serializable;
+
+public class Account implements Serializable {
 	
 	private Organization org;
 	private User user;

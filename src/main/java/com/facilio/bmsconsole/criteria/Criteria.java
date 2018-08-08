@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.criteria;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.facilio.util.ExpressionEvaluator;
 import com.google.common.base.Objects;
 
-public class Criteria extends ExpressionEvaluator<Predicate> {
+public class Criteria extends ExpressionEvaluator<Predicate> implements Serializable {
 	
 	public Criteria() {
 		// TODO Auto-generated constructor stub

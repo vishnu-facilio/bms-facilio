@@ -1,5 +1,6 @@
 package com.facilio.workflows.context;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,7 +25,7 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.workflows.util.ExpressionAggregateOperator;
 import com.facilio.workflows.util.WorkflowUtil;
 
-public class ExpressionContext {
+public class ExpressionContext implements Serializable {
 	
 	private static final Logger LOGGER = Logger.getLogger(ExpressionContext.class.getName());
 	

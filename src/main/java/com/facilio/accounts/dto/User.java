@@ -1,5 +1,6 @@
 package com.facilio.accounts.dto;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -12,7 +13,7 @@ import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.license.LicenseContext.FacilioLicense;
 
-public class User {
+public class User implements Serializable {
 	
 	private long uid;
 	private String name;
