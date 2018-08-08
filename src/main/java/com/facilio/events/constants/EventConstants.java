@@ -43,6 +43,7 @@ public class EventConstants {
 		public static final String ALARM_ID = "alarmId";
 		public static final String FIELD_ID = "fieldId";
 		public static final String TYPE = "type";
+		public static final String PARENT_ID = "parentId";
 	}
 	
 	public static class EventChainFactory {

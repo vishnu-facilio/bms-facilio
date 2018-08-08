@@ -63,6 +63,7 @@ public class EventAction extends ActionSupport {
 		context.put(EventConstants.EventContextNames.ALARM_ID, alarmId);
  		context.put(EventConstants.EventContextNames.FIELD_ID, fieldId);
  		context.put(EventConstants.EventContextNames.TYPE, type);
+ 		context.put(EventConstants.EventContextNames.PARENT_ID, parentId);
  		
 		Chain eventListChain = EventConstants.EventChainFactory.getExportFieldsValue();
 		eventListChain.execute(context);
@@ -155,6 +156,8 @@ public class EventAction extends ActionSupport {
 	public void setType(int type) {
 		this.type = type;
 	}
+	
+	private long parentId;
 //	private List<EventRule> eventRules;
 //	public List<EventRule> getEventRules() {
 //		return eventRules;
@@ -163,6 +166,13 @@ public class EventAction extends ActionSupport {
 //		this.eventRules = eventRules;
 //	}
 	
+	public long getParentId() {
+		return parentId;
+	}
+	public void setParentId(long parentId) {
+		this.parentId = parentId;
+	}
+
 	private List<EventRuleContext> eventRules;
 	public List<EventRuleContext> getEventRules() {
 		return eventRules;

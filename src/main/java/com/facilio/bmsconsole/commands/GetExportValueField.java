@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -33,6 +36,7 @@ public class GetExportValueField implements Command{
 		int type= (int) context.get(EventConstants.EventContextNames.TYPE);
 		List<EventContext> events = (List<EventContext>) context.get(EventConstants.EventContextNames.EVENT_LIST);
 		List<Long> fieldIds = (List<Long>) context.get(EventConstants.EventContextNames.FIELD_ID);
+		long parentId = (long) context.get(EventConstants.EventContextNames.PARENT_ID);
 		ModuleBean  modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		Map<FacilioModule, List<FacilioField>> fieldMap = mapModuleFields(modBean, fieldIds);
 		
@@ -45,7 +49,8 @@ public class GetExportValueField implements Command{
 					.module(entry.getKey())
 					.beanClass(ReadingContext.class)
 					.select(entry.getValue())
-					.andCondition(CriteriaAPI.getCondition("ACTUAL_TTIME", "actual_ttime", StringUtils.join(times,","), StringOperators.IS));
+					.andCondition(CriteriaAPI.getCondition(currentFieldMap.get("actualTtime"), times, StringOperators.IS))
+					.andCondition(CriteriaAPI.getCondition(currentFieldMap.get("parentId"), Collections.singletonList(parentId), NumberOperators.EQUALS));
 			readings.addAll(builder.get());
 		}	
 		Map<String,Object> table = exportFormatObject(fieldMap, events, readings);
@@ -93,6 +98,7 @@ public class GetExportValueField implements Command{
 		}
 		for (EventContext event : events) {
 			for(ReadingContext reading : readings) {
+				
 				if(reading.getActualTtime() == event.getCreatedTime())
 				{
 					HashMap<String, Object> hmap = new HashMap<String, Object>();
