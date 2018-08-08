@@ -1,18 +1,13 @@
 package com.facilio.queue;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.SerializationException;
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.log4j.Logger;
 
-import com.amazonaws.services.sqs.model.Message;
 import com.amazonaws.util.Base64;
 
 public class ObjectQueue {
@@ -23,28 +18,8 @@ public class ObjectQueue {
         if (serializable == null) {
             return;
         }
-        String serializedString;
-        ObjectOutputStream objectOutputStream = null;
-        try {
-            ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
-            objectOutputStream = new ObjectOutputStream(bytesOut);
-            objectOutputStream.writeObject(serializable);
-            objectOutputStream.flush();
-            serializedString = Base64.encodeAsString(bytesOut.toByteArray());
-            // FAWSQueue.sendMessage(queueName, serializedString);
-            QueueFactory.getQueue().push(queueName, serializedString);
-        } catch (IOException e) {
-            LOGGER.error("IOException: cannot serialize objectMessage", e);
-            throw new SerializationException("Unable to serialize Object :  " + serializable.toString());
-        } finally {
-            if (objectOutputStream != null) {
-                try {
-                    objectOutputStream.close();
-                } catch (IOException e) {
-                    LOGGER.warn(e.getMessage());
-                }
-            }
-        }
+        String serializedString = Base64.encodeAsString(SerializationUtils.serialize(serializable));
+        QueueFactory.getQueue().push(queueName, serializedString);
     }
 
     public static List<ObjectMessage> getObjects(String queueName, int limit) {
@@ -55,34 +30,15 @@ public class ObjectQueue {
             if (serialized == null) {
                 return null;
             }
-            Serializable deserializedObject;
-            ObjectInputStream objectInputStream = null;
-            try {
-                byte[] bytes = Base64.decode(serialized);
-                objectInputStream = new ObjectInputStream(new ByteArrayInputStream(bytes));
-                deserializedObject = (Serializable) objectInputStream.readObject();
-                ObjectMessage objectMessage = new ObjectMessage(message.getId(), message.getMessage());
-                objectMessage.setSerializable(deserializedObject);
-                objectMessage.setReceiptHandle(message.getReceiptHandle());
-                serializableList.add(objectMessage);
-            } catch (IOException e) {
-                LOGGER.error("IOException: Message cannot be written", e);
-            } catch (Exception e) {
-                LOGGER.error("Unexpected exception: ", e);
-            } finally {
-                if (objectInputStream != null) {
-                    try {
-                        objectInputStream.close();
-                    } catch (IOException e) {
-                        LOGGER.warn(e.getMessage());
-                    }
-                }
-            }
+            ObjectMessage objectMessage = new ObjectMessage(message.getId(), message.getMessage());
+            objectMessage.setSerializable(SerializationUtils.deserialize(Base64.decode(serialized)));
+            objectMessage.setReceiptHandle(message.getReceiptHandle());
+            serializableList.add(objectMessage);
         }
         return serializableList;
     }
 
     public static void deleteObject(String queueName, String receiptHandle) {
-        FAWSQueue.deleteMessage(queueName, receiptHandle);
+    	QueueFactory.getQueue().delete(queueName, receiptHandle);
     }
 }

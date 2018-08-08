@@ -24,7 +24,7 @@ public class FacilioScheduler {
 	private static final Map<String, SchedulerJobConf.Job> JOBS_MAP = new HashMap<>();
 	private static final Map<String, InstantJobConf.Job> INSTANT_JOBS_MAP = new HashMap<>();
 
-	private static final String INSTANT_JOB_FILE = "conf/instantjob.xml";
+	private static final String INSTANT_JOB_FILE = "conf/instantJobs.xml";
 
 	private static final Logger LOGGER = LogManager.getLogger(FacilioScheduler.class.getName());
 
@@ -32,8 +32,12 @@ public class FacilioScheduler {
 	public static void initScheduler() throws IOException, InterruptedException, JAXBException {
 		
 		getJobObjectsFromConf();
+		LOGGER.info("Scheduler Jobs : ");
 		LOGGER.info(JOBS_MAP);
+		
 		getInstanceJobFromConf();
+		LOGGER.info("Instant Jobs : ");
+		LOGGER.info(INSTANT_JOBS_MAP);
 		
 //		Executor executor = new Executor("facilio", 15, 600);
 		if(Boolean.parseBoolean(AwsUtil.getConfig("schedulerServer"))) {

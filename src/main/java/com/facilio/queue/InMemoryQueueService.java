@@ -57,7 +57,10 @@ public class InMemoryQueueService implements FacilioQueue {
 
 
         private void push(String message){
-            queue.add(new QueueMessage(TIME+"-"+ String.format("%015d", counter.getAndIncrement()), message));
+        	String id = TIME+"-"+ String.format("%015d", counter.getAndIncrement());
+        	QueueMessage msg = new QueueMessage(id, message);
+        	msg.setReceiptHandle(id);
+            queue.add(msg);
         }
 
         private QueueMessage pull() {
