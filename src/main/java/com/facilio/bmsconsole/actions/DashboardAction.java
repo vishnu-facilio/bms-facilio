@@ -1210,6 +1210,7 @@ public class DashboardAction extends ActionSupport {
 				}
 			}
 		}
+		LOGGER.log(Level.SEVERE, "dateCondition -- "+resultMap +" --- "+dateMap);
 		if(reportContext.getId() == 3755l) {
 			for(String key :resultMap1.keySet()) {
 				
