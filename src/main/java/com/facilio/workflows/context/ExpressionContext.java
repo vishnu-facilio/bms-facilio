@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.workflows.util.ExpressionAggregateOperator;
@@ -307,8 +308,25 @@ public class ExpressionContext implements Serializable {
 							return exprResult;
 						}
 					}
+					if(workflowContext.isIgnoreMarkedReadings() && moduleName.equals(FacilioConstants.ContextNames.ENERGY_DATA_READING)) {
+						
+						FacilioField selectMarked = modBean.getField("marked", moduleName);
+						if(selectMarked == null) {
+							selectMarked = new FacilioField();
+							selectMarked.setColumnName("MAX(MARKED)");
+						}
+						else {
+							selectMarked.setColumnName("MAX("+selectMarked.getColumnName()+")");
+						}
+						selectMarked.setExtendedModule(null);
+						selectMarked.setModule(null);
+						selectMarked.setName("hasMarked");
+						
+						selectFields.add(selectMarked);
+					}
 				}
 				selectFields.add(select);
+				
 				selectBuilder.select(selectFields);
 			}
 			else {
@@ -336,6 +354,7 @@ public class ExpressionContext implements Serializable {
 			}
 			
 			props = selectBuilder.get();
+			
 		}
 		else {
 			List records = LookupSpecialTypeUtil.getObjects(moduleName, criteria);
@@ -346,8 +365,10 @@ public class ExpressionContext implements Serializable {
 				}
 			}
 		}
+		
 		LOGGER.fine("selectBuilder -- "+selectBuilder);
 		LOGGER.fine("selectBuilder result -- "+props);
+		
 		if(props != null && !props.isEmpty()) {
 			
 			if(isManualAggregateQuery()) {
@@ -402,8 +423,17 @@ public class ExpressionContext implements Serializable {
 			}
 			else {
 				// Temp check
-				String name = LookupSpecialTypeUtil.isSpecialType(moduleName) ? fieldName : RESULT_STRING; 
+				String name = LookupSpecialTypeUtil.isSpecialType(moduleName) ? fieldName : RESULT_STRING;
 				exprResult = props.get(0).get(name);
+				
+				if(workflowContext.isIgnoreMarkedReadings() && moduleName.equals(FacilioConstants.ContextNames.ENERGY_DATA_READING)) {
+					
+					Object hasMarked = props.get(0).get("hasMarked");
+					
+					if(hasMarked != null && "1".equals(hasMarked.toString())) {
+						workflowContext.setTerminateExecution(true);
+					}
+ 				}
 			}
 		}
 		LOGGER.fine("EXP -- "+toString()+" RESULT -- "+exprResult);

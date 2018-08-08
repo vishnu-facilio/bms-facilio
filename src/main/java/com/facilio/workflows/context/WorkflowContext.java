@@ -50,6 +50,24 @@ public class WorkflowContext implements Serializable {
 		this.isIgnoreNullParams = isIgnoreNullParams;
 	}
 
+	boolean ignoreMarkedReadings;
+	
+	public boolean isIgnoreMarkedReadings() {
+		return ignoreMarkedReadings;
+	}
+	public void setIgnoreMarkedReadings(boolean ignoreMarkedReadings) {
+		this.ignoreMarkedReadings = ignoreMarkedReadings;
+	}
+
+	boolean terminateExecution;
+	
+	public boolean isTerminateExecution() {
+		return terminateExecution;
+	}
+	public void setTerminateExecution(boolean terminateExecution) {
+		this.terminateExecution = terminateExecution;
+	}
+
 	boolean getDataFromCache;
 	
 
@@ -179,10 +197,12 @@ public class WorkflowContext implements Serializable {
 		if (expressions != null) {
 			for(int i=0; i<expressions.size(); i++) {
 				
+				
 				ExpressionContext expressionContext = expressions.get(i);
 				
 				expressionContext = fillParamterAndParseExpressionContext(expressionContext);
 				expressionContext.setVariableToExpresionMap(variableResultMap);
+				expressionContext.setWorkflowContext(this);
 				
 				Object res = expressionContext.executeExpression();
 				variableResultMap.put(expressionContext.getName(), res);
@@ -196,6 +216,9 @@ public class WorkflowContext implements Serializable {
 					return res;
 				}
 			}
+		}
+		if(isTerminateExecution()) {
+			return 0;
 		}
 		LOGGER.fine("variableToExpresionMap --- "+variableResultMap+" \n\n"+"expString --- "+getResultEvaluator());
 		
