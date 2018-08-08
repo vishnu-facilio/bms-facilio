@@ -64,6 +64,7 @@ public class AssetAction extends ActionSupport {
 			categoryId=assetCategory.getId();
 		}
 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, categoryId);
+		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 		Chain addAssetChain = FacilioChainFactory.getAddAssetChain();
 		addAssetChain.execute(context);
 		setAssetId(asset.getId());

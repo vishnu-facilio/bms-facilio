@@ -2377,16 +2377,26 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getModuleListChain() {
-		Chain c = new ChainBase();
-		c.addCommand(new SetTableNamesCommand());
-		c.addCommand(new LoadModuleNameCommand());
-		c.addCommand(new LoadViewCommand());
-		c.addCommand(new LoadAllFieldsCommand());
-		c.addCommand(new GenerateCriteriaFromFilterCommand());
-		c.addCommand(new GenerateSearchConditionCommand());
-		c.addCommand(new GenerateSortingQueryCommand());
-		c.addCommand(new GenericGetModuleDataListCommand());
+	public static Chain addModuleDataChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GenericAddModuleDataCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain updateModuleDataChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GenericUpdateModuleDataCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain deleteModuleDataChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GenericDeleteModuleDataCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}

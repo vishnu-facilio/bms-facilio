@@ -21,16 +21,25 @@ public class GenericAddModuleDataCommand implements Command {
 		ModuleBaseWithCustomFields record = (ModuleBaseWithCustomFields) context.get(FacilioConstants.ContextNames.RECORD);
 		if(record != null) {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
+			
+			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+			if (fields == null) {
+				fields = modBean.getAllFields(moduleName);
+			}
 			
 			InsertRecordBuilder<ModuleBaseWithCustomFields> insertRecordBuilder = new InsertRecordBuilder<ModuleBaseWithCustomFields>()
 																						.module(module)
 																						.fields(fields);
 			
-			insertRecordBuilder.setWithLocalIdModule(true);
+			Boolean setLocalId = (Boolean) context.get(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID);
+			if (setLocalId == null) {
+				setLocalId = false;
+			}
+			
+			insertRecordBuilder.setWithLocalIdModule(setLocalId);
 			long id = insertRecordBuilder.insert(record);
 			record.setId(id);
 			context.put(FacilioConstants.ContextNames.RECORD_ID, id);

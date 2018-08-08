@@ -200,6 +200,8 @@ public class FacilioConstants {
 		public static final String MODULE_NAME = "moduleName";
 		public static final String MODULE_DISPLAY_NAME = "moduleDisplayName";
 		public static final String MODULE_DATA_TABLE_NAME = "moduleDataTable";
+		public static final String MODULE_DATA = "moduleData";
+		public static final String MODULE_DATA_LIST = "moduleDatas";
 		public static final String MODULE_ATTACHMENT_TABLE_NAME = "moduleAttachmentTable";
 		public static final String MODULE_TYPE = "moduleType";
 		public static final String MODULE_DATA_INTERVAL = "moduleDataInterval";
@@ -216,6 +218,7 @@ public class FacilioConstants {
 		public static final String IS_FILTER = "isFilter";
 		public static final String CATEGORY_ID = "categoryId";
 		public static final String META = "meta";
+		public static final String SET_LOCAL_MODULE_ID = "setLocalModuleId";
 		
 		public static final String READINGS_MAP = "readingsMap";
 		public static final String READINGS = "readings";
