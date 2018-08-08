@@ -20,8 +20,8 @@ public enum InstantJobExecutor implements Runnable {
 	
 	private static final Logger LOGGER = LogManager.getLogger(InstantJobExecutor.class.getName());
 	
-	private static final int CORE_POOL_SIZE = 15;
-    private static final int MAX_POOL_SIZE = 15;
+	private static final int CORE_POOL_SIZE = 30;
+    private static final int MAX_POOL_SIZE = 30;
     private static final long KEEP_ALIVE = 300000L;
     private static final int QUEUE_SIZE = 100;
     private static final ThreadPoolExecutor THREAD_POOL_EXECUTOR = new ThreadPoolExecutor(CORE_POOL_SIZE, MAX_POOL_SIZE, KEEP_ALIVE, TimeUnit.SECONDS, new LinkedBlockingQueue<>(QUEUE_SIZE));
@@ -56,7 +56,7 @@ public enum InstantJobExecutor implements Runnable {
 	            for (ObjectMessage message : messageList) {
                     FacilioContext context = (FacilioContext) message.getSerializable();
                     String jobName = (String) context.get(InstantJobConf.getJobNameKey());
-                    LOGGER.info("Gonna Execute job : "+jobName);
+                    LOGGER.debug("Gonna Execute job : "+jobName);
                     if (jobName != null) {
                         InstantJobConf.Job instantJob = FacilioScheduler.getInstantJob(jobName);
                         if (instantJob != null) {
@@ -65,7 +65,7 @@ public enum InstantJobExecutor implements Runnable {
                                 try {
                                     final InstantJob job = jobClass.newInstance();
                                     job.setReceiptHandle(message.getReceiptHandle());
-                                    LOGGER.info("Executing job : "+jobName);
+                                    LOGGER.debug("Executing job : "+jobName);
                                     THREAD_POOL_EXECUTOR.execute(() -> job._execute(context));
                                 } catch (InstantiationException | IllegalAccessException e) {
                                     e.printStackTrace();
