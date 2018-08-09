@@ -82,7 +82,7 @@ public class BaseLineAPI {
 														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														;
 		
-		return getBaseLinesFromMap(selectBuilder.get());
+		return getBaseLinesFromProps(selectBuilder.get());
 	}
 	
 	public static List<BaseLineContext> getBaseLinesOfSpace(long spaceId) throws Exception {
@@ -101,7 +101,7 @@ public class BaseLineAPI {
 														.andCriteria(spaceCriteria)
 														;
 		
-		return getBaseLinesFromMap(selectBuilder.get());
+		return getBaseLinesFromProps(selectBuilder.get());
 	}
 	
 	public static BaseLineContext getBaseLine(long id) throws Exception {
@@ -115,7 +115,7 @@ public class BaseLineAPI {
 														.andCondition(CriteriaAPI.getIdCondition(id, module))
 														;
 		
-		List<BaseLineContext> baseLines = getBaseLinesFromMap(selectBuilder.get());
+		List<BaseLineContext> baseLines = getBaseLinesFromProps(selectBuilder.get());
 		if (baseLines != null && !baseLines.isEmpty()) {
 			return baseLines.get(0);
 		}
@@ -133,7 +133,7 @@ public class BaseLineAPI {
 														.andCondition(CriteriaAPI.getCondition("RANGE_TYPE", "RANGE_TYPE", rangeType.getVal()+"", NumberOperators.EQUALS))
 														;
 		
-		List<BaseLineContext> baseLines = getBaseLinesFromMap(selectBuilder.get());
+		List<BaseLineContext> baseLines = getBaseLinesFromProps(selectBuilder.get());
 		if (baseLines != null && !baseLines.isEmpty()) {
 			return baseLines.get(0);
 		}
@@ -156,14 +156,40 @@ public class BaseLineAPI {
 														.andCondition(CriteriaAPI.getCondition(reportField, String.valueOf(reportId), NumberOperators.EQUALS))
 														;
 		
-		return getBaseLinesFromMap(selectBuilder.get());
+		return getBaseLinesFromProps(selectBuilder.get());
 	}
 	
-	private static List<BaseLineContext> getBaseLinesFromMap(List<Map<String, Object>> props) {
+	private static List<BaseLineContext> getBaseLinesFromProps(List<Map<String, Object>> props) {
 		if(props != null && !props.isEmpty()) {
 			List<BaseLineContext> baseLines = new ArrayList<>();
 			for (Map<String, Object> prop : props) {
 				baseLines.add(FieldUtil.getAsBeanFromMap(prop, BaseLineContext.class));
+			}
+			return baseLines;
+		}
+		return null;
+	}
+	
+	public static Map<Long, BaseLineContext> getBaseLinesAsMap (List<Long> ids) throws Exception {
+		FacilioModule module = ModuleFactory.getBaseLineModule();
+		List<FacilioField> fields = FieldFactory.getBaseLineFields();
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(fields)
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getIdCondition(ids, module))
+														;
+		
+		return getBaseLinesAsMapFromProps(selectBuilder.get());
+	}
+	
+	private static Map<Long, BaseLineContext> getBaseLinesAsMapFromProps(List<Map<String, Object>> props) {
+		if(props != null && !props.isEmpty()) {
+			Map<Long, BaseLineContext> baseLines = new HashMap<>();
+			for (Map<String, Object> prop : props) {
+				BaseLineContext baseLine = FieldUtil.getAsBeanFromMap(prop, BaseLineContext.class); 
+				baseLines.put(baseLine.getId(), baseLine);
 			}
 			return baseLines;
 		}

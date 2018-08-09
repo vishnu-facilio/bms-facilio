@@ -26,7 +26,7 @@ public class FacilioAction extends ActionSupport {
 	}
 	
 	public void setMessage(Exception e) {
-		if (e instanceof IllegalArgumentException || e instanceof RuntimeException) {
+		if (e instanceof IllegalArgumentException) {
 			this.message = e.getMessage();			
 		}
 		else {
@@ -55,6 +55,57 @@ public class FacilioAction extends ActionSupport {
 	public void setStackTrace(Exception e) {
 		this.stackTrace = ExceptionUtils.getStackTrace(e);
 		LogManager.getLogger(this.getClass().getName()).error("Exception occured: - ", e);
+	}
+	
+	
+	private String viewName;
+	public String getViewName() {
+		return viewName;
+	}
+	public void setViewName(String viewName) {
+		this.viewName = viewName;
+	}
+	
+	private String filters;
+	public String getFilters() {
+		return filters;
+	}
+	public void setFilters(String filters) {
+		this.filters = filters;
+	}
+	
+	private String search;
+	public void setSearch(String search) {
+		this.search = search;
+	}
+	public String getSearch() {
+		return this.search;
+	}
+	
+	private String searchFields;
+	public void setSearchFields(String searchFields) {
+		this.searchFields = searchFields;
+	}
+	public String getSearchFields() {
+		return this.searchFields;
+	}
+	
+	private int page;
+	public void setPage(int page) {
+		this.page = page;
+	}
+	
+	public int getPage() {
+		return this.page;
+	}
+	
+	private int perPage = -1;
+	public void setPerPage(int perPage) {
+		this.perPage = perPage;
+	}
+	
+	public int getPerPage() {
+		return this.perPage;
 	}
 
 }

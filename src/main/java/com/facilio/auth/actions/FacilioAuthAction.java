@@ -1,5 +1,6 @@
 package com.facilio.auth.actions;
 
+import java.lang.reflect.InvocationTargetException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
@@ -295,26 +296,32 @@ public class FacilioAuthAction extends ActionSupport {
         boolean passwordValid = false;
         Connection conn = null;
         PreparedStatement pstmt = null;
-        ResultSet rs;
+        ResultSet rs=null;
         try {
             conn = FacilioConnectionPool.INSTANCE.getConnection();
-            pstmt = conn.prepareStatement("SELECT Users.password FROM Users inner join faciliousers on Users.USERID=faciliousers.USERID WHERE (faciliousers.email = ? or faciliousers.username = ?) and USER_VERIFIED=1");
+            pstmt = conn.prepareStatement("SELECT Users.password,Users.EMAIL FROM Users inner join faciliousers on Users.USERID=faciliousers.USERID WHERE (faciliousers.email = ? or faciliousers.username = ?) and USER_VERIFIED=1");
             pstmt.setString(1, emailaddress);
             pstmt.setString(2, emailaddress);
             rs = pstmt.executeQuery();
             if(rs.next()) {
                 String storedPass = rs.getString("password");
+                String emailindb = rs.getString(2);
+                this.emailaddress = emailindb;
                 LOGGER.info("Stored : "+storedPass);
                 LOGGER.info("UserGiv: "+password);
                 if(storedPass.equals(password)) {
                     passwordValid = true;
                 }
             }
+            else
+            {
+            	LOGGER.log(Level.INFO, "No records found for  "+emailaddress);
+            }
 
         } catch(SQLException | RuntimeException e) {
             LOGGER.log(Level.INFO, "Exception while verifying password, ", e);
         } finally {
-            DBUtil.closeAll(conn, pstmt);
+            DBUtil.closeAll(conn, pstmt,rs);
         }
 
         return passwordValid;
@@ -322,7 +329,6 @@ public class FacilioAuthAction extends ActionSupport {
     
     public long portalId() {
         if(AccountUtil.getCurrentOrg() != null) {
-        	System.out.println("()))))))))PortalID in facilio Auth Action"+ AccountUtil.getCurrentOrg().getDomain());
             return AccountUtil.getCurrentOrg().getPortalId();
         }
         return -1L;
@@ -495,27 +501,55 @@ public class FacilioAuthAction extends ActionSupport {
         authAction.getPortalInfo();
         PortalInfoContext portalInfo = authAction.getProtalInfo(); 
        
-        Boolean temp = portalInfo.is_anyDomain_allowed();
-        Boolean signupAllowed = false;
-        if(!temp){
-        	 String domains = (String) portalInfo.getWhiteListed_domains();
-        	 
-             ArrayList<String> items = new ArrayList<String>();
-             if(domains!=null)
-             {
-            	 items = new  ArrayList<String>(Arrays.asList(domains.split(",")));
-             }
-        	for (String item: items){
-        		if(emailaddress.endsWith(item.trim())) {
-        			signupAllowed = true;
-        		}
-        	}
-        	if (!signupAllowed)
-        	setJsonresponse("message", "Signup out of Domain");
-        }
-        if(temp || signupAllowed)
+        Boolean opensignup = portalInfo.isSignup_allowed();  // SIGNUP_ALLOWED
+        Boolean anydomain_allowedforsignup = portalInfo.is_anyDomain_allowed();
+
+        System.out.println("Is signup allowed for all "+opensignup);
+        
+        if(!opensignup)
         {
-        AccountUtil.getUserBean().addRequester(AccountUtil.getCurrentOrg().getId(), user);
+        	setJsonresponse("message", "Signup not allowed for this portal");
+			return SUCCESS;
+        }
+        
+        boolean whitelisteddomain = false;
+
+		if (opensignup && !anydomain_allowedforsignup) {
+			String domains = (String) portalInfo.getWhiteListed_domains();
+
+			ArrayList<String> items = new ArrayList<String>();
+			if (domains != null) {
+				items = new ArrayList<String>(Arrays.asList(domains.split(",")));
+			}
+			for (String item : items) {
+				if (emailaddress.endsWith(item.trim())) {
+					whitelisteddomain = true;
+					break;
+				}
+			}
+			if (!anydomain_allowedforsignup && !whitelisteddomain  ) {
+				setJsonresponse("message", "Only whitelisted domains allowed");
+				return SUCCESS;
+			}
+
+		}
+        if(anydomain_allowedforsignup || opensignup || whitelisteddomain)
+        {
+        try {
+			AccountUtil.getUserBean().createRequestor(AccountUtil.getCurrentOrg().getId(), user);
+		} catch (InvocationTargetException ie) {
+			Throwable e= ie.getTargetException();
+			if(e.getMessage()!=null && e.getMessage().equals("Email Already Registered"))
+			{
+			setJsonresponse("message", "Email Already Registered");
+			return SUCCESS;
+			}else
+			{
+				
+				throw ie;
+			}
+		
+		}
 
         setJsonresponse("message", "success");
         return SUCCESS;

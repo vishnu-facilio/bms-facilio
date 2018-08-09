@@ -1,5 +1,6 @@
 package com.facilio.workflows.context;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,7 +14,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.udojava.evalex.Expression;
 
-public class WorkflowContext {
+public class WorkflowContext implements Serializable {
 	
 	private static final Logger LOGGER = Logger.getLogger(WorkflowContext.class.getName());
 	
@@ -47,6 +48,24 @@ public class WorkflowContext {
 	}
 	public void setIgnoreNullParams(boolean isIgnoreNullParams) {
 		this.isIgnoreNullParams = isIgnoreNullParams;
+	}
+
+	boolean ignoreMarkedReadings;
+	
+	public boolean isIgnoreMarkedReadings() {
+		return ignoreMarkedReadings;
+	}
+	public void setIgnoreMarkedReadings(boolean ignoreMarkedReadings) {
+		this.ignoreMarkedReadings = ignoreMarkedReadings;
+	}
+
+	boolean terminateExecution;
+	
+	public boolean isTerminateExecution() {
+		return terminateExecution;
+	}
+	public void setTerminateExecution(boolean terminateExecution) {
+		this.terminateExecution = terminateExecution;
 	}
 
 	boolean getDataFromCache;
@@ -178,10 +197,12 @@ public class WorkflowContext {
 		if (expressions != null) {
 			for(int i=0; i<expressions.size(); i++) {
 				
+				
 				ExpressionContext expressionContext = expressions.get(i);
 				
 				expressionContext = fillParamterAndParseExpressionContext(expressionContext);
 				expressionContext.setVariableToExpresionMap(variableResultMap);
+				expressionContext.setWorkflowContext(this);
 				
 				Object res = expressionContext.executeExpression();
 				variableResultMap.put(expressionContext.getName(), res);
@@ -196,17 +217,20 @@ public class WorkflowContext {
 				}
 			}
 		}
-		LOGGER.severe("variableToExpresionMap --- "+variableResultMap+" \n\n"+"expString --- "+getResultEvaluator());
+		if(isTerminateExecution()) {
+			return 0;
+		}
+		LOGGER.fine("variableToExpresionMap --- "+variableResultMap+" \n\n"+"expString --- "+getResultEvaluator());
 		
 		result =  evaluateExpression(getResultEvaluator(),variableResultMap, ignoreNullValues);
-		LOGGER.severe("result --- "+result);
+		LOGGER.fine("result --- "+result);
 		return result;
 	}
 	
 	private ExpressionContext fillParamterAndParseExpressionContext(ExpressionContext expressionContext) throws Exception {
 		
 		String expressionString = expressionContext.getExpressionString();
-		LOGGER.severe("BEFORE STRING --- "+expressionString);
+		LOGGER.fine("BEFORE STRING --- "+expressionString);
 		
 		if(expressionContext.getExpressionString().split(VARIABLE_PLACE_HOLDER).length > 1) {
 			for(ParameterContext parameter :parameters) {
@@ -225,7 +249,7 @@ public class WorkflowContext {
 				}
 			}
 		}
-		LOGGER.severe("AFTER STRING --- "+expressionString);
+		LOGGER.fine("AFTER STRING --- "+expressionString);
 		expressionContext = WorkflowUtil.getExpressionContextFromExpressionString(expressionString);
 		
 		return expressionContext;
@@ -233,7 +257,7 @@ public class WorkflowContext {
 	
 	private Object evaluateExpression(String exp,Map<String,Object> variablesMap, boolean ignoreNullValues) {
 
-		LOGGER.severe("EXPRESSION STRING IS -- "+exp+" variablesMap -- "+variablesMap);
+		LOGGER.fine("EXPRESSION STRING IS -- "+exp+" variablesMap -- "+variablesMap);
 		if(exp == null) {
 			return null;
 		}

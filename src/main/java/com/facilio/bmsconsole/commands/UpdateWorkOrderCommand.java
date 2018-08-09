@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +13,8 @@ import org.apache.log4j.LogManager;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -34,13 +37,14 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class UpdateWorkOrderCommand implements Command {
 	
-	private static org.apache.log4j.Logger log = LogManager.getLogger(UpdateTaskCommand.class.getName());
+	private static org.apache.log4j.Logger log = LogManager.getLogger(UpdateWorkOrderCommand.class.getName());
 
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
+		List<ReadingContext> readings = new ArrayList<>();
 		if(workOrder != null && recordIds != null && !recordIds.isEmpty()) {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			
@@ -51,8 +55,13 @@ public class UpdateWorkOrderCommand implements Command {
 			
 			Condition idCondition = CriteriaAPI.getIdCondition(recordIds, module);
 			List<WorkOrderContext> oldWos = getOldWOs(idCondition, fields);
-			List<WorkOrderContext> newWos = new ArrayList<WorkOrderContext>();
 			
+			Long lastSyncTime = (Long) context.get(FacilioConstants.ContextNames.LAST_SYNC_TIME);
+			if (lastSyncTime != null && oldWos.get(0).getModifiedTime() > lastSyncTime ) {
+				throw new RuntimeException("The workorder was modified after the last sync");
+			}
+			
+			List<WorkOrderContext> newWos = new ArrayList<WorkOrderContext>();
 			TicketAPI.updateTicketAssignedBy(workOrder);
 			updateWODetails(workOrder);
 			ActivityType activityType = (ActivityType)context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
@@ -71,18 +80,19 @@ public class UpdateWorkOrderCommand implements Command {
 					} else {
 						if (oldWo.getAssignedTo() != null) {
 							if (workOrder.getAssignedTo().getOuid() == -1) {
-								ShiftAPI.addUserWorkHoursReading(oldWo.getAssignedTo().getOuid(), oldWo.getId(), activityType, "Close", System.currentTimeMillis());
+								readings.addAll(ShiftAPI.addUserWorkHoursReading(oldWo.getAssignedTo().getOuid(), oldWo.getId(), activityType, "Close", System.currentTimeMillis()));
 								newWo.setStatus(submittedStatus);
 							} else if (oldWo.getAssignedTo().getOuid() != workOrder.getAssignedTo().getOuid()) {
 								try {
 									if (oldWo.getStatus().getId() == wipStatus.getId()) {
 										newWo.setStatus(onHoldStatus);
-										ShiftAPI.addUserWorkHoursReading(oldWo.getAssignedTo().getOuid(), oldWo.getId(), activityType, "Pause", System.currentTimeMillis());
+										readings.addAll(ShiftAPI.addUserWorkHoursReading(oldWo.getAssignedTo().getOuid(), oldWo.getId(), activityType, "Pause", System.currentTimeMillis()));
 									} else {
 										newWo.setStatus(oldWo.getStatus());
 									}
 								} catch (Exception e) {
 									log.info("Exception occurred while handling work hours", e);
+									CommonCommandUtil.emailException(ShiftAPI.class.getName(), "Exception occurred while handling work hours", e);
 								}
 							}
 						}
@@ -103,19 +113,18 @@ public class UpdateWorkOrderCommand implements Command {
 					
 					TicketAPI.updateTicketStatus(activityType, newWo, oldWo, newWo.isWorkDurationChangeAllowed() || (newWo.getIsWorkDurationChangeAllowed() == null && oldWo.isWorkDurationChangeAllowed()));
 					try {
-						if (oldWo.getAssignedTo() != null) {
-							ShiftAPI.handleWorkHoursReading(activityType, oldWo.getAssignedTo().getOuid(), oldWo.getId(), oldWo.getStatus(), newWo.getStatus());
-						}
-						if (newWo.isWorkDurationChangeAllowed() || (newWo.getIsWorkDurationChangeAllowed() == null && oldWo.isWorkDurationChangeAllowed())) {
-							List<List<Long>> actualTimings = (List<List<Long>>) context.get(FacilioConstants.ContextNames.ACTUAL_TIMINGS);
-							if (actualTimings != null && !actualTimings.isEmpty()) {
-								ShiftAPI.markAutoEntriesAsInvalid(oldWo.getAssignedTo().getOuid(), oldWo.getId());
-								ShiftAPI.addActualWorkHoursReading(oldWo.getAssignedTo().getOuid(), oldWo.getId(), activityType, actualTimings);
-							}
+						List<List<Long>> actualTimings = (List<List<Long>>) context.get(FacilioConstants.ContextNames.ACTUAL_TIMINGS);
+						if (actualTimings != null && !actualTimings.isEmpty() && (newWo.isWorkDurationChangeAllowed() || (newWo.getIsWorkDurationChangeAllowed() == null && oldWo.isWorkDurationChangeAllowed()))) {
+							readings.addAll(ShiftAPI.handleWorkHoursReading(activityType, oldWo.getAssignedTo().getOuid(), oldWo.getId(), oldWo.getStatus(), newWo.getStatus(), true));
+							ShiftAPI.markAutoEntriesAsInvalid(oldWo.getAssignedTo().getOuid(), oldWo.getId());
+							readings.addAll(ShiftAPI.addActualWorkHoursReading(oldWo.getAssignedTo().getOuid(), oldWo.getId(), activityType, actualTimings));
+						} else if (oldWo.getAssignedTo() != null) {
+							readings.addAll(ShiftAPI.handleWorkHoursReading(activityType, oldWo.getAssignedTo().getOuid(), oldWo.getId(), oldWo.getStatus(), newWo.getStatus()));
 						}
 					}
 					catch(Exception e) {
 						log.info("Exception occurred while handling work hours", e);
+						CommonCommandUtil.emailException(ShiftAPI.class.getName(), "Exception occurred while handling work hours", e);
 					}
 				}
 			}
@@ -145,17 +154,24 @@ public class UpdateWorkOrderCommand implements Command {
 			
 			
 			List<ActivityType> types = Arrays.asList(ActivityType.ASSIGN_TICKET, ActivityType.CLOSE_WORK_ORDER,  ActivityType.SOLVE_WORK_ORDER, ActivityType.HOLD_WORK_ORDER);
-			if(types.contains(activityType)) {
+			if(types.contains(activityType) || workOrder.getPriority() != null) {
 				SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
 						.moduleName(moduleName)
 						.beanClass(WorkOrderContext.class)
 						.select(fields)
-						.andCustomWhere(module.getTableName()+".ID = ?", recordIds.get(0))
+						.andCondition(CriteriaAPI.getIdCondition(recordIds, module))
 						.orderBy("ID");
 
 				List<WorkOrderContext> workOrders = builder.get();
-				context.put(FacilioConstants.ContextNames.RECORD, workOrders.get(0));
+				context.put(FacilioConstants.ContextNames.RECORD_LIST, workOrders);
 			}
+		}
+		
+		if (!readings.isEmpty()) {
+			Map<String, List<ReadingContext>> readingMap = new HashMap<>();
+			readingMap.put("userworkhoursreading", readings);
+			context.put(FacilioConstants.ContextNames.READINGS_MAP, readingMap);
+			context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
 		}
 		return false;
 	}

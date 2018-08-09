@@ -2,17 +2,23 @@ package com.facilio.bmsconsole.commands;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.constants.FacilioConstants;
 
 public class SetModuleForSpecialAssetsCommand implements Command{
 
+	private static final Logger LOGGER = LogManager.getLogger(SetModuleForSpecialAssetsCommand.class.getName());
+	
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
+		long startTime = System.currentTimeMillis();
 		Long categoryId = (Long)context.get(FacilioConstants.ContextNames.PARENT_CATEGORY_ID);
 		if (categoryId == null || categoryId <= 0)
 		{
@@ -74,6 +80,8 @@ public class SetModuleForSpecialAssetsCommand implements Command{
 				context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Assets");
 			}
 		}
+		long timeTaken = System.currentTimeMillis() - startTime;
+		LOGGER.debug("Time taken to execute SetModuleForSpecialAssetsCommand : "+timeTaken);
 		return false;
 	}
 }

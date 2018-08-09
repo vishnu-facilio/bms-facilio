@@ -73,12 +73,13 @@ public class CacheUtil {
 	}
 	
 	public static boolean isCacheEnabled() {
-		return RedisManager.getInstance().isRedisEnabled();
+		// return RedisManager.getInstance().isRedisEnabled();
+        return false;
 	}
 	
 	public static boolean set(String key, Serializable obj) {
 		
-		if (!isCacheEnabled()) {
+		/*if (!isCacheEnabled()) {
 			return false;
 		}
 		
@@ -97,7 +98,7 @@ public class CacheUtil {
 			if (conn != null) {
 				conn.close();
 			}
-		}
+		}*/
 		return false;
 	}
 	
@@ -111,7 +112,7 @@ public class CacheUtil {
 	
 	public static Serializable get(String key) {
 		
-		if (!isCacheEnabled()) {
+		/*if (!isCacheEnabled()) {
 			return null;
 		}
 		
@@ -130,13 +131,13 @@ public class CacheUtil {
 			if (conn != null) {
 				conn.close();
 			}
-		}
+		}*/
 		return null;
 	}
 	
 	public static boolean delete(String... key) {
 		
-		if (!isCacheEnabled()) {
+		/*if (!isCacheEnabled()) {
 			return false;
 		}
 		
@@ -153,7 +154,7 @@ public class CacheUtil {
 			if (conn != null) {
 				conn.close();
 			}
-		}
+		}*/
 		return false;
 	}
 }

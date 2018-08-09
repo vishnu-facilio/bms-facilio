@@ -26,6 +26,9 @@ public class GenericDeleteModuleDataCommand implements Command {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+			if (fields == null) {
+				fields = modBean.getAllFields(moduleName);
+			}
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, getRecords(module, recordIds, fields));
 			
 			GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
@@ -39,10 +42,14 @@ public class GenericDeleteModuleDataCommand implements Command {
 	}
 	
 	private List getRecords(FacilioModule module, List<Long> recordIds, List<FacilioField> fields) throws Exception {
+		Class beanClassName = FacilioConstants.ContextNames.getClassFromModuleName(module.getName());
+		if (beanClassName == null) {
+			beanClassName = ModuleBaseWithCustomFields.class;
+		}
 		SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 																				.select(fields)
 																				.module(module)
-																				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(module.getName()))
+																				.beanClass(beanClassName)
 																				.andCondition(CriteriaAPI.getIdCondition(recordIds, module))
 																				;
 		return builder.get();

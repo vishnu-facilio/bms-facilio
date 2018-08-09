@@ -38,6 +38,28 @@ public class LookupSpecialTypeUtil {
 				;
 	}
 	
+	public static FacilioField getIdField (String specialType) {
+		if(FacilioConstants.ContextNames.USERS.equals(specialType) || 
+				FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
+			return FieldFactory.getAsMap(AccountConstants.getOrgUserFields()).get("ouid");
+		}
+		else if (FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
+			return FieldFactory.getAsMap(AccountConstants.getGroupFields()).get("groupId"); 
+		}
+		else if(FacilioConstants.ContextNames.BUSINESS_HOUR.equals(specialType)) {
+			return FieldFactory.getIdField(ModuleFactory.getBusinessHoursModule());
+		}
+		else if(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE.equals(specialType)) {
+			return FieldFactory.getIdField(ModuleFactory.getPreventiveMaintenancetModule());
+		}
+		else if(EventConstants.EventContextNames.EVENT.equals(specialType)) {
+			return FieldFactory.getIdField(EventConstants.EventModuleFactory.getEventModule());
+		}
+		else {
+			return null;
+		}
+	}
+	
 	public static Map<Long, String> getPickList(String specialType) throws Exception {
 		if(FacilioConstants.ContextNames.USERS.equals(specialType)) {
 			List<User> users = AccountUtil.getOrgBean().getOrgUsers(AccountUtil.getCurrentOrg().getOrgId(), true);

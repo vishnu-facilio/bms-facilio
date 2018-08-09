@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
@@ -29,10 +28,17 @@ public class GenericGetModuleDataDetailCommand implements Command {
 			FacilioModule module = modBean.getModule(moduleName);
 			
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+			if (fields == null) {
+				fields = modBean.getAllFields(moduleName);
+			}
+			Class beanClassName = FacilioConstants.ContextNames.getClassFromModuleName(moduleName);
+			if (beanClassName == null) {
+				beanClassName = ModuleBaseWithCustomFields.class;
+			}
 			
 			SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 																	.module(module)
-																	.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName))
+																	.beanClass(beanClassName)
 																	.select(fields)
 																	.andCustomWhere(module.getTableName()+".ID = ?", recordId);
 

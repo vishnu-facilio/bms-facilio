@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.util;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -18,8 +19,8 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
@@ -160,6 +161,9 @@ public class ExportUtil {
 				List<Object> record = (List<Object>) recordObj;
 				for (int j = 0, rowLen = record.size(); j < rowLen; j++) {
 					Object value = record.get(j);
+					if(value instanceof Double) {
+						value = BigDecimal.valueOf((Double)value).toPlainString();
+					}
 					row.createCell((short) j).setCellValue(value != null ? value.toString() : "");
 				}
 			}
@@ -176,6 +180,9 @@ public class ExportUtil {
 	    	    	    					value=val;
 	    	    	    				}
 	    					}
+					}
+					if(value instanceof Double) {
+						value = BigDecimal.valueOf((Double)value).toPlainString();
 					}
 					row.createCell((short) j).setCellValue(value.toString());
 	    			}
@@ -312,6 +319,9 @@ public class ExportUtil {
     				List<Object> record = (List<Object>) recordObj;
     				for (int j = 0, rowLen = record.size(); j < rowLen; j++) {
         				Object value = record.get(j);
+        				if(value instanceof Double) {
+    						value = BigDecimal.valueOf((Double)value).toPlainString();
+    					}
         				str.append(value != null ? value.toString() : "").append(',');
         			}
     			}
@@ -328,6 +338,9 @@ public class ExportUtil {
 	    	    	    					value=val;
 	    	    	    				}
     	    					}
+    					}
+    					if(value instanceof Double) {
+    						value = BigDecimal.valueOf((Double)value).toPlainString();
     					}
     					str.append("\""+value+"\"").append(',');
     	    			}
@@ -384,6 +397,9 @@ public class ExportUtil {
 			return DateTimeUtil.getFormattedTime((long)value);
 		}
 		case NUMBER: {
+			if(value instanceof Double) {
+				return BigDecimal.valueOf((Double)value).toPlainString();
+			}
 			return getValueFromEnum(field, value);
 		}
 		case BOOLEAN:case DECIMAL:case MISC:case STRING:
@@ -481,7 +497,7 @@ public class ExportUtil {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.CV_NAME, viewName);
 		
-		Chain moduleListChain = FacilioChainFactory.getModuleListChain();
+		Chain moduleListChain = ReadOnlyChainFactory.fetchModuleDataListChain();
 		moduleListChain.execute(context);
 		
 		List<ModuleBaseWithCustomFields> records = (List<ModuleBaseWithCustomFields>) context.get(FacilioConstants.ContextNames.RECORD_LIST);

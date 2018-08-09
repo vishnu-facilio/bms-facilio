@@ -31,7 +31,6 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 
-import com.amazonaws.auth.*;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -47,6 +46,11 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagement;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClientBuilder;
@@ -156,7 +160,7 @@ public class AwsUtil
     
     public static CreateKeysAndCertificateResult getCertificateResult()
     {
-    	AWSIot awsIot = AWSIotClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(getBasicAwsCredentials())).build();
+    	AWSIot awsIot = AWSIotClientBuilder.standard().withCredentials(InstanceProfileCredentialsProvider.createAsyncRefreshingProvider(false)).build();
     
     	CreateKeysAndCertificateRequest cr = new CreateKeysAndCertificateRequest().withSetAsActive(true);
     	CreateKeysAndCertificateResult certResult = awsIot.createKeysAndCertificate(cr);
@@ -180,14 +184,14 @@ public class AwsUtil
     
     public static AmazonS3 getAmazonS3Client() {
     	if (AWS_S3_CLIENT == null) {
-        	AWS_S3_CLIENT = AmazonS3ClientBuilder.standard().withRegion(AwsUtil.getConfig("region")).withCredentials(getAWSCredentialsProvider()).build();
+        	AWS_S3_CLIENT = AmazonS3ClientBuilder.standard().withRegion(region).withCredentials(getAWSCredentialsProvider()).build();
     	}
     	return AWS_S3_CLIENT;
     }
     
     public static AmazonRekognition getAmazonRekognitionClient() {
     	if (AWS_REKOGNITION_CLIENT == null) {
-    		AWS_REKOGNITION_CLIENT = AmazonRekognitionClientBuilder.standard().withRegion(AwsUtil.getConfig("region")).withCredentials(getAWSCredentialsProvider()).build();
+    		AWS_REKOGNITION_CLIENT = AmazonRekognitionClientBuilder.standard().withRegion(region).withCredentials(getAWSCredentialsProvider()).build();
     	}
     	return AWS_REKOGNITION_CLIENT;
     }
@@ -346,10 +350,9 @@ public class AwsUtil
 				AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
 						.withRegion(Regions.US_WEST_2).withCredentials(getAWSCredentialsProvider()).build();
 				client.sendEmail(request);
-				System.out.println("Email sent!");
+				logger.debug("Email sent!");
 			} catch (Exception ex) {
-				System.out.println("The email was not sent.");
-				System.out.println("Error message: " + ex.getMessage());
+				logger.info("Error message: " + ex.getMessage());
 				throw ex;
 			}
 		}
@@ -395,10 +398,10 @@ public class AwsUtil
 	}
 
 	private static AWSCredentials getBasicAwsCredentials() {
-    	if(basicCredentials == null) {
-    		synchronized (LOCK) {
+		if(basicCredentials == null) {
+			synchronized (LOCK) {
 				if (basicCredentials == null) {
-					basicCredentials = new InstanceProfileCredentialsProvider().getCredentials();
+					basicCredentials = new BasicAWSCredentials(AwsUtil.getConfig(AWS_ACCESS_KEY_ID), AwsUtil.getConfig(AWS_SECRET_KEY_ID));
 				}
 			}
 		}
@@ -406,10 +409,14 @@ public class AwsUtil
 	}
 
 	public static AWSCredentialsProvider getAWSCredentialsProvider() {
-    	if(credentialsProvider == null){
-    		synchronized (LOCK) {
-    			if(credentialsProvider == null){
-					credentialsProvider = new AWSStaticCredentialsProvider(getBasicAwsCredentials());
+		if(credentialsProvider == null){
+			synchronized (LOCK) {
+				if(credentialsProvider == null){
+					if("stage".equalsIgnoreCase(AwsUtil.getConfig("environment"))) {
+						credentialsProvider = InstanceProfileCredentialsProvider.createAsyncRefreshingProvider(false);
+					} else {
+						credentialsProvider = new AWSStaticCredentialsProvider(getBasicAwsCredentials());
+					}
 				}
 			}
 		}

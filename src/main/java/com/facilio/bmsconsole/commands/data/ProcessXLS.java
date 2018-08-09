@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.chain.Chain;
@@ -246,7 +247,15 @@ public class ProcessXLS implements Command {
 						try {
 							if(facilioField.getDataTypeEnum().equals(FieldType.DATE_TIME) || facilioField.getDataTypeEnum().equals(FieldType.DATE)) {
 								if(!(cellValue instanceof Long)) {
-									long millis = DateTimeUtil.getTime(cellValue.toString(), "dd-MM-yyyy HH:mm");
+									
+									Object millis = null;
+									try {
+										millis = DateTimeUtil.getTime(cellValue.toString().trim(), "dd-MM-yyyy HH:mm");
+									}
+									catch(Exception e) {
+										millis = cellValue;
+										LOGGER.log(Level.SEVERE, e.getMessage(), e);
+									}
 									props.put(key, millis);
 									isfilledByLookup = true;
 								}

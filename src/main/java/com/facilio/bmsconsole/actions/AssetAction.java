@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.FormLayout;
+import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.AssetsAPI;
@@ -42,7 +43,16 @@ public class AssetAction extends ActionSupport {
 	
 	private Boolean withReadings;
 	
+	private long readingId;
 	
+	public long getReadingId() {
+		return readingId;
+	}
+
+	public void setReadingId(long readingId) {
+		this.readingId = readingId;
+	}
+
 	public String addAsset() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
@@ -54,6 +64,7 @@ public class AssetAction extends ActionSupport {
 			categoryId=assetCategory.getId();
 		}
 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, categoryId);
+		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 		Chain addAssetChain = FacilioChainFactory.getAddAssetChain();
 		addAssetChain.execute(context);
 		setAssetId(asset.getId());
@@ -87,10 +98,11 @@ public class AssetAction extends ActionSupport {
 		
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.DELETE);
 		context.put(FacilioConstants.ContextNames.RECORD, asset);
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(assetId));
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, assetsId);
 		
 		Chain deleteAssetChain = FacilioChainFactory.getDeleteAssetChain();
 		deleteAssetChain.execute(context);
+		setAssetsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
 		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 		
 		return SUCCESS;
@@ -119,17 +131,24 @@ public class AssetAction extends ActionSupport {
  		if (getPerPage() < 0) {
  			pagination.put("perPage", 5000);
  		}
- 		
+ 		context.put(FacilioConstants.ContextNames.READING_ID, readingId);
  		context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
  		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, categoryId);
- 		
+ 		context.put(FacilioConstants.ContextNames.INPUT_TYPE, getInputType());
  		context.put(FacilioConstants.ContextNames.WITH_READINGS, this.getWithReadings());
- 		
  		Chain assetList = FacilioChainFactory.getAssetListChain();
  		assetList.execute(context);
  		assets = (List<AssetContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
  		
 		return SUCCESS;
+	}
+	
+	private ReadingInputType inputType;
+	public ReadingInputType getInputType() {
+		return inputType;
+	}
+	public void setInputType(int inputType) {
+		this.inputType = ReadingInputType.valueOf(inputType);
 	}
 	
 	public String assetDetails() throws Exception {
@@ -192,6 +211,16 @@ public class AssetAction extends ActionSupport {
 	}
 	public void setAssets(List<AssetContext> assets) {
 		this.assets = assets;
+	}
+	
+	private List<Long> assetsId;
+
+	public List<Long> getAssetsId() {
+		return assetsId;
+	}
+
+	public void setAssetsId(List<Long> assetsId) {
+		this.assetsId = assetsId;
 	}
 
 	private AssetContext asset;

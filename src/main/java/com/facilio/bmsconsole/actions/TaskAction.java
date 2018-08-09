@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.ActivityType;
@@ -505,6 +506,63 @@ public class TaskAction extends FacilioAction {
 			setMessage(e);
 			return ERROR;
 		}
+	}
+	
+	public String syncOfflineTasks() {
+		try {
+			if (lastSyncTime == null || lastSyncTime <= 0 ) {
+				throw new IllegalArgumentException("Workorder last synced time is mandatory");
+			}
+			Map<Long, Map<String, Object>> errors = new HashMap<>();
+			int rowsUpdated = 0; 
+			for(TaskContext task: taskContextList) {
+				try {
+					setTask(task);
+					setId(Collections.singletonList(task.getId()));
+					
+					FacilioContext context = new FacilioContext();
+					context.put(FacilioConstants.ContextNames.LAST_SYNC_TIME, lastSyncTime);
+					context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
+					if (AccountUtil.getCurrentAccount().getDeviceType() != null) {
+						context.put(FacilioConstants.ContextNames.DO_VALIDTION, getDoValidation());
+					}
+					updateTask(context);
+					rowsUpdated += this.rowsUpdated;
+				}
+				catch(Exception e) {
+					Map<String, Object> obj = new HashMap<>();
+					obj.put("data", FieldUtil.getAsJSON(task).toJSONString());
+					obj.put("error", e.getMessage());
+					errors.put(task.getId(), obj);
+				}
+			}
+			if (!errors.isEmpty()) {
+				FacilioContext context = new FacilioContext();
+				context.put(FacilioConstants.ContextNames.LAST_SYNC_TIME, lastSyncTime);
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
+				context.put(FacilioConstants.ContextNames.CUSTOM_OBJECT, errors);
+				
+				Chain offlineSync = FacilioChainFactory.addOfflineSyncErrorChain();
+				offlineSync.execute(context);
+				
+				setResult("error", errors.size() + " task(s) sync failed");
+			}
+			setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
+			return SUCCESS;
+		}
+		catch(Exception e) {
+			setResponseCode(1);
+			setMessage(e);
+			return ERROR;
+		}
+	}
+	
+	private Long lastSyncTime;
+	public Long getLastSyncTime() {
+		return lastSyncTime;
+	}
+	public void setLastSyncTime(Long lastSyncTime) {
+		this.lastSyncTime = lastSyncTime;
 	}
 	
  }

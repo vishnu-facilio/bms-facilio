@@ -1,5 +1,6 @@
 package com.facilio.workflows.functions;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.logging.Level;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
@@ -16,12 +18,12 @@ import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
-import com.facilio.workflow.exceptions.FunctionParamException;
+import com.facilio.workflows.exceptions.FunctionParamException;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 
-	ALL_MATCH(1,"allMatch") {
+	ALL_MATCH(1,"allMatch",WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.LIST.getValue(),"list") ) {
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			
@@ -47,7 +49,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 //			}
 		}
 	},
-	GET_MAIN_ENERGY_METER(2,"getMainEnergyMeter") {
+	GET_MAIN_ENERGY_METER(2,"getMainEnergyMeter",WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.NUMBER.getValue(),"spaceId")) {
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			
@@ -77,7 +79,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			}
 		}
 	},
-	STRING_EQUALS(3,"stringEquals") {
+	STRING_EQUALS(3,"stringEquals",WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.STRING.getValue(),"string1"), WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.STRING.getValue(),"string2")) {
 
 		@Override
 		public Object execute(Object... objects) throws Exception {
@@ -89,7 +91,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 		}
 		
 	},
-	STRING_CONTAINS(4,"stringContains") {
+	STRING_CONTAINS(4,"stringContains",WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.STRING.getValue(),"string1"), WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.STRING.getValue(),"string2")) {
 
 		@Override
 		public Object execute(Object... objects) throws Exception {
@@ -100,7 +102,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			return (objects[0] == null ? objects[1] == null : objects[0].toString().contains(objects[1].toString()));
 		}
 	},
-	CONVERT_UNIT(5,"convertUnit") {
+	CONVERT_UNIT(5,"convertUnit",WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.DECIMAL.getValue(),"value"), WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.NUMBER.getValue(),"fromUnit"), WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.NUMBER.getValue(),"toUnit")) {
 
 		@Override
 		public Object execute(Object... objects) throws Exception {
@@ -130,47 +132,48 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 		}
 	},
 	
-	FATCH_DATA(6,"fetchData") {
-		@Override
-		public Object execute(Object... objects) throws Exception {
-			// TODO Auto-generated method stub
-			if (objects.length < 2) {
-				return false;
-			}
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			String moduleName = (String) objects[0];
-			String criteriaString = (String) objects[1];
-			Criteria criteria = WorkflowUtil.parseCriteriaString(moduleName, criteriaString);
-			String fieldName = null, aggregateCondition = null;
-			
-			if(objects[2] != null) {
-				fieldName = (String) objects[2];
-			}
-			if(objects[3] != null) {
-				aggregateCondition = (String) objects[3];
-			}
-			
-			FacilioModule module = modBean.getModule(moduleName);
-			
-			SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>();
-			builder.module(module);
-			builder.andCriteria(criteria);
-			
-			if(fieldName != null) {
-				
-				if(aggregateCondition != null) {
-					
-				}
-			}
-			return null;
-		}
-	},
+//	FATCH_DATA(6,"fetchData") {
+//		@Override
+//		public Object execute(Object... objects) throws Exception {
+//			// TODO Auto-generated method stub
+//			if (objects.length < 2) {
+//				return false;
+//			}
+//			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+//			String moduleName = (String) objects[0];
+//			String criteriaString = (String) objects[1];
+//			Criteria criteria = WorkflowUtil.parseCriteriaString(moduleName, criteriaString);
+//			String fieldName = null, aggregateCondition = null;
+//			
+//			if(objects[2] != null) {
+//				fieldName = (String) objects[2];
+//			}
+//			if(objects[3] != null) {
+//				aggregateCondition = (String) objects[3];
+//			}
+//			
+//			FacilioModule module = modBean.getModule(moduleName);
+//			
+//			SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>();
+//			builder.module(module);
+//			builder.andCriteria(criteria);
+//			
+//			if(fieldName != null) {
+//				
+//				if(aggregateCondition != null) {
+//					
+//				}
+//			}
+//			return null;
+//		}
+//	},
 	;
 	
 	private Integer value;
 	private String functionName;
 	private String namespace = "default";
-	private String params;
+	private List<FacilioFunctionsParamType> params;
+	private FacilioFunctionNameSpace nameSpaceEnum = FacilioFunctionNameSpace.DEFAULT;
 	
 	public Integer getValue() {
 		return value;
@@ -190,15 +193,29 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 	public void setNamespace(String namespace) {
 		this.namespace = namespace;
 	}
-	public String getParams() {
+	public List<FacilioFunctionsParamType> getParams() {
 		return params;
 	}
-	public void setParams(String params) {
+	public void setParams(List<FacilioFunctionsParamType> params) {
 		this.params = params;
 	}
-	FacilioDefaultFunction(Integer value,String functionName) {
+	public void addParams(FacilioFunctionsParamType param) {
+		this.params = (this.params == null) ? new ArrayList<>() :this.params;
+		this.params.add(param);
+	}
+	FacilioDefaultFunction(Integer value,String functionName,FacilioFunctionsParamType... params) {
 		this.value = value;
 		this.functionName = functionName;
+		
+		if(params != null ) {
+			for(int i=0;i<params.length;i++) {
+				addParams(params[i]);
+			}
+		}
+	}
+	
+	public static Map<String, FacilioDefaultFunction> getAllFunctions() {
+		return DEFAULT_FUNCTIONS;
 	}
 	public static FacilioDefaultFunction getFacilioDefaultFunction(String functionName) {
 		return DEFAULT_FUNCTIONS.get(functionName);

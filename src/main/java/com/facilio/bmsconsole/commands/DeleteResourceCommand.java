@@ -32,7 +32,7 @@ public class DeleteResourceCommand implements Command {
 																				.andCondition(CriteriaAPI.getIdCondition(recordIds, module))
 																				;
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, deleteBuilder.markAsDelete());
-			context.put(FacilioConstants.ContextNames.RECORD_LIST, records);
+			context.put(FacilioConstants.ContextNames.RECORD_LIST, recordIds);
 		}
 		return false;
 	}

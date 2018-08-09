@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -8,7 +9,7 @@ import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.workflows.context.WorkflowContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class FormulaFieldContext {
+public class FormulaFieldContext implements Serializable {
 	private long id = -1;
 	public long getId() {
 		return id;
@@ -201,11 +202,19 @@ public class FormulaFieldContext {
 		this.includedResources = includedResources;
 	}
 	
-	private List<Long> matchedResources;
-	public List<Long> getMatchedResources() {
+	private List<Long> matchedResourcesIds;
+	public List<Long> getMatchedResourcesIds() {
+		return matchedResourcesIds;
+	}
+	public void setMatchedResourcesIds(List<Long> matchedResourcesIds) {
+		this.matchedResourcesIds = matchedResourcesIds;
+	}
+	
+	private List<? extends ResourceContext> matchedResources;
+	public List<? extends ResourceContext> getMatchedResources() {
 		return matchedResources;
 	}
-	public void setMatchedResources(List<Long> matchedResources) {
+	public void setMatchedResources(List<? extends ResourceContext> matchedResources) {
 		this.matchedResources = matchedResources;
 	}
 

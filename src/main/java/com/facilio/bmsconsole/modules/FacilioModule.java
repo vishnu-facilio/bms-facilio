@@ -2,10 +2,10 @@
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.struts2.json.annotations.JSON;
 
-import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.time.SecondsChronoUnit;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -129,6 +129,12 @@ public class FacilioModule implements Serializable {
 		return false;
 	}
 	
+	@Override
+	public int hashCode() {
+		// TODO Auto-generated method stub
+		return Objects.hashCode(this.name);
+	}
+	
 	public static enum ModuleType {
 		BASE_ENTITY,
 		PICK_LIST,
@@ -138,7 +144,8 @@ public class FacilioModule implements Serializable {
 		ATTACHMENTS,
 		SCHEDULED_FORMULA,
 		LIVE_FORMULA,
-		SYSTEM_SCHEDULED_FORMULA
+		SYSTEM_SCHEDULED_FORMULA,
+		CUSTOM
 		;
 		
 		public int getValue() {

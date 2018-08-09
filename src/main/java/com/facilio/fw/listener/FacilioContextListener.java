@@ -4,14 +4,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.*;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Properties;
-import java.util.Scanner;
 import java.util.Timer;
 
 import javax.servlet.ServletContextEvent;
@@ -21,7 +21,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import com.facilio.server.ServerInfo;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.flywaydb.core.Flyway;
@@ -34,16 +33,21 @@ import org.xml.sax.SAXException;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.cache.RedisManager;
+import com.facilio.filters.HealthCheckFilter;
 import com.facilio.fw.BeanFactory;
 import com.facilio.kinesis.KinesisProcessor;
 import com.facilio.logging.SysOutLogger;
 import com.facilio.queue.FacilioExceptionProcessor;
+import com.facilio.server.ServerInfo;
 import com.facilio.serviceportal.actions.PortalAuthInterceptor;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.SQLScriptRunner;
 import com.facilio.tasker.FacilioScheduler;
+import com.facilio.tasker.executor.InstantJobExecutor;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.facilio.transaction.TransactionMonitor;
+import com.facilio.wms.message.NotificationProcessor;
+import com.facilio.wms.message.NotificationProcessorFactory;
 
 public class FacilioContextListener implements ServletContextListener {
 
@@ -53,8 +57,11 @@ public class FacilioContextListener implements ServletContextListener {
 	public void contextDestroyed(ServletContextEvent event) {
 		// TODO Auto-generated method stub
 //		System.out.println("Listener Destroyed");
-		RedisManager.getInstance().release(); // destroying redis connection pool
+		if(RedisManager.getInstance() != null) {
+			RedisManager.getInstance().release();// destroying redis connection pool
+		}
 		FacilioScheduler.stopSchedulers();
+		InstantJobExecutor.INSTANCE.stopExecutor();
 	}
 
 	public void contextInitialized(ServletContextEvent event) {
@@ -75,7 +82,7 @@ public class FacilioContextListener implements ServletContextListener {
 		}
 
 		if("true".equals(AwsUtil.getConfig("schedulerServer")) && "production".equals(AwsUtil.getConfig("environment"))) {
-			timer.schedule(new FacilioExceptionProcessor(), 0L, 1800000L); // 30 minutes
+			timer.schedule(new FacilioExceptionProcessor(), 0L, 900000L); // 30 minutes
 		}
 
 
@@ -91,13 +98,26 @@ public class FacilioContextListener implements ServletContextListener {
 			}
 			ServerInfo.registerServer();
 			//timer.schedule(new ServerInfo(), 30000L, 30000L);
+			String environment = AwsUtil.getConfig("environment");
+			String schedulerProp = AwsUtil.getConfig("schedulerServer");
+			boolean scheduler = false;
+			if(schedulerProp != null) {
+			 scheduler = Boolean.parseBoolean(schedulerProp.trim());
+			}
+
+			//handle if server is both user and scheduler.
+			if( ("stage".equalsIgnoreCase(environment) || "production".equalsIgnoreCase(environment)) && ( ! scheduler)) {
+				new Thread(() -> NotificationProcessor.run(new NotificationProcessorFactory())).start();
+			}
 
 			BeanFactory.initBeans();
 			
 			FacilioScheduler.initScheduler();
+			InstantJobExecutor.INSTANCE.startExecutor();
 		//	FacilioTransactionManager.INSTANCE.getTransactionManager();
-			
-			RedisManager.getInstance().connect(); // creating redis connection pool
+			if(RedisManager.getInstance() != null) {
+				RedisManager.getInstance().connect(); // creating redis connection pool
+			}
 			HashMap customdomains = getCustomDomains();
 			
 			if(customdomains!=null)
@@ -159,6 +179,7 @@ PortalAuthInterceptor.PORTALDOMAIN = com.facilio.aws.util.AwsUtil.getConfig("por
 			System.out.println("Loading the domain name as ######"+PortalAuthInterceptor.PORTALDOMAIN );
 			
 			initLocalHostName();
+			HealthCheckFilter.setStatus(200);
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

@@ -27,6 +27,7 @@ import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
+import com.facilio.bmsconsole.criteria.BuildingOperator;
 import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -464,7 +465,38 @@ public class PreventiveMaintenanceAPI {
 	public static List<PreventiveMaintenance> getPMsDetails(List<Long> ids) throws Exception {
 		return getPMs(ids, null, null, null, true, true);
 	}
-	
+	public static List<PreventiveMaintenance> getAllPMs(Long orgid,boolean onlyActive) throws Exception {
+		
+		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
+		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
+		Map<String, FacilioField> pmFieldsMap = FieldFactory.getAsMap(fields);
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(fields)
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														;
+		if (onlyActive) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(pmFieldsMap.get("status"), String.valueOf(true), BooleanOperators.IS));
+		}
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		List<Long> res = null;
+		if(props != null && !props.isEmpty()) {
+			
+			res = new ArrayList<>();
+			for(Map<String, Object> prop :props) {
+				
+				Long id = (Long) prop.get("id");
+				res.add(id);
+			}
+			
+			List<PreventiveMaintenance> pms = getPMs(res,null,null,null,true);
+			
+			return pms;
+		}
+		return null;
+	}
 	public static List<PreventiveMaintenance> getPMs(List<Long> ids, Criteria criteria, String searchQuery, JSONObject pagination, Boolean...fetchDependencies) throws Exception {
 		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
 		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();

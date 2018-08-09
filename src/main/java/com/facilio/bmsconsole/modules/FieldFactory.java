@@ -468,6 +468,18 @@ public class FieldFactory {
 
 		return name;
 	}
+	
+	public static FacilioField getEmailField(FacilioModule module) {
+		FacilioField email = new FacilioField();
+		email.setName("email");
+		email.setDataType(FieldType.STRING);
+		email.setColumnName("EMAIL");
+		if (module != null) {
+			email.setModule(module);
+		}
+
+		return email;
+	}
 
 	public static FacilioField getIsDeletedField() {
 		return getField("deleted", "SYS_DELETED", FieldType.BOOLEAN);
@@ -663,6 +675,9 @@ public class FieldFactory {
 		fields.add(getField("percentage", "PERCENTAGE", module, FieldType.STRING));
 		fields.add(getField("readingFieldId", "READING_FIELD_ID", module, FieldType.NUMBER));
 		fields.add(getField("thresholdType", "THRESHOLD_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("occurences", "OCCURENCES", module, FieldType.NUMBER));
+		fields.add(getField("overPeriod", "OVER_PERIOD", module, FieldType.NUMBER));
+		fields.add(getField("consecutive", "IS_CONSECUTIVE", module, FieldType.BOOLEAN));
 		fields.add(getField("flapCount", "FLAP_COUNT", module, FieldType.NUMBER));
 		fields.add(getField("flapInterval", "FLAP_INTERVAL", module, FieldType.NUMBER));
 		fields.add(getField("minFlapValue", "MIN_FLAP_VAL", module, FieldType.NUMBER));
@@ -2265,6 +2280,13 @@ public class FieldFactory {
 		dashboardUrl.setColumnName("DASHBOARD_URL");
 		dashboardUrl.setModule(module);
 		fields.add(dashboardUrl);
+		
+		FacilioField baseSpaceId = new FacilioField();
+		baseSpaceId.setName("baseSpaceId");
+		baseSpaceId.setDataType(FieldType.LOOKUP);
+		baseSpaceId.setColumnName("BASE_SPACE_ID");
+		baseSpaceId.setModule(module);
+		fields.add(baseSpaceId);
 
 		FacilioField displayOrder = new FacilioField();
 		displayOrder.setName("displayOrder");
@@ -3579,6 +3601,7 @@ public class FieldFactory {
 		fields.add(getIdField(module));
 		fields.add(getField("ruleId", "RULE_ID", module, FieldType.LOOKUP));
 		fields.add(getField("flapTime", "FLAP_TIME", module, FieldType.DATE_TIME));
+		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.LOOKUP));
 		return fields;
 	}
 
@@ -3861,6 +3884,7 @@ public class FieldFactory {
 		fields.add(getOrgIdField(module));
 		fields.add(getNameField(module));
 		fields.add(getDescriptionField(module));
+		fields.add(getEmailField(module));
 		fields.add(getField("logoId", "LOGO_ID", module, FieldType.LOOKUP));
 		fields.add(getField("spaceId", "SPACE", module, FieldType.LOOKUP));
 
@@ -4130,6 +4154,25 @@ public class FieldFactory {
 		
 		return fields;
 	}
+	
+	public static List<FacilioField> getOfflineSyncErrorFields() {
+		FacilioModule module = ModuleFactory.getOfflineSyncErrorModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getOrgIdField(module));
+		fields.add(getField("moduleName", "MODULE_NAME", module, FieldType.STRING));
+		
+		LookupField userField = (LookupField) getField("syncedBy", "SYNCED_BY", module, FieldType.LOOKUP);
+		userField.setSpecialType(FacilioConstants.ContextNames.USERS);
+		fields.add(userField);
+		
+		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.DATE_TIME));
+		fields.add(getField("lastSyncTime", "LAST_SYNC_TIME", module, FieldType.DATE_TIME));
+		fields.add(getField("errorInfo", "ERROR_INFO", module, FieldType.STRING));
+		
+		return fields;
+	}
+
 
 	public static FacilioField getField(String name, String colName, FacilioModule module, FieldType type) {
 		return getField(name, null, colName, module, type);

@@ -1,11 +1,12 @@
 package com.facilio.time;
 
+import java.io.Serializable;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.time.temporal.TemporalUnit;
 
-public class SecondsChronoUnit implements TemporalUnit {
+public class SecondsChronoUnit implements TemporalUnit, Serializable {
 
 	private Duration duration;
 	public SecondsChronoUnit() {

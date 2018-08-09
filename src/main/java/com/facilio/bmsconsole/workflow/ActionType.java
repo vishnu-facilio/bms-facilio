@@ -427,10 +427,10 @@ public enum ActionType {
 			// duration =
 			// (Long)slaPolicyJson.get(String.valueOf(workorderpriority));
 			if (duration != null) {
-				long dueDate = workOrder.getCreatedTime() + duration;
+				long dueDate = ((WorkOrderContext)currentRecord).getCreatedTime() + duration;
 
 				WorkOrderContext updateWO = new WorkOrderContext();
-				workOrder.setDueDate(dueDate);
+				((WorkOrderContext)currentRecord).setDueDate(dueDate);
 				updateWO.setDueDate(dueDate);
 
 				try {
@@ -438,7 +438,7 @@ public enum ActionType {
 					FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
 					UpdateRecordBuilder<WorkOrderContext> updateBuilder = new UpdateRecordBuilder<WorkOrderContext>()
 							.module(woModule).fields(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER))
-							.andCondition(CriteriaAPI.getIdCondition(workOrder.getId(), woModule));
+							.andCondition(CriteriaAPI.getIdCondition(((WorkOrderContext)currentRecord).getId(), woModule));
 					updateBuilder.update(updateWO);
 
 				} catch (Exception e) {

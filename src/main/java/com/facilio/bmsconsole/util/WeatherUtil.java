@@ -240,6 +240,7 @@ public static Map<Long,List<Map<String,Object>>> getReadings(String moduleName) 
 	
 	public static Double getDegreeDays(String ddName,String temperatureField, Double ddBaseTemp,List<Map<String,Object>> weatherReadings) {
 		
+		int size=weatherReadings.size();
 		Double totalTemp= new Double(0);
 		for(Map<String,Object> reading: weatherReadings){
 			
@@ -260,7 +261,7 @@ public static Map<Long,List<Map<String,Object>>> getReadings(String moduleName) 
 				totalTemp+=(temperature - ddBaseTemp);
 			}
 		}
-		Double dd=totalTemp/48;
+		Double dd=totalTemp/size; //if the data is missing, we have to calculate with available data.. hence dividing with size.
 		return dd;
 	}
 	

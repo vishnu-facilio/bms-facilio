@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.util;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -22,7 +23,10 @@ import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
+import com.facilio.bmsconsole.context.MarkedReadingContext;
+import com.facilio.bmsconsole.context.MarkedReadingContext.MarkType;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.criteria.BuildingOperator;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -42,6 +46,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
+import com.facilio.time.SecondsChronoUnit;
 import com.facilio.util.ExpressionEvaluator;
 
 public class DeviceAPI 
@@ -175,7 +180,10 @@ public class DeviceAPI
 		for(BuildingContext building :buildings) {
 			idList = idList +building.getId()+",";
 		}
-		idList = idList.substring(0, idList.length()-1);
+
+		if(idList.length() > 0) {
+			idList = idList.substring(0, idList.length() - 1);
+		}
 		
 		List<EnergyMeterContext> energyMeters = DashboardUtil.getMainEnergyMeter(idList);
 		Map <Long, Long> buildingVsMeter = new HashMap<>();
@@ -480,7 +488,7 @@ public class DeviceAPI
 				}
 			}
 			
-			LOGGER.info("Calculating Consumption for VM : "+meter.getName() + " between " + interval);
+			LOGGER.debug("Calculating Consumption for VM : "+meter.getName() + " between " + interval);
 //			if (AccountUtil.getCurrentOrg().getId() == 116) {
 				LOGGER.debug("Intervals : "+interval);
 //			}
@@ -497,30 +505,65 @@ public class DeviceAPI
 			}
 		}
 
-		LOGGER.info("VM Readings size : "+vmReadings.size());
+		LOGGER.debug("VM Readings size : "+vmReadings.size());
 		if (!vmReadings.isEmpty()) {
 
-			long firstReadingTime =vmReadings.get(0).getTtime();
+			ReadingContext firstReading=vmReadings.get(0);
+			long firstReadingTime =firstReading.getTtime();
 			ReadingContext lastReading=vmReadings.get(vmReadings.size() - 1);
 			deleteEnergyData(meter.getId(), firstReadingTime, lastReading.getTtime()); //Deleting anyway to avoid duplicate entries
+			
+			
+			
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.MODULE_NAME,FacilioConstants.ContextNames.ENERGY_DATA_READING );
 			context.put(FacilioConstants.ContextNames.READINGS, vmReadings);
 			context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS, false);
+			context.put(FacilioConstants.ContextNames.HISTORY_READINGS, isHistorical);
+			
+			//data Gap implementation starts here..
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_DATA_READING);
+			
+			FacilioField energyField=modBean.getField(TOTAL_ENERGY_CONSUMPTION_DELTA, module.getName());
+			ReadingDataMeta rdm= ReadingsAPI.getReadingDataMeta(meter.getId(),energyField);
+			if(!isHistorical && isDataGap(meter.getId(),module,firstReadingTime, rdm.getTtime())) {
+				
+				firstReading.setMarked(true);
+				List<MarkedReadingContext> markedList=new ArrayList<MarkedReadingContext> ();
+				markedList.add(getMarkedReading(firstReading,energyField.getFieldId(),module.getModuleId(),MarkType.HIGH_VALUE_HOURLY_VIOLATION,firstReading,firstReading));
+				context.put(FacilioConstants.ContextNames.MARKED_READINGS, markedList);
+			}
+			//data Gap implementation ends..
 			Chain addReading = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
 			addReading.execute(context);
-			
 			boolean runThroughUpdate= Math.floor((System.currentTimeMillis()-endTime)/(60*1000)) < minutesInterval;
-
 			if(updateReading || runThroughUpdate) {
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-//				FacilioField deltaField= modBean.getField("totalEnergyConsumptionDelta", FacilioConstants.ContextNames.ENERGY_DATA_READING);
 				List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ENERGY_DATA_READING);
 				ReadingsAPI.updateReadingDataMeta(fields, Collections.singletonList(lastReading), null);
 			}
 		}
 	}
 
+	
+	
+	public static boolean isDataGap (long resourceId,FacilioModule module, long currentTime, long previousTime)  {
+		
+		try {
+			int dataInterval=ReadingsAPI.getDataInterval(resourceId, module);
+			//here doing the floor roundoff..
+			SecondsChronoUnit defaultAdjustUnit = new SecondsChronoUnit(dataInterval * 60);
+			ZonedDateTime zdt=	DateTimeUtil.getDateTime(currentTime).truncatedTo(defaultAdjustUnit);
+			if(DateTimeUtil.getMillis(zdt, true)-previousTime > (dataInterval*60*1000)) 
+			{
+				return true;
+			}
+		}
+		catch(Exception e) {
+			LOGGER.error("Exception while cheking data Gap", e);
+		}
+		return false;
+	}
 	private static List<ReadingContext> getChildMeterReadings(List<Long> childIds, long startTime, long endTime, int minutesInterval) throws Exception{
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -706,6 +749,20 @@ public class DeviceAPI
 			}
 			return total;
 		}
+		
+	}
+	
+public static MarkedReadingContext getMarkedReading(ReadingContext reading,long fieldId,long moduleId, MarkType markType, Object currentReading, Object lastReading) {
+		
+		MarkedReadingContext mReading= new MarkedReadingContext();
+		mReading.setReading(reading);
+		mReading.setFieldId(fieldId);
+		mReading.setModuleId(moduleId);
+		mReading.setMarkType(markType);
+		mReading.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+		mReading.setActualValue(String.valueOf(currentReading));
+		mReading.setModifiedValue(String.valueOf(lastReading));
+		return mReading;
 		
 	}
 

@@ -1193,5 +1193,11 @@ public class ModuleFactory {
 		costAssets.setTableName("Report1_Benchmark_Rel");
 		return costAssets;
 	}
-	
+	public static FacilioModule getOfflineSyncErrorModule() {
+		FacilioModule syncModule = new FacilioModule();
+		syncModule.setName("offlinesyncerror");
+		syncModule.setDisplayName("Offline Sync Error");
+		syncModule.setTableName("Sync_Errors");
+		return syncModule;
+	}
 }

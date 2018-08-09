@@ -126,6 +126,37 @@ public class BaseSpaceContext extends ResourceContext {
 	public void setFloorId(long floorId) {
 		this.floorId = floorId;
 	}
+	private  long spaceId1 = -1;
+	public long getSpaceId1() {
+		return spaceId1;
+	}
+	public void setSpaceId1(long spaceId1) {
+		this.spaceId1 = spaceId1;
+	}
+
+	private  long spaceId2 = -1;
+	public long getSpaceId2() {
+		return spaceId2;
+	}
+	public void setSpaceId2(long spaceId2) {
+		this.spaceId2 = spaceId2;
+	}
+	public long getSpaceId3() {
+		return spaceId3;
+	}
+	public void setSpaceId3(long spaceId3) {
+		this.spaceId3 = spaceId3;
+	}
+	public long getSpaceId4() {
+		return spaceId4;
+	}
+	public void setSpaceId4(long spaceId4) {
+		this.spaceId4 = spaceId4;
+	}
+
+	private  long spaceId3 = -1;
+	private  long spaceId4 = -1;
+
 	
 	@Override
 	public ResourceType getResourceTypeEnum() {

@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -8,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext;
@@ -54,6 +57,11 @@ public class UpdateTaskCommand implements Command {
 			
 			List<TaskContext> oldTasks = getTasks(recordIds);
 			
+			Long lastSyncTime = (Long) context.get(FacilioConstants.ContextNames.LAST_SYNC_TIME);
+			if (lastSyncTime != null && oldTasks.get(0).getModifiedTime() > lastSyncTime ) {
+				throw new RuntimeException("The task was modified after the last sync");
+			}
+			
 			ActivityType taskActivity = null;
 			ReadingContext reading = (ReadingContext) context.get(FacilioConstants.ContextNames.READING);
 			if (recordIds.size() == 1 && reading != null) {
@@ -70,13 +78,15 @@ public class UpdateTaskCommand implements Command {
 			} 
 			
 			
-			updateParentTicketStatus(taskActivity, oldTasks.get(0));
+			updateParentTicketStatus(context, taskActivity, oldTasks.get(0));
 			
 			String ids = StringUtils.join(recordIds, ",");
 			Condition idCondition = new Condition();
 			idCondition.setField(FieldFactory.getIdField(module));
 			idCondition.setOperator(NumberOperators.EQUALS);
 			idCondition.setValue(ids);
+			
+			task.setModifiedTime(System.currentTimeMillis());
 			
 			UpdateRecordBuilder<TaskContext> updateBuilder = new UpdateRecordBuilder<TaskContext>()
 																		.moduleName(moduleName)
@@ -105,7 +115,7 @@ public class UpdateTaskCommand implements Command {
 		return null;
 	}
 	
-	private void updateParentTicketStatus(ActivityType activityType, TaskContext task) throws Exception {
+	private void updateParentTicketStatus(Context context, ActivityType activityType, TaskContext task) throws Exception {
 		
 		//TaskContext completeRecord = getTask(taskId);
 		
@@ -144,11 +154,16 @@ public class UpdateTaskCommand implements Command {
 			}
 			try {
 				if (ticket.getAssignedTo() != null) {
-					ShiftAPI.handleWorkHoursReading(activityType, ticket.getAssignedTo().getOuid(), ticket.getId(), ticket.getStatus(), TicketAPI.getStatus("Work in Progress"));
+					List<ReadingContext> readings = ShiftAPI.handleWorkHoursReading(activityType, ticket.getAssignedTo().getOuid(), ticket.getId(), ticket.getStatus(), TicketAPI.getStatus("Work in Progress"));
+					Map<String, List<ReadingContext>> readingMap = new HashMap<>();
+					readingMap.put("userworkhoursreading", readings);
+					context.put(FacilioConstants.ContextNames.READINGS_MAP, readingMap);
+					context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
 				}
 			}
 			catch(Exception e) {
 				log.info("Exception occurred while handling work hours", e);
+				CommonCommandUtil.emailException(UpdateTaskCommand.class.getName(), "Exception occurred while handling work hours", e);
 			}
 			
 		}

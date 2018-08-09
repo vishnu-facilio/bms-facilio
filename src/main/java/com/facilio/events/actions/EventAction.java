@@ -8,6 +8,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
@@ -57,6 +58,30 @@ public class EventAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String eventExport() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(EventConstants.EventContextNames.ALARM_ID, alarmId);
+ 		context.put(EventConstants.EventContextNames.FIELD_ID, fieldId);
+ 		context.put(EventConstants.EventContextNames.TYPE, type);
+ 		context.put(EventConstants.EventContextNames.PARENT_ID, parentId);
+ 		
+		Chain eventListChain = EventConstants.EventChainFactory.getExportFieldsValue();
+		eventListChain.execute(context);
+		setEvents((List<EventContext>) context.get(EventConstants.EventContextNames.EVENT_LIST));
+		setReadingValues((Map<Long,ReadingContext>) context.get(EventConstants.EventContextNames.READING_VALUES));
+		setFileUrl((String) context.get(EventConstants.EventContextNames.FILEURL));
+		return SUCCESS;
+		
+	}
+	private String fileUrl;
+	
+	public String getFileUrl() {
+		return fileUrl;
+	}
+	public void setFileUrl(String fileUrl) {
+		this.fileUrl = fileUrl;
+	}
+
 	private EventContext event;
 	public EventContext getEvent() {
 		return event;
@@ -72,7 +97,22 @@ public class EventAction extends ActionSupport {
 	public void setEvents(List<EventContext> events) {
 		this.events = events;
 	}
-	
+	private Map<Long, ReadingContext> readingValues;
+	public Map<Long, ReadingContext> getReadingValues() {
+		return readingValues;
+	}
+	public void setReadingValues(Map<Long, ReadingContext> readingValues) {
+		this.readingValues = readingValues;
+	}
+
+	private List<Long> fieldId ;
+	public List<Long> getFieldId() {
+		return fieldId;
+	}
+	public void setFieldId(List<Long> fieldId) {
+		this.fieldId = fieldId;
+	}
+
 	private long alarmId = -1;
 	public long getAlarmId() {
 		return alarmId;
@@ -109,7 +149,15 @@ public class EventAction extends ActionSupport {
 	public void setEventProperty(EventProperty eventProperty) {
 		this.eventProperty = eventProperty;
 	}
+	private int type=1;
+	public int getType() {
+		return type;
+	}
+	public void setType(int type) {
+		this.type = type;
+	}
 	
+	private long parentId;
 //	private List<EventRule> eventRules;
 //	public List<EventRule> getEventRules() {
 //		return eventRules;
@@ -118,6 +166,13 @@ public class EventAction extends ActionSupport {
 //		this.eventRules = eventRules;
 //	}
 	
+	public long getParentId() {
+		return parentId;
+	}
+	public void setParentId(long parentId) {
+		this.parentId = parentId;
+	}
+
 	private List<EventRuleContext> eventRules;
 	public List<EventRuleContext> getEventRules() {
 		return eventRules;

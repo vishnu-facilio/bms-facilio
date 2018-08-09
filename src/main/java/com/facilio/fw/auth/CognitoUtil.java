@@ -2,30 +2,11 @@ package com.facilio.fw.auth;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.cognitoidentity.AmazonCognitoIdentity;
-import com.amazonaws.services.cognitoidentity.AmazonCognitoIdentityClientBuilder;
-import com.amazonaws.services.cognitoidentity.model.GetIdRequest;
-import com.amazonaws.services.cognitoidentity.model.GetIdResult;
-import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider;
-import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProviderClientBuilder;
-import com.amazonaws.services.cognitoidp.model.AdminCreateUserRequest;
-import com.amazonaws.services.cognitoidp.model.AdminCreateUserResult;
-import com.amazonaws.services.cognitoidp.model.AdminGetUserRequest;
-import com.amazonaws.services.cognitoidp.model.AdminGetUserResult;
-import com.amazonaws.services.cognitoidp.model.AdminUpdateUserAttributesRequest;
-import com.amazonaws.services.cognitoidp.model.AdminUpdateUserAttributesResult;
-import com.amazonaws.services.cognitoidp.model.AttributeType;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.JWTVerifier;
@@ -34,7 +15,6 @@ import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.constants.FacilioConstants;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.JWKSet;
@@ -46,17 +26,9 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
 import com.nimbusds.jwt.proc.DefaultJWTProcessor;
 
-
-
-
-
 public class CognitoUtil {
 
-	private static org.apache.log4j.Logger log = LogManager.getLogger(CognitoUtil.class.getName());
-
-	private static AWSCognitoIdentityProvider IDP_PROVIDER = null;
-	
-	private static AmazonCognitoIdentity IDENTITY_CLIENT = null;
+	private static org.apache.log4j.Logger logger = LogManager.getLogger(CognitoUtil.class.getName());
 	
 	public static void main(String args[]) {
 		String s = createJWT("id", "auth0", "yoge@facilio.com", System.currentTimeMillis(),true);
@@ -67,7 +39,8 @@ public class CognitoUtil {
 		CognitoUser user = verifiyFacilioToken(s);
 		System.out.println("Cognito User "+user);
 	}
-	public  static String createJWT(String id, String issuer, String subject, long ttlMillis,boolean isPortalUser) {
+
+	public static String createJWT(String id, String issuer, String subject, long ttlMillis,boolean isPortalUser) {
 		 
 		try {
 		    Algorithm algorithm = Algorithm.HMAC256("secret");
@@ -79,16 +52,14 @@ public class CognitoUtil {
 		    
 		    String token =builder.sign(algorithm);
 		    return token;
-		} catch (UnsupportedEncodingException exception){
+		} catch (UnsupportedEncodingException | JWTCreationException exception){
+			logger.info("exception occurred while creating JWT ", exception);
 		    //UTF-8 encoding not supported
-		} catch (JWTCreationException exception){
-		    //Invalid Signing configuration / Couldn't convert Claims.
 		}
 		return null;
 	}
 	
-	public static DecodedJWT  validateJWT(String token ,String issuer)
-	{
+	private static DecodedJWT  validateJWT(String token ,String issuer) {
 		try {
 		    Algorithm algorithm = Algorithm.HMAC256("secret");
 		    JWTVerifier verifier = JWT.require(algorithm)
@@ -100,151 +71,16 @@ public class CognitoUtil {
 		    System.out.println("\ndecoded "+jwt.getClaims());
 		    
 		    return jwt;
-		} catch (UnsupportedEncodingException exception){
-		    //UTF-8 encoding not supported
-			return null;
-
-		} catch (JWTVerificationException exception){
-		    //Invalid signature/claims
+		} catch (UnsupportedEncodingException | JWTVerificationException exception){
+			logger.info("exception occurred while decoding JWT ", exception);
+			//UTF-8 encoding not supported
 			return null;
 
 		}
 	}
-	
-	public static AWSCognitoIdentityProvider getIdpProvider() {
-		if (IDP_PROVIDER == null) {
-			IDP_PROVIDER = AWSCognitoIdentityProviderClientBuilder.standard().withRegion("us-west-2").withCredentials(AwsUtil.getAWSCredentialsProvider()).build();
-		}
-		return IDP_PROVIDER;
-	}
-	
-	public static AmazonCognitoIdentity getIdentityClient() {
-		if (IDENTITY_CLIENT == null) {
-			IDENTITY_CLIENT = AmazonCognitoIdentityClientBuilder.standard().withRegion("us-west-2").withCredentials(AwsUtil.getAWSCredentialsProvider()).build();
-		}
-		return IDENTITY_CLIENT;
-	}
-	
-	public static boolean createUser(String name, String username, String email, boolean emailVerified, String password, String phone, String orgName) {
-		
-		List<AttributeType> attributes = new ArrayList<>();
-		attributes.add(new AttributeType().withName("email").withValue(email));
-		attributes.add(new AttributeType().withName("email_verified").withValue(emailVerified+""));
-		attributes.add(new AttributeType().withName("name").withValue(name));
-		attributes.add(new AttributeType().withName("custom:orgName").withValue(orgName));
-		if (phone != null) {
-			attributes.add(new AttributeType().withName("phone_number").withValue(phone));
-		}
-		
-		AdminCreateUserRequest createUserReq = new AdminCreateUserRequest()
-				.withUserPoolId(FacilioConstants.CognitoUserPool.getUserPoolId())
-				.withUsername(email)
-				.withUserAttributes(attributes)
-				.withDesiredDeliveryMediums("EMAIL")
-				.withTemporaryPassword(password);
 
-		AdminCreateUserResult result = CognitoUtil.getIdpProvider().adminCreateUser(createUserReq);
-		if (result != null) {
-			return true;
-		}
-		return false;
-	}
-	
-	public static boolean updateUserAttributes(String username, String phone) {
-		
-		if (phone == null) {
-			phone = "";
-		}
-		
-		List<AttributeType> attributes = new ArrayList<>();
-		attributes.add(new AttributeType().withName("phone_number").withValue(phone));
-		
-		AdminUpdateUserAttributesRequest updateAttrReq = new AdminUpdateUserAttributesRequest()
-				.withUserPoolId(FacilioConstants.CognitoUserPool.getUserPoolId())
-				.withUsername(username)
-				.withUserAttributes(attributes);
 
-		AdminUpdateUserAttributesResult result = CognitoUtil.getIdpProvider().adminUpdateUserAttributes(updateAttrReq);
-		if (result != null) {
-			return true;
-		}
-		return false;
-	}
-	
-	public static AdminGetUserResult getUser(String username) {
-		
-		try {
-			AdminGetUserRequest adminGetReq = null;
-			adminGetReq = new AdminGetUserRequest().withUserPoolId(FacilioConstants.CognitoUserPool.getUserPoolId()).withUsername(username);
-			return getIdpProvider().adminGetUser(adminGetReq);
-		}
-		catch(Exception e) {
-			return null;
-		}
-	}
-	
-	public static boolean isEmailExists(String email) {
-		
-		try {
-			AdminGetUserRequest adminGetReq = new AdminGetUserRequest().withUserPoolId(FacilioConstants.CognitoUserPool.getUserPoolId()).withUsername(email);
-			
-			AdminGetUserResult userObj = getIdpProvider().adminGetUser(adminGetReq);
-			if (userObj != null && email.equalsIgnoreCase(userObj.getUsername())) {
-				return true;
-			}
-		}
-		catch (Exception e) {
-			log.info("Exception occurred ", e);
-		}
-		return false;
-	}
-	
-	public static String getIdentityId(String idToken) {
-		
-		Map<String, String> logins = new HashMap<String, String>();
-		logins.put("cognito-idp.us-west-2.amazonaws.com/"+FacilioConstants.CognitoUserPool.getUserPoolId(), idToken);
-
-		GetIdRequest idReq = new GetIdRequest()
-				.withAccountId(FacilioConstants.CognitoUserPool.getAWSAccountId())
-				.withIdentityPoolId(FacilioConstants.CognitoUserPool.getIdentityPoolId())
-				.withLogins(logins);
-		
-		GetIdResult result = getIdentityClient().getId(idReq);
-		
-		return result.getIdentityId();
-	}
-	
-	public static JSONObject getUserAttributes(String email) {
-		
-		JSONObject jobj = new JSONObject();
-		String emailDomain = null;
-		try {
-			// temp code
-			emailDomain = email.split("@")[1];
-			emailDomain = emailDomain.split("\\.")[0];
-		} catch (Exception e) {
-			log.info("Exception occurred ", e);
-		}
-		
-		AdminGetUserResult userResult = CognitoUtil.getUser(email);
-		List<AttributeType> li = null;
-		if(userResult != null)
-		{
-			li = userResult.getUserAttributes();
-			for (AttributeType attr : li) {
-				if (!jobj.containsKey(attr.getName())) {
-					jobj.put(attr.getName(), attr.getValue());
-				}
-			}
-		}
-		if (!jobj.containsKey("custom:orgDomain") && emailDomain != null) {
-			jobj.put("custom:orgDomain", emailDomain);
-		}
-		return jobj;
-	}
-	
-	
-	public static CognitoUser verifiyFacilioToken(String idToken) {
+	private static CognitoUser verifiyFacilioToken(String idToken) {
 		return verifiyFacilioToken(idToken, false);
 	}
 	
@@ -259,7 +95,7 @@ public class CognitoUtil {
 			faciliouser.setPortaluser(decodedjwt.getClaim("portaluser").asBoolean());
 			
 			if (!isPortalUser) {
-				String email = faciliouser.getEmail();
+				//String email = faciliouser.getEmail();
 //				String sessionVerify = AwsUtil.getConfig("enable.sessionverify");
 //			if (sessionVerify != null) {
 //					if (Arrays.asList(sessionVerify.split(",")).contains(email)) {
@@ -277,7 +113,7 @@ public class CognitoUtil {
 			return faciliouser;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			log.info("Exception occurred ", e);
+			logger.info("Exception occurred ", e);
 			return null;
 		}
 		//faciliouser.set

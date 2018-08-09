@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.impl.ChainBase;
 
+import com.facilio.bmsconsole.commands.GetExportValueField;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -32,12 +33,17 @@ public class EventConstants {
 		public static final String EVENT_LAST_TIMESTAMP = "eventLastTimeStamp";
 		public static final String EVENT_COUNT_MAP = "eventCountMap";
 		public static final String EVENT_LIST = "events";
+		public static final String READING_VALUES = "readingValue";
+		public static final String FILEURL = "fileurl";
 		public static final String EVENT_PROPERTY = "eventProperty";
 		public static final String EVENT_RULE = "eventRule";
 		public static final String EVENT_RULE_LIST = "eventRules";
 		public static final String SOURCE = "source";
 		public static final String RESOURCE_ID = "resourceId";
 		public static final String ALARM_ID = "alarmId";
+		public static final String FIELD_ID = "fieldId";
+		public static final String TYPE = "type";
+		public static final String PARENT_ID = "parentId";
 	}
 	
 	public static class EventChainFactory {
@@ -136,6 +142,14 @@ public class EventConstants {
 		public static Chain getEventListChain() {
 			Chain c = new ChainBase();
 			c.addCommand(new GetEventListCommand());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
+		public static Chain getExportFieldsValue() {
+			Chain c = new ChainBase();
+			c.addCommand(new GetEventListCommand());
+			c.addCommand(new GetExportValueField());
 			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}

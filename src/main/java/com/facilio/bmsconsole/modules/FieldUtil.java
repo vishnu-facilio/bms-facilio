@@ -304,8 +304,19 @@ public class FieldUtil {
 	}
 	public static <E> List<E> getAsBeanListFromJsonArray(JSONArray content, Class<E> classObj) throws JsonParseException, JsonMappingException, IOException
 	{
-		ObjectMapper mapper = getMapper(classObj);
-		return mapper.readValue(content.toJSONString(), mapper.getTypeFactory().constructCollectionType(List.class, classObj));
+		if (content != null) {
+			ObjectMapper mapper = getMapper(classObj);
+			return mapper.readValue(content.toJSONString(), mapper.getTypeFactory().constructCollectionType(List.class, classObj));
+		}
+		return null;
+	}
+	public static <E> List<E> getAsBeanListFromMapList(List<Map<String, Object>> props, Class<E> classObj) 
+	{
+		if (props != null) {
+			ObjectMapper mapper = getMapper(classObj);
+			return mapper.convertValue(props, mapper.getTypeFactory().constructCollectionType(List.class, classObj));
+		}
+		return null;
 	}
 	
 	@SuppressWarnings("unchecked")

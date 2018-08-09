@@ -12,6 +12,18 @@ public class WhereBuilder implements WhereBuilderIfc<WhereBuilder>{
 	private StringBuilder condition = new StringBuilder();
 	private List<Object> values = new ArrayList<>();;
 	
+	public WhereBuilder() {
+		
+	}
+	
+	public WhereBuilder(WhereBuilder whereBuilder) {
+		// TODO Auto-generated constructor stub
+		this.condition = new StringBuilder(whereBuilder.condition);
+		if (whereBuilder.values != null) {
+			this.values = new ArrayList<>(values);
+		}
+	}
+	
 	@Override
 	public WhereBuilder andCustomWhere(String where, Object... values) {
 		return customWhere(true, where, values);

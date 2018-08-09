@@ -1,12 +1,15 @@
 package com.facilio.workflows.functions;
 
+import java.time.YearMonth;
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
-import com.facilio.workflow.exceptions.FunctionParamException;
+import com.facilio.workflows.exceptions.FunctionParamException;
 
 public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 
@@ -72,11 +75,78 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 			}
 		}
 	},
+	
+	CURRENT_MONTH_DAYS(4,"getCurrentMonthDays") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			int days = 0;
+			if(objects == null) {
+				
+				ZonedDateTime zdt = DateTimeUtil.getZonedDateTime(DateTimeUtil.getMonthStartTime());
+				YearMonth yearMonthObject = YearMonth.of(zdt.getYear(), zdt.getMonthValue());
+				days = yearMonthObject.lengthOfMonth();
+			}
+			else {
+				Long startTime = Long.parseLong( objects[0].toString());
+				ZonedDateTime zdt = DateTimeUtil.getZonedDateTime(startTime);
+				YearMonth yearMonthObject = YearMonth.of(zdt.getYear(), zdt.getMonthValue());
+				days = yearMonthObject.lengthOfMonth();
+			}
+			
+			return days;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			
+		}
+	},
+	LAST_MONTH_DAYS(5,"getLastMonthDays") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			int days = DateTimeUtil.getDaysBetween(DateTimeUtil.getMonthStartTime(-1), DateTimeUtil.getMonthStartTime()-1);
+			
+			return days;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			
+		}
+	},
+	DAYS_BETWEEN(6,"getDaysBetween") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			if(objects[0] == null || objects[1] == null) {
+				return null;
+			}
+			
+			Long startTime = Long.parseLong(objects[0].toString());
+			Long endTime = Long.parseLong(objects[1].toString());
+			int days = DateTimeUtil.getDaysBetween(startTime, endTime);
+			
+			return days;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
 	;
 	private Integer value;
 	private String functionName;
 	private String namespace = "date";
 	private String params;
+	private FacilioFunctionNameSpace nameSpaceEnum = FacilioFunctionNameSpace.DATE;
 	
 	public Integer getValue() {
 		return value;
@@ -105,6 +175,9 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	FacilioDateFunction(Integer value,String functionName) {
 		this.value = value;
 		this.functionName = functionName;
+	}
+	public static Map<String, FacilioDateFunction> getAllFunctions() {
+		return DATE_FUNCTIONS;
 	}
 	public static FacilioDateFunction getFacilioDateFunction(String functionName) {
 		return DATE_FUNCTIONS.get(functionName);

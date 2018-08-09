@@ -131,6 +131,7 @@ public class ExecuteAllWorkflowsCommand implements Command
 			
 			for(WorkflowRuleContext workflowRule : workflowRules) {
 				try {
+					long workflowStartTime = System.currentTimeMillis();
 					Map<String, Object> rulePlaceHolders = workflowRule.constructPlaceHolders(moduleName, record, recordPlaceHolders, (FacilioContext) context);
 					boolean miscFlag = false, criteriaFlag = false, workflowFlag = false;
 					miscFlag = workflowRule.evaluateMisc(moduleName, record, rulePlaceHolders, (FacilioContext) context);
@@ -154,6 +155,7 @@ public class ExecuteAllWorkflowsCommand implements Command
 					currentCriteria.addAndCondition(CriteriaAPI.getCondition(parentRule, String.valueOf(workflowRule.getId()), NumberOperators.EQUALS));
 					currentCriteria.addAndCondition(CriteriaAPI.getCondition(onSuccess, String.valueOf(result), BooleanOperators.IS));
 					criteria.orCriteria(currentCriteria);
+					LOGGER.debug("Time taken to execute rule : "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for module : "+moduleName+" is "+(System.currentTimeMillis() - workflowStartTime));
 				}
 				catch (Exception e) {
 					StringBuilder builder = new StringBuilder("Error during execution of rule : ");

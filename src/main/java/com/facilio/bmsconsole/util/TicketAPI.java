@@ -453,6 +453,23 @@ public class TicketAPI {
 		}
 		return null;
 	}
+	public static TaskSectionContext getTaskSection(Long sectionId) throws Exception {
+		if (sectionId != null) {
+			FacilioModule module = ModuleFactory.getTaskSectionModule();
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+															.select(FieldFactory.getTaskSectionFields())
+															.table(module.getTableName())
+															.andCondition(CriteriaAPI.getIdCondition(sectionId, module));
+			List<Map<String, Object>> props = selectBuilder.get();
+			
+			if(props !=  null && !props.isEmpty()) {
+				TaskSectionContext section = FieldUtil.getAsBeanFromMap(props.get(0), TaskSectionContext.class);
+				
+				return section;
+			}
+		}
+		return null;
+	}
 	
 	public static Map<Long, List<TaskContext>> groupTaskBySection(List<TaskContext> tasks) throws Exception {
 		if(tasks != null && !tasks.isEmpty()) {
@@ -575,16 +592,16 @@ public class TicketAPI {
 				}
 				else {
 					assignTicketToCurrentUser(ticket, oldTicket);
-					ticket.setActualWorkStart(System.currentTimeMillis());
+					ticket.setActualWorkStart(ticket.getOfflineWorkStart() != -1 ? ticket.getOfflineWorkStart() : System.currentTimeMillis());
 				}
 			}
 			else if ("On Hold".equalsIgnoreCase(statusObj.getStatus()) || "Resolved".equalsIgnoreCase(statusObj.getStatus()) 
 					|| ("Closed".equalsIgnoreCase(statusObj.getStatus()) && oldTicket.getStatus().getId() != TicketAPI.getStatus("Resolved").getId()) ) {
 
-				long estimatedDuration = TicketAPI.getEstimatedWorkDuration(oldTicket);
-				
+				long estimatedDuration;
 				if ("Resolved".equalsIgnoreCase(statusObj.getStatus()) || "Closed".equalsIgnoreCase(statusObj.getStatus())) {
-					ticket.setActualWorkEnd(System.currentTimeMillis());
+					ticket.setActualWorkEnd(ticket.getOfflineWorkEnd() != -1 ? ticket.getOfflineWorkEnd() : System.currentTimeMillis());
+					estimatedDuration = TicketAPI.getEstimatedWorkDuration(oldTicket, ticket.getActualWorkEnd());
 					if(isWorkDurationChangeAllowed) {
 						long actualDuration = ticket.getActualWorkDuration() != -1 ? ticket.getActualWorkDuration() : ticket.getEstimatedWorkDuration();
 						ticket.setActualWorkDuration(actualDuration);
@@ -595,6 +612,9 @@ public class TicketAPI {
 					else {
 						ticket.setActualWorkDuration(estimatedDuration);
 					}
+				}
+				else {
+					estimatedDuration = TicketAPI.getEstimatedWorkDuration(oldTicket, System.currentTimeMillis());
 				}
 				
 				if (estimatedDuration != -1) {
@@ -843,15 +863,15 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 		}
 	}
 	
-	public static long getEstimatedWorkDuration (TicketContext ticket) {
+	public static long getEstimatedWorkDuration (TicketContext ticket, long actualWorkEnd) {
 		long duration = -1;
-		long currentTimeInSec = System.currentTimeMillis()/1000;
+		long workEndInSec = actualWorkEnd/1000;
 		if (ticket.getResumedWorkStart() != -1 && ticket.getEstimatedWorkDuration() != -1) {
 			duration = ticket.getEstimatedWorkDuration();
-			duration += (currentTimeInSec - (ticket.getResumedWorkStart()/1000));
+			duration += (workEndInSec - (ticket.getResumedWorkStart()/1000));
 		}
 		else if (ticket.getActualWorkStart() != -1) {
-			duration = currentTimeInSec - (ticket.getActualWorkStart()/1000);
+			duration = workEndInSec - (ticket.getActualWorkStart()/1000);
 		}
 		
 		return duration;

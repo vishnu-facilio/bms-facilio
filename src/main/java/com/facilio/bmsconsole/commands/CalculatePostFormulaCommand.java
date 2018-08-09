@@ -1,9 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -25,18 +23,13 @@ import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext.TriggerType;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.DateOperators;
-import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
-import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.SecondsChronoUnit;
 
 public class CalculatePostFormulaCommand implements Command {
@@ -55,7 +48,6 @@ public class CalculatePostFormulaCommand implements Command {
 			LOGGER.debug("Post Formulas of modules : "+readingMap.keySet());
 			LOGGER.debug(formulaFields);
 			if (formulaFields != null && !formulaFields.isEmpty()) {
-				Map<String, List<ReadingContext>> formulaMap = new HashMap<>();
 				Set<String> completedFormulas = new HashSet<>();
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				for (Entry<String, List<ReadingContext>> entry : readingMap.entrySet()) {
@@ -65,18 +57,10 @@ public class CalculatePostFormulaCommand implements Command {
 						Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(entry.getKey()));
 						if (readings != null && !readings.isEmpty()) {
 							for (ReadingContext reading : readings) {
-								calculateDependentFormulas(reading, formulaMap, completedFormulas, formulaFields, fieldMap);
+								calculateDependentFormulas(reading, completedFormulas, formulaFields, fieldMap);
 							}
 						}
 					}
-				}
-				LOGGER.info("Adding formula Data for for modules : "+readingMap.keySet()+". Data => "+formulaMap.size());
-				if (!formulaMap.isEmpty()) {
-					FacilioContext formulContext = new FacilioContext();
-					formulContext.put(FacilioConstants.ContextNames.MODULE_NAME,FacilioConstants.ContextNames.ENERGY_DATA_READING );
-					formulContext.put(FacilioConstants.ContextNames.READINGS_MAP, formulaMap);
-					Chain addReading = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
-					addReading.execute(formulContext);
 				}
 			}
 			LOGGER.info(AccountUtil.getCurrentOrg().getId()+"::Time taken for post formula calculation for modules : "+readingMap.keySet()+" is "+(System.currentTimeMillis() - processStarttime));
@@ -85,117 +69,37 @@ public class CalculatePostFormulaCommand implements Command {
 		return false;
 	}
 
-	private void calculateDependentFormulas(ReadingContext reading, Map<String, List<ReadingContext>> formulaMap, Set<String> completedFormulas, List<FormulaFieldContext> formulas, Map<String, FacilioField> fieldMap) throws Exception {
+	private void calculateDependentFormulas(ReadingContext reading, Set<String> completedFormulas, List<FormulaFieldContext> formulas, Map<String, FacilioField> fieldMap) throws Exception {
 		// TODO Auto-generated method stub
-		for (FormulaFieldContext formula : formulas) {
-			if (formula.getMatchedResources().contains(reading.getParentId())) {
-				try {
+		if (reading.getReadings() != null && !reading.getReadings().isEmpty()) {
+			for (FormulaFieldContext formula : formulas) {
+				if (formula.getMatchedResourcesIds().contains(reading.getParentId())) {
+					String completedKey = null;
 					if (reading.isNewReading()) {
-						calculateNewFormula(formula, reading, formulaMap, completedFormulas, fieldMap);
+						completedKey = formula.getId()+"|"+reading.getParentId();
 					}
 					else {
-						updateFormula(formula, reading, formulaMap, completedFormulas, fieldMap);
+						long ttime = reading.getTtime();
+						ZonedDateTime zdt = DateTimeUtil.getDateTime(ttime);
+						zdt = zdt.truncatedTo(new SecondsChronoUnit(formula.getInterval() * 60));
+						long startTime = DateTimeUtil.getMillis(zdt, true);
+						long endTime = (startTime + (formula.getInterval() * 60 * 1000)) - 1;
+						completedKey = formula.getId()+"|"+reading.getParentId()+"|"+startTime+"|"+endTime;
 					}
-				}
-				catch (Exception e) {
-					LOGGER.error("Error occurred while calculating of "+formula+" for reading "+reading, e);
-				}
-			}
-		}
-	}
-	
-	private void calculateNewFormula(FormulaFieldContext formula, ReadingContext reading, Map<String, List<ReadingContext>> formulaMap, Set<String> completedFormulas, Map<String, FacilioField> fieldMap) throws Exception {
-		String completedKey = formula.getId()+"|"+reading.getParentId();
-		if (!completedFormulas.contains(completedKey)) {
-			Map<String, Object> readingData = reading.getData();
-			if (readingData != null && !readingData.isEmpty()) {
-				for (String fieldName : readingData.keySet()) {
-					FacilioField field = fieldMap.get(fieldName);
-					if (field != null && formula.getWorkflow().getDependentFieldIds().contains(field.getId())) {
-						ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(reading.getParentId(), formula.getReadingField());
-						List<DateRange> intervals = DateTimeUtil.getTimeIntervals(meta.getTtime()+1, System.currentTimeMillis(), formula.getInterval());
-						LOGGER.info("Intervals for calculation of : "+formula.getName()+" for "+reading.getParentId()+" is "+intervals);
-						long startTime = System.currentTimeMillis();
-						if (intervals.size() > 1) { //If more than one interval has to be calculated, only the last interval will be calculated here. Previous intervals will be done via scheduler
-							long minTime = intervals.get(0).getStartTime();
-							long maxTime = intervals.get(intervals.size() - 2).getEndTime();
-							FormulaFieldAPI.calculateHistoricalDataForSingleResource(formula.getId(), reading.getParentId(), minTime, maxTime);
-							intervals = Collections.singletonList(intervals.get(intervals.size() - 1));
-						}
-						List<ReadingContext> formulaReadings = FormulaFieldAPI.calculateFormulaReadings(reading.getParentId(), formula.getReadingField().getName(), intervals, formula.getWorkflow());
-						LOGGER.info("Time taken for formula calculation of : "+formula.getName()+" for "+reading.getParentId()+" is "+(System.currentTimeMillis() - startTime));
-						if (formulaReadings != null && !formulaReadings.isEmpty()) {
-							List<ReadingContext> existingReadings = formulaMap.get(formula.getReadingField().getModule().getName());
-							if (existingReadings == null) {
-								formulaMap.put(formula.getReadingField().getModule().getName(), formulaReadings);
-							}
-							else {
-								existingReadings.addAll(formulaReadings);
-							}
-						}
+					
+					if (!completedFormulas.contains(completedKey)) {
+						FacilioContext context = new FacilioContext();
+						context.put(FacilioConstants.ContextNames.READING, reading);
+						context.put(FacilioConstants.ContextNames.FORMULA_FIELD, formula);
+						context.put(FacilioConstants.ContextNames.MODULE_FIELD_MAP, fieldMap);
+						
+						FacilioTimer.scheduleInstantJob("PostFormulaCalculationJob", context);
+						LOGGER.debug("Adding instant job for Post formula calculation for  : "+completedKey);
+						
 						completedFormulas.add(completedKey);
-						break;
 					}
 				}
 			}
 		}
-	}
-	
-	private void updateFormula(FormulaFieldContext formula, ReadingContext reading, Map<String, List<ReadingContext>> formulaMap, Set<String> completedFormulas, Map<String, FacilioField> fieldMap) throws Exception {
-		long ttime = reading.getTtime();
-		ZonedDateTime zdt = DateTimeUtil.getDateTime(ttime);
-		zdt = zdt.truncatedTo(new SecondsChronoUnit(formula.getInterval() * 60));
-		long startTime = DateTimeUtil.getMillis(zdt, true);
-		long endTime = (startTime + (formula.getInterval() * 60 * 1000)) - 1;
-		String completedKey = formula.getId()+"|"+reading.getParentId()+"|"+startTime+"|"+endTime;
-		if (!completedFormulas.contains(completedKey)) {
-			Map<String, Object> readingData = reading.getData();
-			if (readingData != null && !readingData.isEmpty()) {
-				ReadingContext oldReading = null;
-				for (String fieldName : readingData.keySet()) {
-					FacilioField field = fieldMap.get(fieldName);
-					if (formula.getWorkflow().getDependentFieldIds().contains(field.getId())) {
-						oldReading = getOldReading(formula, startTime, endTime);
-						List<DateRange> intervals = Collections.singletonList(new DateRange(startTime, endTime));
-						List<ReadingContext> formulaReadings = FormulaFieldAPI.calculateFormulaReadings(reading.getParentId(), formula.getReadingField().getName(), intervals, formula.getWorkflow());
-						if (formulaReadings != null && !formulaReadings.isEmpty()) {
-							ReadingContext newReading = formulaReadings.get(0);
-							if (oldReading != null) {
-								newReading.setTtime(oldReading.getTtime());
-								newReading.setId(oldReading.getId());
-							}
-							List<ReadingContext> existingReadings = formulaMap.get(formula.getReadingField().getModule().getName());
-							if (existingReadings == null) {
-								existingReadings = new ArrayList<>();
-								formulaMap.put(formula.getReadingField().getModule().getName(), existingReadings);
-							}
-							existingReadings.add(newReading);
-						}
-						completedFormulas.add(completedKey);
-						break;
-					}
-				}
-			}
-		}
-	}
-	
-	private ReadingContext getOldReading (FormulaFieldContext formula, long startTime, long endTime) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = formula.getReadingField().getModule();
-		List<FacilioField> fields = modBean.getAllFields(module.getName());
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		FacilioField ttime = fieldMap.get("ttime");
-		
-		SelectRecordsBuilder<ReadingContext> builder = new SelectRecordsBuilder<ReadingContext>()
-															.select(fields)
-															.module(module)
-															.beanClass(ReadingContext.class)
-															.andCondition(CriteriaAPI.getCondition(ttime, startTime+","+endTime, DateOperators.BETWEEN))
-															;
-		List<ReadingContext> readings = builder.get();
-		if (readings != null && !readings.isEmpty()) {
-			return readings.get(0);
-		}
-		return null;
 	}
 }

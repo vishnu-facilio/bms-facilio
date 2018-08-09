@@ -4,10 +4,13 @@ import java.util.List;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -19,11 +22,12 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
 public class GetAssetListCommand implements Command {
-	
+	private static final Logger LOGGER = LogManager.getLogger(GetAssetListCommand.class.getName());
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
+		long startTime = System.currentTimeMillis();
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
@@ -86,12 +90,25 @@ public class GetAssetListCommand implements Command {
 		
 		Boolean withReadings = (Boolean) context.get(FacilioConstants.ContextNames.WITH_READINGS);
 		if (withReadings != null && withReadings) {
-			builder.andCustomWhere("exists(select 1 from Reading_Data_Meta r where r.ORGID=? and r.RESOURCE_ID=Assets.ID and r.VALUE <> -1)", AccountUtil.getCurrentOrg().getId());
+			builder.andCustomWhere("exists(select 1 from Reading_Data_Meta r where r.ORGID=? and r.RESOURCE_ID=Assets.ID and r.VALUE <> -1 and r.VALUE IS NOT NULL)", AccountUtil.getCurrentOrg().getId());
 		}
-		
+		Long readingId = (Long) context.get(FacilioConstants.ContextNames.READING_ID);
+		ReadingInputType inputType = (ReadingInputType) context.get(FacilioConstants.ContextNames.INPUT_TYPE);
+		if (readingId != null && readingId > 0)
+		{
+			builder.andCustomWhere("exists(select 1 from Reading_Data_Meta r where r.ORGID=? and r.RESOURCE_ID=Assets.ID and r.FIELD_ID = ? and r.INPUT_TYPE = ? )",
+					AccountUtil.getCurrentOrg().getId(), readingId, String.valueOf(inputType.getValue()));
+		}
+		// String.valueOf(inputType.getValue())
+		long getStartTime = System.currentTimeMillis();
 		List<? extends ModuleBaseWithCustomFields> records = builder.get();
+		long getTimeTaken = System.currentTimeMillis() - getStartTime;
+		LOGGER.debug("Time taken to execute Fetch assets in GetAssetListCommand : "+getTimeTaken);
+		
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, records);
 		
+		long timeTaken = System.currentTimeMillis() - startTime;
+		LOGGER.debug("Time taken to execute GetAssetListCommand : "+timeTaken);
 		return false;
 	}
 }

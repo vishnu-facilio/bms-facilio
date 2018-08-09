@@ -60,6 +60,9 @@ public interface UserBean {
 	
 	public long addRequester(long orgId, User user) throws Exception;
 	
+	public long createRequestor(long orgId, User user) throws Exception;
+
+	
 	public boolean updateUserPhoto(long uid, long fileId) throws Exception;
 
     public User getFacilioUser(String email) throws Exception;

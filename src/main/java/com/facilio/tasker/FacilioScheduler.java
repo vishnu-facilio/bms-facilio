@@ -10,16 +10,21 @@ import java.util.Map;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.tasker.config.ExecutorsConf;
-import com.facilio.tasker.config.SchedulerJobConf;
-import com.facilio.tasker.executor.Executor;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.tasker.config.ExecutorsConf;
+import com.facilio.tasker.config.InstantJobConf;
+import com.facilio.tasker.config.SchedulerJobConf;
+import com.facilio.tasker.executor.Executor;
 
 public class FacilioScheduler {
 	
 	private static final Map<String, SchedulerJobConf.Job> JOBS_MAP = new HashMap<>();
+	private static final Map<String, InstantJobConf.Job> INSTANT_JOBS_MAP = new HashMap<>();
+
+	private static final String INSTANT_JOB_FILE = "conf/instantJobs.xml";
 
 	private static final Logger LOGGER = LogManager.getLogger(FacilioScheduler.class.getName());
 
@@ -27,7 +32,12 @@ public class FacilioScheduler {
 	public static void initScheduler() throws IOException, InterruptedException, JAXBException {
 		
 		getJobObjectsFromConf();
+		LOGGER.info("Scheduler Jobs : ");
 		LOGGER.info(JOBS_MAP);
+		
+		getInstanceJobFromConf();
+		LOGGER.info("Instant Jobs : ");
+		LOGGER.info(INSTANT_JOBS_MAP);
 		
 //		Executor executor = new Executor("facilio", 15, 600);
 		if(Boolean.parseBoolean(AwsUtil.getConfig("schedulerServer"))) {
@@ -64,6 +74,32 @@ public class FacilioScheduler {
 		}
 	}
 
+	private static void getInstanceJobFromConf() throws JAXBException {
+		ClassLoader classLoader = FacilioScheduler.class.getClassLoader();
+		File instantJobXml = new File(classLoader.getResource(INSTANT_JOB_FILE).getFile());
+
+		JAXBContext jaxbContext = JAXBContext.newInstance(InstantJobConf.class);
+		InstantJobConf instantJobConf = (InstantJobConf) jaxbContext.createUnmarshaller().unmarshal(instantJobXml);
+
+		LOGGER.info(instantJobConf);
+
+		if(instantJobConf.getJobs() != null) {
+			for(InstantJobConf.Job jobConf : instantJobConf.getJobs()) {
+				String name = jobConf.getName();
+				if(name != null && !name.isEmpty() && jobConf.getClassObject() != null) {
+					try {
+						addInstantJobToMap(name, jobConf);
+					}
+					catch(Exception e) {
+						LOGGER.error("The folowing error occurred while parsing job name : "+name, e);
+					}
+				}
+				else {
+					LOGGER.error("Invalid job configuration : "+jobConf);
+				}
+			}
+		}
+	}
 	private static void startExecutors() throws JAXBException {
 		ClassLoader classLoader = FacilioScheduler.class.getClassLoader();
 		File executorsXml = new File(classLoader.getResource("conf/" + AwsUtil.getConfig("scheduleexecutorsfile") + ".xml").getFile());
@@ -99,5 +135,13 @@ public class FacilioScheduler {
 
 	public static SchedulerJobConf.Job getSchedulerJob(String jobName){
 		return JOBS_MAP.get(jobName);
+	}
+
+	private static void addInstantJobToMap(String jobName, InstantJobConf.Job job){
+		INSTANT_JOBS_MAP.put(jobName, job);
+	}
+
+	public static InstantJobConf.Job getInstantJob(String jobName) {
+		return INSTANT_JOBS_MAP.get(jobName);
 	}
 }

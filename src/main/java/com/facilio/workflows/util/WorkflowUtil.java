@@ -37,6 +37,7 @@ import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -58,7 +59,11 @@ import com.facilio.workflows.context.WorkflowFunctionContext;
 import com.facilio.workflows.functions.FacilioCostFunction;
 import com.facilio.workflows.functions.FacilioDateFunction;
 import com.facilio.workflows.functions.FacilioDefaultFunction;
+import com.facilio.workflows.functions.FacilioFunctionsParamType;
+import com.facilio.workflows.functions.FacilioListFunction;
+import com.facilio.workflows.functions.FacilioMapFunction;
 import com.facilio.workflows.functions.FacilioMathFunction;
+import com.facilio.workflows.functions.FacilioStringFunction;
 import com.facilio.workflows.functions.FacilioWorkflowFunctionInterface;
 import com.facilio.workflows.functions.ThermoPhysicalR134aFunctions;
 import com.google.common.collect.ArrayListMultimap;
@@ -256,6 +261,40 @@ public class WorkflowUtil {
 		deleteBuilder.delete();
 	}
 	
+	public static void validateWorkflow(WorkflowContext workflow) throws Exception {
+		
+		checkParamsDeclaration(workflow);
+		checkDuplicateParams(workflow);
+	}
+	
+	public static void checkDuplicateParams(WorkflowContext workflow) throws Exception {
+		
+		List<String> params = new ArrayList<String>();
+		
+		for(ParameterContext parameter :workflow.getParameters()) {
+			
+			if(params.contains(parameter.getName())) {
+				throw new IllegalArgumentException("param - "+parameter.getName()+" is declared more than once");
+			}
+			else {
+				params.add(parameter.getName());
+			}
+		}
+		for(ExpressionContext expressionContext : workflow.getExpressions()) {
+			
+			String expString = expressionContext.getExpressionString();
+			
+			int nameStartIndex = expString.indexOf("<expression name=\"")+"<expression name=\"".length();
+			String name = expString.substring(nameStartIndex, expString.indexOf('"', nameStartIndex));
+			
+			if(params.contains(name)) {
+				throw new IllegalArgumentException("param - "+name+" is declared more than once");
+			}
+			else {
+				params.add(name);
+			}
+		}
+	}
 	public static void checkParamsDeclaration(WorkflowContext workflow) throws Exception {
 		
 		List<String> params = new ArrayList<String>();
@@ -306,7 +345,7 @@ public class WorkflowUtil {
 		
 		parseStringToWorkflowObject(workflow.getWorkflowString(),workflow);
 		
-		checkParamsDeclaration(workflow);
+		validateWorkflow(workflow);
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -314,7 +353,7 @@ public class WorkflowUtil {
 		
 		workflow.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		
-		LOGGER.severe("ADDING WORKFLOW STRING--- "+workflowContext.getWorkflowString());
+		LOGGER.fine("ADDING WORKFLOW STRING--- "+workflowContext.getWorkflowString());
 		
 		workflowContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		
@@ -356,8 +395,8 @@ public class WorkflowUtil {
 			String fieldName = expression.getFieldName();
 			String moduleName = expression.getModuleName();
 			
-			if(moduleName != null && fieldName != null) {
-				LOGGER.severe("moduleName -- "+moduleName +" fieldName -- "+fieldName);
+			if(moduleName != null && fieldName != null && !moduleName.startsWith("$")) {
+				LOGGER.fine("moduleName -- "+moduleName +" fieldName -- "+fieldName);
 				FacilioModule module = modBean.getModule(moduleName);
 				FacilioField field = modBean.getField(fieldName, moduleName);
 				if(field != null) {
@@ -402,8 +441,8 @@ public class WorkflowUtil {
 			String fieldName = expression.getFieldName();
 			String moduleName = expression.getModuleName();
 			
-			if(moduleName != null && fieldName != null) {
-				LOGGER.severe("moduleName -- "+moduleName +" fieldName -- "+fieldName);
+			if(moduleName != null && fieldName != null && !moduleName.startsWith("$")) {
+				LOGGER.fine("moduleName -- "+moduleName +" fieldName -- "+fieldName);
 				FacilioModule module = modBean.getModule(moduleName);
 				FacilioField field = modBean.getField(fieldName, moduleName);
 				if(field != null) {
@@ -560,7 +599,7 @@ public class WorkflowUtil {
 		return getResult(workflowId, paramMap, true);
 	}
 	public static Object getResult(Long workflowId,Map<String,Object> paramMap, boolean ignoreNullExpressions)  throws Exception  {
-		LOGGER.severe("getResult() -- workflowid - "+workflowId+" params -- "+paramMap);
+		LOGGER.fine("getResult() -- workflowid - "+workflowId+" params -- "+paramMap);
 		WorkflowContext workflowContext = getWorkflowContext(workflowId);
 		return getWorkflowExpressionResult(workflowContext.getWorkflowString(),paramMap, ignoreNullExpressions);
 	}
@@ -655,7 +694,12 @@ public class WorkflowUtil {
 				 else if(expressionContext.getDefaultFunctionContext() != null) {
 					 WorkflowFunctionContext function = expressionContext.getDefaultFunctionContext();
 					 Element valueElement = doc.createElement(FUNCTION_STRING);
-					 valueElement.setTextContent(function.getNameSpace()+"."+function.getFunctionName()+"("+function.getParams()+")");
+					 if(function.getParams() != null) {
+						 valueElement.setTextContent(function.getNameSpace()+"."+function.getFunctionName()+"("+function.getParams()+")");
+					 }
+					 else {
+						 valueElement.setTextContent(function.getNameSpace()+"."+function.getFunctionName()+"()");
+					 }
 					 expressionElement.appendChild(valueElement);
 				 }
 				 else {
@@ -737,7 +781,7 @@ public class WorkflowUtil {
 		 LSSerializer lsSerializer = domImplementation.createLSSerializer();
 		 
 		 String result = lsSerializer.writeToString(doc);
-		 LOGGER.severe("result -- "+result);
+		 LOGGER.fine("result -- "+result);
 		 return result;
 	}
 	public static List<ParameterContext> getParameterListFromWorkflowString(String workflow) throws Exception {
@@ -826,8 +870,9 @@ public class WorkflowUtil {
              			else {
              				defaultFunctionContext.setFunctionName(matcher.group(3));
              			}
-             			
-             			defaultFunctionContext.setParams(matcher.group(5));
+             			if(matcher.group(5) != null) {
+             				defaultFunctionContext.setParams(matcher.group(5));
+             			}
              			expressionContext.setDefaultFunctionContext(defaultFunctionContext);
              		}
             	}
@@ -1000,7 +1045,6 @@ public class WorkflowUtil {
 	}
 	
 	private static Condition getConditionObjectFromConditionString(ExpressionContext expressionContext,String conditionString,String moduleName,Integer sequence) throws Exception {
-
 		Pattern condtionStringpattern = Pattern.compile(CONDITION_FORMATTER);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -1008,9 +1052,25 @@ public class WorkflowUtil {
 		Condition condition = null;
 		while (matcher.find()) {
 			String fieldName = matcher.group(2);
-			FacilioField field = modBean.getField(fieldName, moduleName);
-			Operator operator = field.getDataTypeEnum().getOperator(matcher.group(7));		// 7
-			String conditionValue = matcher.group(8);										// 8
+			FacilioField field = null;
+			String operatorString = matcher.group(7);		// 7
+			Operator operator = null;
+			
+			// For current enpi, module will be param
+			if (moduleName.startsWith("$")) {
+				if (operatorString.equals("=")) {
+					operator = NumberOperators.EQUALS;
+				}
+				else if (operatorString.equals("between")) {
+					operator = DateOperators.BETWEEN;
+				}
+			}
+			else {
+				field = modBean.getField(fieldName, moduleName);
+				operator = field.getDataTypeEnum().getOperator(operatorString);
+			}
+			
+			String conditionValue = matcher.group(8); // 8
 			
 			condition = new Condition();
 			
@@ -1029,7 +1089,9 @@ public class WorkflowUtil {
 					else {
 						baseLine.setAdjustType(AdjustType.WEEK);
 					}
-					condition = baseLine.getBaseLineCondition(field, ((DateOperators)operator).getRange(conditionValue));
+					if (field != null) {	// For current Enpi
+						condition = baseLine.getBaseLineCondition(field, ((DateOperators)operator).getRange(conditionValue));
+					}
 					if(sequence != null) {
 						expressionContext.addConditionSeqVsBaselineId(sequence, baseLine.getId());
 					}
@@ -1040,7 +1102,12 @@ public class WorkflowUtil {
 			}
 			else {
 				condition = new Condition();
-				condition.setField(field);
+				if (field != null) {
+					condition.setField(field);
+				}
+				else {
+					condition.setFieldName(fieldName);
+				}
 				condition.setOperator(operator);
 				condition.setValue(conditionValue);
 				if(matcher.group(3) != null && sequence != null) {
@@ -1121,10 +1188,10 @@ public class WorkflowUtil {
 			}
 		}
 		if(objects == null) {
-			LOGGER.severe("function params--- IS NULL");
+			LOGGER.fine("function params--- IS NULL");
 		}
 		else {
-			LOGGER.severe("function params---"+Arrays.toString(objects));
+			LOGGER.fine("function params---"+Arrays.toString(objects));
 		}
 		
 		return defaultFunctions.execute(objects);
@@ -1157,9 +1224,61 @@ public class WorkflowUtil {
 		case "cost" :
 			facilioWorkflowFunction = FacilioCostFunction.getFacilioCostFunction(functionName);
 			break;
+		case "map" :
+			facilioWorkflowFunction = FacilioMapFunction.getFacilioMapFunction(functionName);
+			break;
+		case "list" :
+			facilioWorkflowFunction = FacilioListFunction.getFacilioListFunction(functionName);
+			break;
 		}
 		
 		
 		return facilioWorkflowFunction;
+	}
+	
+	public static List<FacilioWorkflowFunctionInterface> getFacilioFunctions(String nameSpace) {
+		
+		List<FacilioWorkflowFunctionInterface> facilioWorkflowFunction = null;
+		
+		switch(nameSpace) {
+		case "default":
+
+			facilioWorkflowFunction = new ArrayList<>( FacilioDefaultFunction.getAllFunctions().values());
+			break;
+		case "math" :
+			
+			facilioWorkflowFunction = new ArrayList<>( FacilioMathFunction.getAllFunctions().values());
+			break;
+		case "date" :
+			
+			facilioWorkflowFunction = new ArrayList<>( FacilioDateFunction.getAllFunctions().values());
+			break;
+		case "thermoPhysical.R134a" :
+			
+			facilioWorkflowFunction = new ArrayList<>( ThermoPhysicalR134aFunctions.getAllFunctions().values());
+			break;
+			
+		case "cost" :
+			facilioWorkflowFunction = new ArrayList<>( FacilioCostFunction.getAllFunctions().values());
+			break;
+		case "map" :
+			facilioWorkflowFunction = new ArrayList<>( FacilioMapFunction.getAllFunctions().values());
+			break;
+		case "list" :
+			facilioWorkflowFunction = new ArrayList<>( FacilioListFunction.getAllFunctions().values());
+			break;
+		case "string" :
+			facilioWorkflowFunction = new ArrayList<>( FacilioStringFunction.getAllFunctions().values());
+			break;
+		}
+		
+		
+		return facilioWorkflowFunction;
+	}
+	
+	public static FacilioFunctionsParamType getFacilioFunctionParam(int value,String fieldName) {
+		FacilioFunctionsParamType param = FacilioFunctionsParamType.getFacilioDefaultFunction(value);
+		param.setFieldName(fieldName);
+		return param;
 	}
 }

@@ -33,7 +33,7 @@ public class SessionManager {
 		}
 		this.sessions.get(session.getKey()).add(session);
 		
-		logger.log(Level.INFO, "User session added. uid: "+session.getUid()+" currentOpenSessions: "+ this.sessions.get(session.getKey()).size());
+		logger.log(Level.FINE, "User session added. uid: "+session.getUid()+" currentOpenSessions: "+ this.sessions.get(session.getKey()).size());
 	}
 	
 	public List<UserSession> getUserSessions(long uid) {
@@ -44,7 +44,7 @@ public class SessionManager {
 	}
 	public synchronized void removeUserSession(String sessionId) {
 		
-		logger.log(Level.INFO, "User session remove called. sid: "+sessionId);
+		logger.log(Level.FINE, "User session remove called. sid: "+sessionId);
 		
 		Iterator<String> itr = sessions.keySet().iterator();
 		while (itr.hasNext()) {
@@ -61,7 +61,7 @@ public class SessionManager {
 				}
 				if (removeIndex >= 0) {
 					sessionList.remove(removeIndex);
-					logger.log(Level.INFO, "User session removed. uid: "+key+" sid: "+sessionId);
+					logger.log(Level.FINE, "User session removed. uid: "+key+" sid: "+sessionId);
 				}
 			}
 		}
@@ -69,12 +69,11 @@ public class SessionManager {
 	
 	public void sendMessage(Message message) {
 		
-		logger.log(Level.INFO, "Send message called. from: "+message.getFrom()+" to: "+message.getTo());
-		System.out.println("Send message called. from: "+message.getFrom()+" to: "+message.getTo());
-		
+		logger.log(Level.FINE, "Send message called. from: "+message.getFrom()+" to: "+message.getTo());
+
 		List<UserSession> sessionList = getUserSessions(message.getTo());
 		if (sessionList != null) {
-			logger.log(Level.INFO, "Going to send message to ("+sessionList.size()+") user sessions. from: "+message.getFrom()+" to: "+message.getTo());
+			logger.log(Level.FINE, "Going to send message to ("+sessionList.size()+") user sessions. from: "+message.getFrom()+" to: "+message.getTo());
 			for (UserSession us : sessionList) {
 				try {
 					us.sendMessage(message);
@@ -85,13 +84,13 @@ public class SessionManager {
 			}
 		}
 		else {
-			logger.log(Level.INFO, "No active sessions exists for the user: "+message.getTo());
+			logger.log(Level.FINE, "No active sessions exists for the user: "+message.getTo());
 		}
 	}
 	
 	public  void broadcast(Message message) {
 		
-		logger.log(Level.INFO, "Send message called. from: "+message.getFrom()+" to: "+message.getTo());
+		logger.log(Level.FINE, "Send message called. from: "+message.getFrom()+" to: "+message.getTo());
 	//	System.out.println("Send message called. from: "+message.getFrom()+" to: "+message.getTo());
 		
 		Set<String> activeusers =  getActiveUsers() ;
@@ -99,11 +98,11 @@ public class SessionManager {
 		Iterator iter = activeusers.iterator();
 		while (iter.hasNext()) {
 		    String touser =(String) iter.next();
-		    System.out.println("Message sent to "+touser);
+		    logger.info("Message sent to "+touser);
 		    
 			List<UserSession> sessionList = getUserSessions(new Long(touser));
 			if (sessionList != null) {
-				logger.log(Level.INFO, "Going to send message to ("+sessionList.size()+") user sessions. from: "+message.getFrom()+" to: "+touser);
+				logger.log(Level.FINE, "Going to send message to ("+sessionList.size()+") user sessions. from: "+message.getFrom()+" to: "+touser);
 				for (UserSession us : sessionList) {
 					try {
 						message.setTo(new Long(touser));
@@ -115,7 +114,7 @@ public class SessionManager {
 				}
 			}
 			else {
-				logger.log(Level.INFO, "No active sessions exists for the user: "+message.getTo());
+				logger.log(Level.FINE, "No active sessions exists for the user: "+message.getTo());
 			}
 		}
 		

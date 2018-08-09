@@ -33,6 +33,15 @@ public class DashboardContext extends ModuleBaseWithCustomFields {
 		this.dashboardName = dashboardName;
 	}
 	
+	public Long baseSpaceId;
+	
+	public Long getBaseSpaceId() {
+		return baseSpaceId;
+	}
+	public void setBaseSpaceId(Long baseSpaceId) {
+		this.baseSpaceId = baseSpaceId;
+	}
+
 	public List<Long> buildingExcludeList;
 	public List<Long> getBuildingExcludeList() {
 		return buildingExcludeList;

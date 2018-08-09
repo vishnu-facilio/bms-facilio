@@ -200,6 +200,8 @@ public class FacilioConstants {
 		public static final String MODULE_NAME = "moduleName";
 		public static final String MODULE_DISPLAY_NAME = "moduleDisplayName";
 		public static final String MODULE_DATA_TABLE_NAME = "moduleDataTable";
+		public static final String MODULE_DATA = "moduleData";
+		public static final String MODULE_DATA_LIST = "moduleDatas";
 		public static final String MODULE_ATTACHMENT_TABLE_NAME = "moduleAttachmentTable";
 		public static final String MODULE_TYPE = "moduleType";
 		public static final String MODULE_DATA_INTERVAL = "moduleDataInterval";
@@ -216,6 +218,7 @@ public class FacilioConstants {
 		public static final String IS_FILTER = "isFilter";
 		public static final String CATEGORY_ID = "categoryId";
 		public static final String META = "meta";
+		public static final String SET_LOCAL_MODULE_ID = "setLocalModuleId";
 		
 		public static final String READINGS_MAP = "readingsMap";
 		public static final String READINGS = "readings";
@@ -244,6 +247,7 @@ public class FacilioConstants {
 		public static final String REPORT_LABEL_FIELD_TEXT = "label";
 		public static final String REPORT_VALUE_FIELD_TEXT = "value";
 		public static final String REPORT_DATE_FILTER = "dateFilter";
+		public static final String REPORT_DATE_FIELD = "reportDateField";
 		public static final String REPORT_SELECT_FIELDS = "selectFields";
 		public static final String REPORT_GROUP_BY = "groupBy";
 		public static final String REPORT_LIMIT = "limit";
@@ -254,6 +258,10 @@ public class FacilioConstants {
 		public static final String REPORT_Y_AGGR = "yAggr";
 		public static final String REPORT_DATA = "reportData";
 		public static final String REPORT_X_VALUES = "reportXValues";
+		public static final String REPORT_X_FIELD = "reportXField";
+		public static final String REPORT_Y_FIELDS = "reportYFields";
+		public static final String REPORT_FIELDS = "reportFields";
+		public static final String REPORT_MODE = "reportMode";
 		
 		public static final String NOTE = "note";
 		public static final String NOTE_LIST = "notes";
@@ -261,6 +269,7 @@ public class FacilioConstants {
 		public static final String MODULE_FIELD = "moduleField";
 		public static final String MODULE_FIELD_NAME = "fieldName";
 		public static final String MODULE_FIELD_LIST = "moduleFields";
+		public static final String MODULE_FIELD_MAP = "moduleFieldMap";
 		public static final String EXISTING_FIELD_LIST = "existingFields";
 		public static final String FIELD_NAME_LIST = "fieldList";
 		public static final String DEFAULT_FIELD = "defaultField";
@@ -362,6 +371,7 @@ public class FacilioConstants {
 		
 		public static final String CONFIG = "config";
 		public static final String RESULT = "result";
+		public static final String MESSAGE = "message";
 		
 		public static final String COMSUMPTIONDATA_LIST = "comsumptionDataList";
 		
@@ -500,6 +510,8 @@ public class FacilioConstants {
 		
 		public static final String EXCLUDE_EMPTY_FIELDS = "exludeEmptyFields";
 		public static final String WITH_READINGS = "withReadings";
+		public static final String READING_ID = "readingId";
+		public static final String INPUT_TYPE = "inputtype";
 		
 		public static final String BENCHMARK_UNITS = "benchmarkUnits";
 		public static final String BENCHMARK_VALUE = "benchmarkValue";
@@ -512,6 +524,9 @@ public class FacilioConstants {
 		public static final String SHIFT = "shift";
 		public static final String SHIFTS = "shifts";
 		public static final String ACTUAL_TIMINGS = "actualTimings";
+		
+		public static final String LAST_SYNC_TIME = "lastSyncTime";
+		public static final String CUSTOM_OBJECT = "customObject";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {

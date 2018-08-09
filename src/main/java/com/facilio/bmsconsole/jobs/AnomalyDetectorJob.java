@@ -48,7 +48,7 @@ public class AnomalyDetectorJob extends FacilioJob {
 		try {
 			// TO DO .. Feature bit check
 			if (!AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_ANOMALY_DETECTOR)) {
-				logger.log(Level.INFO, "Feature BITS is not enabled");
+				//logger.log(Level.INFO, "Feature BITS is not enabled");
 				return;
 			}else {
 				logger.log(Level.INFO, "Feature BITS is enabled");

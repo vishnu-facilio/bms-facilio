@@ -7,7 +7,10 @@ import java.util.List;
 import org.json.simple.parser.ParseException;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.queue.ObjectQueue;
 import com.facilio.tasker.ScheduleInfo.FrequencyType;
+import com.facilio.tasker.config.InstantJobConf;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.tasker.job.JobStore;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -79,7 +82,13 @@ public class FacilioTimer {
 		}
 		JobStore.addJob(jc);
 	}
-	
+
+	public static void scheduleInstantJob(String jobName, FacilioContext context){
+		context.put(InstantJobConf.getJobNameKey(), jobName);
+		context.put(InstantJobConf.getAccountKey(), AccountUtil.getCurrentAccount());
+		ObjectQueue.sendMessage(InstantJobConf.getInstantJobQueue(), context);
+	}
+
 	public static void scheduleOneTimeJob(long jobId, String jobName, int delayInSec, String executorName) throws Exception {
 		long nextExecutionTime = (System.currentTimeMillis()/1000)+delayInSec;
 		scheduleOneTimeJob(jobId, jobName, nextExecutionTime, executorName);

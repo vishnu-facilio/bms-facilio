@@ -3,6 +3,8 @@ package com.facilio.wms.util;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +14,7 @@ import java.util.logging.Logger;
 
 import javax.websocket.EncodeException;
 
+import com.amazonaws.services.kinesis.model.PutRecordResult;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.wms.endpoints.FacilioClientEndpoint;
@@ -20,10 +23,12 @@ import com.facilio.wms.message.Message;
 import com.facilio.wms.message.WmsChatMessage;
 import com.facilio.wms.message.WmsEvent;
 import com.facilio.wms.message.WmsNotification;
+import org.json.simple.JSONObject;
 
 public class WmsApi
 {
-	private static Logger logger = Logger.getLogger(WmsApi.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(WmsApi.class.getName());
+	private static String kinesisNotificationTopic = "notifications";
 	
 	public static String WEBSOCKET_URL = "ws://localhost:8080/bms/websocket";
 	private static Map<String, FacilioClientEndpoint> FACILIO_CLIENT_ENDPOINTS = new HashMap<>();
@@ -32,6 +37,10 @@ public class WmsApi
 		String socketUrl = AwsUtil.getConfig("websocket.url");
 		if (socketUrl != null) {
 			WEBSOCKET_URL = socketUrl;
+		}
+		String environment = AwsUtil.getConfig("environment");
+		if(environment != null &&  !("development".equalsIgnoreCase(environment))) {
+			kinesisNotificationTopic = environment + "-" + kinesisNotificationTopic;
 		}
 	}
 	
@@ -92,11 +101,28 @@ public class WmsApi
 			if (AccountUtil.getCurrentUser() != null) {
 				message.setFrom(AccountUtil.getCurrentUser().getId());
 			}
-			
-			SessionManager.getInstance().sendMessage(message);
+			sendToKinesis(message.toJson());
+			// SessionManager.getInstance().sendMessage(message);
 		}
 	}
-	
+
+	private static void sendToKinesis(JSONObject object) {
+		try {
+			String partitionKey = (String) object.get("namespace");
+			if (partitionKey == null) {
+				partitionKey = kinesisNotificationTopic;
+			}
+			PutRecordResult result = AwsUtil.getKinesisClient().putRecord(kinesisNotificationTopic, ByteBuffer.wrap(object.toJSONString().getBytes(Charset.defaultCharset())), partitionKey);
+			LOGGER.fine("Sent notification message to kinesis :  " + object.toJSONString() + " , " + result.getSequenceNumber());
+		} catch (Exception e) {
+			LOGGER.log(Level.INFO, "Exception while sending messages to kinesis ", e);
+		}
+	}
+
+	public static String getKinesisNotificationTopic() {
+		return kinesisNotificationTopic;
+	}
+
 	public static FacilioClientEndpoint getFacilioEndPoint(String path)
 	{
 		if(FACILIO_CLIENT_ENDPOINTS.containsKey(path))
@@ -117,7 +143,7 @@ public class WmsApi
         }
 		catch (URISyntaxException ex) 
         {
-        	logger.log(Level.SEVERE, "URISyntaxException exception: " + ex.getMessage(), ex);
+        	LOGGER.log(Level.SEVERE, "URISyntaxException exception: " + ex.getMessage(), ex);
         }
 		return clientEndPoint;
 	}

@@ -371,7 +371,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		if (!params.isEmpty()) {
 			StringBuilder sql = new StringBuilder("UPDATE Modules SET ")
 										.append(joiner.toString())
-										.append("WHERE ORGID = ? AND MODULEID = ?");
+										.append(" WHERE ORGID = ? AND MODULEID = ?");
 			params.add(getOrgId());
 			params.add(module.getModuleId());
 			try (Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS)) {

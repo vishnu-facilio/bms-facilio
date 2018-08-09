@@ -29,4 +29,30 @@ public class ReadOnlyChainFactory extends FacilioChainFactory {
 		c.addCommand(fetchReportDataChain());
 		return c;
 	}
+	
+	public static Chain fetchWorkorderReportChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new CreateWorkOrderAnalyticsReportCommand());
+		c.addCommand(fetchReportDataChain());
+		return c;
+	}
+	
+	public static Chain fetchModuleDataListChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GenerateSortingQueryCommand());
+		c.addCommand(new GenericGetModuleDataListCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain fetchModuleDataDetailsChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
 }

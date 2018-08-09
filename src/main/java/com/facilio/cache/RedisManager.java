@@ -14,16 +14,25 @@ public class RedisManager {
 	private static final Logger LOGGER = Logger.getLogger(RedisManager.class.getName());
 	
 	private static final RedisManager instance = new RedisManager();
-	
+
+	private static boolean isRedisEnabled = false;
 	private static JedisPool pool;
 	
 	private RedisManager() {}
-	
-	public final static RedisManager getInstance() {
-		return instance;
+
+	static {
+		isRedisEnabled = Boolean.parseBoolean(AwsUtil.getConfig("redis.enabled"));
 	}
 	
-	public boolean isRedisEnabled() {
+	public static RedisManager getInstance() {
+		if(isRedisEnabled) {
+			return instance;
+		} else {
+			return null;
+		}
+	}
+	
+	boolean isRedisEnabled() {
 		return Boolean.parseBoolean(AwsUtil.getConfig("redis.enabled"));
 	}
 	
@@ -33,7 +42,7 @@ public class RedisManager {
 			LOGGER.log(Level.WARNING, "Redis disabled, so redis connection pool not initilized.");
 			return;
 		}
-		
+
 		// Create and set a JedisPoolConfig
 		JedisPoolConfig poolConfig = new JedisPoolConfig();
 		// Maximum active connections to Redis instance
@@ -47,10 +56,10 @@ public class RedisManager {
 		poolConfig.setTestOnReturn(true);
 		// Number of connections to Redis that just sit there
 		// and do nothing
-		poolConfig.setMaxIdle(5);
+		poolConfig.setMaxIdle(10);
 		// Minimum number of idle connections to Redis
 		// These can be seen as always open and ready to serve
-		poolConfig.setMinIdle(1);
+		poolConfig.setMinIdle(5);
 		// Tests whether connections are dead during idle periods
 		poolConfig.setTestWhileIdle(true);
 		// Maximum number of connections to test in each idle check

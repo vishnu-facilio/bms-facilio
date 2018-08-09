@@ -1,4 +1,4 @@
-package com.facilio.workflow.exceptions;
+package com.facilio.workflows.exceptions;
 
 public class FunctionParamException extends Exception {
 

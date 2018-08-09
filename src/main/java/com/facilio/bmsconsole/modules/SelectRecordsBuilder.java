@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
@@ -23,6 +26,7 @@ import com.facilio.sql.WhereBuilder;
 
 public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implements SelectBuilderIfc<E> {
 	
+	private static final Logger LOGGER = LogManager.getLogger(SelectRecordsBuilder.class.getName());
 	private static final int LEVEL = 0;
 	
 	private GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
@@ -39,6 +43,26 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	
 	public SelectRecordsBuilder() {
 		// TODO Auto-generated constructor stub
+	}
+	
+	public SelectRecordsBuilder (SelectRecordsBuilder<E> selectBuilder) { //Do not call after calling getProps
+		this.beanClass = selectBuilder.beanClass;
+		this.level = selectBuilder.level;
+		this.maxLevel = selectBuilder.maxLevel;
+		this.moduleName = selectBuilder.moduleName;
+		this.module = selectBuilder.module;
+		this.fetchDeleted = selectBuilder.fetchDeleted;
+		this.groupBy = selectBuilder.groupBy;
+		
+		if (selectBuilder.builder != null) {
+			this.builder = new GenericSelectRecordBuilder(selectBuilder.builder);
+		}
+		if (selectBuilder.select != null) {
+			this.select = new ArrayList<>(selectBuilder.select);
+		}
+		if (selectBuilder.where != null) {
+			this.where = new WhereBuilder(selectBuilder.where);
+		}
 	}
 	
 	public SelectRecordsBuilder (int level) {
@@ -175,10 +199,13 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	@Override
 	public List<E> get() throws Exception {
 		checkForNull(true);
+		long getStartTime = System.currentTimeMillis();
 		List<Map<String, Object>> propList = getAsJustProps();
+		long getTimeTaken = System.currentTimeMillis() - getStartTime;
+		LOGGER.debug("Time Taken to get props in SelectBuilder : "+getTimeTaken);
 		
-		List<E> beans = new ArrayList<>();
-		if(propList != null && propList.size() > 0) {
+		if(propList != null) {
+			long lookupStartTime = System.currentTimeMillis();
 			List<FacilioField> lookupFields = getLookupFields();
 			for(Map<String, Object> props : propList) {
 				for(FacilioField lookupField : lookupFields) {
@@ -196,10 +223,14 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 						}
 					}
 				}
-				E bean = FieldUtil.getAsBeanFromMap(props, beanClass);
-				beans.add(bean);
 			}
+			long lookupTimeTaken = System.currentTimeMillis() - lookupStartTime;
+			LOGGER.debug("Time Taken to convert lookup Fields in SelectBuilder : "+lookupTimeTaken);
 		}
+		long startTime = System.currentTimeMillis();
+		List<E> beans = FieldUtil.getAsBeanListFromMapList(propList, beanClass);
+		long timeTaken = System.currentTimeMillis() - startTime;
+		LOGGER.debug("Time Taken to convert to bean list in SelectBuilder : "+timeTaken);
 		return beans;
 	}
 	

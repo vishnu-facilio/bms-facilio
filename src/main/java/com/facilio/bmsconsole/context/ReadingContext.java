@@ -78,6 +78,20 @@ public class ReadingContext extends ModuleBaseWithCustomFields {
 		this.parentId = parentId;
 	}
 	
+	private Boolean marked;
+	public Boolean getMarked() {
+		return marked;
+	}
+	public void setMarked(Boolean marked) {
+		this.marked = marked;
+	}
+	public boolean isMarked() {
+		if (marked != null) {
+			return marked.booleanValue();
+		}
+		return false;
+	}
+	
 	public Map<String, Object> getReadings() {
 		return super.getData();
 	}

@@ -77,6 +77,12 @@
 			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 		</action>
 		
+		<action name="sync" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="syncOfflineWorkOrders">
+			<param name="moduleName">workorder</param>
+			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+		</action>
+		
 		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 				method="v2viewWorkOrder">
 			<param name="moduleName">workorder</param>
@@ -150,6 +156,11 @@
 			<param name="moduleName">workorder</param>
 			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
 		</action>
+		
+		<action name="sync" class="com.facilio.bmsconsole.actions.TaskAction" method="syncOfflineTasks">
+			<param name="moduleName">workorder</param>
+			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
+		</action>
 	
 		<action name="*" class="com.facilio.bmsconsole.actions.TaskAction" method="v2viewTask">
 			<param name="moduleName">workorder</param>
@@ -164,7 +175,26 @@
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<param name="recordId">{1}</param>
 		</action>
+		<action name="closeAllTask" class="com.facilio.bmsconsole.actions.TaskAction" method="v2closeAllTask">
+			<param name="permission">TASK_CREATE</param>
+		</action>
+	</package> 
+	
+	<package name="noteApiv2" namespace="/api/v2/notes" extends="v2Api">
+		<action name="add" class="com.facilio.bmsconsole.actions.NoteAction" method="v2addNote">
+		</action>
+	</package> 
+	
+	<package name="noteApiListv2" namespace="/api/v2/notes/parent" extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.NoteAction" method="v2noteList">
+			<param name="parentId">{1}</param>
+		</action>
 	</package>
+	
+	<package name="attachmentApiv2" namespace="/api/v2/attachments" extends="v2Api">
+		<action name="add" class="com.facilio.bmsconsole.actions.AttachmentAction" method="v2addAttachment">
+		</action>
+	</package> 
 	
 	<package name="picklistApiv2" namespace="/api/v2/picklist" extends="v2Api">
 	
@@ -174,10 +204,53 @@
 		
 	</package>
 	
-	<package name="reportApiv2" namespace="/api/v2/report" extends="v2Api">
-		<action name="readingReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReadingsData">
+	<package name="formulaApiv2" namespace="/api/v2/reading/formula" extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.ReadingAction" method="getFormulaField">
+			<param name="moduleName">setup</param>
+			<param name="permission">ENERGY_ANALYTICS</param>
+			<param name="id">{1}</param>
+		</action>
+	</package>
+	<package name="formulaFieldApiv2" namespace="/api/v2/reading/formula/field" extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.ReadingAction" method="getFormulaFromReadingField">
+			<param name="moduleName">setup</param>
+			<param name="permission">ENERGY_ANALYTICS</param>
+			<param name="id">{1}</param>
 		</action>
 	</package>
 	
+	<package name="reportApiv2" namespace="/api/v2/report" extends="v2Api">
+		<action name="readingReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReadingsData">
+		</action>
+		<action name="workorderReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchWorkorderData">
+		</action>
+	</package>
+	
+	<package name="moduleDataApiv2" namespace="/api/v2/module/data" extends="v2Api">
+	
+		<action name="add" class="com.facilio.bmsconsole.actions.ModuleAction"
+			method="addModuleData">
+		</action>
+		
+		<action name="update" class="com.facilio.bmsconsole.actions.ModuleAction"
+			method="updateModuleData">
+		</action>
+		
+		<action name="delete" class="com.facilio.bmsconsole.actions.ModuleAction"
+			method="deleteModuleData">
+		</action>
+		
+		<action name="*" class="com.facilio.bmsconsole.actions.ModuleAction"
+				method="moduleDataDetails">
+			<param name="id">{1}</param>
+		</action>
+		
+	</package>
+	<package name="moduleDataApiListv2" namespace="/api/v2/module/data/view" extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.ModuleAction"
+			method="getModuleDataList">
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
 	
 </struts>

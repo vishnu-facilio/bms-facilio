@@ -57,18 +57,16 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 						if(isCalculatable(enpi, calculatedFieldIds)) {
 							try {
 								List<ReadingContext> readings = new ArrayList<>();
-								List<ReadingContext> lastReadings = new ArrayList<>();
-								for (Long resourceId : enpi.getMatchedResources()) {
+								for (Long resourceId : enpi.getMatchedResourcesIds()) {
 									ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(resourceId, enpi.getReadingField());
 									long lastReadingTime = meta.getTtime();
 									ZonedDateTime zdt = DateTimeUtil.getDateTime(lastReadingTime).plusHours(1).truncatedTo(ChronoUnit.HOURS);
 									long startTime = DateTimeUtil.getMillis(zdt, true);
 									ScheduleInfo schedule = FormulaFieldAPI.getSchedule(enpi.getFrequencyEnum());
 									List<DateRange> intervals = DateTimeUtil.getTimeIntervals(startTime, endTime, schedule);
-									List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(resourceId, enpi.getReadingField().getName(), intervals, enpi.getWorkflow());
+									List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(resourceId, enpi.getReadingField().getModule().getName(), enpi.getReadingField().getName(), intervals, enpi.getWorkflow(), true, false);
 									if (currentReadings != null && !currentReadings.isEmpty()) {
 										readings.addAll(currentReadings);
-										lastReadings.add(readings.get(readings.size() - 1));
 									}
 								}
 								
@@ -76,12 +74,10 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 									FacilioContext context = new FacilioContext();
 									context.put(FacilioConstants.ContextNames.MODULE_NAME, enpi.getReadingField().getModule().getName());
 									context.put(FacilioConstants.ContextNames.READINGS, readings);
-									context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS, false);
 									
 									Chain addReadingChain = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
 									addReadingChain.execute(context);
 									
-									ReadingsAPI.updateReadingDataMeta(Collections.singletonList(enpi.getReadingField()), lastReadings, null);
 								}
 							}
 							catch (Exception e) {

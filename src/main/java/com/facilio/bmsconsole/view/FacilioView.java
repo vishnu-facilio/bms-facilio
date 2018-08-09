@@ -131,8 +131,7 @@ public class FacilioView {
 		if(parentViewName != null && !parentViewName.isEmpty()) {
 			fields = ColumnFactory.getColumns(moduleName, parentViewName);
 		}
-		
-		if (fields == null || fields.isEmpty()) {
+		else {
 			fields = ColumnFactory.getColumns(moduleName, "default");
 		}
 		

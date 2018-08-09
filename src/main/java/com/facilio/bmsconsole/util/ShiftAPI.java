@@ -18,6 +18,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -45,7 +46,6 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -343,19 +343,26 @@ public class ShiftAPI {
 		}
 	}
 	
-	public static void addUserWorkHoursReading(long assignedToUserId, long workOrderId, ActivityType activityType, String reading, long time) throws Exception {
-		addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, reading, time, false);
+	public static List<ReadingContext> addUserWorkHoursReading(long assignedToUserId, long workOrderId, ActivityType activityType, String reading, long time) throws Exception {
+		return addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, reading, time, false, false);
 	}
 	
-	public static void addUserWorkHoursReading(long assignedToUserId, long workOrderId, ActivityType activityType, String reading, long time, boolean skipCheck) throws Exception {
+	public static List<ReadingContext> addInvalidatedUserWorkHoursReading(long assignedToUserId, long workOrderId, ActivityType activityType, String reading, long time) throws Exception {
+		return addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, reading, time, false, true);
+	}
+	
+	public static List<ReadingContext> addUserWorkHoursReading(long assignedToUserId, long workOrderId, ActivityType activityType, String reading, long time, boolean skipCheck) throws Exception {
+		return addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, reading, time, skipCheck, false);
+	}
+	
+	public static List<ReadingContext> addUserWorkHoursReading(long assignedToUserId, long workOrderId, ActivityType activityType, String reading, long time, boolean skipCheck, boolean hasManualEntry) throws Exception {
 		if (!skipCheck) {
 			boolean addReading = allowAddReading(assignedToUserId, workOrderId, reading);
 			if (!addReading) {
-				return;
+				return new ArrayList<>();
 			}
 		}
 		
-		Map<String, List<ReadingContext>> readingMap = new HashMap<>();
 		ReadingContext rContext = new ReadingContext();
 		rContext.setParentId(assignedToUserId);
 		rContext.addReading("woId", workOrderId);
@@ -363,14 +370,10 @@ public class ShiftAPI {
 		if (activityType != null) {
 			rContext.addReading("sourceActivity", activityType.getValue());
 		}
+		rContext.addReading("hasManualEntry", hasManualEntry);
 		rContext.setTtime(time);
-		readingMap.put("userworkhoursreading", Arrays.asList(rContext));
 		
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.READINGS_MAP, readingMap);
-		context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
-		Chain c = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
-		c.execute(context);
+		return Arrays.asList(rContext);
 	}
 
 	private static boolean allowAddReading(long assignedToUserId, long workOrderId, String currentReading)
@@ -596,31 +599,41 @@ public class ShiftAPI {
 		res = res.divide(SIXTY.multiply(SIXTY), RoundingMode.HALF_UP);
 		return res.setScale(2, RoundingMode.HALF_UP);
 	}
+	
+	public static List<ReadingContext> handleWorkHoursReading(ActivityType activityType, long assignedToUserId, long workOrderId, TicketStatusContext oldTicketStatus, TicketStatusContext newTicketStatus) throws Exception {
+		return handleWorkHoursReading(activityType, assignedToUserId, workOrderId, oldTicketStatus, newTicketStatus, false); 
+	}
 
-	public static void handleWorkHoursReading(ActivityType activityType, long assignedToUserId, long workOrderId, TicketStatusContext oldTicketStatus, TicketStatusContext newTicketStatus) throws Exception {
+	public static List<ReadingContext> handleWorkHoursReading(ActivityType activityType, long assignedToUserId, long workOrderId, TicketStatusContext oldTicketStatus, TicketStatusContext newTicketStatus, boolean invalidate) throws Exception {
+		List<ReadingContext> readings = new ArrayList<>();
 		long now = System.currentTimeMillis();
 		if (newTicketStatus.getStatus().equals("Work in Progress")) {
 			if (oldTicketStatus.getId() == TicketAPI.getStatus("Assigned").getId() 
 					|| oldTicketStatus.getId() == TicketAPI.getStatus("Closed").getId() 
 					|| oldTicketStatus.getId() == TicketAPI.getStatus("Resolved").getId()) {
 				//pauseWorkOrderForUser(assignedToUserId, activityType, workOrderId, now);
-				addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Start", now);
+				readings.addAll(addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Start", now));
 			} else if (oldTicketStatus.getId() == TicketAPI.getStatus("On Hold").getId() || oldTicketStatus.getId() == TicketAPI.getStatus("Work in Progress").getId()) {
 				//pauseWorkOrderForUser(assignedToUserId, activityType, workOrderId, now);
-				addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Resume", now);
+				readings.addAll(addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Resume", now));
 			}
 		}  else if (newTicketStatus.getStatus().equals("Resolved")) {
-			addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Close", now);
+			if (invalidate) {
+				readings.addAll(addInvalidatedUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Close", now));
+			} else {
+				readings.addAll(addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Close", now));
+			}
 		} else if (newTicketStatus.getStatus().equals("On Hold")) {
-			addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Pause", now);
+			readings.addAll(addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Pause", now));
 		} else if (newTicketStatus.getStatus().equals("Closed")) {
 			if (oldTicketStatus.getId() == TicketAPI.getStatus("On Hold").getId()) {
-				addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Resume", now);
-				addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Close", now);
+				readings.addAll(addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Resume", now));
+				readings.addAll(addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Close", now));
 			} else if (oldTicketStatus.getId() == TicketAPI.getStatus("Work in Progress").getId()) {
-				addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Close", now);
+				readings.addAll(addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Close", now));
 			}
 		}
+		return readings;
 	}
 	
 	public static void markAutoEntriesAsInvalid(long assignedToUserId, long workOrderId) throws Exception {
@@ -642,33 +655,34 @@ public class ShiftAPI {
 		updateBuilder.update(props);
 	}
 
-	public static void addActualWorkHoursReading(long assignedToUserId, long workOrderId, ActivityType activityType, List<List<Long>> actualTimings) throws Exception {
+	public static List<ReadingContext> addActualWorkHoursReading(long assignedToUserId, long workOrderId, ActivityType activityType, List<List<Long>> actualTimings) throws Exception {
+		List<ReadingContext> whreadings = new ArrayList<>();
 		if (actualTimings.size() == 1) {
 			List<Long> readings = actualTimings.get(0);
 			
-			long startTime = readings.get(0);
-			long endTime = readings.get(1);
-			addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Start", startTime, true);
-			addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Close", endTime, true);
+			long startTime = readings.get(0); //1533025848442
+			long endTime = readings.get(1); //  1533025848442
+			whreadings.addAll(addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Start", startTime, true));
+			whreadings.addAll(addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Close", endTime, true));
 		} else {
 			List<Long> readings = actualTimings.get(0);
 			long startTime = readings.get(0);
 			long endTime = readings.get(1);
-			addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Start", startTime, true);
-			addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Pause", endTime, true);
+			whreadings.addAll(addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Start", startTime, true));
+			whreadings.addAll(addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Pause", endTime, true));
 			for (int i = 1; i < actualTimings.size() - 1; i++) {
 				List<Long> r = actualTimings.get(i);
 				long s = r.get(0);
 				long e = r.get(1);
-				addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Resume", s, true);
-				addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Pause", e, true);
+				whreadings.addAll(addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Resume", s, true));
+				whreadings.addAll(addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Pause", e, true));
 			}
 			readings = actualTimings.get(readings.size() - 1);
 			startTime = readings.get(0);
 			endTime = readings.get(1);
-			addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Resume", startTime, true);
-			addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Close", endTime, true);
+			whreadings.addAll(addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Resume", startTime, true));
+			whreadings.addAll(addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Close", endTime, true));
 		}
+		return whreadings;
 	}
-
 }

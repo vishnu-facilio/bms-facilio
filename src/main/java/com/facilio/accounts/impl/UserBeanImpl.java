@@ -326,7 +326,7 @@ public long inviteRequester(long orgId, User user) throws Exception {
 	
 		Organization portalOrg = AccountUtil.getOrgBean().getPortalOrg(AccountUtil.getCurrentOrg().getDomain());
 		user.setPortalId(portalOrg.getPortalId());
-		long ouid = addRequester(orgId, user, false);
+		long ouid = addRequester(orgId, user, false,true);
 		return ouid;
 	}
 
@@ -399,7 +399,14 @@ public long inviteRequester(long orgId, User user) throws Exception {
 			CommonCommandUtil.emailException(user.getEmail(), "cannot send sms for the user", e, null);
 			}
 		} else {
+			if(user.isPortalUser()) {
+				//System.out.println("Adding portal users"+user);
+				AccountEmailTemplate.PORTAL_SIGNUP.send(placeholders);
+
+			}
+			else {
 			AccountEmailTemplate.INVITE_USER.send(placeholders);
+			}
 		}
 	}
 	
@@ -420,8 +427,12 @@ public long inviteRequester(long orgId, User user) throws Exception {
 		Map<String, Object> placeholders = new HashMap<>();
 		CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(user), placeholders);
 		placeholders.put("invitelink", inviteLink);
-		
-		AccountEmailTemplate.EMAIL_VERIFICATION.send(placeholders);
+		if (user.getEmail().contains("@facilio.com")) {
+			 AccountEmailTemplate.EMAIL_VERIFICATION.send(placeholders);
+		}
+		else {
+			AccountEmailTemplate.ALERT_EMAIL_VERIFICATION.send(placeholders);	
+		}
 
 	}
 
@@ -809,7 +820,7 @@ public long inviteRequester(long orgId, User user) throws Exception {
 				.on("Users.USERID = faciliousers.USERID")
 				.innerJoin("ORG_Users")
 				.on("Users.USERID = ORG_Users.USERID")
-				.andCustomWhere("(faciliousers.email = ? or faciliousers.mobile = ?) AND USER_STATUS = 1 AND DELETED_TIME = -1 and ISDEFAULT = ?", email, email, true);
+				.andCustomWhere("(faciliousers.email = ? or faciliousers.username = ?) AND USER_STATUS = 1 AND DELETED_TIME = -1 and ISDEFAULT = ?", email, email, true);
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -997,16 +1008,25 @@ public long inviteRequester(long orgId, User user) throws Exception {
 	@Override
 	public long addRequester(long orgId, User user) throws Exception {
 
-		return addRequester(orgId, user, true);
+		return addRequester(orgId, user, true,true);
 	}
-	
-	public long addRequester(long orgId, User user, boolean emailVerification) throws Exception {
-
+	@Override
+	public long createRequestor(long orgId, User user) throws Exception {
+		// TODO Auto-generated method stub
+		return addRequester(orgId,  user,true,false);
+	}
+	private long addRequester(long orgId, User user, boolean emailVerification,boolean updateifexist) throws Exception {
 		User orgUser = getPortalUser(user.getEmail(), user.getPortalId());
 		if (orgUser != null) {
-			return orgUser.getOuid();
+			log.info("Email Already Registered ");
+			if(!updateifexist)
+			{
+			Exception e = new Exception("Email Already Registered");
+			throw e;
+			}
+			
 		}
-		Boolean isPortalRequester = true;
+		
 		long uid = getPortalUid(user.getPortalId(), user.getEmail());
 		if (uid == -1) {
 			uid = addUserEntry(user, emailVerification, true);
@@ -1322,7 +1342,7 @@ public long inviteRequester(long orgId, User user) throws Exception {
 				.on("Users.USERID = faciliousers.USERID")
 				.innerJoin("UserSessions")
 				.on("Users.USERID = UserSessions.USERID")
-				.andCustomWhere("(faciliousers.email = ? or faciliousers.mobile = ? ) AND UserSessions.TOKEN = ? AND UserSessions.IS_ACTIVE = ?",email, email, token, true);
+				.andCustomWhere("(faciliousers.email = ? or faciliousers.username = ? ) AND UserSessions.TOKEN = ? AND UserSessions.IS_ACTIVE = ?",email, email, token, true);
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -1368,4 +1388,6 @@ public long inviteRequester(long orgId, User user) throws Exception {
 		}
 		return user;
 	}
+
+
 }

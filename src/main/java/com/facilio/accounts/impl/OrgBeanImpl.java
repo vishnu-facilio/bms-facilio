@@ -276,6 +276,30 @@ public class OrgBeanImpl implements OrgBean {
 		}
 		return null;
 	}
+
+	public List<User> getActiveOrgUsers(long orgId) throws Exception {
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.addAll(AccountConstants.getUserFields());
+		fields.addAll(AccountConstants.getOrgUserFields());
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("Users")
+				.innerJoin("ORG_Users")
+				.on("Users.USERID = ORG_Users.USERID")
+				.andCustomWhere("ORGID = ? AND USER_STATUS = 1 AND INVITATION_ACCEPT_STATUS = 1 AND USER_VERIFIED = 1 AND USER_TYPE = ? AND DELETED_TIME = -1", orgId, AccountConstants.UserType.USER.getValue());
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			List<User> users = new ArrayList<>();
+			for(Map<String, Object> prop : props) {
+				users.add(UserBeanImpl.createUserFromProps(prop));
+			}
+			return users;
+		}
+		return null;
+	}
 	
 	public List<User> getRequesters(long orgId) throws Exception {
 		

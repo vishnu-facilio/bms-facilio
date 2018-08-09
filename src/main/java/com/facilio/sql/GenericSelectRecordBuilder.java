@@ -13,6 +13,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -33,6 +34,29 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 	private String orderBy;
 	private int limit = -1;
 	private int offset = -1;
+	
+	public GenericSelectRecordBuilder() {
+		
+	}
+	
+	public GenericSelectRecordBuilder(GenericSelectRecordBuilder selectBuilder) { //Do not call after calling getProps
+		// TODO Auto-generated constructor stub
+		this.tableName = selectBuilder.tableName;
+		this.groupBy = selectBuilder.groupBy;
+		this.having = selectBuilder.having;
+		this.orderBy = selectBuilder.orderBy;
+		this.limit = selectBuilder.limit;
+		this.offset = selectBuilder.offset;
+		
+		this.joinBuilder = new StringBuilder(selectBuilder.joinBuilder);
+		if (selectBuilder.selectFields != null) {
+			this.selectFields = new ArrayList<>(selectBuilder.selectFields);
+		}
+		this.selectFields = selectBuilder.selectFields;
+		if (selectBuilder.where != null) {
+			this.where = new WhereBuilder(selectBuilder.where);
+		}
+	}
 	
 	@Override
 	public GenericSelectRecordBuilder select(List<FacilioField> fields) {
@@ -163,6 +187,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 
 	@Override
 	public List<Map<String, Object>> get() throws Exception {
+		long startTime = System.currentTimeMillis();
 		checkForNull(false);
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -181,8 +206,16 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 				}
 			}
 			
+			long queryStartTime = System.currentTimeMillis();
 			rs = pstmt.executeQuery();
+			long queryTime = System.currentTimeMillis() - queryStartTime;
+			
+			LOGGER.debug("SQL : "+sql);
+			LOGGER.debug("Time taken to execute query in GenericSelectBuilder : "+queryTime);
+			
 			this.sql = pstmt.toString();
+			
+			long mapStartTime = System.currentTimeMillis();
 			List<Map<String, Object>> records = new ArrayList<>();
 			while(rs.next()) {
 				Map<String, Object> record = new HashMap<>();
@@ -202,6 +235,11 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 					records.add(record);
 				}
 			}
+			long mapTimeTaken = System.currentTimeMillis() - mapStartTime;
+			LOGGER.debug("Time taken to create map in GenericSelectBuilder : "+mapTimeTaken);
+			
+			long timeTaken = System.currentTimeMillis() - startTime;
+			LOGGER.debug("Time taken to get records in GenericSelectBuilder : "+timeTaken);
 			return records;
 		}
 		catch(SQLException e) {

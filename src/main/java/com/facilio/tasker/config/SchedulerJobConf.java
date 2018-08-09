@@ -1,15 +1,16 @@
 package com.facilio.tasker.config;
 
-import com.facilio.tasker.job.FacilioJob;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import com.facilio.tasker.job.FacilioJob;
 
 @XmlRootElement(name="scheduler")
 public class SchedulerJobConf {

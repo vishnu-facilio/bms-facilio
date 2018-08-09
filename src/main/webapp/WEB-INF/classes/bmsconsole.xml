@@ -38,8 +38,17 @@
 				<param name="location">/jsps/unauthorized.jsp</param>
 				<param name="parse">false</param>
 			</result>
+            <result name="exception" type="httpheader">
+                <param name="error">500</param>
+            </result>
 		</global-results>
-		<action name="tracklead" class="com.facilio.bmsconsole.actions.LeadTracker">
+
+        <global-exception-mappings>
+            <exception-mapping exception="java.lang.Exception" result="exception" />
+        </global-exception-mappings>
+
+
+        <action name="tracklead" class="com.facilio.bmsconsole.actions.LeadTracker">
 			<param name="auth">false</param>
 			<result name="success" type="json">
 				<param name="includeProperties">response</param>
@@ -738,7 +747,7 @@
 			<param name="moduleName">asset</param>
 			<param name="permission">DELETE</param>
 			<result name="success" type="json">
-				<param name="includeProperties">assetId</param>
+				<param name="includeProperties">assetsId\[\d+\],assetsId\[\d+\].*</param>
 			</result>
 		</action>
 
@@ -1635,7 +1644,7 @@
 			<param name="moduleName">setup</param>
 			<param name="permission">ASSET_SETTINGS</param>
 			<result name="success" type="json">
-				<param name="root">moduleMap</param>
+				<param name="includeProperties">moduleMap.*, assetCount.*</param>
 			</result>
 		</action>
 		
@@ -4047,6 +4056,30 @@
 		</action>
 	</package>
 	
+	<package name="workflow" namespace="/api/workflow" extends="home">
+	
+		<action name="getAllNameSpace" class="com.facilio.workflows.action.WorkflowAction" method="getAllNameSpace">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">namespaces,namespaces\[\d+\],namespaces\[\d+\].*</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">400</param>
+			</result>
+		</action>
+		
+		<action name="getAllFunctions" class="com.facilio.workflows.action.WorkflowAction" method="getAllFunctions">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">functions,functions\[\d+\],functions\[\d+\].*</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">400</param>
+			</result>
+		</action>
+		
+	</package>
+	
 	<package name="dashboard" namespace="/api/dashboard" extends="home">
 		<action name="populateDefaultReports" class="com.facilio.bmsconsole.actions.DashboardAction" method="populateDefaultReports">
 		</action>
@@ -4087,6 +4120,12 @@
 			</result>
 		</action>
 		<action name="getAswaqData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getAswaqData">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">^resultJSON.*</param>
+			</result>
+		</action>
+		<action name="getUTCData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getUTCData">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
 				<param name="includeProperties">^resultJSON.*</param>

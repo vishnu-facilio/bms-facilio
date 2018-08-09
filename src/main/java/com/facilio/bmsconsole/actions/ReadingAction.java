@@ -32,9 +32,8 @@ import com.facilio.bmsconsole.workflow.ActionContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.workflows.context.WorkflowContext;
-import com.opensymphony.xwork2.ActionSupport;
 
-public class ReadingAction extends ActionSupport {
+public class ReadingAction extends FacilioAction {
 	
 	public String addReading() throws Exception {
 		FacilioContext context = new FacilioContext();
@@ -213,7 +212,7 @@ public class ReadingAction extends ActionSupport {
 	
 	public String updateReadingDataMeta() throws Exception{
 		ReadingsAPI.updateReadingDataMeta();
-		result = "success";
+		setResult(FacilioConstants.ContextNames.MESSAGE, "success");
 		return SUCCESS;
 	}
 	
@@ -564,7 +563,12 @@ public class ReadingAction extends ActionSupport {
 	
 	public String getAllAssetReadings() throws Exception {
 			
-		List<Long> assetCategoryIds = getAssetCategoryIds();
+		List<Long> assetCategoryIds;
+		if (this.parentCategoryIds != null && !this.parentCategoryIds.isEmpty()) {
+			assetCategoryIds = this.parentCategoryIds;
+		} else {
+			assetCategoryIds = getAssetCategoryIds();
+		}
 		
 		FacilioModule module = ModuleFactory.getAssetCategoryReadingRelModule();
 		
@@ -577,9 +581,17 @@ public class ReadingAction extends ActionSupport {
 		
 		readings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
 		moduleMap = (Map<Long,List<FacilioModule>>)context.get(FacilioConstants.ContextNames.MODULE_MAP);
-		System.out.println(">>>>>>> readings : "+readings);
-		System.out.println(">>>>>>> moduleMap : "+moduleMap);
+		assetCount = (Map<String, Long>)context.get(FacilioConstants.ContextNames.COUNT);
 		return SUCCESS;
+	}
+	
+	private List<Long> parentCategoryIds;
+	public List<Long> getParentCategoryIds() {
+		return this.parentCategoryIds;
+	}
+	
+	public void setParentCategoryIds(List<Long> ids) {
+		this.parentCategoryIds = ids;
 	}
 	
 	Map<Long,List<FacilioModule>> moduleMap;
@@ -591,6 +603,14 @@ public class ReadingAction extends ActionSupport {
 		this.moduleMap = moduleMap;
 	}
 	
+	private Map<String,Long> assetCount;
+	public Map<String, Long> getAssetCount() {
+		return assetCount;
+	}
+	public void setAssetCount(Map<String, Long> assetCount) {
+		this.assetCount = assetCount;
+	}
+
 	private FormulaFieldContext formula;
 	public FormulaFieldContext getFormula() {
 		return formula;
@@ -620,7 +640,7 @@ public class ReadingAction extends ActionSupport {
 		Chain updateEnPIChain = FacilioChainFactory.updateFormulaChain();
 		updateEnPIChain.execute(context);
 		
-		result = (String) context.get(FacilioConstants.ContextNames.RESULT);
+		setResult(FacilioConstants.ContextNames.MESSAGE, context.get(FacilioConstants.ContextNames.RESULT));
 		
 		return SUCCESS;
 	}
@@ -632,14 +652,6 @@ public class ReadingAction extends ActionSupport {
 	public void setId(long id) {
 		this.id = id;
 	}
-	
-	private String result;
-	public String getResult() {
-		return result;
-	}
-	public void setResult(String result) {
-		this.result = result;
-	}
 
 	public String deleteFormula() throws Exception {
 		FacilioContext context = new FacilioContext();
@@ -648,7 +660,7 @@ public class ReadingAction extends ActionSupport {
 		Chain deleteEnPIChain = FacilioChainFactory.deleteFormulaChain();
 		deleteEnPIChain.execute(context);
 		
-		result = (String) context.get(FacilioConstants.ContextNames.RESULT);
+		setResult(FacilioConstants.ContextNames.MESSAGE, context.get(FacilioConstants.ContextNames.RESULT));
 		
 		return SUCCESS;
 	}
@@ -687,7 +699,7 @@ public class ReadingAction extends ActionSupport {
 	
 	public String calculateFormulField() throws Exception {
 		List<DateRange> intervals = DateTimeUtil.getTimeIntervals(startTime, endTime, minuteInterval);
-		readingValues = FormulaFieldAPI.calculateFormulaReadings(resourceId, fieldName, intervals, workflow);
+		readingValues = FormulaFieldAPI.calculateFormulaReadings(resourceId, fieldName, fieldName, intervals, workflow, false, false);
 		return SUCCESS;
 	}
 	
@@ -763,5 +775,35 @@ public class ReadingAction extends ActionSupport {
 	
 	public List<Long> getDelReadingRulesIds() {
 		return this.delReadingRulesIds;
+	}
+	
+	
+	
+	/**********  V2 apis *************/
+	
+	public String getFormulaField () {
+		try {
+			formula = FormulaFieldAPI.getFormulaField(id);
+			setResult(FacilioConstants.ContextNames.FORMULA_FIELD, formula);			
+			return SUCCESS;
+		}
+		catch(Exception e) {
+			setResponseCode(1);
+			setMessage(e);
+			return ERROR;
+		}
+	}
+	
+	public String getFormulaFromReadingField () {
+		try {
+			formula = FormulaFieldAPI.getFormulaFieldFromReadingField(id);
+			setResult(FacilioConstants.ContextNames.FORMULA_FIELD, formula);			
+			return SUCCESS;
+		}
+		catch(Exception e) {
+			setResponseCode(1);
+			setMessage(e);
+			return ERROR;
+		}
 	}
  }
