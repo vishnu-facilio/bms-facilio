@@ -326,7 +326,7 @@ public long inviteRequester(long orgId, User user) throws Exception {
 	
 		Organization portalOrg = AccountUtil.getOrgBean().getPortalOrg(AccountUtil.getCurrentOrg().getDomain());
 		user.setPortalId(portalOrg.getPortalId());
-		long ouid = addRequester(orgId, user, false);
+		long ouid = addRequester(orgId, user, false,true);
 		return ouid;
 	}
 
@@ -1008,15 +1008,22 @@ public long inviteRequester(long orgId, User user) throws Exception {
 	@Override
 	public long addRequester(long orgId, User user) throws Exception {
 
-		return addRequester(orgId, user, true);
+		return addRequester(orgId, user, true,true);
 	}
-	
-	public long addRequester(long orgId, User user, boolean emailVerification) throws Exception {
+	@Override
+	public long createRequestor(long orgId, User user) throws Exception {
+		// TODO Auto-generated method stub
+		return addRequester(orgId,  user,true,false);
+	}
+	private long addRequester(long orgId, User user, boolean emailVerification,boolean updateifexist) throws Exception {
 		User orgUser = getPortalUser(user.getEmail(), user.getPortalId());
 		if (orgUser != null) {
 			log.info("Email Already Registered ");
-//			Exception e = new Exception("Email Already Registered");
-//			throw e;
+			if(!updateifexist)
+			{
+			Exception e = new Exception("Email Already Registered");
+			throw e;
+			}
 			
 		}
 		
@@ -1381,4 +1388,6 @@ public long inviteRequester(long orgId, User user) throws Exception {
 		}
 		return user;
 	}
+
+
 }

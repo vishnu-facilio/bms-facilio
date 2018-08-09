@@ -536,7 +536,7 @@ public class FacilioAuthAction extends ActionSupport {
         if(anydomain_allowedforsignup || opensignup || whitelisteddomain)
         {
         try {
-			AccountUtil.getUserBean().addRequester(AccountUtil.getCurrentOrg().getId(), user);
+			AccountUtil.getUserBean().createRequestor(AccountUtil.getCurrentOrg().getId(), user);
 		} catch (InvocationTargetException ie) {
 			Throwable e= ie.getTargetException();
 			if(e.getMessage()!=null && e.getMessage().equals("Email Already Registered"))
