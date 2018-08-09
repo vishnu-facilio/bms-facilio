@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -88,9 +89,12 @@ public class GenericGetModuleDataListCommand implements Command {
 		}
 		
 		List<? extends ModuleBaseWithCustomFields> records = builder.get();
+		ResourceAPI.loadModuleResources(records, fields);
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, records);
 		
 		return false;
 	}
+	
+	
 
 }

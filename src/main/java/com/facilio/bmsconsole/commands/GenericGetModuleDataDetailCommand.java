@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -44,6 +45,7 @@ public class GenericGetModuleDataDetailCommand implements Command {
 
 			List<ModuleBaseWithCustomFields> records = builder.get();
 			if(records.size() > 0) {
+				ResourceAPI.loadModuleResources(records, fields);
 				context.put(FacilioConstants.ContextNames.RECORD, records.get(0));
 			}
 		}

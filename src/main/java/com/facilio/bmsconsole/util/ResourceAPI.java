@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
@@ -18,6 +19,9 @@ import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.LookupField;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
@@ -225,5 +229,37 @@ public class ResourceAPI {
 			return readings;
 		}
 		return null;
+	}
+	
+	public static void loadModuleResources(Collection<? extends ModuleBaseWithCustomFields> records, List<FacilioField> fields) throws Exception {
+		if(records != null && !records.isEmpty()) {
+			FacilioField resourceField = fields.stream().filter(field -> field.getDataTypeEnum() == FieldType.LOOKUP &&
+					((LookupField)field).getLookupModule() != null && (((LookupField)field).getLookupModule().getName().equals(FacilioConstants.ContextNames.ASSET) || 
+							((LookupField)field).getLookupModule().getName().equals(FacilioConstants.ContextNames.SPACE)) )
+					.findFirst().orElse(null);
+			if (resourceField != null) {
+				List<ModuleBaseWithCustomFields> recordsWithResources = records.stream().filter(record -> {
+					if(record.getData() != null && record.getData().containsKey(resourceField.getName())) {
+						Map<String, Object> resource = (Map<String, Object>) record.getData().get(resourceField.getName());
+						return resource != null && ((long)resource.get("id") != -1);
+					}
+					return false;
+				}).collect(Collectors.toList());
+				
+				if (recordsWithResources.isEmpty()) {
+					return;
+				}
+				
+				List<Long> resourceIds = recordsWithResources.stream().map(record -> (Long) ((Map<String, Object>) record.getData().get(resourceField.getName())).get("id")).collect(Collectors.toList());
+				Map<Long, ResourceContext> resources = ResourceAPI.getExtendedResourcesAsMapFromIds(resourceIds, true);
+				if(resources != null && !resources.isEmpty()) {
+					for(ModuleBaseWithCustomFields record : recordsWithResources) {
+						Map<String, Object> resource = ((Map<String, Object>) record.getData().get(resourceField.getName()));
+						Long resourceId =  (Long) ((Map<String, Object>) record.getData().get(resourceField.getName())).get("id");
+						resource.put("resource", resources.get(resourceId));
+					}
+				}
+			}
+		}
 	}
 }
