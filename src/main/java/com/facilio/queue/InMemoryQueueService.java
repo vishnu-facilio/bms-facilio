@@ -17,7 +17,9 @@ public class InMemoryQueueService implements FacilioQueue {
     }
 
     private InMemoryQueue getOrCreateQueue(String queueName) {
-        MAP.putIfAbsent(queueName, new InMemoryQueue());
+        if( ! MAP.containsKey(queueName)) {
+            MAP.put(queueName, new InMemoryQueue());
+        }
         return MAP.get(queueName);
     }
 
