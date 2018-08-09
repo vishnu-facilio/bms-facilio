@@ -218,6 +218,7 @@ public class WorkflowContext implements Serializable {
 			}
 		}
 		if(isTerminateExecution()) {
+			LOGGER.severe("workflow --- "+this.getId()+" has been terminated");
 			return 0;
 		}
 		LOGGER.fine("variableToExpresionMap --- "+variableResultMap+" \n\n"+"expString --- "+getResultEvaluator());
