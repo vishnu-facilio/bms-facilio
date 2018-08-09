@@ -9,13 +9,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.struts2.ServletActionContext;
 
 import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.Organization;
@@ -57,7 +55,6 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
-import com.facilio.auth.actions.FacilioAuthAction;
 
 public class UserBeanImpl implements UserBean {
 
