@@ -33,9 +33,8 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 			if(virtualMeters == null || virtualMeters.isEmpty()) {
 				return;
 			}
-			int period=jc.getPeriod();
-			int minutesInterval=period/60;
-			long endTime = DateTimeUtil.getDateTime(System.currentTimeMillis()).truncatedTo(getDefaultDataInterval()).toInstant().toEpochMilli();
+			int minutesInterval = getDefaultDataInterval();
+			long endTime = DateTimeUtil.getDateTime(System.currentTimeMillis()).truncatedTo(new SecondsChronoUnit(minutesInterval * 60)).toInstant().toEpochMilli();
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioField deltaField= modBean.getField("totalEnergyConsumptionDelta", FacilioConstants.ContextNames.ENERGY_DATA_READING);
 			for(EnergyMeterContext meter:virtualMeters) {
@@ -57,16 +56,14 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 		}
 	}
 	
-	private SecondsChronoUnit getDefaultDataInterval() throws Exception {
+	private int getDefaultDataInterval() throws Exception {
 		Map<String, String> orgInfo = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.DEFAULT_DATA_INTERVAL);
 		String defaultIntervalProp = orgInfo.get(FacilioConstants.OrgInfoKeys.DEFAULT_DATA_INTERVAL);
-		SecondsChronoUnit defaultAdjustUnit = null;
 		if (defaultIntervalProp == null || defaultIntervalProp.isEmpty()) {
-			defaultAdjustUnit = ReadingsAPI.DEFAULT_DATA_INTERVAL_UNIT;
+			return ReadingsAPI.DEFAULT_DATA_INTERVAL;
 		}
 		else {
-			defaultAdjustUnit = new SecondsChronoUnit(Long.parseLong(defaultIntervalProp) * 60);
+			return Integer.parseInt(defaultIntervalProp);
 		}
-		return defaultAdjustUnit;
 	}
 }
