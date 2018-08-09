@@ -67,13 +67,15 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 //					Temp fix
 //					processRecordsInput.getCheckpointer().checkpoint(record);
 				}
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
 				try {
-					PutRecordResult recordResult = AwsUtil.getKinesisClient().putRecord(errorStream, record.getData(), record.getPartitionKey());
-					int status = recordResult.getSdkHttpMetadata().getHttpStatusCode();
-					if (status != 200) {
-						log.info("Couldn't add data to " + errorStream + " " + record.getSequenceNumber());
+					if(AwsUtil.isProduction()) {
+						log.info("Sending data to " + errorStream);
+						PutRecordResult recordResult = AwsUtil.getKinesisClient().putRecord(errorStream, record.getData(), record.getPartitionKey());
+						int status = recordResult.getSdkHttpMetadata().getHttpStatusCode();
+						if (status != 200) {
+							log.info("Couldn't add data to " + errorStream + " " + record.getSequenceNumber());
+						}
 					}
 				} catch (Exception e1) {
 					log.info("Exception while sending data to " + errorStream, e1);
