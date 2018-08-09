@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.udojava.evalex.Expression;
@@ -222,12 +223,12 @@ public class WorkflowContext implements Serializable {
 			return 0;
 		}
 		
-		if (id != null && id == 538) {
+		if (AccountUtil.getCurrentOrg().getId() == 88 && "(b == false) && (c >= 3) && (d >= 3)".equals(getResultEvaluator())) {
 			LOGGER.info("variableToExpresionMap --- "+variableResultMap+" \n\n"+"expString --- "+getResultEvaluator());
 		}
 		
 		result =  evaluateExpression(getResultEvaluator(),variableResultMap, ignoreNullValues);
-		if (id != null && id == 538) {
+		if (AccountUtil.getCurrentOrg().getId() == 88 && "(b == false) && (c >= 3) && (d >= 3)".equals(getResultEvaluator())) {
 			LOGGER.info("result --- "+result);
 		}
 		return result;
