@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -117,21 +118,21 @@ public class UpdateTaskCommand implements Command {
 	
 	private void updateParentTicketStatus(Context context, ActivityType activityType, TaskContext task) throws Exception {
 		
-		//TaskContext completeRecord = getTask(taskId);
-		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule taskModule = modBean.getModule(FacilioConstants.ContextNames.TASK);
-		FacilioModule module = modBean.getModule(taskModule.getExtendModule().getModuleId());
-		List<FacilioField> ticketFields = FieldFactory.getTicketFields(module);
 		
-		SelectRecordsBuilder<? extends TicketContext> builder = new SelectRecordsBuilder<TicketContext>()
-				.select(ticketFields)
-				.module(module)
-				.beanClass(TicketContext.class)
-				.andCondition(CriteriaAPI.getIdCondition(task.getParentTicketId(), module))
+		// Assuming that parent ticket will be always Workorder
+		FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+		List<FacilioField> woFields = modBean.getAllFields(woModule.getName());
+		
+		SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
+				.select(woFields)
+				.module(woModule)
+				.beanClass(WorkOrderContext.class)
+				.andCondition(CriteriaAPI.getIdCondition(task.getParentTicketId(), woModule))
 				.maxLevel(1);
 		
-		List<? extends TicketContext> tickets = builder.get();
+		List<WorkOrderContext> tickets = builder.get();
 		if(tickets != null && !tickets.isEmpty()) {
 			TicketContext ticket = tickets.get(0);
 			
@@ -146,9 +147,9 @@ public class UpdateTaskCommand implements Command {
 				TicketAPI.updateTicketStatus(activityType, newTicket, ticket, false);
 				
 				UpdateRecordBuilder<TicketContext> updateBuilder = new UpdateRecordBuilder<TicketContext>()
-															.module(module)
-															.fields(ticketFields)
-															.andCondition(CriteriaAPI.getIdCondition(task.getParentTicketId(), module));
+															.module(woModule)
+															.fields(woFields)
+															.andCondition(CriteriaAPI.getIdCondition(task.getParentTicketId(), woModule));
 				
 				updateBuilder.update(newTicket);
 			}

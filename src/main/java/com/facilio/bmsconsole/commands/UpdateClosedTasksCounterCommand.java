@@ -28,8 +28,13 @@ public class UpdateClosedTasksCounterCommand implements Command {
 		// TODO Auto-generated method stub
 		TaskContext task = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
 		if(task != null) {
-			long parentTicketId = task.getParentTicketId();
-			if(parentTicketId != -1 && task.getStatus() != null) {
+			if(task.getStatus() != null) {
+				long parentTicketId = task.getParentTicketId();
+				if (parentTicketId == -1) {
+					TaskContext oldTask = ((List<TaskContext>) context.get(FacilioConstants.TicketActivity.OLD_TICKETS)).get(0);
+					parentTicketId = oldTask.getParentTicketId();
+				}
+				
 				TicketContext ticket = new TicketContext();
 				ticket.setNoOfClosedTasks(getClosedTasksCount(parentTicketId));
 				
@@ -38,19 +43,13 @@ public class UpdateClosedTasksCounterCommand implements Command {
 				List<FacilioField> fields = new ArrayList<>();
 				fields.add(field);
 				
-				try {
-					UpdateRecordBuilder<TicketContext> updateBuilder = new UpdateRecordBuilder<TicketContext>()
-																			.moduleName(FacilioConstants.ContextNames.TICKET)
-																			.table("Tickets")
-																			.fields(fields)
-																			.andCustomWhere("ID = ?", parentTicketId);
-					
-					updateBuilder.update(ticket);
-				}
-				catch(Exception e) {
-					log.info("Exception occurred ", e);
-					throw e;
-				}
+				UpdateRecordBuilder<TicketContext> updateBuilder = new UpdateRecordBuilder<TicketContext>()
+																		.moduleName(FacilioConstants.ContextNames.TICKET)
+																		.table("Tickets")
+																		.fields(fields)
+																		.andCustomWhere("ID = ?", parentTicketId);
+				
+				updateBuilder.update(ticket);
 			}
 		}
 		return false;
