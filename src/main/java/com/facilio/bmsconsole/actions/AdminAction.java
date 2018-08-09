@@ -13,6 +13,8 @@ import javax.websocket.EncodeException;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.AdminAPI;
 import com.facilio.fw.LRUCache;
 import com.facilio.license.FreshsalesUtil;
@@ -23,6 +25,7 @@ import com.facilio.wms.util.WmsApi;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.util.ValueStack;
+import com.facilio.auth.actions.FacilioAuthAction;
 
 public class AdminAction extends ActionSupport
 {
@@ -52,6 +55,34 @@ public class AdminAction extends ActionSupport
 		return SUCCESS;
 	}
 	
+	public String updateUser()
+	{
+		HttpServletRequest request = ServletActionContext.getRequest();
+		long orgId =  Long.parseLong(request.getParameter("orgid"));
+		String name = request.getParameter("name");
+		String email = request.getParameter("email");
+		String password = request.getParameter("password");
+		long roleId =  Long.parseLong(request.getParameter("roleId"));
+		User newUser = new User();
+		
+		if(!email.contains("@"))
+		{
+			newUser.setMobile(email);
+		}
+		newUser.setName(name);
+		newUser.setEmail(email);
+		newUser.setRoleId(roleId);
+		newUser.setPassword(FacilioAuthAction.cryptWithMD5(password));
+		newUser.setUserVerified(true);
+		try {
+			AccountUtil.getUserBean().inviteAdminConsoleUser(orgId, newUser);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return SUCCESS;
+	}
 	public String updateCRM()
 	{
 		HttpServletRequest request = ServletActionContext.getRequest();

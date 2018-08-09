@@ -9,10 +9,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
 
 import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.Organization;
@@ -54,6 +57,7 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
+import com.facilio.auth.actions.FacilioAuthAction;
 
 public class UserBeanImpl implements UserBean {
 
@@ -129,8 +133,58 @@ public class UserBeanImpl implements UserBean {
 		}
 		return userId;
 	}
+	
+	private long addAdminConsoleUserEntry(User user) throws Exception {
+
+		List<FacilioField> fields = AccountConstants.getUserFields();
+		fields.add(AccountConstants.getUserPasswordField());
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(AccountConstants.getUserModule().getTableName())
+				.fields(fields);
+
+		Map<String, Object> props = FieldUtil.getAsProperties(user);
+		insertBuilder.addRecord(props);
+		insertBuilder.save();
+		long userId = (Long) props.get("id");
+		user.setUid(userId);
+		return userId;
+	}
 
 	private void addFacilioUser(User user){
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		try {
+			conn = FacilioConnectionPool.getInstance().getConnection();
+			pstmt = conn.prepareStatement("INSERT INTO faciliousers(username, email, mobile, USERID) VALUES(?,?,?,?)");
+			pstmt.setString(1, user.getEmail());
+			pstmt.setString(2, user.getEmail());
+			if (user.getMobile() == null || user.getMobile().isEmpty()){
+				user.setMobile(String.valueOf(user.getUid()));
+			}
+ 			pstmt.setString(3, user.getMobile());
+			pstmt.setLong(4, user.getUid());
+			pstmt.executeUpdate();
+		} catch (Exception e){
+			log.info("Exception occurred ", e);
+		} finally {
+			try {
+				if(pstmt!= null) {
+					pstmt.close();
+				}
+			} catch (SQLException e) {
+				log.info("Exception occurred ", e);
+			}
+			try {
+				if(conn != null) {
+					conn.close();
+				}
+			} catch (SQLException e) {
+				log.info("Exception occurred ", e);
+			}
+		}
+	}
+	
+	private void addAdminConsoleFacilioUser(User user){
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		try {
@@ -255,6 +309,52 @@ public class UserBeanImpl implements UserBean {
  		addRDMChain.execute(context);
 		
 		return id;
+	}
+	
+	@Override
+	public long inviteAdminConsoleUser(long orgId, User user) throws Exception {
+		
+		User orgUser = getFacilioUser(orgId, user.getEmail());
+		if (orgUser != null) {
+			if (orgUser.getUserType() == AccountConstants.UserType.REQUESTER.getValue()) {
+				orgUser.setUserType(AccountConstants.UserType.USER.getValue());
+				updateUser(orgUser.getId(), orgUser);
+				return orgUser.getId();
+			}
+			else {
+				throw new AccountException(AccountException.ErrorCode.EMAIL_ALREADY_EXISTS, "This user already exists in your organization.");
+			}
+		}
+		
+		long uid = getUid(user.getEmail());
+		if(user.getRoleId() == 0){	
+			throw new AccountException(AccountException.ErrorCode.ROLE_ID_IS_NULL, "RoleID is Null " + user.getEmail());
+		}
+		if (uid == -1) {
+			user.setTimezone(AccountUtil.getCurrentOrg().getTimezone());
+			user.setLanguage(AccountUtil.getCurrentUser().getLanguage());
+			uid = addAdminConsoleUserEntry(user);
+			user.setUid(uid);
+			addAdminConsoleFacilioUser(user);
+			user.setDefaultOrg(true);
+		}
+		user.setUid(uid);
+		user.setOrgId(orgId);
+		user.setInviteAcceptStatus(true);
+		user.setInvitedTime(System.currentTimeMillis());
+		user.setDefaultOrg(true);
+		user.setUserType(AccountConstants.UserType.USER.getValue());
+		long ouid = addToORGUsers(user);
+
+		user.setOuid(ouid);
+		Long shiftId = user.getShiftId();
+		
+		if (shiftId != null) {
+			insertShiftRel(ouid, shiftId);
+		}
+		// addAccessibleSpace(user.getOuid(), user.getAccessibleSpace());
+		// LicenseApi.updateUsedLicense(user.getLicenseEnum());
+		return ouid;
 	}
 
 	@Override
