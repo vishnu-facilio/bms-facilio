@@ -24,6 +24,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.flywaydb.core.Flyway;
+import org.json.simple.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -182,10 +183,28 @@ PortalAuthInterceptor.PORTALDOMAIN = com.facilio.aws.util.AwsUtil.getConfig("por
 			HealthCheckFilter.setStatus(200);
 			
 		} catch (Exception e) {
+			sendFailureEmail(e);
 			// TODO Auto-generated catch block
 			log.info("Exception occurred ", e);
 		}
 		
+	}
+
+	private void sendFailureEmail(Exception e) {
+		if(AwsUtil.isDevelopment()) {
+			return;
+		}
+		JSONObject json = new JSONObject();
+		json.put("sender", "error@facilio.com");
+		json.put("to", "error@facilio.com");
+		json.put("subject", "Startup Error " + INSTANCEID);
+		json.put("message", e.getMessage());
+		try {
+			AwsUtil.sendEmail(json);
+		} catch (Exception e1) {
+			log.info("Exception while sending email ", e1);
+		}
+
 	}
 	
 	private void migrateSchemaChanges() {

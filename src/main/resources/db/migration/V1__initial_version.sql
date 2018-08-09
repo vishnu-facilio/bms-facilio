@@ -3886,7 +3886,7 @@ CREATE TABLE IF NOT EXISTS Cost_Readings (
 
 CREATE TABLE IF NOT EXISTS server_info (
   id bigint(20) NOT NULL AUTO_INCREMENT,
-  private_ip varchar(18) DEFAULT NULL,
+  private_ip varchar(50) DEFAULT NULL,
   environment varchar(18) DEFAULT NULL,
   status tinyint(4) DEFAULT NULL,
   pingtime bigint(20) DEFAULT NULL,

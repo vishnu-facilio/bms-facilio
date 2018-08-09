@@ -1,4 +1,4 @@
-<%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
+<%@taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
 <%@taglib uri="/struts-tags" prefix="s" %>  
 <%@taglib uri="facilio-tags" prefix="f" %>
 <%@page import="com.opensymphony.xwork2.ActionContext" %>

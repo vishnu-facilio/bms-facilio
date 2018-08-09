@@ -38,17 +38,8 @@
 				<param name="location">/jsps/unauthorized.jsp</param>
 				<param name="parse">false</param>
 			</result>
-            <result name="exception" type="httpheader">
-                <param name="error">500</param>
-            </result>
 		</global-results>
-
-        <global-exception-mappings>
-            <exception-mapping exception="java.lang.Exception" result="exception" />
-        </global-exception-mappings>
-
-
-        <action name="tracklead" class="com.facilio.bmsconsole.actions.LeadTracker">
+		<action name="tracklead" class="com.facilio.bmsconsole.actions.LeadTracker">
 			<param name="auth">false</param>
 			<result name="success" type="json">
 				<param name="includeProperties">response</param>
@@ -1187,6 +1178,12 @@
 			</action>
 			<action name="updateCRM" class="com.facilio.bmsconsole.actions.AdminAction" method="updateCRM">
 			<result type="tiles">adminpage/orginfo.jsp</result>
+			</action>
+			<action name="inviteuser" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result type="tiles">adminpage/inviteuser.jsp</result>
+			</action>
+			<action name="updateUser" class="com.facilio.bmsconsole.actions.AdminAction" method="updateUser">
+			<result type="tiles">adminpage/inviteuser.jsp</result>
 			</action>
 			</package>
 

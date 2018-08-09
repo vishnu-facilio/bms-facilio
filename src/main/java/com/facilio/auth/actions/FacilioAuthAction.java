@@ -451,7 +451,7 @@ public class FacilioAuthAction extends ActionSupport {
         return ERROR;
     }
 
-    private static String cryptWithMD5(String pass) {
+    public static String cryptWithMD5(String pass) {
         try {
             md = MessageDigest.getInstance("MD5");
             byte[] passBytes = pass.getBytes();

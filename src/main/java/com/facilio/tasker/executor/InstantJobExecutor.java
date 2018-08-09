@@ -68,13 +68,18 @@ public enum InstantJobExecutor implements Runnable {
                                     LOGGER.debug("Executing job : "+jobName);
                                     THREAD_POOL_EXECUTOR.execute(() -> job._execute(context));
                                 } catch (InstantiationException | IllegalAccessException e) {
-                                    e.printStackTrace();
+                                   LOGGER.info("Exception while executing job " + e);
                                 }
                             }
                         }
                     }
 	            }
 	        }
-    	}
+			try {
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {
+				LOGGER.info("Exception in sleep ", e);
+			}
+		}
     }
 }

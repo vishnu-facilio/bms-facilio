@@ -221,10 +221,15 @@ public class WorkflowContext implements Serializable {
 			LOGGER.severe("workflow --- "+this.getId()+" has been terminated");
 			return 0;
 		}
-		LOGGER.fine("variableToExpresionMap --- "+variableResultMap+" \n\n"+"expString --- "+getResultEvaluator());
+		
+		if (id != null && id == 538) {
+			LOGGER.info("variableToExpresionMap --- "+variableResultMap+" \n\n"+"expString --- "+getResultEvaluator());
+		}
 		
 		result =  evaluateExpression(getResultEvaluator(),variableResultMap, ignoreNullValues);
-		LOGGER.fine("result --- "+result);
+		if (id != null && id == 538) {
+			LOGGER.info("result --- "+result);
+		}
 		return result;
 	}
 	

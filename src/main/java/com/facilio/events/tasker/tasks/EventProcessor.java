@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.amazonaws.services.kinesis.model.PutRecordResult;
+import com.facilio.aws.util.AwsUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -32,6 +34,7 @@ public class EventProcessor implements IRecordProcessor {
     private long lastEventTime = System.currentTimeMillis();
     private String shardId;
     private String orgDomainName;
+    private String errorStream;
 
     private final CharsetDecoder decoder = Charset.forName("UTF-8").newDecoder();
 
@@ -40,6 +43,7 @@ public class EventProcessor implements IRecordProcessor {
     public EventProcessor(long orgId, String orgDomainName){
         this.orgId = orgId;
         this.orgDomainName = orgDomainName;
+        this.errorStream = orgDomainName + "-error";
     }
 
     @Override
@@ -79,6 +83,17 @@ public class EventProcessor implements IRecordProcessor {
                     }
                 }
             } catch (Exception e) {
+                try {
+                    if(AwsUtil.isProduction()) {
+                        PutRecordResult recordResult = AwsUtil.getKinesisClient().putRecord(errorStream, record.getData(), record.getPartitionKey());
+                        int status = recordResult.getSdkHttpMetadata().getHttpStatusCode();
+                        if (status != 200) {
+                            log.info("Couldn't add data to " + errorStream + " " + record.getSequenceNumber());
+                        }
+                    }
+                } catch (Exception e1) {
+                    log.info("Exception while sending data to " + errorStream, e1);
+                }
             		CommonCommandUtil.emailException("EventProcessor", "Error in processing records : "
             			+record.getSequenceNumber()+ " in EventProcessor ", e,  data);
             		log.info("Exception occurred ", e);

@@ -3,6 +3,8 @@ package com.facilio.timeseries;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 
+import com.amazonaws.services.kinesis.model.PutRecordResult;
+import com.facilio.aws.util.AwsUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -27,15 +29,16 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 	private long orgId;
 	private String orgDomainName;
 	private String shardId;
+	private String errorStream;
 	private final CharsetDecoder decoder = Charset.forName("UTF-8").newDecoder();
 	
 	public TimeSeriesProcessor(long orgId, String orgDomainName){
         this.orgId = orgId;
         this.orgDomainName = orgDomainName;
+        this.errorStream = orgDomainName + "-error";
     }
 	@Override
 	public void initialize(InitializationInput initializationInput) {
-		
 		 this.shardId = initializationInput.getShardId();
 	}
 
@@ -64,10 +67,20 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 //					Temp fix
 //					processRecordsInput.getCheckpointer().checkpoint(record);
 				}
-            }
-            catch (Exception e) {
-            	
-            		CommonCommandUtil.emailException("TimeSeriesProcessor", "Error in processing records : "
+            } catch (Exception e) {
+				try {
+					if(AwsUtil.isProduction()) {
+						log.info("Sending data to " + errorStream);
+						PutRecordResult recordResult = AwsUtil.getKinesisClient().putRecord(errorStream, record.getData(), record.getPartitionKey());
+						int status = recordResult.getSdkHttpMetadata().getHttpStatusCode();
+						if (status != 200) {
+							log.info("Couldn't add data to " + errorStream + " " + record.getSequenceNumber());
+						}
+					}
+				} catch (Exception e1) {
+					log.info("Exception while sending data to " + errorStream, e1);
+				}
+				CommonCommandUtil.emailException("TimeSeriesProcessor", "Error in processing records : "
             		+record.getSequenceNumber()+ " in TimeSeries ", e, data);
                  log.info("Exception occurred ", e);
             }

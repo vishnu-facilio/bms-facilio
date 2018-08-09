@@ -2,7 +2,12 @@
 <%@taglib uri="/struts-tags" prefix="s" %>
 <%@taglib uri="facilio-tags" prefix="f" %>
 <%@page import="java.util.Properties, org.apache.struts2.ServletActionContext" %>
-<%Properties buildinfo = (Properties)ServletActionContext.getServletContext().getAttribute("buildinfo");%>
+<%
+Properties buildinfo = (Properties)ServletActionContext.getServletContext().getAttribute("buildinfo");
+if (buildinfo == null) {
+	buildinfo = new Properties();
+}
+%>
 <div >
 <div class="navbar-default sidebar " role="navigation">
     <div class="sidebar-nav navbar-collapse">
@@ -49,11 +54,18 @@
                <span class="nav-title ">SQL Console</span>
                </a>
            </li>
-           <li>
+<%--            <li>
                <a href="copypm">
                <span class="nav-icon">
               <i class=" sidebar-icon fa fa-copy fa-fw "></i> </span>
                <span class="nav-title">Copy PM</span>
+               </a>
+           </li> --%>
+             <li>
+               <a href="inviteuser">
+               <span class="nav-icon">
+              <i class=" sidebar-icon fa fa-info-circle fa-fw "></i> </span>
+               <span class="nav-title">Invite User</span>
                </a>
            </li>
            <li>

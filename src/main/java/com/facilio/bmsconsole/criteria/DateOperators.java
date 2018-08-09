@@ -1803,15 +1803,26 @@ public enum DateOperators implements Operator<String> {
 		@Override
 		public String getWhereClause(String columnName, String value) {
 			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
-				Long currentTime = DateTimeUtil.getCurrenTime();
+				
+				Long endTime;
+				if(value != null && value.contains(",")) {
+					
+					String[] values = value.split(",");
+					value = values[0];
+					endTime = Long.parseLong(values[1]);
+				}
+				else {
+					endTime = DateTimeUtil.getCurrenTime();
+				}
+				
 				StringBuilder builder = new StringBuilder();
-				builder.append(DateTimeUtil.getLastNMinute(currentTime, Integer.valueOf(value)))
-						.append("<=")
+				builder.append(DateTimeUtil.getLastNMinute(endTime, Integer.valueOf(value)))
+						.append("<")
 						.append(columnName)
 						.append(" AND ")
 						.append(columnName)
-						.append("<")
-						.append(currentTime);
+						.append("<=")
+						.append(endTime);
 				return builder.toString();
 			}
 			return null;
@@ -1825,9 +1836,22 @@ public enum DateOperators implements Operator<String> {
 					@Override
 					public boolean evaluate(Object object) {
 						if(object != null && object instanceof Long) {
-							Long currentTime = DateTimeUtil.getCurrenTime();
+							
+							Long endTime;
+							String value1;
+							if(value != null && value.contains(",")) {
+								
+								String[] values = value.split(",");
+								value1 = values[0];
+								endTime = Long.parseLong(values[1]);
+							}
+							else {
+								endTime = DateTimeUtil.getCurrenTime();
+								value1 = value;
+							}
+							
 							long currentVal = (long) object;
-							return DateTimeUtil.getLastNMinute(currentTime, Integer.valueOf(value)) <= currentVal && currentVal < currentTime;
+							return DateTimeUtil.getLastNMinute(endTime, Integer.valueOf(value1)) < currentVal && currentVal <= endTime;
 						}
 						return false;
 					}
@@ -1864,15 +1888,25 @@ public enum DateOperators implements Operator<String> {
 		@Override
 		public String getWhereClause(String columnName, String value) {
 			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
-				Long currentTime = DateTimeUtil.getCurrenTime();
+				
+				Long endTime;
+				if(value != null && value.contains(",")) {
+					
+					String[] values = value.split(",");
+					value = values[0];
+					endTime = Long.parseLong(values[1]);
+				}
+				else {
+					endTime = DateTimeUtil.getCurrenTime();
+				}
 				StringBuilder builder = new StringBuilder();
-				builder.append(DateTimeUtil.getLastNHour(currentTime, Integer.valueOf(value)))
-						.append("<=")
+				builder.append(DateTimeUtil.getLastNHour(endTime, Integer.valueOf(value)))
+						.append("<")
 						.append(columnName)
 						.append(" AND ")
 						.append(columnName)
-						.append("<")
-						.append(currentTime);
+						.append("<=")
+						.append(endTime);
 				return builder.toString();
 			}
 			return null;
@@ -1886,9 +1920,22 @@ public enum DateOperators implements Operator<String> {
 					@Override
 					public boolean evaluate(Object object) {
 						if(object != null && object instanceof Long) {
-							Long currentTime = DateTimeUtil.getCurrenTime();
 							long currentVal = (long) object;
-							return DateTimeUtil.getLastNHour(currentTime, Integer.valueOf(value)) <= currentVal && currentVal < currentTime;
+							
+							Long endTime;
+							String value1;
+							if(value != null && value.contains(",")) {
+								
+								String[] values = value.split(",");
+								value1 = values[0];
+								endTime = Long.parseLong(values[1]);
+							}
+							else {
+								endTime = DateTimeUtil.getCurrenTime();
+								value1 = value;
+							}
+							
+							return DateTimeUtil.getLastNHour(endTime, Integer.valueOf(value1)) < currentVal && currentVal <= endTime;
 						}
 						return false;
 					}
@@ -1927,12 +1974,13 @@ public enum DateOperators implements Operator<String> {
 		public String getWhereClause(String columnName, String value) {
 			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
+				
 				builder.append(DateTimeUtil.getDayStartTime(-(Integer.valueOf(value)-1)))
-						.append("<=")
+						.append("<")
 						.append(columnName)
 						.append(" AND ")
 						.append(columnName)
-						.append("<")
+						.append("<=")
 						.append(DateTimeUtil.getDayStartTime(1));
 				return builder.toString();
 			}
@@ -1948,7 +1996,7 @@ public enum DateOperators implements Operator<String> {
 					public boolean evaluate(Object object) {
 						if(object != null && object instanceof Long) {
 							long currentVal = (long) object;
-							return DateTimeUtil.getDayStartTime(-(Integer.valueOf(value)-1)) <= currentVal && currentVal < DateTimeUtil.getDayStartTime(1);
+							return DateTimeUtil.getDayStartTime(-(Integer.valueOf(value)-1)) < currentVal && currentVal <= DateTimeUtil.getDayStartTime(1);
 						}
 						return false;
 					}
@@ -2102,11 +2150,11 @@ public enum DateOperators implements Operator<String> {
 			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
 				builder.append(DateTimeUtil.getWeekStartTime(-(Integer.valueOf(value)-1)))
-						.append("<=")
+						.append("<")
 						.append(columnName)
 						.append(" AND ")
 						.append(columnName)
-						.append("<")
+						.append("<=")
 						.append(DateTimeUtil.getWeekStartTime(1));
 				return builder.toString();
 			}
@@ -2123,7 +2171,7 @@ public enum DateOperators implements Operator<String> {
 						if(object != null && object instanceof Long) {
 							long currentVal = (long) object;
 							
-							return DateTimeUtil.getWeekStartTime(-(Integer.valueOf(value)-1)) <= currentVal && currentVal < DateTimeUtil.getWeekStartTime(1);
+							return DateTimeUtil.getWeekStartTime(-(Integer.valueOf(value)-1)) < currentVal && currentVal <= DateTimeUtil.getWeekStartTime(1);
 						}
 						return false;
 					}
@@ -2161,11 +2209,11 @@ public enum DateOperators implements Operator<String> {
 			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
 				builder.append(DateTimeUtil.getMonthStartTime(-(Integer.valueOf(value)-1)))
-						.append("<=")
+						.append("<")
 						.append(columnName)
 						.append(" AND ")
 						.append(columnName)
-						.append("<")
+						.append("<=")
 						.append(DateTimeUtil.getMonthStartTime(1));
 				return builder.toString();
 			}
@@ -2181,7 +2229,7 @@ public enum DateOperators implements Operator<String> {
 					public boolean evaluate(Object object) {
 						if(object != null && object instanceof Long) {
 							long currentVal = (long) object;
-							return DateTimeUtil.getMonthStartTime(-(Integer.valueOf(value)-1)) <= currentVal && currentVal < DateTimeUtil.getMonthStartTime(1);
+							return DateTimeUtil.getMonthStartTime(-(Integer.valueOf(value)-1)) < currentVal && currentVal <= DateTimeUtil.getMonthStartTime(1);
 						}
 						return false;
 					}

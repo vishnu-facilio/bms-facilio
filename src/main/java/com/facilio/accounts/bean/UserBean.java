@@ -14,6 +14,8 @@ public interface UserBean {
 	
 	public long inviteUser(long orgId, User user) throws Exception;
 	
+	public long inviteAdminConsoleUser(long orgId, User user) throws Exception;
+	
 	public long inviteRequester(long orgId, User user) throws Exception;
 
 	User verifyEmail(String token);

@@ -511,7 +511,7 @@ public class TaskAction extends FacilioAction {
 	public String syncOfflineTasks() {
 		try {
 			if (lastSyncTime == null || lastSyncTime <= 0 ) {
-				throw new IllegalArgumentException("Workorder last synced time is mandatory");
+				throw new IllegalArgumentException("Task last synced time is mandatory");
 			}
 			Map<Long, Map<String, Object>> errors = new HashMap<>();
 			int rowsUpdated = 0; 
@@ -534,6 +534,7 @@ public class TaskAction extends FacilioAction {
 					obj.put("data", FieldUtil.getAsJSON(task).toJSONString());
 					obj.put("error", e.getMessage());
 					errors.put(task.getId(), obj);
+					log.error("Error occurred on task sync for taskId - " + task.getId() , e);
 				}
 			}
 			if (!errors.isEmpty()) {
