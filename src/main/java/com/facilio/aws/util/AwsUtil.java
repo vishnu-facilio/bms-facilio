@@ -132,6 +132,9 @@ public class AwsUtil
 
 	private static final String SERVERNAME = getConfig("servername");
 
+	private static boolean productionEnvironment = false;
+	private static boolean developmentEnvironment = true;
+
 	static {
 		loadProperties();
 	}
@@ -141,6 +144,9 @@ public class AwsUtil
 		if (resource != null) {
 			try (InputStream stream = resource.openStream()) {
 				PROPERTIES.load(stream);
+				String environment = PROPERTIES.getProperty("environment");
+				productionEnvironment = "production".equalsIgnoreCase(environment);
+				developmentEnvironment = "development".equalsIgnoreCase(environment);
 			} catch (IOException e) {
 				logger.info("Exception while trying to load property file " + AWS_PROPERTY_FILE);
 			}
@@ -679,5 +685,13 @@ public class AwsUtil
 	       message.addHeader("host", SERVERNAME);
 	    }
 	    return message;
+	}
+
+	public static boolean isProduction() {
+		return productionEnvironment;
+	}
+
+	public static boolean isDevelopment() {
+		return developmentEnvironment;
 	}
 }
