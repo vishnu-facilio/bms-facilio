@@ -3790,6 +3790,7 @@ public class FieldFactory {
 		fields.add(getField("meterId", "PARENT_METER_ID", module, FieldType.NUMBER));
 		fields.add(getField("ttime", "TTIME", module, FieldType.NUMBER));
 		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
+		fields.add(getField("outlierDistance", "OUTLIER_DISTANCE", module, FieldType.DECIMAL));
 
 		return fields;
 	}

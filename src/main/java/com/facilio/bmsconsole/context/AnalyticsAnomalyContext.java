@@ -7,6 +7,7 @@ public class AnalyticsAnomalyContext extends ModuleBaseWithCustomFields {
 	private long ttime;
 	private double energyDelta;
 	private long meterId;
+	private double outlierDistance;
 	
 	public long getMeterId() {
 		return meterId;
@@ -30,6 +31,14 @@ public class AnalyticsAnomalyContext extends ModuleBaseWithCustomFields {
 		this.energyDelta = energyDelta;
 	}
 
+	public double getOutlierDistance() {
+		return outlierDistance;
+	}
+	
+	public void setOutlierDistance(double outlierDistance) {
+		this.outlierDistance = outlierDistance;
+	}
+	
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append(new Long(getId()).toString());
@@ -37,6 +46,8 @@ public class AnalyticsAnomalyContext extends ModuleBaseWithCustomFields {
 		buf.append(new Long(ttime).toString());
 		buf.append(",");
 		buf.append(new Double(energyDelta).toString());
+		buf.append(",");
+		buf.append(new Double(outlierDistance).toString());
 		return buf.toString();
 	}
 }

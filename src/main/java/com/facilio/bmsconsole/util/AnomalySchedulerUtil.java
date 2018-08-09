@@ -75,11 +75,11 @@ public class AnomalySchedulerUtil {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getAnomalyTemperatureFields())
 				.table("Weather_Reading")
-				.andCustomWhere("Weather_Reading.TTIME > ? AND Weather_Reading.TTIME < ? AND Weather_Reading.TEMPERATURE IS NOT NULL AND Weather_Reading.ORGID = ? ", startTime, endTime, orgID);
+				.andCustomWhere("Weather_Reading.TTIME > ? AND Weather_Reading.TTIME < ? AND Weather_Reading.TEMPERATURE IS NOT NULL AND Weather_Reading.ORGID = ? ", 
+						(startTime - 45 * 60 * 1000L) , endTime, orgID);
 	
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			
 			for(Map<String, Object> prop:props) {
 				TemperatureContext temperatureContext = FieldUtil.getAsBeanFromMap(prop, TemperatureContext.class);
 				listOfReadings.add(temperatureContext);

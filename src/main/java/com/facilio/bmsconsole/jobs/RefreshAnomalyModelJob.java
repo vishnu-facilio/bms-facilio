@@ -31,8 +31,10 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 		try {
 			// TO DO .. Feature bit check
 			if (!AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_ANOMALY_DETECTOR)) {
-				logger.log(Level.INFO, "Feature BITS is not enabled");
+				logger.log(Level.INFO, "RefreshAnomalyJob: Feature BITS is not enabled");
 				return;
+			}else {
+				logger.log(Level.INFO, "RefreshAnomalyJob: Feature BITS is enabled");
 			}
 
 			String meters = AwsUtil.getConfig("anomalyMeters");
@@ -129,6 +131,8 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 			String meterFileUrl="";
 			String weatherFileUrl="";
 			if ("development".equalsIgnoreCase(AwsUtil.getConfig("environment"))) {
+				weatherBaseFileName = "1256_1530861012_weather.txt";
+				energyBaseFileName = "1256_1530861012_meter.txt";
 				meterFileUrl = "http://localhost:8000/" + energyBaseFileName;
 				weatherFileUrl = "http://localhost:8000/" + weatherBaseFileName;
 			}else {

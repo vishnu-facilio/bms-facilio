@@ -1,9 +1,11 @@
 package com.facilio.bmsconsole.jobs;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +50,8 @@ public class AnomalyDetectorJob extends FacilioJob {
 			if (!AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_ANOMALY_DETECTOR)) {
 				logger.log(Level.INFO, "Feature BITS is not enabled");
 				return;
+			}else {
+				logger.log(Level.INFO, "Feature BITS is enabled");
 			}
 
 			String meters = AwsUtil.getConfig("anomalyMeters");
@@ -55,10 +59,10 @@ public class AnomalyDetectorJob extends FacilioJob {
 			// get the list of all sub meters
 			List<EnergyMeterContext> allEnergyMeters = DeviceAPI.getSpecificEnergyMeters(meters);
 
-			long correction = 0;
 			
+			long correction = 0;
 			// Uncomment below code for DEV testing only
-			//long correction = System.currentTimeMillis() - 1524720891689L;
+			//long correction = System.currentTimeMillis() - 1521748963945L;
 			
 			long endTime = System.currentTimeMillis() - correction;
 			long startTime = endTime - (2 * anomalyPeriodicity *  60 * 1000L);
@@ -75,15 +79,43 @@ public class AnomalyDetectorJob extends FacilioJob {
 		}
 	}
 	
-	// internal class f
-	class AnomalyList {
-		Long[] anomalyIDs;
-		
-		public void setAnomalyIDs(Long[] anomalyIDs) {
+	class AnomalyDetails {
+		Long anomalyIDs;
+		Double outlierDistance;
+	
+		public void setAnomalyIDs(Long anomalyIDs) {
 			this.anomalyIDs = anomalyIDs;
 		}
 		
+		public Long getAnomalyIDs() {
+			return anomalyIDs;
+		}
+
+		public void setOutlierDistance(Double outlierDistance) {
+			this.outlierDistance = outlierDistance;
+		}
+		
+		public Double getOutlierDistance() {
+			return outlierDistance;
+		}
+	}
+	
+	// internal class f
+	class AnomalyList {
+		AnomalyDetails[] anomalyDetails;
+		
+		public void setAnomalyIDs(AnomalyDetails[] anomalyDetails) {
+			this.anomalyDetails = anomalyDetails;
+		}
+		
+		public AnomalyDetails[] getAnomalyDetails() {
+			return anomalyDetails;
+		}
+		
 		public Long[] getAnomalyIDs() {
+			Long anomalyIDs[] = 
+					Arrays.stream(anomalyDetails).map(s -> s.getAnomalyIDs()).toArray(Long[]::new);
+		      
 			return anomalyIDs;
 		}
 	}
@@ -94,7 +126,9 @@ public class AnomalyDetectorJob extends FacilioJob {
 		
 		try {
 			List<AnalyticsAnomalyContext> meterReadings = AnomalySchedulerUtil.getAllReadings(moduleName,startTime, endTime, energyMeterContext.getId(), energyMeterContext.getOrgId());
-
+			
+			List<AnalyticsAnomalyContext> validAnomalyContext=new ArrayList<>(); 
+			
 			if(meterReadings.size() == 0) {
 				logger.log(Level.SEVERE, "NOT received readings for ID " + energyMeterContext.getId() + " startTime = " + startTime + " endTime = " + endTime);
 				return;
@@ -119,7 +153,7 @@ public class AnomalyDetectorJob extends FacilioJob {
 			logger.log(Level.INFO, " result is " + result);
 			AnomalyList anomalyList = new GsonBuilder().create().fromJson(result, AnomalyList.class);
 
-			if(anomalyList == null || anomalyList.getAnomalyIDs() == null || anomalyList.getAnomalyIDs().length == 0) {
+			if(anomalyList == null || anomalyList.getAnomalyDetails() == null || anomalyList.getAnomalyDetails().length == 0) {
 				// No Anomaly is Detected by our algorithm
 				return;
 			}
@@ -132,8 +166,26 @@ public class AnomalyDetectorJob extends FacilioJob {
 			
 			anomalyIDs.removeAll(existingAnomalyIds);
 		
+			HashMap<Long, AnomalyDetails> validAnomalyList = new LinkedHashMap<>();
+			
 			if(!anomalyIDs.isEmpty()) {
-				insertAnomalyIDs(anomalyIDs, meterReadings, DateTimeUtil.getCurrenTime(), endTime);
+
+				for(AnomalyDetails anomalyInfo : anomalyList.getAnomalyDetails()) {
+					if(anomalyIDs.contains(anomalyInfo.getAnomalyIDs())) {
+						validAnomalyList.put(anomalyInfo.getAnomalyIDs(), anomalyInfo);
+					}
+				}
+				
+				for(AnalyticsAnomalyContext context: meterReadings) {
+					AnomalyDetails anomalyDetails = validAnomalyList.get(context.getId());
+					if(anomalyDetails != null) {
+						context.setOutlierDistance(anomalyDetails.getOutlierDistance());
+						logger.log(Level.INFO, "outier distance = " + context.getOutlierDistance());
+						validAnomalyContext.add(context);
+					}
+				}
+				
+				insertAnomalyIDs(anomalyIDs, validAnomalyContext, DateTimeUtil.getCurrenTime(), endTime);
 			}else {
 				// No anomaly detected
 				//logger.info("No IDs found as anomaly");
@@ -151,11 +203,13 @@ public class AnomalyDetectorJob extends FacilioJob {
 		private long ttime;
 		private double energyDelta;
 		private long createdTime;
+		private double outlierDistance;
 				
 		public AnomalyIDInsertRow() {
 		}
 		
-		public AnomalyIDInsertRow(long id, long orgId, long moduleId, long meterId ,long ttime, double energyDelta, long createdTime) {
+		public AnomalyIDInsertRow(long id, long orgId, long moduleId, long meterId ,long ttime, 
+				double energyDelta, long createdTime, double outlierDistance) {
 			this.id=id;
 			this.orgId=orgId;
 			this.moduleId=moduleId;
@@ -163,6 +217,7 @@ public class AnomalyDetectorJob extends FacilioJob {
 			this.ttime = ttime;
 			this.energyDelta=energyDelta;
 			this.createdTime=createdTime;
+			this.outlierDistance=outlierDistance;
 		}
 		
 		public long getId() {
@@ -215,9 +270,18 @@ public class AnomalyDetectorJob extends FacilioJob {
 		public void setEnergyDelta(double energyDelta) {
 			this.energyDelta = energyDelta;
 		}
+
+		public double getOutlierDistance() {
+			return outlierDistance;
+		}
+
+		public void setOutlierDistance(double outlierDistance) {
+			this.outlierDistance = outlierDistance;
+		}
 	}
 	
-	private void insertAnomalyIDs(LinkedHashSet<Long> insertIDs, List<AnalyticsAnomalyContext> anomalyContext, long currentTimeInMillisec, long endTimeOfWindow) throws Exception {
+	private void insertAnomalyIDs(LinkedHashSet<Long> insertIDs, List<AnalyticsAnomalyContext> anomalyContext, long currentTimeInMillisec, 
+			long endTimeOfWindow) throws Exception {
 		LinkedHashSet<Long> impactedIDs =(LinkedHashSet<Long>) insertIDs.clone();
 		List<Map<String, Object>> props = new ArrayList<>();
 		ArrayList<AnalyticsAnomalyContext> impactedContexts = new ArrayList<>();
@@ -226,15 +290,17 @@ public class AnomalyDetectorJob extends FacilioJob {
 		while (iterator.hasNext() && (!impactedIDs.isEmpty())) {
 			AnalyticsAnomalyContext anomalyObject = iterator.next();
 			
-			//if(impactedIDs.contains(anomalyObject.getId()) && (anomalyObject.getTtime() >= endTimeOfWindow - 2 * FIFTEEN_MINUTES_IN_MILLISEC))  {
+			if(impactedIDs.contains(anomalyObject.getId()))  {
 				
-			AnomalyIDInsertRow newAnomalyId = new AnomalyIDInsertRow(anomalyObject.getId(), anomalyObject.getOrgId(), 
-								anomalyObject.getModuleId(), anomalyObject.getMeterId(), anomalyObject.getTtime(), anomalyObject.getEnergyDelta(), currentTimeInMillisec);
+				AnomalyIDInsertRow newAnomalyId = new AnomalyIDInsertRow(anomalyObject.getId(), anomalyObject.getOrgId(), 
+								anomalyObject.getModuleId(), anomalyObject.getMeterId(), anomalyObject.getTtime(),
+								anomalyObject.getEnergyDelta(), currentTimeInMillisec,
+								anomalyObject.getOutlierDistance());
 				
 				props.add(FieldUtil.getAsProperties(newAnomalyId));
 				impactedIDs.remove(anomalyObject.getId());
-				impactedContexts.add(anomalyObject); 
-			//}
+				impactedContexts.add(anomalyObject);
+			}
 		}
 		
 		GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
@@ -248,6 +314,7 @@ public class AnomalyDetectorJob extends FacilioJob {
 	
 	@SuppressWarnings("unchecked")
 	private void triggerAlarm(List<AnalyticsAnomalyContext> impactedContexts) throws Exception {
+		DecimalFormat df_one_decimal = new DecimalFormat(".#");
 		
 		for(AnalyticsAnomalyContext context: impactedContexts)
 		{
@@ -256,12 +323,13 @@ public class AnomalyDetectorJob extends FacilioJob {
 			String assetName = asset.getName();
 		
 			JSONObject obj = new JSONObject();
-			obj.put("message", "Anomaly Detected");
+			obj.put("message", "Anomaly Detected. Deviated from normal by " + 
+					df_one_decimal.format(context.getOutlierDistance()) + "%");
 			obj.put("source", assetName);
-			obj.put("node", assetName);
+			obj.put("entity", assetName);
 			obj.put("resourceId", meterId);
 			obj.put("severity", "Info");
-			obj.put("time", context.getTtime());
+			obj.put("timestamp", context.getTtime());
 			obj.put("consumption", context.getEnergyDelta());
 
 			FacilioContext addEventContext = new FacilioContext();
