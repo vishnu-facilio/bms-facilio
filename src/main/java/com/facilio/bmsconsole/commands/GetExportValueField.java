@@ -52,8 +52,22 @@ public class GetExportValueField implements Command{
 					.andCondition(CriteriaAPI.getCondition(currentFieldMap.get("actualTtime"), times, StringOperators.IS))
 					.andCondition(CriteriaAPI.getCondition(currentFieldMap.get("parentId"), Collections.singletonList(parentId), NumberOperators.EQUALS));
 			readings.addAll(builder.get());
-		}	
-		Map<String,Object> table = exportFormatObject(fieldMap, events, readings);
+		}
+		Map<Long, Map<String, Object>> valueMap = new HashMap<>();
+		for(ReadingContext reading: readings) {
+			Map<String, Object> data;
+			if (!valueMap.containsKey(reading.getActualTtime())) {
+				data = new HashMap<>();
+				valueMap.put(reading.getActualTtime(), data);
+			}
+			else {
+				data = valueMap.get(reading.getActualTtime());
+			}
+			data.putAll(reading.getData());
+		}
+		List<FacilioField> fieldsList = new ArrayList<FacilioField>();
+		fieldMap.values().forEach(fieldsList::addAll);
+		Map<String,Object> table = exportFormatObject(fieldsList, events, valueMap);
 		String fileUrl = ExportUtil.exportData(FileFormat.getFileFormat(type), "Alarm Summary", table);
 		context.put(EventConstants.EventContextNames.FILEURL, fileUrl);
 		return false;
@@ -73,7 +87,7 @@ public class GetExportValueField implements Command{
 		return fieldMap;
 	}
 	
-	private Map<String,Object> exportFormatObject (Map<FacilioModule, List<FacilioField>> fieldMap,List<EventContext> events, List<ReadingContext> readings) throws Exception {
+	private Map<String,Object> exportFormatObject (List<FacilioField> fieldList,List<EventContext> events, Map<Long, Map<String, Object>> readings) throws Exception {
 		Map<Long , ReadingContext> readingList = new HashMap<Long, ReadingContext>();
 		List<Object> records = new ArrayList<Object>();
 		List<String> header = new ArrayList<String>();
@@ -87,45 +101,32 @@ public class GetExportValueField implements Command{
 		headerFields.put("Event Message", eventField.get("eventMessage"));
 		headerFields.put("Created Time", eventField.get("createdTime"));
 		headerFields.put("Severity", eventField.get("severity"));
-		for (Map.Entry<FacilioModule, List<FacilioField>> entry : fieldMap.entrySet()) {
-		for(FacilioField fiel: entry.getValue()) {
-			if (fiel.getDisplayName().equals("Actual Timestamp")) {
-				
-			} else {
-				header.add(fiel.getDisplayName());
-				headerFields.put(fiel.getDisplayName(), fiel);
-			}
+		for (FacilioField fields: fieldList) {
+			if (!fields.getName().equals("actualTtime")) {
+  				header.add(fields.getDisplayName());
+  				headerFields.put(fields.getDisplayName(), fields);
+  			}
 		}
 		for (EventContext event : events) {
-			for(ReadingContext reading : readings) {
-				
-				if(reading.getActualTtime() == event.getCreatedTime())
+			HashMap<String, Object> hmap = new HashMap<String, Object>();
+		      hmap.put("Event Message", event.getEventMessage());
+		      hmap.put("Event Id", String.valueOf(event.getId()));
+		      hmap.put("Created Time", DateTimeUtil.getFormattedTime(event.getCreatedTime()));
+		      hmap.put("Severity", event.getSeverity());
+		      records.add(hmap);
+		      Map<String, Object> maps = readings.get(event.getCreatedTime());
+		    
+		      
+//			for(ReadingContext reading : readings) {
+				if(maps != null)
 				{
-					HashMap<String, Object> hmap = new HashMap<String, Object>();
-				      hmap.put("Event Message", event.getEventMessage());
-				      hmap.put("Event Id", String.valueOf(event.getId()));
-				      hmap.put("Created Time", DateTimeUtil.getFormattedTime(event.getCreatedTime()));
-				      hmap.put("Severity", event.getSeverity());
-				      records.add(hmap);
-				      for(FacilioField fiel: entry.getValue()) {
-				    	  Object val = "";
-				    	  if (reading.getDatum(fiel.getName()) != null)
-				    	  {
-				    		  if (fiel.getDisplayName().equals("Actual Timestamp")) {
-				    			  val = reading.getActualTtime();
-				    		  }
-				    		  val = reading.getDatum(fiel.getName());
-				    	  }
-				    	  if (fiel.getDisplayName().equals("Actual Timestamp")) {
-				    		  
-				    	  } else {
-				    		  hmap.put(fiel.getDisplayName(), val);
-				    	  }
-						}
-					readingList.put(event.getId(), reading);
+					for (FacilioField field: fieldList) {
+							if (!field.getName().equals("actualTtime") && maps.containsKey(field.getName())) {
+					    		  hmap.put(field.getDisplayName(), maps.get(field.getName()));
+					    	  }
+					}
 				}
-			}
-		}
+//			}
 		}
 		Map<String,Object> table = new HashMap<String, Object>();
 		table.put("headers", header);
