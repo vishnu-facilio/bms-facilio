@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -32,6 +35,8 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class ReadingRuleContext extends WorkflowRuleContext {
+	private static final Logger LOGGER = LogManager.getLogger(ReadingRuleContext.class.getName());
+	
 	private long startValue = -1;
 	public long getStartValue() {
 		return startValue;
@@ -292,6 +297,9 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 			FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		boolean workflowFlag = super.evaluateWorkflowExpression(moduleName, record, placeHolders, context);
+		if (getId() == 2336) {
+			LOGGER.info("Workflow result of 2336 : "+workflowFlag);
+		}
 		if (overPeriod != -1 && occurences == -1) {
 			return evalOverPeriod(workflowFlag, (ReadingContext) record);
 		}
