@@ -222,12 +222,12 @@ public class WorkflowContext implements Serializable {
 			return 0;
 		}
 		
-		if (id == 538) {
+		if (id != null && id == 538) {
 			LOGGER.info("variableToExpresionMap --- "+variableResultMap+" \n\n"+"expString --- "+getResultEvaluator());
 		}
 		
 		result =  evaluateExpression(getResultEvaluator(),variableResultMap, ignoreNullValues);
-		if (id == 538) {
+		if (id != null && id == 538) {
 			LOGGER.info("result --- "+result);
 		}
 		return result;
