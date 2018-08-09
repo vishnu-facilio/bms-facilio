@@ -5066,6 +5066,12 @@ public class DashboardAction extends ActionSupport {
 		}
 		fields.add(y1AxisField);
 		fields.add(xAxisField);
+		if (module != null && "energydata".equalsIgnoreCase(module.getName()) && ((report != null && report.getIsHighResolutionReport()) || xAggr == 0)) {
+			FacilioField markedField = modBean.getField("marked", module.getName());
+			if (markedField != null) {
+				fields.add(markedField);
+			}
+		}
 		builder.select(fields);
 		if(buildingCondition != null) {
 			builder.andCondition(buildingCondition);
@@ -5491,6 +5497,9 @@ public class DashboardAction extends ActionSupport {
 		 					}
 		 					else {
 		 						component.put("value", thisMap.get("value"));
+		 					}
+		 					if (thisMap.get("marked") != null) {
+		 						component.put("marked", thisMap.get("marked"));
 		 					}
 		 					res.add(component);
 		 				}

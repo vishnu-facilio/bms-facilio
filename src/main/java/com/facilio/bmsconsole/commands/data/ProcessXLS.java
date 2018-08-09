@@ -254,7 +254,7 @@ public class ProcessXLS implements Command {
 									}
 									catch(Exception e) {
 										millis = cellValue;
-										LOGGER.log(Level.SEVERE, e.getMessage(), e);
+										LOGGER.log(Level.SEVERE, e.getMessage());
 									}
 									props.put(key, millis);
 									isfilledByLookup = true;
