@@ -6482,12 +6482,19 @@ public class DashboardAction extends ActionSupport {
 	
 	public String updateDashboard() throws Exception {
 		
-		this.dashboard = new DashboardContext();
-		this.dashboard.setId((Long) dashboardMeta.get("id"));
-		this.dashboard.setDashboardName((String) dashboardMeta.get("dashboardName"));
-		if (dashboardMeta.containsKey("linkName")) {
-			this.dashboard.setLinkName((String) dashboardMeta.get("linkName"));
+		this.dashboard = null;
+		if(buildingId != null) {
+			this.dashboard = DashboardUtil.getDashboardForBaseSpace(buildingId);
 		}
+		if(this.dashboard == null) {
+			this.dashboard = new DashboardContext();
+			this.dashboard.setId((Long) dashboardMeta.get("id"));
+			if (dashboardMeta.containsKey("linkName")) {
+				this.dashboard.setLinkName((String) dashboardMeta.get("linkName"));
+			}
+		}
+		
+		this.dashboard.setDashboardName((String) dashboardMeta.get("dashboardName"));
 		
 		List dashboardWidgets = (List) dashboardMeta.get("dashboardWidgets");
 		if (dashboardWidgets != null) {
