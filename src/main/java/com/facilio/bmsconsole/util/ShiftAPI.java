@@ -29,8 +29,6 @@ import org.json.simple.parser.ParseException;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.BusinessHourContext;
 import com.facilio.bmsconsole.context.BusinessHoursList;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -607,7 +605,13 @@ public class ShiftAPI {
 	public static List<ReadingContext> handleWorkHoursReading(ActivityType activityType, long assignedToUserId, long workOrderId, TicketStatusContext oldTicketStatus, TicketStatusContext newTicketStatus, boolean invalidate) throws Exception {
 		List<ReadingContext> readings = new ArrayList<>();
 		long now = System.currentTimeMillis();
-		if (newTicketStatus.getStatus().equals("Work in Progress")) {
+		if(newTicketStatus != null && newTicketStatus.getId() != -1) {
+			newTicketStatus = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), newTicketStatus.getId());
+		}
+		else {
+			newTicketStatus = TicketAPI.getStatus("Submitted");
+		}
+		if ("Work in Progress".equalsIgnoreCase(newTicketStatus.getStatus())) {
 			if (oldTicketStatus.getId() == TicketAPI.getStatus("Assigned").getId() 
 					|| oldTicketStatus.getId() == TicketAPI.getStatus("Closed").getId() 
 					|| oldTicketStatus.getId() == TicketAPI.getStatus("Resolved").getId()) {
@@ -617,15 +621,15 @@ public class ShiftAPI {
 				//pauseWorkOrderForUser(assignedToUserId, activityType, workOrderId, now);
 				readings.addAll(addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Resume", now));
 			}
-		}  else if (newTicketStatus.getStatus().equals("Resolved")) {
+		}  else if ("Resolved".equalsIgnoreCase(newTicketStatus.getStatus())) {
 			if (invalidate) {
 				readings.addAll(addInvalidatedUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Close", now));
 			} else {
 				readings.addAll(addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Close", now));
 			}
-		} else if (newTicketStatus.getStatus().equals("On Hold")) {
+		} else if ("On Hold".equalsIgnoreCase(newTicketStatus.getStatus())) {
 			readings.addAll(addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Pause", now));
-		} else if (newTicketStatus.getStatus().equals("Closed")) {
+		} else if ("Closed".equalsIgnoreCase(newTicketStatus.getStatus())) {
 			if (oldTicketStatus.getId() == TicketAPI.getStatus("On Hold").getId()) {
 				readings.addAll(addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Resume", now));
 				readings.addAll(addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Close", now));
