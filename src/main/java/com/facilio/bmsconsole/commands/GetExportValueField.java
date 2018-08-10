@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -10,10 +9,10 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.StringOperators;
@@ -23,6 +22,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.ExportUtil;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.fs.FileInfo.FileFormat;
@@ -67,7 +67,7 @@ public class GetExportValueField implements Command{
 		}
 		List<FacilioField> fieldsList = new ArrayList<FacilioField>();
 		fieldMap.values().forEach(fieldsList::addAll);
-		Map<String,Object> table = exportFormatObject(fieldsList, events, valueMap);
+		Map<String,Object> table = exportFormatObject(fieldsList, events, valueMap, parentId);
 		String fileUrl = ExportUtil.exportData(FileFormat.getFileFormat(type), "Alarm Summary", table);
 		context.put(EventConstants.EventContextNames.FILEURL, fileUrl);
 		return false;
@@ -87,15 +87,17 @@ public class GetExportValueField implements Command{
 		return fieldMap;
 	}
 	
-	private Map<String,Object> exportFormatObject (List<FacilioField> fieldList,List<EventContext> events, Map<Long, Map<String, Object>> readings) throws Exception {
+	private Map<String,Object> exportFormatObject (List<FacilioField> fieldList,List<EventContext> events, Map<Long, Map<String, Object>> readings, long parentId) throws Exception {
 		Map<Long , ReadingContext> readingList = new HashMap<Long, ReadingContext>();
 		List<Object> records = new ArrayList<Object>();
 		List<String> header = new ArrayList<String>();
 		Map<String, FacilioField> headerFields = new HashMap<String, FacilioField>();
 		Map<String, FacilioField> eventField = FieldFactory.getAsMap(EventConstants.EventFieldFactory.getEventFields());
+		ResourceContext resource = ResourceAPI.getResource(parentId);
 		header.add("Event Id");
 		header.add("Event Message");
 		header.add("Created Time");
+		header.add("Asset Name");
 		header.add("Severity");
 		headerFields.put("Event Id", eventField.get("id"));
 		headerFields.put("Event Message", eventField.get("eventMessage"));
@@ -112,6 +114,7 @@ public class GetExportValueField implements Command{
 		      hmap.put("Event Message", event.getEventMessage());
 		      hmap.put("Event Id", String.valueOf(event.getId()));
 		      hmap.put("Created Time", DateTimeUtil.getFormattedTime(event.getCreatedTime()));
+		      hmap.put("Asset Name", resource.getName());
 		      hmap.put("Severity", event.getSeverity());
 		      records.add(hmap);
 		      Map<String, Object> maps = readings.get(event.getCreatedTime());

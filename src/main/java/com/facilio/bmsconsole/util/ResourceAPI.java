@@ -231,32 +231,49 @@ public class ResourceAPI {
 		return null;
 	}
 	
+	@SuppressWarnings({"unchecked"})
 	public static void loadModuleResources(Collection<? extends ModuleBaseWithCustomFields> records, List<FacilioField> fields) throws Exception {
 		if(records != null && !records.isEmpty()) {
-			FacilioField resourceField = fields.stream().filter(field -> field.getDataTypeEnum() == FieldType.LOOKUP &&
-					((LookupField)field).getLookupModule() != null && (((LookupField)field).getLookupModule().getName().equals(FacilioConstants.ContextNames.ASSET) || 
-							((LookupField)field).getLookupModule().getName().equals(FacilioConstants.ContextNames.SPACE)) )
-					.findFirst().orElse(null);
-			if (resourceField != null) {
-				List<ModuleBaseWithCustomFields> recordsWithResources = records.stream().filter(record -> {
-					if(record.getData() != null && record.getData().containsKey(resourceField.getName())) {
-						Map<String, Object> resource = (Map<String, Object>) record.getData().get(resourceField.getName());
-						return resource != null && ((long)resource.get("id") != -1);
+			List<FacilioField> resourceFields = fields.stream().filter(field -> {
+				if (field.getDataTypeEnum() == FieldType.LOOKUP && ((LookupField)field).getLookupModule() != null && ((LookupField)field).getLookupModule().getExtendModule() != null) {
+					FacilioModule extendedModule = ((LookupField)field).getLookupModule().getExtendModule();
+					return extendedModule.getName() != null && (extendedModule.getName().equals(FacilioConstants.ContextNames.RESOURCE) || extendedModule.getName().equals(FacilioConstants.ContextNames.BASE_SPACE));
+				}
+			return false;
+			}).collect(Collectors.toList());
+			if (!resourceFields.isEmpty()) {
+				List<Long> resourceIds = null;
+				for(ModuleBaseWithCustomFields record : records) {
+					if(record.getData() != null) {
+						resourceIds = new ArrayList<>();
+						for(FacilioField resourceField : resourceFields) {
+							if(record.getData().containsKey(resourceField.getName())) {
+								Map<String, Object> resource = (Map<String, Object>) record.getData().get(resourceField.getName());
+								if(resource != null && ((long)resource.get("id") != -1)) {
+									resourceIds.add((long)resource.get("id"));
+								}
+							}
+						}
 					}
-					return false;
-				}).collect(Collectors.toList());
-				
-				if (recordsWithResources.isEmpty()) {
+				}
+				if (resourceIds == null || resourceIds.isEmpty()) {
 					return;
 				}
 				
-				List<Long> resourceIds = recordsWithResources.stream().map(record -> (Long) ((Map<String, Object>) record.getData().get(resourceField.getName())).get("id")).collect(Collectors.toList());
 				Map<Long, ResourceContext> resources = ResourceAPI.getExtendedResourcesAsMapFromIds(resourceIds, true);
 				if(resources != null && !resources.isEmpty()) {
-					for(ModuleBaseWithCustomFields record : recordsWithResources) {
-						Map<String, Object> resource = ((Map<String, Object>) record.getData().get(resourceField.getName()));
-						Long resourceId =  (Long) ((Map<String, Object>) record.getData().get(resourceField.getName())).get("id");
-						resource.put("resource", resources.get(resourceId));
+					for(ModuleBaseWithCustomFields record : records) {
+						if(record.getData() != null) {
+							for(FacilioField resourceField : resourceFields) {
+								if(record.getData().containsKey(resourceField.getName())) {
+									Map<String, Object> resource = (Map<String, Object>) record.getData().get(resourceField.getName());
+									if(resource != null && ((long)resource.get("id") != -1)) {
+										Long resourceId =  (Long) ((Map<String, Object>) record.getData().get(resourceField.getName())).get("id");
+										record.getData().put(resourceField.getName(), resources.get(resourceId));
+									}
+								}
+							}
+						}
 					}
 				}
 			}
