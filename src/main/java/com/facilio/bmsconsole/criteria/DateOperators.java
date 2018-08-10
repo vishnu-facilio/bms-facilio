@@ -1863,8 +1863,21 @@ public enum DateOperators implements Operator<String> {
 		@Override
 		public DateRange getRange(String value) {
 			// TODO Auto-generated method stub
-			Long currentTime = DateTimeUtil.getCurrenTime();
-			return new DateRange(DateTimeUtil.getLastNHour(currentTime, Integer.valueOf(value)), currentTime-1);
+			
+			Long endTime;
+			String value1;
+			if(value != null && value.contains(",")) {
+				
+				String[] values = value.split(",");
+				value1 = values[0];
+				endTime = Long.parseLong(values[1]);
+			}
+			else {
+				endTime = DateTimeUtil.getCurrenTime();
+				value1 = value;
+			}
+			
+			return new DateRange(DateTimeUtil.getLastNHour(endTime, Integer.valueOf(value1)), endTime);
 		}
 		
 		@Override
@@ -1947,8 +1960,19 @@ public enum DateOperators implements Operator<String> {
 		@Override
 		public DateRange getRange(String value) {
 			// TODO Auto-generated method stub
-			Long currentTime = DateTimeUtil.getCurrenTime();
-			return new DateRange(DateTimeUtil.getLastNHour(currentTime, Integer.valueOf(value)), currentTime-1);
+			Long endTime;
+			String value1;
+			if(value != null && value.contains(",")) {
+				
+				String[] values = value.split(",");
+				value1 = values[0];
+				endTime = Long.parseLong(values[1]);
+			}
+			else {
+				endTime = DateTimeUtil.getCurrenTime();
+				value1 = value;
+			}
+			return new DateRange(DateTimeUtil.getLastNHour(endTime, Integer.valueOf(value1)), endTime-1);
 		}
 		
 		@Override
@@ -2008,7 +2032,7 @@ public enum DateOperators implements Operator<String> {
 		@Override
 		public DateRange getRange(String value) {
 			// TODO Auto-generated method stub
-			return new DateRange(DateTimeUtil.getDayStartTime(-(Integer.valueOf(value)-1)), DateTimeUtil.getDayStartTime(1)-1);
+			return new DateRange(DateTimeUtil.getDayStartTime(-(Integer.valueOf(value)-1)), DateTimeUtil.getDayStartTime(1));
 		}
 		
 		@Override
@@ -2183,7 +2207,7 @@ public enum DateOperators implements Operator<String> {
 		@Override
 		public DateRange getRange(String value) {
 			// TODO Auto-generated method stub
-			return new DateRange(DateTimeUtil.getWeekStartTime(-(Integer.valueOf(value)-1)), DateTimeUtil.getWeekStartTime(1)-1);
+			return new DateRange(DateTimeUtil.getWeekStartTime(-(Integer.valueOf(value)-1)), DateTimeUtil.getWeekStartTime(1));
 		}
 		
 		@Override
@@ -2241,7 +2265,7 @@ public enum DateOperators implements Operator<String> {
 		@Override
 		public DateRange getRange(String value) {
 			// TODO Auto-generated method stub
-			return new DateRange(DateTimeUtil.getMonthStartTime(-(Integer.valueOf(value)-1)), DateTimeUtil.getMonthStartTime(1)-1);
+			return new DateRange(DateTimeUtil.getMonthStartTime(-(Integer.valueOf(value)-1)), DateTimeUtil.getMonthStartTime(1));
 		}
 		
 		@Override
