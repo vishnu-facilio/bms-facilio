@@ -26,6 +26,7 @@ import com.facilio.unitconversion.UnitsUtil;
 
 public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, Object>> {
 	private static final Logger LOGGER = LogManager.getLogger(GenericSelectRecordBuilder.class.getName());
+	private static final int QUERY_TIME_THRESHOLD = 30000;
 
 	private List<FacilioField> selectFields;
 	private String tableName;
@@ -212,8 +213,10 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 			rs = pstmt.executeQuery();
 			long queryTime = System.currentTimeMillis() - queryStartTime;
 			
-			LOGGER.debug("SQL : "+sql);
-			LOGGER.debug("Time taken to execute query in GenericSelectBuilder : "+queryTime);
+			if (queryTime > QUERY_TIME_THRESHOLD) {
+				LOGGER.info("SQL : "+sql);
+				LOGGER.info("Time taken to execute query in GenericSelectBuilder : "+queryTime);
+			}
 			
 			this.sql = pstmt.toString();
 			
@@ -354,7 +357,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
 		
 		// TODO get filePrivateUrl in bulk
-		Map<Long, String> fileUrls = new HashMap();
+		Map<Long, String> fileUrls = new HashMap<>();
 		for(Long fileId: fileIds) {
 			fileUrls.put(fileId, fs.getPrivateUrl(fileId));
 		}
