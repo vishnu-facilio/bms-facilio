@@ -1,8 +1,11 @@
 package com.facilio.bmsconsole.actions;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
@@ -313,6 +316,11 @@ public class ModuleAction extends FacilioAction {
 	 		}
 	 		if (getSearch() != null) {
 	 			JSONObject searchObj = new JSONObject();
+	 			if (getSearchFields() == null) {
+	 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+	 				FacilioField primaryField = (FacilioField) modBean.getPrimaryField(moduleName);
+	 				setSearchFields(moduleName+"."+primaryField.getName());
+	 			}
 	 			searchObj.put("fields", getSearchFields());
 	 			searchObj.put("query", getSearch());
 		 		context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
@@ -346,7 +354,23 @@ public class ModuleAction extends FacilioAction {
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+			
+			if (dataString != null && !dataString.isEmpty()) {
+				JSONParser parser = new JSONParser();
+				Map<String, Object> data = (Map<String, Object>) parser.parse(dataString);
+				if (moduleData == null) {
+					moduleData = new ModuleBaseWithCustomFields();
+				}
+				if (moduleData.getData() == null) {
+					moduleData.setData(new HashMap<>());
+				}
+				moduleData.getData().putAll(data);
+			}
 			context.put(FacilioConstants.ContextNames.RECORD, moduleData);
+			
+			// TODO.... Temporary. Will be changed to counter field soon
+			context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
+			
 			Chain addModuleDataChain = FacilioChainFactory.addModuleDataChain();
 			addModuleDataChain.execute(context);
 			
@@ -358,6 +382,14 @@ public class ModuleAction extends FacilioAction {
 			setMessage(e);
 			return ERROR;
 		}
+	}
+	
+	private String dataString;
+	public String getDataString() {
+		return dataString;
+	}
+	public void setDataString(String dataString) {
+		this.dataString = dataString;
 	}
 	
 	public String updateModuleData() {

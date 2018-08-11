@@ -6,7 +6,6 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.opensymphony.xwork2.util.Element;
 
 public class ModuleBaseWithCustomFields implements Serializable {
 	
@@ -48,7 +47,7 @@ public class ModuleBaseWithCustomFields implements Serializable {
 		return false;
 	}
 
-	@Element( value = java.lang.String.class )
+//	@Element( value = java.lang.String.class )
 	private Map<String, Object> data = null;
 	
 	@JsonAnyGetter

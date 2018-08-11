@@ -13,12 +13,14 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.NumberField;
+import com.facilio.fs.FileStore;
+import com.facilio.fs.FileStoreFactory;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.facilio.unitconversion.UnitsUtil;
 
@@ -217,16 +219,26 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 			
 			long mapStartTime = System.currentTimeMillis();
 			List<Map<String, Object>> records = new ArrayList<>();
+			List<Long> fileIds = null;
 			while(rs.next()) {
 				Map<String, Object> record = new HashMap<>();
 				for(FacilioField field : selectFields) {
 					Object val = FieldUtil.getObjectFromRS(field, rs);
-					if(field != null &&  field instanceof NumberField) {
-						NumberField numberField =  (NumberField)field;
-						if(numberField.getMetric() > 0) {
-							val = UnitsUtil.convertToOrgDisplayUnitFromSi(val, numberField.getMetric());
+					if(field != null) {
+						if (field instanceof NumberField) {
+							NumberField numberField =  (NumberField)field;
+							if(numberField.getMetric() > 0) {
+								val = UnitsUtil.convertToOrgDisplayUnitFromSi(val, numberField.getMetric());
+							}
+						}
+						else if (field.getDataTypeEnum() == FieldType.FILE && val != null ) {
+							if (fileIds == null) {
+								fileIds= new ArrayList<>();
+							}
+							fileIds.add((Long) val);
 						}
 					}
+					
 					if(val != null) {
 						record.put(field.getName(), val);
 					}
@@ -235,6 +247,10 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 					records.add(record);
 				}
 			}
+			if (fileIds != null && !records.isEmpty()) {
+				fetchFileUrl(records, fileIds);
+			}
+			
 			long mapTimeTaken = System.currentTimeMillis() - mapStartTime;
 			LOGGER.debug("Time taken to create map in GenericSelectBuilder : "+mapTimeTaken);
 			
@@ -332,5 +348,23 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 			return parentBuilder;
 		}
 		
+	}
+	
+	private void fetchFileUrl(List<Map<String,Object>> records, List<Long> fileIds) throws Exception {
+		FileStore fs = FileStoreFactory.getInstance().getFileStore();
+		
+		// TODO get filePrivateUrl in bulk
+		Map<Long, String> fileUrls = new HashMap();
+		for(Long fileId: fileIds) {
+			fileUrls.put(fileId, fs.getPrivateUrl(fileId));
+		}
+		
+		for(Map<String, Object> record: records) {
+			for(FacilioField field : selectFields) {
+				if(field != null && field.getDataTypeEnum() == FieldType.FILE && record.get(field.getName()) != null) {
+					record.put(field.getName()+"Url", fileUrls.get((Long) record.get(field.getName())));
+				}
+			}
+		}
 	}
 }

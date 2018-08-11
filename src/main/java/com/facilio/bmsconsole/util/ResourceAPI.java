@@ -242,21 +242,20 @@ public class ResourceAPI {
 			return false;
 			}).collect(Collectors.toList());
 			if (!resourceFields.isEmpty()) {
-				List<Long> resourceIds = null;
+				List<Long> resourceIds = resourceIds = new ArrayList<>();
 				for(ModuleBaseWithCustomFields record : records) {
 					if(record.getData() != null) {
-						resourceIds = new ArrayList<>();
 						for(FacilioField resourceField : resourceFields) {
 							if(record.getData().containsKey(resourceField.getName())) {
 								Map<String, Object> resource = (Map<String, Object>) record.getData().get(resourceField.getName());
-								if(resource != null && ((long)resource.get("id") != -1)) {
+								if(((long)resource.get("id") != -1)) {
 									resourceIds.add((long)resource.get("id"));
 								}
 							}
 						}
 					}
 				}
-				if (resourceIds == null || resourceIds.isEmpty()) {
+				if (resourceIds.isEmpty()) {
 					return;
 				}
 				

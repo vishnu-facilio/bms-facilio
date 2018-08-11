@@ -136,6 +136,7 @@ public class AssetAction extends ActionSupport {
  		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, categoryId);
  		context.put(FacilioConstants.ContextNames.INPUT_TYPE, getInputType());
  		context.put(FacilioConstants.ContextNames.WITH_READINGS, this.getWithReadings());
+ 		context.put(FacilioConstants.ContextNames.MAX_LEVEL, 1);
  		Chain assetList = FacilioChainFactory.getAssetListChain();
  		assetList.execute(context);
  		assets = (List<AssetContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);

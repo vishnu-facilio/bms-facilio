@@ -105,6 +105,8 @@ public class FieldUtil {
 			case NUMBER:	
 			case DATE:
 			case DATE_TIME:
+			case FILE:
+			case COUNTER:
 				if(value != null && !(value instanceof String && ((String)value).isEmpty())) {
 					long val;
 					if(value instanceof Long) {
@@ -234,6 +236,8 @@ public class FieldUtil {
 			case NUMBER:	
 			case DATE:
 			case DATE_TIME:
+			case FILE:
+			case COUNTER:
 				Long longVal;
 				if(value != null && !(value instanceof String && ((String)value).isEmpty())) {
 	
