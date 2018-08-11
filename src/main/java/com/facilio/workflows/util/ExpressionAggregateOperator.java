@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldType;
 
 public enum ExpressionAggregateOperator implements ExpressionAggregateInterface {
 	
@@ -120,7 +121,7 @@ public enum ExpressionAggregateOperator implements ExpressionAggregateInterface 
 	public FacilioField getSelectField(FacilioField field) throws Exception {
 		String selectFieldString =stringValue.replace("{$place_holder$}", field.getColumnName());
 		field.setColumnName(selectFieldString);
-		
+		field.setDataType(FieldType.NUMBER);
 		return field;
 	}
 	@Override
