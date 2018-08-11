@@ -12,6 +12,7 @@ import org.json.simple.JSONObject;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.FormLayout;
@@ -788,6 +789,27 @@ public class ReadingAction extends FacilioAction {
 			return SUCCESS;
 		}
 		catch(Exception e) {
+			setResponseCode(1);
+			setMessage(e);
+			return ERROR;
+		}
+	}
+	
+	public String calculateHistoryForFormula() {
+		try {
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.FORMULA_FIELD, id);
+			context.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(startTime, endTime));
+			context.put(FacilioConstants.ContextNames.RESOURCE_ID, resourceId);
+			
+			Chain historicalCalculation = TransactionChainFactory.historicalFormulaCalculationChain();
+			historicalCalculation.execute(context);
+			
+			setResult("success", "Historical Calculation is started and will be notified when done");
+			
+			return SUCCESS;
+		}
+		catch (Exception e) {
 			setResponseCode(1);
 			setMessage(e);
 			return ERROR;

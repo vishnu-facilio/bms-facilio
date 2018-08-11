@@ -367,7 +367,7 @@ public class FormulaFieldAPI {
 		BmsJobUtil.scheduleOneTimeJobWithProps(formulaId, "HistoricalFormulaFieldCalculator", 30, "priority", FieldUtil.getAsJSON(range));
 	}
 	
-	public static void calculateHistoricalDataForSingleResource(long formulaId, long resourceId, long startTime, long endTime) throws Exception {
+	public static void calculateHistoricalDataForSingleResource(long formulaId, long resourceId, DateRange range) throws Exception {
 		Map<String, Object> prop = getFormulaFieldResourceJob(formulaId, resourceId);
 		long id = -1;
 		if (prop == null) {
@@ -375,13 +375,13 @@ public class FormulaFieldAPI {
 			prop.put("orgId", AccountUtil.getCurrentOrg().getOrgId());
 			prop.put("formulaId", formulaId);
 			prop.put("resourceId", resourceId);
-			prop.put("startTime", startTime);
-			prop.put("endTime", endTime);
+			prop.put("startTime", range.getStartTime());
+			prop.put("endTime", range.getEndTime());
 			id = addFormulaFieldResourceJob(prop);
 		}
 		else {
 			id = (long) prop.get("id");
-			updateFormulaFieldResourceJob(id, startTime, endTime);
+			updateFormulaFieldResourceJob(id, range.getStartTime(), range.getEndTime());
 			FacilioTimer.deleteJob(id, "SingleResourceHistoricalFormulaFieldCalculator");
 		}
 		FacilioTimer.scheduleOneTimeJob(id, "SingleResourceHistoricalFormulaFieldCalculator", 30, "priority");
@@ -694,7 +694,7 @@ public class FormulaFieldAPI {
 							if (currentFormula.getMatchedResourcesIds().contains(singleResourceId)) {
 								List<Long> dependentFieldIds = currentFormula.getWorkflow().getDependentFieldIds();
 								if (dependentFieldIds.contains(formula.getReadingField().getFieldId())) {
-									calculateHistoricalDataForSingleResource(currentFormula.getId(), singleResourceId, range.getStartTime(), range.getEndTime());
+									calculateHistoricalDataForSingleResource(currentFormula.getId(), singleResourceId, range);
 								}
 							}
 						}
