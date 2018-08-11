@@ -572,7 +572,8 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 			rulePlaceHolders.put("previousValue", FieldUtil.castOrParseValueAsPerType(readingField, prevValue));
 		}
 		rulePlaceHolders.put("resourceId", ((ReadingContext) record).getParentId());
-		rulePlaceHolders.put("inputValue", ((ReadingContext) record).getDatum(readingField.getName()));
+		rulePlaceHolders.put("inputValue", ((ReadingContext) record).getReading(readingField.getName()));
+		rulePlaceHolders.put("ttime", ((ReadingContext) record).getTtime());
 		return rulePlaceHolders;
 	}
 }
