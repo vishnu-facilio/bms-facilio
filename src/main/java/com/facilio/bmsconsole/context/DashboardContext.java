@@ -18,6 +18,14 @@ public class DashboardContext extends ModuleBaseWithCustomFields {
 
 	private String dashboardName;
 	
+	private long dashboardFolderId = -1;
+	public long getDashboardFolderId() {
+		return dashboardFolderId;
+	}
+	public void setDashboardFolderId(long dashboardFolderId) {
+		this.dashboardFolderId = dashboardFolderId;
+	}
+
 	private ReportSpaceFilterContext reportSpaceFilterContext;
 	
 	public ReportSpaceFilterContext getReportSpaceFilterContext() {

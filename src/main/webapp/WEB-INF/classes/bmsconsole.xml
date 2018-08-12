@@ -4085,6 +4085,11 @@
 				<param name="includeProperties">^dashboard.*</param>
 			</result>
 		</action>
+		<action name="getDashboardFolder" class="com.facilio.bmsconsole.actions.DashboardAction" method="getDashboardFolder">
+			<result name="success" type="json">
+				<param name="includeProperties">dashboardFolders,dashboardFolders\[\d+\],dashboardFolders\[\d+\].*</param>
+			</result>
+		</action>
 		<action name="update" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboard">
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboard.*</param>

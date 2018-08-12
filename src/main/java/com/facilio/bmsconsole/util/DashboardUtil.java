@@ -31,6 +31,7 @@ import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.DashboardContext;
+import com.facilio.bmsconsole.context.DashboardFolderContext;
 import com.facilio.bmsconsole.context.DashboardSharingContext;
 import com.facilio.bmsconsole.context.DashboardSharingContext.SharingType;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
@@ -71,13 +72,17 @@ import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.criteria.PickListOperators;
+import com.facilio.bmsconsole.modules.DeleteRecordBuilder;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.InsertRecordBuilder;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
@@ -2705,4 +2710,67 @@ public class DashboardUtil {
 		}
 		return null;
 	}
+	
+	public static void addDashboardFolder(DashboardFolderContext dashboardFolder) throws Exception {
+		
+		InsertRecordBuilder<ModuleBaseWithCustomFields> insert = new InsertRecordBuilder<>();
+		insert.module(ModuleFactory.getDashboardFolderModule());
+		insert.fields(FieldFactory.getDashboardFolderFields());
+		
+		Map<String, Object> prop = FieldUtil.getAsProperties(dashboardFolder);
+		
+		ModuleBaseWithCustomFields record = new ModuleBaseWithCustomFields();
+		record.addData(prop);
+		insert.addRecord(record);
+		insert.save();
+	}
+	
+	public static void deleteDashboardFolder(DashboardFolderContext dashboardFolder) throws Exception {
+		
+		DeleteRecordBuilder<ModuleBaseWithCustomFields> delete = new DeleteRecordBuilder<>();
+		
+		delete.module(ModuleFactory.getDashboardFolderModule())
+		.andCustomWhere("ID = ?", dashboardFolder.getId());
+		
+		delete.delete();
+	}
+	
+	public static void updateDashboardFolder(DashboardFolderContext dashboardFolder) throws Exception {
+		
+		UpdateRecordBuilder<ModuleBaseWithCustomFields> update = new UpdateRecordBuilder<>();
+		
+		update.module(ModuleFactory.getDashboardFolderModule());
+		update.fields(FieldFactory.getDashboardFolderFields())
+		.andCustomWhere("ID = ?", dashboardFolder.getId());
+		
+		Map<String, Object> prop = FieldUtil.getAsProperties(dashboardFolder);
+		ModuleBaseWithCustomFields record = new ModuleBaseWithCustomFields();
+		record.addData(prop);
+		
+		update.update(record);
+	}
+	
+	public static List<DashboardFolderContext> getDashboardFolder(String moduleName) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		FacilioModule module = modBean.getModule(moduleName);
+		 
+		 List<DashboardFolderContext> dashboardFolderContexts = new ArrayList<>();
+		 
+		 GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+					.select(FieldFactory.getDashboardFolderFields())
+					.table(ModuleFactory.getDashboardFolderModule().getTableName())
+					.andCustomWhere(ModuleFactory.getDashboardFolderModule().getTableName()+".MODULEID = ?", module.getModuleId());
+			
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			DashboardFolderContext dashboardFolderContext = FieldUtil.getAsBeanFromMap(props.get(0), DashboardFolderContext.class);
+			dashboardFolderContexts.add(dashboardFolderContext);
+		}
+		 
+		return dashboardFolderContexts;
+	}
+	
+	
 }

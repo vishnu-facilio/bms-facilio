@@ -44,6 +44,7 @@ import com.facilio.bmsconsole.context.BenchmarkUnit;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardContext.DashboardPublishStatus;
+import com.facilio.bmsconsole.context.DashboardFolderContext;
 import com.facilio.bmsconsole.context.DashboardSharingContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.DerivationContext;
@@ -6616,6 +6617,44 @@ public class DashboardAction extends ActionSupport {
 			supportedModules.add(modBean.getModule(mod));
 		}
 		setModules(supportedModules);
+		return SUCCESS;
+	}
+	
+	public DashboardFolderContext dashboardFolderContext;
+	
+	public DashboardFolderContext getDashboardFolderContext() {
+		return dashboardFolderContext;
+	}
+	public void setDashboardFolderContext(DashboardFolderContext dashboardFolderContext) {
+		this.dashboardFolderContext = dashboardFolderContext;
+	}
+	public String addDashboardFolder() throws Exception {
+		
+		if(dashboardFolderContext != null) {
+			DashboardUtil.addDashboardFolder(dashboardFolderContext);
+		}
+		return SUCCESS;
+	}
+	List<DashboardFolderContext> dashboardFolders;
+	
+	public List<DashboardFolderContext> getDashboardFolders() {
+		return dashboardFolders;
+	}
+	public void setDashboardFolders(List<DashboardFolderContext> dashboardFolders) {
+		this.dashboardFolders = dashboardFolders;
+	}
+	public String getDashboardFolder() throws Exception {
+		
+		if(moduleName != null) {
+			dashboardFolders = DashboardUtil.getDashboardFolder(moduleName);
+		}
+		return SUCCESS;
+	}
+	public String updateDashboardFolder() throws Exception {
+		
+		if(dashboardFolderContext != null) {
+			DashboardUtil.updateDashboardFolder(dashboardFolderContext);
+		}
 		return SUCCESS;
 	}
 	

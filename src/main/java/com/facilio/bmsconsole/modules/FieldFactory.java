@@ -2237,6 +2237,19 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	public static List<FacilioField> getDashboardFolderFields() {
+		FacilioModule module = ModuleFactory.getDashboardFolderModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getModuleIdField(module));
+		fields.add(getField("parentFolderId", "PARENT_FOLDER_ID", module, FieldType.LOOKUP));
+		fields.add(getField("name", "NAME", module, FieldType.STRING));
+		
+		return fields;
+	}
 
 	public static List<FacilioField> getDashboardFields() {
 		List<FacilioField> fields = new ArrayList<>();
@@ -2245,6 +2258,8 @@ public class FieldFactory {
 		fields.add(getIdField(module));
 		fields.add(getOrgIdField(module));
 		fields.add(getModuleIdField(module));
+		
+		fields.add(getField("dashboardFolderId", "DASHBOARD_FOLDER_ID", module, FieldType.LOOKUP));
 
 		FacilioField dashboardName = new FacilioField();
 		dashboardName.setName("dashboardName");

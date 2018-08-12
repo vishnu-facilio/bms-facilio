@@ -612,6 +612,11 @@ public class ModuleFactory {
 		return historicalVMCalModule;
 	}
 
+	public static FacilioModule getDashboardFolderModule() {
+		FacilioModule dashboardWigetModule = new FacilioModule();
+		dashboardWigetModule.setTableName("Dashboard_Folder");
+		return dashboardWigetModule;
+	}
 	public static FacilioModule getDashboardModule() {
 		FacilioModule dashboardWigetModule = new FacilioModule();
 		dashboardWigetModule.setTableName("Dashboard");
