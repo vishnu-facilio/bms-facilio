@@ -1,14 +1,17 @@
 package com.facilio.bmsconsole.modules;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -20,6 +23,8 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fs.FileStore;
+import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonInclude.Value;
@@ -428,5 +433,54 @@ public class FieldUtil {
 		ObjectMapper mapper = getMapper(classObj);
 		Map<String, Object> properties = mapper.convertValue(bean, Map.class);
 		return mapper.convertValue(properties, classObj);
+	}
+	
+	
+	public static void addFiles(List<FacilioField> fields, List<Map<String, Object>> values) throws Exception {
+		List<FacilioField> fileFields = fields.stream().filter(field -> field.getDataTypeEnum() == FieldType.FILE).collect(Collectors.toList());
+		if (fileFields.isEmpty()) {
+			return;
+		}
+		FileStore fs = FileStoreFactory.getInstance().getFileStore();
+		for(Map<String, Object> value : values) {
+			for(FacilioField field : fileFields) {
+				if (value.containsKey(field.getName())) {
+					Object fileObj = value.get(field.getName());
+					fileObj = fileObj instanceof List && ((ArrayList)fileObj).get(0) != null ? ((Map<String,Object>)((ArrayList)fileObj).get(0)) : fileObj;
+					File file = null;
+					String fileName = null;
+					String fileType = null;
+					
+					if (fileObj instanceof File){
+						file = (File) fileObj;
+						fileName = (String) value.get(field.getName()+"FileName");
+						fileType = (String) value.get(field.getName()+"ContentType");
+					}
+					else {
+						Map<String, Object> fileMap = (Map<String, Object>) fileObj;
+						file = new File((String) fileMap.get("content"));
+						fileName = (String) fileMap.get(field.getName()+"FileName");
+						fileType = (String) fileMap.get(field.getName()+"ContentType");
+					}
+					
+					// TODO add file in bulk
+					/*value.put("file", file);
+					value.put("fileName", fileName);
+					value.put("contentType", fileType);
+					files.add(value);*/
+					
+					long fileId = fs.addFile(fileName, file, fileType);
+					value.put(field.getName(), fileId);
+				}
+			}
+		}
+		
+		/*for(Map<String, Object> value : values) {
+			for(FacilioField field : fileFields) {
+				if (value.containsKey("fileId")) {
+					value.put(field.getName(), value.get("fileId"));
+				}
+			}
+		}*/
 	}
 }

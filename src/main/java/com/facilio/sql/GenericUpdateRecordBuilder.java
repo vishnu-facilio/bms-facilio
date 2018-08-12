@@ -3,6 +3,7 @@ package com.facilio.sql;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -119,6 +120,15 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 		value.remove("id");
 		this.value = value;
 		if(!value.isEmpty()) {
+			
+			try {
+				//TODO...delete the existing files
+				FieldUtil.addFiles(fields, Collections.singletonList(value));
+			} catch (Exception e) {
+				LOGGER.log(Level.ERROR, "Insertion failed while updating files", e);
+				throw new RuntimeException("Insertion failed while updating files");
+			}
+			
 			PreparedStatement pstmt = null;
 			
 			try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {

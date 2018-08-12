@@ -1,6 +1,5 @@
 package com.facilio.sql;
 
-import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,7 +8,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -17,11 +15,7 @@ import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, Object>> {
@@ -81,7 +75,7 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 		
 		checkForNull();
 		try {
-			addFiles();
+			FieldUtil.addFiles(fields, values);
 		} catch (Exception e) {
 			LOGGER.log(Level.ERROR, "Insertion failed while adding files", e);
 			throw new RuntimeException("Insertion failed while adding files");
@@ -178,49 +172,4 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 		
 	}
 	
-	private void addFiles() throws Exception {
-		List<FacilioField> fileFields = fields.stream().filter(field -> field.getDataTypeEnum() == FieldType.FILE).collect(Collectors.toList());
-		
-		FileStore fs = FileStoreFactory.getInstance().getFileStore();
-		for(Map<String, Object> value : values) {
-			for(FacilioField field : fileFields) {
-				if (value.containsKey(field.getName())) {
-					Object fileObj = value.get(field.getName());
-					fileObj = fileObj instanceof List && ((ArrayList)fileObj).get(0) != null ? ((Map<String,Object>)((ArrayList)fileObj).get(0)) : fileObj;
-					File file = null;
-					String fileName = null;
-					String fileType = null;
-					
-					if (fileObj instanceof File){
-						file = (File) fileObj;
-						fileName = (String) value.get(field.getName()+"FileName");
-						fileType = (String) value.get(field.getName()+"ContentType");
-					}
-					else {
-						Map<String, Object> fileMap = (Map<String, Object>) fileObj;
-						file = new File((String) fileMap.get("content"));
-						fileName = (String) fileMap.get(field.getName()+"FileName");
-						fileType = (String) fileMap.get(field.getName()+"ContentType");
-					}
-					
-					// TODO add file in bulk
-					/*value.put("file", file);
-					value.put("fileName", fileName);
-					value.put("contentType", fileType);
-					files.add(value);*/
-					
-					long fileId = fs.addFile(fileName, file, fileType);
-					value.put(field.getName(), fileId);
-				}
-			}
-		}
-		
-		/*for(Map<String, Object> value : values) {
-			for(FacilioField field : fileFields) {
-				if (value.containsKey("fileId")) {
-					value.put(field.getName(), value.get("fileId"));
-				}
-			}
-		}*/
-	}
 }

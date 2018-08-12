@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.actions;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -355,17 +354,7 @@ public class ModuleAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 			
-			if (dataString != null && !dataString.isEmpty()) {
-				JSONParser parser = new JSONParser();
-				Map<String, Object> data = (Map<String, Object>) parser.parse(dataString);
-				if (moduleData == null) {
-					moduleData = new ModuleBaseWithCustomFields();
-				}
-				if (moduleData.getData() == null) {
-					moduleData.setData(new HashMap<>());
-				}
-				moduleData.getData().putAll(data);
-			}
+			setModuleData();
 			context.put(FacilioConstants.ContextNames.RECORD, moduleData);
 			
 			// TODO.... Temporary. Will be changed to counter field soon
@@ -397,7 +386,10 @@ public class ModuleAction extends FacilioAction {
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+			
+			setModuleData();
 			context.put(FacilioConstants.ContextNames.RECORD, moduleData);
+			
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(moduleData.getId()));
 			
 			Chain updateModuleDataChain = FacilioChainFactory.updateModuleDataChain();
@@ -431,6 +423,20 @@ public class ModuleAction extends FacilioAction {
 			setResponseCode(1);
 			setMessage(e);
 			return ERROR;
+		}
+	}
+	
+	private void setModuleData () throws Exception {
+		if (dataString != null && !dataString.isEmpty()) {
+			JSONParser parser = new JSONParser();
+			Map<String, Object> data = (Map<String, Object>) parser.parse(dataString);
+			if (moduleData == null) {
+				moduleData = new ModuleBaseWithCustomFields();
+			}
+			if (moduleData.getData() == null) {
+				moduleData.setData(new HashMap<>());
+			}
+			moduleData.getData().putAll(data);
 		}
 	}
 	
