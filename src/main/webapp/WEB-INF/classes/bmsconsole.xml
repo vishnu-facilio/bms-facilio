@@ -271,6 +271,13 @@
 			</result>
 		</action>
 		
+		<action name="dashboardWithFolder" class="com.facilio.bmsconsole.actions.DashboardAction"
+			method="getDashboardListWithFolder">
+			<result name="success" type="json">
+				<param name="includeProperties">dashboardFolders,dashboardFolders\[\d+\],dashboardFolders\[\d+\].*</param>
+			</result>
+		</action>
+		
 		<action name="tenants" class="com.facilio.bmsconsole.actions.TenantAction" method="fetchAllTenants">
 			<result name="success" type="json">
 				<param name="root">tenants</param>

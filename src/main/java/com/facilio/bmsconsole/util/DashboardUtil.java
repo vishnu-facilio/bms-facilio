@@ -962,6 +962,81 @@ public class DashboardUtil {
 		return null;
 	}
 	
+	
+	public static List<DashboardFolderContext> getDashboardListWithFolder(String moduleName) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getDashboardFields())
+				.table(ModuleFactory.getDashboardModule().getTableName())
+				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
+				.andCustomWhere("BASE_SPACE_ID IS NULL")
+				.andCustomWhere("MODULEID = ?", module.getModuleId());
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		List<Long> dashboardIds = new ArrayList<>();
+		if (props != null && !props.isEmpty()) {
+			Map<Long, DashboardContext> dashboardMap = new HashMap<Long, DashboardContext>();
+			for (Map<String, Object> prop : props) {
+				DashboardContext dashboard = FieldUtil.getAsBeanFromMap(prop, DashboardContext.class);
+				if(dashboard.getLinkName().equals("buildingdashboard") && dashboard.getOrgId() == 58l) {
+					List<Long> s = new ArrayList<>();
+					s.add(382l);
+					dashboard.setBuildingExcludeList(s);
+				}
+				dashboard.setReportSpaceFilterContext(getDashboardSpaceFilter(dashboard.getId()));
+				dashboardMap.put(dashboard.getId(), dashboard);
+				dashboardIds.add(dashboard.getId());
+			}
+			List<DashboardContext> dashboards = getFilteredDashboards(dashboardMap, dashboardIds);
+			
+			return sortDashboardByFolder(dashboards);
+		}
+		return null;
+	}
+	
+	public static List<DashboardFolderContext> sortDashboardByFolder(List<DashboardContext> dashboards) throws Exception {
+		
+		List<DashboardFolderContext> dashboardFolderContexts = new ArrayList<>();
+		
+		DashboardFolderContext defaultFolder = new DashboardFolderContext();
+		
+		defaultFolder.setName("default");
+		
+		for(DashboardContext dashboard :dashboards) {
+			
+			if(dashboard.getDashboardFolderId() > 0) {
+				
+				boolean found = false;
+				for(DashboardFolderContext dashboardFolderContext :dashboardFolderContexts) {
+					
+					if(dashboardFolderContext.getId() == dashboard.getDashboardFolderId()) {
+						dashboardFolderContext.addDashboards(dashboard);
+						found = true;
+						break;
+					}
+				}
+				if(!found) {
+					DashboardFolderContext folder = getDashboardFolder(dashboard.getDashboardFolderId());
+					folder.addDashboards(dashboard);
+					dashboardFolderContexts.add(folder);
+				}
+			}
+			else {
+				defaultFolder.addDashboards(dashboard);
+			}
+		}
+		
+		if(defaultFolder.getDashboards() != null && !defaultFolder.getDashboards().isEmpty()) {
+			
+			dashboardFolderContexts.add(defaultFolder);
+		}
+		return dashboardFolderContexts;
+	}
+	
 	public static List<DashboardContext> getFilteredDashboards(Map<Long, DashboardContext> dashboardMap, List<Long> dashboardIds) throws Exception {
 		
 		List<DashboardContext> dashboardList = new ArrayList<DashboardContext>();
@@ -2765,11 +2840,34 @@ public class DashboardUtil {
 			
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			DashboardFolderContext dashboardFolderContext = FieldUtil.getAsBeanFromMap(props.get(0), DashboardFolderContext.class);
-			dashboardFolderContexts.add(dashboardFolderContext);
+			
+			for(Map<String, Object> prop :props) {
+				
+				DashboardFolderContext dashboardFolderContext = FieldUtil.getAsBeanFromMap(prop, DashboardFolderContext.class);
+				dashboardFolderContexts.add(dashboardFolderContext);
+			}
+			
 		}
 		 
 		return dashboardFolderContexts;
+	}
+	
+	public static DashboardFolderContext getDashboardFolder(long id) throws Exception {
+		
+		 List<DashboardFolderContext> dashboardFolderContexts = new ArrayList<>();
+		 
+		 GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+					.select(FieldFactory.getDashboardFolderFields())
+					.table(ModuleFactory.getDashboardFolderModule().getTableName())
+					.andCustomWhere(ModuleFactory.getDashboardFolderModule().getTableName()+".ID = ?", id);
+			
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			DashboardFolderContext dashboardFolderContext = FieldUtil.getAsBeanFromMap(props.get(0), DashboardFolderContext.class);
+			return dashboardFolderContext;
+		}
+		 
+		return null;
 	}
 	
 	
