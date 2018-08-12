@@ -19,6 +19,12 @@ public enum ExpressionAggregateOperator implements ExpressionAggregateInterface 
 		public Object getAggregateResult(List<Map<String, Object>> props,String fieldName) {
 			return props.size();
 		}
+		
+		@Override
+		protected FieldType getFieldType() {
+			// TODO Auto-generated method stub
+			return FieldType.NUMBER;
+		}
 	},
 	AVERAGE(2,"avg","avg({$place_holder$})") {
 		public Object getAggregateResult(List<Map<String, Object>> props,String fieldName) {
@@ -31,6 +37,12 @@ public enum ExpressionAggregateOperator implements ExpressionAggregateInterface 
 			
 			return sum/props.size();
 		}
+		
+		@Override
+		protected FieldType getFieldType() {
+			// TODO Auto-generated method stub
+			return FieldType.NUMBER;
+		}
 	},
 	SUM(3,"sum","sum({$place_holder$})"){
 		public Object getAggregateResult(List<Map<String, Object>> props,String fieldName) {
@@ -41,6 +53,12 @@ public enum ExpressionAggregateOperator implements ExpressionAggregateInterface 
 				}
 			}
 			return sum;
+		}
+		
+		@Override
+		protected FieldType getFieldType() {
+			// TODO Auto-generated method stub
+			return FieldType.NUMBER;
 		}
 	},
 	MIN(4,"min","min({$place_holder$})"){
@@ -59,6 +77,12 @@ public enum ExpressionAggregateOperator implements ExpressionAggregateInterface 
 			}
 			return min;
 		}
+		
+		@Override
+		protected FieldType getFieldType() {
+			// TODO Auto-generated method stub
+			return FieldType.NUMBER;
+		}
 	},
 	MAX(5,"max","max({$place_holder$})"){
 		public Object getAggregateResult(List<Map<String, Object>> props,String fieldName) {
@@ -75,6 +99,12 @@ public enum ExpressionAggregateOperator implements ExpressionAggregateInterface 
 				}
 			}
 			return max;
+		}
+		
+		@Override
+		protected FieldType getFieldType() {
+			// TODO Auto-generated method stub
+			return FieldType.NUMBER;
 		}
 	},
 	LAST_VALUE(6,"lastValue","{$place_holder$}") {
@@ -102,6 +132,11 @@ public enum ExpressionAggregateOperator implements ExpressionAggregateInterface 
 	public String getStringValue() {
 		return stringValue;
 	}
+	
+	protected FieldType getFieldType() {
+		return null;
+	}
+	
 	ExpressionAggregateOperator(Integer value,String name,String stringValue) {
 		this.value = value;
 		this.name= name;
@@ -121,7 +156,9 @@ public enum ExpressionAggregateOperator implements ExpressionAggregateInterface 
 	public FacilioField getSelectField(FacilioField field) throws Exception {
 		String selectFieldString =stringValue.replace("{$place_holder$}", field.getColumnName());
 		field.setColumnName(selectFieldString);
-		field.setDataType(FieldType.NUMBER);
+		if (getFieldType() != null) { 
+			field.setDataType(getFieldType());
+		}
 		return field;
 	}
 	@Override
