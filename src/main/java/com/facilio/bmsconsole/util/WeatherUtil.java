@@ -209,6 +209,9 @@ public class WeatherUtil {
 	}
 	
 	public static Map<Long,List<Map<String,Object>>> getWetBulbReadings() throws Exception {
+		if(AccountUtil.getCurrentOrg().getOrgId()==88) {
+			return getReadings("wbt");
+		}	
 		return getReadings(FacilioConstants.ContextNames.PSYCHROMETRIC_READING );
 	}
 	
