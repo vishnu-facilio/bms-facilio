@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.jobs;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.log4j.LogManager;
@@ -46,6 +47,7 @@ public class ImportDataJob extends FacilioJob {
 		catch(Exception e) {
 			CommonCommandUtil.emailException("Import Failed", "Import failed - orgid -- "+AccountUtil.getCurrentOrg().getId(), e);
 			log.info("Exception occurred ", e);
+			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
 

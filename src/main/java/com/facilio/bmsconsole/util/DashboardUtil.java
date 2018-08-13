@@ -2788,16 +2788,15 @@ public class DashboardUtil {
 	
 	public static void addDashboardFolder(DashboardFolderContext dashboardFolder) throws Exception {
 		
-		InsertRecordBuilder<ModuleBaseWithCustomFields> insert = new InsertRecordBuilder<>();
-		insert.module(ModuleFactory.getDashboardFolderModule());
-		insert.fields(FieldFactory.getDashboardFolderFields());
 		
-		Map<String, Object> prop = FieldUtil.getAsProperties(dashboardFolder);
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getDashboardFolderModule().getTableName())
+				.fields(FieldFactory.getDashboardFolderFields());
 		
-		ModuleBaseWithCustomFields record = new ModuleBaseWithCustomFields();
-		record.addData(prop);
-		insert.addRecord(record);
-		insert.save();
+		Map<String, Object> props = FieldUtil.getAsProperties(dashboardFolder);
+		insertBuilder.addRecord(props);
+		insertBuilder.save();
+		
 	}
 	
 	public static void deleteDashboardFolder(DashboardFolderContext dashboardFolder) throws Exception {

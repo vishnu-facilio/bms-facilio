@@ -178,10 +178,11 @@ public class ProcessXLS implements Command {
 				}
 				
 				LOGGER.severe("row -- "+row_no+" colVal --- "+colVal);
+				
 
 				HashMap <String, Object> props = new LinkedHashMap<String,Object>();
 				
-				if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) || importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ENERGY_METER)) {
+				if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) || importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ENERGY_METER) || importProcessContext.getModule().getName().equals("kdm")) {
 					
 					Long spaceId = ImportAPI.getSpaceIDforAssets(colVal);
 					 props.put("space", spaceId);
@@ -430,6 +431,7 @@ public class ProcessXLS implements Command {
 					Map<String, Object> prop1 = FieldUtil.getAsProperties(asset);
 					return prop1;
 				}
+				
 			}
 					
 		}
