@@ -57,7 +57,7 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "production_deployment" ]; then
     sed -i'' "s%websocket.url=.*%websocket.url=wss://api.facilio.ae/websocket%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%log4j.appender.graylog2.facility=.*%log4j.appender.graylog2.facility=production-user%g" $CLASSES_DIR/log4j.properties
     sed -i'' "s%log4j.appender.graylog2.graylogHost=.*%log4j.appender.graylog2.graylogHost=172.31.35.38%g" $CLASSES_DIR/log4j.properties
-    sed -i'' "s%cors.allowed.origins=.*%cors.allowed.origins=http://idcaccess:9090,https://facilio.ae,https://fazilio.com,https://facilio.com,https://facilio.in,https://facilstack.com,https://facilioportal.com,https://wiproenergy.com%g" $CONF_DIR/awsprops.properties
+    sed -i'' "s%cors.allowed.origins=.*%cors.allowed.origins=https://facilio.ae,https://fazilio.com,https://facilio.com,https://facilio.in,https://facilstack.com,https://facilioportal.com,https://wiproenergy.com%g" $CONF_DIR/awsprops.properties
     echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/ubuntu/deployment.log
 fi
 
