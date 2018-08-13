@@ -185,7 +185,7 @@ public class PerformAssetAction implements Command {
 			
 			else {
 				
-				module = modBean.getModule("movies");
+				module = modBean.getModule("kdm");
 				Criteria criteria = workflowRule.getCriteria();
 				
 				SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
