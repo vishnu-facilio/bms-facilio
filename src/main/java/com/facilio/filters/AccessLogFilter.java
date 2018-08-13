@@ -64,6 +64,10 @@ public class AccessLogFilter implements Filter {
         if(queryString == null) {
             queryString = DEFAULT_QUERY_STRING;
         }
+        event.setProperty(QUERY, queryString);
+
+        filterChain.doFilter(servletRequest, response);
+
         Organization org = AccountUtil.getCurrentOrg();
         if(org != null) {
             event.setProperty("orgId", String.valueOf(org.getOrgId()));
@@ -76,8 +80,6 @@ public class AccessLogFilter implements Filter {
         } else {
             event.setProperty("userId", DEFAULT_ORG_USER_ID);
         }
-        event.setProperty(QUERY, queryString);
-        filterChain.doFilter(servletRequest, response);
         long timeTaken = System.currentTimeMillis()-startTime;
         event.setProperty(RESPONSE_CODE, String.valueOf(response.getStatus()));
         event.setProperty(TIME_TAKEN, String.valueOf(timeTaken/1000));
