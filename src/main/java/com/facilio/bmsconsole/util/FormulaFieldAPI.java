@@ -50,10 +50,9 @@ import com.facilio.tasker.ScheduleInfo;
 import com.facilio.tasker.ScheduleInfo.FrequencyType;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
-import com.mysql.jdbc.ResultSetImpl;
 
 public class FormulaFieldAPI {
-	private static final Logger LOGGER = LogManager.getLogger(ResultSetImpl.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(FormulaFieldAPI.class.getName());
 	public static long addFormulaField (FormulaFieldContext formula) throws Exception {
 		updateChildIds(formula);
 		validateFormula(formula, true);
