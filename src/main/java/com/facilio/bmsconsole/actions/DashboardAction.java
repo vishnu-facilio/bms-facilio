@@ -6630,7 +6630,15 @@ public class DashboardAction extends ActionSupport {
 	}
 	public String addDashboardFolder() throws Exception {
 		
+		
 		if(dashboardFolderContext != null) {
+			dashboardFolderContext.setOrgId(AccountUtil.getCurrentOrg().getId());
+			
+			if(moduleName != null) {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule module = modBean.getModule(moduleName);
+				dashboardFolderContext.setModuleId(module.getModuleId());
+			}
 			DashboardUtil.addDashboardFolder(dashboardFolderContext);
 		}
 		return SUCCESS;

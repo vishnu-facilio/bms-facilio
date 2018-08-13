@@ -4204,6 +4204,11 @@
 				<param name="includeProperties">^reportFolderContext.*</param>
 			</result>
 		</action>
+		<action name="addDashboardFolder" class="com.facilio.bmsconsole.actions.DashboardAction" method="addDashboardFolder">
+			<result name="success" type="json">
+				<param name="includeProperties">^dashboardFolderContext.*</param>
+			</result>
+		</action>
 		<action name="addReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="addReport">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportContext.*</param>
