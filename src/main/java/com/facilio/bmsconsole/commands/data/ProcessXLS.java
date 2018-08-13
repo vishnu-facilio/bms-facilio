@@ -185,7 +185,13 @@ public class ProcessXLS implements Command {
 				if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) || importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ENERGY_METER) || importProcessContext.getModule().getName().equals("kdm")) {
 					
 					Long spaceId = ImportAPI.getSpaceIDforAssets(colVal);
-					 props.put("space", spaceId);
+					if( importProcessContext.getModule().getName().equals("kdm")) {
+						props.put("site", spaceId);
+						fieldMapping.remove("site");
+					}
+					else {
+						 props.put("space", spaceId);
+					}
 					 if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ENERGY_METER)) {
 						 props.put("purposeSpace", spaceId);
 					 }
@@ -195,6 +201,8 @@ public class ProcessXLS implements Command {
 					colVal.remove("building");
 					colVal.remove("floor");
 					colVal.remove("spaceName");
+					
+					
 				}
 				
 				LOGGER.severe("\n\n importProcessContext.getFacilioFieldMapping() --- "+ importProcessContext.getFacilioFieldMapping());
@@ -424,7 +432,8 @@ public class ProcessXLS implements Command {
 					return prop;
 					
 				}
-				case "resource": {
+				case "resource":
+				case "servernumber": {
 					long assetid = AssetsAPI.getAssetId(value.toString(), lookupField.getOrgId());
 					AssetContext asset = AssetsAPI.getAssetInfo(assetid);
 					
