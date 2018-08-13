@@ -43,7 +43,6 @@ public class ReadOnlyChainFactory extends FacilioChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
-		c.addCommand(new GenerateSortingQueryCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
