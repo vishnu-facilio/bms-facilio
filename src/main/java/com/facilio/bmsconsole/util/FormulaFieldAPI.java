@@ -664,12 +664,12 @@ public class FormulaFieldAPI {
 	public static void historicalCalculation(FormulaFieldContext formula, DateRange range, long singleResourceId) throws Exception {
 		List<DateRange> intervals = getIntervals(formula, range);
 		if (intervals != null && !intervals.isEmpty()) {
-			int deletedData = deleteOlderData(range.getStartTime(), range.getEndTime(), formula.getMatchedResourcesIds(), formula.getReadingField().getModule().getName());
-			LOGGER.info("Deleted rows for formula : "+formula.getName()+" between "+range+" is : "+deletedData);
-			
 			List<ReadingContext> readings = new ArrayList<>();
 			if (singleResourceId != -1) {
 				if (formula.getMatchedResourcesIds().contains(singleResourceId)) {
+					int deletedData = deleteOlderData(range.getStartTime(), range.getEndTime(), Collections.singletonList(singleResourceId), formula.getReadingField().getModule().getName());
+					LOGGER.info("Deleted rows for formula : "+formula.getName()+" between "+range+" is : "+deletedData);
+					
 					List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(singleResourceId, formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), formula.getTriggerTypeEnum() == TriggerType.SCHEDULE, true);
 					if (currentReadings != null && !currentReadings.isEmpty()) {
 						readings.addAll(currentReadings);
@@ -677,6 +677,9 @@ public class FormulaFieldAPI {
 				}
 			}
 			else {
+				int deletedData = deleteOlderData(range.getStartTime(), range.getEndTime(), formula.getMatchedResourcesIds(), formula.getReadingField().getModule().getName());
+				LOGGER.info("Deleted rows for formula : "+formula.getName()+" between "+range+" is : "+deletedData);
+				
 				for (Long resourceId : formula.getMatchedResourcesIds()) {
 					List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(resourceId, formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), formula.getTriggerTypeEnum() == TriggerType.SCHEDULE, true);
 					if (currentReadings != null && !currentReadings.isEmpty()) {
