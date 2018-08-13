@@ -280,7 +280,7 @@ public class WorkflowUtil {
 				params.add(parameter.getName());
 			}
 		}
-		for(ExpressionContext expressionContext : workflow.getExpressions()) {
+		/*for(ExpressionContext expressionContext : workflow.getExpressions()) {
 			
 			String expString = expressionContext.getExpressionString();
 			
@@ -293,7 +293,7 @@ public class WorkflowUtil {
 			else {
 				params.add(name);
 			}
-		}
+		}*/
 	}
 	public static void checkParamsDeclaration(WorkflowContext workflow) throws Exception {
 		

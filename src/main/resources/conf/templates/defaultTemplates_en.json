@@ -463,23 +463,23 @@
 		"name": "WO_RESOLVED_EMAIL",
 		"sender": "noreply@${org.domain}.facilio.com",
 		"subject": "Workorder resolved",
-		"to": "${workorder.assignedTo.email:-}",
+		"to": "${workorder.assignedBy.email:-}",
 		"message": "The following work order ${workorder.subject} has been resolved. Please view the resolved workorder here - ${workorder.url}\n\nRegards\nTeam Facilio."
 	},
 	"54": {
-		"name": "TASK_RESOLVED_SMS",
-		"to": "${workorder.assignedTo.phone:-}",
+		"name": "WO_RESOLVED_SMS",
+		"to": "${workorder.assignedBy.phone:-}",
 		"message": "The following work order ${workorder.subject} has been resolved. Please view the resolved workorder here - ${workorder.url}\n\n - Team Facilio."
 	},
 	"55": {
-		"name": "TASK_RESOLVED_WEB"
+		"name": "WO_RESOLVED_WEB"
 	},
 	"56": {
-		"name": "TASK_RESOLVED_PUSH",
+		"name": "WO_RESOLVED_PUSH",
 		"notification": {
 			"text": "The following work order ${workorder.subject} has been resolved. Please view the resolved workorder here - ${workorder.url}\n\n - Team Facilio.",
 			"click_action": "WORKORDER_SUMMARY",
-			"title": "Task closed"
+			"title": "Workorder resolved"
 		},
 		"data": {
 			"content_available": true,
@@ -489,9 +489,9 @@
 			"priority": "high",
 			"text": "The following work order ${workorder.subject} has been resolved. Please view the resolved workorder here - ${workorder.url}\n\n - Team Facilio.",
 			"click_action": "WORKORDER_SUMMARY",
-			"title": "Task closed"
+			"title": "Workorder resolved"
 		},
-		"id": "${workorder.assignedTo.id:-}"
+		"id": "${workorder.assignedBy.id:-}"
 	},
 
 
