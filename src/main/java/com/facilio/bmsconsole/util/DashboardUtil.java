@@ -2797,6 +2797,7 @@ public class DashboardUtil {
 		insertBuilder.addRecord(props);
 		insertBuilder.save();
 		
+		dashboardFolder.setId((Long) props.get("id"));
 	}
 	
 	public static void deleteDashboardFolder(DashboardFolderContext dashboardFolder) throws Exception {
