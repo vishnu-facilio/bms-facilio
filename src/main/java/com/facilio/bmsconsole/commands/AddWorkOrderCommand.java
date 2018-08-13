@@ -57,7 +57,13 @@ public class AddWorkOrderCommand implements Command {
 			long workOrderId = builder.insert(workOrder);
 			workOrder.setId(workOrderId);
 			if(context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE) == null) {
-				context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
+				// TODO create an activity type for both
+				if (workOrder.getStatus().getStatus().equals("Assigned")) {
+					context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.ASSIGN_TICKET);
+				}
+				else {
+					context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
+				}
 			}
 			context.put(FacilioConstants.ContextNames.RECORD, workOrder);
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(workOrderId));
