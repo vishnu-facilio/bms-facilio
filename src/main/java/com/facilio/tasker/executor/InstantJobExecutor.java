@@ -20,8 +20,8 @@ public enum InstantJobExecutor implements Runnable {
 	
 	private static final Logger LOGGER = LogManager.getLogger(InstantJobExecutor.class.getName());
 	
-	private static final int CORE_POOL_SIZE = 30;
-    private static final int MAX_POOL_SIZE = 30;
+	private static final int CORE_POOL_SIZE = 10;
+    private static final int MAX_POOL_SIZE = 10;
     private static final long KEEP_ALIVE = 300000L;
     private static final int QUEUE_SIZE = 100;
     private static final ThreadPoolExecutor THREAD_POOL_EXECUTOR = new ThreadPoolExecutor(CORE_POOL_SIZE, MAX_POOL_SIZE, KEEP_ALIVE, TimeUnit.SECONDS, new LinkedBlockingQueue<>(QUEUE_SIZE));
