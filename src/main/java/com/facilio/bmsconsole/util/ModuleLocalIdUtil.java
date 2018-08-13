@@ -92,8 +92,8 @@ public class ModuleLocalIdUtil {
 	
 	public static boolean isModuleWithLocalId(String moduleName) {
 		
-		if(AccountUtil.getCurrentOrg().getId() == 92l) {
-			modulesWithLocalId.add("kdm");
+		if(AccountUtil.getCurrentOrg().getId() == 92l && moduleName.equals("kdm")) {
+			return true;
 		}
 		return modulesWithLocalId.contains(moduleName) ? true : false;
 	}
