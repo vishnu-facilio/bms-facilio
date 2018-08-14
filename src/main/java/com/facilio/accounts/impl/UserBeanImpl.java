@@ -983,6 +983,35 @@ public long inviteRequester(long orgId, User user) throws Exception {
 		}
 		return null;
 	}
+	
+
+	public User getPortalUsers(String email, long portalId) throws Exception {
+		FacilioModule portalInfoModule = AccountConstants.getPortalInfoModule();
+		
+		List<FacilioField> fields = new ArrayList<>();
+		fields.addAll(AccountConstants.getPortalUserFields());
+		fields.addAll(AccountConstants.getUserFields());
+		fields.addAll(AccountConstants.getOrgUserFields());
+		fields.add(FieldFactory.getOrgIdField(portalInfoModule));
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("faciliorequestors")
+				.innerJoin("PortalInfo")
+				.on("faciliorequestors.PORTALID = PortalInfo.PORTALID")
+				.innerJoin("Users")
+				.on("faciliorequestors.USERID = Users.USERID")
+				.innerJoin("ORG_Users")
+				.on("Users.USERID = ORG_Users.USERID")
+				.andCustomWhere("faciliorequestors.EMAIL = ? AND DELETED_TIME=-1  AND faciliorequestors.PORTALID = ?", email, portalId);
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			return createUserFromProps(props.get(0));
+		}
+		return null;
+	}
+
 
 	@Override
 	public List<User> getUsers(Criteria criteria, List<Long>... ouids) throws Exception {

@@ -73,6 +73,8 @@ public interface UserBean {
 
     public User getPortalUser(String email, long portalId) throws Exception;
     
+    public User getPortalUsers(String email, long portalId) throws Exception;
+    
     public long startUserSession(long uid, String email, String token, String ipAddress, String userAgent) throws Exception;
     
     public boolean endUserSession(long uid, String email, String token) throws Exception;

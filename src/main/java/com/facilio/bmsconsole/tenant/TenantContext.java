@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 
 public class TenantContext {
@@ -39,13 +40,24 @@ public class TenantContext {
 		this.description = description;
 	}
 	
-	private String email;
-	public String getEmail() {
-		return email;
+	private long contactId;
+	public long getContactId() {
+		return contactId;
 	}
-	public void setEmail(String email) {
-		this.email = email;
+	public void setContactId(long contactId) {
+		this.contactId = contactId;
 	}
+	
+	private User contactInfo;
+	public User getContactInfo() {
+		return contactInfo;
+	}
+	public void setContactInfo(User contactInfo) {
+		this.contactInfo = contactInfo;
+	}
+	
+	
+	
 
 	private long logoId = -1;
 	public long getLogoId() {
