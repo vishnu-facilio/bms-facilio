@@ -40,20 +40,22 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 			String meters = AwsUtil.getConfig("anomalyMeters");
 			Integer anomalyDuration = Integer.parseInt(AwsUtil.getConfig("anomalyDuration"));
 
-			
+			logger.log(Level.INFO, "RefreshAnomalyJob: Getting energy meters " + meters);
 			// get the list of all sub meters
 			List<EnergyMeterContext> allEnergyMeters = DeviceAPI.getSpecificEnergyMeters(meters);
+			logger.log(Level.INFO, "RefreshAnomalyJob: After getting energy meters ");
 
 			// long now = System.currentTimeMillis();
 			long midnightTimeInMillisec = DateTimeUtil.getDayStartTime();
 			long startTime = midnightTimeInMillisec - (anomalyDuration * 24 * 60 * 60 * 1000L);
 
 			for (EnergyMeterContext energyMeter : allEnergyMeters) {
-
-				// logger.log(Level.INFO, "" + energyMeter.getId());
+				logger.log(Level.INFO, "RefreshAnomalyJob: " + energyMeter.getId());
 				buildEnergyAnomalyModel(energyMeter, startTime, midnightTimeInMillisec);
+				logger.log(Level.INFO, "RefreshAnomalyJob: After getting energy meters ");
 			}
 		} catch (Exception e) {
+			logger.log(Level.INFO, "RefreshAnomalyJob: Exception " + e.getMessage());
 			logger.log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
@@ -147,13 +149,14 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 			postData.meterID = energyMeterContext.getId();
 			
 			String jsonInString = mapper.writeValueAsString(postData);
-			logger.log(Level.INFO, " post body is " + jsonInString);
+			logger.log(Level.INFO, "RefreshAnomalyJob:  post body is " + jsonInString);
 			
 			Map<String, String> headers = new HashMap<>();
 			headers.put("Content-Type","application/json");
 			String result=AwsUtil.doHttpPost(postURL, headers, null, jsonInString);
 			logger.log(Level.INFO, " result is " + result);
 		} catch (Exception e) {
+			logger.log(Level.INFO, "RefreshAnomalyJob: Exception " + e.getMessage());
 			logger.log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
