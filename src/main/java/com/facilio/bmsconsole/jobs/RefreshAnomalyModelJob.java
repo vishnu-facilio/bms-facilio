@@ -63,13 +63,16 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 
 	private void writeEnergyReadingFile(String moduleName, EnergyMeterContext energyMeterContext, long startTime,
 			long endTime, String energyReadingFileName) throws Exception {
+		logger.log(Level.INFO, " inside writewriteEnergyReadingFile");
 		List<AnalyticsAnomalyContext> meterReadings = AnomalySchedulerUtil.getAllReadings(moduleName, startTime,
 				endTime, energyMeterContext.getId(), energyMeterContext.getOrgId());
 
 		if (meterReadings.size() == 0) {
-			logger.log(Level.SEVERE, "NOT received readings for ID " + energyMeterContext.getId() + " startTime = "
+			logger.log(Level.INFO, "NOT received readings for ID " + energyMeterContext.getId() + " startTime = "
 					+ startTime + " endTime = " + endTime);
 			return;
+		}else {
+			logger.log(Level.INFO, " received " + meterReadings.size() + " readings for ID " + energyMeterContext.getId());
 		}
 
 		File outputFile = new File(energyReadingFileName);
@@ -88,7 +91,7 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 
 	private void writeWeatherReadingFile(String moduleName, EnergyMeterContext energyMeterContext, long startTime,
 			long endTime, String weatherReadingFileName) throws Exception {
-
+		logger.log(Level.INFO, " inside writeWeatherReadingFile");
 		List<TemperatureContext> temperatureContext = AnomalySchedulerUtil.getAllTemperatureReadings(moduleName,
 				startTime, endTime, energyMeterContext.getOrgId());
 
