@@ -43,7 +43,8 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 			logger.log(Level.INFO, "RefreshAnomalyJob: Getting energy meters " + meters);
 			// get the list of all sub meters
 			List<EnergyMeterContext> allEnergyMeters = DeviceAPI.getSpecificEnergyMeters(meters);
-			logger.log(Level.INFO, "RefreshAnomalyJob: After getting energy meters ");
+			logger.log(Level.INFO, "RefreshAnomalyJob: After getting energy meters1 " +  
+					(allEnergyMeters == null  ? " empty " : allEnergyMeters.size()));
 
 			// long now = System.currentTimeMillis();
 			long midnightTimeInMillisec = DateTimeUtil.getDayStartTime();
@@ -52,7 +53,7 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 			for (EnergyMeterContext energyMeter : allEnergyMeters) {
 				logger.log(Level.INFO, "RefreshAnomalyJob: " + energyMeter.getId());
 				buildEnergyAnomalyModel(energyMeter, startTime, midnightTimeInMillisec);
-				logger.log(Level.INFO, "RefreshAnomalyJob: After getting energy meters ");
+				logger.log(Level.INFO, "RefreshAnomalyJob: After getting energy meters2 ");
 			}
 		} catch (Exception e) {
 			logger.log(Level.INFO, "RefreshAnomalyJob: Exception " + e.getMessage());
@@ -123,6 +124,8 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 			String energyFileName = tempDir +  File.separator + energyBaseFileName;
 			String weatherFileName = tempDir +  File.separator + weatherBaseFileName; 
 			
+			logger.log(Level.INFO, " RefreshAnomalyModel : " + startTime + "  "  + endTime);
+			
 			writeEnergyReadingFile(moduleName, energyMeterContext, startTime, endTime, energyFileName);
 			writeWeatherReadingFile(moduleName, energyMeterContext, startTime, endTime, weatherFileName);
 			
@@ -131,7 +134,7 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 	
 			String meterFileUrl="";
 			String weatherFileUrl="";
-			if ("development".equalsIgnoreCase(AwsUtil.getConfig("environment"))) {
+			if ("development1".equalsIgnoreCase(AwsUtil.getConfig("environment"))) {
 				weatherBaseFileName = "1256_1530861012_weather.txt";
 				energyBaseFileName = "1256_1530861012_meter.txt";
 				meterFileUrl = "http://localhost:8000/" + energyBaseFileName;
