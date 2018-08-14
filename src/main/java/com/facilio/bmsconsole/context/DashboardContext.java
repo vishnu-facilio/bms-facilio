@@ -18,8 +18,8 @@ public class DashboardContext extends ModuleBaseWithCustomFields {
 
 	private String dashboardName;
 	
-	private long dashboardFolderId = -1;
-	public long getDashboardFolderId() {
+	private Long dashboardFolderId;
+	public Long getDashboardFolderId() {
 		return dashboardFolderId;
 	}
 	public void setDashboardFolderId(long dashboardFolderId) {

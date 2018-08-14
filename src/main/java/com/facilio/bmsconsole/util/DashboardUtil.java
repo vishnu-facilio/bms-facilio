@@ -1014,12 +1014,12 @@ public class DashboardUtil {
 		
 		for(DashboardContext dashboard :dashboards) {
 			
-			if(dashboard.getDashboardFolderId() > 0) {
+			if(dashboard.getDashboardFolderId() != null && dashboard.getDashboardFolderId() > 0) {
 				
 				boolean found = false;
 				for(DashboardFolderContext dashboardFolderContext :dashboardFolderContexts) {
 					
-					if(dashboardFolderContext.getId() == dashboard.getDashboardFolderId()) {
+					if(dashboard.getDashboardFolderId().equals(dashboardFolderContext.getId())) {
 						dashboardFolderContext.addDashboards(dashboard);
 						found = true;
 						break;
