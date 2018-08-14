@@ -8,7 +8,7 @@
  List<Map<String, Object>> sessions = null;
  if (email != null) {
 	 User usr = AccountUtil.getUserBean().getFacilioUser(email);
-	 sessions = AccountUtil.getUserBean().getUserSessions(AccountUtil.getCurrentUser().getUid(), null);
+	 sessions = AccountUtil.getUserBean().getUserSessions(usr.getUid(), null);
 	 long orgId = usr.getOrgId();
 	 long roleId = usr.getRoleId();
 	 if (AccountUtil.getRoleBean().getRole(roleId).getName().equalsIgnoreCase("Super Administrator")) {

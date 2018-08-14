@@ -340,6 +340,7 @@ public class UserBeanImpl implements UserBean {
 		user.setInviteAcceptStatus(true);
 		user.setInvitedTime(System.currentTimeMillis());
 		user.setDefaultOrg(true);
+		user.setUserStatus(true);
 		user.setUserType(AccountConstants.UserType.USER.getValue());
 		long ouid = addToORGUsers(user);
 
@@ -654,7 +655,7 @@ public long inviteRequester(long orgId, User user) throws Exception {
 				user.setUserVerified(true);
 				user.setPassword(password);
 				updateUser(user);
-				LicenseApi.updateUsedLicense(user.getLicenseEnum());
+				// LicenseApi.updateUsedLicense(user.getLicenseEnum());
 				return true;
 			}
 		}
