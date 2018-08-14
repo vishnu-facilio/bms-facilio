@@ -16,7 +16,9 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.amazonaws.HttpMethod;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
@@ -73,8 +75,8 @@ public class S3FileStore extends FileStore {
 	}
 	
 	public static String getURL( String bucket, String filePath, File file) throws Exception {
-		AmazonS3Client s3Client = (AmazonS3Client) AwsUtil.getAmazonS3Client();
-		s3Client.putObject(new PutObjectRequest(bucket, filePath, file).withCannedAcl(CannedAccessControlList.PublicRead));
+		AmazonS3Client s3Client = (AmazonS3Client) AmazonS3ClientBuilder.standard().withRegion(Regions.US_WEST_2).withCredentials(AwsUtil.getAWSCredentialsProvider()).build();
+    	s3Client.putObject(bucket, filePath, file);
 		return s3Client.getResourceUrl(bucket, filePath);
 	}
 

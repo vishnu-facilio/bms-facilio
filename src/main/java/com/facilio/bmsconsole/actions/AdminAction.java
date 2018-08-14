@@ -74,6 +74,7 @@ public class AdminAction extends ActionSupport
 		newUser.setRoleId(roleId);
 		newUser.setPassword(FacilioAuthAction.cryptWithMD5(password));
 		newUser.setUserVerified(true);
+		newUser.setUserStatus(true);
 		try {
 			AccountUtil.getUserBean().inviteAdminConsoleUser(orgId, newUser);
 		} catch (Exception e) {
@@ -83,6 +84,7 @@ public class AdminAction extends ActionSupport
 		
 		return SUCCESS;
 	}
+	
 	public String updateCRM()
 	{
 		HttpServletRequest request = ServletActionContext.getRequest();

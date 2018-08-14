@@ -1,7 +1,7 @@
 <%@page import="com.facilio.accounts.util.AccountUtil, com.facilio.bmsconsole.modules.FieldUtil, com.facilio.accounts.dto.Organization ,com.facilio.license.LicenseApi, com.facilio.license.LicenseContext, com.facilio.license.LicenseContext.FacilioLicense, com.facilio.accounts.dto.Role,java.util.Iterator, java.util.List, java.sql.Timestamp, java.util.Date, java.util.Map, com.facilio.accounts.dto.User"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-    
+ <%@ taglib prefix="s" uri="/struts-tags" %> 
     
  <%
  Organization org = null;
@@ -51,7 +51,7 @@ alert("User Updated Succesfully");
 <% if (org != null) {  %>
 <form action = "updateUser">
 </br></br><h4>Invite User:</h4>
-		<div>
+	<div>
 			<input type = "hidden" name = "orgid" value="<%= orgid %>" />
 			<label>Enter the Name:</label><input type = "text" name = "name" id="name" /></br></br>
 			<label>Enter the Email:</label><input type = "text" name = "email" id="email" /></br></br>
@@ -63,9 +63,10 @@ alert("User Updated Succesfully");
 			<option value="<%= role.getId() %>"><%=role.getName()%></option>
 			<% }
 			}%>
-			</select>
-			<input type = "submit" style="margin-left: 10px" name="updateUser"  value = "submit"/> 
-		</div>
+			</select></br></br>
+			<input type = "submit" style="margin-left: 10px" name="updateUser"  value = "Submit"/> 
+			<input type="reset" value="Reset"/>
+		</div> 
 
 </form>
 <% }%>

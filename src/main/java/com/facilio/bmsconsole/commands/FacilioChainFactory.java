@@ -165,7 +165,7 @@ public class FacilioChainFactory {
 	
 	public static Chain getAddUserCommand() {
 		Chain c = new ChainBase();
-	    c.addCommand(new ValidateLicenseCommand());
+	    // c.addCommand(new ValidateLicenseCommand());
 		c.addCommand(new ValidateWorkOrderFieldsCommand());
 		c.addCommand(new AddUserCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
