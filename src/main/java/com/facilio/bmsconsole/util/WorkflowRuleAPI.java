@@ -9,8 +9,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -675,6 +678,35 @@ public class WorkflowRuleAPI {
 	public static void deleteWorkflowRule(long workflowId) throws Exception {
 		if (workflowId != -1) {
 			deleteWorkFlowRules(Collections.singletonList(workflowId));
+		}
+	}
+	
+	public static boolean evaluateWorkflow(WorkflowRuleContext workflowRule, String moduleName, Object record, Map<String, Object> recordPlaceHolders, FacilioContext context) throws Exception {
+		Map<String, Object> rulePlaceHolders = workflowRule.constructPlaceHolders(moduleName, record, recordPlaceHolders, context);
+		boolean miscFlag = false, criteriaFlag = false, workflowFlag = false;
+		miscFlag = workflowRule.evaluateMisc(moduleName, record, rulePlaceHolders, (FacilioContext) context);
+		if (miscFlag) {
+			criteriaFlag = workflowRule.evaluateCriteria(moduleName, record, rulePlaceHolders, (FacilioContext) context);
+			if (criteriaFlag) {
+				workflowFlag = workflowRule.evaluateWorkflowExpression(moduleName, record, rulePlaceHolders, (FacilioContext) context);
+			}
+		}
+		
+		boolean result = criteriaFlag && workflowFlag && miscFlag;
+		if(result) {
+			executeWorkflowActions(workflowRule, record, context, rulePlaceHolders);
+		}
+		return result;
+	}
+	
+	private static void executeWorkflowActions(WorkflowRuleContext rule, Object record, Context context, Map<String, Object> placeHolders) throws Exception {
+		long ruleId = rule.getId();
+		List<ActionContext> actions = ActionAPI.getActiveActionsFromWorkflowRule(AccountUtil.getCurrentOrg().getId(), ruleId);
+		if(actions != null) {
+			for(ActionContext action : actions)
+			{
+				action.executeAction(placeHolders, context, rule, record);
+			}
 		}
 	}
 }

@@ -29,9 +29,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
-import com.facilio.bmsconsole.workflow.ActionContext;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
@@ -132,19 +130,8 @@ public class ExecuteAllWorkflowsCommand implements Command
 			for(WorkflowRuleContext workflowRule : workflowRules) {
 				try {
 					long workflowStartTime = System.currentTimeMillis();
-					Map<String, Object> rulePlaceHolders = workflowRule.constructPlaceHolders(moduleName, record, recordPlaceHolders, (FacilioContext) context);
-					boolean miscFlag = false, criteriaFlag = false, workflowFlag = false;
-					miscFlag = workflowRule.evaluateMisc(moduleName, record, rulePlaceHolders, (FacilioContext) context);
-					if (miscFlag) {
-						criteriaFlag = workflowRule.evaluateCriteria(moduleName, record, rulePlaceHolders, (FacilioContext) context);
-						if (criteriaFlag) {
-							workflowFlag = workflowRule.evaluateWorkflowExpression(moduleName, record, rulePlaceHolders, (FacilioContext) context);
-						}
-					}
-					
-					boolean result = criteriaFlag && workflowFlag && miscFlag;
-					if(result) {
-						executeWorkflowActions(workflowRule, record, context, rulePlaceHolders);
+					boolean result = WorkflowRuleAPI.evaluateWorkflow(workflowRule, moduleName, record, recordPlaceHolders, context);
+					if (result) {
 						if(workflowRule.getRuleTypeEnum().stopFurtherRuleExecution()) {
 							itr.remove();
 							break;
@@ -173,17 +160,6 @@ public class ExecuteAllWorkflowsCommand implements Command
 			return criteria;
 		}
 		return null;
-	}
-	
-	private static void executeWorkflowActions(WorkflowRuleContext rule, Object record, Context context, Map<String, Object> placeHolders) throws Exception {
-		long ruleId = rule.getId();
-		List<ActionContext> actions = ActionAPI.getActiveActionsFromWorkflowRule(AccountUtil.getCurrentOrg().getId(), ruleId);
-		if(actions != null) {
-			for(ActionContext action : actions)
-			{
-				action.executeAction(placeHolders, context, rule, record);
-			}
-		}
 	}
 	
 	private Map<String, List> getRecordMap(FacilioContext context) {
