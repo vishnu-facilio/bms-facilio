@@ -9,8 +9,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import com.facilio.bmsconsole.actions.UserAction;
 import org.apache.commons.lang3.StringUtils;
 
+import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -32,6 +36,7 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
+
 
 public class TenantsAPI {
 	
@@ -104,6 +109,9 @@ public class TenantsAPI {
 				for (TenantContext tenant : tenants) {
 					tenant.setUtilityAssets(utilMap.get(tenant.getId()));
 					tenant.setSpace(spaceMap.get(tenant.getSpaceId()));
+					if (tenant.getContactId() > 0) {
+						tenant.setContactInfo(AccountUtil.getUserBean().getUser(tenant.getContactId()));
+					}
 				}
 			}
 			return tenants;
@@ -151,7 +159,25 @@ public class TenantsAPI {
 			throw new IllegalArgumentException("Invalid space id during addition of Tenant");
 		}
 		
-		addTenantLogo(tenant);
+		 addTenantLogo(tenant);
+		 
+		 
+		
+		
+		
+		User use = tenant.getContactInfo();
+		Organization org = AccountUtil.getOrgBean().getPortalOrg(AccountUtil.getCurrentOrg().getDomain());
+		use.setPortalId(org.getPortalId());
+		User extRequester = AccountUtil.getUserBean().getPortalUsers(use.getEmail(), use.getPortalId());
+		if (extRequester != null) {
+			tenant.setContactId(extRequester.getOuid());
+		}
+		else {
+			long requesterId = AccountUtil.getUserBean().addRequester(AccountUtil.getCurrentOrg().getOrgId(), use);
+			tenant.setContactId(requesterId);
+		}
+		
+		
 		
 		tenant.setOrgId(AccountUtil.getCurrentOrg().getId());
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()

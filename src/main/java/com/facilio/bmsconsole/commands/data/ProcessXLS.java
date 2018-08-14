@@ -297,7 +297,7 @@ public class ProcessXLS implements Command {
 	public static void populateData(ImportProcessContext importProcessContext,List<ReadingContext> readingsEntireList) throws Exception {
 		
 		String moduleName=importProcessContext.getModule().getName();
-		if(importProcessContext.getModule().getTypeEnum() == ModuleType.READING) {
+		if(importProcessContext.getModule().getTypeEnum() == ModuleType.READING || importProcessContext.getModule().getTypeEnum() == ModuleType.LIVE_FORMULA || importProcessContext.getModule().getTypeEnum() == ModuleType.SCHEDULED_FORMULA || importProcessContext.getModule().getTypeEnum() == ModuleType.SYSTEM_SCHEDULED_FORMULA) {
 			
 			Map<String, List<ReadingContext>> readingMap= Collections.singletonMap(moduleName, readingsEntireList);
 			FacilioContext context = new FacilioContext();
