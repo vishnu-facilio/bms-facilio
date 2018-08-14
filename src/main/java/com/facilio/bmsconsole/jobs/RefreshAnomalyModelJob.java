@@ -79,7 +79,7 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 		for (AnalyticsAnomalyContext reading : meterReadings) {
 
 			String line = reading.toString() + "\n";
-			readingInfo += line;
+			readingInfo += line;	
 		}
 
 		meterReadingWriter.write(readingInfo);
@@ -128,6 +128,9 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 			
 			writeEnergyReadingFile(moduleName, energyMeterContext, startTime, endTime, energyFileName);
 			writeWeatherReadingFile(moduleName, energyMeterContext, startTime, endTime, weatherFileName);
+	
+			logger.log(Level.INFO, " RefreshAnomalyModel :  files written ");
+			
 			
 			String bucket = AwsUtil.getConfig("anomalyBucket");
 			String filePath = AwsUtil.getConfig("anomalyBucketDir");
@@ -140,8 +143,10 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 				meterFileUrl = "http://localhost:8000/" + energyBaseFileName;
 				weatherFileUrl = "http://localhost:8000/" + weatherBaseFileName;
 			}else {
+				logger.log(Level.INFO, " RefreshAnomalyModel :  files written ");
 				meterFileUrl = S3FileStore.getURL(bucket, filePath + File.separator + energyBaseFileName , new File(energyFileName));
 				weatherFileUrl = S3FileStore.getURL(bucket, filePath + File.separator + weatherBaseFileName, new File(weatherFileName));
+				logger.log(Level.INFO, " RefreshAnomalyModel :  files written " + meterFileUrl + " " + weatherFileUrl);
 			}
 			
 			BuildAnomalyModelPostData postData=new BuildAnomalyModelPostData();
