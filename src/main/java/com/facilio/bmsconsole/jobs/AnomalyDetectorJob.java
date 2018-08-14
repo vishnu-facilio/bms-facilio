@@ -332,7 +332,7 @@ public class AnomalyDetectorJob extends FacilioJob {
 			obj.put("source", assetName);
 			obj.put("entity", assetName);
 			obj.put("resourceId", meterId);
-			obj.put("severity", "Info");
+			obj.put("severity", "Minor");
 			obj.put("timestamp", context.getTtime());
 			obj.put("consumption", context.getEnergyDelta());
 
