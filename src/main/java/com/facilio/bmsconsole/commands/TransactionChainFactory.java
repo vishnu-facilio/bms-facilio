@@ -12,6 +12,13 @@ public class TransactionChainFactory extends FacilioChainFactory {
 			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}
+		
+		public static Chain runThroughReadingRuleChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new RunThroughReadingRulesCommand());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
 	
 	    protected static Chain getDefaultChain()
 	    {

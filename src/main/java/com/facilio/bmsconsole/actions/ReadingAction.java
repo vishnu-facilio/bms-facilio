@@ -816,6 +816,26 @@ public class ReadingAction extends FacilioAction {
 		}
 	}
 	
+	public String runThroughRule() {
+		try {
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, id);
+			context.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(startTime, endTime));
+			
+			Chain runThroughRuleChain = TransactionChainFactory.runThroughReadingRuleChain();
+			runThroughRuleChain.execute(context);
+			
+			setResult("success", "Rule evaluation for the readings in the given period has been started");
+			
+			return SUCCESS;
+		}
+		catch (Exception e) {
+			setResponseCode(1);
+			setMessage(e);
+			return ERROR;
+		}
+	}
+	
 	public String getFormulaFromReadingField () {
 		try {
 			formula = FormulaFieldAPI.getFormulaFieldFromReadingField(id);
