@@ -65,10 +65,6 @@ public class AdminAction extends ActionSupport
 		long roleId =  Long.parseLong(request.getParameter("roleId"));
 		User newUser = new User();
 		
-		if (name.equals("")){
-			addFieldError("name", "Name is required");
-		}
-		
 		if(!email.contains("@"))
 		{
 			newUser.setMobile(email);
@@ -78,6 +74,7 @@ public class AdminAction extends ActionSupport
 		newUser.setRoleId(roleId);
 		newUser.setPassword(FacilioAuthAction.cryptWithMD5(password));
 		newUser.setUserVerified(true);
+		newUser.setUserStatus(true);
 		try {
 			AccountUtil.getUserBean().inviteAdminConsoleUser(orgId, newUser);
 		} catch (Exception e) {
