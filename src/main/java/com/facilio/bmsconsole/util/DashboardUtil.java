@@ -812,6 +812,7 @@ public class DashboardUtil {
 			if(dashboard.getReportSpaceFilterContext() != null) {
 				dashboardJson.put("spaceFilter", "building");
 			}
+			dashboardJson.put("dashboardFolderId", dashboard.getDashboardFolderId());
 			dashboardJson.put("linkName", dashboard.getLinkName());
 			dashboardJson.put("children", childrenArray);
 			result.add(dashboardJson);

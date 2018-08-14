@@ -4471,7 +4471,7 @@ public class DashboardAction extends ActionSupport {
 		FacilioModule energyMeterModule = modBean.getModule("energymeter");
 		
 		FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
-		if(!module.getName().equals(xAxisField.getModule().getName())) {
+		if(!module.getName().equals(xAxisField.getModule().getName()) || report.getId() == 4218l) {
 
 			subBuilder = new GenericSelectRecordBuilder();
 			subBuilder.table(energyMeterModule.getTableName());
@@ -4480,7 +4480,9 @@ public class DashboardAction extends ActionSupport {
 			.on(energyMeterModule.getTableName()+".ID="+resourceModule.getTableName()+".ID")
 			.andCondition(CriteriaAPI.getCondition("SYS_DELETED", "deleted", String.valueOf(false), BooleanOperators.IS));
 			
-			xAxisField.setColumnName("PARENT_METER_ID");
+			if(report.getId() != 4218l) { 
+				xAxisField.setColumnName("PARENT_METER_ID");
+			}
 			xAxisField.setName("parentId");
 			xAxisField.setModule(module);
 		}
@@ -4817,7 +4819,11 @@ public class DashboardAction extends ActionSupport {
 				
 				String meterIdStr = StringUtils.join(meterIds, ",");
 				buildingCondition = CriteriaAPI.getCondition("PARENT_METER_ID","parentId", meterIdStr, NumberOperators.EQUALS);
+				if(report.getId() == 4218l) {
+					buildingCondition = CriteriaAPI.getCondition("PARENT_ID","PARENT_ID", meterIdStr, NumberOperators.EQUALS);
+				}
 			}
+			LOGGER.severe("buildingCondition -- "+buildingCondition);
 		}
 		
 		if (buildingCondition == null && report.getReportSpaceFilterContext() != null) {
@@ -4994,6 +5000,9 @@ public class DashboardAction extends ActionSupport {
 						String meterIdStr = StringUtils.join(meterIds, ",");
 						energyMeterValue = meterIdStr;
 						buildingCondition = CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", meterIdStr, NumberOperators.EQUALS);
+						if(report.getId() == 4217l) {
+							buildingCondition = CriteriaAPI.getCondition("PARENT_ID","PARENT_ID", meterIdStr, NumberOperators.EQUALS);
+						}
 					}
 				}
 			}
@@ -5098,6 +5107,7 @@ public class DashboardAction extends ActionSupport {
 		}
 		List<Map<String, Object>> rs = null;
 		
+		LOGGER.severe("buildingCondition 1 -- "+buildingCondition);
 		if((subBuilder != null || report.getReportSpaceFilterContext() != null) && buildingCondition == null) {
 //			dont query return null;
 			rs  = new ArrayList<>();

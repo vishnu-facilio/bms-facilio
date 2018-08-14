@@ -3,10 +3,12 @@ package com.facilio.sql;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -15,7 +17,10 @@ import org.apache.log4j.Logger;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.fs.FileStore;
+import com.facilio.fs.FileStoreFactory;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, Object>> {
@@ -122,7 +127,7 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 		if(!value.isEmpty()) {
 			
 			try {
-				//TODO...delete the existing files
+				fetchFilesAndMarkDeleted(value);
 				FieldUtil.addFiles(fields, Collections.singletonList(value));
 			} catch (Exception e) {
 				LOGGER.log(Level.ERROR, "Insertion failed while updating files", e);
@@ -249,6 +254,37 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 			return parentBuilder;
 		}
 		
+	}
+	
+	private void fetchFilesAndMarkDeleted (Map<String, Object> value) throws Exception {
+		List<FacilioField> fileFields = fields.stream().filter(field -> field.getDataTypeEnum() == FieldType.FILE).collect(Collectors.toList());
+		if (fileFields.isEmpty()) {
+			return;
+		}
+		if (!fileFields.stream().anyMatch(field -> value.containsKey(field.getName())) ) {
+			return;
+		}
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(tableName)
+				.andCustomWhere(where.getWhereClause(), where.getValues())
+				;
+		List<Map<String, Object>> records = builder.get();
+		if (records == null || records.isEmpty()) {
+			return;
+		}
+		List<Long> fileIds = new ArrayList<>();
+		for(FacilioField field: fileFields) {
+			if (records.get(0).containsKey(field.getName())) {
+				fileIds.add((Long) records.get(0).get(field.getName()));
+			}
+		}
+		
+		if (!fileIds.isEmpty()) {
+			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			fs.markAsDeleted(fileIds);
+		}
 	}
 	
 }
