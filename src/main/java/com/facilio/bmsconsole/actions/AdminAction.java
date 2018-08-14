@@ -65,6 +65,10 @@ public class AdminAction extends ActionSupport
 		long roleId =  Long.parseLong(request.getParameter("roleId"));
 		User newUser = new User();
 		
+		if (name.equals("")){
+			addFieldError("name", "Name is required");
+		}
+		
 		if(!email.contains("@"))
 		{
 			newUser.setMobile(email);
@@ -83,6 +87,7 @@ public class AdminAction extends ActionSupport
 		
 		return SUCCESS;
 	}
+	
 	public String updateCRM()
 	{
 		HttpServletRequest request = ServletActionContext.getRequest();
