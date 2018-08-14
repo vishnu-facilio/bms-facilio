@@ -12,7 +12,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.sql.DBUtil;
+import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public abstract class FileStore {
@@ -433,6 +439,19 @@ public abstract class FileStore {
 		}
 		
 		return fileInfo;
+	}
+	
+	public int markAsDeleted(List<Long> fileIds) throws SQLException {
+		List<FacilioField> fields = FieldFactory.getFileFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+				.fields(fields)
+				.table(ModuleFactory.getFilesModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("fileId"), fileIds, NumberOperators.EQUALS));
+		
+		Map<String, Object> props = new HashMap<>();
+		props.put("isDeleted", true);
+		return builder.update(props);
 	}
 	
 	public abstract InputStream readFile(long fileId) throws Exception;

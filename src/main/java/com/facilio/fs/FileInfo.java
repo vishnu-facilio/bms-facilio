@@ -14,6 +14,7 @@ public class FileInfo {
 	private String contentType;
 	private long uploadedBy;
 	private long uploadedTime;
+	private Boolean isDeleted;
 	
 	public long getOrgId() {
 		return orgId;
@@ -64,6 +65,19 @@ public class FileInfo {
 		this.uploadedTime = uploadedTime;
 	}
 	
+	public Boolean getIsDeleted() {
+		return isDeleted;
+	}
+	public void setIsDeleted(Boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+	public boolean isDeleted() {
+		if (isDeleted != null) {
+			return isDeleted.booleanValue();
+		}
+		return false;
+	}
+
 	public enum FileFormat {
 		CSV(1, "CSV", ".csv", "application/csv"),
 		XLS(2, "Excel", ".xls", "application/xls"),

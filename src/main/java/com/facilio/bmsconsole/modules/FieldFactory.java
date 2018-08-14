@@ -2078,6 +2078,9 @@ public class FieldFactory {
 		contentType.setModule(module);
 		fields.add(contentType);
 
+		fields.add(getField("fileId", "FILE_ID", module, FieldType.NUMBER));
+		fields.add(getField("isDeleted", "IS_DELETED", module, FieldType.BOOLEAN));
+		
 		return fields;
 	}
 
