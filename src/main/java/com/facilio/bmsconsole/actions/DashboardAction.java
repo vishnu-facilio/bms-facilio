@@ -4471,7 +4471,7 @@ public class DashboardAction extends ActionSupport {
 		FacilioModule energyMeterModule = modBean.getModule("energymeter");
 		
 		FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
-		if(!module.getName().equals(xAxisField.getModule().getName()) || report.getId() == 4218l) {
+		if(!module.getName().equals(xAxisField.getModule().getName()) || (report.getId() == 4218l || report.getId() == 2868l)) {
 
 			subBuilder = new GenericSelectRecordBuilder();
 			subBuilder.table(energyMeterModule.getTableName());
@@ -4480,7 +4480,7 @@ public class DashboardAction extends ActionSupport {
 			.on(energyMeterModule.getTableName()+".ID="+resourceModule.getTableName()+".ID")
 			.andCondition(CriteriaAPI.getCondition("SYS_DELETED", "deleted", String.valueOf(false), BooleanOperators.IS));
 			
-			if(report.getId() != 4218l) { 
+			if(!(report.getId() == 4218l || report.getId() == 2868l)) { 
 				xAxisField.setColumnName("PARENT_METER_ID");
 			}
 			xAxisField.setName("parentId");
@@ -4819,7 +4819,7 @@ public class DashboardAction extends ActionSupport {
 				
 				String meterIdStr = StringUtils.join(meterIds, ",");
 				buildingCondition = CriteriaAPI.getCondition("PARENT_METER_ID","parentId", meterIdStr, NumberOperators.EQUALS);
-				if(report.getId() == 4218l) {
+				if(report.getId() == 4218l || report.getId() == 2868l) {
 					buildingCondition = CriteriaAPI.getCondition("PARENT_ID","PARENT_ID", meterIdStr, NumberOperators.EQUALS);
 				}
 			}
