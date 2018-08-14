@@ -11,6 +11,8 @@ import java.util.StringJoiner;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -504,14 +506,7 @@ public class WorkflowRuleAPI {
 						workflow = FieldUtil.getAsBeanFromMap(prop, ReadingRuleContext.class);
 						ReadingRuleContext readingRule = ((ReadingRuleContext)workflow);
 						readingRule.setReadingField(modBean.getField(((ReadingRuleContext)workflow).getReadingFieldId()));
-						
-						if (readingRule.getAssetCategoryId() == -1) {
-							readingRule.setResource(ResourceAPI.getResource(((ReadingRuleContext)workflow).getResourceId()));
-						}
-						else {
-							readingRule.setCategoryAssets(AssetsAPI.getAssetListOfCategory(readingRule.getAssetCategoryId()));
-							fetchInclusionsExclusions(readingRule);
-						}
+						setMatchedResources(readingRule);
 						break;
 					case SLA_RULE:
 						prop.putAll(typeWiseExtendedProps.get(ruleType).get((Long) prop.get("id")));
@@ -544,6 +539,33 @@ public class WorkflowRuleAPI {
 			return workflows;
 		}
 		return null;
+	}
+	
+	private static void setMatchedResources (ReadingRuleContext readingRule) throws Exception {
+		if (readingRule.getAssetCategoryId() == -1) {
+			long resourceId = readingRule.getResourceId();
+			readingRule.setMatchedResources(Collections.singletonMap(resourceId, ResourceAPI.getResource(resourceId)));
+		}
+		else {
+			List<AssetContext> categoryAssets = AssetsAPI.getAssetListOfCategory(readingRule.getAssetCategoryId());
+			if (categoryAssets != null && !categoryAssets.isEmpty()) {
+				fetchInclusionsExclusions(readingRule);
+				
+				Map<Long, ResourceContext> matchedResources = new HashMap<>();
+				for (AssetContext asset : categoryAssets) {
+					if ( (readingRule.getIncludedResources() == null 
+							|| readingRule.getIncludedResources().isEmpty() 
+							|| readingRule.getIncludedResources().contains(asset.getId()))
+							&& (readingRule.getExcludedResources() == null 
+								|| readingRule.getExcludedResources().isEmpty()
+								|| !readingRule.getExcludedResources().contains(asset.getId()))
+							) {
+						matchedResources.put(asset.getId(), asset);
+					}
+				}
+				readingRule.setMatchedResources(matchedResources);
+			}
+		}
 	}
 	
 	private static void fetchInclusionsExclusions (ReadingRuleContext readingRule) throws Exception {

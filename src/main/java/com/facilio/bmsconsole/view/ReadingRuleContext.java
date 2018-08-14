@@ -7,13 +7,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.commands.FacilioContext;
-import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ResourceContext;
@@ -75,14 +73,6 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		this.resourceId = resourceId;
 	}
 	
-	private ResourceContext resource;
-	public ResourceContext getResource() {
-		return resource;
-	}
-	public void setResource(ResourceContext resource) {
-		this.resource = resource;
-	}
-	
 	private long assetCategoryId = -1;
 	public long getAssetCategoryId() {
 		return assetCategoryId;
@@ -91,12 +81,12 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		this.assetCategoryId = assetCategoryId;
 	}
 	
-	private List<AssetContext> categoryAssets;
-	public List<AssetContext> getCategoryAssets() {
-		return categoryAssets;
+	private Map<Long, ResourceContext> matchedResources;
+	public Map<Long, ResourceContext> getMatchedResources() {
+		return matchedResources;
 	}
-	public void setCategoryAssets(List<AssetContext> categoryAssets) {
-		this.categoryAssets = categoryAssets;
+	public void setMatchedResources(Map<Long, ResourceContext> matchedResources) {
+		this.matchedResources = matchedResources;
 	}
 
 	private List<Long> includedResources;
@@ -436,23 +426,12 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 	}
 	
 	private boolean checkForParentResource(ReadingContext reading) {
-		if (assetCategoryId == -1) {
-			boolean isParent = resourceId == reading.getParentId();
-			if (isParent) {
-				reading.setParent(resource);
+		if (matchedResources != null && !matchedResources.isEmpty()) {
+			ResourceContext parent = matchedResources.get(reading.getParentId());
+			if (parent != null) {
+				reading.setParent(parent);
+				return true;
 			}
-			return isParent;
-		}
-		else if (categoryAssets != null && !categoryAssets.isEmpty()) {
-			long parentId = reading.getParentId();
-			Optional<AssetContext> parentAsset = categoryAssets.stream().filter((asset -> asset.getId() == parentId)).findFirst();
-			if (parentAsset.isPresent()) {
-				reading.setParent(parentAsset.get());
-				boolean presentInInclusion = includedResources == null || includedResources.isEmpty() || includedResources.contains(parentId);
-				boolean notPresentInExclusion = excludedResources == null || excludedResources.isEmpty() || !excludedResources.contains(parentId);
-				return presentInInclusion && notPresentInExclusion;
-			}
-			return false;
 		}
 		return false;
 	}
