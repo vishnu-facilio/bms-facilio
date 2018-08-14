@@ -230,8 +230,8 @@ public class PerformAssetAction implements Command {
 				}
 				List<String> options = new ArrayList<>();
 				
-				options.add("Needed");
-				options.add("Not Needed");
+				options.add("Extended");
+				options.add("Expired");
 				
 				Map<String, List<TaskContext>> tasksList= new HashMap<>();
 				for(Long siteID :siteWiseMap.keys()) {
