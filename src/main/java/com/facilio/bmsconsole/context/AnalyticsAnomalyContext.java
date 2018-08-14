@@ -46,8 +46,6 @@ public class AnalyticsAnomalyContext extends ModuleBaseWithCustomFields {
 		buf.append(new Long(ttime).toString());
 		buf.append(",");
 		buf.append(new Double(energyDelta).toString());
-		buf.append(",");
-		buf.append(new Double(outlierDistance).toString());
 		return buf.toString();
 	}
 }
