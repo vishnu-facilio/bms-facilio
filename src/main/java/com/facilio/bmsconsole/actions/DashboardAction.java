@@ -5469,7 +5469,7 @@ public class DashboardAction extends ActionSupport {
 		 							newPurpose = true;
 		 						}
 		 					}
-		 					else if((report.getId() == 1963l || report.getId() == 3481l || report.getId() == 3653l || report.getId() == 3664l || report.getId() == 3663l || report.getId() == 3748l || report.getId() == 3754l || report.getId() == 3755l || report.getId() == 3756l || report.getId() == 3757l || report.getId() == 3758l || report.getId() == 3759l) && xAxisField != null) {
+		 					else if((report.getId() == 1963l || report.getId() == 3481l || report.getId() == 3653l || report.getId() == 3664l || report.getId() == 3663l || report.getId() == 3748l || report.getId() == 3754l || report.getId() == 3755l || report.getId() == 3756l || report.getId() == 3757l || report.getId() == 3758l || report.getId() == 3759l || report.getId() == 4225l || report.getId() == 4226l) && xAxisField != null) {
 		 						AssetContext context = AssetsAPI.getAssetInfo((Long) lbl);
 		 						if(context != null) {
 		 							lbl = context.getName();
