@@ -26,7 +26,7 @@ import com.facilio.unitconversion.UnitsUtil;
 
 public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, Object>> {
 	private static final Logger LOGGER = LogManager.getLogger(GenericSelectRecordBuilder.class.getName());
-	private static final int QUERY_TIME_THRESHOLD = 30000;
+	private static final int QUERY_TIME_THRESHOLD = 5000;
 
 	private List<FacilioField> selectFields;
 	private String tableName;
