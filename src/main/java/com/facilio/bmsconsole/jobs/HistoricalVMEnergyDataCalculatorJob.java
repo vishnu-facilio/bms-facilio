@@ -49,8 +49,18 @@ public class HistoricalVMEnergyDataCalculatorJob extends FacilioJob {
 			if(vmList.isEmpty()) {
 				return;
 			}
-			DeviceAPI.insertVirtualMeterReadings(vmList.get(0), startTime, endTime, interval, updateReading, true);
+			EnergyMeterContext vMeter=vmList.get(0);
+			List<Long> childMeterIds=DeviceAPI.getChildrenMeters(vMeter);
+			if(childMeterIds==null) {
+				return;
+			}
+			DeviceAPI.insertVirtualMeterReadings(vMeter,childMeterIds,startTime, endTime, interval,updateReading, true);
 			LOGGER.info("Time Taken for jobid "+jobId+" : " + (System.currentTimeMillis() - processStartTime));
+			List<Long> parentMeterIds=DeviceAPI.getParentMeters(vMeter);
+			if(parentMeterIds!=null && !parentMeterIds.isEmpty()) {
+				DeviceAPI.addVirtualMeterReadingsJob(startTime, endTime, interval, parentMeterIds);
+			}
+			
 		}
 		catch (Exception e) {
 			LOGGER.error("Error occurred while doing historical calculation for VM : "+jobId, e);

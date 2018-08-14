@@ -449,21 +449,13 @@ public class DeviceAPI
 
 	
 
-	public static void insertVirtualMeterReadings(EnergyMeterContext meter, long startTime, long endTime, int minutesInterval,boolean updateReading, boolean isHistorical) throws Exception {
+	public static void insertVirtualMeterReadings(EnergyMeterContext meter, List<Long> childMeterIds,  long startTime, long endTime, int minutesInterval, boolean updateReading, boolean isHistorical) throws Exception {
 
-		List<DateRange> intervals= DateTimeUtil.getTimeIntervals(startTime, endTime, minutesInterval);
-		GenericSelectRecordBuilder childMeterBuilder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getVirtualMeterRelFields())
-				.table(ModuleFactory.getVirtualMeterRelModule().getTableName())
-				.andCustomWhere("VIRTUAL_METER_ID = ?", meter.getId());
-		List<Map<String, Object>> childProps = childMeterBuilder.get();
-		if(childProps == null || childProps.isEmpty()) {
+		
+		if(childMeterIds == null) {
 			return;
 		}
-		List<Long> childMeterIds = new ArrayList<>();
-		for(Map<String, Object> childProp : childProps) {
-			childMeterIds.add((Long) childProp.get("childMeterId"));
-		}
+		List<DateRange> intervals= DateTimeUtil.getTimeIntervals(startTime, endTime, minutesInterval);
 		List<ReadingContext> completeReadings = new LinkedList<>(getChildMeterReadings(childMeterIds, startTime, endTime, minutesInterval));
 		if(completeReadings.isEmpty()) {
 			return;
@@ -524,10 +516,8 @@ public class DeviceAPI
 			//data Gap implementation starts here..
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_DATA_READING);
-			
 			FacilioField energyField=modBean.getField(TOTAL_ENERGY_CONSUMPTION_DELTA, module.getName());
-			ReadingDataMeta rdm= ReadingsAPI.getReadingDataMeta(meter.getId(),energyField);
-			if(!isHistorical && isDataGap(meter.getId(),module,firstReadingTime, rdm.getTtime())) {
+			if(!isHistorical && isDataGap(meter.getId(),module,firstReadingTime, startTime)) {
 				
 				firstReading.setMarked(true);
 				List<MarkedReadingContext> markedList=new ArrayList<MarkedReadingContext> ();
@@ -545,6 +535,38 @@ public class DeviceAPI
 		}
 	}
 
+	public static List<Long> getChildrenMeters(EnergyMeterContext meter) throws Exception {
+		GenericSelectRecordBuilder childMeterBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getVirtualMeterRelFields())
+				.table(ModuleFactory.getVirtualMeterRelModule().getTableName())
+				.andCustomWhere("VIRTUAL_METER_ID = ?", meter.getId());
+		List<Map<String, Object>> childProps = childMeterBuilder.get();
+		if(childProps == null || childProps.isEmpty()) {
+			return null;
+		}
+		List<Long> childMeterIds = new ArrayList<>();
+		for(Map<String, Object> childProp : childProps) {
+			childMeterIds.add((Long) childProp.get("childMeterId"));
+		}
+		return childMeterIds;
+	}
+
+	
+	public static List<Long> getParentMeters(EnergyMeterContext meter) throws Exception {
+		GenericSelectRecordBuilder parentMeterBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getVirtualMeterRelFields())
+				.table(ModuleFactory.getVirtualMeterRelModule().getTableName())
+				.andCustomWhere("CHILD_METER_ID = ?", meter.getId());
+		List<Map<String, Object>> parentProps = parentMeterBuilder.get();
+		if(parentProps == null || parentProps.isEmpty()) {
+			return null;
+		}
+		List<Long> parentMeterIds = new ArrayList<>();
+		for(Map<String, Object> childProp : parentProps) {
+			parentMeterIds.add((Long) childProp.get("virtualMeterId"));
+		}
+		return parentMeterIds;
+	}
 	
 	
 	public static boolean isDataGap (long resourceId,FacilioModule module, long currentTime, long previousTime)  {
