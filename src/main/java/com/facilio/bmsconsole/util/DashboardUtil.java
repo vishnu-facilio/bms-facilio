@@ -547,7 +547,7 @@ public class DashboardUtil {
 			
 			boolean co2Skip = false;
 			
-			if(report.getY1AxisUnit() != null && !report.getY1AxisUnit().equals("kg")) {
+			if(report.getY1AxisUnit() != null && report.getY1AxisUnit().equals("kg")) {
 				co2Skip = true;
 			}
 			if(meterList != null && !meterList.isEmpty() && !co2Skip) {

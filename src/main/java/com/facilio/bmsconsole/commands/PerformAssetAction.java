@@ -261,8 +261,8 @@ public class PerformAssetAction implements Command {
 				
 				WorkOrderContext workOrder = new WorkOrderContext();
 				
-				workOrder.setSubject("KDM Workorder");
-				workOrder.setDescription("KDM Workorder");
+				workOrder.setSubject("KDM Expiry List");
+				workOrder.setDescription("KDM's Which are about to expire");
 				
 				TicketCategoryContext category = TicketAPI.getCategory(AccountUtil.getCurrentOrg().getId(), "KDM");
 				
