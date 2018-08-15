@@ -924,6 +924,7 @@ public class FieldFactory {
 
 		fields.add(getIdField(module));
 		fields.add(getOrgIdField(module));
+		fields.add(getSiteIdField(module));
 
 		FacilioField replyName = new FacilioField();
 		replyName.setName("replyName");
@@ -946,13 +947,7 @@ public class FieldFactory {
 		fwdEmail.setModule(module);
 		fields.add(fwdEmail);
 
-		LookupField autoAssignGroup = new LookupField();
-		autoAssignGroup.setName("autoAssignGroup");
-		autoAssignGroup.setDataType(FieldType.LOOKUP);
-		autoAssignGroup.setColumnName("AUTO_ASSIGN_GROUP_ID");
-		autoAssignGroup.setModule(module);
-		autoAssignGroup.setSpecialType(FacilioConstants.ContextNames.GROUP);
-		fields.add(autoAssignGroup);
+		fields.add(getField("autoAssignGroupId", "AUTO_ASSIGN_GROUP_ID", module, FieldType.LOOKUP));
 
 		return fields;
 	}

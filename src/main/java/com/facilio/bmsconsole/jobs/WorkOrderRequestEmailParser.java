@@ -18,9 +18,11 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.amazonaws.services.s3.model.S3Object;
+import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
+import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
@@ -28,7 +30,9 @@ import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.SupportEmailAPI;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
@@ -131,9 +135,16 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 				LOGGER.debug("Parsed Attachments : "+attachedFiles);
 			}
 			
-			if(supportEmail.getAutoAssignGroup() != null) {
-				workOrderRequest.setAssignmentGroup(supportEmail.getAutoAssignGroup());
+			if (supportEmail.getAutoAssignGroupId() != -1) {
+				workOrderRequest.setAssignmentGroup((Group) LookupSpecialTypeUtil.getEmptyLookedupObject(FacilioConstants.ContextNames.GROUPS, supportEmail.getAutoAssignGroupId()));
 			}
+			
+			if (supportEmail.getSiteId() != -1) {
+				SiteContext site = new SiteContext();
+				site.setId(supportEmail.getSiteId());
+				workOrderRequest.setResource(site);
+			}
+			
 			workOrderRequest.setSourceType(TicketContext.SourceType.EMAIL_REQUEST);
 			
 			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", supportEmail.getOrgId());

@@ -1,7 +1,5 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.accounts.dto.Group;
-
 public class SupportEmailContext {
 	
 	private long id = -1;
@@ -20,6 +18,14 @@ public class SupportEmailContext {
 		this.orgId = orgId;
 	}
 	
+	private long siteId = -1;
+	public long getSiteId() {
+		return siteId;
+	}
+	public void setSiteId(long siteId) {
+		this.siteId = siteId;
+	}
+
 	private String replyName;
 	public String getReplyName() {
 		return replyName;
@@ -44,12 +50,8 @@ public class SupportEmailContext {
 		this.fwdEmail = fwdEmail;
 	}
 	
-	private long autoAssignGroupId;
-	public Long getAutoAssignGroupId() {
-		if(autoAssignGroupId==0)
-		{
-			return null;
-		}
+	private long autoAssignGroupId = -1;
+	public long getAutoAssignGroupId() {
 		return autoAssignGroupId;
 	}
 	public void setAutoAssignGroupId(long autoAssignGroupId) {
@@ -60,18 +62,10 @@ public class SupportEmailContext {
 	public String toString() {
 		return "SupportEmailContext [id=" + id + ", orgId=" + orgId + ", replyName=" + replyName + ", actualEmail="
 				+ actualEmail + ", fwdEmail=" + fwdEmail + ", autoAssignGroupId=" + autoAssignGroupId
-				+ ", autoAssignGroup=" + autoAssignGroup + ", verified=" + verified + ", primarySupportMail="
+				+ ", autoAssignGroupId =" + autoAssignGroupId + ", verified=" + verified + ", primarySupportMail="
 				+ primarySupportMail + "]";
 	}
 
-	private Group autoAssignGroup;
-	public Group getAutoAssignGroup() {
-		return autoAssignGroup;
-	}
-	public void setAutoAssignGroup(Group autoAssignGroup) {
-		this.autoAssignGroup = autoAssignGroup;
-	}
-	
 	private boolean verified;
 	public boolean isVerified() {
 		return verified;
