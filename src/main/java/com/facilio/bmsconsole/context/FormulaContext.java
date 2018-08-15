@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.fw.BeanFactory;
 
@@ -161,7 +162,20 @@ public class FormulaContext {
 		public FacilioField getSelectField(FacilioField field) throws Exception {
 			String selectFieldString = expr.replace("{$place_holder$}", field.getColumnName());
 			
-			FacilioField selectField = new FacilioField();
+			FacilioField selectField = null;
+			
+			if(field instanceof NumberField) {
+				
+				NumberField numberField =  (NumberField)field;
+				
+				NumberField selectFieldNumber = new NumberField();
+				selectFieldNumber.setMetric(numberField.getMetric());
+				
+				selectField = selectFieldNumber;
+			}
+			else {
+				selectField = new FacilioField();
+			}
 			selectField.setName(field.getName());
 			selectField.setDisplayName(field.getDisplayName());
 			selectField.setColumnName(selectFieldString);
@@ -193,7 +207,21 @@ public class FormulaContext {
 		public FacilioField getSelectField(FacilioField field) throws Exception {
 			String selectFieldString =expr.replace("{$place_holder$}", field.getColumnName());
 			
-			FacilioField selectField = new FacilioField();
+			FacilioField selectField = null;
+			
+			if(field instanceof NumberField) {
+				
+				NumberField numberField =  (NumberField)field;
+				
+				NumberField selectFieldNumber = new NumberField();
+				selectFieldNumber.setMetric(numberField.getMetric());
+				
+				selectField = selectFieldNumber;
+			}
+			else {
+				selectField = new FacilioField();
+			}
+			
 			selectField.setName(field.getName());
 			selectField.setDisplayName(field.getDisplayName());
 			selectField.setColumnName(selectFieldString);
@@ -255,7 +283,20 @@ public class FormulaContext {
 			String timeZone = DateTimeUtil.getDateTime().getOffset().toString().equalsIgnoreCase("Z") ? "+00:00":DateTimeUtil.getDateTime().getOffset().toString(); 
 			selectFieldString = selectFieldString.replace("{$place_holder1$}",timeZone);
 			
-			FacilioField selectField = new FacilioField();
+			FacilioField selectField = null;
+			
+			if(field instanceof NumberField) {
+				
+				NumberField numberField =  (NumberField)field;
+				
+				NumberField selectFieldNumber = new NumberField();
+				selectFieldNumber.setMetric(numberField.getMetric());
+				
+				selectField = selectFieldNumber;
+			}
+			else {
+				selectField = new FacilioField();
+			}
 			selectField.setName(field.getName());
 			selectField.setDisplayName(field.getDisplayName());
 			selectField.setColumnName(selectFieldString);
@@ -337,7 +378,20 @@ public class FormulaContext {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule baseSpaceModule = modBean.getModule("basespace");
 			
-			FacilioField selectField = new FacilioField();
+			FacilioField selectField = null;
+			
+			if(field instanceof NumberField) {
+				
+				NumberField numberField =  (NumberField)field;
+				
+				NumberField selectFieldNumber = new NumberField();
+				selectFieldNumber.setMetric(numberField.getMetric());
+				
+				selectField = selectFieldNumber;
+			}
+			else {
+				selectField = new FacilioField();
+			}
 			selectField.setName(field.getName());
 			selectField.setDisplayName(field.getDisplayName());
 			selectField.setColumnName(getcolumnName());
