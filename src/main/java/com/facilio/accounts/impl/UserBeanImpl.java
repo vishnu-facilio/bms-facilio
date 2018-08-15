@@ -1142,21 +1142,50 @@ public long inviteRequester(long orgId, User user) throws Exception {
 		// TODO Auto-generated method stub
 		return addRequester(orgId,  user,true,false);
 	}
+	
+	private User getPortalUserForInternal(String email, long portalId) throws Exception {
+		FacilioModule portalInfoModule = AccountConstants.getPortalInfoModule();
+		
+		List<FacilioField> fields = new ArrayList<>();
+		fields.addAll(AccountConstants.getPortalUserFields());
+		fields.addAll(AccountConstants.getUserFields());
+		fields.addAll(AccountConstants.getOrgUserFields());
+		fields.add(FieldFactory.getOrgIdField(portalInfoModule));
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("faciliorequestors")
+				.innerJoin("PortalInfo")
+				.on("faciliorequestors.PORTALID = PortalInfo.PORTALID")
+				.innerJoin("Users")
+				.on("faciliorequestors.USERID = Users.USERID")
+				.innerJoin("ORG_Users")
+				.on("Users.USERID = ORG_Users.USERID")
+				.andCustomWhere("faciliorequestors.EMAIL = ? AND DELETED_TIME=-1 AND faciliorequestors.PORTALID = ?", email, portalId);
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			return createUserFromProps(props.get(0));
+		}
+		return null;
+	}
+	
 	private long addRequester(long orgId, User user, boolean emailVerification,boolean updateifexist) throws Exception {
-		User orgUser = getPortalUser(user.getEmail(), user.getPortalId());
-		if (orgUser != null) {
-			log.info("Email Already Registered ");
-			if(!updateifexist)
-			{
-			Exception e = new Exception("Email Already Registered");
-			throw e;
-			}
-			
+		User portalUser = getPortalUserForInternal(user.getEmail(), user.getPortalId());
+		if (portalUser != null) {
+//			log.info("Email Already Registered ");
+//			if(!updateifexist)
+//			{
+//			Exception e = new Exception("Email Already Registered");
+//			throw e;
+//			}
+			log.info("Requester email already exists in the portal for org: "+ orgId+", ouid: "+ portalUser.getOuid());
+			return portalUser.getOuid();
 		}
 		
 		long uid = getPortalUid(user.getPortalId(), user.getEmail());
 		if (uid == -1) {
-			uid = addUserEntry(user, emailVerification, true);
+			uid = addUserEntry(user, false, true);
 			user.setDefaultOrg(true);
 		}
 		user.setUid(uid);
@@ -1167,7 +1196,10 @@ public long inviteRequester(long orgId, User user) throws Exception {
 		
 		addFacilioRequestor(user);
 		
-		sendInvitation(ouid, user);
+		if (emailVerification) {
+			sendInvitation(ouid, user);
+		}
+		
 		return ouid;
 	}
 
