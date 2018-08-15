@@ -4471,7 +4471,7 @@ public class DashboardAction extends ActionSupport {
 		FacilioModule energyMeterModule = modBean.getModule("energymeter");
 		
 		FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
-		if(!module.getName().equals(xAxisField.getModule().getName()) || (report.getId() == 4218l || report.getId() == 2868l)) {
+		if(!module.getName().equals(xAxisField.getModule().getName()) || (report.getId() == 4218l || report.getId() == 2868l || report.getId() == 4225l || report.getId() == 4226l)) {
 
 			subBuilder = new GenericSelectRecordBuilder();
 			subBuilder.table(energyMeterModule.getTableName());
@@ -4480,7 +4480,7 @@ public class DashboardAction extends ActionSupport {
 			.on(energyMeterModule.getTableName()+".ID="+resourceModule.getTableName()+".ID")
 			.andCondition(CriteriaAPI.getCondition("SYS_DELETED", "deleted", String.valueOf(false), BooleanOperators.IS));
 			
-			if(!(report.getId() == 4218l || report.getId() == 2868l)) { 
+			if(!(report.getId() == 4218l || report.getId() == 2868l || report.getId() == 4225l || report.getId() == 4226l)) { 
 				xAxisField.setColumnName("PARENT_METER_ID");
 			}
 			xAxisField.setName("parentId");
@@ -4819,7 +4819,7 @@ public class DashboardAction extends ActionSupport {
 				
 				String meterIdStr = StringUtils.join(meterIds, ",");
 				buildingCondition = CriteriaAPI.getCondition("PARENT_METER_ID","parentId", meterIdStr, NumberOperators.EQUALS);
-				if(report.getId() == 4218l || report.getId() == 2868l) {
+				if(report.getId() == 4218l || report.getId() == 2868l || report.getId() == 4225l || report.getId() == 4226l) {
 					buildingCondition = CriteriaAPI.getCondition("PARENT_ID","PARENT_ID", meterIdStr, NumberOperators.EQUALS);
 				}
 			}
@@ -5315,21 +5315,24 @@ public class DashboardAction extends ActionSupport {
 				try {
 					if ((report.getY1AxisField() != null && report.getY1AxisField().getField().getName().contains("cost")) || (reportFieldLabelMap != null && reportFieldLabelMap.containsKey(report.getY1AxisField().getField().getName()) && reportFieldLabelMap.get(report.getY1AxisField().getField().getName()) != null && reportFieldLabelMap.get(report.getY1AxisField().getField().getName()).toString().contains("cost"))) {
 						
-						Criteria parentCriteria = criteria != null ? criteria : report.getCriteria();
-						Double totalKwh = getTotalKwh(meterIdsUsed, this.startTime, this.endTime);
-						Double totalCost = (Double) variance.get("sum");
+						if(!meterIdsUsed.contains(",")) {
+							Criteria parentCriteria = criteria != null ? criteria : report.getCriteria();
+							Double totalKwh = getTotalKwh(meterIdsUsed, this.startTime, this.endTime);
+							Double totalCost = (Double) variance.get("sum");
+							
+							Long yesterdayTime = (rs.get(rs.size() - 1).get("dummyField") != null) ? (Long) rs.get(rs.size() - 1).get("dummyField") : (Long) rs.get(rs.size() - 1).get("label");
+							Long startTime = DateTimeUtil.getDayStartTimeOf(DateTimeUtil.getZonedDateTime(yesterdayTime)).toInstant().toEpochMilli();
+							Long endTime = DateTimeUtil.getDayEndTimeOf(DateTimeUtil.getZonedDateTime(yesterdayTime)).toInstant().toEpochMilli();
+							Double yesterdayKwh = getTotalKwh(meterIdsUsed, startTime, endTime);
+							Double yesterdayCost = (Double) rs.get(rs.size() - 1).get("value");
+							
+							variance = new JSONObject();
+							variance.put("total_kwh", totalKwh);
+							variance.put("total_cost", totalCost);
+							variance.put("yesterday_kwh", yesterdayKwh);
+							variance.put("yesterday_cost", yesterdayCost);
+						}
 						
-						Long yesterdayTime = (rs.get(rs.size() - 1).get("dummyField") != null) ? (Long) rs.get(rs.size() - 1).get("dummyField") : (Long) rs.get(rs.size() - 1).get("label");
-						Long startTime = DateTimeUtil.getDayStartTimeOf(DateTimeUtil.getZonedDateTime(yesterdayTime)).toInstant().toEpochMilli();
-						Long endTime = DateTimeUtil.getDayEndTimeOf(DateTimeUtil.getZonedDateTime(yesterdayTime)).toInstant().toEpochMilli();
-						Double yesterdayKwh = getTotalKwh(meterIdsUsed, startTime, endTime);
-						Double yesterdayCost = (Double) rs.get(rs.size() - 1).get("value");
-						
-						variance = new JSONObject();
-						variance.put("total_kwh", totalKwh);
-						variance.put("total_cost", totalCost);
-						variance.put("yesterday_kwh", yesterdayKwh);
-						variance.put("yesterday_cost", yesterdayCost);
 					}
 				}
 				catch (Exception e) {
