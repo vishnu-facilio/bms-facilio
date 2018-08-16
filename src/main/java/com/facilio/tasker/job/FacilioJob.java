@@ -35,14 +35,18 @@ public abstract class FacilioJob implements Runnable {
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		
+
 		try {
 			if ( updateStartExecution(jc.getJobId(), jc.getJobName(), jc.getJobStartTime(), jc.getJobExecutionCount()) < 1 ) {
 				return;
 			}
 			AccountUtil.cleanCurrentAccount();
 			retryExecutionCount++;
-			
+			Thread currentThread = Thread.currentThread();
+			String threadName = currentThread.getName();
+
+			currentThread.setName(jc.getJobId()+"-"+ jc.getJobName());
+
 			FacilioTransactionManager.INSTANCE.getTransactionManager().begin();
 			if(jc.getTransactionTimeout() != -1) {
 				FacilioTransactionManager.INSTANCE.getTransactionManager().setTransactionTimeout(jc.getTransactionTimeout());
@@ -63,7 +67,7 @@ public abstract class FacilioJob implements Runnable {
 			else {
 				JobStore.setInActiveAndUpdateCount(jc.getJobId(), jc.getJobName(), jc.getCurrentExecutionCount()+1);
 			}
-			
+			currentThread.setName(threadName);
 			executor.removeJob(jc);
 			FacilioTransactionManager.INSTANCE.getTransactionManager().commit();
 		}
