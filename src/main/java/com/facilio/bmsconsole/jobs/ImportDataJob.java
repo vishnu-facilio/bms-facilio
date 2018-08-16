@@ -43,6 +43,7 @@ public class ImportDataJob extends FacilioJob {
 			}
 			
 			ImportAPI.updateImportProcess(importProcessContext,ImportStatus.IMPORTED);
+			LOGGER.severe("IMPORT DATA JOB COMPLETED");
 		}
 		catch(Exception e) {
 			CommonCommandUtil.emailException("Import Failed", "Import failed - orgid -- "+AccountUtil.getCurrentOrg().getId(), e);
