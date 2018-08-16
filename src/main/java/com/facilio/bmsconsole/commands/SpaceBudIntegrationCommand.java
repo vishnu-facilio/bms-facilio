@@ -46,7 +46,7 @@ public class SpaceBudIntegrationCommand implements Command {
 			try {
 				Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
 				JSONArray attributes = new JSONArray();
-				if (readingMap.containsKey(FacilioConstants.ContextNames.ENERGY_DATA_READING)) {
+				if (readingMap!=null && readingMap.containsKey(FacilioConstants.ContextNames.ENERGY_DATA_READING)) {
 					postdata.put("zone_id", 1);
 					postdata.put("hardware_type", "ENERGY_METER");
 					JSONObject eventInfo = new JSONObject();
@@ -182,6 +182,9 @@ public class SpaceBudIntegrationCommand implements Command {
 					eventinfoarray.add(eventInfo);
 					postdata.put("eventInfo", eventinfoarray); // eventInfo always array of one element
 					postdata.put("timestamp", System.currentTimeMillis()); 
+				}
+				else {
+					logger.log(Level.FATAL, "SpaceBudIntegrationCommand Fails.readingMap is NULL for "+readingMap );
 				}
 				logger.log(Level.DEBUG, "SpaceBudIntegrationCommand POST content " + postdata.toJSONString());
 				if (! attributes.isEmpty()) {
