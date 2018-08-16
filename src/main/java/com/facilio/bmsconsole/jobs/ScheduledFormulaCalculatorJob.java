@@ -33,17 +33,17 @@ import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 
 public class ScheduledFormulaCalculatorJob extends FacilioJob {
-	private static final Logger logger = LogManager.getLogger(ScheduledFormulaCalculatorJob.class.getName());
-	private static Logger log = LogManager.getLogger(ScheduledFormulaCalculatorJob.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(ScheduledFormulaCalculatorJob.class.getName());
 
 	@Override
 	public void execute(JobContext jc) {
 		// TODO Auto-generated method stub
 		try {
+			long jobStartTime = System.currentTimeMillis();
 			List<Integer> types = getFrequencyTypesToBeFetched();
-			logger.log(Level.INFO, "Frequencies to be fetched for Scheduled Formula Calculation : ");
+			LOGGER.log(Level.INFO, "Frequencies to be fetched for Scheduled Formula Calculation : "+types);
 			List<FormulaFieldContext> formulas = FormulaFieldAPI.getActiveScheduledFormulasOfFrequencyType(types);
-			logger.log(Level.INFO, "Formulas to be calculated : "+formulas);
+			LOGGER.log(Level.INFO, "Formulas to be calculated : "+formulas);
 			List<Long> calculatedFieldIds = new ArrayList<>();
 			if (formulas != null && !formulas.isEmpty()) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -80,7 +80,7 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 								}
 							}
 							catch (Exception e) {
-								log.info("Exception occurred ", e);
+								LOGGER.info("Exception occurred ", e);
 								CommonCommandUtil.emailException("ScheduledFormulaCalculatorJob", "EnPI Calculation failed for : "+enpi.getId()+" in org : "+jc.getOrgId(), e);
 							}
 							calculatedFieldIds.add(enpi.getReadingFieldId());
@@ -89,10 +89,10 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 					}
 				}
 			}
-			
+			LOGGER.info("Time taken for ScheduledFormulaExecution job : "+(System.currentTimeMillis() - jobStartTime));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			log.info("Exception occurred ", e);
+			LOGGER.info("Exception occurred ", e);
 			CommonCommandUtil.emailException("ScheduledFormulaCalculatorJobENPI", "EnPI Calculation job failed for orgid : "+jc.getOrgId(), e);
 		}
 	}
