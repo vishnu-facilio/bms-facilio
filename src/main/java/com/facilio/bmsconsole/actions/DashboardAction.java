@@ -528,7 +528,7 @@ public class DashboardAction extends ActionSupport {
 	
 	public String updateRefreshInterval() throws Exception {
 		
-		if (getWidgetId() != null && getRefreshInterval() != null && getRefreshInterval() > 120) {
+		if (getWidgetId() != null && getRefreshInterval() != null && getRefreshInterval() >= 120) {
 	
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 					.table(ModuleFactory.getWidgetModule().getTableName())
