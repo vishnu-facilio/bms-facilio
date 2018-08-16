@@ -49,6 +49,9 @@ public class EventProcessor implements IRecordProcessor {
     @Override
     public void initialize(InitializationInput initializationInput) {
         this.shardId = initializationInput.getShardId();
+        Thread thread = Thread.currentThread();
+        String threadName = orgDomainName +"-event";
+        thread.setName(threadName);
     }
 
     @Override
