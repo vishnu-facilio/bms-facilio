@@ -250,7 +250,7 @@ public class PerformAssetAction implements Command {
 						task.setInputType(5);
 						task.setAttachmentRequired(false);
 						
-						Long serverNumberID = (Long) kdm.getDatum("servernumber");
+						Long serverNumberID = (Long) ((Map<String, Object>) kdm.getDatum("servernumber")).get("id");
 						
 						AssetContext asset = AssetsAPI.getAssetInfo(serverNumberID);
 						
