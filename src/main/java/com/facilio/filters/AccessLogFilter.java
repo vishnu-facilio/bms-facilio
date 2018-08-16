@@ -1,6 +1,7 @@
 package com.facilio.filters;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -37,6 +38,8 @@ public class AccessLogFilter implements Filter {
     private static final String APPENDER_NAME = "graylog2";
     private static final String DEFAULT_ORG_USER_ID = "-1";
 
+    private static final AtomicInteger THREAD_ID = new AtomicInteger(1);
+
     private static Appender appender;
 
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -48,6 +51,11 @@ public class AccessLogFilter implements Filter {
 
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
+        Thread thread = Thread.currentThread();
+        String threadName = thread.getName();
+
+        thread.setName(String.valueOf(THREAD_ID.getAndIncrement()));
+
         long startTime = System.currentTimeMillis();
         LoggingEvent event = new LoggingEvent(LOGGER.getName(), LOGGER, Level.INFO, DUMMY_MSG, null);
         String remoteIp = request.getHeader(X_FORWARDED_FOR);
@@ -89,6 +97,7 @@ public class AccessLogFilter implements Filter {
         } else {
             LOGGER.callAppenders(event);
         }
+        thread.setName(threadName);
     }
 
     public void destroy() {
