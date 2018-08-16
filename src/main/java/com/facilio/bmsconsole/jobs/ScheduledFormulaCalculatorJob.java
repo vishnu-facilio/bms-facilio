@@ -12,6 +12,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -52,18 +53,26 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 				while (!formulas.isEmpty()) {
 					Iterator<FormulaFieldContext> it = formulas.iterator();
 					while (it.hasNext()) {
-						FormulaFieldContext enpi = it.next();
-						if(isCalculatable(enpi, calculatedFieldIds)) {
+						FormulaFieldContext formula = it.next();
+						if(isCalculatable(formula, calculatedFieldIds)) {
+							if (AccountUtil.getCurrentOrg().getId() == 88) {
+								LOGGER.info("Gonna execute scheduled formula : "+formula.getName());
+							}
 							try {
 								List<ReadingContext> readings = new ArrayList<>();
-								for (Long resourceId : enpi.getMatchedResourcesIds()) {
-									ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(resourceId, enpi.getReadingField());
+								for (Long resourceId : formula.getMatchedResourcesIds()) {
+									ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(resourceId, formula.getReadingField());
 									long lastReadingTime = meta.getTtime();
 									ZonedDateTime zdt = DateTimeUtil.getDateTime(lastReadingTime).plusHours(1).truncatedTo(ChronoUnit.HOURS);
 									long startTime = DateTimeUtil.getMillis(zdt, true);
-									ScheduleInfo schedule = FormulaFieldAPI.getSchedule(enpi.getFrequencyEnum());
+									ScheduleInfo schedule = FormulaFieldAPI.getSchedule(formula.getFrequencyEnum());
 									List<DateRange> intervals = DateTimeUtil.getTimeIntervals(startTime, endTime, schedule);
-									List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(resourceId, enpi.getReadingField().getModule().getName(), enpi.getReadingField().getName(), intervals, enpi.getWorkflow(), true, false);
+									List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(resourceId, formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), true, false);
+									
+									if (AccountUtil.getCurrentOrg().getId() == 88) {
+										LOGGER.info("Readings to be added for Formula : "+formula.getName()+" is "+currentReadings);
+									}
+									
 									if (currentReadings != null && !currentReadings.isEmpty()) {
 										readings.addAll(currentReadings);
 									}
@@ -71,7 +80,7 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 								
 								if (!readings.isEmpty()) {
 									FacilioContext context = new FacilioContext();
-									context.put(FacilioConstants.ContextNames.MODULE_NAME, enpi.getReadingField().getModule().getName());
+									context.put(FacilioConstants.ContextNames.MODULE_NAME, formula.getReadingField().getModule().getName());
 									context.put(FacilioConstants.ContextNames.READINGS, readings);
 									
 									Chain addReadingChain = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
@@ -81,9 +90,9 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 							}
 							catch (Exception e) {
 								LOGGER.info("Exception occurred ", e);
-								CommonCommandUtil.emailException("ScheduledFormulaCalculatorJob", "EnPI Calculation failed for : "+enpi.getId()+" in org : "+jc.getOrgId(), e);
+								CommonCommandUtil.emailException("ScheduledFormulaCalculatorJob", "EnPI Calculation failed for : "+formula.getId()+" in org : "+jc.getOrgId(), e);
 							}
-							calculatedFieldIds.add(enpi.getReadingFieldId());
+							calculatedFieldIds.add(formula.getReadingFieldId());
 							it.remove();
 						}
 					}

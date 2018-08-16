@@ -224,6 +224,7 @@ public class FormulaFieldAPI {
 				long iStartTime = interval.getStartTime();
 				long iEndTime = interval.getEndTime();
 				try {
+					long startTime = System.currentTimeMillis();
 					Map<String, Object> params = new HashMap<>();
 					params.put("startTime", iStartTime);
 					params.put("endTime", iEndTime);
@@ -253,6 +254,10 @@ public class FormulaFieldAPI {
 							Chain addReadingChain = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
 							addReadingChain.execute(context);
 						}
+					}
+					long timeTaken = System.currentTimeMillis() - startTime;
+					if (AccountUtil.getCurrentOrg().getId() == 88) {
+						LOGGER.info("Time taken for Formula calculation of : "+fieldName+" between "+iStartTime+" and "+iEndTime+" : "+timeTaken);
 					}
 				}
 				catch (Exception e) {
