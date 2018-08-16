@@ -51,38 +51,45 @@ public class SpaceBudIntegrationCommand implements Command {
 					postdata.put("hardware_type", "ENERGY_METER");
 					JSONObject eventInfo = new JSONObject();
 					eventInfo.put("eventType", "ENERGY_CONSUMPTION");
+				
+					/**
+					 *  TODO
+					 * Query to get Name from parentID
+					 * 
+					// select r.ID,r.NAME from Energy_Meter em,Resources r where r.ORGID=78 and r.ID=em.ID  and em.IS_VIRTUAL !=1 and r.SYS_DELETED is NULL order by ID;
+					*/
 					List<ReadingContext> readings = readingMap.get(FacilioConstants.ContextNames.ENERGY_DATA_READING);
 					for (ReadingContext reading : readings) {
-						if (reading.getParentId() == 2266 && reading.getReading("totalEnergyConsumptionDelta") != null) {
+						if (reading.getParentId() == 16855 && reading.getReading("totalEnergyConsumptionDelta") != null) {
 						//	content.put("EM_101_EB_KWH", reading.getReading("totalEnergyConsumptionDelta"));
-							attributes.add(new Attribute("EM_101_EB_KWH", reading.getReading("totalEnergyConsumptionDelta")));
+							attributes.add(new Attribute("5B RM1 GF1 EB_EM", reading.getReading("totalEnergyConsumptionDelta")));
 						}
-						else if (reading.getParentId() == 2268 && reading.getReading("totalEnergyConsumptionDelta") != null) {
-							attributes.add(new Attribute("EM_102_EB_KWH", reading.getReading("totalEnergyConsumptionDelta")));
+						else if (reading.getParentId() == 16856 && reading.getReading("totalEnergyConsumptionDelta") != null) {
+							attributes.add(new Attribute("5B RM1 GF2 EB_EM", reading.getReading("totalEnergyConsumptionDelta")));
 						}
-						else if (reading.getParentId() == 2270 && reading.getReading("totalEnergyConsumptionDelta") != null) {
-							attributes.add(new Attribute("EM_103_EB_KWH", reading.getReading("totalEnergyConsumptionDelta")));
+						else if (reading.getParentId() == 16857 && reading.getReading("totalEnergyConsumptionDelta") != null) {
+							attributes.add(new Attribute("5B RM1 1F EB_EM", reading.getReading("totalEnergyConsumptionDelta")));
 						}
-						else if (reading.getParentId() == 2272 && reading.getReading("totalEnergyConsumptionDelta") != null) {
-							attributes.add(new Attribute("EM_104_EB_KWH", reading.getReading("totalEnergyConsumptionDelta")));
+						else if (reading.getParentId() == 16858 && reading.getReading("totalEnergyConsumptionDelta") != null) {
+							attributes.add(new Attribute("5B RM1 2F EB_EM", reading.getReading("totalEnergyConsumptionDelta")));
 						}
-						else if (reading.getParentId() == 2274 && reading.getReading("totalEnergyConsumptionDelta") != null) {
-							attributes.add(new Attribute("EM_201_EB_KWH", reading.getReading("totalEnergyConsumptionDelta")));
+						else if (reading.getParentId() == 16859 && reading.getReading("totalEnergyConsumptionDelta") != null) {
+							attributes.add(new Attribute("5B RM1 3F EB_EM", reading.getReading("totalEnergyConsumptionDelta")));
 						}
-						else if (reading.getParentId() == 2276 && reading.getReading("totalEnergyConsumptionDelta") != null) {
-							attributes.add(new Attribute("EM_202_EB_KWH", reading.getReading("totalEnergyConsumptionDelta")));
+						else if (reading.getParentId() == 16860 && reading.getReading("totalEnergyConsumptionDelta") != null) {
+							attributes.add(new Attribute("5B RM1 4F EB_EM", reading.getReading("totalEnergyConsumptionDelta")));
 						}
-						else if (reading.getParentId() == 2278 && reading.getReading("totalEnergyConsumptionDelta") != null) {
-							attributes.add(new Attribute("EM_203_EB_KWH", reading.getReading("totalEnergyConsumptionDelta")));
+						else if (reading.getParentId() == 16861 && reading.getReading("totalEnergyConsumptionDelta") != null) {
+							attributes.add(new Attribute("5B RM1 5F EB_EM", reading.getReading("totalEnergyConsumptionDelta")));
 						}
-						else if (reading.getParentId() == 2280 && reading.getReading("totalEnergyConsumptionDelta") != null) {
-							attributes.add(new Attribute("EM_204_EB_KWH", reading.getReading("totalEnergyConsumptionDelta")));
+						else if (reading.getParentId() == 16862 && reading.getReading("totalEnergyConsumptionDelta") != null) {
+							attributes.add(new Attribute("5B RM1 6F EB_EM", reading.getReading("totalEnergyConsumptionDelta")));
 						}
-						else if (reading.getParentId() == 2282 && reading.getReading("totalEnergyConsumptionDelta") != null) {
-							attributes.add(new Attribute("EM_301_EB_KWH", reading.getReading("totalEnergyConsumptionDelta")));
+						else if (reading.getParentId() == 16863 && reading.getReading("totalEnergyConsumptionDelta") != null) {
+							attributes.add(new Attribute("5B RM1 7F EB_EM", reading.getReading("totalEnergyConsumptionDelta")));
 						}
-						else if (reading.getParentId() == 2284 && reading.getReading("totalEnergyConsumptionDelta") != null) {
-							attributes.add(new Attribute("EM_302_EB_KWH", reading.getReading("totalEnergyConsumptionDelta")));
+						else if (reading.getParentId() == 16865 && reading.getReading("totalEnergyConsumptionDelta") != null) {
+							attributes.add(new Attribute("5B RM1 8F1 EB_EM", reading.getReading("totalEnergyConsumptionDelta")));
 						}
 						else if (reading.getParentId() == 2286 && reading.getReading("totalEnergyConsumptionDelta") != null) {
 							attributes.add(new Attribute("EM_303_EB_KWH", reading.getReading("totalEnergyConsumptionDelta")));
