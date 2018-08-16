@@ -5315,7 +5315,7 @@ public class DashboardAction extends ActionSupport {
 				try {
 					if ((report.getY1AxisField() != null && report.getY1AxisField().getField().getName().contains("cost")) || (reportFieldLabelMap != null && reportFieldLabelMap.containsKey(report.getY1AxisField().getField().getName()) && reportFieldLabelMap.get(report.getY1AxisField().getField().getName()) != null && reportFieldLabelMap.get(report.getY1AxisField().getField().getName()).toString().contains("cost"))) {
 						
-						if(!meterIdsUsed.contains(",")) {
+						if(meterIdsUsed != null && meterIdsUsed.size() == 1) {
 							Criteria parentCriteria = criteria != null ? criteria : report.getCriteria();
 							Double totalKwh = getTotalKwh(meterIdsUsed, this.startTime, this.endTime);
 							Double totalCost = (Double) variance.get("sum");
