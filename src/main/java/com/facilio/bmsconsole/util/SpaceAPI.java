@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.util;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -746,7 +747,7 @@ public static long getSitesCount() throws Exception {
 		return null;
 	}
 	
-	public static Map<Long, BaseSpaceContext> getBaseSpaceMap(List<Long> idList) throws Exception
+	public static Map<Long, BaseSpaceContext> getBaseSpaceMap(Collection<Long> idList) throws Exception
 	{
 		if(idList == null || idList.isEmpty()) {
 			return null;
@@ -761,8 +762,6 @@ public static long getSitesCount() throws Exception {
 				.beanClass(BaseSpaceContext.class)
 				.andCondition(CriteriaAPI.getIdCondition(idList, module));
 		return selectBuilder.getAsMap();
-	
-		
 	}
 	
 	public static List<BaseSpaceContext> getBaseSpaces(String idList) throws Exception

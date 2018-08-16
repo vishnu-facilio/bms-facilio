@@ -510,11 +510,6 @@ public class ExportUtil {
 		pagination.put("perPage", limit);
 		context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 		
-		// Temp
-		if (moduleName.equals(FacilioConstants.ContextNames.ASSET)) {
-			context.put(FacilioConstants.ContextNames.MAX_LEVEL, 1);
-		}
-		
 		Chain moduleListChain = ReadOnlyChainFactory.fetchModuleDataListChain();
 		moduleListChain.execute(context);
 		

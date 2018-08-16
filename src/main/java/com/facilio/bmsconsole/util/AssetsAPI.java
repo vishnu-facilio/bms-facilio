@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -246,6 +247,16 @@ public class AssetsAPI {
 																		.moduleName(FacilioConstants.ContextNames.ASSET_TYPE)
 																		.beanClass(AssetTypeContext.class);
 		return selectBuilder.get();
+	}
+	
+	public static Map<Long, AssetTypeContext> getAssetType(Collection<Long> typeIds) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		SelectRecordsBuilder<AssetTypeContext> selectBuilder = new SelectRecordsBuilder<AssetTypeContext>()
+																		.select(modBean.getAllFields(FacilioConstants.ContextNames.ASSET_TYPE))
+																		.moduleName(FacilioConstants.ContextNames.ASSET_TYPE)
+																		.beanClass(AssetTypeContext.class);
+		return selectBuilder.getAsMap();
 	}
 	
 	public static List<AssetDepartmentContext> getDepartmentList() throws Exception {

@@ -1,6 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -10,13 +13,17 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.AssetTypeContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -33,7 +40,7 @@ public class GetAssetListCommand implements Command {
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
-		SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
+		SelectRecordsBuilder<AssetContext> builder = new SelectRecordsBuilder<AssetContext>()
 															.module(module)
 															.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName))
 															.select(fields)
@@ -101,9 +108,32 @@ public class GetAssetListCommand implements Command {
 		}
 		// String.valueOf(inputType.getValue())
 		long getStartTime = System.currentTimeMillis();
-		List<? extends ModuleBaseWithCustomFields> records = builder.get();
+		List<AssetContext> records = builder.get();
 		long getTimeTaken = System.currentTimeMillis() - getStartTime;
 		LOGGER.debug("Time taken to execute Fetch assets in GetAssetListCommand : "+getTimeTaken);
+		
+		if (records != null && !records.isEmpty()) {
+			Set<Long> spaceIds = new HashSet<Long>();
+			Set<Long> typeIds = new HashSet<Long>();
+			for(AssetContext asset: records) {
+				if (asset.getSpaceId() > 0) {
+					spaceIds.add(asset.getSpaceId());
+				}
+				if (asset.getType() != null && asset.getType().getId() > 0) {
+					typeIds.add(asset.getType().getId());
+				}
+			}
+			Map<Long, BaseSpaceContext> spaceMap = SpaceAPI.getBaseSpaceMap(spaceIds);
+			Map<Long, AssetTypeContext> assetTypeMap = AssetsAPI.getAssetType(typeIds);
+			for(AssetContext asset: records) {
+				if(asset.getSpaceId() != -1) {
+					asset.setSpace(spaceMap.get(asset.getSpaceId()));
+				}
+				if (asset.getType() != null && asset.getType().getId() > 0) {
+					asset.setType(assetTypeMap.get(asset.getType().getId()));
+				}
+			}
+		}
 		
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, records);
 		
