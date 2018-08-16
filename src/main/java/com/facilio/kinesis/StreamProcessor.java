@@ -19,12 +19,9 @@ public class StreamProcessor {
     public static void run(long orgId, String orgDomainName, String eventType, IRecordProcessorFactory recordProcessorFactory) {
 
         try {
-            Thread thread = Thread.currentThread();
-            String threadName = orgDomainName +"-" + eventType;
-            thread.setName(threadName);
             AccountUtil.setCurrentAccount(orgId);
             String streamName = AwsUtil.getIotKinesisTopic(orgDomainName);
-            String clientName = threadName + "-";
+            String clientName = orgDomainName +"-" + eventType + "-";
             String environment = AwsUtil.getConfig("environment");
             String applicationName = clientName + environment;
             java.security.Security.setProperty("networkaddress.cache.ttl", "60");
