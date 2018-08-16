@@ -4436,7 +4436,7 @@ public class DashboardAction extends ActionSupport {
 		fields.add(FieldFactory.getField("value", "sum(TOTAL_ENERGY_CONSUMPTION_DELTA)", FieldType.NUMBER));
 		builder.select(fields);
 		
-		builder.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID", "parentMeterId", parentIds.get(0), NumberOperators.EQUALS));
+		builder.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID", "parentMeterId", StringUtils.join(parentIds, ','), NumberOperators.EQUALS));
 		builder.andCondition(CriteriaAPI.getCondition("TTIME", "ttime", startTime+","+endTime, DateOperators.BETWEEN));
 		
 		List<Map<String, Object>> rs = builder.get();
@@ -5315,22 +5315,23 @@ public class DashboardAction extends ActionSupport {
 				try {
 					if ((report.getY1AxisField() != null && report.getY1AxisField().getField().getName().contains("cost")) || (reportFieldLabelMap != null && reportFieldLabelMap.containsKey(report.getY1AxisField().getField().getName()) && reportFieldLabelMap.get(report.getY1AxisField().getField().getName()) != null && reportFieldLabelMap.get(report.getY1AxisField().getField().getName()).toString().contains("cost"))) {
 						
-						if(meterIdsUsed != null && meterIdsUsed.size() == 1) {
+						if(meterIdsUsed != null ) {
 							Criteria parentCriteria = criteria != null ? criteria : report.getCriteria();
 							Double totalKwh = getTotalKwh(meterIdsUsed, this.startTime, this.endTime);
 							Double totalCost = (Double) variance.get("sum");
 							
-							Long yesterdayTime = (rs.get(rs.size() - 1).get("dummyField") != null) ? (Long) rs.get(rs.size() - 1).get("dummyField") : (Long) rs.get(rs.size() - 1).get("label");
-							Long startTime = DateTimeUtil.getDayStartTimeOf(DateTimeUtil.getZonedDateTime(yesterdayTime)).toInstant().toEpochMilli();
-							Long endTime = DateTimeUtil.getDayEndTimeOf(DateTimeUtil.getZonedDateTime(yesterdayTime)).toInstant().toEpochMilli();
+							Long startTime = DateTimeUtil.getDayStartTime(-1);
+							Long endTime = DateTimeUtil.getDayStartTime();
 							Double yesterdayKwh = getTotalKwh(meterIdsUsed, startTime, endTime);
 							Double yesterdayCost = (Double) rs.get(rs.size() - 1).get("value");
 							
 							variance = new JSONObject();
 							variance.put("total_kwh", totalKwh);
 							variance.put("total_cost", totalCost);
-							variance.put("yesterday_kwh", yesterdayKwh);
-							variance.put("yesterday_cost", yesterdayCost);
+							if(meterIdsUsed.size() == 1) {
+								variance.put("yesterday_kwh", yesterdayKwh);
+								variance.put("yesterday_cost", yesterdayCost);
+							}
 						}
 						
 					}
