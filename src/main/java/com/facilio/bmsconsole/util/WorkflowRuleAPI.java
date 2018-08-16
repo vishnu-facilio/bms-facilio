@@ -39,6 +39,7 @@ import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class WorkflowRuleAPI {
@@ -225,7 +226,7 @@ public class WorkflowRuleAPI {
 						.on(module.getTableName()+".EVENT_ID = "+eventModule.getTableName()+".ID");
 		}
 		ruleBuilder.select(fields);
-		List<WorkflowRuleContext> rules = getWorkFlowsFromMapList(ruleBuilder.get(), fetchEvent);
+		List<WorkflowRuleContext> rules = getWorkFlowsFromMapList(ruleBuilder.get(), fetchEvent, true);
 		if(rules != null && !rules.isEmpty()) {
 			return rules.get(0);
 		}
@@ -250,7 +251,7 @@ public class WorkflowRuleAPI {
 		}
 		
 		ruleBuilder.select(fields);
-		List<WorkflowRuleContext> rules = getWorkFlowsFromMapList(ruleBuilder.get(), fetchEvent);
+		List<WorkflowRuleContext> rules = getWorkFlowsFromMapList(ruleBuilder.get(), fetchEvent, true);
 		
 		if(fetchAction) {
 			for(WorkflowRuleContext rule :rules) {
@@ -271,7 +272,7 @@ public class WorkflowRuleAPI {
 				.table("Workflow_Rule")
 				.select(FieldFactory.getWorkflowRuleFields())
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
-		return getWorkFlowsFromMapList(ruleBuilder.get(), false);
+		return getWorkFlowsFromMapList(ruleBuilder.get(), false, true);
 	}
 	
 	public static List<WorkflowRuleContext> getWorkflowRules(List<Long> ids) throws Exception {
@@ -282,7 +283,7 @@ public class WorkflowRuleAPI {
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getIdCondition(ids, module))
 				;
-		return getWorkFlowsFromMapList(ruleBuilder.get(), false);
+		return getWorkFlowsFromMapList(ruleBuilder.get(), false, true);
 	}
 	
 	public static List<WorkflowEventContext> getWorkflowEvents(long orgId, long moduleId) throws Exception {
@@ -302,10 +303,10 @@ public class WorkflowRuleAPI {
 				.on("Workflow_Rule.EVENT_ID = Workflow_Event.ID")
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCustomWhere("Workflow_Event.MODULEID = ?", moduleId);
-		return getWorkFlowsFromMapList(ruleBuilder.get(), false);
+		return getWorkFlowsFromMapList(ruleBuilder.get(), false, true);
 	}
 	
-	public static List<WorkflowRuleContext> getWorkflowRulesOfType(RuleType type) throws Exception{
+	public static List<WorkflowRuleContext> getWorkflowRulesOfType(RuleType type, boolean fetchEvent, boolean fetchChildren) throws Exception{
 		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
 		fields.addAll(FieldFactory.getWorkflowEventFields());
 		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
@@ -318,7 +319,7 @@ public class WorkflowRuleAPI {
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCustomWhere("RULE_TYPE = ?", type.getIntVal());
 		
-		return getWorkFlowsFromMapList(builder.get(), true);
+		return getWorkFlowsFromMapList(builder.get(), fetchEvent, fetchChildren);
 	}
 	
 	public static List<WorkflowRuleContext> getActiveWorkflowRulesFromActivityAndRuleType(long moduleId, List<ActivityType> activityTypes,Criteria criteria, RuleType... ruleTypes) throws Exception {
@@ -363,7 +364,7 @@ public class WorkflowRuleAPI {
 			values.add(type.getValue());
 		}
 		ruleBuilder.andCustomWhere(activityTypeWhere.toString(), values.toArray());
-		return getWorkFlowsFromMapList(ruleBuilder.get(), false);
+		return getWorkFlowsFromMapList(ruleBuilder.get(), false, true);
 	}
 	
 	public static int updateLastValueInReadingRule(long ruleId, long value) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
@@ -479,9 +480,11 @@ public class WorkflowRuleAPI {
 		return typeWiseProps;
 	}
 	
-	private static List<WorkflowRuleContext> getWorkFlowsFromMapList(List<Map<String, Object>> props, boolean isEvent) throws Exception {
+	private static List<WorkflowRuleContext> getWorkFlowsFromMapList(List<Map<String, Object>> props, boolean fetchEvent, boolean fetchChildren) throws Exception {
 		if(props != null && props.size() > 0) {
 			List<WorkflowRuleContext> workflows = new ArrayList<>();
+			List<Long> workflowIds = fetchChildren ? new ArrayList<>() : null;
+			List<Long> criteriaIds = fetchChildren ? new ArrayList<>() : null;
 			
 			Map<RuleType, List<Long>> typeWiseIds = new HashMap<>();
 			for(Map<String, Object> prop : props) {
@@ -492,12 +495,32 @@ public class WorkflowRuleAPI {
 					typeWiseIds.put(ruleType, idList);
 				}
 				idList.add((Long) prop.get("id"));
+				
+				if (fetchChildren) {
+					Long workflowId = (Long) prop.get("workflowId");
+					if (workflowId != null) {
+						workflowIds.add(workflowId);
+					}
+					Long criteriaId = (Long) prop.get("criteriaId");
+					if (criteriaId != null) {
+						criteriaIds.add(criteriaId);
+					}
+				}
 			}
 			Map<RuleType, Map<Long, Map<String, Object>>> typeWiseExtendedProps = getTypeWiseExtendedProps(typeWiseIds);
+			Map<Long, WorkflowContext> workflowMap = null;
+			if (fetchChildren && !workflowIds.isEmpty()) {
+				workflowMap = WorkflowUtil.getWorkflowsAsMap(workflowIds, true);
+			}
+			
+			Map<Long, Criteria> criteriaMap = null;
+			if (fetchChildren && !criteriaIds.isEmpty()) {
+				criteriaMap = CriteriaAPI.getCriteriaAsMap(criteriaIds);
+			}
 			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			for(Map<String, Object> prop : props) {
-				WorkflowRuleContext workflow = null;
+				WorkflowRuleContext rule = null;
 				
 				RuleType ruleType = RuleType.valueOf((int) prop.get("ruleType"));
 				switch(ruleType) {
@@ -506,38 +529,38 @@ public class WorkflowRuleAPI {
 					case READING_RULE:
 					case VALIDATION_RULE:
 						prop.putAll(typeWiseExtendedProps.get(ruleType).get((Long) prop.get("id")));
-						workflow = FieldUtil.getAsBeanFromMap(prop, ReadingRuleContext.class);
-						ReadingRuleContext readingRule = ((ReadingRuleContext)workflow);
-						readingRule.setReadingField(modBean.getField(((ReadingRuleContext)workflow).getReadingFieldId()));
+						rule = FieldUtil.getAsBeanFromMap(prop, ReadingRuleContext.class);
+						ReadingRuleContext readingRule = ((ReadingRuleContext)rule);
+						readingRule.setReadingField(modBean.getField(((ReadingRuleContext)rule).getReadingFieldId()));
 						setMatchedResources(readingRule);
 						break;
 					case SLA_RULE:
 						prop.putAll(typeWiseExtendedProps.get(ruleType).get((Long) prop.get("id")));
-						workflow = FieldUtil.getAsBeanFromMap(prop, SLARuleContext.class);
-						((SLARuleContext)workflow).setResource(ResourceAPI.getResource(((SLARuleContext)workflow).getResourceId()));
+						rule = FieldUtil.getAsBeanFromMap(prop, SLARuleContext.class);
+						((SLARuleContext)rule).setResource(ResourceAPI.getResource(((SLARuleContext)rule).getResourceId()));
 						break;
 					default:
-						workflow = FieldUtil.getAsBeanFromMap(prop, WorkflowRuleContext.class);
+						rule = FieldUtil.getAsBeanFromMap(prop, WorkflowRuleContext.class);
 						break;
 				}
 				
-				long criteriaId = workflow.getCriteriaId();
-				if (criteriaId != -1) {
-					workflow.setCriteria(CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), criteriaId));
+				long criteriaId = rule.getCriteriaId();
+				if (fetchChildren && criteriaId != -1) {
+					rule.setCriteria(criteriaMap.get(criteriaId));
 				}
 				
-				long workflowId = workflow.getWorkflowId();
-				if (workflowId != -1) {
-					workflow.setWorkflow(WorkflowUtil.getWorkflowContext(workflowId, true));
+				long workflowId = rule.getWorkflowId();
+				if (fetchChildren && workflowId != -1) {
+					rule.setWorkflow(workflowMap.get(workflowId));
 				}
 				
-				if(isEvent) {
+				if(fetchEvent) {
 					WorkflowEventContext event = FieldUtil.getAsBeanFromMap(prop, WorkflowEventContext.class);
-					event.setId(workflow.getEventId());
+					event.setId(rule.getEventId());
 					event.setModule(modBean.getModule(event.getModuleId()));
-					workflow.setEvent(event);
+					rule.setEvent(event);
 				}
-				workflows.add(workflow);
+				workflows.add(rule);
 			}
 			return workflows;
 		}

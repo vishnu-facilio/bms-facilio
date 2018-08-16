@@ -436,8 +436,10 @@ public class FacilioConstants {
 		public static final String MAX_LEVEL = "maxLevel";
 		public static final String SORTING_QUERY = "sortingQuery";
 		public static final String LIMIT_VALUE = "limitValue";
-		public static final String WORKFLOW_UPDATE="workflowUpdate";
-		public static final String WORKFLOW_RULE="workflowRule";
+		public static final String WORKFLOW_FETCH_EVENT = "workflowFetchEvent";
+		public static final String WORKFLOW_FETCH_CHILDREN = "workflowFetchChildren";
+		public static final String WORKFLOW_UPDATE = "workflowUpdate";
+		public static final String WORKFLOW_RULE = "workflowRule";
 		public static final String WORKFLOW_RULE_LIST="workflowRuleList";
 		public static final String READING_RULE_LIST ="readingRules";
 		public static final String WORKFLOW_RULE_TYPE = "workflowRuleType";
