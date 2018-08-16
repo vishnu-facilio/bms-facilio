@@ -29,6 +29,9 @@ public class NotificationProcessor implements IRecordProcessor {
     private static final CharsetDecoder DECODER = Charset.forName("UTF-8").newDecoder();
 
     public void initialize(InitializationInput initializationInput) {
+        Thread thread = Thread.currentThread();
+        String threadName = "facilio-notifications";
+        thread.setName(threadName);
         LOGGER.info("Starting Notification processor " + initializationInput.getExtendedSequenceNumber());
     }
 
