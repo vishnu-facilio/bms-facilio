@@ -4251,6 +4251,11 @@
 				<param name="includeProperties">^reportContext.*</param>
 			</result>
 		</action>
+		<action name="updateRefreshInterval" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateRefreshInterval">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportContext.*</param>
+			</result>
+		</action>
 		<action name="sendReportMail" class="com.facilio.bmsconsole.actions.DashboardAction" method="sendReportMail">
 			<result name="success" type="json">
 				<param name="includeProperties">reportId</param>

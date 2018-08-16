@@ -516,6 +516,34 @@ public class DashboardAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	private Integer refreshInterval = null;
+	
+	public void setRefreshInterval(Integer refreshInterval) {
+		this.refreshInterval = refreshInterval;
+	}
+	
+	public Integer getRefreshInterval() {
+		return this.refreshInterval;
+	}
+	
+	public String updateRefreshInterval() throws Exception {
+		
+		if (getWidgetId() != null && getRefreshInterval() != null && getRefreshInterval() > 120) {
+	
+			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+					.table(ModuleFactory.getWidgetModule().getTableName())
+					.fields(FieldFactory.getWidgetFields())
+					.andCustomWhere("ID = ?", getWidgetId());
+
+			Map<String, Object> props = new HashMap<String, Object>();
+			props.put("dataRefreshIntervel", getRefreshInterval());
+			
+			updateBuilder.update(props);
+		}
+		
+		return SUCCESS;
+	}
+	
 	public String addReportFolder() throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
