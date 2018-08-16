@@ -91,38 +91,38 @@ public class SpaceBudIntegrationCommand implements Command {
 						else if (reading.getParentId() == 16865 && reading.getReading("totalEnergyConsumptionDelta") != null) {
 							attributes.add(new Attribute("5B RM1 8F1 EB_EM", reading.getReading("totalEnergyConsumptionDelta")));
 						}
-						else if (reading.getParentId() == 2286 && reading.getReading("totalEnergyConsumptionDelta") != null) {
-							attributes.add(new Attribute("EM_303_EB_KWH", reading.getReading("totalEnergyConsumptionDelta")));
+						else if (reading.getParentId() == 16866 && reading.getReading("totalEnergyConsumptionDelta") != null) {
+							attributes.add(new Attribute("5B RM1 8F2 EB_EM", reading.getReading("totalEnergyConsumptionDelta")));
 						}
-						else if (reading.getParentId() == 2288 && reading.getReading("totalEnergyConsumptionDelta") != null) {
-							attributes.add(new Attribute("EM_304_EB_KWH", reading.getReading("totalEnergyConsumptionDelta")));
+						else if (reading.getParentId() == 16867 && reading.getReading("totalEnergyConsumptionDelta") != null) {
+							attributes.add(new Attribute("5B RM1 9F EB_EM", reading.getReading("totalEnergyConsumptionDelta")));
 						}
-						else if (reading.getParentId() == 2290 && reading.getReading("totalEnergyConsumptionDelta") != null) {
-							attributes.add(new Attribute("EM_402A_EB_KWH", reading.getReading("totalEnergyConsumptionDelta")));
+						else if (reading.getParentId() == 16868 && reading.getReading("totalEnergyConsumptionDelta") != null) {
+							attributes.add(new Attribute("5B RM1 10F EB_EM", reading.getReading("totalEnergyConsumptionDelta")));
 						}
-						else if (reading.getParentId() == 2292 && reading.getReading("totalEnergyConsumptionDelta") != null) {
-							attributes.add(new Attribute("EM_402B_EB_KWH", reading.getReading("totalEnergyConsumptionDelta")));
+						else if (reading.getParentId() == 16869 && reading.getReading("totalEnergyConsumptionDelta") != null) {
+							attributes.add(new Attribute("5B RM2 GF1 EB_EM", reading.getReading("totalEnergyConsumptionDelta")));
 						}
-						else if (reading.getParentId() == 2294 && reading.getReading("totalEnergyConsumptionDelta") != null) {
-							attributes.add(new Attribute("EM_403_EB_KWH", reading.getReading("totalEnergyConsumptionDelta")));
+						else if (reading.getParentId() == 16870 && reading.getReading("totalEnergyConsumptionDelta") != null) {
+							attributes.add(new Attribute("5B RM2 GF2 EB_EM", reading.getReading("totalEnergyConsumptionDelta")));
 						}
-						else if (reading.getParentId() == 2296 && reading.getReading("totalEnergyConsumptionDelta") != null) {
-							attributes.add(new Attribute("EM_404_EB_KWH", reading.getReading("totalEnergyConsumptionDelta")));
+						else if (reading.getParentId() == 16871 && reading.getReading("totalEnergyConsumptionDelta") != null) {
+							attributes.add(new Attribute("5B RM2 1F EB_EM", reading.getReading("totalEnergyConsumptionDelta")));
 						}
-						else if (reading.getParentId() == 2298 && reading.getReading("totalEnergyConsumptionDelta") != null) {
-							attributes.add(new Attribute("EM_501_EB_KWH", reading.getReading("totalEnergyConsumptionDelta")));
+						else if (reading.getParentId() == 16872 && reading.getReading("totalEnergyConsumptionDelta") != null) {
+							attributes.add(new Attribute("5B RM2 2F EB_EM", reading.getReading("totalEnergyConsumptionDelta")));
 						}
-						else if (reading.getParentId() == 2300 && reading.getReading("totalEnergyConsumptionDelta") != null) {
-							attributes.add(new Attribute("EM_502_EB_KWH", reading.getReading("totalEnergyConsumptionDelta")));
+						else if (reading.getParentId() == 16873 && reading.getReading("totalEnergyConsumptionDelta") != null) {
+							attributes.add(new Attribute("5B RM2 3F EB_EM", reading.getReading("totalEnergyConsumptionDelta")));
 						}
-						else if (reading.getParentId() == 2303 && reading.getReading("totalEnergyConsumptionDelta") != null) {
-							attributes.add(new Attribute("EM_503_EB_KWH", reading.getReading("totalEnergyConsumptionDelta")));
+						else if (reading.getParentId() == 16874 && reading.getReading("totalEnergyConsumptionDelta") != null) {
+							attributes.add(new Attribute("5B RM2 4F EB_EM", reading.getReading("totalEnergyConsumptionDelta")));
 						}
-						else if (reading.getParentId() == 2305 && reading.getReading("totalEnergyConsumptionDelta") != null) {
-							attributes.add(new Attribute("EM_504_EB_KWH", reading.getReading("totalEnergyConsumptionDelta")));
+						else if (reading.getParentId() == 16875 && reading.getReading("totalEnergyConsumptionDelta") != null) {
+							attributes.add(new Attribute("5B RM2 5F EB_EM", reading.getReading("totalEnergyConsumptionDelta")));
 						}
-						else if (reading.getParentId() == 2307 && reading.getReading("totalEnergyConsumptionDelta") != null) {
-							attributes.add(new Attribute("EM_601_EB_KWH", reading.getReading("totalEnergyConsumptionDelta")));
+						else if (reading.getParentId() == 16876 && reading.getReading("totalEnergyConsumptionDelta") != null) {
+							attributes.add(new Attribute("5B RM2 6F EB_EM", reading.getReading("totalEnergyConsumptionDelta")));
 						}
 						else if (reading.getParentId() == 2309 && reading.getReading("totalEnergyConsumptionDelta") != null) {
 							attributes.add(new Attribute("EM_602_EB_KWH", reading.getReading("totalEnergyConsumptionDelta")));
@@ -189,11 +189,12 @@ public class SpaceBudIntegrationCommand implements Command {
 					eventinfoarray.add(eventInfo);
 					postdata.put("eventInfo", eventinfoarray); // eventInfo always array of one element
 					postdata.put("timestamp", System.currentTimeMillis()); 
+					logger.log(Level.INFO, "SpaceBudIntegrationCommand POST content " + postdata.toJSONString());
+
 				}
 				else {
 					logger.log(Level.FATAL, "SpaceBudIntegrationCommand Fails.readingMap is NULL for "+readingMap );
 				}
-				logger.log(Level.DEBUG, "SpaceBudIntegrationCommand POST content " + postdata.toJSONString());
 				if (! attributes.isEmpty()) {
 					String result = AwsUtil.doHttpPost(POST_URL, headers, null, postdata.toJSONString());
 					logger.log(Level.INFO, "SpaceBudIntegrationCommand POST DONE " + result);
