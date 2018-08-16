@@ -297,7 +297,7 @@ public class WorkflowRuleAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_TYPE, ruleType);
 		context.put(FacilioConstants.ContextNames.WORKFLOW_FETCH_EVENT, false);
-		context.put(FacilioConstants.ContextNames.WORKFLOW_FETCH_CHILDREN, true);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_FETCH_CHILDREN, false);
 		
 		Chain workflowRuleType = FacilioChainFactory.fetchWorkflowRulesOfTypeChain();
 		workflowRuleType.execute(context);
