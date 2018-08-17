@@ -245,6 +245,7 @@ public class OrgBeanImpl implements OrgBean {
 			for(Map<String, Object> prop : props) {
 				User user = UserBeanImpl.createUserFromProps(prop);
 				user.setAccessibleSpace(UserBeanImpl.getAccessibleSpaceList(user.getOuid()));
+				user.setGroups(UserBeanImpl.getAccessibleGroupList(user.getOuid()));
 				users.add(user);
 			}
 			return users;

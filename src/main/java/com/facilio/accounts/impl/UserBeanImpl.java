@@ -23,6 +23,7 @@ import com.facilio.accounts.exception.AccountException;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountEmailTemplate;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountConstants.GroupMemberRole;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -401,7 +402,7 @@ public class UserBeanImpl implements UserBean {
 		
 		sendInvitation(ouid, user);
 		addAccessibleSpace(user.getOuid(), user.getAccessibleSpace());
-
+		addAccessibleTeam(user.getOuid(), user.getGroups());
 		return ouid;
 	}
 
@@ -676,6 +677,10 @@ public long inviteRequester(long orgId, User user) throws Exception {
 			if(user.getAccessibleSpace() != null) {
 				deleteAccessibleSpace(user.getOuid());
 				addAccessibleSpace(user.getOuid(), user.getAccessibleSpace());
+			}
+			if(user.getGroups() != null) {
+				deleteAccessibleGroups(user.getOuid());
+				addAccessibleTeam(user.getOuid(), user.getGroups());
 			}
 
 			Map<String, Object> props = FieldUtil.getAsProperties(user);
@@ -1276,11 +1281,32 @@ public long inviteRequester(long orgId, User user) throws Exception {
 		}
 		insertBuilder.save();
 	}
+	private void addAccessibleTeam (long uid, List<Long> groups) throws Exception {
+
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(AccountConstants.getGroupMemberModule().getTableName())
+				.fields(AccountConstants.getGroupMemberFields());
+		for(Long group : groups) {
+			Map<String, Object> props = new HashMap<>();
+			props.put("ouid", uid);
+			props.put("groupId", group);
+			props.put("memberRole", GroupMemberRole.MEMBER.getMemberRole());
+			insertBuilder.addRecord(props);
+		}
+		insertBuilder.save();
+	}
 
 	private void deleteAccessibleSpace(long uid) throws Exception {
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 				.table(ModuleFactory.getAccessibleSpaceModule().getTableName())
 				.andCustomWhere("ORG_USER_ID = ?", uid);
+		builder.delete();
+	}
+	
+	private void deleteAccessibleGroups(long uid) throws Exception {
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+				.table(AccountConstants.getGroupMemberModule().getTableName())
+				.andCustomWhere("ORG_USERID = ?", uid);
 		builder.delete();
 	}
 
@@ -1301,6 +1327,24 @@ public long inviteRequester(long orgId, User user) throws Exception {
 	return null;
 
 	}
+	
+	static List<Long> getAccessibleGroupList (long uid) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(AccountConstants.getGroupMemberFields())
+				.table(AccountConstants.getGroupMemberModule().getTableName())
+				.andCustomWhere("ORG_USERID = ?", uid);
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			List<Long> bsids = new ArrayList<>();
+			for(Map<String, Object> prop : props) {
+				bsids.add((Long) prop.get("groupId"));
+			}
+			return bsids;
+		}
+		return null;
+
+		}
 
 /*	@Override
 	public long addUserLicense(long orgId, long roleid, Integer number_of_users) throws Exception {

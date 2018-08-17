@@ -291,7 +291,15 @@ public class User implements Serializable {
 	public void setAccessibleSpace(List<Long> accessibleSpace) {
 		this.accessibleSpace = accessibleSpace;
 	}
+	private List<Long> groups;
 
+
+	public List<Long> getGroups() {
+		return groups;
+	}
+	public void setGroups(List<Long> groups) {
+		this.groups = groups;
+	}
 	public Criteria scopeCriteria(String moduleName)
 	{
 		Criteria criteria = null;
