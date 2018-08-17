@@ -253,9 +253,9 @@ public class PerformAssetAction implements Command {
 						
 						Map<String, Object> assetMap= (Map<String, Object>) kdm.getDatum("servernumber");
 						
-						AssetContext asset = FieldUtil.getAsBeanFromMap(assetMap, AssetContext.class);
+						AssetContext asset = AssetsAPI.getAssetInfo((Long)assetMap.get("id"));
 						
-						task.setAsset(asset);
+						task.setResource(asset.getSpace());
 						
 						task.setSequence(sequence);
 						sequence++;
