@@ -7,6 +7,21 @@ public class RemoteScreenContext {
 	Long screenName;
 	String token;
 	Long sessionStartTime;
+	public Long getScreenId() {
+		return screenId;
+	}
+	public void setScreenId(Long screenId) {
+		this.screenId = screenId;
+	}
+	Long screenId;
+	
+	ScreenContext screenContext;
+	public ScreenContext getScreenContext() {
+		return screenContext;
+	}
+	public void setScreenContext(ScreenContext screenContext) {
+		this.screenContext = screenContext;
+	}
 	public Long getId() {
 		return id;
 	}

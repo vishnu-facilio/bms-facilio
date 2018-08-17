@@ -1,5 +1,6 @@
 package com.facilio.screen.util;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.screen.context.ScreenContext;
 import com.facilio.screen.context.ScreenDashboardRelContext;
 import com.facilio.sql.GenericDeleteRecordBuilder;
@@ -19,7 +21,7 @@ import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class ScreenUtil {
 
-	public void addScreen(ScreenContext screen) throws Exception {
+	public static void addScreen(ScreenContext screen) throws Exception {
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getScreenModule().getTableName())
@@ -45,7 +47,7 @@ public class ScreenUtil {
 		insertBuilder.save();
 	}
 	
-	public void updateScreen(ScreenContext screen) throws Exception {
+	public static void updateScreen(ScreenContext screen) throws Exception {
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(ModuleFactory.getScreenModule().getTableName())
@@ -75,7 +77,23 @@ public class ScreenUtil {
 		
 	}
 	
-	public List<ScreenContext> getAllScreen() throws Exception {
+	public static void deleteScreen(ScreenContext screen) throws Exception {
+		
+		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		
+		deleteRecordBuilder.table(ModuleFactory.getScreenDashboardRelModule().getTableName())
+		.andCustomWhere("SCREEN_ID = ?", screen.getId());
+		deleteRecordBuilder.delete();
+		
+		deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		
+		deleteRecordBuilder.table(ModuleFactory.getScreenModule().getTableName())
+		.andCustomWhere("ID = ?", screen.getId());
+		deleteRecordBuilder.delete();
+		
+	}
+	
+	public static List<ScreenContext> getAllScreen() throws Exception {
 		
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
 		
@@ -95,7 +113,7 @@ public class ScreenUtil {
 		return screens;
 	}
 	
-	public ScreenContext getScreen(Long screenId) throws Exception {
+	public static ScreenContext getScreen(Long screenId) throws Exception {
 		
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
 		
@@ -115,7 +133,7 @@ public class ScreenUtil {
 		return null;
 	}
 	
-	public List<ScreenDashboardRelContext> getScreenDashboardRel(ScreenContext screenContext) throws Exception {
+	public static List<ScreenDashboardRelContext> getScreenDashboardRel(ScreenContext screenContext) throws Exception {
 		
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
 		
@@ -138,10 +156,37 @@ public class ScreenUtil {
 	
 	
 	
+	public static void addRemoteScreen(RemoteScreenContext remoteScreenContext) throws Exception {
+		
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getRemoteScreenModule().getTableName())
+				.fields(FieldFactory.getRemoteScreenModuleFields());
+		
+		Map<String, Object> props = FieldUtil.getAsProperties(remoteScreenContext);
+		insertBuilder.addRecord(props);
+		insertBuilder.save();
+		
+		remoteScreenContext.setId((Long) props.get("id"));
+	}
 	
+	public static void updateRemoteScreen(RemoteScreenContext remoteScreenContext) throws Exception {
+		
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(ModuleFactory.getRemoteScreenModule().getTableName())
+				.fields(FieldFactory.getRemoteScreenModuleFields())
+				.andCustomWhere("ID = ?", remoteScreenContext.getId());
+
+		Map<String, Object> props = FieldUtil.getAsProperties(remoteScreenContext);
+		updateBuilder.update(props);
+		
+	}
 	
-	
-	
-	
-	
+	public static void deleteRemoteScreen(RemoteScreenContext remoteScreenContext) throws Exception {
+		
+		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		
+		deleteRecordBuilder.table(ModuleFactory.getRemoteScreenModule().getTableName())
+		.andCustomWhere("ID = ?", remoteScreenContext.getId());
+		deleteRecordBuilder.delete();
+	}
 }
