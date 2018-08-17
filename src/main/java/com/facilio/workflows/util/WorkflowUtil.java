@@ -424,7 +424,10 @@ public class WorkflowUtil {
 					if(workflowFieldContexts == null) {
 						workflowFieldContexts = new ArrayList<>();
 					}
-					workflowFieldContexts.add(workflowFieldContext);
+					
+					if(!workflowFieldContexts.contains(workflowFieldContext)) {
+						workflowFieldContexts.add(workflowFieldContext);
+					}
 				}
 			}
 		}

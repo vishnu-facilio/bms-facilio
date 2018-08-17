@@ -2,7 +2,7 @@ package com.facilio.workflows.context;
 
 import com.facilio.bmsconsole.modules.FacilioField;
 
-public class WorkflowFieldContext {
+public class WorkflowFieldContext{
 
 	private long resourceId = -1;
 	public long getResourceId() {
@@ -51,4 +51,15 @@ public class WorkflowFieldContext {
 	public void setField(FacilioField field) {
 		this.field = field;
 	}
+	@Override
+	public boolean equals(Object o)
+    {
+		if(o instanceof WorkflowFieldContext) {
+			WorkflowFieldContext workflowField = (WorkflowFieldContext) o;
+			if(workflowField.getOrgId() == this.getOrgId() && workflowField.getModuleId() == this.getModuleId() && workflowField.getFieldId() == this.getFieldId() && workflowField.getResourceId() == this.getResourceId()) {
+				return true;
+			}
+		}
+        return false;
+    }
 }
