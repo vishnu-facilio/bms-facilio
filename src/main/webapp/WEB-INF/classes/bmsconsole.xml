@@ -4084,6 +4084,109 @@
 		
 	</package>
 	
+	<package name="screen" namespace="/api/screen" extends="home">
+	
+		<action name="getAllScreens" class="com.facilio.screen.action.ScreenContext" method="getScreens">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">screenContexts,screenContexts\[\d+\],screenContexts\[\d+\].*</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">400</param>
+			</result>
+		</action>
+		
+		<action name="getAllRemoteScreens" class="com.facilio.workflows.action.WorkflowAction" method="getRemoteScreens">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">remoteScreenContexts,remoteScreenContexts\[\d+\],remoteScreenContexts\[\d+\].*</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">400</param>
+			</result>
+		</action>
+		
+		<action name="getRemoteScreen" class="com.facilio.screen.action.ScreenContext" method="getRemoteScreen">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">remoteScreenContext</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">400</param>
+			</result>
+		</action>
+		
+		<action name="getScreen" class="com.facilio.workflows.action.WorkflowAction" method="getScreen">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">screenContext</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">400</param>
+			</result>
+		</action>
+		<action name="addScreen" class="com.facilio.workflows.action.WorkflowAction" method="addScreen">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">screenContext</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">400</param>
+			</result>
+		</action>
+		
+		<action name="updateScreen" class="com.facilio.workflows.action.WorkflowAction" method="updateScreen">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">screenContext</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">400</param>
+			</result>
+		</action>
+		
+		<action name="deleteScreen" class="com.facilio.workflows.action.WorkflowAction" method="deleteScreen">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">screenContext</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">400</param>
+			</result>
+		</action>
+		
+		<action name="addRemoteScreen" class="com.facilio.workflows.action.WorkflowAction" method="addRemoteScreen">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">remoteScreenContext</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">400</param>
+			</result>
+		</action>
+		
+		<action name="updateRemoteScreen" class="com.facilio.workflows.action.WorkflowAction" method="updateRemoteScreen">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">remoteScreenContext</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">400</param>
+			</result>
+		</action>
+		
+		<action name="deleteRemoteScreen" class="com.facilio.workflows.action.WorkflowAction" method="deleteRemoteScreen">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">remoteScreenContext</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">400</param>
+			</result>
+		</action>
+		
+	</package>
+	
 	<package name="dashboard" namespace="/api/dashboard" extends="home">
 		<action name="populateDefaultReports" class="com.facilio.bmsconsole.actions.DashboardAction" method="populateDefaultReports">
 		</action>

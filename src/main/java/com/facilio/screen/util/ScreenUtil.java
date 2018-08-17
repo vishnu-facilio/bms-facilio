@@ -155,6 +155,43 @@ public class ScreenUtil {
 	}
 	
 	
+	public static List<RemoteScreenContext> getAllRemoteScreen() throws Exception {
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
+		
+		builder.table(ModuleFactory.getRemoteScreenModule().getTableName());
+		builder.select(FieldFactory.getRemoteScreenModuleFields());
+		builder.andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getId(), ModuleFactory.getRemoteScreenModule()));
+		
+		List<Map<String, Object>> props = builder.get();
+		
+		List<RemoteScreenContext> remoteScreens = new ArrayList<>();
+		for(Map<String, Object> prop :props) {
+			
+			RemoteScreenContext remoteSreenContext = (RemoteScreenContext) FieldUtil.getAsBeanFromMap(prop, RemoteScreenContext.class);
+			
+			remoteScreens.add(remoteSreenContext);
+		}
+		return remoteScreens;
+	}
+	
+	public static RemoteScreenContext getRemoteScreen(Long remoteScreenId) throws Exception {
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
+		
+		builder.table(ModuleFactory.getRemoteScreenModule().getTableName());
+		builder.select(FieldFactory.getRemoteScreenModuleFields());
+		builder.andCondition(CriteriaAPI.getIdCondition(remoteScreenId+"", ModuleFactory.getRemoteScreenModule()));
+		
+		List<Map<String, Object>> props = builder.get();
+		
+		for(Map<String, Object> prop :props) {
+			
+			RemoteScreenContext remoteScreenContext = (RemoteScreenContext) FieldUtil.getAsBeanFromMap(prop, RemoteScreenContext.class);
+			return remoteScreenContext;
+		}
+		return null;
+	}
 	
 	public static void addRemoteScreen(RemoteScreenContext remoteScreenContext) throws Exception {
 		
