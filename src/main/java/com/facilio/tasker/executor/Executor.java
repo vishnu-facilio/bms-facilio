@@ -25,7 +25,6 @@ public class Executor implements Runnable {
 	private String name = null;
 	private int bufferPeriod;
 	private int maxRetry = MAX_RETRY;
-	private List<String> currentJobs = Collections.synchronizedList(new ArrayList<>());
 	
 	public Executor(String name, int noOfThreads, int bufferPeriod) {
 		// TODO Auto-generated constructor stub
@@ -59,11 +58,7 @@ public class Executor implements Runnable {
 				jobs.addAll(JobStore.getIncompletedJobs(name, startTime, endTime, getMaxRetry()));
 				for(JobContext jc : jobs) {
 					try {
-						String uniqueJobId = jc.getJobId()+"_"+jc.getJobName();
-						if (!currentJobs.contains(uniqueJobId)) {
-							scheduleJob(jc);
-							currentJobs.add(uniqueJobId);
-						}
+						scheduleJob(jc);
 					}
 					catch(Exception e) {
 						log.info("Unable to schedule job : "+jc.getJobName());
@@ -94,10 +89,6 @@ public class Executor implements Runnable {
 				log.info("No such Job with jobname : " + jc.getJobName());
 			}
 		}
-	}
-	
-	public void removeJob(JobContext jc) {
-		currentJobs.remove(jc.getJobId()+"_"+jc.getJobName());
 	}
 	
 	public void schedule(FacilioJob job, long delay) {
