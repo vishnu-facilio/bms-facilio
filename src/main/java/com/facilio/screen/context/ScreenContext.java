@@ -1,11 +1,27 @@
 package com.facilio.screen.context;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ScreenContext {
 
 	Long id;
 	Long orgId;
 	String name;
 	int interval;
+	List<ScreenDashboardRelContext> screenDashboards;
+	
+	public List<ScreenDashboardRelContext> getScreenDashboards() {
+		return screenDashboards;
+	}
+	public void setScreenDashboards(List<ScreenDashboardRelContext> screenDashboards) {
+		this.screenDashboards = screenDashboards;
+	}
+	public void addScreenDashboard(ScreenDashboardRelContext screenDashboard) {
+		screenDashboards = (screenDashboards == null) ? new ArrayList<>() : screenDashboards; 
+		
+		this.screenDashboards.add(screenDashboard);
+	}
 	public Long getId() {
 		return id;
 	}

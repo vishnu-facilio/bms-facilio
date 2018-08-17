@@ -1,11 +1,20 @@
 package com.facilio.screen.context;
 
+import com.facilio.bmsconsole.context.DashboardContext;
+
 public class ScreenDashboardRelContext {
 
 	Long id;
 	Long screenId;
 	Long dashboardId;
 	int sequence;
+	DashboardContext dashboard;
+	public DashboardContext getDashboard() {
+		return dashboard;
+	}
+	public void setDashboard(DashboardContext dashboard) {
+		this.dashboard = dashboard;
+	}
 	public Long getId() {
 		return id;
 	}
