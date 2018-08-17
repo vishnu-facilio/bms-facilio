@@ -46,6 +46,16 @@ public class ModuleBaseWithCustomFields implements Serializable {
 		}
 		return false;
 	}
+	
+	private long formId = -1;
+	
+	public void setFormId(long formId) {
+		this.formId = formId;
+	}
+	
+	public long getFormId() {
+		return this.formId;
+	}
 
 //	@Element( value = java.lang.String.class )
 	private Map<String, Object> data = null;

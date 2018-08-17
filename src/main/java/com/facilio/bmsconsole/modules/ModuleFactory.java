@@ -53,8 +53,27 @@ public class ModuleFactory {
 		moduleMap.put("businesshours", getBusinessHoursModule());
 		moduleMap.put("files", getFilesModule());
 		moduleMap.put("anomalyScheduler", getAnalyticsAnomalyModule());
+		moduleMap.put("form", getFormModule());
+		moduleMap.put("formFields", getFormFieldsModule());
 		return moduleMap;
 	}
+
+	public static FacilioModule getFormModule() {
+		FacilioModule formModule = new FacilioModule();
+		formModule.setName("form");
+		formModule.setDisplayName("Form");
+		formModule.setTableName("Forms");
+		return formModule;
+	}
+	
+	public static FacilioModule getFormFieldsModule() {
+		FacilioModule formFieldsModule = new FacilioModule();
+		formFieldsModule.setName("formFields");
+		formFieldsModule.setDisplayName("Form Fields");
+		formFieldsModule.setTableName("Form_Fields");
+		return formFieldsModule;
+	}
+	
 
 	public static FacilioModule getFieldsModule() {
 		FacilioModule fieldModule = new FacilioModule();

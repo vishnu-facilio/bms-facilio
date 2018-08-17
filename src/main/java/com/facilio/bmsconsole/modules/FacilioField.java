@@ -335,7 +335,11 @@ public class FacilioField implements Serializable {
 		LOOKUP_POPUP(11, null),
 		LOOKUP_SECTION(12, null),
 		DECIMAL(13, "number"),
-		ENPI(14, "enpi") //Temp hack
+		ENPI(14, "enpi"), //Temp hack,
+		WOASSETSPACECHOOSER(15, "wo-asset-space-chooser"),
+		REQUESTER(16, "requester"),
+		URGENCY(17, "urgency"),
+		ATTACHMENT(18, "attachment")
 		;
 		
 		private int intVal;
@@ -354,7 +358,7 @@ public class FacilioField implements Serializable {
 		}
 		
 		
-		private static final Map<Integer, FieldDisplayType> TYPE_MAP = Collections.unmodifiableMap(initTypeMap());
+		public static final Map<Integer, FieldDisplayType> TYPE_MAP = Collections.unmodifiableMap(initTypeMap());
 		private static Map<Integer, FieldDisplayType> initTypeMap() {
 			Map<Integer, FieldDisplayType> typeMap = new HashMap<>();
 			for(FieldDisplayType type : values()) {

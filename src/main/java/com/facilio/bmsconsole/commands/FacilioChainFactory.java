@@ -377,6 +377,8 @@ public class FacilioChainFactory {
 	
 	public static Chain getAddWorkOrderRequestChain() {
 		Chain c = getDefaultChain();
+		c.addCommand(new GetFormMetaCommand());
+		c.addCommand(new ValidateFormCommand());
 //		c.addCommand(getAddTicketChain());
 		c.addCommand(new AddRequesterCommand());
 		c.addCommand(SetTableNamesCommand.getForWorkOrderRequest());
@@ -2477,6 +2479,29 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getFormMetaChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new GetFormMetaCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getFormFieldsChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new GetFormFieldsCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain editFormChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new GetFormMetaCommand());
+		c.addCommand(new EditFormCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	
 	private static  long createOrg(Organization org) throws Exception {
 		
 		Organization existingOrg = getOrg(org.getDomain());
@@ -2544,7 +2569,6 @@ public class FacilioChainFactory {
 		
 		return c;
 	}
-	
 }
 
 class TransactionChain extends ChainBase {

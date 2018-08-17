@@ -144,6 +144,16 @@ public class WorkOrderRequestAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	private String formName;
+	
+	public void setFormName(String formName) {
+		this.formName = formName;
+	}
+	
+	public String getFormName() {
+		return this.formName;
+	}
+	
 	public String addWorkOrderRequest() throws Exception {
 		
 		if (workOrderRequestString != null) {
@@ -153,6 +163,12 @@ public class WorkOrderRequestAction extends FacilioAction {
 		workorderrequest.setSourceType(TicketContext.SourceType.WEB_REQUEST);
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.REQUESTER, workorderrequest.getRequester());
+		
+		if (this.getFormName() != null || !this.getFormName().isEmpty()) {
+			context.put(FacilioConstants.ContextNames.FORM_NAMES, new String[]{this.getFormName()});
+			context.put(FacilioConstants.ContextNames.FORM_OBJECT, workorderrequest);
+		}
+		
 		if (AccountUtil.getCurrentUser() == null && workorderrequest.getRequester().getEmail() != null) {
 			// public work request
 			context.put(FacilioConstants.ContextNames.IS_PUBLIC_REQUEST, true);
