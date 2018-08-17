@@ -4168,6 +4168,43 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	public static List<FacilioField> getScreenModuleFields() {
+		FacilioModule module = ModuleFactory.getScreenModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("name", "NAME", module, FieldType.STRING));
+		fields.add(getField("interval", "INTERVAL", module, FieldType.NUMBER));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getScreenDashboardRelModuleFields() {
+		FacilioModule module = ModuleFactory.getScreenDashboardRelModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getField("screenId", "SCREEN_ID", module, FieldType.LOOKUP));
+		fields.add(getField("dashboardId", "DASHBOARD_ID", module, FieldType.LOOKUP));
+		fields.add(getField("sequence", "SEQUENCE_NO", module, FieldType.NUMBER));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getRemoteScreenModuleFields() {
+		FacilioModule module = ModuleFactory.getRemoteScreenModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getField("name", "NAME", module, FieldType.STRING));
+		fields.add(getField("screenId", "SCREEN_ID", module, FieldType.LOOKUP));
+		fields.add(getField("token", "TOKEN", module, FieldType.STRING));
+		fields.add(getField("sessionStartTime", "SESSION_START_TIME", module, FieldType.NUMBER));
+		
+		return fields;
+	}
+	
 	public static List<FacilioField> getOfflineSyncErrorFields() {
 		FacilioModule module = ModuleFactory.getOfflineSyncErrorModule();
 		List<FacilioField> fields = new ArrayList<>();

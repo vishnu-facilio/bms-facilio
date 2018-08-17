@@ -1205,4 +1205,28 @@ public class ModuleFactory {
 		syncModule.setTableName("Sync_Errors");
 		return syncModule;
 	}
+	
+	public static FacilioModule getScreenModule() {
+		FacilioModule syncModule = new FacilioModule();
+		syncModule.setName("screen");
+		syncModule.setDisplayName("Screen");
+		syncModule.setTableName("Screen");
+		return syncModule;
+	}
+	
+	public static FacilioModule getScreenDashboardRelModule() {
+		FacilioModule syncModule = new FacilioModule();
+		syncModule.setName("screenDashboardRel");
+		syncModule.setDisplayName("Screen Dashboard Rel");
+		syncModule.setTableName("Screen_Dashboard_Rel");
+		return syncModule;
+	}
+	
+	public static FacilioModule getRemoteScreenModule() {
+		FacilioModule syncModule = new FacilioModule();
+		syncModule.setName("remoteScreens");
+		syncModule.setDisplayName("Remote Screens");
+		syncModule.setTableName("Remote_Screens");
+		return syncModule;
+	}
 }
