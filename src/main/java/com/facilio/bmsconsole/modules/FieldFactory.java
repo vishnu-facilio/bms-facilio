@@ -4259,7 +4259,7 @@ public class FieldFactory {
 		fields.add(getIdField(module));
 		fields.add(getOrgIdField(module));
 		fields.add(getField("name", "NAME", module, FieldType.STRING));
-		fields.add(getField("interval", "INTERVAL", module, FieldType.NUMBER));
+		fields.add(getField("interval", "REFRESH_INTERVAL", module, FieldType.NUMBER));
 		
 		return fields;
 	}
