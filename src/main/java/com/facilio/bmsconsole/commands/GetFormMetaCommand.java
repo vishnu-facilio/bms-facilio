@@ -14,7 +14,6 @@ import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormFactory;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioField.FieldDisplayType;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -28,31 +27,33 @@ public class GetFormMetaCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		String[] formNames = (String[]) context.get(FacilioConstants.ContextNames.FORM_NAMES);
-		List<FacilioForm> forms = new ArrayList<>();
-		for (String formName: formNames) {
-			FacilioForm form = getFormFromDB(formName);
-			if (form == null) {
-				form = FormFactory.getForm(formName);
+		if (formNames != null && formNames.length > 0) {
+			List<FacilioForm> forms = new ArrayList<>();
+			for (String formName: formNames) {
+				FacilioForm form = getFormFromDB(formName);
 				if (form == null) {
-					throw new IllegalArgumentException("Invalid Form " + formName);
-				}
-				List<FormField> fields = form.getFields();
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				String moduleName = form.getModule().getName();
-				form.setModule(modBean.getModule(moduleName));
-				
-				for (FormField f : fields) {
-					String fieldName = f.getName();
-					FacilioField field = modBean.getField(fieldName, moduleName);
-					if (field != null) {
-						f.setField(field);
-						f.setFieldId(field.getFieldId());
+					form = FormFactory.getForm(formName);
+					if (form == null) {
+						throw new IllegalArgumentException("Invalid Form " + formName);
+					}
+					List<FormField> fields = form.getFields();
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					String moduleName = form.getModule().getName();
+					form.setModule(modBean.getModule(moduleName));
+					
+					for (FormField f : fields) {
+						String fieldName = f.getName();
+						FacilioField field = modBean.getField(fieldName, moduleName);
+						if (field != null) {
+							f.setField(field);
+							f.setFieldId(field.getFieldId());
+						}
 					}
 				}
+				forms.add(form);
 			}
-			forms.add(form);
+			context.put(FacilioConstants.ContextNames.FORMS, forms);
 		}
-		context.put(FacilioConstants.ContextNames.FORMS, forms);
 		return false;
 	}
 
