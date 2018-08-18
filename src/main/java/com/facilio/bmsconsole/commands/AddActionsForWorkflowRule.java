@@ -73,7 +73,7 @@ public class AddActionsForWorkflowRule implements Command {
 	
 	private void setEmailTemplate(ActionContext action) {
 		EMailTemplate emailTemplate = new EMailTemplate();
-		emailTemplate.setFrom("support@${org.domain}.facilio.com");
+		emailTemplate.setFrom("noreply@${org.domain}.facilio.com");
 		String toAdresses = action.getTemplateJson().get("to").toString();
 //		toAdresses = toAdresses.substring(1, toAdresses.length()-1);
 		
