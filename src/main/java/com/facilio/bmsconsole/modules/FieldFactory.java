@@ -4281,6 +4281,7 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 		
 		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
 		fields.add(getField("name", "NAME", module, FieldType.STRING));
 		fields.add(getField("screenId", "SCREEN_ID", module, FieldType.LOOKUP));
 		fields.add(getField("token", "TOKEN", module, FieldType.STRING));

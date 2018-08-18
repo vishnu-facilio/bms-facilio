@@ -4109,7 +4109,7 @@
 		<action name="getRemoteScreen" class="com.facilio.screen.action.ScreenAction" method="getRemoteScreen">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
-				<param name="includeProperties">remoteScreenContext</param>
+				<param name="includeProperties">^remoteScreenContext.*</param>
 			</result>
 			<result name="error" type="json">
 				<param name="statusCode">400</param>
@@ -4119,7 +4119,7 @@
 		<action name="getScreen" class="com.facilio.screen.action.ScreenAction" method="getScreen">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
-				<param name="includeProperties">screenContext</param>
+				<param name="includeProperties">^screenContext.*</param>
 			</result>
 			<result name="error" type="json">
 				<param name="statusCode">400</param>
@@ -4128,7 +4128,7 @@
 		<action name="addScreen" class="com.facilio.screen.action.ScreenAction" method="addScreen">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
-				<param name="includeProperties">screenContext</param>
+				<param name="includeProperties">^screenContext.*</param>
 			</result>
 			<result name="error" type="json">
 				<param name="statusCode">400</param>
@@ -4138,7 +4138,7 @@
 		<action name="updateScreen" class="com.facilio.screen.action.ScreenAction" method="updateScreen">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
-				<param name="includeProperties">screenContext</param>
+				<param name="includeProperties">^screenContext.*</param>
 			</result>
 			<result name="error" type="json">
 				<param name="statusCode">400</param>
@@ -4148,7 +4148,7 @@
 		<action name="deleteScreen" class="com.facilio.screen.action.ScreenAction" method="deleteScreen">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
-				<param name="includeProperties">screenContext</param>
+				<param name="includeProperties">^screenContext.*</param>
 			</result>
 			<result name="error" type="json">
 				<param name="statusCode">400</param>
@@ -4158,7 +4158,7 @@
 		<action name="addRemoteScreen" class="com.facilio.screen.action.ScreenAction" method="addRemoteScreen">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
-				<param name="includeProperties">remoteScreenContext</param>
+				<param name="includeProperties">^remoteScreenContext.*</param>
 			</result>
 			<result name="error" type="json">
 				<param name="statusCode">400</param>
@@ -4168,7 +4168,7 @@
 		<action name="updateRemoteScreen" class="com.facilio.screen.action.ScreenAction" method="updateRemoteScreen">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
-				<param name="includeProperties">remoteScreenContext</param>
+				<param name="includeProperties">^remoteScreenContext.*</param>
 			</result>
 			<result name="error" type="json">
 				<param name="statusCode">400</param>
@@ -4178,7 +4178,7 @@
 		<action name="deleteRemoteScreen" class="com.facilio.screen.action.ScreenAction" method="deleteRemoteScreen">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
-				<param name="includeProperties">remoteScreenContext</param>
+				<param name="includeProperties">^remoteScreenContext.*</param>
 			</result>
 			<result name="error" type="json">
 				<param name="statusCode">400</param>
