@@ -232,12 +232,16 @@ public class ReadingsAPI {
 		return null;
 	}
 	
+	public static String getRDMKey(long resourceId, FacilioField field) {
+		return resourceId+"_"+field.getFieldId();
+	}
+	
 	private static Map<String, ReadingDataMeta> getRDMMapFromProps (List<Map<String, Object>> props, Map<Long, FacilioField> fieldMap) {
 		if(props != null && !props.isEmpty()) {
 			Map<String, ReadingDataMeta> rdmMap = new HashMap<>();
 			for (Map<String, Object> prop : props) {
 				ReadingDataMeta meta = getRDMFromProp(prop, fieldMap);
-				rdmMap.put(meta.getResourceId()+"_"+meta.getFieldId(), meta);
+				rdmMap.put(getRDMKey(meta.getResourceId(), meta.getField()), meta);
 			}
 			return rdmMap;
 		}
@@ -373,11 +377,11 @@ public class ReadingsAPI {
 		return null;
 	}
 	
-	public static int updateReadingDataMeta(List<FacilioField> fieldsList,List<ReadingContext> readingList,Map<String, ReadingDataMeta> metaMap) throws SQLException {
+	public static Map<String, ReadingDataMeta> updateReadingDataMeta(List<FacilioField> fieldsList,List<ReadingContext> readingList,Map<String, ReadingDataMeta> metaMap) throws SQLException {
 
 
-		if(readingList==null || readingList.isEmpty()) {
-			return 0;
+		if(readingList == null || readingList.isEmpty()) {
+			return null;
 		}
 		String sql = null;
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
@@ -397,8 +401,9 @@ public class ReadingsAPI {
 						Object val = FieldUtil.castOrParseValueAsPerType(fField, reading.getValue());
 						if (val != null) {
 							long fieldId = fField.getFieldId();
+							String uniqueKey = getRDMKey(resourceId, fField);
 							if (metaMap != null) {
-								ReadingDataMeta meta = metaMap.get(resourceId+"_"+fField.getFieldId());
+								ReadingDataMeta meta = metaMap.get(uniqueKey);
 								if(meta != null)
 								{
 									Object lastReading = meta.getValue();
@@ -412,7 +417,6 @@ public class ReadingsAPI {
 							fields.add(fieldId);
 							String value = val.toString();
 							
-							String uniqueKey = resourceId + "_" + fieldId;
 							ReadingDataMeta rdm = uniqueRDMs.get(uniqueKey);
 							if (rdm == null || rdm.getTtime() < timeStamp) {
 								rdm = new ReadingDataMeta();
@@ -434,7 +438,7 @@ public class ReadingsAPI {
 			
 			LOGGER.debug("Unique RDMs : "+uniqueRDMs);
 			if (uniqueRDMs.size() == 0) {
-				return 0;
+				return null;
 			}
 			
 			StringBuilder timeBuilder= new StringBuilder();
@@ -448,8 +452,8 @@ public class ReadingsAPI {
 				idBuilder.append(getCase(rdm.getResourceId(),rdm.getFieldId(),rdm.getReadingDataId(),false));
 			}
 			
-			if(timeBuilder.length()<=0 || valueBuilder.length()<=0) {
-				return 0;
+			if(timeBuilder.length() <= 0 || valueBuilder.length() <= 0) {
+				return null;
 			}
 			String resourceList=StringUtils.join(resources, ",");
 			String fieldList=StringUtils.join(fields, ",");
@@ -461,7 +465,7 @@ public class ReadingsAPI {
 				LOGGER.debug("################ Update RDM sql : "+sql);
 				try(PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
 					int rowCount = pstmt.executeUpdate();
-					return rowCount;
+					return uniqueRDMs;
 				}
 			}
 		}
@@ -470,7 +474,7 @@ public class ReadingsAPI {
 			throw new SQLException("Query failed : "+sql, e);
 		}
 
-		return 0;
+		return null;
 	}
 	
 	private static String getCase(long resource,long field, Object value, boolean insertQuote) {
