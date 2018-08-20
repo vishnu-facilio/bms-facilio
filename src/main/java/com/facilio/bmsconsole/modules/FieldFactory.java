@@ -4271,6 +4271,7 @@ public class FieldFactory {
 		fields.add(getIdField(module));
 		fields.add(getField("screenId", "SCREEN_ID", module, FieldType.LOOKUP));
 		fields.add(getField("dashboardId", "DASHBOARD_ID", module, FieldType.LOOKUP));
+		fields.add(getField("spaceId", "SPACE_ID", module, FieldType.LOOKUP));
 		fields.add(getField("sequence", "SEQUENCE_NO", module, FieldType.NUMBER));
 		
 		return fields;
@@ -4281,10 +4282,25 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 		
 		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
 		fields.add(getField("name", "NAME", module, FieldType.STRING));
 		fields.add(getField("screenId", "SCREEN_ID", module, FieldType.LOOKUP));
 		fields.add(getField("token", "TOKEN", module, FieldType.STRING));
 		fields.add(getField("sessionStartTime", "SESSION_START_TIME", module, FieldType.NUMBER));
+		fields.add(getField("sessionInfo", "SESSION_INFO", module, FieldType.STRING));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getTVPasscodeFields() {
+		FacilioModule module = ModuleFactory.getTVPasscodeModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getField("code", "CODE", module, FieldType.STRING));
+		fields.add(getField("generatedTime", "GENERATED_TIME", module, FieldType.NUMBER));
+		fields.add(getField("expiryTime", "EXPIRY_TIME", module, FieldType.NUMBER));
+		fields.add(getField("connectedScreenId", "CONNECTED_SCREEN_ID", module, FieldType.NUMBER));
+		fields.add(getField("info", "INFO", module, FieldType.STRING));
 		
 		return fields;
 	}

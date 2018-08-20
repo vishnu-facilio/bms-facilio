@@ -1248,4 +1248,12 @@ public class ModuleFactory {
 		syncModule.setTableName("Remote_Screens");
 		return syncModule;
 	}
+	
+	public static FacilioModule getTVPasscodeModule() {
+		FacilioModule syncModule = new FacilioModule();
+		syncModule.setName("tvpasscode");
+		syncModule.setDisplayName("TV Passcode");
+		syncModule.setTableName("TVPasscodes");
+		return syncModule;
+	}
 }

@@ -7,6 +7,7 @@ public class ScreenDashboardRelContext {
 	Long id;
 	Long screenId;
 	Long dashboardId;
+	Long spaceId;
 	int sequence;
 	DashboardContext dashboard;
 	public DashboardContext getDashboard() {
@@ -32,6 +33,12 @@ public class ScreenDashboardRelContext {
 	}
 	public void setDashboardId(Long dashboardId) {
 		this.dashboardId = dashboardId;
+	}
+	public Long getSpaceId() {
+		return spaceId;
+	}
+	public void setSpaceId(Long spaceId) {
+		this.spaceId = spaceId;
 	}
 	public int getSequence() {
 		return sequence;

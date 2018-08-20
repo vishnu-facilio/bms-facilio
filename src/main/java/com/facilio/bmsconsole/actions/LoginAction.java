@@ -74,6 +74,8 @@ import com.facilio.fw.auth.LoginUtil;
 import com.facilio.fw.auth.SAMLAttribute;
 import com.facilio.fw.auth.SAMLUtil;
 import com.facilio.integration.actions.Home;
+import com.facilio.screen.context.RemoteScreenContext;
+import com.facilio.screen.util.ScreenUtil;
 import com.facilio.wms.util.WmsApi;
 import com.opensymphony.xwork2.ActionContext;
 
@@ -711,6 +713,56 @@ public class LoginAction extends FacilioAction{
 		
 		int license = AccountUtil.getFeatureLicense();
 		account.put("License", license);
+		
+		return SUCCESS;
+	}
+	
+	public String tvAccount() throws Exception {
+		
+		account = new HashMap<>();
+		account.put("org", AccountUtil.getCurrentOrg());
+		account.put("user", AccountUtil.getCurrentUser());
+		List<User> users = AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId());
+		List<Group> groups = AccountUtil.getGroupBean().getOrgGroups(AccountUtil.getCurrentOrg().getId(), true);
+		List<Role> roles = AccountUtil.getRoleBean().getRoles(AccountUtil.getCurrentOrg().getOrgId());
+		List<Organization> orgs = AccountUtil.getUserBean().getOrgs(AccountUtil.getCurrentUser().getUid());
+		
+		Map<String, Object> data = new HashMap<>();
+		data.put("users", users);
+		data.put("groups", groups);
+		data.put("roles", roles);
+		data.put("orgs", orgs);
+		
+		data.put("orgInfo", CommonCommandUtil.getOrgInfo());
+		
+		data.put("ticketCategory", TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId()));
+		data.put("ticketPriority", TicketAPI.getPriorties(AccountUtil.getCurrentOrg().getOrgId()));
+		data.put("ticketType", TicketAPI.getTypes(AccountUtil.getCurrentOrg().getOrgId()));
+		
+		data.put("alarmSeverity", AlarmAPI.getAlarmSeverityList());
+		data.put("assetCategory", AssetsAPI.getCategoryList());
+		data.put("assetType", AssetsAPI.getTypeList());
+		data.put("assetDepartment", AssetsAPI.getDepartmentList());
+		
+		data.put("serviceList", ReportsUtil.getPurposeMapping());
+		data.put("buildingList", ReportsUtil.getBuildingMap());
+		data.put("ticketStatus", getTicketStatus());
+		data.put("energyMeters", DeviceAPI.getAllMainEnergyMeters());
+		data.put(FacilioConstants.ContextNames.TICKET_TYPE, CommonCommandUtil.getPickList(FacilioConstants.ContextNames.TICKET_TYPE));
+		data.put(FacilioConstants.ContextNames.SPACE_CATEGORY, CommonCommandUtil.getPickList(FacilioConstants.ContextNames.SPACE_CATEGORY));
+		data.put(FacilioConstants.ContextNames.ASSET_CATEGORY, CommonCommandUtil.getPickList(FacilioConstants.ContextNames.ASSET_CATEGORY));
+		
+		RemoteScreenContext remoteScreen = AccountUtil.getCurrentAccount().getRemoteScreen();
+		if (remoteScreen.getScreenId() != null && remoteScreen.getScreenId() > 0) {
+			remoteScreen.setScreenContext(ScreenUtil.getScreen(remoteScreen.getScreenId()));
+		}
+		data.put("connectedScreen", remoteScreen);
+		
+		Map<String, Object> config = new HashMap<>();
+		config.put("ws_endpoint", WmsApi.getRemoteWebsocketEndpoint(remoteScreen.getId()));
+		
+		account.put("data", data);
+		account.put("config", config);
 		
 		return SUCCESS;
 	}

@@ -1,10 +1,14 @@
 package com.facilio.screen.action;
 
 import java.util.List;
+import java.util.Map;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.screen.context.ScreenContext;
 import com.facilio.screen.util.ScreenUtil;
+import com.facilio.wms.message.WmsRemoteScreenMessage;
+import com.facilio.wms.util.WmsApi;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class ScreenAction extends ActionSupport {
@@ -79,6 +83,8 @@ public class ScreenAction extends ActionSupport {
 	public String addScreen() throws Exception {
 		
 		if(screenContext != null) {
+			screenContext.setOrgId(AccountUtil.getCurrentOrg().getId());
+			
 			ScreenUtil.addScreen(screenContext);
 		}
 		return SUCCESS;
@@ -95,22 +101,68 @@ public class ScreenAction extends ActionSupport {
 	public String deleteScreen() throws Exception {
 		
 		if(screenContext != null) {
-			ScreenUtil.updateScreen(screenContext);
+			ScreenUtil.deleteScreen(screenContext);
 		}
 		return SUCCESS;
 	}
 	
 	public String addRemoteScreen() throws Exception {
 		
-		if(screenContext != null) {
+		if(remoteScreenContext != null) {
 			ScreenUtil.addRemoteScreen(remoteScreenContext);
+		}
+		return SUCCESS;
+	}
+	
+	private String code;
+	
+	public void setCode(String code) {
+		this.code = code;
+	}
+	
+	public String getCode() {
+		return this.code;
+	}
+	
+	public String connectRemoteScreen() throws Exception {
+		
+		if (code != null) {
+			if (ScreenUtil.validateTVPasscode(code)) {
+				if (remoteScreenContext == null) {
+					remoteScreenContext = new RemoteScreenContext();
+					remoteScreenContext.setName("Remote Screen 1");
+				}
+				remoteScreenContext.setOrgId(AccountUtil.getCurrentOrg().getId());
+				remoteScreenContext.setSessionStartTime(System.currentTimeMillis());
+				
+				Map<String, Object> codeInfo = ScreenUtil.getTVPasscode(code);
+				if (codeInfo != null && codeInfo.get("info") != null) {
+					remoteScreenContext.setSessionInfo((String) codeInfo.get("info"));
+				}
+				
+				ScreenUtil.addRemoteScreen(remoteScreenContext);
+				
+				long remoteScreenId = remoteScreenContext.getId();
+				
+				ScreenUtil.updateConnectedScreen(code, remoteScreenId);
+				
+				return SUCCESS;
+			}
+		}
+		return ERROR;
+	}
+	
+	public String refreshRemoteScreen() throws Exception {
+		
+		if(remoteScreenContext != null) {
+			WmsApi.sendRemoteMessage(remoteScreenContext.getId(), new WmsRemoteScreenMessage().setAction(WmsRemoteScreenMessage.RemoteScreenAction.REFRESH));
 		}
 		return SUCCESS;
 	}
 	
 	public String updateRemoteScreen() throws Exception {
 		
-		if(screenContext != null) {
+		if(remoteScreenContext != null) {
 			ScreenUtil.updateRemoteScreen(remoteScreenContext);
 		}
 		return SUCCESS;
@@ -118,7 +170,7 @@ public class ScreenAction extends ActionSupport {
 	
 	public String deleteRemoteScreen() throws Exception {
 		
-		if(screenContext != null) {
+		if(remoteScreenContext != null) {
 			ScreenUtil.deleteRemoteScreen(remoteScreenContext);
 		}
 		return SUCCESS;

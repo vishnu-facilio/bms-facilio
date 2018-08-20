@@ -47,7 +47,12 @@ public class NotificationProcessor implements IRecordProcessor {
                 JSONObject payLoad = (JSONObject) parser.parse(data);
                 Message message = Message.getMessage(payLoad);
                 LOGGER.debug("Going to send message to " + message.getTo() + " from " + message.getFrom());
-                SessionManager.getInstance().sendMessage(message);
+                if (message.getMessageType() != null && message.getMessageType() == MessageType.REMOTE_SCREEN) {
+                	SessionManager.getInstance().sendRemoteMessage(message);
+                }
+                else {
+                	SessionManager.getInstance().sendMessage(message);
+                }
                 processRecordsInput.getCheckpointer().checkpoint(record);
             }
             catch (Exception e) {

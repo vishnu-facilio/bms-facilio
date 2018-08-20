@@ -4,5 +4,6 @@ public enum MessageType {
 	EVENT,
 	NOTIFICATION,
 	CHAT,
-	SYSTEM;
+	SYSTEM,
+	REMOTE_SCREEN;
 }

@@ -6722,6 +6722,13 @@ public class DashboardAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String getDashboardTree() throws Exception {
+		if (moduleName != null) {
+			dashboardFolders = DashboardUtil.getDashboardTree(moduleName);
+		}
+		return SUCCESS;
+	}
+	
 	private List<DashboardSharingContext> dashboardSharing;
 	public List<DashboardSharingContext> getDashboardSharing() {
 		return dashboardSharing;

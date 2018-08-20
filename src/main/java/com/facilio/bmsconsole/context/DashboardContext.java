@@ -18,11 +18,11 @@ public class DashboardContext extends ModuleBaseWithCustomFields {
 
 	private String dashboardName;
 	
-	private Long dashboardFolderId;
+	private Long dashboardFolderId = -1l;
 	public Long getDashboardFolderId() {
 		return dashboardFolderId;
 	}
-	public void setDashboardFolderId(long dashboardFolderId) {
+	public void setDashboardFolderId(Long dashboardFolderId) {
 		this.dashboardFolderId = dashboardFolderId;
 	}
 
@@ -127,6 +127,16 @@ public class DashboardContext extends ModuleBaseWithCustomFields {
 			this.dashboardWidgets = new ArrayList<>();
 		}
 		dashboardWidgets.add(dashboardWidgetContext);
+	}
+	
+	private String moduleName;
+	
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
+	
+	public String getModuleName() {
+		return this.moduleName;
 	}
 	
 	public static enum DashboardPublishStatus {

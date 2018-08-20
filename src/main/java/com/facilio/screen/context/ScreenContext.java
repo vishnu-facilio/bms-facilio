@@ -46,4 +46,14 @@ public class ScreenContext {
 	public void setInterval(int interval) {
 		this.interval = interval;
 	}
+	
+	List<RemoteScreenContext> remoteScreens;
+	
+	public void setRemoteScreens(List<RemoteScreenContext> remoteScreens) {
+		this.remoteScreens = remoteScreens;
+	}
+	
+	public List<RemoteScreenContext> getRemoteScreens() {
+		return this.remoteScreens;
+	}
 }

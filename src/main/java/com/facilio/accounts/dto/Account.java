@@ -2,6 +2,8 @@ package com.facilio.accounts.dto;
 
 import java.io.Serializable;
 
+import com.facilio.screen.context.RemoteScreenContext;
+
 public class Account implements Serializable {
 	
 	private Organization org;
@@ -9,6 +11,8 @@ public class Account implements Serializable {
 	
 	private String deviceType;
 	private String appVersion;
+	
+	private RemoteScreenContext remoteScreen;
 	
 	public Account(Organization org, User user) {
 		this.org = org;
@@ -59,6 +63,11 @@ public class Account implements Serializable {
 		this.appVersion = appVersion;
 	}
 	
+	public RemoteScreenContext getRemoteScreen() {
+		return this.remoteScreen;
+	}
 	
-	
+	public void setRemoteScreen(RemoteScreenContext remoteScreen) {
+		this.remoteScreen = remoteScreen;
+	}
 }

@@ -278,6 +278,13 @@
 			</result>
 		</action>
 		
+		<action name="dashboardTree" class="com.facilio.bmsconsole.actions.DashboardAction"
+			method="getDashboardTree">
+			<result name="success" type="json">
+				<param name="includeProperties">dashboardFolders,dashboardFolders\[\d+\],dashboardFolders\[\d+\].*</param>
+			</result>
+		</action>		
+		
 		<action name="tenants" class="com.facilio.bmsconsole.actions.TenantAction" method="fetchAllTenants">
 			<result name="success" type="json">
 				<param name="root">tenants</param>
@@ -287,6 +294,37 @@
 		<action name="ratecards" class="com.facilio.bmsconsole.actions.TenantAction" method="fetchAllRateCards">
 			<result name="success" type="json">
 				<param name="root">rateCards</param>
+			</result>
+		</action>
+	</package>
+	<package name="tvApi" namespace="/api/tv" extends="home">
+		<action name="connect" class="com.facilio.bmsconsole.actions.LoginAction" method="tvAccount">
+			<result name="success" type="json">
+				<param name="includeProperties">^account.*</param>
+			</result>
+		</action>
+		
+		<action name="generatecode" class="com.facilio.tv.TVAction" method="generateCode">
+			<param name="auth">false</param>
+			<result name="error" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, message, stackTrace</param>
+			</result>
+			<result name="success" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+			</result>
+		</action>
+		
+		<action name="validatecode" class="com.facilio.tv.TVAction" method="validateCode">
+			<param name="auth">false</param>
+			<result name="error" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, message, stackTrace</param>
+			</result>
+			<result name="success" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
 			</result>
 		</action>
 	</package>
@@ -4165,7 +4203,27 @@
 			</result>
 		</action>
 		
+		<action name="connectRemoteScreen" class="com.facilio.screen.action.ScreenAction" method="connectRemoteScreen">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">remoteScreenContext</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">400</param>
+			</result>
+		</action>
+		
 		<action name="updateRemoteScreen" class="com.facilio.screen.action.ScreenAction" method="updateRemoteScreen">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">remoteScreenContext</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">400</param>
+			</result>
+		</action>
+		
+		<action name="refreshRemoteScreen" class="com.facilio.screen.action.ScreenAction" method="refreshRemoteScreen">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
 				<param name="includeProperties">remoteScreenContext</param>
