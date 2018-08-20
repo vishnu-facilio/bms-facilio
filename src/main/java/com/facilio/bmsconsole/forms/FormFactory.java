@@ -6,12 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.forms.FormField.Required;
 import com.facilio.bmsconsole.modules.FacilioField.FieldDisplayType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
 
 public class FormFactory {
 	

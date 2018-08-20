@@ -14,6 +14,8 @@ import java.util.logging.Logger;
 
 import javax.websocket.EncodeException;
 
+import org.json.simple.JSONObject;
+
 import com.amazonaws.services.kinesis.model.PutRecordResult;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
@@ -23,7 +25,6 @@ import com.facilio.wms.message.Message;
 import com.facilio.wms.message.WmsChatMessage;
 import com.facilio.wms.message.WmsEvent;
 import com.facilio.wms.message.WmsNotification;
-import org.json.simple.JSONObject;
 
 public class WmsApi
 {

@@ -1,17 +1,14 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
-import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
 
 public class FormAction extends FacilioAction {
