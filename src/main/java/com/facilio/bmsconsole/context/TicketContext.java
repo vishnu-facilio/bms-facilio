@@ -413,7 +413,7 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		EMAIL_REQUEST(2, "E Mail Request"),
 		SMS_REQUEST(3, "SMS Request"),
 		ALARM(4, "Alarm"),
-		PREVENTIVE_MAINTENANCE(5, "Preventive Maintenance"),
+		PREVENTIVE_MAINTENANCE(5, "Planned"),
 		THRESHOLD_ALARM(6, "Threshold Alarm"),
 		WEB_REQUEST(7, "Web Request"),
 		TASK(8, "Task"),

@@ -58,7 +58,8 @@ public class AddWorkOrderCommand implements Command {
 			workOrder.setId(workOrderId);
 			if(context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE) == null) {
 				// TODO create an activity type for both
-				if (workOrder.getStatus().getStatus().equals("Assigned")) {
+				String status = workOrder.getStatus().getStatus();
+				if (status != null && status.equals("Assigned")) {
 					context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.ASSIGN_TICKET);
 				}
 				else {
