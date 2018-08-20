@@ -19,6 +19,22 @@ public class ScreenAction extends ActionSupport {
 	
 	public RemoteScreenContext remoteScreenContext;
 	
+	public Long getRemoteScreenId() {
+		return remoteScreenId;
+	}
+
+	public void setRemoteScreenId(Long remoteScreenId) {
+		this.remoteScreenId = remoteScreenId;
+	}
+
+	public Long getScreenId() {
+		return screenId;
+	}
+
+	public void setScreenId(Long screenId) {
+		this.screenId = screenId;
+	}
+
 	public Long remoteScreenId,screenId;
 	
 

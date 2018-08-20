@@ -60,9 +60,7 @@ public class CalculatePreFormulaCommand implements Command {
 					List<ReadingDataMeta> metaList = ReadingsAPI.getReadingDataMetaList(newRdmPairs) ;
 					
 					for(ReadingDataMeta meta : metaList) {
-						long resourceId = meta.getResourceId();
-						long fieldId = meta.getField().getFieldId();
-						rdm.put(resourceId+"_"+fieldId, meta);
+						rdm.put(ReadingsAPI.getRDMKey(meta.getResourceId(), meta.getField()), meta);
 					}
 				}
 			}
@@ -83,7 +81,7 @@ public class CalculatePreFormulaCommand implements Command {
 					for (Map.Entry<String, Object> entry : data.entrySet()) {
 						FacilioField field = fieldMap.get(entry.getKey());
 						if (field != null) {
-							ReadingDataMeta rdm = rdmMap.get(reading.getParentId()+"_"+field.getFieldId());
+							ReadingDataMeta rdm = rdmMap.get(ReadingsAPI.getRDMKey(reading.getParentId(), field));
 							if (rdm != null) {
 								params.put(entry.getKey()+".previousValue", rdm.getValue());
 							}

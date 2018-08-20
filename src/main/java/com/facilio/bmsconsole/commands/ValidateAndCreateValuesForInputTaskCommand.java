@@ -52,9 +52,11 @@ public class ValidateAndCreateValuesForInputTaskCommand implements Command {
 									throw new UnsupportedOperationException("Input task cannot be closed without entering input value");
 								}
 								
-								List<AttachmentContext> attachments = TicketAPI.getRelatedAttachments(recordIds.get(i));
-								if(completeRecord.isAttachmentRequired() && (attachments == null || attachments.isEmpty())) {
-									throw new UnsupportedOperationException("Atleast one file has to be attached since attachment is required to close the task");
+								if(completeRecord.isAttachmentRequired()) {
+									List<AttachmentContext> attachments = TicketAPI.getRelatedAttachments(recordIds.get(i));
+									if (attachments == null || attachments.isEmpty() ) {
+										throw new UnsupportedOperationException("Atleast one file has to be attached since attachment is required to close the task");
+									}
 								}
 							}
 						}

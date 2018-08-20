@@ -105,7 +105,6 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.reports.ReportExportUtil;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.templates.EMailTemplate;
@@ -4543,6 +4542,8 @@ public class DashboardAction extends ActionSupport {
 			}
 			else if ((dateFilter != null || report.getDateFilter() != null) && xAxisField.getDataTypeEnum().equals(FieldType.DATE_TIME)) {
 				
+				
+				
 				int oprId =  dateFilter != null ? DashboardUtil.predictDateOpperator(dateFilter) : report.getDateFilter().getOperatorId();
 				
 				boolean isRegression = (reportContext.getChartType() != null && reportContext.getChartType().equals(ReportChartType.REGRESSION.getValue()));
@@ -4557,7 +4558,7 @@ public class DashboardAction extends ActionSupport {
 					xAggregateOpperator = FormulaContext.DateAggregateOperator.HOURSOFDAY;
 				}
 				else if (oprId == DateOperators.CURRENT_WEEK.getOperatorId() || oprId == DateOperators.LAST_WEEK.getOperatorId() || oprId == DateOperators.CURRENT_WEEK_UPTO_NOW.getOperatorId()) {
-					if(!(xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.WEEKDAY) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.FULLDATE) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.HOURSOFDAYONLY))) {
+					if(!(xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.WEEKDAY) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.FULLDATE) )) {
 						xAggregateOpperator = FormulaContext.DateAggregateOperator.WEEKDAY;
 					}
 				}

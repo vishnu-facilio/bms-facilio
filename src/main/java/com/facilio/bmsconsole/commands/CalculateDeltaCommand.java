@@ -46,7 +46,7 @@ public class CalculateDeltaCommand implements Command {
 								for (FacilioField field : counterFields) {
 									Object val = FieldUtil.castOrParseValueAsPerType(field, reading.getReading(field.getName()));
 									if (val != null) {
-										ReadingDataMeta rdm = rdmMap.get(reading.getParentId()+"_"+field.getFieldId());
+										ReadingDataMeta rdm = rdmMap.get(ReadingsAPI.getRDMKey(reading.getParentId(), field));
 										Object deltaVal = null;
 										if (field.getDataTypeEnum() == FieldType.DECIMAL) {
 											Double prevVal = (Double) FieldUtil.castOrParseValueAsPerType(field, rdm.getValue());
@@ -78,9 +78,7 @@ public class CalculateDeltaCommand implements Command {
 				List<ReadingDataMeta> metaList = ReadingsAPI.getReadingDataMetaList(newRdmPairs) ;
 				
 				for(ReadingDataMeta meta : metaList) {
-					long resourceId = meta.getResourceId();
-					long fieldId = meta.getField().getFieldId();
-					rdmMap.put(resourceId+"_"+fieldId, meta);
+					rdmMap.put(ReadingsAPI.getRDMKey(meta.getResourceId(), meta.getField()), meta);
 				}
 			}
 		}

@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.util;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -26,7 +25,6 @@ import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.MarkedReadingContext;
 import com.facilio.bmsconsole.context.MarkedReadingContext.MarkType;
 import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.criteria.BuildingOperator;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -506,11 +504,11 @@ public class DeviceAPI
 			deleteEnergyData(meter.getId(), firstReadingTime, lastReading.getTtime()); //Deleting anyway to avoid duplicate entries
 			
 			
-			
+			boolean runThroughUpdate= Math.floor((System.currentTimeMillis()-endTime)/(60*1000)) < minutesInterval;
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.MODULE_NAME,FacilioConstants.ContextNames.ENERGY_DATA_READING );
 			context.put(FacilioConstants.ContextNames.READINGS, vmReadings);
-			context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS, false);
+			context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS, updateReading || runThroughUpdate);
 			context.put(FacilioConstants.ContextNames.HISTORY_READINGS, isHistorical);
 			
 			//data Gap implementation starts here..
@@ -527,11 +525,6 @@ public class DeviceAPI
 			//data Gap implementation ends..
 			Chain addReading = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
 			addReading.execute(context);
-			boolean runThroughUpdate= Math.floor((System.currentTimeMillis()-endTime)/(60*1000)) < minutesInterval;
-			if(updateReading || runThroughUpdate) {
-				List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ENERGY_DATA_READING);
-				ReadingsAPI.updateReadingDataMeta(fields, Collections.singletonList(lastReading), null);
-			}
 		}
 	}
 

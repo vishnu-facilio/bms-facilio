@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.unitconversion.UnitsUtil;
@@ -43,8 +44,7 @@ public class ReadingUnitConversionCommand implements Command {
 								FacilioField field = fieldMap.get(fieldName);
 								if(field != null && readingData.get(fieldName) != null) {
 									if(reading.getParentId() > 0  && field.getId() > 0) {
-										String key = reading.getParentId()+"_"+field.getId();
-										ReadingDataMeta readingDataMeta = metaMap.get(key);
+										ReadingDataMeta readingDataMeta = metaMap.get(ReadingsAPI.getRDMKey(reading.getParentId(), field));
 										if(readingDataMeta.getUnitEnum() != null) {
 											Object value = UnitsUtil.convertToSiUnit(readingData.get(fieldName), readingDataMeta.getUnitEnum());
 											readingData.put(fieldName, value);

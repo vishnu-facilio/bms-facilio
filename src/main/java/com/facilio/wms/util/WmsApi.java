@@ -14,6 +14,8 @@ import java.util.logging.Logger;
 
 import javax.websocket.EncodeException;
 
+import org.json.simple.JSONObject;
+
 import com.amazonaws.services.kinesis.model.PutRecordResult;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;

@@ -15,6 +15,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.auth.actions.FacilioAuthAction;
 import com.facilio.bmsconsole.util.AdminAPI;
 import com.facilio.fw.LRUCache;
 import com.facilio.license.FreshsalesUtil;
@@ -25,7 +26,6 @@ import com.facilio.wms.util.WmsApi;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.util.ValueStack;
-import com.facilio.auth.actions.FacilioAuthAction;
 
 public class AdminAction extends ActionSupport
 {

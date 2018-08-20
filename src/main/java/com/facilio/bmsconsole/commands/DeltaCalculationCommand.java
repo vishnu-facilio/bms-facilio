@@ -10,7 +10,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.MarkedReadingContext;
@@ -74,9 +73,7 @@ public class DeltaCalculationCommand implements Command {
 					List<ReadingDataMeta> metaList = ReadingsAPI.getReadingDataMetaList(deltaRdmPairs) ;
 					
 					for(ReadingDataMeta meta : metaList) {
-						long resourceId = meta.getResourceId();
-						long fieldId = meta.getField().getFieldId();
-						metaMap.put(resourceId+"_"+fieldId, meta);
+						metaMap.put(ReadingsAPI.getRDMKey(meta.getResourceId(), meta.getField()), meta);
 					}
 				}
 			}
@@ -106,7 +103,7 @@ public class DeltaCalculationCommand implements Command {
 			long resourceId=reading.getParentId();
 			
 			long energyFieldId= readingField.getFieldId();
-			ReadingDataMeta consumptionMeta = metaMap.get(resourceId+"_"+energyFieldId);
+			ReadingDataMeta consumptionMeta = metaMap.get(ReadingsAPI.getRDMKey(resourceId, readingField));
 			if(consumptionMeta == null) {
 				return;
 			}

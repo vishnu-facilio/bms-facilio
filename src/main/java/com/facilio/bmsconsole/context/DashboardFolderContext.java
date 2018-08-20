@@ -3,8 +3,6 @@ package com.facilio.bmsconsole.context;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-
 public class DashboardFolderContext {
 
 	
