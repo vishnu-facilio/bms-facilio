@@ -169,7 +169,7 @@ public class AdminAction extends ActionSupport
 	
 	public String reloadBrowser() throws IOException
 	{
-		Message message = new Message(MessageType.SYSTEM);
+		Message message = new Message(MessageType.BROADCAST);
 		
 		
 		message.setNamespace("system");

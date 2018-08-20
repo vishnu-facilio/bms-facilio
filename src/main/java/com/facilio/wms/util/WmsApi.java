@@ -76,7 +76,7 @@ public class WmsApi
 	public static void broadCastMessage( Message message) throws IOException, EncodeException
 	{
 		
-		SessionManager.getInstance().broadcast(message);
+		SessionManager.getInstance().sendMessage(message);
 		System.out.println("Broad cast done..");
 	}
 	
@@ -118,12 +118,7 @@ public class WmsApi
 				message.setFrom(AccountUtil.getCurrentUser().getId());
 			}
 			if (AwsUtil.isDevelopment()) {
-				if (message.getMessageType() != null && message.getMessageType() == MessageType.REMOTE_SCREEN) {
-                	SessionManager.getInstance().sendRemoteMessage(message);
-                }
-                else {
-                	SessionManager.getInstance().sendMessage(message);
-                }
+				SessionManager.getInstance().sendMessage(message);
 			}
 			else {
 				sendToKinesis(message.toJson());

@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import javax.websocket.Session;
 
 import com.facilio.wms.message.Message;
+import com.facilio.wms.message.MessageType;
 
 public class SessionManager {
 	
@@ -106,7 +107,18 @@ public class SessionManager {
 	}
 	
 	public void sendMessage(Message message) {
-		
+		if (message.getMessageType() != null && message.getMessageType() == MessageType.BROADCAST) {
+			broadcast(message);
+		}
+		else if (message.getMessageType() != null && message.getMessageType() == MessageType.REMOTE_SCREEN) {
+			sendRemoteMessage(message);
+		}
+		else {
+			sendUserMessage(message);
+		}
+	}
+	
+	public void sendUserMessage(Message message) {
 		logger.log(Level.FINE, "Send message called. from: "+message.getFrom()+" to: "+message.getTo());
 
 		List<UserSession> sessionList = getUserSessions(message.getTo());
