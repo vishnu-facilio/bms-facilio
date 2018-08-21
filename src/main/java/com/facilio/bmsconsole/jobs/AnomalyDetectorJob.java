@@ -286,13 +286,11 @@ public class AnomalyDetectorJob extends FacilioJob {
 		List<Map<String, Object>> props = new ArrayList<>();
 		ArrayList<AnalyticsAnomalyContext> impactedContexts = new ArrayList<>();
 	
-		double maxOutlierDistanceInPercentage = Double.parseDouble(AwsUtil.getConfig("anomalyOutlierDistance"));
 		Iterator<AnalyticsAnomalyContext> iterator = anomalyContext.iterator();
 		while (iterator.hasNext() && (!impactedIDs.isEmpty())) {
 			AnalyticsAnomalyContext anomalyObject = iterator.next();
 			
-			if(impactedIDs.contains(anomalyObject.getId())
-				&& (anomalyObject.getOutlierDistance() > maxOutlierDistanceInPercentage))  {
+			if(impactedIDs.contains(anomalyObject.getId())) { // a valid anomaly data point
 				
 				AnomalyIDInsertRow newAnomalyId = new AnomalyIDInsertRow(anomalyObject.getId(), anomalyObject.getOrgId(), 
 								anomalyObject.getModuleId(), anomalyObject.getMeterId(), anomalyObject.getTtime(),
