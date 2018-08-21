@@ -2863,6 +2863,7 @@ public class FieldFactory {
 		reportColor.setModule(module);
 		fields.add(reportColor);
 
+		fields.add(getField("customReportClass", "CUSTOM_REPORT_CLASS", module, FieldType.STRING));
 		return fields;
 	}
 

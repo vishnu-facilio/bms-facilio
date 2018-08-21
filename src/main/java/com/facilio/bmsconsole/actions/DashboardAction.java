@@ -132,11 +132,13 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
 import com.facilio.pdf.PdfUtil;
+import com.facilio.report.customreport.CustomReport;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.ScheduleInfo;
+import com.facilio.tasker.job.FacilioJob;
 import com.facilio.timeseries.TimeSeriesAPI;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.facilio.unitconversion.Metric;
@@ -1494,6 +1496,13 @@ public class DashboardAction extends ActionSupport {
 				dateFilter = new JSONArray();
 				dateFilter.add(1522521000000l);
 				dateFilter.add(1530383400000l);
+			}
+			
+			if(report.getCustomReportClass() != null) {
+				Class<? extends CustomReport> classObject = (Class<? extends CustomReport>) Class.forName(report.getCustomReportClass());
+				CustomReport job = classObject.newInstance();
+				ticketData = job.getData(report, module, dateFilter, userFilterValues, baseLineId, criteriaId);
+				return ticketData;
 			}
 			if(report.getId() == 2349l) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
