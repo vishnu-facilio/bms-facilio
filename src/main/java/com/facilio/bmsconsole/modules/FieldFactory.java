@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -70,6 +72,88 @@ public class FieldFactory {
 			entityFieldsInclucde.add("alarmClass");
 			entityFieldsInclucde.add("state");
 		}
+		public static Set<String> workorderRequestFieldInclude = new HashSet<String>();
+		static {
+			workorderRequestFieldInclude.add("subject");
+			workorderRequestFieldInclude.add("description");
+			workorderRequestFieldInclude.add("priority");
+			workorderRequestFieldInclude.add("category");
+			workorderRequestFieldInclude.add("resource");
+			workorderRequestFieldInclude.add("dueDate");
+			workorderRequestFieldInclude.add("requester");
+			workorderRequestFieldInclude.add("urgency");
+		}
+	}
+	
+	public static List<FacilioField> getFormFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getFormModule();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getNameField(module));
+		fields.add(getDisplayNameField(module));
+		fields.add(getModuleIdField(module));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getFormFieldsFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getFormFieldsModule();
+		
+		fields.add(getIdField());
+		fields.add(getOrgIdField());
+		fields.add(getDisplayNameField(module));
+		
+		FacilioField formId = new FacilioField();
+		formId.setName("formId");
+		formId.setDataType(FieldType.NUMBER);
+		formId.setColumnName("FORMID");
+		formId.setModule(module);
+		fields.add(formId);
+		
+		FacilioField displayType = new FacilioField();
+		displayType.setName("displayTypeInt");
+		displayType.setDataType(FieldType.NUMBER);
+		displayType.setColumnName("DISPLAY_TYPE");
+		displayType.setModule(module);
+		fields.add(displayType);
+		
+		FacilioField fieldId = new FacilioField();
+		fieldId.setName("fieldId");
+		fieldId.setDataType(FieldType.NUMBER);
+		fieldId.setColumnName("FIELDID");
+		fieldId.setModule(module);
+		fields.add(fieldId);
+
+		FacilioField required = new FacilioField();
+		required.setName("required");
+		required.setDataType(FieldType.BOOLEAN);
+		required.setColumnName("REQUIRED");
+		required.setModule(module);
+		fields.add(required);
+		
+		FacilioField sequenceNumber = new FacilioField();
+		sequenceNumber.setName("sequenceNumber");
+		sequenceNumber.setDataType(FieldType.NUMBER);
+		sequenceNumber.setColumnName("SEQUENCE_NUMBER");
+		sequenceNumber.setModule(module);
+		fields.add(sequenceNumber);
+		
+		return fields;
+	}
+
+	private static FacilioField getDisplayNameField(FacilioModule module) {
+		FacilioField displayName = new FacilioField();
+		displayName.setName("displayName");
+		displayName.setDataType(FieldType.STRING);
+		displayName.setColumnName("DISPLAYNAME");
+		if (module != null) {
+			displayName.setModule(module);
+		}
+
+		return displayName;
 	}
 
 	public static List<FacilioField> getAssetCategoryReadingRelFields() {
@@ -2779,6 +2863,7 @@ public class FieldFactory {
 		reportColor.setModule(module);
 		fields.add(reportColor);
 
+		fields.add(getField("customReportClass", "CUSTOM_REPORT_CLASS", module, FieldType.STRING));
 		return fields;
 	}
 
@@ -4164,6 +4249,59 @@ public class FieldFactory {
 		fields.add(getSiteIdField(module));
 		fields.add(getField("benchmarkId", "BENCHMARK_ID", module, FieldType.LOOKUP));
 		fields.add(getField("reportId", "REPORT_ID", module, FieldType.LOOKUP));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getScreenModuleFields() {
+		FacilioModule module = ModuleFactory.getScreenModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("name", "NAME", module, FieldType.STRING));
+		fields.add(getField("interval", "REFRESH_INTERVAL", module, FieldType.NUMBER));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getScreenDashboardRelModuleFields() {
+		FacilioModule module = ModuleFactory.getScreenDashboardRelModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getField("screenId", "SCREEN_ID", module, FieldType.LOOKUP));
+		fields.add(getField("dashboardId", "DASHBOARD_ID", module, FieldType.LOOKUP));
+		fields.add(getField("spaceId", "SPACE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("sequence", "SEQUENCE_NO", module, FieldType.NUMBER));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getRemoteScreenModuleFields() {
+		FacilioModule module = ModuleFactory.getRemoteScreenModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("name", "NAME", module, FieldType.STRING));
+		fields.add(getField("screenId", "SCREEN_ID", module, FieldType.LOOKUP));
+		fields.add(getField("token", "TOKEN", module, FieldType.STRING));
+		fields.add(getField("sessionStartTime", "SESSION_START_TIME", module, FieldType.NUMBER));
+		fields.add(getField("sessionInfo", "SESSION_INFO", module, FieldType.STRING));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getTVPasscodeFields() {
+		FacilioModule module = ModuleFactory.getTVPasscodeModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getField("code", "CODE", module, FieldType.STRING));
+		fields.add(getField("generatedTime", "GENERATED_TIME", module, FieldType.NUMBER));
+		fields.add(getField("expiryTime", "EXPIRY_TIME", module, FieldType.NUMBER));
+		fields.add(getField("connectedScreenId", "CONNECTED_SCREEN_ID", module, FieldType.NUMBER));
+		fields.add(getField("info", "INFO", module, FieldType.STRING));
 		
 		return fields;
 	}

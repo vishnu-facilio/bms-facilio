@@ -68,7 +68,6 @@ public abstract class FacilioJob implements Runnable {
 				JobStore.setInActiveAndUpdateCount(jc.getJobId(), jc.getJobName(), jc.getCurrentExecutionCount()+1);
 			}
 			currentThread.setName(threadName);
-			executor.removeJob(jc);
 			FacilioTransactionManager.INSTANCE.getTransactionManager().commit();
 		}
 		catch(Exception e) {
@@ -78,9 +77,8 @@ public abstract class FacilioJob implements Runnable {
 				// TODO Auto-generated catch block
 				LOGGER.error("Exception occurred ", e1);
 			}
-			executor.removeJob(jc);
 			LOGGER.error("Job execution failed for Job :"+jc.getJobId()+" : "+ jc.getJobName(),e);
-			CommonCommandUtil.emailException(FacilioJob.class.getName(), "Job execution failed for Job :"+jc.getJobId()+" : "+ jc.getJobName(), e);
+			CommonCommandUtil.emailException(FacilioJob.class.getName(), "Job execution failed for Job : "+jc.getJobId()+" : "+ jc.getJobName(), e);
 			reschedule();
 		}
 	}

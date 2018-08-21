@@ -1,8 +1,15 @@
 package com.facilio.wms.message;
 
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.v2.IRecordProcessor;
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.v2.IRecordProcessorFactory;
-import com.amazonaws.services.kinesis.clientlibrary.lib.worker.InitialPositionInStream;
 import com.amazonaws.services.kinesis.clientlibrary.lib.worker.KinesisClientLibConfiguration;
 import com.amazonaws.services.kinesis.clientlibrary.lib.worker.Worker;
 import com.amazonaws.services.kinesis.clientlibrary.types.InitializationInput;
@@ -14,13 +21,6 @@ import com.facilio.aws.util.AwsUtil;
 import com.facilio.server.ServerInfo;
 import com.facilio.wms.endpoints.SessionManager;
 import com.facilio.wms.util.WmsApi;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
 
 
 public class NotificationProcessor implements IRecordProcessor {
@@ -36,9 +36,12 @@ public class NotificationProcessor implements IRecordProcessor {
     }
 
     public void processRecords(ProcessRecordsInput processRecordsInput) {
+        long startTime = System.currentTimeMillis();
+        long timeToSendMessage = 0L;
         for (Record record : processRecordsInput.getRecords()) {
             String data = "";
             try {
+                record.getSequenceNumber();
                 data = DECODER.decode(record.getData()).toString();
                 if(data.isEmpty()){
                     continue;
@@ -47,13 +50,16 @@ public class NotificationProcessor implements IRecordProcessor {
                 JSONObject payLoad = (JSONObject) parser.parse(data);
                 Message message = Message.getMessage(payLoad);
                 LOGGER.debug("Going to send message to " + message.getTo() + " from " + message.getFrom());
-                SessionManager.getInstance().sendMessage(message);
+
+                timeToSendMessage = timeToSendMessage + SessionManager.getInstance().sendMessage(message);
+
                 processRecordsInput.getCheckpointer().checkpoint(record);
             }
             catch (Exception e) {
                 LOGGER.info("Exception occurred "+ data + " , " , e);
             }
         }
+        LOGGER.info("Processed " + processRecordsInput.getRecords().size() +  " in " + (System.currentTimeMillis() - startTime) + " ms. Time to send Messaage " + timeToSendMessage);
     }
 
     public void shutdown(ShutdownInput shutdownInput) {
@@ -73,6 +79,7 @@ public class NotificationProcessor implements IRecordProcessor {
                     new KinesisClientLibConfiguration(applicationName, streamName, AwsUtil.getAWSCredentialsProvider(), workerId)
                             .withRegionName(AwsUtil.getRegion())
                             .withKinesisEndpoint(AwsUtil.getConfig("kinesisEndpoint"))
+                            .withMaxRecords(1000)
                             .withMaxLeaseRenewalThreads(3)
                             .withInitialLeaseTableReadCapacity(1)
                             .withInitialLeaseTableWriteCapacity(1);

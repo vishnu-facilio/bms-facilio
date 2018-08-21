@@ -99,7 +99,6 @@ public class ModeledDataCommand implements Command {
 
 
 		context.put(FacilioConstants.ContextNames.READINGS_MAP,moduleVsReading);
-		context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS,true);
 		context.put(FacilioConstants.ContextNames.HISTORY_READINGS, false);
 		
 		return false;

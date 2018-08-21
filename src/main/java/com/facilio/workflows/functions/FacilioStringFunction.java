@@ -4,8 +4,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.facilio.unitconversion.Unit;
-import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.workflows.exceptions.FunctionParamException;
 
 public enum FacilioStringFunction implements FacilioWorkflowFunctionInterface {

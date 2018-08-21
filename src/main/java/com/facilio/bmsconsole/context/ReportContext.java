@@ -18,6 +18,15 @@ public class ReportContext extends ModuleBaseWithCustomFields {
 	
 	Long parentFolderId;
 	ReportFolderContext reportFolderContext;
+	String customReportClass;
+	public String getCustomReportClass() {
+		return customReportClass;
+	}
+
+	public void setCustomReportClass(String customReportClass) {
+		this.customReportClass = customReportClass;
+	}
+
 	public ReportFolderContext getReportFolderContext() {
 		return reportFolderContext;
 	}

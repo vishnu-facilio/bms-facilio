@@ -105,7 +105,6 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.reports.ReportExportUtil;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.templates.EMailTemplate;
@@ -133,11 +132,13 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
 import com.facilio.pdf.PdfUtil;
+import com.facilio.report.customreport.CustomReport;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.ScheduleInfo;
+import com.facilio.tasker.job.FacilioJob;
 import com.facilio.timeseries.TimeSeriesAPI;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.facilio.unitconversion.Metric;
@@ -1496,6 +1497,13 @@ public class DashboardAction extends ActionSupport {
 				dateFilter.add(1522521000000l);
 				dateFilter.add(1530383400000l);
 			}
+			
+			if(report.getCustomReportClass() != null) {
+				Class<? extends CustomReport> classObject = (Class<? extends CustomReport>) Class.forName(report.getCustomReportClass());
+				CustomReport job = classObject.newInstance();
+				ticketData = job.getData(report, module, dateFilter, userFilterValues, baseLineId, criteriaId);
+				return ticketData;
+			}
 			if(report.getId() == 2349l) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				
@@ -1675,90 +1683,6 @@ public class DashboardAction extends ActionSupport {
 					}
 					
 					LOGGER.log(Level.INFO, "2362ll buildingres ----"+ticketData);
-					
-					return ticketData;
-				}
-			}
-			
-			else if(report.getId() == 2361l) {
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				
-				int tcompliance = 0,tnonCompliance = 0,trepeatFinding = 0,total = 0;
-				
-				List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
-				
-				ticketData = new JSONArray();
-
-				for(TicketCategoryContext category:categories) {
-					
-					List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrders(category.getId());
-					
-					if(workorders.isEmpty()) {
-						continue;
-					}
-					
-					LOGGER.log(Level.SEVERE, "23611l passed Category ----"+category.getName());
-					int compliance = 0,nonCompliance = 0,repeatFinding = 0,notApplicable = 0;
-					
-					for(BuildingContext building : SpaceAPI.getAllBuildings()) {
-						
-						compliance = 0;nonCompliance = 0;repeatFinding = 0;notApplicable = 0;
-						for(WorkOrderContext workorder:workorders) {
-							
-							if(workorder.getResource().getId() != building.getId()) {
-								continue;
-							}
-							LOGGER.log(Level.SEVERE, "dateFilter --- "+dateFilter);
-							if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
-								continue;
-							}
-							LOGGER.log(Level.SEVERE, "passed --- "+workorder.getId());
-							Command chain = FacilioChainFactory.getGetTasksOfTicketCommand();
-							FacilioContext context = new FacilioContext();
-							
-							context.put(FacilioConstants.ContextNames.ID, workorder.getId());
-							context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
-							context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME,"Tasks");
-							context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(FacilioConstants.ContextNames.TASK));
-							context.put("isAsMap", true);
-							chain.execute(context);
-							
-							List<Map<String, Object>> taskMap = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
-							
-							LOGGER.log(Level.SEVERE, "passed1 --- "+taskMap.size());
-							for(Map<String, Object> task : taskMap) {
-								
-								if(task.get("inputValue") != null) {
-									
-									String subject = (String) task.get("inputValue");
-									
-									subject = subject.trim();
-									
-									if (subject.endsWith("Non Compliance")) {
-										nonCompliance += aswaqnonComp;
-									}
-									else if(subject.endsWith("Compliance")) {
-										compliance += aswaqComp;
-									}
-									else if (subject.endsWith("Repeat Findings")) {
-										repeatFinding += aswaqrep;
-									}
-								}
-							}
-						}
-						nonCompliance = Math.abs(nonCompliance);
-						compliance = Math.abs(compliance);
-						repeatFinding = Math.abs(repeatFinding);
-						
-						JSONObject buildingres = new JSONObject();
-						buildingres.put("label",building.getName()); 
-						buildingres.put("value", compliance+nonCompliance+repeatFinding);
-						
-						ticketData.add(buildingres);
-						
-					}
-					
-					LOGGER.log(Level.SEVERE, "2362ll buildingres ----"+ticketData);
 					
 					return ticketData;
 				}
@@ -4543,6 +4467,8 @@ public class DashboardAction extends ActionSupport {
 			}
 			else if ((dateFilter != null || report.getDateFilter() != null) && xAxisField.getDataTypeEnum().equals(FieldType.DATE_TIME)) {
 				
+				
+				
 				int oprId =  dateFilter != null ? DashboardUtil.predictDateOpperator(dateFilter) : report.getDateFilter().getOperatorId();
 				
 				boolean isRegression = (reportContext.getChartType() != null && reportContext.getChartType().equals(ReportChartType.REGRESSION.getValue()));
@@ -4557,7 +4483,7 @@ public class DashboardAction extends ActionSupport {
 					xAggregateOpperator = FormulaContext.DateAggregateOperator.HOURSOFDAY;
 				}
 				else if (oprId == DateOperators.CURRENT_WEEK.getOperatorId() || oprId == DateOperators.LAST_WEEK.getOperatorId() || oprId == DateOperators.CURRENT_WEEK_UPTO_NOW.getOperatorId()) {
-					if(!(xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.WEEKDAY) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.FULLDATE) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.HOURSOFDAYONLY))) {
+					if(!(xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.WEEKDAY) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.FULLDATE) )) {
 						xAggregateOpperator = FormulaContext.DateAggregateOperator.WEEKDAY;
 					}
 				}
@@ -4718,7 +4644,7 @@ public class DashboardAction extends ActionSupport {
 		String baseLineName = null;
 		if(baseLineId != -1) {
 			
-			if(report != null && AccountUtil.getCurrentOrg().getId() == 116l) {
+			if(report != null && (AccountUtil.getCurrentOrg().getId() == 116l || AccountUtil.getCurrentOrg().getId() == 104l)) {
 				report.setReportColor("#ec598c");
 			}
 			
@@ -5501,7 +5427,7 @@ public class DashboardAction extends ActionSupport {
 		 							newPurpose = true;
 		 						}
 		 					}
-		 					else if((report.getId() == 1963l || report.getId() == 3481l || report.getId() == 3653l || report.getId() == 3664l || report.getId() == 3663l || report.getId() == 3748l || report.getId() == 3754l || report.getId() == 3755l || report.getId() == 3756l || report.getId() == 3757l || report.getId() == 3758l || report.getId() == 3759l || report.getId() == 4225l || report.getId() == 4226l) && xAxisField != null) {
+		 					else if((report.getId() == 1963l || report.getId() == 3481l || report.getId() == 3653l || report.getId() == 3664l || report.getId() == 3663l || report.getId() == 3748l || report.getId() == 3754l || report.getId() == 3755l || report.getId() == 3756l || report.getId() == 3757l || report.getId() == 3758l || report.getId() == 3759l || report.getId() == 4225l || report.getId() == 4226l || report.getId() == 4306l) && xAxisField != null) {
 		 						AssetContext context = AssetsAPI.getAssetInfo((Long) lbl);
 		 						if(context != null) {
 		 							lbl = context.getName();
@@ -6718,6 +6644,13 @@ public class DashboardAction extends ActionSupport {
 	public String getDashboardListWithFolder() throws Exception {
 		if (moduleName != null) {
 			dashboardFolders = DashboardUtil.getDashboardListWithFolder(moduleName);
+		}
+		return SUCCESS;
+	}
+	
+	public String getDashboardTree() throws Exception {
+		if (moduleName != null) {
+			dashboardFolders = DashboardUtil.getDashboardTree(moduleName);
 		}
 		return SUCCESS;
 	}

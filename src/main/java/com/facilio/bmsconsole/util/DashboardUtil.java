@@ -52,6 +52,7 @@ import com.facilio.bmsconsole.context.ReportColumnContext;
 import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.ReportContext.LegendMode;
 import com.facilio.bmsconsole.context.ReportContext.ReportChartType;
+import com.facilio.bmsconsole.context.SiteContext.SiteType;
 import com.facilio.bmsconsole.context.ReportDateFilterContext;
 import com.facilio.bmsconsole.context.ReportEnergyMeterContext;
 import com.facilio.bmsconsole.context.ReportFieldContext;
@@ -78,7 +79,6 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
@@ -1000,6 +1000,205 @@ public class DashboardUtil {
 			List<DashboardContext> dashboards = getFilteredDashboards(dashboardMap, dashboardIds);
 			
 			return sortDashboardByFolder(dashboards);
+		}
+		return null;
+	}
+	
+	public static List<DashboardFolderContext> getDashboardTree(String moduleName) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getDashboardFields())
+				.table(ModuleFactory.getDashboardModule().getTableName())
+				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
+				.andCustomWhere("BASE_SPACE_ID IS NULL")
+				.andCustomWhere("MODULEID = ?", module.getModuleId());
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		List<Long> dashboardIds = new ArrayList<>();
+		if (props != null && !props.isEmpty()) {
+			
+			Map<Long, DashboardContext> dashboardMap = new HashMap<Long, DashboardContext>();
+			for (Map<String, Object> prop : props) {
+				DashboardContext dashboard = FieldUtil.getAsBeanFromMap(prop, DashboardContext.class);
+				if(dashboard.getLinkName().equals("buildingdashboard") && dashboard.getOrgId() == 58l) {
+					List<Long> s = new ArrayList<>();
+					s.add(382l);
+					dashboard.setBuildingExcludeList(s);
+				}
+				dashboard.setReportSpaceFilterContext(getDashboardSpaceFilter(dashboard.getId()));
+				dashboardMap.put(dashboard.getId(), dashboard);
+				dashboardIds.add(dashboard.getId());
+			}
+			List<DashboardContext> dashboards = getFilteredDashboards(dashboardMap, dashboardIds);
+			
+			DashboardContext portfolioDashboard = null;
+			DashboardContext commercialPortfolioDashboard = null;
+			DashboardContext residentialPortfolioDashboard = null;
+			DashboardContext buildingDashboard = null;
+			DashboardContext siteDashboard = null;
+			
+			List<DashboardContext> otherDashboards = new ArrayList<>();
+			
+			for (DashboardContext dashboard : dashboards) {
+				if ("portfolio".equalsIgnoreCase(dashboard.getLinkName())) {
+					portfolioDashboard = dashboard;
+				}
+				else if ("buildingdashboard".equalsIgnoreCase(dashboard.getLinkName())) {
+					buildingDashboard = dashboard;
+				}
+				else if ("sitedashboard".equalsIgnoreCase(dashboard.getLinkName())) {
+					siteDashboard = dashboard;
+				}
+				else if ("commercial".equalsIgnoreCase(dashboard.getLinkName())) {
+					commercialPortfolioDashboard = dashboard;
+				}
+				else if ("residential".equalsIgnoreCase(dashboard.getLinkName())) {
+					residentialPortfolioDashboard = dashboard;
+				}
+				else {
+					otherDashboards.add(dashboard);
+				}
+			}
+			
+			DashboardFolderContext portfolioFolder = new DashboardFolderContext();
+			portfolioFolder.setName("Portfolio");
+			
+			DashboardFolderContext commercialPortfolioFolder = new DashboardFolderContext();
+			commercialPortfolioFolder.setName("Commercial");
+			
+			DashboardFolderContext residentialPortfolioFolder = new DashboardFolderContext();
+			residentialPortfolioFolder.setName("Residential");
+			
+			List<BuildingContext> buildings = SpaceAPI.getAllBuildings();
+			List<SiteContext> sites = SpaceAPI.getAllSites();
+			
+			if (portfolioDashboard != null) {	
+				if (portfolioDashboard != null && ((buildings != null && buildings.size() > 1) || (sites != null && sites.size() > 1))) {
+					portfolioFolder.addDashboards(portfolioDashboard);
+				}
+			}
+				
+			if (buildingDashboard != null && buildings != null && buildings.size() > 0) {
+				for (BuildingContext building : buildings) {
+					
+					DashboardContext bd = new DashboardContext();
+					bd.setId(buildingDashboard.getId());
+					bd.setOrgId(buildingDashboard.getOrgId());
+					bd.setModuleId(buildingDashboard.getModuleId());
+					bd.setPublishStatus(buildingDashboard.getPublishStatus());
+					bd.setDashboardName(building.getName());
+					bd.setLinkName(buildingDashboard.getLinkName() + "/" + building.getId());
+					bd.setDashboardFolderId(buildingDashboard.getDashboardFolderId());
+					bd.setReportSpaceFilterContext(buildingDashboard.getReportSpaceFilterContext());
+					bd.setBaseSpaceId(building.getId());
+					bd.setBuildingExcludeList(buildingDashboard.getBuildingExcludeList());
+					bd.setCreatedByUserId(buildingDashboard.getCreatedByUserId());
+					bd.setDisplayOrder(buildingDashboard.getDisplayOrder());
+					
+					portfolioFolder.addDashboards(bd);
+				}
+			}
+			
+			if (siteDashboard != null && sites != null && sites.size() > 0) {
+				for (SiteContext site : sites) {
+					
+					DashboardContext bd = new DashboardContext();
+					bd.setId(siteDashboard.getId());
+					bd.setOrgId(siteDashboard.getOrgId());
+					bd.setModuleId(siteDashboard.getModuleId());
+					bd.setPublishStatus(siteDashboard.getPublishStatus());
+					bd.setDashboardName(site.getName());
+					bd.setLinkName(siteDashboard.getLinkName() + "/" + site.getId());
+					bd.setDashboardFolderId(siteDashboard.getDashboardFolderId());
+					bd.setReportSpaceFilterContext(siteDashboard.getReportSpaceFilterContext());
+					bd.setBaseSpaceId(site.getId());
+					bd.setBuildingExcludeList(siteDashboard.getBuildingExcludeList());
+					bd.setCreatedByUserId(siteDashboard.getCreatedByUserId());
+					bd.setDisplayOrder(siteDashboard.getDisplayOrder());
+					
+					portfolioFolder.addDashboards(bd);
+				}
+			}
+			
+			if (commercialPortfolioDashboard != null) {
+				commercialPortfolioFolder.addDashboards(commercialPortfolioDashboard);
+			}
+			
+			if (commercialPortfolioDashboard != null && buildingDashboard != null) {
+				List<SiteContext> commercialSites = SpaceAPI.getAllSitesOfType(SiteType.COMMERCIAL.getIntVal());
+				if(commercialSites != null) {
+					for(SiteContext site : commercialSites) {
+						for (BuildingContext building : buildings) {
+							if (building.getSiteId() == site.getId()) {
+								
+								DashboardContext bd = new DashboardContext();
+								bd.setId(buildingDashboard.getId());
+								bd.setOrgId(buildingDashboard.getOrgId());
+								bd.setModuleId(buildingDashboard.getModuleId());
+								bd.setPublishStatus(buildingDashboard.getPublishStatus());
+								bd.setDashboardName(building.getName());
+								bd.setLinkName(buildingDashboard.getLinkName() + "/" + building.getId());
+								bd.setDashboardFolderId(buildingDashboard.getDashboardFolderId());
+								bd.setReportSpaceFilterContext(buildingDashboard.getReportSpaceFilterContext());
+								bd.setBaseSpaceId(building.getId());
+								bd.setBuildingExcludeList(buildingDashboard.getBuildingExcludeList());
+								bd.setCreatedByUserId(buildingDashboard.getCreatedByUserId());
+								bd.setDisplayOrder(buildingDashboard.getDisplayOrder());
+								
+								commercialPortfolioFolder.addDashboards(bd);
+							}
+						}
+					}
+				}
+			}
+			
+			if (residentialPortfolioDashboard != null) {
+				residentialPortfolioFolder.addDashboards(residentialPortfolioDashboard);
+			}
+			
+			if (residentialPortfolioDashboard != null && buildingDashboard != null) {
+				List<SiteContext> residentialSites = SpaceAPI.getAllSitesOfType(SiteType.RESIDENTIAL.getIntVal());
+				if(residentialSites != null) {
+					for(SiteContext site : residentialSites) {
+						for (BuildingContext building : buildings) {
+							if (building.getSiteId() == site.getId()) {
+								
+								DashboardContext bd = new DashboardContext();
+								bd.setId(buildingDashboard.getId());
+								bd.setOrgId(buildingDashboard.getOrgId());
+								bd.setModuleId(buildingDashboard.getModuleId());
+								bd.setPublishStatus(buildingDashboard.getPublishStatus());
+								bd.setDashboardName(building.getName());
+								bd.setLinkName(buildingDashboard.getLinkName() + "/" + building.getId());
+								bd.setDashboardFolderId(buildingDashboard.getDashboardFolderId());
+								bd.setReportSpaceFilterContext(buildingDashboard.getReportSpaceFilterContext());
+								bd.setBaseSpaceId(building.getId());
+								bd.setBuildingExcludeList(buildingDashboard.getBuildingExcludeList());
+								bd.setCreatedByUserId(buildingDashboard.getCreatedByUserId());
+								bd.setDisplayOrder(buildingDashboard.getDisplayOrder());
+								
+								residentialPortfolioFolder.addDashboards(bd);
+							}
+						}
+					}
+				}
+			}
+			
+			List<DashboardFolderContext> dList = sortDashboardByFolder(otherDashboards);
+			if (residentialPortfolioFolder.getDashboards() != null && residentialPortfolioFolder.getDashboards().size() > 0) {
+				dList.add(0, residentialPortfolioFolder);
+			}
+			if (commercialPortfolioFolder.getDashboards() != null && commercialPortfolioFolder.getDashboards().size() > 0) {
+				dList.add(0, commercialPortfolioFolder);
+			}
+			if (portfolioFolder.getDashboards() != null && portfolioFolder.getDashboards().size() > 0) {
+				dList.add(0, portfolioFolder);
+			}
+			return dList;
 		}
 		return null;
 	}

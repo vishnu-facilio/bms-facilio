@@ -272,6 +272,13 @@ public class WorkflowRuleContext {
 				return false;
 			}
 		},
+		CUSTOM_WORKORDER_NOTIFICATION_RULE {		//id - 10
+			@Override	
+			public boolean stopFurtherRuleExecution() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+		},
 		;
 		
 		public int getIntVal() {

@@ -53,8 +53,27 @@ public class ModuleFactory {
 		moduleMap.put("businesshours", getBusinessHoursModule());
 		moduleMap.put("files", getFilesModule());
 		moduleMap.put("anomalyScheduler", getAnalyticsAnomalyModule());
+		moduleMap.put("form", getFormModule());
+		moduleMap.put("formFields", getFormFieldsModule());
 		return moduleMap;
 	}
+
+	public static FacilioModule getFormModule() {
+		FacilioModule formModule = new FacilioModule();
+		formModule.setName("form");
+		formModule.setDisplayName("Form");
+		formModule.setTableName("Forms");
+		return formModule;
+	}
+	
+	public static FacilioModule getFormFieldsModule() {
+		FacilioModule formFieldsModule = new FacilioModule();
+		formFieldsModule.setName("formFields");
+		formFieldsModule.setDisplayName("Form Fields");
+		formFieldsModule.setTableName("Form_Fields");
+		return formFieldsModule;
+	}
+	
 
 	public static FacilioModule getFieldsModule() {
 		FacilioModule fieldModule = new FacilioModule();
@@ -1203,6 +1222,38 @@ public class ModuleFactory {
 		syncModule.setName("offlinesyncerror");
 		syncModule.setDisplayName("Offline Sync Error");
 		syncModule.setTableName("Sync_Errors");
+		return syncModule;
+	}
+	
+	public static FacilioModule getScreenModule() {
+		FacilioModule syncModule = new FacilioModule();
+		syncModule.setName("screen");
+		syncModule.setDisplayName("Screen");
+		syncModule.setTableName("Screen");
+		return syncModule;
+	}
+	
+	public static FacilioModule getScreenDashboardRelModule() {
+		FacilioModule syncModule = new FacilioModule();
+		syncModule.setName("screenDashboardRel");
+		syncModule.setDisplayName("Screen Dashboard Rel");
+		syncModule.setTableName("Screen_Dashboard_Rel");
+		return syncModule;
+	}
+	
+	public static FacilioModule getRemoteScreenModule() {
+		FacilioModule syncModule = new FacilioModule();
+		syncModule.setName("remoteScreens");
+		syncModule.setDisplayName("Remote Screens");
+		syncModule.setTableName("Remote_Screens");
+		return syncModule;
+	}
+	
+	public static FacilioModule getTVPasscodeModule() {
+		FacilioModule syncModule = new FacilioModule();
+		syncModule.setName("tvpasscode");
+		syncModule.setDisplayName("TV Passcode");
+		syncModule.setTableName("TVPasscodes");
 		return syncModule;
 	}
 }

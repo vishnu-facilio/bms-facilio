@@ -15,6 +15,7 @@ public class Message
 	private String namespace;
 	private String action;
 	private JSONObject content = new JSONObject();
+	private long timestamp;
 
 	private static final Logger LOGGER = LogManager.getLogger(Message.class.getName());
 	private static final String MESSAGE_TYPE = "messageType";
@@ -23,6 +24,7 @@ public class Message
 	private static final String NAMESPACE = "namespace";
 	private static final String ACTION = "action";
 	private static final String CONTENT = "content";
+	private static final String TIMESTAMP = "timestamp";
 
 	public Message(MessageType type) {
 		this.messageType=type;
@@ -50,6 +52,15 @@ public class Message
 
 	public Message setFrom(long from) {
 		this.from = from;
+		return this;
+	}
+	
+	public long getTimestamp() {
+		return this.timestamp;
+	}
+
+	public Message setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
 		return this;
 	}
 	
@@ -99,6 +110,8 @@ public class Message
 	}
 
 	public JSONObject toJson() {
+		this.timestamp = System.currentTimeMillis();
+		
 		JSONObject object = new JSONObject();
 		object.put(MESSAGE_TYPE, getMessageType().toString());
 		object.put(FROM, getFrom());
@@ -106,6 +119,7 @@ public class Message
 		object.put(NAMESPACE, getNamespace());
 		object.put(ACTION, getAction());
 		object.put(CONTENT, getContent());
+		object.put(TIMESTAMP, getTimestamp());
 		return object;
 	}
 
@@ -138,6 +152,14 @@ public class Message
 
 		if(object.containsKey(CONTENT)) {
 			message.setContent((JSONObject) object.get(CONTENT));
+		}
+		
+		if(object.containsKey(TIMESTAMP)) {
+			try {
+				message.setTimestamp((Long) object.get(TIMESTAMP));
+			} catch (NumberFormatException e) {
+				LOGGER.info("Exception while parsing message to ", e);
+			}
 		}
 
 		return message;

@@ -14,15 +14,20 @@ import java.util.logging.Logger;
 
 import javax.websocket.EncodeException;
 
+import org.json.simple.JSONObject;
+
 import com.amazonaws.services.kinesis.model.PutRecordResult;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.wms.endpoints.FacilioClientEndpoint;
 import com.facilio.wms.endpoints.SessionManager;
 import com.facilio.wms.message.Message;
+import com.facilio.wms.message.MessageType;
 import com.facilio.wms.message.WmsChatMessage;
 import com.facilio.wms.message.WmsEvent;
 import com.facilio.wms.message.WmsNotification;
+import com.facilio.wms.message.WmsRemoteScreenMessage;
+
 import org.json.simple.JSONObject;
 
 public class WmsApi
@@ -50,6 +55,10 @@ public class WmsApi
 		return WEBSOCKET_URL + "/" + uid;
 	}
 	
+	public static String getRemoteWebsocketEndpoint(long id) {
+		return WEBSOCKET_URL + "/remote/" + id;
+	}
+	
 	public static void sendEvent(long to, WmsEvent event) throws IOException, EncodeException
 	{
 		List<Long> toList = new ArrayList<>();
@@ -57,10 +66,17 @@ public class WmsApi
 		sendMessage(toList, event);
 	}
 	
+	public static void sendRemoteMessage(long to, WmsRemoteScreenMessage remoteMessage) throws IOException, EncodeException
+	{
+		List<Long> toList = new ArrayList<>();
+		toList.add(to);
+		sendMessage(toList, remoteMessage);
+	}
+	
 	public static void broadCastMessage( Message message) throws IOException, EncodeException
 	{
 		
-		SessionManager.getInstance().broadcast(message);
+		SessionManager.getInstance().sendMessage(message);
 		System.out.println("Broad cast done..");
 	}
 	
@@ -101,8 +117,12 @@ public class WmsApi
 			if (AccountUtil.getCurrentUser() != null) {
 				message.setFrom(AccountUtil.getCurrentUser().getId());
 			}
-			sendToKinesis(message.toJson());
-			// SessionManager.getInstance().sendMessage(message);
+			if (AwsUtil.isDevelopment()) {
+				SessionManager.getInstance().sendMessage(message);
+			}
+			else {
+				sendToKinesis(message.toJson());
+			}
 		}
 	}
 

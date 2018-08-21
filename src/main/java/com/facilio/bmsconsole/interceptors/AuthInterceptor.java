@@ -14,12 +14,16 @@ import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
 
 import com.facilio.accounts.dto.Account;
+import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.fw.auth.CognitoUtil.CognitoUser;
 import com.facilio.fw.auth.LoginUtil;
+import com.facilio.screen.context.RemoteScreenContext;
+import com.facilio.screen.util.ScreenUtil;
 import com.facilio.util.AuthenticationUtil;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;
@@ -56,59 +60,69 @@ public class AuthInterceptor extends AbstractInterceptor {
 
 		try {
 			HttpServletRequest request = ServletActionContext.getRequest();
-			CognitoUser cognitoUser = AuthenticationUtil.getCognitoUser(request,false);
-			Account currentAccount = null;
-			if (! AuthenticationUtil.checkIfSameUser(currentAccount, cognitoUser)) {
-				try {
-					currentAccount = LoginUtil.getAccount(cognitoUser, false);
-				} catch (Exception e){
-					LOGGER.log(Level.SEVERE, "Invalid users", e);
-					currentAccount = null;
-				}
-			}
-			if(AuthenticationUtil.checkIfSameUser(currentAccount, cognitoUser)) {
-				AccountUtil.cleanCurrentAccount();
-				AccountUtil.setCurrentAccount(currentAccount);
-				request.setAttribute("ORGID", currentAccount.getOrg().getOrgId());
-				request.setAttribute("USERID", currentAccount.getUser().getOuid());
-
-				Parameter permission = ActionContext.getContext().getParameters().get("permission");
-				Parameter moduleName = ActionContext.getContext().getParameters().get("moduleName");
-				if (permission != null && permission.getValue() != null && moduleName != null && moduleName.getValue() != null && !isAuthorizedAccess(moduleName.getValue() ,permission.getValue())) {
-					return "unauthorized";
-				}
-
-				String lang = currentAccount.getUser().getLanguage();
-				Locale localeObj = null;
-				if (lang == null || lang.trim().isEmpty()) {
-					localeObj = request.getLocale();
-				} else {
-					localeObj = new Locale(lang);
-				}
-
-				String timezone = currentAccount.getUser().getTimezone();
-				TimeZone timezoneObj = null;
-				if (timezone == null || timezone.trim().isEmpty()) {
-					Calendar calendar = Calendar.getInstance(localeObj);
-					timezoneObj = calendar.getTimeZone();
-				} else {
-					timezoneObj = TimeZone.getTimeZone(timezone);
-				}
-				ActionContext.getContext().getSession().put("TIMEZONE", timezoneObj);
-			} else {
-				String authRequired = ActionContext.getContext().getParameters().get("auth").getValue();
-				if (authRequired == null || "".equalsIgnoreCase(authRequired.trim()) || "true".equalsIgnoreCase(authRequired)) {
-					return Action.LOGIN;
-				}
-			}
 			
-			if (request.getRequestURL().indexOf("/app/admin") != -1) {
-				if(currentAccount != null) {
-					String useremail = currentAccount.getUser().getEmail();
-					if ( ! ADMIN_IDS.contains(useremail)) {
-						LOGGER.log(Level.SEVERE, "you are not allowed to access this page from");
+			if (!isRemoteScreenMode(request)) {
+				CognitoUser cognitoUser = AuthenticationUtil.getCognitoUser(request,false);
+				Account currentAccount = null;
+				if (! AuthenticationUtil.checkIfSameUser(currentAccount, cognitoUser)) {
+					try {
+						currentAccount = LoginUtil.getAccount(cognitoUser, false);
+					} catch (Exception e){
+						LOGGER.log(Level.SEVERE, "Invalid users", e);
+						currentAccount = null;
+					}
+				}
+				if(AuthenticationUtil.checkIfSameUser(currentAccount, cognitoUser)) {
+					AccountUtil.cleanCurrentAccount();
+					AccountUtil.setCurrentAccount(currentAccount);
+					request.setAttribute("ORGID", currentAccount.getOrg().getOrgId());
+					request.setAttribute("USERID", currentAccount.getUser().getOuid());
+
+					Parameter permission = ActionContext.getContext().getParameters().get("permission");
+					Parameter moduleName = ActionContext.getContext().getParameters().get("moduleName");
+					if (permission != null && permission.getValue() != null && moduleName != null && moduleName.getValue() != null && !isAuthorizedAccess(moduleName.getValue() ,permission.getValue())) {
+						return "unauthorized";
+					}
+
+					String lang = currentAccount.getUser().getLanguage();
+					Locale localeObj = null;
+					if (lang == null || lang.trim().isEmpty()) {
+						localeObj = request.getLocale();
+					} else {
+						localeObj = new Locale(lang);
+					}
+
+					String timezone = currentAccount.getUser().getTimezone();
+					TimeZone timezoneObj = null;
+					if (timezone == null || timezone.trim().isEmpty()) {
+						Calendar calendar = Calendar.getInstance(localeObj);
+						timezoneObj = calendar.getTimeZone();
+					} else {
+						timezoneObj = TimeZone.getTimeZone(timezone);
+					}
+					ActionContext.getContext().getSession().put("TIMEZONE", timezoneObj);
+				} else {
+					String authRequired = ActionContext.getContext().getParameters().get("auth").getValue();
+					if (authRequired == null || "".equalsIgnoreCase(authRequired.trim()) || "true".equalsIgnoreCase(authRequired)) {
 						return Action.LOGIN;
 					}
+				}
+				
+				if (request.getRequestURL().indexOf("/app/admin") != -1) {
+					if(currentAccount != null) {
+						String useremail = currentAccount.getUser().getEmail();
+						if ( ! ADMIN_IDS.contains(useremail)) {
+							LOGGER.log(Level.SEVERE, "you are not allowed to access this page from");
+							return Action.LOGIN;
+						}
+					}
+				}
+			}
+			else {
+				boolean authStatus = handleRemoteScreenAuth(request);
+				if (!authStatus) {
+					LOGGER.log(Level.SEVERE, "you are not allowed to access this page from remote screen.");
+					return Action.ERROR;
 				}
 			}
 		}
@@ -147,5 +161,42 @@ public class AuthInterceptor extends AbstractInterceptor {
 		} else {
 			return role.hasPermission(moduleName, permissions);
 		}
+	}
+	
+	private boolean isRemoteScreenMode(HttpServletRequest request) {
+		if (request.getHeader("X-Remote-Screen") != null && "true".equalsIgnoreCase(request.getHeader("X-Remote-Screen").trim())) {
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean handleRemoteScreenAuth(HttpServletRequest request) {
+		try {
+			String authRequired = ActionContext.getContext().getParameters().get("auth").getValue();
+			if (authRequired != null && "false".equalsIgnoreCase(authRequired.trim())) {
+				return true;
+			}
+			
+			String deviceToken = LoginUtil.getUserCookie(request, "fc.deviceToken");
+			if (deviceToken != null && !"".equals(deviceToken)) {
+				long connectedScreenId = Long.parseLong(CognitoUtil.validateJWT(deviceToken, "auth0").getSubject().split("_")[0]);
+				RemoteScreenContext remoteScreen = ScreenUtil.getRemoteScreen(connectedScreenId);
+				if (remoteScreen != null) {
+					Account currentAccount = new Account(AccountUtil.getOrgBean().getOrg(remoteScreen.getOrgId()), AccountUtil.getOrgBean().getSuperAdmin(remoteScreen.getOrgId()));
+					currentAccount.setRemoteScreen(remoteScreen);
+					
+					AccountUtil.cleanCurrentAccount();
+					AccountUtil.setCurrentAccount(currentAccount);
+					request.setAttribute("ORGID", currentAccount.getOrg().getOrgId());
+					request.setAttribute("USERID", currentAccount.getUser().getOuid());
+					
+					return true;
+				}
+			}
+		}
+		catch (Exception e) {
+			LOGGER.log(Level.SEVERE, "Exception while check authendication from remote-screen.", e);
+		}
+		return false;
 	}
 }

@@ -371,7 +371,7 @@ public class AlarmAPI {
 		
 		String resourceName = ((ResourceContext)reading.getParent()).getName();
 		obj.put("source", resourceName);
-		obj.put("timestamp", reading.getActualTtime());
+		obj.put("timestamp", reading.getTtime());
 	}
 	
 	private static DateRange getRange(ReadingRuleContext rule, ReadingContext reading) {

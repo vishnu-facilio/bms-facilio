@@ -31,6 +31,7 @@ public class RunThroughReadingRulesCommand implements Command {
 			throw new IllegalArgumentException("Invalid Alarm rule id for running through historical data");
 		}
 		
+		BmsJobUtil.deleteJobWithProps(rule.getId(), "HistoricalRunForReadingRule");
 		BmsJobUtil.scheduleOneTimeJobWithProps(rule.getId(), "HistoricalRunForReadingRule", 30, "priority", FieldUtil.getAsJSON(range));
 		return false;
 	}

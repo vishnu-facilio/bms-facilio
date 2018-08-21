@@ -59,7 +59,7 @@ public class CognitoUtil {
 		return null;
 	}
 	
-	private static DecodedJWT  validateJWT(String token ,String issuer) {
+	public static DecodedJWT validateJWT(String token ,String issuer) {
 		try {
 		    Algorithm algorithm = Algorithm.HMAC256("secret");
 		    JWTVerifier verifier = JWT.require(algorithm)
