@@ -36,9 +36,11 @@ public class NotificationProcessor implements IRecordProcessor {
     }
 
     public void processRecords(ProcessRecordsInput processRecordsInput) {
+        long startTime = System.currentTimeMillis();
         for (Record record : processRecordsInput.getRecords()) {
             String data = "";
             try {
+                record.getSequenceNumber();
                 data = DECODER.decode(record.getData()).toString();
                 if(data.isEmpty()){
                     continue;
@@ -47,14 +49,16 @@ public class NotificationProcessor implements IRecordProcessor {
                 JSONObject payLoad = (JSONObject) parser.parse(data);
                 Message message = Message.getMessage(payLoad);
                 LOGGER.debug("Going to send message to " + message.getTo() + " from " + message.getFrom());
+
                 SessionManager.getInstance().sendMessage(message);
-                
+
                 processRecordsInput.getCheckpointer().checkpoint(record);
             }
             catch (Exception e) {
                 LOGGER.info("Exception occurred "+ data + " , " , e);
             }
         }
+        LOGGER.info("Processed " + processRecordsInput.getRecords().size() +  " in " + (System.currentTimeMillis() - startTime) + "ms.");
     }
 
     public void shutdown(ShutdownInput shutdownInput) {
@@ -73,7 +77,8 @@ public class NotificationProcessor implements IRecordProcessor {
             KinesisClientLibConfiguration kinesisClientLibConfiguration =
                     new KinesisClientLibConfiguration(applicationName, streamName, AwsUtil.getAWSCredentialsProvider(), workerId)
                             .withRegionName(AwsUtil.getRegion())
-//                            .withKinesisEndpoint(AwsUtil.getConfig("kinesisEndpoint"))
+                            .withKinesisEndpoint(AwsUtil.getConfig("kinesisEndpoint"))
+                            .withMaxRecords(1000)
                             .withMaxLeaseRenewalThreads(3)
                             .withInitialLeaseTableReadCapacity(1)
                             .withInitialLeaseTableWriteCapacity(1);
