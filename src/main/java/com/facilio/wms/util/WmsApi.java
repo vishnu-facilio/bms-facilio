@@ -33,7 +33,7 @@ import org.json.simple.JSONObject;
 public class WmsApi
 {
 	private static final Logger LOGGER = Logger.getLogger(WmsApi.class.getName());
-	private static String kinesisNotificationTopic = "notifications";
+	private static String kinesisNotificationTopic = "remotenotifications";
 	
 	public static String WEBSOCKET_URL = "ws://localhost:8080/bms/websocket";
 	private static Map<String, FacilioClientEndpoint> FACILIO_CLIENT_ENDPOINTS = new HashMap<>();
@@ -120,7 +120,7 @@ public class WmsApi
 			if (AwsUtil.isDevelopment()) {
 				SessionManager.getInstance().sendMessage(message);
 			}
-			else {
+			else if (message.getMessageType() == MessageType.REMOTE_SCREEN) {
 				sendToKinesis(message.toJson());
 			}
 		}

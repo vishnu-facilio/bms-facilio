@@ -53,7 +53,7 @@ public class NotificationProcessor implements IRecordProcessor {
 
                 timeToSendMessage = timeToSendMessage + SessionManager.getInstance().sendMessage(message);
 
-                processRecordsInput.getCheckpointer().checkpoint(record);
+                // processRecordsInput.getCheckpointer().checkpoint(record);
             }
             catch (Exception e) {
                 LOGGER.info("Exception occurred "+ data + " , " , e);
