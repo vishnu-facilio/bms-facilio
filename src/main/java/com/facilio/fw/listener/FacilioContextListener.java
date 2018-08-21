@@ -107,7 +107,7 @@ public class FacilioContextListener implements ServletContextListener {
 			}
 
 			//handle if server is both user and scheduler.
-			if( ("stage".equalsIgnoreCase(environment) || "production".equalsIgnoreCase(environment)) && ( ! scheduler)) {
+			if( "stage".equalsIgnoreCase(environment) || ("production".equalsIgnoreCase(environment) && ( ! scheduler))) {
 				new Thread(() -> NotificationProcessor.run(new NotificationProcessorFactory())).start();
 			}
 
