@@ -106,7 +106,8 @@ public class SessionManager {
 		}
 	}
 	
-	public void sendMessage(Message message) {
+	public long sendMessage(Message message) {
+		long timeTaken = 0L;
 		if (message.getMessageType() != null && message.getMessageType() == MessageType.BROADCAST) {
 			broadcast(message);
 		}
@@ -114,19 +115,20 @@ public class SessionManager {
 			sendRemoteMessage(message);
 		}
 		else {
-			sendUserMessage(message);
+			timeTaken = sendUserMessage(message);
 		}
+		return timeTaken;
 	}
 	
-	public void sendUserMessage(Message message) {
+	public long sendUserMessage(Message message) {
 		logger.log(Level.FINE, "Send message called. from: "+message.getFrom()+" to: "+message.getTo());
-
+		long timeTaken = 0L;
 		List<UserSession> sessionList = getUserSessions(message.getTo());
 		if (sessionList != null) {
 			logger.log(Level.FINE, "Going to send message to ("+sessionList.size()+") user sessions. from: "+message.getFrom()+" to: "+message.getTo());
 			for (UserSession us : sessionList) {
 				try {
-					us.sendMessage(message);
+					timeTaken = timeTaken + us.sendMessage(message);
 				}
 				catch (Exception e) {
 					logger.log(Level.WARNING, "Send message failed. from: "+message.getFrom()+" to: "+message.getTo(), e);
@@ -136,6 +138,10 @@ public class SessionManager {
 		else {
 			logger.log(Level.FINE, "No active sessions exists for the user: "+message.getTo());
 		}
+		if(sessionList != null) {
+			logger.info("Session size " + sessionList.size() + " " + timeTaken);
+		}
+		return timeTaken;
 	}
 	
 	public void sendRemoteMessage(Message message) {
@@ -229,13 +235,15 @@ public class SessionManager {
 			return this;
 		}
 		
-		public synchronized void sendMessage(Message msg) {
+		public synchronized long sendMessage(Message msg) {
+			long startTime = System.currentTimeMillis();
 			try {
 				this.session.getBasicRemote().sendObject(msg);
 			}
 			catch (Exception e) {
 				logger.log(Level.WARNING, "Exception while send message to user session: uid: "+uid+" sid: "+session.getId()+" createdTime: "+createdTime);
 			}
+			return (System.currentTimeMillis() - startTime);
 		}
 	}
 	

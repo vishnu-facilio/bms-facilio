@@ -37,6 +37,7 @@ public class NotificationProcessor implements IRecordProcessor {
 
     public void processRecords(ProcessRecordsInput processRecordsInput) {
         long startTime = System.currentTimeMillis();
+        long timeToSendMessage = 0L;
         for (Record record : processRecordsInput.getRecords()) {
             String data = "";
             try {
@@ -50,7 +51,7 @@ public class NotificationProcessor implements IRecordProcessor {
                 Message message = Message.getMessage(payLoad);
                 LOGGER.debug("Going to send message to " + message.getTo() + " from " + message.getFrom());
 
-                SessionManager.getInstance().sendMessage(message);
+                timeToSendMessage = timeToSendMessage + SessionManager.getInstance().sendMessage(message);
 
                 processRecordsInput.getCheckpointer().checkpoint(record);
             }
@@ -58,7 +59,7 @@ public class NotificationProcessor implements IRecordProcessor {
                 LOGGER.info("Exception occurred "+ data + " , " , e);
             }
         }
-        LOGGER.info("Processed " + processRecordsInput.getRecords().size() +  " in " + (System.currentTimeMillis() - startTime) + "ms.");
+        LOGGER.info("Processed " + processRecordsInput.getRecords().size() +  " in " + (System.currentTimeMillis() - startTime) + " ms. Time to send Messaage " + timeToSendMessage);
     }
 
     public void shutdown(ShutdownInput shutdownInput) {
