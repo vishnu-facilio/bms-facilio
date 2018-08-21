@@ -33,7 +33,6 @@ import com.facilio.events.constants.EventConstants;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
-import com.facilio.wms.endpoints.SessionManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.GsonBuilder;
 
@@ -41,7 +40,7 @@ public class AnomalyDetectorJob extends FacilioJob {
 	private static long SEVEN_DAYS_IN_MILLISEC = 7 * 24 * 60 * 60 * 1000L;
 	private static long FIFTEEN_MINUTES_IN_MILLISEC = 15 * 60 * 1000L;
 
-	private static final Logger logger = Logger.getLogger(SessionManager.class.getName());
+	private static final Logger logger = Logger.getLogger(AnomalyDetectorJob.class.getName());
 	
 	@Override
 	public void execute(JobContext jc) {

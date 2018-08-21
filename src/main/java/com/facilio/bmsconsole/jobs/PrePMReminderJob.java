@@ -10,10 +10,9 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
-import com.facilio.wms.endpoints.SessionManager;
 
 public class PrePMReminderJob extends FacilioJob {
-	private static final Logger logger = Logger.getLogger(SessionManager.class.getName());
+	private static final Logger logger = Logger.getLogger(PrePMReminderJob.class.getName());
 	
 	@Override
 	public void execute(JobContext jc) {

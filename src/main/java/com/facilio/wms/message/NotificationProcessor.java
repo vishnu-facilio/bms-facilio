@@ -2,7 +2,10 @@ package com.facilio.wms.message;
 
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
+import java.util.concurrent.*;
 
+import com.amazonaws.services.kinesis.clientlibrary.exceptions.InvalidStateException;
+import com.amazonaws.services.kinesis.clientlibrary.exceptions.ShutdownException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -27,6 +30,7 @@ public class NotificationProcessor implements IRecordProcessor {
 
     private static final Logger LOGGER = LogManager.getLogger(NotificationProcessor.class.getName());
     private static final CharsetDecoder DECODER = Charset.forName("UTF-8").newDecoder();
+    private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(5);
 
     public void initialize(InitializationInput initializationInput) {
         Thread thread = Thread.currentThread();
@@ -53,7 +57,13 @@ public class NotificationProcessor implements IRecordProcessor {
 
                 timeToSendMessage = timeToSendMessage + SessionManager.getInstance().sendMessage(message);
 
-                // processRecordsInput.getCheckpointer().checkpoint(record);
+                EXECUTOR.execute(() -> {
+                    try {
+                        processRecordsInput.getCheckpointer().checkpoint(record);
+                    } catch (InvalidStateException | ShutdownException e) {
+                        LOGGER.info("Exception occurred "+ record.getSequenceNumber() + " , " , e);
+                    }
+                });
             }
             catch (Exception e) {
                 LOGGER.info("Exception occurred "+ data + " , " , e);
@@ -79,7 +89,7 @@ public class NotificationProcessor implements IRecordProcessor {
                     new KinesisClientLibConfiguration(applicationName, streamName, AwsUtil.getAWSCredentialsProvider(), workerId)
                             .withRegionName(AwsUtil.getRegion())
                             .withKinesisEndpoint(AwsUtil.getConfig("kinesisEndpoint"))
-                            .withMaxRecords(1000)
+                            .withMaxRecords(500)
                             .withMaxLeaseRenewalThreads(3)
                             .withInitialLeaseTableReadCapacity(1)
                             .withInitialLeaseTableWriteCapacity(1);

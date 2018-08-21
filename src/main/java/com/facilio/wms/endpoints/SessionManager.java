@@ -120,7 +120,7 @@ public class SessionManager {
 		return timeTaken;
 	}
 	
-	public long sendUserMessage(Message message) {
+	private long sendUserMessage(Message message) {
 		logger.log(Level.FINE, "Send message called. from: "+message.getFrom()+" to: "+message.getTo());
 		long timeTaken = 0L;
 		List<UserSession> sessionList = getUserSessions(message.getTo());
@@ -138,7 +138,7 @@ public class SessionManager {
 		else {
 			logger.log(Level.FINE, "No active sessions exists for the user: "+message.getTo());
 		}
-		if(sessionList != null) {
+		if(sessionList != null && sessionList.size() > 0) {
 			logger.info("Session size " + sessionList.size() + " " + timeTaken);
 		}
 		return timeTaken;

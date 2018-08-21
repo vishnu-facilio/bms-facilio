@@ -20,11 +20,10 @@ import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.fs.S3FileStore;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
-import com.facilio.wms.endpoints.SessionManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class RefreshAnomalyModelJob extends FacilioJob {
-	private static final Logger logger = Logger.getLogger(SessionManager.class.getName());
+	private static final Logger logger = Logger.getLogger(RefreshAnomalyModelJob.class.getName());
 
 	@Override
 	public void execute(JobContext jc) {
