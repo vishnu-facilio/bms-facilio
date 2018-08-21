@@ -73,7 +73,7 @@ public class NotificationProcessor implements IRecordProcessor {
             KinesisClientLibConfiguration kinesisClientLibConfiguration =
                     new KinesisClientLibConfiguration(applicationName, streamName, AwsUtil.getAWSCredentialsProvider(), workerId)
                             .withRegionName(AwsUtil.getRegion())
-                            .withKinesisEndpoint(AwsUtil.getConfig("kinesisEndpoint"))
+//                            .withKinesisEndpoint(AwsUtil.getConfig("kinesisEndpoint"))
                             .withMaxLeaseRenewalThreads(3)
                             .withInitialLeaseTableReadCapacity(1)
                             .withInitialLeaseTableWriteCapacity(1);
