@@ -1082,7 +1082,7 @@ public class DashboardUtil {
 				}
 			}
 				
-			if (buildingDashboard != null && buildings != null && buildings.size() > 1) {
+			if (buildingDashboard != null && buildings != null && buildings.size() > 0) {
 				for (BuildingContext building : buildings) {
 					
 					DashboardContext bd = new DashboardContext();
@@ -1103,7 +1103,7 @@ public class DashboardUtil {
 				}
 			}
 			
-			if (siteDashboard != null && sites != null && sites.size() > 1) {
+			if (siteDashboard != null && sites != null && sites.size() > 0) {
 				for (SiteContext site : sites) {
 					
 					DashboardContext bd = new DashboardContext();
