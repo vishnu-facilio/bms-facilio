@@ -2,10 +2,7 @@ package com.facilio.wms.message;
 
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
-import java.util.concurrent.*;
 
-import com.amazonaws.services.kinesis.clientlibrary.exceptions.InvalidStateException;
-import com.amazonaws.services.kinesis.clientlibrary.exceptions.ShutdownException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -30,12 +27,15 @@ public class NotificationProcessor implements IRecordProcessor {
 
     private static final Logger LOGGER = LogManager.getLogger(NotificationProcessor.class.getName());
     private static final CharsetDecoder DECODER = Charset.forName("UTF-8").newDecoder();
-    private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(5);
+    private static final NotificationProcessorCheckpointer CHECKPOINTER = new NotificationProcessorCheckpointer();
+    private String shardId = "";
 
     public void initialize(InitializationInput initializationInput) {
         Thread thread = Thread.currentThread();
         String threadName = "facilio-notifications";
         thread.setName(threadName);
+        shardId = initializationInput.getShardId();
+        new Thread(CHECKPOINTER, threadName+"-checkpointer").start();
         LOGGER.info("Starting Notification processor " + initializationInput.getExtendedSequenceNumber());
     }
 
@@ -57,13 +57,8 @@ public class NotificationProcessor implements IRecordProcessor {
 
                 timeToSendMessage = timeToSendMessage + SessionManager.getInstance().sendMessage(message);
 
-                EXECUTOR.execute(() -> {
-                    try {
-                        processRecordsInput.getCheckpointer().checkpoint(record);
-                    } catch (InvalidStateException | ShutdownException e) {
-                        LOGGER.info("Exception occurred "+ record.getSequenceNumber() + " , " , e);
-                    }
-                });
+                CHECKPOINTER.addCheckPointer(shardId, processRecordsInput.getCheckpointer());
+                CHECKPOINTER.addProcessedSequenceNumber(shardId, record.getSequenceNumber());
             }
             catch (Exception e) {
                 LOGGER.info("Exception occurred "+ data + " , " , e);
