@@ -192,8 +192,22 @@
 				<param name="root">pickList</param>
 			</result>
 		</action>
-
-	</package>
-	
 		
+		<action name="getFormMeta" class="com.facilio.bmsconsole.actions.FormAction"
+			method="fetchFormMeta">
+			<result name="success" type="json">
+				<param name="includeProperties">form.*</param>
+			</result>
+		</action>
+		<action name="getFields" class="com.facilio.bmsconsole.actions.FormAction" method="fetchFormFields">
+			<result name="success" type="json">
+				<param name="includeProperties">fields.*</param>
+			</result>
+		</action>
+		<action name="edit" class="com.facilio.bmsconsole.actions.FormAction" method="editForm">
+			<result name="success" type="json">
+				<param name="includeProperties">res</param>
+			</result>
+		</action>
+	</package>
 </struts>
