@@ -45,7 +45,7 @@ public class NotificationProcessorCheckpointer implements Runnable {
                             LOGGER.info("Exception occurred ", e);
                         }
                     }
-                } catch (InterruptedException e) {
+                } catch (Exception e) {
                     LOGGER.info("InterruptedException ", e);
                 }
             }
