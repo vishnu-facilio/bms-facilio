@@ -86,6 +86,8 @@ public class NotificationProcessor implements IRecordProcessor {
                             .withKinesisEndpoint(AwsUtil.getConfig("kinesisEndpoint"))
                             .withMaxRecords(500)
                             .withMaxLeaseRenewalThreads(3)
+                            .withIdleMillisBetweenCalls(200L)
+                            .withIdleTimeBetweenReadsInMillis(200L)
                             .withInitialLeaseTableReadCapacity(1)
                             .withInitialLeaseTableWriteCapacity(1);
 
