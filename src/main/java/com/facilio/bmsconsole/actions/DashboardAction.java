@@ -596,9 +596,9 @@ public class DashboardAction extends ActionSupport {
 			
 			if ("combo".equalsIgnoreCase(chartType)) {
 				GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-						.table(ModuleFactory.getWidgetChartModule().getTableName())
-						.fields(FieldFactory.getWidgetChartFields())
-						.andCustomWhere("ID = ?", widgetId);
+						.table(ModuleFactory.getReport().getTableName())
+						.fields(FieldFactory.getReportFields())
+						.andCustomWhere("ID = ?", reportId);
 
 				Map<String, Object> props = new HashMap<String, Object>();
 				props.put("isCombinationReport", true);
