@@ -4644,7 +4644,7 @@ public class DashboardAction extends ActionSupport {
 		String baseLineName = null;
 		if(baseLineId != -1) {
 			
-			if(report != null && (AccountUtil.getCurrentOrg().getId() == 116l || AccountUtil.getCurrentOrg().getId() == 104l)) {
+			if(report != null && (AccountUtil.getCurrentOrg().getId() == 116l || AccountUtil.getCurrentOrg().getId() == 104l  || AccountUtil.getCurrentOrg().getId() == 133l)) {
 				report.setReportColor("#ec598c");
 			}
 			
