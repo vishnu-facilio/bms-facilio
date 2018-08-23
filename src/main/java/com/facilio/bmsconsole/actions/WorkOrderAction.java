@@ -980,26 +980,20 @@ public class WorkOrderAction extends FacilioAction {
 		this.tasksString = tasksString;
 	}
 	
-	public void setTaskcontex(String task_string) {
+	public void setTaskcontex(String task_string) throws Exception {
 		this.tasks = convertTask(task_string);
 	}
-	public Map<String, List<TaskContext>> convertTask(String task_string)
+	public Map<String, List<TaskContext>> convertTask(String task_string) throws Exception
 	{
 		Map<String, List<TaskContext>> taskObj = new HashMap<>();
 		JSONParser parser = new JSONParser();
-		try {
-			JSONObject obj = (JSONObject) parser.parse(task_string);
-			System.out.println("######## obj : "+obj);
-			Iterator itr = obj.keySet().iterator();
-			while (itr.hasNext()) {
-				String key = (String) itr.next();
-				JSONArray taskList = (JSONArray) obj.get(key);
-				List<TaskContext> taskContextList = FieldUtil.getAsBeanListFromJsonArray(taskList, TaskContext.class);
-				taskObj.put(key, taskContextList);
-			}
-
-		} catch (Exception e) {
-			log.info("Exception occurred ", e);
+		JSONObject obj = (JSONObject) parser.parse(task_string);
+		Iterator itr = obj.keySet().iterator();
+		while (itr.hasNext()) {
+			String key = (String) itr.next();
+			JSONArray taskList = (JSONArray) obj.get(key);
+			List<TaskContext> taskContextList = FieldUtil.getAsBeanListFromJsonArray(taskList, TaskContext.class);
+			taskObj.put(key, taskContextList);
 		}
 		return taskObj;
 	}
@@ -1084,20 +1078,15 @@ public class WorkOrderAction extends FacilioAction {
 		this.workOrderString = workOrderString;
 	}
 	
-	public void setWorkordercontex(String workorder_string) {
+	public void setWorkordercontex(String workorder_string) throws Exception {
 		this.workorder = convert(workorder_string);
 	}
-	public WorkOrderContext convert(String workOrderStr)
+	public WorkOrderContext convert(String workOrderStr) throws Exception
 	{
 		WorkOrderContext wo = null;
 		JSONParser parser = new JSONParser();
-		try {
-			JSONObject obj = (JSONObject) parser.parse(workOrderStr);
-			wo = FieldUtil.getAsBeanFromJson(obj, WorkOrderContext.class);
-
-		} catch (Exception e) {
-			log.info("Exception occurred ", e);
-		}
+		JSONObject obj = (JSONObject) parser.parse(workOrderStr);
+		wo = FieldUtil.getAsBeanFromJson(obj, WorkOrderContext.class);
 		return wo;
 	}
 	
@@ -1447,6 +1436,7 @@ public class WorkOrderAction extends FacilioAction {
 	public String v2addWorkOrder() {
 		try {
 			String response = addWorkOrder();
+			viewWorkOrder();
 			setResult(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 			return response;
 		}

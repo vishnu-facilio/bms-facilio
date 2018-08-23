@@ -555,4 +555,11 @@ public class WorkOrderRequestAction extends FacilioAction {
 			return ERROR;
 		}
 	}
+	
+	public String v2addWorkOrderRequest() throws Exception {
+		addWorkOrderRequest();
+		viewWorkOrderRequest();
+		setResult(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, getWorkorderrequest());
+		return SUCCESS;
+	}
 }

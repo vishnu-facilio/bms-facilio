@@ -25,7 +25,21 @@ public class FacilioAction extends ActionSupport {
 		this.message = message;
 	}
 	
+	private Exception exception;
+	public Exception getException() {
+		return exception;
+	}
+	public void setException(Exception exception) {
+		this.exception = exception;
+	}
+	
+	public String handleException() {
+		setMessage(exception);
+		return ERROR;
+	}
+	
 	public void setMessage(Exception e) {
+		this.responseCode = 1;
 		if (e instanceof IllegalArgumentException) {
 			this.message = e.getMessage();			
 		}

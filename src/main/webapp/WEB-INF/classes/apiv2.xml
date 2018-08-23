@@ -42,11 +42,18 @@
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">responseCode, message, stackTrace</param>
 			</result>
+			<result name="exception" type="chain">
+				 <param name="actionName">handleException</param>
+				 <param name="namespace">/v2/internal</param>
+			</result>
 			<result name="success" type="json">
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">responseCode, ^result.*</param>
 			</result>
 		</global-results>
+		<global-exception-mappings>
+		    <exception-mapping exception="java.lang.Exception" result="exception" />
+		</global-exception-mappings>
 		
 		<action name="account" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="v2currentAccount">
@@ -60,6 +67,12 @@
 			method="v2attachmentList">
 		</action>
 		
+	</package>
+	
+	<package name="internalV2" namespace="/v2/internal" extends="v2Api">
+		<action name="handleException" class="com.facilio.bmsconsole.actions.FacilioAction" 
+			method="handleException">
+		</action>
 	</package>
 
 
@@ -118,6 +131,11 @@
 			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="v2rejectWorkOrderRequest">
 			<param name="moduleName">workorderrequest</param>
 			<param name="permission">APPROVE_REJECT_WORKREQUEST</param>
+		</action>
+		
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="v2addWorkOrderRequest">
+			<param name="permission">WORKORDER_CREATE</param>
 		</action>
 		
 		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="v2viewWorkOrderRequest">
