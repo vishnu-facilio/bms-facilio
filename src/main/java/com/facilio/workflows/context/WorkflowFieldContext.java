@@ -4,6 +4,15 @@ import com.facilio.bmsconsole.modules.FacilioField;
 
 public class WorkflowFieldContext{
 
+	int aggregation = -1;
+	
+	public int getAggregation() {
+		return aggregation;
+	}
+	public void setAggregation(int aggregation) {
+		this.aggregation = aggregation;
+	}
+
 	private long resourceId = -1;
 	public long getResourceId() {
 		return resourceId;

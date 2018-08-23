@@ -421,6 +421,10 @@ public class WorkflowUtil {
 					if(parentId != null) {
 						workflowFieldContext.setResourceId(parentId);
 					}
+					if(expression.getAggregateOpperator() != null) {
+						workflowFieldContext.setAggregation(expression.getAggregateOpperator().getValue());
+					}
+					
 					if(workflowFieldContexts == null) {
 						workflowFieldContexts = new ArrayList<>();
 					}

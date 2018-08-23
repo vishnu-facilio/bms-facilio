@@ -3265,6 +3265,7 @@ public class FieldFactory {
 		fields.add(fieldId);
 
 		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.NUMBER));
+		fields.add(getField("aggregation", "AGGREGATION", module, FieldType.NUMBER));
 
 		return fields;
 	}
