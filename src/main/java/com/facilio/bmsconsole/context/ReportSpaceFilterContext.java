@@ -4,7 +4,15 @@ public class ReportSpaceFilterContext {
 
 	Long id;
 	Long reportId,siteId,buildingId,floorId,dashboardId;
+	Long chillerId;
 	
+	public Long getChillerId() {
+		return chillerId;
+	}
+	public void setChillerId(Long chillerId) {
+		this.chillerId = chillerId;
+	}
+
 	String groupBy;
 	public Long getDashboardId() {
 		return dashboardId;

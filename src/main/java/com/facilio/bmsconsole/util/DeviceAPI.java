@@ -19,6 +19,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.ChillerContext;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
@@ -103,6 +104,18 @@ public class DeviceAPI
 				.select(modBean.getAllFields(module.getName()))
 				.module(module)
 				.beanClass(EnergyMeterContext.class)
+				.maxLevel(0);
+		return selectBuilder.get();
+	}
+	
+	public static List<ChillerContext> getAllChillerMeters() throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CHILLER);
+
+		SelectRecordsBuilder<ChillerContext> selectBuilder = new SelectRecordsBuilder<ChillerContext>()
+				.select(modBean.getAllFields(module.getName()))
+				.module(module)
+				.beanClass(ChillerContext.class)
 				.maxLevel(0);
 		return selectBuilder.get();
 	}

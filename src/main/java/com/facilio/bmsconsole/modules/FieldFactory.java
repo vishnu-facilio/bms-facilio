@@ -3032,6 +3032,8 @@ public class FieldFactory {
 		floorId.setColumnName("FLOOR_ID");
 		floorId.setModule(module);
 		fields.add(floorId);
+		
+		fields.add(getField("chillerId", "CHILLER_ID", module, FieldType.NUMBER));
 
 		FacilioField groupBy = new FacilioField();
 		groupBy.setName("groupBy");

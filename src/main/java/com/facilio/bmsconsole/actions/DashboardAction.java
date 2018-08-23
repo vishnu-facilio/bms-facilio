@@ -42,6 +42,7 @@ import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BenchmarkContext;
 import com.facilio.bmsconsole.context.BenchmarkUnit;
 import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.ChillerContext;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardContext.DashboardPublishStatus;
 import com.facilio.bmsconsole.context.DashboardFolderContext;
@@ -1364,6 +1365,9 @@ public class DashboardAction extends ActionSupport {
 			}
 			else if (reportSpaceFilterContext.getSiteId() != null) {
 				reportContext.getReportSpaceFilterContext().setSiteId(reportSpaceFilterContext.getSiteId());
+			}
+			else if (reportSpaceFilterContext.getChillerId() != null) {
+				reportContext.getReportSpaceFilterContext().setChillerId(reportSpaceFilterContext.getChillerId());
 			}
 		}
 		else if(buildingId != null) {
@@ -4467,8 +4471,6 @@ public class DashboardAction extends ActionSupport {
 			}
 			else if ((dateFilter != null || report.getDateFilter() != null) && xAxisField.getDataTypeEnum().equals(FieldType.DATE_TIME)) {
 				
-				
-				
 				int oprId =  dateFilter != null ? DashboardUtil.predictDateOpperator(dateFilter) : report.getDateFilter().getOperatorId();
 				
 				boolean isRegression = (reportContext.getChartType() != null && reportContext.getChartType().equals(ReportChartType.REGRESSION.getValue()));
@@ -4578,7 +4580,6 @@ public class DashboardAction extends ActionSupport {
 					
 					setSafelimit(safeLimtJson);
 				}
-				
 			}
 		}
 		else {
@@ -4647,7 +4648,6 @@ public class DashboardAction extends ActionSupport {
 			if(report != null && (AccountUtil.getCurrentOrg().getId() == 116l || AccountUtil.getCurrentOrg().getId() == 104l  || AccountUtil.getCurrentOrg().getId() == 133l)) {
 				report.setReportColor("#ec598c");
 			}
-			
 			BaseLineContext baseLineContext = BaseLineAPI.getBaseLine(baseLineId);
 			if(baseLineContext.getAdjustType() <= 0) {
 				baseLineContext.setAdjustType(1);
@@ -4781,8 +4781,21 @@ public class DashboardAction extends ActionSupport {
 		}
 		
 		if (buildingCondition == null && report.getReportSpaceFilterContext() != null) {
-
-			if (report.getReportSpaceFilterContext().getBuildingId() != null) {
+			
+			if(report.getReportSpaceFilterContext().getGroupBy().equals("chiller")) {
+				
+				if(report.getReportSpaceFilterContext().getChillerId() != null) {
+					Long chillerId = report.getReportSpaceFilterContext().getChillerId();
+					if(report.getReportSpaceFilterContext().getChillerId() < 0) {
+						List<ChillerContext> chillers = DeviceAPI.getAllChillerMeters();
+						if(chillers != null && !chillers.isEmpty()) {
+							chillerId = chillers.get(0).getId();
+						}
+					}
+					buildingCondition = CriteriaAPI.getCondition("parentId","PARENT_ID", chillerId+"", NumberOperators.EQUALS);
+				}
+			}
+			else if (report.getReportSpaceFilterContext().getBuildingId() != null) {
 				if ("service".equalsIgnoreCase(report.getReportSpaceFilterContext().getGroupBy())) {
 					
 					List<EnergyMeterContext> meters = DeviceAPI.getRootServiceMeters(report.getReportSpaceFilterContext().getBuildingId()+"");
