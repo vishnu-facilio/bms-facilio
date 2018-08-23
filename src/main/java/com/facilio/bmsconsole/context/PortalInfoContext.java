@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.context;
 
 import java.io.File;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.serviceportal.actions.PortalAuthInterceptor;
 
 public class PortalInfoContext  {
@@ -17,7 +18,7 @@ public class PortalInfoContext  {
 	private String customDomain;
 	private String whiteListed_domains;
 	private boolean saml_enabled = true;
-	private String login_url = "http://orgdomainname."+PortalAuthInterceptor.PORTALDOMAIN+"/idplogin";
+	//private String login_url = "http://orgdomainname."+PortalAuthInterceptor.PORTALDOMAIN+"/idplogin";
 	private String logout_url = "http://orgdomainname."+PortalAuthInterceptor.PORTALDOMAIN+"/idplogout";
 	private String password_url = "http://orgdomainname."+PortalAuthInterceptor.PORTALDOMAIN+"/idppassword";
 	private long publicKey = -1;
@@ -26,7 +27,7 @@ public class PortalInfoContext  {
 	
 	public String toString()
 	{
-		String objStr = "portalId : "+portalId+", orgId :"+orgId+", portalType :"+portalType+", signup_allowed :"+signup_allowed+", gmailLogin_allowed: "+gmailLogin_allowed+", is_public_create_allowed :"+is_public_create_allowed+", is_anyDomain_allowed : "+is_anyDomain_allowed+", whiteListed_domains :"+whiteListed_domains+", saml_enabled:"+saml_enabled+", login_url :"+login_url+", logout_url:"+logout_url+", password_url:"+password_url;		
+		String objStr = "portalId : "+portalId+", orgId :"+orgId+", portalType :"+portalType+", signup_allowed :"+signup_allowed+", gmailLogin_allowed: "+gmailLogin_allowed+", is_public_create_allowed :"+is_public_create_allowed+", is_anyDomain_allowed : "+is_anyDomain_allowed+", whiteListed_domains :"+whiteListed_domains+", saml_enabled:"+saml_enabled+", login_url :"+getLogin_url()+", logout_url:"+logout_url+", password_url:"+password_url;		
 		return objStr;
 	}
 	
@@ -99,11 +100,10 @@ public class PortalInfoContext  {
 		this.saml_enabled = saml_enabled;
 	}
 	public String getLogin_url() {
+		String login_url = "https://"+AccountUtil.getCurrentOrg().getDomain()+"."+PortalAuthInterceptor.PORTALDOMAIN+"/";
 		return login_url;
 	}
-	public void setLogin_url(String login_url) {
-		this.login_url = login_url;
-	}
+	
 	public String getLogout_url() {
 		return logout_url;
 	}
