@@ -164,7 +164,7 @@ public class WorkOrderRequestAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.REQUESTER, workorderrequest.getRequester());
 		
-		if (this.getFormName() != null || !this.getFormName().isEmpty()) {
+		if (this.getFormName() != null && !this.getFormName().isEmpty()) {
 			context.put(FacilioConstants.ContextNames.FORM_NAMES, new String[]{this.getFormName()});
 			context.put(FacilioConstants.ContextNames.FORM_OBJECT, workorderrequest);
 		}
