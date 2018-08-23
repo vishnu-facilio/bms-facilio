@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -12,6 +13,7 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
@@ -200,92 +202,50 @@ public class WorkflowRuleContext {
 		return rulePlaceHolders;
 	}
 	
+	public void executeWorkflowActions(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
+		long ruleId = getId();
+		if (actions == null) {
+			actions = ActionAPI.getActiveActionsFromWorkflowRule(ruleId);
+		}
+		if(actions != null) {
+			for(ActionContext action : actions) {
+				action.executeAction(placeHolders, context, this, record);
+			}
+		}
+	}
+	
 	private static final RuleType[] RULE_TYPES = RuleType.values();
 	public static enum RuleType {
-		READING_RULE {
-			@Override
-			public boolean stopFurtherRuleExecution() {
-				// TODO Auto-generated method stub
-				return false;
-			}
-		},
-		WORKORDER_AGENT_NOTIFICATION_RULE {
-			@Override
-			public boolean stopFurtherRuleExecution() {
-				// TODO Auto-generated method stub
-				return false;
-			}
-		},
-		WORKORDER_REQUESTER_NOTIFICATION_RULE {
-			@Override
-			public boolean stopFurtherRuleExecution() {
-				// TODO Auto-generated method stub
-				return false;
-			}
-		},
-		ALARM_NOTIFICATION_RULE {
-			@Override
-			public boolean stopFurtherRuleExecution() {
-				// TODO Auto-generated method stub
-				return false;
-			}
-		},
-		SLA_RULE {
-			@Override
-			public boolean stopFurtherRuleExecution() {
-				// TODO Auto-generated method stub
-				return true;
-			}
-		},
-		ASSIGNMENT_RULE {
-			@Override
-			public boolean stopFurtherRuleExecution() {
-				// TODO Auto-generated method stub
-				return true;
-			}
-		},
-		PM_READING_RULE {
-			@Override
-			public boolean stopFurtherRuleExecution() {
-				// TODO Auto-generated method stub
-				return false;
-			}
-		},
-		CUSTOM_ALARM_NOTIFICATION_RULE {
-			@Override
-			public boolean stopFurtherRuleExecution() {
-				// TODO Auto-generated method stub
-				return false;
-			}
-		},
-		VALIDATION_RULE {
-			@Override
-			public boolean stopFurtherRuleExecution() {
-				// TODO Auto-generated method stub
-				return false;
-			}
-		},
-		ASSET_ACTION_RULE {		//id - 10
-			@Override	
-			public boolean stopFurtherRuleExecution() {
-				// TODO Auto-generated method stub
-				return false;
-			}
-		},
-		CUSTOM_WORKORDER_NOTIFICATION_RULE {		//id - 10
-			@Override	
-			public boolean stopFurtherRuleExecution() {
-				// TODO Auto-generated method stub
-				return false;
-			}
-		},
+		READING_RULE,
+		WORKORDER_AGENT_NOTIFICATION_RULE,
+		WORKORDER_REQUESTER_NOTIFICATION_RULE,
+		ALARM_NOTIFICATION_RULE,
+		SLA_RULE (true),
+		ASSIGNMENT_RULE (true),
+		PM_READING_RULE,
+		CUSTOM_ALARM_NOTIFICATION_RULE,
+		VALIDATION_RULE,
+		ASSET_ACTION_RULE,
+		CUSTOM_WORKORDER_NOTIFICATION_RULE,
 		;
+		
+		private boolean stopFurtherExecution = false;
+		private RuleType() {
+			// TODO Auto-generated constructor stub
+		}
+		
+		private RuleType(boolean stopFurtherExecution) {
+			// TODO Auto-generated constructor stub
+			this.stopFurtherExecution = stopFurtherExecution;
+		}
 		
 		public int getIntVal() {
 			return ordinal()+1;
 		}
 		
-		public abstract boolean stopFurtherRuleExecution();
+		public boolean stopFurtherRuleExecution() {
+			return stopFurtherExecution;
+		}
 		
 		public static RuleType valueOf(int val) {
 			try {

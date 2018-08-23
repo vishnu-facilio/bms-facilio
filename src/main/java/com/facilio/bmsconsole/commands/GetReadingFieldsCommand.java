@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -54,21 +53,21 @@ public class GetReadingFieldsCommand implements Command {
 		            Map<Long, WorkflowContext> workflowMap = WorkflowUtil.getWorkflowsAsMap(workFlowIds, true);
 		            Map<Long, List<ReadingRuleContext>> fieldVsRules = new HashMap<>();
 		            
-		        	for (ReadingRuleContext r:  readingRules) {
-		        		if (r.getReadingFieldId() != -1) { 
-		        			List<ReadingRuleContext> rules = fieldVsRules.get(r.getReadingFieldId());
+		        	for (ReadingRuleContext rule:  readingRules) {
+		        		if (rule.getReadingFieldId() != -1) { 
+		        			List<ReadingRuleContext> rules = fieldVsRules.get(rule.getReadingFieldId());
 		        			if (rules == null) {
 		        				rules = new ArrayList<>();
-		        				fieldVsRules.put(r.getReadingFieldId(), rules);
+		        				fieldVsRules.put(rule.getReadingFieldId(), rules);
 		        			}
-		        			rules.add(r);
+		        			rules.add(rule);
 		        		}
-		        		long workflowId = r.getWorkflowId();
+		        		long workflowId = rule.getWorkflowId();
 		        		if (workflowId != -1) {
-		        			r.setWorkflow(workflowMap.get(workflowId));
+		        			rule.setWorkflow(workflowMap.get(workflowId));
 		        		}
-		        		List<ActionContext> actions = ActionAPI.getActiveActionsFromWorkflowRule(AccountUtil.getCurrentOrg().getId(), r.getId());
-		        		r.setActions(actions);
+		        		List<ActionContext> actions = ActionAPI.getActiveActionsFromWorkflowRule(rule.getId());
+		        		rule.setActions(actions);
 		        	}
 		        	dataPoints.forEach(t -> t.setReadingRules(fieldVsRules.get(t.getFieldId())));
 		        }

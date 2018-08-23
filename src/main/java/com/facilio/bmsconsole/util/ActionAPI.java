@@ -40,13 +40,15 @@ public class ActionAPI {
 //		GenericUpdateRecordBuilder
 //	}
 	
-	public static List<ActionContext> getActiveActionsFromWorkflowRule(long orgId, long workflowRuleId) throws Exception {
+	public static List<ActionContext> getActiveActionsFromWorkflowRule(long workflowRuleId) throws Exception {
+		FacilioModule module = ModuleFactory.getActionModule();
 		GenericSelectRecordBuilder actionBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getActionFields())
-				.table("Action")
+				.table(module.getTableName())
 				.innerJoin("Workflow_Rule_Action")
 				.on("Action.ID = Workflow_Rule_Action.ACTION_ID")
-				.andCustomWhere("Action.ORGID = ? AND Workflow_Rule_Action.WORKFLOW_RULE_ID = ? AND Action.STATUS = ?", orgId, workflowRuleId, true);
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCustomWhere("Workflow_Rule_Action.WORKFLOW_RULE_ID = ? AND Action.STATUS = ?", workflowRuleId, true);
 		return getActionsFromPropList(actionBuilder.get());
 	}
 	

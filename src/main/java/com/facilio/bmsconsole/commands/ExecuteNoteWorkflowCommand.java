@@ -30,7 +30,6 @@ public class ExecuteNoteWorkflowCommand implements Command {
 		// TODO Auto-generated method stub
 		NoteContext note = (NoteContext) context.get(FacilioConstants.ContextNames.NOTE);
 		if(note != null) {
-			long orgId = AccountUtil.getCurrentOrg().getOrgId();
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			if(moduleName.equals(FacilioConstants.ContextNames.TICKET_NOTES)) {
 				String ticketModule = (String) context.get(FacilioConstants.ContextNames.TICKET_MODULE);
@@ -46,7 +45,7 @@ public class ExecuteNoteWorkflowCommand implements Command {
 						TicketContext ticket = TicketAPI.getParentTicket(note.getParentId(), ticketModule);
 						if(ticket != null && ticket.getAssignedTo() != null && ticket.getAssignedTo().getId() != note.getCreatedBy().getId()) {
 							long workflowRuleId = workflowRule.getId();
-							List<ActionContext> actions = ActionAPI.getActiveActionsFromWorkflowRule(orgId, workflowRuleId);
+							List<ActionContext> actions = ActionAPI.getActiveActionsFromWorkflowRule(workflowRuleId);
 							if(actions != null) {
 								Map<String, Object> placeHolders = new HashMap<>();
 								CommonCommandUtil.appendModuleNameInKey(ticketModule, FacilioConstants.ContextNames.WORK_ORDER, FieldUtil.getAsProperties(ticket), placeHolders);

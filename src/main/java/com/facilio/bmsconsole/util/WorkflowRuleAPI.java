@@ -717,19 +717,9 @@ public class WorkflowRuleAPI {
 		
 		boolean result = criteriaFlag && workflowFlag && miscFlag;
 		if(result) {
-			executeWorkflowActions(workflowRule, record, context, rulePlaceHolders);
+			workflowRule.executeWorkflowActions(record, context, rulePlaceHolders);
 		}
 		return result;
 	}
 	
-	private static void executeWorkflowActions(WorkflowRuleContext rule, Object record, Context context, Map<String, Object> placeHolders) throws Exception {
-		long ruleId = rule.getId();
-		List<ActionContext> actions = ActionAPI.getActiveActionsFromWorkflowRule(AccountUtil.getCurrentOrg().getId(), ruleId);
-		if(actions != null) {
-			for(ActionContext action : actions)
-			{
-				action.executeAction(placeHolders, context, rule, record);
-			}
-		}
-	}
 }
