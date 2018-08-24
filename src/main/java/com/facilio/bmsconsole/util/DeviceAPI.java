@@ -18,6 +18,8 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.ChillerContext;
 import com.facilio.bmsconsole.context.ControllerContext;
@@ -108,16 +110,17 @@ public class DeviceAPI
 		return selectBuilder.get();
 	}
 	
-	public static List<ChillerContext> getAllChillerMeters() throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CHILLER);
-
-		SelectRecordsBuilder<ChillerContext> selectBuilder = new SelectRecordsBuilder<ChillerContext>()
-				.select(modBean.getAllFields(module.getName()))
-				.module(module)
-				.beanClass(ChillerContext.class)
-				.maxLevel(0);
-		return selectBuilder.get();
+	public static List<AssetContext> getAllChillerMeters() throws Exception {
+		
+		AssetCategoryContext chillerCategory = AssetsAPI.getCategory("Chiller");
+		List<AssetContext> chillers = AssetsAPI.getAssetListOfCategory(chillerCategory.getId());
+		return chillers;
+	}
+	
+	public static List<AssetContext> getAllChillerPlants() throws Exception {
+		AssetCategoryContext chillerPlantCategory = AssetsAPI.getCategory("Chiller Plant");
+		List<AssetContext> chillerPlants = AssetsAPI.getAssetListOfCategory(chillerPlantCategory.getId());
+		return chillerPlants;
 	}
 
 	//for the org..

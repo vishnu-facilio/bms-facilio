@@ -4787,7 +4787,20 @@ public class DashboardAction extends ActionSupport {
 				if(report.getReportSpaceFilterContext().getChillerId() != null) {
 					Long chillerId = report.getReportSpaceFilterContext().getChillerId();
 					if(report.getReportSpaceFilterContext().getChillerId() < 0) {
-						List<ChillerContext> chillers = DeviceAPI.getAllChillerMeters();
+						List<AssetContext> chillers = DeviceAPI.getAllChillerMeters();
+						if(chillers != null && !chillers.isEmpty()) {
+							chillerId = chillers.get(0).getId();
+						}
+					}
+					buildingCondition = CriteriaAPI.getCondition("PARENT_ID","parentId", chillerId+"", NumberOperators.EQUALS);
+				}
+			}
+			else if("chillerPlant".equals(report.getReportSpaceFilterContext().getGroupBy())) {
+				
+				if(report.getReportSpaceFilterContext().getChillerId() != null) {
+					Long chillerId = report.getReportSpaceFilterContext().getChillerId();
+					if(report.getReportSpaceFilterContext().getChillerId() < 0) {
+						List<AssetContext> chillers = DeviceAPI.getAllChillerPlants();
 						if(chillers != null && !chillers.isEmpty()) {
 							chillerId = chillers.get(0).getId();
 						}
