@@ -4792,7 +4792,7 @@ public class DashboardAction extends ActionSupport {
 							chillerId = chillers.get(0).getId();
 						}
 					}
-					buildingCondition = CriteriaAPI.getCondition("parentId","PARENT_ID", chillerId+"", NumberOperators.EQUALS);
+					buildingCondition = CriteriaAPI.getCondition("PARENT_ID","parentId", chillerId+"", NumberOperators.EQUALS);
 				}
 			}
 			else if (report.getReportSpaceFilterContext().getBuildingId() != null) {
