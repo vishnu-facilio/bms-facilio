@@ -222,6 +222,7 @@ public class LoginAction extends FacilioAction{
 		
 		LoginUtil.eraseUserCookie(request, response, "fc.idToken.facilio", null);
 		LoginUtil.eraseUserCookie(request, response, "fc.authtype", null);
+		LoginUtil.eraseUserCookie(request, response, "fc.currentSite", null);
 		
 		return SUCCESS;
 	}
@@ -778,12 +779,16 @@ public class LoginAction extends FacilioAction{
 	
 	public String switchCurrentAccount() throws Exception {
 		HttpServletResponse response = ServletActionContext.getResponse();
+		HttpServletRequest request = ServletActionContext.getRequest();
 		
 		Cookie cookie = new Cookie("fc.currentOrg", getSwitchOrgDomain());
 		cookie.setMaxAge(60 * 60 * 24 * 365 * 10); // Make the cookie 10 year
 		cookie.setPath("/");
 		cookie.setHttpOnly(true);
 		response.addCookie(cookie);
+		
+		
+		LoginUtil.eraseUserCookie(request, response, "fc.currentSite", null);
 		return SUCCESS;
 	}
 	

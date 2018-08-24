@@ -1,5 +1,7 @@
 package com.facilio.fw.auth;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import javax.servlet.http.Cookie;
@@ -27,6 +29,15 @@ public class LoginUtil {
 		
 		HttpServletRequest request = ServletActionContext.getRequest();
 		String currentOrgDomain = LoginUtil.getUserCookie(request, "fc.currentOrg");
+		String currentSite = request.getHeader("X-current-site");
+		long currentSiteId = -1;
+		if (currentSite != null && !currentSite.isEmpty()) {
+			try {
+				currentSiteId = Long.valueOf(currentSite);
+			} catch (NumberFormatException ex) {
+				// ignore if header value is wrong
+			}
+		}
 		
 		if (currentOrgDomain != null) {
 			user = AccountUtil.getUserBean().getFacilioUser(cognitoUser.getEmail(), currentOrgDomain);
@@ -65,7 +76,13 @@ public class LoginUtil {
 			org = AccountUtil.getOrgBean().getOrg(user.getOrgId());
 		}
 		
-		Account account = new Account(org, user);
+		List<Long> accessibleSpace = user.getAccessibleSpace();
+		if (currentSiteId != -1 && accessibleSpace == null) {
+			accessibleSpace = new ArrayList<>();
+			accessibleSpace.add(currentSiteId);
+			user.setAccessibleSpace(accessibleSpace);
+		}
+		Account account = new Account(org, user, currentSiteId);
 		
 		account.setDeviceType(request.getHeader("X-Device-Type"));
 		account.setAppVersion(request.getHeader("X-App-Version"));
