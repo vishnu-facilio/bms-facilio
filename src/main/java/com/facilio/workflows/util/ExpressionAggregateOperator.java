@@ -109,7 +109,10 @@ public enum ExpressionAggregateOperator implements ExpressionAggregateInterface 
 	},
 	LAST_VALUE(6,"lastValue","{$place_holder$}") {
 		public Object getAggregateResult(List<Map<String, Object>> props,String fieldName) {
-			return props.get(props.size()-1).get(fieldName);
+			if(props != null && props.isEmpty()) {
+				return props.get(props.size()-1).get(fieldName);
+			}
+			return null;
 		}
 	},
 	COUNT_RUNNING_TIME(7,"countRunningTime","{$place_holder$}")

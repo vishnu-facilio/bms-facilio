@@ -240,7 +240,10 @@ public class ExpressionContext implements Serializable {
 				}
 			}
 			if(getAggregateOpperator() != null) {
-				return getAggregateOpperator().getAggregateResult(passedData, fieldName);
+				exprResult =  getAggregateOpperator().getAggregateResult(passedData, fieldName);
+			}
+			if(exprResult != null) {
+				return exprResult;
 			}
 		}
 		List<Map<String, Object>> props = null;
