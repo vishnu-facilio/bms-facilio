@@ -99,6 +99,7 @@ public class AccountUtil {
 	public static final int FEATURE_ANOMALY_DETECTOR 		= 32;
 	public static final int FEATURE_WIDGET_LEGENDS 		= 64;
 	public static final int FEATURE_SHIFT_HOURS	 		= 128;
+	public static final int FEATURE_SITE_SWITCH = 256;
 	
 	public static int getFeatureLicense() throws Exception {
 		long orgId = getCurrentOrg().getOrgId();
