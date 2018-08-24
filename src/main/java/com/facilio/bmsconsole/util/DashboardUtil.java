@@ -3057,6 +3057,36 @@ public class DashboardUtil {
 		return dashboardFolderContexts;
 	}
 	
+	
+	public static DashboardFolderContext getorAddDashboardFolder(String moduleName,String dashboardFolderName) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		FacilioModule module = modBean.getModule(moduleName);
+		 
+		 GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+					.select(FieldFactory.getDashboardFolderFields())
+					.table(ModuleFactory.getDashboardFolderModule().getTableName())
+					.andCustomWhere(ModuleFactory.getDashboardFolderModule().getTableName()+".MODULEID = ?", module.getModuleId())
+		 			.andCustomWhere(ModuleFactory.getDashboardFolderModule().getTableName()+".NAME = ?", dashboardFolderName);
+			
+		List<Map<String, Object>> props = selectBuilder.get();
+		DashboardFolderContext dashboardFolderContext = null;
+		if (props != null && !props.isEmpty()) {
+			
+			dashboardFolderContext = FieldUtil.getAsBeanFromMap(props.get(0), DashboardFolderContext.class);
+		}
+		else {
+			dashboardFolderContext = new DashboardFolderContext();
+			dashboardFolderContext.setModuleId(module.getModuleId());
+			dashboardFolderContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+			dashboardFolderContext.setName(dashboardFolderName);
+			
+			addDashboardFolder(dashboardFolderContext);
+		}
+		return dashboardFolderContext;
+	}
+	
 	public static DashboardFolderContext getDashboardFolder(long id) throws Exception {
 		
 		 List<DashboardFolderContext> dashboardFolderContexts = new ArrayList<>();

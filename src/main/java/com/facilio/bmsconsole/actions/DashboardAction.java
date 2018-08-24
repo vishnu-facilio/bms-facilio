@@ -6475,7 +6475,12 @@ public class DashboardAction extends ActionSupport {
 				this.dashboard.setLinkName((String) dashboardMeta.get("linkName"));
 			}
 		}
-		
+		if(dashboardMeta.get("dashboardFolderId") != null) {
+			this.dashboard.setDashboardFolderId((Long) dashboardMeta.get("dashboardFolderId")); 
+		}
+		else {
+			this.dashboard.setDashboardFolderId(null);
+		}
 		this.dashboard.setDashboardName((String) dashboardMeta.get("dashboardName"));
 		
 		List dashboardWidgets = (List) dashboardMeta.get("dashboardWidgets");
