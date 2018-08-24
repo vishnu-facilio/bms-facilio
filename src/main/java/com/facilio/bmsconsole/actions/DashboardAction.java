@@ -4782,7 +4782,7 @@ public class DashboardAction extends ActionSupport {
 		
 		if (buildingCondition == null && report.getReportSpaceFilterContext() != null) {
 			
-			if(report.getReportSpaceFilterContext().getGroupBy().equals("chiller")) {
+			if("chiller".equals(report.getReportSpaceFilterContext().getGroupBy())) {
 				
 				if(report.getReportSpaceFilterContext().getChillerId() != null) {
 					Long chillerId = report.getReportSpaceFilterContext().getChillerId();
