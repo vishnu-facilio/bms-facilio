@@ -277,7 +277,8 @@ public class CommonCommandUtil {
 			}
 			
 			if (info != null && !info.isEmpty()) {
-				body.append(info);
+				body.append("\n")
+					.append(info);
 			}
 			
 			if (e != null) {

@@ -40,7 +40,7 @@ public class AddOrUpdateReadingsCommand implements Command {
 		catch (Exception e) {
 			Map<String, List<ReadingContext>> readingMap = (Map<String, List<ReadingContext>>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
 			LOGGER.error("Error occurred during workflow execution of readings. \n"+readingMap, e);
-			CommonCommandUtil.emailException("AddOrUpdateReading", "Error occurred during workflow execution of readings.", String.valueOf(readingMap));
+			CommonCommandUtil.emailException("AddOrUpdateReading", "Error occurred during workflow execution of readings.", e, String.valueOf(readingMap));
 		}
 		
 		try {
@@ -50,7 +50,7 @@ public class AddOrUpdateReadingsCommand implements Command {
 		catch (Exception e) {
 			Map<String, List<ReadingContext>> readingMap = (Map<String, List<ReadingContext>>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
 			LOGGER.error("Error occurred during formula calculation of readings. \n"+readingMap, e);
-			CommonCommandUtil.emailException("AddOrUpdateReading", "Error occurred during formula calculation of readings.", String.valueOf(readingMap));
+			CommonCommandUtil.emailException("AddOrUpdateReading", "Error occurred during formula calculation of readings.", e, String.valueOf(readingMap));
 		}
 		
 		return false;
