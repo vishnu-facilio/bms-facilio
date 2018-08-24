@@ -11,11 +11,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SiteContext.SiteType;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.reports.ReportsUtil;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
@@ -58,6 +62,47 @@ public class PortfolioAction extends ActionSupport {
 
 
 	@SuppressWarnings("unchecked")
+	
+	JSONArray chillerPlantsJson;
+	
+	public JSONArray getChillerPlantsJson() {
+		return chillerPlantsJson;
+	}
+
+	public void setChillerPlantsJson(JSONArray chillerPlantsJson) {
+		this.chillerPlantsJson = chillerPlantsJson;
+	}
+
+	public String getAllChiller() throws Exception {
+		
+		AssetCategoryContext chillerPlantCategory = AssetsAPI.getCategory("Chiller Plant");
+		AssetCategoryContext chillerCategory = AssetsAPI.getCategory("Chiller");
+		
+		List<AssetContext> chillerPlants = AssetsAPI.getAssetListOfCategory(chillerPlantCategory.getId());
+		List<AssetContext> chillers = AssetsAPI.getAssetListOfCategory(chillerCategory.getId());
+		
+		chillerPlantsJson = new JSONArray();
+		for(AssetContext chillerPlant :chillerPlants) {
+			
+			JSONObject plantJson = FieldUtil.getAsJSON(chillerPlant);
+			
+			JSONArray chillerArray = new JSONArray();
+			
+			for(AssetContext chiller :chillers) {
+				if(chiller.getParentAssetId() == chillerPlant.getId()) {
+					JSONObject chillerJson = FieldUtil.getAsJSON(chillerPlant);
+					chillerArray.add(chillerJson);
+				}
+			}
+			
+			plantJson.put("childrens", chillerArray);
+			
+			chillerPlantsJson.add(plantJson);
+		}
+		
+		return SUCCESS;
+	}
+	
 	public String getAllBuildings() throws Exception
 	{
 		JSONObject result = new JSONObject();
