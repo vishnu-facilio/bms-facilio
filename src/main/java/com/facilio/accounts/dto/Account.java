@@ -8,6 +8,7 @@ public class Account implements Serializable {
 	
 	private Organization org;
 	private User user;
+	private long siteId = -1; 
 	
 	private String deviceType;
 	private String appVersion;
@@ -17,6 +18,12 @@ public class Account implements Serializable {
 	public Account(Organization org, User user) {
 		this.org = org;
 		this.user = user;
+	}
+	
+	public Account(Organization org, User user, long siteId) {
+		this.org = org;
+		this.user = user;
+		this.siteId = siteId;
 	}
 	
 	public Organization getOrg() {
@@ -33,6 +40,14 @@ public class Account implements Serializable {
 	
 	public void setUser(User user) {
 		this.user = user;
+	}
+	
+	public long getCurrentSiteId() {
+		return this.siteId;
+	}
+	
+	public void setCurrentSiteId(long siteId) {
+		this.siteId = siteId;
 	}
 	
 	public Boolean isFromMobile() {

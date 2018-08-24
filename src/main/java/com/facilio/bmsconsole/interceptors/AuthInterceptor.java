@@ -14,7 +14,6 @@ import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
 
 import com.facilio.accounts.dto.Account;
-import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
