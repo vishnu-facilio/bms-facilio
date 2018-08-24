@@ -215,6 +215,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 			
 			if (queryTime > QUERY_TIME_THRESHOLD) {
 				LOGGER.info("SQL : "+sql);
+				LOGGER.info("Values : "+whereValues);
 				LOGGER.info("Time taken to execute query in GenericSelectBuilder : "+queryTime);
 			}
 			
