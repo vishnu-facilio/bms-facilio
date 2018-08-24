@@ -38,7 +38,8 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 public class UpdateWorkOrderCommand implements Command {
 	
 	private static org.apache.log4j.Logger log = LogManager.getLogger(UpdateWorkOrderCommand.class.getName());
-
+	private static final List<ActivityType> TYPES = Arrays.asList(ActivityType.EDIT, ActivityType.ASSIGN_TICKET, ActivityType.CLOSE_WORK_ORDER,  ActivityType.SOLVE_WORK_ORDER, ActivityType.HOLD_WORK_ORDER);
+	
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -151,10 +152,7 @@ public class UpdateWorkOrderCommand implements Command {
 				rowsUpdated += updateBuilder.update(wo);
 			}
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
-			
-			
-			List<ActivityType> types = Arrays.asList(ActivityType.ASSIGN_TICKET, ActivityType.CLOSE_WORK_ORDER,  ActivityType.SOLVE_WORK_ORDER, ActivityType.HOLD_WORK_ORDER);
-			if(types.contains(activityType) || workOrder.getPriority() != null) {
+			if(TYPES.contains(activityType) || workOrder.getPriority() != null) {
 				SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
 						.moduleName(moduleName)
 						.beanClass(WorkOrderContext.class)

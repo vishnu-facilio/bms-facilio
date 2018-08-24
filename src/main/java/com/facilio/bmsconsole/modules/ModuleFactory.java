@@ -184,7 +184,7 @@ public class ModuleFactory {
 		readingRuleModule.setName("readingrule");
 		readingRuleModule.setDisplayName("Reading Rule");
 		readingRuleModule.setTableName("Reading_Rule");
-		readingRuleModule.setExtendModule(getWorkflowRuleModule());
+//		readingRuleModule.setExtendModule(getWorkflowRuleModule());
 
 		return readingRuleModule;
 	}
@@ -202,9 +202,27 @@ public class ModuleFactory {
 		slarule.setName("slarule");
 		slarule.setDisplayName("SLA Rule");
 		slarule.setTableName("SLA_Rule");
-		slarule.setExtendModule(getWorkflowRuleModule());
+//		slarule.setExtendModule(getWorkflowRuleModule());
 
 		return slarule;
+	}
+	
+	public static FacilioModule getScheduledRuleModule() {
+		FacilioModule scheduledRule = new FacilioModule();
+		scheduledRule.setName("scheduledRule");
+		scheduledRule.setDisplayName("Scheduled Rules");
+		scheduledRule.setTableName("Scheduled_Rules");
+		
+		return scheduledRule;
+	}
+	
+	public static FacilioModule getScheduledRuleJobModule() {
+		FacilioModule scheduledRuleJob = new FacilioModule();
+		scheduledRuleJob.setName("scheduledRuleJob");
+		scheduledRuleJob.setDisplayName("Scheduled Rule Jobs");
+		scheduledRuleJob.setTableName("Scheduled_Rule_Jobs");
+		
+		return scheduledRuleJob;
 	}
 
 	public static FacilioModule getWorkflowRuleActionModule() {

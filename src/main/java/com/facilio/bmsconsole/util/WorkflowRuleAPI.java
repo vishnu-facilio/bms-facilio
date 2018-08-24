@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 
-import org.apache.commons.chain.Context;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -31,6 +29,7 @@ import com.facilio.bmsconsole.view.ReadingRuleContext;
 import com.facilio.bmsconsole.view.SLARuleContext;
 import com.facilio.bmsconsole.workflow.ActionContext;
 import com.facilio.bmsconsole.workflow.ActivityType;
+import com.facilio.bmsconsole.workflow.ScheduledRuleContext;
 import com.facilio.bmsconsole.workflow.WorkflowEventContext;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
@@ -49,10 +48,7 @@ public class WorkflowRuleAPI {
 		rule.setStatus(true);
 		updateWorkflowRuleChildIds(rule);
 		
-		if (rule.getEventId() == -1) {
-			throw new IllegalArgumentException("Event ID cannot be null during addition for Workflow");
-		}
-		
+		validateWorkflowRule(rule);
 		Map<String, Object> ruleProps = FieldUtil.getAsProperties(rule);
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 													.table(ModuleFactory.getWorkflowRuleModule().getTableName())
@@ -69,12 +65,46 @@ public class WorkflowRuleAPI {
 				break;
 			case SLA_RULE:
 				addExtendedProps(ModuleFactory.getSLARuleModule(), FieldFactory.getSLARuleFields(), ruleProps);
+			case SCHEDULED_RULE:
+				validateScheduledRule((ScheduledRuleContext) rule);
+				addExtendedProps(ModuleFactory.getScheduledRuleModule(), FieldFactory.getScheduledRuleFields(), ruleProps);
 				break;
 			default:
 				break;
 		}
 		
 		return rule.getId();
+	}
+	
+	private static void validateWorkflowRule (WorkflowRuleContext rule) {
+		if (rule.getEventId() == -1) {
+			throw new IllegalArgumentException("Event ID cannot be null during addition for Workflow");
+		}
+		
+		if (rule.getRuleTypeEnum() == null) {
+			throw new IllegalArgumentException("Rule Type cannot be null during addition for Workflow");
+		}
+	}
+	
+	private static void validateScheduledRule(ScheduledRuleContext rule) {
+		if (rule.getDateFieldId() == -1) {
+			throw new IllegalArgumentException("Date Field Id cannot be null for Scheduled Rule");
+		}
+		
+		if (rule.getScheduleTypeEnum() == null) {
+			throw new IllegalArgumentException("Schedule Type cannot be null for Scheduled Rule");
+		}
+		
+		switch (rule.getScheduleTypeEnum()) {
+			case BEFORE:
+			case AFTER:
+				if (rule.getInterval() == -1) {
+					throw new IllegalArgumentException("Interval cannot be null for Scheduled Rule with type BEFORE/ AFTER");
+				}
+				break;
+			case ON:
+				break;
+		}
 	}
 	
 	private static void addExtendedProps(FacilioModule module, List<FacilioField> fields, Map<String, Object> ruleProps) throws SQLException, RuntimeException {
@@ -473,6 +503,9 @@ public class WorkflowRuleAPI {
 				case SLA_RULE:
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getSLARuleModule(), FieldFactory.getSLARuleFields(), entry.getValue()));
 					break;
+				case SCHEDULED_RULE:
+					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getScheduledRuleModule(), FieldFactory.getScheduledRuleFields(), entry.getValue()));
+					break;
 				default:
 					break;
 			}
@@ -538,6 +571,11 @@ public class WorkflowRuleAPI {
 						prop.putAll(typeWiseExtendedProps.get(ruleType).get((Long) prop.get("id")));
 						rule = FieldUtil.getAsBeanFromMap(prop, SLARuleContext.class);
 						((SLARuleContext)rule).setResource(ResourceAPI.getResource(((SLARuleContext)rule).getResourceId()));
+						break;
+					case SCHEDULED_RULE:
+						prop.putAll(typeWiseExtendedProps.get(ruleType).get((Long) prop.get("id")));
+						rule = FieldUtil.getAsBeanFromMap(prop, ScheduledRuleContext.class);
+						((ScheduledRuleContext)rule).setDateField(modBean.getField(((ScheduledRuleContext)rule).getDateFieldId()));
 						break;
 					default:
 						rule = FieldUtil.getAsBeanFromMap(prop, WorkflowRuleContext.class);

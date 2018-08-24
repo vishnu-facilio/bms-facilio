@@ -179,6 +179,15 @@ public enum ActivityType {
 			String moduleName = (String) json.get(FacilioConstants.ContextNames.MODULE_NAME);
 			return "put on hold the "+moduleName;
 		}
+	},
+	SCHEDULED (1 << 19) {
+
+		@Override
+		public String getMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
 	}
 	;
 

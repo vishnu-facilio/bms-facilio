@@ -84,7 +84,10 @@ public class ExecuteAllWorkflowsCommand implements Command
 			
 			ActivityType activityType = (ActivityType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
 			if(activityType != null) {
-				List<ActivityType> activities = Collections.singletonList(activityType);
+				List<ActivityType> activities = new ArrayList<>();
+				activities.add(activityType);
+				activities.add(ActivityType.SCHEDULED);
+				
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				long moduleId = modBean.getModule(moduleName).getModuleId();
 				

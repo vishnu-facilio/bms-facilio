@@ -26,6 +26,7 @@
 	 <job name='costCalculator' classname = 'com.facilio.bmsconsole.jobs.CostCalculatorJob' transactionTimeout='300000'/>
 	 
 	 <job name='HistoricalRunForReadingRule' classname = 'com.facilio.bmsconsole.jobs.HistoricalRunForReadingRule' transactionTimeout='900000'/>
+	 <job name='ScheduledRuleExecution' classname = 'com.facilio.bmsconsole.jobs.ScheduledRuleExecutionJob' transactionTimeout='900000'/>
 	 
 	 <!-- Shift jobs -->
 	 <job name='StartShift' classname= 'com.facilio.bmsconsole.jobs.ShiftStartJob' transactionTimeout='300000'/>

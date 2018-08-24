@@ -21,6 +21,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
@@ -401,31 +402,40 @@ public class FieldUtil {
 				return LookupSpecialTypeUtil.getLookedupObject(lookupField.getSpecialType(), id);
 			}
 			else {
-				Class<ModuleBaseWithCustomFields> moduleClass = FacilioConstants.ContextNames.getClassFromModuleName(lookupField.getLookupModule().getName());
-				if(moduleClass != null) {
-					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-					List<FacilioField> lookupBeanFields = modBean.getAllFields(lookupField.getLookupModule().getName());
-					SelectRecordsBuilder<ModuleBaseWithCustomFields> lookupBeanBuilder = new SelectRecordsBuilder<>(level)
-																						.table(lookupField.getLookupModule().getTableName())
-																						.moduleName(lookupField.getLookupModule().getName())
-																						.beanClass(moduleClass)
-																						.select(lookupBeanFields)
-																						.andCustomWhere(lookupField.getLookupModule().getTableName()+".ID = ?", id);
-					List<ModuleBaseWithCustomFields> records = lookupBeanBuilder.get();
-					if(records != null && records.size() > 0) {
-						return records.get(0);
-					}
-					else {
-						return null;
-					}
-				}
-				else {
-					throw new IllegalArgumentException("Unknown Module Name in Lookup field "+lookupField);
-				}
+				return getRecord(lookupField.getLookupModule(), id, level);
 			}	
 		}
 		else {
 			return null;
+		}
+	}
+	
+	public static Object getRecord (FacilioModule module, long id) throws Exception {
+		return getRecord(module, id, 0);
+	}
+	
+	public static Object getRecord (FacilioModule module, long id, int level) throws Exception {
+		Class<ModuleBaseWithCustomFields> moduleClass = FacilioConstants.ContextNames.getClassFromModuleName(module.getName());
+		if(moduleClass != null) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			List<FacilioField> lookupBeanFields = modBean.getAllFields(module.getName());
+			SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<>(level)
+																				.table(module.getTableName())
+																				.moduleName(module.getName())
+																				.beanClass(moduleClass)
+																				.select(lookupBeanFields)
+																				.andCondition(CriteriaAPI.getIdCondition(id, module))
+																				;
+			List<ModuleBaseWithCustomFields> records = selectBuilder.get();
+			if(records != null && records.size() > 0) {
+				return records.get(0);
+			}
+			else {
+				return null;
+			}
+		}
+		else {
+			throw new IllegalArgumentException("Unknown Module during get record of module : "+module+ " for id : "+id);
 		}
 	}
 	

@@ -794,6 +794,35 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	public static List<FacilioField> getScheduledRuleFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getScheduledRuleModule();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getSiteIdField(module));
+		fields.add(getField("dateFieldId", "DATE_FIELD_ID", module, FieldType.LOOKUP));
+		fields.add(getField("scheduleType", "SCHEDULE_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("interval", "TIME_INTERVAL", module, FieldType.NUMBER));
+		fields.add(getField("time", "JOB_TIME", module, FieldType.STRING));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getScheduledRuleJobFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getScheduledRuleJobModule();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getSiteIdField(module));
+		fields.add(getField("ruleId", "RULE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("recordId", "RECORD_ID", module, FieldType.LOOKUP));
+		fields.add(getField("scheduledTime", "SCHEDULED_TIME", module, FieldType.DATE_TIME));
+		
+		return fields;
+	}
 
 	public static List<FacilioField> getActionFields() {
 		List<FacilioField> fields = new ArrayList<>();
