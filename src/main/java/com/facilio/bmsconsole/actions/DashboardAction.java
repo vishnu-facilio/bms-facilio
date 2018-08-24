@@ -6652,6 +6652,14 @@ public class DashboardAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String deleteDashboardFolder() throws Exception {
+		
+		if(dashboardFolderContext != null) {
+			DashboardUtil.deleteDashboardFolder(dashboardFolderContext);
+		}
+		return SUCCESS;
+	}
+	
 	public String getDashboardList() throws Exception {
 		if (moduleName != null) {
 			dashboards = DashboardUtil.getDashboardList(moduleName);

@@ -4370,6 +4370,16 @@
 				<param name="includeProperties">^dashboardFolderContext.*</param>
 			</result>
 		</action>
+		<action name="updateDashboardFolder" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboardFolder">
+			<result name="success" type="json">
+				<param name="includeProperties">^dashboardFolderContext.*</param>
+			</result>
+		</action>
+		<action name="deleteDashboardFolder" class="com.facilio.bmsconsole.actions.DashboardAction" method="deleteDashboardFolder">
+			<result name="success" type="json">
+				<param name="includeProperties">^dashboardFolderContext.*</param>
+			</result>
+		</action>
 		<action name="addReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="addReport">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportContext.*</param>
