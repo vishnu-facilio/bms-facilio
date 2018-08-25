@@ -634,6 +634,15 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getRelatedMultipleTasksChain() {
+		Chain c = new ChainBase();
+		c.addCommand(SetTableNamesCommand.getForTask());
+		c.addCommand(new GetMultipleRelatedTasksCommand());
+		c.addCommand(new GetTaskInputDataCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain addTaskSectionChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new AddTaskSectionCommand());

@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -387,20 +388,25 @@ public class TicketAPI {
 	}
 	
 	public static List<TaskContext> getRelatedTasks(long ticketId) throws Exception {
-		return getRelatedTasks(ticketId, true);
+		return getRelatedTasks(Collections.singletonList(ticketId));
 	}
 	
-	public static List<TaskContext> getRelatedTasks(long ticketId, boolean fetchChildren) throws Exception 
+	public static List<TaskContext> getRelatedTasks(List<Long> ticketIds) throws Exception {
+		return getRelatedTasks(ticketIds, true);
+	}
+	
+	public static List<TaskContext> getRelatedTasks(List<Long> ticketIds, boolean fetchChildren) throws Exception 
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioField> fields = modBean.getAllFields("task");
+		FacilioField parentId = FieldFactory.getAsMap(fields).get("parentTicketId");
 		
 		SelectRecordsBuilder<TaskContext> builder = new SelectRecordsBuilder<TaskContext>()
 				.table("Tasks")
 				.moduleName(FacilioConstants.ContextNames.TASK)
 				.beanClass(TaskContext.class)
 				.select(fields)
-				.andCustomWhere("PARENT_TICKET_ID = ?", ticketId)
+				.andCondition(CriteriaAPI.getCondition(parentId, ticketIds, NumberOperators.EQUALS))
 				.orderBy("ID");
 
 		List<TaskContext> tasks = builder.get();

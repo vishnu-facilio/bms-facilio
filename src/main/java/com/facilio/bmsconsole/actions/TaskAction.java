@@ -381,6 +381,14 @@ public class TaskAction extends FacilioAction {
 		this.sections = sections;
 	}
 	
+	private Map<Long, Map<String, Object>> taskMap;
+	public Map<Long, Map<String, Object>> getTaskMap() {
+		return taskMap;
+	}
+	public void setTaskMap(Map<Long, Map<String, Object>> taskMap) {
+		this.taskMap = taskMap;
+	}
+
 	public String getModuleLinkName()
 	{
 		return FacilioConstants.ContextNames.TASK;
@@ -460,7 +468,6 @@ public class TaskAction extends FacilioAction {
 			return response;
 		}
 		catch(Exception e) {
-			setResponseCode(1);
 			setMessage(e);
 			return ERROR;
 		}
@@ -506,6 +513,20 @@ public class TaskAction extends FacilioAction {
 			setMessage(e);
 			return ERROR;
 		}
+	}
+	
+	public String v2multipleTaskList() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, this.id);
+
+		Chain getRelatedTasksChain = FacilioChainFactory.getRelatedMultipleTasksChain();
+		getRelatedTasksChain.execute(context);
+
+		setTaskMap((Map<Long, Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP));
+		setResult(FacilioConstants.ContextNames.TASK_LIST, getTaskMap());
+		
+		return SUCCESS;
 	}
 	
 	public String syncOfflineTasks() {

@@ -179,6 +179,11 @@
 			<param name="moduleName">workorder</param>
 			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
 		</action>
+		
+		<action name="parents" class="com.facilio.bmsconsole.actions.TaskAction" method="v2multipleTaskList">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+		</action>
 	
 		<action name="*" class="com.facilio.bmsconsole.actions.TaskAction" method="v2viewTask">
 			<param name="moduleName">workorder</param>
@@ -196,7 +201,7 @@
 		<action name="closeAllTask" class="com.facilio.bmsconsole.actions.TaskAction" method="v2closeAllTask">
 			<param name="permission">TASK_CREATE</param>
 		</action>
-	</package> 
+	</package>
 	
 	<package name="noteApiv2" namespace="/api/v2/notes" extends="v2Api">
 		<action name="add" class="com.facilio.bmsconsole.actions.NoteAction" method="v2addNote">

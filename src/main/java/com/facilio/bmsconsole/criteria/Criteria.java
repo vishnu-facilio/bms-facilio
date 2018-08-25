@@ -117,7 +117,7 @@ public class Criteria extends ExpressionEvaluator<Predicate> implements Serializ
 		    else if ((e.equalsIgnoreCase("and") || e.equalsIgnoreCase("or")) && !prev.equals(")") && !isNumber(prev)) {
 		    	throw new IllegalArgumentException("Invalid Expression");
 		    }
-		    else if (isNumber(e) && !prev.equals("(") && !prev.equalsIgnoreCase("and") && !prev.equalsIgnoreCase("or")) {
+		    else if (isNumber(e) && prev != null &&  !prev.equals("(") && !prev.equalsIgnoreCase("and") && !prev.equalsIgnoreCase("or")) {
 		    	throw new IllegalArgumentException("Invalid Expression");
 		    }
 			
