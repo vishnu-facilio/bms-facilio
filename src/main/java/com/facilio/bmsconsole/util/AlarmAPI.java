@@ -397,7 +397,7 @@ public class AlarmAPI {
 				break;
 			case AGGREGATION:
 			case BASE_LINE:
-				range = DateOperators.LAST_N_HOURS.getRange(String.valueOf(rule.getDateRange()));
+				range = DateOperators.LAST_N_HOURS.getRange(String.valueOf(rule.getDateRange())+","+reading.getTtime());
 				break;
 			case FLAPPING:
 				range = new DateRange();
