@@ -90,7 +90,7 @@ public class PortfolioAction extends ActionSupport {
 			
 			for(AssetContext chiller :chillers) {
 				if(chiller.getParentAssetId() == chillerPlant.getId()) {
-					JSONObject chillerJson = FieldUtil.getAsJSON(chillerPlant);
+					JSONObject chillerJson = FieldUtil.getAsJSON(chiller);
 					chillerArray.add(chillerJson);
 				}
 			}
@@ -221,7 +221,8 @@ public class PortfolioAction extends ActionSupport {
 			setReportData(result);
 			return SUCCESS;
 		}
-	
+		Long meterid;
+		
 	
 	//period -year & lastYear -EUI ranking
 	@SuppressWarnings("unchecked")
