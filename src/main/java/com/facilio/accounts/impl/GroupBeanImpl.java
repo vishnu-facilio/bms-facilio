@@ -291,10 +291,18 @@ public class GroupBeanImpl implements GroupBean {
 		
 		List<Group> groups = new ArrayList<>();
 		
+		long siteId = AccountUtil.getCurrentSiteId();
+		
+		String siteCondition = "";
+		
+		if (siteId > 0) {
+			siteCondition = " AND (SITE_ID IS NULL OR SITE_ID = " + String.valueOf(siteId) + ")";
+		}
+		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(AccountConstants.getGroupFields())
 				.table(AccountConstants.getGroupModule().getTableName())
-				.andCustomWhere("ORGID = ? AND IS_ACTIVE = true", orgId);
+				.andCustomWhere("ORGID = ? AND IS_ACTIVE = true"+siteCondition, orgId);
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {

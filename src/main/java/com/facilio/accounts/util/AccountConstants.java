@@ -1378,6 +1378,9 @@ public class AccountConstants {
 		parent.setColumnName("PARENT");
 		parent.setModule(module);
 		fields.add(parent);
+		
+		FacilioField siteId = FieldFactory.getSiteIdField(module);
+		fields.add(siteId);
 
 		return fields;
 	}

@@ -13,6 +13,7 @@ public class Group {
 	private long createdTime = -1;
 	private long createdBy = -1;
 	private long parent = -1;
+	private long siteId = -1;
 	
 	public long getGroupId() {
 		return groupId;
@@ -103,5 +104,11 @@ public class Group {
 	}
 	public void setMembers(List<GroupMember> members) {
 		this.members = members;
+	}
+	public long getSiteId() {
+		return siteId;
+	}
+	public void setSiteId(long siteId) {
+		this.siteId = siteId;
 	} 
 }
