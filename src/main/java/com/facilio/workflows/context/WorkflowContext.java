@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.udojava.evalex.Expression;
@@ -22,6 +23,16 @@ public class WorkflowContext implements Serializable {
 	public static String VARIABLE_PLACE_HOLDER = "\\$\\{.+\\}";
 
 	private Map<String,List<Map<String,Object>>> cachedData = null;
+
+	public Map<String,ReadingDataMeta> CATCHED_RDM = new HashMap<>();
+	
+	public Map<String, ReadingDataMeta> getCATCHED_RDM() {
+		return CATCHED_RDM;
+	}
+	public void setCATCHED_RDM(Map<String, ReadingDataMeta> cATCHED_RDM) {
+		CATCHED_RDM = cATCHED_RDM;
+	}
+
 	public Map<String, List<Map<String, Object>>> getCachedData() {
 		return cachedData;
 	}

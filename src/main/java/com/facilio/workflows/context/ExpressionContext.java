@@ -311,7 +311,16 @@ public class ExpressionContext implements Serializable {
 									break;
 								}
 							}
-							ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(Long.parseLong(parentIdString), select);
+							ReadingDataMeta meta = null;
+							if(workflowContext.getCATCHED_RDM() != null && !workflowContext.getCATCHED_RDM().isEmpty()) {
+								
+								String key = ReadingsAPI.getRDMKey(Long.parseLong(parentIdString), modBean.getField(fieldName, moduleName));
+								meta = workflowContext.getCATCHED_RDM().get(key);
+							}
+							if(meta == null) {
+								meta = ReadingsAPI.getReadingDataMeta(Long.parseLong(parentIdString), select);
+							}
+							
 							exprResult = meta.getValue();
 							return exprResult;
 						}
