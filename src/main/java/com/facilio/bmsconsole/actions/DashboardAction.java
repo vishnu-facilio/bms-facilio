@@ -427,7 +427,7 @@ public class DashboardAction extends ActionSupport {
 			GenericSelectRecordBuilder select = new GenericSelectRecordBuilder();
 			select.table(ModuleFactory.getScreenDashboardRelModule().getTableName());
 			select.select(FieldFactory.getScreenDashboardRelModuleFields());
-			select.andCustomWhere("DASHBOARD_ID", dashboardId);
+			select.andCustomWhere("DASHBOARD_ID = ?", dashboardId);
 			
 			List<Map<String, Object>> props = select.get();
 			
