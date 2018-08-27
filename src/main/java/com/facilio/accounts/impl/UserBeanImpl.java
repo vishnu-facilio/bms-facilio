@@ -34,6 +34,7 @@ import com.facilio.bmsconsole.context.ShiftUserRelContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -701,13 +702,59 @@ public long inviteRequester(long orgId, User user) throws Exception {
 			userMobileSetting.setCreatedTime(System.currentTimeMillis());
 		}
 		
-		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-				.table(AccountConstants.getUserMobileSettingModule().getTableName())
-				.fields(AccountConstants.getUserMobileSettingFields());
+		//Fetching and adding only if it's not present already
+		FacilioModule module = AccountConstants.getUserMobileSettingModule();
+		List<FacilioField> fields = AccountConstants.getUserMobileSettingFields();
 		
-		Map<String, Object> props = FieldUtil.getAsProperties(userMobileSetting);
-		insertBuilder.addRecord(props);
-		insertBuilder.save();
+		UserMobileSetting currentSetting = getUserMobileSetting(userMobileSetting.getUserId(), userMobileSetting.getMobileInstanceId(), module, fields);
+		if (currentSetting == null) {
+			addUserMobileSetting(userMobileSetting, module, fields);
+		}
+		else {
+			userMobileSetting.setUserMobileSettingId(currentSetting.getUserMobileSettingId());
+			userMobileSetting.setUserId(-1);
+			userMobileSetting.setMobileInstanceId(null);
+			updateUserMobileSetting(userMobileSetting, module, fields);
+		}
+	}
+	
+	private UserMobileSetting getUserMobileSetting(long userId, String instance, FacilioModule module, List<FacilioField> fields) throws Exception {
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioField userIdField = fieldMap.get("userId");
+		FacilioField instanceField = fieldMap.get("mobileInstanceId");
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.table(module.getTableName())
+														.select(fields)
+														.andCondition(CriteriaAPI.getCondition(userIdField, String.valueOf(userId), PickListOperators.IS))
+														.andCondition(CriteriaAPI.getCondition(instanceField, instance, StringOperators.IS))
+														;
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			return FieldUtil.getAsBeanFromMap(props.get(0), UserMobileSetting.class);
+		}
+		return null;
+	}
+	
+	private long addUserMobileSetting (UserMobileSetting userMobileSetting, FacilioModule module, List<FacilioField> fields) throws Exception {
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(module.getTableName())
+				.fields(fields);
+		
+		return insertBuilder.insert(FieldUtil.getAsProperties(userMobileSetting));
+	}
+	
+	private void updateUserMobileSetting (UserMobileSetting userMobileSetting, FacilioModule module, List<FacilioField> fields) throws Exception {
+		FacilioField idField = FieldFactory.getAsMap(fields).get("userMobileSettingId");
+		long id = userMobileSetting.getUserMobileSettingId();
+		userMobileSetting.setUserMobileSettingId(-1);
+		
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+														.table(module.getTableName())
+														.fields(fields)
+														.andCondition(CriteriaAPI.getCondition(idField, String.valueOf(id), PickListOperators.IS))
+														;
+		updateBuilder.update(FieldUtil.getAsProperties(userMobileSetting));
 	}
 	
 	@Override
