@@ -411,12 +411,33 @@ public class DashboardAction extends ActionSupport {
 		
 		return SUCCESS;
 	}
-
-	public String deleteDashboard() throws SQLException {
+	
+	String errorString = "";
+	
+	public String getErrorString() {
+		return errorString;
+	}
+	public void setErrorString(String errorString) {
+		this.errorString = errorString;
+	}
+	public String deleteDashboard() throws Exception {
 		
 		if(dashboardId != null) {
-			if(DashboardUtil.deleteDashboard(dashboardId)) {
-				return SUCCESS;
+			
+			GenericSelectRecordBuilder select = new GenericSelectRecordBuilder();
+			select.table(ModuleFactory.getScreenDashboardRelModule().getTableName());
+			select.select(FieldFactory.getScreenDashboardRelModuleFields());
+			select.andCustomWhere("DASHBOARD_ID", dashboardId);
+			
+			List<Map<String, Object>> props = select.get();
+			
+			if(props == null || props.isEmpty()) {
+				if(DashboardUtil.deleteDashboard(dashboardId)) {
+					return SUCCESS;
+				}
+			}
+			else {
+				errorString = "Dashboard Used in Screen";
 			}
 		}
 		return ERROR;
