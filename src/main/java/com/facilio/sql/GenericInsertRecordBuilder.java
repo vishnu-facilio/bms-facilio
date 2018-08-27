@@ -96,7 +96,7 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 						FieldUtil.castOrParseValueAsPerType(pstmt, paramIndex++, field, value.get(field.getName()));
 					}
 					catch (Exception e) {
-						LOGGER.info("Error in parsing field : "+field+" during insertion.", e);
+						LOGGER.error("Error in parsing field : "+field+" during insertion.", e);
 						throw e;
 					}
 				}
