@@ -575,7 +575,7 @@
 		</action>
 	</package>
 	<package name="taskSummaryApi" namespace="/api/task/summary"
-		extends="task">
+		extends="homeApi">
 		<action name="*" class="com.facilio.bmsconsole.actions.TaskAction"
 			method="viewTask">
 			<param name="moduleName">workorder</param>
@@ -2046,7 +2046,7 @@
 	</package>
 
 	<package name="workOrderRequestSummaryApi" namespace="/api/workorderrequest/summary"
-		extends="ticket">
+		extends="homeApi">
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="viewWorkOrderRequest">
 			<param name="moduleName">workorderrequest</param>
@@ -2830,7 +2830,7 @@
 	</package>
 
 	<package name="workOrderSummaryApi" namespace="/api/workorder/summary"
-		extends="ticket">
+		extends="homeApi">
 		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="viewWorkOrder">
 			<param name="moduleName">workorder</param>
