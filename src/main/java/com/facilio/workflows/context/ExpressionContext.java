@@ -226,24 +226,29 @@ public class ExpressionContext implements Serializable {
 		if(getConstant() != null) {
 			return getConstant();
 		}
-		if(getWorkflowContext() != null && getWorkflowContext().isGetDataFromCache()) {
+		if(getWorkflowContext() != null && getWorkflowContext().isGetDataFromCache() && this.getWorkflowContext().getCachedData() != null) {
 			
 			String parentId = WorkflowUtil.getParentIdFromCriteria(criteria);
 			
-			List<Map<String, Object>> cachedDatas = this.getWorkflowContext().getCachedData().get(moduleName+"-"+parentId);
+			List<Map<String, Object>> cachedDatas = this.getWorkflowContext().getCachedData().get(WorkflowUtil.getCacheKey(moduleName, parentId));
 
-			List<Map<String, Object>> passedData = new ArrayList<>();
-			for(Map<String, Object> cachedData :cachedDatas) {
-				org.apache.commons.collections.Predicate Predicate = criteria.computePredicate(cachedData);
-				if(Predicate.evaluate(cachedData)) {
-					passedData.add(cachedData);
+			if (cachedDatas != null && !cachedDatas.isEmpty()) {
+				List<Map<String, Object>> passedData = new ArrayList<>();
+				for(Map<String, Object> cachedData :cachedDatas) {
+					org.apache.commons.collections.Predicate Predicate = criteria.computePredicate(cachedData);
+					if(Predicate.evaluate(cachedData)) {
+						passedData.add(cachedData);
+					}
 				}
-			}
-			if(getAggregateOpperator() != null) {
-				exprResult =  getAggregateOpperator().getAggregateResult(passedData, fieldName);
-			}
-			if(exprResult != null) {
-				return exprResult;
+				
+				if (!passedData.isEmpty()) {
+					if(getAggregateOpperator() != null) {
+						exprResult =  getAggregateOpperator().getAggregateResult(passedData, fieldName);
+					}
+					if(exprResult != null) {
+						return exprResult;
+					}
+				}
 			}
 		}
 		List<Map<String, Object>> props = null;

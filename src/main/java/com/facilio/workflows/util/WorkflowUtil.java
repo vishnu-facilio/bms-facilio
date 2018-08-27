@@ -209,6 +209,14 @@ public class WorkflowUtil {
 	static final String SEQUENCE_STRING =  "sequence";
 	static final String RESULT_STRING =  "result";
 	
+	public static String getCacheKey (String moduleName, long resourceId) {
+		return getCacheKey(moduleName, String.valueOf(resourceId));
+	}
+	
+	public static String getCacheKey (String moduleName, String resourceId) {
+		return moduleName+"-"+resourceId;
+	}
+	
 	public static Object getWorkflowExpressionResult(String workflowString,Map<String,Object> paramMap) throws Exception {
 		return getWorkflowExpressionResult(workflowString, paramMap, true);
 	}

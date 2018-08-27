@@ -21,17 +21,18 @@ public class WorkflowContext implements Serializable {
 	
 	public static String VARIABLE_PLACE_HOLDER = "\\$\\{.+\\}";
 
-	public Map<String,List<Map<String,Object>>> CACHED_DATA = new HashMap<String, List<Map<String,Object>>>();
-	
+	private Map<String,List<Map<String,Object>>> cachedData = null;
 	public Map<String, List<Map<String, Object>>> getCachedData() {
-		return CACHED_DATA;
+		return cachedData;
 	}
-	public void setCachedData(Map<String, List<Map<String, Object>>> cACHED_DATA) {
-		CACHED_DATA = cACHED_DATA;
+	public void setCachedData(Map<String, List<Map<String, Object>>> cachedData) {
+		this.cachedData = cachedData;
 	}
-	
 	public void addCachedData(String name, List<Map<String, Object>> data) {
-		CACHED_DATA.put(name, data);
+		if (cachedData == null) {
+			cachedData = new HashMap<String, List<Map<String,Object>>>();
+		}
+		cachedData.put(name, data);
 	}
 
 	Long id;
@@ -70,8 +71,6 @@ public class WorkflowContext implements Serializable {
 	}
 
 	boolean getDataFromCache;
-	
-
 	public boolean isGetDataFromCache() {
 		return getDataFromCache;
 	}
