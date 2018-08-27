@@ -70,7 +70,7 @@ public class DashboardContext extends ModuleBaseWithCustomFields {
 	}
 	public String getLinkName() {
 		if (linkName == null && dashboardName != null) {
-			linkName = dashboardName.replaceAll("[^\\p{IsAlphabetic}]+", "").toLowerCase();
+			linkName = dashboardName.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
 
 			if (this.getId() > 0) {
 				try {
