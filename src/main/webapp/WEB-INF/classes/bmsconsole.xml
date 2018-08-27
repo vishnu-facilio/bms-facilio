@@ -3090,10 +3090,6 @@
 			<result name="success" type="json">
 				<param name="includeProperties">dashboardId</param>
 			</result>
-			<result name="error" type="json">
-				<param name="statusCode">400</param>
-				<param name="includeProperties">errorString</param>
-			</result>
 		</action>
 		<action name="getReportFields" class="com.facilio.bmsconsole.actions.DashboardAction" method="getReportFields">
 			<result name="success" type="json">
