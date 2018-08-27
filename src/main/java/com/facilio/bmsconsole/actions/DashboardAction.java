@@ -6477,9 +6477,11 @@ public class DashboardAction extends ActionSupport {
 	
 	public String updateDashboard() throws Exception {
 		
+		Long dashboardId = (Long) dashboardMeta.get("id");
 		this.dashboard = null;
-		if(buildingId != null) {
-			this.dashboard = DashboardUtil.getDashboardForBaseSpace(buildingId);
+		if (buildingId != null) {
+			DashboardContext dbContext = DashboardUtil.getDashboardWithWidgets(dashboardId);
+			this.dashboard = DashboardUtil.getDashboardForBaseSpace(buildingId, dbContext.getModuleId());
 		}
 		if(this.dashboard == null) {
 			this.dashboard = new DashboardContext();
@@ -6714,7 +6716,10 @@ public class DashboardAction extends ActionSupport {
 	
 	public String viewDashboard() throws Exception {
 		if(buildingId != null) {
-			dashboard = DashboardUtil.getDashboardForBaseSpace(buildingId);
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(moduleName);
+			
+			dashboard = DashboardUtil.getDashboardForBaseSpace(buildingId, module.getModuleId());
 			linkName = (dashboard != null) ? dashboard.getLinkName() : linkName;
 		}
 		dashboard = DashboardUtil.getDashboardWithWidgets(linkName, moduleName);

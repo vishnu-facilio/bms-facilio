@@ -874,12 +874,13 @@ public class DashboardUtil {
 		return null;
 	}
 	
-	public static DashboardContext getDashboardForBaseSpace(Long basespaceId) throws Exception {
+	public static DashboardContext getDashboardForBaseSpace(Long basespaceId, Long moduleId) throws Exception {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getDashboardFields())
 				.table(ModuleFactory.getDashboardModule().getTableName())
 				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
-				.andCustomWhere("BASE_SPACE_ID = ?", basespaceId);
+				.andCustomWhere("BASE_SPACE_ID = ?", basespaceId)
+				.andCustomWhere("MODULEID = ?", moduleId);
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		
