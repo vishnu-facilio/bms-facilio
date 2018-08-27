@@ -92,7 +92,13 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 				pstmt.clearParameters();
 				int paramIndex = 1;
 				for(FacilioField field : fields) {
-					FieldUtil.castOrParseValueAsPerType(pstmt, paramIndex++, field, value.get(field.getName()));
+					try {
+						FieldUtil.castOrParseValueAsPerType(pstmt, paramIndex++, field, value.get(field.getName()));
+					}
+					catch (Exception e) {
+						LOGGER.info("Error in parsing field : "+field+" during insertion.", e);
+						throw e;
+					}
 				}
 				pstmt.addBatch();
 			}
