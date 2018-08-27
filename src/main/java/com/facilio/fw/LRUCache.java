@@ -196,6 +196,7 @@ public class LRUCache<K, V>{
 					return tempNode.getValue();
 				} else {
             		cache.remove(key);
+            		currentSize--;
 				}
             }
     	} catch (Exception e) {

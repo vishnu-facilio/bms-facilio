@@ -3,6 +3,7 @@
 <%@page import="com.opensymphony.xwork2.ActionContext" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <%
+    response.setStatus(401);
 	String serverName = request.getServerName();
 	int serverPort = request.getServerPort();
 
