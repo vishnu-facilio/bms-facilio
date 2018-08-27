@@ -78,26 +78,35 @@ public class PortfolioAction extends ActionSupport {
 		AssetCategoryContext chillerPlantCategory = AssetsAPI.getCategory("Chiller Plant");
 		AssetCategoryContext chillerCategory = AssetsAPI.getCategory("Chiller");
 		
-		List<AssetContext> chillerPlants = AssetsAPI.getAssetListOfCategory(chillerPlantCategory.getId());
-		List<AssetContext> chillers = AssetsAPI.getAssetListOfCategory(chillerCategory.getId());
-		
-		chillerPlantsJson = new JSONArray();
-		for(AssetContext chillerPlant :chillerPlants) {
+		if(chillerPlantCategory != null && chillerCategory != null) {
+			List<AssetContext> chillerPlants = AssetsAPI.getAssetListOfCategory(chillerPlantCategory.getId());
+			List<AssetContext> chillers = AssetsAPI.getAssetListOfCategory(chillerCategory.getId());
 			
-			JSONObject plantJson = FieldUtil.getAsJSON(chillerPlant);
+			chillerPlantsJson = new JSONArray();
 			
-			JSONArray chillerArray = new JSONArray();
-			
-			for(AssetContext chiller :chillers) {
-				if(chiller.getParentAssetId() == chillerPlant.getId()) {
-					JSONObject chillerJson = FieldUtil.getAsJSON(chiller);
-					chillerArray.add(chillerJson);
+			if(chillerPlants != null && !chillerPlants.isEmpty()) {
+				
+				for(AssetContext chillerPlant :chillerPlants) {
+					
+					JSONObject plantJson = FieldUtil.getAsJSON(chillerPlant);
+					
+					JSONArray chillerArray = new JSONArray();
+					
+					if(chillers != null && !chillers.isEmpty()) {
+						
+						for(AssetContext chiller :chillers) {
+							if(chiller.getParentAssetId() == chillerPlant.getId()) {
+								JSONObject chillerJson = FieldUtil.getAsJSON(chiller);
+								chillerArray.add(chillerJson);
+							}
+						}
+					}
+					
+					plantJson.put("childrens", chillerArray);
+					
+					chillerPlantsJson.add(plantJson);
 				}
 			}
-			
-			plantJson.put("childrens", chillerArray);
-			
-			chillerPlantsJson.add(plantJson);
 		}
 		
 		return SUCCESS;
