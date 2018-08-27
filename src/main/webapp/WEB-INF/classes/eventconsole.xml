@@ -35,7 +35,7 @@
 		</global-results>
 	</package>
 	
-	<package name="eventSummaryApi" namespace="/api/event/summary" extends="home">
+	<package name="eventSummaryApi" namespace="/api/event/summary" extends="homeApi">
 		<action name="*" class="com.facilio.events.actions.EventAction" method="eventDetail">
 			<param name="moduleName">alarm</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
@@ -46,7 +46,7 @@
 		</action>
 	</package>
 	
-	<package name="eventApi" namespace="/api/event" extends="home">
+	<package name="eventApi" namespace="/api/event" extends="homeApi">
 		<action name="*" class="com.facilio.events.actions.EventAction"
 			method="eventList">
 			<param name="moduleName">alarm</param>

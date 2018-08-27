@@ -297,7 +297,7 @@
 			</result>
 		</action>
 	</package>
-	<package name="tvApi" namespace="/api/tv" extends="home">
+	<package name="tvApi" namespace="/api/tv" extends="homeApi">
 		<action name="connect" class="com.facilio.bmsconsole.actions.LoginAction" method="tvAccount">
 			<result name="success" type="json">
 				<param name="includeProperties">^account.*</param>
@@ -329,7 +329,7 @@
 		</action>
 	</package>
 	<package name="tabwidgetApi" namespace="/api/tabwidget"
-		extends="home">
+		extends="homeApi">
 		<action name="*" class="com.facilio.bmsconsole.actions.TabWidgetAction"
 			method="viewTabWidget">
 			<param name="tabLinkName">{1}</param>
@@ -338,7 +338,7 @@
 			</result>
 		</action>
 	</package>
-	<package name="spaceCategoryAPI" namespace="/api/spacecategory" extends="home">
+	<package name="spaceCategoryAPI" namespace="/api/spacecategory" extends="homeApi">
 		<action name="getlist" class="com.facilio.bmsconsole.actions.SpaceCategoryAction"
 			method="spaceCategoriesList">
 			<param name="moduleName">setup</param>
@@ -375,7 +375,7 @@
 			</result>
 		</action>
 	</package>
-	<package name="skillApi" namespace="/api/skill" extends="home">
+	<package name="skillApi" namespace="/api/skill" extends="homeApi">
 		<action name="skilllist" class="com.facilio.bmsconsole.actions.SkillActions" 
 			method="skillsList">
 			<param name="moduleName">setup</param>
@@ -409,7 +409,7 @@
 			</result>
 		</action>
 	</package>
-	<package name="servicePortalAPI" namespace="/api/serviceportal" extends="home">
+	<package name="servicePortalAPI" namespace="/api/serviceportal" extends="homeApi">
 		<action name="updateserviceportal" class="com.facilio.bmsconsole.actions.PortalInfoAction"
 			method="updateServicePortal">
 			<param name="moduleName">setup</param>
@@ -435,7 +435,7 @@
 			</result>
 		</action>
 	</package>
-	<package name="locationApi" namespace="/api/location" extends="home">
+	<package name="locationApi" namespace="/api/location" extends="homeApi">
 		<action name="locationlist" class="com.facilio.bmsconsole.actions.LocationActions"
 			method="locationsList">
 			<param name="moduleName">setup</param>
@@ -469,8 +469,7 @@
 			</result>
 		</action>			
 	</package>
-	<package name="businessHoursApi" namespace="/api/businesshours"
-		extends="home">
+	<package name="businessHoursApi" namespace="/api/businesshours" extends="homeApi">
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.BusinessHoursAction" method="addBussinessHours">
 			<param name="moduleName">setup</param>
@@ -490,7 +489,7 @@
 			</result>
 		</action>
 	</package>
-	<package name="taskApi" namespace="/api/task" extends="home">
+	<package name="taskApi" namespace="/api/task" extends="homeApi">
 		<action name="layout" class="com.facilio.bmsconsole.actions.TaskAction"
 			method="newTask">
 			<param name="moduleName">workorder</param>
@@ -574,8 +573,7 @@
 			</result>
 		</action>
 	</package>
-	<package name="taskSummaryApi" namespace="/api/task/summary"
-		extends="homeApi">
+	<package name="taskSummaryApi" namespace="/api/task/summary" extends="homeApi">
 		<action name="*" class="com.facilio.bmsconsole.actions.TaskAction"
 			method="viewTask">
 			<param name="moduleName">workorder</param>
@@ -587,7 +585,7 @@
 		</action>
 	</package>
 
-	<package name="alarmApi" namespace="/api/alarm" extends="home">
+	<package name="alarmApi" namespace="/api/alarm" extends="homeApi">
 		<action name="layout" class="com.facilio.bmsconsole.actions.AlarmAction"
 			method="newAlarm">
 			<param name="moduleName">alarm</param>
@@ -658,7 +656,7 @@
 		</action>
 	</package>
 	
-	<package name="readingAlarmApi" namespace="/api/readingalarm" extends="home">
+	<package name="readingAlarmApi" namespace="/api/readingalarm" extends="homeApi">
 		<action name="*" class="com.facilio.bmsconsole.actions.AlarmAction"
 			method="fetchReadingAlarms">
 			<param name="moduleName">alarm</param>
@@ -670,7 +668,7 @@
 		</action>
 	</package>
 	
-	<package name="alarmEntityApi" namespace="/api/alarmentity" extends="home">
+	<package name="alarmEntityApi" namespace="/api/alarmentity" extends="homeApi">
 		<action name="alarm" class="com.facilio.bmsconsole.actions.AlarmAction"
 			method="alarmList">
 			<param name="moduleName">alarm</param>
@@ -681,7 +679,7 @@
 		</action>
 	</package>
 
-	<package name="energyMeterApi" namespace="/api/energymeter" extends="home">
+	<package name="energyMeterApi" namespace="/api/energymeter" extends="homeApi">
 		<action name="addenergydata" class="com.facilio.bmsconsole.actions.EnergyAction" method="addEnergyData">
 			<param name="moduleName">setup</param>
 			<param name="permission">ENERGY_ANALYTICS</param>
@@ -742,7 +740,7 @@
 		</action>
 	</package>
 	
-	<package name="urjanetApi" namespace="/api/unet" extends="home">
+	<package name="urjanetApi" namespace="/api/unet" extends="homeApi">
 		<action name="addnewuser" class="com.facilio.urjanet.actions.UrjanetAction"
 			method="UserAdd">
 			<result name="success" type="json">
@@ -752,7 +750,7 @@
 
 	</package>
 	<!-- Urjanet Packages  -->
-	<package name="assetApi" namespace="/api/asset" extends="home">
+	<package name="assetApi" namespace="/api/asset" extends="homeApi">
 		<action name="layout" class="com.facilio.bmsconsole.actions.AssetAction"
 			method="newAsset">
 			<param name="moduleName">asset</param>
@@ -816,8 +814,7 @@
 		</action>
 	</package>
 
-	<package name="assetSummaryApi" namespace="/api/asset/summary"
-		extends="home">
+	<package name="assetSummaryApi" namespace="/api/asset/summary" extends="homeApi">
 		<action name="*" class="com.facilio.bmsconsole.actions.AssetAction"
 			method="assetDetails">
 			<param name="moduleName">asset</param>
@@ -829,199 +826,7 @@
 		</action>
 	</package>
 
-	<package name="home" strict-method-invocation="false"
-		namespace="/app" extends="struts-default,json-default">
-		<result-types>
-			<result-type name="tiles"
-				class="org.apache.struts2.views.tiles.TilesResult" />
-		</result-types>
-		<interceptors>
-			<interceptor name="authinterceptor"
-				class="com.facilio.bmsconsole.interceptors.AuthInterceptor" />
-			<interceptor-stack name="defaultInterceptor">
-				<interceptor-ref name="defaultStack" />
-				<interceptor-ref name="authinterceptor" />
-				<interceptor-ref name="json">
-					<param name="enableSMD">true</param>
-				</interceptor-ref>
-			</interceptor-stack>
-		</interceptors>
-
-		<default-interceptor-ref name="defaultInterceptor" />
-		<global-results>
-			<result name="login" type="redirect">
-				<param name="location">/login</param>
-				<param name="parse">false</param>
-			</result>
-			<result name="unauthorized" type="redirect">
-				<param name="location">/jsps/unauthorized.jsp</param>
-				<param name="parse">false</param>
-			</result>
-		</global-results>
-
-		<action name="index" class="com.facilio.bmsconsole.actions.HomePageActions">
-			<result type="tiles">homepage</result>
-		</action>
-
-		<action name="setuphome" class="com.facilio.bmsconsole.actions.SetupActions">
-			<param name="permission">SETUP</param>
-			<result type="tiles">setuphome</result>
-		</action>
-
-		<action name="setup" class="com.facilio.bmsconsole.actions.SetupActions">
-			<param name="permission">SETUP</param>
-			<result type="tiles">setup</result>
-		</action>
-
-		<action name="dashboard" class="com.facilio.bmsconsole.actions.HomePageActions">
-			<param name="permission">DASHBOARD_ACCESS_ENABLE</param>
-			<result name="success">/jsps/dashboard.jsp</result>
-		</action>
-		<action name="calendar" class="com.facilio.bmsconsole.actions.CalendarAction"
-			method="show">
-			<param name="permission">TASK_READ</param>
-			<result name="success">/jsps/calendar.jsp</result>
-		</action>
-		<action name="centraldispatch" class="com.facilio.bmsconsole.actions.CalendarAction"
-			method="centraldispatch">
-			<param name="permission">TASK_ASSIGN</param>
-			<result name="success">/jsps/centraldispatch.jsp</result>
-		</action>
-		<action name="admin" class="com.facilio.bmsconsole.actions.AdminAction"
-			method="show">
-			<result name="success">/jsps/admin.jsp</result>
-		</action>
-
-		<action name="users" class="com.facilio.bmsconsole.actions.UserAction"
-			method="userPickList">
-			<result name="success" type="json">
-				<param name="root">users</param>
-			</result>
-		</action>
-
-		<action name="ticket" class="com.facilio.bmsconsole.actions.TicketAction"
-			method="ticketList">
-			<param name="moduleName">workorder</param>
-			<param name="permission">READ</param>
-			<result name="success">/jsps/listview.jsp</result>
-		</action>
-
-		<action name="workorder" class="com.facilio.bmsconsole.actions.WorkOrderAction"
-			method="workOrderList">
-			<param name="moduleName">workorder</param>
-			<param name="permission">READ</param>
-			<result name="success">/jsps/listview.jsp</result>
-		</action>
-
-		<action name="workorderrequest"
-			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="workOrderRequestList">
-			<param name="moduleName">workorder</param>
-			<param name="permission">READ</param>
-			<result name="success">/jsps/listview.jsp</result>
-		</action>
-
-		<action name="alarm" class="com.facilio.bmsconsole.actions.AlarmAction"
-			method="alarmList">
-			<param name="moduleName">alarm</param>
-			<param name="permission">READ</param>
-			<result name="success">/jsps/listview.jsp</result>
-		</action>
-
-		<action name="leed" class="com.facilio.bmsconsole.actions.WorkOrderAction"
-			method="workOrderList">
-			<param name="moduleName">workorder</param>
-			<param name="permission">READ</param>
-			<!-- <param name="permission">WORKORDER_READ</param> -->
-			<result name="success">/jsps/leed/leedhome.jsp</result>
-		</action>
-
-		<action name="leedDemo" class="com.facilio.bmsconsole.actions.WorkOrderAction"
-			method="workOrderList">
-			<!-- <param name="permission">WORKORDER_READ</param> -->
-			<result name="success">/jsps/leed/leedDemo.jsp</result>
-		</action>
-
-		<action name="leedRegistration" class="com.facilio.bmsconsole.actions.WorkOrderAction"
-			method="workOrderList">
-			<!-- <param name="permission">WORKORDER_READ</param> -->
-			<result name="success">/jsps/leed/leedRegistration.jsp</result>
-		</action>
-
-		<action name="task" class="com.facilio.bmsconsole.actions.TaskAction"
-			method="taskList">
-			<param name="moduleName">workorder</param>
-			<param name="permission">READ</param>
-			<result name="success">/jsps/listview.jsp</result>
-		</action>
-
-		<action name="campus" class="com.facilio.bmsconsole.actions.CampusAction"
-			method="campusList">
-			<param name="moduleName">space</param>
-			<param name="permission">READ</param>
-			<result name="success">/jsps/listview.jsp</result>
-		</action>
-
-		<action name="building" class="com.facilio.bmsconsole.actions.BuildingAction"
-			method="buildingList">
-			<param name="moduleName">space</param>
-			<param name="permission">READ</param>
-			<result name="success">/jsps/listview.jsp</result>
-		</action>
-
-		<action name="floor" class="com.facilio.bmsconsole.actions.FloorAction"
-			method="floorList">
-			<param name="moduleName">space</param>
-			<param name="permission">READ</param>
-			<result name="success">/jsps/listview.jsp</result>
-		</action>
-
-		<action name="space" class="com.facilio.bmsconsole.actions.SpaceAction"
-			method="spaceList">
-			<param name="moduleName">space</param>
-			<param name="permission">READ</param>
-			<result name="success">/jsps/listview.jsp</result>
-		</action>
-
-		<action name="zone" class="com.facilio.bmsconsole.actions.ZoneAction"
-			method="zoneList">
-			<param name="moduleName">space</param>
-			<param name="permission">READ</param>
-			<result name="success">/jsps/listview.jsp</result>
-		</action>
-
-		<action name="reports" class="com.facilio.bmsconsole.actions.ReportActions">
-			<param name="moduleName">space</param>
-			<param name="permission">READ</param>
-			<result name="success">/jsps/reports.jsp</result>
-		</action>
-
-		<action name="locations" class="com.facilio.bmsconsole.actions.LocationActions">
-			<param name="moduleName">setup</param>
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result name="success">/jsps/locations.jsp</result>
-		</action>
-
-		<action name="skill" class="com.facilio.bmsconsole.actions.SkillActions">
-			<param name="moduleName">setup</param>
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result name="success">/jsps/listview.jsp</result>
-		</action>
-
-		<action name="rules"
-			class="com.facilio.bmsconsole.actions.WorkflowRuleAction">
-			<param name="moduleName">setup</param>
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result name="success">/jsps/assignmentRules.jsp</result>
-		</action>
-
-		<action name="picklist" class="com.facilio.bmsconsole.actions.PickListAction">
-			<result name="success" type="json">
-				<param name="root">pickList</param>
-			</result>
-		</action>
-
-	</package>
-	<package name="picklistApi" namespace="/api/picklist" extends="home">
+	<package name="picklistApi" namespace="/api/picklist" extends="homeApi">
 		<action name="addTicketCategory" class="com.facilio.bmsconsole.actions.PickListAction"
 			method="addTicketCategory">
 			<result name="success" type="json">
@@ -1160,7 +965,7 @@
 		</action>
 	</package>
 
-	<package name="admin" namespace="/app/admin" extends="home">
+	<package name="admin" namespace="/app/admin" extends="homeApi">
 		<action name="addJob" class="com.facilio.bmsconsole.actions.AdminAction"
 			method="addJob">
 		</action>
@@ -1220,7 +1025,7 @@
 			</action>
 			</package>
 
-	<package name="viewApi" namespace="/api/view" extends="home">
+	<package name="viewApi" namespace="/api/view" extends="homeApi">
 		<action name="add" class="com.facilio.bmsconsole.actions.ViewAction"
 			method="addView">
 			<!-- <param name="permission">WORKORDER_CREATE</param> -->
@@ -1256,7 +1061,7 @@
 		</action>
 	</package>
 
-	<package name="readingApi" namespace="/api/reading" extends="home">
+	<package name="readingApi" namespace="/api/reading" extends="homeApi">
 		<action name="layout" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="newReadingData">
 			<param name="moduleName">space</param>
@@ -1561,7 +1366,7 @@
 		
 	</package>
 
-	<package name="photosApi" namespace="/api/photos" extends="home">
+	<package name="photosApi" namespace="/api/photos" extends="homeApi">
 		<action name="add" class="com.facilio.bmsconsole.actions.PhotosAction"
 			method="addPhotos">
 			<result name="success" type="json">
@@ -1665,7 +1470,7 @@
 		</action>
 	</package>
 
-	<package name="moduleApi" namespace="/api/module" extends="home">
+	<package name="moduleApi" namespace="/api/module" extends="homeApi">
 		<action name="addmodule" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="addNewModule">
 			<result name="success" type="json">
@@ -1724,7 +1529,7 @@
 		</action>
 	</package>
 
-	<package name="fieldApi" namespace="/api/field" extends="home">
+	<package name="fieldApi" namespace="/api/field" extends="homeApi">
 		<action name="*" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="fieldDetails">
 			<param name="fieldId">{1}</param>
@@ -1734,8 +1539,7 @@
 		</action>
 	</package>
 
-	<package name="workOrderApi" namespace="/api/workorder"
-		extends="home">
+	<package name="workOrderApi" namespace="/api/workorder" extends="homeApi">
 		<action name="layout" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="newWorkOrder">
 			<param name="moduleName">workorder</param>
@@ -1944,8 +1748,7 @@
 		
 	</package>
 
-	<package name="plannedMaintenanceApi" namespace="/api/planned"
-		extends="home">
+	<package name="plannedMaintenanceApi" namespace="/api/planned" extends="homeApi">
 
 		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="plannedMaintenanceList">
@@ -1968,8 +1771,7 @@
 		</action>
 	</package>
 
-	<package name="workOrderRequestApi" namespace="/api/workorderrequest"
-		extends="home">
+	<package name="workOrderRequestApi" namespace="/api/workorderrequest" extends="homeApi">
 
 		<action name="layout"
 			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="newWorkOrderRequest">
@@ -2045,8 +1847,7 @@
 		
 	</package>
 
-	<package name="workOrderRequestSummaryApi" namespace="/api/workorderrequest/summary"
-		extends="homeApi">
+	<package name="workOrderRequestSummaryApi" namespace="/api/workorderrequest/summary" extends="homeApi">
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="viewWorkOrderRequest">
 			<param name="moduleName">workorderrequest</param>
@@ -2058,7 +1859,7 @@
 		</action>
 	</package>
 
-	<package name="templateApi" namespace="/api/template" extends="home">
+	<package name="templateApi" namespace="/api/template" extends="homeApi">
 		<action name="gettemplates" class="com.facilio.bmsconsole.actions.TemplateAction" method="fetchTemplates">
 			<param name="moduleName">setup</param>
 			<param name="permission">WORKORDER_SETTINGS</param>
@@ -2159,8 +1960,7 @@
 		</action>
 	</package>
 
-	<package name="attachmentApi" namespace="/api/attachment"
-	extends="home">
+	<package name="attachmentApi" namespace="/api/attachment" extends="homeApi">
 		<action name="add" class="com.facilio.bmsconsole.actions.AttachmentAction"
 			method="addAttachment">
 			<result name="success" type="json">
@@ -2176,7 +1976,7 @@
 		</action>
 	</package>
 	
-	<package name="baseLineApi" namespace="/api/baseline" extends="home">
+	<package name="baseLineApi" namespace="/api/baseline" extends="homeApi">
 		<action name="addBaseLine" class="com.facilio.bmsconsole.actions.BaseLineAction"
 			method="addBaseLine">
 			<param name="moduleName">setup</param>
@@ -2219,7 +2019,7 @@
 		</action>
 	</package>
 
-	<package name="energyBuildingReportsApi" namespace="/api/report/energy/building" extends="home">
+	<package name="energyBuildingReportsApi" namespace="/api/report/energy/building" extends="homeApi">
 		<action name="getBuildingDetails" class="com.facilio.bmsconsole.actions.ReportActions"
 			method="getBuildingDetails">			
 			<result name="success" type="json">
@@ -2253,7 +2053,7 @@
 	</package>
 	
 	
-	<package name="energyPorfolioReportsApi" namespace="/api/report/energy/portfolio" extends="home">
+	<package name="energyPorfolioReportsApi" namespace="/api/report/energy/portfolio" extends="homeApi">
 			<action name="getBuildingMap" class="com.facilio.bmsconsole.actions.PortfolioAction"
 					method="getBuildingMap">
 				<result name="success" type="json">
@@ -2305,8 +2105,7 @@
 		</action>
 	</package>
 
-	<package name="workorderReportApi" namespace="/api/report/workorder"
-		extends="home">
+	<package name="workorderReportApi" namespace="/api/report/workorder" extends="homeApi">
 		<action name="summary"
 			class="com.facilio.bmsconsole.actions.WorkOrderReportAction" method="summary">
 				<result name="success" type="json">
@@ -2342,8 +2141,7 @@
 		</action>
 	</package>
 
-	<package name="alarmReportApi" namespace="/api/report/alarms"
-		extends="home">
+	<package name="alarmReportApi" namespace="/api/report/alarms" extends="homeApi">
 		<action name="summary" class="com.facilio.bmsconsole.actions.AlarmReportAction"
 			method="summary">
 				<result name="success" type="json">
@@ -2415,8 +2213,7 @@
 		</action>
 	</package>
 
-	<package name="baseSpaceApi" namespace="/api/basespace"
-		extends="home">
+	<package name="baseSpaceApi" namespace="/api/basespace" extends="homeApi">
 		<action name="children" class="com.facilio.bmsconsole.actions.BaseSpaceAction"
 			method="childrenList">
 				<param name="moduleName">space</param>
@@ -2426,7 +2223,7 @@
 			</result>
 		</action>
 	</package>
-	<package name="campusApi" namespace="/api/campus" extends="home">
+	<package name="campusApi" namespace="/api/campus" extends="homeApi">
 		<action name="layout" class="com.facilio.bmsconsole.actions.CampusAction"
 			method="newCampus">
 			<param name="moduleName">space</param>
@@ -2487,8 +2284,7 @@
 		</action>
 	</package>
 
-
-	<package name="buildingApi" namespace="/api/building" extends="home">
+	<package name="buildingApi" namespace="/api/building" extends="homeApi">
 		<action name="layout" class="com.facilio.bmsconsole.actions.BuildingAction"
 			method="newBuilding">
 			<param name="moduleName">space</param>
@@ -2546,7 +2342,7 @@
 		</action>
 	</package>
 
-	<package name="floorApi" namespace="/api/floor" extends="home">
+	<package name="floorApi" namespace="/api/floor" extends="homeApi">
 		<action name="layout" class="com.facilio.bmsconsole.actions.FloorAction"
 			method="newFloor">
 			<param name="moduleName">space</param>
@@ -2602,7 +2398,7 @@
 			</result>
 		</action>
 	</package>
-	<package name="spaceApi" namespace="/api/space" extends="home">
+	<package name="spaceApi" namespace="/api/space" extends="homeApi">
 		<action name="layout" class="com.facilio.bmsconsole.actions.SpaceAction"
 			method="newSpace">
 			<param name="moduleName">space</param>
@@ -2677,7 +2473,7 @@
 		</action>
 	</package>
 
-	<package name="zoneApi" namespace="/api/zone" extends="home">
+	<package name="zoneApi" namespace="/api/zone" extends="homeApi">
 		<action name="layout" class="com.facilio.bmsconsole.actions.ZoneAction"
 			method="newZone">
 			<param name="moduleName">space</param>
@@ -2735,7 +2531,7 @@
 		</action>
 	</package>
 
-	<package name="setupApi" namespace="/api/settings" extends="home">
+	<package name="setupApi" namespace="/api/settings" extends="homeApi">
 		<action name="company" class="com.facilio.bmsconsole.actions.SetupActions"
 			method="orgSettings">
 			<param name="moduleName">setup</param>
@@ -2762,8 +2558,7 @@
 		</action>
 	</package>
 
-	<package name="userAvatarApi" namespace="/api/settings/users/avatar"
-		extends="home">
+	<package name="userAvatarApi" namespace="/api/settings/users/avatar" extends="homeApi">
 		<action name="upload" class="com.facilio.bmsconsole.actions.UserAction"
 			method="uploadUserAvatar">
 			<result name="success" type="json">
@@ -2778,14 +2573,14 @@
 		</action>
 	</package>
 	
-	<package name="accountApi" namespace="/api/account" extends="home">
+	<package name="accountApi" namespace="/api/account" extends="homeApi">
 		<action name="update" class="com.facilio.bmsconsole.actions.UserAction" method="updateMyProfile">
 			<result name="success" type="json">
 			</result>
 		</action>
 	</package>
 	
-	<package name="notificationApi" namespace="/api/notification" extends="home">
+	<package name="notificationApi" namespace="/api/notification" extends="homeApi">
 		<action name="read" class="com.facilio.bmsconsole.actions.NotificationAction" method="markAsRead">
 			<result name="success" type="json">
 				<param name="includeProperties">unread</param>
@@ -2803,7 +2598,7 @@
 		</action>
 	</package>
 	
-	<package name="tenantBillingApi" namespace="/api/tenantbilling" extends="home">
+	<package name="tenantBillingApi" namespace="/api/tenantbilling" extends="homeApi">
 		<action name="upload" class="com.facilio.billing.action.BillingAction" method="GenerateTemplate">
 			<result name="success" type="json">
 				<param name="moduleName">setup</param>
@@ -2829,8 +2624,7 @@
 		</action>
 	</package>
 
-	<package name="workOrderSummaryApi" namespace="/api/workorder/summary"
-		extends="homeApi">
+	<package name="workOrderSummaryApi" namespace="/api/workorder/summary" extends="homeApi">
 		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="viewWorkOrder">
 			<param name="moduleName">workorder</param>
@@ -2842,7 +2636,7 @@
 		</action>
 	</package>
 
-	<package name="noteApi" namespace="/api/note" extends="home">
+	<package name="noteApi" namespace="/api/note" extends="homeApi">
 		<action name="add" class="com.facilio.bmsconsole.actions.NoteAction"
 			method="addNote">
 			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
@@ -2906,7 +2700,7 @@
 
 	</package>
 	
-	<package name="tenant" namespace="/api/tenant" extends="home">
+	<package name="tenant" namespace="/api/tenant" extends="homeApi">
 		<action name="add" class="com.facilio.bmsconsole.actions.TenantAction"
 			method="addTenant">
 			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
@@ -2948,7 +2742,7 @@
 		</action>
 	</package>
 	
-	<package name="ratecard" namespace="/api/ratecard" extends="home">
+	<package name="ratecard" namespace="/api/ratecard" extends="homeApi">
 		<action name="add" class="com.facilio.bmsconsole.actions.TenantAction"
 			method="addRateCard">
 			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
@@ -2983,8 +2777,7 @@
 		</action>
 	</package>
 
-	<package name="internal" namespace="/internal"
-		extends='struts-default,tiles-default,json-default'>
+	<package name="internal" namespace="/internal" extends='struts-default,tiles-default,json-default'>
 		<interceptors>
 			<interceptor-stack name="defaultInterceptor">
 				<interceptor-ref name="defaultStack" />
@@ -3008,46 +2801,9 @@
 		<action name="migration">
 			<result name="success">/jsps/Migration.jsp</result>
 		</action>
-		
-				
-		<action name="addAlarm" class="com.facilio.bmsconsole.actions.InternalActions"
-			method="addAlarmFromEvent">
-			<result name="success" type="json">
-				<param name="includeProperties">alarmId</param>
-			</result>
-		</action>
-		
-		<action name="updateAlarmFromEvent" class="com.facilio.bmsconsole.actions.InternalActions"
-			method="updateAlarmFromEvent">
-			<result name="success" type="json">
-				<param name="includeProperties">rowsUpdated</param>
-			</result>
-		</action>
-
-		<action name="updateAlarmPriority" class="com.facilio.bmsconsole.actions.InternalActions"
-			method="updateAlarmPriority">
-			<result name="success" type="json">
-				<param name="includeProperties">rowsUpdated</param>
-			</result>
-		</action>
-		
-		<action name="updateAlarmResource" class="com.facilio.bmsconsole.actions.InternalActions"
-			method="updateAlarmResource">
-			<result name="success" type="json">
-				<param name="includeProperties">rowsUpdated</param>
-			</result>
-		</action>
-
-		<action name="addAlarmTemplate" class="com.facilio.bmsconsole.actions.InternalActions"
-			method="addAlarmTemplate">
-			<result name="success" type="json">
-				<param name="includeProperties">alarmTemplateId</param>
-			</result>
-		</action>
-
 	</package>
 
-	<package name="importapi" namespace="/api/import" extends="home">
+	<package name="importapi" namespace="/api/import" extends="homeApi">
 
 		<action name="importPasteData" class="com.facilio.bmsconsole.actions.ImportDataAction" method="importPasteData">
 			<result name="success" type="json">
@@ -3090,7 +2846,7 @@
 		</action>
 	</package>
 
-	<package name="timeseriesPublish" namespace="/iot/api/timeseries" extends="home">
+	<package name="timeseriesPublish" namespace="/iot/api/timeseries" extends="homeApi">
 	<action name="publish" class="com.facilio.bmsconsole.actions.TimeSeries"
 			method="publish">
 		<result name="success" type="json">
@@ -3104,7 +2860,7 @@
 	</action>
 	</package>
 
-	<package name="timeseriesapi" namespace="/api/timeseries" extends="home">
+	<package name="timeseriesapi" namespace="/api/timeseries" extends="homeApi">
 		<action name="migrateData" class="com.facilio.bmsconsole.actions.TimeSeries"
 			method="migrateData">
 			<result name="success" type="json">
@@ -3147,7 +2903,7 @@
 		</action>
 	</package>
 
-	<package name="widget" namespace="/api/widget" extends="home">
+	<package name="widget" namespace="/api/widget" extends="homeApi">
 		<action name="getUserCardData" class="com.facilio.bmsconsole.actions.WidgetAction" method="getUserCardData">
 			<result name="success" type="json">
 				<param name="includeProperties">^user.*,^result.*</param>
@@ -3155,7 +2911,7 @@
 		</action>
 	</package>
 	
-	<package name="workflow" namespace="/api/workflow" extends="home">
+	<package name="workflow" namespace="/api/workflow" extends="homeApi">
 	
 		<action name="getAllNameSpace" class="com.facilio.workflows.action.WorkflowAction" method="getAllNameSpace">
 			<result name="success" type="json">
@@ -3179,7 +2935,7 @@
 		
 	</package>
 	
-	<package name="screen" namespace="/api/screen" extends="home">
+	<package name="screen" namespace="/api/screen" extends="homeApi">
 	
 		<action name="getAllScreens" class="com.facilio.screen.action.ScreenAction" method="getScreens">
 			<result name="success" type="json">
@@ -3302,7 +3058,7 @@
 		
 	</package>
 	
-	<package name="dashboard" namespace="/api/dashboard" extends="home">
+	<package name="dashboard" namespace="/api/dashboard" extends="homeApi">
 		<action name="populateDefaultReports" class="com.facilio.bmsconsole.actions.DashboardAction" method="populateDefaultReports">
 		</action>
 		<action name="add" class="com.facilio.bmsconsole.actions.DashboardAction" method="addDashboard">
@@ -3550,7 +3306,7 @@
 			</result>
 		</action>
 	</package>
-	<package name="dashboardsharing" namespace="/api/dashboardsharing" extends="home">
+	<package name="dashboardsharing" namespace="/api/dashboardsharing" extends="homeApi">
 		<action name="apply" class="com.facilio.bmsconsole.actions.DashboardAction" method="applyDashboardSharing">
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboardSharing.*</param>
@@ -3564,7 +3320,7 @@
 		</action>
 	</package>
 	
-	<package name="units" namespace="/api/units" extends="home">
+	<package name="units" namespace="/api/units" extends="homeApi">
 		<action name="getDefaultMetricUnits" class="com.facilio.bmsconsole.actions.UnitAction" method="getDefaultMetricUnits">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
@@ -3582,7 +3338,7 @@
 			</result>
 		</action>
 	</package>
-	<package name="shifts" namespace="/api/shifts" extends="home">
+	<package name="shifts" namespace="/api/shifts" extends="homeApi">
 		<action name="add" class="com.facilio.bmsconsole.actions.ShiftAction" method="add">
 			<result name="success" type="json">
 				<param name="includeProperties">shift.*</param>
@@ -3610,7 +3366,7 @@
 		</action>
 	</package>
 	
-	<package name="formApi" namespace="/api/forms" extends="home">
+	<package name="formApi" namespace="/api/forms" extends="homeApi">
 		<action name="getFormMeta" class="com.facilio.bmsconsole.actions.FormAction"
 			method="fetchFormMeta">
 			<result name="success" type="json">
