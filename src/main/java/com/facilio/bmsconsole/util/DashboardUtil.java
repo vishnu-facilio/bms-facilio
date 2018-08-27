@@ -1817,9 +1817,11 @@ public class DashboardUtil {
 	
 	public static void deleteReport(long reportId) throws SQLException {
 		
-		GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder();
-		update.table(ModuleFactory.getReport().getTableName());
-		update.andCustomWhere("ID = ?",reportId);
+		GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder()
+													.fields(FieldFactory.getReportFields())
+													.table(ModuleFactory.getReport().getTableName())
+													.andCustomWhere("ID = ?",reportId)
+													;
 		
 		Map<String,Object> value = new HashMap<>();
 		value.put("parentFolderId", null);
