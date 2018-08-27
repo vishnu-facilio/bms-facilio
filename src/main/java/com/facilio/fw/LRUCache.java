@@ -54,12 +54,10 @@ public class LRUCache<K, V>{
 	private RedisManager redis;
 	private ConcurrentHashMap<K, Node<K, V>> cache;
 	private int maxSize;
-	private int currentSize;
 
 	private LRUCache(String name, int maxSize){
 		this.name = AwsUtil.getConfig("environment")+'_'+name;
 		this.maxSize = maxSize;
-		this.currentSize = 0;
 		cache = new ConcurrentHashMap<K, Node<K, V>>();
 		redis = RedisManager.getInstance();
 	}
@@ -80,7 +78,7 @@ public class LRUCache<K, V>{
 
 	public String toString() {
 		double hitc =  ((hitcount*100d)/(hitcount+misscount) );
-		return (" The current size "+currentSize+"\n hitcount "+hitcount+"\n Cache Hit Ratio= "+ hitc +"\n\n"+cache );
+		return (" The current size "+cache.size()+"\n hitcount "+hitcount+"\n Cache Hit Ratio= "+ hitc +"\n\n"+cache );
 	}
 
     // Define Node with pointers to the previous and next items and a key, value pair
@@ -162,7 +160,6 @@ public class LRUCache<K, V>{
     	  for(int i = 0; i<list.size(); i++) {
     		  cache.remove(list.get(i).key);
     		  LOGGER.debug("Removing "+list.get(i).key);
-    		  currentSize--;
     	  }
     }
     class SortedArrayList<T> extends ArrayList<T> {
@@ -179,7 +176,6 @@ public class LRUCache<K, V>{
     public void purgeCache() {
 		purgeInRedis();
         cache.clear();
-        this.currentSize = 0;
     }
 
     private String getRedisKey(String key) {
@@ -196,7 +192,6 @@ public class LRUCache<K, V>{
 					return tempNode.getValue();
 				} else {
             		cache.remove(key);
-            		currentSize--;
 				}
             }
     	} catch (Exception e) {
@@ -237,10 +232,9 @@ public class LRUCache<K, V>{
         Node<K, V> myNode = new Node<>(null, null, key, value);
         cache.put(key, myNode);
         putInRedis(key, myNode);
-        currentSize++;
 
         // Delete the left-most entry and update the LRU pointer
-        if (currentSize >= maxSize){
+        if (cache.size() >= maxSize){
             synchronized (cache) {
                 try {
                     clearTenPercentile();
@@ -256,7 +250,6 @@ public class LRUCache<K, V>{
 		if(cache.containsKey(key)) {
 			cache.remove(key);
 			deleteInRedis(key);
-			currentSize--;
 		}
     }
 
