@@ -179,6 +179,7 @@ public class LRUCache<K, V>{
     public void purgeCache() {
 		purgeInRedis();
         cache.clear();
+        this.currentSize = 0;
     }
 
     private String getRedisKey(String key) {
