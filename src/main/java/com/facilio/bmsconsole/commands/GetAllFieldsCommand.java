@@ -110,7 +110,10 @@ public class GetAllFieldsCommand implements Command {
 					}
 				} 
 				else if (moduleName.equals("workorder")) {
-					if(FieldFactory.Fields.workOrderFieldsInclude.contains(fieldObject.getName())) {
+					if(!fieldObject.isDefault()) {
+						fields.add(fieldObject);
+					}
+					else if(FieldFactory.Fields.workOrderFieldsInclude.contains(fieldObject.getName())) {
 						fields.add(fieldObject);
 					}
 				}else {
