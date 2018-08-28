@@ -139,7 +139,7 @@ public class SessionManager {
 			logger.log(Level.FINE, "No active sessions exists for the user: "+message.getTo());
 		}
 		if(sessionList != null && sessionList.size() > 0) {
-			logger.info("Session size " + sessionList.size() + " " + timeTaken);
+			logger.fine("Session size " + sessionList.size() + " " + timeTaken);
 		}
 		return timeTaken;
 	}

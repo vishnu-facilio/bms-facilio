@@ -189,6 +189,14 @@ public class ModuleFactory {
 		return readingRuleModule;
 	}
 
+	public static FacilioModule getDeviceDetailsModule() {
+		FacilioModule deviceModule = new FacilioModule();
+		deviceModule.setName("devicedetails");
+		deviceModule.setDisplayName("Device Details");
+		deviceModule.setTableName("DeviceDetails");
+		return deviceModule;
+	}
+
 	public static FacilioModule getReadingRuleInclusionsExclusionsModule() {
 		FacilioModule readingRuleInclusionsExclusions = new FacilioModule();
 		readingRuleInclusionsExclusions.setName("readingruleInclusionsExclusions");

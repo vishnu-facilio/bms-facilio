@@ -107,6 +107,12 @@ public class UpdateDashboardCommand implements Command {
 				.andCondition(CriteriaAPI.getCondition(ModuleFactory.getDashboardVsWidgetModule().getTableName()+".WIDGET_ID", "widgetId", StringUtils.join(removedWidgets, ","),StringOperators.IS));
 				
 				genericDeleteRecordBuilder.delete();
+				
+				genericDeleteRecordBuilder = new GenericDeleteRecordBuilder();
+				genericDeleteRecordBuilder.table(ModuleFactory.getWidgetModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(ModuleFactory.getWidgetModule().getTableName()+".ID", "ID", StringUtils.join(removedWidgets, ","),StringOperators.IS));
+				
+				genericDeleteRecordBuilder.delete();
 			}
 		}
 		

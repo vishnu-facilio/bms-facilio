@@ -56,6 +56,29 @@ public class FieldFactory {
 			alarmsFieldsInclude.add("entity");
 			alarmsFieldsInclude.add("noOfAttachments");
 		}
+		public static List<String> workOrderFieldsInclude = new ArrayList<String>();
+		static {
+			workOrderFieldsInclude.add("actualWorkDuration");
+			workOrderFieldsInclude.add("actualWorkEnd");
+			workOrderFieldsInclude.add("assignedBy");
+			workOrderFieldsInclude.add("assignedTo");
+			workOrderFieldsInclude.add("assignmentGroup");
+			workOrderFieldsInclude.add("category");
+			workOrderFieldsInclude.add("createdTime");
+			workOrderFieldsInclude.add("dueDate");
+			workOrderFieldsInclude.add("estimatedEnd");
+			workOrderFieldsInclude.add("estimatedStart");
+			workOrderFieldsInclude.add("estimatedWorkDuration");
+			workOrderFieldsInclude.add("modifiedTime");
+			workOrderFieldsInclude.add("noOfClosedTasks");
+			workOrderFieldsInclude.add("priority");
+			workOrderFieldsInclude.add("requester");
+			workOrderFieldsInclude.add("resource");
+			workOrderFieldsInclude.add("scheduledStart");
+			workOrderFieldsInclude.add("sourceType");
+			workOrderFieldsInclude.add("status");
+			workOrderFieldsInclude.add("type");
+		}
 		public static List<String> energyFieldsInclude = new ArrayList<String>();
 		static {
 			energyFieldsInclude.add("id");
@@ -627,6 +650,44 @@ public class FieldFactory {
 		field3.setColumnName("ACTIVITY_TYPE");
 		field3.setModule(module);
 		fields.add(field3);
+
+		return fields;
+	}
+
+	public static List<FacilioField> getDeviceDetailsFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getDeviceDetailsModule();
+
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+
+		FacilioField deviceName = new FacilioField();
+		deviceName.setName("deviceName");
+		deviceName.setDataType(FieldType.STRING);
+		deviceName.setColumnName("DEVICE_NAME");
+		deviceName.setModule(module);
+		fields.add(deviceName);
+
+		FacilioField deviceId = new FacilioField();
+		deviceId.setName("deviceId");
+		deviceId.setDataType(FieldType.STRING);
+		deviceId.setColumnName("DEVICE_ID");
+		deviceId.setModule(module);
+		fields.add(deviceId);
+
+		FacilioField inUse = new FacilioField();
+		inUse.setName("inUse");
+		inUse.setDataType(FieldType.BOOLEAN);
+		inUse.setColumnName("IN_USE");
+		inUse.setModule(module);
+		fields.add(inUse);
+
+		FacilioField lastUpdated = new FacilioField();
+		lastUpdated.setName("lastUpdatedTime");
+		lastUpdated.setDataType(FieldType.NUMBER);
+		lastUpdated.setColumnName("LAST_UPDATED_TIME");
+		lastUpdated.setModule(module);
+		fields.add(lastUpdated);
 
 		return fields;
 	}

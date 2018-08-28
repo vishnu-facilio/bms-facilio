@@ -108,7 +108,15 @@ public class GetAllFieldsCommand implements Command {
 					if(FieldFactory.Fields.entityFieldsInclucde.contains(fieldObject.getName())) {
 						fields.add(fieldObject);
 					}
-				} else {
+				} 
+				else if (moduleName.equals("workorder")) {
+					if(!fieldObject.isDefault()) {
+						fields.add(fieldObject);
+					}
+					else if(FieldFactory.Fields.workOrderFieldsInclude.contains(fieldObject.getName())) {
+						fields.add(fieldObject);
+					}
+				}else {
 					fields = allFields;
 				}
 			}

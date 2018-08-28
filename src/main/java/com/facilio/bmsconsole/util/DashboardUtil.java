@@ -73,6 +73,7 @@ import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.criteria.PickListOperators;
+import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.DeleteRecordBuilder;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -1815,7 +1816,7 @@ public class DashboardUtil {
 		}
 	}
 	
-	public static void deleteReport(long reportId) throws SQLException {
+	public static void deleteReport(long reportId) throws Exception {
 		
 		GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder()
 													.fields(FieldFactory.getReportFields())
@@ -1862,6 +1863,25 @@ public class DashboardUtil {
 		deleteRecordBuilder = new GenericDeleteRecordBuilder();
 		deleteRecordBuilder.table(ModuleFactory.getBaseLineReportRelModule().getTableName())
 		.andCustomWhere("REPORT_ID = ?", reportId);
+		deleteRecordBuilder.delete();
+		
+		List<WidgetChartContext> widgets = getWidgetFromDashboard(reportId);
+		
+		List<Long> removedWidgets = new ArrayList<>();
+		for(WidgetChartContext widget :widgets) {
+			removedWidgets.add(widget.getId());
+		}
+		
+		deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		deleteRecordBuilder.table(ModuleFactory.getDashboardVsWidgetModule().getTableName())
+		.andCondition(CriteriaAPI.getCondition(ModuleFactory.getDashboardVsWidgetModule().getTableName()+".WIDGET_ID", "widgetId", StringUtils.join(removedWidgets, ","),StringOperators.IS));
+		
+		deleteRecordBuilder.delete();
+		
+		deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		deleteRecordBuilder.table(ModuleFactory.getWidgetModule().getTableName())
+		.andCondition(CriteriaAPI.getCondition(ModuleFactory.getWidgetModule().getTableName()+".ID", "id", StringUtils.join(removedWidgets, ","),StringOperators.IS));
+		
 		deleteRecordBuilder.delete();
 		
 		deleteRecordBuilder = new GenericDeleteRecordBuilder();
@@ -2759,26 +2779,8 @@ public class DashboardUtil {
 		if (reportContext != null) {
 			
 			reportContext.setOrgId(AccountUtil.getCurrentOrg().getId());
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			
-			if(reportContext.getModuleId() == -1) {
-				FacilioModule module = modBean.getModule(reportContext.getModuleName());
-				reportContext.setModuleId(module.getModuleId());
-			}
-			else {
-				FacilioModule module = modBean.getModule(reportContext.getModuleId());
-				reportContext.setModuleName(module.getName());
-			}
 			
 			List<FacilioField> fields = FieldFactory.getReportFields();
-			
-			reportContext.setxAxis(DashboardUtil.addOrGetReportfield(reportContext.getxAxisField(), reportContext.getModuleName()).getId());
-			if(reportContext.getY1AxisField() != null && reportContext.getY1AxisField().getModuleField() != null) {
-				reportContext.setY1Axis(DashboardUtil.addOrGetReportfield(reportContext.getY1AxisField(), reportContext.getModuleName()).getId());
-			}
-			if(reportContext.getGroupByField() != null && reportContext.getGroupByField().getModuleField() != null) {
-				reportContext.setGroupBy(DashboardUtil.addOrGetReportfield(reportContext.getGroupByField(), reportContext.getModuleName()).getId());
-			}
 			
 			GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder()
 			.table(ModuleFactory.getReport().getTableName())
@@ -2787,54 +2789,45 @@ public class DashboardUtil {
 			
 			
 			Map<String, Object> reportProp = FieldUtil.getAsProperties(reportContext);
+			LOGGER.log(Level.SEVERE, "Update Report Prop --"+reportProp);
 			update.update(reportProp);
 			
 
-			GenericInsertRecordBuilder insertBuilder;
-			
-			if(oldReport.getCriteria() != null) {
-				
-				GenericDeleteRecordBuilder delete = new GenericDeleteRecordBuilder();
-				delete.table(ModuleFactory.getReportCriteria().getTableName())
-				.andCustomWhere(ModuleFactory.getReportCriteria().getTableName()+".REPORT_ID = ?", oldReport.getId());
-				
-				delete.delete();
-				CriteriaAPI.deleteCriteria(oldReport.getCriteria().getCriteriaId());
-			}
-			
-			if(reportContext.getCriteria() != null) {
-				
-				Long criteriaId = CriteriaAPI.addCriteria(reportContext.getCriteria(), AccountUtil.getCurrentOrg().getId());
-				
-				insertBuilder = new GenericInsertRecordBuilder()
-						.table(ModuleFactory.getReportCriteria().getTableName())
-						.fields(FieldFactory.getReportCriteriaFields());
-				
-				Map<String, Object> prop = new HashMap<String, Object>();
-				prop.put("reportId", reportContext.getId());
-				prop.put("criteriaId", criteriaId);
-				insertBuilder.addRecord(prop).save();
-			}
-			if(reportContext.getReportUserFilters() != null) {
-			}
-			if(reportContext.getReportThresholds() != null) {
-			}
+//			if(reportContext.getCriteria() != null) {
+//				
+//				if(oldReport.getCriteria() != null) {
+//					
+//					GenericDeleteRecordBuilder delete = new GenericDeleteRecordBuilder();
+//					delete.table(ModuleFactory.getReportCriteria().getTableName())
+//					.andCustomWhere(ModuleFactory.getReportCriteria().getTableName()+".REPORT_ID = ?", oldReport.getId());
+//					
+//					delete.delete();
+//					CriteriaAPI.deleteCriteria(oldReport.getCriteria().getCriteriaId());
+//				}
+//				
+//				Long criteriaId = CriteriaAPI.addCriteria(reportContext.getCriteria(), AccountUtil.getCurrentOrg().getId());
+//				
+//				GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+//						.table(ModuleFactory.getReportCriteria().getTableName())
+//						.fields(FieldFactory.getReportCriteriaFields());
+//				
+//				Map<String, Object> prop = new HashMap<String, Object>();
+//				prop.put("reportId", reportContext.getId());
+//				prop.put("criteriaId", criteriaId);
+//				insertBuilder.addRecord(prop).save();
+//			}
 			if(reportContext.getDateFilter() != null) {
 				
-				GenericDeleteRecordBuilder delete = new GenericDeleteRecordBuilder();
+				fields = FieldFactory.getReportDateFilterFields();
 				
-				delete.table(ModuleFactory.getReportDateFilter().getTableName())
-				.andCustomWhere(ModuleFactory.getReportDateFilter().getTableName()+".REPORT_ID = ?", reportContext.getId());
-				delete.delete();
-				
-				Map<String, Object> prop = FieldUtil.getAsProperties(reportContext.getDateFilter());
-				prop.put("reportId", reportContext.getId());
-
-				insertBuilder = new GenericInsertRecordBuilder()
+				update = new GenericUpdateRecordBuilder()
 						.table(ModuleFactory.getReportDateFilter().getTableName())
-						.fields(FieldFactory.getReportDateFilterFields());
+						.fields(fields)
+						.andCustomWhere(ModuleFactory.getReportDateFilter().getTableName()+".REPORT_ID = ?", reportContext.getId());
+						
+				Map<String, Object> reportDateFilterProp = FieldUtil.getAsProperties(reportContext.getDateFilter());
+				update.update(reportDateFilterProp);
 				
-				insertBuilder.addRecord(prop).save();
 			}
 		}
 		reportContext = getReportContext(reportContext.getId());
@@ -3118,5 +3111,72 @@ public class DashboardUtil {
 		return null;
 	}
 	
+	public static List<WidgetChartContext> getWidgetFromDashboard(long reportId) throws Exception {
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+					.select(FieldFactory.getWidgetChartFields())
+					.table(ModuleFactory.getWidgetChartModule().getTableName())
+					.andCustomWhere(ModuleFactory.getWidgetChartModule().getTableName()+".REPORT_ID = ?", reportId);
+			
+		List<Map<String, Object>> props =  selectBuilder.get();
+		
+		List<WidgetChartContext> widgetCharts = new ArrayList<>();
+		if (props != null && !props.isEmpty()) {
+			for(Map<String, Object> prop :props) {
+				WidgetChartContext widgetChart = FieldUtil.getAsBeanFromMap(prop, WidgetChartContext.class);
+				widgetCharts.add(widgetChart);
+			}
+		}
+		
+		return widgetCharts;
+	}
 	
+	
+	public static JSONArray getGroupedBooleanFields( List<Map<String, Object>> rs) {
+		
+		
+		String previousValue = null;
+		JSONObject booleanRes = new JSONObject();	
+		JSONArray booleanResArray = new JSONArray();
+		
+		for(int i=0;i<rs.size();i++) {
+ 			Map<String, Object> thisMap = rs.get(i);
+ 			
+ 			String booleanValue = thisMap.get("value").toString();
+ 			
+ 			if(previousValue == null) {
+ 				
+ 				booleanRes.put("startTime", thisMap.get("label"));
+ 				booleanRes.put("endTime", thisMap.get("label"));
+ 				booleanRes.put("value", booleanValue);
+ 				booleanRes.put("label", thisMap.get("label"));
+ 				
+ 				previousValue = booleanValue;
+ 				continue;
+ 			}
+ 			
+ 			if(previousValue.equals(booleanValue)) {
+ 				booleanRes.put("endTime", thisMap.get("label"));
+ 			}
+ 			else {
+ 				
+ 				booleanResArray.add(booleanRes);
+ 				
+ 				Object lastEndTime = booleanRes.get("endTime");
+ 				
+ 				booleanRes = new JSONObject();
+ 				booleanRes.put("startTime", lastEndTime);
+ 				booleanRes.put("end", thisMap.get("label"));
+ 				booleanRes.put("value", booleanValue);
+ 				booleanRes.put("label", thisMap.get("label"));
+ 			}
+ 			
+ 			if(i == rs.size()-1) {
+ 				booleanResArray.add(booleanRes);
+ 			}
+ 			previousValue = booleanValue;
+		}
+		
+		return booleanResArray;
+	}
 }

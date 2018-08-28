@@ -64,7 +64,7 @@ public class NotificationProcessor implements IRecordProcessor {
                 LOGGER.info("Exception occurred "+ data + " , " , e);
             }
         }
-        LOGGER.info("Processed " + processRecordsInput.getRecords().size() +  " in " + (System.currentTimeMillis() - startTime) + " ms. Time to send Messaage " + timeToSendMessage);
+        LOGGER.debug("Processed " + processRecordsInput.getRecords().size() +  " in " + (System.currentTimeMillis() - startTime) + " ms. Time to send Messaage " + timeToSendMessage);
     }
 
     public void shutdown(ShutdownInput shutdownInput) {

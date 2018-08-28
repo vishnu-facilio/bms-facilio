@@ -32,4 +32,5 @@
 	 <job name='StartShift' classname= 'com.facilio.bmsconsole.jobs.ShiftStartJob' transactionTimeout='300000'/>
 	 <job name='EndShift' classname= 'com.facilio.bmsconsole.jobs.ShiftEndJob' transactionTimeout='300000'/>
 	 <job name='EndShiftOTJ' classname= 'com.facilio.bmsconsole.jobs.ShiftEndOneTimeJob' transactionTimeout='300000'/>
+	 <job name='DeviceMonitor' classname= 'com.facilio.bmsconsole.jobs.DeviceMonitorJob' transactionTimeout='300000'/>
 </scheduler>

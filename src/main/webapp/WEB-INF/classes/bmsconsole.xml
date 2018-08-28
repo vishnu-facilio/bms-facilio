@@ -3103,7 +3103,7 @@
 		<action name="getData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getData">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
-				<param name="includeProperties">^reportData.*,^reportContext.*,^baseLineComparisionDiff.*,^entityName.*,^meterIds.*,^readingAlarms.*,^reportColumns.*,^reportFieldLabelMap.*,^variance.*,^safelimit.*,^benchmarks.*,^heatMapRange.*</param>
+				<param name="includeProperties">^reportData.*,^reportContext.*,^baseLineComparisionDiff.*,^entityName.*,^meterIds.*,^readingAlarms.*,^reportColumns.*,^reportFieldLabelMap.*,^variance.*,^safelimit.*,^benchmarks.*,^heatMapRange.*,^booleanResultGrouping.*</param>
 			</result>
 		</action>
 		<action name="getAswaqData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getAswaqData">
@@ -3217,6 +3217,10 @@
 		<action name="deleteReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="deleteReport">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportContext.*</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">400</param>
+				<param name="includeProperties">^errorString.*</param>
 			</result>
 		</action>
 		<action name="deleteWidgetFromDashboard" class="com.facilio.bmsconsole.actions.DashboardAction" method="deleteWidgetFromDashboard">
