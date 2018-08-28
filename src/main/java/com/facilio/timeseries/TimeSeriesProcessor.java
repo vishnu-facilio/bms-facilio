@@ -8,10 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.*;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -147,7 +144,7 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 	}
 
 	private Condition getDeviceIdCondition(String deviceId) {
-		return  CriteriaAPI.getCondition("DEVICE_ID", "DEVICE_ID", deviceId, NumberOperators.EQUALS);
+		return  CriteriaAPI.getCondition("DEVICE_ID", "DEVICE_ID", deviceId, StringOperators.IS);
 		/*Condition condition = new Condition();
 		condition.setField(deviceIdField);
 		condition.setOperator(NumberOperators.EQUALS);
