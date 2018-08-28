@@ -2847,7 +2847,7 @@
 	</package>
 
 	<package name="timeseriesPublish" namespace="/iot/api/timeseries" extends="homeApi">
-	<action name="publish" class="com.facilio.bmsconsole.actions.TimeSeries"
+	<action name="tspublish" class="com.facilio.bmsconsole.actions.TimeSeries"
 			method="publish">
 		<result name="success" type="json">
 			<param name="statusCode">200</param>
