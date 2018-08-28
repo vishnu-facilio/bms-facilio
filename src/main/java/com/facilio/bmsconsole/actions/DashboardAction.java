@@ -42,7 +42,6 @@ import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BenchmarkContext;
 import com.facilio.bmsconsole.context.BenchmarkUnit;
 import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.ChillerContext;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardContext.DashboardPublishStatus;
 import com.facilio.bmsconsole.context.DashboardFolderContext;
@@ -139,7 +138,6 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.ScheduleInfo;
-import com.facilio.tasker.job.FacilioJob;
 import com.facilio.timeseries.TimeSeriesAPI;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.facilio.unitconversion.Metric;
@@ -940,10 +938,13 @@ public class DashboardAction extends ActionSupport {
 		
 		if(readingruleContext != null) {
 			ResourceContext resource = ResourceAPI.getResource(alarm.getResource().getId());
+			ResourceContext currentResource = resource;
 			
 			reportMeta = new JSONObject();
 			
 			if(readingruleContext.getThresholdType() == ReadingRuleContext.ThresholdType.ADVANCED.getValue()) {
+				
+				//TODO get all resources in a single query
 				
 				if(readingruleContext.getWorkflowId() > 0) {
 					WorkflowContext workflow = WorkflowUtil.getWorkflowContext(readingruleContext.getWorkflowId(), true);
@@ -975,9 +976,7 @@ public class DashboardAction extends ActionSupport {
 									Condition condition = conditions.get(key);
 									
 									if(condition.getFieldName().equals("parentId")) {
-										if(!condition.getValue().equals("${resourceId}")) {
-											resource = ResourceAPI.getResource(Long.parseLong(condition.getValue()));
-										}
+										resource = condition.getValue().equals("${resourceId}") ? currentResource : ResourceAPI.getResource(Long.parseLong(condition.getValue()));
 										dataPoint.put("parentId", resource.getId());
 										break;
 									}
