@@ -47,7 +47,7 @@ public class AnomalyDetectorJob extends FacilioJob {
 		try {
 			// TO DO .. Feature bit check
 			if (!AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_ANOMALY_DETECTOR)) {
-				//logger.log(Level.INFO, "Feature BITS is not enabled");
+				logger.log(Level.INFO, "Feature BITS is not enabled");
 				return;
 			}else {
 				logger.log(Level.INFO, "Feature BITS is enabled");
@@ -61,7 +61,7 @@ public class AnomalyDetectorJob extends FacilioJob {
 			
 			long correction = 0;
 			// Uncomment below code for DEV testing only
-			//long correction = System.currentTimeMillis() - 1521748963945L;
+			// long correction = System.currentTimeMillis() - 1521748963945L;
 			
 			long endTime = System.currentTimeMillis() - correction;
 			long startTime = endTime - (2 * anomalyPeriodicity *  60 * 1000L);

@@ -32,7 +32,10 @@ public class AnomalySchedulerUtil {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getAnomalySchedulerFields())
 				.table(energyDataTable)
-				.andCustomWhere("TTIME > ? AND TTIME < ? AND PARENT_METER_ID=? AND TOTAL_ENERGY_CONSUMPTION_DELTA IS NOT NULL  AND ORGID = ? ", startTime, endTime, meterID, orgID);
+				.andCustomWhere("TTIME >= ? AND TTIME < ? AND PARENT_METER_ID=? " + 
+						" AND TOTAL_ENERGY_CONSUMPTION_DELTA IS NOT NULL  " + 
+						" AND (MARKED is NULL OR MARKED = 0) ",
+						startTime, endTime, meterID);
 	
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
