@@ -134,7 +134,7 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 			}
 			if(deviceMap.containsKey(deviceId)) {
 				HashMap<String, Object> map = new HashMap<>();
-				map.put(deviceId, System.currentTimeMillis());
+				map.put("lastUpdatedTime", System.currentTimeMillis());
 				GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder().table(deviceDetailsModule.getTableName())
 						.fields(fields).andCondition(getDeviceIdCondition(deviceId)).andCondition(orgIdCondition);
 				builder.update(map);
