@@ -56,6 +56,29 @@ public class FieldFactory {
 			alarmsFieldsInclude.add("entity");
 			alarmsFieldsInclude.add("noOfAttachments");
 		}
+		public static List<String> workOrderFieldsInclude = new ArrayList<String>();
+		static {
+			workOrderFieldsInclude.add("actualWorkDuration");
+			workOrderFieldsInclude.add("actualWorkEnd");
+			workOrderFieldsInclude.add("assignedBy");
+			workOrderFieldsInclude.add("assignedTo");
+			workOrderFieldsInclude.add("assignmentGroup");
+			workOrderFieldsInclude.add("category");
+			workOrderFieldsInclude.add("createdTime");
+			workOrderFieldsInclude.add("dueDate");
+			workOrderFieldsInclude.add("estimatedEnd");
+			workOrderFieldsInclude.add("estimatedStart");
+			workOrderFieldsInclude.add("estimatedWorkDuration");
+			workOrderFieldsInclude.add("modifiedTime");
+			workOrderFieldsInclude.add("noOfClosedTasks");
+			workOrderFieldsInclude.add("priority");
+			workOrderFieldsInclude.add("requester");
+			workOrderFieldsInclude.add("resource");
+			workOrderFieldsInclude.add("scheduledStart");
+			workOrderFieldsInclude.add("sourceType");
+			workOrderFieldsInclude.add("status");
+			workOrderFieldsInclude.add("type");
+		}
 		public static List<String> energyFieldsInclude = new ArrayList<String>();
 		static {
 			energyFieldsInclude.add("id");
