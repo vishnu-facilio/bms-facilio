@@ -608,7 +608,7 @@ public class WorkflowRuleAPI {
 	private static void setMatchedResources (ReadingRuleContext readingRule) throws Exception {
 		if (readingRule.getAssetCategoryId() == -1) {
 			long resourceId = readingRule.getResourceId();
-			readingRule.setMatchedResources(Collections.singletonMap(resourceId, ResourceAPI.getResource(resourceId)));
+			readingRule.setMatchedResources(Collections.singletonMap(resourceId, ResourceAPI.getExtendedResource(resourceId)));
 		}
 		else {
 			List<AssetContext> categoryAssets = AssetsAPI.getAssetListOfCategory(readingRule.getAssetCategoryId());
