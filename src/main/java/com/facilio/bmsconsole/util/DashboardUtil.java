@@ -3166,7 +3166,7 @@ public class DashboardUtil {
  				
  				booleanRes = new JSONObject();
  				booleanRes.put("startTime", lastEndTime);
- 				booleanRes.put("end", thisMap.get("label"));
+ 				booleanRes.put("endTime", thisMap.get("label"));
  				booleanRes.put("value", booleanValue);
  				booleanRes.put("label", thisMap.get("label"));
  			}
