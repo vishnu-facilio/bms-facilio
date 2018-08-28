@@ -631,6 +631,44 @@ public class FieldFactory {
 		return fields;
 	}
 
+	public static List<FacilioField> getDeviceDetailsFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getDeviceDetailsModule();
+
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+
+		FacilioField deviceName = new FacilioField();
+		deviceName.setName("deviceName");
+		deviceName.setDataType(FieldType.STRING);
+		deviceName.setColumnName("DEVICE_NAME");
+		deviceName.setModule(module);
+		fields.add(deviceName);
+
+		FacilioField deviceId = new FacilioField();
+		deviceId.setName("deviceId");
+		deviceId.setDataType(FieldType.STRING);
+		deviceId.setColumnName("DEVICE_ID");
+		deviceId.setModule(module);
+		fields.add(deviceId);
+
+		FacilioField inUse = new FacilioField();
+		inUse.setName("inUse");
+		inUse.setDataType(FieldType.BOOLEAN);
+		inUse.setColumnName("IN_USE");
+		inUse.setModule(module);
+		fields.add(inUse);
+
+		FacilioField lastUpdated = new FacilioField();
+		lastUpdated.setName("lastUpdatedTime");
+		lastUpdated.setDataType(FieldType.NUMBER);
+		lastUpdated.setColumnName("LAST_UPDATED_TIME");
+		lastUpdated.setModule(module);
+		fields.add(lastUpdated);
+
+		return fields;
+	}
+
 	public static List<FacilioField> getWorkflowRuleActionFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getWorkflowRuleActionModule();
