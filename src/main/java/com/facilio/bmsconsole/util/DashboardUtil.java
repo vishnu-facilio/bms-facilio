@@ -3130,4 +3130,50 @@ public class DashboardUtil {
 		
 		return widgetCharts;
 	}
+	
+	
+	public static JSONArray getGroupedBooleanFields( List<Map<String, Object>> rs) {
+		
+		
+		String previousValue = null;
+		JSONObject booleanRes = new JSONObject();	
+		JSONArray booleanResArray = new JSONArray();
+		
+		for(int i=0;i<rs.size();i++) {
+ 			Map<String, Object> thisMap = rs.get(i);
+ 			
+ 			String booleanValue = thisMap.get("value").toString();
+ 			
+ 			if(previousValue == null) {
+ 				
+ 				booleanRes.put("startTime", thisMap.get("label"));
+ 				booleanRes.put("endTime", thisMap.get("label"));
+ 				booleanRes.put("value", booleanValue);
+ 				booleanRes.put("label", thisMap.get("label"));
+ 				
+ 				previousValue = booleanValue;
+ 				continue;
+ 			}
+ 			
+ 			if(previousValue.equals(booleanValue)) {
+ 				booleanRes.put("endTime", thisMap.get("label"));
+ 			}
+ 			else {
+ 				
+ 				booleanResArray.add(booleanRes);
+ 				
+ 				Object lastEndTime = booleanRes.get("endTime");
+ 				
+ 				booleanRes = new JSONObject();
+ 				booleanRes.put("startTime", lastEndTime);
+ 				booleanRes.put("end", thisMap.get("label"));
+ 				booleanRes.put("value", booleanValue);
+ 				booleanRes.put("label", thisMap.get("label"));
+ 			}
+ 			
+ 			previousValue = booleanValue;
+		}
+		
+		return booleanResArray;
+	}
 }

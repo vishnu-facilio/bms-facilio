@@ -4444,6 +4444,14 @@ public class DashboardAction extends ActionSupport {
 		return 0d;
 	}
 	
+	JSONArray booleanResultGrouping;
+	
+	public JSONArray getBooleanResultGrouping() {
+		return booleanResultGrouping;
+	}
+	public void setBooleanResultGrouping(JSONArray booleanResultGrouping) {
+		this.booleanResultGrouping = booleanResultGrouping;
+	}
 	private JSONArray getDataForReadings(ReportContext report, FacilioModule module, JSONArray dateFilter, JSONObject userFilterValues, long baseLineId, long criteriaId) throws Exception {
 		JSONArray readingData = null;
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -5330,6 +5338,23 @@ public class DashboardAction extends ActionSupport {
 		else {
 			JSONArray res = new JSONArray();
 			
+			if(report.getY1AxisField() != null && report.getY1AxisField().getField() != null) {
+				
+				FacilioField yAxisField = report.getY1AxisField().getField();
+				
+				if(yAxisField.getDataTypeEnum().equals(FieldType.BOOLEAN)) {
+					
+					try {
+						booleanResultGrouping = DashboardUtil.getGroupedBooleanFields(rs);
+						LOGGER.log(Level.SEVERE, "booleanResultGrouping -- "+booleanResultGrouping);
+					}
+					catch(Exception e) {
+						LOGGER.log(Level.SEVERE, e.getMessage(),e);
+					}
+					
+				}
+			}
+			
 			JSONObject purposeIndexMapping = new JSONObject();
 			
 			if(!"eui".equalsIgnoreCase(report.getY1AxisUnit())) {
@@ -5445,6 +5470,7 @@ public class DashboardAction extends ActionSupport {
 				
 			}
 			else {
+				
 				for(int i=0;i<rs.size();i++) {
 					boolean newPurpose = false;
 		 			Map<String, Object> thisMap = rs.get(i);
