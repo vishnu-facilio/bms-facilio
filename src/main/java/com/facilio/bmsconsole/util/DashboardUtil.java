@@ -3171,6 +3171,9 @@ public class DashboardUtil {
  				booleanRes.put("label", thisMap.get("label"));
  			}
  			
+ 			if(i == rs.size()-1) {
+ 				booleanResArray.add(booleanRes);
+ 			}
  			previousValue = booleanValue;
 		}
 		
