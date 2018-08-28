@@ -2,10 +2,7 @@ package com.facilio.bmsconsole.jobs;
 
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
@@ -32,7 +29,18 @@ public class DeviceMonitorJob extends FacilioJob {
             orgIdCondition.setOperator(NumberOperators.EQUALS);
             orgIdCondition.setValue(String.valueOf(jc.getOrgId()));
 
-            GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().table(DEVICE_DETAILS_MODULE.getTableName()).andCondition(orgIdCondition).select(FIELDS);
+            FacilioField lastUpdatedTimeField = new FacilioField();
+            lastUpdatedTimeField.setName("lastUpdatedTime");
+		    lastUpdatedTimeField.setDataType(FieldType.NUMBER);
+		    lastUpdatedTimeField.setColumnName("LAST_UPDATED_TIME");
+		    lastUpdatedTimeField.setModule(DEVICE_DETAILS_MODULE);
+
+            Condition lastUpdatedTimeCondition = new Condition();
+            lastUpdatedTimeCondition.setField(lastUpdatedTimeField);
+            lastUpdatedTimeCondition.setOperator(NumberOperators.LESS_THAN_EQUAL);
+            lastUpdatedTimeCondition.setValue(String.valueOf((System.currentTimeMillis()- DEFAULT_TIMEOUT)));
+
+            GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().table(DEVICE_DETAILS_MODULE.getTableName()).andCondition(orgIdCondition).andCondition(lastUpdatedTimeCondition).select(FIELDS);
             try {
                 List<Map<String, Object>> data = builder.get();
                 for(Map<String, Object> obj : data) {
