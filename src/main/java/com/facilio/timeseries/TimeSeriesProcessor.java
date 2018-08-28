@@ -47,6 +47,7 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 	private final FacilioField deviceIdField = new FacilioField();
 	private final HashMap<String, Long> deviceMap = new HashMap<>();
 	private FacilioModule deviceDetailsModule;
+	private final FacilioField orgIdField = FieldFactory.getOrgIdField();
 
 	public TimeSeriesProcessor(long orgId, String orgDomainName){
         this.orgId = orgId;
@@ -62,12 +63,13 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 		this.shardId = initializationInput.getShardId();
 
 		deviceDetailsModule = ModuleFactory.getDeviceDetailsModule();
+		orgIdField.setModule(deviceDetailsModule);
 
-		orgIdCondition.setField(FieldFactory.getOrgIdField());
+		orgIdCondition.setField(orgIdField);
 		orgIdCondition.setOperator(NumberOperators.EQUALS);
 		orgIdCondition.setValue(String.valueOf(orgId));
 
-		deviceIdField.setName("deviceIdField");
+		deviceIdField.setName("deviceId");
 		deviceIdField.setDataType(FieldType.STRING);
 		deviceIdField.setColumnName("DEVICE_ID");
 		deviceIdField.setModule(deviceDetailsModule);
