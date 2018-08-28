@@ -10,6 +10,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.twilio.sdk.Twilio;
@@ -24,6 +25,14 @@ public class SMSUtil {
 	}
 	private final static String FROM = "facilio";
 	public static String sendSMS(JSONObject obj) {
+		
+		if(AwsUtil.isDevelopment())
+		{
+			LOGGER.info("SMS restricted in development/stage  ");
+			return "";
+
+		}
+		
 		String message = (String) obj.get("message");
 		String to = (String) obj.get("to");
 		
