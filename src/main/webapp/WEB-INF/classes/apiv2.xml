@@ -90,6 +90,12 @@
 			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 		</action>
 		
+		<action name="assign" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="v2assignWorkOrder">
+			<param name="moduleName">workorder</param>
+			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+		</action>
+		
 		<action name="sync" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="syncOfflineWorkOrders">
 			<param name="moduleName">workorder</param>

@@ -817,6 +817,9 @@ public class WorkOrderAction extends FacilioAction {
 				activityType = type;
 			}
 		}
+		else if(!context.containsKey(FacilioConstants.ContextNames.ACTIVITY_TYPE) && ((workorder.getAssignedTo() != null && workorder.getAssignedTo().getId() > 0) || (workorder.getAssignmentGroup() != null && workorder.getAssignmentGroup().getId() > 0)) ) {
+			activityType = ActivityType.ASSIGN_TICKET;
+		}
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, activityType);
 	}
 
@@ -1458,6 +1461,12 @@ public class WorkOrderAction extends FacilioAction {
 			setMessage(e);
 			return ERROR;
 		}
+	}
+	
+	public String v2assignWorkOrder() throws Exception {
+		assignWorkOrder();
+		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
+		return SUCCESS;
 	}
 	
 	public String v2workOrderList() {
