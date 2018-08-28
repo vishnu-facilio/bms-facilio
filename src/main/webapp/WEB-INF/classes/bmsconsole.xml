@@ -3218,6 +3218,10 @@
 			<result name="success" type="json">
 				<param name="includeProperties">^reportContext.*</param>
 			</result>
+			<result name="error" type="json">
+				<param name="statusCode">400</param>
+				<param name="includeProperties">^errorString.*</param>
+			</result>
 		</action>
 		<action name="deleteWidgetFromDashboard" class="com.facilio.bmsconsole.actions.DashboardAction" method="deleteWidgetFromDashboard">
 			<result name="success" type="json">

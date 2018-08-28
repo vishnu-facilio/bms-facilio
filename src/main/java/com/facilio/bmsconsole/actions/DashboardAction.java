@@ -4364,10 +4364,28 @@ public class DashboardAction extends ActionSupport {
 		this.reportFieldLabelMap = reportFieldLabelMap; 
 		return ticketData;
 	}
+	public boolean isDeleteWithWidget;
 	
+	public boolean isDeleteWithWidget() {
+		return isDeleteWithWidget;
+	}
+	public void setDeleteWithWidget(boolean isDeleteWithWidget) {
+		this.isDeleteWithWidget = isDeleteWithWidget;
+	}
 	public String deleteReport() throws Exception {
-		DashboardUtil.deleteReport(reportId);
-		return SUCCESS;
+		
+		List<WidgetChartContext> widgetCharts = null;
+		if(!isDeleteWithWidget) {
+			widgetCharts = DashboardUtil.getWidgetFromDashboard(reportId);
+		}
+		if(widgetCharts == null || widgetCharts.isEmpty()) {
+			DashboardUtil.deleteReport(reportId);
+			return SUCCESS;
+		}
+		else {
+			errorString = "Report Used In Dashboard";
+		}
+		return ERROR;
 	}
 	public String updateReport() throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

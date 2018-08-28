@@ -73,6 +73,7 @@ import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.criteria.PickListOperators;
+import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.DeleteRecordBuilder;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -1815,7 +1816,7 @@ public class DashboardUtil {
 		}
 	}
 	
-	public static void deleteReport(long reportId) throws SQLException {
+	public static void deleteReport(long reportId) throws Exception {
 		
 		GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder()
 													.fields(FieldFactory.getReportFields())
@@ -1862,6 +1863,25 @@ public class DashboardUtil {
 		deleteRecordBuilder = new GenericDeleteRecordBuilder();
 		deleteRecordBuilder.table(ModuleFactory.getBaseLineReportRelModule().getTableName())
 		.andCustomWhere("REPORT_ID = ?", reportId);
+		deleteRecordBuilder.delete();
+		
+		List<WidgetChartContext> widgets = getWidgetFromDashboard(reportId);
+		
+		List<Long> removedWidgets = new ArrayList<>();
+		for(WidgetChartContext widget :widgets) {
+			removedWidgets.add(widget.getId());
+		}
+		
+		deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		deleteRecordBuilder.table(ModuleFactory.getDashboardVsWidgetModule().getTableName())
+		.andCondition(CriteriaAPI.getCondition(ModuleFactory.getDashboardVsWidgetModule().getTableName()+".WIDGET_ID", "widgetId", StringUtils.join(removedWidgets, ","),StringOperators.IS));
+		
+		deleteRecordBuilder.delete();
+		
+		deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		deleteRecordBuilder.table(ModuleFactory.getWidgetModule().getTableName())
+		.andCondition(CriteriaAPI.getCondition(ModuleFactory.getWidgetModule().getTableName()+".ID", "id", StringUtils.join(removedWidgets, ","),StringOperators.IS));
+		
 		deleteRecordBuilder.delete();
 		
 		deleteRecordBuilder = new GenericDeleteRecordBuilder();
@@ -3091,5 +3111,23 @@ public class DashboardUtil {
 		return null;
 	}
 	
-	
+	public static List<WidgetChartContext> getWidgetFromDashboard(long reportId) throws Exception {
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+					.select(FieldFactory.getWidgetChartFields())
+					.table(ModuleFactory.getWidgetChartModule().getTableName())
+					.andCustomWhere(ModuleFactory.getWidgetChartModule().getTableName()+".REPORT_ID = ?", reportId);
+			
+		List<Map<String, Object>> props =  selectBuilder.get();
+		
+		List<WidgetChartContext> widgetCharts = new ArrayList<>();
+		if (props != null && !props.isEmpty()) {
+			for(Map<String, Object> prop :props) {
+				WidgetChartContext widgetChart = FieldUtil.getAsBeanFromMap(prop, WidgetChartContext.class);
+				widgetCharts.add(widgetChart);
+			}
+		}
+		
+		return widgetCharts;
+	}
 }
