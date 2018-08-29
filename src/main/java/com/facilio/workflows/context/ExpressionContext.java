@@ -312,10 +312,9 @@ public class ExpressionContext implements Serializable {
 								}
 							}
 							ReadingDataMeta meta = null;
-							if(workflowContext.getCATCHED_RDM() != null && !workflowContext.getCATCHED_RDM().isEmpty()) {
-								
+							if(workflowContext.getCachedRDM() != null && !workflowContext.getCachedRDM().isEmpty()) {
 								String key = ReadingsAPI.getRDMKey(Long.parseLong(parentIdString), modBean.getField(fieldName, moduleName));
-								meta = workflowContext.getCATCHED_RDM().get(key);
+								meta = workflowContext.getCachedRDM().get(key);
 							}
 							if(meta == null) {
 								meta = ReadingsAPI.getReadingDataMeta(Long.parseLong(parentIdString), select);

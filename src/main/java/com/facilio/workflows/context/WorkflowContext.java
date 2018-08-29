@@ -24,15 +24,15 @@ public class WorkflowContext implements Serializable {
 
 	private Map<String,List<Map<String,Object>>> cachedData = null;
 
-	public Map<String,ReadingDataMeta> CATCHED_RDM = new HashMap<>();
-	
-	public Map<String, ReadingDataMeta> getCATCHED_RDM() {
-		return CATCHED_RDM;
-	}
-	public void setCATCHED_RDM(Map<String, ReadingDataMeta> cATCHED_RDM) {
-		CATCHED_RDM = cATCHED_RDM;
-	}
+	private Map<String,ReadingDataMeta> cachedRDM = null;
 
+	public Map<String, ReadingDataMeta> getCachedRDM() {
+		return cachedRDM;
+	}
+	public void setCachedRDM(Map<String, ReadingDataMeta> cachedRDM) {
+		this.cachedRDM = cachedRDM;
+	}
+	
 	public Map<String, List<Map<String, Object>>> getCachedData() {
 		return cachedData;
 	}
