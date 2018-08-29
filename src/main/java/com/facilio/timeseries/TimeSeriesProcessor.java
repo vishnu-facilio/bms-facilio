@@ -1,5 +1,6 @@
 package com.facilio.timeseries;
 
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.sql.SQLException;
@@ -85,6 +86,7 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 		for (Record record : processRecordsInput.getRecords()) {
 			String data = "";
 			try {
+
 				data = decoder.decode(record.getData()).toString();
 				if(data.isEmpty()){
 					continue;
@@ -107,7 +109,7 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 				try {
 					if(AwsUtil.isProduction()) {
 						log.info("Sending data to " + errorStream);
-						PutRecordResult recordResult = AwsUtil.getKinesisClient().putRecord(errorStream, record.getData(), record.getPartitionKey());
+						PutRecordResult recordResult = AwsUtil.getKinesisClient().putRecord(errorStream, ByteBuffer.wrap(data.getBytes(Charset.defaultCharset())), record.getPartitionKey());
 						int status = recordResult.getSdkHttpMetadata().getHttpStatusCode();
 						if (status != 200) {
 							log.info("Couldn't add data to " + errorStream + " " + record.getSequenceNumber());
