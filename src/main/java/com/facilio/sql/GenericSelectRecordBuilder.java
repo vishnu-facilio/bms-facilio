@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -215,7 +216,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 			
 			if (queryTime > QUERY_TIME_THRESHOLD) {
 				LOGGER.info("SQL : "+sql);
-				LOGGER.info("Values : "+whereValues);
+				LOGGER.info("Values : "+Arrays.toString(whereValues));
 				LOGGER.info("Time taken to execute query in GenericSelectBuilder : "+queryTime);
 			}
 			
