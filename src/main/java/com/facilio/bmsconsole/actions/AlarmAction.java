@@ -40,7 +40,7 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionSupport;
 
-public class AlarmAction extends ActionSupport {
+public class AlarmAction extends FacilioAction {
 	private static Logger log = LogManager.getLogger(AlarmAction.class.getName());
 	private AlarmContext alarm;
 	public AlarmContext getAlarm() {
@@ -206,6 +206,7 @@ public class AlarmAction extends ActionSupport {
 		
 		return SUCCESS;
 	}
+	
 	
 	private long entityId = -1;
 	public long getEntityId() {
@@ -529,6 +530,20 @@ public class AlarmAction extends ActionSupport {
 		Chain getReadingAlarmsChain = FacilioChainFactory.getReadingAlarmsChain();
 		getReadingAlarmsChain.execute(context);
 		readingAlarms = (List<ReadingAlarmContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+		return SUCCESS;
+	}
+	
+	/******************      V2 Api    ******************/
+	public String v2alarmList() throws Exception{
+		alarmList();
+		setResult(FacilioConstants.ContextNames.ALARM, alarms);
+		return SUCCESS;
+		
+	}
+	
+	public String v2viewAlarm() throws Exception{
+		viewAlarm();
+		setResult(FacilioConstants.ContextNames.ALARM, alarms.get(0));
 		return SUCCESS;
 	}
 }
