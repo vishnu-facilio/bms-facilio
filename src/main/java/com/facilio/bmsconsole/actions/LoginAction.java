@@ -720,6 +720,10 @@ public class LoginAction extends FacilioAction{
 	
 	public String tvAccount() throws Exception {
 		
+		HashMap<String, Object> appProps = new HashMap<>();
+		appProps.put("permissions", AccountConstants.ModulePermission.toMap());
+		appProps.put("permissions_groups", AccountConstants.PermissionGroup.toMap());
+		
 		account = new HashMap<>();
 		account.put("org", AccountUtil.getCurrentOrg());
 		account.put("user", AccountUtil.getCurrentUser());
@@ -764,6 +768,10 @@ public class LoginAction extends FacilioAction{
 		
 		account.put("data", data);
 		account.put("config", config);
+		account.put("appProps", appProps);
+		
+		int license = AccountUtil.getFeatureLicense();
+		account.put("License", license);
 		
 		return SUCCESS;
 	}
