@@ -4444,6 +4444,13 @@ public class DashboardAction extends ActionSupport {
 	}
 	
 	JSONArray booleanResultGrouping;
+	public JSONArray getBooleanResultOptions() {
+		return booleanResultOptions;
+	}
+	public void setBooleanResultOptions(JSONArray booleanResultOptions) {
+		this.booleanResultOptions = booleanResultOptions;
+	}
+	JSONArray booleanResultOptions;
 	
 	public JSONArray getBooleanResultGrouping() {
 		return booleanResultGrouping;
@@ -5344,7 +5351,8 @@ public class DashboardAction extends ActionSupport {
 				if(yAxisField.getDataTypeEnum().equals(FieldType.BOOLEAN)) {
 					
 					try {
-						booleanResultGrouping = DashboardUtil.getGroupedBooleanFields(rs);
+						booleanResultOptions = new JSONArray();
+						booleanResultGrouping = DashboardUtil.getGroupedBooleanFields(rs,booleanResultOptions);
 						LOGGER.log(Level.SEVERE, "booleanResultGrouping -- "+booleanResultGrouping);
 					}
 					catch(Exception e) {

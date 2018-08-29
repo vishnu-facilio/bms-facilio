@@ -3132,7 +3132,7 @@ public class DashboardUtil {
 	}
 	
 	
-	public static JSONArray getGroupedBooleanFields( List<Map<String, Object>> rs) {
+	public static JSONArray getGroupedBooleanFields( List<Map<String, Object>> rs,JSONArray booleanResultOptions) {
 		
 		
 		String previousValue = null;
@@ -3143,6 +3143,10 @@ public class DashboardUtil {
  			Map<String, Object> thisMap = rs.get(i);
  			
  			String booleanValue = thisMap.get("value").toString();
+ 			
+ 			if(!booleanResultOptions.contains(booleanValue)) {
+ 				booleanResultOptions.add(booleanValue);
+ 			}
  			
  			if(previousValue == null) {
  				
