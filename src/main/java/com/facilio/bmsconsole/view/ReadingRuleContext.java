@@ -32,6 +32,7 @@ import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.facilio.workflows.util.WorkflowUtil;
 
 public class ReadingRuleContext extends WorkflowRuleContext {
 	private static final Logger LOGGER = LogManager.getLogger(ReadingRuleContext.class.getName());
@@ -287,7 +288,7 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 	public boolean evaluateWorkflowExpression(String moduleName, Object record, Map<String, Object> placeHolders,
 			FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
-		boolean workflowFlag = super.evaluateWorkflowExpression(moduleName, record, placeHolders, context);
+		boolean workflowFlag = evalWorkflow(placeHolders, (Map<String, ReadingDataMeta>) context.get(FacilioConstants.ContextNames.CURRRENT_READING_DATA_META));
 		if (getId() == 2336) {
 			LOGGER.info("Workflow result of 2336 : "+workflowFlag);
 		}
@@ -302,6 +303,24 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		}
 		else {
 			return workflowFlag;
+		}
+	}
+	
+	private boolean evalWorkflow(Map<String, Object> placeHolders, Map<String, ReadingDataMeta> currentRDM) throws Exception {
+		try {
+			boolean workflowFlag = true;
+			if (getWorkflow() != null) {
+				getWorkflow().setIgnoreMarkedReadings(true);
+				getWorkflow().setCachedRDM(currentRDM);
+				double result = (double) WorkflowUtil.getWorkflowExpressionResult(getWorkflow().getWorkflowString(), placeHolders);
+				getWorkflow().setCachedRDM(null);
+				workflowFlag = result == 1;
+			}
+			return workflowFlag;
+		}
+		catch (ArithmeticException e) {
+			LOGGER.error("Arithmetic exception during execution of workflow for rule : "+getId(), e);
+			return false;
 		}
 	}
 	
