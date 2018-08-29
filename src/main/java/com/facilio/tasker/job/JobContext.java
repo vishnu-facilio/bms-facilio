@@ -189,7 +189,7 @@ public class JobContext {
 
 	@Override
 	public String toString() {
-		return jobId+"::"+jobId+"::"+orgId+"::"+jobName+"::"+period+"::"+isPeriodic+"::"+executionTime;
+		return jobId+"::"+orgId+"::"+jobName+"::"+period+"::"+isPeriodic+"::"+executionTime;
 	}
 
 
