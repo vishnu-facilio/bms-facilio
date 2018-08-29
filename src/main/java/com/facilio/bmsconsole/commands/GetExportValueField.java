@@ -13,9 +13,9 @@ import org.apache.commons.chain.Context;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -45,12 +45,19 @@ public class GetExportValueField implements Command{
 		for (Map.Entry<FacilioModule, List<FacilioField>> entry : fieldMap.entrySet()) {
 			Map<String, FacilioField> currentFieldMap = FieldFactory.getAsMap(modBean.getAllFields(entry.getKey().getName()));
 			entry.getValue().add(currentFieldMap.get("actualTtime"));
+			entry.getValue().add(currentFieldMap.get("ttime"));
 			SelectRecordsBuilder<ReadingContext> builder = new SelectRecordsBuilder<ReadingContext>()
 					.module(entry.getKey())
 					.beanClass(ReadingContext.class)
 					.select(entry.getValue())
-					.andCondition(CriteriaAPI.getCondition(currentFieldMap.get("actualTtime"), times, StringOperators.IS))
 					.andCondition(CriteriaAPI.getCondition(currentFieldMap.get("parentId"), Collections.singletonList(parentId), NumberOperators.EQUALS));
+
+			
+			Criteria criteria = new Criteria();
+			criteria.addAndCondition(CriteriaAPI.getCondition(currentFieldMap.get("actualTtime"), times, NumberOperators.EQUALS));
+			criteria.addOrCondition(CriteriaAPI.getCondition(currentFieldMap.get("ttime"), times, NumberOperators.EQUALS));
+			builder.andCriteria(criteria);
+			
 			readings.addAll(builder.get());
 		}
 		Map<Long, Map<String, Object>> valueMap = new HashMap<>();
@@ -62,6 +69,15 @@ public class GetExportValueField implements Command{
 			}
 			else {
 				data = valueMap.get(reading.getActualTtime());
+			}
+			data.putAll(reading.getData());
+			
+			if (!valueMap.containsKey(reading.getTtime())) {
+				data = new HashMap<>();
+				valueMap.put(reading.getTtime(), data);
+			}
+			else {
+				data = valueMap.get(reading.getTtime());
 			}
 			data.putAll(reading.getData());
 		}
@@ -103,10 +119,10 @@ public class GetExportValueField implements Command{
 		headerFields.put("Event Message", eventField.get("eventMessage"));
 		headerFields.put("Created Time", eventField.get("createdTime"));
 		headerFields.put("Severity", eventField.get("severity"));
-		for (FacilioField fields: fieldList) {
-			if (!fields.getName().equals("actualTtime")) {
-  				header.add(fields.getDisplayName());
-  				headerFields.put(fields.getDisplayName(), fields);
+		for (FacilioField field: fieldList) {
+			if (!field.getName().equals("actualTtime") && !field.getName().equals("ttime")) {
+  				header.add(field.getDisplayName());
+  				headerFields.put(field.getDisplayName(), field);
   			}
 		}
 		for (EventContext event : events) {
@@ -124,7 +140,7 @@ public class GetExportValueField implements Command{
 				if(maps != null)
 				{
 					for (FacilioField field: fieldList) {
-							if (!field.getName().equals("actualTtime") && maps.containsKey(field.getName())) {
+							if (!field.getName().equals("actualTtime") && !field.getName().equals("ttime") && maps.containsKey(field.getName())) {
 					    		  hmap.put(field.getDisplayName(), maps.get(field.getName()));
 					    	  }
 					}
