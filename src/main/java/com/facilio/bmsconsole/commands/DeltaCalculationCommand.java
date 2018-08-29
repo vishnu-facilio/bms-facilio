@@ -37,7 +37,7 @@ public class DeltaCalculationCommand implements Command {
 			return false;
 		}
 
-		Map<String, ReadingDataMeta> metaMap = (Map<String, ReadingDataMeta>) context.get(FacilioConstants.ContextNames.READING_DATA_META);
+		Map<String, ReadingDataMeta> metaMap = (Map<String, ReadingDataMeta>) context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
 		if(metaMap==null || metaMap.isEmpty()) {
 			return false;
 		}

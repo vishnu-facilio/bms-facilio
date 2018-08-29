@@ -59,7 +59,7 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 			adjustTime = true;
 		}
 		
-		Map<String, ReadingDataMeta> lastReadingMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.READING_DATA_META);
+		Map<String, ReadingDataMeta> lastReadingMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
 		if (readingMap != null && !readingMap.isEmpty()) {
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			boolean useControllerDataInterval = useControllerDataInterval(readingMap);
@@ -73,6 +73,7 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 				List<ReadingContext> readingsToBeAdded = addDefaultPropsAndGetReadingsToBeAdded(module, fields, readings, lastReadingMap, currentReadingMap, adjustTime, useControllerDataInterval, updateLastReading);
 				addReadings(module, fields, readingsToBeAdded,lastReadingMap, currentReadingMap, updateLastReading);
 			}
+			context.put(FacilioConstants.ContextNames.CURRRENT_READING_DATA_META, currentReadingMap);
 		}
 		LOGGER.info("Time taken to add/update Readings data to DB : "+(System.currentTimeMillis() - startTime));
 		context.put(FacilioConstants.ContextNames.RECORD_MAP, readingMap);

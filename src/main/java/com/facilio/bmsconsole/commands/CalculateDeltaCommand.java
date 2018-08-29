@@ -30,7 +30,7 @@ public class CalculateDeltaCommand implements Command {
 		// TODO Auto-generated method stub
 		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
 		if (readingMap != null && !readingMap.isEmpty()) {
-			Map<String, ReadingDataMeta> rdmMap = (Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.READING_DATA_META);
+			Map<String, ReadingDataMeta> rdmMap = (Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			List<Pair<Long, FacilioField>> newRdmPairs = new ArrayList<>();
 			for (Entry<String, List<ReadingContext>> entry : readingMap.entrySet()) {

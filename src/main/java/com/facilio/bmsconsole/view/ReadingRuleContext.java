@@ -24,6 +24,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
@@ -404,8 +405,8 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		switch (thresholdType) {
 			case FLAPPING:
 				boolean singleFlap = false;
-				Map<String, ReadingDataMeta> metaMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.READING_DATA_META);
-				ReadingDataMeta meta = metaMap.get(reading.getParentId()+"_"+readingField.getFieldId());
+				Map<String, ReadingDataMeta> metaMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
+				ReadingDataMeta meta = metaMap.get(ReadingsAPI.getRDMKey(reading.getParentId(), readingField));
 				Object prevValue = meta.getValue();
 				if (currentReadingObj instanceof Number) {
 					double prevVal = Double.valueOf(prevValue.toString());
@@ -544,7 +545,7 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 	public Map<String, Object> constructPlaceHolders(String moduleName, Object record, Map<String, Object> recordPlaceHolders, FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		Map<String, Object> rulePlaceHolders = super.constructPlaceHolders(moduleName, record, recordPlaceHolders, context);
-		Map<String, ReadingDataMeta> metaMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.READING_DATA_META);
+		Map<String, ReadingDataMeta> metaMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
 		ReadingDataMeta meta = metaMap.get(((ReadingContext)record).getParentId()+"_"+readingField.getFieldId());
 		if (meta != null) {
 			Object prevValue = meta.getValue();

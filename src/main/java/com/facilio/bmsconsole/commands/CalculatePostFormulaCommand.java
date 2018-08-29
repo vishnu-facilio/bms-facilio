@@ -35,7 +35,7 @@ public class CalculatePostFormulaCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		Map<String, ReadingDataMeta> readingDataMeta = (Map<String, ReadingDataMeta>) context.get(FacilioConstants.ContextNames.READING_DATA_META);
+		Map<String, ReadingDataMeta> readingDataMeta = (Map<String, ReadingDataMeta>) context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
 		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
 		if (readingDataMeta != null && !readingDataMeta.isEmpty() && readingMap != null && !readingMap.isEmpty()) {
 			long processStarttime = System.currentTimeMillis();

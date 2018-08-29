@@ -484,7 +484,8 @@ public class FacilioConstants {
 		public static final String MODELED_DATA="modeledData";
 		public static final String UPDATE_LAST_READINGS = "updateLastReadings";
 		public static final String SKIP_LAST_READING_CHECK = "skipLastReadingCheck";
-		public static final String READING_DATA_META = "readingDataMeta";
+		public static final String PREVIOUS_READING_DATA_META = "previousReadingDataMeta";
+		public static final String CURRRENT_READING_DATA_META = "currentReadingDataMeta";
 		public static final String READING_DATA_META_LIST = "readingDataMetaList";
 		public static final String READING_DATA_META_TYPE = "readingDataMetaType";
 		public static final String FORMULA_FIELD = "formulaField";

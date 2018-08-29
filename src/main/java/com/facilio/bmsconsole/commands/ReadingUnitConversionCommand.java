@@ -27,7 +27,7 @@ public class ReadingUnitConversionCommand implements Command {
 		// TODO Auto-generated method stub
 		long startTime = System.currentTimeMillis();
 		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
-		Map<String, ReadingDataMeta> metaMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.READING_DATA_META);
+		Map<String, ReadingDataMeta> metaMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
 		
 		if (readingMap != null && !readingMap.isEmpty()) {
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");

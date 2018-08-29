@@ -70,7 +70,6 @@ public class CostCalculatorJob extends FacilioJob {
 								context.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(startTime, endTime));
 								context.put(FacilioConstants.ContextNames.COST, cost);
 								context.put(FacilioConstants.ContextNames.COST_ASSET, asset);
-								context.put(FacilioConstants.ContextNames.READING_DATA_META, rdmMap);
 								context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fields);
 								
 								Chain calculateCostChain = FacilioChainFactory.calculateCostChain();
