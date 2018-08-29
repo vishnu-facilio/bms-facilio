@@ -38,7 +38,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
-import com.opensymphony.xwork2.ActionSupport;
 
 public class AlarmAction extends FacilioAction {
 	private static Logger log = LogManager.getLogger(AlarmAction.class.getName());
@@ -545,5 +544,12 @@ public class AlarmAction extends FacilioAction {
 		viewAlarm();
 		setResult(FacilioConstants.ContextNames.ALARM, alarms.get(0));
 		return SUCCESS;
+	}
+	
+	public String v2updateStatus() throws Exception{
+		updateStatus();
+		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
+		return SUCCESS;
+		
 	}
 }
