@@ -289,9 +289,6 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 			FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		boolean workflowFlag = evalWorkflow(placeHolders, (Map<String, ReadingDataMeta>) context.get(FacilioConstants.ContextNames.CURRRENT_READING_DATA_META));
-		if (getId() == 2336) {
-			LOGGER.info("Workflow result of 2336 : "+workflowFlag);
-		}
 		if (overPeriod != -1 && occurences == -1) {
 			return evalOverPeriod(workflowFlag, (ReadingContext) record);
 		}
