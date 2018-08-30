@@ -120,8 +120,11 @@ public class FacilioLogAppender extends DailyRollingFileAppender {
                 Throwable throwable = information.getThrowable();
                 String exceptionType = throwable.getClass().getName();
                 event.setProperty("exception", exceptionType);
+            } else {
+                event.setProperty("exception", "-");
             }
         } catch (Exception e) {
+            event.setProperty("exception", "LogAppenderException");
         }
         super.append(event);
     }
