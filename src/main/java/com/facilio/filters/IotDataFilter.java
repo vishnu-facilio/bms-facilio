@@ -19,6 +19,7 @@ public class IotDataFilter implements Filter {
 
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
+        String headerToken = request.getHeader("Authorization");
         StringBuilder builder = new StringBuilder();
         String line = null;
         BufferedReader reader = request.getReader();
@@ -26,7 +27,7 @@ public class IotDataFilter implements Filter {
             builder.append(line);
             builder.append(System.lineSeparator());
         }
-        LOGGER.warn(builder.toString());
+        LOGGER.warn("header : " + headerToken + "  data : " + builder.toString());
     }
 
     public void destroy() {
