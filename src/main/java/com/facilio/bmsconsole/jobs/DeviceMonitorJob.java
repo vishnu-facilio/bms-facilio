@@ -1,21 +1,26 @@
 package com.facilio.bmsconsole.jobs;
 
-import com.facilio.bmsconsole.commands.FacilioContext;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.*;
-import com.facilio.events.constants.EventConstants;
-import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.tasker.job.FacilioJob;
-import com.facilio.tasker.job.JobContext;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import java.util.List;
-import java.util.Map;
+import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.events.constants.EventConstants;
+import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.tasker.job.FacilioJob;
+import com.facilio.tasker.job.JobContext;
 
 public class DeviceMonitorJob extends FacilioJob {
 

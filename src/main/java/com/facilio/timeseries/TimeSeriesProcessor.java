@@ -3,17 +3,11 @@ package com.facilio.timeseries;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.bmsconsole.criteria.*;
-import com.facilio.bmsconsole.modules.*;
-import com.facilio.sql.GenericInsertRecordBuilder;
-import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.sql.GenericUpdateRecordBuilder;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -28,8 +22,20 @@ import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.StringOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.events.tasker.tasks.EventProcessor;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericInsertRecordBuilder;
+import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class TimeSeriesProcessor implements IRecordProcessor {
 	

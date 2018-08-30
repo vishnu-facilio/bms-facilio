@@ -21,7 +21,6 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.ChillerContext;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;

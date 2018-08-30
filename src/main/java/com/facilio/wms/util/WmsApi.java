@@ -22,13 +22,10 @@ import com.facilio.aws.util.AwsUtil;
 import com.facilio.wms.endpoints.FacilioClientEndpoint;
 import com.facilio.wms.endpoints.SessionManager;
 import com.facilio.wms.message.Message;
-import com.facilio.wms.message.MessageType;
 import com.facilio.wms.message.WmsChatMessage;
 import com.facilio.wms.message.WmsEvent;
 import com.facilio.wms.message.WmsNotification;
 import com.facilio.wms.message.WmsRemoteScreenMessage;
-
-import org.json.simple.JSONObject;
 
 public class WmsApi
 {

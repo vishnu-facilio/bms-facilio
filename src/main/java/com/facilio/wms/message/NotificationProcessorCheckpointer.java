@@ -1,13 +1,14 @@
 package com.facilio.wms.message;
 
-import com.amazonaws.services.kinesis.clientlibrary.exceptions.InvalidStateException;
-import com.amazonaws.services.kinesis.clientlibrary.exceptions.ShutdownException;
-import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import com.amazonaws.services.kinesis.clientlibrary.exceptions.InvalidStateException;
+import com.amazonaws.services.kinesis.clientlibrary.exceptions.ShutdownException;
+import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
 
 
 public class NotificationProcessorCheckpointer implements Runnable {

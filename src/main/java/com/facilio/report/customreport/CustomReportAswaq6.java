@@ -1,7 +1,6 @@
 package com.facilio.report.customreport;
 
 import java.util.List;
-import java.util.logging.Level;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -12,8 +11,8 @@ import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.TicketStatusContext.StatusType;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.SpaceAPI;

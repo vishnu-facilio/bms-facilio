@@ -1,11 +1,9 @@
 package com.facilio.report.context;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.criteria.Operator;
