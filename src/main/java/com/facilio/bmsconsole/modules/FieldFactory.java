@@ -4266,7 +4266,11 @@ public class FieldFactory {
 		fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.NUMBER));
 		fields.add(getField("chartState", "CHART_STATE", module, FieldType.STRING));
 		fields.add(getField("tabularState", "TABULAR_STATE", module, FieldType.STRING));
-		
+		fields.add(getField("benchmarkJson", "BENCHMARK_JSON", module, FieldType.STRING));
+		fields.add(getField("dataPointJson", "DATA_POINT_JSON", module, FieldType.STRING));
+		fields.add(getField("xCriteriaJson", "X_CRITERIA_JSON", module, FieldType.STRING));
+		fields.add(getField("baselineJson", "BASELINE_JSON", module, FieldType.STRING));
+		fields.add(getField("dateFilterJson", "DATE_FILTER_JSON", module, FieldType.STRING));
 		return fields;
 	}
 	
