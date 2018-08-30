@@ -49,7 +49,6 @@ public class AccessLogFilter implements Filter {
 
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
 
-
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         Thread thread = Thread.currentThread();
@@ -99,6 +98,7 @@ public class AccessLogFilter implements Filter {
             LOGGER.callAppenders(event);
         }
         thread.setName(threadName);
+        AccountUtil.cleanCurrentAccount();
     }
 
     public void destroy() {
