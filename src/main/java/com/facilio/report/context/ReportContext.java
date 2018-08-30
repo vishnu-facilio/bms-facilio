@@ -1,9 +1,15 @@
 package com.facilio.report.context;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.criteria.Operator;
+import com.facilio.bmsconsole.modules.FieldUtil;
 
 public class ReportContext {
 
@@ -79,22 +85,6 @@ public class ReportContext {
 		this.chartState = chartState;
 	}
 	
-	private List<ReportDataPointContext> dataPoints;
-	public List<ReportDataPointContext> getDataPoints() {
-		return dataPoints;
-	}
-	public void setDataPoints(List<ReportDataPointContext> dataPoints) {
-		this.dataPoints = dataPoints;
-	}
-	
-	private ReportXCriteriaContext xCriteria;
-	public ReportXCriteriaContext getxCriteria() {
-		return xCriteria;
-	}
-	public void setxCriteria(ReportXCriteriaContext xCriteria) {
-		this.xCriteria = xCriteria;
-	}
-	
 	private Operator dateOperator;
 	public Operator getDateOperatorEnum() {
 		return dateOperator;
@@ -126,6 +116,35 @@ public class ReportContext {
 	}
 	public void setDateRange(DateRange dateRange) {
 		this.dateRange = dateRange;
+	}
+	
+	private JSONParser parser = new JSONParser();
+	
+	public String getDateRangeJson() throws Exception {
+		if (dateRange != null) {
+			return FieldUtil.getAsJSON(dateRange).toJSONString();
+		}
+		return null;
+	}
+	public void setDateRangeJson(String dateRange) throws Exception {
+		JSONObject json = (JSONObject) parser.parse(dateRange);
+		this.dateRange = FieldUtil.getAsBeanFromJson(json, DateRange.class);
+	}
+	
+	private List<ReportDataPointContext> dataPoints;
+	public List<ReportDataPointContext> getDataPoints() {
+		return dataPoints;
+	}
+	public void setDataPoints(List<ReportDataPointContext> dataPoints) {
+		this.dataPoints = dataPoints;
+	}
+	
+	private ReportXCriteriaContext xCriteria;
+	public ReportXCriteriaContext getxCriteria() {
+		return xCriteria;
+	}
+	public void setxCriteria(ReportXCriteriaContext xCriteria) {
+		this.xCriteria = xCriteria;
 	}
 
 	private List<ReportBaseLineContext> baseLines;
