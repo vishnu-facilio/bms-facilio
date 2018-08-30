@@ -5577,6 +5577,9 @@ public class DashboardAction extends ActionSupport {
 			 	}
 			}
 			readingData = res;
+			if(report.getId() == 1064l) {
+				variance = DashboardUtil.getStandardVariance1(report,res,null);
+			}
 		}
 		
 		if(reportContext.getReportBenchmarkRelContexts() != null && !reportContext.getReportBenchmarkRelContexts().isEmpty()) {

@@ -12,6 +12,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
@@ -219,6 +220,7 @@ public class PerformAssetAction implements Command {
 				
 				List<ModuleBaseWithCustomFields> kdms = selectBuilder.get();
 				
+				LOGGER.log(Priority.ERROR, "kdms111 -- "+kdms.size());
 				Multimap<Long,ModuleBaseWithCustomFields> siteWiseMap =  ArrayListMultimap.create();
 				for(ModuleBaseWithCustomFields kdm :kdms) {
 					
@@ -228,18 +230,23 @@ public class PerformAssetAction implements Command {
 					
 					siteWiseMap.put(siteId, kdm);
 				}
+				
+				LOGGER.log(Priority.ERROR, "siteWiseMap111 -- "+siteWiseMap.keySet());
+				LOGGER.log(Priority.ERROR, "siteWiseMap222 -- "+siteWiseMap.values().size());
 				List<String> options = new ArrayList<>();
 				
 				options.add("Extended");
 				options.add("Expired");
 				
 				Map<String, List<TaskContext>> tasksList= new HashMap<>();
-				for(Long siteID :siteWiseMap.keys()) {
+				for(Long siteID :siteWiseMap.keySet()) {
 					
 					SiteContext site = SpaceAPI.getSiteSpace(siteID);
 					
 					int sequence = 1;
 					List<TaskContext> tasks = new ArrayList<>();
+					LOGGER.log(Priority.ERROR, "sitee -- "+siteID);
+					LOGGER.log(Priority.ERROR, "kdmsss -- "+siteWiseMap.get(siteID).size());
 					for(ModuleBaseWithCustomFields kdm :siteWiseMap.get(siteID)) {
 						
 						TaskContext task = new TaskContext();
@@ -250,8 +257,11 @@ public class PerformAssetAction implements Command {
 						task.setInputType(5);
 						task.setAttachmentRequired(false);
 						
+						
 						Map<String, Object> assetMap= (Map<String, Object>) kdm.getDatum("servernumber");
 						
+						LOGGER.log(Priority.ERROR, "test222 -- "+assetMap);
+						LOGGER.log(Priority.ERROR, "test1111 -- "+assetMap.get("id"));
 						AssetContext asset = AssetsAPI.getAssetInfo((Long)assetMap.get("id"));
 						
 						task.setResource(asset.getSpace());
