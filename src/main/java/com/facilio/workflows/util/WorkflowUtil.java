@@ -430,7 +430,7 @@ public class WorkflowUtil {
 						workflowFieldContext.setResourceId(parentId);
 					}
 					if(expression.getAggregateOpperator() != null) {
-						workflowFieldContext.setAggregation(expression.getAggregateOpperator().getValue());
+						workflowFieldContext.setAggregation(expression.getAggregateOpperator());
 					}
 					
 					if(workflowFieldContexts == null) {
