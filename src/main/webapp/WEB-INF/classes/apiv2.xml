@@ -292,6 +292,11 @@
 		</action>
 	</package>
 	
+	
+	<package name="resourceApiv2" namespace="/api/v2/resource" extends="v2Api">
+		<action name="getResourcesDetails" class="com.facilio.bmsconsole.actions.ResourceAction" method="getResources">
+		</action>
+	</package>
 	<package name="moduleDataApiv2" namespace="/api/v2/module/data" extends="v2Api">
 	
 		<action name="add" class="com.facilio.bmsconsole.actions.ModuleAction"
