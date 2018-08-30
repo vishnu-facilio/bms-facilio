@@ -1213,36 +1213,36 @@ public class ModuleFactory {
 		return costAssets;
 	}
 	
-	public static FacilioModule getReportDataPointModule() {
-		FacilioModule costAssets = new FacilioModule();
-		costAssets.setName("reportDataPoint");
-		costAssets.setDisplayName("Report Data Point");
-		costAssets.setTableName("Report_Data_Point");
-		return costAssets;
-	}
-	
-	public static FacilioModule getReportXCriteriaModule() {
-		FacilioModule costAssets = new FacilioModule();
-		costAssets.setName("ReportXCriteria");
-		costAssets.setDisplayName("Report X Criteria");
-		costAssets.setTableName("Report_X_Criteria");
-		return costAssets;
-	}
-	
-	public static FacilioModule getReportBaselineModule() {
-		FacilioModule costAssets = new FacilioModule();
-		costAssets.setName("ReportBaseLineRel");
-		costAssets.setDisplayName("Report1 BaseLine Rel");
-		costAssets.setTableName("Report1_BaseLine_Rel");
-		return costAssets;
-	}
-	public static FacilioModule getReportBenchmarkModule() {
-		FacilioModule costAssets = new FacilioModule();
-		costAssets.setName("ReportBenchmarkRel");
-		costAssets.setDisplayName("Report Benchmark Rel");
-		costAssets.setTableName("Report1_Benchmark_Rel");
-		return costAssets;
-	}
+//	public static FacilioModule getReportDataPointModule() {
+//		FacilioModule costAssets = new FacilioModule();
+//		costAssets.setName("reportDataPoint");
+//		costAssets.setDisplayName("Report Data Point");
+//		costAssets.setTableName("Report_Data_Point");
+//		return costAssets;
+//	}
+//	
+//	public static FacilioModule getReportXCriteriaModule() {
+//		FacilioModule costAssets = new FacilioModule();
+//		costAssets.setName("ReportXCriteria");
+//		costAssets.setDisplayName("Report X Criteria");
+//		costAssets.setTableName("Report_X_Criteria");
+//		return costAssets;
+//	}
+//	
+//	public static FacilioModule getReportBaselineModule() {
+//		FacilioModule costAssets = new FacilioModule();
+//		costAssets.setName("ReportBaseLineRel");
+//		costAssets.setDisplayName("Report1 BaseLine Rel");
+//		costAssets.setTableName("Report1_BaseLine_Rel");
+//		return costAssets;
+//	}
+//	public static FacilioModule getReportBenchmarkModule() {
+//		FacilioModule costAssets = new FacilioModule();
+//		costAssets.setName("ReportBenchmarkRel");
+//		costAssets.setDisplayName("Report Benchmark Rel");
+//		costAssets.setTableName("Report1_Benchmark_Rel");
+//		return costAssets;
+//	}
 	public static FacilioModule getOfflineSyncErrorModule() {
 		FacilioModule syncModule = new FacilioModule();
 		syncModule.setName("offlinesyncerror");
