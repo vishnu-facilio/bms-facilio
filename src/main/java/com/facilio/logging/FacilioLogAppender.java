@@ -15,6 +15,7 @@ import org.apache.log4j.spi.LoggingEvent;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import org.apache.log4j.spi.ThrowableInformation;
 
 public class FacilioLogAppender extends DailyRollingFileAppender {
 
@@ -112,6 +113,15 @@ public class FacilioLogAppender extends DailyRollingFileAppender {
         	event.setProperty("userId", String.valueOf(user.getOuid()));
         } else {
             event.setProperty("userId", DEFAULT_ORG_USER_ID);
+        }
+        try {
+            ThrowableInformation information = event.getThrowableInformation();
+            if (information != null) {
+                Throwable throwable = information.getThrowable();
+                String exceptionType = throwable.getClass().getName();
+                event.setProperty("exception", exceptionType);
+            }
+        } catch (Exception e) {
         }
         super.append(event);
     }
