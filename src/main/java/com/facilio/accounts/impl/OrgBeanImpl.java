@@ -199,6 +199,7 @@ public class OrgBeanImpl implements OrgBean {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(portalId);
 		fields.addAll(AccountConstants.getPortalUserFields());
+		fields.addAll(AccountConstants.getOrgUserFields());
 		fields.addAll(AccountConstants.getUserFields());
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
@@ -207,6 +208,8 @@ public class OrgBeanImpl implements OrgBean {
 				.on(portalUsersModule.getTableName()+".PORTALID = PortalInfo.PORTALID")
 				.innerJoin("Users")
 				.on(portalUsersModule.getTableName()+".USERID = Users.USERID")
+				.innerJoin("ORG_Users")
+				.on("Users.USERID = ORG_Users.USERID AND ORG_Users.USER_TYPE=2")
 				.andCustomWhere("PortalInfo.ORGID="+ orgId);
 
 		List<Map<String, Object>> props = selectBuilder.get();
