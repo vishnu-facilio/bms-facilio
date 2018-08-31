@@ -3969,20 +3969,6 @@ public class FieldFactory {
 		return getField(name, colName, null, type);
 	}
 
-	public static List<FacilioField> getAnomalySchedulerFields() {
-		FacilioModule module = ModuleFactory.getAnalyticsAnomalyModule();
-		List<FacilioField> fields = new ArrayList<>();
-
-		fields.add(getOrgIdField(module));
-		fields.add(getModuleIdField(module));
-		fields.add(getField("id", "ID", module, FieldType.NUMBER));
-		fields.add(getField("energyDelta", "TOTAL_ENERGY_CONSUMPTION_DELTA", module, FieldType.DECIMAL));
-		fields.add(getField("meterId", "PARENT_METER_ID", module, FieldType.NUMBER));
-
-		fields.add(getField("ttime", "TTIME", module, FieldType.NUMBER));
-		return fields;
-	}
-	
 	public static List<FacilioField> getAnomalyTemperatureFields() {
 		FacilioModule module = ModuleFactory.getAnalyticsAnomalyModuleWeatherData();
 		List<FacilioField> fields = new ArrayList<>();
