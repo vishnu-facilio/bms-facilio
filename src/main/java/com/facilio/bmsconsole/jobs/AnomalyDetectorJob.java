@@ -297,8 +297,8 @@ public class AnomalyDetectorJob extends FacilioJob {
 			if(impactedIDs.contains(anomalyObject.getId())) { // a valid anomaly data point
 				
 				AnomalyIDInsertRow newAnomalyId = new AnomalyIDInsertRow(anomalyObject.getId(), anomalyObject.getOrgId(), 
-								anomalyObject.getModuleId(), anomalyObject.getMeterId(), anomalyObject.getTtime(),
-								anomalyObject.getEnergyDelta(), currentTimeInMillisec,
+								anomalyObject.getModuleId(), anomalyObject.getParentId(), anomalyObject.getTtime(),
+								anomalyObject.getTotalEnergyConsumptionDelta(), currentTimeInMillisec,
 								anomalyObject.getOutlierDistance());
 				
 				props.add(FieldUtil.getAsProperties(newAnomalyId));
@@ -327,7 +327,7 @@ public class AnomalyDetectorJob extends FacilioJob {
 		
 		for(AnalyticsAnomalyContext context: impactedContexts)
 		{
-			long meterId = context.getMeterId();	
+			long meterId = context.getParentId();	
 			AssetContext asset = AssetsAPI.getAssetInfo(meterId);
 			String assetName = asset.getName();
 		
@@ -339,7 +339,7 @@ public class AnomalyDetectorJob extends FacilioJob {
 			obj.put("resourceId", meterId);
 			obj.put("severity", "Minor");
 			obj.put("timestamp", context.getTtime());
-			obj.put("consumption", context.getEnergyDelta());
+			obj.put("consumption", context.getTotalEnergyConsumptionDelta());
 			
 			obj.put("sourceType", SourceType.ANOMALY_ALARM.getIntVal());
 			obj.put("readingFieldId", consumptionField.getFieldId());

@@ -5,36 +5,38 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class AnalyticsAnomalyContext extends ModuleBaseWithCustomFields {
 	private long ttime;
-	private double energyDelta;
-	private long meterId;
+	private double totalEnergyConsumptionDelta;
+	private long parentId;
 	private double outlierDistance;
-	
-	public long getMeterId() {
-		return meterId;
-	}
-	public void setMeterId(long meterId) {
-		this.meterId = meterId;
-	}
 
-	
 	public long getTtime() {
 		return ttime;
 	}
+
 	public void setTtime(long ttime) {
 		this.ttime = ttime;
 	}
-	
-	public double getEnergyDelta() {
-		return energyDelta;
+
+	public double getTotalEnergyConsumptionDelta() {
+		return totalEnergyConsumptionDelta;
 	}
-	public void setEnergyDelta(double energyDelta) {
-		this.energyDelta = energyDelta;
+
+	public void setTotalEnergyConsumptionDelta(double totalEnergyConsumptionDelta) {
+		this.totalEnergyConsumptionDelta = totalEnergyConsumptionDelta;
+	}
+
+	public long getParentId() {
+		return parentId;
+	}
+
+	public void setParentId(long parentId) {
+		this.parentId = parentId;
 	}
 
 	public double getOutlierDistance() {
 		return outlierDistance;
 	}
-	
+
 	public void setOutlierDistance(double outlierDistance) {
 		this.outlierDistance = outlierDistance;
 	}
@@ -45,7 +47,7 @@ public class AnalyticsAnomalyContext extends ModuleBaseWithCustomFields {
 		buf.append(",");
 		buf.append(new Long(ttime).toString());
 		buf.append(",");
-		buf.append(new Double(energyDelta).toString());
+		buf.append(new Double(totalEnergyConsumptionDelta).toString());
 		return buf.toString();
 	}
 }
