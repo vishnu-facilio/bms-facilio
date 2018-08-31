@@ -1,16 +1,17 @@
 package com.facilio.report.context;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.facilio.bmsconsole.criteria.DateRange;
-import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FieldUtil;
 
 public class ReportContext {
 
+	private JSONParser parser = new JSONParser();
 	private long id = -1;
 	public long getId() {
 		return id;
@@ -83,51 +84,27 @@ public class ReportContext {
 		this.chartState = chartState;
 	}
 	
-	private Operator dateOperator;
-	public Operator getDateOperatorEnum() {
-		return dateOperator;
-	}
-	public void setDateOperator(Operator dateOperator) {
-		this.dateOperator = dateOperator;
-	}
-	public int getDateOperator() {
-		if (dateOperator != null) {
-			return dateOperator.getOperatorId();
-		}
-		return -1;
-	}
-	public void setDateOperator(int dateOperator) {
-		this.dateOperator = Operator.OPERATOR_MAP.get(dateOperator);
-	}
+	private ReportDateFilterContext dateFilter;
 	
-	private String dateValue;
-	public String getDateValue() {
-		return dateValue;
+	public ReportDateFilterContext getDateFilter() {
+		return dateFilter;
 	}
-	public void setDateValue(String dateValue) {
-		this.dateValue = dateValue;
+	public void setDateFilter(ReportDateFilterContext dateFilter) {
+		this.dateFilter = dateFilter;
 	}
-	
-	private DateRange dateRange;
-	public DateRange getDateRange() {
-		return dateRange;
+	public void setDateFilterJson(String dateRange) throws Exception {
+		
+		JSONObject json = (JSONObject) parser.parse(dateRange);
+		this.dateFilter = FieldUtil.getAsBeanFromJson(json, ReportDateFilterContext.class);
 	}
-	public void setDateRange(DateRange dateRange) {
-		this.dateRange = dateRange;
-	}
-	
-	private JSONParser parser = new JSONParser();
-	
-	public String getDateRangeJson() throws Exception {
-		if (dateRange != null) {
-			return FieldUtil.getAsJSON(dateRange).toJSONString();
+	public String getDateFilterJson() throws Exception {
+		
+		if (dateFilter != null) {
+			return FieldUtil.getAsJSON(dateFilter).toJSONString();
 		}
 		return null;
 	}
-	public void setDateRangeJson(String dateRange) throws Exception {
-		JSONObject json = (JSONObject) parser.parse(dateRange);
-		this.dateRange = FieldUtil.getAsBeanFromJson(json, DateRange.class);
-	}
+	
 	
 	private List<ReportDataPointContext> dataPoints;
 	public List<ReportDataPointContext> getDataPoints() {
@@ -135,6 +112,68 @@ public class ReportContext {
 	}
 	public void setDataPoints(List<ReportDataPointContext> dataPoints) {
 		this.dataPoints = dataPoints;
+	}
+	
+	public void addDataPoint(ReportDataPointContext dataPoint) {
+		
+		this.dataPoints = this.dataPoints == null ? new ArrayList<>() : this.dataPoints;
+		this.dataPoints.add(dataPoint);
+	}
+	
+	public void setDataPointJson(String dataPointJson) throws Exception {
+		
+		JSONArray jsonarray = (JSONArray) parser.parse(dataPointJson);
+		
+		for( Object jsonObject :jsonarray) {
+			
+			JSONObject json = (JSONObject) jsonObject;
+			ReportDataPointContext dataPoint = FieldUtil.getAsBeanFromJson(json, ReportDataPointContext.class);
+			
+			addDataPoint(dataPoint);
+		}
+	}
+	
+	public String getDataPointJson() throws Exception {
+		
+		if (dataPoints != null) {
+			return FieldUtil.getAsJSONArray(dataPoints, ReportDataPointContext.class).toJSONString();
+		}
+		return null;
+	}
+	
+	private List<ReportBaseLineContext> baseLines;
+	
+	public List<ReportBaseLineContext> getBaseLines() {
+		return baseLines;
+	}
+	public void setBaseLines(List<ReportBaseLineContext> baseLines) {
+		this.baseLines = baseLines;
+	}
+
+	public void addBaseLines(ReportBaseLineContext baseLine) {
+		
+		this.baseLines = this.baseLines == null ? new ArrayList<>() : this.baseLines;
+		baseLines.add(baseLine);
+	}
+	public void setBaselineJson(String baselineJson) throws Exception {
+		
+		JSONArray jsonarray = (JSONArray) parser.parse(baselineJson);
+		
+		for( Object jsonObject :jsonarray) {
+			
+			JSONObject json = (JSONObject) jsonObject;
+			ReportBaseLineContext dataPoint = FieldUtil.getAsBeanFromJson(json, ReportBaseLineContext.class);
+			
+			addBaseLines(dataPoint);
+		}
+	}
+	
+	public String getBaselineJson() throws Exception {
+		
+		if (baseLines != null) {
+			return FieldUtil.getAsJSONArray(baseLines, ReportBaseLineContext.class).toJSONString();
+		}
+		return null;
 	}
 	
 	private ReportXCriteriaContext xCriteria;
@@ -145,12 +184,17 @@ public class ReportContext {
 		this.xCriteria = xCriteria;
 	}
 
-	private List<ReportBaseLineContext> baseLines;
-	public List<ReportBaseLineContext> getBaseLines() {
-		return baseLines;
-	}
-	public void setBaseLines(List<ReportBaseLineContext> baseLines) {
-		this.baseLines = baseLines;
+	public void setXCriteriaJson(String xCriteriaJson) throws Exception {
+		
+		JSONObject json = (JSONObject) parser.parse(xCriteriaJson);
+		this.xCriteria = FieldUtil.getAsBeanFromJson(json, ReportXCriteriaContext.class);
 	}
 	
+	public String getXCriteriaJson() throws Exception {
+		
+		if (xCriteria != null) {
+			return FieldUtil.getAsJSON(xCriteria).toJSONString();
+		}
+		return null;
+	}
 }
