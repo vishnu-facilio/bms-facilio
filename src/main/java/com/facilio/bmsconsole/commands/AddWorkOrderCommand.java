@@ -28,6 +28,7 @@ public class AddWorkOrderCommand implements Command {
 			
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+			workOrder.setCreatedBy(AccountUtil.getCurrentUser());
 			workOrder.setCreatedTime(System.currentTimeMillis());
 			workOrder.setModifiedTime(workOrder.getCreatedTime());
 			workOrder.setScheduledStart(workOrder.getCreatedTime());

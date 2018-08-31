@@ -64,6 +64,14 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.assignedTo = assignedTo;
 	}
 	
+	private User createdBy;
+	public User getCreatedBy() {
+		return createdBy;
+	}
+	public void setCreatedBy(User createdBy) {
+		this.createdBy = createdBy;
+	}
+	
 	private User assignedBy;
 	public User getAssignedBy() {
 		return assignedBy;
