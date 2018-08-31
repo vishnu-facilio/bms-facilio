@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -10,7 +11,6 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -107,28 +107,23 @@ public class GetWorkOrderRequestListCommand implements Command {
 	
 	private void loadRequesters(List<WorkOrderRequestContext> workOrderRequests) throws Exception {
 		if(workOrderRequests != null && !workOrderRequests.isEmpty()) {
-			StringBuilder ids = new StringBuilder();
-			boolean isFirst = true;
-			for(WorkOrderRequestContext workOrderRequest : workOrderRequests) {
-				if(workOrderRequest.getRequester() != null)
-				{
-					if(isFirst) {
-						isFirst = false;
-					}
-					else {
-						ids.append(",");
-					}
-					ids.append(workOrderRequest.getRequester().getId());
-				}
-			}
+			List<Long> ids = workOrderRequests.stream().filter(req -> req.getRequester() != null).map(req -> req.getRequester().getId()).collect(Collectors.toList());
 			
-			if(ids.length() > 0)
+			if(ids.size() > 0)
 			{
-				Map<Long, User> requesters = CommonCommandUtil.getRequesters(ids.toString());
+				/*Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(AccountConstants.getOrgUserFields());
+				Criteria criteria = new Criteria();
+				criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("ouid"), ids, NumberOperators.EQUALS));
+				Map<Long, User> users = AccountUtil.getOrgBean().getOrgUsersAsMap(AccountUtil.getCurrentOrg().getOrgId(), criteria);
+				List<Long> reqIds = ids.stream().filter(id -> !users.containsKey(id)).collect(Collectors.toList());
+				if (!reqIds.isEmpty()) {
+					users.
+				}*/
+				Map<Long, User> requesters = AccountUtil.getUserBean().getUsersAsMap(null, ids);
 				for(WorkOrderRequestContext workOrderRequest : workOrderRequests) {
 					if(workOrderRequest.getRequester() != null)
 					{
-						workOrderRequest.setRequester(requesters.get(workOrderRequest.getRequester().getId()));
+						workOrderRequest.setRequester((User) requesters.get(workOrderRequest.getRequester().getId()));
 					}
 				}
 			}
