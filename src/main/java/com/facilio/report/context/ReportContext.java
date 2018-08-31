@@ -3,10 +3,13 @@ package com.facilio.report.context;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.bmsconsole.criteria.DateRange;
+import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FieldUtil;
 
 public class ReportContext {
@@ -84,27 +87,50 @@ public class ReportContext {
 		this.chartState = chartState;
 	}
 	
-	private ReportDateFilterContext dateFilter;
+	private Operator dateOperator;
+	public Operator getDateOperatorEnum() {
+		return dateOperator;
+	}
+	public void setDateOperator(Operator dateOperator) {
+		this.dateOperator = dateOperator;
+	}
+	public int getDateOperator() {
+		if (dateOperator != null) {
+			return dateOperator.getOperatorId();
+		}
+		return -1;
+	}
+	public void setDateOperator(int dateOperator) {
+		this.dateOperator = Operator.OPERATOR_MAP.get(dateOperator);
+	}
 	
-	public ReportDateFilterContext getDateFilter() {
-		return dateFilter;
+	private String dateValue;
+	public String getDateValue() {
+		return dateValue;
 	}
-	public void setDateFilter(ReportDateFilterContext dateFilter) {
-		this.dateFilter = dateFilter;
+	public void setDateValue(String dateValue) {
+		this.dateValue = dateValue;
 	}
-	public void setDateFilterJson(String dateRange) throws Exception {
-		
-		JSONObject json = (JSONObject) parser.parse(dateRange);
-		this.dateFilter = FieldUtil.getAsBeanFromJson(json, ReportDateFilterContext.class);
+	
+	private DateRange dateRange;
+	public DateRange getDateRange() {
+		return dateRange;
 	}
-	public String getDateFilterJson() throws Exception {
-		
-		if (dateFilter != null) {
-			return FieldUtil.getAsJSON(dateFilter).toJSONString();
+	public void setDateRange(DateRange dateRange) {
+		this.dateRange = dateRange;
+	}
+	
+	@JSON(serialize=false)
+	public String getDateRangeJson() throws Exception {
+		if (dateRange != null) {
+			return FieldUtil.getAsJSON(dateRange).toJSONString();
 		}
 		return null;
 	}
-	
+	public void setDateRangeJson(String dateRange) throws Exception {
+		JSONObject json = (JSONObject) parser.parse(dateRange);
+		this.dateRange = FieldUtil.getAsBeanFromJson(json, DateRange.class);
+	}
 	
 	private List<ReportDataPointContext> dataPoints;
 	public List<ReportDataPointContext> getDataPoints() {
@@ -120,6 +146,7 @@ public class ReportContext {
 		this.dataPoints.add(dataPoint);
 	}
 	
+	
 	public void setDataPointJson(String dataPointJson) throws Exception {
 		
 		JSONArray jsonarray = (JSONArray) parser.parse(dataPointJson);
@@ -133,6 +160,7 @@ public class ReportContext {
 		}
 	}
 	
+	@JSON(serialize=false)
 	public String getDataPointJson() throws Exception {
 		
 		if (dataPoints != null) {
@@ -142,34 +170,28 @@ public class ReportContext {
 	}
 	
 	private List<ReportBaseLineContext> baseLines;
-	
 	public List<ReportBaseLineContext> getBaseLines() {
 		return baseLines;
 	}
 	public void setBaseLines(List<ReportBaseLineContext> baseLines) {
 		this.baseLines = baseLines;
 	}
-
 	public void addBaseLines(ReportBaseLineContext baseLine) {
 		
 		this.baseLines = this.baseLines == null ? new ArrayList<>() : this.baseLines;
 		baseLines.add(baseLine);
 	}
+	
 	public void setBaselineJson(String baselineJson) throws Exception {
-		
 		JSONArray jsonarray = (JSONArray) parser.parse(baselineJson);
-		
 		for( Object jsonObject :jsonarray) {
-			
 			JSONObject json = (JSONObject) jsonObject;
 			ReportBaseLineContext dataPoint = FieldUtil.getAsBeanFromJson(json, ReportBaseLineContext.class);
-			
 			addBaseLines(dataPoint);
 		}
 	}
-	
+	@JSON(serialize=false)
 	public String getBaselineJson() throws Exception {
-		
 		if (baseLines != null) {
 			return FieldUtil.getAsJSONArray(baseLines, ReportBaseLineContext.class).toJSONString();
 		}
@@ -190,6 +212,7 @@ public class ReportContext {
 		this.xCriteria = FieldUtil.getAsBeanFromJson(json, ReportXCriteriaContext.class);
 	}
 	
+	@JSON(serialize=false)
 	public String getXCriteriaJson() throws Exception {
 		
 		if (xCriteria != null) {
