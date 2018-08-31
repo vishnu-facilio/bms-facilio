@@ -278,7 +278,8 @@ public class GroupBeanImpl implements GroupBean {
 		if (props != null && !props.isEmpty()) {
 			for(Map<String, Object> prop : props) {
 				Group group = FieldUtil.getAsBeanFromMap(prop, Group.class);
-				populateGroupEmailAndPhone(group);
+				group.setMembers(AccountUtil.getGroupBean().getGroupMembers(group.getId()));
+				//populateGroupEmailAndPhone(group);
 				groups.add(group);
 			}
 			return groups;

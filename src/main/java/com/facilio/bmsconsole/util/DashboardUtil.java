@@ -52,7 +52,6 @@ import com.facilio.bmsconsole.context.ReportColumnContext;
 import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.ReportContext.LegendMode;
 import com.facilio.bmsconsole.context.ReportContext.ReportChartType;
-import com.facilio.bmsconsole.context.SiteContext.SiteType;
 import com.facilio.bmsconsole.context.ReportDateFilterContext;
 import com.facilio.bmsconsole.context.ReportEnergyMeterContext;
 import com.facilio.bmsconsole.context.ReportFieldContext;
@@ -62,6 +61,7 @@ import com.facilio.bmsconsole.context.ReportSpaceFilterContext;
 import com.facilio.bmsconsole.context.ReportThreshold;
 import com.facilio.bmsconsole.context.ReportUserFilterContext;
 import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.context.SiteContext.SiteType;
 import com.facilio.bmsconsole.context.UserWorkHourReading;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetVsWorkflowContext;
@@ -631,6 +631,138 @@ public class DashboardUtil {
 		}
 		return null;
 	}
+	
+public static JSONObject getStandardVariance1(ReportContext report,JSONArray props,List<String> meterList) {
+		
+		try {
+			Double min = null ,max = null,avg = null,sum = (double) 0;
+			for(Object prop1:props) {
+				
+				JSONObject prop = (JSONObject) prop1;
+				if(AccountUtil.getCurrentOrg().getOrgId() == 116l) {
+					if(prop.get("dummyField") != null) {
+ 						
+ 						Long currtime = (Long) prop.get("dummyField");
+ 						
+ 						if(report.getxAxisaggregateFunction() != null && report.getxAxisaggregateFunction().equals(DateAggregateOperator.FULLDATE.getValue())) {
+ 							
+ 							DateRange range = DateOperators.TODAY.getRange(null);
+	 						if(currtime < range.getEndTime() && currtime >= range.getStartTime()) {
+	 							continue;
+	 						}
+ 						}
+ 					}
+				}
+				if(prop.get("value") != null) {
+					double value = Double.parseDouble(prop.get("value").toString());
+					
+					sum = sum + value;
+					
+					if(min == null && max == null) {
+						min = value;
+						max = value;
+					}
+					else {
+						min = min < value ? min : value;
+						max = max > value ? max : value;
+					}
+				}
+			}
+			if(sum > 0 && props.size() > 0) {
+				avg = sum / props.size();
+			}
+			JSONObject variance = new JSONObject();
+			variance.put("min", min);
+			variance.put("max", max);
+			variance.put("avg", avg);
+			variance.put("sum", sum);
+			
+			boolean co2Skip = false;
+			
+			if(report.getY1AxisUnit() != null && report.getY1AxisUnit().equals("kg")) {
+				co2Skip = true;
+			}
+			if(meterList != null && !meterList.isEmpty() && !co2Skip) {
+				LOGGER.log(Level.SEVERE, "meterList --- "+meterList);
+				List<Long> bb = new ArrayList<Long>();
+		        bb.add(null);
+		        meterList.removeAll(bb);
+				if(!meterList.isEmpty()) {
+					
+					List<String> uniqueList = (List<String>) SetUniqueList.decorate(meterList);
+					LOGGER.log(Level.SEVERE, "uniqueList --- "+uniqueList);
+			        if(uniqueList.size() == 1) {
+			        	
+			        	long meterID = Long.parseLong(uniqueList.get(0));
+			        	
+			        	EnergyMeterContext energyMeter = DeviceAPI.getEnergyMeter(meterID);
+			        	if(energyMeter != null && energyMeter.isRoot()) {
+			        		BaseSpaceContext purposeSpace = SpaceAPI.getBaseSpace(energyMeter.getPurposeSpace().getId());
+			        		variance.put("space", purposeSpace.getId());
+			        		double grossFloorArea = 0.0;
+			        		if(purposeSpace.getSpaceType() == BaseSpaceContext.SpaceType.SITE.getIntVal()) {
+			        			SiteContext sites = SpaceAPI.getSiteSpace(purposeSpace.getId());
+			        			if(sites != null) {
+			        				grossFloorArea = sites.getGrossFloorArea();
+			        			}
+			        		}
+			        		else if(purposeSpace.getSpaceType() == BaseSpaceContext.SpaceType.BUILDING.getIntVal()) {
+			        			BuildingContext building = SpaceAPI.getBuildingSpace(purposeSpace.getId());
+			        			if(building != null) {
+			        				grossFloorArea = building.getGrossFloorArea();
+			        			}
+							}
+			        		else if(purposeSpace.getSpaceType() == BaseSpaceContext.SpaceType.FLOOR.getIntVal()) {
+			        			FloorContext floor = SpaceAPI.getFloorSpace(purposeSpace.getId());
+			        			if(floor != null) {
+			        				grossFloorArea = floor.getArea();
+			        			}
+							}
+			        		
+			        		if(report.getId() == 1012l && grossFloorArea > 0) {
+			        			
+			        			Map<Integer, Double> ress = getHourlyAggregatedData(props);
+			        			
+			        			List <Double> hourlyeuis = new ArrayList<>();
+			        			if(ress != null && !ress.isEmpty()) {
+			        				
+			        				for(Integer hour : ress.keySet()) {
+			        					
+			        					Double value = ress.get(hour);
+			        					
+			        					double eui = value/grossFloorArea;
+					        			hourlyeuis.add(eui);
+					        			LOGGER.log(Level.SEVERE, "hour -- "+hour +" eui --"+eui);
+			        				}
+			        				LOGGER.log(Level.SEVERE, "hourlyeuis -- "+hourlyeuis);
+			        				sum = 0d;
+			        				for(Double hourlyeui :hourlyeuis) {
+			        					sum = sum + hourlyeui;
+			        				}
+			        				variance.put("eui", sum/hourlyeuis.size());
+			        			}
+			        		}
+			        		else {
+			        			
+			        			if(grossFloorArea > 0 && sum > 0) {
+				        			double eui = sum/grossFloorArea;
+				        			variance.put("eui", eui);
+				        		}
+			        			
+			        		}
+			        	}
+			        }
+				}
+			}
+			
+			return variance;
+		}
+		catch (Exception e) {
+			log.info("Exception occurred ", e);
+		}
+		return null;
+	}
+	
 	
 	public static Map<Integer, Double> getHourlyAggregatedData(List<Map<String, Object>> props ) {
 		
@@ -3132,7 +3264,7 @@ public class DashboardUtil {
 	}
 	
 	
-	public static JSONArray getGroupedBooleanFields( List<Map<String, Object>> rs) {
+	public static JSONArray getGroupedBooleanFields( List<Map<String, Object>> rs,JSONArray booleanResultOptions) {
 		
 		
 		String previousValue = null;
@@ -3143,6 +3275,10 @@ public class DashboardUtil {
  			Map<String, Object> thisMap = rs.get(i);
  			
  			String booleanValue = thisMap.get("value").toString();
+ 			
+ 			if(!booleanResultOptions.contains(booleanValue)) {
+ 				booleanResultOptions.add(booleanValue);
+ 			}
  			
  			if(previousValue == null) {
  				
@@ -3166,7 +3302,7 @@ public class DashboardUtil {
  				
  				booleanRes = new JSONObject();
  				booleanRes.put("startTime", lastEndTime);
- 				booleanRes.put("end", thisMap.get("label"));
+ 				booleanRes.put("endTime", thisMap.get("label"));
  				booleanRes.put("value", booleanValue);
  				booleanRes.put("label", thisMap.get("label"));
  			}

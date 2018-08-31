@@ -46,6 +46,7 @@ public class Executor implements Runnable {
 	{
 //		while (true)
 //		{
+			Thread.currentThread().setName("Executor-"+this.name);
 			try {
 				long startTime = System.currentTimeMillis()/1000;
 				long endTime = startTime+bufferPeriod;

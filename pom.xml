@@ -1,5 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.facilio</groupId>
 	<artifactId>bms</artifactId>
@@ -152,9 +152,9 @@
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.glassfish.jaxb/jaxb-runtime -->
 		<dependency>
- 		   <groupId>org.glassfish.jaxb</groupId>
-   			 <artifactId>jaxb-runtime</artifactId>
-    			<version>2.3.0</version>
+			<groupId>org.glassfish.jaxb</groupId>
+			<artifactId>jaxb-runtime</artifactId>
+			<version>2.3.0</version>
 		</dependency>
 
 		<dependency>
@@ -194,25 +194,25 @@
 			<version>3.6</version>
 		</dependency>
 		<dependency>
-		    <groupId>commons-codec</groupId>
-		    <artifactId>commons-codec</artifactId>
-		    <version>1.10</version>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.10</version>
 		</dependency>
 		<dependency>
-    		<groupId>org.apache.poi</groupId>
-    		<artifactId>poi</artifactId>
-    		<version>3.16</version>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>3.16</version>
 		</dependency>
 		<dependency>
-    		<groupId>org.apache.poi</groupId>
-    		<artifactId>poi-ooxml</artifactId>
-    		<version>3.16</version>
-    		<exclusions>
-        		<exclusion>
-          		<groupId>stax</groupId>
-          		<artifactId>stax-api</artifactId>
-        		</exclusion>
-      		</exclusions>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>3.16</version>
+			<exclusions>
+				<exclusion>
+					<groupId>stax</groupId>
+					<artifactId>stax-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
@@ -226,17 +226,17 @@
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/ua_parser/ua-parser -->
 		<dependency>
-		  <groupId>nl.basjes.parse.useragent</groupId>
-		  <artifactId>yauaa</artifactId>
-		  <version>4.5</version>
+			<groupId>nl.basjes.parse.useragent</groupId>
+			<artifactId>yauaa</artifactId>
+			<version>4.5</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.chargebee/chargebee-java -->
 		<dependency>
-		    <groupId>com.chargebee</groupId>
-		    <artifactId>chargebee-java</artifactId>
-		    <version>2.5.7</version>
+			<groupId>com.chargebee</groupId>
+			<artifactId>chargebee-java</artifactId>
+			<version>2.5.7</version>
 		</dependency>
-		
+
 		<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
 		<dependency>
 			<groupId>mysql</groupId>
@@ -252,37 +252,37 @@
 		</dependency>
 		<!-- Temp -->
 		<dependency>
-		    <groupId>org.flywaydb</groupId>
-		    <artifactId>flyway-core</artifactId>
-		    <version>4.2.0</version>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-core</artifactId>
+			<version>4.2.0</version>
 		</dependency>
 		<dependency>
-		    <groupId>com.nimbusds</groupId>
-		    <artifactId>nimbus-jose-jwt</artifactId>
-		    <version>4.23</version>
+			<groupId>com.nimbusds</groupId>
+			<artifactId>nimbus-jose-jwt</artifactId>
+			<version>4.23</version>
 		</dependency>
-<!-- 		<dependency>
-            <groupId>com.facilio</groupId>
-            <artifactId>fedge</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency> -->
-        <dependency>
+		<!-- 		<dependency>
+                    <groupId>com.facilio</groupId>
+                    <artifactId>fedge</artifactId>
+                    <version>0.0.1-SNAPSHOT</version>
+                </dependency> -->
+		<dependency>
 			<groupId>redis.clients</groupId>
-		    <artifactId>jedis</artifactId>
-		    <version>2.9.0</version>
+			<artifactId>jedis</artifactId>
+			<version>2.9.0</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.imgscalr/imgscalr-lib -->
 		<dependency>
-    		<groupId>org.imgscalr</groupId>
-    		<artifactId>imgscalr-lib</artifactId>
-    		<version>4.2</version>
+			<groupId>org.imgscalr</groupId>
+			<artifactId>imgscalr-lib</artifactId>
+			<version>4.2</version>
 		</dependency>
-		
+
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-math3 -->
 		<dependency>
-		    <groupId>org.apache.commons</groupId>
-		    <artifactId>commons-math3</artifactId>
-		    <version>3.6.1</version>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-math3</artifactId>
+			<version>3.6.1</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.twilio.sdk/twilio-java-sdk -->
@@ -348,12 +348,12 @@
 			<artifactId>commons-net</artifactId>
 			<version>2.0</version>
 		</dependency>
-		 <dependency>
+		<dependency>
 			<groupId>com.udojava</groupId>
 			<artifactId>EvalEx</artifactId>
 			<version>1.18</version>
-		 </dependency>
-		 <!-- https://mvnrepository.com/artifact/net.sf.supercsv/super-csv -->
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/net.sf.supercsv/super-csv -->
 		<dependency>
 			<groupId>net.sf.supercsv</groupId>
 			<artifactId>super-csv</artifactId>
@@ -389,17 +389,17 @@
 	<build>
 		<extensions>
 			<extension>
-                <groupId>org.springframework.build</groupId>
-                <artifactId>aws-maven</artifactId>
-                <version>5.0.0.RELEASE</version>
-            </extension>
-	    </extensions>
+				<groupId>org.springframework.build</groupId>
+				<artifactId>aws-maven</artifactId>
+				<version>5.0.0.RELEASE</version>
+			</extension>
+		</extensions>
 		<finalName>ROOT</finalName>
 		<resources>
-		   <resource>
-			  <directory>src/main/resources</directory>
-			  <filtering>true</filtering>
-		   </resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
 		</resources>
 	</build>
 	<properties>

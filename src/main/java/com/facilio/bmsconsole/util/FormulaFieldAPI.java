@@ -48,6 +48,7 @@ import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.tasker.ScheduleInfo.FrequencyType;
+import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
@@ -661,6 +662,18 @@ public class FormulaFieldAPI {
 		}
 	}
 	
+	private static boolean dependsOnSameModule(FormulaFieldContext formula) throws Exception {
+		List<ParameterContext> parameters = formula.getWorkflow().getParameters();
+		if (parameters != null && !parameters.isEmpty()) {
+			for (ParameterContext parameter : parameters) {
+				if ("currentField".equals(parameter.getName())) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 	public static void historicalCalculation(FormulaFieldContext formula, DateRange range) throws Exception {
 		historicalCalculation(formula, range, -1);
 	}
@@ -669,12 +682,13 @@ public class FormulaFieldAPI {
 		List<DateRange> intervals = getIntervals(formula, range);
 		if (intervals != null && !intervals.isEmpty()) {
 			List<ReadingContext> readings = new ArrayList<>();
+			boolean isSelfDependent = dependsOnSameModule(formula);
 			if (singleResourceId != -1) {
 				if (formula.getMatchedResourcesIds().contains(singleResourceId)) {
 					int deletedData = deleteOlderData(range.getStartTime(), range.getEndTime(), Collections.singletonList(singleResourceId), formula.getReadingField().getModule().getName());
 					LOGGER.info("Deleted rows for formula : "+formula.getName()+" between "+range+" is : "+deletedData);
 					
-					List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(singleResourceId, formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), formula.getTriggerTypeEnum() == TriggerType.SCHEDULE, true);
+					List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(singleResourceId, formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), formula.getTriggerTypeEnum() == TriggerType.SCHEDULE, isSelfDependent);
 					if (currentReadings != null && !currentReadings.isEmpty()) {
 						readings.addAll(currentReadings);
 					}
@@ -685,7 +699,7 @@ public class FormulaFieldAPI {
 				LOGGER.info("Deleted rows for formula : "+formula.getName()+" between "+range+" is : "+deletedData);
 				
 				for (Long resourceId : formula.getMatchedResourcesIds()) {
-					List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(resourceId, formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), formula.getTriggerTypeEnum() == TriggerType.SCHEDULE, true);
+					List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(resourceId, formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), formula.getTriggerTypeEnum() == TriggerType.SCHEDULE, isSelfDependent);
 					if (currentReadings != null && !currentReadings.isEmpty()) {
 						readings.addAll(currentReadings);
 					}
@@ -693,6 +707,16 @@ public class FormulaFieldAPI {
 			}
 			
 			LOGGER.info("Historical Data to be added for formula "+readings.size());
+			if (!isSelfDependent && !readings.isEmpty()) {
+				FacilioContext context = new FacilioContext();
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, formula.getReadingField().getModule().getName());
+				context.put(FacilioConstants.ContextNames.READINGS, readings);
+//				context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS, false);
+
+				Chain addReadingChain = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
+				addReadingChain.execute(context);
+			}
+			
 			if (formula.getTriggerTypeEnum() == TriggerType.SCHEDULE) {
 				List<FormulaFieldContext> dependentFormulas = FormulaFieldAPI.getActiveFormulasDependingOnFields(TriggerType.SCHEDULE, Collections.singletonList(formula.getReadingField().getId()));
 				if (dependentFormulas != null && !dependentFormulas.isEmpty()) {

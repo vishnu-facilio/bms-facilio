@@ -1,23 +1,21 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.tuple.Pair;
 
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
 
 public class GetLatestReadingValuesCommand implements Command {
 
@@ -27,41 +25,29 @@ public class GetLatestReadingValuesCommand implements Command {
 		List<FacilioModule> modules = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
 		long parentId = (long) context.get(FacilioConstants.ContextNames.PARENT_ID);
 		if(modules != null && !modules.isEmpty() && parentId != -1) {
+			List<Pair<Long, FacilioField>> rdmPairs = new ArrayList<>();
 			Map<String, List<ReadingContext>> readingData = new HashMap<>();
 			for(FacilioModule module : modules) {
-				int count = (int) context.get(FacilioConstants.ContextNames.LIMIT_VALUE);
-				if(count == -1) {
-					count = 1;
-				}
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				List<FacilioField> fields = new ArrayList<>();
-				Map<String, FacilioField> defaultFieldMap = FieldFactory.getAsMap(FieldFactory.getDefaultReadingFields(module));
-				fields.add(defaultFieldMap.get("ttime"));
-				fields.add(defaultFieldMap.get("actualTtime"));
-				
-				Condition idCondition = new Condition();
-				idCondition.setField(modBean.getField("parentId", module.getName()));
-				idCondition.setOperator(NumberOperators.EQUALS);
-				idCondition.setValue(String.valueOf(parentId));
-				
 				for(FacilioField field : module.getFields()) {
-					fields.add(field);
-					SelectRecordsBuilder<ReadingContext> readingBuilder = new SelectRecordsBuilder<ReadingContext>()
-																				.module(module)
-																				.beanClass(ReadingContext.class)
-																				.select(fields)
-																				.andCondition(idCondition)
-																				.andCustomWhere(field.getColumnName()+" IS NOT NULL")
-																				.orderBy("TTIME DESC")
-																				.limit(count);
-					
-					List<ReadingContext> readings = readingBuilder.get();
-					if(readings != null && !readings.isEmpty()) {
-						readingData.put(field.getName(), readings);
-					}
-					fields.remove(field);
+					rdmPairs.add(Pair.of(parentId, field));
 				}
 			}
+			
+			List<ReadingDataMeta> rdms = ReadingsAPI.getReadingDataMetaList(rdmPairs);
+			if (rdms != null && !rdms.isEmpty()) {
+				for (ReadingDataMeta rdm : rdms) {
+					if (rdm.getReadingDataId() != -1) {
+						ReadingContext reading = new ReadingContext();
+						reading.setParentId(rdm.getResourceId());
+						reading.setTtime(rdm.getTtime());
+						reading.addReading(rdm.getField().getName(), rdm.getValue());
+						reading.setId(rdm.getReadingDataId());
+						
+						readingData.put(rdm.getField().getName(), Collections.singletonList(reading));
+					}
+				}
+			}
+			
 			context.put(FacilioConstants.ContextNames.READINGS, readingData);
 		}
 		return false;

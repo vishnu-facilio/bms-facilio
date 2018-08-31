@@ -66,7 +66,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 			CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeHolders);
 			
 			FacilioContext context = new FacilioContext(); 
-			context.put(FacilioConstants.ContextNames.READING_DATA_META, fetchRDM(readingRule));
+			context.put(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META, fetchRDM(readingRule));
 			
 			for (ReadingContext reading : readings) {
 				try {

@@ -2847,7 +2847,7 @@
 	</package>
 
 	<package name="timeseriesPublish" namespace="/iot/api/timeseries" extends="homeApi">
-	<action name="publish" class="com.facilio.bmsconsole.actions.TimeSeries"
+	<action name="tspublish" class="com.facilio.bmsconsole.actions.TimeSeries"
 			method="publish">
 		<result name="success" type="json">
 			<param name="statusCode">200</param>
@@ -3103,7 +3103,7 @@
 		<action name="getData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getData">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
-				<param name="includeProperties">^reportData.*,^reportContext.*,^baseLineComparisionDiff.*,^entityName.*,^meterIds.*,^readingAlarms.*,^reportColumns.*,^reportFieldLabelMap.*,^variance.*,^safelimit.*,^benchmarks.*,^heatMapRange.*,^booleanResultGrouping.*</param>
+				<param name="includeProperties">^reportData.*,^reportContext.*,^baseLineComparisionDiff.*,^entityName.*,^meterIds.*,^readingAlarms.*,^reportColumns.*,^reportFieldLabelMap.*,^variance.*,^safelimit.*,^benchmarks.*,^heatMapRange.*,^booleanResultGrouping.*,^booleanResultOptions.*</param>
 			</result>
 		</action>
 		<action name="getAswaqData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getAswaqData">

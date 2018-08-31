@@ -29,16 +29,6 @@
 </listener>
 
     <filter>
-        <filter-name>IotFilter</filter-name>
-        <filter-class>com.facilio.filters.IotFilter</filter-class>
-    </filter>
-
-    <filter-mapping>
-        <filter-name>IotFilter</filter-name>
-        <url-pattern>/iot/api/timeseries/publish</url-pattern>
-    </filter-mapping>
-
-    <filter>
         <filter-name>HealthFilter</filter-name>
         <filter-class>com.facilio.filters.HealthCheckFilter</filter-class>
     </filter>
@@ -55,6 +45,27 @@
     <filter-mapping>
         <filter-name>AccessLogFilter</filter-name>
         <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+
+    <filter>
+        <filter-name>IotFilter</filter-name>
+        <filter-class>com.facilio.filters.IotFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>IotFilter</filter-name>
+        <url-pattern>/iot/api/timeseries/publish</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>IotDataFilter</filter-name>
+        <filter-class>com.facilio.filters.IotDataFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>IotDataFilter</filter-name>
+        <url-pattern>/iot/api/timeseries/data/publish</url-pattern>
     </filter-mapping>
 
     <filter>

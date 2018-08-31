@@ -148,14 +148,28 @@ public enum ExpressionAggregateOperator implements ExpressionAggregateInterface 
 	public static ExpressionAggregateOperator getExpressionAggregateOperator(String name) {
 		return EXP_AGGREGATE_OPERATOR_MAP_BY_NAME.get(name);
 	}
-	static final Map<String, ExpressionAggregateOperator> EXP_AGGREGATE_OPERATOR_MAP_BY_NAME = Collections.unmodifiableMap(initTypeMap());
-	static Map<String, ExpressionAggregateOperator> initTypeMap() {
+	private static final Map<String, ExpressionAggregateOperator> EXP_AGGREGATE_OPERATOR_MAP_BY_NAME = Collections.unmodifiableMap(initTypeMap());
+	private static Map<String, ExpressionAggregateOperator> initTypeMap() {
 		Map<String, ExpressionAggregateOperator> typeMap = new HashMap<>();
 		for(ExpressionAggregateOperator type : ExpressionAggregateOperator.values()) {
 			typeMap.put(type.getName(), type);
 		}
 		return typeMap;
 	}
+	
+	private static final Map<Integer, ExpressionAggregateOperator> EXP_AGGREGATE_OPERATOR_MAP_BY_VALUE = Collections.unmodifiableMap(initTypeMapByValue());
+	private static Map<Integer, ExpressionAggregateOperator> initTypeMapByValue() {
+		Map<Integer, ExpressionAggregateOperator> typeMap = new HashMap<>();
+		for(ExpressionAggregateOperator type : ExpressionAggregateOperator.values()) {
+			typeMap.put(type.getValue(), type);
+		}
+		return typeMap;
+	}
+	
+	public static ExpressionAggregateOperator valueOf(int value) {
+		return EXP_AGGREGATE_OPERATOR_MAP_BY_VALUE.get(value);
+	}
+	
 	public FacilioField getSelectField(FacilioField field) throws Exception {
 		String selectFieldString =stringValue.replace("{$place_holder$}", field.getColumnName());
 		field.setColumnName(selectFieldString);

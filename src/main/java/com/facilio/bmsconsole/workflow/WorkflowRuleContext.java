@@ -184,7 +184,6 @@ public class WorkflowRuleContext {
 		try {
 			boolean workflowFlag = true;
 			if (workflow != null) {
-				workflow.setIgnoreMarkedReadings(true);
 				double result = (double) WorkflowUtil.getWorkflowExpressionResult(workflow.getWorkflowString(), placeHolders);
 				workflowFlag = result == 1;
 			}

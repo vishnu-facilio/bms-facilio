@@ -205,11 +205,12 @@ public class SpaceAPI {
 																	.moduleName(module.getName())
 																	.maxLevel(0)
 																	.beanClass(BuildingContext.class)
+																	.orderBy("LOCAL_ID")
 																	.andCondition(CriteriaAPI.getCondition(fieldName,fieldName, 
 																			buildingList,NumberOperators.EQUALS));
-		return selectBuilder.get();
+		List<BuildingContext> props = selectBuilder.get();
 		
-		
+		return props;
 	}
 	
 	

@@ -63,6 +63,15 @@ public class FormField {
 		this.sequenceNumber = num;
 	}
 	
+	private String lookupModuleName;
+	public void setLookupModuleName(String lookupModuleName) {
+		this.lookupModuleName = lookupModuleName;
+	}
+	
+	public String getLookupModuleName() {
+		return this.lookupModuleName;
+	}
+	
 	public enum Required {
 		REQUIRED,
 		OPTIONAL
@@ -73,6 +82,11 @@ public class FormField {
 	public FormField(long fieldId, String name, FieldDisplayType displayType, String displayName, Required required, int sequenceNumber) {
 		this(name, displayType, displayName, required, sequenceNumber);
 		this.setFieldId(fieldId);
+	}
+	
+	public FormField(String name, FieldDisplayType displayType, String displayName, Required required, String lookupModuleName, int sequenceNumber) {
+		this(name, displayType, displayName, required, sequenceNumber);
+		this.setLookupModuleName(lookupModuleName);
 	}
 	
 	public FormField(String name, FieldDisplayType displayType, String displayName, Required required, int sequenceNumber) {
@@ -101,16 +115,6 @@ public class FormField {
 	
 	public String getName() {
 		return this.name;
-	}
-
-	private FacilioField field;
-	
-	public FacilioField getField() {
-		return field;
-	}
-
-	public void setField(FacilioField field) {
-		this.field = field;
 	}
 	
 	private long fieldId = -1;

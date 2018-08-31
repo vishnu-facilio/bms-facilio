@@ -3,7 +3,6 @@ package com.facilio.report.customreport;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
 import org.apache.commons.chain.Command;
 import org.json.simple.JSONArray;

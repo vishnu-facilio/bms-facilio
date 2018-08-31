@@ -37,49 +37,51 @@ public class IotFilter implements Filter {
         StringBuilder builder = new StringBuilder();
         String line = null;
         try {
-        		AccountUtil.cleanCurrentAccount();
-            BufferedReader reader = request.getReader();
-            List<String> list = new ArrayList<>();
-            while ((line = reader.readLine()) != null) {
-            	    list.add(line.trim());
-                builder.append(line);
-                builder.append(System.lineSeparator());
-            }
-            if(builder.length() > 0) {
-            		String data = builder.toString();
-	        	    if (!data.contains("-OPERATOR COMMAND-") && !data.contains("$WTPING")) {
-	        	    		AccountUtil.setCurrentAccount(78L);
-	        	    	
-	        	    		for(int i = 0; i < list.size(); i++) {
-	        	    			String info = list.get(i);
-	        	    			if (info.isEmpty() || i == list.size() || list.get(i+1).isEmpty()) {
-	        	    				continue;
-	        	    			}
-	        	    			String source = list.get(i+1);
-	        	    			i++;
-	        	    			try {
-				    	    		String message = info.substring(0, info.indexOf("::") - 1);
-				    	    		String timeStamp = info.substring(info.indexOf("::") + 3, info.indexOf("P:") - 1);
-				    	    		
-				    	    		JSONObject payload = new JSONObject();
-				    	    		payload.put("source", source.trim());
-				    	    		payload.put("entity", source.trim());
-				    	    		payload.put("message", message.trim());
-				    	    		payload.put("timestamp", DateTimeUtil.getTime(timeStamp.trim(), "HH:mm:ss dd/MM/yyyy"));
-				    	    		
-				    	    		LOGGER.warn(payload.toString());
-				    	    		
-				    	    		FacilioContext context = new FacilioContext();
-				    	    		context.put(EventConstants.EventContextNames.EVENT_PAYLOAD, payload);
-				    	    		Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
-				    	    		getAddEventChain.execute(context);
-	        	    			}
-			    	    		catch (Exception e) {
-			    	        		LOGGER.error("IOTFilter Exception :", e);
-			    	        }
-	        	    		}
-		    	    }
-            }
+        	String headerToken = request.getHeader("Authorization");
+        	if(headerToken == null) {
+				AccountUtil.cleanCurrentAccount();
+				BufferedReader reader = request.getReader();
+				List<String> list = new ArrayList<>();
+				while ((line = reader.readLine()) != null) {
+					list.add(line.trim());
+					builder.append(line);
+					builder.append(System.lineSeparator());
+				}
+				if (builder.length() > 0) {
+					String data = builder.toString();
+					if (!data.contains("-OPERATOR COMMAND-") && !data.contains("$WTPING")) {
+						AccountUtil.setCurrentAccount(78L);
+
+						for (int i = 0; i < list.size(); i++) {
+							String info = list.get(i);
+							if (info.isEmpty() || i == list.size() || list.get(i + 1).isEmpty()) {
+								continue;
+							}
+							String source = list.get(i + 1);
+							i++;
+							try {
+								String message = info.substring(0, info.indexOf("::") - 1);
+								String timeStamp = info.substring(info.indexOf("::") + 3, info.indexOf("P:") - 1);
+
+								JSONObject payload = new JSONObject();
+								payload.put("source", source.trim());
+								payload.put("entity", source.trim());
+								payload.put("message", message.trim());
+								payload.put("timestamp", DateTimeUtil.getTime(timeStamp.trim(), "HH:mm:ss dd/MM/yyyy"));
+
+								LOGGER.warn(payload.toString());
+
+								FacilioContext context = new FacilioContext();
+								context.put(EventConstants.EventContextNames.EVENT_PAYLOAD, payload);
+								Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
+								getAddEventChain.execute(context);
+							} catch (Exception e) {
+								LOGGER.error("IOTFilter Exception :", e);
+							}
+						}
+					}
+				}
+			}
         } catch (Exception e) {
         		LOGGER.error("IOTFilter Exception :", e);
         }

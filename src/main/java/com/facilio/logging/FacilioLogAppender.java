@@ -11,6 +11,7 @@ import org.apache.log4j.Priority;
 import org.apache.log4j.spi.ErrorHandler;
 import org.apache.log4j.spi.Filter;
 import org.apache.log4j.spi.LoggingEvent;
+import org.apache.log4j.spi.ThrowableInformation;
 
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
@@ -112,6 +113,18 @@ public class FacilioLogAppender extends DailyRollingFileAppender {
         	event.setProperty("userId", String.valueOf(user.getOuid()));
         } else {
             event.setProperty("userId", DEFAULT_ORG_USER_ID);
+        }
+        try {
+            ThrowableInformation information = event.getThrowableInformation();
+            if (information != null) {
+                Throwable throwable = information.getThrowable();
+                String exceptionType = throwable.getClass().getName();
+                event.setProperty("exception", exceptionType);
+            } else {
+                event.setProperty("exception", "-");
+            }
+        } catch (Exception e) {
+            event.setProperty("exception", "LogAppenderException");
         }
         super.append(event);
     }

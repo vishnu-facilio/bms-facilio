@@ -63,7 +63,7 @@ public class GetReadingDataMetaCommand implements Command {
 			if (!rdmPairs.isEmpty()) {
 				readingDataMeta = fetchRDM(readingDataMeta, rdmPairs);
 			}
-			context.put(FacilioConstants.ContextNames.READING_DATA_META, readingDataMeta);
+			context.put(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META, readingDataMeta);
 		}
 		return false;
 	}

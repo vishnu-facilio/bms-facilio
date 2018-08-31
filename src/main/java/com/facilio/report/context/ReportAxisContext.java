@@ -37,6 +37,11 @@ public class ReportAxisContext {
 		return field;
 	}
 	public void setField(FacilioField field) {
+		if (field != null) {
+			this.fieldId = field.getId();
+			this.fieldName = field.getName();
+			this.moduleName = field.getModule().getName();
+		}
 		this.field = field;
 	}
 	

@@ -24,6 +24,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
@@ -31,6 +32,7 @@ import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.facilio.workflows.util.WorkflowUtil;
 
 public class ReadingRuleContext extends WorkflowRuleContext {
 	private static final Logger LOGGER = LogManager.getLogger(ReadingRuleContext.class.getName());
@@ -286,10 +288,7 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 	public boolean evaluateWorkflowExpression(String moduleName, Object record, Map<String, Object> placeHolders,
 			FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
-		boolean workflowFlag = super.evaluateWorkflowExpression(moduleName, record, placeHolders, context);
-		if (getId() == 2336) {
-			LOGGER.info("Workflow result of 2336 : "+workflowFlag);
-		}
+		boolean workflowFlag = evalWorkflow(placeHolders, (Map<String, ReadingDataMeta>) context.get(FacilioConstants.ContextNames.CURRRENT_READING_DATA_META));
 		if (overPeriod != -1 && occurences == -1) {
 			return evalOverPeriod(workflowFlag, (ReadingContext) record);
 		}
@@ -301,6 +300,24 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		}
 		else {
 			return workflowFlag;
+		}
+	}
+	
+	private boolean evalWorkflow(Map<String, Object> placeHolders, Map<String, ReadingDataMeta> currentRDM) throws Exception {
+		try {
+			boolean workflowFlag = true;
+			if (getWorkflow() != null) {
+				getWorkflow().setIgnoreMarkedReadings(true);
+				getWorkflow().setCachedRDM(currentRDM);
+				double result = (double) WorkflowUtil.getWorkflowExpressionResult(getWorkflow().getWorkflowString(), placeHolders);
+				getWorkflow().setCachedRDM(null);
+				workflowFlag = result == 1;
+			}
+			return workflowFlag;
+		}
+		catch (ArithmeticException e) {
+			LOGGER.error("Arithmetic exception during execution of workflow for rule : "+getId(), e);
+			return false;
 		}
 	}
 	
@@ -404,8 +421,8 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		switch (thresholdType) {
 			case FLAPPING:
 				boolean singleFlap = false;
-				Map<String, ReadingDataMeta> metaMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.READING_DATA_META);
-				ReadingDataMeta meta = metaMap.get(reading.getParentId()+"_"+readingField.getFieldId());
+				Map<String, ReadingDataMeta> metaMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
+				ReadingDataMeta meta = metaMap.get(ReadingsAPI.getRDMKey(reading.getParentId(), readingField));
 				Object prevValue = meta.getValue();
 				if (currentReadingObj instanceof Number) {
 					double prevVal = Double.valueOf(prevValue.toString());
@@ -544,7 +561,7 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 	public Map<String, Object> constructPlaceHolders(String moduleName, Object record, Map<String, Object> recordPlaceHolders, FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		Map<String, Object> rulePlaceHolders = super.constructPlaceHolders(moduleName, record, recordPlaceHolders, context);
-		Map<String, ReadingDataMeta> metaMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.READING_DATA_META);
+		Map<String, ReadingDataMeta> metaMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
 		ReadingDataMeta meta = metaMap.get(((ReadingContext)record).getParentId()+"_"+readingField.getFieldId());
 		if (meta != null) {
 			Object prevValue = meta.getValue();

@@ -611,7 +611,9 @@ public class ReportContext extends ModuleBaseWithCustomFields {
 		TABULAR (14,"tabular",1,1),
 		SCATTER (15,"scatter",1,1),
 		REGRESSION (16,"regression",1,1),
-		TREEMAP (17,"treemap",1,1);
+		TREEMAP (17,"treemap",1,1),
+		BOOLEANGRAPH (18,"boolean",1,1),
+		;
 		
 		private int value;
 		private String name;

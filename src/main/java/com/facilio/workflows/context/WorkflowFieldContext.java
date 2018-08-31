@@ -1,16 +1,26 @@
 package com.facilio.workflows.context;
 
+import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.workflows.util.ExpressionAggregateOperator;
 
 public class WorkflowFieldContext{
 
-	int aggregation = -1;
-	
-	public int getAggregation() {
+	private ExpressionAggregateOperator aggregation;
+	public ExpressionAggregateOperator getAggregationEnum() {
 		return aggregation;
 	}
-	public void setAggregation(int aggregation) {
+	public void setAggregation(ExpressionAggregateOperator aggregation) {
 		this.aggregation = aggregation;
+	}
+	public int getAggregation() {
+		if (aggregation != null) {
+			return aggregation.getValue();
+		}
+		return -1;
+	}
+	public void setAggregation(int aggregation) {
+		this.aggregation = ExpressionAggregateOperator.valueOf(aggregation);
 	}
 
 	private long resourceId = -1;

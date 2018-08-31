@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -14,12 +16,19 @@ import com.opensymphony.xwork2.ActionSupport;
 public class TimeSeries extends ActionSupport {
 	
 	private static final long serialVersionUID = 1L;
+	private static final Logger LOGGER = LogManager.getLogger(TimeSeries.class.getName());
+
 	
 	public String publish() throws Exception
 	{
 		JSONParser parser = new JSONParser();
+		try {
 		JSONObject payLoad = (JSONObject) parser.parse(getDeviceData());
 		TimeSeriesAPI.processPayLoad(getTimestamp(), payLoad);
+		}
+		catch(Exception e) {
+			LOGGER.info("Error while processing data: ", e);
+		}
 		return SUCCESS;
 	}
 	

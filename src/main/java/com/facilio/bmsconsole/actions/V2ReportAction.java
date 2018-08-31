@@ -8,13 +8,33 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.report.context.ReadingAnalysisContext;
 import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
 import com.facilio.report.context.ReportBaseLineContext;
+import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.WorkorderAnalysisContext;
+import com.facilio.report.util.ReportUtil;
 
 public class V2ReportAction extends FacilioAction {
+	
+	public ReportContext reportContext;
+	public ReportContext getReportContext() {
+		return reportContext;
+	}
+	public void setReportContext(ReportContext reportContext) {
+		this.reportContext = reportContext;
+	}
+	
+	public String addReport() throws Exception {
+		
+		if(reportContext != null) {
+			ReportUtil.addReport(reportContext);
+		}
+		return SUCCESS;
+	}
+	
 	public String fetchReadingsData() {
 		try {
 			

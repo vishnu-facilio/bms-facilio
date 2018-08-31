@@ -138,7 +138,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("source", "Source"));
 		columns.add(new ViewField("entity", "Entity"));
 		columns.add(new ViewField("resource", "Asset"));
-		columns.add(new ViewField("modifiedTime", "Last Reported Before"));
+		columns.add(new ViewField("modifiedTime", "Last Reported"));
 		columns.add(new ViewField("acknowledgedBy", "Acknowledged"));
 		
 		return columns;

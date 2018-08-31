@@ -175,7 +175,6 @@ public class ReadingAction extends FacilioAction {
 	
 	public String getSpaceSpecificLatestReadingData() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.LIMIT_VALUE, count);
 		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
 		
 		Chain addCurrentOccupancy = FacilioChainFactory.getGetLatestSpaceReadingValuesChain();
@@ -186,7 +185,6 @@ public class ReadingAction extends FacilioAction {
 	
 	public String getAssetSpecificLatestReadingData() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.LIMIT_VALUE, count);
 		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
 		
 		Chain latestAssetData = FacilioChainFactory.getGetLatestAssetReadingValuesChain();
@@ -367,7 +365,6 @@ public class ReadingAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, module);
 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, getParentCategoryId());
-		context.put(FacilioConstants.ContextNames.LIMIT_VALUE, count);
 		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
 		
 		Chain addCurrentOccupancy = FacilioChainFactory.getGetLatestReadingValuesChain();
@@ -394,7 +391,6 @@ public class ReadingAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, module);
 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, getParentCategoryId());
-		context.put(FacilioConstants.ContextNames.LIMIT_VALUE, count);
 		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -428,14 +424,6 @@ public class ReadingAction extends FacilioAction {
 	}
 	public void setParentId(long parentId) {
 		this.parentId = parentId;
-	}
-
-	private int count = -1;
-	public int getCount() {
-		return count;
-	}
-	public void setCount(int count) {
-		this.count = count;
 	}
 
 	private Map<String, List<ReadingContext>> readingData;

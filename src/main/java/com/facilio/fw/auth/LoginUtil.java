@@ -75,12 +75,13 @@ public class LoginUtil {
 		} else {
 			org = AccountUtil.getOrgBean().getOrg(user.getOrgId());
 		}
-		
-		List<Long> accessibleSpace = user.getAccessibleSpace();
-		if (currentSiteId != -1 && accessibleSpace == null) {
-			accessibleSpace = new ArrayList<>();
-			accessibleSpace.add(currentSiteId);
-			user.setAccessibleSpace(accessibleSpace);
+		if(user != null) {
+			List<Long> accessibleSpace = user.getAccessibleSpace();
+			if (currentSiteId != -1 && accessibleSpace == null) {
+				accessibleSpace = new ArrayList<>();
+				accessibleSpace.add(currentSiteId);
+				user.setAccessibleSpace(accessibleSpace);
+			}
 		}
 		Account account = new Account(org, user, currentSiteId);
 		
