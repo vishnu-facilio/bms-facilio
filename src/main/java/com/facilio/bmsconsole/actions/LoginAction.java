@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.UUID;
 import java.util.zip.Inflater;
 
@@ -60,11 +61,14 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.EncryptionUtil;
+import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
@@ -701,6 +705,10 @@ public class LoginAction extends FacilioAction{
 		data.put(FacilioConstants.ContextNames.SPACE_CATEGORY, CommonCommandUtil.getPickList(FacilioConstants.ContextNames.SPACE_CATEGORY));
 		data.put(FacilioConstants.ContextNames.ASSET_CATEGORY, CommonCommandUtil.getPickList(FacilioConstants.ContextNames.ASSET_CATEGORY));
 		data.put(FacilioConstants.ContextNames.SHIFTS, ShiftAPI.getAllShifts());
+		if (AccountUtil.getCurrentAccount().isFromMobile()) {
+			Map<String, Set<FacilioForm>> forms = FormsAPI.getAllForms(FormType.MOBILE);
+			data.put("forms", forms);
+		}
 
 		
 		Map<String, Object> config = new HashMap<>();

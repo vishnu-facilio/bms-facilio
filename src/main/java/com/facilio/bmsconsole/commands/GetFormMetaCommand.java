@@ -2,25 +2,21 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormFactory;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class GetFormMetaCommand implements Command {
 
@@ -45,7 +41,6 @@ public class GetFormMetaCommand implements Command {
 						String fieldName = f.getName();
 						FacilioField field = modBean.getField(fieldName, moduleName);
 						if (field != null) {
-							f.setField(field);
 							f.setFieldId(field.getFieldId());
 						}
 					}
@@ -56,49 +51,21 @@ public class GetFormMetaCommand implements Command {
 		}
 		return false;
 	}
-
-	private FacilioForm getFormFromDB(String formName) throws Exception {
-		FacilioModule formModule = ModuleFactory.getFormModule();
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.table(formModule.getTableName())
-				.select(FieldFactory.getFormFields())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(formModule))
-				.andCustomWhere("NAME = ?", formName);
+	
+	public static FacilioForm getFormFromDB(String formName) throws Exception {
+		Criteria formNameCriteria = new Criteria();
+		Condition condition = new Condition();
+		condition.setColumnName("NAME");
+		condition.setFieldName("name");
+		condition.setOperator(StringOperators.IS);
+		condition.setValue(formName);
+		formNameCriteria.addAndCondition(condition);
 		
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props == null || props.isEmpty()) {
+		List<FacilioForm> forms = FormsAPI.getFormFromDB(formNameCriteria);
+		if (forms == null || forms.isEmpty()) {
 			return null;
 		}
-		
-		FacilioForm form = FieldUtil.getAsBeanFromMap(props.get(0), FacilioForm.class);
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		long modid = form.getModuleId();
-		form.setModule(modBean.getModule(modid));
-		
-		FacilioModule fieldsModule = ModuleFactory.getFormFieldsModule();
-		selectBuilder = new GenericSelectRecordBuilder()
-				.table(fieldsModule.getTableName())
-				.select(FieldFactory.getFormFieldsFields())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(fieldsModule))
-				.andCondition(CriteriaAPI.getCondition("FORMID", "formId", String.valueOf(props.get(0).get("id")), NumberOperators.EQUALS))
-				.orderBy("SEQUENCE_NUMBER");
-		
-		props = selectBuilder.get();
-		
-		List<FormField> fields = new ArrayList<>();
-		for (Map<String, Object> p: props) {
-			FormField f = FieldUtil.getAsBeanFromMap(p, FormField.class);
-			if (f.getFieldId() != -1) {
-				FacilioField field =  modBean.getField(f.getFieldId());
-				f.setField(field);
-				f.setName(field.getName());
-			}
-			fields.add(f);
-		}
-		
-		form.setFields(fields);
-		return form;
+		return forms.get(0);
 	}
 
 }
