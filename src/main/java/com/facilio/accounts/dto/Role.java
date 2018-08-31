@@ -68,7 +68,7 @@ public class Role implements Serializable {
 	public boolean hasPermission(String moduleName, String permissionVal) {
 		for (Permissions permission : getPermissions()) {
 			if(permission.getModuleName().equals(moduleName)) {
-				if(name == AccountConstants.DefaultRole.SUPER_ADMIN ) {
+				if(AccountConstants.DefaultRole.SUPER_ADMIN.equals(name) ) {
 					return permission.hasPermission(0L);
 				}
 				try {
@@ -81,17 +81,16 @@ public class Role implements Serializable {
 		}
 		return false;
 	}
-	private List<Permissions> permissions;
+	private List<Permissions> permissions = new ArrayList<>();
 	public List<Permissions> getPermissions() {
 		return permissions;
 	}
 	public void setPermissions(List<Permissions> permissions) {
-		this.permissions = permissions;
+		if(permissions != null) {
+			this.permissions = permissions;
+		}
 	}
 	public void addPermission(Permissions permission) {
-		if (this.permissions == null) {
-			permissions = new ArrayList<>();
-		}
 		permissions.add(permission);
 	}
 	

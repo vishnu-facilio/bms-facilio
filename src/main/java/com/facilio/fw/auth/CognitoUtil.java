@@ -90,26 +90,27 @@ public class CognitoUtil {
 		try {
 			DecodedJWT decodedjwt = validateJWT(idToken, "auth0");
 			CognitoUser faciliouser = new CognitoUser();
-			faciliouser.setEmail(decodedjwt.getSubject().split("_")[0]);
-			faciliouser.setFacilioauth(true);
-			faciliouser.setPortaluser(decodedjwt.getClaim("portaluser").asBoolean());
-			
-			if (!isPortalUser) {
-				//String email = faciliouser.getEmail();
+			if(decodedjwt != null) {
+				faciliouser.setEmail(decodedjwt.getSubject().split("_")[0]);
+				faciliouser.setFacilioauth(true);
+				faciliouser.setPortaluser(decodedjwt.getClaim("portaluser").asBoolean());
+
+				if (!isPortalUser) {
+					//String email = faciliouser.getEmail();
 //				String sessionVerify = AwsUtil.getConfig("enable.sessionverify");
 //			if (sessionVerify != null) {
 //					if (Arrays.asList(sessionVerify.split(",")).contains(email)) {
-						boolean override = overrideSessionCheck != null && overrideSessionCheck.length == 1 && overrideSessionCheck[0];
-						if (override || AccountUtil.getUserBean().verifyUserSession(faciliouser.getEmail(), idToken)) {
-							return faciliouser;
-						}
-						else {
-							// invalid session
-							return null;
-						}
+					boolean override = overrideSessionCheck != null && overrideSessionCheck.length == 1 && overrideSessionCheck[0];
+					if (override || AccountUtil.getUserBean().verifyUserSession(faciliouser.getEmail(), idToken)) {
+						return faciliouser;
+					} else {
+						// invalid session
+						return null;
 					}
+				}
 //				}
 //			}
+			}
 			return faciliouser;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

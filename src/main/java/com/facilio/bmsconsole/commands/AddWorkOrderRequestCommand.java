@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
@@ -25,6 +26,7 @@ public class AddWorkOrderRequestCommand implements Command {
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		//	Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			workOrderRequest.setCreatedTime(System.currentTimeMillis());
+			workOrderRequest.setCreatedBy(AccountUtil.getCurrentUser());
 			
 			if(workOrderRequest.getRequestStatus() == -1) {
 				workOrderRequest.setRequestStatus(WorkOrderRequestContext.RequestStatus.OPEN);

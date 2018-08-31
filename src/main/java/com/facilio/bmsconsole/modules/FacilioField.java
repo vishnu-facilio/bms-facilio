@@ -339,7 +339,8 @@ public class FacilioField implements Serializable {
 		WOASSETSPACECHOOSER(15, "wo-asset-space-chooser"),
 		REQUESTER(16, "requester"),
 		URGENCY(17, "urgency"),
-		ATTACHMENT(18, "attachment")
+		ATTACHMENT(18, "attachment"), 
+		TEAMSTAFFASSIGNMENT(19, "team-staff-assignment")
 		;
 		
 		private int intVal;

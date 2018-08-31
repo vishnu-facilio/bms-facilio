@@ -26,6 +26,24 @@ public static void createLead(String module,String modulekey , JSONObject data) 
 		String url = "https://facilio.freshsales.io/api/"+module;
 		System.out.println("Ther final data to be posted is "+postData.toJSONString());
 		AwsUtil.doHttpPost(url, headers, null, postData.toJSONString());
+		
+		try {
+			if(module.equals("leads"))
+			{
+			JSONObject json = new JSONObject();
+			
+			 json.put("sender", "yoge@facilio.com");
+			 json.put("to", "yoge@facilio.com,prabhu@facilio.com,krishna@facilio.com,radhika@facilio.com,raj@facilio.com");
+			     
+			     json.put("subject", "New Lead Created "+data.get("email"));
+			     json.put("message", postData.toJSONString());
+			     
+			AwsUtil.sendEmail(json);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 public static void main(String args[]) throws Exception

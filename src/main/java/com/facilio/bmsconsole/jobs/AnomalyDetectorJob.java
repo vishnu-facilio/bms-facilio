@@ -17,11 +17,14 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.AnalyticsAnomalyContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.TemperatureContext;
+import com.facilio.bmsconsole.context.TicketContext.SourceType;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
@@ -29,7 +32,9 @@ import com.facilio.bmsconsole.util.AnomalySchedulerUtil;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
@@ -124,7 +129,7 @@ public class AnomalyDetectorJob extends FacilioJob {
 		ObjectMapper mapper = new ObjectMapper();
 		
 		try {
-			List<AnalyticsAnomalyContext> meterReadings = AnomalySchedulerUtil.getAllReadings(moduleName,startTime, endTime, energyMeterContext.getId(), energyMeterContext.getOrgId());
+			List<AnalyticsAnomalyContext> meterReadings = AnomalySchedulerUtil.getAllEnergyReadings(startTime, endTime, energyMeterContext.getId(), energyMeterContext.getOrgId());
 			
 			List<AnalyticsAnomalyContext> validAnomalyContext=new ArrayList<>(); 
 			
@@ -292,8 +297,8 @@ public class AnomalyDetectorJob extends FacilioJob {
 			if(impactedIDs.contains(anomalyObject.getId())) { // a valid anomaly data point
 				
 				AnomalyIDInsertRow newAnomalyId = new AnomalyIDInsertRow(anomalyObject.getId(), anomalyObject.getOrgId(), 
-								anomalyObject.getModuleId(), anomalyObject.getMeterId(), anomalyObject.getTtime(),
-								anomalyObject.getEnergyDelta(), currentTimeInMillisec,
+								anomalyObject.getModuleId(), anomalyObject.getParentId(), anomalyObject.getTtime(),
+								anomalyObject.getTotalEnergyConsumptionDelta(), currentTimeInMillisec,
 								anomalyObject.getOutlierDistance());
 				
 				props.add(FieldUtil.getAsProperties(newAnomalyId));
@@ -317,9 +322,12 @@ public class AnomalyDetectorJob extends FacilioJob {
 	private void triggerAlarm(List<AnalyticsAnomalyContext> impactedContexts) throws Exception {
 		DecimalFormat df_one_decimal = new DecimalFormat(".#");
 		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioField consumptionField = modBean.getField("totalEnergyConsumptionDelta", FacilioConstants.ContextNames.ENERGY_DATA_READING);
+		
 		for(AnalyticsAnomalyContext context: impactedContexts)
 		{
-			long meterId = context.getMeterId();	
+			long meterId = context.getParentId();	
 			AssetContext asset = AssetsAPI.getAssetInfo(meterId);
 			String assetName = asset.getName();
 		
@@ -331,7 +339,13 @@ public class AnomalyDetectorJob extends FacilioJob {
 			obj.put("resourceId", meterId);
 			obj.put("severity", "Minor");
 			obj.put("timestamp", context.getTtime());
-			obj.put("consumption", context.getEnergyDelta());
+			obj.put("consumption", context.getTotalEnergyConsumptionDelta());
+			
+			obj.put("sourceType", SourceType.ANOMALY_ALARM.getIntVal());
+			obj.put("readingFieldId", consumptionField.getFieldId());
+			obj.put("readingDataId", context.getId());
+			obj.put("startTime", context.getTtime());
+			obj.put("readingMessage", "");
 
 			FacilioContext addEventContext = new FacilioContext();
 			addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, obj);

@@ -63,7 +63,7 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 	private void writeEnergyReadingFile(String moduleName, EnergyMeterContext energyMeterContext, long startTime,
 			long endTime, String energyReadingFileName) throws Exception {
 		logger.log(Level.INFO, " inside writewriteEnergyReadingFile");
-		List<AnalyticsAnomalyContext> meterReadings = AnomalySchedulerUtil.getAllReadings(moduleName, startTime,
+		List<AnalyticsAnomalyContext> meterReadings = AnomalySchedulerUtil.getAllEnergyReadings(startTime,
 				endTime, energyMeterContext.getId(), energyMeterContext.getOrgId());
 
 		if (meterReadings.size() == 0) {

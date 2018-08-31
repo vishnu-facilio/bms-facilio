@@ -26,7 +26,7 @@ public class SMSUtil {
 	private final static String FROM = "facilio";
 	public static String sendSMS(JSONObject obj) {
 		
-		if(AwsUtil.isDevelopment())
+		if(!AwsUtil.isProduction())
 		{
 			LOGGER.info("SMS restricted in development/stage  ");
 			return "";

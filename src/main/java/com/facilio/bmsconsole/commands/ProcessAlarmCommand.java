@@ -9,14 +9,12 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext;
-import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
 
 public class ProcessAlarmCommand implements Command {
 
@@ -25,19 +23,15 @@ public class ProcessAlarmCommand implements Command {
 		// TODO Auto-generated method stub
 		JSONObject alarmInfo = (JSONObject) context.get(FacilioConstants.ContextNames.ALARM);
 		AlarmContext alarm = null;
-		List<FacilioField> fields = null;
-		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		int sourceType = -1;
+		SourceType sourceType = null;
 		if (alarmInfo.get("sourceType") != null) {
-			sourceType = Integer.parseInt(alarmInfo.get("sourceType").toString());
+			sourceType = SourceType.getType(Integer.parseInt(alarmInfo.get("sourceType").toString()));
+		}
+		if (sourceType == null) {
+			sourceType = SourceType.ALARM;
 		}
 		
-		if (sourceType == SourceType.THRESHOLD_ALARM.getIntVal()) {
-			fields = bean.getAllFields(FacilioConstants.ContextNames.READING_ALARM);
-		}
-		else {
-			fields = bean.getAllFields(FacilioConstants.ContextNames.ALARM);
-		}
+		List<FacilioField> fields = AlarmAPI.getAlarmFields(sourceType);
 		JSONObject additionalInfo = new JSONObject();
 		Set<String> fieldNames = fields.stream().map(FacilioField::getName).collect(Collectors.toSet());
 		Set<String> propNames = alarmInfo.keySet();
@@ -51,13 +45,8 @@ public class ProcessAlarmCommand implements Command {
 			}
 		}
 		
-		if (sourceType == 6) {
-			alarm = FieldUtil.getAsBeanFromJson(alarmInfo, ReadingAlarmContext.class);
-		}
-		else {
-			alarm = FieldUtil.getAsBeanFromJson(alarmInfo, AlarmContext.class);
-		}
-		
+		alarm = FieldUtil.getAsBeanFromJson(alarmInfo, AlarmAPI.getAlarmClass(sourceType));
+		alarm.setSourceType(sourceType);
 		if (!additionalInfo.isEmpty()) {
 			alarm.setAdditionInfo(additionalInfo);
 		}
@@ -65,5 +54,4 @@ public class ProcessAlarmCommand implements Command {
 		
 		return false;
 	}
-
 }

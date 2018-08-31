@@ -102,6 +102,7 @@ public class AlarmAPI {
 				if (type != null) {
 					switch (type) {
 						case THRESHOLD_ALARM:
+						case ANOMALY_ALARM:
 							alarms.set(i, typeWiseAlarms.get(alarm.getSourceTypeEnum()).get(alarm.getId()));
 							break;
 						default:
@@ -121,7 +122,8 @@ public class AlarmAPI {
 				SourceType type = entry.getKey();
 				if (type != null) {
 					switch (type) {
-						case THRESHOLD_ALARM: {
+						case THRESHOLD_ALARM:
+						case ANOMALY_ALARM: {
 							typewiseAlarms.put(entry.getKey(), fetchExtendedAlarms(modBean.getModule(FacilioConstants.ContextNames.READING_ALARM), modBean.getAllFields(FacilioConstants.ContextNames.READING_ALARM), entry.getValue(), ReadingAlarmContext.class));
 						}break;
 						default:
@@ -653,5 +655,50 @@ public class AlarmAPI {
 		BeanUtils.copyProperties(wo, alarm);
 		wo.setCreatedTime(System.currentTimeMillis());
 		return wo;
+	}
+	
+	public static String getAlarmModuleName(SourceType type) throws Exception {
+		
+		if (type == null) {
+			return FacilioConstants.ContextNames.ALARM;
+		}
+		
+		switch (type) {
+			case THRESHOLD_ALARM:
+			case ANOMALY_ALARM:
+				return FacilioConstants.ContextNames.READING_ALARM;
+			default:
+				return FacilioConstants.ContextNames.ALARM;
+		}
+	}
+	
+	public static List<FacilioField> getAlarmFields(SourceType type) throws Exception {
+		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		if (type == null) {
+			return bean.getAllFields(FacilioConstants.ContextNames.ALARM);
+		}
+		
+		switch (type) {
+			case THRESHOLD_ALARM:
+			case ANOMALY_ALARM:
+				return bean.getAllFields(FacilioConstants.ContextNames.READING_ALARM);
+			default:
+				return bean.getAllFields(FacilioConstants.ContextNames.ALARM);
+		}
+	}
+	
+	public static Class<? extends AlarmContext> getAlarmClass(SourceType type) {
+		if (type == null) {
+			return AlarmContext.class;
+		}
+		
+		switch (type) {
+			case THRESHOLD_ALARM:
+			case ANOMALY_ALARM:
+				return ReadingAlarmContext.class;
+			default:
+				return AlarmContext.class;
+		}
 	}
 }

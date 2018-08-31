@@ -1,19 +1,27 @@
 package com.facilio.bmsconsole.forms;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.forms.FormField.Required;
 import com.facilio.bmsconsole.modules.FacilioField.FieldDisplayType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.constants.FacilioConstants;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 
 public class FormFactory {
 	
 	private static final Map<String, FacilioForm> FORM_MAP = Collections.unmodifiableMap(initMap());
+	private static final Map<FormType, Multimap<String, FacilioForm>> ALL_FORMS = Collections.unmodifiableMap(initAllForms());
 
 	private static Map<String, FacilioForm> initMap() {
 		Map<String, FacilioForm> forms = new HashMap<>();
@@ -22,6 +30,23 @@ public class FormFactory {
 		return forms;
 	}
 	
+	@SuppressWarnings("unchecked") // https://stackoverflow.com/a/11205178
+	public static Map<String, Set<FacilioForm>> getAllForms(FormType formtype) {
+		return (Map<String, Set<FacilioForm>>) (Map<?, ?>) Multimaps.asMap(ALL_FORMS.get(formtype));
+	}
+	
+	private static Map<FormType, Multimap<String, FacilioForm>> initAllForms() {
+		return ImmutableMap.<FormType, Multimap<String, FacilioForm>>builder()
+				.put(FormType.MOBILE, 
+					ImmutableMultimap.<String, FacilioForm>builder()
+						.put(FacilioConstants.ContextNames.WORK_ORDER, getMobileWorkOrderForm()).build())
+				.put(FormType.PORTAL, ImmutableMultimap.<String, FacilioForm>builder()
+						.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, getServiceWorkRequestForm()).build())
+				.build();
+	}
+	
+	
+
 	public static FacilioForm getForm(String name) {
 		return FormFactory.FORM_MAP.get(name);
 	}
@@ -31,6 +56,7 @@ public class FormFactory {
 		form.setDisplayName("SUBMIT A REQUEST");
 		form.setName("loggedInServiceWorkRequest");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER_REQUEST));
+		form.setFormType(FormType.PORTAL);
 		form.setFields(getLoggedInServiceWorkRequestFormFields());
 		return form;
 	}
@@ -41,9 +67,31 @@ public class FormFactory {
 		form.setName("serviceWorkRequest");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER_REQUEST));
 		form.setFields(getServiceWorkRequestFormFields());
+		form.setFormType(FormType.PORTAL);
 		return form;
 	}
 	
+	public static FacilioForm getMobileWorkOrderForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("SUBMIT WORKORDER");
+		form.setName("mobile_default");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER));
+		form.setFields(getMobileWorkOrderFormFields());
+		form.setFormType(FormType.MOBILE);
+		return form;
+	}
+	
+	private static List<FormField> getMobileWorkOrderFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.REQUIRED, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.REQUIRED, 2));
+		fields.add(new FormField("resource", FieldDisplayType.WOASSETSPACECHOOSER, "Space/Asset", Required.REQUIRED, 3));
+		fields.add(new FormField("assignment", FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", Required.REQUIRED, 4));
+		fields.add(new FormField("priority", FieldDisplayType.LOOKUP_SIMPLE, "Priority", Required.OPTIONAL, "ticketpriority", 5));
+		fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachment", Required.OPTIONAL, 6));
+		return fields;
+	}
+
 	private static List<FormField> getLoggedInServiceWorkRequestFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.OPTIONAL, 1));
@@ -62,5 +110,4 @@ public class FormFactory {
 		fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachment", Required.OPTIONAL, 5));
 		return fields;
 	}
-	
 }

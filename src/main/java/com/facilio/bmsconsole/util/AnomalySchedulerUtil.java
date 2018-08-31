@@ -8,11 +8,15 @@ import java.util.logging.Logger;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AnalyticsAnomalyContext;
+import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.TemperatureContext;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
@@ -25,19 +29,25 @@ public class AnomalySchedulerUtil {
 	private static final String anomalyIdTable =  ModuleFactory.getAnalyticsAnomalyIDListModule().getTableName();
 	private static final String weatherDataTable = ModuleFactory.getAnalyticsAnomalyModuleWeatherData().getTableName();
 	
-	public static List<AnalyticsAnomalyContext> getAllReadings(String moduleName, long startTime, long endTime, long meterID, long orgID) throws Exception {
+	public static List<AnalyticsAnomalyContext> getAllEnergyReadings(long startTime, long endTime, long meterID, long orgID) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(moduleName);
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_DATA_READING);
+		
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(modBean.getField("totalEnergyConsumptionDelta", FacilioConstants.ContextNames.ENERGY_DATA_READING));
+		fields.add(modBean.getField("parentId", FacilioConstants.ContextNames.ENERGY_DATA_READING));
+		fields.add(modBean.getField("ttime", FacilioConstants.ContextNames.ENERGY_DATA_READING));
+		
 		List<AnalyticsAnomalyContext> listOfReadings=new ArrayList<AnalyticsAnomalyContext>();
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getAnomalySchedulerFields())
-				.table(energyDataTable)
+		SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
+				.select(fields)
+				.module(module)
 				.andCustomWhere("TTIME >= ? AND TTIME < ? AND PARENT_METER_ID=? " + 
 						" AND TOTAL_ENERGY_CONSUMPTION_DELTA IS NOT NULL  " + 
 						" AND (MARKED is NULL OR MARKED = 0) ",
 						startTime, endTime, meterID);
 	
-		List<Map<String, Object>> props = selectBuilder.get();
+		List<Map<String, Object>> props = selectBuilder.getAsProps();
 		if (props != null && !props.isEmpty()) {
 			
 			for(Map<String, Object> prop:props) {
