@@ -4,6 +4,7 @@ import org.apache.commons.chain.Chain;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
@@ -27,12 +28,64 @@ public class V2ReportAction extends FacilioAction {
 		this.reportContext = reportContext;
 	}
 	
-	public String addReport() throws Exception {
-		
-		if(reportContext != null) {
-			ReportUtil.addReport(reportContext);
+	public String addReadingReport() throws Exception {
+		try {
+			
+			JSONParser parser = new JSONParser();
+			JSONArray fieldArray = (JSONArray) parser.parse(fields);
+			JSONArray baseLineList = null;
+			if (baseLines != null && !baseLines.isEmpty()) {
+				baseLineList = (JSONArray) parser.parse(baseLines);
+			}
+			
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.START_TIME, startTime);
+			context.put(FacilioConstants.ContextNames.END_TIME, endTime);
+			context.put(FacilioConstants.ContextNames.REPORT_X_AGGR, xAggr);
+			context.put(FacilioConstants.ContextNames.REPORT_Y_FIELDS, FieldUtil.getAsBeanListFromJsonArray(fieldArray, ReadingAnalysisContext.class));
+			context.put(FacilioConstants.ContextNames.REPORT_MODE, mode);
+			context.put(FacilioConstants.ContextNames.BASE_LINE_LIST, FieldUtil.getAsBeanListFromJsonArray(baseLineList, ReportBaseLineContext.class));
+			
+			Chain addReadingReport = FacilioChainFactory.addReadingReportChain();
+			addReadingReport.execute(context);
+			
+			return setReportResult(context);
 		}
-		return SUCCESS;
+		catch (Exception e) {
+			setResponseCode(1);
+			setMessage(e);
+			return ERROR;
+		}
+	}
+	
+	public String addWorkOrderReport() throws Exception {
+		try {
+			
+			JSONParser parser = new JSONParser();
+			JSONArray fieldArray = (JSONArray) parser.parse(fields);
+			JSONArray baseLineList = null;
+			if (baseLines != null && !baseLines.isEmpty()) {
+				baseLineList = (JSONArray) parser.parse(baseLines);
+			}
+			
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.START_TIME, startTime);
+			context.put(FacilioConstants.ContextNames.END_TIME, endTime);
+			context.put(FacilioConstants.ContextNames.REPORT_X_AGGR, xAggr);
+			context.put(FacilioConstants.ContextNames.REPORT_Y_FIELDS, FieldUtil.getAsBeanListFromJsonArray(fieldArray, ReadingAnalysisContext.class));
+			context.put(FacilioConstants.ContextNames.REPORT_MODE, mode);
+			context.put(FacilioConstants.ContextNames.BASE_LINE_LIST, FieldUtil.getAsBeanListFromJsonArray(baseLineList, ReportBaseLineContext.class));
+			
+			Chain addWorkOrderChain = FacilioChainFactory.addWorkOrderReportChain();
+			addWorkOrderChain.execute(context);
+			
+			return setReportResult(context);
+		}
+		catch (Exception e) {
+			setResponseCode(1);
+			setMessage(e);
+			return ERROR;
+		}
 	}
 	
 	public String fetchReadingsData() {

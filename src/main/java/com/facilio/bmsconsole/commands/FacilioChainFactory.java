@@ -392,6 +392,20 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain addReadingReportChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new CreateReadingAnalyticsReportCommand());
+		c.addCommand(new AddReportCommand());
+		return c;
+	}
+	
+	public static Chain addWorkOrderReportChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new CreateWorkOrderAnalyticsReportCommand());
+		c.addCommand(new AddReportCommand());
+		return c;
+	}
+	
 	public static Chain getWorkOrderRequestDetailsChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForWorkOrderRequest());

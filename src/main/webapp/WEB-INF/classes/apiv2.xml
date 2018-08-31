@@ -290,10 +290,9 @@
 		</action>
 		<action name="workorderReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchWorkorderData">
 		</action>
-		<action name="addReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="addReport">
-			<result name="success" type="json">
-				<param name="includeProperties">^reportContext.*</param>
-			</result>
+		<action name="addReadingReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="addReadingReport">
+		</action>
+		<action name="addWorkOrderReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="addWorkOrderReport">
 		</action>
 	</package>
 	
