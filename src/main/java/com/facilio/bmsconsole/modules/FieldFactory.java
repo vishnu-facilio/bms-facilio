@@ -64,6 +64,7 @@ public class FieldFactory {
 			workOrderFieldsInclude.add("assignedTo");
 			workOrderFieldsInclude.add("assignmentGroup");
 			workOrderFieldsInclude.add("category");
+			workOrderFieldsInclude.add("createdBy");
 			workOrderFieldsInclude.add("createdTime");
 			workOrderFieldsInclude.add("dueDate");
 			workOrderFieldsInclude.add("estimatedEnd");
@@ -105,6 +106,7 @@ public class FieldFactory {
 			workorderRequestFieldInclude.add("dueDate");
 			workorderRequestFieldInclude.add("requester");
 			workorderRequestFieldInclude.add("urgency");
+			workorderRequestFieldInclude.add("createdBy");
 		}
 	}
 	

@@ -263,7 +263,7 @@ public class OrgBeanImpl implements OrgBean {
 	public List<User> getOrgUsers(long orgId, boolean status) throws Exception {
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(AccountConstants.getOrgUserFields());
 		Criteria criteria = new Criteria();
-		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("userType"), String.valueOf(AccountConstants.UserType.USER.getValue()), NumberOperators.EQUALS));
+		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("userStatus"), String.valueOf(status), NumberOperators.EQUALS));
 		return getOrgUsers(orgId, criteria);
 	}
 	
@@ -304,7 +304,7 @@ public class OrgBeanImpl implements OrgBean {
 				.table("Users")
 				.innerJoin("ORG_Users")
 				.on("Users.USERID = ORG_Users.USERID")
-				.andCustomWhere("ORGID = ? AND USER_STATUS = ? AND USER_TYPE = ? AND DELETED_TIME = -1", orgId, AccountConstants.UserType.USER.getValue())
+				.andCustomWhere("ORGID = ? AND USER_TYPE = ? AND DELETED_TIME = -1", orgId, AccountConstants.UserType.USER.getValue())
 				.andCriteria(criteria);
 				;
 		
