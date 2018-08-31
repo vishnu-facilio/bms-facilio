@@ -425,6 +425,7 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		THRESHOLD_ALARM(6, "Threshold Alarm"),
 		WEB_REQUEST(7, "Web Request"),
 		TASK(8, "Task"),
+		ANOMALY_ALARM(9, "Anomaly Alarm"),
 		;
 		
 		private int intVal;

@@ -9,17 +9,13 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext;
-import com.facilio.bmsconsole.context.ReadingAlarmContext;
-import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
 import com.facilio.wms.message.WmsEvent;
 import com.facilio.wms.util.WmsApi;
 
@@ -49,19 +45,8 @@ public class AddAlarmCommand implements Command {
 				alarm.setSeverity(AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.INFO_SEVERITY));
 			}
 			
-			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			List<FacilioField> fields = null;
-			String moduleName = null;
-			if (alarm instanceof ReadingAlarmContext) {
-				fields = bean.getAllFields(FacilioConstants.ContextNames.READING_ALARM);
-				moduleName = FacilioConstants.ContextNames.READING_ALARM;
-				alarm.setSourceType(TicketContext.SourceType.THRESHOLD_ALARM);
-			}
-			else {
-				fields = bean.getAllFields(FacilioConstants.ContextNames.ALARM);
-				moduleName = FacilioConstants.ContextNames.ALARM;
-				alarm.setSourceType(TicketContext.SourceType.ALARM);
-			}
+			List<FacilioField> fields = AlarmAPI.getAlarmFields(alarm.getSourceTypeEnum());
+			String moduleName = AlarmAPI.getAlarmModuleName(alarm.getSourceTypeEnum());
 			
 			InsertRecordBuilder<AlarmContext> builder = new InsertRecordBuilder<AlarmContext>()
 																.moduleName(moduleName)

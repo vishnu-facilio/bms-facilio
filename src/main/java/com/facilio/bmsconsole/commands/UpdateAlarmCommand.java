@@ -13,7 +13,6 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AlarmSeverityContext;
-import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -38,18 +37,10 @@ public class UpdateAlarmCommand implements Command {
 		if(alarm != null && recordIds != null && !recordIds.isEmpty()) {
 			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			List<FacilioField> fields = null;
-			String moduleName = null;
-			if (alarm instanceof ReadingAlarmContext) {
-				fields = modBean.getAllFields(FacilioConstants.ContextNames.READING_ALARM);
-				moduleName = FacilioConstants.ContextNames.READING_ALARM;
-			}
-			else {
-				fields = modBean.getAllFields(FacilioConstants.ContextNames.ALARM);
-				moduleName = FacilioConstants.ContextNames.ALARM;
-			}
-			FacilioModule module = modBean.getModule(moduleName);
+			List<FacilioField> fields = AlarmAPI.getAlarmFields(alarm.getSourceTypeEnum());
+			String moduleName = AlarmAPI.getAlarmModuleName(alarm.getSourceTypeEnum());
 			
+			FacilioModule module = modBean.getModule(moduleName);
 			String ids = StringUtils.join(recordIds, ",");
 			Condition idCondition = new Condition();
 			idCondition.setField(FieldFactory.getIdField(module));

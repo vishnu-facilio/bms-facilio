@@ -29,6 +29,7 @@ public class ClearAlarmOnWOCloseCommand implements Command {
 			switch(workOrder.getSourceTypeEnum()) {
 				case ALARM:
 				case THRESHOLD_ALARM:
+				case ANOMALY_ALARM:
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					FacilioModule alarmModule = modBean.getModule(FacilioConstants.ContextNames.ALARM);
 					SelectRecordsBuilder<AlarmContext> alarmBuilder = new SelectRecordsBuilder<AlarmContext>()

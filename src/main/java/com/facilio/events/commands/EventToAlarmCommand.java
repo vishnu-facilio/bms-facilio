@@ -134,7 +134,7 @@ public class EventToAlarmCommand implements Command {
 		
 		if (event.getAdditionInfo() != null) {
 			Long sourceType = (Long) FieldUtil.castOrParseValueAsPerType(FieldType.NUMBER, event.getAdditionInfo().get("sourceType"));
-			if (sourceType != null && sourceType == SourceType.THRESHOLD_ALARM.getIntVal()) {
+			if (sourceType != null && (sourceType == SourceType.THRESHOLD_ALARM.getIntVal() || sourceType == SourceType.ANOMALY_ALARM.getIntVal())) {
 				alarm.put("sourceType", sourceType);
 				alarm.put("startTime", event.getAdditionInfo().get("startTime"));
 				alarm.put("endTime", event.getAdditionInfo().get("endTime"));

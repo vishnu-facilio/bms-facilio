@@ -22,6 +22,7 @@ import com.facilio.bmsconsole.context.AnalyticsAnomalyContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.TemperatureContext;
+import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
@@ -332,6 +333,13 @@ public class AnomalyDetectorJob extends FacilioJob {
 			obj.put("severity", "Minor");
 			obj.put("timestamp", context.getTtime());
 			obj.put("consumption", context.getEnergyDelta());
+			
+			obj.put("sourceType", SourceType.ANOMALY_ALARM.getIntVal());
+			obj.put("readingFieldId", -1);
+			obj.put("readingDataId", -1);
+			obj.put("startTime", -1);
+			obj.put("endTime", -1);
+			obj.put("readingMessage", "");
 
 			FacilioContext addEventContext = new FacilioContext();
 			addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, obj);
