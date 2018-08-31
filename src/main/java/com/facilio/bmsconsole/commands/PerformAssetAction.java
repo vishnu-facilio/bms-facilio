@@ -289,9 +289,10 @@ public class PerformAssetAction implements Command {
 				
 				workOrder.setDueDate(DateTimeUtil.getDayStartTime(1)-1000);
 				
-//				workOrder.setAssignedTo();
-//				
-//				workOrder.setAssignmentGroup(assignmentGroup);
+				if(AccountUtil.getCurrentOrg().getId() == 92l) {
+					User user = AccountUtil.getUserBean().getUser(848657l);		//suresh+spicinemas@facilio.com user id
+					workOrder.setAssignedTo(user);
+				}
 				
 				WorkOrderAction woAction = new WorkOrderAction();
 				
