@@ -1,11 +1,11 @@
 package com.facilio.bmsconsole.jobs;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
@@ -32,6 +33,9 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
+import com.facilio.workflows.context.WorkflowFieldContext;
+import com.facilio.workflows.util.ExpressionAggregateOperator;
+import com.facilio.workflows.util.WorkflowUtil;
 
 public class HistoricalRunForReadingRule extends FacilioJob {
 	private static final Logger LOGGER = LogManager.getLogger(HistoricalRunForReadingRule.class.getName());
@@ -49,9 +53,26 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 			JSONObject props = BmsJobUtil.getJobProps(jc.getJobId(), jc.getJobName());
 			long startTime = (long) props.get("startTime");
 			long endTime = (long) props.get("endTime");
-			List<ReadingContext> readings = fetchReadings(readingRule, startTime, endTime);
-			executeWorkflows(readingRule, readings);
-			LOGGER.info("Time taken for Historical Run for Reading Rul : "+jc.getJobId()+" between "+startTime+" and "+endTime+" is "+(System.currentTimeMillis() - jobStartTime));
+			
+			LOGGER.info("Historical execution of rule : "+readingRule.getId()+" for resources : "+readingRule.getMatchedResources().keySet());
+			
+			List<WorkflowFieldContext> fields = WorkflowUtil.getWorkflowFields(readingRule.getWorkflow().getId());
+			LOGGER.info("Dependent fields : "+fields);
+			
+			Map<String, List<ReadingDataMeta>> supportFieldsRDM = null;
+			if (fields != null && !fields.isEmpty()) {
+				supportFieldsRDM = getSupportingData(fields, startTime, endTime);
+				LOGGER.info("Support Fields RDM Values size : "+supportFieldsRDM.size());
+			}
+			for (long resourceId : readingRule.getMatchedResources().keySet()) {
+				LOGGER.info("Gonna fetch data and execute rule for resource : "+resourceId);
+				long processStartTime = System.currentTimeMillis();
+				long currentStartTime = startTime - (ReadingsAPI.getDataInterval(resourceId, readingRule.getReadingField().getModule()) * 60 * 1000);
+				List<ReadingContext> readings = fetchReadings(readingRule, resourceId, currentStartTime, endTime);
+				executeWorkflows(readingRule, readings, supportFieldsRDM, fields);
+				LOGGER.info("Time taken for Historical Run for Reading Rule : "+jc.getJobId()+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is "+(System.currentTimeMillis() - processStartTime));
+			}
+			LOGGER.info("Total Time taken for Historical Run for Reading Rule : "+jc.getJobId()+" between "+startTime+" and "+endTime+" is "+(System.currentTimeMillis() - jobStartTime));
 		}
 		catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
@@ -59,20 +80,44 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 		}
 	}
 	
-	private void executeWorkflows(ReadingRuleContext readingRule, List<ReadingContext> readings) throws Exception {
+	private void executeWorkflows(ReadingRuleContext readingRule, List<ReadingContext> readings, Map<String, List<ReadingDataMeta>> supportFieldsRDM, List<WorkflowFieldContext> fields) throws Exception {
 		if (readings != null && !readings.isEmpty()) {
 			Map<String, Object> placeHolders = new HashMap<>();
 			CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeHolders);
 			CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeHolders);
 			
 			FacilioContext context = new FacilioContext(); 
-			context.put(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META, fetchRDM(readingRule));
+			ReadingDataMeta prevRDM = null;
+			int itr = 0;
+			for (; itr < readings.size(); itr++) {
+				prevRDM = getRDM(readings.get(itr), readingRule.getReadingField());
+				if (prevRDM != null) {
+					break;
+				}
+			}
 			
-			for (ReadingContext reading : readings) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			List<FacilioField> allFields = modBean.getAllFields(readingRule.getReadingField().getModule().getName());
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
+			Map<String, Integer> lastItr = new HashMap<>(); //To store itr of currently matched rdm itr
+			
+			for (int i = itr; i < readings.size(); i++) {
+				ReadingContext reading = readings.get(i);
 				try {
-					Map<String, Object> recordPlaceHolders = new HashMap<>(placeHolders);
-					CommonCommandUtil.appendModuleNameInKey(readingRule.getReadingField().getModule().getName(), readingRule.getReadingField().getModule().getName(), FieldUtil.getAsProperties(reading), recordPlaceHolders);
-					WorkflowRuleAPI.evaluateWorkflow(readingRule, readingRule.getReadingField().getModule().getName(), reading, recordPlaceHolders, context);
+					ReadingDataMeta currentRDM = getRDM(reading, readingRule.getReadingField());
+					if (currentRDM != null) {
+						context.put(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META, Collections.singletonMap(ReadingsAPI.getRDMKey(reading.getParentId(), readingRule.getReadingField()), prevRDM));
+						
+						Map<String, ReadingDataMeta> rdmCache = getCurrentRDMs(reading, fieldMap);
+						getOtherRDMs(reading.getTtime(), supportFieldsRDM, rdmCache, lastItr, fields);
+						context.put(FacilioConstants.ContextNames.CURRRENT_READING_DATA_META, rdmCache);
+						
+						Map<String, Object> recordPlaceHolders = new HashMap<>(placeHolders);
+						CommonCommandUtil.appendModuleNameInKey(readingRule.getReadingField().getModule().getName(), readingRule.getReadingField().getModule().getName(), FieldUtil.getAsProperties(reading), recordPlaceHolders);
+						WorkflowRuleAPI.evaluateWorkflow(readingRule, readingRule.getReadingField().getModule().getName(), reading, recordPlaceHolders, context);
+						
+						prevRDM = currentRDM;
+					}
 				}
 				catch (Exception e) {
 					StringBuilder builder = new StringBuilder("Error during execution of rule : ");
@@ -88,33 +133,146 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 		}
 	}
 	
-	private Map<String, ReadingDataMeta> fetchRDM(ReadingRuleContext readingRule) throws Exception {
-		List<Pair<Long, FacilioField>> rdmPairs = new ArrayList<>();
-		for (Long id : readingRule.getMatchedResources().keySet()) {
-			rdmPairs.add(Pair.of(id, readingRule.getReadingField()));
+	private void getOtherRDMs(long ttime, Map<String, List<ReadingDataMeta>> rdmMap, Map<String, ReadingDataMeta> rdmCache, Map<String, Integer> lastItr, List<WorkflowFieldContext> fields) {
+		if (rdmMap != null && !rdmMap.isEmpty()) {
+			for (WorkflowFieldContext field : fields) {
+				if (field.getAggregationEnum() == ExpressionAggregateOperator.LAST_VALUE) {
+					String rdmKey = ReadingsAPI.getRDMKey(field.getResourceId(), field.getField());
+					List<ReadingDataMeta> rdmList = rdmMap.get(ReadingsAPI.getRDMKey(field.getResourceId(), field.getField()));
+					ReadingDataMeta prevRDM = null;
+					Integer itr = lastItr.get(rdmKey);
+					if (itr == null) {
+						itr = 0;
+					}
+					
+					if (rdmList != null && !rdmList.isEmpty()) {
+						for (; itr < rdmList.size(); itr++) {
+							ReadingDataMeta rdm = rdmList.get(itr);
+							if (rdm.getTtime() > ttime) {
+								break;
+							}
+							prevRDM = rdm;
+						}
+					}
+					if (prevRDM != null) {
+						rdmCache.put(rdmKey, prevRDM);
+						lastItr.put(rdmKey, itr - 1);
+					}
+				}
+			}
 		}
-		Map<String, ReadingDataMeta> rdm = ReadingsAPI.getReadingDataMetaMap(rdmPairs);
-		return rdm;
+	}
+	
+	private Map<String, ReadingDataMeta> getCurrentRDMs(ReadingContext reading, Map<String, FacilioField> fieldMap) {
+		Map<String, ReadingDataMeta> rdmCache = new HashMap<>();
+		Map<String, Object> data = reading.getReadings();
+		if (data != null && !data.isEmpty()) {
+			for (Map.Entry<String, Object> entry : data.entrySet()) {
+				FacilioField field = fieldMap.get(entry.getKey());
+				if (field != null) {
+					ReadingDataMeta rdm = getRDM(reading, field);
+					rdmCache.put(ReadingsAPI.getRDMKey(reading.getParentId(), field), rdm);
+				}
+			}
+		}
+		return rdmCache;
+	}
+	
+	private Map<String, List<ReadingDataMeta>> getSupportingData(List<WorkflowFieldContext> fields, long startTime, long endTime) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		Map<String, List<ReadingDataMeta>> supportingValues = new HashMap<>();
+		for (WorkflowFieldContext field : fields) {
+			if (field.getAggregationEnum() == ExpressionAggregateOperator.LAST_VALUE) {
+				FacilioField valField = modBean.getField(field.getFieldId());
+				field.setField(valField);
+				String rdmKey = ReadingsAPI.getRDMKey(field.getResourceId(), valField);
+				
+				List<FacilioField> allFields = modBean.getAllFields(valField.getModule().getName());
+				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
+				FacilioField parentField = fieldMap.get("parentId");
+				FacilioField ttimeField = fieldMap.get("ttime");
+				
+				List<FacilioField> selectFields = new ArrayList<>();
+				selectFields.add(valField);
+				selectFields.add(parentField);
+				selectFields.add(ttimeField);
+				
+				SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
+																		.select(selectFields)
+																		.module(valField.getModule())
+																		.beanClass(ReadingContext.class)
+																		.andCondition(CriteriaAPI.getCondition(parentField, String.valueOf(field.getResourceId()), PickListOperators.IS))
+																		.andCondition(CriteriaAPI.getCondition(ttimeField, startTime+","+endTime, DateOperators.BETWEEN))
+																		.andCondition(CriteriaAPI.getCondition(valField, CommonOperators.IS_NOT_EMPTY))
+																		.orderBy("TTIME")
+																		;
+
+				List<ReadingContext> values = selectBuilder.get();
+				if (values != null && !values.isEmpty()) {
+					List<ReadingDataMeta> rdms = new ArrayList<>();
+					for (ReadingContext value : values) {
+						ReadingDataMeta rdm = getRDM(value, valField);
+						rdms.add(rdm);
+					}
+					supportingValues.put(rdmKey, rdms);
+				}
+				else {
+					selectBuilder = new SelectRecordsBuilder<ReadingContext>()
+										.select(selectFields)
+										.module(valField.getModule())
+										.beanClass(ReadingContext.class)
+										.andCondition(CriteriaAPI.getCondition(parentField, String.valueOf(field.getResourceId()), PickListOperators.IS))
+										.andCondition(CriteriaAPI.getCondition(ttimeField, String.valueOf(startTime), DateOperators.IS_BEFORE))
+										.andCondition(CriteriaAPI.getCondition(valField, CommonOperators.IS_NOT_EMPTY))
+										.orderBy("TTIME DESC")
+										.limit(1)
+										;
+					values = selectBuilder.get();
+					ReadingDataMeta rdm = null;
+					if (values != null && !values.isEmpty()) {
+						rdm = getRDM(values.get(0), valField);
+					}
+					else {
+						rdm = ReadingsAPI.getReadingDataMeta(field.getResourceId(), valField);
+					}
+					if (rdm != null) {
+						supportingValues.put(rdmKey, Collections.singletonList(rdm));
+					}
+				}
+			}
+		}
+		return supportingValues;
+	}
+	
+	private ReadingDataMeta getRDM(ReadingContext value, FacilioField valField) {
+		Object val = value.getReading(valField.getName());
+		if (val != null) {
+			ReadingDataMeta rdm = new ReadingDataMeta();
+			rdm.setFieldId(valField.getFieldId());
+			rdm.setField(valField);
+			rdm.setTtime(value.getTtime());
+			rdm.setValue(val);
+			rdm.setReadingDataId(value.getId());
+			rdm.setResourceId(value.getParentId());
+			return rdm;
+		}
+		return null;
 	}
 
-	private List<ReadingContext> fetchReadings(ReadingRuleContext readingRule, long startTime, long endTime) throws Exception {
+	private List<ReadingContext> fetchReadings(ReadingRuleContext readingRule, long resourceId, long startTime, long endTime) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioField> fields = modBean.getAllFields(readingRule.getReadingField().getModule().getName());
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		FacilioField parentField = fieldMap.get("parentId");
 		FacilioField ttimeField = fieldMap.get("ttime");
 		
-		List<FacilioField> selectFields = new ArrayList<>();
-		selectFields.add(readingRule.getReadingField());
-		selectFields.add(parentField);
-		selectFields.add(ttimeField);
-		
 		SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
-																.select(selectFields)
+																.select(fields)
 																.module(readingRule.getReadingField().getModule())
 																.beanClass(ReadingContext.class)
-																.andCondition(CriteriaAPI.getCondition(parentField, readingRule.getMatchedResources().keySet(), PickListOperators.IS))
+																.andCondition(CriteriaAPI.getCondition(parentField, String.valueOf(resourceId), PickListOperators.IS))
 																.andCondition(CriteriaAPI.getCondition(ttimeField, startTime+","+endTime, DateOperators.BETWEEN))
+																.orderBy("TTIME")
 																;
 		
 		return selectBuilder.get();
