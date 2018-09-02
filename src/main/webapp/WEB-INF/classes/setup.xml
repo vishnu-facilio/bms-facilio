@@ -270,8 +270,8 @@
 			</result>
 		</action>
 		<action name="addmobilesetting"  class="com.facilio.bmsconsole.actions.UserAction" method="addMobileSetting">
-			<param name="moduleName">setup</param>
-			<param name="permission">USER_MANAGEMENT</param>
+			<!-- <param name="moduleName">setup</param>
+			<param name="permission">USER_MANAGEMENT</param> -->
 			<result name="success" type="json">
 				<param name="includeProperties">^userMobileSetting.*</param>
 			</result>
@@ -282,8 +282,8 @@
 			</result>
 		</action>
 		<action name="removemobilesetting"  class="com.facilio.bmsconsole.actions.UserAction" method="removeMobileSetting">
-			<param name="moduleName">setup</param>
-			<param name="permission">USER_MANAGEMENT</param>
+			<!-- <param name="moduleName">setup</param>
+			<param name="permission">USER_MANAGEMENT</param> -->
 			<result name="success" type="json">
 				<param name="includeProperties">^userMobileSetting.*</param>
 			</result>
