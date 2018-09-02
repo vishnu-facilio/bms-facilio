@@ -112,8 +112,8 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 						
 						Map<String, ReadingDataMeta> rdmCache = getCurrentRDMs(reading, fieldMap);
 						getOtherRDMs(reading.getTtime(), supportFieldsRDM, rdmCache, lastItr, fields);
-//						LOGGER.info("Current RDM : "+rdmCache.keySet());
-//						LOGGER.info("Current RDM Size : "+rdmCache.size());
+						LOGGER.info("Current RDM : "+rdmCache.keySet());
+						LOGGER.info("Current RDM Size : "+rdmCache.size());
 						
 						context.put(FacilioConstants.ContextNames.CURRRENT_READING_DATA_META, rdmCache);
 						
