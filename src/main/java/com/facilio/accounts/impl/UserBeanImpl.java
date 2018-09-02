@@ -1085,7 +1085,7 @@ public long inviteRequester(long orgId, User user) throws Exception {
 		if (props != null && !props.isEmpty()) {
 			Map<Long, User> users = new HashMap<>();
 			for(Map<String, Object> prop : props) {
-				User user = UserBeanImpl.createUserFromProps(prop);
+				User user = createUserFromProps(prop);
 				user.setAccessibleSpace(getAccessibleSpaceList(user.getOuid()));
 				users.put(user.getId(), user);
 			}

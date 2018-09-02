@@ -6,6 +6,8 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -47,7 +49,12 @@ public class GetWorkOrderRequestCommand implements Command {
 				
 				TicketAPI.loadRelatedModules(workOrderRequest);
 				TicketAPI.loadTicketLookups(Collections.singleton(workOrderRequest));
-
+				if (workOrderRequest.getRequester() != null) {
+					List<User> users = AccountUtil.getUserBean().getUsers(null, Collections.singletonList(workOrderRequest.getRequester().getId()));
+					if (users != null && !users.isEmpty()) {
+						workOrderRequest.setRequester(users.get(0));
+					}
+				}
 			}
 		}
 		else {
