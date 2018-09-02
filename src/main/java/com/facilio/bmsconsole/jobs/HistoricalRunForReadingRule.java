@@ -55,14 +55,16 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 			long endTime = (long) props.get("endTime");
 			
 			LOGGER.info("Historical execution of rule : "+readingRule.getId()+" for resources : "+readingRule.getMatchedResources().keySet());
-			
-			List<WorkflowFieldContext> fields = WorkflowUtil.getWorkflowFields(readingRule.getWorkflow().getId());
-			LOGGER.info("Dependent fields : "+fields);
-			
 			Map<String, List<ReadingDataMeta>> supportFieldsRDM = null;
-			if (fields != null && !fields.isEmpty()) {
-				supportFieldsRDM = getSupportingData(fields, startTime, endTime);
-				LOGGER.info("Support Fields RDM Values size : "+supportFieldsRDM.size());
+			List<WorkflowFieldContext> fields = null;
+			if (readingRule.getWorkflow() != null) {
+				fields = WorkflowUtil.getWorkflowFields(readingRule.getWorkflow().getId());
+				LOGGER.info("Dependent fields : "+fields);
+			
+				if (fields != null && !fields.isEmpty()) {
+					supportFieldsRDM = getSupportingData(fields, startTime, endTime);
+					LOGGER.info("Support Fields RDM Values size : "+supportFieldsRDM.size());
+				}
 			}
 			for (long resourceId : readingRule.getMatchedResources().keySet()) {
 				LOGGER.info("Gonna fetch data and execute rule for resource : "+resourceId);
@@ -134,7 +136,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 	}
 	
 	private void getOtherRDMs(long ttime, Map<String, List<ReadingDataMeta>> rdmMap, Map<String, ReadingDataMeta> rdmCache, Map<String, Integer> lastItr, List<WorkflowFieldContext> fields) {
-		if (rdmMap != null && !rdmMap.isEmpty()) {
+		if (rdmMap != null && !rdmMap.isEmpty() && fields != null && !fields.isEmpty()) {
 			for (WorkflowFieldContext field : fields) {
 				if (field.getAggregationEnum() == ExpressionAggregateOperator.LAST_VALUE) {
 					String rdmKey = ReadingsAPI.getRDMKey(field.getResourceId(), field.getField());
