@@ -489,26 +489,13 @@ public class ViewFactory {
 	
 	private static FacilioView getOpenWorkorderRequests() {
 		
-		FacilioField field = new FacilioField();
-		field.setName("status");
-		field.setColumnName("STATUS");
-		field.setDataType(FieldType.NUMBER);
-		FacilioModule workOrderRequestsModule = ModuleFactory.getWorkOrderRequestsModule();
-		field.setModule(workOrderRequestsModule);
-		
-		Condition condition = new Condition();
-		condition.setField(field);
-		condition.setOperator(NumberOperators.EQUALS);
-		condition.setValue(String.valueOf(WorkOrderRequestContext.RequestStatus.OPEN.getIntVal()));
-		
-		Criteria criteria = new Criteria();
-		criteria.addAndCondition(condition);
+		Criteria criteria = getWorkRequestStatusCriteria(WorkOrderRequestContext.RequestStatus.OPEN);
 		
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("createdTime");
 		createdTime.setDataType(FieldType.NUMBER);
 		createdTime.setColumnName("CREATED_TIME");
-		createdTime.setModule(workOrderRequestsModule);
+		createdTime.setModule(ModuleFactory.getWorkOrderRequestsModule());
 		
 		FacilioView allRequestsView = new FacilioView();
 		allRequestsView.setName("open");
@@ -521,6 +508,24 @@ public class ViewFactory {
 	
 	private static FacilioView getRejectedWorkorderRequests() {
 		
+		Criteria criteria = getWorkRequestStatusCriteria(WorkOrderRequestContext.RequestStatus.REJECTED);
+		
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(ModuleFactory.getWorkOrderRequestsModule());
+		
+		FacilioView allRequestsView = new FacilioView();
+		allRequestsView.setName("rejected");
+		allRequestsView.setDisplayName("Rejected Work Requests");
+		allRequestsView.setCriteria(criteria);
+		allRequestsView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		return allRequestsView;
+	}
+	
+	public static Criteria getWorkRequestStatusCriteria(WorkOrderRequestContext.RequestStatus status) {
+		
 		FacilioField field = new FacilioField();
 		field.setName("status");
 		field.setColumnName("STATUS");
@@ -531,23 +536,12 @@ public class ViewFactory {
 		Condition condition = new Condition();
 		condition.setField(field);
 		condition.setOperator(NumberOperators.EQUALS);
-		condition.setValue(String.valueOf(WorkOrderRequestContext.RequestStatus.REJECTED.getIntVal()));
+		condition.setValue(String.valueOf(status.getIntVal()));
 		
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(condition);
 		
-		FacilioField createdTime = new FacilioField();
-		createdTime.setName("createdTime");
-		createdTime.setDataType(FieldType.NUMBER);
-		createdTime.setColumnName("CREATED_TIME");
-		createdTime.setModule(workOrderRequestsModule);
-		
-		FacilioView allRequestsView = new FacilioView();
-		allRequestsView.setName("rejected");
-		allRequestsView.setDisplayName("Rejected Work Requests");
-		allRequestsView.setCriteria(criteria);
-		allRequestsView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
-		return allRequestsView;
+		return criteria;
 	}
 	
 	private static FacilioView getAllOpenWorkOrders() {
@@ -1420,6 +1414,16 @@ public class ViewFactory {
 				
 			case "unassigned": 
 				criteria = getUnAssignedCriteria(module);
+			break;
+				
+			case "rejected":
+				criteria = getWorkRequestStatusCriteria(WorkOrderRequestContext.RequestStatus.REJECTED);
+			break;
+				
+			case "open":
+				if (module.getName().equals(FacilioConstants.ContextNames.WORK_ORDER_REQUEST)) {
+					criteria = getWorkRequestStatusCriteria(WorkOrderRequestContext.RequestStatus.OPEN);
+				}
 			break;
 		}
 		return !criteria.isEmpty() ? criteria : null; 

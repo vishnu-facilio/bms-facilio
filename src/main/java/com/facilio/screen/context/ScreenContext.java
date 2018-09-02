@@ -9,7 +9,7 @@ public class ScreenContext {
 	Long orgId;
 	String name;
 	int interval;
-	List<ScreenDashboardRelContext> screenDashboards;
+	List<ScreenDashboardRelContext> screenDashboards = new ArrayList<>();
 	
 	public List<ScreenDashboardRelContext> getScreenDashboards() {
 		return screenDashboards;
