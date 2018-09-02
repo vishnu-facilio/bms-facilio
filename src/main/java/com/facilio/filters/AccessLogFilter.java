@@ -38,6 +38,7 @@ public class AccessLogFilter implements Filter {
     private static final String DUMMY_MSG = "accesslog";
     private static final String APPENDER_NAME = "graylog2";
     private static final String DEFAULT_ORG_USER_ID = "-1";
+    private static final String X_DEVICE_TYPE = "X-Device-Type";
 
     private static final AtomicInteger THREAD_ID = new AtomicInteger(1);
 
@@ -88,6 +89,21 @@ public class AccessLogFilter implements Filter {
         } else {
             event.setProperty("userId", DEFAULT_ORG_USER_ID);
         }
+
+        String origin = request.getHeader("Origin");
+        if(origin != null) {
+            event.setProperty("origin", origin);
+        } else {
+            event.setProperty("origin", DEFAULT_QUERY_STRING);
+        }
+
+        String deviceType = request.getHeader(X_DEVICE_TYPE);
+        if(deviceType != null) {
+            event.setProperty("deviceType", deviceType);
+        } else {
+            event.setProperty("deviceType", DEFAULT_QUERY_STRING);
+        }
+
         long timeTaken = System.currentTimeMillis()-startTime;
         event.setProperty(RESPONSE_CODE, String.valueOf(response.getStatus()));
         event.setProperty(TIME_TAKEN, String.valueOf(timeTaken/1000));
