@@ -56,22 +56,37 @@ public class AddWidgetCommand implements Command {
 				insertBuilder.save();
 				
 				if(widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD) || widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD_MINI) || widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_ENERGY_CARBON_CARD_MINI)) {
-					Long workflowId = WorkflowUtil.addWorkflow(DashboardUtil.WEATHER_WIDGET_WORKFLOW_STRING);
-					WidgetVsWorkflowContext widgetVsWorkflowContext = new WidgetVsWorkflowContext();
 					
-					widgetVsWorkflowContext.setWidgetId(widget.getId());
-					widgetVsWorkflowContext.setWorkflowId(workflowId);
-					widgetVsWorkflowContext.setWorkflowName("weather");
+					if(widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD) || widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD_MINI)) {
+						
+						Long workflowId = WorkflowUtil.addWorkflow(DashboardUtil.WEATHER_WIDGET_WORKFLOW_STRING);
+						WidgetVsWorkflowContext widgetVsWorkflowContext = new WidgetVsWorkflowContext();
+						
+						widgetVsWorkflowContext.setWidgetId(widget.getId());
+						widgetVsWorkflowContext.setWorkflowId(workflowId);
+						widgetVsWorkflowContext.setWorkflowName("weather");
+						
+						if(widgetStaticContext.getBaseSpaceId() != null) {
+							widgetVsWorkflowContext.setBaseSpaceId(widgetStaticContext.getBaseSpaceId());
+						}
+						
+						DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
+					}
 					
-					DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
-					
-					workflowId = WorkflowUtil.addWorkflow(DashboardUtil.CARBON_EMISSION_CARD);
-					widgetVsWorkflowContext = new WidgetVsWorkflowContext();
-					
-					widgetVsWorkflowContext.setWidgetId(widget.getId());
-					widgetVsWorkflowContext.setWorkflowId(workflowId);
-					widgetVsWorkflowContext.setWorkflowName("carbonEmission");
-					DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
+					if(widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD) || widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_ENERGY_CARBON_CARD_MINI)) {
+						Long workflowId = WorkflowUtil.addWorkflow(DashboardUtil.CARBON_EMISSION_CARD);
+						WidgetVsWorkflowContext widgetVsWorkflowContext = new WidgetVsWorkflowContext();
+						
+						widgetVsWorkflowContext.setWidgetId(widget.getId());
+						widgetVsWorkflowContext.setWorkflowId(workflowId);
+						widgetVsWorkflowContext.setWorkflowName("carbonEmission");
+						
+						if(widgetStaticContext.getBaseSpaceId() != null) {
+							widgetVsWorkflowContext.setBaseSpaceId(widgetStaticContext.getBaseSpaceId());
+						}
+						
+						DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
+					}
 				}
 				else if(widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_ENERGY_COST_CARD) || widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_ENERGY_COST_CARD_MINI)) {
 					Long workflowId = WorkflowUtil.addWorkflow(DashboardUtil.ENERGY_COST_THIS_MONTH_CONSUMPTION_WORKFLOW);
@@ -80,6 +95,11 @@ public class AddWidgetCommand implements Command {
 					widgetVsWorkflowContext.setWidgetId(widget.getId());
 					widgetVsWorkflowContext.setWorkflowId(workflowId);
 					widgetVsWorkflowContext.setWorkflowName("currentMonth");
+					
+					if(widgetStaticContext.getBaseSpaceId() != null) {
+						widgetVsWorkflowContext.setBaseSpaceId(widgetStaticContext.getBaseSpaceId());
+					}
+					
 					DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
 					
 					workflowId = WorkflowUtil.addWorkflow(DashboardUtil.ENERGY_COST_LAST_MONTH_CONSUMPTION_WORKFLOW);
@@ -88,6 +108,9 @@ public class AddWidgetCommand implements Command {
 					widgetVsWorkflowContext.setWidgetId(widget.getId());
 					widgetVsWorkflowContext.setWorkflowId(workflowId);
 					widgetVsWorkflowContext.setWorkflowName("lastMonth");
+					if(widgetStaticContext.getBaseSpaceId() != null) {
+						widgetVsWorkflowContext.setBaseSpaceId(widgetStaticContext.getBaseSpaceId());
+					}
 					DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
 					
 					BaseLineContext baseline = BaseLineAPI.getBaseLine(RangeType.PREVIOUS_MONTH);
@@ -98,6 +121,9 @@ public class AddWidgetCommand implements Command {
 					widgetVsWorkflowContext.setWidgetId(widget.getId());
 					widgetVsWorkflowContext.setWorkflowId(workflowId);
 					widgetVsWorkflowContext.setWorkflowName("lastMonthThisDate");
+					if(widgetStaticContext.getBaseSpaceId() != null) {
+						widgetVsWorkflowContext.setBaseSpaceId(widgetStaticContext.getBaseSpaceId());
+					}
 					DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
 					
 					energyCostLastMonth = DashboardUtil.LAST_MONTH_THIS_DATE.replaceAll("\\$\\$BASELINE_ID\\$\\$", baseline.getId()+"");
@@ -107,6 +133,9 @@ public class AddWidgetCommand implements Command {
 					widgetVsWorkflowContext.setWidgetId(widget.getId());
 					widgetVsWorkflowContext.setWorkflowId(workflowId);
 					widgetVsWorkflowContext.setWorkflowName("lastMonthDate");
+					if(widgetStaticContext.getBaseSpaceId() != null) {
+						widgetVsWorkflowContext.setBaseSpaceId(widgetStaticContext.getBaseSpaceId());
+					}
 					DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
 				}
 				else if(widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_ENERGY_CARD_MINI)) {
@@ -117,6 +146,9 @@ public class AddWidgetCommand implements Command {
 					widgetVsWorkflowContext.setWidgetId(widget.getId());
 					widgetVsWorkflowContext.setWorkflowId(workflowId);
 					widgetVsWorkflowContext.setWorkflowName("currentMonth");
+					if(widgetStaticContext.getBaseSpaceId() != null) {
+						widgetVsWorkflowContext.setBaseSpaceId(widgetStaticContext.getBaseSpaceId());
+					}
 					DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
 					
 					workflowId = WorkflowUtil.addWorkflow(DashboardUtil.ENERGY_CONSUMPTION_LAST_MONTH_WORKFLOW);
@@ -125,6 +157,9 @@ public class AddWidgetCommand implements Command {
 					widgetVsWorkflowContext.setWidgetId(widget.getId());
 					widgetVsWorkflowContext.setWorkflowId(workflowId);
 					widgetVsWorkflowContext.setWorkflowName("lastMonth");
+					if(widgetStaticContext.getBaseSpaceId() != null) {
+						widgetVsWorkflowContext.setBaseSpaceId(widgetStaticContext.getBaseSpaceId());
+					}
 					DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
 					
 				}

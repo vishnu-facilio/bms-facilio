@@ -1159,7 +1159,7 @@ public class DashboardAction extends ActionSupport {
 							if(reportSpaceFilterContext.getBuildingId() != null) {
 								paramMap.put("parentId", reportSpaceFilterContext.getBuildingId());
 							}
-							if(widgetStaticContext != null && ( (widgetStaticContext.getStaticKey().equals("weathercard") && widgetVsWorkflowContext.getWorkflowName().equals("weather"))  || (widgetStaticContext.getStaticKey().equals("weathercardaltayer") && widgetVsWorkflowContext.getWorkflowName().equals("weather")) )) {
+							if(widgetStaticContext != null && ( ((widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD) || widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD_MINI)) && widgetVsWorkflowContext.getWorkflowName().equals("weather"))  || (widgetStaticContext.getStaticKey().equals("weathercardaltayer") && widgetVsWorkflowContext.getWorkflowName().equals("weather")) )) {
 								BaseSpaceContext basespace = SpaceAPI.getBaseSpace(reportSpaceFilterContext.getBuildingId());
 								if(basespace != null) {
 									paramMap.put("parentId", basespace.getSiteId());
@@ -1170,9 +1170,9 @@ public class DashboardAction extends ActionSupport {
 							if(paramMap == null) {
 								paramMap = new HashMap<>();
 							}
-							DateRange rang1e = DateOperators.CURRENT_MONTH_UPTO_NOW.getRange(null);
-							paramMap.put("startTime", rang1e.getStartTime());
-							paramMap.put("endTime", rang1e.getEndTime());
+							DateRange range1 = DateOperators.CURRENT_MONTH_UPTO_NOW.getRange(null);
+							paramMap.put("startTime", range1.getStartTime());
+							paramMap.put("endTime", range1.getEndTime());
 						}
 						Object wfResult = WorkflowUtil.getResult(widgetVsWorkflowContext.getWorkflowId(), paramMap);
 						
