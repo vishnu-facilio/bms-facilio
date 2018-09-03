@@ -125,21 +125,17 @@ public class AttachmentAction  extends FacilioAction {
 		this.attachments = attachments;
 	}
 	
-	public String attachmentList() {
+	public String attachmentList() throws Exception {
 		
-		try {
-			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.MODULE_NAME, this.module);
-			context.put(FacilioConstants.ContextNames.RECORD_ID, this.recordId);
-			
-			Chain getAttachmentsChain = FacilioChainFactory.getAttachmentsChain();
-			getAttachmentsChain.execute(context);
-			
-			List<AttachmentContext> attachmentList = (List<AttachmentContext>) context.get(FacilioConstants.ContextNames.ATTACHMENT_LIST);
-			setAttachments(attachmentList);
-		} catch (Exception e) {
-			log.info("Exception occurred ", e);
-		}
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, this.module);
+		context.put(FacilioConstants.ContextNames.RECORD_ID, this.recordId);
+		
+		Chain getAttachmentsChain = FacilioChainFactory.getAttachmentsChain();
+		getAttachmentsChain.execute(context);
+		
+		List<AttachmentContext> attachmentList = (List<AttachmentContext>) context.get(FacilioConstants.ContextNames.ATTACHMENT_LIST);
+		setAttachments(attachmentList);
 		return SUCCESS;
 	}
 	
@@ -197,29 +193,16 @@ public class AttachmentAction  extends FacilioAction {
 	
 	/******************      V2 Api    ******************/
 	
-	public String v2attachmentList() {
-		try {
-			String response = attachmentList();
-			setResult(FacilioConstants.ContextNames.ATTACHMENT_LIST, getAttachments());
-			return response;
-		}
-		catch(Exception e) {
-			setResponseCode(1);
-			setMessage(e);
-			return ERROR;
-		}
+	public String v2attachmentList() throws Exception {
+		attachmentList();
+		setResult(FacilioConstants.ContextNames.ATTACHMENT_LIST, getAttachments());
+		return SUCCESS;
 	}
+	
 	public String v2addAttachment() throws Exception {
-		try {
-			String response = addAttachment();
-			setResult(FacilioConstants.ContextNames.ATTACHMENT, attachments);
-			return response;
-		}
-		catch(Exception e) {
-			setResponseCode(1);
-			setMessage(e);
-			return ERROR;
-		}
+		addAttachment();
+		setResult(FacilioConstants.ContextNames.ATTACHMENT, attachments);
+		return SUCCESS;
 	}
 	
 }

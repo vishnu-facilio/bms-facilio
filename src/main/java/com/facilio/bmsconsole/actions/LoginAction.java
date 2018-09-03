@@ -987,17 +987,10 @@ public class LoginAction extends FacilioAction{
 
 /******************      V2 Api    ******************/
 	
-	public String v2currentAccount() {
-		try {
-			String response = currentAccount();
-			setResult("account", account);
-			return response;
-		}
-		catch(Exception e) {
-			setResponseCode(1);
-			setMessage(e);
-			return ERROR;
-		}
+	public String v2currentAccount() throws Exception {
+		currentAccount();
+		setResult("account", account);
+		return SUCCESS;
 	}
 	
 }

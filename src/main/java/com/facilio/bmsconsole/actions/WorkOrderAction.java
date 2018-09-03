@@ -1423,44 +1423,23 @@ public class WorkOrderAction extends FacilioAction {
 	
 	/******************      V2 Api    ******************/
 	
-	public String v2viewWorkOrder() {
-		try {
-			String response = viewWorkOrder();
-			setResult(FacilioConstants.ContextNames.WORK_ORDER, workorder);
-			return response;
-		}
-		catch(Exception e) {
-			setResponseCode(1);
-			setMessage(e);
-			return ERROR;
-		}
+	public String v2viewWorkOrder() throws Exception {
+		viewWorkOrder();
+		setResult(FacilioConstants.ContextNames.WORK_ORDER, workorder);
+		return SUCCESS;
 	}
 	
-	public String v2addWorkOrder() {
-		try {
-			String response = addWorkOrder();
-			viewWorkOrder();
-			setResult(FacilioConstants.ContextNames.WORK_ORDER, workorder);
-			return response;
-		}
-		catch(Exception e) {
-			setResponseCode(1);
-			setMessage(e);
-			return ERROR;
-		}
+	public String v2addWorkOrder() throws Exception {
+		addWorkOrder();
+		viewWorkOrder();
+		setResult(FacilioConstants.ContextNames.WORK_ORDER, workorder);
+		return SUCCESS;
 	}
 	
-	public String v2updateWorkOrder() {
-		try {
-			String response = updateWorkOrder();
-			setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
-			return response;
-		}
-		catch(Exception e) {
-			setResponseCode(1);
-			setMessage(e);
-			return ERROR;
-		}
+	public String v2updateWorkOrder() throws Exception {
+		updateWorkOrder();
+		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
+		return SUCCESS;
 	}
 	
 	public String v2assignWorkOrder() throws Exception {
@@ -1469,71 +1448,57 @@ public class WorkOrderAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	public String v2workOrderList() {
-		try {
-			String response = workOrderList();
-			setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
-			if (getSubView() != null) {
-				setResult(FacilioConstants.ContextNames.SUB_VIEW, subView);
-			}
-			if (getShowViewsCount()) {
-				setResult(FacilioConstants.ContextNames.SUB_VIEW_COUNT, subViewsCount);
-			}
-			setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
-			return response;
+	public String v2workOrderList() throws Exception {
+		workOrderList();
+		setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
+		if (getSubView() != null) {
+			setResult(FacilioConstants.ContextNames.SUB_VIEW, subView);
 		}
-		catch(Exception e) {
-			setResponseCode(1);
-			setMessage(e);
-			return ERROR;
+		if (getShowViewsCount()) {
+			setResult(FacilioConstants.ContextNames.SUB_VIEW_COUNT, subViewsCount);
 		}
+		setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
+		return SUCCESS;
 	}
 	
-	public String syncOfflineWorkOrders() {
-		try {
-			if (lastSyncTime == null || lastSyncTime <= 0 ) {
-				throw new IllegalArgumentException("Workorder last synced time is mandatory");
-			}
-			Map<Long, Map<String, Object>> errors = new HashMap<>();
-			int rowsUpdated = 0; 
-			for(WorkOrderContext wo: workOrders) {
-				try {
-					setWorkorder(wo);
-					setId(Collections.singletonList(wo.getId()));
-					
-					FacilioContext context = new FacilioContext();
-					context.put(FacilioConstants.ContextNames.LAST_SYNC_TIME, lastSyncTime);
-					setUpdateWorkorderContext(context);
-					
-					updateWorkOrder(context);
-					rowsUpdated += this.rowsUpdated;
-				}
-				catch(Exception e) {
-					Map<String, Object> obj = new HashMap<>();
-					obj.put("data", FieldUtil.getAsJSON(wo).toJSONString());
-					obj.put("error", e.getMessage());
-					errors.put(wo.getId(), obj);
-				}
-			}
-			if (!errors.isEmpty()) {
+	public String syncOfflineWorkOrders() throws Exception {
+		if (lastSyncTime == null || lastSyncTime <= 0 ) {
+			throw new IllegalArgumentException("Workorder last synced time is mandatory");
+		}
+		Map<Long, Map<String, Object>> errors = new HashMap<>();
+		int rowsUpdated = 0; 
+		for(WorkOrderContext wo: workOrders) {
+			try {
+				setWorkorder(wo);
+				setId(Collections.singletonList(wo.getId()));
+				
 				FacilioContext context = new FacilioContext();
 				context.put(FacilioConstants.ContextNames.LAST_SYNC_TIME, lastSyncTime);
-				context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WORK_ORDER);
-				context.put(FacilioConstants.ContextNames.CUSTOM_OBJECT, errors);
+				setUpdateWorkorderContext(context);
 				
-				Chain offlineSync = FacilioChainFactory.addOfflineSyncErrorChain();
-				offlineSync.execute(context);
-				
-				setResult("error", errors.size() + " workorder(s) sync failed");
+				updateWorkOrder(context);
+				rowsUpdated += this.rowsUpdated;
 			}
-			setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
-			return SUCCESS;
+			catch(Exception e) {
+				Map<String, Object> obj = new HashMap<>();
+				obj.put("data", FieldUtil.getAsJSON(wo).toJSONString());
+				obj.put("error", e.getMessage());
+				errors.put(wo.getId(), obj);
+			}
 		}
-		catch(Exception e) {
-			setResponseCode(1);
-			setMessage(e);
-			return ERROR;
+		if (!errors.isEmpty()) {
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.LAST_SYNC_TIME, lastSyncTime);
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WORK_ORDER);
+			context.put(FacilioConstants.ContextNames.CUSTOM_OBJECT, errors);
+			
+			Chain offlineSync = FacilioChainFactory.addOfflineSyncErrorChain();
+			offlineSync.execute(context);
+			
+			setResult("error", errors.size() + " workorder(s) sync failed");
 		}
+		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
+		return SUCCESS;
 	}
 	
 	private Long lastSyncTime;

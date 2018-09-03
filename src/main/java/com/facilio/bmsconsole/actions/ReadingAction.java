@@ -770,70 +770,42 @@ public class ReadingAction extends FacilioAction {
 	
 	/**********  V2 apis *************/
 	
-	public String getFormulaField () {
-		try {
-			formula = FormulaFieldAPI.getFormulaField(id);
-			setResult(FacilioConstants.ContextNames.FORMULA_FIELD, formula);			
-			return SUCCESS;
-		}
-		catch(Exception e) {
-			setResponseCode(1);
-			setMessage(e);
-			return ERROR;
-		}
+	public String getFormulaField() throws Exception {
+		formula = FormulaFieldAPI.getFormulaField(id);
+		setResult(FacilioConstants.ContextNames.FORMULA_FIELD, formula);			
+		return SUCCESS;
 	}
 	
-	public String calculateHistoryForFormula() {
-		try {
-			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.FORMULA_FIELD, id);
-			context.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(startTime, endTime));
-			context.put(FacilioConstants.ContextNames.RESOURCE_ID, resourceId);
-			
-			Chain historicalCalculation = TransactionChainFactory.historicalFormulaCalculationChain();
-			historicalCalculation.execute(context);
-			
-			setResult("success", "Historical Calculation is started and will be notified when done");
-			
-			return SUCCESS;
-		}
-		catch (Exception e) {
-			setResponseCode(1);
-			setMessage(e);
-			return ERROR;
-		}
+	public String calculateHistoryForFormula() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.FORMULA_FIELD, id);
+		context.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(startTime, endTime));
+		context.put(FacilioConstants.ContextNames.RESOURCE_ID, resourceId);
+		
+		Chain historicalCalculation = TransactionChainFactory.historicalFormulaCalculationChain();
+		historicalCalculation.execute(context);
+		
+		setResult("success", "Historical Calculation is started and will be notified when done");
+		
+		return SUCCESS;
 	}
 	
-	public String runThroughRule() {
-		try {
-			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, id);
-			context.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(startTime, endTime));
-			
-			Chain runThroughRuleChain = TransactionChainFactory.runThroughReadingRuleChain();
-			runThroughRuleChain.execute(context);
-			
-			setResult("success", "Rule evaluation for the readings in the given period has been started");
-			
-			return SUCCESS;
-		}
-		catch (Exception e) {
-			setResponseCode(1);
-			setMessage(e);
-			return ERROR;
-		}
+	public String runThroughRule() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, id);
+		context.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(startTime, endTime));
+		
+		Chain runThroughRuleChain = TransactionChainFactory.runThroughReadingRuleChain();
+		runThroughRuleChain.execute(context);
+		
+		setResult("success", "Rule evaluation for the readings in the given period has been started");
+		
+		return SUCCESS;
 	}
 	
-	public String getFormulaFromReadingField () {
-		try {
-			formula = FormulaFieldAPI.getFormulaFieldFromReadingField(id);
-			setResult(FacilioConstants.ContextNames.FORMULA_FIELD, formula);			
-			return SUCCESS;
-		}
-		catch(Exception e) {
-			setResponseCode(1);
-			setMessage(e);
-			return ERROR;
-		}
+	public String getFormulaFromReadingField () throws Exception {
+		formula = FormulaFieldAPI.getFormulaFieldFromReadingField(id);
+		setResult(FacilioConstants.ContextNames.FORMULA_FIELD, formula);			
+		return SUCCESS;
 	}
  }

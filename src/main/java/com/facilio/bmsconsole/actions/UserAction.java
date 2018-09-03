@@ -579,29 +579,15 @@ public class UserAction extends FacilioAction {
 	
 	/******************      V2 Api    ******************/
 	
-	public String v2addMobileSetting() {
-		try {
-			String response = addMobileSetting();
-			setResult(FacilioConstants.ContextNames.USER_MOBILE_SETTING, userMobileSetting);
-			return response;
-		}
-		catch(Exception e) {
-			setResponseCode(1);
-			setMessage(e);
-			return ERROR;
-		}
+	public String v2addMobileSetting() throws Exception {
+		addMobileSetting();
+		setResult(FacilioConstants.ContextNames.USER_MOBILE_SETTING, userMobileSetting);
+		return SUCCESS;
 	}
 	
-	public String v2removeMobileSetting() {
-		try {
-			String response = removeMobileSetting();
-			setResult(FacilioConstants.ContextNames.USER_MOBILE_SETTING, userMobileSetting);
-			return response;
-		}
-		catch(Exception e) {
-			setResponseCode(1);
-			setMessage(e);
-			return ERROR;
-		}
+	public String v2removeMobileSetting() throws Exception {
+		removeMobileSetting();
+		setResult(FacilioConstants.ContextNames.USER_MOBILE_SETTING, userMobileSetting);
+		return SUCCESS;
 	}
 }

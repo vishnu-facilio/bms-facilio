@@ -127,30 +127,16 @@ public class NoteAction extends FacilioAction {
 	
 	/******************      V2 Api    ******************/
 
-	public String v2noteList() {
-		try {
-			String response = getNotesList();
-			setResult(FacilioConstants.ContextNames.NOTE_LIST, notes);
-			return response;
-		}
-		catch(Exception e) {
-			setResponseCode(1);
-			setMessage(e);
-			return ERROR;
-		}
+	public String v2noteList() throws Exception {
+		getNotesList();
+		setResult(FacilioConstants.ContextNames.NOTE_LIST, notes);
+		return SUCCESS;
 	}
 	
 	public String v2addNote() throws Exception {
-		try {
-			String response = addNote();
-			setResult(FacilioConstants.ContextNames.NOTE, noteId);
-			return response;
-		}
-		catch(Exception e) {
-			setResponseCode(1);
-			setMessage(e);
-			return ERROR;
-		}
+		addNote();
+		setResult(FacilioConstants.ContextNames.NOTE, noteId);
+		return SUCCESS;
 	}
  }
 

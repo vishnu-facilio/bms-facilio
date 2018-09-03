@@ -530,43 +530,22 @@ public class WorkOrderRequestAction extends FacilioAction {
 	
 /******************      V2 Api    ******************/
 	
-	public String v2viewWorkOrderRequest() {
-		try {
-			String response = viewWorkOrderRequest();
-			setResult(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, workorderrequest);
-			return response;
-		}
-		catch(Exception e) {
-			setResponseCode(1);
-			setMessage(e);
-			return ERROR;
-		}
+	public String v2viewWorkOrderRequest() throws Exception {
+		viewWorkOrderRequest();
+		setResult(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, workorderrequest);
+		return SUCCESS;
 	}
 	
-	public String v2approveWorkOrderRequest() {
-		try {
-			String response = approveWorkOrderRequest();
-			setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
-			return response;
-		}
-		catch(Exception e) {
-			setResponseCode(1);
-			setMessage(e);
-			return ERROR;
-		}
+	public String v2approveWorkOrderRequest() throws Exception {
+		approveWorkOrderRequest();
+		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
+		return SUCCESS;
 	}
 	
-	public String v2rejectWorkOrderRequest() {
-		try {
-			String response = rejectWorkOrderRequest();
-			setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
-			return response;
-		}
-		catch(Exception e) {
-			setResponseCode(1);
-			setMessage(e);
-			return ERROR;
-		}
+	public String v2rejectWorkOrderRequest() throws Exception {
+		rejectWorkOrderRequest();
+		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
+		return SUCCESS;
 	}
 	
 	public String v2workOrderRequestList() throws Exception {
