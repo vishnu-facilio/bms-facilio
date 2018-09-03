@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
@@ -207,12 +208,11 @@ public class AwsUtil
 		String secretKey = AwsUtil.getConfig("secretKeyId");
         String dateStamp = new SimpleDateFormat("yyyyMMdd").format(new Date()); 	//"20170525";
         String regionName = AwsUtil.getConfig("region");		//"us-west-2";
-        String serviceName = AwsUtil.AWS_IOT_SERVICE_NAME;
-        
-    	byte[] kSecret = ("AWS4" + secretKey).getBytes("UTF8");
+
+		byte[] kSecret = ("AWS4" + secretKey).getBytes(StandardCharsets.UTF_8);
         byte[] kDate = HmacSHA256(dateStamp, kSecret);
         byte[] kRegion = HmacSHA256(regionName, kDate);
-        byte[] kService = HmacSHA256(serviceName, kRegion);
+        byte[] kService = HmacSHA256(AwsUtil.AWS_IOT_SERVICE_NAME, kRegion);
         byte[] kSigning = HmacSHA256("aws4_request", kService);
         
         String stringToSign = getStringToSign(payload, xAmzDate, path);
@@ -241,33 +241,27 @@ public class AwsUtil
     
     public static String doHttpPost(String url, Map<String, String> headers, Map<String, String> params, String bodyContent) throws IOException
     {
-    	StringBuffer result = new StringBuffer();
+    	StringBuilder result = new StringBuilder();
     	CloseableHttpClient client = HttpClients.createDefault();
     	try
     	{
 			HttpPost post = new HttpPost(url);
 			if(headers != null)
 			{
-				Iterator<String> headerIterator = headers.keySet().iterator();
-				while(headerIterator.hasNext())
-				{
-					String key = headerIterator.next();
+				for (String key : headers.keySet()) {
 					String value = headers.get(key);
 					post.setHeader(key, value);
 				}
 			}
 			if(bodyContent != null)
 			{
-			    HttpEntity entity = new ByteArrayEntity(bodyContent.getBytes("UTF-8"));
+			    HttpEntity entity = new ByteArrayEntity(bodyContent.getBytes(StandardCharsets.UTF_8));
 			    post.setEntity(entity);
 			}		    
 		    if(params != null)
 		    {
 		    	List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
-		    	Iterator<String> paramIterator = params.keySet().iterator();
-				while(paramIterator.hasNext())
-				{
-					String key = paramIterator.next();
+				for (String key : params.keySet()) {
 					String value = params.get(key);
 					postParameters.add(new BasicNameValuePair(key, value));
 				}
@@ -303,7 +297,7 @@ public class AwsUtil
         String algorithm = "HmacSHA256";
         Mac mac = Mac.getInstance(algorithm);
         mac.init(new SecretKeySpec(key, algorithm));
-        return mac.doFinal(data.getBytes("UTF8"));
+        return mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
     }
 	
 	private static String hash256(String data) throws NoSuchAlgorithmException
@@ -380,7 +374,7 @@ public class AwsUtil
 
 		if(sendEmail) {
 			try {
-				if (AwsUtil.getConfig("app.url").contains("localhost")) {
+				if ("localhost".contains(AwsUtil.getConfig("app.url"))) {
 //					mailJson.put("subject", "Local - " + mailJson.get("subject"));
 					return;
 				}
