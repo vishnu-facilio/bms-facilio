@@ -284,7 +284,7 @@ public class S3FileStore extends FileStore {
 				String signedUrl = CloudFrontUrlSigner.getSignedURLWithCannedPolicy(SignerUtils.Protocol.https, "files.facilio.in", new File(PRIVATE_KEY_FILE_PATH), s3ObjectKey, keyPairId, new Date(System.currentTimeMillis()+(86400000L)));
 				return  signedUrl;
 			} catch (IOException | InvalidKeySpecException e) {
-				log.info("Exception while creating signed Url");
+				log.info("Exception while creating signed Url", e);
 			}
 		}
 		return null;
