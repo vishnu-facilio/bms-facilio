@@ -374,7 +374,7 @@ public class AwsUtil
 
 		if(sendEmail) {
 			try {
-				if ("localhost".contains(AwsUtil.getConfig("app.url"))) {
+				if (AwsUtil.getConfig("app.url") == null || AwsUtil.getConfig("app.url").contains("localhost")) {
 //					mailJson.put("subject", "Local - " + mailJson.get("subject"));
 					return;
 				}
