@@ -202,9 +202,17 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 		Map<String, List<ReadingDataMeta>> supportingValues = new HashMap<>();
 		for (WorkflowFieldContext field : fields) {
 			if (field.getAggregationEnum() == ExpressionAggregateOperator.LAST_VALUE) {
+				if (resourceId == -1 && field.getResourceId() == -1) {
+					continue;
+				}
+				if (resourceId != -1 && field.getResourceId() != -1) {
+					continue;
+				}
+				long parentId = resourceId == -1? field.getResourceId() : resourceId;
+				
 				FacilioField valField = modBean.getField(field.getFieldId());
 				field.setField(valField);
-				String rdmKey = ReadingsAPI.getRDMKey(field.getResourceId(), valField);
+				String rdmKey = ReadingsAPI.getRDMKey(parentId, valField);
 				
 				List<FacilioField> allFields = modBean.getAllFields(valField.getModule().getName());
 				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
@@ -215,16 +223,6 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 				selectFields.add(valField);
 				selectFields.add(parentField);
 				selectFields.add(ttimeField);
-				
-				if (resourceId == -1 && field.getResourceId() == -1) {
-					continue;
-				}
-				
-				if (resourceId != -1 && field.getResourceId() != -1) {
-					continue;
-				}
-				
-				long parentId = resourceId == -1? field.getResourceId() : resourceId;
 				
 				SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
 																		.select(selectFields)
@@ -250,7 +248,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 										.select(selectFields)
 										.module(valField.getModule())
 										.beanClass(ReadingContext.class)
-										.andCondition(CriteriaAPI.getCondition(parentField, String.valueOf(field.getResourceId()), PickListOperators.IS))
+										.andCondition(CriteriaAPI.getCondition(parentField, String.valueOf(parentId), PickListOperators.IS))
 										.andCondition(CriteriaAPI.getCondition(ttimeField, String.valueOf(startTime), DateOperators.IS_BEFORE))
 										.andCondition(CriteriaAPI.getCondition(valField, CommonOperators.IS_NOT_EMPTY))
 										.orderBy("TTIME DESC")
@@ -262,7 +260,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 						rdm = getRDM(values.get(0), valField);
 					}
 					else {
-						rdm = ReadingsAPI.getReadingDataMeta(field.getResourceId(), valField);
+						rdm = ReadingsAPI.getReadingDataMeta(parentId, valField);
 					}
 					if (rdm != null) {
 						supportingValues.put(rdmKey, Collections.singletonList(rdm));
