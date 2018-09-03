@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -30,6 +31,10 @@ public class AddWorkOrderRequestCommand implements Command {
 			
 			if(workOrderRequest.getRequestStatus() == -1) {
 				workOrderRequest.setRequestStatus(WorkOrderRequestContext.RequestStatus.OPEN);
+			}
+			User requester = workOrderRequest.getRequester();
+			if (requester == null || requester.getEmail() == null || "".equals(requester.getEmail())) {
+				workOrderRequest.setRequester(AccountUtil.getCurrentUser());
 			}
 			TicketAPI.updateTicketStatus(workOrderRequest);
 			TicketAPI.updateTicketStatus(workOrderRequest);

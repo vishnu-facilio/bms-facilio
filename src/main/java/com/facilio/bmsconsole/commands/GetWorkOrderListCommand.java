@@ -167,6 +167,7 @@ public class GetWorkOrderListCommand implements Command {
 				.innerJoin(ticketTable)
 				.on(woTable+".ID=" + ticketTable+ ".ID")
 				.select(Collections.singletonList( FieldFactory.getField("count", "COUNT(WorkOrders.ID)", FieldType.NUMBER)))
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(workorderModule))
 				.andCriteria(viewCriteria);
 		
 		Criteria subViewcriteria = (Criteria) subView.get("criteria");

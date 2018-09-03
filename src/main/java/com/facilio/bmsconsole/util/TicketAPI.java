@@ -685,11 +685,11 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 	
 	
 	public static void loadTicketLookups(Collection<? extends TicketContext> tickets) throws Exception {
-//		loadTicketStatus(tickets);
-//		loadTicketPriority(tickets);
-//		loadTicketCategory(tickets);
-//		loadTicketUsers(tickets);
-//		loadTicketGroups(tickets);
+		loadTicketStatus(tickets);
+		loadTicketPriority(tickets);
+		loadTicketCategory(tickets);
+		loadTicketUsers(tickets);
+		loadTicketGroups(tickets);
 		loadTicketResources(tickets);
 	}
 	

@@ -480,6 +480,7 @@
 			<parameter name="workorderrequest.description" type="String" />
 			<parameter name="workorderrequest.id" type="Number" />
 			<parameter name="workorderrequest.assignedTo.id" type="Number" />
+			<parameter name="workorderrequest.requester.id" type="Number" />
 			<expression name="workorderrequest.subject">
 				<constant>${workorderrequest.subject}</constant>
 			</expression>
@@ -491,6 +492,9 @@
 			</expression>
 			<expression name="workorderrequest.assignedTo.id">
 				<constant>${workorderrequest.assignedTo.id}</constant>
+			</expression>
+			<expression name="workorderrequest.requester.id">
+				<constant>${workorderrequest.requester.id}</constant>
 			</expression>
 		</workflow>
 	</template>

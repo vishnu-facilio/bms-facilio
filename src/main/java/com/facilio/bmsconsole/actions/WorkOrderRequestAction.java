@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.actions;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
@@ -404,6 +405,9 @@ public class WorkOrderRequestAction extends FacilioAction {
  		if (getCount() != null) {
 			context.put(FacilioConstants.ContextNames.WO_LIST_COUNT, getCount());
 		}
+ 		if(getShowViewsCount()) {
+			context.put(FacilioConstants.ContextNames.WO_VIEW_COUNT, true);
+		}
  		System.out.println("View Name : "+getViewName());
  		Chain workOrderListChain = FacilioChainFactory.getWorkOrderRequestListChain();
  		workOrderListChain.execute(context);
@@ -416,6 +420,9 @@ public class WorkOrderRequestAction extends FacilioAction {
 			System.out.println("data" + getWoCount());
 		}
 		else {
+			if(getShowViewsCount()) {
+				setViewsCount((Map<String, Object>) context.get(FacilioConstants.ContextNames.VIEW_COUNT));
+			}
 			setWorkOrderRequests((List<WorkOrderRequestContext>) context.get(FacilioConstants.ContextNames.WORK_ORDER_REQUEST_LIST));
 		}
 		setWorkOrderRequests((List<WorkOrderRequestContext>) context.get(FacilioConstants.ContextNames.WORK_ORDER_REQUEST_LIST));
@@ -442,6 +449,25 @@ public class WorkOrderRequestAction extends FacilioAction {
 	}
 	public void setViewName(String viewName) {
 		this.viewName = viewName;
+	}
+	
+	private Boolean showViewsCount;
+	public Boolean getShowViewsCount() {
+		if (showViewsCount == null) {
+			return false;
+		}
+		return showViewsCount;
+	}
+	public void setShowViewsCount(Boolean showViewsCount) {
+		this.showViewsCount = showViewsCount;
+	}
+	
+	Map<String, Object> viewsCount;
+	public Map<String, Object> getViewsCount() {
+		return viewsCount;
+	}
+	public void setViewsCount(Map<String, Object> viewsCount) {
+		this.viewsCount = viewsCount;
 	}
 	
 	public String getModuleLinkName()
@@ -543,17 +569,13 @@ public class WorkOrderRequestAction extends FacilioAction {
 		}
 	}
 	
-	public String v2workOrderRequestList() {
-		try {
-			String response = workOrderRequestList();
-			setResult(FacilioConstants.ContextNames.WORK_ORDER_REQUEST_LIST, workOrderRequests);
-			return response;
+	public String v2workOrderRequestList() throws Exception {
+		workOrderRequestList();
+		if (getShowViewsCount()) {
+			setResult(FacilioConstants.ContextNames.VIEW_COUNT, viewsCount);
 		}
-		catch(Exception e) {
-			setResponseCode(1);
-			setMessage(e);
-			return ERROR;
-		}
+		setResult(FacilioConstants.ContextNames.WORK_ORDER_REQUEST_LIST, workOrderRequests);
+		return SUCCESS;
 	}
 	
 	public String v2addWorkOrderRequest() throws Exception {

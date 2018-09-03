@@ -64,6 +64,7 @@ public class FieldFactory {
 			workOrderFieldsInclude.add("assignedTo");
 			workOrderFieldsInclude.add("assignmentGroup");
 			workOrderFieldsInclude.add("category");
+			workOrderFieldsInclude.add("createdBy");
 			workOrderFieldsInclude.add("createdTime");
 			workOrderFieldsInclude.add("dueDate");
 			workOrderFieldsInclude.add("estimatedEnd");
@@ -105,6 +106,7 @@ public class FieldFactory {
 			workorderRequestFieldInclude.add("dueDate");
 			workorderRequestFieldInclude.add("requester");
 			workorderRequestFieldInclude.add("urgency");
+			workorderRequestFieldInclude.add("createdBy");
 		}
 	}
 	
@@ -4278,13 +4280,17 @@ public class FieldFactory {
 		fields.add(getField("name", "NAME", module, FieldType.STRING));
 		fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
 		fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.NUMBER));
+		
+		fields.add(getField("dateOperator", "DATE_OPERATOR", module, FieldType.NUMBER));
+		fields.add(getField("dateValue", "DATE_VALUE", module, FieldType.STRING));
+		fields.add(getField("dateRangeJson", "DATE_RANGE_JSON", module, FieldType.STRING));
+		
 		fields.add(getField("chartState", "CHART_STATE", module, FieldType.STRING));
 		fields.add(getField("tabularState", "TABULAR_STATE", module, FieldType.STRING));
 		fields.add(getField("benchmarkJson", "BENCHMARK_JSON", module, FieldType.STRING));
 		fields.add(getField("dataPointJson", "DATA_POINT_JSON", module, FieldType.STRING));
 		fields.add(getField("xCriteriaJson", "X_CRITERIA_JSON", module, FieldType.STRING));
 		fields.add(getField("baselineJson", "BASELINE_JSON", module, FieldType.STRING));
-		fields.add(getField("dateFilterJson", "DATE_FILTER_JSON", module, FieldType.STRING));
 		return fields;
 	}
 	

@@ -1,9 +1,11 @@
 package com.facilio.accounts.bean;
 
 import java.util.List;
+import java.util.Map;
 
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
+import com.facilio.bmsconsole.criteria.Criteria;
 
 public interface OrgBean {
 
@@ -24,6 +26,10 @@ public interface OrgBean {
 	public List<User> getAllOrgUsers(long orgId) throws Exception;
 	
 	public List<User> getOrgUsers(long orgId, boolean status) throws Exception;
+	
+	public List<User> getOrgUsers(long orgId, Criteria criteria) throws Exception;
+	
+	public Map<Long, User> getOrgUsersAsMap(long orgId, Criteria criteria) throws Exception;
 
 	public List<User> getActiveOrgUsers(long orgId) throws Exception;
 

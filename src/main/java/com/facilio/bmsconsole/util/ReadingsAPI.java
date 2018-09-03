@@ -421,6 +421,7 @@ public class ReadingsAPI {
 							if (rdm == null || rdm.getTtime() < timeStamp) {
 								rdm = new ReadingDataMeta();
 								rdm.setFieldId(fieldId);
+								rdm.setField(fField);
 								rdm.setTtime(timeStamp);
 								rdm.setValue(value);
 								rdm.setReadingDataId(readingId);
@@ -565,6 +566,7 @@ public class ReadingsAPI {
 					ReadingDataMeta rdm= new ReadingDataMeta();
 					rdm.setOrgId(orgId);
 					rdm.setFieldId(field.getFieldId());
+					rdm.setField(field);
 					rdm.setValue("-1");
 					rdm.setResourceId(resourceId);
 					rdm.setTtime(System.currentTimeMillis());
@@ -576,7 +578,7 @@ public class ReadingsAPI {
 		builder.save();
 	}
 
-	public static int getDataInterval(long resourceId, FacilioModule module) throws Exception {
+	public static int getDataInterval(long resourceId, FacilioModule module) throws Exception { //Return in minutes	
 		ReadingContext readingContext = new ReadingContext();
 		readingContext.setParentId(resourceId);
 		readingContext.setModuleId(module.getModuleId());

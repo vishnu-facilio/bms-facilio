@@ -1,6 +1,5 @@
 package com.facilio.workflows.context;
 
-import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.workflows.util.ExpressionAggregateOperator;
 
@@ -81,4 +80,15 @@ public class WorkflowFieldContext{
 		}
         return false;
     }
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		StringBuilder builder = new StringBuilder()
+									.append("Field ID : ").append(fieldId).append("::")
+									.append("Resource ID : ").append(resourceId).append("::")
+									.append("Aggr : ").append(aggregation)
+									;
+		return builder.toString();
+	}
 }

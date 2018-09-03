@@ -1,17 +1,17 @@
 package com.facilio.fs;
 
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
+import java.security.Security;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Date;
 import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import com.amazonaws.services.cloudfront.CloudFrontUrlSigner;
+import com.amazonaws.services.cloudfront.util.SignerUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -28,7 +28,9 @@ import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.util.ImageScaleUtil;
 
 public class S3FileStore extends FileStore {
-	
+
+	private static final String PRIVATE_KEY_FILE_PATH = System.getProperty("user.home")+"/pk/pk-APKAJUH5UCWNSYC4DOSQ.pem";
+
 	public S3FileStore(long orgId, long userId) {
 		super(orgId, userId);
 	}
@@ -84,7 +86,7 @@ public class S3FileStore extends FileStore {
 		
 		for (int resizeVal : resize) {
 			try {
-				if (contentType.indexOf("image/") != -1) {
+				if (contentType.contains("image/")) {
 					// Image resizing...
 					
 					FileInputStream fis = new FileInputStream(file);
@@ -255,31 +257,41 @@ public class S3FileStore extends FileStore {
 	}
 
 	private String fetchUrl(FileInfo fileInfo, long expiration) {
-		
-		
-		             
-		GeneratePresignedUrlRequest generatePresignedUrlRequest = 
-		              new GeneratePresignedUrlRequest(getBucketName(), fileInfo.getFilePath());
-		generatePresignedUrlRequest.setMethod(HttpMethod.GET);
-		
-		Date expiry = new Date();
-		expiry.setTime(expiry.getTime()+expiration);
-		generatePresignedUrlRequest.setExpiration(expiry);
-		
-		if (fileInfo.getContentType() != null) {
-			ResponseHeaderOverrides resHeaders = new ResponseHeaderOverrides();
-			resHeaders.setContentType(fileInfo.getContentType());
-			generatePresignedUrlRequest.setResponseHeaders(resHeaders);
+
+		if (AwsUtil.isProduction()) {
+
+			GeneratePresignedUrlRequest generatePresignedUrlRequest =
+					new GeneratePresignedUrlRequest(getBucketName(), fileInfo.getFilePath());
+			generatePresignedUrlRequest.setMethod(HttpMethod.GET);
+
+			Date expiry = new Date();
+			expiry.setTime(expiry.getTime() + expiration);
+			generatePresignedUrlRequest.setExpiration(expiry);
+
+			if (fileInfo.getContentType() != null) {
+				ResponseHeaderOverrides resHeaders = new ResponseHeaderOverrides();
+				resHeaders.setContentType(fileInfo.getContentType());
+				generatePresignedUrlRequest.setResponseHeaders(resHeaders);
+			}
+
+			URL url = AwsUtil.getAmazonS3Client().generatePresignedUrl(generatePresignedUrlRequest);
+			return url.toString();
+		} else {
+			try {
+				Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+				String s3ObjectKey = fileInfo.getFilePath()+"?response-content-type="+fileInfo.getContentType();
+				String keyPairId = "APKAJUH5UCWNSYC4DOSQ";
+				String signedUrl = CloudFrontUrlSigner.getSignedURLWithCannedPolicy(SignerUtils.Protocol.https, "files.facilio.in", new File(PRIVATE_KEY_FILE_PATH), s3ObjectKey, keyPairId, new Date(System.currentTimeMillis()+(86400000L)));
+				return  signedUrl;
+			} catch (IOException | InvalidKeySpecException e) {
+				log.info("Exception while creating signed Url");
+			}
 		}
-		             
-		URL url = AwsUtil.getAmazonS3Client().generatePresignedUrl(generatePresignedUrlRequest);
-		return url.toString();
+		return null;
 	}
 	
 	private String fetchDownloadUrl(FileInfo fileInfo, long expiration) {
-		
-		
-        
+
 		GeneratePresignedUrlRequest generatePresignedUrlRequest = 
 		              new GeneratePresignedUrlRequest(getBucketName(), fileInfo.getFilePath());
 		generatePresignedUrlRequest.setMethod(HttpMethod.GET);
@@ -303,5 +315,9 @@ public class S3FileStore extends FileStore {
 	private long getExpiration()
 	{
 		return 24 * 60* 60 * 1000;
+	}
+
+	public static void main(String[] args) {
+
 	}
 }

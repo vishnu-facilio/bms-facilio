@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -389,6 +388,7 @@ public class UserBeanImpl implements UserBean {
 		user.setOrgId(orgId);
 		user.setInviteAcceptStatus(false);
 		user.setInvitedTime(System.currentTimeMillis());
+		user.setUserStatus(true);
 		user.setUserType(AccountConstants.UserType.USER.getValue());
 		long ouid = addToORGUsers(user);
 
@@ -1067,23 +1067,7 @@ public long inviteRequester(long orgId, User user) throws Exception {
 	@Override
 	public List<User> getUsers(Criteria criteria, List<Long>... ouids) throws Exception {
 		
-		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(AccountConstants.getUserFields());
-		fields.addAll(AccountConstants.getOrgUserFields());
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(fields)
-				.table("Users")
-				.innerJoin("ORG_Users")
-				.on("Users.USERID = ORG_Users.USERID")
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getOrgUserModule()))
-				.andCriteria(criteria);
-				
-		if (ouids != null && ouids.length == 1) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.ORG_USERID", "ouid", StringUtils.join(ouids[0], ","), NumberOperators.EQUALS));
-		}
-		
-		List<Map<String, Object>> props = selectBuilder.get();
+		List<Map<String, Object>> props = fetchUserProps(criteria, ouids);
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
@@ -1094,6 +1078,43 @@ public long inviteRequester(long orgId, User user) throws Exception {
 			return users;
 		}
 		return null;
+	}
+	
+	@Override
+	public Map<Long, User> getUsersAsMap(Criteria criteria, List<Long>... ouids) throws Exception {
+		List<Map<String, Object>> props = fetchUserProps(criteria, ouids);
+		if (props != null && !props.isEmpty()) {
+			Map<Long, User> users = new HashMap<>();
+			for(Map<String, Object> prop : props) {
+				User user = createUserFromProps(prop);
+				user.setAccessibleSpace(getAccessibleSpaceList(user.getOuid()));
+				users.put(user.getId(), user);
+			}
+			return users;
+		}
+		return null;
+	}
+	
+	private List<Map<String, Object>> fetchUserProps (Criteria criteria, List<Long>... ouids) throws Exception {
+		List<FacilioField> fields = new ArrayList<>();
+		fields.addAll(AccountConstants.getUserFields());
+		List<FacilioField> orgUserFields = AccountConstants.getOrgUserFields();
+		fields.addAll(orgUserFields);
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("Users")
+				.innerJoin("ORG_Users")
+				.on("Users.USERID = ORG_Users.USERID")
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getOrgUserModule()))
+				.andCriteria(criteria);
+				
+		if (ouids != null && ouids.length == 1) {
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(orgUserFields);
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("ouid"), ouids[0], NumberOperators.EQUALS));
+		}
+		
+		return selectBuilder.get();
 	}
 
 	@Override
@@ -1241,7 +1262,7 @@ public long inviteRequester(long orgId, User user) throws Exception {
 		user.setUid(uid);
 		user.setOrgId(orgId);
 		user.setUserType(AccountConstants.UserType.REQUESTER.getValue());
-		
+		user.setUserStatus(true);
 		long ouid = addToORGUsers(user);
 		
 		addFacilioRequestor(user);

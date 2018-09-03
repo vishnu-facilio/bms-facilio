@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -39,6 +40,10 @@ public class UpdateWorkOrderRequestCommand implements Command {
 			idCondition.setField(FieldFactory.getIdField(module));
 			idCondition.setOperator(NumberOperators.EQUALS);
 			idCondition.setValue(ids);
+			
+			if((workOrderRequest.getAssignedTo() != null && workOrderRequest.getAssignedTo().getId() > 0) || (workOrderRequest.getAssignmentGroup() != null && workOrderRequest.getAssignmentGroup().getId() > 0)) {
+				workOrderRequest.setStatus(TicketAPI.getStatus("Assigned"));
+			}
 			
 			UpdateRecordBuilder<WorkOrderRequestContext> updateBuilder = new UpdateRecordBuilder<WorkOrderRequestContext>()
 																		.moduleName(moduleName)

@@ -1,8 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -10,16 +13,21 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class GetWorkOrderRequestListCommand implements Command {
 
@@ -39,6 +47,11 @@ public class GetWorkOrderRequestListCommand implements Command {
 			fields.add(countFld);
 		}
 		else {
+			Boolean getViewsCount = (Boolean) context.get(FacilioConstants.ContextNames.WO_VIEW_COUNT);
+			if (getViewsCount != null && getViewsCount) {
+				Map<String, Object> viewsCount = setViewsCount();
+				context.put(FacilioConstants.ContextNames.VIEW_COUNT, viewsCount);
+			}
 			fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		}
 		
@@ -107,31 +120,92 @@ public class GetWorkOrderRequestListCommand implements Command {
 	
 	private void loadRequesters(List<WorkOrderRequestContext> workOrderRequests) throws Exception {
 		if(workOrderRequests != null && !workOrderRequests.isEmpty()) {
-			StringBuilder ids = new StringBuilder();
-			boolean isFirst = true;
-			for(WorkOrderRequestContext workOrderRequest : workOrderRequests) {
-				if(workOrderRequest.getRequester() != null)
-				{
-					if(isFirst) {
-						isFirst = false;
-					}
-					else {
-						ids.append(",");
-					}
-					ids.append(workOrderRequest.getRequester().getId());
-				}
-			}
+			List<Long> ids = workOrderRequests.stream().filter(req -> req.getRequester() != null).map(req -> req.getRequester().getId()).collect(Collectors.toList());
 			
-			if(ids.length() > 0)
+			if(ids.size() > 0)
 			{
-				Map<Long, User> requesters = CommonCommandUtil.getRequesters(ids.toString());
+				/*Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(AccountConstants.getOrgUserFields());
+				Criteria criteria = new Criteria();
+				criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("ouid"), ids, NumberOperators.EQUALS));
+				Map<Long, User> users = AccountUtil.getOrgBean().getOrgUsersAsMap(AccountUtil.getCurrentOrg().getOrgId(), criteria);
+				List<Long> reqIds = ids.stream().filter(id -> !users.containsKey(id)).collect(Collectors.toList());
+				if (!reqIds.isEmpty()) {
+					users.
+				}*/
+				Map<Long, User> requesters = AccountUtil.getUserBean().getUsersAsMap(null, ids);
 				for(WorkOrderRequestContext workOrderRequest : workOrderRequests) {
 					if(workOrderRequest.getRequester() != null)
 					{
-						workOrderRequest.setRequester(requesters.get(workOrderRequest.getRequester().getId()));
+						workOrderRequest.setRequester((User) requesters.get(workOrderRequest.getRequester().getId()));
 					}
 				}
 			}
 		}
 	}
+	
+	private Map<String, Object> setViewsCount() throws Exception {
+		
+		FacilioModule workorderRequestModule = ModuleFactory.getWorkOrderRequestsModule();
+		
+		Map<String, Object> viewDetail = new HashMap<>();
+		viewDetail.put("open", getWrCount(ViewFactory.getCriteriaForView("open", workorderRequestModule)));
+		viewDetail.put("rejected", getWrCount(ViewFactory.getCriteriaForView("rejected", workorderRequestModule)));
+		viewDetail.put("all", getWrCount(null));
+		
+		/*
+		List<Map<String, Object>> views = new ArrayList<>();
+		Map<String, FacilioView> fviews = ViewFactory.getModuleViews(workorderRequestModule.getName());
+		
+		FacilioView open = fviews.get("open");
+		viewDetail.put("name", open.getName());
+		viewDetail.put("displayName", open.getDisplayName());
+		setWrCount(open.getCriteria(), viewDetail);
+		views.add(viewDetail);
+		
+		FacilioView rejected = fviews.get("rejected");
+		viewDetail.put("name", rejected.getName());
+		viewDetail.put("displayName", rejected.getDisplayName());
+		setWrCount(rejected.getCriteria(), viewDetail);
+		views.add(viewDetail);
+		
+		FacilioView all = fviews.get("all");
+		viewDetail.put("name", all.getName());
+		viewDetail.put("displayName", all.getDisplayName());
+		setWrCount(all.getCriteria(), viewDetail);
+		views.add(viewDetail);*/
+		
+		return viewDetail;
+	}
+	
+	private long getWrCount (Criteria viewCriteria) throws Exception {
+		FacilioModule workorderRequestModule = ModuleFactory.getWorkOrderRequestsModule();
+		String wrTable = workorderRequestModule.getTableName();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.table(wrTable)
+				.select(Collections.singletonList( FieldFactory.getField("count", "COUNT(" + wrTable + ".ID)", FieldType.NUMBER)))
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(workorderRequestModule))
+				.andCriteria(viewCriteria);
+		
+		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(workorderRequestModule.getName());
+		if(scopeCriteria != null)
+		{
+			selectBuilder.andCriteria(scopeCriteria);
+		}
+
+		if (AccountUtil.getCurrentAccount().getUser().getUserType() != 2) {
+			System.out.println(AccountUtil.getCurrentAccount());
+			Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(workorderRequestModule.getName(),"read");
+			if(permissionCriteria != null) {
+				selectBuilder.andCriteria(permissionCriteria);
+			}
+		}
+		
+		long count = 0;
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			count = (long) props.get(0).get("count");
+		}
+		return count;
+	}
+	
 }

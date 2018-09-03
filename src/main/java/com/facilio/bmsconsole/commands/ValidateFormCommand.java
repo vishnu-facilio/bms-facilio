@@ -85,8 +85,15 @@ public class ValidateFormCommand implements Command {
 					map = (Map<Long, String>) c1.get(FacilioConstants.ContextNames.PICKLIST);
 				}
 				
-				if (value != null && !(value instanceof ModuleBaseWithCustomFields && map.containsKey(((ModuleBaseWithCustomFields) value).getId()))) {
-					throw new IllegalArgumentException(f.getDisplayName() + " is invalid.");
+				if (value != null) {
+					if (value instanceof ModuleBaseWithCustomFields) {
+						long id = ((ModuleBaseWithCustomFields) value).getId();
+						if (id != -1) {
+							if (!map.containsKey(id)) {
+								throw new IllegalArgumentException(f.getDisplayName() + " is invalid.");
+							}
+						}
+					}
 				}
 				break;
 			case URGENCY:

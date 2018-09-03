@@ -13,6 +13,9 @@ import com.facilio.accounts.exception.AccountException;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -258,7 +261,40 @@ public class OrgBeanImpl implements OrgBean {
 	
 	@Override
 	public List<User> getOrgUsers(long orgId, boolean status) throws Exception {
-		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(AccountConstants.getOrgUserFields());
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("userStatus"), String.valueOf(status), NumberOperators.EQUALS));
+		return getOrgUsers(orgId, criteria);
+	}
+	
+	@Override
+	public List<User> getOrgUsers(long orgId, Criteria criteria) throws Exception {
+		List<Map<String, Object>> props = fetchOrgUserProps(orgId, criteria);
+		if (props != null && !props.isEmpty()) {
+			List<User> users = new ArrayList<>();
+			for(Map<String, Object> prop : props) {
+				users.add(UserBeanImpl.createUserFromProps(prop));
+			}
+			return users;
+		}
+		return null;
+	}
+	
+	@Override
+	public Map<Long, User> getOrgUsersAsMap(long orgId, Criteria criteria) throws Exception {
+		List<Map<String, Object>> props = fetchOrgUserProps(orgId, criteria);
+		if (props != null && !props.isEmpty()) {
+			Map<Long, User> users = new HashMap<>();
+			for(Map<String, Object> prop : props) {
+				User user = UserBeanImpl.createUserFromProps(prop);
+				users.put(user.getId(), user);
+			}
+			return users;
+		}
+		return null;
+	}
+	
+	private List<Map<String, Object>> fetchOrgUserProps (long orgId, Criteria criteria) throws Exception {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getUserFields());
 		fields.addAll(AccountConstants.getOrgUserFields());
@@ -268,17 +304,11 @@ public class OrgBeanImpl implements OrgBean {
 				.table("Users")
 				.innerJoin("ORG_Users")
 				.on("Users.USERID = ORG_Users.USERID")
-				.andCustomWhere("ORGID = ? AND USER_STATUS = ? AND USER_TYPE = ? AND DELETED_TIME = -1", orgId, status, AccountConstants.UserType.USER.getValue());
+				.andCustomWhere("ORGID = ? AND USER_TYPE = ? AND DELETED_TIME = -1", orgId, AccountConstants.UserType.USER.getValue())
+				.andCriteria(criteria);
+				;
 		
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			List<User> users = new ArrayList<>();
-			for(Map<String, Object> prop : props) {
-				users.add(UserBeanImpl.createUserFromProps(prop));
-			}
-			return users;
-		}
-		return null;
+		return selectBuilder.get();
 	}
 
 	public List<User> getActiveOrgUsers(long orgId) throws Exception {
