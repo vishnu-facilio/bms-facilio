@@ -11,7 +11,7 @@ import java.io.IOException;
 
 public class IotDataFilter implements Filter {
 
-    private static final Logger LOGGER = Logger.getLogger(IotFilter.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(IotDataFilter.class.getName());
 
     public void init(FilterConfig filterConfig) throws ServletException {
 

@@ -388,6 +388,7 @@ public class UserBeanImpl implements UserBean {
 		user.setOrgId(orgId);
 		user.setInviteAcceptStatus(false);
 		user.setInvitedTime(System.currentTimeMillis());
+		user.setUserStatus(true);
 		user.setUserType(AccountConstants.UserType.USER.getValue());
 		long ouid = addToORGUsers(user);
 
@@ -1261,7 +1262,7 @@ public long inviteRequester(long orgId, User user) throws Exception {
 		user.setUid(uid);
 		user.setOrgId(orgId);
 		user.setUserType(AccountConstants.UserType.REQUESTER.getValue());
-		
+		user.setUserStatus(true);
 		long ouid = addToORGUsers(user);
 		
 		addFacilioRequestor(user);
