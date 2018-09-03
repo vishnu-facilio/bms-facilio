@@ -46,6 +46,7 @@ public class AddWidgetCommand implements Command {
 			
 			if(context.get(FacilioConstants.ContextNames.WIDGET_TYPE).equals(WidgetType.STATIC)) {
 				WidgetStaticContext widgetStaticContext = (WidgetStaticContext) widget;
+				
 						insertBuilder = new GenericInsertRecordBuilder()
 						.table(ModuleFactory.getWidgetStaticModule().getTableName())
 						.fields(FieldFactory.getWidgetStaticFields());
@@ -54,13 +55,14 @@ public class AddWidgetCommand implements Command {
 				insertBuilder.addRecord(props);
 				insertBuilder.save();
 				
-				if(widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD)) {
+				if(widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD) || widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD_MINI) || widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_ENERGY_CARBON_CARD_MINI)) {
 					Long workflowId = WorkflowUtil.addWorkflow(DashboardUtil.WEATHER_WIDGET_WORKFLOW_STRING);
 					WidgetVsWorkflowContext widgetVsWorkflowContext = new WidgetVsWorkflowContext();
 					
 					widgetVsWorkflowContext.setWidgetId(widget.getId());
 					widgetVsWorkflowContext.setWorkflowId(workflowId);
 					widgetVsWorkflowContext.setWorkflowName("weather");
+					
 					DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
 					
 					workflowId = WorkflowUtil.addWorkflow(DashboardUtil.CARBON_EMISSION_CARD);
@@ -71,7 +73,7 @@ public class AddWidgetCommand implements Command {
 					widgetVsWorkflowContext.setWorkflowName("carbonEmission");
 					DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
 				}
-				else if(widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_ENERGY_COST_CARD)) {
+				else if(widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_ENERGY_COST_CARD) || widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_ENERGY_COST_CARD_MINI)) {
 					Long workflowId = WorkflowUtil.addWorkflow(DashboardUtil.ENERGY_COST_THIS_MONTH_CONSUMPTION_WORKFLOW);
 					WidgetVsWorkflowContext widgetVsWorkflowContext = new WidgetVsWorkflowContext();
 					
@@ -106,6 +108,25 @@ public class AddWidgetCommand implements Command {
 					widgetVsWorkflowContext.setWorkflowId(workflowId);
 					widgetVsWorkflowContext.setWorkflowName("lastMonthDate");
 					DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
+				}
+				else if(widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_ENERGY_CARD_MINI)) {
+					
+					Long workflowId = WorkflowUtil.addWorkflow(DashboardUtil.ENERGY_CONSUMPTION_THIS_MONTH_WORKFLOW);
+					WidgetVsWorkflowContext widgetVsWorkflowContext = new WidgetVsWorkflowContext();
+					
+					widgetVsWorkflowContext.setWidgetId(widget.getId());
+					widgetVsWorkflowContext.setWorkflowId(workflowId);
+					widgetVsWorkflowContext.setWorkflowName("currentMonth");
+					DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
+					
+					workflowId = WorkflowUtil.addWorkflow(DashboardUtil.ENERGY_CONSUMPTION_LAST_MONTH_WORKFLOW);
+					widgetVsWorkflowContext = new WidgetVsWorkflowContext();
+					
+					widgetVsWorkflowContext.setWidgetId(widget.getId());
+					widgetVsWorkflowContext.setWorkflowId(workflowId);
+					widgetVsWorkflowContext.setWorkflowName("lastMonth");
+					DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
+					
 				}
 			}
 			else if(context.get(FacilioConstants.ContextNames.WIDGET_TYPE).equals(WidgetType.WEB)) {
