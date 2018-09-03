@@ -65,9 +65,9 @@ public class AnomalyDetectorJob extends FacilioJob {
 			//List<EnergyMeterContext> allEnergyMeters = DeviceAPI.getSpecificEnergyMeters(meters);
 
 			
-			//long correction = 0;
+			long correction = 0;
 			// Uncomment below code for DEV testing only
-			long correction = System.currentTimeMillis() - 1521748963945L;
+			//long correction = System.currentTimeMillis() - 1521748963945L;
 			long endTime = System.currentTimeMillis() - correction;
 			long startTime = endTime - (2 * anomalyPeriodicity *  60 * 1000L);
 
