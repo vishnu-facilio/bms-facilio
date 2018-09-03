@@ -124,7 +124,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 						context.put(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META, Collections.singletonMap(ReadingsAPI.getRDMKey(reading.getParentId(), readingRule.getReadingField()), prevRDM));
 						
 						Map<String, ReadingDataMeta> rdmCache = getCurrentRDMs(reading, fieldMap);
-						getOtherRDMs(reading.getTtime(), supportFieldsRDM, rdmCache, lastItr, fields);
+						getOtherRDMs(reading.getParentId(), reading.getTtime(), supportFieldsRDM, rdmCache, lastItr, fields);
 //						LOGGER.info("Current RDM : "+rdmCache.keySet());
 //						LOGGER.info("Current RDM Size : "+rdmCache.size());
 						
@@ -151,12 +151,13 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 		}
 	}
 	
-	private void getOtherRDMs(long ttime, Map<String, List<ReadingDataMeta>> rdmMap, Map<String, ReadingDataMeta> rdmCache, Map<String, Integer> lastItr, List<WorkflowFieldContext> fields) {
+	private void getOtherRDMs(long resourceId, long ttime, Map<String, List<ReadingDataMeta>> rdmMap, Map<String, ReadingDataMeta> rdmCache, Map<String, Integer> lastItr, List<WorkflowFieldContext> fields) {
 		if (rdmMap != null && !rdmMap.isEmpty() && fields != null && !fields.isEmpty()) {
 			for (WorkflowFieldContext field : fields) {
 				if (field.getAggregationEnum() == ExpressionAggregateOperator.LAST_VALUE) {
-					String rdmKey = ReadingsAPI.getRDMKey(field.getResourceId(), field.getField());
-					List<ReadingDataMeta> rdmList = rdmMap.get(ReadingsAPI.getRDMKey(field.getResourceId(), field.getField()));
+					long parentId = field.getResourceId() == -1 ? resourceId : field.getResourceId();
+					String rdmKey = ReadingsAPI.getRDMKey(parentId, field.getField());
+					List<ReadingDataMeta> rdmList = rdmMap.get(ReadingsAPI.getRDMKey(parentId, field.getField()));
 					ReadingDataMeta prevRDM = null;
 					Integer itr = lastItr.get(rdmKey);
 					if (itr == null) {
