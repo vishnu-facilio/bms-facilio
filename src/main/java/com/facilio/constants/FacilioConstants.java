@@ -41,6 +41,7 @@ import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketPriorityContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.TicketTypeContext;
+import com.facilio.bmsconsole.context.UtilityMeterContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.context.ZoneContext;
@@ -330,6 +331,7 @@ public class FacilioConstants {
 		public static final String COOLING_TOWER = "coolingtower";
 		public static final String FCU = "fcu";
 		public static final String HEAT_PUMP = "heatpump";
+		public static final String UTILITY_METER = "utilitymeter";
 		public static final String ENERGY_METER_PURPOSE = "energymeterpurpose";
 		
 		public static final String CURRENT_OCCUPANCY_READING = "currentoccupancyreading";
@@ -339,6 +341,7 @@ public class FacilioConstants {
 		public static final String CO2_READING = "co2reading";
 		public static final String SET_POINT_READING = "setpointreading";
 		public static final String ENERGY_DATA_READING = "energydata";
+		public static final String UTILITY_BILL_READING = "utilitybillreading";
 		
 		public static final String BASE_SPACE_PHOTOS = "basespacephotos";
 		public static final String ASSET_PHOTOS = "assetphotos";
@@ -579,12 +582,13 @@ public class FacilioConstants {
 			classMap.put(COOLING_TOWER, CoolingTowerContext.class);
 			classMap.put(FCU, FCUContext.class);
 			classMap.put(HEAT_PUMP, HeatPumpContext.class);
+			classMap.put(UTILITY_METER, UtilityMeterContext.class);
 			classMap.put(ENERGY_DATA_READING, ReadingContext.class);
 			classMap.put(ENERGY_METER_PURPOSE, EnergyMeterPurposeContext.class);
 			classMap.put(WEATHER_READING, ReadingContext.class);
 			classMap.put(CDD_READING, ReadingContext.class);
 			classMap.put(HDD_READING, ReadingContext.class);
-
+			classMap.put(UTILITY_BILL_READING, ReadingContext.class);
 			
 			return classMap;
 		}
