@@ -3969,6 +3969,26 @@ public class FieldFactory {
 		return getField(name, colName, null, type);
 	}
 
+	public static List<FacilioField> getAnomalyConfigFields() {
+		FacilioModule module = ModuleFactory.getAnalyticsAnomalyConfigModule();
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getOrgIdField(module));
+		fields.add(getField("meterId", "METER_ID", module, FieldType.NUMBER));
+		fields.add(getField("constant1", "CONSTANT1", module, FieldType.DECIMAL));
+		fields.add(getField("constant2", "CONSTANT2", module, FieldType.DECIMAL));
+		fields.add(getField("maxDistance", "MAXDISTANCE", module, FieldType.DECIMAL));
+				
+		fields.add(getField("dimension1Buckets", "DIMENSION1_BUCKETS", module, FieldType.STRING));
+		fields.add(getField("dimension2Buckets", "DIMENSION2_BUCKETS", module, FieldType.STRING));
+		fields.add(getField("dimension1Value", "DIMENSION1_VALUE", module, FieldType.STRING));
+		fields.add(getField("dimension2Value", "DIMENSION2_VALUE", module, FieldType.STRING));
+		fields.add(getField("xAxisDimension", "DIMENSION_x", module, FieldType.STRING));
+		fields.add(getField("yAxisDimension", "DIMENSION_y", module, FieldType.STRING));
+
+		return fields;
+	}
+	
 	public static List<FacilioField> getAnomalyTemperatureFields() {
 		FacilioModule module = ModuleFactory.getAnalyticsAnomalyModuleWeatherData();
 		List<FacilioField> fields = new ArrayList<>();

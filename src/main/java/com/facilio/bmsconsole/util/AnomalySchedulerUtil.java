@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AnalyticsAnomalyConfigContext;
 import com.facilio.bmsconsole.context.AnalyticsAnomalyContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.TemperatureContext;
@@ -22,14 +23,35 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 
 
 public class AnomalySchedulerUtil {
-	
-
 	private static final Logger logger = Logger.getLogger(AnomalySchedulerUtil.class.getName());
 	private static final String energyDataTable = ModuleFactory.getAnalyticsAnomalyModule().getTableName();
 	private static final String anomalyIdTable =  ModuleFactory.getAnalyticsAnomalyIDListModule().getTableName();
 	private static final String weatherDataTable = ModuleFactory.getAnalyticsAnomalyModuleWeatherData().getTableName();
+	private static final String anomalyConfigTable = ModuleFactory.getAnalyticsAnomalyConfigModule().getTableName();
+
+	public static List<AnalyticsAnomalyConfigContext> getAllAssetConfigs(String moduleName, long orgID) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		List<AnalyticsAnomalyConfigContext> listOfReadings=new ArrayList<AnalyticsAnomalyConfigContext>();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getAnomalyConfigFields())
+				.table(anomalyConfigTable)
+				.andCustomWhere(" ORGID = ? ",  orgID);
 	
-	public static List<AnalyticsAnomalyContext> getAllEnergyReadings(long startTime, long endTime, long meterID, long orgID) throws Exception {
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			
+			for(Map<String, Object> prop:props) {
+				AnalyticsAnomalyConfigContext anomalyConfigContext = FieldUtil.getAsBeanFromMap(prop, AnalyticsAnomalyConfigContext.class);
+				listOfReadings.add(anomalyConfigContext);
+			}
+		}
+
+		return listOfReadings;
+	}
+	
+	public static List<AnalyticsAnomalyContext> getAllEnergyReadings(long startTime, long endTime, long meterID, long orgID)
+		throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_DATA_READING);
 		
@@ -58,7 +80,8 @@ public class AnomalySchedulerUtil {
 
 		return listOfReadings;
 	}
-	
+
+
 	public static LinkedHashSet<Long> getExistingAnomalyIDs(String moduleName, String anomalyIDList) throws Exception{
 		LinkedHashSet<Long> setOfAnomalyIDs=new LinkedHashSet<>();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

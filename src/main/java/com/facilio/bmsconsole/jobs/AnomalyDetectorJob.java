@@ -19,6 +19,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.context.AnalyticsAnomalyConfigContext;
 import com.facilio.bmsconsole.context.AnalyticsAnomalyContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
@@ -58,25 +59,36 @@ public class AnomalyDetectorJob extends FacilioJob {
 				logger.log(Level.INFO, "Feature BITS is enabled");
 			}
 
-			String meters = AwsUtil.getConfig("anomalyMeters");
+			//String meters = AwsUtil.getConfig("anomalyMeters");
 			Integer anomalyPeriodicity = Integer.parseInt(AwsUtil.getConfig("anomalyPeriodicity"));
 			// get the list of all sub meters
-			List<EnergyMeterContext> allEnergyMeters = DeviceAPI.getSpecificEnergyMeters(meters);
+			//List<EnergyMeterContext> allEnergyMeters = DeviceAPI.getSpecificEnergyMeters(meters);
 
 			
-			long correction = 0;
+			//long correction = 0;
 			// Uncomment below code for DEV testing only
-			// long correction = System.currentTimeMillis() - 1521748963945L;
-			
+			long correction = System.currentTimeMillis() - 1521748963945L;
 			long endTime = System.currentTimeMillis() - correction;
 			long startTime = endTime - (2 * anomalyPeriodicity *  60 * 1000L);
 
 			logger.log(Level.INFO, "  " + startTime + " " + endTime + " " + anomalyPeriodicity);
 			logger.log(Level.INFO, "selected Meters ");
-			for (EnergyMeterContext energyMeter : allEnergyMeters) {
-				
-				logger.log(Level.INFO, "" + energyMeter.getId() + "  " + startTime + " " + endTime);
-				doEnergyMeterAnomalyDetection(energyMeter, startTime, endTime);
+
+			
+			List<AnalyticsAnomalyConfigContext> meterConfigurations = null;
+			
+			String moduleName="dummyModuleName";
+			try {
+				meterConfigurations = AnomalySchedulerUtil.getAllAssetConfigs(moduleName,  jc.getOrgId());
+				logger.log(Level.INFO, "meter configuration  = " + (meterConfigurations.size()));
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			for(AnalyticsAnomalyConfigContext context: meterConfigurations) {
+				logger.log(Level.INFO, "meter configuration  = " + context.toString());
+				//logger.log(Level.INFO, "" + energyMeter.getId() + "  " + startTime + " " + endTime);
+				doEnergyMeterAnomalyDetection(context, startTime, endTime);
 			}
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, e.getMessage(), e);
@@ -124,28 +136,60 @@ public class AnomalyDetectorJob extends FacilioJob {
 		}
 	}
 	
-	private void doEnergyMeterAnomalyDetection(EnergyMeterContext  energyMeterContext, long startTime, long endTime) {
+	private void doEnergyMeterAnomalyDetection(AnalyticsAnomalyConfigContext configContext, long startTime, long endTime) {
 		String moduleName="dummyModuleName";
 		ObjectMapper mapper = new ObjectMapper();
+
+		long orgId = configContext.getOrgId();
+		long meterId = configContext.getMeterId();
 		
 		try {
-			List<AnalyticsAnomalyContext> meterReadings = AnomalySchedulerUtil.getAllEnergyReadings(startTime, endTime, energyMeterContext.getId(), energyMeterContext.getOrgId());
-			
+			List<AnalyticsAnomalyContext> meterReadings = AnomalySchedulerUtil.getAllEnergyReadings(startTime, endTime, 
+					configContext.getMeterId(), configContext.getOrgId());
 			List<AnalyticsAnomalyContext> validAnomalyContext=new ArrayList<>(); 
 			
 			if(meterReadings.size() == 0) {
-				logger.log(Level.SEVERE, "NOT received readings for ID " + energyMeterContext.getId() + " startTime = " + startTime + " endTime = " + endTime);
+				logger.log(Level.SEVERE, "NOT received readings for ID " + meterId + " startTime = " + startTime + " endTime = " + endTime);
 				return;
 			}
 				
 			List<TemperatureContext> temperatureContext = AnomalySchedulerUtil.getAllTemperatureReadings(moduleName,
-					startTime, endTime, energyMeterContext.getOrgId());
+					startTime, endTime, orgId);
 
+			/*
+			 * 		
+				double constant1;
+				double constant2;
+				double maxDistance;
+				
+				Long meterID;
+				String timezone;
+				String dimension1Bucket;
+				String dimension2Bucket;
+				String dimension1Value; 
+				String dimension2Value; 
+				String xDimension;
+				String yDimension;
+				
+		
+			 * 
+			 */
 			CheckAnomalyModelPostData postData=new CheckAnomalyModelPostData();
 			String postURL = AwsUtil.getConfig("anomalyCheckServiceURL") + "/checkAnomaly";
 
-			postData.meterID = energyMeterContext.getId();
+			postData.meterID = meterId;
+			postData.constant1 = configContext.getConstant1();
+			postData.constant2 = configContext.getConstant2();
+			postData.maxDistance = configContext.getMaxDistance();
+			postData.dimension1Bucket = configContext.getDimension1Buckets();
+			postData.dimension2Bucket = configContext.getDimension2Buckets();
+			postData.dimension1Value =  configContext.getDimension1Value();
+			postData.dimension2Value =  configContext.getDimension2Value();
+			postData.xDimension = configContext.getxAxisDimension();
+			postData.yDimension = configContext.getyAxisDimension();
+			
 			postData.temperatureData=temperatureContext;
+
 			postData.energyData=meterReadings;
 			postData.timezone = AccountUtil.getCurrentOrg().getTimezone();
 			String jsonInString = mapper.writeValueAsString(postData);
@@ -355,20 +399,97 @@ public class AnomalyDetectorJob extends FacilioJob {
 	}
 	
 	class CheckAnomalyModelPostData {
+		public double getConstant1() {
+			return constant1;
+		}
+		public void setConstant1(double constant1) {
+			this.constant1 = constant1;
+		}
+		public double getConstant2() {
+			return constant2;
+		}
+		public void setConstant2(double constant2) {
+			this.constant2 = constant2;
+		}
+		public double getMaxDistance() {
+			return maxDistance;
+		}
+		public void setMaxDistance(double maxDistance) {
+			this.maxDistance = maxDistance;
+		}
 		public Long getMeterID() {
 			return meterID;
+		}
+		public void setMeterID(Long meterID) {
+			this.meterID = meterID;
 		}
 		public String getTimezone() {
 			return timezone;
 		}
+		public void setTimezone(String timezone) {
+			this.timezone = timezone;
+		}
+		public String getDimension1Bucket() {
+			return dimension1Bucket;
+		}
+		public void setDimension1Bucket(String dimension1Bucket) {
+			this.dimension1Bucket = dimension1Bucket;
+		}
+		public String getDimension2Bucket() {
+			return dimension2Bucket;
+		}
+		public void setDimension2Bucket(String dimension2Bucket) {
+			this.dimension2Bucket = dimension2Bucket;
+		}
+		public String getDimension1Value() {
+			return dimension1Value;
+		}
+		public void setDimension1Value(String dimension1Value) {
+			this.dimension1Value = dimension1Value;
+		}
+		public String getDimension2Value() {
+			return dimension2Value;
+		}
+		public void setDimension2Value(String dimension2Value) {
+			this.dimension2Value = dimension2Value;
+		}
+		public String getxDimension() {
+			return xDimension;
+		}
+		public void setxDimension(String xDimension) {
+			this.xDimension = xDimension;
+		}
+		public String getyDimension() {
+			return yDimension;
+		}
+		public void setyDimension(String yDimension) {
+			this.yDimension = yDimension;
+		}
 		public List<AnalyticsAnomalyContext> getEnergyData() {
 			return energyData;
+		}
+		public void setEnergyData(List<AnalyticsAnomalyContext> energyData) {
+			this.energyData = energyData;
 		}
 		public List<TemperatureContext> getTemperatureData() {
 			return temperatureData;
 		}
+		public void setTemperatureData(List<TemperatureContext> temperatureData) {
+			this.temperatureData = temperatureData;
+		}
+		double constant1;
+		double constant2;
+		double maxDistance;
+		
 		Long meterID;
 		String timezone;
+		String dimension1Bucket;
+		String dimension2Bucket;
+		String dimension1Value; 
+		String dimension2Value; 
+		String xDimension;
+		String yDimension;
+		
 		List<AnalyticsAnomalyContext> energyData;
 		List<TemperatureContext> temperatureData;
 	}
