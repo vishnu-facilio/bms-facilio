@@ -71,6 +71,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 				Map<String, List<ReadingDataMeta>> currentFields = supportFieldsRDM;
 				Map<String, List<ReadingDataMeta>> currentRDMList = getSupportingData(fields, startTime, endTime, resourceId);
 				if (currentRDMList != null && !currentRDMList.isEmpty()) {
+					LOGGER.info("Current resource Support Fields RDM Values size : "+currentRDMList.size());
 					if (supportFieldsRDM == null) {
 						currentFields = currentRDMList;
 					}
