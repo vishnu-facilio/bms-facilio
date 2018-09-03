@@ -2638,6 +2638,8 @@ public class FieldFactory {
 		dateFilter.setColumnName("DATE_FILTER");
 		dateFilter.setModule(module);
 		fields.add(dateFilter);
+		
+		fields.add(getField("newReportId", "NEW_REPORT_ID", module, FieldType.LOOKUP));
 
 		return fields;
 	}
