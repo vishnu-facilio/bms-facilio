@@ -1,15 +1,18 @@
 package com.facilio.bmsconsole.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.ModuleLocalIdContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.StringOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -17,9 +20,11 @@ import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class ModuleLocalIdUtil {
 
-	public static final List<String> modulesWithLocalId = new ArrayList<>();
+	private static final List<String> MODULES_WITH_LOCAL_ID = Collections.unmodifiableList(initModulesWithLocalIds());
+	private static final Object SYNC_OBJ = new Object();
 	
-	static {
+	private static List<String> initModulesWithLocalIds() {
+		List<String> modulesWithLocalId = new ArrayList<>();
 		modulesWithLocalId.add(FacilioConstants.ContextNames.ASSET);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.ENERGY_METER);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.WORK_ORDER);
@@ -27,66 +32,62 @@ public class ModuleLocalIdUtil {
 		modulesWithLocalId.add(FacilioConstants.ContextNames.TASK);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.ALARM);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.READING_ALARM);
+		
+		return modulesWithLocalId;
 	}
 	
-	public static ModuleLocalIdContext getModuleLocalContext(Long orgId,String moduleName) throws Exception {
+	private static long getModuleLocalId(String moduleName) throws Exception {
+		FacilioModule module = ModuleFactory.getModuleLocalIdModule();
 		
-		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder();
-		selectRecordBuilder.table(ModuleFactory.getModuleLocalIdModule().getTableName());
-		selectRecordBuilder.select(FieldFactory.getModuleLocalIdFields());
-		
-		selectRecordBuilder.andCondition(CriteriaAPI.getOrgIdCondition(orgId, ModuleFactory.getModuleLocalIdModule()));
-		selectRecordBuilder.andCondition(CriteriaAPI.getCondition("MODULE_NAME", "moduleName", moduleName, StringOperators.IS));
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+																.table(module.getTableName())
+																.select(FieldFactory.getModuleLocalIdFields())
+																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+																.andCondition(CriteriaAPI.getCondition("MODULE_NAME", "moduleName", moduleName, StringOperators.IS))
+																;
 		
 		List<Map<String, Object>> props = selectRecordBuilder.get();
-		
 		if(props != null && !props.isEmpty()) {
-			ModuleLocalIdContext moduleLocalIdContext = FieldUtil.getAsBeanFromMap(props.get(0), ModuleLocalIdContext.class);
-			return moduleLocalIdContext;
+			return (long) props.get(0).get("localId");
 		}
-		return null;
-	}
-	public static ModuleLocalIdContext getModuleLocalContext(String moduleName) throws Exception {
-		return getModuleLocalContext(AccountUtil.getCurrentOrg().getId(),moduleName);
+		return -1;
 	}
 	
-	public static Long getModuleLocalId(String moduleName) throws Exception {
-		return getModuleLocalId(AccountUtil.getCurrentOrg().getId(),moduleName);
-	}
-	public static Long getModuleLocalId(Long orgId,String moduleName) throws Exception {
-		ModuleLocalIdContext moduleLocalIdContext = getModuleLocalContext(orgId,moduleName);
-		if(moduleLocalIdContext != null) {
-			return moduleLocalIdContext.getLocalId();
+	public static long getAndUpdateModuleLocalId(String moduleName, int currentSize) throws Exception {
+		if (currentSize <= 0) {
+			throw new IllegalArgumentException("Invalid current id size for fetching local Id");
 		}
-		return null;
+		synchronized (SYNC_OBJ) {
+			long localId = getModuleLocalId(moduleName);
+			if (localId == -1) {
+				throw new IllegalArgumentException("This module doesn't have last local id. This is not supposed to happen");
+			}
+			if (updateModuleLocalId(moduleName, localId, localId+currentSize) <= 0) {
+				return getAndUpdateModuleLocalId(moduleName, currentSize);
+			}
+			return localId;
+		}
 	}
 	
-	public static boolean updateModuleLocalId(String moduleName,Long lastLocalId) throws Exception {
+	private static int updateModuleLocalId(String moduleName,long oldId,long lastLocalId) throws Exception {
+		FacilioModule module = ModuleFactory.getModuleLocalIdModule();
+		List<FacilioField> fields = FieldFactory.getModuleLocalIdFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioField moduleField = fieldMap.get("moduleName");
+		FacilioField localIdField = fieldMap.get("localId");
 		
-		return updateModuleLocalId(AccountUtil.getCurrentOrg().getId(),moduleName,lastLocalId);
-	}
-	
-	public static boolean updateModuleLocalId(Long orgId, String moduleName,Long lastLocalId) throws Exception {
+		GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
+																.table(module.getTableName())
+																.fields(fields)
+																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+																.andCondition(CriteriaAPI.getCondition(moduleField, moduleName, StringOperators.IS))
+																.andCondition(CriteriaAPI.getCondition(localIdField, String.valueOf(oldId), NumberOperators.EQUALS))
+																;
 		
-		ModuleLocalIdContext moduleLocalIdContext = new ModuleLocalIdContext();
-		moduleLocalIdContext.setOrgId(orgId);
-		moduleLocalIdContext.setModuleName(moduleName);
-		moduleLocalIdContext.setLocalId(lastLocalId);
 		
-		return updateModuleLocalId(moduleLocalIdContext);
-	}
-	
-	public static boolean updateModuleLocalId(ModuleLocalIdContext moduleLocalIdContext) throws Exception {
-		
-		GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder();
-		updateRecordBuilder.table(ModuleFactory.getModuleLocalIdModule().getTableName());
-		updateRecordBuilder.fields(FieldFactory.getModuleLocalIdFields());
-		
-		updateRecordBuilder.andCondition(CriteriaAPI.getOrgIdCondition(moduleLocalIdContext.getOrgId(), ModuleFactory.getModuleLocalIdModule()));
-		updateRecordBuilder.andCondition(CriteriaAPI.getCondition("MODULE_NAME", "moduleName", moduleLocalIdContext.getModuleName(), StringOperators.IS));
-		
-		Map<String, Object> props = FieldUtil.getAsProperties(moduleLocalIdContext);
-		return updateRecordBuilder.update(props) > 0 ? true : false;
+		Map<String, Object> prop = new HashMap<>();
+		prop.put("localId", lastLocalId);
+		return updateRecordBuilder.update(prop);
 		
 	}
 	
@@ -95,6 +96,6 @@ public class ModuleLocalIdUtil {
 		if(AccountUtil.getCurrentOrg().getId() == 92l && moduleName.equals("kdm")) {
 			return true;
 		}
-		return modulesWithLocalId.contains(moduleName) ? true : false;
+		return MODULES_WITH_LOCAL_ID.contains(moduleName) ? true : false;
 	}
 }

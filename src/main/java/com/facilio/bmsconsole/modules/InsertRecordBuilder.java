@@ -107,14 +107,14 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		List<FacilioModule> modules = splitModules();
 		Map<Long, List<FacilioField>> fieldMap = splitFields();
 		
-		Long localId = null;
-		if(isWithLocalIdModule && module != null) {
-			localId = ModuleLocalIdUtil.getModuleLocalId(module.getName());
+		long localId = -1;
+		if(isWithLocalIdModule) {
+			localId = ModuleLocalIdUtil.getAndUpdateModuleLocalId(module.getName(), records.size());
 		}
 		
 		List<Map<String, Object>> beanProps = new ArrayList<>();
 		for(E bean : records) {
-			if(isWithLocalIdModule && localId != null) {
+			if(isWithLocalIdModule) {
 				bean.setLocalId(++localId);
 			}
 			bean.setSysCreatedTime(System.currentTimeMillis());
@@ -146,10 +146,6 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			}
 			currentLevel++;
 		}
-		if(isWithLocalIdModule && localId != null) {
-			ModuleLocalIdUtil.updateModuleLocalId(module.getName(), localId);
-		}
-		
 		for(int itr = 0; itr < records.size(); itr++) {
 			Map<String, Object> beanProp = beanProps.get(itr);
 			if(beanProp.get("id") != null) {
