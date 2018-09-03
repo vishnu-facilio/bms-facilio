@@ -62,16 +62,28 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 				LOGGER.info("Dependent fields : "+fields);
 			
 				if (fields != null && !fields.isEmpty()) {
-					supportFieldsRDM = getSupportingData(fields, startTime, endTime);
+					supportFieldsRDM = getSupportingData(fields, startTime, endTime, -1);
 					LOGGER.info("Support Fields RDM Values size : "+supportFieldsRDM.size());
 				}
 			}
 			for (long resourceId : readingRule.getMatchedResources().keySet()) {
 				LOGGER.info("Gonna fetch data and execute rule for resource : "+resourceId);
+				Map<String, List<ReadingDataMeta>> currentFields = supportFieldsRDM;
+				Map<String, List<ReadingDataMeta>> currentRDMList = getSupportingData(fields, startTime, endTime, resourceId);
+				if (currentRDMList != null && !currentRDMList.isEmpty()) {
+					if (supportFieldsRDM == null) {
+						currentFields = currentRDMList;
+					}
+					else {
+						currentFields = new HashMap<>(supportFieldsRDM);
+						currentFields.putAll(currentRDMList);
+					}
+				}
+				
 				long processStartTime = System.currentTimeMillis();
 				long currentStartTime = startTime - (ReadingsAPI.getDataInterval(resourceId, readingRule.getReadingField().getModule()) * 60 * 1000);
 				List<ReadingContext> readings = fetchReadings(readingRule, resourceId, currentStartTime, endTime);
-				executeWorkflows(readingRule, readings, supportFieldsRDM, fields);
+				executeWorkflows(readingRule, readings, currentFields, fields);
 				LOGGER.info("Time taken for Historical Run for Reading Rule : "+jc.getJobId()+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is "+(System.currentTimeMillis() - processStartTime));
 			}
 			LOGGER.info("Total Time taken for Historical Run for Reading Rule : "+jc.getJobId()+" between "+startTime+" and "+endTime+" is "+(System.currentTimeMillis() - jobStartTime));
@@ -183,7 +195,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 		return rdmCache;
 	}
 	
-	private Map<String, List<ReadingDataMeta>> getSupportingData(List<WorkflowFieldContext> fields, long startTime, long endTime) throws Exception {
+	private Map<String, List<ReadingDataMeta>> getSupportingData(List<WorkflowFieldContext> fields, long startTime, long endTime, long resourceId) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		Map<String, List<ReadingDataMeta>> supportingValues = new HashMap<>();
 		for (WorkflowFieldContext field : fields) {
@@ -202,11 +214,21 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 				selectFields.add(parentField);
 				selectFields.add(ttimeField);
 				
+				if (resourceId == -1 && field.getResourceId() == -1) {
+					continue;
+				}
+				
+				if (resourceId != -1 && field.getResourceId() != -1) {
+					continue;
+				}
+				
+				long parentId = resourceId == -1? field.getResourceId() : resourceId;
+				
 				SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
 																		.select(selectFields)
 																		.module(valField.getModule())
 																		.beanClass(ReadingContext.class)
-																		.andCondition(CriteriaAPI.getCondition(parentField, String.valueOf(field.getResourceId()), PickListOperators.IS))
+																		.andCondition(CriteriaAPI.getCondition(parentField, String.valueOf(parentId), PickListOperators.IS))
 																		.andCondition(CriteriaAPI.getCondition(ttimeField, startTime+","+endTime, DateOperators.BETWEEN))
 																		.andCondition(CriteriaAPI.getCondition(valField, CommonOperators.IS_NOT_EMPTY))
 																		.orderBy("TTIME")
