@@ -1151,6 +1151,13 @@ public class DashboardAction extends ActionSupport {
 								paramMap = new HashMap<>();
 							}
 							paramMap.put("parentId", widgetVsWorkflowContext.getBaseSpaceId());
+							
+							if(widgetStaticContext != null && ( ((widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD) || widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD_MINI)) && widgetVsWorkflowContext.getWorkflowName().equals("weather"))  || (widgetStaticContext.getStaticKey().equals("weathercardaltayer") && widgetVsWorkflowContext.getWorkflowName().equals("weather")) )) {
+								BaseSpaceContext basespace = SpaceAPI.getBaseSpace(widgetVsWorkflowContext.getBaseSpaceId());
+								if(basespace != null) {
+									paramMap.put("parentId", basespace.getSiteId());
+								}
+							}
 						}
 						if(reportSpaceFilterContext != null) {
 							if(paramMap == null) {
