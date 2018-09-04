@@ -343,44 +343,66 @@ public class AssetsAPI {
 		Set<Long> fieldIds = assets.stream().map(asset -> (Long) asset.getData().get("fieldId")).collect(Collectors.toSet());
 		fieldMap = modBean.getFields(fieldIds);
 		
+		Map<Long, Object> assetMap = new JSONObject();
+		
 		JSONObject categoryVsFields = new JSONObject();
+		JSONObject categoryVsAssets = new JSONObject();
 		for(AssetContext asset: assets) {
 			if (asset.getCategory() == null) {
 				continue;
 			}
-			Set<Long> assetIds;
+			
 			Long fieldId = (Long) asset.getData().get("fieldId");
-			Map<Long, Map<String, Object>> readings;
+			
+			List<Long> assetFieldIds;
+			Map<Long, List<Long>> categoryAssets;
+			if (!categoryVsAssets.containsKey(asset.getCategory().getId())) {
+				categoryAssets = new HashMap<>();
+				categoryVsAssets.put(asset.getCategory().getId(), categoryAssets);
+			}
+			else {
+				categoryAssets = (Map<Long, List<Long>>) categoryVsAssets.get(asset.getCategory().getId());
+			}
+			if (!categoryAssets.containsKey(asset.getId())) {
+				assetFieldIds = new ArrayList<>();
+				categoryAssets.put(asset.getId(), assetFieldIds);
+				assetMap.put(asset.getId(), asset.getName());
+			}
+			else {
+				assetFieldIds = (List<Long>) categoryAssets.get(asset.getId());
+			}
+			assetFieldIds.add(fieldId);
+			categoryVsAssets.put(asset.getCategory().getId(), categoryAssets);
+			
+			
+			Set<Long> assetIds;
+			Map<Long, Set<Long>> readings;
 			if (!categoryVsFields.containsKey(asset.getCategory().getId())) {
 				readings = new HashMap<>();
 				categoryVsFields.put(asset.getCategory().getId(), readings);
 			}
 			else {
-				readings = (Map<Long, Map<String, Object>>) categoryVsFields.get(asset.getCategory().getId());
+				readings = (Map<Long, Set<Long>>) categoryVsFields.get(asset.getCategory().getId());
 			}
 			if (!readings.containsKey(fieldId)) {
-				Map<String, Object> readingObj = new HashMap<>();
-				FacilioField readingField = fieldMap.get(fieldId);
-				readingObj.put("field", readingField);
 				assetIds = new HashSet<Long>();
-				readingObj.put("assetIds", assetIds);
-				readings.put(fieldId, readingObj);
+				readings.put(fieldId, assetIds);
 			}
 			else {
-				assetIds = (Set<Long>) readings.get(fieldId).get("assetIds");
+				assetIds = (Set<Long>) readings.get(fieldId);
 			}
 			assetIds.add(asset.getId());
 			categoryVsFields.put(asset.getCategory().getId(), readings);
+			
 		}
-		// Temp
-		Map<Long, Object> assetMap = new JSONObject();
-		for(AssetContext asset: assets) {
-			assetMap.put(asset.getId(), asset.getName());
-		}
-//		Map<Long, AssetContext> assetMap = assets.stream().collect(Collectors.toMap(AssetContext::getId, Function.identity(), (prevValue, curValue) -> {return prevValue;}));
+		
 		JSONObject data = new JSONObject();
 		data.put("categoryWithFields", categoryVsFields);
+		data.put("categoryWithAssets", categoryVsAssets);
 		data.put("assets", assetMap);
+		data.put("fields", fieldMap);
+		
+		
 		return data;
 	}
 	
