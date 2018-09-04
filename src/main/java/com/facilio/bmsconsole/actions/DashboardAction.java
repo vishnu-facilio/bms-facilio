@@ -6601,6 +6601,9 @@ public class DashboardAction extends ActionSupport {
 					if(widget.get("staticKey") != null) {
 						widgetStaticContext.setStaticKey(widget.get("staticKey").toString());
 					}
+					if(widget.get("staticKey") != null) {
+						widgetStaticContext.setBaseSpaceId((Long) widget.get("baseSpaceId"));
+					}
 				}
 				else if (widgetType == DashboardWidgetContext.WidgetType.WEB.getValue()) {
 					widgetContext = new WidgetWebContext();
