@@ -4425,7 +4425,8 @@ public class DashboardAction extends ActionSupport {
 		this.safelimit = safelimit;
 	}
 	
-	private Double getTotalKwh(List<String> parentIds, long startTime, long endTime) throws Exception {
+	
+	public static Double getTotalKwh(List<String> parentIds, long startTime, long endTime) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule("energydata");
@@ -5378,12 +5379,12 @@ public class DashboardAction extends ActionSupport {
 						
 						if(meterIdsUsed != null ) {
 							Criteria parentCriteria = criteria != null ? criteria : report.getCriteria();
-							Double totalKwh = getTotalKwh(meterIdsUsed, this.startTime, this.endTime);
+							Double totalKwh = DashboardAction.getTotalKwh(meterIdsUsed, this.startTime, this.endTime);
 							Double totalCost = (Double) variance.get("sum");
 							
 							Long startTime = DateTimeUtil.getDayStartTime(-1);
 							Long endTime = DateTimeUtil.getDayStartTime();
-							Double yesterdayKwh = getTotalKwh(meterIdsUsed, startTime, endTime);
+							Double yesterdayKwh = DashboardAction.getTotalKwh(meterIdsUsed, startTime, endTime);
 							Double yesterdayCost = (Double) rs.get(rs.size() - 1).get("value");
 							
 							variance = new JSONObject();
