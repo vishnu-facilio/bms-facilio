@@ -325,7 +325,19 @@ public class AwsUtil
 		String toAddress = (String)mailJson.get("to");
 		boolean sendEmail = true;
 		if( ! "production".equals(AwsUtil.getConfig("environment")) ) {
-			if(toAddress == null || ( ! toAddress.contains("facilio.com"))){
+			if(toAddress != null) {
+				String to = "";
+				for(String address : toAddress.split(",")) {
+					 if(address.contains("facilio.com")) {
+						 to = address + ",";
+					 }
+				}
+				if(to.length() == 0 ) {
+					sendEmail = false;
+				} else {
+					toAddress = to;
+				}
+			} else {
 				sendEmail = false;
 			}
 		}
@@ -367,11 +379,22 @@ public class AwsUtil
 		String toAddress = (String)mailJson.get("to");
 		boolean sendEmail = true;
 		if( ! "production".equals(AwsUtil.getConfig("environment")) ) {
-			if(toAddress == null || ( ! toAddress.contains("facilio.com"))){
+			if(toAddress != null) {
+				String to = "";
+				for(String address : toAddress.split(",")) {
+					if(address.contains("facilio.com")) {
+						to = address + ",";
+					}
+				}
+				if(to.length() == 0 ) {
+					sendEmail = false;
+				} else {
+					mailJson.put("to", to);
+				}
+			} else {
 				sendEmail = false;
 			}
 		}
-
 		if(sendEmail) {
 			try {
 				if (AwsUtil.getConfig("app.url") == null || AwsUtil.getConfig("app.url").contains("localhost")) {
