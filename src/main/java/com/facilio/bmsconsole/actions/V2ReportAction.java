@@ -10,7 +10,6 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.report.context.ReadingAnalysisContext;
 import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
 import com.facilio.report.context.ReportBaseLineContext;
@@ -20,7 +19,7 @@ import com.facilio.report.util.ReportUtil;
 
 public class V2ReportAction extends FacilioAction {
 	
-	public ReportContext reportContext;
+	private ReportContext reportContext;
 	public ReportContext getReportContext() {
 		return reportContext;
 	}
@@ -28,18 +27,17 @@ public class V2ReportAction extends FacilioAction {
 		this.reportContext = reportContext;
 	}
 	
-	Long reportId;
+	private long reportId = -1;
 	public Long getReportId() {
 		return reportId;
 	}
 	public void setReportId(Long reportId) {
 		this.reportId = reportId;
 	}
-	public void getReport() throws Exception {
-		
+	
+	public void fetchReport() throws Exception {
 		reportContext = ReportUtil.getReport(reportId);
 		setResult("report", reportContext);
-		
 	}
 	
 	public String addReadingReport() throws Exception {
