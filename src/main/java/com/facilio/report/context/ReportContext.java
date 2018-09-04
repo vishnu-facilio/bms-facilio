@@ -100,8 +100,10 @@ public class ReportContext {
 		}
 		return -1;
 	}
-	public void setDateOperator(int dateOperator) {
-		this.dateOperator = Operator.OPERATOR_MAP.get(dateOperator);
+	public void setDateOperator(Integer dateOperator) {
+		if(dateOperator != null) {
+			this.dateOperator = Operator.OPERATOR_MAP.get(dateOperator);
+		}
 	}
 	
 	private String dateValue;
