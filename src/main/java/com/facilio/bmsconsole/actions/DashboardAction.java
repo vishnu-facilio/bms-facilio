@@ -1131,6 +1131,20 @@ public class DashboardAction extends ActionSupport {
 	public void setCardResult(Object cardResult) {
 		this.cardResult = cardResult;
 	}
+	Long baseSpaceId;
+	public Long getBaseSpaceId() {
+		return baseSpaceId;
+	}
+	public void setBaseSpaceId(Long baseSpaceId) {
+		this.baseSpaceId = baseSpaceId;
+	}
+	public String getStaticKey() {
+		return staticKey;
+	}
+	public void setStaticKey(String staticKey) {
+		this.staticKey = staticKey;
+	}
+	String staticKey;
 	public String getCardData() throws Exception {
 		if(widgetId != null) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -1241,6 +1255,117 @@ public class DashboardAction extends ActionSupport {
 			}
 			LOGGER.severe("result --- "+result);
 			setCardResult(result);
+		}
+		else if(staticKey != null) {
+			
+			Map<String,Object> result = null;
+			
+			List<WidgetVsWorkflowContext> workflowList = DashboardUtil.getCardWorkflowBasedOnStaticKey(staticKey);
+			
+			if(workflowList != null) {
+				
+				result = new HashMap<>();
+				
+				for(WidgetVsWorkflowContext widgetVsWorkflowContext : workflowList) {
+					
+					widgetVsWorkflowContext.setBaseSpaceId(baseSpaceId);
+					
+					if(staticKey.equals("profilemini")) {
+						
+						if(widgetVsWorkflowContext.getBaseSpaceId() != null) {
+							
+							BuildingContext building = SpaceAPI.getBuildingSpace(widgetVsWorkflowContext.getBaseSpaceId());
+							
+							List<EnergyMeterContext> meters = DeviceAPI.getMainEnergyMeter(building.getId()+"");
+							
+							EnergyMeterContext meter = meters.get(0);
+							
+							DateOperators dateOpp = DateOperators.CURRENT_MONTH;
+							DateOperators dateOpp1 = DateOperators.LAST_MONTH;
+							value = DashboardAction.getTotalKwh(Collections.singletonList(meter.getId()+""), dateOpp.getRange(null).getStartTime(), dateOpp.getRange(null).getEndTime());
+							
+							double value1 = DashboardAction.getTotalKwh(Collections.singletonList(meter.getId()+""), dateOpp1.getRange(null).getStartTime(), dateOpp1.getRange(null).getEndTime());
+							
+							JSONObject json1 = new JSONObject();
+							
+							json1.put("consumption", value);
+							json1.put("unit", "kWh");
+							
+							JSONObject json = new JSONObject();
+							
+							json.put("name", building.getName());
+							json.put("avatar", building.getAvatarUrl());
+							json.put("currentVal", json1);
+							
+							json.put("variance", ReportsUtil.getVariance(value, value1));
+							
+							result.put("card", json);
+							result.put("building", building);
+						}
+					}
+					else {
+						try {
+							Map<String,Object> paramMap = null;
+							if(widgetVsWorkflowContext.getBaseSpaceId() != null) {
+								if(paramMap == null) {
+									paramMap = new HashMap<>();
+								}
+								paramMap.put("parentId", widgetVsWorkflowContext.getBaseSpaceId());
+								
+								if( ( ((staticKey.equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD) || staticKey.equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD_MINI)) && widgetVsWorkflowContext.getWorkflowName().equals("weather"))  || (widgetStaticContext.getStaticKey().equals("weathercardaltayer") && widgetVsWorkflowContext.getWorkflowName().equals("weather")) )) {
+									BaseSpaceContext basespace = SpaceAPI.getBaseSpace(widgetVsWorkflowContext.getBaseSpaceId());
+									if(basespace != null) {
+										paramMap.put("parentId", basespace.getSiteId());
+									}
+								}
+							}
+							if(reportSpaceFilterContext != null) {
+								if(paramMap == null) {
+									paramMap = new HashMap<>();
+								}
+								if(reportSpaceFilterContext.getBuildingId() != null) {
+									paramMap.put("parentId", reportSpaceFilterContext.getBuildingId());
+								}
+								if( ( ((staticKey.equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD) || staticKey.equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD_MINI)) && widgetVsWorkflowContext.getWorkflowName().equals("weather"))  || (staticKey.equals("weathercardaltayer") && widgetVsWorkflowContext.getWorkflowName().equals("weather")) )) {
+									BaseSpaceContext basespace = SpaceAPI.getBaseSpace(reportSpaceFilterContext.getBuildingId());
+									if(basespace != null) {
+										paramMap.put("parentId", basespace.getSiteId());
+									}
+								}
+							}
+							if (widgetVsWorkflowContext.getWorkflowName().equals("lastMonthThisDate") || widgetVsWorkflowContext.getWorkflowName().equals("lastMonthDate")){
+								if(paramMap == null) {
+									paramMap = new HashMap<>();
+								}
+								DateRange range1 = DateOperators.CURRENT_MONTH_UPTO_NOW.getRange(null);
+								paramMap.put("startTime", range1.getStartTime());
+								paramMap.put("endTime", range1.getEndTime());
+							}
+							Object wfResult = WorkflowUtil.getWorkflowExpressionResult(widgetVsWorkflowContext.getWorkflowString(), paramMap);
+							
+							if( staticKey.equals("weathercard") && staticKey.equals("weather")) {
+								Map<String,Object> ss = (Map<String, Object>) wfResult;
+								Object temprature = ss.get("temperature");
+								if(AccountUtil.getCurrentOrg().getOrgId() == 104l || AccountUtil.getCurrentOrg().getOrgId() == 75l) {
+									temprature = UnitsUtil.convert(temprature, Unit.CELSIUS, Unit.FAHRENHEIT);
+									ss.put("unit", "F");
+								}
+								DecimalFormat f = new DecimalFormat("##.0");
+								ss.put("temperature", f.format(temprature));
+							}
+							
+							LOGGER.severe("widgetVsWorkflowContext.getWorkflowId() --- "+widgetVsWorkflowContext.getWorkflowId() +" wfResult --  "+wfResult);
+							result.put(widgetVsWorkflowContext.getWorkflowName(), wfResult);
+						}
+						catch(Exception e) {
+							LOGGER.severe(e.getMessage());
+						}
+					}
+				}
+			}
+			LOGGER.severe("result --- "+result);
+			setCardResult(result);
+			
 		}
 		return SUCCESS;
 	}
