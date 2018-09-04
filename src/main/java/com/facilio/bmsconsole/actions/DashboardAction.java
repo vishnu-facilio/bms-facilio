@@ -6609,7 +6609,7 @@ public class DashboardAction extends ActionSupport {
 					if(widget.get("staticKey") != null) {
 						widgetStaticContext.setStaticKey(widget.get("staticKey").toString());
 					}
-					if(widget.get("staticKey") != null) {
+					if(widget.get("baseSpaceId") != null) {
 						widgetStaticContext.setBaseSpaceId((Long) widget.get("baseSpaceId"));
 					}
 				}
