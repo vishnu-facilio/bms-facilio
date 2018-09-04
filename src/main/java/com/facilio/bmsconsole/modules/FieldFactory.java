@@ -4287,8 +4287,8 @@ public class FieldFactory {
 		fields.add(getField("dateValue", "DATE_VALUE", module, FieldType.STRING));
 		fields.add(getField("dateRangeJson", "DATE_RANGE_JSON", module, FieldType.STRING));
 		
-		fields.add(getField("chartState", "CHART_STATE", module, FieldType.STRING));
-		fields.add(getField("tabularState", "TABULAR_STATE", module, FieldType.STRING));
+		fields.add(getField("chartState", "CHART_STATE_JSON", module, FieldType.STRING));
+		fields.add(getField("tabularState", "TABULAR_STATE_JSON", module, FieldType.STRING));
 		fields.add(getField("benchmarkJson", "BENCHMARK_JSON", module, FieldType.STRING));
 		fields.add(getField("dataPointJson", "DATA_POINT_JSON", module, FieldType.STRING));
 		fields.add(getField("xCriteriaJson", "X_CRITERIA_JSON", module, FieldType.STRING));

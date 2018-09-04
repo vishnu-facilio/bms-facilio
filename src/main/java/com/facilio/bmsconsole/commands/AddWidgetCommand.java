@@ -163,6 +163,21 @@ public class AddWidgetCommand implements Command {
 					DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
 					
 				}
+				
+				else if(widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_PROFILE_CARD_MINI)) {
+					
+					WidgetVsWorkflowContext widgetVsWorkflowContext = new WidgetVsWorkflowContext();
+					
+					widgetVsWorkflowContext.setWidgetId(widget.getId());
+					widgetVsWorkflowContext.setWorkflowId(null);
+					widgetVsWorkflowContext.setWorkflowName("currentMonth");
+					if(widgetStaticContext.getBaseSpaceId() != null) {
+						widgetVsWorkflowContext.setBaseSpaceId(widgetStaticContext.getBaseSpaceId());
+					}
+					DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
+					
+				}
+				
 			}
 			else if(context.get(FacilioConstants.ContextNames.WIDGET_TYPE).equals(WidgetType.WEB)) {
 				WidgetWebContext widgetWebContext = (WidgetWebContext) widget;

@@ -16,6 +16,7 @@ import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.WorkorderAnalysisContext;
+import com.facilio.report.util.ReportUtil;
 
 public class V2ReportAction extends FacilioAction {
 	
@@ -25,6 +26,20 @@ public class V2ReportAction extends FacilioAction {
 	}
 	public void setReportContext(ReportContext reportContext) {
 		this.reportContext = reportContext;
+	}
+	
+	Long reportId;
+	public Long getReportId() {
+		return reportId;
+	}
+	public void setReportId(Long reportId) {
+		this.reportId = reportId;
+	}
+	public void getReport() throws Exception {
+		
+		reportContext = ReportUtil.getReport(reportId);
+		setResult("report", reportContext);
+		
 	}
 	
 	public String addReadingReport() throws Exception {

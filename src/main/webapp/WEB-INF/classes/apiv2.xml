@@ -294,6 +294,8 @@
 		</action>
 		<action name="addWorkOrderReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="addWorkOrderReport">
 		</action>
+		<action name="getReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="getReport">
+		</action>
 	</package>
 	
 	

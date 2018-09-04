@@ -1145,62 +1145,97 @@ public class DashboardAction extends ActionSupport {
 				
 				for(WidgetVsWorkflowContext widgetVsWorkflowContext : dashboardWidgetContext.getWidgetVsWorkflowContexts()) {
 					
-					try {
-						Map<String,Object> paramMap = null;
+					if(widgetStaticContext.getStaticKey().equals("profilemini")) {
+						
 						if(widgetVsWorkflowContext.getBaseSpaceId() != null) {
-							if(paramMap == null) {
-								paramMap = new HashMap<>();
-							}
-							paramMap.put("parentId", widgetVsWorkflowContext.getBaseSpaceId());
 							
-							if(widgetStaticContext != null && ( ((widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD) || widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD_MINI)) && widgetVsWorkflowContext.getWorkflowName().equals("weather"))  || (widgetStaticContext.getStaticKey().equals("weathercardaltayer") && widgetVsWorkflowContext.getWorkflowName().equals("weather")) )) {
-								BaseSpaceContext basespace = SpaceAPI.getBaseSpace(widgetVsWorkflowContext.getBaseSpaceId());
-								if(basespace != null) {
-									paramMap.put("parentId", basespace.getSiteId());
-								}
-							}
-						}
-						if(reportSpaceFilterContext != null) {
-							if(paramMap == null) {
-								paramMap = new HashMap<>();
-							}
-							if(reportSpaceFilterContext.getBuildingId() != null) {
-								paramMap.put("parentId", reportSpaceFilterContext.getBuildingId());
-							}
-							if(widgetStaticContext != null && ( ((widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD) || widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD_MINI)) && widgetVsWorkflowContext.getWorkflowName().equals("weather"))  || (widgetStaticContext.getStaticKey().equals("weathercardaltayer") && widgetVsWorkflowContext.getWorkflowName().equals("weather")) )) {
-								BaseSpaceContext basespace = SpaceAPI.getBaseSpace(reportSpaceFilterContext.getBuildingId());
-								if(basespace != null) {
-									paramMap.put("parentId", basespace.getSiteId());
-								}
-							}
-						}
-						if (widgetVsWorkflowContext.getWorkflowName().equals("lastMonthThisDate") || widgetVsWorkflowContext.getWorkflowName().equals("lastMonthDate")){
-							if(paramMap == null) {
-								paramMap = new HashMap<>();
-							}
-							DateRange range1 = DateOperators.CURRENT_MONTH_UPTO_NOW.getRange(null);
-							paramMap.put("startTime", range1.getStartTime());
-							paramMap.put("endTime", range1.getEndTime());
-						}
-						Object wfResult = WorkflowUtil.getResult(widgetVsWorkflowContext.getWorkflowId(), paramMap);
-						
-						if(widgetStaticContext != null && widgetStaticContext.getStaticKey().equals("weathercard") && widgetVsWorkflowContext.getWorkflowName().equals("weather")) {
-							Map<String,Object> ss = (Map<String, Object>) wfResult;
-							Object temprature = ss.get("temperature");
-							if(AccountUtil.getCurrentOrg().getOrgId() == 104l || AccountUtil.getCurrentOrg().getOrgId() == 75l) {
-								temprature = UnitsUtil.convert(temprature, Unit.CELSIUS, Unit.FAHRENHEIT);
-								ss.put("unit", "F");
-							}
-							DecimalFormat f = new DecimalFormat("##.0");
-							ss.put("temperature", f.format(temprature));
+							BuildingContext building = SpaceAPI.getBuildingSpace(widgetVsWorkflowContext.getBaseSpaceId());
 							
+							List<EnergyMeterContext> meters = DeviceAPI.getMainEnergyMeter(building.getId()+"");
+							
+							EnergyMeterContext meter = meters.get(0);
+							
+							DateOperators dateOpp = DateOperators.CURRENT_MONTH;
+							DateOperators dateOpp1 = DateOperators.LAST_MONTH;
+							value = DashboardAction.getTotalKwh(Collections.singletonList(meter.getId()+""), dateOpp.getRange(null).getStartTime(), dateOpp.getRange(null).getEndTime());
+							
+							double value1 = DashboardAction.getTotalKwh(Collections.singletonList(meter.getId()+""), dateOpp1.getRange(null).getStartTime(), dateOpp1.getRange(null).getEndTime());
+							
+							JSONObject json1 = new JSONObject();
+							
+							json1.put("consumption", value);
+							json1.put("unit", "kWh");
+							
+							JSONObject json = new JSONObject();
+							
+							json.put("name", building.getName());
+							json.put("avatar", building.getAvatarUrl());
+							json.put("currentVal", json1);
+							
+							json.put("variance", ReportsUtil.getVariance(value, value1));
+							
+							result.put("card", json);
+							result.put("building", building);
 						}
-						
-						LOGGER.severe("widgetVsWorkflowContext.getWorkflowId() --- "+widgetVsWorkflowContext.getWorkflowId() +" wfResult --  "+wfResult);
-						result.put(widgetVsWorkflowContext.getWorkflowName(), wfResult);
 					}
-					catch(Exception e) {
-						LOGGER.severe(e.getMessage());
+					else {
+						try {
+							Map<String,Object> paramMap = null;
+							if(widgetVsWorkflowContext.getBaseSpaceId() != null) {
+								if(paramMap == null) {
+									paramMap = new HashMap<>();
+								}
+								paramMap.put("parentId", widgetVsWorkflowContext.getBaseSpaceId());
+								
+								if(widgetStaticContext != null && ( ((widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD) || widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD_MINI)) && widgetVsWorkflowContext.getWorkflowName().equals("weather"))  || (widgetStaticContext.getStaticKey().equals("weathercardaltayer") && widgetVsWorkflowContext.getWorkflowName().equals("weather")) )) {
+									BaseSpaceContext basespace = SpaceAPI.getBaseSpace(widgetVsWorkflowContext.getBaseSpaceId());
+									if(basespace != null) {
+										paramMap.put("parentId", basespace.getSiteId());
+									}
+								}
+							}
+							if(reportSpaceFilterContext != null) {
+								if(paramMap == null) {
+									paramMap = new HashMap<>();
+								}
+								if(reportSpaceFilterContext.getBuildingId() != null) {
+									paramMap.put("parentId", reportSpaceFilterContext.getBuildingId());
+								}
+								if(widgetStaticContext != null && ( ((widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD) || widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD_MINI)) && widgetVsWorkflowContext.getWorkflowName().equals("weather"))  || (widgetStaticContext.getStaticKey().equals("weathercardaltayer") && widgetVsWorkflowContext.getWorkflowName().equals("weather")) )) {
+									BaseSpaceContext basespace = SpaceAPI.getBaseSpace(reportSpaceFilterContext.getBuildingId());
+									if(basespace != null) {
+										paramMap.put("parentId", basespace.getSiteId());
+									}
+								}
+							}
+							if (widgetVsWorkflowContext.getWorkflowName().equals("lastMonthThisDate") || widgetVsWorkflowContext.getWorkflowName().equals("lastMonthDate")){
+								if(paramMap == null) {
+									paramMap = new HashMap<>();
+								}
+								DateRange range1 = DateOperators.CURRENT_MONTH_UPTO_NOW.getRange(null);
+								paramMap.put("startTime", range1.getStartTime());
+								paramMap.put("endTime", range1.getEndTime());
+							}
+							Object wfResult = WorkflowUtil.getResult(widgetVsWorkflowContext.getWorkflowId(), paramMap);
+							
+							if(widgetStaticContext != null && widgetStaticContext.getStaticKey().equals("weathercard") && widgetVsWorkflowContext.getWorkflowName().equals("weather")) {
+								Map<String,Object> ss = (Map<String, Object>) wfResult;
+								Object temprature = ss.get("temperature");
+								if(AccountUtil.getCurrentOrg().getOrgId() == 104l || AccountUtil.getCurrentOrg().getOrgId() == 75l) {
+									temprature = UnitsUtil.convert(temprature, Unit.CELSIUS, Unit.FAHRENHEIT);
+									ss.put("unit", "F");
+								}
+								DecimalFormat f = new DecimalFormat("##.0");
+								ss.put("temperature", f.format(temprature));
+								
+							}
+							
+							LOGGER.severe("widgetVsWorkflowContext.getWorkflowId() --- "+widgetVsWorkflowContext.getWorkflowId() +" wfResult --  "+wfResult);
+							result.put(widgetVsWorkflowContext.getWorkflowName(), wfResult);
+						}
+						catch(Exception e) {
+							LOGGER.severe(e.getMessage());
+						}
 					}
 				}
 			}

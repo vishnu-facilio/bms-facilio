@@ -100,8 +100,8 @@ public class ReportContext {
 		}
 		return -1;
 	}
-	public void setDateOperator(Integer dateOperator) {
-		if(dateOperator != null) {
+	public void setDateOperator(int dateOperator) {
+		if(dateOperator > 0) {
 			this.dateOperator = Operator.OPERATOR_MAP.get(dateOperator);
 		}
 	}
