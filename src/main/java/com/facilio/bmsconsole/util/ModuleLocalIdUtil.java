@@ -21,7 +21,6 @@ import com.facilio.sql.GenericUpdateRecordBuilder;
 public class ModuleLocalIdUtil {
 
 	private static final List<String> MODULES_WITH_LOCAL_ID = Collections.unmodifiableList(initModulesWithLocalIds());
-	private static final Object SYNC_OBJ = new Object();
 	
 	private static List<String> initModulesWithLocalIds() {
 		List<String> modulesWithLocalId = new ArrayList<>();
@@ -57,16 +56,14 @@ public class ModuleLocalIdUtil {
 		if (currentSize <= 0) {
 			throw new IllegalArgumentException("Invalid current id size for fetching local Id");
 		}
-		synchronized (SYNC_OBJ) {
-			long localId = getModuleLocalId(moduleName);
-			if (localId == -1) {
-				throw new IllegalArgumentException("This module doesn't have last local id. This is not supposed to happen");
-			}
-			if (updateModuleLocalId(moduleName, localId, localId+currentSize) <= 0) {
-				return getAndUpdateModuleLocalId(moduleName, currentSize);
-			}
-			return localId;
+		long localId = getModuleLocalId(moduleName);
+		if (localId == -1) {
+			throw new IllegalArgumentException("This module doesn't have last local id. This is not supposed to happen");
 		}
+		if (updateModuleLocalId(moduleName, localId, localId+currentSize) <= 0) {
+			return getAndUpdateModuleLocalId(moduleName, currentSize);
+		}
+		return localId;
 	}
 	
 	private static int updateModuleLocalId(String moduleName,long oldId,long lastLocalId) throws Exception {
