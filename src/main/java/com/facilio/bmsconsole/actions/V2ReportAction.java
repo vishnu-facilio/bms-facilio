@@ -42,6 +42,8 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.REPORT_Y_FIELDS, FieldUtil.getAsBeanListFromJsonArray(fieldArray, ReadingAnalysisContext.class));
 		context.put(FacilioConstants.ContextNames.REPORT_MODE, mode);
 		context.put(FacilioConstants.ContextNames.BASE_LINE_LIST, FieldUtil.getAsBeanListFromJsonArray(baseLineList, ReportBaseLineContext.class));
+		context.put(FacilioConstants.ContextNames.CHART_STATE, chartState);
+		context.put(FacilioConstants.ContextNames.TABULAR_STATE, tabularState);
 		
 		Chain addReadingReport = FacilioChainFactory.addReadingReportChain();
 		addReadingReport.execute(context);
@@ -64,6 +66,8 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.REPORT_Y_FIELDS, FieldUtil.getAsBeanListFromJsonArray(fieldArray, ReadingAnalysisContext.class));
 		context.put(FacilioConstants.ContextNames.REPORT_MODE, mode);
 		context.put(FacilioConstants.ContextNames.BASE_LINE_LIST, FieldUtil.getAsBeanListFromJsonArray(baseLineList, ReportBaseLineContext.class));
+		context.put(FacilioConstants.ContextNames.CHART_STATE, chartState);
+		context.put(FacilioConstants.ContextNames.TABULAR_STATE, tabularState);
 		
 		Chain addWorkOrderChain = FacilioChainFactory.addWorkOrderReportChain();
 		addWorkOrderChain.execute(context);
@@ -154,7 +158,22 @@ public class V2ReportAction extends FacilioAction {
 	public void setEndTime(long endTime) {
 		this.endTime = endTime;
 	}
+	public String chartState;
+	public String tabularState;
 	
+	public String getChartState() {
+		return chartState;
+	}
+	public void setChartState(String chartState) {
+		this.chartState = chartState;
+	}
+	public String getTabularState() {
+		return tabularState;
+	}
+	public void setTabularState(String tabularState) {
+		this.tabularState = tabularState;
+	}
+
 	private AggregateOperator xAggr;
 	public int getxAggr() {
 		if (xAggr != null) {

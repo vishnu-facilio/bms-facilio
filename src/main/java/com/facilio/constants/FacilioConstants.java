@@ -475,6 +475,9 @@ public class FacilioConstants {
 		public static final String BASE_LINE_LIST = "baseLines";
 		public static final String DATE_RANGE = "dateRange";
 		
+		public static final String CHART_STATE = "chartState";
+		public static final String TABULAR_STATE = "tabularState";
+		
 		public static final String COST = "cost";
 		public static final String COST_ASSET = "costAsset";
 		public static final String COST_FIRST_BILL_TIME = "costFirstBillTime";

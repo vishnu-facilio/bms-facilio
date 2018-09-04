@@ -65,6 +65,9 @@ public class CreateWorkOrderAnalyticsReportCommand implements Command {
 			report.setDateValue(startTime+", "+endTime);
 			CommonReportUtil.fetchBaseLines(report, (List<ReportBaseLineContext>) context.get(FacilioConstants.ContextNames.BASE_LINE_LIST));
 			
+			report.setChartState((String)context.get(FacilioConstants.ContextNames.CHART_STATE));
+			report.setTabularState((String)context.get(FacilioConstants.ContextNames.TABULAR_STATE));
+			
 			context.put(FacilioConstants.ContextNames.REPORT, report);
 		}
 		else {
