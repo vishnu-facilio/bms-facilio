@@ -86,6 +86,7 @@ import com.facilio.bmsconsole.context.WidgetVsWorkflowContext;
 import com.facilio.bmsconsole.context.WidgetWebContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext.WORUrgency;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -4914,6 +4915,9 @@ public class DashboardAction extends ActionSupport {
 					report.setGroupBy(-1L);
 				}
 				else if ("floor".equalsIgnoreCase(report.getReportSpaceFilterContext().getGroupBy())) {
+					
+					EnergyMeterPurposeContext purpose = DeviceAPI.getEnergyMetersPurposeByName(DashboardUtil.ENERGY_METER_PURPOSE_MAIN);
+					
 					SelectRecordsBuilder<EnergyMeterContext> builder12 = new SelectRecordsBuilder<EnergyMeterContext>()
 							.table(modBean.getModule("energymeter").getTableName())
 							.moduleName("energymeter")
@@ -4923,11 +4927,15 @@ public class DashboardAction extends ActionSupport {
 							.on(modBean.getModule("basespace").getTableName()+".ID = "+modBean.getModule("energymeter").getTableName()+".PURPOSE_SPACE_ID")
 							.andCustomWhere(modBean.getModule("basespace").getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId())
 							.andCustomWhere(modBean.getModule("basespace").getTableName()+".BUILDING_ID="+ report.getReportSpaceFilterContext().getBuildingId())
-							.andCustomWhere(modBean.getModule("basespace").getTableName()+".FLOOR_ID>0");
+							.andCustomWhere(modBean.getModule("basespace").getTableName()+".SPACE_TYPE= ?",SpaceType.FLOOR.getIntVal())
+							.andCustomWhere(modBean.getModule("energymeter").getTableName()+".IS_ROOT= 1")
+							.andCustomWhere(modBean.getModule("energymeter").getTableName()+".PURPOSE_ID= ?",purpose.getId());
 					
 					
 					
 					List<EnergyMeterContext> props = builder12.get();
+					
+					LOGGER.severe("builder12 -- "+builder12);
 					List<Long> meterIds = new ArrayList<Long>();
 					if(props != null && !props.isEmpty()) {
 						for(EnergyMeterContext energyMeterContext:props) {
