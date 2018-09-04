@@ -65,8 +65,13 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 			report.setChartState((String)context.get(FacilioConstants.ContextNames.CHART_STATE));
 			report.setTabularState((String)context.get(FacilioConstants.ContextNames.TABULAR_STATE));
 			
-			report.setDateOperator((Integer) context.get(FacilioConstants.ContextNames.DATE_OPERATOR));
-			report.setDateValue((String)context.get(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE));
+			if(context.get(FacilioConstants.ContextNames.DATE_OPERATOR) != null) {
+				report.setDateOperator((Integer) context.get(FacilioConstants.ContextNames.DATE_OPERATOR));
+			}
+			
+			if(context.get(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE) != null) {
+				report.setDateValue((String)context.get(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE));
+			}
 			
 			context.put(FacilioConstants.ContextNames.REPORT, report);
 		}
