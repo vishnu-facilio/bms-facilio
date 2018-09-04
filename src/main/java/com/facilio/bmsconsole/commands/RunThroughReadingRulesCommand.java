@@ -32,7 +32,7 @@ public class RunThroughReadingRulesCommand implements Command {
 		}
 		
 		BmsJobUtil.deleteJobWithProps(rule.getId(), "HistoricalRunForReadingRule");
-		BmsJobUtil.scheduleOneTimeJobWithProps(rule.getId(), "HistoricalRunForReadingRule", 30, "priority", FieldUtil.getAsJSON(range));
+		BmsJobUtil.scheduleOneTimeJobWithProps(rule.getId(), "HistoricalRunForReadingRule", 30, "historicalRule", FieldUtil.getAsJSON(range));
 		return false;
 	}
 }
