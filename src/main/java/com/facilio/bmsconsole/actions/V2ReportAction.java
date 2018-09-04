@@ -38,6 +38,8 @@ public class V2ReportAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.START_TIME, startTime);
 		context.put(FacilioConstants.ContextNames.END_TIME, endTime);
+		context.put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
+		context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateOperator);
 		context.put(FacilioConstants.ContextNames.REPORT_X_AGGR, xAggr);
 		context.put(FacilioConstants.ContextNames.REPORT_Y_FIELDS, FieldUtil.getAsBeanListFromJsonArray(fieldArray, ReadingAnalysisContext.class));
 		context.put(FacilioConstants.ContextNames.REPORT_MODE, mode);
@@ -62,6 +64,8 @@ public class V2ReportAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.START_TIME, startTime);
 		context.put(FacilioConstants.ContextNames.END_TIME, endTime);
+		context.put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
+		context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateOperator);
 		context.put(FacilioConstants.ContextNames.REPORT_X_AGGR, xAggr);
 		context.put(FacilioConstants.ContextNames.REPORT_Y_FIELDS, FieldUtil.getAsBeanListFromJsonArray(fieldArray, ReadingAnalysisContext.class));
 		context.put(FacilioConstants.ContextNames.REPORT_MODE, mode);
@@ -109,6 +113,7 @@ public class V2ReportAction extends FacilioAction {
 	}
 	
 	public String fetchWorkorderData() throws Exception {
+		
 		JSONParser parser = new JSONParser();
 		JSONArray fieldArray = (JSONArray) parser.parse(fields);
 		JSONArray baseLineList = null;
@@ -126,6 +131,7 @@ public class V2ReportAction extends FacilioAction {
 		fetchReadingDataChain.execute(context);
 		
 		return setReportResult(context);
+		
 	}
 	
 	private String setReportResult(FacilioContext context) {
@@ -191,5 +197,19 @@ public class V2ReportAction extends FacilioAction {
 	}
 	public void setBaseLines(String baseLines) {
 		this.baseLines = baseLines;
+	}
+	Integer dateOperator;
+	String dateOperatorValue;
+	public Integer getDateOperator() {
+		return dateOperator;
+	}
+	public void setDateOperator(Integer dateOperator) {
+		this.dateOperator = dateOperator;
+	}
+	public String getDateOperatorValue() {
+		return dateOperatorValue;
+	}
+	public void setDateOperatorValue(String dateOperatorValue) {
+		this.dateOperatorValue = dateOperatorValue;
 	}
 }

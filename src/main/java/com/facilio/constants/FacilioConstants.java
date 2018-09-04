@@ -471,6 +471,9 @@ public class FacilioConstants {
 		public static final String END_TIME = "endTime";
 		public static final String MAX_COUNT = "maxCount";
 		
+		public static final String DATE_OPERATOR = "dateOperator";
+		public static final String DATE_OPERATOR_VALUE = "dateOperatorValue";
+		
 		public static final String BASE_LINE = "baseLine";
 		public static final String BASE_LINE_LIST = "baseLines";
 		public static final String DATE_RANGE = "dateRange";
