@@ -40,9 +40,10 @@ public class V2ReportAction extends FacilioAction {
 		this.reportId = reportId;
 	}
 	
-	public void fetchReport() throws Exception {
+	public String fetchReport() throws Exception {
 		reportContext = ReportUtil.getReport(reportId);
 		setResult("report", reportContext);
+		return SUCCESS;
 	}
 	
 	public String addReadingReport() throws Exception {
