@@ -2470,6 +2470,14 @@ public class FacilioChainFactory {
 	public static Chain addTenantChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(new AddTenantCommand());
+		c.addCommand(new AddTenantUserCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain addTenantUserChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new AddTenantUserCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
