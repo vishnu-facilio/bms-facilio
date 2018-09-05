@@ -57,9 +57,9 @@ public class ModuleLocalIdUtil {
 			throw new IllegalArgumentException("Invalid current id size for fetching local Id");
 		}
 		long localId = getModuleLocalId(moduleName);
-		if (localId == -1) {
-			throw new IllegalArgumentException("This module doesn't have last local id. This is not supposed to happen");
-		}
+//		if (localId == -1) {
+//			throw new IllegalArgumentException("This module doesn't have last local id. This is not supposed to happen");
+//		}
 		if (updateModuleLocalId(moduleName, localId, localId+currentSize) <= 0) {
 			return getAndUpdateModuleLocalId(moduleName, currentSize);
 		}
