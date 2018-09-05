@@ -29,7 +29,7 @@ import com.facilio.bmsconsole.util.ImageScaleUtil;
 
 public class S3FileStore extends FileStore {
 
-	private static final String PRIVATE_KEY_FILE_PATH = System.getProperty("user.home")+"/pk/pk-APKAJUH5UCWNSYC4DOSQ.pem";
+	private static final String PRIVATE_KEY_FILE_PATH = "/home/ubuntu/pk/pk-APKAJUH5UCWNSYC4DOSQ.pem";
 
 	public S3FileStore(long orgId, long userId) {
 		super(orgId, userId);
@@ -284,7 +284,7 @@ public class S3FileStore extends FileStore {
 				String signedUrl = CloudFrontUrlSigner.getSignedURLWithCannedPolicy(SignerUtils.Protocol.https, "files.facilio.in", new File(PRIVATE_KEY_FILE_PATH), s3ObjectKey, keyPairId, new Date(System.currentTimeMillis()+(86400000L)));
 				return  signedUrl;
 			} catch (IOException | InvalidKeySpecException e) {
-				log.info("Exception while creating signed Url");
+				log.info("Exception while creating signed Url", e);
 			}
 		}
 		return null;

@@ -127,32 +127,34 @@ public class FacilioContextListener implements ServletContextListener {
 				System.out.println("Custom domains loaded" + customdomains);
 			}
 			
-			/*File file = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/leedconsole.sql").getFile());
-			SQLScriptRunner scriptRunner = new SQLScriptRunner(file, true, null);
-			//Connection c = FacilioConnectionPool.getInstance().getConnection();
-			try
-			{
-			scriptRunner.runScript();
+			if(!"stage".equalsIgnoreCase(environment) && !"production".equalsIgnoreCase(environment)) {
+				File file = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/leedconsole.sql").getFile());
+				SQLScriptRunner scriptRunner = new SQLScriptRunner(file, true, null);
+				//Connection c = FacilioConnectionPool.getInstance().getConnection();
+				try
+				{
+				scriptRunner.runScript();
+				}
+				catch(Exception e)
+				{
+					
+				}
+				finally
+				{
+					
+				}
+				file = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/eventconsole.sql").getFile());
+				scriptRunner = new SQLScriptRunner(file, true, null);
+			//	c = FacilioConnectionPool.getInstance().getConnection();
+				try
+				{
+				scriptRunner.runScript();
+				}
+				catch(Exception e)
+				{
+					
+				}
 			}
-			catch(Exception e)
-			{
-				
-			}
-			finally
-			{
-				
-			}
-			file = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/eventconsole.sql").getFile());
-			scriptRunner = new SQLScriptRunner(file, true, null);
-		//	c = FacilioConnectionPool.getInstance().getConnection();
-			try
-			{
-			scriptRunner.runScript();
-			}
-			catch(Exception e)
-			{
-				
-			}*/
 
 			try {
 				if(("true".equalsIgnoreCase(AwsUtil.getConfig("enable.kinesis"))) && "true".equalsIgnoreCase(AwsUtil.getConfig("kinesisServer"))) {

@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.context.BaseLineContext.RangeType;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
@@ -46,6 +47,7 @@ public class AddWidgetCommand implements Command {
 			
 			if(context.get(FacilioConstants.ContextNames.WIDGET_TYPE).equals(WidgetType.STATIC)) {
 				WidgetStaticContext widgetStaticContext = (WidgetStaticContext) widget;
+				
 						insertBuilder = new GenericInsertRecordBuilder()
 						.table(ModuleFactory.getWidgetStaticModule().getTableName())
 						.fields(FieldFactory.getWidgetStaticFields());
@@ -54,48 +56,100 @@ public class AddWidgetCommand implements Command {
 				insertBuilder.addRecord(props);
 				insertBuilder.save();
 				
-				if(widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD)) {
-					Long workflowId = WorkflowUtil.addWorkflow(DashboardUtil.WEATHER_WIDGET_WORKFLOW_STRING);
-					WidgetVsWorkflowContext widgetVsWorkflowContext = new WidgetVsWorkflowContext();
+				if(widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD) || widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD_MINI) || widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_ENERGY_CARBON_CARD_MINI)) {
 					
-					widgetVsWorkflowContext.setWidgetId(widget.getId());
-					widgetVsWorkflowContext.setWorkflowId(workflowId);
-					widgetVsWorkflowContext.setWorkflowName("weather");
-					DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
+					if(widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD) || widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD_MINI)) {
+						
+						Long workflowId = WorkflowUtil.addWorkflow(DashboardUtil.WEATHER_WIDGET_WORKFLOW_STRING);
+						WidgetVsWorkflowContext widgetVsWorkflowContext = new WidgetVsWorkflowContext();
+						
+						widgetVsWorkflowContext.setWidgetId(widget.getId());
+						widgetVsWorkflowContext.setWorkflowId(workflowId);
+						widgetVsWorkflowContext.setWorkflowName("weather");
+						
+						if(widgetStaticContext.getBaseSpaceId() != null) {
+							widgetVsWorkflowContext.setBaseSpaceId(widgetStaticContext.getBaseSpaceId());
+						}
+						
+						DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
+					}
 					
-					workflowId = WorkflowUtil.addWorkflow(DashboardUtil.CARBON_EMISSION_CARD);
-					widgetVsWorkflowContext = new WidgetVsWorkflowContext();
-					
-					widgetVsWorkflowContext.setWidgetId(widget.getId());
-					widgetVsWorkflowContext.setWorkflowId(workflowId);
-					widgetVsWorkflowContext.setWorkflowName("carbonEmission");
-					DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
+					if(widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD) || widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_ENERGY_CARBON_CARD_MINI)) {
+						Long workflowId = WorkflowUtil.addWorkflow(DashboardUtil.CARBON_EMISSION_CARD);
+						WidgetVsWorkflowContext widgetVsWorkflowContext = new WidgetVsWorkflowContext();
+						
+						widgetVsWorkflowContext.setWidgetId(widget.getId());
+						widgetVsWorkflowContext.setWorkflowId(workflowId);
+						widgetVsWorkflowContext.setWorkflowName("carbonEmission");
+						
+						if(widgetStaticContext.getBaseSpaceId() != null) {
+							widgetVsWorkflowContext.setBaseSpaceId(widgetStaticContext.getBaseSpaceId());
+						}
+						
+						DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
+					}
 				}
-				else if(widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_ENERGY_COST_CARD)) {
-					Long workflowId = WorkflowUtil.addWorkflow(DashboardUtil.ENERGY_COST_THIS_MONTH_CONSUMPTION_WORKFLOW);
+				else if(widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_ENERGY_COST_CARD) || widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_ENERGY_COST_CARD_MINI)) {
+					
+					Long workflowId = null;
+					
+					if(AccountUtil.getCurrentOrg().getId() == 116l) {
+						workflowId = WorkflowUtil.addWorkflow(DashboardUtil.ENERGY_COST_THIS_MONTH_CONSUMPTION_COST_MODULE_WORKFLOW);
+					}
+					else {
+						workflowId = WorkflowUtil.addWorkflow(DashboardUtil.ENERGY_COST_THIS_MONTH_CONSUMPTION_WORKFLOW);
+					}
+					 
 					WidgetVsWorkflowContext widgetVsWorkflowContext = new WidgetVsWorkflowContext();
 					
 					widgetVsWorkflowContext.setWidgetId(widget.getId());
 					widgetVsWorkflowContext.setWorkflowId(workflowId);
 					widgetVsWorkflowContext.setWorkflowName("currentMonth");
+					
+					if(widgetStaticContext.getBaseSpaceId() != null) {
+						widgetVsWorkflowContext.setBaseSpaceId(widgetStaticContext.getBaseSpaceId());
+					}
+					
 					DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
 					
-					workflowId = WorkflowUtil.addWorkflow(DashboardUtil.ENERGY_COST_LAST_MONTH_CONSUMPTION_WORKFLOW);
+					if(AccountUtil.getCurrentOrg().getId() == 116l) {
+						workflowId = WorkflowUtil.addWorkflow(DashboardUtil.ENERGY_COST_LAST_MONTH_CONSUMPTION_COST_MODULE_WORKFLOW);
+					}
+					else {
+						workflowId = WorkflowUtil.addWorkflow(DashboardUtil.ENERGY_COST_LAST_MONTH_CONSUMPTION_WORKFLOW);
+					}
+					
 					widgetVsWorkflowContext = new WidgetVsWorkflowContext();
 					
 					widgetVsWorkflowContext.setWidgetId(widget.getId());
 					widgetVsWorkflowContext.setWorkflowId(workflowId);
 					widgetVsWorkflowContext.setWorkflowName("lastMonth");
+					if(widgetStaticContext.getBaseSpaceId() != null) {
+						widgetVsWorkflowContext.setBaseSpaceId(widgetStaticContext.getBaseSpaceId());
+					}
 					DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
 					
 					BaseLineContext baseline = BaseLineAPI.getBaseLine(RangeType.PREVIOUS_MONTH);
-					String energyCostLastMonth = DashboardUtil.ENERGY_COST_LAST_MONTH_THIS_DATE_CONSUMPTION_WORKFLOW.replaceAll("\\$\\$BASELINE_ID\\$\\$", baseline.getId()+"");
+					
+					String energyCostLastMonth = null;
+					
+					if(AccountUtil.getCurrentOrg().getId() == 116l) {
+						energyCostLastMonth = DashboardUtil.ENERGY_COST_LAST_MONTH_THIS_DATE_CONSUMPTION_COST_MODULE_WORKFLOW;
+					}
+					else {
+						energyCostLastMonth = DashboardUtil.ENERGY_COST_LAST_MONTH_THIS_DATE_CONSUMPTION_WORKFLOW;
+					}
+					
+					energyCostLastMonth = energyCostLastMonth.replaceAll("\\$\\$BASELINE_ID\\$\\$", baseline.getId()+"");
 					workflowId = WorkflowUtil.addWorkflow(energyCostLastMonth);
 					widgetVsWorkflowContext = new WidgetVsWorkflowContext();
 					
 					widgetVsWorkflowContext.setWidgetId(widget.getId());
 					widgetVsWorkflowContext.setWorkflowId(workflowId);
 					widgetVsWorkflowContext.setWorkflowName("lastMonthThisDate");
+					if(widgetStaticContext.getBaseSpaceId() != null) {
+						widgetVsWorkflowContext.setBaseSpaceId(widgetStaticContext.getBaseSpaceId());
+					}
 					DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
 					
 					energyCostLastMonth = DashboardUtil.LAST_MONTH_THIS_DATE.replaceAll("\\$\\$BASELINE_ID\\$\\$", baseline.getId()+"");
@@ -105,8 +159,51 @@ public class AddWidgetCommand implements Command {
 					widgetVsWorkflowContext.setWidgetId(widget.getId());
 					widgetVsWorkflowContext.setWorkflowId(workflowId);
 					widgetVsWorkflowContext.setWorkflowName("lastMonthDate");
+					if(widgetStaticContext.getBaseSpaceId() != null) {
+						widgetVsWorkflowContext.setBaseSpaceId(widgetStaticContext.getBaseSpaceId());
+					}
 					DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
 				}
+				else if(widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_ENERGY_CARD_MINI)) {
+					
+					Long workflowId = WorkflowUtil.addWorkflow(DashboardUtil.ENERGY_CONSUMPTION_THIS_MONTH_WORKFLOW);
+					WidgetVsWorkflowContext widgetVsWorkflowContext = new WidgetVsWorkflowContext();
+					
+					widgetVsWorkflowContext.setWidgetId(widget.getId());
+					widgetVsWorkflowContext.setWorkflowId(workflowId);
+					widgetVsWorkflowContext.setWorkflowName("currentMonth");
+					if(widgetStaticContext.getBaseSpaceId() != null) {
+						widgetVsWorkflowContext.setBaseSpaceId(widgetStaticContext.getBaseSpaceId());
+					}
+					DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
+					
+					workflowId = WorkflowUtil.addWorkflow(DashboardUtil.ENERGY_CONSUMPTION_LAST_MONTH_WORKFLOW);
+					widgetVsWorkflowContext = new WidgetVsWorkflowContext();
+					
+					widgetVsWorkflowContext.setWidgetId(widget.getId());
+					widgetVsWorkflowContext.setWorkflowId(workflowId);
+					widgetVsWorkflowContext.setWorkflowName("lastMonth");
+					if(widgetStaticContext.getBaseSpaceId() != null) {
+						widgetVsWorkflowContext.setBaseSpaceId(widgetStaticContext.getBaseSpaceId());
+					}
+					DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
+					
+				}
+				
+				else if(widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_PROFILE_CARD_MINI)) {
+					
+					WidgetVsWorkflowContext widgetVsWorkflowContext = new WidgetVsWorkflowContext();
+					
+					widgetVsWorkflowContext.setWidgetId(widget.getId());
+					widgetVsWorkflowContext.setWorkflowId(null);
+					widgetVsWorkflowContext.setWorkflowName("currentMonth");
+					if(widgetStaticContext.getBaseSpaceId() != null) {
+						widgetVsWorkflowContext.setBaseSpaceId(widgetStaticContext.getBaseSpaceId());
+					}
+					DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
+					
+				}
+				
 			}
 			else if(context.get(FacilioConstants.ContextNames.WIDGET_TYPE).equals(WidgetType.WEB)) {
 				WidgetWebContext widgetWebContext = (WidgetWebContext) widget;

@@ -699,6 +699,20 @@ public class FieldFactory {
 		lastUpdated.setModule(module);
 		fields.add(lastUpdated);
 
+		FacilioField lastAlertedTimeField = new FacilioField();
+		lastAlertedTimeField.setName("lastAlertedTime");
+		lastAlertedTimeField.setDataType(FieldType.NUMBER);
+		lastAlertedTimeField.setColumnName("LAST_ALERTED_TIME");
+		lastAlertedTimeField.setModule(module);
+		fields.add(lastAlertedTimeField);
+
+		FacilioField alertFrequency = new FacilioField();
+		alertFrequency.setName("alertFrequency");
+		alertFrequency.setDataType(FieldType.NUMBER);
+		alertFrequency.setColumnName("ALERT_FREQUENCY");
+		alertFrequency.setModule(module);
+		fields.add(alertFrequency);
+
 		return fields;
 	}
 
@@ -2638,6 +2652,8 @@ public class FieldFactory {
 		dateFilter.setColumnName("DATE_FILTER");
 		dateFilter.setModule(module);
 		fields.add(dateFilter);
+		
+		fields.add(getField("newReportId", "NEW_REPORT_ID", module, FieldType.LOOKUP));
 
 		return fields;
 	}
@@ -4289,8 +4305,8 @@ public class FieldFactory {
 		fields.add(getField("dateValue", "DATE_VALUE", module, FieldType.STRING));
 		fields.add(getField("dateRangeJson", "DATE_RANGE_JSON", module, FieldType.STRING));
 		
-		fields.add(getField("chartState", "CHART_STATE", module, FieldType.STRING));
-		fields.add(getField("tabularState", "TABULAR_STATE", module, FieldType.STRING));
+		fields.add(getField("chartState", "CHART_STATE_JSON", module, FieldType.STRING));
+		fields.add(getField("tabularState", "TABULAR_STATE_JSON", module, FieldType.STRING));
 		fields.add(getField("benchmarkJson", "BENCHMARK_JSON", module, FieldType.STRING));
 		fields.add(getField("dataPointJson", "DATA_POINT_JSON", module, FieldType.STRING));
 		fields.add(getField("xCriteriaJson", "X_CRITERIA_JSON", module, FieldType.STRING));

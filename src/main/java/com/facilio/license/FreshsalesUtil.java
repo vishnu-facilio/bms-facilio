@@ -33,10 +33,10 @@ public static void createLead(String module,String modulekey , JSONObject data) 
 			JSONObject json = new JSONObject();
 			
 			 json.put("sender", "yoge@facilio.com");
-			 json.put("to", "yoge@facilio.com,prabhu@facilio.com,krishna@facilio.com,radhika@facilio.com,raj@facilio.com");
+			 json.put("to", "nivedha@facilio.com,vaishnavi.lm@facilio.com,yoge@facilio.com,prabhu@facilio.com,krishna@facilio.com,radhika@facilio.com,raj@facilio.com");
 			     
 			     json.put("subject", "New Lead Created "+data.get("email"));
-			     json.put("message", postData.toJSONString());
+			     json.put("message", "<!--"+postData.toJSONString()+"-->");
 			     
 			AwsUtil.sendEmail(json);
 			}

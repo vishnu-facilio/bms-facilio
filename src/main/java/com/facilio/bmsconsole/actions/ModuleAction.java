@@ -282,95 +282,76 @@ public class ModuleAction extends FacilioAction {
 		this.rowsDeleted = rowsDeleted;
 	}
 	
+	/************* V2 Apis *****************/
+	
 	public String moduleDataDetails() throws Exception {
-		try {
-			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.ID, getId());
-			context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-			
-			Chain dataDetailsChain = ReadOnlyChainFactory.fetchModuleDataDetailsChain();
-			dataDetailsChain.execute(context);
-			
-			setModuleData((ModuleBaseWithCustomFields) context.get(FacilioConstants.ContextNames.RECORD));
-			setResult(FacilioConstants.ContextNames.MODULE_DATA, moduleData);
-		}
-		catch(Exception e) {
-			setResponseCode(1);
-			setMessage(e);
-			return ERROR;
-		}
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ID, getId());
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		
+		Chain dataDetailsChain = ReadOnlyChainFactory.fetchModuleDataDetailsChain();
+		dataDetailsChain.execute(context);
+		
+		setModuleData((ModuleBaseWithCustomFields) context.get(FacilioConstants.ContextNames.RECORD));
+		setResult(FacilioConstants.ContextNames.MODULE_DATA, moduleData);
 		
 		return SUCCESS;
 	}
 	
-	public String getModuleDataList() {
-		try {
-			FacilioContext context = new FacilioContext();
-	 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
-	 		if(getFilters() != null)
-	 		{	
-		 		JSONParser parser = new JSONParser();
-		 		JSONObject json = (JSONObject) parser.parse(getFilters());
-		 		context.put(FacilioConstants.ContextNames.FILTERS, json);
-	 		}
-	 		if (getSearch() != null) {
-	 			JSONObject searchObj = new JSONObject();
-	 			if (getSearchFields() == null) {
-	 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-	 				FacilioField primaryField = (FacilioField) modBean.getPrimaryField(moduleName);
-	 				setSearchFields(moduleName+"."+primaryField.getName());
-	 			}
-	 			searchObj.put("fields", getSearchFields());
-	 			searchObj.put("query", getSearch());
-		 		context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
-	 		}
-	 		
-	 		JSONObject pagination = new JSONObject();
-	 		pagination.put("page", getPage());
-	 		pagination.put("perPage", getPerPage());
-	 		if (getPerPage() < 0) {
-	 			pagination.put("perPage", 500);
-	 		}
-	 		context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
-	 		
-	 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-	 		Chain dataList = ReadOnlyChainFactory.fetchModuleDataListChain();
-	 		dataList.execute(context);
-	 		
-	 		moduleDatas = (List<ModuleBaseWithCustomFields>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
-	 		setResult(FacilioConstants.ContextNames.MODULE_DATA_LIST, moduleDatas);
-			return SUCCESS;
-		}
-		catch(Exception e) {
-			setResponseCode(1);
-			setMessage(e);
-			return ERROR;
-		}
+	public String getModuleDataList() throws Exception {
+		FacilioContext context = new FacilioContext();
+ 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+ 		if(getFilters() != null)
+ 		{	
+	 		JSONParser parser = new JSONParser();
+	 		JSONObject json = (JSONObject) parser.parse(getFilters());
+	 		context.put(FacilioConstants.ContextNames.FILTERS, json);
+ 		}
+ 		if (getSearch() != null) {
+ 			JSONObject searchObj = new JSONObject();
+ 			if (getSearchFields() == null) {
+ 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+ 				FacilioField primaryField = (FacilioField) modBean.getPrimaryField(moduleName);
+ 				setSearchFields(moduleName+"."+primaryField.getName());
+ 			}
+ 			searchObj.put("fields", getSearchFields());
+ 			searchObj.put("query", getSearch());
+	 		context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
+ 		}
+ 		
+ 		JSONObject pagination = new JSONObject();
+ 		pagination.put("page", getPage());
+ 		pagination.put("perPage", getPerPage());
+ 		if (getPerPage() < 0) {
+ 			pagination.put("perPage", 500);
+ 		}
+ 		context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+ 		
+ 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+ 		Chain dataList = ReadOnlyChainFactory.fetchModuleDataListChain();
+ 		dataList.execute(context);
+ 		
+ 		moduleDatas = (List<ModuleBaseWithCustomFields>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+ 		setResult(FacilioConstants.ContextNames.MODULE_DATA_LIST, moduleDatas);
+		return SUCCESS;
 	}
 	
-	public String addModuleData() {
-		try {
-			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
-			context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-			
-			setModuleData();
-			context.put(FacilioConstants.ContextNames.RECORD, moduleData);
-			
-			// TODO.... Temporary. Will be changed to counter field soon
-			context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
-			
-			Chain addModuleDataChain = FacilioChainFactory.addModuleDataChain();
-			addModuleDataChain.execute(context);
-			
-			setId(moduleData.getId());
-			return moduleDataDetails();
-		}
-		catch(Exception e) {
-			setResponseCode(1);
-			setMessage(e);
-			return ERROR;
-		}
+	public String addModuleData() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		
+		setModuleData();
+		context.put(FacilioConstants.ContextNames.RECORD, moduleData);
+		
+		// TODO.... Temporary. Will be changed to counter field soon
+		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
+		
+		Chain addModuleDataChain = FacilioChainFactory.addModuleDataChain();
+		addModuleDataChain.execute(context);
+		
+		setId(moduleData.getId());
+		return moduleDataDetails();
 	}
 	
 	private String dataString;
@@ -381,49 +362,35 @@ public class ModuleAction extends FacilioAction {
 		this.dataString = dataString;
 	}
 	
-	public String updateModuleData() {
-		try {
-			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
-			context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-			
-			setModuleData();
-			context.put(FacilioConstants.ContextNames.RECORD, moduleData);
-			
-			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(moduleData.getId()));
-			
-			Chain updateModuleDataChain = FacilioChainFactory.updateModuleDataChain();
-			updateModuleDataChain.execute(context);
-			
-			setId(moduleData.getId());
-			return moduleDataDetails();
-		}
-		catch(Exception e) {
-			setResponseCode(1);
-			setMessage(e);
-			return ERROR;
-		}
+	public String updateModuleData() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		
+		setModuleData();
+		context.put(FacilioConstants.ContextNames.RECORD, moduleData);
+		
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(moduleData.getId()));
+		
+		Chain updateModuleDataChain = FacilioChainFactory.updateModuleDataChain();
+		updateModuleDataChain.execute(context);
+		
+		setId(moduleData.getId());
+		return moduleDataDetails();
 	}
 	
-	public String deleteModuleData() {
-		try {
-			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.DELETE);
-			context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
-			
-			Chain deleteModuleDataChain = FacilioChainFactory.deleteModuleDataChain();
-			deleteModuleDataChain.execute(context);
-			
-			rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
-			setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
-			return SUCCESS;
-		}
-		catch(Exception e) {
-			setResponseCode(1);
-			setMessage(e);
-			return ERROR;
-		}
+	public String deleteModuleData() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.DELETE);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
+		
+		Chain deleteModuleDataChain = FacilioChainFactory.deleteModuleDataChain();
+		deleteModuleDataChain.execute(context);
+		
+		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
+		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
+		return SUCCESS;
 	}
 	
 	private void setModuleData () throws Exception {

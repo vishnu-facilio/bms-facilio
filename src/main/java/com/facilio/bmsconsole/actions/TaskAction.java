@@ -435,84 +435,43 @@ public class TaskAction extends FacilioAction {
 /******************      V2 Api    ******************/
 	
 	
-	public String v2viewTask() {
-		try {
-			String response = viewTask();
-			setResult(FacilioConstants.ContextNames.TASK, task);
-			return response;
-		}
-		catch(Exception e) {
-			setResponseCode(1);
-			setMessage(e);
-			return ERROR;
-		}
+	public String v2viewTask() throws Exception {
+		viewTask();
+		setResult(FacilioConstants.ContextNames.TASK, task);
+		return SUCCESS;
 	}
 	
-	public String v2updateStatus() {
-		try {
-			String response = updateStatus();
-			setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
-			return response;
-		}
-		catch(Exception e) {
-			setResponseCode(1);
-			setMessage(e);
-			return ERROR;
-		}
+	public String v2updateStatus() throws Exception {
+		updateStatus();
+		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
+		return SUCCESS;
 	}
 	
-	public String v2closeAllTask() {
-		try {
-			String response = closeAllTask();
-			setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
-			return response;
-		}
-		catch(Exception e) {
-			setMessage(e);
-			return ERROR;
-		}
+	public String v2closeAllTask() throws Exception {
+		closeAllTask();
+		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
+		return SUCCESS;
 	}
 	
-	public String v2updateAllTask() {
-		try {
-			String response = updateAllTask();
-			setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
-			setResult("error", getError());
-			return response;
-		}
-		catch(Exception e) {
-			setResponseCode(1);
-			setMessage(e);
-			return ERROR;
-		}
+	public String v2updateAllTask() throws Exception {
+		updateAllTask();
+		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
+		setResult("error", getError());
+		return SUCCESS;
 	}
 	
-	public String v2updateTask() {
-		try {
-			String response = updateTask();
-			setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
-			setResult("error", getError());
-			return response;
-		}
-		catch(Exception e) {
-			setResponseCode(1);
-			setMessage(e);
-			return ERROR;
-		}
+	public String v2updateTask() throws Exception {
+		updateTask();
+		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
+		setResult("error", getError());
+		return SUCCESS;
 	}
 	
-	public String v2taskList() {
-		try {
-			String response = taskList();
-			setResult(FacilioConstants.ContextNames.TASK_LIST, tasks);
-			setResult("sections", getSections());
-			return response;
-		}
-		catch(Exception e) {
-			setResponseCode(1);
-			setMessage(e);
-			return ERROR;
-		}
+	public String v2taskList() throws Exception {
+		taskList();
+		setResult(FacilioConstants.ContextNames.TASK_LIST, tasks);
+		setResult("sections", getSections());
+		return SUCCESS;
 	}
 	
 	public String v2multipleTaskList() throws Exception {
@@ -529,54 +488,47 @@ public class TaskAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	public String syncOfflineTasks() {
-		try {
-			if (lastSyncTime == null || lastSyncTime <= 0 ) {
-				throw new IllegalArgumentException("Task last synced time is mandatory");
-			}
-			Map<Long, Map<String, Object>> errors = new HashMap<>();
-			int rowsUpdated = 0; 
-			for(TaskContext task: taskContextList) {
-				try {
-					setTask(task);
-					setId(Collections.singletonList(task.getId()));
-					
-					FacilioContext context = new FacilioContext();
-					context.put(FacilioConstants.ContextNames.LAST_SYNC_TIME, lastSyncTime);
-					context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
-					if (AccountUtil.getCurrentAccount().getDeviceType() != null) {
-						context.put(FacilioConstants.ContextNames.DO_VALIDTION, getDoValidation());
-					}
-					updateTask(context);
-					rowsUpdated += this.rowsUpdated;
-				}
-				catch(Exception e) {
-					Map<String, Object> obj = new HashMap<>();
-					obj.put("data", FieldUtil.getAsJSON(task).toJSONString());
-					obj.put("error", e.getMessage());
-					errors.put(task.getId(), obj);
-					log.error("Error occurred on task sync for taskId - " + task.getId() , e);
-				}
-			}
-			if (!errors.isEmpty()) {
+	public String syncOfflineTasks() throws Exception {
+		if (lastSyncTime == null || lastSyncTime <= 0 ) {
+			throw new IllegalArgumentException("Task last synced time is mandatory");
+		}
+		Map<Long, Map<String, Object>> errors = new HashMap<>();
+		int rowsUpdated = 0; 
+		for(TaskContext task: taskContextList) {
+			try {
+				setTask(task);
+				setId(Collections.singletonList(task.getId()));
+				
 				FacilioContext context = new FacilioContext();
 				context.put(FacilioConstants.ContextNames.LAST_SYNC_TIME, lastSyncTime);
-				context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
-				context.put(FacilioConstants.ContextNames.CUSTOM_OBJECT, errors);
-				
-				Chain offlineSync = FacilioChainFactory.addOfflineSyncErrorChain();
-				offlineSync.execute(context);
-				
-				setResult("error", errors.size() + " task(s) sync failed");
+				context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
+				if (AccountUtil.getCurrentAccount().getDeviceType() != null) {
+					context.put(FacilioConstants.ContextNames.DO_VALIDTION, getDoValidation());
+				}
+				updateTask(context);
+				rowsUpdated += this.rowsUpdated;
 			}
-			setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
-			return SUCCESS;
+			catch(Exception e) {
+				Map<String, Object> obj = new HashMap<>();
+				obj.put("data", FieldUtil.getAsJSON(task).toJSONString());
+				obj.put("error", e.getMessage());
+				errors.put(task.getId(), obj);
+				log.error("Error occurred on task sync for taskId - " + task.getId() , e);
+			}
 		}
-		catch(Exception e) {
-			setResponseCode(1);
-			setMessage(e);
-			return ERROR;
+		if (!errors.isEmpty()) {
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.LAST_SYNC_TIME, lastSyncTime);
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
+			context.put(FacilioConstants.ContextNames.CUSTOM_OBJECT, errors);
+			
+			Chain offlineSync = FacilioChainFactory.addOfflineSyncErrorChain();
+			offlineSync.execute(context);
+			
+			setResult("error", errors.size() + " task(s) sync failed");
 		}
+		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
+		return SUCCESS;
 	}
 	
 	private Long lastSyncTime;

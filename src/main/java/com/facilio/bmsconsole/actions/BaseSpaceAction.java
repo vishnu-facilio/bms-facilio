@@ -174,17 +174,10 @@ public class BaseSpaceAction extends FacilioAction {
 	
 /******************      V2 Api    ******************/
 	
-	public String v2baseSpaceList() {
-		try {
-			String response = baseSpaceList();
-			setResult(FacilioConstants.ContextNames.BASE_SPACE_LIST, basespaces);
-			return response;
-		}
-		catch(Exception e) {
-			setResponseCode(1);
-			setMessage(e);
-			return ERROR;
-		}
+	public String v2baseSpaceList() throws Exception {
+		baseSpaceList();
+		setResult(FacilioConstants.ContextNames.BASE_SPACE_LIST, basespaces);
+		return SUCCESS;
 	}
 	
 }

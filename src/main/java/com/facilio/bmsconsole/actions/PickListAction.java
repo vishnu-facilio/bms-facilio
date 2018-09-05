@@ -343,19 +343,13 @@ public class PickListAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-/******************      V2 Api    ******************/
+/******************      V2 Api    
+ * @throws Exception ******************/
 	
-	public String v2pickList() {
-		try {
-			String response = execute();
-			setResult(FacilioConstants.ContextNames.PICKLIST, pickList);
-			return response;
-		}
-		catch(Exception e) {
-			setResponseCode(1);
-			setMessage(e);
-			return ERROR;
-		}
+	public String v2pickList() throws Exception {
+		execute();
+		setResult(FacilioConstants.ContextNames.PICKLIST, pickList);
+		return SUCCESS;
 	}
 	
 }

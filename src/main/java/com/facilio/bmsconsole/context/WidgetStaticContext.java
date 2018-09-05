@@ -6,7 +6,16 @@ public class WidgetStaticContext extends DashboardWidgetContext {
 
 	
 	String staticKey;
+	Long baseSpaceId;
 	
+	public Long getBaseSpaceId() {
+		return baseSpaceId;
+	}
+
+	public void setBaseSpaceId(Long baseSpaceId) {
+		this.baseSpaceId = baseSpaceId;
+	}
+
 	public void setStaticKey(String staticKey) {
 		this.staticKey = staticKey;
 	}
