@@ -107,10 +107,7 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		List<FacilioModule> modules = splitModules();
 		Map<Long, List<FacilioField>> fieldMap = splitFields();
 		
-		long localId = -1;
-		if(isWithLocalIdModule) {
-			localId = ModuleLocalIdUtil.getAndUpdateModuleLocalId(module.getName(), records.size());
-		}
+		long localId = getLocalId(modules);
 		
 		List<Map<String, Object>> beanProps = new ArrayList<>();
 		for(E bean : records) {
@@ -153,6 +150,24 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			}
 		}
 		
+	}
+	
+	private long getLocalId (List<FacilioModule> modules) throws Exception {
+		long localId = -1;
+		if(isWithLocalIdModule) {
+			for (int i = modules.size() - 1; i >= 0; i--) {
+				FacilioModule module = modules.get(i);
+				localId = ModuleLocalIdUtil.getAndUpdateModuleLocalId(module.getName(), records.size());
+				if (localId != -1) {
+					break;
+				}
+			}
+			
+			if (localId == -1) {
+				throw new IllegalArgumentException(modules.get(modules.size() - 1).getName()+" doesn't have last local id. This is not supposed to happen");
+			}
+		}
+		return localId;
 	}
 	
 	private List<FacilioModule> splitModules() {
