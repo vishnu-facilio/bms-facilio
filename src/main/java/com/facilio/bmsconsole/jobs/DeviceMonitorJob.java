@@ -62,6 +62,7 @@ public class DeviceMonitorJob extends FacilioJob {
                     String name = deviceId;
                     Object deviceName = obj.get("deviceName");
                     Long lastUpdatedTime = (Long)obj.get("lastUpdatedTime");
+                    Long lastAlertedTime = (Long)obj.get("lastAlertedTime");
                     Object alertFrequency = obj.get("alertFrequency");
                     Long deviceDetailsId = (Long) obj.get("id");
                     long alertTime = DEFAULT_TIMEOUT;
@@ -72,7 +73,8 @@ public class DeviceMonitorJob extends FacilioJob {
                             LOGGER.info("Exception while converting " + alertFrequency, e);
                         }
                     }
-                    if((System.currentTimeMillis()-lastUpdatedTime) > alertTime) {
+                    long currentTime = System.currentTimeMillis();
+                    if(((currentTime - lastUpdatedTime) > alertTime) && ((currentTime - lastAlertedTime) > alertTime)) {
                         JSONObject jsonObject = new JSONObject();
                         jsonObject.put("deviceId", deviceId);
                         jsonObject.put("lastProcessedTime", lastUpdatedTime);
@@ -132,6 +134,5 @@ public class DeviceMonitorJob extends FacilioJob {
         } catch (SQLException e) {
             LOGGER.info("Exception while updating alert time ", e);
         }
-
     }
 }
