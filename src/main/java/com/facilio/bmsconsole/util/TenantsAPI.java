@@ -14,8 +14,12 @@ import org.apache.commons.lang3.StringUtils;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.actions.DashboardAction;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -25,6 +29,7 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.tenant.RateCardContext;
 import com.facilio.bmsconsole.tenant.RateCardServiceContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsole.tenant.TenantUserContext;
 import com.facilio.bmsconsole.tenant.UtilityAsset;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
@@ -60,6 +65,98 @@ public class TenantsAPI {
 		return getTenantsFromProps(selectBuilder.get());
 	}
 	
+	
+	
+	
+	
+	public static List<TenantUserContext> getAllTenantsUsers(long id) throws Exception {
+		
+		if (id<=0 ) {
+			return null;
+		}
+		TenantContext tenant = getTenant(id, true);
+		FacilioModule module = ModuleFactory.getTenantsuserModule();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(FieldFactory.getTenantsUserFields())
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCustomWhere("tenant_users.TENANTID = ? ", id);
+//														.andCondition(CriteriaAPI.getCondition(field, operator)(id, module));
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		List<TenantUserContext> tenantUsers = new ArrayList<>();
+		
+//		tenant.getContactId();
+//		
+//		TenantUserContext tenantUserContext = new TenantUserContext();
+//		
+//		tenantUserContext.setOrgid(AccountUtil.getCurrentOrg().getId());
+//		tenantUserContext.setOuid(tenant.getContactId());
+//		tenantUserContext.setTenantId(id);
+//		tenantUserContext.setOrgUser((User)AccountUtil.getUserBean().getUser(tenant.getContactId()));
+//		
+//		tenantUsers.add(tenantUserContext);
+		
+		if(props != null && !props.isEmpty()) {
+			
+			for(Map<String, Object> prop :props) {
+				
+				TenantUserContext tenantUser = FieldUtil.getAsBeanFromMap(prop, TenantUserContext.class);
+				
+				User user = (User) AccountUtil.getUserBean().getUser(tenantUser.getOuid());
+				
+				tenantUser.setOrgUser(user);
+				
+				tenantUsers.add(tenantUser);
+			}
+		}
+		
+		return (tenantUsers);
+	}
+	
+	public static Map<String, Double> getTenantMeterReadings(List<String> meterId) throws Exception {
+		
+
+				
+//		List<String,Object> props ;	
+		Map<String, Double> newDatas = new HashMap<String, Double>();
+		
+		for (String meter : meterId) {
+		
+		DateRange daterange = DateOperators.CURRENT_MONTH.getRange(null);
+		
+		long startTime = daterange.getStartTime();
+		
+		long endTime = daterange.getEndTime();
+		Double meterData = DashboardAction.getTotalKwh(Collections.singletonList(meter) ,  startTime,  endTime);
+		newDatas.put(meter, meterData);
+
+		}
+		return newDatas;
+		
+		
+	}
+	public static long updatePortalUserAccess(long userId,Object portal_verified) throws Exception {
+		User user = (User) AccountUtil.getUserBean().getUser(userId);
+		if (user.portal_verified == null) {
+			
+			AccountUtil.getUserBean().inviteUser(user.getOrgId(), user);
+		}
+		
+		FacilioModule module = ModuleFactory.getOrgUserModule();
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(module.getTableName())
+				.fields(FieldFactory.getOrgUserFields())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCustomWhere("ORG_USERID = ?", userId);
+		
+		Map<String, Object> value = new HashMap<>();
+		value.put("portal_verified", portal_verified);
+		int count = updateBuilder.update(value);
+		
+		return userId;
+	}
+	 
 	public static TenantContext getTenant(long id, Boolean...fetchTenantOnly) throws Exception {
 		
 		if (id <= 0) {
@@ -135,6 +232,8 @@ public class TenantsAPI {
 			Map<Long, List<UtilityAsset>> utilityMap = new HashMap<>();
 			for (Map<String, Object> prop : props) {
 				UtilityAsset util = FieldUtil.getAsBeanFromMap(prop, UtilityAsset.class);
+				AssetContext assetInfo = AssetsAPI.getAssetInfo(util.getAssetId());
+				util.setAsset(assetInfo);
 				List<UtilityAsset> utilList = utilityMap.get(util.getTenantId());
 				if (utilList == null) {
 					utilList = new ArrayList<>();
@@ -147,6 +246,8 @@ public class TenantsAPI {
 		return null;
 	}
 	
+	@SuppressWarnings("unused")
+//	public static TenantContext addTenant (TenantContext tenant) throws Exception {
 	public static long addTenant (TenantContext tenant) throws Exception {
 		
 		if (tenant.getName() == null || tenant.getName().isEmpty()) {
@@ -163,7 +264,8 @@ public class TenantsAPI {
 		
 		
 		
-		User use = tenant.getContactInfo();
+//		List<User> users = tenant.getContactInfo();
+			User use = tenant.getContactInfo();
 		Organization org = AccountUtil.getOrgBean().getPortalOrg(AccountUtil.getCurrentOrg().getDomain());
 		use.setPortalId(org.getPortalId());
 		User extRequester = AccountUtil.getUserBean().getPortalUsers(use.getEmail(), use.getPortalId());
@@ -175,7 +277,19 @@ public class TenantsAPI {
 			tenant.setContactId(requesterId);
 		}
 		
+//		for(User user : users) {
+			
+//			user.setPortalId(org.getPortalId());
+//		User extRequester = AccountUtil.getUserBean().getPortalUsers(user.getEmail(), user.getPortalId());
+//		if (extRequester != null) {
+//			user.setContactId(extRequester.getOuid());
+//		}
+//		else {
+//			long requesterId = AccountUtil.getUserBean().addRequester(AccountUtil.getCurrentOrg().getOrgId(), user);
+//			contactId.setContactId(requesterId);
+//		}
 		
+//		}
 		
 		tenant.setOrgId(AccountUtil.getCurrentOrg().getId());
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
@@ -185,6 +299,7 @@ public class TenantsAPI {
 		tenant.setId(id);
 		addUtilityMapping(tenant);
 		return id;
+//		return tenant;
 	}
 	
 	private static void addUtilityMapping(TenantContext tenant) throws Exception {

@@ -1158,6 +1158,13 @@ public class AccountConstants {
 		userType.setColumnName("USER_TYPE");
 		userType.setModule(module);
 		fields.add(userType);
+		
+		FacilioField portal_verified = new FacilioField();
+		portal_verified.setName("portal_verified");
+		portal_verified.setDataType(FieldType.BOOLEAN);
+		portal_verified.setColumnName("PORTAL_VERIFIED");
+		portal_verified.setModule(module);
+		fields.add(portal_verified);
 	
 		return fields;
 	}
