@@ -252,7 +252,7 @@ public class V2ReportAction extends FacilioAction {
 		fetchReadingsData();
 		String fileUrl = null;
 		if(fileFormat == FileFormat.PDF || fileFormat == FileFormat.IMAGE) {
-//			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(),url, fileFormat);
+			// TODO Store the chart options temporarily in 
 		}
 		else {
 			Map<String,Object> tableData = ReportExportUtil.getTabularReportData(getResult(), mode);

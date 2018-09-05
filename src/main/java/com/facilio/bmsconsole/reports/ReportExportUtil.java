@@ -530,13 +530,13 @@ public class ReportExportUtil {
 	    else {
 	    		currentHeaderKeys.add(report.getDataPoints().get(0).getxAxis().getField().getName());
 	    		if (report.getBaseLines() != null && !report.getBaseLines().isEmpty()) {
-	    			baseLineMap = report.getBaseLines().stream().collect(Collectors.toMap(ReportBaseLineContext::getId, Function.identity()));
+	    			baseLineMap = report.getBaseLines().stream().collect(Collectors.toMap(ReportBaseLineContext::getBaseLineId, Function.identity()));
 	    		}
 	    		
 	    		reportData.forEach((key, data) -> {
 	    			currentHeaderKeys.add(key);
 	    			if (report.getBaseLines() != null) {
-	    				currentHeaderKeys.addAll(report.getBaseLines().stream().map(bl -> String.valueOf(bl.getBaseLineId()) + "__baseline__").collect(Collectors.toList()));
+	    				currentHeaderKeys.addAll(report.getBaseLines().stream().map(bl -> String.valueOf(bl.getBaseLineId()) + "__baseline__" + key).collect(Collectors.toList()));
 	    			}
 	    		});
 	    		
@@ -580,9 +580,9 @@ public class ReportExportUtil {
 		headerKeys.forEach(header -> {
 			Map<String, Object> column = new HashMap<>();
 			column.put("name", header);
-			if (headerKeys.contains("__baseline__")) {
+			if (header.contains("__baseline__")) {
 				column.put("baseLine", true);
-				column.put("baseLineId", header.substring(0, header.indexOf("__baseline__")));
+				column.put("baseLineId", Long.parseLong(header.substring(0, header.indexOf("__baseline__"))));
 				column.put("dp", header.substring(header.indexOf("__baseline__") + 12));
 			}
 			columns.add(column);
@@ -624,7 +624,7 @@ public class ReportExportUtil {
 					StringBuilder builder = new StringBuilder(dataPoint.getName());
 					builder.append((unit != null && !unit.isEmpty() ? " (" + unit + ")" : ""));
 					if (isBaseLine) {
-						builder.append(" - ").append(baseLineMap.get((String) col.get("baseLineId")).getBaseLine().getName());
+						builder.append(" - ").append(baseLineMap.get(col.get("baseLineId")).getBaseLine().getName());
 					}
 					String header = builder.toString();
 					headers.add(header);
@@ -647,8 +647,8 @@ public class ReportExportUtil {
 					}
 					else if (reportData.get(key).containsKey(columnName)){
 						ReportDataPointContext dataPoint = dataMap.get(columnName);
-						Object val = reportData.get(key).get(columnName).values().stream().findFirst().get();
-						FacilioField field = dataPoint.getyAxis().getField();
+						Object val = reportData.get(key).get(columnName).keySet().stream().findFirst().get();
+						FacilioField field = dataPoint != null ? dataPoint.getyAxis().getField() : null;
 						String unit = "";
 						if (field instanceof NumberField) {
 							unit = ((NumberField)field).getUnit();
@@ -660,13 +660,14 @@ public class ReportExportUtil {
 			});
 		}
 		else {
-			xValues.forEach(x -> {
+			for(Object xObj: xValues) {
+				long x = (long)xObj;
 				Map<String, Object> newRow = new HashMap<>();
 				for(int i = 0, size = columns.size(); i < size; i++) {
 					Map<String, Object> column = columns.get(i);
 					if (i == 0) {
 						String  format = "MMMM dd, yyyy hh:mm A";
-						newRow.put((String) column.get("header"), DateTimeUtil.getFormattedTime((long)x, format));
+						newRow.put((String) column.get("header"), DateTimeUtil.getFormattedTime(x, format));
 						continue;
 					}
 					String name, bl;
@@ -675,19 +676,19 @@ public class ReportExportUtil {
 						name = (String) column.get("dp");
 						ReportBaseLineContext baseContext =  baseLineMap.get(column.get("baseLineId"));
 						bl = baseContext.getBaseLine().getName();
-						xTime = (long)x - baseContext.getDiff();
+						xTime = x - baseContext.getDiff();
 					}
 					else {
 						name = (String) column.get("name");
-						bl = ACTUAL_HEADER;
-						xTime = (long)x;
+						bl = ACTUAL_HEADER.toLowerCase();
+						xTime = x;
 					}
 					if (reportData.get(name) != null && reportData.get(name).get(bl).get(xTime) != null) {
 						newRow.put((String) column.get("header"), reportData.get(name).get(bl).get(xTime));
 					}
 				}
 				records.add(newRow);
-			});
+			};
 		}
 		return records;
 	}
