@@ -259,6 +259,7 @@ public class FacilioConstants {
 		public static final String REPORT_X_AGGR = "xAggr";
 		public static final String REPORT_Y_AGGR = "yAggr";
 		public static final String REPORT_DATA = "reportData";
+		public static final String REPORT_VARIANCE_DATA = "reportVarianceData";
 		public static final String REPORT_X_VALUES = "reportXValues";
 		public static final String REPORT_X_FIELD = "reportXField";
 		public static final String REPORT_Y_FIELDS = "reportYFields";

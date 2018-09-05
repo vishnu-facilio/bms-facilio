@@ -19,6 +19,7 @@ public class ReadOnlyChainFactory extends FacilioChainFactory {
 		c.addCommand(new FilterXFieldCommand());
 		c.addCommand(new FetchReportDataCommand());
 		c.addCommand(new TransformReportDataCommand());
+		c.addCommand(new CalculateVarianceCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
