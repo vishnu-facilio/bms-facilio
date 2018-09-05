@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.context.BaseLineContext.RangeType;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
@@ -89,7 +90,16 @@ public class AddWidgetCommand implements Command {
 					}
 				}
 				else if(widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_ENERGY_COST_CARD) || widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_ENERGY_COST_CARD_MINI)) {
-					Long workflowId = WorkflowUtil.addWorkflow(DashboardUtil.ENERGY_COST_THIS_MONTH_CONSUMPTION_WORKFLOW);
+					
+					Long workflowId = null;
+					
+					if(AccountUtil.getCurrentOrg().getId() == 116l) {
+						workflowId = WorkflowUtil.addWorkflow(DashboardUtil.ENERGY_COST_THIS_MONTH_CONSUMPTION_COST_MODULE_WORKFLOW);
+					}
+					else {
+						workflowId = WorkflowUtil.addWorkflow(DashboardUtil.ENERGY_COST_THIS_MONTH_CONSUMPTION_WORKFLOW);
+					}
+					 
 					WidgetVsWorkflowContext widgetVsWorkflowContext = new WidgetVsWorkflowContext();
 					
 					widgetVsWorkflowContext.setWidgetId(widget.getId());
@@ -102,7 +112,13 @@ public class AddWidgetCommand implements Command {
 					
 					DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
 					
-					workflowId = WorkflowUtil.addWorkflow(DashboardUtil.ENERGY_COST_LAST_MONTH_CONSUMPTION_WORKFLOW);
+					if(AccountUtil.getCurrentOrg().getId() == 116l) {
+						workflowId = WorkflowUtil.addWorkflow(DashboardUtil.ENERGY_COST_LAST_MONTH_CONSUMPTION_COST_MODULE_WORKFLOW);
+					}
+					else {
+						workflowId = WorkflowUtil.addWorkflow(DashboardUtil.ENERGY_COST_LAST_MONTH_CONSUMPTION_WORKFLOW);
+					}
+					
 					widgetVsWorkflowContext = new WidgetVsWorkflowContext();
 					
 					widgetVsWorkflowContext.setWidgetId(widget.getId());
@@ -114,7 +130,17 @@ public class AddWidgetCommand implements Command {
 					DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
 					
 					BaseLineContext baseline = BaseLineAPI.getBaseLine(RangeType.PREVIOUS_MONTH);
-					String energyCostLastMonth = DashboardUtil.ENERGY_COST_LAST_MONTH_THIS_DATE_CONSUMPTION_WORKFLOW.replaceAll("\\$\\$BASELINE_ID\\$\\$", baseline.getId()+"");
+					
+					String energyCostLastMonth = null;
+					
+					if(AccountUtil.getCurrentOrg().getId() == 116l) {
+						energyCostLastMonth = DashboardUtil.ENERGY_COST_LAST_MONTH_THIS_DATE_CONSUMPTION_COST_MODULE_WORKFLOW;
+					}
+					else {
+						energyCostLastMonth = DashboardUtil.ENERGY_COST_LAST_MONTH_THIS_DATE_CONSUMPTION_WORKFLOW;
+					}
+					
+					energyCostLastMonth = energyCostLastMonth.replaceAll("\\$\\$BASELINE_ID\\$\\$", baseline.getId()+"");
 					workflowId = WorkflowUtil.addWorkflow(energyCostLastMonth);
 					widgetVsWorkflowContext = new WidgetVsWorkflowContext();
 					
