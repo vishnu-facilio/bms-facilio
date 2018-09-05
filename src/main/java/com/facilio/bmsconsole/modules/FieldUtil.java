@@ -8,9 +8,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Level;
@@ -492,5 +496,12 @@ public class FieldUtil {
 				}
 			}
 		}*/
+	}
+	
+	private static Set<String> ALLOWED_MODULES = Collections.unmodifiableSet(
+			new HashSet<>(Arrays.asList("resource", "asset", "building", "floor", "space", "zone")));
+	
+	public static boolean isSiteIdFieldPresent(FacilioModule module) {
+		return ALLOWED_MODULES.contains(module.getName()) || (module.getExtendModule() != null && module.getExtendModule().getName().equals("asset"));
 	}
 }

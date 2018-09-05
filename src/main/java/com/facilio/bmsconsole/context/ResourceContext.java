@@ -75,6 +75,15 @@ public class ResourceContext extends ModuleBaseWithCustomFields {
 	public void setControllerId(long controllerId) {
 		this.controllerId = controllerId;
 	}
+	
+	private long siteId = -1;
+	public void setSiteId(long siteId) {
+		this.siteId = siteId;
+	}
+	
+	public long getSiteId() {
+		return this.siteId;
+	}
 
 	public static enum ResourceType {
 		SPACE,

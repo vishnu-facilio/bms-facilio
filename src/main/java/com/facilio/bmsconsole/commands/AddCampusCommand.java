@@ -1,16 +1,28 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class AddCampusCommand implements Command {
 	
@@ -35,6 +47,9 @@ public class AddCampusCommand implements Command {
 															.fields(fields);
 			long id = builder.insert(site);
 			site.setId(id);
+			
+			updateSiteId(id);
+			
 			SpaceAPI.updateHelperFields(site);
 			context.put(FacilioConstants.ContextNames.RECORD_ID, id);
 			context.put(FacilioConstants.ContextNames.PARENT_ID, id);
@@ -44,5 +59,20 @@ public class AddCampusCommand implements Command {
 			throw new IllegalArgumentException("Campus Object cannot be null");
 		}
 		return false;
+	}
+
+	private void updateSiteId(long id) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule("resource");
+		
+		Map<String, Object> prop = new HashMap<>();
+		prop.put("siteId", id);
+		
+		new GenericUpdateRecordBuilder()
+				.table(module.getTableName())
+				.fields(Arrays.asList(FieldFactory.getSiteIdField(module)))
+				.andCondition(CriteriaAPI.getIdCondition(id, module))
+				.update(prop);
+		
 	}
 }

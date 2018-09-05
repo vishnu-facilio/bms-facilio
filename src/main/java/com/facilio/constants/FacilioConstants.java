@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.ChillerCondenserPumpContext;
 import com.facilio.bmsconsole.context.ChillerContext;
 import com.facilio.bmsconsole.context.ChillerPrimaryPumpContext;
+import com.facilio.bmsconsole.context.ChillerSecondaryPumpContext;
 import com.facilio.bmsconsole.context.CoolingTowerContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
@@ -595,7 +596,7 @@ public class FacilioConstants {
 			classMap.put(CDD_READING, ReadingContext.class);
 			classMap.put(HDD_READING, ReadingContext.class);
 			classMap.put(UTILITY_BILL_READING, ReadingContext.class);
-			
+			classMap.put(CHILLER_SECONDARY_PUMP, ChillerSecondaryPumpContext.class);			
 			return classMap;
 		}
 		

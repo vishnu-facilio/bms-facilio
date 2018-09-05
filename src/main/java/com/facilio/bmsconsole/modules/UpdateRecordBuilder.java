@@ -126,9 +126,13 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			moduleProps.remove("orgId");
 			moduleProps.remove("moduleId");
 			moduleProps.remove("id");
+			if (FieldUtil.isSiteIdFieldPresent(module)) {
+				moduleProps.remove("siteId");
+			}
 			
 			FacilioField orgIdField = FieldFactory.getOrgIdField(module);
 			FacilioField moduleIdField = FieldFactory.getModuleIdField(module);
+			FacilioField siteIdField = FieldFactory.getSiteIdField(module);
 			
 			WhereBuilder whereCondition = new WhereBuilder();
 			Condition orgCondition = CriteriaAPI.getCondition(orgIdField, String.valueOf(AccountUtil.getCurrentOrg().getOrgId()), NumberOperators.EQUALS);
@@ -136,6 +140,12 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			
 			Condition moduleCondition = CriteriaAPI.getCondition(moduleIdField, String.valueOf(module.getModuleId()), NumberOperators.EQUALS);
 			whereCondition.andCondition(moduleCondition);
+			
+			long currentSiteId = AccountUtil.getCurrentSiteId();
+			if (FieldUtil.isSiteIdFieldPresent(module) && currentSiteId > 0) {
+				Condition siteIdCondition = CriteriaAPI.getCondition(siteIdField, String.valueOf(currentSiteId), NumberOperators.EQUALS);
+				whereCondition.andCondition(siteIdCondition);
+			}
 			
 			whereCondition.andCustomWhere(where.getWhereClause(), where.getValues());
 			where = whereCondition;
@@ -146,6 +156,10 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			updateFields.add(orgIdField);
 			updateFields.add(moduleIdField);
 			updateFields.add(FieldFactory.getIdField(module));
+			
+			if (FieldUtil.isSiteIdFieldPresent(module)) {
+				updateFields.add(siteIdField);
+			}
 			
 			if (module.isTrashEnabled()) {
 				FacilioField isDeletedField = FieldFactory.getIsDeletedField();

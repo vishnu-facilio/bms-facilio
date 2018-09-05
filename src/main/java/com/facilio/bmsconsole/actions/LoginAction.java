@@ -709,7 +709,7 @@ public class LoginAction extends FacilioAction{
 			Map<String, Set<FacilioForm>> forms = FormsAPI.getAllForms(FormType.MOBILE);
 			data.put("forms", forms);
 		}
-
+		data.put("mysites", CommonCommandUtil.getMySites());
 		
 		Map<String, Object> config = new HashMap<>();
 		config.put("ws_endpoint", WmsApi.getWebsocketEndpoint(AccountUtil.getCurrentUser().getId()));

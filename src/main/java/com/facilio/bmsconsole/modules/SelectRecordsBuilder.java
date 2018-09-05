@@ -339,10 +339,16 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	private List<Map<String, Object>> getAsJustProps() throws Exception {
 		FacilioField orgIdField = FieldFactory.getOrgIdField(module);
 		FacilioField moduleIdField = FieldFactory.getModuleIdField(module);
+		FacilioField siteIdField = FieldFactory.getSiteIdField(module);
 		
 		List<FacilioField> selectFields = new ArrayList<>();
 		selectFields.add(orgIdField);
 		selectFields.add(moduleIdField);
+		
+		if (FieldUtil.isSiteIdFieldPresent(module)) {
+			selectFields.add(siteIdField);
+		}
+		
 		if (groupBy == null || groupBy.isEmpty()) {
 			selectFields.add(FieldFactory.getIdField(module));
 		}
@@ -366,6 +372,13 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		
 		Condition moduleCondition = CriteriaAPI.getCondition(moduleIdField, String.valueOf(module.getModuleId()), NumberOperators.EQUALS);
 		whereCondition.andCondition(moduleCondition);
+		
+		long currentSiteId = AccountUtil.getCurrentSiteId();
+		
+		if (FieldUtil.isSiteIdFieldPresent(module) && currentSiteId > 0) {
+			Condition siteCondition = CriteriaAPI.getCondition(siteIdField, String.valueOf(currentSiteId), NumberOperators.EQUALS);
+			whereCondition.andCondition(siteCondition);
+		}
 		
 		if (module.isTrashEnabled()) {
 			FacilioField isDeletedField = FieldFactory.getIsDeletedField();

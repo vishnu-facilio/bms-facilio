@@ -819,10 +819,15 @@ public static long getSitesCount() throws Exception {
 		if (searchCriteria != null) {
 			selectBuilder.andCriteria(searchCriteria);
 		}
+		
+		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria("basespace");
+		if(scopeCriteria != null) {
+			selectBuilder.andCriteria(scopeCriteria);
+		}
+		
 		if (orderBy != null && !orderBy.isEmpty()) {
 			selectBuilder.orderBy(orderBy);
 		}
-		
 		
 		List<BaseSpaceContext> spaces = selectBuilder.get();
 		return spaces;

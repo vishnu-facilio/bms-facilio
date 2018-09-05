@@ -13,6 +13,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
@@ -277,5 +278,21 @@ public class ResourceAPI {
 				}
 			}
 		}
+	}
+	
+	public static long getSiteIDForSpaceOrAsset(long resourceId) throws Exception {
+		ResourceContext resource = ResourceAPI.getResource(resourceId);
+		long siteId = -1;
+		if (resource.getResourceTypeEnum() == ResourceType.SPACE) {
+			BaseSpaceContext space = SpaceAPI.getBaseSpace(resourceId);
+			siteId = space.getSiteId();
+		} else {
+			AssetContext asset = AssetsAPI.getAssetInfo(resourceId);
+			if (asset.getSpaceId() != -1) {
+				BaseSpaceContext space = SpaceAPI.getBaseSpace(asset.getSpaceId());
+				siteId = space.getSiteId();
+			}
+		}
+		return siteId;
 	}
 }
