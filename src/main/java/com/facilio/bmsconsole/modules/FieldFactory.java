@@ -699,6 +699,20 @@ public class FieldFactory {
 		lastUpdated.setModule(module);
 		fields.add(lastUpdated);
 
+		FacilioField lastAlertedTimeField = new FacilioField();
+		lastAlertedTimeField.setName("lastAlertedTime");
+		lastAlertedTimeField.setDataType(FieldType.NUMBER);
+		lastAlertedTimeField.setColumnName("LAST_ALERTED_TIME");
+		lastAlertedTimeField.setModule(module);
+		fields.add(lastAlertedTimeField);
+
+		FacilioField alertFrequency = new FacilioField();
+		alertFrequency.setName("alertFrequency");
+		alertFrequency.setDataType(FieldType.NUMBER);
+		alertFrequency.setColumnName("ALERT_FREQUENCY");
+		alertFrequency.setModule(module);
+		fields.add(alertFrequency);
+
 		return fields;
 	}
 
