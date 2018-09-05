@@ -40,6 +40,13 @@ public class TenantContext {
 		this.description = description;
 	}
 	
+//	private list contactId;
+//	public long getContactId() {
+//		return contactId;
+//	}
+//	public void setContactId(long contactId) {
+//		this.contactId = contactId;
+//	}
 	private long contactId;
 	public long getContactId() {
 		return contactId;
@@ -48,6 +55,13 @@ public class TenantContext {
 		this.contactId = contactId;
 	}
 	
+//	private List<User> contactInfo;
+//	public List<User> getContactInfo() {
+//		return contactInfo;
+//	}
+//	public void setContactInfo(List<User> contactInfo) {
+//		this.contactInfo = contactInfo;
+//	}
 	private User contactInfo;
 	public User getContactInfo() {
 		return contactInfo;
@@ -56,8 +70,13 @@ public class TenantContext {
 		this.contactInfo = contactInfo;
 	}
 	
-	
-	
+//	private List<User> contactInfo;
+//	public List<User> getContactInfo() {
+	//	return contactInfo;
+//	}
+//	public void setContactInfo(List<User> contactInfo) {
+//			this.contactInfo = contactInfo;
+//	}
 
 	private long logoId = -1;
 	public long getLogoId() {
