@@ -59,7 +59,10 @@ public class CreateWorkOrderAnalyticsReportCommand implements Command {
 				
 				dataPoints.add(dataPoint);
 			}
-			ReportContext report = new ReportContext();
+			ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
+			if(report == null) {
+				report = new ReportContext();
+			}
 			report.setDataPoints(dataPoints);
 			report.setDateOperator(DateOperators.BETWEEN);
 			report.setDateValue(startTime+", "+endTime);

@@ -64,6 +64,7 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.BASE_LINE_LIST, FieldUtil.getAsBeanListFromJsonArray(baseLineList, ReportBaseLineContext.class));
 		context.put(FacilioConstants.ContextNames.CHART_STATE, chartState);
 		context.put(FacilioConstants.ContextNames.TABULAR_STATE, tabularState);
+		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 		
 		Chain addReadingReport = FacilioChainFactory.addReadingReportChain();
 		addReadingReport.execute(context);
@@ -90,6 +91,7 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.BASE_LINE_LIST, FieldUtil.getAsBeanListFromJsonArray(baseLineList, ReportBaseLineContext.class));
 		context.put(FacilioConstants.ContextNames.CHART_STATE, chartState);
 		context.put(FacilioConstants.ContextNames.TABULAR_STATE, tabularState);
+		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 		
 		Chain addWorkOrderChain = FacilioChainFactory.addWorkOrderReportChain();
 		addWorkOrderChain.execute(context);
