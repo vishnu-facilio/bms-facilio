@@ -11,70 +11,150 @@ public class AnalyticsAnomalyConfigContext extends ModuleBaseWithCustomFields {
 	private String dimension2Value;
 	private String xAxisDimension;
 	private String yAxisDimension;
-	private Double constant1;
-	private Double constant2;
-	private Double maxDistance;
+	private double constant1;
+	private double constant2;
+	private double maxDistance;
+	private double outlierDistance;
+	private int historyDays;
+	private String startDate;
+	private boolean startDateMode;
 	
-	public String getDimension1Buckets() {
-		return dimension1Buckets;
-	}
-	public void setDimension1Buckets(String dimension1Buckets) {
-		this.dimension1Buckets = dimension1Buckets;
-	}
-	public String getDimension2Buckets() {
-		return dimension2Buckets;
-	}
-	public void setDimension2Buckets(String dimension2Buckets) {
-		this.dimension2Buckets = dimension2Buckets;
-	}
-	public String getDimension1Value() {
-		return dimension1Value;
-	}
-	public void setDimension1Value(String dimension1Value) {
-		this.dimension1Value = dimension1Value;
-	}
-	public String getDimension2Value() {
-		return dimension2Value;
-	}
-	public void setDimension2Value(String dimension2Value) {
-		this.dimension2Value = dimension2Value;
-	}
-	public String getxAxisDimension() {
-		return xAxisDimension;
-	}
-	public void setxAxisDimension(String xAxisDimension) {
-		this.xAxisDimension = xAxisDimension;
-	}
-	public String getyAxisDimension() {
-		return yAxisDimension;
-	}
-	public void setyAxisDimension(String yAxisDimension) {
-		this.yAxisDimension = yAxisDimension;
-	}
 	public long getMeterId() {
 		return meterId;
 	}
+
+
 	public void setMeterId(long meterId) {
 		this.meterId = meterId;
 	}
 
-	public Double getConstant1() {
+
+	public String getDimension1Buckets() {
+		return dimension1Buckets;
+	}
+
+
+	public void setDimension1Buckets(String dimension1Buckets) {
+		this.dimension1Buckets = dimension1Buckets;
+	}
+
+
+	public String getDimension2Buckets() {
+		return dimension2Buckets;
+	}
+
+
+	public void setDimension2Buckets(String dimension2Buckets) {
+		this.dimension2Buckets = dimension2Buckets;
+	}
+
+
+	public String getDimension1Value() {
+		return dimension1Value;
+	}
+
+
+	public void setDimension1Value(String dimension1Value) {
+		this.dimension1Value = dimension1Value;
+	}
+
+
+	public String getDimension2Value() {
+		return dimension2Value;
+	}
+
+
+	public void setDimension2Value(String dimension2Value) {
+		this.dimension2Value = dimension2Value;
+	}
+
+
+	public String getxAxisDimension() {
+		return xAxisDimension;
+	}
+
+
+	public void setxAxisDimension(String xAxisDimension) {
+		this.xAxisDimension = xAxisDimension;
+	}
+
+
+	public String getyAxisDimension() {
+		return yAxisDimension;
+	}
+
+
+	public void setyAxisDimension(String yAxisDimension) {
+		this.yAxisDimension = yAxisDimension;
+	}
+
+
+	public double getConstant1() {
 		return constant1;
 	}
-	public void setConstant1(Double constant1) {
+
+
+	public void setConstant1(double constant1) {
 		this.constant1 = constant1;
 	}
-	public Double getConstant2() {
+
+
+	public double getConstant2() {
 		return constant2;
 	}
-	public void setConstant2(Double constant2) {
+
+
+	public void setConstant2(double constant2) {
 		this.constant2 = constant2;
 	}
-	public Double getMaxDistance() {
+
+
+	public double getMaxDistance() {
 		return maxDistance;
 	}
-	public void setMaxDistance(Double maxDistance) {
+
+
+	public void setMaxDistance(double maxDistance) {
 		this.maxDistance = maxDistance;
+	}
+
+
+	public double getOutlierDistance() {
+		return outlierDistance;
+	}
+
+
+	public void setOutlierDistance(double outlierDistance) {
+		this.outlierDistance = outlierDistance;
+	}
+
+
+	public int getHistoryDays() {
+		return historyDays;
+	}
+
+
+	public void setHistoryDays(int historyDays) {
+		this.historyDays = historyDays;
+	}
+
+
+	public String getStartDate() {
+		return startDate;
+	}
+
+
+	public void setStartDate(String startDate) {
+		this.startDate = startDate;
+	}
+
+	public boolean getStartDateMode() {
+		return startDateMode;
+	}
+
+
+	public void setStartDateMode(boolean startDateMode) {
+		this.startDateMode = startDateMode;
 	}
 
 	public String toString() {
@@ -99,7 +179,13 @@ public class AnalyticsAnomalyConfigContext extends ModuleBaseWithCustomFields {
 			buf.append(constant2);
 			buf.append(", maxDistance = ");
 			buf.append(maxDistance);
-
+			buf.append(", outlierDistance = ");
+			buf.append(outlierDistance);
+			buf.append(", historyDays = ");
+			buf.append(historyDays);
+			buf.append(", startDate = ");
+			buf.append(startDate);
+			
 			return buf.toString();
 	}
 }

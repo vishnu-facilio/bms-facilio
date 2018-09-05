@@ -25,6 +25,7 @@ public class EnergyAction extends ActionSupport {
 	public String addEnergyMeter() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
+		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 		context.put(FacilioConstants.ContextNames.RECORD, energyMeter);
 		//energyMeter.setName("test1");
 		Chain addAssetChain = FacilioChainFactory.getAddEnergyMeterChain();

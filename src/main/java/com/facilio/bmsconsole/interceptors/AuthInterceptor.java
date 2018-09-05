@@ -59,19 +59,20 @@ public class AuthInterceptor extends AbstractInterceptor {
 
 		try {
 			HttpServletRequest request = ServletActionContext.getRequest();
-			
+
+			if(! (("/api/integ/faciliosubmit".equals(request.getRequestURI())) || ("/api/integ/apilogin".equals(request.getRequestURI())) || ("/auth/api/login".equals(request.getRequestURI())))) {
 			if (!isRemoteScreenMode(request)) {
-				CognitoUser cognitoUser = AuthenticationUtil.getCognitoUser(request,false);
+				CognitoUser cognitoUser = AuthenticationUtil.getCognitoUser(request, false);
 				Account currentAccount = null;
-				if (! AuthenticationUtil.checkIfSameUser(currentAccount, cognitoUser)) {
+				if (!AuthenticationUtil.checkIfSameUser(currentAccount, cognitoUser)) {
 					try {
 						currentAccount = LoginUtil.getAccount(cognitoUser, false);
-					} catch (Exception e){
+					} catch (Exception e) {
 						LOGGER.log(Level.SEVERE, "Invalid users", e);
 						currentAccount = null;
 					}
 				}
-				if(AuthenticationUtil.checkIfSameUser(currentAccount, cognitoUser)) {
+				if (AuthenticationUtil.checkIfSameUser(currentAccount, cognitoUser)) {
 					AccountUtil.cleanCurrentAccount();
 					AccountUtil.setCurrentAccount(currentAccount);
 					request.setAttribute("ORGID", currentAccount.getOrg().getOrgId());
@@ -79,7 +80,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 
 					Parameter permission = ActionContext.getContext().getParameters().get("permission");
 					Parameter moduleName = ActionContext.getContext().getParameters().get("moduleName");
-					if (permission != null && permission.getValue() != null && moduleName != null && moduleName.getValue() != null && !isAuthorizedAccess(moduleName.getValue() ,permission.getValue())) {
+					if (permission != null && permission.getValue() != null && moduleName != null && moduleName.getValue() != null && !isAuthorizedAccess(moduleName.getValue(), permission.getValue())) {
 						return "unauthorized";
 					}
 
@@ -106,11 +107,11 @@ public class AuthInterceptor extends AbstractInterceptor {
 						return Action.LOGIN;
 					}
 				}
-				
+
 				if (request.getRequestURL().indexOf("/app/admin") != -1) {
-					if(currentAccount != null) {
+					if (currentAccount != null) {
 						String useremail = currentAccount.getUser().getEmail();
-						if ( ! ADMIN_IDS.contains(useremail)) {
+						if (!ADMIN_IDS.contains(useremail)) {
 							LOGGER.log(Level.SEVERE, "you are not allowed to access this page from");
 							return Action.LOGIN;
 						}
@@ -124,11 +125,13 @@ public class AuthInterceptor extends AbstractInterceptor {
 					return Action.ERROR;
 				}
 			}
+			}
 		}
 		catch (Exception e) {
 			LOGGER.log(Level.SEVERE, "error in auth interceptor", e);
 			return Action.LOGIN;
 		}
+
 		
 		try {
 			/* let us call action or next interceptor */

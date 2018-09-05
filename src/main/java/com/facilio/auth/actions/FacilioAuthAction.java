@@ -431,18 +431,19 @@ public class FacilioAuthAction extends ActionSupport {
 
     public String changePassword() throws Exception {
         User user = AccountUtil.getCurrentUser();
-        boolean verifyOldPassword = verifyPassword(user.getEmail(), getPassword());
-        if(verifyOldPassword) {
-            user.setPassword(getNewPassword());
-            AccountUtil.getUserBean().updateUser(user);
-            setJsonresponse("message", "Password changed successfully");
-            setJsonresponse("status", "success");
-            return SUCCESS;
-        } else {
-            setJsonresponse("message", "Current Password is incorrect");
-            setJsonresponse("status", "failure");
-            return ERROR;
+        if(user != null) {
+            boolean verifyOldPassword = verifyPassword(user.getEmail(), getPassword());
+            if (verifyOldPassword) {
+                user.setPassword(getNewPassword());
+                AccountUtil.getUserBean().updateUser(user);
+                setJsonresponse("message", "Password changed successfully");
+                setJsonresponse("status", "success");
+                return SUCCESS;
+            }
         }
+        setJsonresponse("message", "Current Password is incorrect");
+        setJsonresponse("status", "failure");
+        return ERROR;
     }
 
     public String acceptUserInvite() throws Exception {

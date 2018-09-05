@@ -1,8 +1,11 @@
 package com.facilio.bmsconsole.jobs;
 
+import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.sql.GenericUpdateRecordBuilder;
 import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -28,8 +31,9 @@ public class DeviceMonitorJob extends FacilioJob {
     private static final FacilioModule DEVICE_DETAILS_MODULE = ModuleFactory.getDeviceDetailsModule();
     private static final List<FacilioField> FIELDS = FieldFactory.getDeviceDetailsFields();
     private static final FacilioField ORG_ID_FIELD = FieldFactory.getOrgIdField(DEVICE_DETAILS_MODULE);
+    private static final FacilioField ID_FIELD = FieldFactory.getIdField(DEVICE_DETAILS_MODULE);
     private static final Condition IN_USE = CriteriaAPI.getCondition("IN_USE", "IN_USE", String.valueOf(1), NumberOperators.EQUALS);
-    private static final long DEFAULT_TIMEOUT = 30*60*100L;
+    private static final long DEFAULT_TIMEOUT = 40*60*1000L;
 
     public void execute(JobContext jc) {
 
@@ -58,7 +62,19 @@ public class DeviceMonitorJob extends FacilioJob {
                     String name = deviceId;
                     Object deviceName = obj.get("deviceName");
                     Long lastUpdatedTime = (Long)obj.get("lastUpdatedTime");
-                    if((System.currentTimeMillis()-lastUpdatedTime) > DEFAULT_TIMEOUT) {
+                    Long lastAlertedTime = (Long)obj.get("lastAlertedTime");
+                    Object alertFrequency = obj.get("alertFrequency");
+                    Long deviceDetailsId = (Long) obj.get("id");
+                    long alertTime = DEFAULT_TIMEOUT;
+                    if(alertFrequency != null) {
+                        try {
+                            alertTime = (Long) alertFrequency;
+                        } catch (ClassCastException e){
+                            LOGGER.info("Exception while converting " + alertFrequency, e);
+                        }
+                    }
+                    long currentTime = System.currentTimeMillis();
+                    if(((currentTime - lastUpdatedTime) > alertTime) && ((currentTime - lastAlertedTime) > alertTime)) {
                         JSONObject jsonObject = new JSONObject();
                         jsonObject.put("deviceId", deviceId);
                         jsonObject.put("lastProcessedTime", lastUpdatedTime);
@@ -69,6 +85,7 @@ public class DeviceMonitorJob extends FacilioJob {
                         jsonObject.put("message","Data missing for controller " + name);
                         jsonObject.put("severity","Major");
                         sendEvent(jsonObject);
+                        updateLastAlertedTime(deviceDetailsId);
                     }
                 }
             } catch (Exception e) {
@@ -87,6 +104,35 @@ public class DeviceMonitorJob extends FacilioJob {
             getAddEventChain.execute(addEventContext);
         } catch (Exception e) {
             LOGGER.info("Exception while adding event");
+        }
+    }
+
+    private void updateLastAlertedTime(long deviceDetailsId) {
+
+        Condition idCondition = new Condition();
+        idCondition.setField(ID_FIELD);
+        idCondition.setOperator(NumberOperators.EQUALS);
+        idCondition.setValue(String.valueOf(deviceDetailsId));
+
+        FacilioField lastUpdatedTimeField = new FacilioField();
+        lastUpdatedTimeField.setName("lastUpdatedTime");
+        lastUpdatedTimeField.setDataType(FieldType.NUMBER);
+        lastUpdatedTimeField.setColumnName("LAST_UPDATED_TIME");
+        lastUpdatedTimeField.setModule(DEVICE_DETAILS_MODULE);
+
+        Condition lastUpdatedTimeCondition = new Condition();
+        lastUpdatedTimeCondition.setField(lastUpdatedTimeField);
+        lastUpdatedTimeCondition.setOperator(NumberOperators.LESS_THAN_EQUAL);
+        lastUpdatedTimeCondition.setValue(String.valueOf((System.currentTimeMillis()- DEFAULT_TIMEOUT)));
+
+        Map<String, Object> values = new HashMap<>();
+        values.put("lastAlertedTime", System.currentTimeMillis());
+
+        GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder().table(DEVICE_DETAILS_MODULE.getTableName()).fields(FIELDS).andCondition(idCondition).andCondition(lastUpdatedTimeCondition);
+        try {
+            builder.update(values);
+        } catch (SQLException e) {
+            LOGGER.info("Exception while updating alert time ", e);
         }
     }
 }
