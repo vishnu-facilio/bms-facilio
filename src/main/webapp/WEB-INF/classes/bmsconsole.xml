@@ -2725,6 +2725,39 @@
 			</result>
 		</action>
 		
+		
+	<action name="addTenantUser" class="com.facilio.bmsconsole.actions.TenantAction" 
+	method="addTenantUser">
+	<param name="moduleName">setup</param>
+	<param name="permission">USER_MANAGEMENT</param>
+	<result name="success" type="json">
+	<param name="includeProperties">^user.*</param>
+	</result>
+	</action>
+	
+	<action name="getTenantUsers" class="com.facilio.bmsconsole.actions.TenantAction"
+	method="getTenantUsers">
+	<result name="success" type="json">
+	<param name="includeProperties">tenantsUsers,tenantsUsers\[\d+\],tenantsUsers\[\d+\].*</param>
+	</result>
+	</action>	
+	
+	
+	<action name="updateportalaccess" class="com.facilio.bmsconsole.actions.TenantAction"
+	method="updatePortalAccess">
+	<result name="success" type="json">
+	<param name="root">^user.*</param>
+	</result>
+	</action>	
+	
+	<action name="getmeterreadings" class="com.facilio.bmsconsole.actions.TenantAction"
+	method="getMeterReadings">
+	<result name="success" type="json">
+	<param name="root">readingData</param>
+	</result>
+	</action>	
+		
+		
 		<action name="generatebill" class="com.facilio.bmsconsole.actions.TenantAction"
 			method="generateBill">
 			<result name="success" type="json">

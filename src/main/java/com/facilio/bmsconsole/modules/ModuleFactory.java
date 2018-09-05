@@ -1109,6 +1109,14 @@ public class ModuleFactory {
 		tenants.setTableName("Tenants");
 		return tenants;
 	}
+	
+	public static FacilioModule getTenantsuserModule() {
+		FacilioModule tenants = new FacilioModule();
+		tenants.setName("tenant_users");
+		tenants.setDisplayName("Tenant_Users");
+		tenants.setTableName("Tenant_users");
+		return tenants;
+	}
 
 	public static FacilioModule getTenantsUtilityMappingModule() {
 		FacilioModule mapping = new FacilioModule();

@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.tenant;
 
+import com.facilio.bmsconsole.context.AssetContext;
+
 public class UtilityAsset {
 	private long id = -1;
 	public long getId() {
@@ -46,7 +48,17 @@ public class UtilityAsset {
 	public long getAssetId() {
 		return assetId;
 	}
+	
+	
 	public void setAssetId(long assetId) {
 		this.assetId = assetId;
 	}
+	private AssetContext asset;
+	public AssetContext getAsset() {
+		return asset;
+	}
+	public void setAsset(AssetContext asset) {
+		this.asset = asset;
+	}
+	
 }
