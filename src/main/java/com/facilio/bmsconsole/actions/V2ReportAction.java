@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.Map;
+
 import org.apache.commons.chain.Chain;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
@@ -9,6 +11,8 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.reports.ReportExportUtil;
+import com.facilio.bmsconsole.util.ExportUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.report.context.ReadingAnalysisContext;
@@ -20,7 +24,7 @@ import com.facilio.report.util.ReportUtil;
 
 public class V2ReportAction extends FacilioAction {
 	
-	public ReportContext reportContext;
+	private ReportContext reportContext;
 	public ReportContext getReportContext() {
 		return reportContext;
 	}
@@ -28,18 +32,17 @@ public class V2ReportAction extends FacilioAction {
 		this.reportContext = reportContext;
 	}
 	
-	Long reportId;
+	private long reportId = -1;
 	public Long getReportId() {
 		return reportId;
 	}
 	public void setReportId(Long reportId) {
 		this.reportId = reportId;
 	}
-	public void getReport() throws Exception {
-		
+	
+	public void fetchReport() throws Exception {
 		reportContext = ReportUtil.getReport(reportId);
 		setResult("report", reportContext);
-		
 	}
 	
 	public String addReadingReport() throws Exception {
@@ -226,5 +229,34 @@ public class V2ReportAction extends FacilioAction {
 	}
 	public void setDateOperatorValue(String dateOperatorValue) {
 		this.dateOperatorValue = dateOperatorValue;
+	}
+	
+	
+	private FileFormat fileFormat;
+	public int getFileFormat() {
+		if (fileFormat != null) {
+			return fileFormat.getIntVal();
+		}
+		return -1;
+	}
+	public void setFileFormat(int fileFormat) {
+		this.fileFormat = FileFormat.getFileFormat(fileFormat);
+	}
+	
+	public String exportAnalyticsData() throws Exception{
+		
+		fetchReadingsData();
+		String fileUrl = null;
+		if(fileFormat == FileFormat.PDF || fileFormat == FileFormat.IMAGE) {
+//			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(),url, fileFormat);
+		}
+		else {
+			Map<String,Object> tableData = ReportExportUtil.getTabularReportData(getResult(), mode);
+			fileUrl = ExportUtil.exportData(fileFormat, "Analytics Data", tableData);			
+		}
+		
+		setResult("fileUrl", fileUrl);
+		
+		return SUCCESS;
 	}
 }

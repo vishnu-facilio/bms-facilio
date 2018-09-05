@@ -3,7 +3,15 @@ package com.facilio.bmsconsole.context;
 public class WidgetVsWorkflowContext {
 	
 	Long id,workflowId,baseSpaceId,widgetId;
-	String workflowName;
+	String workflowName,workflowString;
+
+	public String getWorkflowString() {
+		return workflowString;
+	}
+
+	public void setWorkflowString(String workflowString) {
+		this.workflowString = workflowString;
+	}
 
 	public String getWorkflowName() {
 		return workflowName;

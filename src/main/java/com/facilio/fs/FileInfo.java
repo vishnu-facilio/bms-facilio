@@ -124,8 +124,5 @@ public class FileInfo {
 			}
 			return fomatMap;
 		}
-		public Map<Integer, FileFormat> getAllFormats() {
-			return formatMap;
-		}
 	}
 }

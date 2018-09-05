@@ -65,6 +65,7 @@ import com.facilio.bmsconsole.context.SiteContext.SiteType;
 import com.facilio.bmsconsole.context.UserWorkHourReading;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetVsWorkflowContext;
+import com.facilio.bmsconsole.context.BaseLineContext.RangeType;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -118,6 +119,10 @@ public class DashboardUtil {
 	public static final String ENERGY_COST_LAST_MONTH_THIS_DATE_CONSUMPTION_WORKFLOW = "<workflow>	<parameter name=\"startTime\" type=\"Number\"/>  		<parameter name=\"endTime\" type=\"Number\"/>	<parameter name=\"parentId\" type=\"Number\"/> 		<expression name=\"mainMeter\"> 		 		 				<function>default.getMainEnergyMeter(parentId)</function>	 		</expression>	<expression name=\"a\"> 		 				<module name=\"energydata\"/> 		 				<criteria pattern=\"1 and 2\"> 			 						<condition sequence=\"1\">parentId`=`${mainMeter}</condition> 			 						<condition sequence=\"2\">TTIME`baseLine{$$BASELINE_ID$$,0}between`${startTime}, ${endTime}</condition> 		 				</criteria> 		 				<field name=\"totalEnergyConsumptionDelta\" aggregate = \"sum\"/> 	 		</expression> 	<expression name=\"unitcost\"> 		 			<constant>0.41</constant> 	 		</expression> 	 		<result>a*unitcost</result> </workflow>";
 	public static final String LAST_MONTH_THIS_DATE = "<workflow> 		<parameter name=\"startTime\" type=\"Number\"/>  		<parameter name=\"endTime\" type=\"Number\"/>	<parameter name=\"parentId\" type=\"Number\"/> 		<expression name=\"mainMeter\"> 		 		 				<function>default.getMainEnergyMeter(parentId)</function>	 		</expression>	<expression name=\"a\"> 				<module name=\"energydata\"/> 				<criteria pattern=\"1 and 2\"> 						<condition sequence=\"1\">parentId`=`${mainMeter}</condition> 						<condition sequence=\"2\">TTIME`baseLine{$$BASELINE_ID$$,0}between`${startTime}, ${endTime}</condition> 				</criteria> 				<field name=\"TTIME\" aggregate = \"max\"/> 			</expression> 		 		<result>a</result> </workflow>";
 	
+	public static final String ENERGY_COST_THIS_MONTH_CONSUMPTION_COST_MODULE_WORKFLOW = "<workflow>    <parameter name=\"parentId\" type=\"Number\" />    <expression name=\"mainMeter\">       <function>default.getMainEnergyMeter(parentId)</function>    </expression>    <expression name=\"cost\">       <module name=\"cost\" />       <criteria pattern=\"1 and 2\">          <condition sequence=\"1\">parentId`=`${mainMeter}</condition>          <condition sequence=\"2\">ttime`Current Month upto now`</condition>       </criteria>       <field name=\"cost\" aggregate=\"sum\" />    </expression>    <result>cost</result> </workflow>";
+	public static final String ENERGY_COST_LAST_MONTH_CONSUMPTION_COST_MODULE_WORKFLOW = "<workflow>    <parameter name=\"parentId\" type=\"Number\" />    <expression name=\"mainMeter\">       <function>default.getMainEnergyMeter(parentId)</function>    </expression>    <expression name=\"cost\">       <module name=\"cost\" />       <criteria pattern=\"1 and 2\">          <condition sequence=\"1\">parentId`=`${mainMeter}</condition>          <condition sequence=\"2\">ttime`Last Month`</condition>       </criteria>       <field name=\"cost\" aggregate=\"sum\" />    </expression>    <result>cost</result> </workflow>";
+	public static final String ENERGY_COST_LAST_MONTH_THIS_DATE_CONSUMPTION_COST_MODULE_WORKFLOW = "<workflow>    <parameter name=\"startTime\" type=\"Number\" />    <parameter name=\"endTime\" type=\"Number\" />    <parameter name=\"parentId\" type=\"Number\" />    <expression name=\"mainMeter\">       <function>default.getMainEnergyMeter(parentId)</function>    </expression>    <expression name=\"a\">       <module name=\"cost\" />       <criteria pattern=\"1 and 2\">          <condition sequence=\"1\">parentId`=`${mainMeter}</condition>          <condition sequence=\"2\">TTIME`baseLine{$$BASELINE_ID$$,0}between`${startTime}, ${endTime}</condition>       </criteria>       <field name=\"cost\" aggregate=\"sum\" />    </expression>       <result>a</result> </workflow>";
+	public static final String LAST_MONTH_THIS_DATE_COST_MODULE = LAST_MONTH_THIS_DATE;
 	
 	public static final String STATIC_WIDGET_WEATHER_CARD = "weathercard";
 	public static final String STATIC_WIDGET_ENERGY_COST_CARD = "energycost";
@@ -3325,5 +3330,93 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		}
 		
 		return booleanResArray;
+	}
+	
+	public static List<WidgetVsWorkflowContext> getCardWorkflowBasedOnStaticKey(String staticKey) throws Exception {
+		
+		List<WidgetVsWorkflowContext> workflowList = new ArrayList<>();
+		
+		switch(staticKey) {
+			
+		case STATIC_WIDGET_PROFILE_CARD_MINI :
+			
+			WidgetVsWorkflowContext widgetVsWorkflowContext = new WidgetVsWorkflowContext();
+			workflowList.add(widgetVsWorkflowContext);
+			
+			return workflowList;
+			
+		case STATIC_WIDGET_WEATHER_CARD_MINI:
+			
+			widgetVsWorkflowContext = new WidgetVsWorkflowContext();
+			widgetVsWorkflowContext.setWorkflowString(WEATHER_WIDGET_WORKFLOW_STRING);
+			widgetVsWorkflowContext.setWorkflowName("weather");
+			workflowList.add(widgetVsWorkflowContext);
+			return workflowList;
+			
+		case STATIC_WIDGET_ENERGY_CARBON_CARD_MINI:
+			
+			widgetVsWorkflowContext = new WidgetVsWorkflowContext();
+			widgetVsWorkflowContext.setWorkflowString(CARBON_EMISSION_CARD);
+			widgetVsWorkflowContext.setWorkflowName("carbonEmission");
+			workflowList.add(widgetVsWorkflowContext);
+			
+			return workflowList;
+			
+		case STATIC_WIDGET_ENERGY_COST_CARD_MINI:
+		
+			widgetVsWorkflowContext = new WidgetVsWorkflowContext();
+			
+			widgetVsWorkflowContext.setWorkflowName("currentMonth");
+			
+			if(AccountUtil.getCurrentOrg().getId() == 116l) {
+				widgetVsWorkflowContext.setWorkflowString(ENERGY_COST_THIS_MONTH_CONSUMPTION_COST_MODULE_WORKFLOW);
+			}
+			else {
+				widgetVsWorkflowContext.setWorkflowString(ENERGY_COST_THIS_MONTH_CONSUMPTION_WORKFLOW);
+			}
+			workflowList.add(widgetVsWorkflowContext);
+			
+			widgetVsWorkflowContext = new WidgetVsWorkflowContext();
+			
+			widgetVsWorkflowContext.setWorkflowName("lastMonth");
+			
+			if(AccountUtil.getCurrentOrg().getId() == 116l) {
+				widgetVsWorkflowContext.setWorkflowString(ENERGY_COST_LAST_MONTH_CONSUMPTION_COST_MODULE_WORKFLOW);
+			}
+			else {
+				widgetVsWorkflowContext.setWorkflowString(ENERGY_COST_LAST_MONTH_CONSUMPTION_WORKFLOW);
+			}
+			workflowList.add(widgetVsWorkflowContext);
+			
+			widgetVsWorkflowContext = new WidgetVsWorkflowContext();
+			
+			BaseLineContext baseline = BaseLineAPI.getBaseLine(RangeType.PREVIOUS_MONTH);
+			
+			String energyCostLastMonth = null;
+			
+			if(AccountUtil.getCurrentOrg().getId() == 116l) {
+				energyCostLastMonth = ENERGY_COST_LAST_MONTH_THIS_DATE_CONSUMPTION_COST_MODULE_WORKFLOW;
+			}
+			else {
+				energyCostLastMonth = ENERGY_COST_LAST_MONTH_THIS_DATE_CONSUMPTION_WORKFLOW;
+			}
+			
+			energyCostLastMonth = energyCostLastMonth.replaceAll("\\$\\$BASELINE_ID\\$\\$", baseline.getId()+"");
+			widgetVsWorkflowContext.setWorkflowName("lastMonthThisDate");
+			widgetVsWorkflowContext.setWorkflowString(energyCostLastMonth);
+			workflowList.add(widgetVsWorkflowContext);
+			
+			widgetVsWorkflowContext = new WidgetVsWorkflowContext();
+			
+			energyCostLastMonth = DashboardUtil.LAST_MONTH_THIS_DATE.replaceAll("\\$\\$BASELINE_ID\\$\\$", baseline.getId()+"");
+			widgetVsWorkflowContext.setWorkflowName("lastMonthDate");
+			widgetVsWorkflowContext.setWorkflowString(energyCostLastMonth);
+			workflowList.add(widgetVsWorkflowContext);
+			return workflowList;
+			
+		}
+	
+		return null;
+	
 	}
 }
