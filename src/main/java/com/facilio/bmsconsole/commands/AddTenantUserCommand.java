@@ -47,7 +47,7 @@ public class AddTenantUserCommand implements Command {
 		
 		GenericInsertRecordBuilder insert = new GenericInsertRecordBuilder();
 		insert.table(ModuleFactory.getTenantsuserModule().getTableName());
-		insert.fields(FieldFactory.getTenantsUserFields());
+//		insert.fields(FieldFactory.getTenantsUserFields());
 		insert.addRecord(prop);
 
 		insert.save(); 
