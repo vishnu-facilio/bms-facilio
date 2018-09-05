@@ -3987,6 +3987,10 @@ public class FieldFactory {
 		fields.add(getField("dimension2Value", "DIMENSION2_VALUE", module, FieldType.STRING));
 		fields.add(getField("xAxisDimension", "DIMENSION_x", module, FieldType.STRING));
 		fields.add(getField("yAxisDimension", "DIMENSION_y", module, FieldType.STRING));
+		fields.add(getField("outlierDistance", "OUTLIER_DISTANCE", module, FieldType.DECIMAL));
+		fields.add(getField("historyDays", "HISTORY_DAYS", module, FieldType.NUMBER));
+		fields.add(getField("startDateMode", "START_DATE_MODE", module, FieldType.BOOLEAN));
+		fields.add(getField("startDate", "START_DATE", module, FieldType.STRING));
 
 		return fields;
 	}
