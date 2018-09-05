@@ -59,7 +59,7 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 					startTime = DateTimeUtil.getDayStartTime(meterContext.getStartDate(), "yyyy-MM-dd");
 				}
 				
-				logger.log(Level.INFO, "RefreshAnomalyJob " + meterContext.getId() + " start: " + startTime +  "end:" + midnightTimeInMillisec);
+				logger.log(Level.INFO, "RefreshAnomalyJob " + meterContext.getMeterId() + " start: " + startTime +  "end:" + midnightTimeInMillisec);
 				buildEnergyAnomalyModel(meterContext, startTime, midnightTimeInMillisec);
 				logger.log(Level.INFO, "RefreshAnomalyJob over ");
 			}
@@ -170,7 +170,7 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 			postData.readingFile=meterFileUrl;
 			postData.temperatureFile=weatherFileUrl;
 			postData.organizationID=AccountUtil.getCurrentOrg().getId();
-			postData.meterID = meterContext.getId();
+			postData.meterID = meterContext.getMeterId();
 			postData.constant1 = meterContext.getConstant1();
 			postData.constant2 = meterContext.getConstant2();
 			postData.maxDistance = meterContext.getMaxDistance();
