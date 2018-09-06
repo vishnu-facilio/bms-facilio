@@ -30,6 +30,15 @@ public class ReportFolderContext extends ModuleBaseWithCustomFields {
 		this.siteId = siteId;
 	}
 	
+	private long moduleId = -1;
+	
+	public long getModuleId() {
+		return moduleId;
+	}
+	public void setModuleId(long moduleId) {
+		this.moduleId = moduleId;
+	}
+
 	private long parentFolderId = -1;
 	public Long getParentFolderId() {
 		return parentFolderId;

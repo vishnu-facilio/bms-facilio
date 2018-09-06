@@ -63,6 +63,20 @@ public class V2ReportAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	ReportFolderContext reportFolder;
+	
+	public ReportFolderContext getReportFolder() {
+		return reportFolder;
+	}
+	public void setReportFolder(ReportFolderContext reportFolder) {
+		this.reportFolder = reportFolder;
+	}
+	public String addReportFolder() throws Exception {
+		reportFolder = ReportUtil.addReportFolder(reportFolder);
+		setResult("reportFolder", reportFolder);
+		return SUCCESS;
+	}
+	
 	public String addReadingReport() throws Exception {
 		JSONParser parser = new JSONParser();
 		JSONArray fieldArray = (JSONArray) parser.parse(fields);

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -91,6 +92,20 @@ public class ReportUtil {
 			return report;
 		}
 		return null;
+	}
+	
+	public static ReportFolderContext addReportFolder(ReportFolderContext reportFolderContext) throws Exception {
+		
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getReportFolderModule().getTableName())
+				.fields(FieldFactory.getReport1FolderFields());
+
+		reportFolderContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+		Map<String, Object> props = FieldUtil.getAsProperties(reportFolderContext);
+		long id = insertBuilder.insert(props);
+		reportFolderContext.setId(id);
+		
+		return reportFolderContext;
 	}
 	
 	public static long addReport(ReportContext reportContext) throws Exception {
