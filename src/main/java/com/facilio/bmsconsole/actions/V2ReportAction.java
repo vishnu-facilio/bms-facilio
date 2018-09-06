@@ -7,15 +7,19 @@ import org.apache.commons.chain.Chain;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.reports.ReportExportUtil;
 import com.facilio.bmsconsole.util.ExportUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo.FileFormat;
+import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.ReadingAnalysisContext;
 import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
 import com.facilio.report.context.ReportBaseLineContext;
@@ -84,6 +88,13 @@ public class V2ReportAction extends FacilioAction {
 		this.reportFolder = reportFolder;
 	}
 	public String addReportFolder() throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		
+		reportFolder.setOrgId(AccountUtil.getCurrentOrg().getId());
+		reportFolder.setModuleId(module.getModuleId());
+		
 		reportFolder = ReportUtil.addReportFolder(reportFolder);
 		setResult("reportFolder", reportFolder);
 		return SUCCESS;
