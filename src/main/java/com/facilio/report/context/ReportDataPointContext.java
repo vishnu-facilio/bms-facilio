@@ -2,9 +2,12 @@ package com.facilio.report.context;
 
 import java.util.List;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.fw.BeanFactory;
 import com.facilio.workflows.context.WorkflowContext;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ReportDataPointContext {
 
@@ -162,10 +165,17 @@ public class ReportDataPointContext {
 	}
 
 	private FacilioField dateField;
-	public FacilioField getDateField() {
+	
+	@JsonIgnore
+	public FacilioField getDateField() throws Exception {
+		if(dateField == null && dateFieldId >0) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			dateField = modBean.getField(dateFieldId);
+		}
 		return dateField;
 	}
 	public void setDateField(FacilioField dateField) {
+		dateFieldId = dateField.getFieldId();
 		this.dateField = dateField;
 	}
 

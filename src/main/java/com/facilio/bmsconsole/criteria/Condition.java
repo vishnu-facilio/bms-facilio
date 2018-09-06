@@ -12,6 +12,7 @@ import org.apache.commons.collections.Predicate;
 
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.util.FacilioExpressionWrapper;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Condition implements Serializable {
 	
@@ -83,10 +84,13 @@ public class Condition implements Serializable {
 	}
 
 	private Operator operator;
+	
+	@JsonIgnore
 	public Operator getOperator() {
 		return operator;
 	}
 	public void setOperator(Operator operator) {
+		this.operatorId = operator.getOperatorId();
 		this.operator = operator;
 	}
 	
