@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -14,11 +16,13 @@ public class WorkOrderRequestAPI {
 	
 	private static final Logger LOGGER = LogManager.getLogger(WorkOrderRequestAPI.class.getName());
 
-	public static long addS3MessageId(String s3Id) throws SQLException {
+	public static long addS3MessageId(JSONObject mailObj) throws SQLException {
 		try {
-			
+			String s3Id = (String) mailObj.get("messageId");
+			String destination =  ((JSONArray) mailObj.get("destination")).toJSONString();
 			Map<String, Object> workOrderEmailProps = new HashMap<>();
 			workOrderEmailProps.put("s3MessageId", s3Id);
+			workOrderEmailProps.put("to", destination);
 			workOrderEmailProps.put("createdTime", System.currentTimeMillis());
 			
 			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()

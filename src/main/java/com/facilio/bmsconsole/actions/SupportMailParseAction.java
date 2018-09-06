@@ -15,7 +15,7 @@ public class SupportMailParseAction extends ActionSupport {
 	public String execute() throws Exception {
 		// TODO Auto-generated method stub
 		//System.out.println(s3.toJSONString());
-		LOGGER.info("Added to WorkorderEmail table with id : "+WorkOrderRequestAPI.addS3MessageId((String) s3.get("messageId")));
+		LOGGER.info("Added to WorkorderEmail table with id : "+WorkOrderRequestAPI.addS3MessageId(s3));
 		return SUCCESS;
 	}
 	

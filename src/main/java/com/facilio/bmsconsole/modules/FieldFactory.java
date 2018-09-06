@@ -1254,6 +1254,7 @@ public class FieldFactory {
 		s3MessageIdField.setModule(module);
 		fields.add(s3MessageIdField);
 
+		fields.add(getField("to", "TO_ADDR", module, FieldType.STRING));
 		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.DATE_TIME));
 
 		FacilioField isProcessField = new FacilioField();

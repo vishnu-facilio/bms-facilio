@@ -67,9 +67,9 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 						String s3Id = (String) emailProp.get("s3MessageId");
 						S3Object rawEmail = AwsUtil.getAmazonS3Client().getObject(S3_BUCKET_NAME, s3Id);
 						long requestId = createWorkOrderRequest(rawEmail);
-						if (requestId != -1) {
+//						if (requestId != -1) { //Marked as processed even if no request is created because of no matching support email
 							updateEmailProp((long) emailProp.get("id"), requestId);
-						}
+//						}
 					}
 					catch(Exception e) {
 						LOGGER.error("Exception occurred ", e);
