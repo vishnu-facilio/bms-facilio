@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,8 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.context.ShiftUserRelContext;
@@ -35,6 +38,7 @@ import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.criteria.StringOperators;
+import com.facilio.bmsconsole.modules.DeleteRecordBuilder;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -42,8 +46,10 @@ import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.EncryptionUtil;
 import com.facilio.bmsconsole.util.SMSUtil;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
@@ -231,8 +237,9 @@ public class UserBeanImpl implements UserBean {
 		int updatedRows = updateBuilder.update(props);
 		
 		GenericDeleteRecordBuilder relDeleteBuilder = new GenericDeleteRecordBuilder()
-				.table(ModuleFactory.getShiftUserRelModule().getTableName())
-				.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(user.getUid()), NumberOperators.EQUALS));
+				                               .table(ModuleFactory.getShiftUserRelModule().getTableName())
+				                               .andCondition(CriteriaAPI.getCondition("ORG_USERID", "userId", String.valueOf(user.getOuid()), NumberOperators.EQUALS));
+		relDeleteBuilder.delete();		
 		
 		if (user.getShiftId() != null) {
 			insertShiftRel(user.getOuid(), user.getShiftId());
@@ -1338,14 +1345,25 @@ public long inviteRequester(long orgId, User user) throws Exception {
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getAccessibleSpaceModule().getTableName())
 				.fields(AccountConstants.getAccessbileSpaceFields());
+		
+		Map<Long, BaseSpaceContext> idVsBaseSpace = SpaceAPI.getBaseSpaceMap(accessibleSpace);
 
 		for(Long bsid : accessibleSpace) {
 			Map<String, Object> props = new HashMap<>();
 			props.put("ouid", uid);
 			props.put("bsid", bsid);
+			props.put("siteId", getParentSiteId(bsid, idVsBaseSpace));
 			insertBuilder.addRecord(props);
 		}
 		insertBuilder.save();
+	}
+	
+	private long getParentSiteId(long baseSpaceId, Map<Long, BaseSpaceContext> idVsBaseSpace) {
+		BaseSpaceContext baseSpace = idVsBaseSpace.get(baseSpaceId);
+		if (baseSpace.getSpaceTypeEnum() == SpaceType.SITE) {
+			return baseSpace.getId();
+		}
+		return baseSpace.getSiteId();
 	}
 	private void addAccessibleTeam (long uid, List<Long> groups) throws Exception {
 

@@ -1474,6 +1474,9 @@ public class AccountConstants {
 		bsid.setModule(module);
 		fields.add(bsid);
 		
+		FacilioField siteId = FieldFactory.getSiteIdField(module);
+		fields.add(siteId);
+		
 		return fields;
 	}
 	

@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.facilio.accounts.bean.OrgBean;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.Role;
@@ -13,6 +15,7 @@ import com.facilio.accounts.exception.AccountException;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -21,6 +24,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -244,6 +248,43 @@ public class OrgBeanImpl implements OrgBean {
 				.leftJoin("Shift_User_Rel")
 				.on("ORG_Users.ORG_USERID = Shift_User_Rel.ORG_USERID")
 				.andCustomWhere("ORGID = ? AND USER_TYPE = ? AND DELETED_TIME = -1", orgId, AccountConstants.UserType.USER.getValue());
+		
+		
+		List<Long> accessibleSpace = AccountUtil.getCurrentAccount().getUser().getAccessibleSpace();
+		String siteIdCondition = "";
+		if (accessibleSpace != null && !accessibleSpace.isEmpty()) {
+			Map<Long, BaseSpaceContext> idVsBaseSpace = SpaceAPI.getBaseSpaceMap(accessibleSpace);
+			List<Long> siteIds = new ArrayList<>();
+			for (BaseSpaceContext baseSpace: idVsBaseSpace.values()) {
+				if (baseSpace.getSiteId() > 0) {
+					siteIds.add(baseSpace.getSiteId());
+				}
+			}
+			
+			if (!siteIds.isEmpty()) {
+				siteIdCondition = StringUtils.join(siteIds, ',');
+				siteIdCondition = "(" + siteIdCondition + ")";
+			}
+		}
+		
+		long currentSiteId = AccountUtil.getCurrentSiteId();
+		
+		String whereCondition = "";
+		if (currentSiteId > 0 && !siteIdCondition.isEmpty()) {
+			whereCondition = "((not exists(select 1 from Accessible_Space where Accessible_Space.ORG_USER_ID=ORG_Users.ORG_USERID)) OR (exists(select 1 from Accessible_Space where Accessible_Space.ORG_USER_ID=ORG_Users.ORG_USERID AND Accessible_Space.SITE_ID = " + String.valueOf(currentSiteId);
+			whereCondition += " and Accessible_Space.SITE_ID IN" + siteIdCondition + ")))" ;
+		} else if (currentSiteId > 0 && siteIdCondition.isEmpty()) {
+			whereCondition = "((not exists(select 1 from Accessible_Space where Accessible_Space.ORG_USER_ID=ORG_Users.ORG_USERID)) OR (exists(select 1 from Accessible_Space where Accessible_Space.ORG_USER_ID=ORG_Users.ORG_USERID AND Accessible_Space.SITE_ID = " + String.valueOf(currentSiteId) + ")))"; 
+		} else if (currentSiteId <= 0 && !siteIdCondition.isEmpty()) {
+			whereCondition = "((not exists(select 1 from Accessible_Space where Accessible_Space.ORG_USER_ID=ORG_Users.ORG_USERID)) OR (exists(select 1 from Accessible_Space where Accessible_Space.ORG_USER_ID=ORG_Users.ORG_USERID ";
+			whereCondition += " and Accessible_Space.SITE_ID IN" + siteIdCondition + ")))" ;
+		}
+		
+		
+		if(!whereCondition.isEmpty()) {
+			selectBuilder
+				.andCustomWhere(whereCondition);
+		}
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
