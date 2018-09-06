@@ -136,6 +136,28 @@ public class TenantsAPI {
 		
 		
 	}
+	
+	public static long showInPortalAccess(long tenantId, Long tenantMeterId, boolean isShow_In_Portal) throws SQLException {
+		
+		FacilioModule module = ModuleFactory.getTenantsUtilityMappingModule();
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(module.getTableName())
+				.fields(FieldFactory.getTenantsUtilityMappingFields())
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+				.andCustomWhere("tenants_utility_mapping.ASSET_ID = ?", tenantMeterId)
+				.andCustomWhere("tenants_utility_mapping.TENANT_ID = ? ", tenantId);
+		
+		
+		Map<String , Object> value = new HashMap<>();
+		value.put("showInPortal", isShow_In_Portal);
+		int count = updateBuilder.update(value);
+		
+		return  tenantMeterId;
+		
+	}
+	
+	
+	
 	public static long updatePortalUserAccess(long userId,Object portal_verified) throws Exception {
 		User user = (User) AccountUtil.getUserBean().getUser(userId);
 		if (user.portal_verified == null) {
@@ -621,6 +643,6 @@ public class TenantsAPI {
 				}
 				break;
 		}
-	}
 
+}
 }

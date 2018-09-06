@@ -4131,6 +4131,7 @@ public class FieldFactory {
 		fields.add(getField("tenantId", "TENANT_ID", module, FieldType.LOOKUP));
 		fields.add(getField("utility", "UTILITY_ID", module, FieldType.NUMBER));
 		fields.add(getField("assetId", "ASSET_ID", module, FieldType.LOOKUP));
+		fields.add(getField("showInPortal", "SHOW_IN_PORTAL", module, FieldType.BOOLEAN));
 
 		return fields;
 	}
