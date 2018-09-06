@@ -150,7 +150,7 @@ public class FetchReportDataCommand implements Command {
 		}
 	}
 	
-	private void applyDateCondition(ReportContext report, ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, ReportBaseLineContext baseLine) {
+	private void applyDateCondition(ReportContext report, ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, ReportBaseLineContext baseLine) throws Exception {
 		if (report.getDateOperatorEnum() != null) {
 			if (dp.getDateField() == null) {
 				throw new IllegalArgumentException("Date Field for datapoint cannot be null when report has date filter");
