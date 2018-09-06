@@ -281,7 +281,7 @@ public class LRUCache<K, V>{
 		try {
 			if (redis != null) {
 				Jedis jedis = redis.getJedis();
-				jedis.flushAll();
+				jedis.flushDB();
 				jedis.close();
 			}
 		} catch (Exception e) {

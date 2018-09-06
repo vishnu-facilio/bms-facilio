@@ -32,7 +32,7 @@ public class RedisManager {
 		}
 	}
 	
-	boolean isRedisEnabled() {
+	private boolean isRedisEnabled() {
 		return Boolean.parseBoolean(AwsUtil.getConfig("redis.enabled"));
 	}
 	
@@ -67,8 +67,7 @@ public class RedisManager {
 		// Idle connection checking period
 		poolConfig.setTimeBetweenEvictionRunsMillis(60000);
 		// Create the jedisPool
-		pool = new JedisPool(poolConfig, AwsUtil.getConfig("redis.host"), Integer.parseInt(AwsUtil.getConfig("redis.port")));
-		
+		pool = new JedisPool(poolConfig, AwsUtil.getConfig("redis.host"), Integer.parseInt(AwsUtil.getConfig("redis.port")), 2000, (String) null, Integer.parseInt(AwsUtil.getConfig("redis.db")));
 		LOGGER.log(Level.INFO, "Redis connection pool successfully initilized..");
 	}
 	
