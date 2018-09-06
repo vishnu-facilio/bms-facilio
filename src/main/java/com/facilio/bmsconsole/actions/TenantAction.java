@@ -39,6 +39,18 @@ public class TenantAction extends ActionSupport {
 	public void setUserId(long id) {
 		this.userId = userId;
 	}
+	private boolean show_In_Portal; 
+	
+	
+
+	public boolean isShow_In_Portal() {
+		return show_In_Portal;
+	}
+	public void setShow_In_Portal(boolean show_In_Portal) {
+		this.show_In_Portal = show_In_Portal;
+	}
+
+
 	private List<String> meterId;
 	public List<String> getMeterId() {
 		return meterId;
@@ -47,6 +59,15 @@ public class TenantAction extends ActionSupport {
 		this.meterId = meterId;
 	}
 	
+	private Long tenantMeterId;
+
+	public Long getTenantMeterId() {
+		return tenantMeterId;
+	}
+	public void setTenantMeterId(Long tenantMeterId) {
+		this.tenantMeterId = tenantMeterId;
+	}
+
 
 	private String result;
 	public String getResult() {
@@ -92,6 +113,16 @@ private Map<String, Double> readingData;
 	public void setReadingData(Map<String, Double> readingData) {
 		this.readingData = readingData;
 	}
+	
+	private long tenantReadingData;
+	public long getTenantReadingData() {
+		return tenantReadingData;
+	}
+	public void setTenantReadingData(long tenantReadingData) {
+		this.tenantReadingData = tenantReadingData;
+	}
+
+
 	private List<TenantUserContext> tenantsUsers;
 	public List<TenantUserContext> getTenantsUsers() {
 		return tenantsUsers;
@@ -169,7 +200,6 @@ private Map<String, Double> readingData;
 	}
 	
 	public String updatePortalAccess() throws Exception {
-		System.out.println("@@@@@@@@@@@@@@@@@@@@ userId : "+user.getId());
 		Object portal_verified = null;
 		userId = TenantsAPI.updatePortalUserAccess(user.getId() , user.getPortal_verified());
 		return SUCCESS;
@@ -177,6 +207,11 @@ private Map<String, Double> readingData;
 	
 	public String getMeterReadings() throws Exception {
 		readingData = TenantsAPI.getTenantMeterReadings(meterId);
+		return SUCCESS;
+	}
+	
+	public String showInPortal() throws Exception {
+		tenantReadingData = TenantsAPI.showInPortalAccess(tenantId,tenantMeterId,show_In_Portal);
 		return SUCCESS;
 	}
 
