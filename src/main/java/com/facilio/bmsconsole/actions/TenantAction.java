@@ -7,13 +7,17 @@ import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.exception.AccountException;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.tenant.RateCardContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsole.tenant.TenantUserContext;
 import com.facilio.bmsconsole.util.TenantsAPI;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.pdf.PdfUtil;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -27,6 +31,44 @@ public class TenantAction extends ActionSupport {
 		this.id = id;
 	}
 	
+	
+	private long userId = -1;
+	public long getUserId() {
+		return userId;
+	}
+	public void setUserId(long id) {
+		this.userId = userId;
+	}
+	private boolean show_In_Portal; 
+	
+	
+
+	public boolean isShow_In_Portal() {
+		return show_In_Portal;
+	}
+	public void setShow_In_Portal(boolean show_In_Portal) {
+		this.show_In_Portal = show_In_Portal;
+	}
+
+
+	private List<String> meterId;
+	public List<String> getMeterId() {
+		return meterId;
+	}
+	public void setMeterId(List<String> meterId) {
+		this.meterId = meterId;
+	}
+	
+	private Long tenantMeterId;
+
+	public Long getTenantMeterId() {
+		return tenantMeterId;
+	}
+	public void setTenantMeterId(Long tenantMeterId) {
+		this.tenantMeterId = tenantMeterId;
+	}
+
+
 	private String result;
 	public String getResult() {
 		return result;
@@ -51,6 +93,45 @@ public class TenantAction extends ActionSupport {
 		this.tenants = tenants;
 	}
 	
+	private List<TenantUserContext> tenantsUser;
+	
+	
+//	public List<TenantUserContext> getTenantsUsers() {
+//		return tenantUsers;
+//	}
+//	public void setTenantUsers(List<TenantUserContext> tenants) {
+//		this.tenantUsers = tenantUsers;
+//	}
+
+private Map<String, Double> readingData;
+	
+	
+	
+	public Map<String, Double> getReadingData() {
+		return readingData;
+	}
+	public void setReadingData(Map<String, Double> readingData) {
+		this.readingData = readingData;
+	}
+	
+	private long tenantReadingData;
+	public long getTenantReadingData() {
+		return tenantReadingData;
+	}
+	public void setTenantReadingData(long tenantReadingData) {
+		this.tenantReadingData = tenantReadingData;
+	}
+
+
+	private List<TenantUserContext> tenantsUsers;
+	public List<TenantUserContext> getTenantsUsers() {
+		return tenantsUsers;
+	}
+	public void setTenantsUsers(List<TenantUserContext> tenantsUsers) {
+		this.tenantsUsers = tenantsUsers;
+	}
+	
+	
 	private RateCardContext rateCard;
 	public RateCardContext getRateCard() {
 		return rateCard;
@@ -73,10 +154,17 @@ public class TenantAction extends ActionSupport {
 		context.put(TenantsAPI.TENANT_CONTEXT, tenant);
 		Chain newTenant = FacilioChainFactory.addTenantChain();
 		newTenant.execute(context);
-
+//		addTenantUser();
 		return SUCCESS;
 	}
 	
+	private User user;
+	public User getUser() {
+		return user;
+	}
+	public void setUser(User user) {
+		this.user = user;
+	}
 	public String updateTenant() throws Exception {
 
 		FacilioContext context = new FacilioContext();
@@ -104,6 +192,29 @@ public class TenantAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String getTenantUsers() throws Exception {
+		System.out.println("@@@@@@@@@@@@@@@@@@@@ tenantId : "+tenantId);
+		tenantsUsers = TenantsAPI.getAllTenantsUsers(tenantId);
+		
+		return SUCCESS;
+	}
+	
+	public String updatePortalAccess() throws Exception {
+		Object portal_verified = null;
+		userId = TenantsAPI.updatePortalUserAccess(user.getId() , user.getPortal_verified());
+		return SUCCESS;
+	}
+	
+	public String getMeterReadings() throws Exception {
+		readingData = TenantsAPI.getTenantMeterReadings(meterId);
+		return SUCCESS;
+	}
+	
+	public String showInPortal() throws Exception {
+		tenantReadingData = TenantsAPI.showInPortalAccess(tenantId,tenantMeterId,show_In_Portal);
+		return SUCCESS;
+	}
+
 	public String addRateCard() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(TenantsAPI.RATECARD_CONTEXT, rateCard);
@@ -188,6 +299,18 @@ public class TenantAction extends ActionSupport {
 	public void setFileUrl(String url) {
 		this.fileUrl = url;
 	}
+	
+public String addTenantUser() throws Exception {
+		
+	    Chain addTenantUser = FacilioChainFactory.addTenantUserChain();
+	    FacilioContext context = new FacilioContext();
+	    context.put(FacilioConstants.ContextNames.USER, user);
+	    tenant = TenantsAPI.getTenant(id, true);
+		context.put(TenantsAPI.TENANT_CONTEXT, tenant);
+		addTenantUser.execute(context);
+		return SUCCESS;
+	}
+
 	
 	@SuppressWarnings("unchecked")
 	public String generateBill() throws Exception {
