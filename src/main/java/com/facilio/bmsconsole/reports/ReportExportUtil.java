@@ -589,7 +589,7 @@ public class ReportExportUtil {
 		});
 	}
 	
-	private static List<String> getTableHeaders(List<Map<String, Object>> columns, com.facilio.report.context.ReportContext report, Map<Long, ReportBaseLineContext> baseLineMap, Map<String, ReportDataPointContext> dataMap, ReportMode mode) {
+	private static List<String> getTableHeaders(List<Map<String, Object>> columns, com.facilio.report.context.ReportContext report, Map<Long, ReportBaseLineContext> baseLineMap, Map<String, ReportDataPointContext> dataMap, ReportMode mode) throws Exception {
 		List<String> headers = new ArrayList<>();
 		if (mode == ReportMode.SERIES) {
 			columns.forEach(col -> {
@@ -648,7 +648,12 @@ public class ReportExportUtil {
 					else if (reportData.get(key).containsKey(columnName)){
 						ReportDataPointContext dataPoint = dataMap.get(columnName);
 						Object val = reportData.get(key).get(columnName).keySet().stream().findFirst().get();
-						FacilioField field = dataPoint != null ? dataPoint.getyAxis().getField() : null;
+						FacilioField field = null;
+						try {
+							field = dataPoint != null ? dataPoint.getyAxis().getField() : null;
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 						String unit = "";
 						if (field instanceof NumberField) {
 							unit = ((NumberField)field).getUnit();

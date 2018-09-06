@@ -44,7 +44,7 @@ public class TransformReportDataCommand implements Command {
 		return false;
 	}
 
-	private Map<Object, Object> transformData(ReportDataPointContext dataPoint, Set<Object> xValues, List<Map<String, Object>> props) {
+	private Map<Object, Object> transformData(ReportDataPointContext dataPoint, Set<Object> xValues, List<Map<String, Object>> props) throws Exception {
 		if (props != null && !props.isEmpty()) {
 			Map<Object, Object> dataPoints = new LinkedHashMap<>();
 			for (Map<String, Object> prop : props) {

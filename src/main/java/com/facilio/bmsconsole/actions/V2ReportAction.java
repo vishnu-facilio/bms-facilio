@@ -63,6 +63,18 @@ public class V2ReportAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String fetchReportWithData() throws Exception {
+		reportContext = ReportUtil.getReport(reportId);
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
+		
+		Chain fetchReadingDataChain = ReadOnlyChainFactory.fetchReportDataChain();
+		fetchReadingDataChain.execute(context);
+		
+		return setReportResult(context);
+	}
+	
 	ReportFolderContext reportFolder;
 	
 	public ReportFolderContext getReportFolder() {

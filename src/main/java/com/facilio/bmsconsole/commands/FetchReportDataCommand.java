@@ -96,7 +96,7 @@ public class FetchReportDataCommand implements Command {
 		return false;
 	}
 	
-	private void joinYModuleIfRequred(ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, Set<FacilioModule> addedModules) {
+	private void joinYModuleIfRequred(ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, Set<FacilioModule> addedModules) throws Exception {
 		if (!dp.getxAxis().getField().getModule().equals(dp.getyAxis().getField().getModule())) {
 			applyJoin(dp.getyAxis().getJoinOn(), dp.getyAxis().getField().getModule(), selectBuilder);
 			addedModules.add(dp.getyAxis().getField().getModule());
@@ -188,7 +188,7 @@ public class FetchReportDataCommand implements Command {
 		}
 	}
 	
-	private List<List<ReportDataPointContext>> groupDataPoints(List<ReportDataPointContext> dataPoints) {
+	private List<List<ReportDataPointContext>> groupDataPoints(List<ReportDataPointContext> dataPoints) throws Exception {
 		List<List<ReportDataPointContext>> groupedList = new ArrayList<>();
 		for (ReportDataPointContext dataPoint : dataPoints) {
 			addToMatchedList(dataPoint, groupedList);
@@ -196,7 +196,7 @@ public class FetchReportDataCommand implements Command {
 		return groupedList;
 	}
 	
-	private void addToMatchedList (ReportDataPointContext dataPoint, List<List<ReportDataPointContext>> groupedList) {
+	private void addToMatchedList (ReportDataPointContext dataPoint, List<List<ReportDataPointContext>> groupedList) throws Exception {
 		for (List<ReportDataPointContext> dataPointList : groupedList) {
 			ReportDataPointContext rdp = dataPointList.get(0);
 			if (rdp.getxAxis().getField().equals(dataPoint.getxAxis().getField()) &&
