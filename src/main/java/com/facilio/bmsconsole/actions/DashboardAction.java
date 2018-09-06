@@ -1148,14 +1148,8 @@ public class DashboardAction extends ActionSupport {
 	}
 	String staticKey;
 	
-	JSONObject cardParams;
+	JSONObject paramsJson;
 	
-	public JSONObject getCardParams() {
-		return cardParams;
-	}
-	public void setCardParams(JSONObject cardParams) {
-		this.cardParams = cardParams;
-	}
 	public String getCardData() throws Exception {
 		if(widgetId != null) {
 			
@@ -1293,7 +1287,7 @@ public class DashboardAction extends ActionSupport {
 				
 				CardType card = CardType.getCardType(staticKey);
 				
-				String workflow = CardUtil.replaceWorflowPlaceHolders(card.getWorkflow(), cardParams);
+				String workflow = CardUtil.replaceWorflowPlaceHolders(card.getWorkflow(), paramsJson);
 				
 				Object wfResult = WorkflowUtil.getWorkflowExpressionResult(workflow, null);
 				
@@ -1411,6 +1405,12 @@ public class DashboardAction extends ActionSupport {
 			
 		}
 		return SUCCESS;
+	}
+	public JSONObject getParamsJson() {
+		return paramsJson;
+	}
+	public void setParamsJson(JSONObject paramsJson) {
+		this.paramsJson = paramsJson;
 	}
 	public String getTabularData() throws Exception {
 		
