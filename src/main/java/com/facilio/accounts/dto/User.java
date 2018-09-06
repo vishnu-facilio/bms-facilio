@@ -354,7 +354,7 @@ public class User implements Serializable {
 			criteria = new Criteria();
 			criteria.addAndCondition(condition);
 		}
-		if(moduleName.equals("building") || moduleName.equals("floor") || moduleName.equals("space") || moduleName.equals("zone")) {
+		if(moduleName.equals("building") || moduleName.equals("floor") || moduleName.equals("space") || moduleName.equals("zone") || moduleName.equals("basespace")) {
 			Condition condition = new Condition();
 			condition.setColumnName("Resources.ID");
 			condition.setFieldName("id");
