@@ -535,7 +535,7 @@ public class SpaceAPI {
 																	.module(module)
 																	.maxLevel(0)
 																	.beanClass(BuildingContext.class)
-																	.andCustomWhere("SITE_ID =? AND SPACE_TYPE=?",siteId,BaseSpaceContext.SpaceType.BUILDING.getIntVal());
+																	.andCustomWhere("BaseSpace.SITE_ID =? AND SPACE_TYPE=?",siteId,BaseSpaceContext.SpaceType.BUILDING.getIntVal());
 		List<BuildingContext> buildings = selectBuilder.get();
 		return buildings;
 	}
