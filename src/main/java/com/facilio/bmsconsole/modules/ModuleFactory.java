@@ -1228,6 +1228,13 @@ public class ModuleFactory {
 		costAssets.setTableName("Report1");
 		return costAssets;
 	}
+	public static FacilioModule getReportFieldsModule() {
+		FacilioModule costAssets = new FacilioModule();
+		costAssets.setName("reportFields");
+		costAssets.setDisplayName("Report Fields");
+		costAssets.setTableName("Report_Fields");
+		return costAssets;
+	}
 	
 //	public static FacilioModule getReportDataPointModule() {
 //		FacilioModule costAssets = new FacilioModule();

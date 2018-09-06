@@ -4314,6 +4314,18 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	public static List<FacilioField> getReportFieldsFields() {
+		FacilioModule module = ModuleFactory.getReportFieldsModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getField("reportId", "REPORT_ID", module, FieldType.LOOKUP));
+		fields.add(getField("fieldId", "FIELD_ID", module, FieldType.LOOKUP));
+		fields.add(getField("fieldName", "FIELD_NAME", module, FieldType.STRING));
+		fields.add(getField("moduleName", "MODULE_NAME", module, FieldType.STRING));
+		return fields;
+	}
+	
 //	public static List<FacilioField> getReportDataPointFields() {
 //		FacilioModule module = ModuleFactory.getReportDataPointModule();
 //		List<FacilioField> fields = new ArrayList<>();
