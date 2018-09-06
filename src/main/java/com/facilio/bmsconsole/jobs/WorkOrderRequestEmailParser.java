@@ -60,6 +60,7 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 															.table("WorkOrderRequest_EMail")
 															.andCustomWhere("IS_PROCESSED IS NULL OR IS_PROCESSED = false");
 			List<Map<String, Object>> emailProps = selectBuilder.get();
+			LOGGER.info("EMail Props : "+emailProps);
 			if(emailProps != null) {
 				for(Map<String, Object> emailProp : emailProps) {
 					try {
@@ -71,13 +72,13 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 						}
 					}
 					catch(Exception e) {
-						LOGGER.info("Exception occurred ", e);
+						LOGGER.error("Exception occurred ", e);
 					}
 				}
 			}
 		}
 		catch(Exception e) {
-			LOGGER.info("Exception occurred ", e);
+			LOGGER.error("Exception occurred ", e);
 		}
 	}
 	
@@ -113,7 +114,7 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 			List<String> attachedFilesFileName = null;
 			List<String> attachedFilesContentType = null;
 			if (attachments != null && !attachments.isEmpty()) {
-				LOGGER.debug("Attachment List : "+attachments);
+				LOGGER.info("Attachment List : "+attachments);
 				attachedFiles = new ArrayList<>();
 				attachedFilesFileName = new ArrayList<>();
 				attachedFilesContentType = new ArrayList<>();
@@ -132,7 +133,7 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 						attachedFiles.add(file);
 					}
 				}
-				LOGGER.debug("Parsed Attachments : "+attachedFiles);
+				LOGGER.info("Parsed Attachments : "+attachedFiles);
 			}
 			
 			if (supportEmail.getAutoAssignGroupId() != -1) {
@@ -149,7 +150,7 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 			
 			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", supportEmail.getOrgId());
 			long requestId = bean.addWorkOrderRequest(workOrderRequest, attachedFiles, attachedFilesFileName, attachedFilesContentType);
-			LOGGER.debug("Added Workorder from Email Parser : " + requestId );
+			LOGGER.info("Added Workorder from Email Parser : " + requestId );
 			return requestId;
 		}
 		return -1;
@@ -176,12 +177,12 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 	
 	private SupportEmailContext getSupportEmail(List<Address> toAddresses) throws Exception {
 		if(toAddresses != null) {
-			LOGGER.debug("Support email addresses : "+toAddresses);
+			LOGGER.info("Support email addresses : "+toAddresses);
 			for(Address address : toAddresses) {
 				String email = ((InternetAddress) address).getAddress();
 				if(email.endsWith(".facilio.com")) {
 					SupportEmailContext supportEmail = SupportEmailAPI.getSupportEmailFromFwdEmail(email);
-					LOGGER.debug("Support email object : "+supportEmail);
+					LOGGER.info("Support email object : "+supportEmail);
 					return supportEmail;
 				}
 			}
