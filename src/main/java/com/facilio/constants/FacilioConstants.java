@@ -468,6 +468,7 @@ public class FacilioConstants {
 		public static final String SPACECATEGORIESLIST = "SPACECATEGORIESLIST";
 		
 		public static final String FILE_FORMAT = "fileFormat";
+		public static final String FILE_URL = "fileUrl";
 		public static final String DATE_FILTER = "dateFilter";
 		public static final String START_TIME = "startTime";
 		public static final String SCHEDULE_INFO = "schedule";

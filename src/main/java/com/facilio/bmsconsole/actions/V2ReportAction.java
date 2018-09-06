@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 import org.json.simple.JSONArray;
@@ -16,8 +15,7 @@ import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.reports.ReportExportUtil;
-import com.facilio.bmsconsole.util.ExportUtil;
+import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
@@ -159,6 +157,16 @@ public class V2ReportAction extends FacilioAction {
 	}
 	
 	public String fetchReadingsData() throws Exception {
+		FacilioContext context = new FacilioContext();
+		setReadingsDataContext(context);
+		
+		Chain fetchReadingDataChain = ReadOnlyChainFactory.fetchReadingReportChain();
+		fetchReadingDataChain.execute(context);
+		
+		return setReportResult(context);
+	}
+	
+	private void setReadingsDataContext(FacilioContext context) throws Exception {
 		JSONParser parser = new JSONParser();
 		JSONArray fieldArray = (JSONArray) parser.parse(fields);
 		JSONArray baseLineList = null;
@@ -166,18 +174,13 @@ public class V2ReportAction extends FacilioAction {
 			baseLineList = (JSONArray) parser.parse(baseLines);
 		}
 		
-		FacilioContext context = new FacilioContext();
+		
 		context.put(FacilioConstants.ContextNames.START_TIME, startTime);
 		context.put(FacilioConstants.ContextNames.END_TIME, endTime);
 		context.put(FacilioConstants.ContextNames.REPORT_X_AGGR, xAggr);
 		context.put(FacilioConstants.ContextNames.REPORT_Y_FIELDS, FieldUtil.getAsBeanListFromJsonArray(fieldArray, ReadingAnalysisContext.class));
 		context.put(FacilioConstants.ContextNames.REPORT_MODE, mode);
 		context.put(FacilioConstants.ContextNames.BASE_LINE_LIST, FieldUtil.getAsBeanListFromJsonArray(baseLineList, ReportBaseLineContext.class));
-		
-		Chain fetchReadingDataChain = ReadOnlyChainFactory.fetchReadingReportChain();
-		fetchReadingDataChain.execute(context);
-		
-		return setReportResult(context);
 	}
 	
 	private ReadingAnalysisContext.ReportMode mode = ReportMode.TIMESERIES;
@@ -305,20 +308,51 @@ public class V2ReportAction extends FacilioAction {
 		this.fileFormat = FileFormat.getFileFormat(fileFormat);
 	}
 	
-	public String exportAnalyticsData() throws Exception{
+	public String exportReport() throws Exception{
 		
-		fetchReadingsData();
-		String fileUrl = null;
-		if(fileFormat == FileFormat.PDF || fileFormat == FileFormat.IMAGE) {
-			// TODO Store the chart options temporarily in 
-		}
-		else {
-			Map<String,Object> tableData = ReportExportUtil.getTabularReportData(getResult(), mode);
-			fileUrl = ExportUtil.exportData(fileFormat, "Analytics Data", tableData);			
-		}
+		FacilioContext context = new FacilioContext();
+		setExportContext(context);
 		
-		setResult("fileUrl", fileUrl);
+		Chain exportChain = FacilioChainFactory.getExportReportFileChain();
+		exportChain.execute(context);
+		
+		setResult("fileUrl", context.get(FacilioConstants.ContextNames.FILE_URL));
 		
 		return SUCCESS;
 	}
+	
+	private void setExportContext(FacilioContext context) throws Exception {
+		if (reportId != -1) {
+			reportContext = ReportUtil.getReport(reportId);
+			context.put(FacilioConstants.ContextNames.REPORT, reportContext);
+		}
+		else {
+			setReadingsDataContext(context);	
+		}
+		context.put(FacilioConstants.ContextNames.FILE_FORMAT, fileFormat);
+	}
+	
+	private EMailTemplate emailTemplate;
+	public EMailTemplate getEmailTemplate() {
+		return emailTemplate;
+	}
+	public void setEmailTemplate(EMailTemplate emailTemplate) {
+		this.emailTemplate = emailTemplate;
+	}
+	
+	public String sendReportMail() throws Exception{
+
+		FacilioContext context = new FacilioContext();
+		setExportContext(context);
+		
+		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
+		
+		Chain mailReportChain = FacilioChainFactory.sendReadingReportMailChain();
+		mailReportChain.execute(context);
+		
+		setResult("fileUrl", context.get(FacilioConstants.ContextNames.FILE_URL));
+		
+		return SUCCESS;
+	}
+	
 }

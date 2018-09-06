@@ -296,7 +296,9 @@
 		</action>
 		<action name="fetchReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReport">
 		</action>
-		<action name="exportAnalyticsData" class="com.facilio.bmsconsole.actions.V2ReportAction" method="exportAnalyticsData">
+		<action name="export" class="com.facilio.bmsconsole.actions.V2ReportAction" method="exportReport">
+		</action>
+		<action name="sendMail" class="com.facilio.bmsconsole.actions.V2ReportAction" method="sendReportMail">
 		</action>
 		<action name="fetchReportFolders" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReportFolders">
 		</action>
