@@ -2701,7 +2701,9 @@ public class FieldFactory {
 		staticKey.setColumnName("STATIC_KEY");
 		staticKey.setModule(module);
 		fields.add(staticKey);
-
+		
+		fields.add(getField("params", "PARAMS_JSON", module, FieldType.STRING));
+		fields.add(getField("metaJson", "META_JSON", module, FieldType.STRING));
 		return fields;
 	}
 

@@ -129,6 +129,8 @@ import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.ActivityType;
+import com.facilio.cards.util.CardType;
+import com.facilio.cards.util.CardUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
@@ -1147,12 +1149,28 @@ public class DashboardAction extends ActionSupport {
 	String staticKey;
 	public String getCardData() throws Exception {
 		if(widgetId != null) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			
 			DashboardWidgetContext dashboardWidgetContext =  DashboardUtil.getWidget(widgetId);
 			
 			WidgetStaticContext widgetStaticContext = (WidgetStaticContext) dashboardWidgetContext;
 			Map<String,Object> result = null;
+			
+			if(CardUtil.isGetDataFromEnum(widgetStaticContext.getStaticKey())) {
+				
+				result = new HashMap<>();
+				
+				CardType card = CardType.getCardType(widgetStaticContext.getStaticKey());
+				
+				String workflow = CardUtil.replaceWorflowPlaceHolders(card.getWorkflow(), widgetStaticContext.getParamsJson());
+				
+				Object wfResult = WorkflowUtil.getWorkflowExpressionResult(workflow, null);
+				
+				result.put("result", wfResult);
+				result.put("widget", widgetStaticContext);
+				setCardResult(result);
+				return SUCCESS;
+			}
+			
 			if(dashboardWidgetContext.getWidgetVsWorkflowContexts() != null) {
 				
 				result = new HashMap<>();
