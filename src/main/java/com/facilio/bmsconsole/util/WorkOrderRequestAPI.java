@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -19,7 +18,7 @@ public class WorkOrderRequestAPI {
 	public static long addS3MessageId(JSONObject mailObj) throws SQLException {
 		try {
 			String s3Id = (String) mailObj.get("messageId");
-			String destination =  ((JSONArray) mailObj.get("destination")).toJSONString();
+			String destination =  mailObj.get("destination").toString();
 			Map<String, Object> workOrderEmailProps = new HashMap<>();
 			workOrderEmailProps.put("s3MessageId", s3Id);
 			workOrderEmailProps.put("to", destination);
