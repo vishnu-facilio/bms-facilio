@@ -40,6 +40,15 @@ public class User implements Serializable {
 	private String serverName;
 	private FacilioLicense license;
 	private Long shiftId;
+	public Boolean portal_verified;
+	
+	public Boolean getPortal_verified() {
+		return portal_verified;
+	}
+	public void setPortal_verified(Boolean portal_verified) {
+		this.portal_verified = portal_verified;
+	}
+	
 	public long getUid() {
 		return uid;
 	}
@@ -345,7 +354,7 @@ public class User implements Serializable {
 			criteria = new Criteria();
 			criteria.addAndCondition(condition);
 		}
-		if(moduleName.equals("building") || moduleName.equals("floor") || moduleName.equals("space") || moduleName.equals("zone")) {
+		if(moduleName.equals("building") || moduleName.equals("floor") || moduleName.equals("space") || moduleName.equals("zone") || moduleName.equals("basespace")) {
 			Condition condition = new Condition();
 			condition.setColumnName("Resources.ID");
 			condition.setFieldName("id");

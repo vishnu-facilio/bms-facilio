@@ -1,12 +1,45 @@
 package com.facilio.bmsconsole.context;
 
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 public class WidgetStaticContext extends DashboardWidgetContext {
 
 	
 	String staticKey;
 	Long baseSpaceId;
+	JSONObject paramsJson;
+	String metaJson;
+	
+	public String getMetaJson() {
+		return metaJson;
+	}
+
+	public void setMetaJson(String metaJson) {
+		this.metaJson = metaJson;
+	}
+
+	public JSONObject getParamsJson() {
+		return paramsJson;
+	}
+
+	public void setParamsJson(JSONObject paramsJson) {
+		this.paramsJson = paramsJson;
+	}
+
+	public void setParams(String s) throws ParseException {
+		
+		JSONParser parser = new JSONParser();
+		paramsJson = (JSONObject) parser.parse(s);
+	}
+	public String getParams() {
+		
+		if(paramsJson != null) {
+			return paramsJson.toJSONString(); 
+		}
+		return null;
+	}
 	
 	public Long getBaseSpaceId() {
 		return baseSpaceId;

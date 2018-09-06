@@ -32,8 +32,8 @@ public class ReportUtil {
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
 													.select(FieldFactory.getReport1FolderFields())
 													.table(reportFoldermodule.getTableName())
-													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-													.andCustomWhere(reportFoldermodule.getTableName()+".MODULE_ID = ?",module.getModuleId())
+													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(reportFoldermodule))
+													.andCustomWhere(reportFoldermodule.getTableName()+".MODULEID = ?",module.getModuleId())
 													;
 		
 		List<Map<String, Object>> props = select.get();

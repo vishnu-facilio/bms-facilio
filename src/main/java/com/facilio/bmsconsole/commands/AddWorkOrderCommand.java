@@ -47,7 +47,9 @@ public class AddWorkOrderCommand implements Command {
 			
 			InsertRecordBuilder<WorkOrderContext> builder = new InsertRecordBuilder<WorkOrderContext>()
 																.moduleName(moduleName)
-																.fields(fields);
+																.fields(fields)
+																.withChangeSet()
+																;
 			
 			Integer insertLevel = (Integer) context.get(FacilioConstants.ContextNames.INSERT_LEVEL);
 			if(insertLevel != null) {
@@ -67,6 +69,7 @@ public class AddWorkOrderCommand implements Command {
 					context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
 				}
 			}
+			context.put(FacilioConstants.ContextNames.CHANGE_SET, builder.getChangeSet());
 			context.put(FacilioConstants.ContextNames.RECORD, workOrder);
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(workOrderId));
 			

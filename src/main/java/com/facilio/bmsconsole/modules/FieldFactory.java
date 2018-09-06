@@ -1111,6 +1111,13 @@ public class FieldFactory {
 		deletedTime.setColumnName("DELETED_TIME");
 		deletedTime.setModule(module);
 		fields.add(deletedTime);
+		
+		FacilioField portal_verified = new FacilioField();
+		portal_verified.setName("portal_verified");
+		portal_verified.setDataType(FieldType.BOOLEAN);
+		portal_verified.setColumnName("PORTAL_VERIFIED");
+		portal_verified.setModule(module);
+		fields.add(portal_verified);
 
 		return fields;
 
@@ -2694,7 +2701,9 @@ public class FieldFactory {
 		staticKey.setColumnName("STATIC_KEY");
 		staticKey.setModule(module);
 		fields.add(staticKey);
-
+		
+		fields.add(getField("params", "PARAMS_JSON", module, FieldType.STRING));
+		fields.add(getField("metaJson", "META_JSON", module, FieldType.STRING));
 		return fields;
 	}
 
@@ -4118,6 +4127,21 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	
+	public static List<FacilioField> getTenantsUserFields() {
+		FacilioModule module = ModuleFactory.getTenantsuserModule();
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getOrgIdField(module));
+		fields.add(getField("tenantId", "TENANTID", module, FieldType.NUMBER));
+		fields.add(getField("ouid", "ORG_USERID", module, FieldType.NUMBER));
+
+		return fields;
+	}
+	
+	
+	
 
 	public static List<FacilioField> getTenantsUtilityMappingFields() {
 		FacilioModule module = ModuleFactory.getTenantsUtilityMappingModule();
@@ -4128,9 +4152,12 @@ public class FieldFactory {
 		fields.add(getField("tenantId", "TENANT_ID", module, FieldType.LOOKUP));
 		fields.add(getField("utility", "UTILITY_ID", module, FieldType.NUMBER));
 		fields.add(getField("assetId", "ASSET_ID", module, FieldType.LOOKUP));
+		fields.add(getField("showInPortal", "SHOW_IN_PORTAL", module, FieldType.BOOLEAN));
 
 		return fields;
 	}
+	
+	
 
 	public static List<FacilioField> getRateCardFields() {
 		FacilioModule module = ModuleFactory.getRateCardModule();

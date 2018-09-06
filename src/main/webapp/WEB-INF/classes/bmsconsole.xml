@@ -2755,6 +2755,13 @@
 	<result name="success" type="json">
 	<param name="root">readingData</param>
 	</result>
+	</action>
+	
+	<action name="showinportal" class="com.facilio.bmsconsole.actions.TenantAction"
+	method="showInPortal">
+	<result name="success" type="json">
+	<param name="root">tenantReadingData</param>
+	</result>
 	</action>	
 		
 		

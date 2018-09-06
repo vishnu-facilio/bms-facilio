@@ -98,6 +98,7 @@ public class FacilioConstants {
 		public static final String KINESIS_CHECK_POINTER = "kinesisCheckPointer";
 		
 		public static final String SIGNUP_INFO = "signupinfo";
+		public static final String CHANGE_SET = "changeSet";
 		public static final String RECORD = "record";
 		public static final String RECORD_LIST = "records";
 		public static final String RECORD_MAP = "recordMap";

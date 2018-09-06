@@ -10,7 +10,14 @@ public class UtilityAsset {
 	public void setId(long id) {
 		this.id = id;
 	}
-
+	private boolean showInPortal;
+	
+	public boolean isShowInPortal() {
+		return showInPortal;
+	}
+	public void setShowInPortal(boolean showInPortal) {
+		this.showInPortal = showInPortal;
+	}
 	private long orgId = -1;
 	public long getOrgId() {
 		return orgId;

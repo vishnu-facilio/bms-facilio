@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +45,7 @@ import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.FacilioTablePrinter;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
@@ -432,61 +434,45 @@ public class CommonCommandUtil {
 	}
     
     public static List<BaseSpaceContext> getMySites() throws Exception {
-		List<Long> accessibleSpace = AccountUtil.getCurrentAccount().getUser().getAccessibleSpace();
-		if (accessibleSpace == null) {
-			accessibleSpace = new ArrayList<>();
-		}
-		long currentSiteId = AccountUtil.getCurrentSiteId();
-		
-		for (int i = 0; i < accessibleSpace.size(); ++i) { //removes duplicate current site id
-			if (accessibleSpace.get(i) == currentSiteId) {
-				accessibleSpace.remove(i);
-				break;
-			}
-		}
-		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE);
 		
+		FacilioModule accessibleSpaceMod = ModuleFactory.getAccessibleSpaceModule();
+		GenericSelectRecordBuilder selectAccessibleBuilder = new GenericSelectRecordBuilder()
+				.select(AccountConstants.getAccessbileSpaceFields())
+				.table(accessibleSpaceMod.getTableName())
+				.andCustomWhere("ORG_USER_ID = ?", AccountUtil.getCurrentAccount().getUser().getOuid());
+
+		List<Map<String, Object>> props = selectAccessibleBuilder.get();
+		List<Long> siteIds = new ArrayList<>();
+		if (props != null && !props.isEmpty()) {
+			for(Map<String, Object> prop : props) {
+				Long siteId = (Long) prop.get("siteId");
+				if (siteId != null) {
+					siteIds.add(siteId);
+				}
+			}
+		}
+		
 		SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
-																	.select(fields)
-																	.module(module)
-																	.beanClass(BaseSpaceContext.class);
+				.select(fields)
+				.module(module)
+				.beanClass(BaseSpaceContext.class)
+				.andCondition(CriteriaAPI.getCondition("SPACE_TYPE", "spaceType", String.valueOf(SpaceType.SITE.getIntVal()), NumberOperators.EQUALS));
 		
 		List<BaseSpaceContext> accessibleBaseSpace;
-		if (accessibleSpace.isEmpty()) {
+		if (siteIds.isEmpty()) {
 			accessibleBaseSpace = selectBuilder.get();
 		} else {
-			accessibleBaseSpace = selectBuilder.andCondition(CriteriaAPI.getIdCondition(accessibleSpace, module)).get();
+			accessibleBaseSpace = selectBuilder.andCondition(CriteriaAPI.getIdCondition(siteIds, module)).get();
 		}
 		
 		if (accessibleBaseSpace == null || accessibleBaseSpace.isEmpty()) {
 			return Collections.emptyList();
 		}
 		
-		Set<Long> parentSites = accessibleBaseSpace.stream().map(i -> {
-			if (i.getSpaceType() == 1) {
-				return i.getId();
-			}
-			return i.getSiteId();
-		}).collect(Collectors.toSet());
-		if (parentSites == null || parentSites.isEmpty()) {
-			return Collections.emptyList();
-		}
-		
-		selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
-								.select(fields)
-								.module(module)
-								.beanClass(BaseSpaceContext.class);
-		
-		List<BaseSpaceContext> allSites = selectBuilder.andCondition(CriteriaAPI.getCondition("SPACE_TYPE", "spaceType", String.valueOf(SpaceType.SITE.getIntVal()), NumberOperators.EQUALS)).get();
-		if (allSites == null || allSites.isEmpty()) {
-			return Collections.emptyList();
-		}
-		
-		List<BaseSpaceContext> myAccessibleSites = allSites.stream().filter(i -> parentSites.contains(i.getId())).collect(Collectors.toList());
-		return myAccessibleSites;
+		return accessibleBaseSpace;
 	}
     
     public static Map<String, String> getOrgInfo(String... names) throws Exception {
