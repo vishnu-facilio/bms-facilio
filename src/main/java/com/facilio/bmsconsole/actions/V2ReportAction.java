@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
@@ -19,6 +20,7 @@ import com.facilio.report.context.ReadingAnalysisContext;
 import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
+import com.facilio.report.context.ReportFolderContext;
 import com.facilio.report.context.WorkorderAnalysisContext;
 import com.facilio.report.util.ReportUtil;
 
@@ -38,6 +40,21 @@ public class V2ReportAction extends FacilioAction {
 	}
 	public void setReportId(Long reportId) {
 		this.reportId = reportId;
+	}
+	
+	String moduleName;
+	public String getModuleName() {
+		return moduleName;
+	}
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
+	public String fetchReportFolders() throws Exception {
+		
+		List<ReportFolderContext> reportFolders = ReportUtil.getAllReportFolder(moduleName, true);
+		setResult("reportFolders", reportFolders);
+		setResult("moduleName", moduleName);
+		return SUCCESS;
 	}
 	
 	public String fetchReport() throws Exception {

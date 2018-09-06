@@ -298,6 +298,8 @@
 		</action>
 		<action name="exportAnalyticsData" class="com.facilio.bmsconsole.actions.V2ReportAction" method="exportAnalyticsData">
 		</action>
+		<action name="fetchReportFolders" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReportFolders">
+		</action>
 	</package>
 	
 	

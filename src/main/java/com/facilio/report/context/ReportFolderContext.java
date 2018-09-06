@@ -1,5 +1,7 @@
 package com.facilio.report.context;
 
+import java.util.List;
+
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class ReportFolderContext extends ModuleBaseWithCustomFields {
@@ -42,5 +44,13 @@ public class ReportFolderContext extends ModuleBaseWithCustomFields {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	List<ReportContext> reports;
+	public List<ReportContext> getReports() {
+		return reports;
+	}
+	public void setReports(List<ReportContext> reports) {
+		this.reports = reports;
 	}
 }
