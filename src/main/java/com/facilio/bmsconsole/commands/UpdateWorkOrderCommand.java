@@ -27,6 +27,7 @@ import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.modules.UpdateChangeSet;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -138,10 +139,13 @@ public class UpdateWorkOrderCommand implements Command {
 			
 			int rowsUpdated = 0;
 			int woCount = newWos.size();
+			Map<Long, List<UpdateChangeSet>> changeSets = new HashMap<>();
 			for (WorkOrderContext wo : newWos) {
 				UpdateRecordBuilder<WorkOrderContext> updateBuilder = new UpdateRecordBuilder<WorkOrderContext>()
 						.moduleName(moduleName)
-						.fields(fields);
+						.fields(fields)
+						.withChangeSet(oldWos)
+						;
 				
 				if (woCount > 1) {
 					updateBuilder.andCondition(CriteriaAPI.getIdCondition(wo.getId(), module));
@@ -150,8 +154,13 @@ public class UpdateWorkOrderCommand implements Command {
 					updateBuilder.andCondition(idCondition);
 				}
 				rowsUpdated += updateBuilder.update(wo);
+				
+				if (updateBuilder.getChangeSet() != null) {
+					changeSets.putAll(updateBuilder.getChangeSet());
+				}
 			}
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
+			context.put(FacilioConstants.ContextNames.CHANGE_SET, changeSets);
 			if(TYPES.contains(activityType) || workOrder.getPriority() != null) {
 				SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
 						.moduleName(moduleName)

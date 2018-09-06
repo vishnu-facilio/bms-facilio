@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -20,6 +21,9 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	private List<FacilioField> fields;
 	private int level = 1;
 	private List<E> records = new ArrayList<>();
+	private boolean inserted = false;
+	private boolean withChangeSet = false;
+	private Map<Long, List<UpdateChangeSet>> changeSet;
 	
 	private boolean isWithLocalIdModule;
 	
@@ -81,6 +85,19 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		return records;
 	}
 	
+	public InsertRecordBuilder<E> withChangeSet() {
+		this.withChangeSet = true;
+		return this;
+	}
+	
+	public Map<Long, List<UpdateChangeSet>> getChangeSet() {
+		
+		if (!inserted) {
+			throw new IllegalArgumentException("Update first and then get change set.");
+		}
+		return changeSet;
+	}
+	
 	private void checkForNull() throws Exception {
 		
 		if(fields == null || fields.size() < 1) {
@@ -98,6 +115,8 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	
 	@Override
 	public void save() throws Exception {
+		inserted = true;
+		
 		if(records.isEmpty()) {
 			return;
 		}
@@ -147,13 +166,41 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			}
 			currentLevel++;
 		}
+		
+		Map<String, FacilioField> fieldNameMap = null;
+		if (withChangeSet) {
+			fieldNameMap = FieldFactory.getAsMap(fields);
+			changeSet = new HashMap<>();
+		}
+		
 		for(int itr = 0; itr < records.size(); itr++) {
 			Map<String, Object> beanProp = beanProps.get(itr);
 			if(beanProp.get("id") != null) {
-				records.get(itr).setId((long) beanProp.get("id"));
+				long id = (long) beanProp.get("id");
+				records.get(itr).setId(id);
+				
+				if (withChangeSet) {
+					List<UpdateChangeSet> changeList = constructChangeSet(id, beanProp, fieldNameMap);
+					changeSet.put(id, changeList);
+				}
 			}
 		}
 		
+	}
+	
+	private List<UpdateChangeSet> constructChangeSet(long recordId, Map<String, Object> prop, Map<String, FacilioField> fieldMap) {
+		Set<String> fieldNames = fieldMap.keySet();
+		List<UpdateChangeSet> changeList = new ArrayList<>();
+		for (Map.Entry<String, Object> entry : prop.entrySet()) {
+			if (fieldNames.contains(entry.getKey())) {
+				UpdateChangeSet currentChange = new UpdateChangeSet();
+				currentChange.setFieldId(fieldMap.get(entry.getKey()).getFieldId());
+				currentChange.setNewValue(entry.getValue());
+				currentChange.setRecordId(recordId);
+				changeList.add(currentChange);
+			}
+		}
+		return changeList;
 	}
 	
 	private long getLocalId (List<FacilioModule> modules) throws Exception {

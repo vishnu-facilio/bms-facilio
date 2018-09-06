@@ -216,6 +216,15 @@ public class CriteriaAPI {
 		return idCondition;
 	}
 	
+	public static Condition getCurrentSiteIdCondition(FacilioModule module) {
+		Condition idCondition = new Condition();
+		idCondition.setField(FieldFactory.getSiteIdField(module));
+		idCondition.setOperator(NumberOperators.EQUALS);
+		idCondition.setValue(String.valueOf(AccountUtil.getCurrentSiteId()));
+		
+		return idCondition;
+	}
+	
 	public static Condition getIdCondition(long id, FacilioModule module) {
 		Condition idCondition = new Condition();
 		idCondition.setField(FieldFactory.getIdField(module));
