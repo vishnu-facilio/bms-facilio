@@ -1147,6 +1147,15 @@ public class DashboardAction extends ActionSupport {
 		this.staticKey = staticKey;
 	}
 	String staticKey;
+	
+	JSONObject cardParams;
+	
+	public JSONObject getCardParams() {
+		return cardParams;
+	}
+	public void setCardParams(JSONObject cardParams) {
+		this.cardParams = cardParams;
+	}
 	public String getCardData() throws Exception {
 		if(widgetId != null) {
 			
@@ -1277,6 +1286,22 @@ public class DashboardAction extends ActionSupport {
 		else if(staticKey != null) {
 			
 			Map<String,Object> result = null;
+			
+			if(CardUtil.isGetDataFromEnum(staticKey)) {
+				
+				result = new HashMap<>();
+				
+				CardType card = CardType.getCardType(staticKey);
+				
+				String workflow = CardUtil.replaceWorflowPlaceHolders(card.getWorkflow(), cardParams);
+				
+				Object wfResult = WorkflowUtil.getWorkflowExpressionResult(workflow, null);
+				
+				result.put("result", wfResult);
+				setCardResult(result);
+				return SUCCESS;
+			}
+			
 			
 			List<WidgetVsWorkflowContext> workflowList = DashboardUtil.getCardWorkflowBasedOnStaticKey(staticKey);
 			
