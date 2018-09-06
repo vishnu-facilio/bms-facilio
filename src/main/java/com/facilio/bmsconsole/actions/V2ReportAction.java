@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
+import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.reports.ReportExportUtil;
@@ -71,6 +72,9 @@ public class V2ReportAction extends FacilioAction {
 		reportContext = ReportUtil.getReport(reportId);
 		
 		FacilioContext context = new FacilioContext();
+		if(startTime > 0 && endTime > 0) {
+			reportContext.setDateRange(new DateRange(startTime, endTime));
+		}
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 		
 		Chain fetchReadingDataChain = ReadOnlyChainFactory.fetchReportDataChain();
