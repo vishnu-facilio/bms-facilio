@@ -92,6 +92,18 @@ public class UpdateDashboardCommand implements Command {
 					System.out.println(" dashboard update props --- "+props1);
 					updateBuilder.update(props1);
 					
+					if(updatedWidgets.get(i).getType().equals(DashboardWidgetContext.WidgetType.STATIC.getValue())) {
+						
+						updateBuilder = new GenericUpdateRecordBuilder()
+								.table(ModuleFactory.getWidgetStaticModule().getTableName())
+								.fields(FieldFactory.getWidgetStaticFields())
+								.andCustomWhere(ModuleFactory.getWidgetStaticModule().getTableName()+".ID = ?",updatedWidgets.get(i).getId());
+
+						
+						System.out.println("dashboard update props --- "+props1);
+						updateBuilder.update(props1);
+					}
+					
 					updateBuilder = new GenericUpdateRecordBuilder()
 							.table(ModuleFactory.getWidgetModule().getTableName())
 							.fields(FieldFactory.getWidgetFields())
