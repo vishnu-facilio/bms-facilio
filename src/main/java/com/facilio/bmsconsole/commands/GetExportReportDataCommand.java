@@ -184,7 +184,9 @@ public class GetExportReportDataCommand implements Command {
 						if (field instanceof NumberField) {
 							unit = ((NumberField)field).getUnit();
 						}
-						newRow.put((String) col.get("header"), reportData.get(key).get(columnName).get(val) + " " + unit);
+						if (reportData.get(key).containsKey(columnName) && reportData.get(key).get(columnName).containsKey(val)) {
+							newRow.put((String) col.get("header"), reportData.get(key).get(columnName).get(val) + " " + unit);
+						}
 					}
 				});
 				records.add(newRow);
@@ -214,7 +216,7 @@ public class GetExportReportDataCommand implements Command {
 						bl = ACTUAL_HEADER.toLowerCase();
 						xTime = x;
 					}
-					if (reportData.get(name) != null && reportData.get(name).get(bl).get(xTime) != null) {
+					if (reportData.get(name) != null && reportData.get(name).containsKey(bl) && reportData.get(name).get(bl).containsKey(xTime) && reportData.get(name).get(bl).get(xTime) != null) {
 						newRow.put((String) column.get("header"), reportData.get(name).get(bl).get(xTime));
 					}
 				}
