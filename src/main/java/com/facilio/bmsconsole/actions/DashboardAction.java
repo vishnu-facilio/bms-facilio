@@ -1167,8 +1167,9 @@ public class DashboardAction extends ActionSupport {
 				String workflow = CardUtil.replaceWorflowPlaceHolders(card.getWorkflow(), widgetStaticContext.getParamsJson());
 				
 				Object wfResult = WorkflowUtil.getWorkflowExpressionResult(workflow, null);
-				
 				result.put("result", wfResult);
+				result.put("unit", CardUtil.getUnit(widgetStaticContext.getParamsJson()));
+				
 				result.put("widget", widgetStaticContext);
 				setCardResult(result);
 				return SUCCESS;
@@ -1292,6 +1293,7 @@ public class DashboardAction extends ActionSupport {
 				Object wfResult = WorkflowUtil.getWorkflowExpressionResult(workflow, null);
 				
 				result.put("result", wfResult);
+				result.put("unit", CardUtil.getUnit(paramsJson));
 				setCardResult(result);
 				return SUCCESS;
 			}

@@ -3176,6 +3176,7 @@
 		</action>
 		<action name="getCardData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getCardData">
 			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
 				<param name="includeProperties">^cardResult.*</param>
 			</result>
 		</action>
