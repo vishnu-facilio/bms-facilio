@@ -60,7 +60,6 @@ public class AuthInterceptor extends AbstractInterceptor {
 		try {
 			HttpServletRequest request = ServletActionContext.getRequest();
 
-			if(! (("/api/integ/faciliosubmit".equals(request.getRequestURI())) || ("/api/integ/apilogin".equals(request.getRequestURI())) || ("/auth/api/login".equals(request.getRequestURI())))) {
 			if (!isRemoteScreenMode(request)) {
 				CognitoUser cognitoUser = AuthenticationUtil.getCognitoUser(request, false);
 				Account currentAccount = null;
@@ -125,7 +124,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 					return Action.ERROR;
 				}
 			}
-			}
+
 		}
 		catch (Exception e) {
 			LOGGER.log(Level.SEVERE, "error in auth interceptor", e);
@@ -197,7 +196,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 			}
 		}
 		catch (Exception e) {
-			LOGGER.log(Level.SEVERE, "Exception while check authendication from remote-screen.", e);
+			LOGGER.log(Level.SEVERE, "Exception while check authentication from remote-screen.", e);
 		}
 		return false;
 	}
