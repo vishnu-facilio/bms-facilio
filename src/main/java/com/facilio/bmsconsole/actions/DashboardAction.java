@@ -6824,6 +6824,12 @@ public class DashboardAction extends ActionSupport {
 					if(widget.get("baseSpaceId") != null) {
 						widgetStaticContext.setBaseSpaceId((Long) widget.get("baseSpaceId"));
 					}
+					if(widget.get("paramsJson") != null) {
+						widgetStaticContext.setParams(widget.get("paramsJson").toString());
+					}
+					if(widget.get("metaJson") != null) {
+						widgetStaticContext.setMetaJson(widget.get("metaJson").toString());
+					}
 				}
 				else if (widgetType == DashboardWidgetContext.WidgetType.WEB.getValue()) {
 					widgetContext = new WidgetWebContext();
