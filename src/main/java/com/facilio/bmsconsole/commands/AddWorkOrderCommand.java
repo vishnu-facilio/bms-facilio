@@ -26,6 +26,8 @@ public class AddWorkOrderCommand implements Command {
 				workOrder.setRequester(null);
 			}
 			
+			TicketAPI.validateSiteSpecificData(workOrder);
+			
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			workOrder.setCreatedBy(AccountUtil.getCurrentUser());
