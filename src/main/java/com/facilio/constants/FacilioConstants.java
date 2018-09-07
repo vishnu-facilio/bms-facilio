@@ -99,6 +99,7 @@ public class FacilioConstants {
 		
 		public static final String SIGNUP_INFO = "signupinfo";
 		public static final String CHANGE_SET = "changeSet";
+		public static final String CHANGE_SET_MAP = "changeSetMap";
 		public static final String RECORD = "record";
 		public static final String RECORD_LIST = "records";
 		public static final String RECORD_MAP = "recordMap";
@@ -696,6 +697,8 @@ public class FacilioConstants {
 	public static class Reports 
 
 	{
+		public static final String ACTUAL_DATA = "actual";
+		
 		public static final String RANGE_FROM = "fromRange";
 		public static final String RANGE_END = "endRange";
 		public static final String GROUPBY="groupBy";

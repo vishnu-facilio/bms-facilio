@@ -30,7 +30,14 @@ public class TransformReportDataCommand implements Command {
 					Map<String, Map<Object, Object>> dataPointMap = new HashMap<>();
 					for (Map.Entry<String, List<Map<String, Object>>> entry : reportProps.entrySet()) {
 						List<Map<String, Object>> props = entry.getValue();
-						Map<Object, Object> dataPoints = transformData(dataPoint, xValues, props);
+						Map<Object, Object> dataPoints = null;
+						if (FacilioConstants.Reports.ACTUAL_DATA.equals(entry.getKey())) {
+							dataPoints = transformData(dataPoint, xValues, props);
+						}
+						else {
+							dataPoints = transformData(dataPoint, null, props); //xValues are ignored for baseline 
+						}
+						
 						if (dataPoints != null) {
 							dataPointMap.put(entry.getKey(), dataPoints);
 						}
@@ -50,7 +57,9 @@ public class TransformReportDataCommand implements Command {
 			for (Map<String, Object> prop : props) {
 				Object xVal = prop.get(dataPoint.getxAxis().getField().getName());
 				if (xVal != null) {
-					xValues.add(xVal);
+					if (xValues != null) {
+						xValues.add(xVal);
+					}
 					Object yVal = prop.get(dataPoint.getyAxis().getField().getName());
 					yVal = yVal == null ? "" : yVal;
 					if (dataPoint.getGroupByFields() == null || dataPoint.getGroupByFields().isEmpty()) {
