@@ -6804,56 +6804,24 @@ public class DashboardAction extends ActionSupport {
 				DashboardWidgetContext widgetContext = null;
 				if (widgetType == DashboardWidgetContext.WidgetType.CHART.getValue()) {
 					widgetContext = new WidgetChartContext();
-					WidgetChartContext widgetChartContext1 = (WidgetChartContext) widgetContext;
-					widgetChartContext1.setReportId((Long)widget.get("reportId"));
-					widgetChartContext1.setNewReportId((Long)widget.get("newReportId"));
+					widgetContext = FieldUtil.getAsBeanFromMap(widget, WidgetChartContext.class);
 				}
 				else if (widgetType == DashboardWidgetContext.WidgetType.LIST_VIEW.getValue()) {
 					widgetContext = new WidgetListViewContext();
-					WidgetListViewContext WidgetListViewContext1 = (WidgetListViewContext) widgetContext;
-					
-					WidgetListViewContext1.setViewName(widget.get("viewName") != null ? widget.get("viewName").toString() : null);
-					WidgetListViewContext1.setModuleName(widget.get("moduleName") != null ? widget.get("moduleName").toString() : null);
+					widgetContext = FieldUtil.getAsBeanFromMap(widget, WidgetListViewContext.class);
 				}
 				else if (widgetType == DashboardWidgetContext.WidgetType.STATIC.getValue()) {
 					widgetContext = new WidgetStaticContext();
-					WidgetStaticContext widgetStaticContext = (WidgetStaticContext) widgetContext;
-					if(widget.get("staticKey") != null) {
-						widgetStaticContext.setStaticKey(widget.get("staticKey").toString());
-					}
-					if(widget.get("baseSpaceId") != null) {
-						widgetStaticContext.setBaseSpaceId((Long) widget.get("baseSpaceId"));
-					}
-					if(widget.get("paramsJson") != null) {
-						widgetStaticContext.setParams(widget.get("paramsJson").toString());
-					}
-					if(widget.get("metaJson") != null) {
-						widgetStaticContext.setMetaJson(widget.get("metaJson").toString());
-					}
+					widgetContext = FieldUtil.getAsBeanFromMap(widget, WidgetStaticContext.class);
 				}
 				else if (widgetType == DashboardWidgetContext.WidgetType.WEB.getValue()) {
 					widgetContext = new WidgetWebContext();
+					widgetContext = FieldUtil.getAsBeanFromMap(widget, WidgetWebContext.class);
 				}
 				
-				if( widget.get("id") != null) {
-					widgetContext.setId((Long) widget.get("id"));
-				}
-				widgetContext.setLayoutWidth(Integer.parseInt(widget.get("layoutWidth").toString()));
-				widgetContext.setLayoutHeight(Integer.parseInt(widget.get("layoutHeight").toString()));
 				widgetContext.setLayoutPosition(Integer.parseInt(widget.get("order").toString()));
-				widgetContext.setxPosition(Integer.parseInt(widget.get("xPosition").toString()));
-				widgetContext.setyPosition(Integer.parseInt(widget.get("yPosition").toString()));
 				widgetContext.setType(widgetType);
 				
-				if(widget.get("widgetName") != null) {
-					widgetContext.setWidgetName(widget.get("widgetName").toString());
-				}
-				if(widget.get("headerText") != null) {
-					widgetContext.setHeaderText(widget.get("headerText").toString());
-				}
-				if(widget.get("headerSubText") != null) {
-					widgetContext.setHeaderSubText(widget.get("headerSubText").toString());
-				}
 				this.dashboard.addDashboardWidget(widgetContext);
 			}
 		}
