@@ -6806,6 +6806,7 @@ public class DashboardAction extends ActionSupport {
 					widgetContext = new WidgetChartContext();
 					WidgetChartContext widgetChartContext1 = (WidgetChartContext) widgetContext;
 					widgetChartContext1.setReportId((Long)widget.get("reportId"));
+					widgetChartContext1.setNewReportId((Long)widget.get("newReportId"));
 				}
 				else if (widgetType == DashboardWidgetContext.WidgetType.LIST_VIEW.getValue()) {
 					widgetContext = new WidgetListViewContext();
@@ -6827,6 +6828,7 @@ public class DashboardAction extends ActionSupport {
 				else if (widgetType == DashboardWidgetContext.WidgetType.WEB.getValue()) {
 					widgetContext = new WidgetWebContext();
 				}
+				
 				if( widget.get("id") != null) {
 					widgetContext.setId((Long) widget.get("id"));
 				}
