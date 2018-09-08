@@ -213,6 +213,14 @@ public class WorkflowRuleContext {
 		}
 	}
 	
+	private List<FieldChangeFieldContext> fields;
+	public List<FieldChangeFieldContext> getFields() {
+		return fields;
+	}
+	public void setFields(List<FieldChangeFieldContext> fields) {
+		this.fields = fields;
+	}
+	
 	private static final RuleType[] RULE_TYPES = RuleType.values();
 	public static enum RuleType {
 		READING_RULE,

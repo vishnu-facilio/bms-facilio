@@ -29,6 +29,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsole.modules.UpdateChangeSet;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
@@ -62,19 +63,20 @@ public class ExecuteAllWorkflowsCommand implements Command
 			return false;
 		}
 		Map<String, List> recordMap = getRecordMap((FacilioContext) context);
+		Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = getChangeSetMap((FacilioContext) context);
 		if(recordMap != null && !recordMap.isEmpty()) {
 			if (recordsPerThread == -1) {
-				fetchAndExecuteRules(recordMap, (FacilioContext) context);
+				fetchAndExecuteRules(recordMap, changeSetMap, (FacilioContext) context);
 			}
 			else {
-				new ParallalWorkflowExecution(AccountUtil.getCurrentAccount(), recordMap, (FacilioContext) context).invoke();
+				new ParallalWorkflowExecution(AccountUtil.getCurrentAccount(), recordMap, changeSetMap, (FacilioContext) context).invoke();
 			}
 			LOGGER.info("Time taken to Execute workflows for modules : "+recordMap.keySet()+" is "+(System.currentTimeMillis() - startTime));
 		}
 		return false;
 	}
 	
-	private void fetchAndExecuteRules(Map<String, List> recordMap, FacilioContext context) throws Exception {
+	private void fetchAndExecuteRules(Map<String, List> recordMap, Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap, FacilioContext context) throws Exception {
 		for (Map.Entry<String, List> entry : recordMap.entrySet()) {
 			String moduleName = entry.getKey();
 			if (moduleName == null || moduleName.isEmpty() || entry.getValue() == null || entry.getValue().isEmpty()) {
@@ -84,9 +86,14 @@ public class ExecuteAllWorkflowsCommand implements Command
 			
 			ActivityType activityType = (ActivityType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
 			if(activityType != null) {
+				Map<Long, List<UpdateChangeSet>> currentChangeSet = changeSetMap == null ? null : changeSetMap.get(moduleName);
+				
 				List<ActivityType> activities = new ArrayList<>();
 				activities.add(activityType);
 				activities.add(ActivityType.SCHEDULED);
+				if (currentChangeSet != null && !currentChangeSet.isEmpty()) {
+					activities.add(ActivityType.FIELD_CHANGE);
+				}
 				
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				long moduleId = modBean.getModule(moduleName).getModuleId();
@@ -107,11 +114,12 @@ public class ExecuteAllWorkflowsCommand implements Command
 					Iterator it = records.iterator();
 					while (it.hasNext()) {
 						Object record = it.next();
+						List<UpdateChangeSet> changeSet = currentChangeSet == null ? null : currentChangeSet.get( ((ModuleBaseWithCustomFields)record).getId() );
 						Map<String, Object> recordPlaceHolders = new HashMap<>(placeHolders);
 						CommonCommandUtil.appendModuleNameInKey(moduleName, moduleName, FieldUtil.getAsProperties(record), recordPlaceHolders);
 						List<WorkflowRuleContext> currentWorkflows = workflowRules;
 						while (currentWorkflows != null && !currentWorkflows.isEmpty()) {
-							Criteria childCriteria = executeWorkflows(currentWorkflows, moduleName, record, it, recordPlaceHolders, (FacilioContext) context);
+							Criteria childCriteria = executeWorkflows(currentWorkflows, moduleName, record, changeSet, it, recordPlaceHolders, (FacilioContext) context);
 							if (childCriteria == null) {
 								break;
 							}
@@ -123,7 +131,7 @@ public class ExecuteAllWorkflowsCommand implements Command
 		}
 	}
 	
-	private static Criteria executeWorkflows(List<WorkflowRuleContext> workflowRules, String moduleName, Object record, Iterator itr, Map<String, Object> recordPlaceHolders, FacilioContext context) throws Exception {
+	private static Criteria executeWorkflows(List<WorkflowRuleContext> workflowRules, String moduleName, Object record, List<UpdateChangeSet> changeSet, Iterator itr, Map<String, Object> recordPlaceHolders, FacilioContext context) throws Exception {
 		if(workflowRules != null && !workflowRules.isEmpty()) {
 			Map<String, FacilioField> fields = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleFields());
 			FacilioField parentRule = fields.get("parentRuleId");
@@ -133,7 +141,7 @@ public class ExecuteAllWorkflowsCommand implements Command
 			for(WorkflowRuleContext workflowRule : workflowRules) {
 				try {
 					long workflowStartTime = System.currentTimeMillis();
-					boolean result = WorkflowRuleAPI.evaluateWorkflow(workflowRule, moduleName, record, recordPlaceHolders, context);
+					boolean result = WorkflowRuleAPI.evaluateWorkflow(workflowRule, moduleName, record, changeSet, recordPlaceHolders, context);
 					if (result) {
 						if(workflowRule.getRuleTypeEnum().stopFurtherRuleExecution()) {
 							itr.remove();
@@ -186,17 +194,31 @@ public class ExecuteAllWorkflowsCommand implements Command
 		return recordMap;
 	}
 	
+	private Map<String, Map<Long, List<UpdateChangeSet>>> getChangeSetMap(FacilioContext context) {
+		Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = (Map<String, Map<Long, List<UpdateChangeSet>>>) context.get(FacilioConstants.ContextNames.CHANGE_SET_MAP);
+		if (changeSetMap == null) {
+			Map<Long, List<UpdateChangeSet>> changeSet = (Map<Long, List<UpdateChangeSet>>) context.get(FacilioConstants.ContextNames.CHANGE_SET);
+			if (changeSet != null) {
+				String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+				changeSetMap = Collections.singletonMap(moduleName, changeSet);
+			}
+		}
+		return changeSetMap;
+	}
+	
 	private class ParallalWorkflowExecution extends RecursiveAction {
 
 		private Account account;
 		private Map<String, List> recordMap = null;
+		private Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = null;
 		private FacilioContext context = null;
 		
-		public ParallalWorkflowExecution(Account account, Map<String, List> recordMap, FacilioContext context) {
+		public ParallalWorkflowExecution(Account account, Map<String, List> recordMap, Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap, FacilioContext context) {
 			// TODO Auto-generated constructor stub
 			this.account = account;
 			this.recordMap = recordMap;
 			this.context = context;
+			this.changeSetMap = changeSetMap;
 		}
 		
 		@Override
@@ -211,7 +233,7 @@ public class ExecuteAllWorkflowsCommand implements Command
 					for (Map.Entry<String, List> entry : recordMap.entrySet()) {
 						String name = entry.getKey();
 						if (name != null && !name.isEmpty()) {
-							subTasks.add(new ParallalWorkflowExecution(account, Collections.singletonMap(name, entry.getValue()), context));
+							subTasks.add(new ParallalWorkflowExecution(account, Collections.singletonMap(name, entry.getValue()), changeSetMap, context));
 						}
 					}
 					ForkJoinTask.invokeAll(subTasks);
@@ -222,13 +244,13 @@ public class ExecuteAllWorkflowsCommand implements Command
 					if (records != null && !records.isEmpty()) {
 						String moduleName = entry.getKey();
 						if (records.size() <= recordsPerThread) {
-							fetchAndExecuteRules(recordMap, context);
+							fetchAndExecuteRules(recordMap, changeSetMap, context);
 						}
 						else {
 							List<List> recordLists = Lists.partition(records, recordsPerThread);
 							List<ParallalWorkflowExecution> subTasks  = new ArrayList<>();
 							for (List recordList : recordLists) {
-								subTasks.add(new ParallalWorkflowExecution(account, Collections.singletonMap(moduleName, recordList), context));
+								subTasks.add(new ParallalWorkflowExecution(account, Collections.singletonMap(moduleName, recordList), changeSetMap, context));
 							}
 							ForkJoinTask.invokeAll(subTasks);
 						}

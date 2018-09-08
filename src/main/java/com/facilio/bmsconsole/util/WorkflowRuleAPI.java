@@ -25,6 +25,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.UpdateChangeSet;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
 import com.facilio.bmsconsole.view.SLARuleContext;
 import com.facilio.bmsconsole.workflow.ActionContext;
@@ -33,6 +34,7 @@ import com.facilio.bmsconsole.workflow.ScheduledRuleContext;
 import com.facilio.bmsconsole.workflow.WorkflowEventContext;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
+import com.facilio.bmsconsole.workflow.FieldChangeFieldContext;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -73,7 +75,29 @@ public class WorkflowRuleAPI {
 				break;
 		}
 		
+		if (rule.getEvent() != null && ActivityType.FIELD_CHANGE.isPresent(rule.getEvent().getActivityType())) {
+			addFieldChangeFields(rule);
+		}
+		
 		return rule.getId();
+	}
+	
+	private static void addFieldChangeFields(WorkflowRuleContext rule) throws Exception {
+		if (rule.getFields() == null || rule.getFields().isEmpty()) {
+			throw new IllegalArgumentException("Atleast one field has to be added for Workflow Rule with Field Change activity");
+		}
+		
+		FacilioModule module = ModuleFactory.getWorkflowFieldChangeFieldsModule();
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+														.table(module.getTableName())
+														.fields(FieldFactory.getWorkflowFieldChangeFields());
+		
+		for (FieldChangeFieldContext field : rule.getFields()) {
+			field.setRuleId(rule.getId());
+			field.setOrgId(AccountUtil.getCurrentOrg().getId());
+			insertBuilder.addRecord(FieldUtil.getAsProperties(field));
+		}
+		insertBuilder.save();
 	}
 	
 	private static void validateWorkflowRule (WorkflowRuleContext rule) {
@@ -354,9 +378,12 @@ public class WorkflowRuleAPI {
 	
 	public static List<WorkflowRuleContext> getActiveWorkflowRulesFromActivityAndRuleType(long moduleId, List<ActivityType> activityTypes,Criteria criteria, RuleType... ruleTypes) throws Exception {
 		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
+		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
+		fields.addAll(FieldFactory.getWorkflowEventFields());
+		
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 				.table(module.getTableName())
-				.select(FieldFactory.getWorkflowRuleFields())
+				.select(fields)
 				.innerJoin("Workflow_Event")
 				.on("Workflow_Rule.EVENT_ID = Workflow_Event.ID")
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
@@ -394,7 +421,7 @@ public class WorkflowRuleAPI {
 			values.add(type.getValue());
 		}
 		ruleBuilder.andCustomWhere(activityTypeWhere.toString(), values.toArray());
-		return getWorkFlowsFromMapList(ruleBuilder.get(), false, true);
+		return getWorkFlowsFromMapList(ruleBuilder.get(), true, true);
 	}
 	
 	public static int updateLastValueInReadingRule(long ruleId, long value) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
@@ -513,11 +540,45 @@ public class WorkflowRuleAPI {
 		return typeWiseProps;
 	}
 	
+	private static Map<Long, List<FieldChangeFieldContext>> getFieldChangeFields(List<Long> ruleIds) throws Exception {
+		if (ruleIds != null && !ruleIds.isEmpty()) {
+			FacilioModule module = ModuleFactory.getWorkflowFieldChangeFieldsModule();
+			List<FacilioField> fields = FieldFactory.getWorkflowFieldChangeFields();
+			FacilioField ruleField = FieldFactory.getAsMap(fields).get("ruleId");
+			
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+															.table(module.getTableName())
+															.select(fields)
+															.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+															.andCondition(CriteriaAPI.getCondition(ruleField, ruleIds, PickListOperators.IS))
+															;
+			
+			List<Map<String, Object>> props = selectBuilder.get();
+			if (props != null && !props.isEmpty()) {
+				Map<Long, List<FieldChangeFieldContext>> fieldMap = new HashMap<>();
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				for (Map<String, Object> prop : props) {
+					FieldChangeFieldContext field = FieldUtil.getAsBeanFromMap(prop, FieldChangeFieldContext.class);
+					field.setField(modBean.getField(field.getFieldId()));
+					List<FieldChangeFieldContext> fieldList = fieldMap.get(field.getRuleId());
+					if (fieldList == null) {
+						fieldList = new ArrayList<>();
+						fieldMap.put(field.getRuleId(), fieldList);
+					}
+					fieldList.add(field);
+				}
+				return fieldMap; 
+			}
+		}
+		return null;
+	}
+	
 	private static List<WorkflowRuleContext> getWorkFlowsFromMapList(List<Map<String, Object>> props, boolean fetchEvent, boolean fetchChildren) throws Exception {
 		if(props != null && props.size() > 0) {
 			List<WorkflowRuleContext> workflows = new ArrayList<>();
 			List<Long> workflowIds = fetchChildren ? new ArrayList<>() : null;
 			List<Long> criteriaIds = fetchChildren ? new ArrayList<>() : null;
+			List<Long> fieldChangeRuleIds = fetchEvent ? new ArrayList<>() : null;
 			
 			Map<RuleType, List<Long>> typeWiseIds = new HashMap<>();
 			for(Map<String, Object> prop : props) {
@@ -539,6 +600,13 @@ public class WorkflowRuleAPI {
 						criteriaIds.add(criteriaId);
 					}
 				}
+				
+				if (fetchEvent) {
+					int activity = (int) prop.get("activityType");
+					if (ActivityType.FIELD_CHANGE.isPresent(activity)) {
+						fieldChangeRuleIds.add((Long) prop.get("id"));
+					}
+				}
 			}
 			Map<RuleType, Map<Long, Map<String, Object>>> typeWiseExtendedProps = getTypeWiseExtendedProps(typeWiseIds);
 			Map<Long, WorkflowContext> workflowMap = null;
@@ -549,6 +617,11 @@ public class WorkflowRuleAPI {
 			Map<Long, Criteria> criteriaMap = null;
 			if (fetchChildren && !criteriaIds.isEmpty()) {
 				criteriaMap = CriteriaAPI.getCriteriaAsMap(criteriaIds);
+			}
+			
+			Map<Long, List<FieldChangeFieldContext>> ruleFieldsMap = null;
+			if (fetchEvent && !fieldChangeRuleIds.isEmpty()) {
+				ruleFieldsMap = getFieldChangeFields(fieldChangeRuleIds);
 			}
 			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -597,6 +670,10 @@ public class WorkflowRuleAPI {
 					event.setId(rule.getEventId());
 					event.setModule(modBean.getModule(event.getModuleId()));
 					rule.setEvent(event);
+					
+					if (ActivityType.FIELD_CHANGE.isPresent(event.getActivityType())) {
+						rule.setFields(ruleFieldsMap.get(rule.getId()));
+					}
 				}
 				workflows.add(rule);
 			}
@@ -742,18 +819,41 @@ public class WorkflowRuleAPI {
 		}
 	}
 	
-	public static boolean evaluateWorkflow(WorkflowRuleContext workflowRule, String moduleName, Object record, Map<String, Object> recordPlaceHolders, FacilioContext context) throws Exception {
+	private static boolean evalFieldChange(WorkflowRuleContext rule, List<UpdateChangeSet> changeSetList) {
+		if (rule.getEvent().getActivityTypeEnum() == ActivityType.FIELD_CHANGE) {
+			if (changeSetList != null && !changeSetList.isEmpty()) {
+				for (FieldChangeFieldContext field : rule.getFields()) {
+					for (UpdateChangeSet changeSet : changeSetList) {
+						if (field.getFieldId() == changeSet.getFieldId() 
+								&& (field.getOldValue() == null || field.getOldValue().toString().equals(changeSet.getOldValue().toString()))
+								&& (field.getNewValue() == null || field.getNewValue().toString().equals(changeSet.getNewValue().toString()))
+								) {
+							return true;
+						}
+					}
+				}
+			}
+			return false;
+		}
+		return true;
+	}
+	
+	public static boolean evaluateWorkflow(WorkflowRuleContext workflowRule, String moduleName, Object record, List<UpdateChangeSet> changeSet, Map<String, Object> recordPlaceHolders, FacilioContext context) throws Exception {
 		Map<String, Object> rulePlaceHolders = workflowRule.constructPlaceHolders(moduleName, record, recordPlaceHolders, context);
-		boolean miscFlag = false, criteriaFlag = false, workflowFlag = false;
-		miscFlag = workflowRule.evaluateMisc(moduleName, record, rulePlaceHolders, (FacilioContext) context);
-		if (miscFlag) {
-			criteriaFlag = workflowRule.evaluateCriteria(moduleName, record, rulePlaceHolders, (FacilioContext) context);
-			if (criteriaFlag) {
-				workflowFlag = workflowRule.evaluateWorkflowExpression(moduleName, record, rulePlaceHolders, (FacilioContext) context);
+		boolean fieldChangeFlag = false, miscFlag = false, criteriaFlag = false, workflowFlag = false;
+		
+		fieldChangeFlag = evalFieldChange(workflowRule, changeSet);
+		if (fieldChangeFlag) {
+			miscFlag = workflowRule.evaluateMisc(moduleName, record, rulePlaceHolders, (FacilioContext) context);
+			if (miscFlag) {
+				criteriaFlag = workflowRule.evaluateCriteria(moduleName, record, rulePlaceHolders, (FacilioContext) context);
+				if (criteriaFlag) {
+					workflowFlag = workflowRule.evaluateWorkflowExpression(moduleName, record, rulePlaceHolders, (FacilioContext) context);
+				}
 			}
 		}
 		
-		boolean result = criteriaFlag && workflowFlag && miscFlag;
+		boolean result = fieldChangeFlag && miscFlag && criteriaFlag && workflowFlag;
 		if(result) {
 			workflowRule.executeWorkflowActions(record, context, rulePlaceHolders);
 		}

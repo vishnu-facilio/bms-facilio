@@ -801,6 +801,20 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	public static List<FacilioField> getWorkflowFieldChangeFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getWorkflowFieldChangeFieldsModule();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("ruleId", "RULE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("fieldId", "FIELD_ID", module, FieldType.LOOKUP));
+		fields.add(getField("oldValue", "OLD_VALUE", module, FieldType.STRING));
+		fields.add(getField("newValue", "NEW_VALUE", module, FieldType.STRING));
+		
+		return fields;
+	}
 
 	public static List<FacilioField> getReadingRuleFields() {
 		List<FacilioField> fields = new ArrayList<>();

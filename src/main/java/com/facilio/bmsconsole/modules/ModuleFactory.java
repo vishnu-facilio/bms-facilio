@@ -178,6 +178,14 @@ public class ModuleFactory {
 		workflowRuleModule.setTableName("Workflow_Rule");
 		return workflowRuleModule;
 	}
+	
+	public static FacilioModule getWorkflowFieldChangeFieldsModule() {
+		FacilioModule workflowFieldChangeFields = new FacilioModule();
+		workflowFieldChangeFields.setName("workflowFieldChangeFields");
+		workflowFieldChangeFields.setDisplayName("Workflow Field Change Fields");
+		workflowFieldChangeFields.setTableName("Workflow_Field_Change_Fields");
+		return workflowFieldChangeFields;
+	}
 
 	public static FacilioModule getReadingRuleModule() {
 		FacilioModule readingRuleModule = new FacilioModule();
