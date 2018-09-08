@@ -70,6 +70,7 @@ import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.EncryptionUtil;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.util.ShiftAPI;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.auth.CognitoUtil;
@@ -710,6 +711,7 @@ public class LoginAction extends FacilioAction{
 			data.put("forms", forms);
 		}
 		data.put("mysites", CommonCommandUtil.getMySites());
+		data.put("sites", SpaceAPI.getAllSites());
 		
 		Map<String, Object> config = new HashMap<>();
 		config.put("ws_endpoint", WmsApi.getWebsocketEndpoint(AccountUtil.getCurrentUser().getId()));
