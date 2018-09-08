@@ -67,18 +67,23 @@ public class V2ReportAction extends FacilioAction {
 	}
 	
 	public String fetchReportWithData() throws Exception {
-		reportContext = ReportUtil.getReport(reportId);
 		
 		FacilioContext context = new FacilioContext();
-		if(startTime > 0 && endTime > 0) {
-			reportContext.setDateRange(new DateRange(startTime, endTime));
-		}
-		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
+		setReportWithDataContext(context);
 		
 		Chain fetchReadingDataChain = ReadOnlyChainFactory.fetchReportDataChain();
 		fetchReadingDataChain.execute(context);
 		
 		return setReportResult(context);
+	}
+	
+	private void setReportWithDataContext(FacilioContext context) throws Exception {
+		reportContext = ReportUtil.getReport(reportId);
+		
+		if(startTime > 0 && endTime > 0) {
+			reportContext.setDateRange(new DateRange(startTime, endTime));
+		}
+		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 	}
 	
 	ReportFolderContext reportFolder;
@@ -311,25 +316,23 @@ public class V2ReportAction extends FacilioAction {
 	public String exportReport() throws Exception{
 		
 		FacilioContext context = new FacilioContext();
-		setExportContext(context);
 		
-		Chain exportChain = FacilioChainFactory.getExportReportFileChain();
+		Chain exportChain;
+		if (reportId != -1) {
+			exportChain = FacilioChainFactory.getExportReportFileChain();
+			setReportWithDataContext(context);
+		}
+		else {
+			exportChain = FacilioChainFactory.getExportReadingReportFileChain();
+			setReadingsDataContext(context);
+		}
+		context.put(FacilioConstants.ContextNames.FILE_FORMAT, fileFormat);
+		
 		exportChain.execute(context);
 		
 		setResult("fileUrl", context.get(FacilioConstants.ContextNames.FILE_URL));
 		
 		return SUCCESS;
-	}
-	
-	private void setExportContext(FacilioContext context) throws Exception {
-		if (reportId != -1) {
-			reportContext = ReportUtil.getReport(reportId);
-			context.put(FacilioConstants.ContextNames.REPORT, reportContext);
-		}
-		else {
-			setReadingsDataContext(context);	
-		}
-		context.put(FacilioConstants.ContextNames.FILE_FORMAT, fileFormat);
 	}
 	
 	private EMailTemplate emailTemplate;
@@ -343,11 +346,18 @@ public class V2ReportAction extends FacilioAction {
 	public String sendReportMail() throws Exception{
 
 		FacilioContext context = new FacilioContext();
-		setExportContext(context);
-		
+		Chain mailReportChain;
+		if (reportId != -1) {
+			mailReportChain = FacilioChainFactory.sendReportMailChain();
+			setReportWithDataContext(context);
+		}
+		else {
+			mailReportChain = FacilioChainFactory.sendReadingReportMailChain();
+			setReadingsDataContext(context);
+		}
+		context.put(FacilioConstants.ContextNames.FILE_FORMAT, fileFormat);
 		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
 		
-		Chain mailReportChain = FacilioChainFactory.sendReadingReportMailChain();
 		mailReportChain.execute(context);
 		
 		setResult("fileUrl", context.get(FacilioConstants.ContextNames.FILE_URL));

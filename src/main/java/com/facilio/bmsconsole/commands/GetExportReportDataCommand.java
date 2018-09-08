@@ -199,7 +199,7 @@ public class GetExportReportDataCommand implements Command {
 				for(int i = 0, size = columns.size(); i < size; i++) {
 					Map<String, Object> column = columns.get(i);
 					if (i == 0) {
-						String  format = "MMMM dd, yyyy hh:mm A";
+						String  format = "MMMM dd, yyyy hh:mm a";
 						newRow.put((String) column.get("header"), DateTimeUtil.getFormattedTime(x, format));
 						continue;
 					}
