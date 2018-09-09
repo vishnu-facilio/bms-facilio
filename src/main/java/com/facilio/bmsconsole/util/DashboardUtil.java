@@ -108,6 +108,7 @@ public class DashboardUtil {
 
     public static final String WEATHER_WIDGET_WORKFLOW_STRING = "<workflow> 		<parameter name=\"parentId\" type = \"Number\"/> 		<expression name=\"a\"> 				<module name=\"weather\"/> 				<criteria pattern=\"1\"> 						<condition sequence=\"1\">parentId`=`${parentId}</condition> 				</criteria> 				<orderBy name=\"ttime\" sort=\"desc\"/> 				<limit>1</limit> 		</expression> </workflow>";
 	public static final String CARBON_EMISSION_CARD = "<workflow> 		<parameter name=\"parentId\" type=\"Number\"/> 		<expression name=\"mainMeter\"> 		 		 				<function>default.getMainEnergyMeter(parentId)</function>	 		</expression>	<expression name=\"a\"> 				<module name=\"energydata\"/> 				<criteria pattern=\"1 and 2\"> 						<condition sequence=\"1\">parentId`=`${mainMeter}</condition> 						<condition sequence=\"2\">ttime`Current Month`</condition> 				</criteria> 				<field name=\"totalEnergyConsumptionDelta\" aggregate = \"sum\"/> 		</expression> 		<expression name=\"carbonConstant\"> 				<constant>0.44</constant> 		</expression> 	<result>a*carbonConstant</result> </workflow>";
+	public static final String CARBON_EMISSION_CARBON_MODULE_CARD = "<workflow> 		<parameter name=\"parentId\" type=\"Number\"/> 		<expression name=\"mainMeter\"> 		 		 				<function>default.getMainEnergyMeter(parentId)</function>	 		</expression>	<expression name=\"a\"> 				<module name=\"co2emisson\"/> 				<criteria pattern=\"1 and 2\"> 						<condition sequence=\"1\">parentId`=`${mainMeter}</condition> 						<condition sequence=\"2\">ttime`Current Month`</condition> 				</criteria> 				<field name=\"co2emisson\" aggregate = \"sum\"/> 		</expression> 	<result>a</result> </workflow>";
 	
 	public static final String ENERGY_COST_LAST_MONTH_CONSUMPTION_WORKFLOW = "<workflow> 		<parameter name=\"parentId\" type=\"Number\"/> 		<expression name=\"mainMeter\"> 		 		 				<function>default.getMainEnergyMeter(parentId)</function>	 		</expression>	<expression name=\"a\"> 		 				<module name=\"energydata\"/> 		 				<criteria pattern=\"1 and 2\"> 			 						<condition sequence=\"1\">parentId`=`${mainMeter}</condition> 			 						<condition sequence=\"2\">ttime`Last Month`</condition> 		 				</criteria> 		 				<field name=\"totalEnergyConsumptionDelta\" aggregate = \"sum\"/> 	 		</expression> 		<expression name=\"unitcost\"> 		 			<constant>0.41</constant> 	 		</expression> 	 		<result>a*unitcost</result> </workflow>";
 	public static final String ENERGY_COST_THIS_MONTH_CONSUMPTION_WORKFLOW = "<workflow> 		<parameter name=\"parentId\" type=\"Number\"/> 		<expression name=\"mainMeter\"> 		 		 				<function>default.getMainEnergyMeter(parentId)</function>	 		</expression>	<expression name=\"a\"> 		 				<module name=\"energydata\"/> 		 				<criteria pattern=\"1 and 2\"> 			 						<condition sequence=\"1\">parentId`=`${mainMeter}</condition> 			 						<condition sequence=\"2\">ttime`Current Month upto now`</condition> 		 				</criteria> 		 				<field name=\"totalEnergyConsumptionDelta\" aggregate = \"sum\"/> 	 		</expression> 		<expression name=\"unitcost\"> 		 			<constant>0.41</constant> 	 		</expression> 	 		<result>a*unitcost</result> </workflow>";
@@ -3356,7 +3357,14 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		case STATIC_WIDGET_ENERGY_CARBON_CARD_MINI:
 			
 			widgetVsWorkflowContext = new WidgetVsWorkflowContext();
-			widgetVsWorkflowContext.setWorkflowString(CARBON_EMISSION_CARD);
+			
+			if(AccountUtil.getCurrentOrg().getId() == 116l) {
+				widgetVsWorkflowContext.setWorkflowString(CARBON_EMISSION_CARBON_MODULE_CARD);
+			}
+			else {
+				widgetVsWorkflowContext.setWorkflowString(CARBON_EMISSION_CARD);
+			}
+			
 			widgetVsWorkflowContext.setWorkflowName("carbonEmission");
 			workflowList.add(widgetVsWorkflowContext);
 			
