@@ -82,6 +82,7 @@ public class V2ReportAction extends FacilioAction {
 		
 		if(startTime > 0 && endTime > 0) {
 			reportContext.setDateRange(new DateRange(startTime, endTime));
+			reportContext.setDateValue(new DateRange(startTime, endTime).toString());
 		}
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 	}

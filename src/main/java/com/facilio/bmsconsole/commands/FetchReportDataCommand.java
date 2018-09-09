@@ -304,10 +304,17 @@ public class FetchReportDataCommand implements Command {
 	
 	private void calculateBaseLineRange (ReportContext report) {
 		if (report.getDateOperatorEnum() != null) {
-			DateRange actualRange = ((DateOperators) report.getDateOperatorEnum()).getRange(report.getDateValue());
-			report.setDateRange(actualRange);
+			DateRange actualRange = null;
+			if(report.getDateRange() == null) {
+				actualRange = ((DateOperators) report.getDateOperatorEnum()).getRange(report.getDateValue());
+				report.setDateRange(actualRange);
+			}
+			else {
+				actualRange = report.getDateRange();
+			}
 			if (report.getBaseLines() != null && !report.getBaseLines().isEmpty()) {
 				for (ReportBaseLineContext baseLine : report.getBaseLines()) {
+
 					DateRange baseLineRange = baseLine.getBaseLine().calculateBaseLineRange(actualRange, baseLine.getAdjustTypeEnum());
 					long diff = actualRange.getStartTime() - baseLineRange.getStartTime();
 					
@@ -318,3 +325,4 @@ public class FetchReportDataCommand implements Command {
 		}
 	}
 }
+
