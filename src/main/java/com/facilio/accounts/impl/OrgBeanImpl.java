@@ -249,8 +249,11 @@ public class OrgBeanImpl implements OrgBean {
 				.on("ORG_Users.ORG_USERID = Shift_User_Rel.ORG_USERID")
 				.andCustomWhere("ORGID = ? AND USER_TYPE = ? AND DELETED_TIME = -1", orgId, AccountConstants.UserType.USER.getValue());
 		
-		
-		List<Long> accessibleSpace = AccountUtil.getCurrentAccount().getUser().getAccessibleSpace();
+		User currentUser = AccountUtil.getCurrentAccount().getUser();
+		if(currentUser == null){
+			return null;
+		}
+		List<Long> accessibleSpace = currentUser.getAccessibleSpace();
 		String siteIdCondition = "";
 		if (accessibleSpace != null && !accessibleSpace.isEmpty()) {
 			Map<Long, BaseSpaceContext> idVsBaseSpace = SpaceAPI.getBaseSpaceMap(accessibleSpace);
