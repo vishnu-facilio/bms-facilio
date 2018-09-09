@@ -26,6 +26,7 @@ import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportFolderContext;
 import com.facilio.report.context.WorkorderAnalysisContext;
 import com.facilio.report.util.ReportUtil;
+import com.facilio.tasker.ScheduleInfo;
 
 public class V2ReportAction extends FacilioAction {
 	
@@ -364,6 +365,46 @@ public class V2ReportAction extends FacilioAction {
 		mailReportChain.execute(context);
 		
 		setResult("fileUrl", context.get(FacilioConstants.ContextNames.FILE_URL));
+		
+		return SUCCESS;
+	}
+	
+	private int maxCount = -1;
+	public int getMaxCount() {
+		return maxCount;
+	}
+	public void setMaxCount(int maxCount) {
+		this.maxCount = maxCount;
+	}
+	
+	private ScheduleInfo scheduleInfo;
+	public ScheduleInfo getScheduleInfo() {
+		return scheduleInfo;
+	}
+	public void setScheduleInfo(ScheduleInfo scheduleInfo) {
+		this.scheduleInfo = scheduleInfo;
+	}
+	
+	public String scheduleReport() throws Exception{
+		
+		FacilioContext context = new FacilioContext();
+		
+		emailTemplate.setName("Report");
+		emailTemplate.setFrom("report@${org.domain}.facilio.com");
+
+		context.put(FacilioConstants.ContextNames.REPORT_ID, reportId);
+		context.put(FacilioConstants.ContextNames.FILE_FORMAT, fileFormat);
+		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
+		context.put(FacilioConstants.ContextNames.START_TIME, startTime);
+		context.put(FacilioConstants.ContextNames.END_TIME, endTime);
+		context.put(FacilioConstants.ContextNames.MAX_COUNT, maxCount);
+		context.put(FacilioConstants.ContextNames.SCHEDULE_INFO, scheduleInfo);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+ 		
+		Chain scheduleReportChain = FacilioChainFactory.scheduleReportChain();
+		scheduleReportChain.execute(context);
+		
+		setResult("id", context.get(FacilioConstants.ContextNames.RECORD_ID));
 		
 		return SUCCESS;
 	}

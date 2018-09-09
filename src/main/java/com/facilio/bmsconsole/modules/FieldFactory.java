@@ -3657,6 +3657,20 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	public static List<FacilioField> getReportScheduleInfo1Fields() {
+		FacilioModule module = ModuleFactory.getReportScheduleInfo();
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getModuleIdField(module));
+		fields.add(getField("reportId", "REPORTID", module, FieldType.NUMBER));
+		fields.add(getField("fileFormat", "FILE_FORMAT", module, FieldType.NUMBER));
+		fields.add(getField("templateId", "TEMPLATEID", module, FieldType.NUMBER));
+
+		return fields;
+	}
 
 	public static List<FacilioField> getBaseLineFields() {
 		FacilioModule module = ModuleFactory.getBaseLineModule();

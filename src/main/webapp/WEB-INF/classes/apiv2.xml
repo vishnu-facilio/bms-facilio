@@ -300,6 +300,8 @@
 		</action>
 		<action name="sendMail" class="com.facilio.bmsconsole.actions.V2ReportAction" method="sendReportMail">
 		</action>
+		<action name="schedule" class="com.facilio.bmsconsole.actions.V2ReportAction" method="scheduleReport">
+		</action>
 		<action name="fetchReportFolders" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReportFolders">
 		</action>
 		<action name="addReportFolder" class="com.facilio.bmsconsole.actions.V2ReportAction" method="addReportFolder">

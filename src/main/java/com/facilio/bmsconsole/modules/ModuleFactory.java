@@ -884,6 +884,14 @@ public class ModuleFactory {
 		reportScheduleInfo.setTableName("Report_Schedule_Info");
 		return reportScheduleInfo;
 	}
+	
+	public static FacilioModule getReportScheduleInfo() {
+		FacilioModule reportScheduleInfo = new FacilioModule();
+		reportScheduleInfo.setName("reportScheduleInfo");
+		reportScheduleInfo.setDisplayName("Report Schedule Info");
+		reportScheduleInfo.setTableName("Report_Schedule_Info1");
+		return reportScheduleInfo;
+	}
 
 	public static FacilioModule getCalendarColorModule() {
 		FacilioModule calendarColor = new FacilioModule();
