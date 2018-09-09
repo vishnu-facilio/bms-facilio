@@ -48,14 +48,32 @@ public class UnitsUtil {
 	}
 	
 	public static Double convertToSiUnit(Object value,Unit from) {
+		if(value == null) {
+			return null;
+		}
+		if(from.getMetric().getMetricId() == Metric.CURRENCY.getMetricId()) {
+			return Double.parseDouble(value.toString());
+		}
 		return convert(value, from, Unit.valueOf(from.getMetric().getSiUnitId()));
 	}
 	public static Double convertToOrgDisplayUnit(Object value,Unit from) throws Exception {
+		if(value == null) {
+			return null;
+		}
+		if(from.getMetric().getMetricId() == Metric.CURRENCY.getMetricId()) {
+			return Double.parseDouble(value.toString());
+		}
 		Unit orgDisplayUnit = getOrgDisplayUnit(AccountUtil.getCurrentOrg().getOrgId(),from.getMetric().getMetricId());
 		return convert(value, from, orgDisplayUnit);
 	}
 	
 	public static Double convertToOrgDisplayUnitFromSi(Object value,int metricId) throws Exception {
+		if(value == null) {
+			return null;
+		}
+		if(metricId == Metric.CURRENCY.getMetricId()) {
+			return Double.parseDouble(value.toString());
+		}
 		Unit orgDisplayUnit = getOrgDisplayUnit(AccountUtil.getCurrentOrg().getOrgId(),metricId);
 		return convert(value, Unit.valueOf(Metric.valueOf(metricId).getSiUnitId()) , orgDisplayUnit);
 	}
