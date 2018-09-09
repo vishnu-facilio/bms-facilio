@@ -43,7 +43,7 @@ public class GetExportReportDataCommand implements Command {
 		Map<String, Map<String, Object>> rows = new LinkedHashMap<>();
 	    if (mode == ReportMode.SERIES) {
 	    	  currentHeaderKeys.add(SERIES_X_HEADER);
-	    	  currentHeaderKeys.addAll(reportData.values().stream().findFirst().get().keySet());
+	    	  currentHeaderKeys.addAll(reportData.values().stream().filter(val -> val != null && !val.isEmpty()).findFirst().get().keySet());
 	    }
 	    else {
 	    		currentHeaderKeys.add(report.getDataPoints().get(0).getxAxis().getField().getName());
@@ -61,7 +61,8 @@ public class GetExportReportDataCommand implements Command {
 	    }
 	    
 	    Map<String, Object> tableState = null;
-		if (report.getTabularState() != null) {
+	    String tabularState = report.getTabularState() != null ? report.getTabularState() : (String) context.get(FacilioConstants.ContextNames.TABULAR_STATE);
+		if (tabularState != null) {
 			JSONParser parser = new JSONParser();
     			tableState = (Map<String, Object>) parser.parse(report.getTabularState());
 		}
@@ -78,7 +79,7 @@ public class GetExportReportDataCommand implements Command {
 			if (columns.size() != stateColumns.size()) {
 				List<String> existingHeaders = stateColumns.stream().map(col -> col.get("name").toString()).collect(Collectors.toList());
 				List<String> remainingHeaders = currentHeaderKeys.stream().filter(header -> !existingHeaders.contains(header)).collect(Collectors.toList());
-				setTableStateColumns(stateColumns, remainingHeaders);
+				setTableStateColumns(columns, remainingHeaders);
 			}
 		}
 		
@@ -110,6 +111,9 @@ public class GetExportReportDataCommand implements Command {
 				column.put("baseLine", true);
 				column.put("baseLineId", Long.parseLong(header.substring(0, header.indexOf("__baseline__"))));
 				column.put("dp", header.substring(header.indexOf("__baseline__") + 12));
+			}
+			else if (header.equalsIgnoreCase(ACTUAL_HEADER)) {
+				column.put("displayName", ACTUAL_HEADER);
 			}
 			columns.add(column);
 		});
@@ -172,7 +176,7 @@ public class GetExportReportDataCommand implements Command {
 						newRow.put((String) col.get("header"), key);
 					}
 					else if (reportData.get(key).containsKey(columnName)){
-						ReportDataPointContext dataPoint = dataMap.get(columnName);
+						ReportDataPointContext dataPoint = dataMap.get(key);
 						Object val = reportData.get(key).get(columnName).keySet().stream().findFirst().get();
 						FacilioField field = null;
 						try {

@@ -326,6 +326,7 @@ public class V2ReportAction extends FacilioAction {
 		else {
 			exportChain = FacilioChainFactory.getExportReadingReportFileChain();
 			setReadingsDataContext(context);
+			context.put(FacilioConstants.ContextNames.TABULAR_STATE, tabularState);
 		}
 		context.put(FacilioConstants.ContextNames.FILE_FORMAT, fileFormat);
 		
@@ -355,6 +356,7 @@ public class V2ReportAction extends FacilioAction {
 		else {
 			mailReportChain = FacilioChainFactory.sendReadingReportMailChain();
 			setReadingsDataContext(context);
+			context.put(FacilioConstants.ContextNames.TABULAR_STATE, tabularState);
 		}
 		context.put(FacilioConstants.ContextNames.FILE_FORMAT, fileFormat);
 		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
