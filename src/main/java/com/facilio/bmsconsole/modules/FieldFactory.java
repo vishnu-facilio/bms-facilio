@@ -4466,6 +4466,7 @@ public class FieldFactory {
 		fields.add(getOrgIdField(module));
 		fields.add(getField("name", "NAME", module, FieldType.STRING));
 		fields.add(getField("interval", "REFRESH_INTERVAL", module, FieldType.NUMBER));
+		fields.add(getField("screenSettingString","SCREEN_SETTING",module,FieldType.STRING));
 		
 		return fields;
 	}

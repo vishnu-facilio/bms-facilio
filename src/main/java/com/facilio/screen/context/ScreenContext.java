@@ -1,7 +1,14 @@
 package com.facilio.screen.context;
 
 import java.util.ArrayList;
+
+
 import java.util.List;
+
+
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 public class ScreenContext {
 
@@ -10,6 +17,26 @@ public class ScreenContext {
 	String name;
 	int interval;
 	List<ScreenDashboardRelContext> screenDashboards = new ArrayList<>();
+	String screenSettingString;
+	
+	JSONObject screenSetting = new JSONObject();
+	public JSONObject getScreenSetting() throws ParseException {
+		if(this.screenSettingString != null) {
+			JSONParser parser = new JSONParser();
+			this.screenSetting = (JSONObject) parser.parse(this.screenSettingString);
+		}
+		return this.screenSetting;
+	}
+	public void setScreenSetting(JSONObject screenSetting) {
+		this.screenSetting = screenSetting;
+	}
+	public String getScreenSettingString() {
+		return screenSettingString;
+	}
+	public void setScreenSettingString(String screenSettingString) {
+		this.screenSettingString = screenSettingString;
+	}
+
 	
 	public List<ScreenDashboardRelContext> getScreenDashboards() {
 		return screenDashboards;
