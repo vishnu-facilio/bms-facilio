@@ -60,12 +60,12 @@ public class TransformReportDataCommand implements Command {
 			for (Map<String, Object> prop : props) {
 				Object xVal = prop.get(dataPoint.getxAxis().getField().getName());
 				if (xVal != null) {
-					xVal = getFormattedVal(dataPoint.getxAxis().getField(), xVal);
+					xVal = formatVal(dataPoint.getxAxis().getField(), xVal);
 					if (xValues != null) {
 						xValues.add(xVal);
 					}
 					Object yVal = prop.get(dataPoint.getyAxis().getField().getName());
-					yVal = getFormattedVal(dataPoint.getyAxis().getField(), yVal);
+					yVal = formatVal(dataPoint.getyAxis().getField(), yVal);
 					if (dataPoint.getGroupByFields() == null || dataPoint.getGroupByFields().isEmpty()) {
 						dataPoints.put(xVal, yVal.toString());
 					}
@@ -78,7 +78,7 @@ public class TransformReportDataCommand implements Command {
 						for (int i = 0; i < dataPoint.getGroupByFields().size(); i++) {
 							FacilioField field = dataPoint.getGroupByFields().get(i).getField();
 							Object groupByVal = prop.get(field.getName());
-							groupByVal = getFormattedVal(field, groupByVal);
+							groupByVal = formatVal(field, groupByVal);
 							if (i == dataPoint.getGroupByFields().size() - 1) {
 								currentMap.put(groupByVal.toString(), yVal);
 							}
@@ -100,12 +100,12 @@ public class TransformReportDataCommand implements Command {
 	}
 	
 	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
-	private Object getFormattedVal (FacilioField field, Object val) {
+	private Object formatVal(FacilioField field, Object val) {
 		if (val == null) {
 			return "";
 		}
 		if (field.getDataTypeEnum() == FieldType.DECIMAL) {
-			return DECIMAL_FORMAT.format(FieldUtil.castOrParseValueAsPerType(field, val));
+			return DECIMAL_FORMAT.format(val);
 		}
 		return val;
 	}
