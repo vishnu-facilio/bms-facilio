@@ -1261,7 +1261,7 @@ public class DashboardAction extends ActionSupport {
 							if(widgetStaticContext != null && widgetStaticContext.getStaticKey().equals("weathercard") && widgetVsWorkflowContext.getWorkflowName().equals("weather")) {
 								Map<String,Object> ss = (Map<String, Object>) wfResult;
 								Object temprature = ss.get("temperature");
-								if(AccountUtil.getCurrentOrg().getOrgId() == 104l || AccountUtil.getCurrentOrg().getOrgId() == 75l) {
+								if(AccountUtil.getCurrentOrg().getOrgId() == 104l) {
 									temprature = UnitsUtil.convert(temprature, Unit.CELSIUS, Unit.FAHRENHEIT);
 									ss.put("unit", "F");
 								}
