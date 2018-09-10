@@ -1200,6 +1200,7 @@ public class DashboardAction extends ActionSupport {
 							
 							double previousValue = DashboardAction.getTotalKwh(Collections.singletonList(meter.getId()+""), lastMonthUptoNow.getStartTime(), lastMonthUptoNow.getEndTime());
 							
+							value = DashboardAction.getTotalKwh(Collections.singletonList(meter.getId()+""), dateOpp.getRange(null).getStartTime(), dateOpp.getRange(null).getEndTime());
 							JSONObject json1 = new JSONObject();
 							
 							json1.put("consumption", value);
