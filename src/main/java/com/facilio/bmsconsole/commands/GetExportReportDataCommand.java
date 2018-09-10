@@ -37,6 +37,17 @@ public class GetExportReportDataCommand implements Command {
 		Map<String, Map<String, Map<Object, Object>>> reportData = (Map<String, Map<String, Map<Object, Object>>>) context.get(FacilioConstants.ContextNames.REPORT_DATA);
 		ReportMode mode = (ReportMode)context.get(FacilioConstants.ContextNames.REPORT_MODE);
 		
+		if (mode == null) {
+			String chartStateString = (String) report.getChartState();
+			JSONParser parser = new JSONParser();
+			Map<String, Object> chartState = (Map<String, Object>) parser.parse(report.getTabularState());
+			if (chartState != null) {
+				Map<String, Object> common = (Map<String, Object>) chartState.get("common");
+				mode = ReportMode.valueOf((int) common.get("mode"));
+			}
+		}
+		
+		
 		Map<Long, ReportBaseLineContext> baseLineMap = null;
 		
 		List<String> currentHeaderKeys = new ArrayList<>();

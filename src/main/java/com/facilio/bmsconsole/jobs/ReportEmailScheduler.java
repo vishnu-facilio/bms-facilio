@@ -59,7 +59,6 @@ public class ReportEmailScheduler extends FacilioJob {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			log.info("Exception occurred ", e);
-			System.out.println("Exception in report mail" + e);
 		}
 	}
 
