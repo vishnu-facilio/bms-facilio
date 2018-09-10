@@ -111,7 +111,7 @@ public class V2ReportAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	public String addReadingReport() throws Exception {
+	public String addOrUpdateReadingReport() throws Exception {
 		JSONParser parser = new JSONParser();
 		JSONArray fieldArray = (JSONArray) parser.parse(fields);
 		JSONArray baseLineList = null;
@@ -132,7 +132,11 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.TABULAR_STATE, tabularState);
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 		
-		Chain addReadingReport = FacilioChainFactory.addReadingReportChain();
+		if(reportContext != null &&  reportContext.getId() > 0) {
+			context.put(FacilioConstants.ContextNames.OLD_REPORT_ID, reportContext.getId());
+			reportContext.setId(-1);
+		}
+		Chain addReadingReport = FacilioChainFactory.addOrUpdateReadingReportChain();
 		addReadingReport.execute(context);
 		
 		return setReportResult(context);

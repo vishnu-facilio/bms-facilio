@@ -13,12 +13,13 @@ import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.util.ReportUtil;
 
-public class AddReportCommand implements Command {
+public class AddOrUpdateReportCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
 		
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
+		Long oldReportId = (Long) context.get(FacilioConstants.ContextNames.OLD_REPORT_ID);
 		
 		report.setOrgId(AccountUtil.getCurrentOrg().getId());
 		
@@ -51,6 +52,10 @@ public class AddReportCommand implements Command {
 			reportFields.add(reportFieldContext);
 		}
 		ReportUtil.addReportFields(reportFields);
+		
+		if(oldReportId != null) {
+			ReportUtil.deleteOldReportWithWidgetUpdate(oldReportId,report.getId());
+		}
 		return false;
 	}
 

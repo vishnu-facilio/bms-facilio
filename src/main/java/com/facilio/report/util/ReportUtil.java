@@ -1,8 +1,10 @@
 package com.facilio.report.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -11,6 +13,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.StringOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -23,6 +26,7 @@ import com.facilio.report.context.ReportFolderContext;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class ReportUtil {
 	
@@ -111,6 +115,20 @@ public class ReportUtil {
 		return reportFolderContext;
 	}
 	
+	public static ReportFolderContext updateReportFolder(ReportFolderContext reportFolderContext) throws Exception {
+		
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getReportFolderModule().getTableName())
+				.fields(FieldFactory.getReport1FolderFields());
+
+		reportFolderContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+		Map<String, Object> props = FieldUtil.getAsProperties(reportFolderContext);
+		long id = insertBuilder.insert(props);
+		reportFolderContext.setId(id);
+		
+		return reportFolderContext;
+	}
+	
 	public static long addReport(ReportContext reportContext) throws Exception {
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
@@ -139,6 +157,25 @@ public class ReportUtil {
 		insertBuilder.addRecords(values);
 		insertBuilder.save();
 	}
+	
+	public static void deleteOldReportWithWidgetUpdate(Long oldReportId,Long reportId) throws Exception {
+		
+		
+		List<FacilioField> fields = FieldFactory.getWidgetChartFields();
+		
+		GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder()
+		.table(ModuleFactory.getWidgetChartModule().getTableName())
+		.fields(fields)
+		.andCustomWhere(ModuleFactory.getWidgetChartModule().getTableName()+".NEW_REPORT_ID = ?",oldReportId);
+		
+		
+		Map<String, Object> reportProp = new HashMap<>();
+		reportProp.put("newReportId", reportId);
+		update.update(reportProp);
+		
+		deleteReport(oldReportId);
+	}
+	
 	public static void deleteReport(long reportId) throws Exception {
 		
 		List<WidgetChartContext> widgets = DashboardUtil.getWidgetFromDashboard(reportId,true);

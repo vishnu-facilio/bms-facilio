@@ -290,7 +290,7 @@
 		</action>
 		<action name="workorderReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchWorkorderData">
 		</action>
-		<action name="addReadingReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="addReadingReport">
+		<action name="addReadingReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="addOrUpdateReadingReport">
 		</action>
 		<action name="addWorkOrderReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="addWorkOrderReport">
 		</action>
