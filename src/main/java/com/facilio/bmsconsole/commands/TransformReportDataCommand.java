@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -11,6 +12,8 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.report.context.ReportDataContext;
 import com.facilio.report.context.ReportDataPointContext;
@@ -57,11 +60,12 @@ public class TransformReportDataCommand implements Command {
 			for (Map<String, Object> prop : props) {
 				Object xVal = prop.get(dataPoint.getxAxis().getField().getName());
 				if (xVal != null) {
+					xVal = getFormattedVal(dataPoint.getxAxis().getField(), xVal);
 					if (xValues != null) {
 						xValues.add(xVal);
 					}
 					Object yVal = prop.get(dataPoint.getyAxis().getField().getName());
-					yVal = yVal == null ? "" : yVal;
+					yVal = getFormattedVal(dataPoint.getyAxis().getField(), yVal);
 					if (dataPoint.getGroupByFields() == null || dataPoint.getGroupByFields().isEmpty()) {
 						dataPoints.put(xVal, yVal.toString());
 					}
@@ -74,7 +78,7 @@ public class TransformReportDataCommand implements Command {
 						for (int i = 0; i < dataPoint.getGroupByFields().size(); i++) {
 							FacilioField field = dataPoint.getGroupByFields().get(i).getField();
 							Object groupByVal = prop.get(field.getName());
-							groupByVal = groupByVal == null ? "" : groupByVal;
+							groupByVal = getFormattedVal(field, groupByVal);
 							if (i == dataPoint.getGroupByFields().size() - 1) {
 								currentMap.put(groupByVal.toString(), yVal);
 							}
@@ -93,5 +97,16 @@ public class TransformReportDataCommand implements Command {
 			return dataPoints;
 		}
 		return null;
+	}
+	
+	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
+	private Object getFormattedVal (FacilioField field, Object val) {
+		if (val == null) {
+			return "";
+		}
+		if (field.getDataTypeEnum() == FieldType.DECIMAL) {
+			return DECIMAL_FORMAT.format(FieldUtil.castOrParseValueAsPerType(field, val));
+		}
+		return val;
 	}
 }
