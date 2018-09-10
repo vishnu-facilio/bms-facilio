@@ -2014,7 +2014,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		.andCustomWhere("REPORT_ID = ?", reportId);
 		deleteRecordBuilder.delete();
 		
-		List<WidgetChartContext> widgets = getWidgetFromDashboard(reportId);
+		List<WidgetChartContext> widgets = getWidgetFromDashboard(reportId,false);
 		
 		List<Long> removedWidgets = new ArrayList<>();
 		for(WidgetChartContext widget :widgets) {
@@ -3260,12 +3260,20 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		return null;
 	}
 	
-	public static List<WidgetChartContext> getWidgetFromDashboard(long reportId) throws Exception {
+	public static List<WidgetChartContext> getWidgetFromDashboard(long reportId,boolean isNewReport) throws Exception {
+		
+		String reportCollumn = null;
+		if(isNewReport) {
+			reportCollumn = "NEW_REPORT_ID";
+		}
+		else {
+			reportCollumn = "REPORT_ID";
+		}
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 					.select(FieldFactory.getWidgetChartFields())
 					.table(ModuleFactory.getWidgetChartModule().getTableName())
-					.andCustomWhere(ModuleFactory.getWidgetChartModule().getTableName()+".REPORT_ID = ?", reportId);
+					.andCustomWhere(ModuleFactory.getWidgetChartModule().getTableName()+"."+reportCollumn+" = ?", reportId);
 			
 		List<Map<String, Object>> props =  selectBuilder.get();
 		
@@ -3279,6 +3287,8 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		
 		return widgetCharts;
 	}
+	
+	
 	
 	
 	public static JSONArray getGroupedBooleanFields( List<Map<String, Object>> rs,JSONArray booleanResultOptions) {

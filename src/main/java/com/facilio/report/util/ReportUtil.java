@@ -4,17 +4,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportFolderContext;
+import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
@@ -132,5 +138,26 @@ public class ReportUtil {
 		}
 		insertBuilder.addRecords(values);
 		insertBuilder.save();
+	}
+	public static void deleteReport(long reportId) throws Exception {
+		
+		List<WidgetChartContext> widgets = DashboardUtil.getWidgetFromDashboard(reportId,true);
+		
+		List<Long> removedWidgets = new ArrayList<>();
+		for(WidgetChartContext widget :widgets) {
+			removedWidgets.add(widget.getId());
+		}
+		
+		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		deleteRecordBuilder.table(ModuleFactory.getWidgetModule().getTableName())
+		.andCondition(CriteriaAPI.getCondition(ModuleFactory.getWidgetModule().getTableName()+".ID", "id", StringUtils.join(removedWidgets, ","),StringOperators.IS));
+		
+		deleteRecordBuilder.delete();
+		
+		
+		deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		deleteRecordBuilder.table(ModuleFactory.getReportModule().getTableName())
+		.andCustomWhere("ID = ?", reportId);
+		deleteRecordBuilder.delete();
 	}
 }

@@ -308,6 +308,8 @@
 		</action>
 		<action name="fetchReportWithData" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReportWithData">
 		</action>
+		<action name="deleteReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="deleteReport">
+		</action>
 	</package>
 	
 	

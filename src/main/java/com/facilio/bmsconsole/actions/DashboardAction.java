@@ -4594,7 +4594,7 @@ public class DashboardAction extends ActionSupport {
 		
 		List<WidgetChartContext> widgetCharts = null;
 		if(!isDeleteWithWidget) {
-			widgetCharts = DashboardUtil.getWidgetFromDashboard(reportId);
+			widgetCharts = DashboardUtil.getWidgetFromDashboard(reportId,false);
 		}
 		if(widgetCharts == null || widgetCharts.isEmpty()) {
 			DashboardUtil.deleteReport(reportId);

@@ -11,11 +11,13 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.templates.EMailTemplate;
+import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
@@ -171,6 +173,30 @@ public class V2ReportAction extends FacilioAction {
 		fetchReadingDataChain.execute(context);
 		
 		return setReportResult(context);
+	}
+
+	public boolean deleteWithWidget;
+	
+	public boolean isDeleteWithWidget() {
+		return deleteWithWidget;
+	}
+	public void setDeleteWithWidget(boolean deleteWithWidget) {
+		this.deleteWithWidget = deleteWithWidget;
+	}
+	public String deleteReport() throws Exception {
+		
+		List<WidgetChartContext> widgetCharts = null;
+		if(!deleteWithWidget) {
+			widgetCharts = DashboardUtil.getWidgetFromDashboard(reportId,true);
+		}
+		if(widgetCharts == null || widgetCharts.isEmpty()) {
+			ReportUtil.deleteReport(reportId);
+			return SUCCESS;
+		}
+		else {
+			setResult("errorString", "Report Used In Dashboard");
+		}
+		return SUCCESS;
 	}
 	
 	private void setReadingsDataContext(FacilioContext context) throws Exception {
