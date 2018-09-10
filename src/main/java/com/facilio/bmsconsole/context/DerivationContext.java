@@ -1,10 +1,7 @@
 package com.facilio.bmsconsole.context;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.facilio.bmsconsole.criteria.DateRange;
+import com.facilio.report.context.ReadingAnalysisContext.AnalyticsType;
 import com.facilio.workflows.context.WorkflowContext;
 
 public class DerivationContext {
@@ -89,45 +86,4 @@ public class DerivationContext {
 		this.dateRange = dateRange;
 	}
 
-	public static enum AnalyticsType {
-			
-			PORTFOLIO(1, "Portfolio Analysis"),
-			BUILDING(2, "Building Analysis"),
-			HEAT_MAP(3, "Heat Map Analysis"),
-			REGRESSION(4, "Regression Analysis"),
-			READINGS(5, "Readings Analysis")
-			;
-			
-			private int intVal;
-			private String strVal;
-			
-			private AnalyticsType(int intVal, String strVal) {
-				this.intVal = intVal;
-				this.strVal = strVal;
-			}
-			
-			public int getIntVal() {
-				return intVal;
-			}
-			public String getStringVal() {
-				return strVal;
-			}
-			
-			public static AnalyticsType getType(int val) {
-				return typeMap.get(val);
-			}
-			
-			private static final Map<Integer, AnalyticsType> typeMap = Collections.unmodifiableMap(initTypeMap());
-			private static Map<Integer, AnalyticsType> initTypeMap() {
-				Map<Integer, AnalyticsType> typeMap = new HashMap<>();
-				
-				for(AnalyticsType type : values()) {
-					typeMap.put(type.getIntVal(), type);
-				}
-				return typeMap;
-			}
-			public Map<Integer, AnalyticsType> getAllTypes() {
-				return typeMap;
-			}
-		}
 }
