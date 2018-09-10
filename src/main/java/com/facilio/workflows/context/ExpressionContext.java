@@ -277,6 +277,8 @@ public class ExpressionContext implements Serializable {
 				select.setModule(null);
 				select.setName(RESULT_STRING);
 				
+				selectBuilder.andCustomWhere(select.getColumnName()+" is not null");
+				
 				if(aggregateString != null && !aggregateString.isEmpty()) {
 					ExpressionAggregateOperator expAggregateOpp = getAggregateOpperator();
 					select = expAggregateOpp.getSelectField(select);
