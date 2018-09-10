@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.StringJoiner;
+import java.util.logging.Logger;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -40,6 +41,7 @@ import com.facilio.report.context.ReportGroupByField;
 
 public class FetchReportDataCommand implements Command {
 
+	private static final Logger LOGGER = Logger.getLogger(FetchReportDataCommand.class.getName());
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -73,7 +75,7 @@ public class FetchReportDataCommand implements Command {
 			applyOrderBy(dp, selectBuilder);
 			List<FacilioField> fields = new ArrayList<>();
 			StringJoiner groupBy = new StringJoiner(",");
-			FacilioField xAggrField = applyXAggregation(dp, groupBy, selectBuilder, fields, addedModules);
+			FacilioField xAggrField = applyXAggregation(dp, groupBy, selectBuilder, fields, addedModules);				// doubt
 			setYFieldsAndGroupByFields(dataPointList, fields, xAggrField, groupBy, dp, selectBuilder, addedModules);
 			selectBuilder.select(fields);
 			if (report.getxCriteria() != null) {
@@ -83,6 +85,7 @@ public class FetchReportDataCommand implements Command {
 			Map<String, List<Map<String, Object>>> props = new HashMap<>();
 			props.put(FacilioConstants.Reports.ACTUAL_DATA, fetchReportData(report, dp, selectBuilder, null));
 			
+			LOGGER.severe("SELECT BUILDER --- "+ selectBuilder);
 			if (report.getBaseLines() != null && !report.getBaseLines().isEmpty()) {
 				for (ReportBaseLineContext reportBaseLine : report.getBaseLines()) {
 					props.put(reportBaseLine.getBaseLine().getName(), fetchReportData(report, dp, selectBuilder, reportBaseLine));
@@ -199,18 +202,18 @@ public class FetchReportDataCommand implements Command {
 	private void addToMatchedList (ReportDataPointContext dataPoint, List<List<ReportDataPointContext>> groupedList) throws Exception {
 		for (List<ReportDataPointContext> dataPointList : groupedList) {
 			ReportDataPointContext rdp = dataPointList.get(0);
-			if (rdp.getxAxis().getField().equals(dataPoint.getxAxis().getField()) &&
-					rdp.getyAxis().getField().getModule().equals(dataPoint.getyAxis().getField().getModule()) &&
-					Objects.equals(rdp.getOrderBy(), dataPoint.getOrderBy())) {
+			if (rdp.getxAxis().getField().equals(dataPoint.getxAxis().getField()) &&									// xaxis should be same
+					rdp.getyAxis().getField().getModule().equals(dataPoint.getyAxis().getField().getModule()) &&		// yaxis Module should be same
+					Objects.equals(rdp.getOrderBy(), dataPoint.getOrderBy())) {											// Order BY should be same
 				OrderByFunction rdpFunc = rdp.getOrderByFuncEnum() == null ? OrderByFunction.ACCENDING : rdp.getOrderByFuncEnum();
 				OrderByFunction dataPointFunc = dataPoint.getOrderByFuncEnum() == null ? OrderByFunction.ACCENDING : dataPoint.getOrderByFuncEnum();
 				int rdpAggr = rdp.getxAxis().getAggrEnum() == null && rdp.getyAxis().getAggrEnum() == null ? 0 : 1;
 				int dataPointAggr = dataPoint.getxAxis().getAggrEnum() == null && dataPoint.getyAxis().getAggrEnum() == null ? 0 : 1;
-				if (rdpFunc == dataPointFunc && 
-						Objects.equals(rdp.getCriteria(), dataPoint.getCriteria()) && 
-						rdpAggr == dataPointAggr &&
-						(rdpAggr == 0 || (rdp.getxAxis().getAggrEnum() == dataPoint.getxAxis().getAggrEnum())) &&
-						Objects.equals(rdp.getGroupByFields(), dataPoint.getGroupByFields())) {
+				if (rdpFunc == dataPointFunc && 																		// order by function should be same
+						Objects.equals(rdp.getCriteria(), dataPoint.getCriteria()) && 									// criteria should be same
+						rdpAggr == dataPointAggr &&																		// x and y aggregation (either both null or both should be not null)
+						(rdpAggr == 0 || (rdp.getxAxis().getAggrEnum() == dataPoint.getxAxis().getAggrEnum())) &&		// x aggregation should be same;
+						Objects.equals(rdp.getGroupByFields(), dataPoint.getGroupByFields())) {							// group by field should be same;
 					dataPointList.add(dataPoint);
 					return;
 				}
