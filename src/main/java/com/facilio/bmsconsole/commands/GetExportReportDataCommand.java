@@ -41,9 +41,9 @@ public class GetExportReportDataCommand implements Command {
 			String chartStateString = (String) report.getChartState();
 			JSONParser parser = new JSONParser();
 			Map<String, Object> chartState = (Map<String, Object>) parser.parse(chartStateString);
-			if (chartState != null) {
+			if (chartState != null && chartState.containsKey("common")) {
 				Map<String, Object> common = (Map<String, Object>) chartState.get("common");
-				mode = ReportMode.valueOf((int) common.get("mode"));
+				mode = ReportMode.valueOf((int)(long) common.get("mode"));
 			}
 		}
 		

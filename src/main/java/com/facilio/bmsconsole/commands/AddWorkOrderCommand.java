@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -62,14 +63,17 @@ public class AddWorkOrderCommand implements Command {
 			long workOrderId = builder.insert(workOrder);
 			workOrder.setId(workOrderId);
 			if(context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE) == null) {
-				// TODO create an activity type for both
+				List<ActivityType> activities = new ArrayList<>();
+				activities.add(ActivityType.CREATE);
+				
+				//TODO remove single ACTIVITY_TYPE once handled in TicketActivity
+				context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
+				
 				String status = workOrder.getStatus().getStatus();
 				if (status != null && status.equals("Assigned")) {
-					context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.ASSIGN_TICKET);
+					activities.add(ActivityType.ASSIGN_TICKET);
 				}
-				else {
-					context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
-				}
+				context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE_LIST, activities);
 			}
 			context.put(FacilioConstants.ContextNames.CHANGE_SET, builder.getChangeSet());
 			context.put(FacilioConstants.ContextNames.RECORD, workOrder);
