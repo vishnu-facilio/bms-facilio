@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.forms;
 
-import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioField.FieldDisplayType;
 
 public class FormField {

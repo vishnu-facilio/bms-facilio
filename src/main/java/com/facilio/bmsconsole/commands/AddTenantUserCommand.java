@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Command;
@@ -9,7 +8,6 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.tenant.TenantContext;
