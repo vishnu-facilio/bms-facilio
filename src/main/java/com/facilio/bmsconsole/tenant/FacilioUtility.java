@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.tenant;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
 public enum FacilioUtility {
@@ -11,7 +12,7 @@ public enum FacilioUtility {
 		public FacilioField getReadingField() throws Exception {
 			// TODO Auto-generated method stub
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			return modBean.getField("totalEnergyConsumptionDelta", "energydata");
+			return modBean.getField("totalEnergyConsumptionDelta", FacilioConstants.ContextNames.ENERGY_DATA_READING);
 		}
 	},
 	WATER {
