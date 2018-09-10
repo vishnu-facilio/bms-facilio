@@ -86,6 +86,8 @@ import com.facilio.bmsconsole.context.WidgetVsWorkflowContext;
 import com.facilio.bmsconsole.context.WidgetWebContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
+import com.facilio.bmsconsole.context.BaseLineContext.AdjustType;
+import com.facilio.bmsconsole.context.BaseLineContext.RangeType;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext.WORUrgency;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
@@ -1192,10 +1194,11 @@ public class DashboardAction extends ActionSupport {
 							EnergyMeterContext meter = meters.get(0);
 							
 							DateOperators dateOpp = DateOperators.CURRENT_MONTH;
-							DateOperators dateOpp1 = DateOperators.LAST_MONTH;
-							value = DashboardAction.getTotalKwh(Collections.singletonList(meter.getId()+""), dateOpp.getRange(null).getStartTime(), dateOpp.getRange(null).getEndTime());
 							
-							double value1 = DashboardAction.getTotalKwh(Collections.singletonList(meter.getId()+""), dateOpp1.getRange(null).getStartTime(), dateOpp1.getRange(null).getEndTime());
+							BaseLineContext baseline = BaseLineAPI.getBaseLine(RangeType.PREVIOUS_MONTH);
+							DateRange lastMonthUptoNow = baseline.calculateBaseLineRange(new DateRange(dateOpp.getRange(null).getStartTime(), DateTimeUtil.getCurrenTime()), AdjustType.NONE);
+							
+							double previousValue = DashboardAction.getTotalKwh(Collections.singletonList(meter.getId()+""), lastMonthUptoNow.getStartTime(), lastMonthUptoNow.getEndTime());
 							
 							JSONObject json1 = new JSONObject();
 							
@@ -1208,7 +1211,7 @@ public class DashboardAction extends ActionSupport {
 							json.put("avatar", building.getAvatarUrl());
 							json.put("currentVal", json1);
 							
-							json.put("variance", ReportsUtil.getVariance(value, value1));
+							json.put("variance", ReportsUtil.getVariance(value, previousValue));
 							
 							result.put("card", json);
 							result.put("building", building);
@@ -1320,10 +1323,12 @@ public class DashboardAction extends ActionSupport {
 							EnergyMeterContext meter = meters.get(0);
 							
 							DateOperators dateOpp = DateOperators.CURRENT_MONTH;
-							DateOperators dateOpp1 = DateOperators.LAST_MONTH;
-							value = DashboardAction.getTotalKwh(Collections.singletonList(meter.getId()+""), dateOpp.getRange(null).getStartTime(), dateOpp.getRange(null).getEndTime());
+							BaseLineContext baseline = BaseLineAPI.getBaseLine(RangeType.PREVIOUS_MONTH);
+							DateRange lastMonthUptoNow = baseline.calculateBaseLineRange(new DateRange(dateOpp.getRange(null).getStartTime(), DateTimeUtil.getCurrenTime()), AdjustType.NONE);
 							
-							double value1 = DashboardAction.getTotalKwh(Collections.singletonList(meter.getId()+""), dateOpp1.getRange(null).getStartTime(), dateOpp1.getRange(null).getEndTime());
+							double previousValue = DashboardAction.getTotalKwh(Collections.singletonList(meter.getId()+""), lastMonthUptoNow.getStartTime(), lastMonthUptoNow.getEndTime());
+							
+							value = DashboardAction.getTotalKwh(Collections.singletonList(meter.getId()+""), dateOpp.getRange(null).getStartTime(), dateOpp.getRange(null).getEndTime());
 							
 							JSONObject json1 = new JSONObject();
 							
@@ -1336,7 +1341,7 @@ public class DashboardAction extends ActionSupport {
 							json.put("avatar", building.getAvatarUrl());
 							json.put("currentVal", json1);
 							
-							json.put("variance", ReportsUtil.getVariance(value, value1));
+							json.put("variance", ReportsUtil.getVariance(value, previousValue));
 							
 							result.put("card", json);
 							result.put("building", building);
