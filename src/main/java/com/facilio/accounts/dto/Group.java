@@ -98,6 +98,22 @@ public class Group {
 		this.phone = phone;
 	}
 	
+	private String groupMembersEmail;
+	public String getGroupMembersEmail() {
+		return groupMembersEmail;
+	}
+	public void setGroupMembersEmail(String groupMembersEmail) {
+		this.groupMembersEmail = groupMembersEmail;
+	}
+	
+	private String groupMembersPhone;
+	public String getGroupMembersPhone() {
+		return groupMembersPhone;
+	}
+	public void setGroupMembersPhone(String groupMembersPhone) {
+		this.groupMembersPhone = groupMembersPhone;
+	}
+	
 	private List<GroupMember> members;
 	public List<GroupMember> getMembers() {
 		return members;

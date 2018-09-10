@@ -235,10 +235,14 @@ public class GroupBeanImpl implements GroupBean {
 					phones.add(member.getPhone());
 				}
 			}
-			if (group.getEmail() == null || group.getEmail().isEmpty()) {
-				group.setEmail(emails.toString());
+			
+			if (emails.length() > 0) {
+				group.setGroupMembersEmail(emails.toString());
 			}
-			group.setPhone(phones.toString());
+			
+			if (phones.length() > 0) {
+				group.setGroupMembersPhone(phones.toString());
+			}
 		}
 	}
 	
