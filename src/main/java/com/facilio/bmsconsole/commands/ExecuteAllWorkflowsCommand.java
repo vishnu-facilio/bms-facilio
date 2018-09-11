@@ -86,8 +86,10 @@ public class ExecuteAllWorkflowsCommand implements Command
 			List<ActivityType> activities = (List<ActivityType>) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE_LIST);
 			if (activities == null) {
 				ActivityType activityType = (ActivityType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
-				activities = new ArrayList<>();
-				activities.add(activityType);
+				if (activityType != null) {
+					activities = new ArrayList<>();
+					activities.add(activityType);
+				}
 			}
 			if(activities != null) {
 				Map<Long, List<UpdateChangeSet>> currentChangeSet = changeSetMap == null ? null : changeSetMap.get(moduleName);
