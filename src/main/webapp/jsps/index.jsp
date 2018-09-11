@@ -1,5 +1,85 @@
-<div class="row">
-   <div class="col-lg-12">
-       Loading...
-   </div>
-</div>
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset=utf-8>
+    <meta name=format-detection content="telephone=no">
+    <meta name=msapplication-tap-highlight content=no>
+    <meta name=viewport content="user-scalable=no,initial-scale=1,maximum-scale=1,minimum-scale=1,width=device-width">
+    <title>Facilio</title>
+    <link rel=icon href=https://static.facilio.in/v71/statics/favicon.png type=image/x-icon>
+    <link rel=manifest href=https://static.facilio.in/v71/statics/manifest.json>
+
+    <style>
+      .app-spinner {
+        width: 70px;
+        text-align: center;
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+        height: 22px;
+      }
+
+      .app-spinner > div {
+        width: 18px;
+        height: 18px;
+        background-color: #2F2E49;
+        border-radius: 100%;
+        display: inline-block;
+        -webkit-animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+        animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+      }
+
+      .app-spinner .bounce1 {
+        -webkit-animation-delay: -0.32s;
+        animation-delay: -0.32s;
+      }
+
+      .app-spinner .bounce2 {
+        -webkit-animation-delay: -0.16s;
+        animation-delay: -0.16s;
+      }
+
+      @-webkit-keyframes sk-bouncedelay {
+        0%, 80%, 100% { -webkit-transform: scale(0) }
+        40% { -webkit-transform: scale(1.0) }
+      }
+
+      @keyframes sk-bouncedelay {
+        0%, 80%, 100% {
+          -webkit-transform: scale(0);
+          transform: scale(0);
+        } 40% {
+          -webkit-transform: scale(1.0);
+          transform: scale(1.0);
+        }
+      }
+
+  </style>
+
+  <script type=text/javascript>
+        window.isFacilioAuth = (document.cookie.indexOf('fc.authtype=facilio') !== -1)
+  </script>
+  <link href=https://static.facilio.in/v71/app.12621f0850a28d1234a97283ed72dbfc.css rel=stylesheet>
+ </head>
+
+
+  <body>
+      <div id=q-app>
+          <div class=app-spinner>
+              <div class=bounce1></div>
+              <div class=bounce2></div>
+              <div class=bounce3></div>
+          </div>
+      </div>
+      <script type=text/javascript src=https://static.facilio.in/v71/js/manifest.450a607be09d5163e5d0.js></script>
+      <script type=text/javascript src=https://static.facilio.in/v71/js/vendor.a30105feec30962a8ce6.js></script>
+      <script type=text/javascript src=https://static.facilio.in/v71/js/app.78bd3f4ed22d53340806.js></script>
+
+  </body>
+
+  </html>
