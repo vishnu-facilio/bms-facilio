@@ -100,6 +100,20 @@ public class ReportUtil {
 		return null;
 	}
 	
+	public static List<Map<String, Object>> getReportFromFolderId(long reportFolderId) throws Exception {
+		
+		FacilioModule module = ModuleFactory.getReportModule();
+		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
+													.select(FieldFactory.getReport1Fields())
+													.table(module.getTableName())
+													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+													.andCustomWhere("REPORT_FOLDER_ID = ?", reportFolderId);
+													;
+		
+		List<Map<String, Object>> props = select.get();
+		return props;
+	}
+	
 	public static ReportFolderContext addReportFolder(ReportFolderContext reportFolderContext) throws Exception {
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
@@ -116,14 +130,28 @@ public class ReportUtil {
 	
 	public static ReportFolderContext updateReportFolder(ReportFolderContext reportFolderContext) throws Exception {
 		
-		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+		
+		GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder()
 				.table(ModuleFactory.getReportFolderModule().getTableName())
-				.fields(FieldFactory.getReport1FolderFields());
-
+				.fields(FieldFactory.getReport1FolderFields())
+				.andCustomWhere("ID = ?", reportFolderContext.getId());
+		
 		reportFolderContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+		
 		Map<String, Object> props = FieldUtil.getAsProperties(reportFolderContext);
-		long id = insertBuilder.insert(props);
-		reportFolderContext.setId(id);
+		update.update(props);
+		
+		return reportFolderContext;
+	}
+	
+	public static ReportFolderContext deleteReportFolder(ReportFolderContext reportFolderContext) throws Exception {
+		
+		
+		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		deleteRecordBuilder.table(ModuleFactory.getReportFolderModule().getTableName())
+		.andCustomWhere("ID = ?", reportFolderContext.getId());
+		
+		deleteRecordBuilder.delete();
 		
 		return reportFolderContext;
 	}

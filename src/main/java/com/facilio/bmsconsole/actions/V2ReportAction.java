@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 import org.json.simple.JSONArray;
@@ -98,6 +99,7 @@ public class V2ReportAction extends FacilioAction {
 	public void setReportFolder(ReportFolderContext reportFolder) {
 		this.reportFolder = reportFolder;
 	}
+	
 	public String addReportFolder() throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -108,6 +110,32 @@ public class V2ReportAction extends FacilioAction {
 		
 		reportFolder = ReportUtil.addReportFolder(reportFolder);
 		setResult("reportFolder", reportFolder);
+		return SUCCESS;
+	}
+	
+	public String updateReportFolder() throws Exception {
+		
+		if(reportFolder != null) {
+			ReportUtil.updateReportFolder(reportFolder);
+			setResult("reportFolder", reportFolder);
+		}
+		
+		return SUCCESS;
+	}
+	
+	public String deleteReportFolder() throws Exception {
+		
+		if(reportFolder != null) {
+			
+			List<Map<String, Object>> reports = ReportUtil.getReportFromFolderId(reportFolder.getId());
+			if(reports == null || reports.isEmpty()) {
+				ReportUtil.deleteReportFolder(reportFolder);
+			}
+			else {
+				setResult("errorString", "Report present in Folder");
+			}
+		}
+		
 		return SUCCESS;
 	}
 	

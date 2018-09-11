@@ -310,6 +310,10 @@
 		</action>
 		<action name="deleteReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="deleteReport">
 		</action>
+		<action name="updateReportFolder" class="com.facilio.bmsconsole.actions.V2ReportAction" method="updateReportFolder">
+		</action>
+		<action name="deleteReportFolder" class="com.facilio.bmsconsole.actions.V2ReportAction" method="deleteReportFolder">
+		</action>
 	</package>
 	
 	
