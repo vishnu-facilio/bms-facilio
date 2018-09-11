@@ -2,4 +2,5 @@
 <instantjob>
     <!--  job name='test' classname= 'com.facilio.bmsconsole.jobs.TestJob'/ -->
     <job name='PostFormulaCalculationJob' classname= 'com.facilio.bmsconsole.instant.jobs.PostFormulaCalculationJob'/>
+    <job name='ForkedChain' classname= 'com.facilio.bmsconsole.instant.jobs.ForkedChainJob'/>
 </instantjob>

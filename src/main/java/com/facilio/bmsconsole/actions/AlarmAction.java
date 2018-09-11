@@ -21,6 +21,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
@@ -86,7 +87,7 @@ public class AlarmAction extends FacilioAction {
 				woContext.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
 				woContext.put(FacilioConstants.ContextNames.INSERT_LEVEL, 2);
 				
-				Command addWorkOrder = FacilioChainFactory.getAddWorkOrderChain();
+				Command addWorkOrder = TransactionChainFactory.getAddWorkOrderChain();
 				addWorkOrder.execute(woContext);
 			}
 		}

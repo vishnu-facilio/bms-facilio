@@ -11,7 +11,7 @@ public class ReadOnlyChainFactory extends FacilioChainFactory {
 	private static Logger LOGGER = LogManager.getLogger(ReadOnlyChainFactory.class.getName());
 	   protected static Chain getDefaultChain()
 	    {
-	    	    return new ChainBase();
+	    	    return new FacilioChain(false);
 	    }
 	
 	public static Chain fetchReportDataChain() {

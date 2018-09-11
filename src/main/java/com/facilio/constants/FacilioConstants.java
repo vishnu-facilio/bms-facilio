@@ -655,6 +655,7 @@ public class FacilioConstants {
 	public static class Job{
 		public static final String NEXT_EXECUTION_TIME = "NEXT_EXECUTION_TIME";
 		public static final String TABLE_NAME = "Jobs";
+		public static final String FORKED_COMMANDS = "forkedCommands";
 	}
 	public static class Ticket{
 		public static final String STATUS_ID = "status_id";

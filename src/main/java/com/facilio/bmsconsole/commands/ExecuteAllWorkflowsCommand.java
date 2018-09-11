@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,7 +39,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.google.common.collect.Lists;
 
-public class ExecuteAllWorkflowsCommand implements Command 
+public class ExecuteAllWorkflowsCommand implements Command, Serializable
 {
 	private static final Logger LOGGER = LogManager.getLogger(ExecuteAllWorkflowsCommand.class.getName());
 	private RuleType[] ruleTypes;

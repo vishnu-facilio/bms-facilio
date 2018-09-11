@@ -21,6 +21,7 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.AttachmentContext;
@@ -123,7 +124,7 @@ public class WorkOrderAction extends FacilioAction {
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_TYPE, this.attachmentType);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
 		
-		Command addWorkOrder = FacilioChainFactory.getAddWorkOrderChain();
+		Command addWorkOrder = TransactionChainFactory.getAddWorkOrderChain();
 		addWorkOrder.execute(context);
 		
 		setWorkOrderId(workorder.getId());
@@ -828,7 +829,7 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 
-		Chain updateWorkOrder = FacilioChainFactory.getUpdateWorkOrderChain();
+		Chain updateWorkOrder = TransactionChainFactory.getUpdateWorkOrderChain();
 		updateWorkOrder.execute(context);
 		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 

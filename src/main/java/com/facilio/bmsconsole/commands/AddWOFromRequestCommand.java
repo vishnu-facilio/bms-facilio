@@ -79,7 +79,7 @@ public class AddWOFromRequestCommand implements Command {
 			wo.setStatus(TicketAPI.getStatus("Submitted"));
 		}
 		
-		Command addWorkOrder = FacilioChainFactory.getAddWorkOrderChain();
+		Command addWorkOrder = TransactionChainFactory.getAddWorkOrderChain();
 		addWorkOrder.execute(context);
 		
 		return wo.getId();
