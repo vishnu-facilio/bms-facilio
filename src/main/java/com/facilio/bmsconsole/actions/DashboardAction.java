@@ -2704,8 +2704,13 @@ public class DashboardAction extends ActionSupport {
 
 				for(TicketCategoryContext category:categories) {
 					
+					if(category.getId() != 606l) {
+						continue;
+					}
+					
 					List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrders(category.getId());
 					
+					LOGGER.log(Level.INFO, "workorders.size() --- "+workorders.size());
 					if(workorders.isEmpty()) {
 						continue;
 					}
@@ -2713,8 +2718,10 @@ public class DashboardAction extends ActionSupport {
 					for(BuildingContext building : SpaceAPI.getAllBuildings()) {
 						
 						int completed = 0,pending = 0;
+						LOGGER.log(Level.INFO, "buildingid --- "+building.getId());
 						for(WorkOrderContext workorder:workorders) {
 							
+							LOGGER.log(Level.INFO, "workorderid --- "+workorder.getId());
 							if(workorder.getResource().getId() != building.getId()) {
 								continue;
 							}
@@ -2722,6 +2729,7 @@ public class DashboardAction extends ActionSupport {
 							if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
 								continue;
 							}
+							LOGGER.log(Level.INFO, "passed --- "+workorder.getId());
 							Command chain = FacilioChainFactory.getGetTasksOfTicketCommand();
 							FacilioContext context = new FacilioContext();
 							
