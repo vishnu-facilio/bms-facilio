@@ -39,15 +39,19 @@ public class User implements Serializable {
 	private String serverName;
 	private FacilioLicense license;
 	private Long shiftId;
-	public Boolean portal_verified;
+	public boolean portal_verified;
 	
-	public Boolean getPortal_verified() {
-		return portal_verified;
+	
+	public boolean getPortal_verified() {
+		if(portal_verified) {
+			return portal_verified;
+		}
+		return false;
 	}
-	public void setPortal_verified(Boolean portal_verified) {
+	public void setPortal_verified(boolean portal_verified) {
+		
 		this.portal_verified = portal_verified;
 	}
-	
 	public long getUid() {
 		return uid;
 	}

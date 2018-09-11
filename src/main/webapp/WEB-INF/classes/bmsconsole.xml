@@ -2738,7 +2738,7 @@
 	<param name="moduleName">setup</param>
 	<param name="permission">USER_MANAGEMENT</param>
 	<result name="success" type="json">
-	<param name="includeProperties">^user.*</param>
+	<param name="includeProperties">user.*</param>
 	</result>
 	</action>
 	

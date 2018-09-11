@@ -428,6 +428,19 @@ public class OrgBeanImpl implements OrgBean {
 		return null;
 	}
 	
+	public long getPortalId( ) throws Exception {
+		Organization org = AccountUtil.getCurrentOrg();
+		if(org.getPortalId() > 0) {
+			return org.getPortalId();
+		}
+		Organization portalOrg = AccountUtil.getOrgBean().getPortalOrg(org.getDomain());
+		long portalId = portalOrg.getPortalId();
+		org.setPortalId(portalId);
+		return portalId;
+	}
+	
+	
+	
 	public void testTransaction(String prefix) throws Exception
 	{
 		Organization org = new Organization();

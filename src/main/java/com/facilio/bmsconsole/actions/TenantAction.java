@@ -40,8 +40,33 @@ public class TenantAction extends ActionSupport {
 	}
 	private boolean show_In_Portal; 
 	
-	
+	private long orgId = -1;
 
+	public long getOrgId() {
+		return orgId;
+	}
+	public void setOrgId(long orgId) {
+		this.orgId = orgId;
+	}
+	
+	List<Map<String,Object>> item = new ArrayList<>();
+	
+	public List<Map<String, Object>> getItem() {
+		return item;
+	}
+	public void setItem(List<Map<String, Object>> item) {
+		this.item = item;
+	}
+
+
+	private long usersId = -1;
+	
+	public long getUsersId() {
+		return usersId;
+	}
+	public void setUsersId(long usersId) {
+		this.usersId = usersId;
+	}
 	public boolean isShow_In_Portal() {
 		return show_In_Portal;
 	}
@@ -200,7 +225,7 @@ private Map<String, Double> readingData;
 	
 	public String updatePortalAccess() throws Exception {
 		Object portal_verified = null;
-		userId = TenantsAPI.updatePortalUserAccess(user.getId() , user.getPortal_verified());
+		userId = TenantsAPI.updatePortalUserAccess(user.getOuid() , user.getPortal_verified());
 		return SUCCESS;
 	}
 	
@@ -211,6 +236,12 @@ private Map<String, Double> readingData;
 	
 	public String showInPortal() throws Exception {
 		tenantReadingData = TenantsAPI.showInPortalAccess(tenantId,tenantMeterId,show_In_Portal);
+		return SUCCESS;
+	}
+	
+	
+	public String getUsersTenants() throws Exception {
+		item = TenantsAPI.getUsersTenantId(usersId,orgId);
 		return SUCCESS;
 	}
 

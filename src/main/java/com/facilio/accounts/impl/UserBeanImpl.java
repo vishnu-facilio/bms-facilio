@@ -16,8 +16,10 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
 
+import com.facilio.accounts.bean.OrgBean;
 import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.impl.OrgBeanImpl;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
 import com.facilio.accounts.exception.AccountException;
@@ -445,7 +447,7 @@ public class UserBeanImpl implements UserBean {
 		return hostname + url + inviteToken;
 	}
 	
-	private void sendInvitation(long ouid, User user) throws Exception {
+	public void sendInvitation(long ouid, User user) throws Exception {
 		user.setOuid(ouid);
 		String inviteLink = getUserLink(user,"/invitation/");
 		Map<String, Object> placeholders = new HashMap<>();
@@ -1029,8 +1031,45 @@ public class UserBeanImpl implements UserBean {
 		}
 		return null;
 	}
+	
+	
+	
+	
+	public User getPortalUser(long uid, long portalId) throws Exception {
+		FacilioModule portalInfoModule = AccountConstants.getPortalInfoModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.addAll(AccountConstants.getPortalUserFields());
+		fields.addAll(AccountConstants.getUserFields());
+		fields.addAll(AccountConstants.getOrgUserFields());
+		fields.add(FieldFactory.getOrgIdField(portalInfoModule));
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("faciliorequestors")
+				.innerJoin("PortalInfo")
+				.on("faciliorequestors.PORTALID = PortalInfo.PORTALID")
+				.innerJoin("Users")
+				.on("faciliorequestors.USERID = Users.USERID")
+				.innerJoin("ORG_Users")
+				.on("Users.USERID = ORG_Users.USERID")
+				.andCustomWhere("faciliorequestors.USERID = ? AND DELETED_TIME=-1  AND faciliorequestors.PORTALID = ?", uid, portalId);
 
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			System.out.println(props);
+			return createUserFromProps(props.get(0));
+		}
+		
+		return  null ;
 
+	}
+
+	public User getPortalUser(long uid) throws Exception {
+		return getPortalUser(uid, AccountUtil.getOrgBean().getPortalId());
+	}
+	
+	
+	
 	@Override
 	public List<User> getUsers(Criteria criteria, List<Long>... ouids) throws Exception {
 		
