@@ -20,8 +20,8 @@
 	 <job name='SingleResourceHistoricalFormulaFieldCalculator' classname = 'com.facilio.bmsconsole.jobs.SingleResourceHistoricalFormulaCalculatorJob' transactionTimeout='900000'/>
 	 <job name='WeatherData' classname = 'com.facilio.bmsconsole.jobs.WeatherDataJob' transactionTimeout='300000'/>
 	 <job name='DegreeDaysCalculator' classname = 'com.facilio.bmsconsole.jobs.DegreeDaysCalculatorJob' transactionTimeout='300000'/>
-	 <job name='AnomalyDetector' classname = 'com.facilio.bmsconsole.jobs.AnomalyDetectorJob' transactionTimeout='300000'/>
-	 <job name='RefreshAnomalyModel' classname = 'com.facilio.bmsconsole.jobs.RefreshAnomalyModelJob' transactionTimeout='300000'/>
+	 <job name='AnomalyDetector' classname = 'com.facilio.bmsconsole.jobs.AnomalyDetectorJob' transactionTimeout='1800000'/>
+	 <job name='RefreshAnomalyModel' classname = 'com.facilio.bmsconsole.jobs.RefreshAnomalyModelJob' transactionTimeout='14400000'/>
 	 <job name='importData' classname = 'com.facilio.bmsconsole.jobs.ImportDataJob' transactionTimeout='1800000'/>
 	 <job name='assetActionJob' classname = 'com.facilio.bmsconsole.jobs.AssetActionJob' transactionTimeout='300000'/>
 	 <job name='costCalculator' classname = 'com.facilio.bmsconsole.jobs.CostCalculatorJob' transactionTimeout='300000'/>
