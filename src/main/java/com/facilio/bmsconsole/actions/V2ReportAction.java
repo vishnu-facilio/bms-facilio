@@ -160,10 +160,6 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.TABULAR_STATE, tabularState);
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 		
-		if(reportContext != null &&  reportContext.getId() > 0) {
-			context.put(FacilioConstants.ContextNames.OLD_REPORT_ID, reportContext.getId());
-			reportContext.setId(-1);
-		}
 		Chain addReadingReport = FacilioChainFactory.addOrUpdateReadingReportChain();
 		addReadingReport.execute(context);
 		

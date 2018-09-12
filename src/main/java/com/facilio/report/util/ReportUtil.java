@@ -156,6 +156,16 @@ public class ReportUtil {
 		return reportFolderContext;
 	}
 	
+	public static int  deleteReportFields(Long reportId) throws Exception {
+		
+		
+		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		deleteRecordBuilder.table(ModuleFactory.getReportFieldsModule().getTableName())
+		.andCustomWhere("REPORT_ID = ?", reportId);
+		
+		return deleteRecordBuilder.delete();
+	}
+	
 	public static long addReport(ReportContext reportContext) throws Exception {
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
@@ -167,6 +177,16 @@ public class ReportUtil {
 		reportContext.setId(id);
 		
 		return id;
+	}
+	
+	public static boolean updateReport(ReportContext reportContext) throws Exception {
+		
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+													.table(ModuleFactory.getReportModule().getTableName())
+													.fields(FieldFactory.getReport1Fields());
+		
+		Map<String, Object> props = FieldUtil.getAsProperties(reportContext);
+		return updateBuilder.update(props) > 0 ? true :false ;
 	}
 	
 	public static void addReportFields(List<ReportFieldContext> reportFieldContexts) throws Exception {

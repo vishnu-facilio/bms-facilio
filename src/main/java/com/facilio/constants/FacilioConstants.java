@@ -245,7 +245,6 @@ public class FacilioConstants {
 		public static final String WIDGET_TYPE = "widgetType";
 		
 		public static final String REPORT = "report";
-		public static final String OLD_REPORT_ID = "oldReportId";
 		public static final String REPORT_LIST = "reportList";
 		public static final String REPORT_COLUMN_LIST = "reportList";
 		public static final String REPORT_USER_FILTER_VALUE = "userFilterValue";

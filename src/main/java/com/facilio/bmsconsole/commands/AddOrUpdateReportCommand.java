@@ -19,11 +19,16 @@ public class AddOrUpdateReportCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
-		Long oldReportId = (Long) context.get(FacilioConstants.ContextNames.OLD_REPORT_ID);
 		
 		report.setOrgId(AccountUtil.getCurrentOrg().getId());
 		
-		ReportUtil.addReport(report);
+		if(report.getId() <= 0) {
+			ReportUtil.addReport(report);
+		}
+		else {
+			ReportUtil.updateReport(report);
+			ReportUtil.deleteReportFields(report.getId());
+		}
 		
 		List <ReportFieldContext> reportFields = new ArrayList<>();
 		
@@ -53,9 +58,9 @@ public class AddOrUpdateReportCommand implements Command {
 		}
 		ReportUtil.addReportFields(reportFields);
 		
-		if(oldReportId != null) {
-			ReportUtil.deleteOldReportWithWidgetUpdate(oldReportId,report.getId());
-		}
+//		if(oldReportId != null) {
+//			ReportUtil.deleteOldReportWithWidgetUpdate(oldReportId,report.getId());
+//		}
 		return false;
 	}
 
