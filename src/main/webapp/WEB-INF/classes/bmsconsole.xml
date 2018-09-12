@@ -630,7 +630,7 @@
 		<action name="updatestatus" class="com.facilio.bmsconsole.actions.AlarmAction"
 			method="updateStatus">
 			<param name="moduleName">alarm</param>
-			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+			<param name="permission">ACKNOWLEDGE_ALARM,CLEAR_ALARM</param>
 			<!-- <param name="permission">WORKORDER_READ</param> -->
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
