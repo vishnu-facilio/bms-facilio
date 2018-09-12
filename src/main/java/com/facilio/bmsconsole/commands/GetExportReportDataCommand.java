@@ -14,6 +14,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.NumberField;
@@ -200,12 +201,12 @@ public class GetExportReportDataCommand implements Command {
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
-						String unit = "";
+						String unit = null;
 						if (field instanceof NumberField) {
 							unit = ((NumberField)field).getUnit();
 						}
 						if (reportData.get(key).containsKey(columnName) && reportData.get(key).get(columnName).containsKey(val)) {
-							newRow.put((String) col.get("header"), reportData.get(key).get(columnName).get(val) + " " + unit);
+							newRow.put((String) col.get("header"), reportData.get(key).get(columnName).get(val) + (unit != null ? " " + unit : ""));
 						}
 					}
 				});
@@ -217,8 +218,11 @@ public class GetExportReportDataCommand implements Command {
 			String format = "EEEE, MMMM dd, yyyy hh:mm a";
 			
 			List<Map<String, Object>> xValueList = new ArrayList<>();
-			String dateFormat = ((DateAggregateOperator)report.getDataPoints().get(0).getxAxis().getAggrEnum()).getFormat();
-			format = dateFormat != null ? dateFormat : format;
+			AggregateOperator aggr = report.getDataPoints().get(0).getxAxis().getAggrEnum();
+			if (aggr != null && aggr instanceof DateAggregateOperator) {
+				String dateFormat = ((DateAggregateOperator)aggr).getFormat();
+				format = dateFormat != null ? dateFormat : format;
+			}
 			
 			TreeSet xValuesSet = new TreeSet<>();
 			xValuesSet.addAll(xValues);
@@ -270,16 +274,6 @@ public class GetExportReportDataCommand implements Command {
 			}
 		}
 		return records;
-	}
-	
-	private void getDateFormat(int xAggr) {
-		Map<Integer, String> formats = new HashMap<>();
-		formats.put(20, "dddd, MMM D, YYYY h a");
-		formats.put(12, "dddd, MMM D, YYYY");
-		formats.put(11, "dddd, MMM D, YYYY");
-		formats.put(10, "MMMM YYYY");
-		formats.put(8, "YYYY");
-		
 	}
 
 }
