@@ -8,6 +8,7 @@ import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -160,8 +161,13 @@ public class WorkOrderRequestAction extends FacilioAction {
 		if (workOrderRequestString != null) {
 			setWorkorderrequest(workOrderRequestString);
 		}
+		
 		workorderrequest.setRequestStatus(WorkOrderRequestContext.RequestStatus.OPEN);
-		workorderrequest.setSourceType(TicketContext.SourceType.WEB_REQUEST);
+		if (ServletActionContext.getRequest().getRequestURI().contains("/api/service")) {
+			workorderrequest.setSourceType(TicketContext.SourceType.SERVICE_PORTAL_REQUEST);
+		} else {
+			workorderrequest.setSourceType(TicketContext.SourceType.WEB_REQUEST);
+		}
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.REQUESTER, workorderrequest.getRequester());
 		

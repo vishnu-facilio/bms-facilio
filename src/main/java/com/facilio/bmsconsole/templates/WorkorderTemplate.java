@@ -131,6 +131,15 @@ public class WorkorderTemplate extends Template {
 		JSONParser parser = new JSONParser();
 		additionInfo = (JSONObject) parser.parse(jsonStr);
 	}
+	
+	private long siteId = -1;
+	public long getSiteId() {
+		return this.siteId;
+	}
+	
+	public void setSiteId(long siteId) {
+		this.siteId = siteId;
+	}
 
 	public WorkOrderContext getWorkorder() {
 		if (getName() != null && !getName().isEmpty()) {
@@ -139,6 +148,7 @@ public class WorkorderTemplate extends Template {
 			woProp.put("subject", getSubject());
 			woProp.put("description", description);
 			woProp.put("duration", duration);
+			woProp.put("siteId", siteId);
 			if (statusId != -1) {
 				woProp.put("status", FieldUtil.getLookedUpProp(statusId));
 			}
@@ -206,6 +216,10 @@ public class WorkorderTemplate extends Template {
 				resourceId = workorder.getResource().getId();
 			}
 			
+			if (workorder.getSiteId() != -1) {
+				siteId = workorder.getSiteId();
+			}
+			
 			Map<String, Object> prop = FieldUtil.getAsProperties(workorder);
 			prop.remove("id");
 			prop.remove("subject");
@@ -218,6 +232,7 @@ public class WorkorderTemplate extends Template {
 			prop.remove("assignmentGroup");
 			prop.remove("assignedTo");
 			prop.remove("resource");
+			prop.remove("siteId");
 			additionInfo = new JSONObject();
 			additionInfo.putAll(prop);
 		}

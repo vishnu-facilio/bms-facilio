@@ -22,6 +22,7 @@ import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
@@ -107,6 +108,9 @@ public class TaskAction extends FacilioAction {
 	//Add Task Props
 	public String addTask() throws Exception {
 		// TODO Auto-generated method stub
+		
+		long siteId = WorkOrderAPI.getSiteIdForWO(task.getParentTicketId());
+		task.setSiteId(siteId);
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TASK, task);

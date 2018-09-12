@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.TemplateAPI;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 
 public class CreateWorkorderTemplateCommand implements Command {
@@ -24,6 +25,9 @@ public class CreateWorkorderTemplateCommand implements Command {
 		if(context.get(FacilioConstants.ContextNames.ATTACHMENT_CONTEXT_LIST) != null) {
 			workorder.setAttachments(((List<AttachmentContext>) context.get(FacilioConstants.ContextNames.ATTACHMENT_CONTEXT_LIST)));
 		}
+		
+		TicketAPI.validateSiteSpecificData(workorder);
+		
 		Map<String, List<TaskContext>> tasks = (Map<String, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
 		WorkorderTemplate workorderTemplate = new WorkorderTemplate();
 		workorderTemplate.setWorkorder(workorder);

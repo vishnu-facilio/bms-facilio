@@ -23,6 +23,8 @@ import com.facilio.bmsconsole.templates.TaskTemplate;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
+import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -69,8 +71,9 @@ public class ValidateTasksCommand implements Command {
 					maxUniqueId = getMaxUniqueIdFromTemplate(oldPm.getWoTemplate().getId());
 				}
 			}
-			
+
 			for(TaskContext task : tasks) {
+				TicketAPI.validateSiteSpecificData(task);
 				if (task.getUniqueId() == -1) {
 					task.setUniqueId(++maxUniqueId);
 				}

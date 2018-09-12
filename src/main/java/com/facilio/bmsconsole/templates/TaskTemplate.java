@@ -156,6 +156,9 @@ public class TaskTemplate extends Template {
 	public void setAdditionInfo(JSONObject additionInfo) {
 		this.additionInfo = additionInfo;
 	}
+	
+	private long siteId = -1;
+	
 	public void addAdditionInfo(String key, Object value) {
 		if(this.additionInfo == null) {
 			this.additionInfo =  new JSONObject();
@@ -208,6 +211,10 @@ public class TaskTemplate extends Template {
 			if (inputType != null) {
 				taskProp.put("inputType", inputType.getVal());
 			}
+			if (siteId != -1) {
+				taskProp.put("siteId", siteId);
+			}
+			
 			taskProp.put("sectionId", sectionId);
 			if (additionInfo != null) {
 				taskProp.putAll(additionInfo);
@@ -249,6 +256,10 @@ public class TaskTemplate extends Template {
 				resourceId = task.getResource().getId();
 			}
 			
+			if (task.getSiteId() != -1) {
+				siteId = task.getSiteId();
+			}
+			
 			Map<String, Object> prop = FieldUtil.getAsProperties(task);
 			prop.remove("id");
 			prop.remove("subject");
@@ -266,6 +277,7 @@ public class TaskTemplate extends Template {
 			prop.remove("sectionId");
 			prop.remove("sequence");
 			prop.remove("attachmentRequired");
+			prop.remove("siteId");
 			additionInfo = new JSONObject();
 			additionInfo.putAll(prop);
 		}
@@ -275,6 +287,12 @@ public class TaskTemplate extends Template {
 	public JSONObject getOriginalTemplate() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	public long getSiteId() {
+		return siteId;
+	}
+	public void setSiteId(long siteId) {
+		this.siteId = siteId;
 	}
 
 }

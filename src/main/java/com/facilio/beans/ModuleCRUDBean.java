@@ -15,9 +15,6 @@ import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.events.context.EventRuleContext;
 
 public interface ModuleCRUDBean {
-	public long addWorkOrder(WorkOrderContext workorder) throws Exception;
-	
-	public long addWorkOrderRequest(WorkOrderRequestContext workOrderRequest) throws Exception;
 	
 	public long addWorkOrderRequest(WorkOrderRequestContext workOrderRequest, List<File> attachedFiles,
 			List<String> attachedFileNames, List<String> attachedFilesContentType) throws Exception;

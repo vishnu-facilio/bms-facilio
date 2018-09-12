@@ -63,23 +63,6 @@ import com.facilio.timeseries.TimeSeriesAPI;
 public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
 	@Override
-	public long addWorkOrder(WorkOrderContext workorder) throws Exception {
-		// TODO Auto-generated method stub
-		if (workorder != null) {
-			FacilioContext context = new FacilioContext();
-			// context.put(FacilioConstants.ContextNames.TICKET,
-			// workorder.getTicket());
-			context.put(FacilioConstants.ContextNames.REQUESTER, workorder.getRequester());
-			context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
-
-			Command addWorkOrder = TransactionChainFactory.getAddWorkOrderChain();
-			addWorkOrder.execute(context);
-			return workorder.getId();
-		}
-		return -1;
-	}
-
-	@Override
 	public AlarmContext processAlarm(JSONObject alarmInfo) throws Exception {
 		// TODO Auto-generated method stub
 		FacilioContext context = new FacilioContext();
@@ -128,12 +111,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		}
 		return -1;
 	}
-	
-	@Override
-	public long addWorkOrderRequest(WorkOrderRequestContext workOrderRequest) throws Exception {
-		// TODO Auto-generated method stub
-		return addWorkOrderRequest(workOrderRequest, null, null, null);
-	}
+
 
 	@Override
 	public int updateAlarm(AlarmContext alarm, List<Long> ids) throws Exception {

@@ -26,6 +26,9 @@ public class AddWorkOrderRequestCommand implements Command {
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		//	Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
+			
+			TicketAPI.validateSiteSpecificData(workOrderRequest);
+			
 			workOrderRequest.setCreatedTime(System.currentTimeMillis());
 			workOrderRequest.setCreatedBy(AccountUtil.getCurrentUser());
 			
