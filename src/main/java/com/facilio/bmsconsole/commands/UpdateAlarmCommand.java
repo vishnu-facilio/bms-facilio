@@ -21,6 +21,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.AlarmAPI;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -88,6 +89,9 @@ public class UpdateAlarmCommand implements Command {
 					AlarmAPI.updateAlarmDetailsInTicket(alarmObj, alarm);
 				}
 			}
+			
+			TicketAPI.updateTicketAssignedBy(alarm);
+			TicketAPI.updateTicketStatus(alarm);
 			
 			UpdateRecordBuilder<AlarmContext> updateBuilder = new UpdateRecordBuilder<AlarmContext>()
 																		.module(module)

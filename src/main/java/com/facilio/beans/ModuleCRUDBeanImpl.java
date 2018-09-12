@@ -19,6 +19,7 @@ import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.ResourceContext;
@@ -71,7 +72,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			context.put(FacilioConstants.ContextNames.REQUESTER, workorder.getRequester());
 			context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 
-			Command addWorkOrder = FacilioChainFactory.getAddWorkOrderChain();
+			Command addWorkOrder = TransactionChainFactory.getAddWorkOrderChain();
 			addWorkOrder.execute(context);
 			return workorder.getId();
 		}
@@ -257,7 +258,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			
 			//Temp fix. Have to be removed eventually
 			PreventiveMaintenanceAPI.updateResourceDetails(wo, taskMap);
-			Chain addWOChain = FacilioChainFactory.getAddWorkOrderChain();
+			Chain addWOChain = TransactionChainFactory.getAddWorkOrderChain();
 			addWOChain.execute(context);
 
 			incrementPMCount(pm);

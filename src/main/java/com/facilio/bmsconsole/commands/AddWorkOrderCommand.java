@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -25,6 +26,8 @@ public class AddWorkOrderCommand implements Command {
 			{
 				workOrder.setRequester(null);
 			}
+			
+			TicketAPI.validateSiteSpecificData(workOrder);
 			
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
@@ -60,17 +63,20 @@ public class AddWorkOrderCommand implements Command {
 			long workOrderId = builder.insert(workOrder);
 			workOrder.setId(workOrderId);
 			if(context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE) == null) {
-				// TODO create an activity type for both
+				List<ActivityType> activities = new ArrayList<>();
+				activities.add(ActivityType.CREATE);
+				
+				//TODO remove single ACTIVITY_TYPE once handled in TicketActivity
+				context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
+				
 				String status = workOrder.getStatus().getStatus();
 				if (status != null && status.equals("Assigned")) {
-					context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.ASSIGN_TICKET);
+					activities.add(ActivityType.ASSIGN_TICKET);
 				}
-				else {
-					context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
-				}
+				context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE_LIST, activities);
 			}
 			context.put(FacilioConstants.ContextNames.CHANGE_SET, builder.getChangeSet());
-			context.put(FacilioConstants.ContextNames.RECORD, workOrder);
+			context.put(FacilioConstants.ContextNames.RECORD_MAP, Collections.singletonMap(FacilioConstants.ContextNames.WORK_ORDER, Collections.singletonList(workOrder)));
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(workOrderId));
 			
 		}

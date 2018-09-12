@@ -38,7 +38,10 @@ import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseLineContext;
+import com.facilio.bmsconsole.context.BaseLineContext.AdjustType;
+import com.facilio.bmsconsole.context.BaseLineContext.RangeType;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.BenchmarkContext;
 import com.facilio.bmsconsole.context.BenchmarkUnit;
 import com.facilio.bmsconsole.context.BuildingContext;
@@ -86,7 +89,6 @@ import com.facilio.bmsconsole.context.WidgetVsWorkflowContext;
 import com.facilio.bmsconsole.context.WidgetWebContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
-import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext.WORUrgency;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -1167,8 +1169,9 @@ public class DashboardAction extends ActionSupport {
 				String workflow = CardUtil.replaceWorflowPlaceHolders(card.getWorkflow(), widgetStaticContext.getParamsJson());
 				
 				Object wfResult = WorkflowUtil.getWorkflowExpressionResult(workflow, null);
-				
 				result.put("result", wfResult);
+				result.put("unit", CardUtil.getUnit(widgetStaticContext.getParamsJson()));
+				
 				result.put("widget", widgetStaticContext);
 				setCardResult(result);
 				return SUCCESS;
@@ -1191,11 +1194,13 @@ public class DashboardAction extends ActionSupport {
 							EnergyMeterContext meter = meters.get(0);
 							
 							DateOperators dateOpp = DateOperators.CURRENT_MONTH;
-							DateOperators dateOpp1 = DateOperators.LAST_MONTH;
+							
+							BaseLineContext baseline = BaseLineAPI.getBaseLine(RangeType.PREVIOUS_MONTH);
+							DateRange lastMonthUptoNow = baseline.calculateBaseLineRange(new DateRange(dateOpp.getRange(null).getStartTime(), DateTimeUtil.getCurrenTime()), AdjustType.NONE);
+							
+							double previousValue = DashboardAction.getTotalKwh(Collections.singletonList(meter.getId()+""), lastMonthUptoNow.getStartTime(), lastMonthUptoNow.getEndTime());
+							
 							value = DashboardAction.getTotalKwh(Collections.singletonList(meter.getId()+""), dateOpp.getRange(null).getStartTime(), dateOpp.getRange(null).getEndTime());
-							
-							double value1 = DashboardAction.getTotalKwh(Collections.singletonList(meter.getId()+""), dateOpp1.getRange(null).getStartTime(), dateOpp1.getRange(null).getEndTime());
-							
 							JSONObject json1 = new JSONObject();
 							
 							json1.put("consumption", value);
@@ -1207,7 +1212,7 @@ public class DashboardAction extends ActionSupport {
 							json.put("avatar", building.getAvatarUrl());
 							json.put("currentVal", json1);
 							
-							json.put("variance", ReportsUtil.getVariance(value, value1));
+							json.put("variance", ReportsUtil.getVariance(value, previousValue));
 							
 							result.put("card", json);
 							result.put("building", building);
@@ -1256,8 +1261,11 @@ public class DashboardAction extends ActionSupport {
 							if(widgetStaticContext != null && widgetStaticContext.getStaticKey().equals("weathercard") && widgetVsWorkflowContext.getWorkflowName().equals("weather")) {
 								Map<String,Object> ss = (Map<String, Object>) wfResult;
 								Object temprature = ss.get("temperature");
-								if(AccountUtil.getCurrentOrg().getOrgId() == 104l || AccountUtil.getCurrentOrg().getOrgId() == 75l) {
+								if(AccountUtil.getCurrentOrg().getOrgId() == 104l) {
 									temprature = UnitsUtil.convert(temprature, Unit.CELSIUS, Unit.FAHRENHEIT);
+									ss.put("unit", "F");
+								}
+								if(AccountUtil.getCurrentOrg().getOrgId() == 75l) {
 									ss.put("unit", "F");
 								}
 								DecimalFormat f = new DecimalFormat("##.0");
@@ -1292,6 +1300,7 @@ public class DashboardAction extends ActionSupport {
 				Object wfResult = WorkflowUtil.getWorkflowExpressionResult(workflow, null);
 				
 				result.put("result", wfResult);
+				result.put("unit", CardUtil.getUnit(paramsJson));
 				setCardResult(result);
 				return SUCCESS;
 			}
@@ -1318,10 +1327,12 @@ public class DashboardAction extends ActionSupport {
 							EnergyMeterContext meter = meters.get(0);
 							
 							DateOperators dateOpp = DateOperators.CURRENT_MONTH;
-							DateOperators dateOpp1 = DateOperators.LAST_MONTH;
-							value = DashboardAction.getTotalKwh(Collections.singletonList(meter.getId()+""), dateOpp.getRange(null).getStartTime(), dateOpp.getRange(null).getEndTime());
+							BaseLineContext baseline = BaseLineAPI.getBaseLine(RangeType.PREVIOUS_MONTH);
+							DateRange lastMonthUptoNow = baseline.calculateBaseLineRange(new DateRange(dateOpp.getRange(null).getStartTime(), DateTimeUtil.getCurrenTime()), AdjustType.NONE);
 							
-							double value1 = DashboardAction.getTotalKwh(Collections.singletonList(meter.getId()+""), dateOpp1.getRange(null).getStartTime(), dateOpp1.getRange(null).getEndTime());
+							double previousValue = DashboardAction.getTotalKwh(Collections.singletonList(meter.getId()+""), lastMonthUptoNow.getStartTime(), lastMonthUptoNow.getEndTime());
+							
+							value = DashboardAction.getTotalKwh(Collections.singletonList(meter.getId()+""), dateOpp.getRange(null).getStartTime(), dateOpp.getRange(null).getEndTime());
 							
 							JSONObject json1 = new JSONObject();
 							
@@ -1334,7 +1345,7 @@ public class DashboardAction extends ActionSupport {
 							json.put("avatar", building.getAvatarUrl());
 							json.put("currentVal", json1);
 							
-							json.put("variance", ReportsUtil.getVariance(value, value1));
+							json.put("variance", ReportsUtil.getVariance(value, previousValue));
 							
 							result.put("card", json);
 							result.put("building", building);
@@ -2693,8 +2704,13 @@ public class DashboardAction extends ActionSupport {
 
 				for(TicketCategoryContext category:categories) {
 					
+					if(category.getId() != 606l) {
+						continue;
+					}
+					
 					List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrders(category.getId());
 					
+					LOGGER.log(Level.INFO, "workorders.size() --- "+workorders.size());
 					if(workorders.isEmpty()) {
 						continue;
 					}
@@ -2702,8 +2718,10 @@ public class DashboardAction extends ActionSupport {
 					for(BuildingContext building : SpaceAPI.getAllBuildings()) {
 						
 						int completed = 0,pending = 0;
+						LOGGER.log(Level.INFO, "buildingid --- "+building.getId());
 						for(WorkOrderContext workorder:workorders) {
 							
+							LOGGER.log(Level.INFO, "workorderid --- "+workorder.getId());
 							if(workorder.getResource().getId() != building.getId()) {
 								continue;
 							}
@@ -2711,6 +2729,7 @@ public class DashboardAction extends ActionSupport {
 							if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
 								continue;
 							}
+							LOGGER.log(Level.INFO, "passed --- "+workorder.getId());
 							Command chain = FacilioChainFactory.getGetTasksOfTicketCommand();
 							FacilioContext context = new FacilioContext();
 							
@@ -4586,7 +4605,7 @@ public class DashboardAction extends ActionSupport {
 		
 		List<WidgetChartContext> widgetCharts = null;
 		if(!isDeleteWithWidget) {
-			widgetCharts = DashboardUtil.getWidgetFromDashboard(reportId);
+			widgetCharts = DashboardUtil.getWidgetFromDashboard(reportId,false);
 		}
 		if(widgetCharts == null || widgetCharts.isEmpty()) {
 			DashboardUtil.deleteReport(reportId);
@@ -6804,56 +6823,24 @@ public class DashboardAction extends ActionSupport {
 				DashboardWidgetContext widgetContext = null;
 				if (widgetType == DashboardWidgetContext.WidgetType.CHART.getValue()) {
 					widgetContext = new WidgetChartContext();
-					WidgetChartContext widgetChartContext1 = (WidgetChartContext) widgetContext;
-					widgetChartContext1.setReportId((Long)widget.get("reportId"));
-					widgetChartContext1.setNewReportId((Long)widget.get("newReportId"));
+					widgetContext = FieldUtil.getAsBeanFromMap(widget, WidgetChartContext.class);
 				}
 				else if (widgetType == DashboardWidgetContext.WidgetType.LIST_VIEW.getValue()) {
 					widgetContext = new WidgetListViewContext();
-					WidgetListViewContext WidgetListViewContext1 = (WidgetListViewContext) widgetContext;
-					
-					WidgetListViewContext1.setViewName(widget.get("viewName") != null ? widget.get("viewName").toString() : null);
-					WidgetListViewContext1.setModuleName(widget.get("moduleName") != null ? widget.get("moduleName").toString() : null);
+					widgetContext = FieldUtil.getAsBeanFromMap(widget, WidgetListViewContext.class);
 				}
 				else if (widgetType == DashboardWidgetContext.WidgetType.STATIC.getValue()) {
 					widgetContext = new WidgetStaticContext();
-					WidgetStaticContext widgetStaticContext = (WidgetStaticContext) widgetContext;
-					if(widget.get("staticKey") != null) {
-						widgetStaticContext.setStaticKey(widget.get("staticKey").toString());
-					}
-					if(widget.get("baseSpaceId") != null) {
-						widgetStaticContext.setBaseSpaceId((Long) widget.get("baseSpaceId"));
-					}
-					if(widget.get("paramsJson") != null) {
-						widgetStaticContext.setParams(widget.get("paramsJson").toString());
-					}
-					if(widget.get("metaJson") != null) {
-						widgetStaticContext.setMetaJson(widget.get("metaJson").toString());
-					}
+					widgetContext = FieldUtil.getAsBeanFromMap(widget, WidgetStaticContext.class);
 				}
 				else if (widgetType == DashboardWidgetContext.WidgetType.WEB.getValue()) {
 					widgetContext = new WidgetWebContext();
+					widgetContext = FieldUtil.getAsBeanFromMap(widget, WidgetWebContext.class);
 				}
 				
-				if( widget.get("id") != null) {
-					widgetContext.setId((Long) widget.get("id"));
-				}
-				widgetContext.setLayoutWidth(Integer.parseInt(widget.get("layoutWidth").toString()));
-				widgetContext.setLayoutHeight(Integer.parseInt(widget.get("layoutHeight").toString()));
 				widgetContext.setLayoutPosition(Integer.parseInt(widget.get("order").toString()));
-				widgetContext.setxPosition(Integer.parseInt(widget.get("xPosition").toString()));
-				widgetContext.setyPosition(Integer.parseInt(widget.get("yPosition").toString()));
 				widgetContext.setType(widgetType);
 				
-				if(widget.get("widgetName") != null) {
-					widgetContext.setWidgetName(widget.get("widgetName").toString());
-				}
-				if(widget.get("headerText") != null) {
-					widgetContext.setHeaderText(widget.get("headerText").toString());
-				}
-				if(widget.get("headerSubText") != null) {
-					widgetContext.setHeaderSubText(widget.get("headerSubText").toString());
-				}
 				this.dashboard.addDashboardWidget(widgetContext);
 			}
 		}

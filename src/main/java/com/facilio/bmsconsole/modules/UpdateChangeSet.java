@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.modules;
 
-public class UpdateChangeSet {
+import java.io.Serializable;
+
+public class UpdateChangeSet implements Serializable {
 	
 	private long recordId = -1;
 	public long getRecordId() {

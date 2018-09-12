@@ -81,7 +81,16 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 	public Integer getType() {
 		return type;
 	}
-
+	public void setType(String type) {
+		try {
+			this.type = Integer.parseInt(type);
+			return;
+		}
+		catch(Exception e) {
+			
+		}
+		this.type = DashboardWidgetContext.WidgetType.getWidgetType(type).getValue();
+	}
 	public void setType(Integer type) {
 		this.type = type;
 	}

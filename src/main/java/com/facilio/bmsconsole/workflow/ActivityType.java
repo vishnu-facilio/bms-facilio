@@ -188,23 +188,33 @@ public enum ActivityType {
 			return null;
 		}
 		
+	},
+	FIELD_CHANGE (1 << 20) {
+
+		@Override
+		public String getMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
 	}
 	;
 
     private int eventType;
-
     ActivityType(int eventType) {
         this.eventType = eventType;
     }
-
     public int getValue() {
         return eventType;
     }
-    
     public static ActivityType valueOf(int eventTypeVal) {
     	return TYPE_MAP.get(eventTypeVal);
     }
     
+    public boolean isPresent(long activity) {
+    	return (activity & this.eventType) == this.eventType;
+    }
+   
     public abstract String getMessage(JSONObject json);
     
     private static final Map<Integer, ActivityType> TYPE_MAP = Collections.unmodifiableMap(initTypeMap());

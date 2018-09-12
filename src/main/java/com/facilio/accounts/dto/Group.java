@@ -1,8 +1,9 @@
 package com.facilio.accounts.dto;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Group {
+public class Group implements Serializable {
 	
 	private long groupId = -1;
 	private long orgId = -1;
@@ -96,6 +97,22 @@ public class Group {
 	}
 	public void setPhone(String phone) {
 		this.phone = phone;
+	}
+	
+	private String groupMembersEmail;
+	public String getGroupMembersEmail() {
+		return groupMembersEmail;
+	}
+	public void setGroupMembersEmail(String groupMembersEmail) {
+		this.groupMembersEmail = groupMembersEmail;
+	}
+	
+	private String groupMembersPhone;
+	public String getGroupMembersPhone() {
+		return groupMembersPhone;
+	}
+	public void setGroupMembersPhone(String groupMembersPhone) {
+		this.groupMembersPhone = groupMembersPhone;
 	}
 	
 	private List<GroupMember> members;

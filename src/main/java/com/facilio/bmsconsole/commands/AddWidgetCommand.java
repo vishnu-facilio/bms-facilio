@@ -75,7 +75,14 @@ public class AddWidgetCommand implements Command {
 					}
 					
 					if(widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD) || widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_ENERGY_CARBON_CARD_MINI)) {
-						Long workflowId = WorkflowUtil.addWorkflow(DashboardUtil.CARBON_EMISSION_CARD);
+						Long workflowId = null;
+						
+						if(AccountUtil.getCurrentOrg().getId() == 116l) {
+							workflowId = WorkflowUtil.addWorkflow(DashboardUtil.CARBON_EMISSION_CARBON_MODULE_CARD);
+						}
+						else {
+							workflowId = WorkflowUtil.addWorkflow(DashboardUtil.CARBON_EMISSION_CARD);
+						}
 						WidgetVsWorkflowContext widgetVsWorkflowContext = new WidgetVsWorkflowContext();
 						
 						widgetVsWorkflowContext.setWidgetId(widget.getId());

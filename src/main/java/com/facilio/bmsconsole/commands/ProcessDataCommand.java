@@ -33,23 +33,25 @@ public class ProcessDataCommand implements Command {
 				keyName=actualKey.substring(firstIndex+1);
 			}
 			Iterator<String> innerKeyList = record.keySet().iterator();
-			while(innerKeyList.hasNext())
-			{
+			while(innerKeyList.hasNext()) {
 				String iKeyName=innerKeyList.next();
-				String instanceVal=record.get(iKeyName).toString();
-				String deviceName=iKeyName;//incase of POINT_ inner keyName is deviceName
-				String instanceName=keyName;//incase of POINT_ keyName is instanceName
-
-				if(!actualKey.startsWith("POINT_")) {
-					deviceName=keyName;//incase of DEVICE_ & others keyName is deviceName
-					instanceName=iKeyName;//incase of DEVICE_ & others inner KeyName is instanceName
+				Object instanceObj = record.get(iKeyName);
+				if (instanceObj != null) {
+					String instanceVal = instanceObj.toString();
+					String deviceName=iKeyName;//incase of POINT_ inner keyName is deviceName
+					String instanceName=keyName;//incase of POINT_ keyName is instanceName
+	
+					if(!actualKey.startsWith("POINT_")) {
+						deviceName=keyName;//incase of DEVICE_ & others keyName is deviceName
+						instanceName=iKeyName;//incase of DEVICE_ & others inner KeyName is instanceName
+					}
+					Map<String,String> data= deviceData.get(deviceName);
+					if(data==null) {
+						data= new HashMap<String,String> ();
+						deviceData.put(deviceName, data);
+					}
+					data.put(instanceName,instanceVal);
 				}
-				Map<String,String> data= deviceData.get(deviceName);
-				if(data==null) {
-					data= new HashMap<String,String> ();
-					deviceData.put(deviceName, data);
-				}
-				data.put(instanceName,instanceVal);
 			}
 		}
 		LOGGER.debug("Finished ProcessDataCommand####### : ");

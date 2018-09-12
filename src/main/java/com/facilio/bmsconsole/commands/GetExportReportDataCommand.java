@@ -37,13 +37,24 @@ public class GetExportReportDataCommand implements Command {
 		Map<String, Map<String, Map<Object, Object>>> reportData = (Map<String, Map<String, Map<Object, Object>>>) context.get(FacilioConstants.ContextNames.REPORT_DATA);
 		ReportMode mode = (ReportMode)context.get(FacilioConstants.ContextNames.REPORT_MODE);
 		
+		if (mode == null) {
+			String chartStateString = (String) report.getChartState();
+			JSONParser parser = new JSONParser();
+			Map<String, Object> chartState = (Map<String, Object>) parser.parse(chartStateString);
+			if (chartState != null && chartState.containsKey("common")) {
+				Map<String, Object> common = (Map<String, Object>) chartState.get("common");
+				mode = ReportMode.valueOf((int)(long) common.get("mode"));
+			}
+		}
+		
+		
 		Map<Long, ReportBaseLineContext> baseLineMap = null;
 		
 		List<String> currentHeaderKeys = new ArrayList<>();
 		Map<String, Map<String, Object>> rows = new LinkedHashMap<>();
 	    if (mode == ReportMode.SERIES) {
 	    	  currentHeaderKeys.add(SERIES_X_HEADER);
-	    	  currentHeaderKeys.addAll(reportData.values().stream().findFirst().get().keySet());
+	    	  currentHeaderKeys.addAll(reportData.values().stream().filter(val -> val != null && !val.isEmpty()).findFirst().get().keySet());
 	    }
 	    else {
 	    		currentHeaderKeys.add(report.getDataPoints().get(0).getxAxis().getField().getName());
@@ -61,7 +72,8 @@ public class GetExportReportDataCommand implements Command {
 	    }
 	    
 	    Map<String, Object> tableState = null;
-		if (report.getTabularState() != null) {
+	    String tabularState = report.getTabularState() != null ? report.getTabularState() : (String) context.get(FacilioConstants.ContextNames.TABULAR_STATE);
+		if (tabularState != null) {
 			JSONParser parser = new JSONParser();
     			tableState = (Map<String, Object>) parser.parse(report.getTabularState());
 		}
@@ -78,7 +90,7 @@ public class GetExportReportDataCommand implements Command {
 			if (columns.size() != stateColumns.size()) {
 				List<String> existingHeaders = stateColumns.stream().map(col -> col.get("name").toString()).collect(Collectors.toList());
 				List<String> remainingHeaders = currentHeaderKeys.stream().filter(header -> !existingHeaders.contains(header)).collect(Collectors.toList());
-				setTableStateColumns(stateColumns, remainingHeaders);
+				setTableStateColumns(columns, remainingHeaders);
 			}
 		}
 		
@@ -110,6 +122,9 @@ public class GetExportReportDataCommand implements Command {
 				column.put("baseLine", true);
 				column.put("baseLineId", Long.parseLong(header.substring(0, header.indexOf("__baseline__"))));
 				column.put("dp", header.substring(header.indexOf("__baseline__") + 12));
+			}
+			else if (header.equalsIgnoreCase(ACTUAL_HEADER)) {
+				column.put("displayName", ACTUAL_HEADER);
 			}
 			columns.add(column);
 		});
@@ -172,7 +187,7 @@ public class GetExportReportDataCommand implements Command {
 						newRow.put((String) col.get("header"), key);
 					}
 					else if (reportData.get(key).containsKey(columnName)){
-						ReportDataPointContext dataPoint = dataMap.get(columnName);
+						ReportDataPointContext dataPoint = dataMap.get(key);
 						Object val = reportData.get(key).get(columnName).keySet().stream().findFirst().get();
 						FacilioField field = null;
 						try {
@@ -184,7 +199,9 @@ public class GetExportReportDataCommand implements Command {
 						if (field instanceof NumberField) {
 							unit = ((NumberField)field).getUnit();
 						}
-						newRow.put((String) col.get("header"), reportData.get(key).get(columnName).get(val) + " " + unit);
+						if (reportData.get(key).containsKey(columnName) && reportData.get(key).get(columnName).containsKey(val)) {
+							newRow.put((String) col.get("header"), reportData.get(key).get(columnName).get(val) + " " + unit);
+						}
 					}
 				});
 				records.add(newRow);
@@ -197,7 +214,7 @@ public class GetExportReportDataCommand implements Command {
 				for(int i = 0, size = columns.size(); i < size; i++) {
 					Map<String, Object> column = columns.get(i);
 					if (i == 0) {
-						String  format = "MMMM dd, yyyy hh:mm A";
+						String  format = "MMMM dd, yyyy hh:mm a";
 						newRow.put((String) column.get("header"), DateTimeUtil.getFormattedTime(x, format));
 						continue;
 					}
@@ -214,7 +231,7 @@ public class GetExportReportDataCommand implements Command {
 						bl = ACTUAL_HEADER.toLowerCase();
 						xTime = x;
 					}
-					if (reportData.get(name) != null && reportData.get(name).get(bl).get(xTime) != null) {
+					if (reportData.get(name) != null && reportData.get(name).containsKey(bl) && reportData.get(name).get(bl).containsKey(xTime) && reportData.get(name).get(bl).get(xTime) != null) {
 						newRow.put((String) column.get("header"), reportData.get(name).get(bl).get(xTime));
 					}
 				}

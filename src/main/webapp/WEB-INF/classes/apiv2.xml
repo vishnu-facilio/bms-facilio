@@ -290,7 +290,7 @@
 		</action>
 		<action name="workorderReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchWorkorderData">
 		</action>
-		<action name="addReadingReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="addReadingReport">
+		<action name="addReadingReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="addOrUpdateReadingReport">
 		</action>
 		<action name="addWorkOrderReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="addWorkOrderReport">
 		</action>
@@ -300,11 +300,19 @@
 		</action>
 		<action name="sendMail" class="com.facilio.bmsconsole.actions.V2ReportAction" method="sendReportMail">
 		</action>
+		<action name="schedule" class="com.facilio.bmsconsole.actions.V2ReportAction" method="scheduleReport">
+		</action>
 		<action name="fetchReportFolders" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReportFolders">
 		</action>
 		<action name="addReportFolder" class="com.facilio.bmsconsole.actions.V2ReportAction" method="addReportFolder">
 		</action>
 		<action name="fetchReportWithData" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReportWithData">
+		</action>
+		<action name="deleteReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="deleteReport">
+		</action>
+		<action name="updateReportFolder" class="com.facilio.bmsconsole.actions.V2ReportAction" method="updateReportFolder">
+		</action>
+		<action name="deleteReportFolder" class="com.facilio.bmsconsole.actions.V2ReportAction" method="deleteReportFolder">
 		</action>
 	</package>
 	

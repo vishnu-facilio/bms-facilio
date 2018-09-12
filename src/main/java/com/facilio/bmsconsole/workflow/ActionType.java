@@ -23,6 +23,7 @@ import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AlarmSeverityContext;
 import com.facilio.bmsconsole.context.NoteContext;
@@ -465,7 +466,7 @@ public enum ActionType {
 					woContext.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
 					woContext.put(FacilioConstants.ContextNames.INSERT_LEVEL, 2);
 
-					Command addWorkOrder = FacilioChainFactory.getAddWorkOrderChain();
+					Command addWorkOrder = TransactionChainFactory.getAddWorkOrderChain();
 					addWorkOrder.execute(woContext);
 				} else {
 					AlarmContext alarm = AlarmAPI.getAlarm(wo.getId());
@@ -532,7 +533,7 @@ public enum ActionType {
 					context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 					context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(wo.getId()));
 
-					Chain updateWorkOrder = FacilioChainFactory.getUpdateWorkOrderChain();
+					Chain updateWorkOrder = TransactionChainFactory.getUpdateWorkOrderChain();
 					updateWorkOrder.execute(context);
 				}
 			}

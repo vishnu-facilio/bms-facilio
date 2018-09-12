@@ -49,17 +49,18 @@ public class WorkflowEventContext {
 		this.module = module;
 	}
 
-	private ActivityType activityType;
+	private int activity = -1;
 	public int getActivityType() {
-		if(activityType != null) {
-			return activityType.getValue();
-		}
-		return -1;
+		return activity;
 	}
 	public void setActivityType(int activityType) {
+		this.activity = activityType;
 		this.activityType = ActivityType.valueOf(activityType);
 	}
+	
+	private ActivityType activityType;
 	public void setActivityType(ActivityType activityType) {
+		this.activity = activityType.getValue();
 		this.activityType = activityType;
 	}
 	public ActivityType getActivityTypeEnum() {

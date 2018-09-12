@@ -11,6 +11,7 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.report.context.ReadingAnalysisContext.AnalyticsType;
 
 public class ReportContext {
 
@@ -221,5 +222,22 @@ public class ReportContext {
 			return FieldUtil.getAsJSON(xCriteria).toJSONString();
 		}
 		return null;
+	}
+	
+	private AnalyticsType analyticsType;
+	public int getAnalyticsType() {
+		if(analyticsType != null) {
+			return analyticsType.getIntVal();
+		}
+		return -1;
+	}
+	public AnalyticsType getAnalyticsTypeEnum() {
+		return analyticsType;
+	}
+	public void setAnalyticsType(int type) {
+		this.analyticsType = AnalyticsType.getType(type);
+	}
+	public void setAnalyticsType(AnalyticsType analyticsType) {
+		this.analyticsType = analyticsType;
 	}
 }

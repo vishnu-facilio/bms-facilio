@@ -132,7 +132,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 						
 						Map<String, Object> recordPlaceHolders = new HashMap<>(placeHolders);
 						CommonCommandUtil.appendModuleNameInKey(readingRule.getReadingField().getModule().getName(), readingRule.getReadingField().getModule().getName(), FieldUtil.getAsProperties(reading), recordPlaceHolders);
-						WorkflowRuleAPI.evaluateWorkflow(readingRule, readingRule.getReadingField().getModule().getName(), reading, recordPlaceHolders, context);
+						WorkflowRuleAPI.evaluateWorkflow(readingRule, readingRule.getReadingField().getModule().getName(), reading, null, recordPlaceHolders, context);
 						
 						prevRDM = currentRDM;
 					}

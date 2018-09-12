@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
@@ -14,6 +16,7 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.report.context.ReportContext;
+import com.facilio.workflows.util.WorkflowUtil;
 
 public class FilterXFieldCommand implements Command {
 
@@ -29,12 +32,23 @@ public class FilterXFieldCommand implements Command {
 																				.andCondition(CriteriaAPI.getCondition(report.getxCriteria().getxField(), CommonOperators.IS_NOT_EMPTY))
 																				;
 			List<Map<String, Object>> props = selectBuilder.getAsProps();
+			List<Object> xValues = new ArrayList<>();
 			if (props != null && !props.isEmpty()) {
 				StringJoiner joiner = new StringJoiner(",");
 				for (Map<String, Object> prop : props) {
 					joiner.add(prop.get(report.getxCriteria().getxField().getName()).toString());
+					xValues.add(prop.get(report.getxCriteria().getxField().getName()));
 				}
 				context.put(FacilioConstants.ContextNames.REPORT_X_VALUES, joiner.toString());
+			}
+			
+			if(report.getxCriteria().getTransformWorkflowId() > 0) {
+				
+				Map<String,Object> paramMap = new HashMap<>();
+				paramMap.put("value", xValues);
+				Object result = WorkflowUtil.getResult(report.getxCriteria().getTransformWorkflowId(), paramMap);
+				
+				context.put(FacilioConstants.ContextNames.REPORT_X_VALUES, result);
 			}
 		}
 		return false;

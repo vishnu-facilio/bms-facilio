@@ -1,1 +1,0 @@
-<h2>The Photo which you're accessing is removed or not exists.</h2>

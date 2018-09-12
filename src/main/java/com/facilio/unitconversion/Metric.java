@@ -22,6 +22,7 @@ public enum Metric {
 	AREA(12,"Area",63),
 	TORQUE(13,"Torque",69),
 	LIQUID(14,"Liquid",70),
+	CURRENCY(15,"Currency"),
 	;
 	
 	public static Map<Integer, Metric> getMetricMap() {
@@ -48,6 +49,10 @@ public enum Metric {
 		this.metricId = metricId;
 		this.name = name;
 		this.siUnitId = siUnitid;
+	}
+	Metric(int metricId, String name) {
+		this.metricId = metricId;
+		this.name = name;
 	}
 	
 	private static final Map<Integer, Metric> METRIC_MAP = Collections.unmodifiableMap(initTypeMap());

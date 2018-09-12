@@ -278,7 +278,6 @@ public class FormulaContext {
 			this.isPublic = isPublic;
 		}
 		public FacilioField getSelectField(FacilioField field) throws Exception {
-			System.out.println("org timeZone -- "+DateTimeUtil.getDateTime().getOffset().toString());
 			String selectFieldString =expr.replace("{$place_holder$}", field.getColumnName());
 			String timeZone = DateTimeUtil.getDateTime().getOffset().toString().equalsIgnoreCase("Z") ? "+00:00":DateTimeUtil.getDateTime().getOffset().toString(); 
 			selectFieldString = selectFieldString.replace("{$place_holder1$}",timeZone);

@@ -5,7 +5,7 @@ import com.facilio.unitconversion.Unit;
 
 public class NumberField extends FacilioField {
 	
-	private int unitId;
+	private int unitId = -1;
 	
 	public int getUnitId() {
 		return unitId;

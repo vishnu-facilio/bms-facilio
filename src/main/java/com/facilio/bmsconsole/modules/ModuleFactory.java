@@ -178,6 +178,14 @@ public class ModuleFactory {
 		workflowRuleModule.setTableName("Workflow_Rule");
 		return workflowRuleModule;
 	}
+	
+	public static FacilioModule getWorkflowFieldChangeFieldsModule() {
+		FacilioModule workflowFieldChangeFields = new FacilioModule();
+		workflowFieldChangeFields.setName("workflowFieldChangeFields");
+		workflowFieldChangeFields.setDisplayName("Workflow Field Change Fields");
+		workflowFieldChangeFields.setTableName("Workflow_Field_Change_Fields");
+		return workflowFieldChangeFields;
+	}
 
 	public static FacilioModule getReadingRuleModule() {
 		FacilioModule readingRuleModule = new FacilioModule();
@@ -874,6 +882,14 @@ public class ModuleFactory {
 		reportScheduleInfo.setName("reportScheduleInfo");
 		reportScheduleInfo.setDisplayName("Report Schedule Info");
 		reportScheduleInfo.setTableName("Report_Schedule_Info");
+		return reportScheduleInfo;
+	}
+	
+	public static FacilioModule getReportScheduleInfo() {
+		FacilioModule reportScheduleInfo = new FacilioModule();
+		reportScheduleInfo.setName("reportScheduleInfo");
+		reportScheduleInfo.setDisplayName("Report Schedule Info");
+		reportScheduleInfo.setTableName("Report_Schedule_Info1");
 		return reportScheduleInfo;
 	}
 

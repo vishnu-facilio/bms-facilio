@@ -35,15 +35,12 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.AnomalySchedulerUtil;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DateTimeUtil;
-import com.facilio.bmsconsole.util.DeviceAPI;
-import com.facilio.bmsconsole.util.WeatherUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.GsonBuilder;
 
@@ -56,15 +53,13 @@ public class AnomalyDetectorJob extends FacilioJob {
 	@Override
 	public void execute(JobContext jc) {
 		try {
-			// TO DO .. Feature bit check
 			if (!AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_ANOMALY_DETECTOR)) {
-				logger.log(Level.INFO, "Feature BITS is not enabled");
+				logger.log(Level.INFO, "Feature Bit is not enabled");
 				return;
 			} else {
-				logger.log(Level.INFO, "Feature BITS is enabled");
+				logger.log(Level.INFO, "Feature Bit is enabled");
 			}
 
-			// String meters = AwsUtil.getConfig("anomalyMeters");
 			Integer anomalyPeriodicity = Integer.parseInt(AwsUtil.getConfig("anomalyPeriodicity"));
 			// get the list of all sub meters
 			long correction = 0;

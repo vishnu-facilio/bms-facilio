@@ -99,6 +99,7 @@ public class FacilioConstants {
 		
 		public static final String SIGNUP_INFO = "signupinfo";
 		public static final String CHANGE_SET = "changeSet";
+		public static final String CHANGE_SET_MAP = "changeSetMap";
 		public static final String RECORD = "record";
 		public static final String RECORD_LIST = "records";
 		public static final String RECORD_MAP = "recordMap";
@@ -107,6 +108,7 @@ public class FacilioConstants {
 		public static final String RECORD_COUNT = "recordCount";
 		public static final String ROWS_UPDATED = "rowsUpdated";
 		public static final String ACTIVITY_TYPE = "activityType";
+		public static final String ACTIVITY_TYPE_LIST = "activityTypeList";
 		public static final String IS_BULK_ACTION = "isBulkAction";
 		
 		public static final String USER_ID = "userId";
@@ -243,6 +245,7 @@ public class FacilioConstants {
 		public static final String WIDGET_TYPE = "widgetType";
 		
 		public static final String REPORT = "report";
+		public static final String OLD_REPORT_ID = "oldReportId";
 		public static final String REPORT_LIST = "reportList";
 		public static final String REPORT_COLUMN_LIST = "reportList";
 		public static final String REPORT_USER_FILTER_VALUE = "userFilterValue";
@@ -652,6 +655,7 @@ public class FacilioConstants {
 	public static class Job{
 		public static final String NEXT_EXECUTION_TIME = "NEXT_EXECUTION_TIME";
 		public static final String TABLE_NAME = "Jobs";
+		public static final String FORKED_COMMANDS = "forkedCommands";
 	}
 	public static class Ticket{
 		public static final String STATUS_ID = "status_id";
@@ -696,6 +700,8 @@ public class FacilioConstants {
 	public static class Reports 
 
 	{
+		public static final String ACTUAL_DATA = "actual";
+		
 		public static final String RANGE_FROM = "fromRange";
 		public static final String RANGE_END = "endRange";
 		public static final String GROUPBY="groupBy";

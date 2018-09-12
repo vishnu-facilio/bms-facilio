@@ -28,6 +28,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.BaseLineContext;
+import com.facilio.bmsconsole.context.BaseLineContext.RangeType;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.DashboardContext;
@@ -65,7 +66,6 @@ import com.facilio.bmsconsole.context.SiteContext.SiteType;
 import com.facilio.bmsconsole.context.UserWorkHourReading;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetVsWorkflowContext;
-import com.facilio.bmsconsole.context.BaseLineContext.RangeType;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -108,6 +108,7 @@ public class DashboardUtil {
 
     public static final String WEATHER_WIDGET_WORKFLOW_STRING = "<workflow> 		<parameter name=\"parentId\" type = \"Number\"/> 		<expression name=\"a\"> 				<module name=\"weather\"/> 				<criteria pattern=\"1\"> 						<condition sequence=\"1\">parentId`=`${parentId}</condition> 				</criteria> 				<orderBy name=\"ttime\" sort=\"desc\"/> 				<limit>1</limit> 		</expression> </workflow>";
 	public static final String CARBON_EMISSION_CARD = "<workflow> 		<parameter name=\"parentId\" type=\"Number\"/> 		<expression name=\"mainMeter\"> 		 		 				<function>default.getMainEnergyMeter(parentId)</function>	 		</expression>	<expression name=\"a\"> 				<module name=\"energydata\"/> 				<criteria pattern=\"1 and 2\"> 						<condition sequence=\"1\">parentId`=`${mainMeter}</condition> 						<condition sequence=\"2\">ttime`Current Month`</condition> 				</criteria> 				<field name=\"totalEnergyConsumptionDelta\" aggregate = \"sum\"/> 		</expression> 		<expression name=\"carbonConstant\"> 				<constant>0.44</constant> 		</expression> 	<result>a*carbonConstant</result> </workflow>";
+	public static final String CARBON_EMISSION_CARBON_MODULE_CARD = "<workflow> 		<parameter name=\"parentId\" type=\"Number\"/> 		<expression name=\"mainMeter\"> 		 		 				<function>default.getMainEnergyMeter(parentId)</function>	 		</expression>	<expression name=\"a\"> 				<module name=\"co2emisson\"/> 				<criteria pattern=\"1 and 2\"> 						<condition sequence=\"1\">parentId`=`${mainMeter}</condition> 						<condition sequence=\"2\">ttime`Current Month`</condition> 				</criteria> 				<field name=\"co2emisson\" aggregate = \"sum\"/> 		</expression> 	<result>a</result> </workflow>";
 	
 	public static final String ENERGY_COST_LAST_MONTH_CONSUMPTION_WORKFLOW = "<workflow> 		<parameter name=\"parentId\" type=\"Number\"/> 		<expression name=\"mainMeter\"> 		 		 				<function>default.getMainEnergyMeter(parentId)</function>	 		</expression>	<expression name=\"a\"> 		 				<module name=\"energydata\"/> 		 				<criteria pattern=\"1 and 2\"> 			 						<condition sequence=\"1\">parentId`=`${mainMeter}</condition> 			 						<condition sequence=\"2\">ttime`Last Month`</condition> 		 				</criteria> 		 				<field name=\"totalEnergyConsumptionDelta\" aggregate = \"sum\"/> 	 		</expression> 		<expression name=\"unitcost\"> 		 			<constant>0.41</constant> 	 		</expression> 	 		<result>a*unitcost</result> </workflow>";
 	public static final String ENERGY_COST_THIS_MONTH_CONSUMPTION_WORKFLOW = "<workflow> 		<parameter name=\"parentId\" type=\"Number\"/> 		<expression name=\"mainMeter\"> 		 		 				<function>default.getMainEnergyMeter(parentId)</function>	 		</expression>	<expression name=\"a\"> 		 				<module name=\"energydata\"/> 		 				<criteria pattern=\"1 and 2\"> 			 						<condition sequence=\"1\">parentId`=`${mainMeter}</condition> 			 						<condition sequence=\"2\">ttime`Current Month upto now`</condition> 		 				</criteria> 		 				<field name=\"totalEnergyConsumptionDelta\" aggregate = \"sum\"/> 	 		</expression> 		<expression name=\"unitcost\"> 		 			<constant>0.41</constant> 	 		</expression> 	 		<result>a*unitcost</result> </workflow>";
@@ -2013,7 +2014,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		.andCustomWhere("REPORT_ID = ?", reportId);
 		deleteRecordBuilder.delete();
 		
-		List<WidgetChartContext> widgets = getWidgetFromDashboard(reportId);
+		List<WidgetChartContext> widgets = getWidgetFromDashboard(reportId,false);
 		
 		List<Long> removedWidgets = new ArrayList<>();
 		for(WidgetChartContext widget :widgets) {
@@ -3259,12 +3260,20 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		return null;
 	}
 	
-	public static List<WidgetChartContext> getWidgetFromDashboard(long reportId) throws Exception {
+	public static List<WidgetChartContext> getWidgetFromDashboard(long reportId,boolean isNewReport) throws Exception {
+		
+		String reportCollumn = null;
+		if(isNewReport) {
+			reportCollumn = "NEW_REPORT_ID";
+		}
+		else {
+			reportCollumn = "REPORT_ID";
+		}
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 					.select(FieldFactory.getWidgetChartFields())
 					.table(ModuleFactory.getWidgetChartModule().getTableName())
-					.andCustomWhere(ModuleFactory.getWidgetChartModule().getTableName()+".REPORT_ID = ?", reportId);
+					.andCustomWhere(ModuleFactory.getWidgetChartModule().getTableName()+"."+reportCollumn+" = ?", reportId);
 			
 		List<Map<String, Object>> props =  selectBuilder.get();
 		
@@ -3278,6 +3287,8 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		
 		return widgetCharts;
 	}
+	
+	
 	
 	
 	public static JSONArray getGroupedBooleanFields( List<Map<String, Object>> rs,JSONArray booleanResultOptions) {
@@ -3356,7 +3367,14 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		case STATIC_WIDGET_ENERGY_CARBON_CARD_MINI:
 			
 			widgetVsWorkflowContext = new WidgetVsWorkflowContext();
-			widgetVsWorkflowContext.setWorkflowString(CARBON_EMISSION_CARD);
+			
+			if(AccountUtil.getCurrentOrg().getId() == 116l) {
+				widgetVsWorkflowContext.setWorkflowString(CARBON_EMISSION_CARBON_MODULE_CARD);
+			}
+			else {
+				widgetVsWorkflowContext.setWorkflowString(CARBON_EMISSION_CARD);
+			}
+			
 			widgetVsWorkflowContext.setWorkflowName("carbonEmission");
 			workflowList.add(widgetVsWorkflowContext);
 			

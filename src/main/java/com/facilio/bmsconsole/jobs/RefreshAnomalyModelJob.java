@@ -12,8 +12,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.context.AnalyticsAnomalyConfigContext;
@@ -22,7 +20,6 @@ import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.TemperatureContext;
 import com.facilio.bmsconsole.util.AnomalySchedulerUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
-import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.fs.S3FileStore;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
@@ -37,10 +34,10 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 		try {
 			// TO DO .. Feature bit check
 			if (!AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_ANOMALY_DETECTOR)) {
-				logger.log(Level.INFO, "RefreshAnomalyJob: Feature BITS is not enabled");
+				logger.log(Level.INFO, "RefreshAnomalyJob: Feature Bit is not enabled");
 				return;
 			} else {
-				logger.log(Level.INFO, "RefreshAnomalyJob: Feature BITS is enabled");
+				logger.log(Level.INFO, "RefreshAnomalyJob: Feature Bit is enabled");
 			}
 
 			logger.log(Level.INFO, "RefreshAnomalyJob: Getting energy meters ");

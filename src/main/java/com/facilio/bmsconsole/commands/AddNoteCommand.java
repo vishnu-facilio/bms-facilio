@@ -1,17 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -73,15 +72,17 @@ public class AddNoteCommand implements Command {
 						return false;
 					}
 					
-					Map<Long, User> requesters = CommonCommandUtil.getRequesters(String.valueOf(requester.getId()));
-					requester = requesters.get(requester.getId());
+					UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
+					requester = userBean.getUser(requester.getId());
 					
-					JSONObject mailJson = new JSONObject();
-					mailJson.put("sender", "support@facilio.com");
-					mailJson.put("to", requester.getEmail());
-					mailJson.put("subject", AccountUtil.getCurrentUser().getName() + " commented on your request");
-					mailJson.put("message", note.getBody());
-					AwsUtil.sendEmail(mailJson);
+					if (requester.getEmail() != null) { //This has to be changed to support any notification
+						JSONObject mailJson = new JSONObject();
+						mailJson.put("sender", "support@facilio.com");
+						mailJson.put("to", requester.getEmail());
+						mailJson.put("subject", AccountUtil.getCurrentUser().getName() + " commented on your request");
+						mailJson.put("message", note.getBody());
+						AwsUtil.sendEmail(mailJson);
+					}
 				}
 			}
 		}

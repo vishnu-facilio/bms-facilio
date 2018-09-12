@@ -14,8 +14,10 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.unitconversion.UnitsUtil;
 
 public class GetLatestReadingValuesCommand implements Command {
 
@@ -40,7 +42,14 @@ public class GetLatestReadingValuesCommand implements Command {
 						ReadingContext reading = new ReadingContext();
 						reading.setParentId(rdm.getResourceId());
 						reading.setTtime(rdm.getTtime());
-						reading.addReading(rdm.getField().getName(), rdm.getValue());
+						
+						if (rdm.getField() instanceof NumberField && ((NumberField) rdm.getField()).getUnitId() != -1 ) {
+							reading.addReading(rdm.getField().getName(), UnitsUtil.convertToOrgDisplayUnitFromSi(rdm.getValue(), ((NumberField) rdm.getField()).getUnitId()));
+						}
+						else {
+							reading.addReading(rdm.getField().getName(), rdm.getValue());
+						}
+						
 						reading.setId(rdm.getReadingDataId());
 						
 						readingData.put(rdm.getField().getName(), Collections.singletonList(reading));

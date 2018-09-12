@@ -801,6 +801,20 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	public static List<FacilioField> getWorkflowFieldChangeFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getWorkflowFieldChangeFieldsModule();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("ruleId", "RULE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("fieldId", "FIELD_ID", module, FieldType.LOOKUP));
+		fields.add(getField("oldValue", "OLD_VALUE", module, FieldType.STRING));
+		fields.add(getField("newValue", "NEW_VALUE", module, FieldType.STRING));
+		
+		return fields;
+	}
 
 	public static List<FacilioField> getReadingRuleFields() {
 		List<FacilioField> fields = new ArrayList<>();
@@ -3643,6 +3657,20 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	public static List<FacilioField> getReportScheduleInfo1Fields() {
+		FacilioModule module = ModuleFactory.getReportScheduleInfo();
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getModuleIdField(module));
+		fields.add(getField("reportId", "REPORTID", module, FieldType.NUMBER));
+		fields.add(getField("fileFormat", "FILE_FORMAT", module, FieldType.NUMBER));
+		fields.add(getField("templateId", "TEMPLATEID", module, FieldType.NUMBER));
+
+		return fields;
+	}
 
 	public static List<FacilioField> getBaseLineFields() {
 		FacilioModule module = ModuleFactory.getBaseLineModule();
@@ -4339,6 +4367,7 @@ public class FieldFactory {
 		fields.add(getField("dataPointJson", "DATA_POINT_JSON", module, FieldType.STRING));
 		fields.add(getField("xCriteriaJson", "X_CRITERIA_JSON", module, FieldType.STRING));
 		fields.add(getField("baselineJson", "BASELINE_JSON", module, FieldType.STRING));
+		fields.add(getField("analyticsType", "ANALYTICS_TYPE", module, FieldType.NUMBER));
 		return fields;
 	}
 	
@@ -4438,6 +4467,7 @@ public class FieldFactory {
 		fields.add(getOrgIdField(module));
 		fields.add(getField("name", "NAME", module, FieldType.STRING));
 		fields.add(getField("interval", "REFRESH_INTERVAL", module, FieldType.NUMBER));
+		fields.add(getField("screenSettingString","SCREEN_SETTING",module,FieldType.STRING));
 		
 		return fields;
 	}

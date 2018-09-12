@@ -48,8 +48,8 @@
 		<result >/urjanet/login.jsp</result>
 		</action>
 
-	<action name="faciliosubmit" class="com.facilio.auth.actions.FacilioAuthAction"
-		method="validateLogin">
+	<action name="faciliosubmit" class="com.facilio.auth.actions.FacilioAuthAction" method="validateLogin">
+		<param name="auth">false</param>
 		<result name="success" type="json">
 				<param name="includeProperties">jsonresponse.*</param>
 		</result>
@@ -58,8 +58,7 @@
 		</result>
 	</action>
 
-	<action name="acceptOpInvite" class="com.facilio.auth.actions.FacilioAuthAction"
-			method="acceptUserInvite">
+	<action name="acceptOpInvite" class="com.facilio.auth.actions.FacilioAuthAction" method="acceptUserInvite">
 		<param name="auth">false</param>
 		<result name="success" type="json">
 				<param name="includeProperties">jsonresponse.*</param>
@@ -67,8 +66,7 @@
 	</action>
 	
 
-	<action name="opChangePassword" class="com.facilio.integration.actions.Home"
-			method="changePassword">
+	<action name="opChangePassword" class="com.facilio.integration.actions.Home" method="changePassword">
 		<result name="success" type="json">
 			<param name="includeProperties">jsonresponse.*</param>
 		</result>
@@ -77,8 +75,7 @@
 		</result>
 	</action>
 
-	<action name="changepassword" class="com.facilio.auth.actions.FacilioAuthAction"
-			method="changePassword">
+	<action name="changepassword" class="com.facilio.auth.actions.FacilioAuthAction" method="changePassword">
 		<result name="success" type="json">
 			<param name="includeProperties">jsonresponse.*</param>
 		</result>
@@ -86,15 +83,15 @@
 			<param name="includeProperties">jsonresponse.*</param>
 		</result>
 	</action>
-	<action name="apilogin" class="com.facilio.auth.actions.FacilioAuthAction"
-	method="generateAuthToken">
+	<action name="apilogin" class="com.facilio.auth.actions.FacilioAuthAction" method="generateAuthToken">
+		<param name="auth">false</param>
 		<result name="success" type="json">
 			<param name="includeProperties">jsonresponse.*</param>
 		</result>
 	</action>
 	
-	<action name="apisignup" class="com.facilio.auth.actions.FacilioAuthAction"
-	method="signupUser">
+	<action name="apisignup" class="com.facilio.auth.actions.FacilioAuthAction" method="signupUser">
+		<param name="auth">false</param>
 		<result name="success" type="json">
 			<param name="includeProperties">jsonresponse.*</param>
 		</result>
@@ -103,8 +100,7 @@
 		</result>
 	</action>
 
-	<action name="confirmpayment" class="com.facilio.integration.actions.Home"
-		method="confirmPayment">
+	<action name="confirmpayment" class="com.facilio.integration.actions.Home" method="confirmPayment">
 		<result name="success" type="json">
 				<param name="includeProperties">jsonresponse.*</param>
 		</result>
@@ -128,16 +124,18 @@
     </action>
 
 	</package>
+
 	<package name="authApi" namespace="/auth/api" extends="integration">
-	<action name="login" class="com.facilio.auth.actions.FacilioAuthAction"
-	   method="validateLogin">
-		<result name="success" type="json">
-			<param name="includeProperties">jsonresponse.*</param>
-		</result>
-		<result name="error" type="json">
-			<param name="includeProperties">jsonresponse.*</param>
-		</result>
-	</action>
+
+		<action name="login" class="com.facilio.auth.actions.FacilioAuthAction" method="validateLogin">
+			<param name="auth">false</param>
+			<result name="success" type="json">
+				<param name="includeProperties">jsonresponse.*</param>
+			</result>
+			<result name="error" type="json">
+				<param name="includeProperties">jsonresponse.*</param>
+			</result>
+		</action>
 	</package>
 		
 </struts>

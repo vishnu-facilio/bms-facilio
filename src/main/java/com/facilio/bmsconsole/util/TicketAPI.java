@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,12 +18,16 @@ import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.AttachmentContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.CalendarColorContext;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.TaskSectionContext;
@@ -31,6 +36,7 @@ import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketPriorityContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.TicketTypeContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -959,5 +965,130 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 				break;
 		}
 		}
+	}
+
+	public static <T extends TicketContext> void validateSiteSpecificData(T ticket, List<T> oldTickets) throws Exception {
+		boolean isWorkOrder = ticket instanceof WorkOrderContext;
+		if (ticket.getResource() != null) {
+			ResourceContext resource = ResourceAPI.getResource(ticket.getResource().getId());
+			long resourceSiteId = -1;
+			if (resource.getResourceTypeEnum() == ResourceType.SPACE) {
+				BaseSpaceContext baseSpace = SpaceAPI.getBaseSpace(resource.getId());
+				if (baseSpace.getSpaceTypeEnum() == SpaceType.SITE) {
+					resourceSiteId = baseSpace.getId();
+				} else {
+					resourceSiteId = baseSpace.getSiteId();
+				}
+			} else {
+				AssetContext asset = AssetsAPI.getAssetInfo(resource.getId(), false); //check deleted ?
+				if (asset.getSpaceId() > 0) {
+					BaseSpaceContext baseSpace = SpaceAPI.getBaseSpace(asset.getSpaceId());
+					if (baseSpace.getSpaceTypeEnum() == SpaceType.SITE) {
+						resourceSiteId = baseSpace.getId();
+					} else {
+						resourceSiteId = baseSpace.getSiteId();
+					}
+				}
+			}
+			
+			if (resourceSiteId > 0) {
+				for(T oldWo: oldTickets) {
+					long siteId = oldWo.getSiteId();
+					if (resourceSiteId != siteId) {
+						if (resource.getResourceTypeEnum() == ResourceType.SPACE) {
+							if (isWorkOrder) {
+								throw new IllegalArgumentException("The Space does not belong in the Workorder's Site.");
+							} else {
+								throw new IllegalArgumentException("The Space does not belong in the Workorder request's Site.");
+							}
+							
+						} else {
+							if (isWorkOrder) {
+								throw new IllegalArgumentException("The Asset does not belong in the Workorder's Site.");
+							} else {
+								throw new IllegalArgumentException("The Asset does not belong in the Workorder request's Site.");
+							}
+						}
+					}
+				}
+			}
+		} else if(ticket.getAssignedTo() != null || ticket.getAssignmentGroup() != null) {
+			User assignedTo = ticket.getAssignedTo();
+			Group assignmentGroup = ticket.getAssignmentGroup();
+			long groupSiteId = -1;
+			Set<Long> userSiteIds = new HashSet<>();
+			if (ticket.getAssignedTo() != null) {
+				assignedTo = AccountUtil.getUserBean().getUser(assignedTo.getOuid());
+				List<Long> accessibleSpace = assignedTo.getAccessibleSpace();
+				Map<Long, BaseSpaceContext> idVsBaseSpace = SpaceAPI.getBaseSpaceMap(accessibleSpace);
+				if (accessibleSpace != null && !accessibleSpace.isEmpty()) {
+					for (long id: accessibleSpace) {
+						BaseSpaceContext space = idVsBaseSpace.get(id);
+						if (space.getSpaceTypeEnum() == SpaceType.SITE) {
+							userSiteIds.add(space.getId());
+						} else {
+							userSiteIds.add(space.getSiteId());
+						}
+					}
+				}
+			} 
+			if (assignmentGroup != null) {
+				assignmentGroup = AccountUtil.getGroupBean().getGroup(assignmentGroup.getGroupId());
+				groupSiteId = assignmentGroup.getSiteId();
+			}
+			
+			for (TicketContext oldWo: oldTickets) {
+				long siteId = oldWo.getSiteId();
+				if (groupSiteId > 0 && groupSiteId != siteId) {
+					throw new IllegalArgumentException("The Team does not belong to current site.");
+				}
+				
+				if (!userSiteIds.isEmpty() && !userSiteIds.contains(siteId)) {
+					throw new IllegalArgumentException("The User does not belong to current site.");
+				}
+			}
+		}
+	}
+
+	public static <T extends TicketContext> void validateSiteSpecificData(T ticket) throws Exception {
+		long siteId = ticket.getSiteId();
+		if (siteId == -1) {
+			return;
+		}
+		
+		User assignedTo = ticket.getAssignedTo();
+		Group assignmentGroup = ticket.getAssignmentGroup();
+	
+		Set<Long> userSiteIds = new HashSet<>();
+		if (assignedTo != null) {
+			assignedTo = AccountUtil.getUserBean().getUser(assignedTo.getOuid());
+			List<Long> accessibleSpace = assignedTo.getAccessibleSpace();
+			Map<Long, BaseSpaceContext> idVsBaseSpace = SpaceAPI.getBaseSpaceMap(accessibleSpace);
+			if (accessibleSpace != null && !accessibleSpace.isEmpty()) {
+				for (long id: accessibleSpace) {
+					BaseSpaceContext space = idVsBaseSpace.get(id);
+					if (space.getSpaceTypeEnum() == SpaceType.SITE) {
+						userSiteIds.add(space.getId());
+					} else {
+						userSiteIds.add(space.getSiteId());
+					}
+				}
+			}
+		}
+		
+		long groupSiteId = -1;
+		if (assignmentGroup != null) {
+			assignmentGroup = AccountUtil.getGroupBean().getGroup(assignmentGroup.getGroupId());
+			groupSiteId = assignmentGroup.getSiteId();
+		}
+	
+		if (groupSiteId > 0 && groupSiteId != siteId) {
+			throw new IllegalArgumentException("The Team does not belong to current site.");
+		}
+		
+		if (!userSiteIds.isEmpty() && !userSiteIds.contains(siteId)) {
+			throw new IllegalArgumentException("The User does not belong to current site.");
+		}
+		
 	}
 }

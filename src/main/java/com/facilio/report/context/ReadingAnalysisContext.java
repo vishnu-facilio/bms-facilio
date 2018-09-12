@@ -37,7 +37,7 @@ public class ReadingAnalysisContext {
 	public void setyAggr(int yAggr) {
 		this.yAggr = AggregateOperator.getAggregateOperator(yAggr);
 	}
-
+	
 
 	public static enum ReportMode {
 		TIMESERIES,
@@ -54,5 +54,38 @@ public class ReadingAnalysisContext {
 			}
 			return null;
 		}
+	}
+	
+	public static enum AnalyticsType {
+		
+		PORTFOLIO(1, "Portfolio Analysis"),
+		BUILDING(2, "Building Analysis"),
+		HEAT_MAP(3, "Heat Map Analysis"),
+		REGRESSION(4, "Regression Analysis"),
+		READINGS(5, "Readings Analysis")
+		;
+		
+		private int intVal;
+		private String strVal;
+		
+		private AnalyticsType(int intVal, String strVal) {
+			this.intVal = intVal;
+			this.strVal = strVal;
+		}
+		
+		public int getIntVal() {
+			return intVal;
+		}
+		public String getStringVal() {
+			return strVal;
+		}
+		
+		public static AnalyticsType getType(int value) {
+			if (value > 0 && value <= values().length) {
+				return values() [value - 1];
+			}
+			return null;
+		}
+		
 	}
 }

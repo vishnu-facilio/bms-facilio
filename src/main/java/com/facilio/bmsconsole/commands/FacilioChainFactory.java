@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import javax.transaction.Transaction;
@@ -30,13 +31,19 @@ import com.facilio.transaction.FacilioTransactionManager;
 public class FacilioChainFactory {
     private static Logger log = LogManager.getLogger(FacilioChainFactory.class.getName());
 
-    protected static Chain getDefaultChain()
+    protected static Chain getTransactionChain()
     {
-    	    return new TransactionChain();
+    	    return new FacilioChain(true);
     }
+    
+    protected static Chain getNonTransactionChain()
+    {
+    	    return new FacilioChain(false);
+    }
+    
     public static Chain getOrgSignupChain()
 	{
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new CreateOrgCommand());
 		c.addCommand(new AddDefaultModulesCommand());
 		c.addCommand(new AddDefaultReportCommand());
@@ -56,7 +63,7 @@ public class FacilioChainFactory {
 	}
 
 	public static Chain getAddEnergyDataChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		//c.addCommand(SetTableNamesCommand.getForEner);
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenericAddModuleDataCommand());
@@ -66,7 +73,7 @@ public class FacilioChainFactory {
 	}
 
 	public static Chain getAssetActionChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new PerformAssetAction());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
@@ -286,43 +293,8 @@ public class FacilioChainFactory {
 //		return c;
 //	}
 	
-	public static Chain getAddWorkOrderChain() {
-		Chain c = getDefaultChain();
-		c.addCommand(new AddRequesterCommand());
-		c.addCommand(SetTableNamesCommand.getForWorkOrder());
-		c.addCommand(new ValidateWorkOrderFieldsCommand());
-		c.addCommand(new LoadAllFieldsCommand());
-		c.addCommand(new AddWorkOrderCommand());
-		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
-		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SLA_RULE));
-		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE, RuleType.SCHEDULED_RULE));
-		c.addCommand(new AddAttachmentCommand());
-		c.addCommand(new AttachmentContextCommand());
-		c.addCommand(new AddAttachmentRelationshipCommand());
-		c.addCommand(new AddTicketActivityCommand());
-		c.addCommand(getAddTasksChain());
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
-	public static Chain getUpdateWorkOrderChain() {
-		Chain c = getDefaultChain();
-		c.addCommand(SetTableNamesCommand.getForWorkOrder());
-		c.addCommand(new LoadAllFieldsCommand());
-		c.addCommand(new UpdateWorkOrderCommand());
-		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
-		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SLA_RULE));
-		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE, RuleType.SCHEDULED_RULE));
-		c.addCommand(new SendNotificationCommand());
-		c.addCommand(new ClearAlarmOnWOCloseCommand());
-		c.addCommand(new AddTicketActivityCommand());
-//		c.addCommand(getAddOrUpdateReadingValuesChain());
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
 	public static Chain getDeleteWorkOrderChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForWorkOrder());
 		c.addCommand(new SplitDependentTicketsCommand());
 		c.addCommand(new DeleteTicketDependenciesCommand());
@@ -376,7 +348,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getAddWorkOrderRequestChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new GetFormMetaCommand());
 		c.addCommand(new ValidateFormCommand());
 //		c.addCommand(getAddTicketChain());
@@ -392,31 +364,52 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain addReadingReportChain() {
+	public static Chain addOrUpdateReadingReportChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new CreateReadingAnalyticsReportCommand());
-		c.addCommand(new AddReportCommand());
+		c.addCommand(new AddOrUpdateReportCommand());
 		return c;
 	}
 	
 	public static Chain addWorkOrderReportChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new CreateWorkOrderAnalyticsReportCommand());
-		c.addCommand(new AddReportCommand());
+		c.addCommand(new AddOrUpdateReportCommand());
 		return c;
 	}
 	
 	public static Chain sendReadingReportMailChain() {
+		Chain c = new ChainBase();
+		c.addCommand(getExportReadingReportFileChain());
+		c.addCommand(new SendReadingReportMailCommand());
+		return c;
+	}
+	
+	public static Chain sendReportMailChain() {
 		Chain c = new ChainBase();
 		c.addCommand(getExportReportFileChain());
 		c.addCommand(new SendReadingReportMailCommand());
 		return c;
 	}
 	
-	public static Chain getExportReportFileChain() {
+	public static Chain getExportReadingReportFileChain() {
 		Chain c = new ChainBase();
 		c.addCommand(ReadOnlyChainFactory.fetchReadingReportChain());
 		c.addCommand(new GetExportReportDataCommand());
+		return c;
+	}
+	
+	public static Chain getExportReportFileChain() {
+		Chain c = new ChainBase();
+		c.addCommand(ReadOnlyChainFactory.fetchReportDataChain());
+		c.addCommand(new GetExportReportDataCommand());
+		return c;
+	}
+	
+	public static Chain scheduleReportChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new AddTemplateCommand());
+		c.addCommand(new ScheduleV2ReportCommand());
 		return c;
 	}
 	
@@ -444,7 +437,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getDeleteWorkOrderRequestChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForWorkOrderRequest());
 		c.addCommand(new SplitDependentTicketsCommand());
 		c.addCommand(new DeleteTicketDependenciesCommand());
@@ -455,7 +448,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getUpdateWorkOrderRequestChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForWorkOrderRequest());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new UpdateWorkOrderRequestCommand());
@@ -467,14 +460,14 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getAddAlarmFromEventChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new ProcessAlarmCommand());
 		c.addCommand(getAddAlarmChain());
 		return c;
 	}
 	
 	public static Chain getAddAlarmChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 //		c.addCommand(getAddTicketChain());
 		c.addCommand(SetTableNamesCommand.getForAlarm());
 		c.addCommand(new AddAlarmCommand());
@@ -485,7 +478,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getDeleteAlarmChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForAlarm());
 		c.addCommand(new RemoveAlarmFromEventCommand());
 		c.addCommand(new SplitDependentTicketsCommand());
@@ -497,7 +490,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getAddAlarmTemplateChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new AddAlarmTemplateCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
@@ -528,14 +521,14 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain updateAlarmFromJsonChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new ProcessAlarmCommand());
 		c.addCommand(getUpdateAlarmChain());
 		return c;
 	}
 	
 	public static Chain getUpdateAlarmChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForAlarm());
 		c.addCommand(new UpdateAlarmCommand());
 		c.addCommand(new AddWOFromAlarmCommand());
@@ -545,7 +538,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getUpdateAlarmResourceChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForAlarm());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new UpdateAlarmAssetCommand());
@@ -581,7 +574,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getAddTaskChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		//c.addCommand(getAddTicketChain());
 		c.addCommand(SetTableNamesCommand.getForTask());
 		c.addCommand(new ValidateTasksCommand());
@@ -595,7 +588,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getAddTasksChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForTask());
 		c.addCommand(new ValidateTasksCommand());
 		c.addCommand(new LoadAllFieldsCommand());
@@ -609,7 +602,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getUpdateTaskChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new ValidateAndCreateValuesForInputTaskCommand());
 		c.addCommand(getAddOrUpdateReadingValuesChain());
 		c.addCommand(SetTableNamesCommand.getForTask());
@@ -710,7 +703,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain addLocationChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForLocation());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
@@ -720,7 +713,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain updateLocationChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForLocation());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
@@ -731,7 +724,7 @@ public class FacilioChainFactory {
 	
 	public static Chain deleteLocationChain() {
 		
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForLocation());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
@@ -762,7 +755,7 @@ public class FacilioChainFactory {
 	
 	public static Chain addSkillChain()
 	{
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForSkill());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
@@ -773,7 +766,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Command updateSkillCommand() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForSkill());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
@@ -786,7 +779,7 @@ public class FacilioChainFactory {
 	
 	
 	public static Command deleteSkillCommand(){
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForSkill());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
@@ -1121,7 +1114,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getAddZoneChain() {
-		Chain c = new TransactionChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new ValidateZoneFieldsCommand());
 		c.addCommand(SetTableNamesCommand.getForZone());
 		c.addCommand(new LoadAllFieldsCommand());
@@ -1131,7 +1124,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getUpdateZoneChain() {
-		Chain c = new TransactionChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new ValidateZoneFieldsCommand());
 		c.addCommand(SetTableNamesCommand.getForZone());
 		c.addCommand(new LoadAllFieldsCommand());
@@ -1160,7 +1153,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getAddAssetChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		//c.addCommand(SetTableNamesCommand.getForAsset());
 		c.addCommand(new SetModuleForSpecialAssetsCommand());
 //		c.addCommand(new LoadAllFieldsCommand());
@@ -1202,14 +1195,14 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getUpdateWorkflowRuleAction() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new UpdateWorkFlowRuleAction());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain getAddTemplateOfWorkflowRuleAction() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new CreateActionTemplateForWorkflowCommand());
 		c.addCommand(new AddTemplateCommand());
 		c.addCommand(new UpdateTemplateInAction());
@@ -1219,7 +1212,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getUpdateAssetChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new SetModuleForSpecialAssetsCommand());
 //		c.addCommand(SetTableNamesCommand.getForAsset());
 		c.addCommand(new LoadAssetFields());
@@ -1231,7 +1224,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getDeleteAssetChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForAsset());
 		c.addCommand(new DeleteResourceCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
@@ -1281,7 +1274,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getAddEnergyMeterChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForEnergyMeter());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddAdditionalPropsForEnergyMeterCommand());
@@ -1295,7 +1288,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain updateEnergyMeterChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForEnergyMeter());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new UpdateAdditionalPropsForEnergyMeterCommand());
@@ -1317,7 +1310,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getProcessHistoricalDataChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new HistoricalReadingsCommand());
 		c.addCommand(new BulkModeledReadingCommand());
 		c.addCommand(getAddOrUpdateReadingValuesChain());
@@ -1339,7 +1332,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getAddEnergyMeterPurposeChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForEnergyMeterPurpose());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenericAddModuleDataCommand());
@@ -1439,7 +1432,7 @@ public class FacilioChainFactory {
 		return c;
 	}
 	public static Chain getUpdateSupportEmailChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new UpdateSupportEmailCommand());
 		//CommonCommandUtil.addCleanUpCommand(c);
 		System.out.println("........ c"+ c);
@@ -1447,7 +1440,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getUpdateNotificationSettingChain(){
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new UpdateNotificationSettings());
 		System.out.println("....Notification");
 
@@ -1468,21 +1461,21 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain deleteTemplateChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new DeleteTemplateCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain getAddWorkorderTemplateChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new CreateWorkorderTemplateCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain updateWorkorderTemplateChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new DeleteTemplateCommand());
 		c.addCommand(new CreateWorkorderTemplateCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
@@ -1490,14 +1483,14 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain addTaskGroupTemplateChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new CreateTaskGroupTemplateCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain updateTaskGroupTemplateChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new DeleteTemplateCommand());
 		c.addCommand(new CreateTaskGroupTemplateCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
@@ -1505,7 +1498,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getAddPreventiveMaintenanceChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new AddAttachmentCommand());
 		c.addCommand(new AttachmentContextCommand());
 		
@@ -1525,7 +1518,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getExecutePreventiveMaintenanceChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new ExecutePMCommand());
 		c.addCommand(new ResetTriggersCommand());
 		c.addCommand(new SchedulePMRemindersCommand());
@@ -1534,7 +1527,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getExecutePMsChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new ExecutePMsCommand());
 		c.addCommand(new ResetTriggersCommand());
 		c.addCommand(new SchedulePMRemindersCommand());
@@ -1543,7 +1536,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getUpdatePreventiveMaintenanceChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new AddAttachmentCommand());
 		c.addCommand(new AttachmentContextCommand());
 		
@@ -1566,7 +1559,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getUpdatePreventiveMaintenanceJobChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new UpdatePreventiveMaintenanceJobCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
@@ -1582,7 +1575,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getDeletePreventiveMaintenanceChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new GetPreventiveMaintenanceCommand());
 		c.addCommand(new DeletePMAndDependenciesCommand(true));
 		CommonCommandUtil.addCleanUpCommand(c);
@@ -1590,7 +1583,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getChangePreventiveMaintenanceStatusChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new ChangePreventiveMaintenanceStatusCommand());
 		c.addCommand(new DeletePMAndDependenciesCommand(false, true));
 		c.addCommand(new AddAndSchedulePMTriggerCommand(true));
@@ -1714,7 +1707,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getAddViewChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new LoadViewCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new AddCVCommand());
@@ -1732,7 +1725,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getViewsCustomizeChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new CustomizeViewCommand());
 		c.addCommand(new GetViewListCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
@@ -1747,14 +1740,14 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getViewCustomizeSortColumnsChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new SaveSortFieldsCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain getAddModuleChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new CreateCustomModuleCommand());
 		c.addCommand(new AddModuleCommand());
 		c.addCommand(new SetColumnNameForNewCFsCommand());
@@ -1764,7 +1757,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getAddFieldsChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new SetColumnNameForNewCFsCommand());
 		c.addCommand(new AddFieldsCommand());
@@ -1773,14 +1766,14 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getUpdateFieldChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new UpdateFieldCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain getdeleteFieldsChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new DeleteFieldsCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
@@ -1819,7 +1812,7 @@ public class FacilioChainFactory {
 	}*/
 	
 	public static Chain addSpaceCategoryChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForSpaceCategory());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
@@ -1833,7 +1826,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain updateSpaceCategoryChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForSpaceCategory());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
@@ -1847,7 +1840,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain deleteSpaceCategoryChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForSpaceCategory());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
@@ -1861,7 +1854,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getAddReadingChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new CreateReadingModuleCommand());
 		c.addCommand(new AddModuleCommand());
 		c.addCommand(new SetColumnNameForNewCFsCommand());
@@ -1871,7 +1864,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getUpdateReadingChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new RestrictUneditablePropsInFieldCommand());
 		c.addCommand(getUpdateFieldChain());
 		c.addCommand(new AddValidationRulesCommand());
@@ -1880,7 +1873,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getAddCategoryReadingChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(getAddReadingChain());
 		c.addCommand(new AddCategoryReadingRelCommand());
 		c.addCommand(new GetCategoryResourcesCommand());
@@ -1892,7 +1885,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain addResourceReadingChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(getAddReadingChain());
 		c.addCommand(new AddResourceReadingRelCommand());
 		c.addCommand(new InsertReadingDataMetaForNewReadingCommand());
@@ -1935,7 +1928,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getCategoryReadingsChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new GetCategoryReadingsCommand());
 		c.addCommand(new GetReadingFieldsCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
@@ -1959,7 +1952,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getReadingsForSpaceTypeChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new GetAllSpaceTypeReadingsCommand());
 		c.addCommand(new GetReadingFieldsCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
@@ -1967,7 +1960,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain addResourceRDMChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new GetReadingFieldsCommand());
 		c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
@@ -1982,7 +1975,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain onlyAddOrUpdateReadingsChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new GetReadingDataMetaCommand());
 		c.addCommand(new ReadingUnitConversionCommand());
 		c.addCommand(new DeltaCalculationCommand());
@@ -2019,14 +2012,14 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getGetReadingValuesChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new GetLatestReadingValuesCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain getAddPhotosChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddPhotosCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
@@ -2034,7 +2027,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getUploadPhotosChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new UploadPhotosCommand());
 		c.addCommand(new AddPhotosCommand());
@@ -2043,7 +2036,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain justUploadPhotosChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new UploadPhotosCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
@@ -2058,7 +2051,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getUpdateDefaultSpacePhotoChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new UpdateDefaultSpacePhotoCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
@@ -2066,7 +2059,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getPhotosChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetPhotosCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
@@ -2074,7 +2067,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getAddNoteChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddNoteCommand());
 		c.addCommand(new ExecuteNoteWorkflowCommand());
@@ -2084,7 +2077,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getNotesChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetNotesCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
@@ -2092,14 +2085,14 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getAddDashboardChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new AddDashboardCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain getUpdateDashboardChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new UpdateDashboardCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
@@ -2119,21 +2112,21 @@ public class FacilioChainFactory {
 //	}
 	
 	public static Chain getAddWidgetChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new AddWidgetCommand());
 		c.addCommand(new AddDashboardVsWidgetCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	public static Chain getAddDashboardVsWidgetChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new AddDashboardVsWidgetCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain addBaseLineChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new ValidateBaseLineCommand());
 		c.addCommand(new AddBaseLineCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
@@ -2155,14 +2148,14 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain addReportBaseLinesChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new AddReportBaseLinesCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain updateReportBaseLinesChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new DeleteExistingReportBaseLineCommand());
 		c.addCommand(new AddReportBaseLinesCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
@@ -2170,7 +2163,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain addFormulaFieldChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new CreateFormulaFieldDependenciesCommand());
 		c.addCommand(getAddReadingChain());
 		c.addCommand(new AddResourceReadingRelCommand());
@@ -2190,21 +2183,21 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain updateFormulaChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new UpdateFormulaCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain deleteFormulaChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new DeleteFormulaCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain addTabularReportChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new AddComparisonReportsCommand());
 		c.addCommand(new AddReportColumnsCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
@@ -2212,14 +2205,14 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain updateReportColumnSequence() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new UpdateReportColumnSequence());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain getAddTicketCategoryChain() {
-		Chain c = new ChainBase();
+		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForTicketCategory());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
@@ -2229,7 +2222,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getUpdateTicketCategoryChain() {
-		Chain c = new TransactionChain();
+		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForTicketCategory());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
@@ -2238,7 +2231,7 @@ public class FacilioChainFactory {
 		return c;
 	}
 	public static Chain getDeleteTicketCategoryChain() {
-		Chain c = new TransactionChain();
+		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForTicketCategory());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
@@ -2247,7 +2240,7 @@ public class FacilioChainFactory {
 		return c;
 	}
 	public static Chain getAddTicketPriorityChain() {
-		Chain c = new TransactionChain();
+		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForTicketPriority());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
@@ -2257,7 +2250,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getUpdateTicketPriorityChain() {
-		Chain c = new TransactionChain();
+		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForTicketPriority());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
@@ -2267,7 +2260,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getDeleteTicketPriorityChain() {
-		Chain c = new TransactionChain();
+		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForTicketPriority());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
@@ -2276,7 +2269,7 @@ public class FacilioChainFactory {
 		return c;
 	}
 	public static Chain getAddTicketTypeChain() {
-		Chain c = new TransactionChain();
+		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForTicketType());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
@@ -2285,7 +2278,7 @@ public class FacilioChainFactory {
 		return c;
 	}
 	public static Chain getUpdateTicketTypeChain() {
-		Chain c = new TransactionChain();
+		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForTicketType());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
@@ -2295,7 +2288,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getDeleteTicketTypeChain() {
-		Chain c = new TransactionChain();
+		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForTicketType());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
@@ -2305,7 +2298,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getAddAssetCategoryChain() {
-		Chain c = new TransactionChain();
+		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForAssetCategory());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
@@ -2315,7 +2308,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getUpdateAssetCategoryChain() {
-		Chain c = new TransactionChain();
+		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForAssetCategory());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
@@ -2326,7 +2319,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getDeleteAssetCategoryChain() {		
-		Chain c = new TransactionChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new ValidateAssetCategoryDeletion());
 		c.addCommand(SetTableNamesCommand.getForAssetCategory());
 		c.addCommand(new LoadModuleNameCommand());
@@ -2337,7 +2330,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getAddAssetDepartmentChain() {
-		Chain c = new TransactionChain();
+		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForAssetDepartment());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
@@ -2347,7 +2340,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getUpdateAssetDepartmentChain() {
-		Chain c = new TransactionChain();
+		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForAssetDepartment());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
@@ -2357,7 +2350,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getDeleteAssetDepartmentChain() {		
-		Chain c = new TransactionChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new ValidateAssetDepartmentDeletion());
 		c.addCommand(SetTableNamesCommand.getForAssetDepartment());
 		c.addCommand(new LoadModuleNameCommand());
@@ -2368,7 +2361,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getAddAssetTypeChain() {
-		Chain c = new TransactionChain();
+		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForAssetType());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
@@ -2378,7 +2371,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getUpdateAssetTypeChain() {
-		Chain c = new TransactionChain();
+		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForAssetType());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
@@ -2388,7 +2381,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getDeleteAssetTypeChain() {
-		Chain c = new TransactionChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new ValidateAssetTypeDeletion());
 		c.addCommand(SetTableNamesCommand.getForAssetType());
 		c.addCommand(new LoadModuleNameCommand());
@@ -2399,7 +2392,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getAddAlarmSeverityChain() {
-		Chain c = new TransactionChain();
+		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForAlarmSeverity());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
@@ -2409,7 +2402,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain addDerivationFormulaChain() {
-		Chain c = new TransactionChain();
+		Chain c = getTransactionChain();
 		c.addCommand(addFormulaFieldChain());
 		c.addCommand(new UpdateDerivationCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
@@ -2417,7 +2410,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain addModuleDataChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new GenericAddModuleDataCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
@@ -2425,7 +2418,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain updateModuleDataChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new GenericUpdateModuleDataCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
@@ -2433,7 +2426,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain deleteModuleDataChain() {
-		Chain c = getDefaultChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new GenericDeleteModuleDataCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
@@ -2453,28 +2446,28 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getAddShiftCommand() {
-		Chain c = new TransactionChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new AddShiftCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain getUpdateShiftCommand() {
-		Chain c = new TransactionChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new UpdateShiftCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain getDeleteShiftCommand() {
-		Chain c = new TransactionChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new DeleteShiftCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain calculateCostChain() {
-		Chain c = new TransactionChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new FetchCostDataCommand());
 		c.addCommand(new CalculateCostCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
@@ -2482,7 +2475,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain addTenantChain() {
-		Chain c = new TransactionChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new AddTenantCommand());
 		c.addCommand(new AddTenantUserCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
@@ -2490,56 +2483,56 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain addTenantUserChain() {
-		Chain c = new TransactionChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new AddTenantUserCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain updateTenantChain() {
-		Chain c = new TransactionChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new UpdateTenantCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain addRateCardChain() {
-		Chain c = new TransactionChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new AddRateCardCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain updateRateCardChain() {
-		Chain c = new TransactionChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new UpdateRateCardCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain addOfflineSyncErrorChain() {
-		Chain c = new TransactionChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new AddOfflineSyncErrorCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain getFormMetaChain() {
-		Chain c = new TransactionChain();
+		Chain c = getNonTransactionChain();
 		c.addCommand(new GetFormMetaCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain getFormFieldsChain() {
-		Chain c = new TransactionChain();
+		Chain c = getNonTransactionChain();
 		c.addCommand(new GetFormFieldsCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain editFormChain() {
-		Chain c = new TransactionChain();
+		Chain c = getTransactionChain();
 		c.addCommand(new GetFormMetaCommand());
 		c.addCommand(new EditFormCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
@@ -2574,7 +2567,7 @@ public class FacilioChainFactory {
 	}
 	public static Chain getTestTransactionChain()
 	{
-		Chain c = new TransactionChain();
+		Chain c = getTransactionChain();
 	
 		Command command = new Command() {
 
@@ -2614,48 +2607,50 @@ public class FacilioChainFactory {
 		
 		return c;
 	}
-}
-
-class TransactionChain extends ChainBase {
-    private static Logger log = LogManager.getLogger(TransactionChain.class.getName());
-
-    private boolean enableTransaction = false;
-	public boolean execute(Context context) throws Exception {
-		boolean istransaction = false;
-		String jtaEnabled = AwsUtil.getConfig("enable.transaction");
-		if(jtaEnabled != null) {
-			enableTransaction = Boolean.parseBoolean(jtaEnabled);
+	
+	public static class FacilioChain extends ChainBase {
+		
+		private boolean enableTransaction = false;
+		public FacilioChain(boolean isTransactionChain) {
+			// TODO Auto-generated constructor stub
+			this.enableTransaction = isTransactionChain && Boolean.valueOf(AwsUtil.getConfig("enable.transaction"));
 		}
-		try {
-			if (enableTransaction) {
-				TransactionManager tm = FacilioTransactionManager.INSTANCE.getTransactionManager();
-				Transaction currenttrans = tm.getTransaction();
-				if (currenttrans == null) {
-					tm.begin();
-					istransaction = true;
-				} else {
-					//LOGGER.info("joining parent transaction for " + method.getName());
-				} 
-			}
-			boolean status = super.execute(context);
-			if (enableTransaction) {
-				if (istransaction) {
-				//	LOGGER.info("commit transaction for " + method.getName());
-					FacilioTransactionManager.INSTANCE.getTransactionManager().commit();
+		
+	    private static Logger log = LogManager.getLogger(FacilioChain.class.getName());
+
+		public boolean execute(Context context) throws Exception {
+			boolean istransaction = false;
+			try {
+				if (enableTransaction) {
+					TransactionManager tm = FacilioTransactionManager.INSTANCE.getTransactionManager();
+					Transaction currenttrans = tm.getTransaction();
+					if (currenttrans == null) {
+						tm.begin();
+						istransaction = true;
+					} else {
+						//LOGGER.info("joining parent transaction for " + method.getName());
+					} 
 				}
+				boolean status = super.execute(context);
+				if (enableTransaction) {
+					if (istransaction) {
+					//	LOGGER.info("commit transaction for " + method.getName());
+						FacilioTransactionManager.INSTANCE.getTransactionManager().commit();
+					}
+				}
+					
+				return status;
+			} catch (Throwable e) {
+				// TODO Auto-generated catch block
+				log.info("Exception occurred ", e);
+				if (enableTransaction) {
+					if (istransaction) {
+						FacilioTransactionManager.INSTANCE.getTransactionManager().rollback();
+						//LOGGER.info("rollback transaction for " + method.getName());
+					} 
+				}
+				throw e;
 			}
-				
-			return status;
-		} catch (Throwable e) {
-			// TODO Auto-generated catch block
-			log.info("Exception occurred ", e);
-			if (enableTransaction) {
-				if (istransaction) {
-					FacilioTransactionManager.INSTANCE.getTransactionManager().rollback();
-					//LOGGER.info("rollback transaction for " + method.getName());
-				} 
-			}
-			throw e;
 		}
 	}
 }

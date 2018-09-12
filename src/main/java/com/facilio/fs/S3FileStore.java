@@ -1,7 +1,12 @@
 package com.facilio.fs;
 
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.security.Security;
 import java.security.spec.InvalidKeySpecException;
@@ -10,13 +15,13 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import com.amazonaws.services.cloudfront.CloudFrontUrlSigner;
-import com.amazonaws.services.cloudfront.util.SignerUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.amazonaws.HttpMethod;
 import com.amazonaws.regions.Regions;
+import com.amazonaws.services.cloudfront.CloudFrontUrlSigner;
+import com.amazonaws.services.cloudfront.util.SignerUtils;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;

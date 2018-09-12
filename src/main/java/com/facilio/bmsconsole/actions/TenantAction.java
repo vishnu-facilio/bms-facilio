@@ -8,7 +8,6 @@ import java.util.Map;
 import org.apache.commons.chain.Chain;
 
 import com.facilio.accounts.dto.User;
-import com.facilio.accounts.exception.AccountException;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
