@@ -146,7 +146,7 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 		postData.readingFile=s3EnergyFileUrl;
 		postData.temperatureFile=s3WeatherFileUrl;
 		postData.organizationID=AccountUtil.getCurrentOrg().getId();
-		postData.meterID = meterConfigContext.getMeterId();
+		postData.meterID = meterID;
 		postData.constant1 = meterConfigContext.getConstant1();
 		postData.constant2 = meterConfigContext.getConstant2();
 		postData.maxDistance = meterConfigContext.getMaxDistance();

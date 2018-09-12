@@ -170,7 +170,7 @@ public class AnomalyDetectorJob extends FacilioJob {
 	    		}
 	    		
 	    		AnalyticsAnomalyConfigContext configContext = meterConfigurations.get(energyMeterContext.getId());
-	    		String result= doPostAnomalyDetectAPI(configContext, meterReadings, siteTemperatureReadings);
+	    		String result= doPostAnomalyDetectAPI(configContext, meterReadings, siteTemperatureReadings, energyMeterContext.getId());
 	    		logger.log(Level.INFO, " result is " + result);
 
 				AnomalyList anomalyList = new GsonBuilder().create().fromJson(result, AnomalyList.class);
@@ -218,12 +218,12 @@ public class AnomalyDetectorJob extends FacilioJob {
 	}
 
 	String doPostAnomalyDetectAPI(AnalyticsAnomalyConfigContext configContext,
-			List<AnalyticsAnomalyContext> meterReadings, List<TemperatureContext> siteTemperatureReadings)
+			List<AnalyticsAnomalyContext> meterReadings, List<TemperatureContext> siteTemperatureReadings, long meterID)
 			throws IOException {
 		CheckAnomalyModelPostData postData = new CheckAnomalyModelPostData();
 
 		String postURL = AwsUtil.getConfig("anomalyCheckServiceURL") + "/checkAnomaly";
-		postData.meterID = configContext.getMeterId();
+		postData.meterID = meterID;
 		postData.constant1 = configContext.getConstant1();
 		postData.constant2 = configContext.getConstant2();
 		postData.maxDistance = configContext.getMaxDistance();
