@@ -1,9 +1,11 @@
 package com.facilio.bmsconsole.context;
 
+import java.io.Serializable;
+
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.unitconversion.Unit;
 
-public class ReadingDataMeta {
+public class ReadingDataMeta implements Serializable {
 	private long orgId = -1;
 	int unit = -1;
 	public int getUnit() {
