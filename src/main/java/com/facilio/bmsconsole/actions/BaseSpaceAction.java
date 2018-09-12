@@ -37,7 +37,13 @@ public class BaseSpaceAction extends FacilioAction {
  			sorting.put("orderType", getOrderType());
  			context.put(FacilioConstants.ContextNames.SORTING, sorting);
  		}
- 		
+ 		JSONObject pagination = new JSONObject();
+ 		pagination.put("page", getPage());
+ 		pagination.put("perPage", getPerPage());
+ 		if (getPerPage() < 0) {
+ 			pagination.put("perPage", 5000);
+ 		}
+ 		context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.BASE_SPACE);
 		Chain getAllSpace = FacilioChainFactory.getAllAreaChain();
 		getAllSpace.execute(context);

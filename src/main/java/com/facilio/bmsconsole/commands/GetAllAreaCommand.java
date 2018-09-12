@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.util.SpaceAPI;
@@ -18,10 +19,12 @@ public class GetAllAreaCommand implements Command{
 	//	Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
 		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
 		Criteria searchCriteria = (Criteria) context.get(FacilioConstants.ContextNames.SEARCH_CRITERIA);
-		
+		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
+
 		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
 		
-		context.put(FacilioConstants.ContextNames.BASE_SPACE_LIST, SpaceAPI.getAllBaseSpaces(filterCriteria, searchCriteria, orderBy));
+		
+		context.put(FacilioConstants.ContextNames.BASE_SPACE_LIST, SpaceAPI.getAllBaseSpaces(filterCriteria, searchCriteria, orderBy, pagination));
 		
 		return false;
 	}
