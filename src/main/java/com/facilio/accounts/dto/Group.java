@@ -1,8 +1,9 @@
 package com.facilio.accounts.dto;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Group {
+public class Group implements Serializable {
 	
 	private long groupId = -1;
 	private long orgId = -1;
