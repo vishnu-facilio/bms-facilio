@@ -3,11 +3,16 @@ package com.facilio.bmsconsole.jobs;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
@@ -21,6 +26,7 @@ import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.fs.S3FileStore;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class RefreshAnomalyModelJob extends FacilioJob {
@@ -33,57 +39,140 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 			if (!AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_ANOMALY_DETECTOR)) {
 				logger.log(Level.INFO, "RefreshAnomalyJob: Feature BITS is not enabled");
 				return;
-			}else {
+			} else {
 				logger.log(Level.INFO, "RefreshAnomalyJob: Feature BITS is enabled");
 			}
 
 			logger.log(Level.INFO, "RefreshAnomalyJob: Getting energy meters ");
 
-			List<AnalyticsAnomalyConfigContext> meterConfigurations=null;
-			String moduleName="dummyModuleName";
+			// Collect all asset configuration details
+			Map<Long, AnalyticsAnomalyConfigContext> meterConfigurations = null;
+			long orgID = jc.getOrgId();
+			String moduleName = "dummyModuleName";
 			try {
-				meterConfigurations = AnomalySchedulerUtil.getAllAssetConfigs(moduleName,  jc.getOrgId());
+				meterConfigurations = AnomalySchedulerUtil.getAllAssetConfigWithDefaults(moduleName, jc.getOrgId());
 				logger.log(Level.INFO, "meters configured  = " + (meterConfigurations.size()));
-			}catch (Exception e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 
-			long midnightTimeInMillisec = DateTimeUtil.getDayStartTime();
-			
-			for(AnalyticsAnomalyConfigContext meterContext: meterConfigurations) {
-				long startTime = 0;
-				
-				if (!meterContext.getStartDateMode()) {
-					startTime = midnightTimeInMillisec - (meterContext.getHistoryDays() * 24 * 60 * 60 * 1000L);
-				}else {
-					startTime = DateTimeUtil.getDayStartTime(meterContext.getStartDate(), "yyyy-MM-dd");
-				}
-				
-				logger.log(Level.INFO, "RefreshAnomalyJob " + meterContext.getMeterId() + " start: " + startTime +  "end:" + midnightTimeInMillisec);
-				buildEnergyAnomalyModel(meterContext, startTime, midnightTimeInMillisec);
-				logger.log(Level.INFO, "RefreshAnomalyJob over ");
+			// Collect all configuration of energy meters
+			List<EnergyMeterContext> energyContextList = AnomalySchedulerUtil
+					.getAllConfiguredEnergyMeters(meterConfigurations);
+			Set<Long> siteIdList = energyContextList.stream().map(s -> s.getSiteId()).collect(Collectors.toSet());
+			long endTime = DateTimeUtil.getDayStartTime(); // start of current day
+
+			// Collect the list of energy meters
+			for (Long siteId : siteIdList) {
+				List<EnergyMeterContext> subEnergyMeterContextList = energyContextList.stream()
+						.filter(s -> s.getSiteId() == siteId).collect(Collectors.toList());
+
+				buildEnergyAnomalyModel(subEnergyMeterContextList, meterConfigurations, endTime, siteId, orgID);
+
+				// logger.log(Level.INFO, "RefreshAnomalyJob over for siteID " + siteID);
 			}
+
 		} catch (Exception e) {
 			logger.log(Level.INFO, "RefreshAnomalyJob: Exception " + e.getMessage());
 			logger.log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
+		    
+		 public void buildEnergyAnomalyModel(List<EnergyMeterContext> subEnergyMeterContextList,
+				 Map<Long, AnalyticsAnomalyConfigContext> meterConfigurations, long endTime,long siteId, long orgID) throws Exception {
+			 
+			 String bucket = AwsUtil.getConfig("anomalyBucket");
+			 String filePath = AwsUtil.getConfig("anomalyBucketDir");
+ 			 String tempDir =  AwsUtil.getConfig("anomalyTempDir");
+             Map<Long, String> siteIdToWeatherMapping = new HashMap<>();
+ 			
+			 for (EnergyMeterContext eachEnergyMeterContext: subEnergyMeterContextList) {
+		    		long meterID = eachEnergyMeterContext.getId();
+		    		AnalyticsAnomalyConfigContext meterConfigContext = AnomalySchedulerUtil.getAssetConfig(meterID, meterConfigurations);
+		    		long startTime = AnomalySchedulerUtil.getStartTime(endTime, meterConfigContext);
 
-	private void writeEnergyReadingFile(String moduleName, long meterID, long orgID, long startTime,
-			long endTime, String energyReadingFileName) throws Exception {
-		logger.log(Level.INFO, " inside writeEnergyReadingFile");
-		List<AnalyticsAnomalyContext> meterReadings = AnomalySchedulerUtil.getAllEnergyReadings(startTime,
-				endTime,  meterID, orgID);
+		    		List<TemperatureContext> allTemperatureReadings=AnomalySchedulerUtil.getWeatherReadingsForOneSite(startTime, endTime, siteId);
+					
+		    		String s3WeatherFileUrl = null;
+		    		String s3EnergyFileUrl = null;
+		    		
+		    		if(siteIdToWeatherMapping.containsKey(siteId)){
+		    			s3WeatherFileUrl = siteIdToWeatherMapping.get(siteId);
+		    		}
+		    		else {
+		    			String weatherBaseFileName = AnomalySchedulerUtil.getWeatherFileName(meterID, siteId, orgID);
+		    			String weatherAbsoluteFilePath = tempDir + "/" + weatherBaseFileName;
+		    			writeWeatherReadingFile(weatherAbsoluteFilePath , allTemperatureReadings);
 
-		if (meterReadings.size() == 0) {
-			logger.log(Level.INFO, "NOT received readings for ID " +  meterID + " startTime = "
-					+ startTime + " endTime = " + endTime);
-			return;
-		}else {
-			logger.log(Level.INFO, " received " + meterReadings.size() + " readings for ID " +  meterID + " startTime = "
-					+ startTime + " endTime = " + endTime);
-		}
+		    			if(AnomalySchedulerUtil.isDevEnviroment()) {
+		    				s3WeatherFileUrl = "http://localhost:8000/" + weatherBaseFileName;
+		    			}else {
+		    				s3WeatherFileUrl = S3FileStore.getURL(bucket, filePath + File.separator + weatherBaseFileName, new File(weatherAbsoluteFilePath));
+		    			}
+		    			
+						siteIdToWeatherMapping.put(siteId, s3WeatherFileUrl);		
+		    		}
+		    		
+		    		List<AnalyticsAnomalyContext > meterReadings = AnomalySchedulerUtil.getAllEnergyReadings(startTime, endTime, meterID, orgID);
+		    		if (meterReadings.size() == 0) {
+		    				logger.log(Level.INFO, "NOT received readings for ID " +  meterID + " startTime = "
+		    						+ startTime + " endTime = " + endTime);
+		    				continue;
+		    		}
+		    		
+		    		logger.log(Level.INFO, " received " + meterReadings.size() + " readings for ID " +  meterID + " startTime = "
+		    						+ startTime + " endTime = " + endTime);
 
+		    		String energyBaseFileName = AnomalySchedulerUtil.getEnergyFileName(meterID,orgID);
+	    			String energyAbsoluteFilePath = tempDir + "/" + energyBaseFileName;
+	    			writeEnergyReadingFile(energyAbsoluteFilePath , meterReadings);
+
+	    			if(AnomalySchedulerUtil.isDevEnviroment()) {
+	    				s3EnergyFileUrl = "http://localhost:8000/" + energyBaseFileName;
+	    			}else {
+	    				s3EnergyFileUrl = S3FileStore.getURL(bucket, filePath + File.separator + energyBaseFileName, new File(energyAbsoluteFilePath));
+	    			}
+	    			
+	    			doRefreshAnomalyModel(meterID, orgID, s3EnergyFileUrl, s3WeatherFileUrl,meterConfigContext);
+	    			
+	    			try {
+	    				Thread.sleep(1000 * Integer.parseInt(AwsUtil.getConfig("anomalyRefreshWaitTimeInSeconds")));
+	    			}catch (Exception e) {
+	    				logger.log(Level.INFO, "RefreshAnomalyJob: Exception " + e.getMessage());
+	    			}
+			 }
+	}
+
+	private void doRefreshAnomalyModel(long meterID, long orgID, String s3EnergyFileUrl, String s3WeatherFileUrl, AnalyticsAnomalyConfigContext meterConfigContext) throws JsonProcessingException,IOException {
+		BuildAnomalyModelPostData postData=new BuildAnomalyModelPostData();
+		postData.timezone = AccountUtil.getCurrentOrg().getTimezone();
+		postData.readingFile=s3EnergyFileUrl;
+		postData.temperatureFile=s3WeatherFileUrl;
+		postData.organizationID=AccountUtil.getCurrentOrg().getId();
+		postData.meterID = meterConfigContext.getMeterId();
+		postData.constant1 = meterConfigContext.getConstant1();
+		postData.constant2 = meterConfigContext.getConstant2();
+		postData.maxDistance = meterConfigContext.getMaxDistance();
+		postData.dimension1 = meterConfigContext.getDimension1Buckets();
+		postData.dimension2 = meterConfigContext.getDimension2Buckets();
+		postData.dimension1Value =  meterConfigContext.getDimension1Value();
+		postData.dimension2Value =  meterConfigContext.getDimension2Value();
+		postData.xAxisDimension = meterConfigContext.getxAxisDimension();
+		postData.yAxisDimension = meterConfigContext.getyAxisDimension();
+		postData.outlierDistance =meterConfigContext.getOutlierDistance();
+		
+		ObjectMapper mapper = new ObjectMapper();
+		String jsonInString = mapper.writeValueAsString(postData);
+		logger.log(Level.INFO, "refresh anomaly post: " + jsonInString);
+		
+		Map<String, String> headers = new HashMap<>();
+		headers.put("Content-Type","application/json");
+		String postURL = AwsUtil.getConfig("anomalyCheckServiceURL") + "/refreshAnomalyModel";
+		String result=AwsUtil.doHttpPost(postURL, headers, null, jsonInString);
+		logger.log(Level.INFO, " result is " + result);
+	}
+
+	private void writeEnergyReadingFile(String energyReadingFileName, List<AnalyticsAnomalyContext> meterReadings) throws Exception {
 		File outputFile = new File(energyReadingFileName);
 		BufferedWriter meterReadingWriter = new BufferedWriter(new FileWriter(outputFile));
 
@@ -91,28 +180,22 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 		for (AnalyticsAnomalyContext reading : meterReadings) {
 
 			String line = reading.toString() + "\n";
-			readingInfo += line;	
+			readingInfo += line;		
 		}
 
 		meterReadingWriter.write(readingInfo);
 		meterReadingWriter.close();
 	}
 
-	private void writeWeatherReadingFile(String moduleName, long orgID, long startTime,
-			long endTime, String weatherReadingFileName) throws Exception {
+	private void writeWeatherReadingFile(String weatherReadingFileName,List<TemperatureContext> temperatureContext) throws Exception {
 		logger.log(Level.INFO, " inside writeWeatherReadingFile");
-		List<TemperatureContext> temperatureContext = AnomalySchedulerUtil.getAllTemperatureReadings(moduleName,
-				startTime, endTime, orgID);
-
 		File temperatureFile = new File(weatherReadingFileName);
 		BufferedWriter temperatureWriter = new BufferedWriter(new FileWriter(temperatureFile));
 
 		String temperatureInfo = "ID,TTIME,TEMPERATURE\n";
 
 		for (TemperatureContext reading : temperatureContext) {
-
 			String line = reading.toString() + "\n"; 
-			//logger.log(Level.INFO, line);
 			temperatureInfo += line;
 		}
 
@@ -138,12 +221,17 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 			
 			String energyFileName = tempDir +  File.separator + energyBaseFileName;
 			String weatherFileName = tempDir +  File.separator + weatherBaseFileName; 
-			
+
+			/*
 			long meterID =meterContext.getMeterId();
 			long organisationID=meterContext.getOrgId();
 					
 			writeEnergyReadingFile(moduleName, meterID, organisationID, startTime, endTime, energyFileName);
 			writeWeatherReadingFile(moduleName, organisationID, startTime, endTime, weatherFileName);
+			*/
+			
+			writeEnergyReadingFile(energyFileName, null);
+			writeWeatherReadingFile(weatherFileName, null);
 	
 			logger.log(Level.INFO, " RefreshAnomalyModel :  files written ");
 			
@@ -157,7 +245,7 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 				weatherBaseFileName = "1256_1530861012_weather.txt";
 				energyBaseFileName = "1256_1530861012_meter.txt";
 				meterFileUrl = "http://localhost:8000/" + energyBaseFileName;
-				weatherFileUrl = "http://localhost:8000/" + weatherBaseFileName;
+				
 			}else {
 				logger.log(Level.INFO, " RefreshAnomalyModel :  files written ");
 				meterFileUrl = S3FileStore.getURL(bucket, filePath + File.separator + energyBaseFileName , new File(energyFileName));
@@ -165,29 +253,29 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 				logger.log(Level.INFO, " RefreshAnomalyModel :  files written " + meterFileUrl + " " + weatherFileUrl);
 			}
 			
-			BuildAnomalyModelPostData postData=new BuildAnomalyModelPostData();
-			postData.timezone = AccountUtil.getCurrentOrg().getTimezone();
-			postData.readingFile=meterFileUrl;
-			postData.temperatureFile=weatherFileUrl;
-			postData.organizationID=AccountUtil.getCurrentOrg().getId();
-			postData.meterID = meterContext.getMeterId();
-			postData.constant1 = meterContext.getConstant1();
-			postData.constant2 = meterContext.getConstant2();
-			postData.maxDistance = meterContext.getMaxDistance();
-			postData.dimension1 = meterContext.getDimension1Buckets();
-			postData.dimension2 = meterContext.getDimension2Buckets();
-			postData.dimension1Value =  meterContext.getDimension1Value();
-			postData.dimension2Value =  meterContext.getDimension2Value();
-			postData.xAxisDimension = meterContext.getxAxisDimension();
-			postData.yAxisDimension = meterContext.getyAxisDimension();
-			postData.outlierDistance =meterContext.getOutlierDistance();
-			
-			String jsonInString = mapper.writeValueAsString(postData);
-			logger.log(Level.INFO, "RefreshAnomalyJob:  post body is " + jsonInString);
-			
-			Map<String, String> headers = new HashMap<>();
-			headers.put("Content-Type","application/json");
-			String result=AwsUtil.doHttpPost(postURL, headers, null, jsonInString);
+				BuildAnomalyModelPostData postData=new BuildAnomalyModelPostData();
+				postData.timezone = AccountUtil.getCurrentOrg().getTimezone();
+				postData.readingFile=meterFileUrl;
+				postData.temperatureFile=weatherFileUrl;
+				postData.organizationID=AccountUtil.getCurrentOrg().getId();
+				postData.meterID = meterContext.getMeterId();
+				postData.constant1 = meterContext.getConstant1();
+				postData.constant2 = meterContext.getConstant2();
+				postData.maxDistance = meterContext.getMaxDistance();
+				postData.dimension1 = meterContext.getDimension1Buckets();
+				postData.dimension2 = meterContext.getDimension2Buckets();
+				postData.dimension1Value =  meterContext.getDimension1Value();
+				postData.dimension2Value =  meterContext.getDimension2Value();
+				postData.xAxisDimension = meterContext.getxAxisDimension();
+				postData.yAxisDimension = meterContext.getyAxisDimension();
+				postData.outlierDistance =meterContext.getOutlierDistance();
+				
+				String jsonInString = mapper.writeValueAsString(postData);
+				logger.log(Level.INFO, "RefreshAnomalyJob:  post body is " + jsonInString);
+				
+				Map<String, String> headers = new HashMap<>();
+				headers.put("Content-Type","application/json");
+				String result=AwsUtil.doHttpPost(postURL, headers, null, jsonInString);
 			logger.log(Level.INFO, " result is " + result);
 		} catch (Exception e) {
 			logger.log(Level.INFO, "RefreshAnomalyJob: Exception " + e.getMessage());
@@ -267,18 +355,7 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 		public void setyAxisDimension(String yAxisDimension) {
 			this.yAxisDimension = yAxisDimension;
 		}
-		public List<AnalyticsAnomalyContext> getEnergyData() {
-			return energyData;
-		}
-		public void setEnergyData(List<AnalyticsAnomalyContext> energyData) {
-			this.energyData = energyData;
-		}
-		public List<TemperatureContext> getTemperatureData() {
-			return temperatureData;
-		}
-		public void setTemperatureData(List<TemperatureContext> temperatureData) {
-			this.temperatureData = temperatureData;
-		}
+
 		public void setTimezone(String timezone) {
 			this.timezone = timezone;
 		}
@@ -317,7 +394,5 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 		String xAxisDimension;
 		String yAxisDimension;
 		double outlierDistance;
-		List<AnalyticsAnomalyContext> energyData;
-		List<TemperatureContext> temperatureData;
 	}
 }

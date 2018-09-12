@@ -1,5 +1,9 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class TemperatureContext extends ModuleBaseWithCustomFields {
@@ -28,5 +32,23 @@ public class TemperatureContext extends ModuleBaseWithCustomFields {
 		buf.append(",");
 		buf.append(new Double(temperature).toString());
 		return buf.toString();
+	}
+	
+	public static List<TemperatureContext> convertToObjectFromMap(List< Map<String, Object> > siteInfo) {
+		List<TemperatureContext> listOfTemperatureContext = new ArrayList<>();
+		for(Map<String, Object> mapObject: siteInfo) {
+			TemperatureContext obj = new TemperatureContext();
+			for(String key: mapObject.keySet()) {
+				if(key.equals("temperature")) {
+					obj.setTemperature((Double) mapObject.get(key));
+				}else if(key.equals("ttime")) {
+					obj.setTtime((Long) mapObject.get(key));
+				}
+			}
+			
+			listOfTemperatureContext.add(obj);
+		}
+		
+		return listOfTemperatureContext;
 	}
 }
