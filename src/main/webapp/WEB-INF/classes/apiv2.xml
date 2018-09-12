@@ -314,6 +314,8 @@
 		</action>
 		<action name="deleteReportFolder" class="com.facilio.bmsconsole.actions.V2ReportAction" method="deleteReportFolder">
 		</action>
+		<action name="duplicateReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="duplicateReport">
+		</action>
 	</package>
 	
 	

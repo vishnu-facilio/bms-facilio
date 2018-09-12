@@ -166,6 +166,21 @@ public class V2ReportAction extends FacilioAction {
 		return setReportResult(context);
 	}
 	
+	public String duplicateReport() throws Exception {
+		
+		if(reportId > 0) {
+			reportContext = ReportUtil.getReport(reportId);
+			reportContext.setId(-1);
+			
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.REPORT, reportContext);
+			Chain addReport = FacilioChainFactory.addOrUpdateReportChain();
+			addReport.execute(context);
+			return setReportResult(context);
+		}
+		return ERROR;
+	}
+	
 	public String addWorkOrderReport() throws Exception {
 		JSONParser parser = new JSONParser();
 		JSONArray fieldArray = (JSONArray) parser.parse(fields);
