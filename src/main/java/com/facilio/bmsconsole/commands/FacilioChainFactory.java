@@ -364,26 +364,6 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain addOrUpdateReadingReportChain() {
-		Chain c = new ChainBase();
-		c.addCommand(new CreateReadingAnalyticsReportCommand());
-		c.addCommand(new AddOrUpdateReportCommand());
-		return c;
-	}
-	
-	public static Chain addOrUpdateReportChain() {
-		Chain c = new ChainBase();
-		c.addCommand(new AddOrUpdateReportCommand());
-		return c;
-	}
-	
-	public static Chain addWorkOrderReportChain() {
-		Chain c = new ChainBase();
-		c.addCommand(new CreateWorkOrderAnalyticsReportCommand());
-		c.addCommand(new AddOrUpdateReportCommand());
-		return c;
-	}
-	
 	public static Chain sendReadingReportMailChain() {
 		Chain c = new ChainBase();
 		c.addCommand(getExportReadingReportFileChain());
@@ -589,20 +569,6 @@ public class FacilioChainFactory {
 		c.addCommand(new AddTaskOptionsCommand());
 		c.addCommand(new UpdateReadingDataMetaCommand());
 		c.addCommand(new AddTaskTicketActivityCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
-	public static Chain getAddTasksChain() {
-		Chain c = getTransactionChain();
-		c.addCommand(SetTableNamesCommand.getForTask());
-		c.addCommand(new ValidateTasksCommand());
-		c.addCommand(new LoadAllFieldsCommand());
-		c.addCommand(new AddTaskSectionsCommand());
-		c.addCommand(new AddTasksCommand());
-		c.addCommand(new AddTaskOptionsCommand());
-		c.addCommand(new UpdateReadingDataMetaCommand());
-		// c.addCommand(new AddTaskTicketActivityCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}

@@ -2,10 +2,11 @@ package com.facilio.bmsconsole.commands;
 
 import org.apache.commons.chain.Chain;
 
+import com.facilio.bmsconsole.commands.FacilioChainFactory.FacilioChain;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
 
-public class TransactionChainFactory extends FacilioChainFactory {
+public class TransactionChainFactory {
 
 		public static Chain historicalFormulaCalculationChain() {
 			Chain c = getDefaultChain();
@@ -42,8 +43,22 @@ public class TransactionChainFactory extends FacilioChainFactory {
 			return c;
 		}
 		
+		public static Chain getAddTasksChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForTask());
+			c.addCommand(new ValidateTasksCommand());
+			c.addCommand(new LoadAllFieldsCommand());
+			c.addCommand(new AddTaskSectionsCommand());
+			c.addCommand(new AddTasksCommand());
+			c.addCommand(new AddTaskOptionsCommand());
+			c.addCommand(new UpdateReadingDataMetaCommand());
+			// c.addCommand(new AddTaskTicketActivityCommand());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
 		public static Chain getUpdateWorkOrderChain() {
-			Chain c = getTransactionChain();
+			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForWorkOrder());
 			c.addCommand(new LoadAllFieldsCommand());
 			c.addCommand(new UpdateWorkOrderCommand());
@@ -57,6 +72,26 @@ public class TransactionChainFactory extends FacilioChainFactory {
 					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE, RuleType.SCHEDULED_RULE))
 					);
 			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
+		public static Chain addOrUpdateReadingReportChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new CreateReadingAnalyticsReportCommand());
+			c.addCommand(new AddOrUpdateReportCommand());
+			return c;
+		}
+		
+		public static Chain addOrUpdateReportChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddOrUpdateReportCommand());
+			return c;
+		}
+		
+		public static Chain addWorkOrderReportChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new CreateWorkOrderAnalyticsReportCommand());
+			c.addCommand(new AddOrUpdateReportCommand());
 			return c;
 		}
 	
