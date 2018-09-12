@@ -80,6 +80,14 @@ public class ReportContext {
 		this.tabularState = tabularState;
 	}
 	
+	private String commonState;
+	public String getCommonState() {
+		return commonState;
+	}
+	public void setCommonState(String commonState) {
+		this.commonState = commonState;
+	}
+
 	private String chartState;
 	public String getChartState() {
 		return chartState;
