@@ -12,6 +12,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.criteria.DateRange;
@@ -160,7 +161,7 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.TABULAR_STATE, tabularState);
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 		
-		Chain addReadingReport = FacilioChainFactory.addOrUpdateReadingReportChain();
+		Chain addReadingReport = TransactionChainFactory.addOrUpdateReadingReportChain();
 		addReadingReport.execute(context);
 		
 		return setReportResult(context);
@@ -174,7 +175,7 @@ public class V2ReportAction extends FacilioAction {
 			
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.REPORT, reportContext);
-			Chain addReport = FacilioChainFactory.addOrUpdateReportChain();
+			Chain addReport = TransactionChainFactory.addOrUpdateReportChain();
 			addReport.execute(context);
 			return setReportResult(context);
 		}
@@ -202,7 +203,7 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.TABULAR_STATE, tabularState);
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 		
-		Chain addWorkOrderChain = FacilioChainFactory.addWorkOrderReportChain();
+		Chain addWorkOrderChain = TransactionChainFactory.addWorkOrderReportChain();
 		addWorkOrderChain.execute(context);
 		
 		return setReportResult(context);
