@@ -43,6 +43,7 @@ import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.FormulaContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
+import com.facilio.bmsconsole.context.FormulaContext.CommonAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.NumberAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
@@ -439,27 +440,27 @@ public class DashboardUtil {
 	}
 	public static Integer getDataFromValue(Long timeValue,AggregateOperator aggregateOperator) {
 		
-		if(aggregateOperator.getValue().equals(10)) {
+		if(aggregateOperator.getValue() == 10) {
 			ZonedDateTime dateTime = DateTimeUtil.getDateTime(timeValue);
 			return dateTime.getMonth().getValue();
 		}
-		else if (aggregateOperator.getValue().equals(12)) {
+		else if (aggregateOperator.getValue() == 12) {
 			ZonedDateTime dateTime = DateTimeUtil.getDateTime(timeValue);
 			return Integer.parseInt(dateTime.getMonth().getValue() + "" + dateTime.getDayOfMonth());
 		}
-		else if(aggregateOperator.getValue().equals(18)) {
+		else if(aggregateOperator.getValue() == 18) {
 			ZonedDateTime dateTime = DateTimeUtil.getDateTime(timeValue);
 			return dateTime.getDayOfMonth();
 		}
-		else if(aggregateOperator.getValue().equals(19)) {
+		else if(aggregateOperator.getValue() == 19) {
 			ZonedDateTime dateTime = DateTimeUtil.getDateTime(timeValue);
 			return dateTime.getHour();
 		}
-		else if(aggregateOperator.getValue().equals(20)) {
+		else if(aggregateOperator.getValue() == 20) {
 			ZonedDateTime dateTime = DateTimeUtil.getDateTime(timeValue);
 			return Integer.parseInt(dateTime.getHour() + "" + Integer.parseInt(dateTime.getMonth().getValue() + "" + dateTime.getDayOfMonth()) + "" + dateTime.getYear()); 
 		}
-		else if(aggregateOperator.getValue().equals(8)) {
+		else if(aggregateOperator.getValue() == 8) {
 			ZonedDateTime dateTime = DateTimeUtil.getDateTime(timeValue);
 			return dateTime.getYear();
 		}
@@ -1655,13 +1656,13 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 				ReportFieldContext reportXAxisField = DashboardUtil.getReportField(reportContext.getxAxisField());
 				reportContext.setxAxisField(reportXAxisField);
 				if(reportContext.getxAxisaggregateFunction() == null) {
-					reportContext.setxAxisaggregateFunction(FormulaContext.NumberAggregateOperator.COUNT.getValue());
+					reportContext.setxAxisaggregateFunction(FormulaContext.CommonAggregateOperator.COUNT.getValue());
 				}
 				if(reportContext.getY1Axis() != null || reportContext.getY1AxisField() != null ) {
 					ReportFieldContext reportY1AxisField = DashboardUtil.getReportField(reportContext.getY1AxisField());
 					reportContext.setY1AxisField(reportY1AxisField);
 					if(reportContext.getY1AxisaggregateFunction() == null) {
-						reportContext.setY1AxisaggregateFunction(FormulaContext.NumberAggregateOperator.COUNT.getValue());
+						reportContext.setY1AxisaggregateFunction(FormulaContext.CommonAggregateOperator.COUNT.getValue());
 					}
 				}
 				if(reportContext.getGroupBy() != null) {
@@ -2127,12 +2128,12 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 
 			reportContext.setxAxis(DashboardUtil.addOrGetReportfield(reportContext.getxAxisField(), reportContext.getModuleName()).getId());
 			if(reportContext.getxAxisaggregateFunction() == null) {
-				reportContext.setxAxisaggregateFunction(FormulaContext.NumberAggregateOperator.COUNT.getValue());
+				reportContext.setxAxisaggregateFunction(FormulaContext.CommonAggregateOperator.COUNT.getValue());
 			}
 			if(reportContext.getY1AxisField() != null && reportContext.getY1AxisField().getModuleField() != null) {
 				reportContext.setY1Axis(DashboardUtil.addOrGetReportfield(reportContext.getY1AxisField(), reportContext.getModuleName()).getId());
 				if(reportContext.getY1AxisaggregateFunction() == null) {
-					reportContext.setxAxisaggregateFunction(FormulaContext.NumberAggregateOperator.COUNT.getValue());
+					reportContext.setxAxisaggregateFunction(FormulaContext.CommonAggregateOperator.COUNT.getValue());
 				}
 			}
 			if(reportContext.getGroupByField() != null && reportContext.getGroupByField().getModuleField() != null) {
@@ -2497,8 +2498,11 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 	
 	public static double performAggregation(List<Double> values, AggregateOperator yAggrOpr) {
 		
-		NumberAggregateOperator xAxisAggr1 = (NumberAggregateOperator) yAggrOpr;
+		if (yAggrOpr == CommonAggregateOperator.COUNT) {
+			return values.size();
+		}
 		
+		NumberAggregateOperator xAxisAggr1 = (NumberAggregateOperator) yAggrOpr;
 		values.removeIf(value -> value == null);
 		switch(xAxisAggr1) {
 		case SUM: {
@@ -2508,10 +2512,6 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 			OptionalDouble optionalDouble = values.stream().mapToDouble(Double::doubleValue).average();
 			double value = optionalDouble.orElse(0);
 			return value;
-		}
-		case COUNT: {
-			return values.size();
-			
 		}
 		case MIN: {
 			OptionalDouble optionalDouble = values.stream().mapToDouble(Double::doubleValue).min();
@@ -2599,7 +2599,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		ReportFieldContext xAxisFld = new ReportFieldContext();
 		xAxisFld.setModuleFieldId(ttimeFld.getId());
 		highResReport.setxAxisField(xAxisFld);
-		highResReport.setxAxisaggregateFunction(FormulaContext.DateAggregateOperator.ACTUAL.getValue());
+		highResReport.setxAxisaggregateFunction(FormulaContext.CommonAggregateOperator.ACTUAL.getValue());
 		highResReport.setxAxisLabel("Time");
 		
 		ReportFieldContext y1AxisFld = new ReportFieldContext();

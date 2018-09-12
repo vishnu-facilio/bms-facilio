@@ -55,6 +55,7 @@ import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.FormulaContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
+import com.facilio.bmsconsole.context.FormulaContext.CommonAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.EnergyPurposeAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.NumberAggregateOperator;
@@ -4179,8 +4180,8 @@ public class DashboardAction extends ActionSupport {
 			FacilioField dummyField = new FacilioField();
 			dummyField.setColumnName(xAxisField.getColumnName());
 			dummyField.setName("dummyField");
-			if (report.getXAxisAggregateOpperator() == FormulaContext.DateAggregateOperator.ACTUAL) {
-				dummyField = DateAggregateOperator.ACTUAL.getSelectField(dummyField);
+			if (report.getXAxisAggregateOpperator() == FormulaContext.CommonAggregateOperator.ACTUAL) {
+				dummyField = CommonAggregateOperator.ACTUAL.getSelectField(dummyField);
 			}
 			else {
 				dummyField = NumberAggregateOperator.MAX.getSelectField(dummyField);
@@ -4191,7 +4192,7 @@ public class DashboardAction extends ActionSupport {
 		FacilioField y1AxisField = null;
 		ReportFieldContext reportY1AxisField;
 		AggregateOperator xAggregateOpperator = report.getXAxisAggregateOpperator();
-		if(!xAggregateOpperator.getValue().equals(NumberAggregateOperator.COUNT.getValue())) {
+		if(xAggregateOpperator.getValue() != CommonAggregateOperator.COUNT.getValue()) {
 			if ((dateFilter != null || report.getDateFilter() != null) && xAxisField.getDataTypeEnum().equals(FieldType.DATE_TIME)) {
 				
 				int oprId =  dateFilter != null ? DashboardUtil.predictDateOpperator(dateFilter) : report.getDateFilter().getOperatorId();
@@ -4225,7 +4226,7 @@ public class DashboardAction extends ActionSupport {
 			y1AxisField = y1AggregateOpperator.getSelectField(y1AxisField);
 		}
 		else {
-			y1AxisField = NumberAggregateOperator.COUNT.getSelectField(xAxisField);
+			y1AxisField = CommonAggregateOperator.COUNT.getSelectField(xAxisField);
 			reportY1AxisField = new ReportFieldContext();
 			reportY1AxisField.setModuleField(y1AxisField);
 		}
@@ -4266,7 +4267,7 @@ public class DashboardAction extends ActionSupport {
 			groupByString = groupByString + ",groupBy";
 		}
 			
-		if (report.getY1AxisAggregateOpperator() != FormulaContext.DateAggregateOperator.ACTUAL) {
+		if (report.getY1AxisAggregateOpperator() != FormulaContext.CommonAggregateOperator.ACTUAL) {
 			builder.groupBy(groupByString);
 		}
 		
@@ -4740,8 +4741,8 @@ public class DashboardAction extends ActionSupport {
 			FacilioField dummyField = new FacilioField();
 			dummyField.setColumnName(xAxisField.getColumnName());
 			dummyField.setName("dummyField");
-			if (report.getXAxisAggregateOpperator() == FormulaContext.DateAggregateOperator.ACTUAL) {
-				dummyField = DateAggregateOperator.ACTUAL.getSelectField(dummyField);
+			if (report.getXAxisAggregateOpperator() == FormulaContext.CommonAggregateOperator.ACTUAL) {
+				dummyField = CommonAggregateOperator.ACTUAL.getSelectField(dummyField);
 			}
 			else {
 				dummyField = NumberAggregateOperator.MAX.getSelectField(dummyField);
@@ -4751,7 +4752,7 @@ public class DashboardAction extends ActionSupport {
 		
 		AggregateOperator xAggregateOpperator = report.getXAxisAggregateOpperator();
 		boolean isGroupBySpace = false;
-		if(!xAggregateOpperator.getValue().equals(NumberAggregateOperator.COUNT.getValue())) {
+		if(xAggregateOpperator.getValue() != CommonAggregateOperator.COUNT.getValue()) {
 			if (xAggr > 0) {
 				xAggregateOpperator = AggregateOperator.getAggregateOperator(xAggr);
 				report.setxAxisaggregateFunction(xAggr);
@@ -4844,7 +4845,7 @@ public class DashboardAction extends ActionSupport {
 			report.getxAxisField().getField().setDisplayName("Service");
 			report.getxAxisField().getField().setName("Service");
 		}
-		else if(!report.getIsHighResolutionReport() && xAggr != 0 && !xAggregateOpperator.getValue().equals(NumberAggregateOperator.COUNT.getValue())) {
+		else if(!report.getIsHighResolutionReport() && xAggr != 0 && xAggregateOpperator.getValue() != CommonAggregateOperator.COUNT.getValue()) {
 			xAxisField = xAggregateOpperator.getSelectField(xAxisField);
 		}
 		
@@ -4870,7 +4871,7 @@ public class DashboardAction extends ActionSupport {
 			}
 		}
 		else {
-			y1AxisField = NumberAggregateOperator.COUNT.getSelectField(xAxisField);
+			y1AxisField = CommonAggregateOperator.COUNT.getSelectField(xAxisField);
 			reportY1AxisField = new ReportFieldContext();
 			reportY1AxisField.setModuleField(y1AxisField);
 		}
@@ -4911,7 +4912,7 @@ public class DashboardAction extends ActionSupport {
 			groupByString = groupByString + ",groupBy";
 		}
 			
-		if (report.getY1AxisAggregateOpperator() != FormulaContext.DateAggregateOperator.ACTUAL) {
+		if (report.getY1AxisAggregateOpperator() != FormulaContext.CommonAggregateOperator.ACTUAL) {
 			builder.groupBy(groupByString);
 		}
 		

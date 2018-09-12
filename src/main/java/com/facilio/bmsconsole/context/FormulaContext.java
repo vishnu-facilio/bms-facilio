@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.util.DateTimeUtil;
+import com.facilio.collections.UniqueMap;
 import com.facilio.fw.BeanFactory;
 
 public class FormulaContext {
@@ -115,7 +116,10 @@ public class FormulaContext {
 		public FacilioField getSelectField(FacilioField field) throws Exception;
 		static final Map<Integer, AggregateOperator> AGGREGATE_OPERATOR_MAP = Collections.unmodifiableMap(initTypeMap());
 		static Map<Integer, AggregateOperator> initTypeMap() {
-			Map<Integer, AggregateOperator> typeMap = new HashMap<>();
+			Map<Integer, AggregateOperator> typeMap = new UniqueMap<>();
+			for(AggregateOperator type : CommonAggregateOperator.values()) {
+				typeMap.put(type.getValue(), type);
+			}
 			for(AggregateOperator type : NumberAggregateOperator.values()) {
 				typeMap.put(type.getValue(), type);
 			}
@@ -133,22 +137,62 @@ public class FormulaContext {
 			}
 			return typeMap;
 		}
-		public Integer getValue();
+		public int getValue();
 		public String getStringValue();
 	}
 	
-	public enum NumberAggregateOperator implements AggregateOperator {
-		
+	public enum CommonAggregateOperator implements AggregateOperator {
+		ACTUAL(0,"Actual","{$place_holder$}"),
 		COUNT(1,"Count","count({$place_holder$})"),
+		;
+		
+		private int value;
+		private String stringValue;
+		private String expr;
+		public int getValue() {
+			return value;
+		}
+		public String getStringValue() {
+			return stringValue;
+		}
+		CommonAggregateOperator(int value,String stringValue,String expr) {
+			this.value = value;
+			this.stringValue = stringValue;
+			this.expr = expr;
+		}
+		
+		public FacilioField getSelectField(FacilioField field) throws Exception {
+			String selectFieldString = expr.replace("{$place_holder$}", field.getColumnName());
+			FacilioField selectField = null;
+			if(field instanceof NumberField) {
+				NumberField numberField =  (NumberField)field;
+				NumberField selectFieldNumber = new NumberField();
+				selectFieldNumber.setMetric(numberField.getMetric());
+				selectField = selectFieldNumber;
+			}
+			else {
+				selectField = new FacilioField();
+			}
+			selectField.setName(field.getName());
+			selectField.setDisplayName(field.getDisplayName());
+			selectField.setColumnName(selectFieldString);
+			selectField.setFieldId(field.getFieldId());
+			return selectField;
+		}
+	}
+	
+	public enum NumberAggregateOperator implements AggregateOperator {
 		AVERAGE(2,"Average","avg({$place_holder$})"),
 		SUM(3,"Sum","sum({$place_holder$})"),
 		MIN(4,"Min","min({$place_holder$})"),
-		MAX(5,"Max","max({$place_holder$})");
+		MAX(5,"Max","max({$place_holder$})"),
+		RANGE(6,"Range","CONCAT(MIN({$place_holder$}),',',AVG({$place_holder$}),',',MAX({$place_holder$}))")
+		;
 		
-		private Integer value;
+		private int value;
 		private String stringValue;
 		private String expr;
-		public Integer getValue() {
+		public int getValue() {
 			return value;
 		}
 		public String getStringValue() {
@@ -159,18 +203,14 @@ public class FormulaContext {
 			this.stringValue = stringValue;
 			this.expr = expr;
 		}
+		
 		public FacilioField getSelectField(FacilioField field) throws Exception {
 			String selectFieldString = expr.replace("{$place_holder$}", field.getColumnName());
-			
 			FacilioField selectField = null;
-			
 			if(field instanceof NumberField) {
-				
 				NumberField numberField =  (NumberField)field;
-				
 				NumberField selectFieldNumber = new NumberField();
 				selectFieldNumber.setMetric(numberField.getMetric());
-				
 				selectField = selectFieldNumber;
 			}
 			else {
@@ -185,15 +225,13 @@ public class FormulaContext {
 	}
 	
 	public enum StringAggregateOperator implements AggregateOperator {
+		;
 		
-		ACTUAL(0,"Actual","{$place_holder$}"),
-		COUNT(1,"Count","count({$place_holder$})");
-		
-		private Integer value;
+		private int value;
 		private String stringValue;
 		private String expr;
 		
-		public Integer getValue() {
+		public int getValue() {
 			return value;
 		}
 		public String getStringValue() {
@@ -207,21 +245,7 @@ public class FormulaContext {
 		public FacilioField getSelectField(FacilioField field) throws Exception {
 			String selectFieldString =expr.replace("{$place_holder$}", field.getColumnName());
 			
-			FacilioField selectField = null;
-			
-			if(field instanceof NumberField) {
-				
-				NumberField numberField =  (NumberField)field;
-				
-				NumberField selectFieldNumber = new NumberField();
-				selectFieldNumber.setMetric(numberField.getMetric());
-				
-				selectField = selectFieldNumber;
-			}
-			else {
-				selectField = new FacilioField();
-			}
-			
+			FacilioField selectField =  new FacilioField();
 			selectField.setName(field.getName());
 			selectField.setDisplayName(field.getDisplayName());
 			selectField.setColumnName(selectFieldString);
@@ -232,8 +256,6 @@ public class FormulaContext {
 	
 	public enum DateAggregateOperator implements AggregateOperator {
 		
-		ACTUAL(0,"Actual", "{$place_holder$}",false),
-		COUNT(1,"Count","count({$place_holder$})",false),
 		YEAR(8,"Yearly","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y')",true),
 		MONTHANDYEAR(10,"monthAndYear","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %m')", "MMMM yyyy",false),
 		WEEKANDYEAR(11,"weekAndYear","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %V')",false),
@@ -247,7 +269,7 @@ public class FormulaContext {
 		HOURSOFDAYONLY(20,"Hourly","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %m %d %H')", "EEE, MMM dd, yyyy hh a",true)
 		;
 		
-		private Integer value;
+		private int value;
 		private String stringValue;
 		private String expr;
 		private String format;
@@ -255,7 +277,7 @@ public class FormulaContext {
 		public boolean isPublic() {
 			return isPublic;
 		}
-		public Integer getValue() {
+		public int getValue() {
 			return value;
 		}
 		public String getStringValue() {
@@ -282,20 +304,7 @@ public class FormulaContext {
 			String timeZone = DateTimeUtil.getDateTime().getOffset().toString().equalsIgnoreCase("Z") ? "+00:00":DateTimeUtil.getDateTime().getOffset().toString(); 
 			selectFieldString = selectFieldString.replace("{$place_holder1$}",timeZone);
 			
-			FacilioField selectField = null;
-			
-			if(field instanceof NumberField) {
-				
-				NumberField numberField =  (NumberField)field;
-				
-				NumberField selectFieldNumber = new NumberField();
-				selectFieldNumber.setMetric(numberField.getMetric());
-				
-				selectField = selectFieldNumber;
-			}
-			else {
-				selectField = new FacilioField();
-			}
+			FacilioField selectField =  new FacilioField();
 			selectField.setName(field.getName());
 			selectField.setDisplayName(field.getDisplayName());
 			selectField.setColumnName(selectFieldString);
@@ -319,11 +328,11 @@ public class FormulaContext {
 		BUILDING(22,BaseSpaceContext.SpaceType.BUILDING.getStringVal(),"BUILDING_ID"),
 		FLOOR(23,BaseSpaceContext.SpaceType.FLOOR.getStringVal(),"FLOOR_ID");
 		
-		private Integer value;
+		private int value;
 		private String stringValue;
 		private String columnName;
 		
-		public Integer getValue() {
+		public int getValue() {
 			return value;
 		}
 		public String getStringValue() {
@@ -354,11 +363,11 @@ public class FormulaContext {
 		
 		PURPOSE(24,"Purpose");
 		
-		private Integer value;
+		private int value;
 		private String stringValue;
 		private String columnName;
 		
-		public Integer getValue() {
+		public int getValue() {
 			return value;
 		}
 		public String getStringValue() {
@@ -377,20 +386,7 @@ public class FormulaContext {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule baseSpaceModule = modBean.getModule("basespace");
 			
-			FacilioField selectField = null;
-			
-			if(field instanceof NumberField) {
-				
-				NumberField numberField =  (NumberField)field;
-				
-				NumberField selectFieldNumber = new NumberField();
-				selectFieldNumber.setMetric(numberField.getMetric());
-				
-				selectField = selectFieldNumber;
-			}
-			else {
-				selectField = new FacilioField();
-			}
+			FacilioField selectField = new FacilioField();
 			selectField.setName(field.getName());
 			selectField.setDisplayName(field.getDisplayName());
 			selectField.setColumnName(getcolumnName());

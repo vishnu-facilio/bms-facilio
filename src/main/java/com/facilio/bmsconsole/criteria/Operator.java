@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.collections.UniqueMap;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public interface Operator<E> {
@@ -27,7 +28,7 @@ public interface Operator<E> {
 	static final Map<Integer, Operator> OPERATOR_MAP = Collections.unmodifiableMap(initOperatorMap());
 	@SuppressWarnings("rawtypes")
 	static Map<Integer, Operator> initOperatorMap() {
-		Map<Integer, Operator> operatorMap = new UniqueOperatorMap();
+		Map<Integer, Operator> operatorMap = new UniqueMap<>();
 		
 		for(Operator operator : CommonOperators.values()) {
 			operatorMap.put(operator.getOperatorId(), operator);
@@ -67,17 +68,5 @@ public interface Operator<E> {
 		
 		return operatorMap;
 		//Max operator code is 61
-	}
-	
-	@SuppressWarnings("rawtypes")
-	static class UniqueOperatorMap extends HashMap<Integer, Operator> {
-		@Override
-		public Operator put(Integer key, Operator value) {
-			// TODO Auto-generated method stub
-			if(containsKey(key)) {
-				throw new IllegalArgumentException("Duplicate ID IN Operators");
-			}
-			return super.put(key, value);
-		}
 	}
 }

@@ -85,7 +85,7 @@ public class FetchReportDataCommand implements Command {
 			Map<String, List<Map<String, Object>>> props = new HashMap<>();
 			props.put(FacilioConstants.Reports.ACTUAL_DATA, fetchReportData(report, dp, selectBuilder, null));
 			
-			LOGGER.severe("SELECT BUILDER --- "+ selectBuilder);
+			LOGGER.fine("SELECT BUILDER --- "+ selectBuilder);
 			if (report.getBaseLines() != null && !report.getBaseLines().isEmpty()) {
 				for (ReportBaseLineContext reportBaseLine : report.getBaseLines()) {
 					props.put(reportBaseLine.getBaseLine().getName(), fetchReportData(report, dp, selectBuilder, reportBaseLine));
