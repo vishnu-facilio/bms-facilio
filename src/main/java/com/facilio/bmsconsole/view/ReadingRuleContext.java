@@ -307,10 +307,7 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		try {
 			boolean workflowFlag = true;
 			if (getWorkflow() != null) {
-				getWorkflow().setIgnoreMarkedReadings(true);
-				getWorkflow().setCachedRDM(currentRDM);
-				double result = (double) WorkflowUtil.getWorkflowExpressionResult(getWorkflow().getWorkflowString(), placeHolders);
-				getWorkflow().setCachedRDM(null);
+				double result = (double) WorkflowUtil.getWorkflowExpressionResult(getWorkflow().getWorkflowString(), placeHolders, currentRDM, true, true);
 				workflowFlag = result == 1;
 			}
 			return workflowFlag;
