@@ -116,12 +116,6 @@ public class WhereBuilder implements WhereBuilderIfc<WhereBuilder>{
 		}
 	}
 	
-	public void checkForNull() {
-		if(condition.length() == 0) {
-			throw new IllegalArgumentException("No where condition specified");
-		}
-	}
-	
 	public boolean isEmpty() {
 		return condition.length() == 0;
 	}

@@ -151,13 +151,12 @@ public class GenericDeleteRecordBuilder implements DeleteBuilderIfc<Map<String, 
 	}
 	
 	private void checkForNull() {
-		
 		if(tableName == null || tableName.isEmpty()) {
 			throw new IllegalArgumentException("Table Name cannot be empty");
 		}
-		
-		where.checkForNull();
-		
+		if (where.isEmpty()) {
+			throw new IllegalArgumentException("Cannot delete because there's no where condition.");
+		}
 	}
 	
 	public static class GenericJoinBuilder implements JoinBuilderIfc<GenericDeleteRecordBuilder> {
