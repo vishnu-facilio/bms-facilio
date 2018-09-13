@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -66,6 +67,13 @@ public class FacilioContextListener implements ServletContextListener {
 	}
 
 	public void contextInitialized(ServletContextEvent event) {
+
+		String schedulerProp = AwsUtil.getConfig("schedulerServer");
+		boolean scheduler = false;
+		if(schedulerProp != null) {
+			scheduler = Boolean.parseBoolean(schedulerProp.trim());
+		}
+
 		try {
 			System.setOut(new SysOutLogger("SysOut"));
 		} catch (FileNotFoundException e1) {
@@ -82,7 +90,7 @@ public class FacilioContextListener implements ServletContextListener {
 			timer.schedule(new TransactionMonitor(), 0L, 3000L);
 		}
 
-		if("true".equals(AwsUtil.getConfig("schedulerServer")) && "production".equals(AwsUtil.getConfig("environment"))) {
+		if(scheduler && AwsUtil.isProduction()) {
 			timer.schedule(new FacilioExceptionProcessor(), 0L, 900000L); // 30 minutes
 		}
 
@@ -92,22 +100,17 @@ public class FacilioContextListener implements ServletContextListener {
 		Operator test = Operator.OPERATOR_MAP.get(1);
 		try {
 			try {
-			migrateSchemaChanges();
-			}
-			catch(Exception e) {
+				migrateSchemaChanges();
+			} catch(Exception e) {
 				log.info("Exception occurred ", e);
 			}
 			ServerInfo.registerServer();
 			//timer.schedule(new ServerInfo(), 30000L, 30000L);
 			String environment = AwsUtil.getConfig("environment");
-			String schedulerProp = AwsUtil.getConfig("schedulerServer");
-			boolean scheduler = false;
-			if(schedulerProp != null) {
-			 scheduler = Boolean.parseBoolean(schedulerProp.trim());
-			}
+
 
 			//handle if server is both user and scheduler.
-			if( "stage".equalsIgnoreCase(environment) || ("production".equalsIgnoreCase(environment) && ( ! scheduler))) {
+			if( "stage".equalsIgnoreCase(environment) || (AwsUtil.isProduction() && ( ! scheduler))) {
 				new Thread(() -> NotificationProcessor.run(new NotificationProcessorFactory())).start();
 			}
 
@@ -121,39 +124,13 @@ public class FacilioContextListener implements ServletContextListener {
 			}
 			HashMap customdomains = getCustomDomains();
 			
-			if(customdomains!=null)
-			{
+			if(customdomains!=null) {
 				event.getServletContext().setAttribute("customdomains", customdomains);
-				System.out.println("Custom domains loaded" + customdomains);
+				log.info("Custom domains loaded " + customdomains);
 			}
 			
-			if(!"stage".equalsIgnoreCase(environment) && !"production".equalsIgnoreCase(environment)) {
-				File file = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/leedconsole.sql").getFile());
-				SQLScriptRunner scriptRunner = new SQLScriptRunner(file, true, null);
-				//Connection c = FacilioConnectionPool.getInstance().getConnection();
-				try
-				{
-				scriptRunner.runScript();
-				}
-				catch(Exception e)
-				{
-					
-				}
-				finally
-				{
-					
-				}
-				file = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/eventconsole.sql").getFile());
-				scriptRunner = new SQLScriptRunner(file, true, null);
-			//	c = FacilioConnectionPool.getInstance().getConnection();
-				try
-				{
-				scriptRunner.runScript();
-				}
-				catch(Exception e)
-				{
-					
-				}
+			if(AwsUtil.isDevelopment()) {
+				initializeDB();
 			}
 
 			try {
@@ -178,9 +155,8 @@ public class FacilioContextListener implements ServletContextListener {
 				log.info("Exception occurred ", e);
 			}
 
-PortalAuthInterceptor.PORTALDOMAIN = com.facilio.aws.util.AwsUtil.getConfig("portal.domain");// event.getServletContext().getInitParameter("SERVICEPORTAL_DOMAIN");
+			PortalAuthInterceptor.PORTALDOMAIN = com.facilio.aws.util.AwsUtil.getConfig("portal.domain");// event.getServletContext().getInitParameter("SERVICEPORTAL_DOMAIN");
 			System.out.println("Loading the domain name as ######"+PortalAuthInterceptor.PORTALDOMAIN );
-			
 			initLocalHostName();
 			HealthCheckFilter.setStatus(200);
 			
@@ -190,6 +166,26 @@ PortalAuthInterceptor.PORTALDOMAIN = com.facilio.aws.util.AwsUtil.getConfig("por
 			log.info("Exception occurred ", e);
 		}
 		
+	}
+
+	private void initializeDB() {
+		createTables("conf/leedconsole.sql");
+		createTables("conf/eventconsole.sql");
+	}
+
+	private void createTables(String fileName) {
+		URL url = SQLScriptRunner.class.getClassLoader().getResource(fileName);
+		if(url != null) {
+			File file = new File(url.getFile());
+			SQLScriptRunner scriptRunner = new SQLScriptRunner(file, true, null);
+			try {
+				scriptRunner.runScript();
+			} catch (Exception e) {
+				log.info("Error while executing script " + fileName);
+			}
+		} else {
+			log.warn("Couldn't find : " + fileName);
+		}
 	}
 
 	private void sendFailureEmail(Exception e) {
