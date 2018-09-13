@@ -48,7 +48,7 @@ public class EnergyAction extends ActionSupport {
 	
 	public String insertVirtualMeterReadings() throws Exception {
 		
-		DeviceAPI.addVirtualMeterReadingsJob(startTime, endTime, interval, vmList);
+		DeviceAPI.addVirtualMeterReadingsJob(startTime, endTime, interval, vmList, runParentMeter);
 		return SUCCESS;
 	}
 	
@@ -198,6 +198,14 @@ public String addEnergyData() throws Exception {
 	}
 	public void setVmList(List<Long> vmList) {
 		this.vmList = vmList;
+	}
+	
+	private boolean runParentMeter = false;
+	public boolean getRunParentMeter() {
+		return runParentMeter;
+	}
+	public void setRunParentMeter(boolean runParentMeter) {
+		this.runParentMeter = runParentMeter;
 	}
 	
 }

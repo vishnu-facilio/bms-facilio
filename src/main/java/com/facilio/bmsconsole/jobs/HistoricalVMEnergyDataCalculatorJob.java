@@ -44,6 +44,7 @@ public class HistoricalVMEnergyDataCalculatorJob extends FacilioJob {
 			Long meterId=(Long)jobProps.get("meterId");
 			Integer interval=(Integer)jobProps.get("intervalValue");
 			Boolean updateReading= (Boolean)jobProps.get("updateReading");
+			Boolean runParentMeter= (Boolean)jobProps.get("runParentMeter");
 			long processStartTime = System.currentTimeMillis();
 			List<EnergyMeterContext> vmList= DeviceAPI.getVirtualMeters(Collections.singletonList(meterId));
 			if(vmList.isEmpty()) {
@@ -56,9 +57,12 @@ public class HistoricalVMEnergyDataCalculatorJob extends FacilioJob {
 			}
 			DeviceAPI.insertVirtualMeterReadings(vMeter,childMeterIds,startTime, endTime, interval,updateReading, true);
 			LOGGER.info("Time Taken for jobid "+jobId+" : " + (System.currentTimeMillis() - processStartTime));
-			List<Long> parentMeterIds=DeviceAPI.getParentMeters(vMeter);
+			List<Long> parentMeterIds=null;
+			if (runParentMeter == null || runParentMeter) {
+				parentMeterIds = DeviceAPI.getParentMeters(vMeter);
+			}
 			if(parentMeterIds!=null && !parentMeterIds.isEmpty()) {
-				DeviceAPI.addVirtualMeterReadingsJob(startTime, endTime, interval, parentMeterIds);
+				DeviceAPI.addVirtualMeterReadingsJob(startTime, endTime, interval, parentMeterIds, true);
 			}
 			
 		}

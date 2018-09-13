@@ -2455,6 +2455,7 @@ public class FieldFactory {
 		fields.add(getField("endTime", "END_TIME", module, FieldType.NUMBER));
 		fields.add(getField("intervalValue", "INTERVAL_VALUE", module, FieldType.NUMBER));
 		fields.add(getField("updateReading", "UPDATE_READING", module, FieldType.BOOLEAN));
+		fields.add(getField("runParentMeter", "RUN_PARENT_METER", module, FieldType.BOOLEAN));
 
 		return fields;
 	}
