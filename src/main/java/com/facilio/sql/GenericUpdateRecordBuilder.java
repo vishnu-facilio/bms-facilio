@@ -210,6 +210,9 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 			sql.append(" WHERE ")
 				.append(where.getWhereClause());
 		}
+		else {
+			throw new IllegalArgumentException("Cannot update because there's no where condition.");
+		}
 		
 		return sql.toString();
 	}
