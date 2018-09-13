@@ -2839,7 +2839,7 @@
 		</action>
 		
 		<action name="migration">
-			<result name="success">/jsps/Migration.jsp</result>
+			<result name="success">/jsps/migration/Migration.jsp</result>
 		</action>
 	</package>
 
