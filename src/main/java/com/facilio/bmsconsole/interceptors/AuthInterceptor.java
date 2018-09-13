@@ -117,6 +117,8 @@ public class AuthInterceptor extends AbstractInterceptor {
 		try {
 			return arg0.invoke();
 		} catch (Exception e) {
+			System.out.println("exception code 154");
+
 			LOGGER.log(Level.SEVERE, "error thrown from action class", e);
 			throw e;
 		}
