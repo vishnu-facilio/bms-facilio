@@ -76,7 +76,11 @@ public class AddAlarmCommand implements Command {
 			InsertRecordBuilder<AlarmContext> builder = new InsertRecordBuilder<AlarmContext>()
 																.moduleName(moduleName)
 																.fields(fields);
-			builder.setWithLocalIdModule(true);
+			
+			if (AccountUtil.getCurrentOrg().getId() != 75) {
+				builder.withLocalId();
+			}
+			
 			AlarmAPI.updateAlarmDetailsInTicket(alarm, alarm);
 			TicketAPI.updateTicketStatus(alarm);
 			long alarmId = builder.insert(alarm);

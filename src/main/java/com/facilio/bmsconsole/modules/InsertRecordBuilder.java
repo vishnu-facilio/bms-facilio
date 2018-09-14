@@ -24,16 +24,7 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	private boolean inserted = false;
 	private boolean withChangeSet = false;
 	private Map<Long, List<UpdateChangeSet>> changeSet;
-	
 	private boolean isWithLocalIdModule;
-	
-	public boolean isWithLocalIdModule() {
-		return isWithLocalIdModule;
-	}
-
-	public void setWithLocalIdModule(boolean isWithLocalIdModule) {
-		this.isWithLocalIdModule = isWithLocalIdModule;
-	}
 
 	public InsertRecordBuilder () {
 		// TODO Auto-generated constructor stub
@@ -76,6 +67,11 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	@Override
 	public InsertRecordBuilder<E> addRecords(List<E> beans) {
 		this.records.addAll(beans);
+		return this;
+	}
+	
+	public InsertRecordBuilder<E> withLocalId() {
+		this.isWithLocalIdModule = true;
 		return this;
 	}
 	

@@ -339,7 +339,7 @@ public class ProcessXLS implements Command {
 						.addRecords(readingsList);
 				
 				if(ModuleLocalIdUtil.isModuleWithLocalId(moduleName)) {
-					readingBuilder.setWithLocalIdModule(true);
+					readingBuilder.withLocalId();
 				}
 				readingBuilder.save();
 				
