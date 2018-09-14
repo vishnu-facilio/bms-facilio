@@ -284,6 +284,11 @@
 			<param name="id">{1}</param>
 		</action>
 	</package>
+	<package name="assetLatestDataApiv2" namespace="/api/v2/reading/latestdata" extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.ReadingAction" method="v2GetLatestReadingData">
+			<param name="parentId">{1}</param>
+		</action>
+	</package>
 	
 	<package name="reportApiv2" namespace="/api/v2/report" extends="v2Api">
 		<action name="readingReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReadingsData">

@@ -55,4 +55,10 @@ public class ReadOnlyChainFactory extends FacilioChainFactory {
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
+	
+	public static Chain fetchLatestReadingDataChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetLatestReadingDataCommand());
+		return c;
+	}
 }

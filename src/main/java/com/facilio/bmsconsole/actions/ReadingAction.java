@@ -12,6 +12,7 @@ import org.json.simple.JSONObject;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
@@ -806,6 +807,19 @@ public class ReadingAction extends FacilioAction {
 	public String getFormulaFromReadingField () throws Exception {
 		formula = FormulaFieldAPI.getFormulaFieldFromReadingField(id);
 		setResult(FacilioConstants.ContextNames.FORMULA_FIELD, formula);			
+		return SUCCESS;
+	}
+	
+	public String v2GetLatestReadingData() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
+		context.put(FacilioConstants.ContextNames.EXCLUDE_EMPTY_FIELDS, excludeEmptyFields != null ? excludeEmptyFields : true);
+		
+		Chain latestAssetData = ReadOnlyChainFactory.fetchLatestReadingDataChain();
+		latestAssetData.execute(context);
+		
+		setResult("readingValues", context.get(FacilioConstants.ContextNames.READING_DATA_META_LIST));
+		
 		return SUCCESS;
 	}
  }

@@ -190,15 +190,21 @@ public class ReadingsAPI {
 	}
 	
 	public static List<ReadingDataMeta> getReadingDataMetaList(Long resourceId, Collection<FacilioField> fieldList, boolean excludeEmptyFields, ReadingInputType...readingTypes) throws Exception {
-		Map<Long, FacilioField> fieldMap = FieldFactory.getAsIdMap(fieldList);
+		Map<Long, FacilioField> fieldMap = null;
+		if (fieldList != null) {
+			fieldMap = FieldFactory.getAsIdMap(fieldList);
+		}
 		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
 		List<FacilioField> redingFields = FieldFactory.getReadingDataMetaFields();
 		Map<String, FacilioField> readingFieldsMap = FieldFactory.getAsMap(redingFields);
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getReadingDataMetaFields())
 				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("fieldId"), StringUtils.join(fieldMap.keySet(), ","), NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+				
+		if (fieldMap != null) {
+			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("fieldId"), StringUtils.join(fieldMap.keySet(), ","), NumberOperators.EQUALS));
+		}
 		
 		if(resourceId != null) {
 			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("resourceId"), String.valueOf(resourceId), NumberOperators.EQUALS));
@@ -220,7 +226,7 @@ public class ReadingsAPI {
 		return getReadingDataFromProps(stats, fieldMap);
 	}
 	
-	private static List<ReadingDataMeta> getReadingDataFromProps(List<Map<String, Object>> props, Map<Long, FacilioField> fieldMap) {
+	private static List<ReadingDataMeta> getReadingDataFromProps(List<Map<String, Object>> props, Map<Long, FacilioField> fieldMap) throws Exception {
 		if(props != null && !props.isEmpty()) {
 			List<ReadingDataMeta> metaList = new ArrayList<>();
 			for (Map<String, Object> prop : props) {
@@ -236,7 +242,7 @@ public class ReadingsAPI {
 		return resourceId+"_"+field.getFieldId();
 	}
 	
-	private static Map<String, ReadingDataMeta> getRDMMapFromProps (List<Map<String, Object>> props, Map<Long, FacilioField> fieldMap) {
+	private static Map<String, ReadingDataMeta> getRDMMapFromProps (List<Map<String, Object>> props, Map<Long, FacilioField> fieldMap) throws Exception {
 		if(props != null && !props.isEmpty()) {
 			Map<String, ReadingDataMeta> rdmMap = new HashMap<>();
 			for (Map<String, Object> prop : props) {
@@ -248,10 +254,17 @@ public class ReadingsAPI {
 		return null;
 	}
 	
-	private static ReadingDataMeta getRDMFromProp (Map<String, Object> prop, Map<Long, FacilioField> fieldMap) {
+	private static ReadingDataMeta getRDMFromProp (Map<String, Object> prop, Map<Long, FacilioField> fieldMap) throws Exception {
 		ReadingDataMeta meta = FieldUtil.getAsBeanFromMap(prop, ReadingDataMeta.class);
 		Object value = meta.getValue();
-		FacilioField field = fieldMap.get(meta.getFieldId());
+		FacilioField field;
+		if (fieldMap != null) {
+			 field = fieldMap.get(meta.getFieldId());
+		}
+		else {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			field = modBean.getField(meta.getFieldId());
+		}
 		if (field.getDataTypeEnum() == FieldType.ENUM) {
 			if (value != null && value instanceof String) {
 				value = Integer.valueOf((String) value);
