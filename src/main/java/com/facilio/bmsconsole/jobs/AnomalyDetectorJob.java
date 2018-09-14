@@ -236,6 +236,7 @@ public class AnomalyDetectorJob extends FacilioJob {
 		postData.temperatureData = siteTemperatureReadings;
 		postData.energyData = meterReadings;
 		postData.timezone = AccountUtil.getCurrentOrg().getTimezone();
+		postData.outlierDistance =configContext.getOutlierDistance();
 
 		ObjectMapper mapper = new ObjectMapper();
 		String jsonInString = mapper.writeValueAsString(postData);
@@ -402,6 +403,15 @@ public class AnomalyDetectorJob extends FacilioJob {
 	}
 
 	class CheckAnomalyModelPostData {
+		public double outlierDistance;
+		public double getOutlierDistance() {
+			return outlierDistance;
+		}
+
+		public void setOutlierDistance(double outlierDistance) {
+			this.outlierDistance = outlierDistance;
+		}
+
 		public double getConstant1() {
 			return constant1;
 		}
