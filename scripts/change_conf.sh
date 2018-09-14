@@ -37,6 +37,8 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "pre_production" ]; then
     sed -i'' "s%cors.allowed.origins=.*%cors.allowed.origins=http://localhost:8080,http://localhost:9090,https://facilio.in%g" $CONF_DIR/awsprops.properties
     sed -i -e 's/localhost:7444/172.31.10.148:7444/g' $CONF_DIR/awsprops.properties
     sed -i -e 's/tmp/home\/ubuntu\/analytics\/temp/g' $CONF_DIR/awsprops.properties
+    sed -i -e 's/anomalyRefreshWaitTimeInSeconds=10/anomalyRefreshWaitTimeInSeconds=1/g' $CONF_DIR/awsprops.properties
+    sed -i -e 's/anomalyDetectWaitTimeInSeconds=3/anomalyDetectWaitTimeInSeconds=0/g' $CONF_DIR/awsprops.properties 
     echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/ubuntu/deployment.log
 fi
 
