@@ -166,6 +166,7 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 			}
 			catch(SQLException e) {
 				LOGGER.log(Level.ERROR, "Update failed ", e);
+				LOGGER.log(Level.ERROR, (pstmt == null) ? "null" : pstmt);
 				throw e;
 			}
 			finally {
