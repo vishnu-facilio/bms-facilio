@@ -62,9 +62,9 @@ public class AnomalyDetectorJob extends FacilioJob {
 
 			Integer anomalyPeriodicity = Integer.parseInt(AwsUtil.getConfig("anomalyPeriodicity"));
 			// get the list of all sub meters
-			//long correction = 0;
+			long correction = 0;
 			//Uncomment below code for DEV testing only
-			long correction = System.currentTimeMillis() - 1529948963000L;
+			//long correction = System.currentTimeMillis() - 1529948963000L;
 			long endTime = System.currentTimeMillis() - correction;
 			long startTime = endTime - (2 * anomalyPeriodicity * 60 * 1000L);
 
