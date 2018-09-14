@@ -236,7 +236,7 @@ public class FormulaFieldAPI {
 					if (workflow.getWorkflowString() == null) {
 						workflow.setWorkflowString(WorkflowUtil.getXmlStringFromWorkflow(workflow));
 					}
-					Double resultVal = (Double) WorkflowUtil.getWorkflowExpressionResult(workflow.getWorkflowString(), params, ignoreNullValues);
+					Double resultVal = (Double) WorkflowUtil.getWorkflowExpressionResult(workflow.getWorkflowString(), params, null, ignoreNullValues, false);
 					
 					if (resultVal != null) {
 						ReadingContext reading = new ReadingContext();

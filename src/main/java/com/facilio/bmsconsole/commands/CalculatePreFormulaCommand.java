@@ -89,7 +89,7 @@ public class CalculatePreFormulaCommand implements Command {
 					}
 					
 					try {
-						Double resultVal = (Double) WorkflowUtil.getWorkflowExpressionResult(formula.getWorkflow().getWorkflowString(), params, false);
+						Double resultVal = (Double) WorkflowUtil.getWorkflowExpressionResult(formula.getWorkflow().getWorkflowString(), params, null, false, false);
 						if (resultVal != null) {
 							reading.addReading(formula.getReadingField().getName(), resultVal);
 							newRdmPairs.add(Pair.of(reading.getParentId(), formula.getReadingField()));
