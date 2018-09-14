@@ -421,7 +421,7 @@ public class DeviceAPI
 		return null;
 	}
 	
-	public static void addHistoricalVMCalculationJob(long meterId, long startTime, long endTime, int interval,boolean updateReading) throws Exception {
+	public static void addHistoricalVMCalculationJob(long meterId, long startTime, long endTime, int interval,boolean updateReading, boolean runParentMeter) throws Exception {
 		
 		GenericInsertRecordBuilder historyVMBuilder = new GenericInsertRecordBuilder()
 				.fields(FieldFactory.getHistoricalVMCalculationFields())
@@ -433,30 +433,31 @@ public class DeviceAPI
 		jobProp.put("endTime",endTime);
 		jobProp.put("intervalValue", interval);
 		jobProp.put("updateReading", updateReading);
+		jobProp.put("runParentMeter", runParentMeter);
 		long jobId= historyVMBuilder.insert(jobProp);
 		FacilioTimer.scheduleOneTimeJob(jobId, "HistoricalVMCalculation", 30, "facilio");
 	}
 	
 	
-	public static void addVMReadingsJob(long startTime, long endTime, int minutesInterval) throws Exception {
-		addVMReadingsJob(DeviceAPI.getAllVirtualMeters(), startTime,endTime, minutesInterval);
+	public static void addVMReadingsJob(long startTime, long endTime, int minutesInterval, boolean runParentMeter) throws Exception {
+		addVMReadingsJob(DeviceAPI.getAllVirtualMeters(), startTime,endTime, minutesInterval, runParentMeter);
 	}
 	
-	public static void addVirtualMeterReadingsJob(long startTime, long endTime, int minutesInterval, List<Long> vmList) throws Exception {
+	public static void addVirtualMeterReadingsJob(long startTime, long endTime, int minutesInterval, List<Long> vmList, boolean runParentMeter) throws Exception {
 		if(vmList == null || vmList.isEmpty()) {
-			addVMReadingsJob(startTime,endTime, minutesInterval);
+			addVMReadingsJob(startTime,endTime, minutesInterval, runParentMeter);
 			return;
 		}
-		addVMReadingsJob(getVirtualMeters(vmList), startTime,endTime, minutesInterval);
+		addVMReadingsJob(getVirtualMeters(vmList), startTime,endTime, minutesInterval, runParentMeter);
 	}
 	
 	
 	private static void addVMReadingsJob(List<EnergyMeterContext> virtualMeters, long startTime, long endTime,
-			int minutesInterval) throws Exception {
+			int minutesInterval, boolean runParentMeter) throws Exception {
 
 		for(EnergyMeterContext meter : virtualMeters) {
 
-			addHistoricalVMCalculationJob(meter.getId(), startTime, endTime, minutesInterval,false);
+			addHistoricalVMCalculationJob(meter.getId(), startTime, endTime, minutesInterval,false, runParentMeter);
 		}
 	}
 

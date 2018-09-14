@@ -127,6 +127,14 @@ public static List<WorkOrderContext> getWorkOrders(long categoryId) throws Excep
 	}
 	
 	
+	public static long getSiteIdForWO(long woId) throws Exception {
+		WorkOrderContext wo = getWorkOrder(woId);
+		if (wo == null) {
+			return -1;
+		}
+		return wo.getSiteId();
+	}
+	
 	
 	
 	

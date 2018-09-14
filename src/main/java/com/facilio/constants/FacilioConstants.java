@@ -619,6 +619,7 @@ public class FacilioConstants {
 	public static class Alarm {
 		public static final String CLEAR_SEVERITY = "Clear";
 		public static final String INFO_SEVERITY = "Info";
+		public static final String CRITICAL_SEVERITY = "Critical";
 	}
 	
 	public static class Criteria {

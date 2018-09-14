@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
@@ -986,6 +987,13 @@ public class WorkOrderAction extends FacilioAction {
 	
 	public void setTaskcontex(String task_string) throws Exception {
 		this.tasks = convertTask(task_string);
+		if (this.workorder != null) {
+			for (Entry<String, List<TaskContext>> e : this.tasks.entrySet()) {
+				for (TaskContext t : e.getValue()) {
+					t.setSiteId(this.workorder.getSiteId());
+				}
+			}
+		}
 	}
 	public Map<String, List<TaskContext>> convertTask(String task_string) throws Exception
 	{

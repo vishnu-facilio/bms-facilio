@@ -1747,6 +1747,8 @@ public class FieldFactory {
 		fields.add(getField("frequency", "FREQUENCY_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("custom", "IS_CUSTOM", module, FieldType.BOOLEAN));
 
+		fields.add(getSiteIdField(module));
+		
 		return fields;
 	}
 
@@ -2453,6 +2455,7 @@ public class FieldFactory {
 		fields.add(getField("endTime", "END_TIME", module, FieldType.NUMBER));
 		fields.add(getField("intervalValue", "INTERVAL_VALUE", module, FieldType.NUMBER));
 		fields.add(getField("updateReading", "UPDATE_READING", module, FieldType.BOOLEAN));
+		fields.add(getField("runParentMeter", "RUN_PARENT_METER", module, FieldType.BOOLEAN));
 
 		return fields;
 	}
@@ -3749,6 +3752,8 @@ public class FieldFactory {
 		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.LOOKUP));
 		fields.add(getField("duration", "DURATION", module, FieldType.NUMBER));
 		fields.add(getField("additionalInfoJsonStr", "ADDITIONAL_INFO", module, FieldType.STRING));
+		
+		fields.add(getSiteIdField(module));
 
 		return fields;
 	}
@@ -3786,6 +3791,7 @@ public class FieldFactory {
 		fields.add(getField("sequence", "SEQUENCE", module, FieldType.LOOKUP));
 		fields.add(getField("attachmentRequired", "ATTACHMENT_REQUIRED", module, FieldType.BOOLEAN));
 		fields.add(getField("additionalInfoJsonStr", "ADDITIONAL_INFO", module, FieldType.STRING));
+		fields.add(getSiteIdField(module));
 
 		return fields;
 	}

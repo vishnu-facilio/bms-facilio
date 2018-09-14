@@ -131,6 +131,8 @@ public class UpdateWorkOrderCommand implements Command {
 				}
 			}
 			
+			TicketAPI.validateSiteSpecificData(workOrder, oldWos);
+			
 			if (newWos.isEmpty()) {
 				newWos.add(workOrder);
 			}

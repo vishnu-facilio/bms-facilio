@@ -16,27 +16,26 @@ public class BeanInvocationHandler implements InvocationHandler {
 
 	private static final Logger LOGGER = Logger.getLogger( BeanInvocationHandler.class.getName() );
 
-	private static boolean ENABLE_JTA = false;
+	private boolean enableTransaction = false;
 	private Object delegate;
-	long orgid = 0;
-//	private Connection conn;
+	private long orgid = 0;
 
 	public BeanInvocationHandler(Object obj, Long orgid) {
-		this.delegate = obj;
-		this.orgid = orgid;
+		this(obj, orgid, false);
 	}
 
-	/*public BeanInvocationHandler(Object obj, Long orgid, Connection conn) {
+	public BeanInvocationHandler(Object obj, Long orgid, boolean enableTransaction) {
 		this.delegate = obj;
 		this.orgid = orgid;
-		this.conn = conn;
-	}*/
+		this.enableTransaction = enableTransaction;
+	}
+
 
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
 		Object result;
-		boolean istransaction =false;
+		boolean isTransaction =false;
 		try {
 			Account oldAccount = AccountUtil.getCurrentAccount();
 
@@ -46,45 +45,35 @@ public class BeanInvocationHandler implements InvocationHandler {
 				}
 			}
 
-		
-		if (ENABLE_JTA) {
-			TransactionManager tm = FacilioTransactionManager.INSTANCE.getTransactionManager();
-			Transaction currenttrans = tm.getTransaction();
-			if (currenttrans == null) {
-				tm.begin();
-				LOGGER.info("begin transaction for " + method.getName());
-				istransaction = true;
-			} else {
-				LOGGER.info("joining parent transaction for " + method.getName());
-			} 
-		}
-			result = method.invoke(delegate, args);
-			//LOGGER.info("finish method "+method.getName());
 
-			if (ENABLE_JTA) {
-				if (istransaction) {
-					LOGGER.info("commit transaction for " + method.getName());
-					FacilioTransactionManager.INSTANCE.getTransactionManager().commit();
-				} 
+			if (enableTransaction) {
+				TransactionManager tm = FacilioTransactionManager.INSTANCE.getTransactionManager();
+				Transaction currentTransaction = tm.getTransaction();
+				if (currentTransaction == null) {
+					tm.begin();
+					LOGGER.info("begin transaction for " + method.getName());
+					isTransaction = true;
+				} else {
+					LOGGER.info("joining parent transaction for " + method.getName());
+				}
+			}
+			result = method.invoke(delegate, args);
+
+			if (enableTransaction && isTransaction) {
+				LOGGER.info("commit transaction for " + method.getName());
+				FacilioTransactionManager.INSTANCE.getTransactionManager().commit();
 			}
 			if (orgid != 0 && oldAccount != null) {
 				AccountUtil.setCurrentAccount(oldAccount);
 			}
-		
+
 		}  catch (Exception e) {
-			
 			LOGGER.log(Level.INFO,"exception for  for " + method.getName(),e);
-			
-			if (ENABLE_JTA) {
-				if (istransaction) {
-					FacilioTransactionManager.INSTANCE.getTransactionManager().rollback();
-					LOGGER.info("rollback transaction for " + method.getName());
-				} 
+			if (enableTransaction && isTransaction) {
+				FacilioTransactionManager.INSTANCE.getTransactionManager().rollback();
+				LOGGER.info("rollback transaction for " + method.getName());
 			}
 			throw e;
-		}
-		finally {
-			
 		}
 		return result;
 	}

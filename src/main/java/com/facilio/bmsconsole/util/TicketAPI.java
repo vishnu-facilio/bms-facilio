@@ -33,6 +33,7 @@ import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.TicketPriorityContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.TicketTypeContext;
@@ -1049,18 +1050,85 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 			}
 		}
 	}
+	
+	private static <T extends TicketContext> void skipSiteValidation(T ticket) {
+		SourceType sourceType = ticket.getSourceTypeEnum();
+		if (sourceType == null) {
+			if (AccountUtil.getCurrentSiteId() != -1) {
+				ticket.setSiteId(AccountUtil.getCurrentSiteId());
+			}
+			return;
+		}
+		
+		switch (sourceType) { 
+		case THRESHOLD_ALARM:
+		case ANOMALY_ALARM:
+		case ALARM:
+			return;
+		default:
+			if (AccountUtil.getCurrentSiteId() != -1) {
+				ticket.setSiteId(AccountUtil.getCurrentSiteId());
+			}
+			break;
+		}
+	}
 
 	public static <T extends TicketContext> void validateSiteSpecificData(T ticket) throws Exception {
 		long siteId = ticket.getSiteId();
+		skipSiteValidation(ticket);
+		
 		if (siteId == -1) {
 			return;
+		}
+		
+		boolean isWorkOrder = ticket instanceof WorkOrderContext;
+		if (ticket.getResource() != null && ticket.getResource().getId() != -1) {
+			ResourceContext resource = ResourceAPI.getResource(ticket.getResource().getId());
+			long resourceSiteId = -1;
+			if (resource.getResourceTypeEnum() == ResourceType.SPACE) {
+				BaseSpaceContext baseSpace = SpaceAPI.getBaseSpace(resource.getId());
+				if (baseSpace.getSpaceTypeEnum() == SpaceType.SITE) {
+					resourceSiteId = baseSpace.getId();
+				} else {
+					resourceSiteId = baseSpace.getSiteId();
+				}
+			} else {
+				AssetContext asset = AssetsAPI.getAssetInfo(resource.getId(), false); //check deleted ?
+				if (asset.getSpaceId() > 0) {
+					BaseSpaceContext baseSpace = SpaceAPI.getBaseSpace(asset.getSpaceId());
+					if (baseSpace.getSpaceTypeEnum() == SpaceType.SITE) {
+						resourceSiteId = baseSpace.getId();
+					} else {
+						resourceSiteId = baseSpace.getSiteId();
+					}
+				}
+			}
+			
+			if (resourceSiteId > 0) {
+				if (resourceSiteId != siteId) {
+					if (resource.getResourceTypeEnum() == ResourceType.SPACE) {
+						if (isWorkOrder) {
+							throw new IllegalArgumentException("The Space does not belong in the Workorder's Site.");
+						} else {
+							throw new IllegalArgumentException("The Space does not belong in the Workorder request's Site.");
+						}
+						
+					} else {
+						if (isWorkOrder) {
+							throw new IllegalArgumentException("The Asset does not belong in the Workorder's Site.");
+						} else {
+							throw new IllegalArgumentException("The Asset does not belong in the Workorder request's Site.");
+						}
+					}
+				}
+			}
 		}
 		
 		User assignedTo = ticket.getAssignedTo();
 		Group assignmentGroup = ticket.getAssignmentGroup();
 	
 		Set<Long> userSiteIds = new HashSet<>();
-		if (assignedTo != null) {
+		if (assignedTo != null && assignedTo.getOuid() != -1) {
 			assignedTo = AccountUtil.getUserBean().getUser(assignedTo.getOuid());
 			List<Long> accessibleSpace = assignedTo.getAccessibleSpace();
 			Map<Long, BaseSpaceContext> idVsBaseSpace = SpaceAPI.getBaseSpaceMap(accessibleSpace);
@@ -1077,7 +1145,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 		}
 		
 		long groupSiteId = -1;
-		if (assignmentGroup != null) {
+		if (assignmentGroup != null && assignmentGroup.getGroupId() != -1) {
 			assignmentGroup = AccountUtil.getGroupBean().getGroup(assignmentGroup.getGroupId());
 			groupSiteId = assignmentGroup.getSiteId();
 		}

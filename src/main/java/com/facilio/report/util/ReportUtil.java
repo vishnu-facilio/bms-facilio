@@ -181,9 +181,13 @@ public class ReportUtil {
 	
 	public static boolean updateReport(ReportContext reportContext) throws Exception {
 		
+		FacilioModule module = ModuleFactory.getReportModule();
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-													.table(ModuleFactory.getReportModule().getTableName())
-													.fields(FieldFactory.getReport1Fields());
+													.table(module.getTableName())
+													.fields(FieldFactory.getReport1Fields())
+													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+													.andCondition(CriteriaAPI.getIdCondition(reportContext.getId(), module))
+													;
 		
 		Map<String, Object> props = FieldUtil.getAsProperties(reportContext);
 		return updateBuilder.update(props) > 0 ? true :false ;

@@ -50,7 +50,7 @@ public class AddVirtualMeterRelCommand implements Command {
 			long startTime=DateTimeUtil.getMonthStartTime(DeviceAPI.VM_HISTORICAL_DATA_CALCULATION_INTERVAL);
 			long endTime=System.currentTimeMillis();
 			int interval=15;//ideally this value should be fetched from org settings.
-			DeviceAPI.addHistoricalVMCalculationJob(meter.getId(),startTime,endTime,interval,true);
+			DeviceAPI.addHistoricalVMCalculationJob(meter.getId(),startTime,endTime,interval,true, true);
 		}
 		return false;
 	}

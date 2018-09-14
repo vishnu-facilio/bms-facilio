@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsole.context.BaseLineContext;
+import com.facilio.bmsconsole.context.BaseLineContext.AdjustType;
 import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
@@ -29,6 +30,11 @@ public class CommonReportUtil {
 			
 			for (ReportBaseLineContext baseLine : reportBaseLines) {
 				baseLine.setBaseLine(baseLines.get(baseLine.getBaseLineId()));
+				
+				if (baseLine.getAdjustTypeEnum() == null) {
+					baseLine.setAdjustType(AdjustType.WEEK);
+				}
+				
 				if (baseLine.getBaseLine() == null) {
 					throw new IllegalArgumentException("Give valid baseline id. "+baseLine.getBaseLineId()+" is invalid");
 				}

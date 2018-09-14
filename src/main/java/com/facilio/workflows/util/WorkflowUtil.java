@@ -32,6 +32,7 @@ import org.w3c.dom.ls.LSSerializer;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseLineContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.BaseLineContext.AdjustType;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -218,11 +219,13 @@ public class WorkflowUtil {
 	}
 	
 	public static Object getWorkflowExpressionResult(String workflowString,Map<String,Object> paramMap) throws Exception {
-		return getWorkflowExpressionResult(workflowString, paramMap, true);
+		return getWorkflowExpressionResult(workflowString, paramMap, null, true, false);
 	}
 	
-	public static Object getWorkflowExpressionResult(String workflowString,Map<String,Object> paramMap, boolean ignoreNullExpressions) throws Exception {
+	public static Object getWorkflowExpressionResult(String workflowString,Map<String,Object> paramMap, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked) throws Exception {
 		WorkflowContext workflowContext = parseStringToWorkflowObject(workflowString);
+		workflowContext.setCachedRDM(rdmCache);
+		workflowContext.setIgnoreMarkedReadings(ignoreMarked);
 		List<ParameterContext> parameterContexts = validateAndGetParameters(workflowContext,paramMap);
 		workflowContext.setParameters(parameterContexts);
 		return workflowContext.executeWorkflow(ignoreNullExpressions);
@@ -616,7 +619,7 @@ public class WorkflowUtil {
 	public static Object getResult(Long workflowId,Map<String,Object> paramMap, boolean ignoreNullExpressions)  throws Exception  {
 		LOGGER.fine("getResult() -- workflowid - "+workflowId+" params -- "+paramMap);
 		WorkflowContext workflowContext = getWorkflowContext(workflowId);
-		return getWorkflowExpressionResult(workflowContext.getWorkflowString(),paramMap, ignoreNullExpressions);
+		return getWorkflowExpressionResult(workflowContext.getWorkflowString(),paramMap, null, ignoreNullExpressions, false);
 	}
 	
 	public static List<ParameterContext> validateAndGetParameters(WorkflowContext workflowContext,Map<String,Object> paramMap) throws Exception {

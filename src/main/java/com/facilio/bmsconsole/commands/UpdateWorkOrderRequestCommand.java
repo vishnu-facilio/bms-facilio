@@ -10,10 +10,12 @@ import org.apache.commons.lang3.StringUtils;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
@@ -34,6 +36,20 @@ public class UpdateWorkOrderRequestCommand implements Command {
 			
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		//	Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
+			
+			SelectRecordsBuilder<WorkOrderRequestContext> selectBuilder = new SelectRecordsBuilder<WorkOrderRequestContext>()
+					.select(fields)
+					.beanClass(WorkOrderRequestContext.class)
+					.moduleName(FacilioConstants.ContextNames.WORK_ORDER_REQUEST)
+					.andCondition(CriteriaAPI.getIdCondition(recordIds, module));
+			
+			List<WorkOrderRequestContext> oldWorkOrderRequests = selectBuilder.get(); 
+			
+			if (oldWorkOrderRequests == null || oldWorkOrderRequests.isEmpty()) {
+				return false;
+			}
+			
+			TicketAPI.validateSiteSpecificData(workOrderRequest, oldWorkOrderRequests);
 			
 			String ids = StringUtils.join(recordIds, ",");
 			Condition idCondition = new Condition();

@@ -206,10 +206,9 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 			return null; //Nothing to update
 		}
 		
-		if(where.getWhereClause() != null && !where.getWhereClause().trim().isEmpty()) {
-			sql.append(" WHERE ")
-				.append(where.getWhereClause());
-		}
+		sql.append(" WHERE ")
+			.append(where.getWhereClause())
+			;
 		
 		return sql.toString();
 	}
@@ -235,6 +234,9 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 			throw new IllegalArgumentException("Fields cannot be null or empty");
 		}
 		
+		if (where.isEmpty()) {
+			throw new IllegalArgumentException("Cannot update because there's no where condition.");
+		}
 	}
 	
 	public static class GenericJoinBuilder implements JoinBuilderIfc<GenericUpdateRecordBuilder> {

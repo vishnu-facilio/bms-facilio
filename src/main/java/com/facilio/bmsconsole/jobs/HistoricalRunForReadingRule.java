@@ -45,7 +45,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 		// TODO Auto-generated method stub
 		try {
 			long jobStartTime = System.currentTimeMillis();
-			ReadingRuleContext readingRule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(jc.getJobId());
+			ReadingRuleContext readingRule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(jc.getJobId(), true);
 			if (readingRule.getMatchedResources() == null || readingRule.getMatchedResources().isEmpty()) {
 				return;
 			}
@@ -102,14 +102,14 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 			CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeHolders);
 			
 			FacilioContext context = new FacilioContext(); 
-			ReadingDataMeta prevRDM = null;
+			ReadingDataMeta prevRDM = null;			
 			int itr = 0;
-			for (; itr < readings.size(); itr++) {
+			/*for (; itr < readings.size(); itr++) {
 				prevRDM = getRDM(readings.get(itr), readingRule.getReadingField());
 				if (prevRDM != null) {
 					break;
 				}
-			}
+			}*/
 			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			List<FacilioField> allFields = modBean.getAllFields(readingRule.getReadingField().getModule().getName());
@@ -118,13 +118,17 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 			
 			for (int i = itr; i < readings.size(); i++) {
 				ReadingContext reading = readings.get(i);
+				LOGGER.debug("Executing rule for reading : "+reading);
 				try {
 					ReadingDataMeta currentRDM = getRDM(reading, readingRule.getReadingField());
+					LOGGER.debug("Current RDM : "+currentRDM);
 					if (currentRDM != null) {
 						context.put(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META, Collections.singletonMap(ReadingsAPI.getRDMKey(reading.getParentId(), readingRule.getReadingField()), prevRDM));
 						
 						Map<String, ReadingDataMeta> rdmCache = getCurrentRDMs(reading, fieldMap);
+						LOGGER.debug("Current RDMs : "+rdmCache);
 						getOtherRDMs(reading.getParentId(), reading.getTtime(), supportFieldsRDM, rdmCache, lastItr, fields);
+						LOGGER.debug("After other RDM : "+rdmCache);
 //						LOGGER.info("Current RDM : "+rdmCache.keySet());
 //						LOGGER.info("Current RDM Size : "+rdmCache.size());
 						
@@ -299,6 +303,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 																.beanClass(ReadingContext.class)
 																.andCondition(CriteriaAPI.getCondition(parentField, String.valueOf(resourceId), PickListOperators.IS))
 																.andCondition(CriteriaAPI.getCondition(ttimeField, startTime+","+endTime, DateOperators.BETWEEN))
+																.andCondition(CriteriaAPI.getCondition(readingRule.getReadingField(), CommonOperators.IS_NOT_EMPTY))
 																.orderBy("TTIME")
 																;
 		

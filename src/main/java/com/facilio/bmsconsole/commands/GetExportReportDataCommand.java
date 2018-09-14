@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -13,6 +14,8 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
+import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.util.DateTimeUtil;
@@ -28,11 +31,13 @@ public class GetExportReportDataCommand implements Command {
 	
 	private static final String SERIES_X_HEADER = "Data Point";
 	private static final String ACTUAL_HEADER = "Actual";
+	
+	private static ReportContext report;
 
 	@Override
 	public boolean execute(Context context) throws Exception {
 		
-		ReportContext report = (com.facilio.report.context.ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
+		report = (com.facilio.report.context.ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
 		Set<Object> xValues = (Set<Object>) context.get(FacilioConstants.ContextNames.REPORT_X_VALUES);
 		Map<String, Map<String, Map<Object, Object>>> reportData = (Map<String, Map<String, Map<Object, Object>>>) context.get(FacilioConstants.ContextNames.REPORT_DATA);
 		ReportMode mode = (ReportMode)context.get(FacilioConstants.ContextNames.REPORT_MODE);
@@ -176,6 +181,7 @@ public class GetExportReportDataCommand implements Command {
 		return headers;
 	}
 	
+	@SuppressWarnings("unchecked")
 	private static List<Map<String, Object>> getTableData(List<Map<String, Object>> columns, Map<String, Map<String, Map<Object, Object>>> reportData, Set<Object> xValues, Map<Long, ReportBaseLineContext> baseLineMap,Map<String, ReportDataPointContext> dataMap, ReportMode mode) {
 		List<Map<String, Object>> records = new ArrayList<>();
 		if (mode == ReportMode.SERIES) {
@@ -195,12 +201,12 @@ public class GetExportReportDataCommand implements Command {
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
-						String unit = "";
+						String unit = null;
 						if (field instanceof NumberField) {
 							unit = ((NumberField)field).getUnit();
 						}
 						if (reportData.get(key).containsKey(columnName) && reportData.get(key).get(columnName).containsKey(val)) {
-							newRow.put((String) col.get("header"), reportData.get(key).get(columnName).get(val) + " " + unit);
+							newRow.put((String) col.get("header"), reportData.get(key).get(columnName).get(val) + (unit != null ? " " + unit : ""));
 						}
 					}
 				});
@@ -208,35 +214,64 @@ public class GetExportReportDataCommand implements Command {
 			});
 		}
 		else {
-			for(Object xObj: xValues) {
+			
+			String format = "EEEE, MMMM dd, yyyy hh:mm a";
+			
+			List<Map<String, Object>> xValueList = new ArrayList<>();
+			AggregateOperator aggr = report.getDataPoints().get(0).getxAxis().getAggrEnum();
+			if (aggr != null && aggr instanceof DateAggregateOperator) {
+				String dateFormat = ((DateAggregateOperator)aggr).getFormat();
+				format = dateFormat != null ? dateFormat : format;
+			}
+			
+			TreeSet xValuesSet = new TreeSet<>();
+			xValuesSet.addAll(xValues);
+			
+			for(Object xObj: xValuesSet) {
 				long x = (long)xObj;
+				String label = DateTimeUtil.getFormattedTime(x, format);
+				Map<String, Object> xValue = xValueList.stream().filter(val -> val.get("label").equals(label)).findFirst().orElse(null);
+				if (xValue == null) {
+					xValue = new HashMap<>();
+					xValue.put("label", label);
+					List<Long> xList = new ArrayList<>();
+					xList.add(x);
+					xValue.put("values", xList);
+					xValueList.add(xValue);
+				}
+				else if (!((List<Long>)xValue.get("values")).contains(x)) {
+					((List<Long>)xValue.get("values")).add(x);
+				}
+			}
+			
+			for(Map<String, Object> xValue: xValueList) {
+				String date = (String) xValue.get("label");
 				Map<String, Object> newRow = new HashMap<>();
-				for(int i = 0, size = columns.size(); i < size; i++) {
-					Map<String, Object> column = columns.get(i);
-					if (i == 0) {
-						String  format = "MMMM dd, yyyy hh:mm a";
-						newRow.put((String) column.get("header"), DateTimeUtil.getFormattedTime(x, format));
-						continue;
-					}
+				newRow.put((String) columns.get(0).get("header"), date);
+				for(Map<String, Object> column : columns) {
 					String name, bl;
-					long xTime;
+					List<Long> xTime;
 					if (column.containsKey("baseLine") && ((boolean)column.get("baseLine"))) {
 						name = (String) column.get("dp");
 						ReportBaseLineContext baseContext =  baseLineMap.get(column.get("baseLineId"));
 						bl = baseContext.getBaseLine().getName();
-						xTime = x - baseContext.getDiff();
+						xTime = ((List<Long>)xValue.get("values")).stream().map(val -> val - baseContext.getDiff()).collect(Collectors.toList());
 					}
 					else {
 						name = (String) column.get("name");
 						bl = ACTUAL_HEADER.toLowerCase();
-						xTime = x;
+						xTime = ((List<Long>)xValue.get("values"));
 					}
-					if (reportData.get(name) != null && reportData.get(name).containsKey(bl) && reportData.get(name).get(bl).containsKey(xTime) && reportData.get(name).get(bl).get(xTime) != null) {
-						newRow.put((String) column.get("header"), reportData.get(name).get(bl).get(xTime));
+					if (reportData.get(name) != null && reportData.get(name).containsKey(bl) && xTime != null && !xTime.isEmpty()) {
+						xTime.forEach(time -> {
+							if (reportData.get(name).get(bl).containsKey(time) && reportData.get(name).get(bl).get(time) != null) {
+								newRow.put((String) column.get("header"), reportData.get(name).get(bl).get(time));
+							}
+						});
 					}
 				}
 				records.add(newRow);
-			};
+			}
 		}
 		return records;
 	}
