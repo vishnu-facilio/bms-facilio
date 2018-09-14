@@ -101,6 +101,12 @@ public class TransactionChainFactory {
 			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}
+		public static Chain getEditControllerChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new EditControllerSettingsCommand());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
 	
 	    protected static Chain getDefaultChain()
 	    {

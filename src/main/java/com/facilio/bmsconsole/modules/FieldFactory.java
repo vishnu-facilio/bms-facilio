@@ -2336,6 +2336,7 @@ public class FieldFactory {
 
 		fields.add(getIdField(module));
 		fields.add(getOrgIdField(module));
+		fields.add(getSiteIdField());
 
 		FacilioField name = new FacilioField();
 		name.setName("name");
@@ -2350,6 +2351,14 @@ public class FieldFactory {
 		macAddr.setColumnName("MAC_ADDR");
 		macAddr.setModule(module);
 		fields.add(macAddr);
+		
+		FacilioField buildingId = new FacilioField();
+		buildingId.setName("buildingId");
+		buildingId.setDataType(FieldType.NUMBER);
+		buildingId.setColumnName("BUILDING_ID");
+		buildingId.setModule(module);
+		fields.add(buildingId);
+
 
 		fields.add(getField("dataInterval", "DATA_INTERVAL", module, FieldType.NUMBER));
 

@@ -38,6 +38,25 @@ public class ControllerContext {
 		this.macAddr = macAddr;
 	}
 	
+	
+	private long siteId = -1;
+	public void setSiteId(long siteId) {
+		this.siteId = siteId;
+	}
+	
+	public long getSiteId() {
+		return this.siteId;
+	}
+	
+	private long buildingId = -1;
+	public void setBuildingId(long buildingId) {
+		this.buildingId = buildingId;
+	}
+	
+	public long getBuildingId() {
+		return this.buildingId;
+	}
+	
 	private long dataInterval = -1; //In minutes
 	public long getDataInterval() {
 		return dataInterval;

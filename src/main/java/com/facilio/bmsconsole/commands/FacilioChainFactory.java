@@ -2511,7 +2511,6 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	
 	private static  long createOrg(Organization org) throws Exception {
 		
 		Organization existingOrg = getOrg(org.getDomain());

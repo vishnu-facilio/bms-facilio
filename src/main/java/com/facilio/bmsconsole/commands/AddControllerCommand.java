@@ -7,11 +7,13 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.BuildingContext;
 //import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericInsertRecordBuilder;
 
@@ -25,17 +27,16 @@ public class AddControllerCommand implements Command {
 		if(controllerSettings != null) {
 			controllerSettings.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 			
-//			
-////			CommonCommandUtil.setFwdMail(supportEmail);
-//			ObjectMapper mapper = new ObjectMapper();
-//			mapper.setSerializationInclusion(Include.NON_DEFAULT);
-//			Map<String, Object> controllerSettingsprops = mapper.convertValue(controllerSettings, Map.class);
-////			emailProps.put("autoAssignGroup", ((Map<String, Object>)emailProps.get("autoAssignGroup")).get("id"));
-////			if(emailProps.get("autoAssignGroup")!=null)
-////			{
-////						emailProps.put("autoAssignGroup", ((Map<String, Object>)emailProps.get("autoAssignGroup")).get("id"));
-////			}
-////			System.out.println(emailProps);
+			if (controllerSettings.getSiteId() <= 0) {
+				throw new IllegalArgumentException("Site is mandatory.");
+			}
+			
+			if (controllerSettings.getBuildingId() > 0) {
+				BuildingContext building = SpaceAPI.getBuildingSpace(controllerSettings.getBuildingId());
+				if (building == null || building.getSiteId() != controllerSettings.getSiteId()) {
+					throw new IllegalArgumentException("Building does not belong to site.");
+				}
+			}
 			
 			Map<String, Object> controllerSettingsprops = FieldUtil.getAsProperties(controllerSettings);
 			
