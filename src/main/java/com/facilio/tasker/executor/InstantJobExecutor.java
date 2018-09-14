@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.queue.ObjectMessage;
 import com.facilio.queue.ObjectQueue;
@@ -33,7 +34,7 @@ public enum InstantJobExecutor implements Runnable {
 	}
 	
 	public void startExecutor() {
-		if (!isRunning) {
+		if (Boolean.parseBoolean(AwsUtil.getConfig("instantJobServer")) && !isRunning) {
 			executorThread = new Thread(this, "instantJobExecutor");
 			isRunning = true;
 			executorThread.start();
