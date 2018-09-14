@@ -62,9 +62,9 @@ public class AnomalyDetectorJob extends FacilioJob {
 
 			Integer anomalyPeriodicity = Integer.parseInt(AwsUtil.getConfig("anomalyPeriodicity"));
 			// get the list of all sub meters
-			long correction = 0;
-			// Uncomment below code for DEV testing only
-			//long correction = System.currentTimeMillis() - 1529948963000L;
+			//long correction = 0;
+			//Uncomment below code for DEV testing only
+			long correction = System.currentTimeMillis() - 1529948963000L;
 			long endTime = System.currentTimeMillis() - correction;
 			long startTime = endTime - (2 * anomalyPeriodicity * 60 * 1000L);
 
@@ -150,10 +150,10 @@ public class AnomalyDetectorJob extends FacilioJob {
 						energyMeterContext.getId(), orgID);
 				List<AnalyticsAnomalyContext> validAnomalyContext=new ArrayList<>(); 
 			
-				if(meterReadings.size() == 0) {
+				if(meterReadings == null || meterReadings.size() == 0) {
 					logger.log(Level.SEVERE, "NOT received readings for ID " + energyMeterContext.getId() + 
 							" startTime = " + startTime + " endTime = " + endTime);
-					return;
+					continue;
 				}
 				List<TemperatureContext> siteTemperatureReadings=null;
 				if(siteIdToWeatherMapping.containsKey(siteId)){
@@ -163,20 +163,20 @@ public class AnomalyDetectorJob extends FacilioJob {
 	    			siteIdToWeatherMapping.put(siteId, siteTemperatureReadings);
 	    		}
 
-	    		if(siteTemperatureReadings.size() == 0) {
+	    		if(siteTemperatureReadings == null || siteTemperatureReadings.size() == 0) {
 	    			logger.log(Level.SEVERE, "NOT received weatherData for ID " + energyMeterContext.getId() + 
 	    					" startTime = " + startTime + " endTime = " + endTime);
-	    			return;
+	    			continue;
 	    		}
 	    		
-	    		AnalyticsAnomalyConfigContext configContext = meterConfigurations.get(energyMeterContext.getId());
+	    		AnalyticsAnomalyConfigContext configContext = AnomalySchedulerUtil.getAssetConfig(energyMeterContext.getId(), meterConfigurations);
 	    		String result= doPostAnomalyDetectAPI(configContext, meterReadings, siteTemperatureReadings, energyMeterContext.getId());
 	    		logger.log(Level.INFO, " result is " + result);
 
 				AnomalyList anomalyList = new GsonBuilder().create().fromJson(result, AnomalyList.class);
 				if(anomalyList == null || anomalyList.getAnomalyDetails() == null || anomalyList.getAnomalyDetails().length == 0) {
 					// No Anomaly is Detected by our algorithm
-					return;
+					continue;
 				}
 			
 				String idList = Arrays.toString(anomalyList.getAnomalyIDs());
@@ -226,16 +226,17 @@ public class AnomalyDetectorJob extends FacilioJob {
 		postData.constant1 = configContext.getConstant1();
 		postData.constant2 = configContext.getConstant2();
 		postData.maxDistance = configContext.getMaxDistance();
-		postData.dimension1Bucket = configContext.getDimension1Buckets();
-		postData.dimension2Bucket = configContext.getDimension2Buckets();
+		postData.dimension1 = configContext.getDimension1Buckets();
+		postData.dimension2 = configContext.getDimension2Buckets();
 		postData.dimension1Value = configContext.getDimension1Value();
 		postData.dimension2Value = configContext.getDimension2Value();
-		postData.xDimension = configContext.getxAxisDimension();
-		postData.yDimension = configContext.getyAxisDimension();
+		postData.xAxisDimension = configContext.getxAxisDimension();
+		postData.yAxisDimension = configContext.getyAxisDimension();
+		postData.outlierDistance =configContext.getOutlierDistance();
 		postData.temperatureData = siteTemperatureReadings;
 		postData.energyData = meterReadings;
 		postData.timezone = AccountUtil.getCurrentOrg().getTimezone();
-		postData.outlierDistance =configContext.getOutlierDistance();
+		
 
 		ObjectMapper mapper = new ObjectMapper();
 		String jsonInString = mapper.writeValueAsString(postData);
@@ -402,132 +403,104 @@ public class AnomalyDetectorJob extends FacilioJob {
 	}
 
 	class CheckAnomalyModelPostData {
-		public double outlierDistance;
-		public double getOutlierDistance() {
-			return outlierDistance;
-		}
-
-		public void setOutlierDistance(double outlierDistance) {
-			this.outlierDistance = outlierDistance;
-		}
-
-		public double getConstant1() {
-			return constant1;
-		}
-
-		public void setConstant1(double constant1) {
-			this.constant1 = constant1;
-		}
-
-		public double getConstant2() {
-			return constant2;
-		}
-
-		public void setConstant2(double constant2) {
-			this.constant2 = constant2;
-		}
-
-		public double getMaxDistance() {
-			return maxDistance;
-		}
-
-		public void setMaxDistance(double maxDistance) {
-			this.maxDistance = maxDistance;
-		}
-
 		public Long getMeterID() {
 			return meterID;
 		}
-
 		public void setMeterID(Long meterID) {
 			this.meterID = meterID;
 		}
-	
-		public String getTimezone() {
-			return timezone;
+		public double getConstant1() {
+			return constant1;
 		}
-
-		public void setTimezone(String timezone) {
-			this.timezone = timezone;
+		public void setConstant1(double constant1) {
+			this.constant1 = constant1;
 		}
-
-		public String getDimension1Bucket() {
-			return dimension1Bucket;
+		public double getConstant2() {
+			return constant2;
 		}
-
-		public void setDimension1Bucket(String dimension1Bucket) {
-			this.dimension1Bucket = dimension1Bucket;
+		public void setConstant2(double constant2) {
+			this.constant2 = constant2;
 		}
-
-		public String getDimension2Bucket() {
-			return dimension2Bucket;
+		public double getMaxDistance() {
+			return maxDistance;
 		}
-
-		public void setDimension2Bucket(String dimension2Bucket) {
-			this.dimension2Bucket = dimension2Bucket;
+		public void setMaxDistance(double maxDistance) {
+			this.maxDistance = maxDistance;
 		}
-
+		public String getDimension1() {
+			return dimension1;
+		}
+		public void setDimension1(String dimension1) {
+			this.dimension1 = dimension1;
+		}
+		public String getDimension2() {
+			return dimension2;
+		}
+		public void setDimension2(String dimension2) {
+			this.dimension2 = dimension2;
+		}
 		public String getDimension1Value() {
 			return dimension1Value;
 		}
-
 		public void setDimension1Value(String dimension1Value) {
 			this.dimension1Value = dimension1Value;
 		}
-
 		public String getDimension2Value() {
 			return dimension2Value;
 		}
-
 		public void setDimension2Value(String dimension2Value) {
 			this.dimension2Value = dimension2Value;
 		}
-
-		public String getxDimension() {
-			return xDimension;
+		public String getxAxisDimension() {
+			return xAxisDimension;
 		}
-
-		public void setxDimension(String xDimension) {
-			this.xDimension = xDimension;
+		public void setxAxisDimension(String xAxisDimension) {
+			this.xAxisDimension = xAxisDimension;
 		}
-
-		public String getyDimension() {
-			return yDimension;
+		public String getyAxisDimension() {
+			return yAxisDimension;
 		}
-
-		public void setyDimension(String yDimension) {
-			this.yDimension = yDimension;
+		public void setyAxisDimension(String yAxisDimension) {
+			this.yAxisDimension = yAxisDimension;
 		}
-
+		public String getTimezone() {
+			return timezone;
+		}
+		public void setTimezone(String timezone) {
+			this.timezone = timezone;
+		}
+		public double getOutlierDistance() {
+			return outlierDistance;
+		}
+		public void setOutlierDistance(double outlierDistance) {
+			this.outlierDistance = outlierDistance;
+		}
 		public List<AnalyticsAnomalyContext> getEnergyData() {
 			return energyData;
 		}
-
 		public void setEnergyData(List<AnalyticsAnomalyContext> energyData) {
 			this.energyData = energyData;
 		}
-
 		public List<TemperatureContext> getTemperatureData() {
 			return temperatureData;
 		}
-
 		public void setTemperatureData(List<TemperatureContext> temperatureData) {
 			this.temperatureData = temperatureData;
 		}
-
+		Long meterID;
 		double constant1;
 		double constant2;
 		double maxDistance;
 
-		Long meterID;
-		String timezone;
-		String dimension1Bucket;
-		String dimension2Bucket;
+		String dimension1;
+		String dimension2;
 		String dimension1Value;
 		String dimension2Value;
-		String xDimension;
-		String yDimension;
-
+		String xAxisDimension;
+		String yAxisDimension;
+		
+		String timezone;
+		double outlierDistance;
 		List<AnalyticsAnomalyContext> energyData;
 		List<TemperatureContext> temperatureData;
 	}
