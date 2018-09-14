@@ -95,6 +95,11 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 
 		    		List<TemperatureContext> allTemperatureReadings=AnomalySchedulerUtil.getWeatherReadingsForOneSite(startTime, endTime, siteId);
 					
+		    		if(allTemperatureReadings == null || allTemperatureReadings.size() == 0) {
+		    			logger.log(Level.INFO, "NOT received readings for siteID " +  siteId);
+	    				continue;
+		    		}
+		    		
 		    		String s3WeatherFileUrl = null;
 		    		String s3EnergyFileUrl = null;
 		    		
