@@ -15,6 +15,8 @@ import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fs.FileStore;
+import com.facilio.fs.FileStoreFactory;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class WidgetAction extends ActionSupport {
@@ -49,59 +51,58 @@ public class WidgetAction extends ActionSupport {
 		this.user = user;
 	}
 	
-	private List<File> file;
-	private List<String> fileContentType;
-	private List<String> fileFileName;
+	private File avatar;
 	
-	public List<File> getFile() {
-		return file;
+	public File getAvatar() {
+		return avatar;
 	}
-
-	public void setFile(List<File> file) {
-		this.file = file;
+	public void setAvatar(File avatar) {
+		this.avatar = avatar;
 	}
-
-	public List<String> getFileContentType() {
-		return fileContentType;
-	}
-
-	public void setFileContentType(List<String> fileContentType) {
-		this.fileContentType = fileContentType;
-	}
-
-	public List<String> getFileFileName() {
-		return fileFileName;
-	}
-
-	public void setFileFileName(List<String> fileFileName) {
-		this.fileFileName = fileFileName;
-	}
-	PhotosContext photo;
 	
-	public PhotosContext getPhoto() {
-		return photo;
+	private String avatarFileName;
+
+	public String getAvatarFileName() {
+		return avatarFileName;
 	}
 
-	public void setPhoto(PhotosContext photo) {
-		this.photo = photo;
+	public void setAvatarFileName(String avatarFileName) {
+		this.avatarFileName = avatarFileName;
+	}
+	
+	private String avatarContentType;
+	public String getAvatarContentType() {
+		return avatarContentType;
+	}
+
+	public void setAvatarContentType(String avatarContentType) {
+		this.avatarContentType = avatarContentType;
+	}
+	
+	String url;
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+	Long photoId;
+	public Long getPhotoId() {
+		return photoId;
+	}
+
+	public void setPhotoId(Long photoId) {
+		this.photoId = photoId;
 	}
 
 	public String addPhoto() throws Exception {
 		
-		FacilioContext context = new FacilioContext();
+		FileStore fs = FileStoreFactory.getInstance().getFileStore();
+		long fileId = fs.addFile(getAvatarFileName(), getAvatar(), getAvatarContentType());
 		
-		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, this.file);
- 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, this.fileFileName);
- 		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.fileContentType);
-		
-		Chain addPhotosChain = TransactionChainFactory.getAddPhotoChain();
-		addPhotosChain.execute(context);
-		
-		List<PhotosContext> photos = (List<PhotosContext>) context.get(FacilioConstants.ContextNames.PHOTOS);
-		
-		if(photos != null && !photos.isEmpty()) {
-			photo = photos.get(0);
-		}
+		setPhotoId(fileId);
+		setUrl(fs.getPrivateUrl(fileId));
 		
 		return SUCCESS;
 	}

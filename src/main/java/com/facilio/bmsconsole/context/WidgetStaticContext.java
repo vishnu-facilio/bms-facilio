@@ -91,6 +91,7 @@ public class WidgetStaticContext extends DashboardWidgetContext {
 		dataOptionsJson.put("name", "dummy");
 		dataOptionsJson.put("staticKey", getStaticKey());
 		dataOptionsJson.put("metaJson", getMetaJson());
+		dataOptionsJson.put("paramsJson", getParamsJson());
 		dataOptionsJson.put("refresh_interval", getDataRefreshIntervel());
 		
 		resultJson.put("dataOptions", dataOptionsJson);

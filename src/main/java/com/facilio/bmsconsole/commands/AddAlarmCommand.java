@@ -77,7 +77,7 @@ public class AddAlarmCommand implements Command {
 																.moduleName(moduleName)
 																.fields(fields);
 			
-			if (AccountUtil.getCurrentOrg().getId() != 75) {
+			if (AccountUtil.getCurrentOrg().getId() != 78) {
 				builder.withLocalId();
 			}
 			
