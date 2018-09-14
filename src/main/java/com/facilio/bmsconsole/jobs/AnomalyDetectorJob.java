@@ -204,18 +204,17 @@ public class AnomalyDetectorJob extends FacilioJob {
 				}
 				
 				insertAnomalyIDs(anomalyIDs, validAnomalyContext, DateTimeUtil.getCurrenTime(), endTime);
-			}
-    		
-			try {
-				Thread.sleep(1000 * Integer.parseInt(AwsUtil.getConfig("anomalyDetectWaitTimeInSeconds")));
-			}catch (Exception e) {
-				logger.log(Level.INFO, "RefreshAnomalyJob: Exception " + e.getMessage());
-			}
+				int waitTimeInSecs = Integer.parseInt(AwsUtil.getConfig("anomalyDetectWaitTimeInSeconds"));
+				
+				if(waitTimeInSecs > 0) {
+						Thread.sleep(1000 * waitTimeInSecs);
+				}
+    		} // end of for
     	}catch(Exception e) {
-			logger.log(Level.SEVERE, e.getMessage(), e);
-		}
-
-	}
+    			logger.log(Level.SEVERE, e.getMessage(), e);
+    	}
+    }
+    
 
 	String doPostAnomalyDetectAPI(AnalyticsAnomalyConfigContext configContext,
 			List<AnalyticsAnomalyContext> meterReadings, List<TemperatureContext> siteTemperatureReadings, long meterID)

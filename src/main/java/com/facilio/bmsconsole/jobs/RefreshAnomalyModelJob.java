@@ -48,7 +48,7 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 			String moduleName = "dummyModuleName";
 			try {
 				meterConfigurations = AnomalySchedulerUtil.getAllAssetConfigWithDefaults(moduleName, jc.getOrgId());
-				logger.log(Level.INFO, "meters configured  = " + (meterConfigurations.size()));
+				logger.log(Level.INFO, "meter configuration count = " + (meterConfigurations.size()));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -56,7 +56,12 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 			// Collect all configuration of energy meters
 			List<EnergyMeterContext> energyContextList = AnomalySchedulerUtil
 					.getAllConfiguredEnergyMeters(meterConfigurations);
+			
 			Set<Long> siteIdList = energyContextList.stream().map(s -> s.getSiteId()).collect(Collectors.toSet());
+			
+			logger.log(Level.INFO, "number of energy meters = " + (energyContextList.size()));
+			logger.log(Level.INFO, "number of sites = " + (siteIdList.size()));
+			
 			long endTime = DateTimeUtil.getDayStartTime(); // start of current day
 
 			// Collect the list of energy meters
@@ -65,8 +70,6 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 						.filter(s -> s.getSiteId() == siteId).collect(Collectors.toList());
 
 				buildEnergyAnomalyModel(subEnergyMeterContextList, meterConfigurations, endTime, siteId, orgID);
-
-				// logger.log(Level.INFO, "RefreshAnomalyJob over for siteID " + siteID);
 			}
 
 		} catch (Exception e) {
@@ -85,6 +88,8 @@ public class RefreshAnomalyModelJob extends FacilioJob {
  			
 			 for (EnergyMeterContext eachEnergyMeterContext: subEnergyMeterContextList) {
 		    		long meterID = eachEnergyMeterContext.getId();
+		    		
+		    		logger.log(Level.INFO, "processing " +  meterID);			
 		    		AnalyticsAnomalyConfigContext meterConfigContext = AnomalySchedulerUtil.getAssetConfig(meterID, meterConfigurations);
 		    		long startTime = AnomalySchedulerUtil.getStartTime(endTime, meterConfigContext);
 
@@ -133,7 +138,11 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 	    			doRefreshAnomalyModel(meterID, orgID, s3EnergyFileUrl, s3WeatherFileUrl,meterConfigContext);
 	    			
 	    			try {
-	    				Thread.sleep(1000 * Integer.parseInt(AwsUtil.getConfig("anomalyRefreshWaitTimeInSeconds")));
+	    				int waitTimeInSecs = Integer.parseInt(AwsUtil.getConfig("anomalyRefreshWaitTimeInSeconds"));
+	    				
+	    				if(waitTimeInSecs > 0) {
+	    					Thread.sleep(1000 * waitTimeInSecs);
+	    				}
 	    			}catch (Exception e) {
 	    				logger.log(Level.INFO, "RefreshAnomalyJob: Exception " + e.getMessage());
 	    			}
