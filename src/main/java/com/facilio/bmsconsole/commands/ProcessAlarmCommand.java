@@ -40,8 +40,14 @@ public class ProcessAlarmCommand implements Command {
 		defaultProps.add("orgId");
 		
 		for (String propName : propNames) {
-			if (!fieldNames.contains(propName) && !defaultProps.contains(propName)) {
-				additionalInfo.put(propName, alarmInfo.get(propName));
+			Object val = alarmInfo.get(propName);
+			if (val == null) {
+				alarmInfo.remove(propName);
+			}
+			else {
+				if (!fieldNames.contains(propName) && !defaultProps.contains(propName)) {
+					additionalInfo.put(propName, val);
+				}
 			}
 		}
 		
