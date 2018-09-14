@@ -2949,6 +2949,14 @@
 				<param name="includeProperties">^user.*,^result.*</param>
 			</result>
 		</action>
+		
+		<action name="addPhoto" class="com.facilio.bmsconsole.actions.WidgetAction"
+			method="addPhoto">
+			<result name="success" type="json">
+				<param name="includeProperties">^photo.*</param>
+			</result>
+		</action>
+		
 	</package>
 	
 	<package name="workflow" namespace="/api/workflow" extends="homeApi">
