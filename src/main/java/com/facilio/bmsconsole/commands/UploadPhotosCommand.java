@@ -17,8 +17,10 @@ public class UploadPhotosCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		
-		long parentId = (long) context.get(FacilioConstants.ContextNames.PARENT_ID);
+		long parentId = -1;
+		if(context.get(FacilioConstants.ContextNames.PARENT_ID) != null) {
+			parentId = (long) context.get(FacilioConstants.ContextNames.PARENT_ID);
+		}
 		List<File> attachmentList = (List<File>) context.get(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST);
 		List<String> attachmentName = (List<String>) context.get(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME);
 		List<String> attachmentContentType = (List<String>) context.get(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE);

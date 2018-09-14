@@ -94,6 +94,13 @@ public class TransactionChainFactory {
 			c.addCommand(new AddOrUpdateReportCommand());
 			return c;
 		}
+		
+		public static Chain getAddPhotoChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UploadPhotosCommand());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
 	
 	    protected static Chain getDefaultChain()
 	    {

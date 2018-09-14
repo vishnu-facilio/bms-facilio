@@ -45,9 +45,10 @@ public class EventToAlarmCommand implements Command {
 				GenericSelectRecordBuilder eventSelectBuilder = new GenericSelectRecordBuilder()
 						.select(EventConstants.EventFieldFactory.getEventFields())
 						.table("Event")
-						.limit(1)
 						.andCustomWhere("ORGID = ? AND MESSAGE_KEY = ? AND ALARM_ID IS NOT NULL", orgId, event.getMessageKey())
-						.orderBy("CREATED_TIME DESC");
+						.orderBy("CREATED_TIME DESC")
+						.limit(1)
+						;
 
 				List<Map<String, Object>> props = eventSelectBuilder.get();
 				boolean createAlarm = true;

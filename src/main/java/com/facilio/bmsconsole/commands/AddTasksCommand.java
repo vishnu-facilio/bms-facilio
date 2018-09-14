@@ -39,8 +39,9 @@ public class AddTasksCommand implements Command {
 			
 			InsertRecordBuilder<TaskContext> builder = new InsertRecordBuilder<TaskContext>()
 															.module(module)
-															.fields(fields);
-			builder.setWithLocalIdModule(true);
+															.withLocalId()
+															.fields(fields)
+															;
 			taskMap.forEach((sectionName, tasks) -> {
 				long sectionId = -1;
 				if(!sectionName.equals(FacilioConstants.ContextNames.DEFAULT_TASK_SECTION)) {

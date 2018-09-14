@@ -32,14 +32,14 @@ public class GenericAddModuleDataCommand implements Command {
 			
 			InsertRecordBuilder<ModuleBaseWithCustomFields> insertRecordBuilder = new InsertRecordBuilder<ModuleBaseWithCustomFields>()
 																						.module(module)
-																						.fields(fields);
+																						.fields(fields)
+																						;
 			
 			Boolean setLocalId = (Boolean) context.get(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID);
-			if (setLocalId == null) {
-				setLocalId = false;
+			if (setLocalId != null && setLocalId) {
+				insertRecordBuilder.withLocalId();
 			}
 			
-			insertRecordBuilder.setWithLocalIdModule(setLocalId);
 			long id = insertRecordBuilder.insert(record);
 			record.setId(id);
 			context.put(FacilioConstants.ContextNames.RECORD_ID, id);
