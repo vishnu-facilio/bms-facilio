@@ -2953,7 +2953,7 @@
 		<action name="addPhoto" class="com.facilio.bmsconsole.actions.WidgetAction"
 			method="addPhoto">
 			<result name="success" type="json">
-				<param name="includeProperties">^photo.*</param>
+				<param name="includeProperties">^url.*,^photoId.*</param>
 			</result>
 		</action>
 		
