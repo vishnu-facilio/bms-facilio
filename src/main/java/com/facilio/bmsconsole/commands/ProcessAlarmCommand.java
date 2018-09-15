@@ -1,7 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -34,19 +36,21 @@ public class ProcessAlarmCommand implements Command {
 		List<FacilioField> fields = AlarmAPI.getAlarmFields(sourceType);
 		JSONObject additionalInfo = new JSONObject();
 		Set<String> fieldNames = fields.stream().map(FacilioField::getName).collect(Collectors.toSet());
-		Set<String> propNames = alarmInfo.keySet();
 		Set<String> defaultProps = new HashSet<>();
 		defaultProps.add("severityString");
 		defaultProps.add("orgId");
 		
-		for (String propName : propNames) {
-			Object val = alarmInfo.get(propName);
+		Iterator<Map.Entry<String, Object>> itr = alarmInfo.entrySet().iterator();
+		
+		while (itr.hasNext()) {
+			Map.Entry<String, Object> entry = itr.next();
+			Object val = alarmInfo.get(entry.getValue());
 			if (val == null) {
-				alarmInfo.remove(propName);
+				itr.remove();
 			}
 			else {
-				if (!fieldNames.contains(propName) && !defaultProps.contains(propName)) {
-					additionalInfo.put(propName, val);
+				if (!fieldNames.contains(entry.getKey()) && !defaultProps.contains(entry.getKey())) {
+					additionalInfo.put(entry.getKey(), val);
 				}
 			}
 		}
