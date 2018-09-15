@@ -128,14 +128,6 @@ public class ModuleFactory {
 		return fieldModule;
 	}
 
-	public static FacilioModule getImportTemplateModule() {
-		FacilioModule importTemplateModule = new FacilioModule();
-		importTemplateModule.setDisplayName("ImportTemplate");
-		importTemplateModule.setName("importTemplate");
-		importTemplateModule.setTableName("ImportTemplate");
-		return importTemplateModule;
-	}
-	
 	public static FacilioModule getAssetsModule() {
 		FacilioModule fieldModule = new FacilioModule();
 		fieldModule.setName(FacilioConstants.ContextNames.ASSET);
