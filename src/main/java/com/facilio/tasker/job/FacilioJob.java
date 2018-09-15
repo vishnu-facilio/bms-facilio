@@ -36,16 +36,19 @@ public abstract class FacilioJob implements Runnable {
 	public void run() {
 		// TODO Auto-generated method stub
 
+		long startTime = 0L;
 		try {
 			if ( updateStartExecution(jc.getJobId(), jc.getJobName(), jc.getJobStartTime(), jc.getJobExecutionCount()) < 1 ) {
 				return;
 			}
-			AccountUtil.cleanCurrentAccount();
-			retryExecutionCount++;
 			Thread currentThread = Thread.currentThread();
 			String threadName = currentThread.getName();
 
 			currentThread.setName(jc.getJobId()+"-"+ jc.getJobName());
+			startTime = System.currentTimeMillis();
+			LOGGER.info("Starting job " + jc.getJobId()+"-"+ jc.getJobName());
+			AccountUtil.cleanCurrentAccount();
+			retryExecutionCount++;
 
 			FacilioTransactionManager.INSTANCE.getTransactionManager().begin();
 			if(jc.getTransactionTimeout() != -1) {
@@ -80,6 +83,9 @@ public abstract class FacilioJob implements Runnable {
 			LOGGER.error("Job execution failed for Job :"+jc.getJobId()+" : "+ jc.getJobName(),e);
 			CommonCommandUtil.emailException(FacilioJob.class.getName(), "Job execution failed for Job : "+jc.getJobId()+" : "+ jc.getJobName(), e);
 			reschedule();
+		} finally {
+
+			LOGGER.info("Job completed " +jc.getJobId()+"-"+ jc.getJobName() + " time taken : " + (System.currentTimeMillis()-startTime));
 		}
 	}
 
