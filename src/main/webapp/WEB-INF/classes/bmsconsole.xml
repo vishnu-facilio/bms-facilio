@@ -2884,8 +2884,25 @@
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
 			</result>
 		</action>
+		<action name="checkImport" class="com.facilio.bmsconsole.actions.ImportDataAction" method="checkImportStatus">
+			<param name="permission">DATA_ADMINISTRATION</param>
+			<result name="success" type="json">
+				<param name="properties">im.*</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+			</result>
+		</action>
+		<action name="importreading" class="com.facilio.bmsconsole.actions.ImportDataAction" method="importReading">
+			<param name="permission">DATA_ADMINISTRATION</param>
+			<result name="success" type="json">
+				<param name="properties">importProcessContext.*</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+			</result>
+		</action>
 	</package>
-
 	<package name="timeseriesPublish" namespace="/iot/api/timeseries" extends="homeApi">
 	<action name="tspublish" class="com.facilio.bmsconsole.actions.TimeSeries"
 			method="publish">

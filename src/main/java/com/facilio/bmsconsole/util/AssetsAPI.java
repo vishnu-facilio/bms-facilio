@@ -518,4 +518,75 @@ public class AssetsAPI {
 		return data;
 	}
 	
+	public static HashMap<String,String> getAssetModuleName(Long categoryId) throws Exception{
+		HashMap<String,String> moduleInfo = new HashMap<String,String>();
+		if (categoryId == null || categoryId <= 0)
+		{	
+			moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, "asset");
+			moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Assets");
+		}
+		else 
+		{
+			AssetCategoryContext assetCategory = AssetsAPI.getCategoryForAsset(categoryId);
+			String assetCategoryName = assetCategory.getName();
+			if(assetCategoryName.trim().equalsIgnoreCase("Energy Meter"))
+			{
+				moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.ENERGY_METER);
+				moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Energy_Meter");
+			}
+			else if(assetCategoryName.trim().equalsIgnoreCase("Chiller"))
+			{
+				moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.CHILLER);
+				moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Chiller");
+			}
+			else if(assetCategoryName.trim().equalsIgnoreCase("Primary Pump"))
+			{
+				moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.CHILLER_PRIMARY_PUMP);
+				moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Chiller_Primary_Pump");
+			}
+			else if(assetCategoryName.trim().equalsIgnoreCase("Secondary Pump"))
+			{
+				moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.CHILLER_SECONDARY_PUMP);
+				moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Chiller_Secondary_Pump");
+			}
+			else if(assetCategoryName.trim().equalsIgnoreCase("Condenser Pump"))
+			{
+				moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.CHILLER_CONDENSER_PUMP);
+				moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Chiller_Condenser_Pump");
+			}
+			else if(assetCategoryName.trim().equalsIgnoreCase("AHU"))
+			{
+				moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.AHU);
+				moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "AHU");
+			}
+			else if(assetCategoryName.trim().equalsIgnoreCase("Cooling Tower"))
+			{
+				moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.COOLING_TOWER);
+				moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Cooling_Tower");
+			}
+			else if(assetCategoryName.trim().equalsIgnoreCase("FCU"))
+			{
+				moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.FCU);
+				moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "FCU");
+			}
+			else if(assetCategoryName.trim().equalsIgnoreCase("Heat Pump"))
+			{
+				moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.HEAT_PUMP);
+				moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Heat_Pump");
+			}
+			else if(assetCategoryName.trim().equalsIgnoreCase("Utility Meter"))
+			{
+				moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.UTILITY_METER);
+				moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Utility_Meters");
+			}
+			else
+			{
+				moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, "asset");
+				moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Assets");
+			}
+		}
+		
+	return moduleInfo;
+	}
+	
 }
