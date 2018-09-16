@@ -3055,8 +3055,8 @@ public class FieldFactory {
 		fields.add(formulaFieldId);
 
 		return fields;
+	
 	}
-
 	public static List<FacilioField> getReportDateFilterFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getReportDateFilter();
@@ -4115,7 +4115,21 @@ public class FieldFactory {
 		fields.add(getField("importTime", "IMPORT_TIME", module, FieldType.NUMBER));
 		fields.add(getField("importType", "IMPORT_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("importJobMeta", "IMPORT_JOB_META", module, FieldType.STRING));
+		fields.add(getField("importSetting","IMPORT_SETTING",module,FieldType.STRING));
+		fields.add(getField("mailSetting","MAIL_SETTING",module,FieldType.STRING));
+		fields.add(getField("importMode","IMPORT_MODE",module,FieldType.NUMBER));
+		fields.add(getField("templateId","TEMPLATE_ID",module,FieldType.NUMBER));
 
+		return fields;
+	}
+	public static List<FacilioField> getImportTemplateFields(){
+		FacilioModule module = ModuleFactory.getImportTemplateModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getField("id","ID",module, FieldType.NUMBER));
+		fields.add(getField("module","MODULE",module,FieldType.STRING));
+		fields.add(getField("templateName","TEMPLATE_NAME",module,FieldType.STRING));
+		fields.add(getField("uniqueMappingString","UNIQUE_MAPPING",module, FieldType.STRING));
+		fields.add(getField("fieldMappingString","FIELD_MAPPING",module,FieldType.STRING));
 		return fields;
 	}
 

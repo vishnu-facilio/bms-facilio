@@ -18,6 +18,7 @@ import com.facilio.accounts.exception.AccountException;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
@@ -664,7 +665,12 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	
+	public static Chain addReadingMetaDataEntry() {
+		Chain c = new ChainBase();
+		c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
 	public static Command getAllLocationsCommand() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForLocation());
@@ -1350,6 +1356,25 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getBulkAssertImportChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new SeperateToCategoriesCommand());
+		c.addCommand(new SetModuleForSpecialAssetsCommand());
+		c.addCommand(new BulkPushAssetCommands());
+		c.addCommand(new InsertReadingDataMetaForNewResourceCommandDataImport());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getImportReadingChain() {
+		ChainBase c = new ChainBase();
+		c.addCommand(new DataParseForReadingsCommand());
+		c.addCommand(new InsertReadingCommand());
+		c.addCommand(new SendEmailCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain processImportData() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForZone());
@@ -1359,6 +1384,8 @@ public class FacilioChainFactory {
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
+	
+	
 	
 	public static Chain getEmailSettingChain() {
 		Chain c = new ChainBase();
@@ -1927,6 +1954,18 @@ public class FacilioChainFactory {
 		Chain c = getTransactionChain();
 		c.addCommand(new GetAllSpaceTypeReadingsCommand());
 		c.addCommand(new GetReadingFieldsCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getImportChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new ProcessImportCommand());
+		c.addCommand(new PopulateImportProcessCommand());
+		c.addCommand(new GetAllSpaceTypeReadingsCommand());
+		c.addCommand(new GetReadingFieldsCommand());
+		
+		c.addCommand(new SendEmailCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
