@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.io.Serializable;
 import java.util.Map;
 
 import javax.transaction.Transaction;
@@ -18,7 +17,6 @@ import com.facilio.accounts.exception.AccountException;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
-import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
