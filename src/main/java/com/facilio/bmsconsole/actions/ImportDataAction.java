@@ -174,7 +174,6 @@ public class ImportDataAction extends ActionSupport {
 	
 	public String processImport() throws Exception
 	{	
-		String jobName;
 		if(assetId > 0) {
 			importProcessContext.setAssetId(assetId);
 			
@@ -184,13 +183,12 @@ public class ImportDataAction extends ActionSupport {
 			importProcessContext.setImportJobMeta(scheduleInfo.toJSONString());
 		}
 		
-		/*if (importProcessContext.getModule().getName().equals("space") || importProcessContext.getModule().getName().equals("Space"))
+		if (importProcessContext.getModule().getName().equals("space") || importProcessContext.getModule().getName().equals("Space"))
 		{
 			ProcessSpaceXLS.processImport(importProcessContext);
 			ImportAPI.updateImportProcess(getImportProcessContext());
-		} */
-		
-//		Space has been taken under ProcessXLS 
+		} 
+	 
 		
 		ImportAPI.updateImportProcess(importProcessContext);
 		FacilioTimer.scheduleOneTimeJob(importProcessContext.getId(), "importData" , 5, "priority");

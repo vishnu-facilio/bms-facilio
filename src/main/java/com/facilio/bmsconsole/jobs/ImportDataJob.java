@@ -41,16 +41,16 @@ public class ImportDataJob extends FacilioJob {
 				}
 			}
 			
-			FacilioContext context = new FacilioContext();
-			context.put("importProcessContext", importProcessContext);
-			Chain importChain = FacilioChainFactory.getImportChain();
-			importChain.execute(context);
+//			FacilioContext context = new FacilioContext();
+//			context.put("importProcessContext", importProcessContext);
+//			Chain importChain = FacilioChainFactory.getImportChain();
+//			importChain.execute(context);
 			
 			
-//			if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) || importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ENERGY_METER)) {
-//				ReadingsAPI.updateReadingDataMeta();
-//			}
-//			
+			if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) || importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ENERGY_METER)) {
+				ReadingsAPI.updateReadingDataMeta();
+			}
+			
 			
 			ImportAPI.updateImportProcess(importProcessContext,ImportProcessContext.ImportStatus.UPLOAD_COMPLETE);
 			LOGGER.severe("IMPORT DATA JOB COMPLETED");

@@ -1356,15 +1356,15 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getBulkAssertImportChain() {
-		Chain c = new ChainBase();
-		c.addCommand(new SeperateToCategoriesCommand());
-		c.addCommand(new SetModuleForSpecialAssetsCommand());
-		c.addCommand(new BulkPushAssetCommands());
-		c.addCommand(new InsertReadingDataMetaForNewResourceCommandDataImport());
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
+//	public static Chain getBulkAssertImportChain() {
+//		Chain c = new ChainBase();
+//		c.addCommand(new SeperateToCategoriesCommand());
+//		c.addCommand(new SetModuleForSpecialAssetsCommand());
+//		c.addCommand(new BulkPushAssetCommands());
+//		c.addCommand(new InsertReadingDataMetaForNewResourceCommandDataImport());
+//		CommonCommandUtil.addCleanUpCommand(c);
+//		return c;
+//	}
 	
 	public static Chain getImportReadingChain() {
 		ChainBase c = new ChainBase();
@@ -1958,17 +1958,17 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getImportChain() {
-		Chain c = new ChainBase();
-		c.addCommand(new ProcessImportCommand());
-		c.addCommand(new PopulateImportProcessCommand());
-		c.addCommand(new GetAllSpaceTypeReadingsCommand());
-		c.addCommand(new GetReadingFieldsCommand());
-		
-		c.addCommand(new SendEmailCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
+//	public static Chain getImportChain() {
+//		Chain c = new ChainBase();
+//		c.addCommand(new ProcessImportCommand());
+//		c.addCommand(new PopulateImportProcessCommand());
+//		c.addCommand(new GetAllSpaceTypeReadingsCommand());
+//		c.addCommand(new GetReadingFieldsCommand());
+//		
+//		c.addCommand(new SendEmailCommand());
+//		CommonCommandUtil.addCleanUpCommand(c);
+//		return c;
+//	}
 	
 	public static Chain addResourceRDMChain() {
 		Chain c = getTransactionChain();
