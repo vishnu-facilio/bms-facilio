@@ -449,7 +449,7 @@ public class LoginAction extends FacilioAction{
 			Organization org = AccountUtil.getOrgBean().getOrg(user.getOrgId());
 			invitation.put("email", user.getEmail());
 			invitation.put("orgname", org.getName());
-			if(user.getPassword() == null) {
+			if(user.password() == null) {
 				invitation.put("account_exists", false);
 			} else {
 				invitation.put("account_exists", true);	

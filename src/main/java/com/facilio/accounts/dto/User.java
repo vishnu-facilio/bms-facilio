@@ -87,7 +87,7 @@ public class User implements Serializable {
 	public void setCognitoId(String cognitoId) {
 		this.cognitoId = cognitoId;
 	}*/
-	public String getPassword() {
+	public String password() {
 		return password;
 	}
 	public void setPassword(String password) {

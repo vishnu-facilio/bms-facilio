@@ -313,56 +313,17 @@ public class UserBeanImpl implements UserBean {
 	
 	@Override
 	public long inviteAdminConsoleUser(long orgId, User user) throws Exception {
-		
-		User orgUser = getFacilioUser(orgId, user.getEmail());
-		if (orgUser != null) {
-			if (orgUser.getUserType() == AccountConstants.UserType.REQUESTER.getValue()) {
-				orgUser.setUserType(AccountConstants.UserType.USER.getValue());
-				updateUser(orgUser.getId(), orgUser);
-				return orgUser.getId();
-			}
-			else {
-				throw new AccountException(AccountException.ErrorCode.EMAIL_ALREADY_EXISTS, "This user already exists in your organization.");
-			}
-		}
-		
-		long uid = getUid(user.getEmail());
-		if(user.getRoleId() == 0){	
-			throw new AccountException(AccountException.ErrorCode.ROLE_ID_IS_NULL, "RoleID is Null " + user.getEmail());
-		}
-		if (uid == -1) {
-			user.setTimezone(AccountUtil.getCurrentOrg().getTimezone());
-			user.setLanguage(AccountUtil.getCurrentUser().getLanguage());
-			uid = addAdminConsoleUserEntry(user);
-			user.setUid(uid);
-			addAdminConsoleFacilioUser(user);
-			user.setDefaultOrg(true);
-		}
-		user.setUid(uid);
-		user.setOrgId(orgId);
-		user.setInviteAcceptStatus(true);
-		user.setInvitedTime(System.currentTimeMillis());
-		user.setDefaultOrg(true);
-		user.setUserStatus(true);
-		user.setUserType(AccountConstants.UserType.USER.getValue());
-		long ouid = addToORGUsers(user);
-
-		user.setOuid(ouid);
-		Long shiftId = user.getShiftId();
-		
-		if (shiftId != null) {
-			insertShiftRel(ouid, shiftId);
-		}
-		// addAccessibleSpace(user.getOuid(), user.getAccessibleSpace());
-		// LicenseApi.updateUsedLicense(user.getLicenseEnum());
-		return ouid;
+		return inviteUser(orgId, user);
 	}
 
 	@Override
 	public long inviteUser(long orgId, User user) throws Exception {
-		
+
+		if(user.getRoleId() == 0) {
+			throw new AccountException(AccountException.ErrorCode.ROLE_ID_IS_NULL, "RoleID is Null " + user.getEmail());
+		}
+
 		User orgUser = getFacilioUser(orgId, user.getEmail());
-		//System.out.println("----------------->>>>"+orgUser.getEmail());
 		if (orgUser != null) {
 			if (orgUser.getUserType() == AccountConstants.UserType.REQUESTER.getValue()) {
 				orgUser.setUserType(AccountConstants.UserType.USER.getValue());
@@ -375,14 +336,14 @@ public class UserBeanImpl implements UserBean {
 		}
 		
 		long uid = getUid(user.getEmail());
-		if(user.getRoleId() == 0){
-			System.out.println("#####################RoleId is Null");	
-			
-			throw new AccountException(AccountException.ErrorCode.ROLE_ID_IS_NULL, "RoleID is Null " + user.getEmail());
-		}
+
 		if (uid == -1) {
-			user.setTimezone(AccountUtil.getCurrentOrg().getTimezone());
-			user.setLanguage(AccountUtil.getCurrentUser().getLanguage());
+			if( (AccountUtil.getCurrentOrg() != null) && (user.getTimezone() == null) ) {
+				user.setTimezone(AccountUtil.getCurrentOrg().getTimezone());
+			}
+			if( (AccountUtil.getCurrentUser() != null) && (user.getLanguage() == null) ) {
+				user.setLanguage(AccountUtil.getCurrentUser().getLanguage());
+			}
 			uid = addUserEntry(user, false, false);
 			user.setUid(uid);
 			addFacilioUser(user);
@@ -404,8 +365,12 @@ public class UserBeanImpl implements UserBean {
 		}
 		
 		sendInvitation(ouid, user);
-		addAccessibleSpace(user.getOuid(), user.getAccessibleSpace());
-		addAccessibleTeam(user.getOuid(), user.getGroups());
+		if(user.getAccessibleSpace() != null) {
+			addAccessibleSpace(user.getOuid(), user.getAccessibleSpace());
+		}
+		if(user.getGroups() != null) {
+			addAccessibleTeam(user.getOuid(), user.getGroups());
+		}
 		return ouid;
 	}
 
@@ -424,12 +389,13 @@ public class UserBeanImpl implements UserBean {
 		shiftRelInsertBuilder.save();
 	}
 	
-public long inviteRequester(long orgId, User user) throws Exception {
-	
-		Organization portalOrg = AccountUtil.getOrgBean().getPortalOrg(AccountUtil.getCurrentOrg().getDomain());
-		user.setPortalId(portalOrg.getPortalId());
-		long ouid = addRequester(orgId, user, false,true);
-		return ouid;
+	public long inviteRequester(long orgId, User user) throws Exception {
+		if(AccountUtil.getCurrentOrg() != null) {
+			Organization portalOrg = AccountUtil.getOrgBean().getPortalOrg(AccountUtil.getCurrentOrg().getDomain());
+			user.setPortalId(portalOrg.getPortalId());
+			return addRequester(orgId, user, false, true);
+		}
+		return 0L;
 	}
 
 
@@ -1245,7 +1211,7 @@ public long inviteRequester(long orgId, User user) throws Exception {
 		return null;
 	}
 	
-	private long addRequester(long orgId, User user, boolean emailVerification,boolean updateifexist) throws Exception {
+	private long addRequester(long orgId, User user, boolean emailVerification, boolean updateifexist) throws Exception {
 		User portalUser = getPortalUserForInternal(user.getEmail(), user.getPortalId());
 		if (portalUser != null) {
 //			log.info("Email Already Registered ");

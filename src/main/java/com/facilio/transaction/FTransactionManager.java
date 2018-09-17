@@ -32,11 +32,15 @@ public class FTransactionManager implements TransactionManager {
 
 	private static final ConcurrentHashMap<FacilioTransaction, Long> TRANSACTION_TIMEOUT_MAP = new ConcurrentHashMap<>();
 
+	private String getTransactionId() {
+		return  Thread.currentThread().getName();
+	}
+
 	@Override
 	public void begin() throws NotSupportedException, SystemException {
         FacilioTransaction currenttrans = currentTransaction.get();
 		if("true".equals(AwsUtil.getConfig("enable.transaction")) && currenttrans == null) {
-			currenttrans =  new FacilioTransaction();
+			currenttrans =  new FacilioTransaction(getTransactionId());
 			currentTransaction.set(currenttrans);
 			TRANSACTION_TIMEOUT_MAP.put(currenttrans, System.currentTimeMillis());
 		}

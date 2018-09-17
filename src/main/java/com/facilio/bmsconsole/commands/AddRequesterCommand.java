@@ -21,8 +21,7 @@ public class AddRequesterCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		// TODO Auto-generated method stub
-		
+
 		User requester = (User) context.get(FacilioConstants.ContextNames.REQUESTER);
 		if (requester != null && requester.getEmail() != null && !"".equals(requester.getEmail())) {
 			long orgid = AccountUtil.getCurrentOrg().getOrgId();

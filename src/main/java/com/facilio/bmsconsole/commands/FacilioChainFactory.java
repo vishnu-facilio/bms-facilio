@@ -40,8 +40,7 @@ public class FacilioChainFactory {
     	    return new FacilioChain(false);
     }
     
-    public static Chain getOrgSignupChain()
-	{
+    public static Chain getOrgSignupChain() {
 		Chain c = getTransactionChain();
 		c.addCommand(new CreateOrgCommand());
 		c.addCommand(new AddDefaultModulesCommand());
@@ -193,7 +192,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Command getUpdateUserCommand() {
-		Chain c = new ChainBase();
+		Chain c = getTransactionChain();
 		c.addCommand(new UpdateUserCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;

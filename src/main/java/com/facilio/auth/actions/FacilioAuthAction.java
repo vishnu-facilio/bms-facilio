@@ -235,7 +235,7 @@ public class FacilioAuthAction extends ActionSupport {
         if(getUsername() != null && getPassword() != null) {
             try {
                 LOGGER.info("validateLogin() : username : " + getUsername() + "; password : " + getPassword() + " portal id : " + portalId());
-                boolean validPassword = false;
+                Boolean validPassword = null;
                 if (portalId() > 0) {
                     validPassword = verifyPortalPassword(getUsername(), getPassword(), portalId());
                     portalUser = true;
@@ -243,10 +243,16 @@ public class FacilioAuthAction extends ActionSupport {
                     validPassword = verifyPassword(getUsername(), getPassword());
                 }
 
-                if (!validPassword) {
-                    LOGGER.info(">>>>> invalid Password :" + getUsername());
+                if (validPassword == null) {
+                    setJsonresponse("message", "User doesn't exist"); // can be removed later
                     setJsonresponse("errorcode", "1");
                     return ERROR;
+                } else {
+                    if (!validPassword) {
+                        LOGGER.info(">>>>> invalid Password :" + getUsername());
+                        setJsonresponse("errorcode", "1");
+                        return ERROR;
+                    }
                 }
 
                 String jwt = CognitoUtil.createJWT("id", "auth0", getUsername(), System.currentTimeMillis() + 24 * 60 * 60000,portalUser);
@@ -294,7 +300,7 @@ public class FacilioAuthAction extends ActionSupport {
         return ERROR;
     }
 
-    private boolean verifyPassword(String emailaddress, String password) {
+    private Boolean verifyPassword(String emailaddress, String password) {
         boolean passwordValid = false;
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -314,10 +320,9 @@ public class FacilioAuthAction extends ActionSupport {
                 if(storedPass.equals(password)) {
                     passwordValid = true;
                 }
-            }
-            else
-            {
+            } else {
             	LOGGER.log(Level.INFO, "No records found for  "+emailaddress);
+                return null;
             }
 
         } catch(SQLException | RuntimeException e) {
@@ -336,7 +341,7 @@ public class FacilioAuthAction extends ActionSupport {
         return -1L;
     }
 
-    private boolean verifyPortalPassword(String emailAddress, String password, long portalId) {
+    private Boolean verifyPortalPassword(String emailAddress, String password, long portalId) {
         boolean passwordValid = false;
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -354,6 +359,8 @@ public class FacilioAuthAction extends ActionSupport {
                 if(storedPass.equals(password)) {
                     passwordValid = true;
                 }
+            } else {
+                return null;
             }
         } catch(SQLException | RuntimeException e) {
             LOGGER.log(Level.INFO, "Exception while verifying password, ", e);
@@ -372,7 +379,7 @@ public class FacilioAuthAction extends ActionSupport {
             Organization org = AccountUtil.getOrgBean().getOrg(user.getOrgId());
             invitation.put("email", user.getEmail());
             invitation.put("orgname", org.getName());
-            if(user.getPassword() == null) {
+            if(user.password() == null) {
                 invitation.put("account_exists", false);
             } else {
                 invitation.put("account_exists", true);
@@ -410,11 +417,8 @@ public class FacilioAuthAction extends ActionSupport {
             }
         } else {
             User user;
-            System.out.println("#$#$#$#$#$#$$#$#$$$$$$$$$$ portal ID"+ portalId());
             if(portalId() > 0) {
-                
             	user = AccountUtil.getUserBean().getPortalUser(getEmailaddress(), portalId());
-            	System.out.println("#$#$#$#$#$#$$#$#$$$$$$$$$$ USER"+ user);
             } else {
                 user = AccountUtil.getUserBean().getFacilioUser(getEmailaddress());
             }
@@ -447,7 +451,7 @@ public class FacilioAuthAction extends ActionSupport {
     }
 
     public String acceptUserInvite() throws Exception {
-        boolean status = AccountUtil.getUserBean().acceptInvite(getInviteToken(), getPassword());  
+        boolean status = AccountUtil.getTransactionalUserBean().acceptInvite(getInviteToken(), getPassword());
         if(status){
             return SUCCESS;
         }
@@ -504,13 +508,12 @@ public class FacilioAuthAction extends ActionSupport {
         authAction.getPortalInfo();
         PortalInfoContext portalInfo = authAction.getProtalInfo(); 
        
-        Boolean opensignup = portalInfo.isSignup_allowed();  // SIGNUP_ALLOWED
-        Boolean anydomain_allowedforsignup = portalInfo.is_anyDomain_allowed();
+        boolean opensignup = portalInfo.isSignup_allowed();  // SIGNUP_ALLOWED
+        boolean anydomain_allowedforsignup = portalInfo.is_anyDomain_allowed();
 
         System.out.println("Is signup allowed for all "+opensignup);
         
-        if(!opensignup)
-        {
+        if(!opensignup) {
         	setJsonresponse("message", "Signup not allowed for this portal");
 			return SUCCESS;
         }
@@ -518,11 +521,11 @@ public class FacilioAuthAction extends ActionSupport {
         boolean whitelisteddomain = false;
 
 		if (opensignup && !anydomain_allowedforsignup) {
-			String domains = (String) portalInfo.getWhiteListed_domains();
+			String domains = portalInfo.getWhiteListed_domains();
 
 			ArrayList<String> items = new ArrayList<String>();
 			if (domains != null) {
-				items = new ArrayList<String>(Arrays.asList(domains.split(",")));
+				items = new ArrayList<>(Arrays.asList(domains.split(",")));
 			}
 			for (String item : items) {
 				if (emailaddress.endsWith(item.trim())) {
@@ -536,29 +539,21 @@ public class FacilioAuthAction extends ActionSupport {
 			}
 
 		}
-        if(anydomain_allowedforsignup || opensignup || whitelisteddomain)
-        {
-        try {
-			AccountUtil.getUserBean().createRequestor(AccountUtil.getCurrentOrg().getId(), user);
-		} catch (InvocationTargetException ie) {
-			Throwable e= ie.getTargetException();
-			if(e.getMessage()!=null && e.getMessage().equals("Email Already Registered"))
-			{
-			setJsonresponse("message", "Email Already Registered");
-			return SUCCESS;
-			}else
-			{
-				
-				throw ie;
-			}
-		
-		}
-
-        setJsonresponse("message", "success");
-        return SUCCESS;
+        if(anydomain_allowedforsignup || opensignup || whitelisteddomain) {
+            try {
+                AccountUtil.getTransactionalUserBean().createRequestor(AccountUtil.getCurrentOrg().getId(), user);
+            } catch (InvocationTargetException ie) {
+                Throwable e= ie.getTargetException();
+                if(e.getMessage()!=null && e.getMessage().equals("Email Already Registered")) {
+                    setJsonresponse("message", "Email Already Registered");
+                    return SUCCESS;
+                } else {
+                    throw ie;
+                }
+		    }
+            setJsonresponse("message", "success");
+            return SUCCESS;
         }
-       
-        
         return ERROR;
     }
 

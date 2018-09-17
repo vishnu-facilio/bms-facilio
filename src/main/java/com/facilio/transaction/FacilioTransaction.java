@@ -3,6 +3,8 @@ package com.facilio.transaction;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
@@ -21,9 +23,19 @@ public class FacilioTransaction implements Transaction {
 	private int status=Status.STATUS_ACTIVE;
 	private long transactionTimeout = 300_000L;
 	private static Logger log = LogManager.getLogger(FacilioTransaction.class.getName());
+	private static final Executor EXECUTOR = Executors.newSingleThreadExecutor();
+	private String transactionId;
+
+	public FacilioTransaction(String transactionId) {
+		this.transactionId = transactionId;
+	}
 
 	private ArrayList<Connection> connections = new ArrayList<Connection>();
-	
+
+	public String getTransactionId() {
+		return transactionId;
+	}
+
 	private void associateConnection(java.sql.Connection c) {
 		connections.add(c);
 	}
@@ -97,28 +109,32 @@ public class FacilioTransaction implements Transaction {
 
 	@Override
 	public void rollback() throws IllegalStateException, SystemException {
+		rollback(false);
+	}
+
+	public void rollback(boolean abortConnection) throws IllegalStateException, SystemException {
 		this.status = Status.STATUS_ROLLING_BACK;
 
-		for(int i=0;i< connections.size();i++)
-		{
-			FacilioConnection fc = (FacilioConnection)connections.get(i);
+		for (Connection connection : connections) {
+			FacilioConnection fc = (FacilioConnection) connection;
 			try {
 				fc.getPhysicalConnection().rollback();
-
 			} catch (SQLException e) {
 				log.info("Exception occurred ", e);
 			}
 
 			try {
-				fc.getPhysicalConnection().close();
+				if (abortConnection) {
+					fc.getPhysicalConnection().abort(EXECUTOR);
+				} else {
+					fc.getPhysicalConnection().close();
+				}
 			} catch (SQLException e) {
 				log.info("Exception occurred ", e);
 			}
 		}
 		connections.clear();
 		this.status = Status.STATUS_ROLLEDBACK;
-		
-
 	}
 
 	@Override

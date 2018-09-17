@@ -52,8 +52,8 @@ CREATE TABLE IF NOT EXISTS UserSessions (
 
 CREATE TABLE IF NOT EXISTS `faciliousers` (
 `id` int( 11 ) NOT NULL AUTO_INCREMENT ,
-`username` varchar( 30 ) NOT NULL ,
-`email` varchar( 50 ) NOT NULL ,
+`username` varchar( 200 ) NOT NULL ,
+`email` varchar( 200 ) NOT NULL ,
 `mobile` char(20) DEFAULT NULL,
 USERID BIGINT NOT NULL,
 PRIMARY KEY ( `id` ) ,
@@ -3162,8 +3162,8 @@ CREATE TABLE IF NOT EXISTS PortalInfo (
 CREATE TABLE IF NOT EXISTS `faciliorequestors` (
 `id` int( 11 ) NOT NULL AUTO_INCREMENT ,
 `PORTALID` BIGINT NOT NULL  ,
-`username` varchar( 30 ) NOT NULL ,
-`email` varchar( 50 ) NOT NULL ,
+`username` varchar( 200 ) NOT NULL ,
+`email` varchar( 200 ) NOT NULL ,
 USERID BIGINT NOT NULL,
 PRIMARY KEY ( `id` ) ,
 CONSTRAINT UNIQUE_FACILIOREQUESTORS_ID UNIQUE(PORTALID, email),
