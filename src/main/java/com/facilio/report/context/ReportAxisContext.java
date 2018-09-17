@@ -36,7 +36,6 @@ public class ReportAxisContext {
 	
 	@JsonIgnore
 	public FacilioField getField() throws Exception {
-		
 		if(field == null && fieldId > 0) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			field = modBean.getField(fieldId);
