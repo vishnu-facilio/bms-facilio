@@ -531,11 +531,11 @@ public class DeviceAPI
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_DATA_READING);
 			FacilioField energyField=modBean.getField(TOTAL_ENERGY_CONSUMPTION_DELTA, module.getName());
-			if(!isHistorical && isDataGap(meter.getId(),module,firstReadingTime, startTime)) {
+			if(!isHistorical && getDataGapCount(meter.getId(),module,firstReadingTime, startTime)>0) {
 				
 				firstReading.setMarked(true);
 				List<MarkedReadingContext> markedList=new ArrayList<MarkedReadingContext> ();
-				markedList.add(getMarkedReading(firstReading,energyField.getFieldId(),module.getModuleId(),MarkType.HIGH_VALUE_HOURLY_VIOLATION,firstReading,firstReading));
+				markedList.add(MarkingUtil.getMarkedReading(firstReading,energyField.getFieldId(),module.getModuleId(),MarkType.HIGH_VALUE_HOURLY_VIOLATION,firstReading,firstReading));
 				context.put(FacilioConstants.ContextNames.MARKED_READINGS, markedList);
 			}
 			//data Gap implementation ends..
@@ -578,22 +578,21 @@ public class DeviceAPI
 	}
 	
 	
-	public static boolean isDataGap (long resourceId,FacilioModule module, long currentTime, long previousTime)  {
+	public static int getDataGapCount (long resourceId,FacilioModule module, long currentTime, long previousTime)  {
 		
 		try {
-			int dataInterval=ReadingsAPI.getDataInterval(resourceId, module);
+			long dataIntervalSeconds=ReadingsAPI.getDataInterval(resourceId, module)*60;
 			//here doing the floor roundoff..
-			SecondsChronoUnit defaultAdjustUnit = new SecondsChronoUnit(dataInterval * 60);
+			SecondsChronoUnit defaultAdjustUnit = new SecondsChronoUnit(dataIntervalSeconds);
 			ZonedDateTime zdt=	DateTimeUtil.getDateTime(currentTime).truncatedTo(defaultAdjustUnit);
-			if(DateTimeUtil.getMillis(zdt, true)-previousTime > (dataInterval*60*1000)) 
-			{
-				return true;
-			}
+			long timeDiff=DateTimeUtil.getMillis(zdt, true)-previousTime;
+			int gapCount=(int) (timeDiff/(dataIntervalSeconds*1000));
+			return gapCount;
 		}
 		catch(Exception e) {
 			LOGGER.error("Exception while cheking data Gap", e);
 		}
-		return false;
+		return 0;
 	}
 	private static List<ReadingContext> getChildMeterReadings(List<Long> childIds, long startTime, long endTime, int minutesInterval) throws Exception{
 
@@ -780,20 +779,6 @@ public class DeviceAPI
 			}
 			return total;
 		}
-		
-	}
-	
-public static MarkedReadingContext getMarkedReading(ReadingContext reading,long fieldId,long moduleId, MarkType markType, Object currentReading, Object lastReading) {
-		
-		MarkedReadingContext mReading= new MarkedReadingContext();
-		mReading.setReading(reading);
-		mReading.setFieldId(fieldId);
-		mReading.setModuleId(moduleId);
-		mReading.setMarkType(markType);
-		mReading.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-		mReading.setActualValue(String.valueOf(currentReading));
-		mReading.setModifiedValue(String.valueOf(lastReading));
-		return mReading;
 		
 	}
 
