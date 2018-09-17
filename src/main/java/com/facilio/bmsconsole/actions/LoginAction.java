@@ -711,6 +711,7 @@ public class LoginAction extends FacilioAction{
 			data.put("forms", forms);
 		}
 		data.put("mysites", CommonCommandUtil.getMySites());
+		data.put("buildings", SpaceAPI.getAllBuildings());
 		data.put("sites", SpaceAPI.getAllSites());
 		
 		Map<String, Object> config = new HashMap<>();
