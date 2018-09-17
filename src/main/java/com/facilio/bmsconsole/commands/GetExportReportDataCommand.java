@@ -6,7 +6,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -224,50 +223,24 @@ public class GetExportReportDataCommand implements Command {
 				format = dateFormat != null ? dateFormat : format;
 			}
 			
-			TreeSet xValuesSet = new TreeSet<>();
-			xValuesSet.addAll(xValues);
-			
-			for(Object xObj: xValuesSet) {
-				long x = (long)xObj;
-				String label = DateTimeUtil.getFormattedTime(x, format);
-				Map<String, Object> xValue = xValueList.stream().filter(val -> val.get("label").equals(label)).findFirst().orElse(null);
-				if (xValue == null) {
-					xValue = new HashMap<>();
-					xValue.put("label", label);
-					List<Long> xList = new ArrayList<>();
-					xList.add(x);
-					xValue.put("values", xList);
-					xValueList.add(xValue);
-				}
-				else if (!((List<Long>)xValue.get("values")).contains(x)) {
-					((List<Long>)xValue.get("values")).add(x);
-				}
-			}
-			
-			for(Map<String, Object> xValue: xValueList) {
-				String date = (String) xValue.get("label");
+			for(Object xValue: xValues) {
+				long x = (long)xValue;
+				String date = DateTimeUtil.getFormattedTime(x, format);
 				Map<String, Object> newRow = new HashMap<>();
 				newRow.put((String) columns.get(0).get("header"), date);
 				for(Map<String, Object> column : columns) {
 					String name, bl;
-					List<Long> xTime;
 					if (column.containsKey("baseLine") && ((boolean)column.get("baseLine"))) {
 						name = (String) column.get("dp");
 						ReportBaseLineContext baseContext =  baseLineMap.get(column.get("baseLineId"));
 						bl = baseContext.getBaseLine().getName();
-						xTime = ((List<Long>)xValue.get("values")).stream().map(val -> val - baseContext.getDiff()).collect(Collectors.toList());
 					}
 					else {
 						name = (String) column.get("name");
 						bl = ACTUAL_HEADER.toLowerCase();
-						xTime = ((List<Long>)xValue.get("values"));
 					}
-					if (reportData.get(name) != null && reportData.get(name).containsKey(bl) && xTime != null && !xTime.isEmpty()) {
-						xTime.forEach(time -> {
-							if (reportData.get(name).get(bl).containsKey(time) && reportData.get(name).get(bl).get(time) != null) {
-								newRow.put((String) column.get("header"), reportData.get(name).get(bl).get(time));
-							}
-						});
+					if (reportData.get(name) != null && reportData.get(name).containsKey(bl) && reportData.get(name).get(bl).containsKey(x) && reportData.get(name).get(bl).get(x) != null) {
+						newRow.put((String) column.get("header"), reportData.get(name).get(bl).get(x));
 					}
 				}
 				records.add(newRow);
