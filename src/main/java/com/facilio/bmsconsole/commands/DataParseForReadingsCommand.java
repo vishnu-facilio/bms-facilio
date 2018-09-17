@@ -202,7 +202,7 @@ public class DataParseForReadingsCommand implements Command {
 								} 
 							}
 						} catch (Exception e) {
-							e.printStackTrace();
+							LOGGER.severe("exception ---" + e.getMessage());
 						}
 						}
 					}
@@ -219,7 +219,7 @@ public class DataParseForReadingsCommand implements Command {
 					ReadingContext readingContext = FieldUtil.getAsBeanFromMap(props, ReadingContext.class);
 					readingContexts.add(readingContext);
 					groupedContext.put(module, readingContext);
-	}
+				}
 			}
 		}
 		context.put(ImportAPI.ImportProcessConstants.READINGS_LIST, readingContexts);

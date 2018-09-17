@@ -25,7 +25,7 @@ public class ImportReadingJob extends FacilioJob {
 	@Override
 	public void execute(JobContext jc) {
 		ImportProcessContext importProcessContext = null;
-		LOGGER.severe("IMPORTREADING JOB CALLED");
+		LOGGER.severe("IMPORT READING JOB CALLED");
 
 		Long jobId = jc.getJobId();
 
@@ -38,7 +38,8 @@ public class ImportReadingJob extends FacilioJob {
 
 			ImportAPI.updateImportProcess(importProcessContext, ImportProcessContext.ImportStatus.IMPORTED);
 			LOGGER.severe("READING IMPORT COMPLETE");
-		} catch (Exception e) {
+		} 
+		catch (Exception e) {
 			try {
 				if (importProcessContext != null) {
 					ImportAPI.updateImportProcess(importProcessContext, ImportProcessContext.ImportStatus.FAILED);

@@ -51,7 +51,50 @@ public enum FacilioMathFunction implements FacilioWorkflowFunctionInterface  {
 				throw new FunctionParamException("Required Object is null or empty");
 			}
 		}
-	}
+	},
+	POWER(4,"pow") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			double a = Double.parseDouble(objects[0].toString());
+			double b = Double.parseDouble(objects[1].toString());
+			return Math.pow(a, b);
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects == null || objects.length == 0) {
+				throw new FunctionParamException("Required Object is null or empty");
+			}
+		}
+	},
+	CUBEROOT(5,"cbrt") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			double a = Double.parseDouble(objects[0].toString());
+			return Math.cbrt(a);
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects == null || objects.length == 0) {
+				throw new FunctionParamException("Required Object is null or empty");
+			}
+		}
+	},
+	SQRT(6,"sqrt") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			double a = Double.parseDouble(objects[0].toString());
+			return Math.sqrt(a);
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects == null || objects.length == 0) {
+				throw new FunctionParamException("Required Object is null or empty");
+			}
+		}
+	},
 	;
 	
 	private Integer value;
