@@ -7,6 +7,7 @@ import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.constants.FacilioConstants;
@@ -16,10 +17,9 @@ import com.facilio.events.context.EventProperty;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.util.EventAPI;
 import com.facilio.events.util.EventRulesAPI;
-import com.opensymphony.xwork2.ActionSupport;
 
 @SuppressWarnings("serial")
-public class EventAction extends ActionSupport {
+public class EventAction extends FacilioAction {
 
 	private JSONObject payload;
 	public JSONObject getPayload() {
@@ -282,13 +282,8 @@ public class EventAction extends ActionSupport {
 		
 		Chain updateAssetChain = EventConstants.EventChainFactory.updateNodeToResourceMappingChain();
 		updateAssetChain.execute(context);
-		result = (String) context.get(FacilioConstants.ContextNames.RESULT);
+		setResult(FacilioConstants.ContextNames.RESULT, (String) context.get(FacilioConstants.ContextNames.RESULT));
 		return SUCCESS;
-	}
-	
-	private String result;
-	public String getResult() {
-		return result;
 	}
 	
 	private String source;
@@ -331,5 +326,20 @@ public class EventAction extends ActionSupport {
 	
 	public void setPerPage(int perPage) {
 		this.perPage = perPage;
+	}
+	
+	/******************      V2 Api    ******************/
+	
+	public String v2eventList() throws Exception{
+		eventList();
+		setResult(EventConstants.EventContextNames.EVENT_LIST, events);
+		return SUCCESS;
+		
+	}
+	
+	public String v2viewEvent() throws Exception{
+		eventDetail();
+		setResult(EventConstants.EventContextNames.EVENT, event);
+		return SUCCESS;
 	}
  }
