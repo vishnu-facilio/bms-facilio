@@ -199,7 +199,8 @@ public class UserAction extends FacilioAction {
 	public String inviteRequester() throws Exception {
 
 		boolean isEmailEmpty = (user.getEmail() == null ||  user.getEmail().isEmpty());
-		if(user.getMobile() == null || isEmailEmpty || user.getMobile().isEmpty()) {
+		boolean isMobileEmpty = (user.getMobile() == null || user.getMobile().isEmpty());
+		if(isMobileEmpty && isEmailEmpty ) {
 			addFieldError("error", "Please enter a valid mobile number or email");
 			return ERROR;
 		}
@@ -232,8 +233,14 @@ public class UserAction extends FacilioAction {
 	
 	public String addUser() throws Exception {
 		boolean isEmailEmpty = (user.getEmail() == null ||  user.getEmail().isEmpty());
-		if(user.getMobile() == null || isEmailEmpty || user.getMobile().isEmpty()) {
+		boolean isMobileEmpty = (user.getMobile() == null || user.getMobile().isEmpty());
+		if(isEmailEmpty && isMobileEmpty) {
 			addFieldError("error", "Please enter a valid mobile number or email");
+			return ERROR;
+		}
+
+		if(user.getRoleId() <=0 ) {
+			addFieldError("error", "Please specify a role for this user");
 			return ERROR;
 		}
 
@@ -246,10 +253,7 @@ public class UserAction extends FacilioAction {
 		String value = LoginUtil.getUserCookie(request, "fc.authtype");
 		user.setFacilioAuth("facilio".equals(value));
 
-		if(user.getRoleId() <=0 ) {
-			addFieldError("error", "Please specify a role for this user");
-			return ERROR;
-		}
+
 //		Integer availableLicensedUsers = AccountUtil.getUserBean().getAvailableUserLicense(AccountUtil.getCurrentOrg().getOrgId());
 //		if (availableLicensedUsers < 1)
 //		{
