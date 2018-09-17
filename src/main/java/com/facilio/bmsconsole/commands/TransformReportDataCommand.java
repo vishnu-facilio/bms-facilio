@@ -11,6 +11,8 @@ import java.util.Set;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
+import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.constants.FacilioConstants;
@@ -59,12 +61,12 @@ public class TransformReportDataCommand implements Command {
 			for (Map<String, Object> prop : props) {
 				Object xVal = prop.get(dataPoint.getxAxis().getField().getName());
 				if (xVal != null) {
-					xVal = formatVal(dataPoint.getxAxis().getField(), xVal);
+					xVal = formatVal(dataPoint.getxAxis().getField(), dataPoint.getxAxis().getAggrEnum(), xVal);
 					if (xValues != null) {
 						xValues.add(xVal);
 					}
 					Object yVal = prop.get(dataPoint.getyAxis().getField().getName());
-					yVal = formatVal(dataPoint.getyAxis().getField(), yVal);
+					yVal = formatVal(dataPoint.getyAxis().getField(), dataPoint.getyAxis().getAggrEnum(), yVal);
 					if (dataPoint.getGroupByFields() == null || dataPoint.getGroupByFields().isEmpty()) {
 						dataPoints.put(xVal, yVal.toString());
 					}
@@ -77,7 +79,7 @@ public class TransformReportDataCommand implements Command {
 						for (int i = 0; i < dataPoint.getGroupByFields().size(); i++) {
 							FacilioField field = dataPoint.getGroupByFields().get(i).getField();
 							Object groupByVal = prop.get(field.getName());
-							groupByVal = formatVal(field, groupByVal);
+							groupByVal = formatVal(field, null, groupByVal);
 							if (i == dataPoint.getGroupByFields().size() - 1) {
 								currentMap.put(groupByVal.toString(), yVal);
 							}
@@ -99,10 +101,15 @@ public class TransformReportDataCommand implements Command {
 	}
 	
 	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
-	private Object formatVal(FacilioField field, Object val) {
+	private Object formatVal(FacilioField field, AggregateOperator aggr, Object val) {
 		if (val == null) {
 			return "";
 		}
+		
+		if (aggr != null && aggr instanceof DateAggregateOperator) {
+			val = ((DateAggregateOperator)aggr).getAdjustedTimestamp((long) val);
+		}
+		
 		if (field.getDataTypeEnum() == FieldType.DECIMAL) {
 			return DECIMAL_FORMAT.format(val);
 		}
