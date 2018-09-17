@@ -121,9 +121,11 @@ public class DeltaCalculationCommand implements Command {
 			}
 			Double lastDelta=0.0;
 			ReadingDataMeta deltaMeta = metaMap.get(ReadingsAPI.getRDMKey(resourceId, deltaField));
-			LOGGER.info("Delta Meta for resource "+resourceId+" for fieldId: "+deltaField);
 			if(deltaMeta!=null) {
 				lastDelta = (Double) deltaMeta.getValue(); 
+			} 
+			else {
+				LOGGER.info("Delta Meta null for resource "+resourceId+" for fieldId: "+deltaField);
 			}
 			
 			long deltaFieldId=deltaField.getFieldId();
