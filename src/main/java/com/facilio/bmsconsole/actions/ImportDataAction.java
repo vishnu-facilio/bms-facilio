@@ -69,11 +69,14 @@ public class ImportDataAction extends ActionSupport {
         		facilioModule = modBean.getModule(moduleName);
         		importProcessContext.setModuleId(facilioModule.getModuleId());
         	}
+        	else {
+            	importProcessContext.setModuleId(facilioModule.getModuleId());
+            }
+            
         }
         else {
         	importProcessContext.setModuleId(facilioModule.getModuleId());
         }
-        
         importProcessContext.setStatus(ImportProcessContext.ImportStatus.UPLOAD_COMPLETE.getValue());
         
         importProcessContext.setFileId(fileId);
