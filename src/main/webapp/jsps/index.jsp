@@ -8,7 +8,7 @@
     <meta name=msapplication-tap-highlight content=no>
     <meta name=viewport content="user-scalable=no,initial-scale=1,maximum-scale=1,minimum-scale=1,width=device-width">
     <title>Facilio</title>
-    <% String staticUrl = "https://static.facilio.in/v1"; %>
+    <% String staticUrl = com.facilio.aws.util.AwsUtil.getConfig("static.url")+com.facilio.aws.util.AwsUtil.getClientVersion(); %>
 
     <link rel=icon href=<%=staticUrl%>/statics/favicon.png type=image/x-icon>
     <link rel=manifest href=<%=staticUrl%>/statics/manifest.json>

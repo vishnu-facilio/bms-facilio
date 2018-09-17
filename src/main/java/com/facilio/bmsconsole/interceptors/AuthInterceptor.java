@@ -91,7 +91,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 					}
 				}
 
-				if (request.getRequestURL().indexOf("/app/admin") != -1) {
+				if (request.getRequestURL().indexOf("/admin") != -1) {
 					if (currentAccount != null) {
 						String useremail = currentAccount.getUser().getEmail();
 						if (! useremail.endsWith("@facilio.com")) {

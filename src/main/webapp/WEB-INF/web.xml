@@ -124,7 +124,7 @@
 
     <servlet>
         <servlet-name>clientapp</servlet-name>
-        <jsp-file>/jsps/index.jsp</jsp-file>
+        <jsp-file>/index.html</jsp-file>
     </servlet>
     <servlet-mapping>
         <servlet-name>clientapp</servlet-name>
@@ -132,7 +132,7 @@
     </servlet-mapping>
     
     <welcome-file-list>
-        <welcome-file>/jsps/index.jsp</welcome-file>
+        <welcome-file>home.jsp</welcome-file>
     </welcome-file-list>
  
  	<!--  JDBC -->
