@@ -1,6 +1,14 @@
 package com.facilio.bmsconsole.context;
 
 public class FloorContext extends BaseSpaceContext {
+	private int floorlevel;
+	
+	public int getFloorlevel() {
+		return floorlevel;
+	}
+	public void setFloorlevel(int floorlevel) {
+		this.floorlevel = floorlevel;
+	}
 	private BuildingContext building;
 	public BuildingContext getBuilding() {
 		if ((building == null || building.getId() == -1) && super.getBuildingId() != -1) {

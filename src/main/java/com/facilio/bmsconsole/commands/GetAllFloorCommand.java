@@ -30,7 +30,7 @@ public class GetAllFloorCommand implements Command{
 				.moduleName(moduleName)
 				.beanClass(FloorContext.class)
 				.select(fields)
-				.orderBy("ID");
+				.orderBy("-Floor.FLOOR_LEVEL desc, ID");
 		
 		if (buildingId != null && buildingId > 0) {
 			builder.andCustomWhere("BaseSpace.BUILDING_ID = ?", buildingId);
