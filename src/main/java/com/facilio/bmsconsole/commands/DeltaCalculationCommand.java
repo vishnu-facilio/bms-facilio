@@ -65,19 +65,26 @@ public class DeltaCalculationCommand implements Command {
 					skipLastReadingCheck = false;
 				}
 				for(ReadingContext reading:readings) {
-					setDelta(fieldMap,"totalEnergyConsumption",module, reading,metaMap,markedList, deltaRdmPairs, skipLastReadingCheck);
-					setDelta(fieldMap,"phaseEnergyR",module,reading,metaMap,markedList, deltaRdmPairs, skipLastReadingCheck);
-					setDelta(fieldMap,"phaseEnergyY",module,reading,metaMap,markedList, deltaRdmPairs, skipLastReadingCheck);
-					setDelta(fieldMap,"phaseEnergyB",module,reading,metaMap,markedList, deltaRdmPairs, skipLastReadingCheck);
+					addDeltaRDM(fieldMap,"totalEnergyConsumption", reading,metaMap, deltaRdmPairs);
+					addDeltaRDM(fieldMap,"phaseEnergyR",reading,metaMap, deltaRdmPairs);
+					addDeltaRDM(fieldMap,"phaseEnergyY",reading,metaMap, deltaRdmPairs);
+					addDeltaRDM(fieldMap,"phaseEnergyB",reading,metaMap, deltaRdmPairs);
 				}
-				
 				if (!deltaRdmPairs.isEmpty()) {
 					List<ReadingDataMeta> metaList = ReadingsAPI.getReadingDataMetaList(deltaRdmPairs) ;
 					
 					for(ReadingDataMeta meta : metaList) {
 						metaMap.put(ReadingsAPI.getRDMKey(meta.getResourceId(), meta.getField()), meta);
 					}
+					
+					for(ReadingContext reading:readings) {
+						setDelta(fieldMap,"totalEnergyConsumption",module, reading,metaMap,markedList, skipLastReadingCheck);
+						setDelta(fieldMap,"phaseEnergyR",module,reading,metaMap,markedList, skipLastReadingCheck);
+						setDelta(fieldMap,"phaseEnergyY",module,reading,metaMap,markedList, skipLastReadingCheck);
+						setDelta(fieldMap,"phaseEnergyB",module,reading,metaMap,markedList, skipLastReadingCheck);
+					}
 				}
+				
 			}
 			context.put(FacilioConstants.ContextNames.MARKED_READINGS, markedList);
 			LOGGER.debug("Inside DeltaCommand#######  "+markedList);
@@ -88,8 +95,33 @@ public class DeltaCalculationCommand implements Command {
 		return false;
 	}
 
+	private  void addDeltaRDM(Map<String,FacilioField>  fieldMap,String fieldName,ReadingContext reading,Map<String, 
+			ReadingDataMeta> metaMap,List<Pair<Long,FacilioField>> deltaRdmPairs) {
+		
+		FacilioField readingField=fieldMap.get(fieldName);
+		Object readingVal=reading.getReading(fieldName);
+		String deltaFieldName = fieldName+"Delta";
+		FacilioField deltaField=fieldMap.get(deltaFieldName);
+		Object deltaVal=reading.getReading(deltaFieldName);
+		
+		long resourceId=reading.getParentId();
+
+		if( deltaVal!=null || readingVal==null) {// delta already set in reading or reading is null..
+			return;
+		}
+		ReadingDataMeta consumptionMeta = metaMap.get(ReadingsAPI.getRDMKey(resourceId, readingField));
+		if(consumptionMeta == null) {
+			return;
+		}
+		Double lastReading = (Double) consumptionMeta.getValue(); 
+		if(lastReading == null || lastReading<0) {
+			return;
+		}
+		deltaRdmPairs.add(Pair.of(resourceId, deltaField));
+	}
+	
 	private void setDelta(Map<String,FacilioField>  fieldMap, String fieldName,FacilioModule module, ReadingContext reading,Map<String, 
-			ReadingDataMeta> metaMap,List<MarkedReadingContext> markedList,List<Pair<Long, FacilioField>> deltaRdmPairs, Boolean skipLastReadingCheck ) {
+			ReadingDataMeta> metaMap,List<MarkedReadingContext> markedList, Boolean skipLastReadingCheck ) {
 			
 			FacilioField readingField=fieldMap.get(fieldName);
 			FieldType dataType=readingField.getDataTypeEnum();
@@ -111,14 +143,10 @@ public class DeltaCalculationCommand implements Command {
 			}
 			
 			Double lastReading = (Double) consumptionMeta.getValue(); 
-			if(lastReading == null) {
+			if(lastReading == null || lastReading <0) {
 				return;
 			}
-			else if(lastReading<0) {
-				//then it means the very first reading..  
-				reading.addReading(deltaFieldName, 0);
-				return;
-			}
+			
 			Double lastDelta=0.0;
 			ReadingDataMeta deltaMeta = metaMap.get(ReadingsAPI.getRDMKey(resourceId, deltaField));
 			if(deltaMeta!=null) {
@@ -176,7 +204,7 @@ public class DeltaCalculationCommand implements Command {
 			
 			long currentTime=(reading.getTtime()!=-1)? reading.getTtime():System.currentTimeMillis() ;
 			long lastDataTime=consumptionMeta.getTtime();
-			int dataGapCount= DeviceAPI.getDataGapCount(resourceId, module,currentTime, lastDataTime);
+			float dataGapCount= DeviceAPI.getDataGapCount(resourceId, module,currentTime, lastDataTime);
 			
 			if(delta>DELATA_HIGH_VAL_BAND && delta>lastDelta) {
 				//Not sure how to handle, if there is an erratic meter reading.. 
@@ -197,10 +225,8 @@ public class DeltaCalculationCommand implements Command {
 				}
 			}
 			
-			reading.addReading(deltaFieldName, ReportsUtil.roundOff(delta,4));
-			deltaRdmPairs.add(Pair.of(resourceId, deltaField));
-			
-			if(dataGapCount>0 && delta > 0)	 
+			reading.addReading(deltaFieldName, ReportsUtil.roundOff(delta,4));			
+			if(dataGapCount>1 && delta > 0)	 
 			{
 				//need to mark as hourly violation..
 				type=MarkType.HIGH_VALUE_HOURLY_VIOLATION;
@@ -221,11 +247,11 @@ public class DeltaCalculationCommand implements Command {
 	private static final long RESET_BAND_MF=50;
 	
 	
-	private Double getEstimatedDelta(Double lastDelta, int dataGapCount) {
+	private Double getEstimatedDelta(Double lastDelta, float dataGapCount) {
 		
-		int gapMultiplier= (dataGapCount==0)?1:dataGapCount;//if there is no gap.. we can consider it as 1 for calculation ease..
+		//int gapMultiplier= (dataGapCount==0)?1:dataGapCount;//if there is no gap.. we can consider it as 1 for calculation ease..
 		double deltaAdjuster= (lastDelta<=1)?lastDelta+1:lastDelta;//no harm in adding 1 to delta .. this is to avoid zero & 1 last delta
-		double estimatedDelta= (deltaAdjuster)*(gapMultiplier);//
+		double estimatedDelta= (deltaAdjuster)*(dataGapCount);//
 		return estimatedDelta;
 		
 	}

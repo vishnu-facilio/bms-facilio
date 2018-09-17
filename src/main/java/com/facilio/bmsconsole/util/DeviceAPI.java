@@ -531,11 +531,14 @@ public class DeviceAPI
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_DATA_READING);
 			FacilioField energyField=modBean.getField(TOTAL_ENERGY_CONSUMPTION_DELTA, module.getName());
-			if(!isHistorical && getDataGapCount(meter.getId(),module,firstReadingTime, startTime)>0) {
+			if(!isHistorical && getDataGapCount(meter.getId(),module,firstReadingTime, startTime)>1) {
 				
 				firstReading.setMarked(true);
 				List<MarkedReadingContext> markedList=new ArrayList<MarkedReadingContext> ();
 				markedList.add(MarkingUtil.getMarkedReading(firstReading,energyField.getFieldId(),module.getModuleId(),MarkType.HIGH_VALUE_HOURLY_VIOLATION,firstReading,firstReading));
+				if (AccountUtil.getCurrentOrg().getId() == 88) {
+					LOGGER.info("Marked Readings to be added for VM : "+firstReading.getParentId()+" is " +markedList.get(0));
+				}
 				context.put(FacilioConstants.ContextNames.MARKED_READINGS, markedList);
 			}
 			//data Gap implementation ends..
@@ -578,7 +581,7 @@ public class DeviceAPI
 	}
 	
 	
-	public static int getDataGapCount (long resourceId,FacilioModule module, long currentTime, long previousTime)  {
+	public static float getDataGapCount (long resourceId,FacilioModule module, long currentTime, long previousTime)  {
 		
 		try {
 			long dataIntervalSeconds=ReadingsAPI.getDataInterval(resourceId, module)*60;
@@ -586,13 +589,13 @@ public class DeviceAPI
 			SecondsChronoUnit defaultAdjustUnit = new SecondsChronoUnit(dataIntervalSeconds);
 			ZonedDateTime zdt=	DateTimeUtil.getDateTime(currentTime).truncatedTo(defaultAdjustUnit);
 			long timeDiff=DateTimeUtil.getMillis(zdt, true)-previousTime;
-			int gapCount=(int) (timeDiff/(dataIntervalSeconds*1000));
+			float gapCount=(float) (timeDiff/(dataIntervalSeconds*1000));
 			return gapCount;
 		}
 		catch(Exception e) {
 			LOGGER.error("Exception while cheking data Gap", e);
 		}
-		return 0;
+		return 1;
 	}
 	private static List<ReadingContext> getChildMeterReadings(List<Long> childIds, long startTime, long endTime, int minutesInterval) throws Exception{
 

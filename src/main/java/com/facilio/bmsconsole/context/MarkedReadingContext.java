@@ -128,4 +128,8 @@ public class MarkedReadingContext  {
 		}
 	}
 	
+	public String toString() {
+		
+		return "Marked Reading resource: "+getResourceId()+" : "+getActualValue()+ " : "+getModifiedValue()+" : "+getMarkType()+" : "+getFieldId();
+	}
 } 
