@@ -4400,6 +4400,8 @@ public class FieldFactory {
 		fields.add(getField("xCriteriaJson", "X_CRITERIA_JSON", module, FieldType.STRING));
 		fields.add(getField("baselineJson", "BASELINE_JSON", module, FieldType.STRING));
 		fields.add(getField("analyticsType", "ANALYTICS_TYPE", module, FieldType.NUMBER));
+		
+		fields.add(getField("booleanSetting", "BOOLEAN_SETTINGS", module, FieldType.NUMBER));
 		return fields;
 	}
 	
