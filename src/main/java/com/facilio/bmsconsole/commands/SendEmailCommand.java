@@ -28,15 +28,13 @@ public class SendEmailCommand implements Command{
 		Integer mailSetting = updatedContext.getMailSetting();
 		
 		if (mailSetting != null) {
-			AwsUtil emailInstance = new AwsUtil();
 			User user = AccountUtil.getCurrentUser();
 			FileInfo fileInfo = fs.getFileInfo(importProcessContext.getFileId());
 			JSONObject email = new JSONObject();
 			email.put("to", user.getEmail());
 			email.put("subject", "Import of " + fileInfo.getFileName());
 			email.put("message",emailMessage.toString());
-			emailInstance.sendEmail(email);
-			
+			AwsUtil.sendEmail(email);
 		}
 		else {
 			emailMessage.delete(0, emailMessage.length());

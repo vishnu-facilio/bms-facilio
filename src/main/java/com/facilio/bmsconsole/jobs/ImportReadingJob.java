@@ -18,38 +18,38 @@ import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 import com.google.common.collect.ArrayListMultimap;
 
-public class ImportReadingJob extends FacilioJob{
+public class ImportReadingJob extends FacilioJob {
 
 	private static final Logger LOGGER = Logger.getLogger(ImportReadingJob.class.getName());
-	
+
 	@Override
 	public void execute(JobContext jc) {
 		ImportProcessContext importProcessContext = null;
 		LOGGER.severe("IMPORTREADING JOB CALLED");
-		
+
 		Long jobId = jc.getJobId();
-		
+
 		try {
-		importProcessContext = ImportAPI.getImportProcessContext(jobId);
-		FacilioContext context = new FacilioContext();
-		context.put(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT, importProcessContext);
-		Chain importReadingChain = FacilioChainFactory.getImportReadingChain();
-		importReadingChain.execute(context);
-		
-		ImportAPI.updateImportProcess(importProcessContext,ImportProcessContext.ImportStatus.IMPORTED);
-		LOGGER.severe("READING IMPORT COMPLETE");
-		} catch(Exception e) {
+			importProcessContext = ImportAPI.getImportProcessContext(jobId);
+			FacilioContext context = new FacilioContext();
+			context.put(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT, importProcessContext);
+			Chain importReadingChain = FacilioChainFactory.getImportReadingChain();
+			importReadingChain.execute(context);
+
+			ImportAPI.updateImportProcess(importProcessContext, ImportProcessContext.ImportStatus.IMPORTED);
+			LOGGER.severe("READING IMPORT COMPLETE");
+		} catch (Exception e) {
 			try {
-				if(importProcessContext != null) {
-				ImportAPI.updateImportProcess(importProcessContext,ImportProcessContext.ImportStatus.FAILED);
+				if (importProcessContext != null) {
+					ImportAPI.updateImportProcess(importProcessContext, ImportProcessContext.ImportStatus.FAILED);
 				}
-				}
-				catch(Exception a) {
-					System.out.println(a);
-				}
-				CommonCommandUtil.emailException("Import Failed", "Import failed - orgid -- "+AccountUtil.getCurrentOrg().getId(), e);
-				LOGGER.log(Level.SEVERE, e.getMessage(), e);
+			} catch (Exception a) {
+				System.out.println(a);
+			}
+			CommonCommandUtil.emailException("Import Failed",
+					"Import failed - orgid -- " + AccountUtil.getCurrentOrg().getId(), e);
+			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
-		
+
 }
