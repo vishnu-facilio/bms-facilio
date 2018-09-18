@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.stat.StatUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -27,6 +28,7 @@ import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.MarkedReadingContext;
 import com.facilio.bmsconsole.context.MarkedReadingContext.MarkType;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.criteria.BuildingOperator;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -531,14 +533,13 @@ public class DeviceAPI
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_DATA_READING);
 			FacilioField energyField=modBean.getField(TOTAL_ENERGY_CONSUMPTION_DELTA, module.getName());
-			if(!isHistorical && getDataGapCount(meter.getId(),module,firstReadingTime, startTime)>1) {
+			long resourceId=meter.getId();
+			long previousTime=getPreviousDataTime(resourceId,energyField);
+			if(!isHistorical && getDataGapCount(resourceId,module,firstReadingTime,previousTime)>1) {
 				
 				firstReading.setMarked(true);
 				List<MarkedReadingContext> markedList=new ArrayList<MarkedReadingContext> ();
 				markedList.add(MarkingUtil.getMarkedReading(firstReading,energyField.getFieldId(),module.getModuleId(),MarkType.HIGH_VALUE_HOURLY_VIOLATION,firstReading,firstReading));
-				if (AccountUtil.getCurrentOrg().getId() == 88) {
-					LOGGER.info("Marked Readings to be added for VM : "+firstReading.getParentId()+" is " +markedList.get(0));
-				}
 				context.put(FacilioConstants.ContextNames.MARKED_READINGS, markedList);
 			}
 			//data Gap implementation ends..
@@ -547,6 +548,23 @@ public class DeviceAPI
 		}
 	}
 
+	
+	private static long getPreviousDataTime(long resourceId,FacilioField energyField) {
+		
+		try {
+			List<Pair<Long, FacilioField>> deltaRdmPairs = new ArrayList<>();
+			deltaRdmPairs.add(Pair.of(resourceId, energyField));
+			List<ReadingDataMeta> metaList = ReadingsAPI.getReadingDataMetaList(deltaRdmPairs) ;
+			for(ReadingDataMeta meta : metaList) {
+				return meta.getTtime();
+			}
+		}
+		catch(Exception e) {
+			LOGGER.error("Exception while fetching previousTime: ", e);
+		}
+		return 0;
+	}
+	
 	public static List<Long> getChildrenMeters(EnergyMeterContext meter) throws Exception {
 		GenericSelectRecordBuilder childMeterBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getVirtualMeterRelFields())
