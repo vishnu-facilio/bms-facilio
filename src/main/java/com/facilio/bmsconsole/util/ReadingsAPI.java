@@ -404,7 +404,6 @@ public class ReadingsAPI {
 			Map<String, ReadingDataMeta> uniqueRDMs = new HashMap<>();
 			for(ReadingContext readingContext:readingList) {
 				long resourceId=readingContext.getParentId();
-				resources.add(resourceId);
 				long timeStamp=readingContext.getTtime();
 				long readingId = readingContext.getId();
 				Map<String,Object> readings=  readingContext.getReadings();
@@ -441,6 +440,7 @@ public class ReadingsAPI {
 								rdm.setResourceId(resourceId);
 								
 								uniqueRDMs.put(uniqueKey, rdm);
+								resources.add(resourceId);
 							}
 						}
 						else {
