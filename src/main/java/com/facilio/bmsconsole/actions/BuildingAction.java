@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.SetTableNamesCommand;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
@@ -21,6 +22,7 @@ import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.opensymphony.xwork2.ActionContext;
@@ -142,6 +144,16 @@ public class BuildingAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	EnergyMeterContext mainEnergyMeter;
+	
+	public EnergyMeterContext getMainEnergyMeter() {
+		return mainEnergyMeter;
+	}
+
+	public void setMainEnergyMeter(EnergyMeterContext mainEnergyMeter) {
+		this.mainEnergyMeter = mainEnergyMeter;
+	}
+
 	private JSONObject reports;
 	public JSONObject getReports() {
 		return reports;
@@ -172,6 +184,10 @@ public class BuildingAction extends ActionSupport {
 		setReports(reports);
 		setReportcards((JSONArray) context.get(FacilioConstants.ContextNames.REPORT_CARDS));
 		
+		List<EnergyMeterContext> energyMeters = DashboardUtil.getMainEnergyMeter(getBuildingId()+"");
+		if(energyMeters != null && !energyMeters.isEmpty()) {
+			setMainEnergyMeter(energyMeters.get(0));
+		}
 		return SUCCESS;
 	}
 	

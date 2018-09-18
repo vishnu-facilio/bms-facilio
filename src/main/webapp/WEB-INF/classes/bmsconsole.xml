@@ -2327,7 +2327,7 @@
 			<param name="moduleName">space</param>
 			<param name="permission">READ</param>
 			<result name="success" type="json">
-				<param name="includeProperties">reports.*,reportcards,reportcards\[\d+\],reportcards\[\d+\].*</param>
+				<param name="includeProperties">reports.*,reportcards,reportcards\[\d+\],reportcards\[\d+\].*,^mainEnergyMeter.*</param>
 			</result>
 		</action>
 
