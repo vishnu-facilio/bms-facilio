@@ -3,10 +3,10 @@ package com.facilio.bmsconsole.commands;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -28,7 +28,7 @@ public class TransformReportDataCommand implements Command {
 		// TODO Auto-generated method stub
 		List<ReportDataContext> reportData = (List<ReportDataContext>) context.get(FacilioConstants.ContextNames.REPORT_DATA);
 		Map<String, Map<String, Map<Object, Object>>> transformedData = new HashMap<>();
-		Set<Object> xValues = new LinkedHashSet<>();
+		Set<Object> xValues = new TreeSet<>();
 		for (ReportDataContext data : reportData ) {
 			Map<String, List<Map<String, Object>>> reportProps = data.getProps();
 			if (reportProps != null && !reportProps.isEmpty()) {
