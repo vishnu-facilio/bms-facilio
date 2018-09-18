@@ -202,7 +202,6 @@ public class PerformAssetAction implements Command {
 					 Condition condition = criteria.getConditions().get(1);
 					 expiryDay = condition.getValue();
 					 operatorId = condition.getOperatorId();
-//							 }
 				}
 				selectBuilder.andCriteria(criteria);
 				
