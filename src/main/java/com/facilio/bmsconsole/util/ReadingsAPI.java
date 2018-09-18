@@ -399,8 +399,6 @@ public class ReadingsAPI {
 		String sql = null;
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
 			Map<String,FacilioField>  fieldMap = FieldFactory.getAsMap(fieldsList);
-			Set<Long> resources= new HashSet<Long>();
-			Set<Long> fields= new HashSet<Long>();
 			Map<String, ReadingDataMeta> uniqueRDMs = new HashMap<>();
 			for(ReadingContext readingContext:readingList) {
 				long resourceId=readingContext.getParentId();
@@ -426,7 +424,6 @@ public class ReadingsAPI {
 									}
 								}
 							}
-							fields.add(fieldId);
 							String value = val.toString();
 							
 							ReadingDataMeta rdm = uniqueRDMs.get(uniqueKey);
@@ -440,7 +437,6 @@ public class ReadingsAPI {
 								rdm.setResourceId(resourceId);
 								
 								uniqueRDMs.put(uniqueKey, rdm);
-								resources.add(resourceId);
 							}
 						}
 						else {
@@ -458,23 +454,31 @@ public class ReadingsAPI {
 			StringBuilder timeBuilder= new StringBuilder();
 			StringBuilder valueBuilder= new StringBuilder();
 			StringBuilder idBuilder= new StringBuilder();
+			StringJoiner whereClause = new StringJoiner(" OR ");
 			long orgId=AccountUtil.getCurrentOrg().getOrgId();
 
 			for (ReadingDataMeta rdm : uniqueRDMs.values()) {
 				timeBuilder.append(getCase(rdm.getResourceId(),rdm.getFieldId(),rdm.getTtime(),false));
 				valueBuilder.append(getCase(rdm.getResourceId(),rdm.getFieldId(),rdm.getValue(),true));
 				idBuilder.append(getCase(rdm.getResourceId(),rdm.getFieldId(),rdm.getReadingDataId(),false));
+				
+				StringBuilder builder = new StringBuilder()
+											.append("(RESOURCE_ID = ")
+											.append(rdm.getResourceId())
+											.append(" AND FIELD_ID = ")
+											.append(rdm.getFieldId())
+											.append(")")
+											;
+				whereClause.add(builder.toString());
 			}
 			
 			if(timeBuilder.length() <= 0 || valueBuilder.length() <= 0) {
 				return null;
 			}
-			String resourceList=StringUtils.join(resources, ",");
-			String fieldList=StringUtils.join(fields, ",");
 			sql = "UPDATE "+ModuleFactory.getReadingDataMetaModule().getTableName()+" SET TTIME = CASE "+timeBuilder.toString()+ " END, "
 					+ "VALUE = CASE "+valueBuilder.toString() + " END, "
 					+ "READING_DATA_ID = CASE "+idBuilder.toString() + " END "
-					+ "WHERE ORGID = "+orgId+" AND RESOURCE_ID IN ("+resourceList+") AND FIELD_ID IN ("+fieldList+")";
+					+ "WHERE ORGID = "+orgId+" AND ("+whereClause.toString()+")";
 			if(sql != null && !sql.isEmpty()) {
 				LOGGER.debug("################ Update RDM sql : "+sql);
 				try(PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
