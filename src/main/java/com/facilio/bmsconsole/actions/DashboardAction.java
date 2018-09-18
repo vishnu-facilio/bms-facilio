@@ -1167,9 +1167,7 @@ public class DashboardAction extends ActionSupport {
 				
 				CardType card = CardType.getCardType(widgetStaticContext.getStaticKey());
 				
-				String workflow = CardUtil.replaceWorflowPlaceHolders(card.getWorkflow(), widgetStaticContext.getParamsJson());
-				
-				Object wfResult = WorkflowUtil.getWorkflowExpressionResult(workflow, null);
+				Object wfResult = WorkflowUtil.getWorkflowExpressionResult(card.getWorkflow(), widgetStaticContext.getParamsJson());
 				result.put("result", wfResult);
 				result.put("unit", CardUtil.getUnit(widgetStaticContext.getParamsJson()));
 				
@@ -1296,9 +1294,7 @@ public class DashboardAction extends ActionSupport {
 				
 				CardType card = CardType.getCardType(staticKey);
 				
-				String workflow = CardUtil.replaceWorflowPlaceHolders(card.getWorkflow(), paramsJson);
-				
-				Object wfResult = WorkflowUtil.getWorkflowExpressionResult(workflow, null);
+				Object wfResult = WorkflowUtil.getWorkflowExpressionResult(card.getWorkflow(), paramsJson);
 				
 				result.put("result", wfResult);
 				result.put("unit", CardUtil.getUnit(paramsJson));

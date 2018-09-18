@@ -7,16 +7,31 @@ import java.util.Map;
 public enum CardType {
 	
 	READING_CARD(1,"readingcard","<workflow>\n" + 
+			"	<parameter name=\"moduleName\" type=\"String\"/> 	\n" + 
+			"	<parameter name=\"parentId\" type=\"Number\"/> 	\n" + 
+			"	<parameter name=\"dateOperator\" type=\"String\"/> 	\n" + 
+			"	<parameter name=\"fieldName\" type=\"String\"/> 	\n" + 
+			"	<parameter name=\"aggregateOpperator\" type=\"String\"/> 	\n" + 
 			"   <expression name=\"a\">\n" + 
-			"      <module name=\"%moduleName%\" />\n" + 
+			"      <module name=\"${moduleName}\" />\n" + 
 			"      <criteria pattern=\"1 and 2\">\n" + 
-			"         <condition sequence=\"1\">parentId`=`%parentId%</condition>\n" + 
-			"         <condition sequence=\"2\">TTIME`%dateOperator%`</condition>\n" + 
+			"         <condition sequence=\"1\">parentId`=`${parentId}</condition>\n" + 
+			"         <condition sequence=\"2\">TTIME`${dateOperator}`</condition>\n" + 
 			"      </criteria>\n" + 
-			"      <field name=\"%fieldName%\" aggregate=\"%aggregateOpperator%\" />\n" + 
+			"      <field name=\"${fieldName}\" aggregate=\"${aggregateOpperator}\" />\n" + 
 			"   </expression>\n" + 
 			"   <result>a</result>\n" + 
-			"</workflow>")
+			"</workflow>"),
+	
+	ENERGY_READING_CARD(2,"energyDataCard","<workflow> \n" + 
+			"	<parameter name=\"baseSpaceId\" type=\"Number\"/> 	\n" + 
+			"	<parameter name=\"dateOperator\" type=\"Number\"/> 	\n" + 
+			"	<parameter name=\"dateValue\" type=\"Number\"/> 	\n" + 
+			"	<expression name=\"pow\"> 		 		 		\n" + 
+			"		<function>readings.getEnergyReading(baseSpaceId,dateOperator,dateValue)</function>	 	\n" + 
+			"	</expression>\n" + 
+			"	 <result>pow</result>\n" + 
+			"</workflow>"),
 	;
 	
 	private Integer value;

@@ -250,7 +250,9 @@ public class V2ReportAction extends FacilioAction {
 		if (baseLines != null && !baseLines.isEmpty()) {
 			baseLineList = (JSONArray) parser.parse(baseLines);
 		}
-		
+		if(mode.equals(ReportMode.SERIES)) {
+			setxAggr(0);
+		}
 		
 		context.put(FacilioConstants.ContextNames.START_TIME, startTime);
 		context.put(FacilioConstants.ContextNames.END_TIME, endTime);

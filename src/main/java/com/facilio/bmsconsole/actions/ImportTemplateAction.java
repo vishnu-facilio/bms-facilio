@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.poi.hssf.record.SelectionRecord;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -30,6 +31,9 @@ public class ImportTemplateAction extends FacilioAction {
 		FacilioModule module = ModuleFactory.getImportTemplateModule();
 		List<FacilioField> fields = FieldFactory.getImportTemplateFields();
 		insertRecordBuilder.table(module.getTableName()).fields(fields);
+		if(importTemplateContext != null) {
+			importTemplateContext.setOrgId(AccountUtil.getCurrentOrg().getId());
+		}
 		Map<String,Object> props = FieldUtil.getAsProperties(importTemplateContext);
 		insertRecordBuilder.addRecord(props);
 		insertRecordBuilder.save();	
