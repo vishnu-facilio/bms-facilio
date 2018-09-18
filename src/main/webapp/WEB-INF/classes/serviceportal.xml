@@ -102,7 +102,7 @@
 		</action>
 		
 		<action name="tenantuser" class="com.facilio.bmsconsole.actions.TenantAction" 
-				method="getUsersTenants">
+				method="tenantServicePortal">
 			<result name="success" type="json">
 				<param name="includeProperties">^item.*</param>
 			</result>

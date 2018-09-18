@@ -1147,7 +1147,7 @@ public class ModuleFactory {
 		FacilioModule tenants = new FacilioModule();
 		tenants.setName("tenant_users");
 		tenants.setDisplayName("Tenant_Users");
-		tenants.setTableName("Tenant_users");
+		tenants.setTableName("Tenant_Users");
 		return tenants;
 	}
 

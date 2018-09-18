@@ -12,6 +12,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.tenant.RateCardContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.tenant.TenantUserContext;
@@ -49,12 +50,12 @@ public class TenantAction extends ActionSupport {
 		this.orgId = orgId;
 	}
 	
-	List<Map<String,Object>> item = new ArrayList<>();
+	List<ResourceContext> item = new ArrayList<>();
 	
-	public List<Map<String, Object>> getItem() {
+	public List<ResourceContext> getItem() {
 		return item;
 	}
-	public void setItem(List<Map<String, Object>> item) {
+	public void setItem(List<ResourceContext> item) {
 		this.item = item;
 	}
 
@@ -181,7 +182,6 @@ private Map<String, Double> readingData;
 //		addTenantUser();
 		return SUCCESS;
 	}
-	
 	private User user;
 	public User getUser() {
 		return user;
@@ -240,7 +240,7 @@ private Map<String, Double> readingData;
 	}
 	
 	
-	public String getUsersTenants() throws Exception {
+	public String tenantServicePortal() throws Exception {
 		item = TenantsAPI.getUsersTenantId(usersId,orgId);
 		return SUCCESS;
 	}
