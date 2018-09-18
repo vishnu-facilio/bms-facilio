@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.List;
+
 import org.apache.struts2.json.annotations.JSON;
 
 import com.facilio.time.SecondsChronoUnit;
@@ -48,13 +50,13 @@ public class ControllerContext {
 		return this.siteId;
 	}
 	
-	private long buildingId = -1;
-	public void setBuildingId(long buildingId) {
-		this.buildingId = buildingId;
+	private List<Long> buildingIds;
+	public List<Long> getBuildingIds() {
+		return this.buildingIds;
 	}
 	
-	public long getBuildingId() {
-		return this.buildingId;
+	public void setBuildingIds(List<Long> buildingIds) {
+		this.buildingIds = buildingIds;
 	}
 	
 	private long dataInterval = -1; //In minutes

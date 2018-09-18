@@ -645,6 +645,15 @@ public class ModuleFactory {
 
 		return controllerModule;
 	}
+	
+	public static FacilioModule getControllerBuildingRelModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("controllerBuildingRel");
+		module.setDisplayName("Controller Building Rel");
+		module.setTableName("Controller_Building_Rel");
+		
+		return module;
+	}
 
 	public static FacilioModule getNotificationModule() {
 		FacilioModule notificationModule = new FacilioModule();

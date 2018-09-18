@@ -1,14 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.logging.log4j.util.Strings;
 
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -16,6 +19,8 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.sql.GenericDeleteRecordBuilder;
+import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class EditControllerSettingsCommand implements Command {
@@ -32,10 +37,17 @@ public class EditControllerSettingsCommand implements Command {
 			throw new IllegalArgumentException("Site is mandatory.");
 		}
 		
-		if (controllerSettings.getBuildingId() > 0) {
-			BuildingContext building = SpaceAPI.getBuildingSpace(controllerSettings.getBuildingId());
-			if (building == null || building.getSiteId() != controllerSettings.getSiteId()) {
+		if (controllerSettings.getBuildingIds() != null && !controllerSettings.getBuildingIds().isEmpty()) {
+			
+			List<BuildingContext> buildings = SpaceAPI.getBuildingSpace(Strings.join(controllerSettings.getBuildingIds(), ','));
+			if (buildings == null || buildings.isEmpty()) {
 				throw new IllegalArgumentException("Building does not belong to site.");
+			}
+			
+			for (BuildingContext building: buildings) {
+				if (building.getSiteId() != controllerSettings.getSiteId()) {
+					throw new IllegalArgumentException("Building does not belong to site.");
+				}
 			}
 		}
 		
@@ -45,13 +57,34 @@ public class EditControllerSettingsCommand implements Command {
 		
 		FacilioModule module = ModuleFactory.getControllerModule();
 		
-		GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
+		long id = new GenericUpdateRecordBuilder()
 				.table(module.getTableName())
 				.fields(fields)
-				.andCondition(CriteriaAPI.getIdCondition(controllerSettings.getId(), module));
+				.andCondition(CriteriaAPI.getIdCondition(controllerSettings.getId(), module))
+				.update(controllerSettingsprops);
 		
-		long id = updateRecordBuilder.update(controllerSettingsprops);
 		controllerSettings.setId(id);
+		
+		FacilioModule relModule = ModuleFactory.getControllerBuildingRelModule();
+		new GenericDeleteRecordBuilder()
+				.table(relModule.getTableName())
+				.andCondition(CriteriaAPI.getCondition("CONTROLLER_ID","controllerId", Strings.join(controllerSettings.getBuildingIds(), ','),NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(relModule))
+				.delete();
+		
+		if (controllerSettings.getBuildingIds() != null && !controllerSettings.getBuildingIds().isEmpty()) {
+			GenericInsertRecordBuilder relBuilder = new GenericInsertRecordBuilder()
+					.table(ModuleFactory.getControllerBuildingRelModule().getTableName())
+					.fields(FieldFactory.getControllerBuildingRelFields());
+			for (long buildingId: controllerSettings.getBuildingIds()) {
+				Map<String, Object> prop = new HashMap<>();
+				prop.put("buildingId", buildingId);
+				prop.put("controllerId", controllerSettings.getId());
+				relBuilder.addRecord(prop);
+			}
+			relBuilder.save();
+		}
+		
 		return false;
 	}
 

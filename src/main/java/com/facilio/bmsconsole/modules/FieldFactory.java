@@ -2364,6 +2364,27 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	public static List<FacilioField> getControllerBuildingRelFields() {
+		FacilioModule module = ModuleFactory.getControllerBuildingRelModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		FacilioField buildingId = new FacilioField();
+		buildingId.setName("buildingId");
+		buildingId.setDataType(FieldType.NUMBER);
+		buildingId.setColumnName("BUILDING_ID");
+		buildingId.setModule(module);
+		fields.add(buildingId);
+		
+		FacilioField controllerId = new FacilioField();
+		controllerId.setName("controllerId");
+		controllerId.setDataType(FieldType.NUMBER);
+		controllerId.setColumnName("CONTROLLER_ID");
+		controllerId.setModule(module);
+		fields.add(controllerId);
+		
+		return fields;
+	}
 
 	public static List<FacilioField> getNotificationFields() {
 		FacilioModule module = ModuleFactory.getNotificationModule();
