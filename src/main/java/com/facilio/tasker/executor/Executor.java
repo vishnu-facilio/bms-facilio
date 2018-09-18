@@ -44,33 +44,34 @@ public class Executor implements Runnable {
 	@Override
 	public void run()
 	{
-//		while (true)
-//		{
-			Thread.currentThread().setName("Executor-"+this.name);
-			try {
-				long startTime = System.currentTimeMillis()/1000;
-				long endTime = startTime+bufferPeriod;
-				
-				log.info(name+"::"+startTime+"::"+endTime);
-				
-				List<JobContext> jobs = JobStore.getJobs(name, startTime, endTime, getMaxRetry());
-				jobs.addAll(JobStore.getIncompletedJobs(name, startTime, endTime, getMaxRetry()));
-				for(JobContext jc : jobs) {
-					try {
-						scheduleJob(jc);
-					}
-					catch(Exception e) {
-						log.info("Unable to schedule job : "+jc.getJobName());
-						log.info("Exception occurred ", e);
-					}
+		Thread currentThread = Thread.currentThread();
+		String threadName = currentThread.getName();
+		currentThread.setName("Executor-"+this.name);
+		try {
+			long startTime = System.currentTimeMillis()/1000;
+			long endTime = startTime+bufferPeriod;
+			
+			log.info(name+"::"+startTime+"::"+endTime);
+			
+			List<JobContext> jobs = JobStore.getJobs(name, startTime, endTime, getMaxRetry());
+			jobs.addAll(JobStore.getIncompletedJobs(name, startTime, endTime, getMaxRetry()));
+			for(JobContext jc : jobs) {
+				try {
+					scheduleJob(jc);
 				}
-				
-//				Thread.sleep((endTime*1000)-System.currentTimeMillis());
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				log.info("Exception occurred ", e);
+				catch(Exception e) {
+					log.info("Unable to schedule job : "+jc.getJobName());
+					log.info("Exception occurred ", e);
+				}
 			}
-//		}
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			log.info("Exception occurred ", e);
+		}
+		finally {
+			currentThread.setName(threadName);
+		}
 	}
 	
 	private void scheduleJob(JobContext jc) throws InstantiationException, IllegalAccessException  {
