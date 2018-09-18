@@ -965,7 +965,7 @@
 		</action>
 	</package>
 
-	<package name="admin" namespace="/app/admin" extends="homeApi">
+	<package name="admin" namespace="/admin" extends="homeApi">
 		<action name="addJob" class="com.facilio.bmsconsole.actions.AdminAction"
 			method="addJob">
 		</action>
