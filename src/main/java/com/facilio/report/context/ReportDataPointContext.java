@@ -2,10 +2,8 @@ package com.facilio.report.context;
 
 import java.util.List;
 
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.fw.BeanFactory;
 import com.facilio.workflows.context.WorkflowContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -163,15 +161,27 @@ public class ReportDataPointContext {
 	public void setDateFieldId(long dateFieldId) {
 		this.dateFieldId = dateFieldId;
 	}
+	
+	private String dateFieldModuleName;
+	public String getDateFieldModuleName() {
+		return dateFieldModuleName;
+	}
+	public void setDateFieldModuleName(String dateFieldModuleName) {
+		this.dateFieldModuleName = dateFieldModuleName;
+	}
+	
+	private String dateFieldName;
+	public String getDateFieldName() {
+		return dateFieldName;
+	}
+	public void setDateFieldName(String dateFieldName) {
+		this.dateFieldName = dateFieldName;
+	}
 
 	private FacilioField dateField;
 	
 	@JsonIgnore
 	public FacilioField getDateField() throws Exception {
-		if(dateField == null && dateFieldId >0) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			dateField = modBean.getField(dateFieldId);
-		}
 		return dateField;
 	}
 	public void setDateField(FacilioField dateField) {

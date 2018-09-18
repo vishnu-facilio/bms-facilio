@@ -550,7 +550,6 @@ public class DeviceAPI
 
 	
 	private static long getPreviousDataTime(long resourceId,FacilioField energyField) {
-		
 		try {
 			List<Pair<Long, FacilioField>> deltaRdmPairs = new ArrayList<>();
 			deltaRdmPairs.add(Pair.of(resourceId, energyField));

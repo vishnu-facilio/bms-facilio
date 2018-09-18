@@ -8,7 +8,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.facilio.bmsconsole.context.BaseLineContext.AdjustType;
 import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -20,7 +19,6 @@ public class ReportContext {
 	private long id = -1;
 	
 	int booleanSetting;
-	
 	public int getBooleanSetting() {
 		return booleanSetting;
 	}
@@ -29,12 +27,10 @@ public class ReportContext {
 	}
 	
 	public boolean getShowHideAlarm() {
-		
 		return ((booleanSetting & BooleanSettings.SHOW_HIDE_ALARM.booleanValue) == BooleanSettings.SHOW_HIDE_ALARM.booleanValue) ? true : false;  
 	}
 	
 	public void setShowHideAlarm() {
-		
 		booleanSetting =  booleanSetting | BooleanSettings.SHOW_HIDE_ALARM.booleanValue;
 	}
 	
