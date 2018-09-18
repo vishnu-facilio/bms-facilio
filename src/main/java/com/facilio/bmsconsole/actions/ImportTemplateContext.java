@@ -13,7 +13,7 @@ import com.facilio.bmsconsole.actions.ImportProcessContext.ImportType;
 
 public class ImportTemplateContext{
 	
-	Long id;
+	Long id,orgId,save;
 	String module;
 	String uniqueMappingString, fieldMappingString;
 	String templateName;
@@ -24,6 +24,19 @@ public class ImportTemplateContext{
 	HashMap<String,String> fieldMapping;
 	HashMap<String,String> moduleMapping;
 
+	
+	public Long getSave() {
+		return save;
+	}
+	public void setSave(Long save) {
+		this.save = save;
+	}
+	public Long getOrgId() {
+		return orgId;
+	}
+	public void setOrgId(Long orgId) {
+		this.orgId = orgId;
+	}
 	public String getModule() {
 		return module;
 	}

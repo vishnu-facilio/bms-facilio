@@ -186,12 +186,11 @@ public class ImportDataAction extends ActionSupport {
 			importProcessContext.setImportJobMeta(scheduleInfo.toJSONString());
 		}
 		
-		if (importProcessContext.getModule().getName().equals("space") || importProcessContext.getModule().getName().equals("Space"))
-		{
-			ProcessSpaceXLS.processImport(importProcessContext);
-			ImportAPI.updateImportProcess(getImportProcessContext());
-		} 
-	 
+//		if (importProcessContext.getModule().getName().equals("space") || importProcessContext.getModule().getName().equals("Space"))
+//		{
+//			ProcessSpaceXLS.processImport(importProcessContext);
+//			ImportAPI.updateImportProcess(getImportProcessContext());
+//		} 
 		
 		ImportAPI.updateImportProcess(importProcessContext);
 		FacilioTimer.scheduleOneTimeJob(importProcessContext.getId(), "importData" , 5, "priority");

@@ -4126,10 +4126,12 @@ public class FieldFactory {
 		FacilioModule module = ModuleFactory.getImportTemplateModule();
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(getField("id","ID",module, FieldType.NUMBER));
+		fields.add(getOrgIdField(module));
 		fields.add(getField("module","MODULE",module,FieldType.STRING));
 		fields.add(getField("templateName","TEMPLATE_NAME",module,FieldType.STRING));
 		fields.add(getField("uniqueMappingString","UNIQUE_MAPPING",module, FieldType.STRING));
 		fields.add(getField("fieldMappingString","FIELD_MAPPING",module,FieldType.STRING));
+		fields.add(getField("save","SYS_SHOW",module,FieldType.NUMBER));
 		return fields;
 	}
 

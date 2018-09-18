@@ -573,6 +573,7 @@ public class ImportAPI {
 		public static final String ASSET_CATEGORY = "assetCategory";
 		public static final String UNIQUE_MAPPING = "uniqueMapping";
 		public static final String FIELD_MAPPING = "fieldMapping";
+		public static final String SYS_FIELD_SHOW ="save";
 	}
 	
 	public static void addReadingDataMeta(String moduleName, List<Long> listOfIds) throws Exception {
@@ -588,5 +589,7 @@ public class ImportAPI {
 		Chain readingMetaChain = FacilioChainFactory.addReadingMetaDataEntry();
 		readingMetaChain.execute(readingMetaContext);
 	}
+	
+	
 	
 }
