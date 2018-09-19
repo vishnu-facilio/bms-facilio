@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.util.logging.Logger;
 import org.apache.log4j.LogManager;
@@ -16,7 +17,7 @@ import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.google.common.collect.ArrayListMultimap;
 
-public class UpdateBaseAndResourceCommand implements Command {
+public class UpdateBaseAndResourceCommand implements Command,Serializable {
 	private static Logger LOGGER = Logger.getLogger(UpdateBaseAndResourceCommand.class.getName());
 
 	@Override

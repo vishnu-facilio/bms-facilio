@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,7 +21,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.fw.BeanFactory;
 
-public class ImportProcessContext
+public class ImportProcessContext implements Serializable
 {
 	private static final Logger LOGGER = Logger.getLogger(ImportProcessContext.class.getName());
 	private static org.apache.log4j.Logger log = LogManager.getLogger(ImportProcessContext.class.getName());

@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
+import java.io.Serializable;
+
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
@@ -15,7 +17,7 @@ import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 
-public class SendEmailCommand implements Command{
+public class SendEmailCommand implements Command,Serializable{
 	
 	private static final Logger LOGGER = LogManager.getLogger(SendEmailCommand.class.getName());
 	
