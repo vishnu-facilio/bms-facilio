@@ -1906,6 +1906,12 @@ public class FacilioChainFactory {
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
+	public static Chain getResourcesOccupantReadingValuesChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new GetResourcesLatestReadingValuesCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
 	
 	public static Chain getSpaceReadingsChain() {
 		Chain c = new ChainBase();
