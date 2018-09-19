@@ -123,6 +123,11 @@ public class UserBeanImpl implements UserBean {
 				.fields(fields);
 
 		Map<String, Object> props = FieldUtil.getAsProperties(user);
+	
+		if(user.password()!=null)
+		{
+		props.put("password", user.password());
+		}
 		insertBuilder.addRecord(props);
 		insertBuilder.save();
 		long userId = (Long) props.get("id");
@@ -133,22 +138,7 @@ public class UserBeanImpl implements UserBean {
 		return userId;
 	}
 	
-	private long addAdminConsoleUserEntry(User user) throws Exception {
-
-		List<FacilioField> fields = AccountConstants.getUserFields();
-		fields.add(AccountConstants.getUserPasswordField());
-		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-				.table(AccountConstants.getUserModule().getTableName())
-				.fields(fields);
-
-		Map<String, Object> props = FieldUtil.getAsProperties(user);
-		insertBuilder.addRecord(props);
-		insertBuilder.save();
-		long userId = (Long) props.get("id");
-		user.setUid(userId);
-		return userId;
-	}
-
+	
 	private void addFacilioUser(User user){
 		Connection conn = null;
 		PreparedStatement pstmt = null;
