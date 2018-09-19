@@ -47,7 +47,7 @@ public enum InstantJobExecutor implements Runnable {
 
 	private int getNoOfFreeThreads(){
 		int freeCount = MAX_POOL_SIZE - THREAD_POOL_EXECUTOR.getActiveCount();
-		LOGGER.info("Instant jobs Free Count : "+freeCount);
+		LOGGER.debug("Instant jobs Free Count : "+freeCount);
 		return freeCount;
 	}
 
