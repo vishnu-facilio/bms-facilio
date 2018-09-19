@@ -36,7 +36,8 @@ public class ImportReadingJob extends FacilioJob {
 			Chain importReadingChain = FacilioChainFactory.getImportReadingChain();
 			importReadingChain.execute(context);
 
-			ImportAPI.updateImportProcess(importProcessContext, ImportProcessContext.ImportStatus.IMPORTED);
+			importProcessContext.setStatus(ImportProcessContext.ImportStatus.IMPORTED.getValue());
+			ImportAPI.updateImportProcess(importProcessContext);
 			LOGGER.severe("READING IMPORT COMPLETE");
 		} 
 		catch (Exception e) {

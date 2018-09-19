@@ -44,7 +44,7 @@ public class InsertReadingCommand implements Command {
 			meta.put("Inserted", groupedContext.size());
 			importProcessContext.setImportJobMeta(meta.toJSONString());
 		}
-		ImportAPI.updateImportProcess(importProcessContext);
+//		ImportAPI.updateImportProcess(importProcessContext);
 		context.put(ImportAPI.ImportProcessConstants.EMAIL_MESSAGE, emailMessage);
 		return false;
 	}

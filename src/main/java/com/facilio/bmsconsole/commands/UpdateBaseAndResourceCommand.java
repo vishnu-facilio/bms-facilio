@@ -24,7 +24,7 @@ public class UpdateBaseAndResourceCommand implements Command {
 		ArrayListMultimap<String, ReadingContext> groupedContext = (ArrayListMultimap<String, ReadingContext>) context.get(ImportAPI.ImportProcessConstants.GROUPED_READING_CONTEXT);
 		for(String module : groupedContext.keySet()) {
 			List<ReadingContext> readingsList = groupedContext.get(module);
-			String updateBaseQueryColumn = new String();
+			String updateBaseQueryColumn = null;
 			switch(module) {
 				case "site":
 					{
@@ -43,7 +43,8 @@ public class UpdateBaseAndResourceCommand implements Command {
 					break;
 				}
 			}
-			try { Connection con = FacilioConnectionPool.INSTANCE.getConnection();
+			if(updateBaseQueryColumn != null) {
+				try { Connection con = FacilioConnectionPool.INSTANCE.getConnection();
 				
 				for(int done= 0 ;done< readingsList.size();) {
 					String updateResourceQuery = "UPDATE Resources SET SPACE_ID = CASE ID";
@@ -75,6 +76,7 @@ public class UpdateBaseAndResourceCommand implements Command {
 				}catch(Exception e) {
 					LOGGER.severe(e.toString());
 				}
+			}
 		}
 		return false;
 	}

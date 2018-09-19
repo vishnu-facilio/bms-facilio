@@ -59,8 +59,8 @@ public class ImportDataJob extends FacilioJob {
 				ReadingsAPI.updateReadingDataMeta();
 			}
 			
-			
-			ImportAPI.updateImportProcess(importProcessContext,ImportProcessContext.ImportStatus.UPLOAD_COMPLETE);
+			importProcessContext.setStatus(ImportProcessContext.ImportStatus.IMPORTED.getValue());
+			ImportAPI.updateImportProcess(importProcessContext);
 			LOGGER.severe("IMPORT DATA JOB COMPLETED");
 		}
 		catch(Exception e) {

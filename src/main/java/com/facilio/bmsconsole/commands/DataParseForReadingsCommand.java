@@ -68,8 +68,8 @@ public class DataParseForReadingsCommand implements Command {
 		HashMap<String,String> fieldMapping = importTemplateContext.getFieldMapping();
 		HashMap<String,String> uniqueMapping = importTemplateContext.getUniqueMapping();
 		List<ReadingContext> readingContexts = new ArrayList<>();
-		importProcessContext.setStatus(ImportProcessContext.ImportStatus.IN_PROGRESS.getValue());
-		ImportAPI.updateImportProcess(importProcessContext);
+//		importProcessContext.setStatus(ImportProcessContext.ImportStatus.IN_PROGRESS.getValue());
+//		ImportAPI.updateImportProcess(importProcessContext);
 		fieldMapParsing(fieldMapping);
 		
 		List<String> moduleNames = new ArrayList<>(groupedFields.keySet());

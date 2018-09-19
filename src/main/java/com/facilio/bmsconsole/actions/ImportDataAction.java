@@ -191,7 +191,7 @@ public class ImportDataAction extends ActionSupport {
 //			ProcessSpaceXLS.processImport(importProcessContext);
 //			ImportAPI.updateImportProcess(getImportProcessContext());
 //		} 
-		
+		importProcessContext.setStatus(ImportProcessContext.ImportStatus.IN_PROGRESS.getValue());
 		ImportAPI.updateImportProcess(importProcessContext);
 		FacilioTimer.scheduleOneTimeJob(importProcessContext.getId(), "importData" , 5, "priority");
 		

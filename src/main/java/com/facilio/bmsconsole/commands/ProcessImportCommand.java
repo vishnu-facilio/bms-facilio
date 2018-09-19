@@ -76,8 +76,7 @@ public class ProcessImportCommand implements Command {
 	public boolean execute(Context c) throws Exception {
 
 		ArrayListMultimap<String, ReadingContext> groupedContext = ArrayListMultimap.create();
-		ImportProcessContext importProcessContext = (ImportProcessContext) c
-				.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
+		ImportProcessContext importProcessContext = (ImportProcessContext) c.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
 		HashMap<String, String> fieldMapping = importProcessContext.getFieldMapping();
 		fieldMapParsing(fieldMapping);
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
@@ -86,8 +85,8 @@ public class ProcessImportCommand implements Command {
 		List<String> moduleNames = new ArrayList<>(groupedFields.keySet());
 		Map<String, Long> lookupHolder;
 
-		importProcessContext.setStatus(ImportProcessContext.ImportStatus.IN_PROGRESS.getValue());
-		ImportAPI.updateImportProcess(importProcessContext);
+//		importProcessContext.setStatus(ImportProcessContext.ImportStatus.IN_PROGRESS.getValue());
+//		ImportAPI.updateImportProcess(importProcessContext);
 
 		HashMap<Integer, String> headerIndex = new HashMap<Integer, String>();
 
