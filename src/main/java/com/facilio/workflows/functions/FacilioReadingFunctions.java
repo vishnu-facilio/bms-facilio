@@ -1,14 +1,17 @@
 package com.facilio.workflows.functions;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.geometry.Space;
 
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
+import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.criteria.DateOperators;
@@ -54,7 +57,28 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 						}
 					}
 					else {
-						
+						List<BuildingContext> buildings = SpaceAPI.getSiteBuildings(baseSpaceId);
+						List<Long> buildingMeters = new ArrayList<>();
+						for(BuildingContext building :buildings) {
+							
+							energyMeters = DashboardUtil.getMainEnergyMeter(building.getId()+"");
+							if(energyMeters != null && !energyMeters.isEmpty()) {
+								buildingMeters.add(energyMeters.get(0).getId());
+							}
+						}
+						if(!buildingMeters.isEmpty()) {
+							List<Map<String, Object>> data = ReportsUtil.fetchMeterData(StringUtils.join(buildingMeters, ","),range.getStartTime(),range.getEndTime(),true);
+							double consumption = 0.0;
+							if(data != null && !data.isEmpty()) {
+								
+								for(Map<String, Object> energyData :data) {
+									Double consumptionTemp = (Double) energyData.get("CONSUMPTION");
+									
+									consumption += consumptionTemp;
+								}
+							}
+							return consumption;
+						}
 					}
 				break;
 				case BUILDING:
