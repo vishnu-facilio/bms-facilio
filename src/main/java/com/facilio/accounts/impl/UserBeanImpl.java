@@ -5,6 +5,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +14,7 @@ import java.util.Map;
 import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.logging.log4j.util.Strings;
 
 import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.Organization;
@@ -1349,6 +1352,26 @@ public class UserBeanImpl implements UserBean {
 				.table(AccountConstants.getGroupMemberModule().getTableName())
 				.andCustomWhere("ORG_USERID = ?", uid);
 		builder.delete();
+	}
+	
+	static Map<Long, List<Long>> getAccessibleSpaceList(Collection<Long> uids) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(AccountConstants.getAccessbileSpaceFields())
+				.table(ModuleFactory.getAccessibleSpaceModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("ORG_USER_ID", "ouid", Strings.join(uids, ','), NumberOperators.EQUALS));
+		
+		Map<Long, List<Long>> ouidsVsAccessibleSpace = new HashMap<>();
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			for(Map<String, Object> prop : props) {
+				if (ouidsVsAccessibleSpace.get(prop.get("ouid")) == null) {
+					ouidsVsAccessibleSpace.put((long) prop.get("ouid"), new ArrayList<>());
+				}
+				ouidsVsAccessibleSpace.get(prop.get("ouid")).add((Long) prop.get("bsid"));
+			}
+			return ouidsVsAccessibleSpace;
+		}
+		return Collections.emptyMap();
 	}
 
 	static List<Long> getAccessibleSpaceList (long uid) throws Exception {
