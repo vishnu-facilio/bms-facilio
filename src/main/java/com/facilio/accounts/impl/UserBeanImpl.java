@@ -221,7 +221,10 @@ public class UserBeanImpl implements UserBean {
 		
 
 		Map<String, Object> props = FieldUtil.getAsProperties(user);
+		if(user.password()!=null)
+		{
 		props.put("password", user.password());
+		}
 		int updatedRows = updateBuilder.update(props);
 		
 		GenericDeleteRecordBuilder relDeleteBuilder = new GenericDeleteRecordBuilder()

@@ -17,7 +17,6 @@ public class User implements Serializable {
 	
 	private long uid;
 	private String name;
-	private String cognitoId;
 	private String email;
 	private long photoId;
 	private String timezone;
