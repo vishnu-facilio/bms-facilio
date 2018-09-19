@@ -392,7 +392,6 @@ public class ImportAPI {
 				 }
 				 listOfIds.clear();
 				 listOfIds.add(spaceId);
-				 addReadingDataMeta(FacilioConstants.ContextNames.SPACE, listOfIds);
 			 }
 			}
 		return spaceId;
@@ -485,6 +484,7 @@ public class ImportAPI {
 		
 		try {
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule facilioModule = bean.getModule(module);
 			List<FacilioField> fieldsList= bean.getAllFields(module);
 
 			for(FacilioField field : fieldsList)
@@ -494,7 +494,7 @@ public class ImportAPI {
 					fields.add(field.getName());
 				}
 			}
-			if(module.equals(FacilioConstants.ContextNames.ASSET) || module.equals(FacilioConstants.ContextNames.ENERGY_METER)) {
+			if(facilioModule.getName().equals(FacilioConstants.ContextNames.ASSET) || (facilioModule.getExtendModule() != null && facilioModule.getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
 				
 				fields.remove("space");
 				fields.remove("localId");
