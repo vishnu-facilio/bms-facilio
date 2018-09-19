@@ -2177,6 +2177,13 @@
 			</result>
 		</action>
 		
+		<action name="siteMap" class="com.facilio.bmsconsole.actions.AlarmReportAction"
+			method="siteMap">
+				<result name="success" type="json">
+				<param name="root">alarmTypeStats</param>
+			</result>
+		</action>
+		
 		<action name="getAllBuildings" class="com.facilio.bmsconsole.actions.AlarmReportAction"
 			method="getAllBuildings">
 				<result name="success" type="json">
