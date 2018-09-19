@@ -46,7 +46,7 @@ public class FacilioUtil {
     	if(str == null) {
     		return false;
     	}
-    	return str.matches("-?\\d+(\\.\\d+)?");  //match a number with optional '-' and decimal.
+    	return str.matches("-?\\d+(\\.\\d+)?");  //match a number with optional '-' and decimal. eg  : (-10.23)
     }
     public static Map<String, Object> getAsMap(JSONObject object) throws JSONException {
 	    Map<String, Object> map = new HashMap<String, Object>();
