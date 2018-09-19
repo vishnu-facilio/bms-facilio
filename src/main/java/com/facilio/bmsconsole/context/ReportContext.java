@@ -84,7 +84,16 @@ public class ReportContext extends ModuleBaseWithCustomFields {
 	Integer limit;
 	Long reportEntityId;
 	List<ReportContext> comparingReportContexts;
+	JSONObject metaJson;
 	
+	public JSONObject getMetaJson() {
+		return metaJson;
+	}
+
+	public void setMetaJson(JSONObject metaJson) {
+		this.metaJson = metaJson;
+	}
+
 	private LegendMode legendMode;
 	
 	public void setLegendMode(LegendMode legendMode) {

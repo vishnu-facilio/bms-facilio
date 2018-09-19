@@ -4260,6 +4260,20 @@ public class DashboardAction extends ActionSupport {
 			groupByField.setName("groupBy");
 			fields.add(groupByField);
 			builder.groupBy("groupBy");
+			FacilioField severityfield = modBean.getField("severity", FacilioConstants.ContextNames.ALARM);
+			if(severityfield != null && severityfield.getId() == groupByField.getId()) {
+				JSONObject metaJson = new JSONObject();
+				
+				metaJson.put("Critical", "#ff5959");
+				metaJson.put("Major", "#e79958");
+				metaJson.put("Minor", "#e3c920");
+				metaJson.put("Warning", "#7daeec");
+				metaJson.put("Clear", "#6cbd85");
+				metaJson.put("Fire", "#ca0a0a");
+				metaJson.put("Info", "#086826");
+				
+				report.setMetaJson(metaJson);
+			}
 			groupByString = groupByString + ",groupBy";
 		}
 			
