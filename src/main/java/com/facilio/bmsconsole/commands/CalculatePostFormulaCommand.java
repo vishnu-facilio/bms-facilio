@@ -43,11 +43,8 @@ public class CalculatePostFormulaCommand implements Command {
 			Set<Long> fieldIds = metaList.stream().map(meta -> meta.getField().getId()).collect(Collectors.toSet());
 			
 			List<FormulaFieldContext> formulaFields = FormulaFieldAPI.getActiveFormulasDependingOnFields(TriggerType.POST_LIVE_READING, fieldIds);
-			
-			if (AccountUtil.getCurrentOrg().getId() == 88) {
-				LOGGER.info("Post Formulas of modules : "+readingMap.keySet());
-				LOGGER.info(formulaFields);
-			}
+			LOGGER.debug("Post Formulas of modules : "+readingMap.keySet());
+			LOGGER.debug(formulaFields);
 			if (formulaFields != null && !formulaFields.isEmpty()) {
 				Set<String> completedFormulas = new HashSet<>();
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -95,10 +92,7 @@ public class CalculatePostFormulaCommand implements Command {
 						context.put(FacilioConstants.ContextNames.MODULE_FIELD_MAP, fieldMap);
 						
 						FacilioTimer.scheduleInstantJob("PostFormulaCalculationJob", context);
-						
-						if (AccountUtil.getCurrentOrg().getId() == 88) {
-							LOGGER.info("Adding instant job for Post formula calculation for  : "+completedKey);
-						}
+						LOGGER.debug("Adding instant job for Post formula calculation for  : "+completedKey);
 						
 						completedFormulas.add(completedKey);
 					}
