@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
@@ -58,6 +59,7 @@ public class PostFormulaCalculationJob extends InstantJob {
 		}
 		catch (Exception e) {
 			LOGGER.error("Error occurred while calculating of "+formula+" for reading "+reading, e);
+			CommonCommandUtil.emailException("PostFormulaCalculationJob", "Error occurred while calculating of "+formula.getName(), e, "Error occurred while calculating of "+formula+" for reading "+reading);
 		}
 	}
 	
