@@ -1960,7 +1960,9 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(new ProcessImportCommand());
 		c.addCommand(new PopulateImportProcessCommand());
-		c.addCommand(new SendEmailCommand());
+		c.addCommand(new ForkChainToInstantJobCommand()
+				.addCommand(new UpdateBaseAndResourceCommand())
+				.addCommand(new SendEmailCommand()));
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}

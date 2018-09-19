@@ -102,9 +102,9 @@ public class ImportTemplateContext{
 		return uniqueMappingJSON;
 	}
 	
-//	public void setUniqueMappingJSON(JSONObject uniqueMappingJSON) {
-//		this.uniqueMappingJSON = uniqueMappingJSON;
-//	}
+	public void setUniqueMappingJSON(JSONObject uniqueMappingJSON) {
+		this.uniqueMappingJSON = uniqueMappingJSON;
+	}
 	
 	public JSONObject getFieldMappingJSON() throws ParseException{
 		if(fieldMappingString != null) {

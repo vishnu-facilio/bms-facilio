@@ -355,7 +355,6 @@ public class PopulateImportProcessCommand implements Command {
 					continue;
 				}
 				else {
-				updateBaseAndResourceTables(readingsList, moduleName);
 				}
 		
 			}
@@ -400,57 +399,4 @@ public static ReadingContext getAssetNames(ImportProcessContext importProcessCon
 	}
 }
 
-public static void updateBaseAndResourceTables(List<ReadingContext> readingsList, String moduleName) {
-	String updateBaseQueryColumn = new String();
-	switch(moduleName) {
-		case "site":
-			{
-				updateBaseQueryColumn ="SITE_ID";
-				break;
-			}
-		case "building":{
-			updateBaseQueryColumn ="BUILDING_ID";
-			break;
-		}
-		case "floor":{
-			updateBaseQueryColumn = "FLOOR_ID";
-			break;
-		}
-		default:{
-			break;
-		}
-	}
-	try { Connection con = FacilioConnectionPool.INSTANCE.getConnection();
-		
-		for(int done= 0 ;done< readingsList.size();) {
-			String updateResourceQuery = "UPDATE Resources SET SPACE_ID = CASE ID";
-			String updateBaseSpaceQuery = "UPDATE BaseSpace SET "+ updateBaseQueryColumn +" = CASE ID";
-			
-			List<ReadingContext> tempList = new ArrayList<>();
-			int remaining  = readingsList.size() - done;
-			if(remaining > 1000) {
-				tempList = readingsList.subList(done,done+1000);
-			}
-			else {
-				tempList = readingsList.subList(done, done+ remaining);
-			}
-			for(int temp1=0; temp1 < tempList.size() ; temp1++) {
-				updateResourceQuery = updateResourceQuery + " WHEN " + readingsList.get(temp1).getId() + " THEN " + readingsList.get(temp1).getId();
-				updateBaseSpaceQuery = updateBaseSpaceQuery + " WHEN " + readingsList.get(temp1).getId() + " THEN " + readingsList.get(temp1).getId();
-			}
-			
-			updateResourceQuery = updateResourceQuery + " else SPACE_ID end;";
-			PreparedStatement pstmt = con.prepareStatement(updateResourceQuery, Statement.RETURN_GENERATED_KEYS);
-			pstmt.executeUpdate();
-			updateBaseSpaceQuery = updateBaseSpaceQuery + " else " + updateBaseQueryColumn + " end;";
-			PreparedStatement basepstmt = con.prepareStatement(updateBaseSpaceQuery, Statement.RETURN_GENERATED_KEYS);
-			basepstmt.executeUpdate();
-			
-			done = done + tempList.size();
-			LOGGER.severe("UPDATED BASE and RESOURCE");
-		}
-		}catch(Exception e) {
-			LOGGER.severe(e.toString());
-		}
-	}
 }

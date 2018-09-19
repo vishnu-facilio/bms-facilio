@@ -9,6 +9,7 @@ import org.apache.poi.hssf.record.SelectionRecord;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.GenericDeleteForSpaces;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -20,8 +21,10 @@ import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class ImportTemplateAction extends FacilioAction {
 	ImportTemplateContext importTemplateContext;
@@ -40,6 +43,15 @@ public class ImportTemplateAction extends FacilioAction {
 		setResult("templateId", (Long) props.get("id"));
 		return SUCCESS;
 	}
+	public String deleteTemplate() throws Exception {
+		GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder();
+		FacilioModule importtemplateModule = ModuleFactory.getImportTemplateModule();
+		List<FacilioField> fields = FieldFactory.getImportTemplateFields();
+		updateRecordBuilder.table(importtemplateModule.getTableName()).fields(fields).andCustomWhere("ID = ?", importTemplateContext.getId());
+		Map<String,Object> props = FieldUtil.getAsProperties(importTemplateContext);
+		updateRecordBuilder.update(props);
+		return SUCCESS;
+	}
 	
 	public ImportTemplateContext getImportTemplateContext() {
 		return importTemplateContext;
@@ -54,8 +66,9 @@ public class ImportTemplateAction extends FacilioAction {
 		List<FacilioField> fields = FieldFactory.getImportTemplateFields();
 		
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder();
-		selectRecordBuilder.table(module.getTableName()).select(fields);
+		selectRecordBuilder.table(module.getTableName()).select(fields).andCustomWhere("SYS_SHOW IS NULL").andCustomWhere(module.getTableName()+ ".ORGID = ?", AccountUtil.getCurrentOrg().getId());
 		List<Map<String,Object>> props = selectRecordBuilder.get();
+		
 		if(props.isEmpty()) {
 			setResult("importTemplateContext", null);
 		}
