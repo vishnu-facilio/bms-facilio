@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.license.LicenseContext.FacilioLicense;
+import org.apache.struts2.json.annotations.JSON;
 
 public class User implements Serializable {
 	
@@ -84,15 +85,12 @@ public class User implements Serializable {
 	public void setName(String name) {
 		this.name = name;
 	}
-/*	public String getCognitoId() {
-		return cognitoId;
-	}
-	public void setCognitoId(String cognitoId) {
-		this.cognitoId = cognitoId;
-	}*/
-	public String password() {
+
+	@JSON(serialize=false)
+	public String getPassword() {
 		return password;
 	}
+
 	public void setPassword(String password) {
 		this.password = password;
 	}
@@ -126,7 +124,7 @@ public class User implements Serializable {
 	public void setAvatarUrl(String avatarUrl) {
 		this.avatarUrl = avatarUrl;
 	}
-	
+
 	public void setPhotoId(long photoId) {
 		this.photoId = photoId;
 	}

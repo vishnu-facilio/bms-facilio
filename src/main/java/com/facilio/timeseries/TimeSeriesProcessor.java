@@ -184,6 +184,8 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 		device.put("deviceId", deviceId);
 		device.put("inUse", true);
 		device.put("lastUpdatedTime", System.currentTimeMillis());
+		device.put("lastAlertedTime", 0L);
+		device.put("alertFrequency", 2400000L);
 		long id = builder.insert(device);
 		deviceMap.put(deviceId, id);
 	}

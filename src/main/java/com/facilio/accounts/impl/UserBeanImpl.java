@@ -16,10 +16,8 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
 
-import com.facilio.accounts.bean.OrgBean;
 import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.Organization;
-import com.facilio.accounts.impl.OrgBeanImpl;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
 import com.facilio.accounts.exception.AccountException;
@@ -128,11 +126,7 @@ public class UserBeanImpl implements UserBean {
 				.fields(fields);
 
 		Map<String, Object> props = FieldUtil.getAsProperties(user);
-	
-		if(user.password()!=null)
-		{
-		props.put("password", user.password());
-		}
+
 		insertBuilder.addRecord(props);
 		insertBuilder.save();
 		long userId = (Long) props.get("id");
@@ -226,10 +220,6 @@ public class UserBeanImpl implements UserBean {
 		
 
 		Map<String, Object> props = FieldUtil.getAsProperties(user);
-		if(user.password()!=null)
-		{
-		props.put("password", user.password());
-		}
 		int updatedRows = updateBuilder.update(props);
 		
 		GenericDeleteRecordBuilder relDeleteBuilder = new GenericDeleteRecordBuilder()
@@ -241,11 +231,7 @@ public class UserBeanImpl implements UserBean {
 			insertShiftRel(user.getOuid(), user.getShiftId());
 		}
 		
-		if (updatedRows > 0) {
-			return true;
-		}
-		
-		return false;
+		return (updatedRows > 0);
 	}
 	
 	@Override
