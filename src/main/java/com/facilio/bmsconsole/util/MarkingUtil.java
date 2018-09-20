@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +15,10 @@ import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.MarkedReadingContext;
 import com.facilio.bmsconsole.context.MarkedReadingContext.MarkType;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -72,19 +77,20 @@ public static List<Double> getActualValues(long resourceId, long fieldId, long t
 	
 	List<Double> actualValList = new ArrayList<>();
 	FacilioModule module=ModuleFactory.getMarkedReadingModule();
-	FacilioField actualValFld=FieldFactory.getField("actualValue", "ACTUAL_VALUE", module, FieldType.STRING);
-	List<FacilioField> fields = new ArrayList<>();
-	fields.add(actualValFld);
+	List<FacilioField> fields = FieldFactory.getMarkedReadingFields();
+	Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+	FacilioField actualValFld = fieldMap.get("actualValue");
 	
 	GenericSelectRecordBuilder actualValueBuilder = new GenericSelectRecordBuilder()
-			.select(fields)
+			.select(Collections.singletonList(actualValFld))
 			.table(module.getTableName())
-			.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
-			.andCustomWhere("RESOURCE_ID = ?", resourceId)
-			.andCustomWhere("FIELD_ID", fieldId)
-			.andCustomWhere("TTIME >= ?", ttime)
-			.andCustomWhere("MARK_TYPE = ?", type)
-			.orderBy("TTIME");
+			.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+			.andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceId"), String.valueOf(resourceId), PickListOperators.IS))
+			.andCondition(CriteriaAPI.getCondition(fieldMap.get("fieldId"), String.valueOf(fieldId), PickListOperators.IS))
+			.andCondition(CriteriaAPI.getCondition(fieldMap.get("ttime"), String.valueOf(ttime), NumberOperators.GREATER_THAN_EQUAL))
+			.andCondition(CriteriaAPI.getCondition(fieldMap.get("markType"), String.valueOf(type.getValue()), NumberOperators.EQUALS))
+			.orderBy("TTIME")
+			;
 	try {
 
 		List<Map<String, Object>> actualValMap = actualValueBuilder.get();
