@@ -541,6 +541,9 @@ public class ReadingsAPI {
 	}
 	
 	public static void updateReadingDataMeta() throws Exception {
+		updateReadingDataMeta(false);
+	}
+	public static void updateReadingDataMeta(boolean isFromAssetImport) throws Exception {
 
 		List<ResourceContext> resourcesList= ResourceAPI.getAllResources();
 		long orgId=AccountUtil.getCurrentOrg().getOrgId();
@@ -556,11 +559,14 @@ public class ReadingsAPI {
 			long resourceId=resource.getId();
 			FacilioContext context = new FacilioContext();
 			
+			
 			if(resourceType==ResourceContext.ResourceType.SPACE.getValue()) {
-				context.put(FacilioConstants.ContextNames.PARENT_ID, resourceId);
-				Chain getSpaceSpecifcReadingsChain = FacilioChainFactory.getSpaceReadingsChain();
-				getSpaceSpecifcReadingsChain.execute(context);
-				moduleList = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
+				if(!isFromAssetImport) {
+					context.put(FacilioConstants.ContextNames.PARENT_ID, resourceId);
+					Chain getSpaceSpecifcReadingsChain = FacilioChainFactory.getSpaceReadingsChain();
+					getSpaceSpecifcReadingsChain.execute(context);
+					moduleList = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
+				}
 			}
 			else if(resourceType==ResourceContext.ResourceType.ASSET.getValue()) {
 				context.put(FacilioConstants.ContextNames.PARENT_ID, resourceId);

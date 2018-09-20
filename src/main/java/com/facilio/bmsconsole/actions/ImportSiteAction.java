@@ -47,10 +47,6 @@ public class ImportSiteAction {
 																.moduleName(module.getName())
 																.table(module.getTableName())
 																.fields(modBean.getAllFields(module.getName()));
-			
-				
-				
-				
 				
 				long id = builder.insert(site);
 				System.out.println("Site created with the following Id :"+id);

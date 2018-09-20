@@ -54,9 +54,8 @@ public class ImportDataJob extends FacilioJob {
 				bulkAssetImportChain.execute(context);
 			}
 			
-			
 			if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) || (importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
-				ReadingsAPI.updateReadingDataMeta();
+				ReadingsAPI.updateReadingDataMeta(true);
 			}
 			
 			importProcessContext.setStatus(ImportProcessContext.ImportStatus.IMPORTED.getValue());
