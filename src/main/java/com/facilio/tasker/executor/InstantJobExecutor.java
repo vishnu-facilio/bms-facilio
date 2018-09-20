@@ -58,24 +58,28 @@ public enum InstantJobExecutor implements Runnable {
 	        if(messageList != null) {
 	            for (ObjectMessage message : messageList) {
                     FacilioContext context = (FacilioContext) message.getSerializable();
-                    String jobName = (String) context.get(InstantJobConf.getJobNameKey());
-                    LOGGER.debug("Gonna Execute job : "+jobName);
-                    if (jobName != null) {
-                        InstantJobConf.Job instantJob = FacilioScheduler.getInstantJob(jobName);
-                        if (instantJob != null) {
-                            Class<? extends InstantJob> jobClass = instantJob.getClassObject();
-                            if (jobClass != null) {
-                                try {
-                                    final InstantJob job = jobClass.newInstance();
-                                    job.setReceiptHandle(message.getReceiptHandle());
-                                    LOGGER.debug("Executing job : "+jobName);
-                                    THREAD_POOL_EXECUTOR.execute(() -> job._execute(context));
-                                } catch (InstantiationException | IllegalAccessException e) {
-                                   LOGGER.info("Exception while executing job " + e);
-                                }
-                            }
-                        }
-                    }
+                    if(context != null) {
+						String jobName = (String) context.get(InstantJobConf.getJobNameKey());
+						LOGGER.debug("Gonna Execute job : " + jobName);
+						if (jobName != null) {
+							InstantJobConf.Job instantJob = FacilioScheduler.getInstantJob(jobName);
+							if (instantJob != null) {
+								Class<? extends InstantJob> jobClass = instantJob.getClassObject();
+								if (jobClass != null) {
+									try {
+										final InstantJob job = jobClass.newInstance();
+										job.setReceiptHandle(message.getReceiptHandle());
+										LOGGER.debug("Executing job : " + jobName);
+										THREAD_POOL_EXECUTOR.execute(() -> job._execute(context));
+									} catch (InstantiationException | IllegalAccessException e) {
+										LOGGER.info("Exception while executing job " + e);
+									}
+								}
+							}
+						}
+					} else {
+                    	ObjectQueue.deleteObject(InstantJobConf.getInstantJobQueue(), message.getReceiptHandle());
+					}
 	            }
 	        }
 			try {

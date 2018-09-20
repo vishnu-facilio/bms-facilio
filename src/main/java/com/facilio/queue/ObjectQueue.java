@@ -27,11 +27,16 @@ public class ObjectQueue {
         List<ObjectMessage> serializableList = new ArrayList<>();
         for (QueueMessage message: receivedMessages) {
             String serialized = message.getMessage();
-            if (serialized == null) {
-                return null;
-            }
             ObjectMessage objectMessage = new ObjectMessage(message.getId(), message.getMessage());
-            objectMessage.setSerializable(SerializationUtils.deserialize(Base64.decode(serialized)));
+            Object deserializedObject = null;
+            try {
+                if(serialized != null) {
+                    deserializedObject = SerializationUtils.deserialize(Base64.decode(serialized));
+                }
+            } catch (Exception e) {
+                LOGGER.info("Exception while deserializing msg :  "+ serialized);
+            }
+            objectMessage.setSerializable(deserializedObject);
             objectMessage.setReceiptHandle(message.getReceiptHandle());
             serializableList.add(objectMessage);
         }
