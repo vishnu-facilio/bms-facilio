@@ -61,4 +61,11 @@ public class ReadOnlyChainFactory extends FacilioChainFactory {
 		c.addCommand(new GetLatestReadingDataCommand());
 		return c;
 	}
+	
+	public static Chain fetchScheduledReportsChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new ScheduledV2ReportListCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
 }

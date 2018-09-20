@@ -358,6 +358,15 @@
 		</action>
 	</package>
 	
+	<package name="scheduledReportApiv2" namespace="/api/v2/report/scheduled" extends="v2Api">
+		<action name="edit" class="com.facilio.bmsconsole.actions.V2ReportAction" method="editScheduledReport">
+		</action>
+		<action name="delete" class="com.facilio.bmsconsole.actions.V2ReportAction" method="deleteScheduledReport">
+		</action>
+		<action name="*" class="com.facilio.bmsconsole.actions.V2ReportAction" method="scheduledList">
+			<param name="moduleName">{1}</param>
+		</action>
+	</package>
 	
 	<package name="resourceApiv2" namespace="/api/v2/resource" extends="v2Api">
 		<action name="getResourcesDetails" class="com.facilio.bmsconsole.actions.ResourceAction" method="getResources">

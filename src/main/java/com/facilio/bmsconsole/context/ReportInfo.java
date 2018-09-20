@@ -1,17 +1,11 @@
 package com.facilio.bmsconsole.context;
 
-import java.util.List;
-
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.templates.EMailTemplate;
-import com.facilio.bmsconsole.util.ExportUtil;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
-import com.facilio.pdf.PdfUtil;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.tasker.job.JobContext;
 
@@ -35,6 +29,14 @@ public class ReportInfo {
 		this.reportId = reportId;
 	}
 	
+	private String name;	// Report name
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	private FileFormat fileFormat;
 	public int getFileFormat() {
 		if (fileFormat != null) {
@@ -100,6 +102,10 @@ public class ReportInfo {
 	
 	private EMailTemplate emailTemplate;
 	public EMailTemplate getEmailTemplate() {
+		if (emailTemplate != null) {
+			emailTemplate.setName("Report");
+			emailTemplate.setFrom("report@${org.domain}.facilio.com");
+		}
 		return emailTemplate;
 	}
 	public void setEmailTemplate(EMailTemplate emailTemplate) {
@@ -122,12 +128,28 @@ public class ReportInfo {
 		this.scheduleInfo = scheduleInfo;
 	}
 	
-	private long startTime;
+	private long startTime = -1;
 	public long getStartTime() {
 		return startTime;
 	}
 	public void setStartTime(long startTime) {
 		this.startTime = startTime;
+	}
+	
+	private long endTime = -1;
+	public long getEndTime() {
+		return endTime;
+	}
+	public void setEndTime(long endTime) {
+		this.endTime = endTime;
+	}
+	
+	private int maxCount = -1;
+	public int getMaxCount() {
+		return maxCount;
+	}
+	public void setMaxCount(int maxCount) {
+		this.maxCount = maxCount;
 	}
 	
 	private JobContext job;
@@ -138,15 +160,4 @@ public class ReportInfo {
 		this.job = job;
 	}
 	
-	public String getFileUrl(List<ModuleBaseWithCustomFields> records) throws Exception {
-		String fileUrl = null;
-		FileFormat fileFormat = FileFormat.getFileFormat(type);
-		if(fileFormat == FileFormat.PDF) {
-			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(), "/app/em/reports/view/"+reportContext.getId(), null);
-		}
-		else {
-			fileUrl = ExportUtil.exportData(fileFormat, getModule(), view.getFields(), records);
-		}
-		return fileUrl;
-	}
 }
