@@ -136,11 +136,15 @@ public class ProcessImportCommand implements Command {
 						val = cell.getStringCellValue();
 					} else if (cell.getCellTypeEnum() == CellType.NUMERIC
 							|| cell.getCellTypeEnum() == CellType.FORMULA) {
-						if (HSSFDateUtil.isCellDateFormatted(cell)) {
+						if (cell.getCellTypeEnum() == CellType.NUMERIC && HSSFDateUtil.isCellDateFormatted(cell)) {
 							Date date = cell.getDateCellValue();
 							Instant date1 = date.toInstant();
 							val = (Long) date1.getEpochSecond() * 1000;
-						} else {
+						} 
+						else if(cell.getCellTypeEnum() == CellType.FORMULA) {
+							val = cell.getStringCellValue();
+						}
+						else {
 							val = cell.getNumericCellValue();
 						}
 					} else if (cell.getCellTypeEnum() == CellType.BOOLEAN) {
