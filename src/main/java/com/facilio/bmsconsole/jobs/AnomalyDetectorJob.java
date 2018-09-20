@@ -379,9 +379,10 @@ public class AnomalyDetectorJob extends FacilioJob {
 			AssetContext asset = AssetsAPI.getAssetInfo(meterId);
 			String assetName = asset.getName();
 
+			String message = "Anomaly Detected. Energy meter reading is "
+			+ df_one_decimal.format(context.getOutlierDistance()) + "% more than the expected value";
 			JSONObject obj = new JSONObject();
-			obj.put("message", "Anomaly Detected. Deviated from normal by "
-					+ df_one_decimal.format(context.getOutlierDistance()) + "%");
+			obj.put("message", message);
 			obj.put("source", assetName);
 			obj.put("entity", assetName);
 			obj.put("resourceId", meterId);
@@ -393,7 +394,7 @@ public class AnomalyDetectorJob extends FacilioJob {
 			obj.put("readingFieldId", consumptionField.getFieldId());
 			obj.put("readingDataId", context.getId());
 			obj.put("startTime", context.getTtime());
-			obj.put("readingMessage", "");
+			obj.put("readingMessage", message);
 
 			FacilioContext addEventContext = new FacilioContext();
 			addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, obj);

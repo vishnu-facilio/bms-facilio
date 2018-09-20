@@ -124,8 +124,7 @@ public class AnomalySchedulerUtil {
 				.andCustomWhere("TTIME >= ? AND TTIME < ? AND PARENT_METER_ID=? " + 
 						" AND TOTAL_ENERGY_CONSUMPTION_DELTA IS NOT NULL  " + 
 						" AND (MARKED is NULL OR MARKED = 0) ",
-						startTime, endTime, meterID)
-			    .orderBy("TTIME");
+						startTime, endTime, meterID);
 	
 		List<Map<String, Object>> props = selectBuilder.getAsProps();
 		if (props != null && !props.isEmpty()) {
@@ -197,8 +196,7 @@ public class AnomalySchedulerUtil {
 				.moduleName(moduleName)
 				.beanClass(ReadingContext.class)
 				.andCustomWhere("TTIME >= ? AND TTIME < ? AND PARENT_ID = ? ",
-						startTime, endTime, siteIdOfEnergyMeter)
-				.orderBy("TTIME");
+						startTime, endTime, siteIdOfEnergyMeter);
 
 		List<Map<String,Object>> weatherReadings= builder.getAsProps();
 
