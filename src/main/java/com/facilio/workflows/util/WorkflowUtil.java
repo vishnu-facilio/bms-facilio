@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -75,6 +76,7 @@ import com.facilio.workflows.functions.FacilioWorkflowFunctionInterface;
 import com.facilio.workflows.functions.ThermoPhysicalR134aFunctions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.udojava.evalex.Expression;
 
 public class WorkflowUtil {
 	
@@ -202,6 +204,7 @@ public class WorkflowUtil {
 	static final String NAME_STRING =  "name";
 	static final String CONSTANT_STRING =  "constant";
 	static final String FUNCTION_STRING =  "function";
+	static final String EXPR_STRING =  "expr";
 	static final String MODULE_STRING =  "module";
 	static final String FIELD_STRING =  "field";
 	static final String AGGREGATE_STRING =  "aggregate";
@@ -866,14 +869,22 @@ public class WorkflowUtil {
             
             NodeList valueNodes = expression.getElementsByTagName(CONSTANT_STRING);
             NodeList functionNodes = expression.getElementsByTagName(FUNCTION_STRING);
-            
+            NodeList exprNodes = expression.getElementsByTagName(EXPR_STRING);
            
-            if(valueNodes.getLength() > 0 ) {
+            if(valueNodes.getLength() > 0) {
             	Node valueNode =  valueNodes.item(0);
             	if (valueNode.getNodeType() == Node.ELEMENT_NODE) {
             		Element value = (Element) valueNode;
             		String valueString = value.getTextContent();
             		expressionContext.setConstant(valueString);
+            	}
+            }
+            else if(exprNodes.getLength() > 0 ) {
+            	Node valueNode =  exprNodes.item(0);
+            	if (valueNode.getNodeType() == Node.ELEMENT_NODE) {
+            		Element value = (Element) valueNode;
+            		String valueString = value.getTextContent();
+            		expressionContext.setExpr(valueString);
             	}
             }
             else if (functionNodes.getLength() > 0) {
@@ -1313,5 +1324,26 @@ public class WorkflowUtil {
 		FacilioFunctionsParamType param = FacilioFunctionsParamType.getFacilioDefaultFunction(value);
 		param.setFieldName(fieldName);
 		return param;
+	}
+	
+	public static Object evaluateExpression(String exp,Map<String,Object> variablesMap, boolean ignoreNullValues) {
+
+		LOGGER.fine("EXPRESSION STRING IS -- "+exp+" variablesMap -- "+variablesMap);
+		if(exp == null) {
+			return null;
+		}
+		Expression expression = new Expression(exp);
+		for(String key : variablesMap.keySet()) {
+			String value = "0";
+			if(variablesMap.get(key) != null) {
+				value = variablesMap.get(key).toString();
+			}
+			else if (!ignoreNullValues) {
+				return null;
+			}
+			expression.with(key, value);
+		}
+		BigDecimal result = expression.eval();
+		return result.doubleValue();
 	}
 }

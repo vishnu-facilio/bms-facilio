@@ -237,7 +237,7 @@ public class WorkflowContext implements Serializable {
 			LOGGER.info("variableToExpresionMap --- "+variableResultMap+" \n\n"+"expString --- "+getResultEvaluator());
 		}
 		
-		result =  evaluateExpression(getResultEvaluator(),variableResultMap, ignoreNullValues);
+		result =  WorkflowUtil.evaluateExpression(getResultEvaluator(),variableResultMap, ignoreNullValues);
 		if (AccountUtil.getCurrentOrg().getId() == 88 && "(b == false) && (c >= 3) && (d >= 3)".equals(getResultEvaluator())) {
 			LOGGER.info("result --- "+result);
 		}
@@ -270,27 +270,6 @@ public class WorkflowContext implements Serializable {
 		expressionContext = WorkflowUtil.getExpressionContextFromExpressionString(expressionString);
 		
 		return expressionContext;
-	}
-	
-	private Object evaluateExpression(String exp,Map<String,Object> variablesMap, boolean ignoreNullValues) {
-
-		LOGGER.fine("EXPRESSION STRING IS -- "+exp+" variablesMap -- "+variablesMap);
-		if(exp == null) {
-			return null;
-		}
-		Expression expression = new Expression(exp);
-		for(String key : variablesMap.keySet()) {
-			String value = "0";
-			if(variablesMap.get(key) != null) {
-				value = variablesMap.get(key).toString();
-			}
-			else if (!ignoreNullValues) {
-				return null;
-			}
-			expression.with(key, value);
-		}
-		BigDecimal result = expression.eval();
-		return result.doubleValue();
 	}
 	
 	public boolean isSingleExpression() {

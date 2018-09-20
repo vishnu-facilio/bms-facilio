@@ -47,7 +47,16 @@ public class ExpressionContext implements Serializable {
 	String groupBy;
 	Map<Integer,Long> conditionSeqVsBaselineId;
 	WorkflowContext workflowContext;
+	String expr;
 	
+	public String getExpr() {
+		return expr;
+	}
+
+	public void setExpr(String expr) {
+		this.expr = expr;
+	}
+
 	public WorkflowContext getWorkflowContext() {
 		return workflowContext;
 	}
@@ -225,6 +234,9 @@ public class ExpressionContext implements Serializable {
 		}
 		if(getConstant() != null) {
 			return getConstant();
+		}
+		if(getExpr() != null) {
+			return WorkflowUtil.evaluateExpression(getExpr(), variableToExpresionMap, workflowContext.isIgnoreNullParams());
 		}
 		if(getWorkflowContext() != null && getWorkflowContext().isGetDataFromCache() && this.getWorkflowContext().getCachedData() != null) {
 			
