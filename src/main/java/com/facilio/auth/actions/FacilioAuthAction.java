@@ -379,7 +379,7 @@ public class FacilioAuthAction extends ActionSupport {
             Organization org = AccountUtil.getOrgBean().getOrg(user.getOrgId());
             invitation.put("email", user.getEmail());
             invitation.put("orgname", org.getName());
-            if(user.password() == null) {
+            if(user.getPassword() == null) {
                 invitation.put("account_exists", false);
             } else {
                 invitation.put("account_exists", true);
