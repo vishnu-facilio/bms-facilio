@@ -8,9 +8,11 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
@@ -434,6 +436,26 @@ public class CommonCommandUtil {
 		}
 		return result;		
 	}
+    
+    public static List<Long> getMySiteIds() throws Exception {
+    	FacilioModule accessibleSpaceMod = ModuleFactory.getAccessibleSpaceModule();
+		GenericSelectRecordBuilder selectAccessibleBuilder = new GenericSelectRecordBuilder()
+				.select(AccountConstants.getAccessbileSpaceFields())
+				.table(accessibleSpaceMod.getTableName())
+				.andCustomWhere("ORG_USER_ID = ?", AccountUtil.getCurrentAccount().getUser().getOuid());
+		List<Map<String, Object>> props = selectAccessibleBuilder.get();
+		Set<Long> siteIds = new HashSet<>();
+		if (props != null && !props.isEmpty()) {
+			for(Map<String, Object> prop : props) {
+				Long siteId = (Long) prop.get("siteId");
+				if (siteId != null) {
+					siteIds.add(siteId);
+				}
+			}
+		}
+		List<Long> toArray = new ArrayList<>(siteIds);
+		return toArray;
+    }
     
     public static List<BaseSpaceContext> getMySites() throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
