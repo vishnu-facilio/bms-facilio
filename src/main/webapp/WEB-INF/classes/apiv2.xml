@@ -81,6 +81,7 @@
 		<action name="save" class="com.facilio.bmsconsole.actions.ImportTemplateAction" method="saveImportTemplate">
 		<param name="permission">DATA_ADMINISTRATION</param>
 		</action>
+		<action name="deletetemplate" class="com.facilio.bmsconsole.actions.ImportTemplateAction" method="deleteTemplate"></action>
 	</package>
 
 	<package name="workOrderApiV2" namespace="/api/v2/workorders" extends="v2Api">
