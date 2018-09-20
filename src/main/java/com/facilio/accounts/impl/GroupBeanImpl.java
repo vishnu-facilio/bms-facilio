@@ -361,8 +361,10 @@ public class GroupBeanImpl implements GroupBean {
 			}
 			Map<Long, List<Long>> ouidVsAccSpace = UserBeanImpl.getAccessibleSpaceList(ouids);
 			for (Group group: groups) {
-				for (GroupMember member: group.getMembers()) {
-					member.setAccessibleSpace(ouidVsAccSpace.get(member.getOuid()));
+				if (group.getMembers() != null) {
+					for (GroupMember member: group.getMembers()) {
+						member.setAccessibleSpace(ouidVsAccSpace.get(member.getOuid()));
+					}
 				}
 			}
 			return groups;
