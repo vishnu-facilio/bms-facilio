@@ -6,15 +6,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.criteria.BuildingOperator;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -310,6 +315,40 @@ public class AlarmReportAction extends ActionSupport {
 					buildingObj.put("stats", getBuildingAlarmTypeStats(building.getId()));
 					
 					alarmTypeStats.add(buildingObj);
+				}
+			}
+			catch(Exception e) {
+				log.info("Exception occurred ", e);
+				throw e;
+			}
+		}
+		return SUCCESS;
+	}
+	
+	public String siteMap() throws Exception {
+		alarmTypeStats = new JSONArray();
+		List<SiteContext> sites = SpaceAPI.getAllSites();
+		if(sites != null && !sites.isEmpty()) {
+			try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+				for(SiteContext site : sites) {
+					
+					if(site.getLocation() != null && site.getLocation().getId() > 0) {
+						FacilioContext context = new FacilioContext();
+						context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.LOCATION);
+						context.put(FacilioConstants.ContextNames.ID, site.getLocation().getId());
+						Chain getLocationChain = FacilioChainFactory.getLocationChain();
+						getLocationChain.execute(context);
+						
+						if(context.get(FacilioConstants.ContextNames.LOCATION) != null ) {
+							site.setLocation((LocationContext)context.get(FacilioConstants.ContextNames.LOCATION));
+						}
+					}
+					JSONObject siteObj = new JSONObject();
+					
+					siteObj.put("siteMeta", site);
+					siteObj.put("stats", getBuildingAlarmTypeStats(site.getId()));
+					
+					alarmTypeStats.add(siteObj);
 				}
 			}
 			catch(Exception e) {

@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.impl.ChainBase;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory.FacilioChain;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -101,7 +102,36 @@ public class TransactionChainFactory {
 			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}
-	
+		public static Chain getEditControllerChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new EditControllerSettingsCommand());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
+		public static Chain scheduleReportChain() {
+			Chain c = new ChainBase();
+			c.addCommand(new AddTemplateCommand());
+			c.addCommand(new ScheduleV2ReportCommand());
+			return c;
+		}
+		
+		public static Chain updateScheduledReportsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddTemplateCommand());
+			c.addCommand(new DeleteScheduledReportsCommand(true));
+			c.addCommand(new ScheduleV2ReportCommand());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
+		public static Chain deleteScheduledReportsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new DeleteScheduledReportsCommand(true));
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
 	    protected static Chain getDefaultChain()
 	    {
 	    	    return new FacilioChain(true);

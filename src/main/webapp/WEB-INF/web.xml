@@ -10,20 +10,7 @@
         /WEB-INF/tiles.xml
     </param-value>
 </context-param>
-    
-<context-param>
-    <param-name>DOMAINNAME</param-name>
-    <param-value>.facilstack.com</param-value>
-</context-param>
-<context-param>
-    <param-name>SERVICEPORTAL_DOMAIN</param-name>
-    <param-value>facilioportal.com</param-value>
-</context-param>    
-<context-param>
-    <param-name>M_DOMAINNAME</param-name>
-    <param-value>.mfacilio.com</param-value>
-</context-param> 
-    
+
 <listener>
     <listener-class>org.apache.tiles.web.startup.simple.SimpleTilesListener</listener-class>
 </listener>
@@ -131,13 +118,13 @@
     </filter-mapping>
     <filter-mapping>
         <filter-name>struts2</filter-name>
-        <url-pattern>/app/admin/*</url-pattern>
+        <url-pattern>/admin/*</url-pattern>
     </filter-mapping>
     
 
-<servlet>
+    <servlet>
         <servlet-name>clientapp</servlet-name>
-        <jsp-file>/index.html</jsp-file>                        
+        <jsp-file>/index.html</jsp-file>
     </servlet>
     <servlet-mapping>
         <servlet-name>clientapp</servlet-name>

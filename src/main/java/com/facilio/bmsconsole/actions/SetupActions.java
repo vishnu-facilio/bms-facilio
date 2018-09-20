@@ -12,6 +12,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
 import com.facilio.bmsconsole.context.CalendarColorContext;
 import com.facilio.bmsconsole.context.ControllerContext;
@@ -334,6 +335,17 @@ public String importData() throws Exception {
 		
 		controllerSettingsId = controllerSettings.getId();
 		return SUCCESS;	
+	}
+	
+	public String editControllerSettings() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.CONTROLLER_SETTINGS, controllerSettings);
+		
+		Chain editControllerSettings = TransactionChainFactory.getEditControllerChain();
+		editControllerSettings.execute(context);
+		
+		controllerSettingsId = controllerSettings.getId();
+		return SUCCESS; 
 	}
 	
 	public String updateSupportEmailSetting() throws Exception {

@@ -81,7 +81,7 @@ public class EventAPI {
 	    while(iterator.hasNext())
 	    {
 	    	String key = iterator.next();
-	    	if (payload.get(key) != null) {
+	    	if (key != null && !key.isEmpty() && payload.get(key) != null) {
 		    	String value = payload.get(key).toString();
 		    	if(key.equalsIgnoreCase("entity"))
 		    	{
@@ -110,6 +110,9 @@ public class EventAPI {
 		    	}
 		    	else if(key.equals("timestamp")) {
 		    		event.setCreatedTime(Long.parseLong(value));
+		    	}
+		    	else if (key.equals("resourceId")) {
+		    		event.setResourceId(Long.parseLong(value));
 		    	}
 		    	else
 		    	{

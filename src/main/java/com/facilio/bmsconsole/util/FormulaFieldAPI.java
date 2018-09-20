@@ -680,11 +680,14 @@ public class FormulaFieldAPI {
 	
 	public static void historicalCalculation(FormulaFieldContext formula, DateRange range, long singleResourceId) throws Exception {
 		List<DateRange> intervals = getIntervals(formula, range);
+		LOGGER.info(intervals);
 		if (intervals != null && !intervals.isEmpty()) {
 			List<ReadingContext> readings = new ArrayList<>();
 			boolean isSelfDependent = dependsOnSameModule(formula);
 			if (singleResourceId != -1) {
+				LOGGER.info("Gonna calculate historical formula of : "+formula.getId()+" for resource : "+singleResourceId);
 				if (formula.getMatchedResourcesIds().contains(singleResourceId)) {
+					LOGGER.info("Matched");
 					int deletedData = deleteOlderData(range.getStartTime(), range.getEndTime(), Collections.singletonList(singleResourceId), formula.getReadingField().getModule().getName());
 					LOGGER.info("Deleted rows for formula : "+formula.getName()+" between "+range+" is : "+deletedData);
 					

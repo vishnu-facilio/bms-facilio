@@ -54,11 +54,10 @@ import com.facilio.wms.message.NotificationProcessorFactory;
 public class FacilioContextListener implements ServletContextListener {
 
 	private Timer timer = new Timer();
-	private static Logger log = LogManager.getLogger(FacilioContextListener.class.getName());
+	private static final Logger log = LogManager.getLogger(FacilioContextListener.class.getName());
+	private static String instanceId = null;
 
 	public void contextDestroyed(ServletContextEvent event) {
-		// TODO Auto-generated method stub
-//		System.out.println("Listener Destroyed");
 		if(RedisManager.getInstance() != null) {
 			RedisManager.getInstance().release();// destroying redis connection pool
 		}
@@ -77,15 +76,14 @@ public class FacilioContextListener implements ServletContextListener {
 		try {
 			System.setOut(new SysOutLogger("SysOut"));
 		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
 			log.info("Exception occurred ", e1);
 		}
 		try {
 			System.setErr(new SysOutLogger("SysErr"));
 		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
 			log.info("Exception occurred ", e1);
 		}
+
 		if("true".equals(AwsUtil.getConfig("enable.transaction"))) {
 			timer.schedule(new TransactionMonitor(), 0L, 3000L);
 		}
@@ -95,7 +93,6 @@ public class FacilioContextListener implements ServletContextListener {
 		}
 
 
-		// TODO Auto-generated method stub
 		initDBConnectionPool();
 		Operator test = Operator.OPERATOR_MAP.get(1);
 		try {
@@ -118,15 +115,15 @@ public class FacilioContextListener implements ServletContextListener {
 			
 			FacilioScheduler.initScheduler();
 			InstantJobExecutor.INSTANCE.startExecutor();
-		//	FacilioTransactionManager.INSTANCE.getTransactionManager();
+
 			if(RedisManager.getInstance() != null) {
 				RedisManager.getInstance().connect(); // creating redis connection pool
 			}
-			HashMap customdomains = getCustomDomains();
-			
-			if(customdomains!=null) {
-				event.getServletContext().setAttribute("customdomains", customdomains);
-				log.info("Custom domains loaded " + customdomains);
+
+			HashMap customDomains = getCustomDomains();
+			if(customDomains!=null) {
+				event.getServletContext().setAttribute("custom domains", customDomains);
+				log.info("Custom domains loaded " + customDomains);
 			}
 			
 			if(AwsUtil.isDevelopment()) {
@@ -140,29 +137,25 @@ public class FacilioContextListener implements ServletContextListener {
 			} catch (Exception e){
 				log.info("Exception occurred ", e);
 			}
-			InputStream versionfile;
+			InputStream versionFile;
 			try {
-				versionfile = SQLScriptRunner.class.getClassLoader().getResourceAsStream("version.txt");
-				//String version = FileUtils.readFileToString(versionfile);
+				versionFile = SQLScriptRunner.class.getClassLoader().getResourceAsStream("version.txt");
 				Properties prop = new Properties();
-				prop.load(versionfile);
+				prop.load(versionFile);
 				event.getServletContext().setAttribute("buildinfo", prop);
-				
-				System.out.println("Loaded build properties "+prop);
+				log.info("Loaded build properties "+prop);
 
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				log.info("Exception occurred ", e);
 			}
 
-			PortalAuthInterceptor.PORTALDOMAIN = com.facilio.aws.util.AwsUtil.getConfig("portal.domain");// event.getServletContext().getInitParameter("SERVICEPORTAL_DOMAIN");
-			System.out.println("Loading the domain name as ######"+PortalAuthInterceptor.PORTALDOMAIN );
+			PortalAuthInterceptor.setPortalDomain(com.facilio.aws.util.AwsUtil.getConfig("portal.domain"));// event.getServletContext().getInitParameter("SERVICEPORTAL_DOMAIN");
+			log.info("Loading the domain name as ######"+PortalAuthInterceptor.getPortalDomain());
 			initLocalHostName();
 			HealthCheckFilter.setStatus(200);
 			
 		} catch (Exception e) {
 			sendFailureEmail(e);
-			// TODO Auto-generated catch block
 			log.info("Exception occurred ", e);
 		}
 		
@@ -195,7 +188,7 @@ public class FacilioContextListener implements ServletContextListener {
 		JSONObject json = new JSONObject();
 		json.put("sender", "error@facilio.com");
 		json.put("to", "error@facilio.com");
-		json.put("subject", "Startup Error " + INSTANCEID);
+		json.put("subject", "Startup Error at " + getInstanceId());
 		json.put("message", e.getMessage());
 		try {
 			AwsUtil.sendEmail(json);
@@ -217,12 +210,6 @@ public class FacilioContextListener implements ServletContextListener {
 		
 		System.out.println("Flyway migration status: "+mig_status +" time taken in ms : " + (System.currentTimeMillis() - startTime));
 	}
-	
-	/*private void createTables() throws SQLException, IOException {
-		File file = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/createTables.sql").getFile());
-		SQLScriptRunner scriptRunner = new SQLScriptRunner(file, true, false);
-		scriptRunner.runScript();
-	}*/
 	
 	private void initDBConnectionPool() {
 		System.out.println("Initializing DB Connection Pool");
@@ -246,44 +233,47 @@ public class FacilioContextListener implements ServletContextListener {
 		}
 	}
 	
-	private HashMap getCustomDomains()
-	{
-		File beansxml = new File(this.getClass().getClassLoader().getResource("conf/customdomains.xml").getFile());
-		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-		try {
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+	private HashMap getCustomDomains() {
+		URL url = this.getClass().getClassLoader().getResource("conf/customdomains.xml");
+		if(url != null) {
+			File beansxml = new File(url.getFile());
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			try {
+				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 
-			Document doc = dBuilder.parse(beansxml);
-			NodeList nList = doc.getElementsByTagName("domain");
+				Document doc = dBuilder.parse(beansxml);
+				NodeList nList = doc.getElementsByTagName("domain");
 
-			HashMap customdomains = new HashMap();
+				HashMap customdomains = new HashMap();
 
-			for (int temp = 0; temp < nList.getLength(); temp++) {
-				Node nNode = nList.item(temp);
+				for (int temp = 0; temp < nList.getLength(); temp++) {
+					Node nNode = nList.item(temp);
 
-				Element eElement = (Element) nNode;
-				String customdomain = eElement.getAttribute("host");
-				String orgdomain = eElement.getAttribute("orgdomain");
-				customdomains.put(customdomain,orgdomain);
+					Element eElement = (Element) nNode;
+					String customdomain = eElement.getAttribute("host");
+					String orgdomain = eElement.getAttribute("orgdomain");
+					customdomains.put(customdomain, orgdomain);
+				}
+				return customdomains;
+
+			} catch (SAXException | IOException | ParserConfigurationException e) {
+				log.info("Exception occurred ", e);
 			}
-			return customdomains;
-
-		} catch (SAXException | IOException | ParserConfigurationException e) {
-			// TODO Auto-generated catch block
-			log.info("Exception occurred ", e);
+		} else {
+			log.info("Couldn't find custom domains file.");
 		}
 		return null;
 	}
-	public static String INSTANCEID = null;
 
 	private void initLocalHostName() {
-	
 		try {
-			INSTANCEID = InetAddress.getLocalHost().getHostName();
-
+			instanceId = InetAddress.getLocalHost().getHostName();
 		} catch (UnknownHostException e) {
 			log.info("Exception occurred ", e);
 		}
 	}
 
+	public static String getInstanceId(){
+		return instanceId;
+	}
 }

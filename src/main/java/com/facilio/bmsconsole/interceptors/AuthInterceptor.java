@@ -32,22 +32,6 @@ import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 public class AuthInterceptor extends AbstractInterceptor {
 
     private static final Logger LOGGER = Logger.getLogger(AuthInterceptor.class.getName());
-    private static final HashSet<String> ADMIN_IDS = new HashSet<>();
-
-	static {
-		loadIds();
-	}
-
-	private static void loadIds() {
-		String email = AwsUtil.getConfig("admin.console");
-		if (email == null || "".equals(email.trim())) {
-			return;
-		}
-		String[] list = email.split(",");
-		for(String id : list) {
-			ADMIN_IDS.add(id.trim());
-		}
-	}
 
 	@Override
 	public void init() {
@@ -63,7 +47,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 			if (!isRemoteScreenMode(request)) {
 				CognitoUser cognitoUser = AuthenticationUtil.getCognitoUser(request, false);
 				Account currentAccount = null;
-				if (!AuthenticationUtil.checkIfSameUser(currentAccount, cognitoUser)) {
+				if ( ! AuthenticationUtil.checkIfSameUser(currentAccount, cognitoUser)) {
 					try {
 						currentAccount = LoginUtil.getAccount(cognitoUser, false);
 					} catch (Exception e) {
@@ -107,10 +91,10 @@ public class AuthInterceptor extends AbstractInterceptor {
 					}
 				}
 
-				if (request.getRequestURL().indexOf("/app/admin") != -1) {
+				if (request.getRequestURL().indexOf("/admin") != -1) {
 					if (currentAccount != null) {
 						String useremail = currentAccount.getUser().getEmail();
-						if (!ADMIN_IDS.contains(useremail)) {
+						if (! useremail.endsWith("@facilio.com")) {
 							LOGGER.log(Level.SEVERE, "you are not allowed to access this page from");
 							return Action.LOGIN;
 						}
@@ -125,23 +109,16 @@ public class AuthInterceptor extends AbstractInterceptor {
 				}
 			}
 
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOGGER.log(Level.SEVERE, "error in auth interceptor", e);
 			return Action.LOGIN;
 		}
 
-		
 		try {
-			/* let us call action or next interceptor */
-			String result = arg0.invoke();
-
-			/* let us do some post-processing */
-			//output = "Post-Processing";
-			//System.out.println(output);
-
-			return result;
+			return arg0.invoke();
 		} catch (Exception e) {
+			System.out.println("exception code 154");
+
 			LOGGER.log(Level.SEVERE, "error thrown from action class", e);
 			throw e;
 		}
@@ -165,10 +142,8 @@ public class AuthInterceptor extends AbstractInterceptor {
 	}
 	
 	private boolean isRemoteScreenMode(HttpServletRequest request) {
-		if (request.getHeader("X-Remote-Screen") != null && "true".equalsIgnoreCase(request.getHeader("X-Remote-Screen").trim())) {
-			return true;
-		}
-		return false;
+		String remoteScreenHeader = request.getHeader("X-Remote-Screen");
+		return ( remoteScreenHeader != null && "true".equalsIgnoreCase(remoteScreenHeader.trim()));
 	}
 	
 	private boolean handleRemoteScreenAuth(HttpServletRequest request) {
@@ -194,8 +169,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 					return true;
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOGGER.log(Level.SEVERE, "Exception while check authentication from remote-screen.", e);
 		}
 		return false;

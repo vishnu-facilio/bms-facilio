@@ -97,7 +97,14 @@
 		<action name="account" class="com.facilio.bmsconsole.actions.LoginAction"
 				method="portalAccount">
 			<result name="success" type="json">
-				<param name="includeProperties">^account.*</param>
+				<param name="includeProperties">account.*</param>
+			</result>
+		</action>
+		
+		<action name="tenantuser" class="com.facilio.bmsconsole.actions.TenantAction" 
+				method="tenantServicePortal">
+			<result name="success" type="json">
+				<param name="includeProperties">^item.*</param>
 			</result>
 		</action>
 		

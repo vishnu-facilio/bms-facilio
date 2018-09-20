@@ -2,7 +2,7 @@ package com.facilio.bmsconsole.tenant;
 
 import com.facilio.accounts.dto.User;
 
-public class TenantUserContext {
+public class TenantUserContext  {
 
 	Long tenantId;
 	Long orgid;
@@ -21,16 +21,17 @@ public class TenantUserContext {
 	public void setOrgid(Long orgid) {
 		this.orgid = orgid;
 	}
-	public Long getOuid() {
-		return ouid;
-	}
-	public void setOuid(Long ouid) {
-		this.ouid = ouid;
-	}
+	
 	public User getOrgUser() {
 		return orgUser;
 	}
 	public void setOrgUser(User orgUser) {
 		this.orgUser = orgUser;
+	}
+	public long getOuid() {
+		return ouid;
+	}
+	public void setOuid(Long ouid) {
+		this.ouid = ouid;
 	}
 }

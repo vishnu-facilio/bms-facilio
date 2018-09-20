@@ -202,19 +202,6 @@ public class PerformAssetAction implements Command {
 					 Condition condition = criteria.getConditions().get(1);
 					 expiryDay = condition.getValue();
 					 operatorId = condition.getOperatorId();
-//					 if(criteria.getConditions().get(2) != null) {
-//						 condition = criteria.getConditions().get(2);
-//						 if(condition.getValue() != null) {
-//							 siteId = Long.parseLong(condition.getValue());
-//							 List<BaseSpaceContext> baseSpaces = SpaceAPI.getBaseSpaceWithChildren(siteId);
-//							 List<Long> baseSpaceids = new ArrayList<>();
-//							 baseSpaceids.add(siteId);
-//							 for(BaseSpaceContext baseSpace :baseSpaces) {
-//								 baseSpaceids.add(baseSpace.getId());
-//							 }
-//							 condition.setValue(StringUtils.join(baseSpaceids,","));
-//						 }
-//					 }
 				}
 				selectBuilder.andCriteria(criteria);
 				
@@ -238,7 +225,7 @@ public class PerformAssetAction implements Command {
 				options.add("Extended");
 				options.add("Expired");
 				
-				Map<String, List<TaskContext>> tasksList= new HashMap<>();
+				Map<SiteContext, List<TaskContext>> tasksList= new HashMap<>();
 				for(Long siteID :siteWiseMap.keySet()) {
 					
 					SiteContext site = SpaceAPI.getSiteSpace(siteID);
@@ -272,36 +259,43 @@ public class PerformAssetAction implements Command {
 						tasks.add(task);
 					}
 					
-					tasksList.put(site.getName(), tasks);
+					tasksList.put(site, tasks);
 				}
 				
-				WorkOrderContext workOrder = new WorkOrderContext();
-				
-				workOrder.setSubject("KDM Expiry List");
-				workOrder.setDescription("KDM's Which are about to expire");
-				
-				TicketCategoryContext category = TicketAPI.getCategory(AccountUtil.getCurrentOrg().getId(), "KDM");
-				
-				workOrder.setCategory(category);
-				
-				TicketPriorityContext priority = TicketAPI.getPriority(AccountUtil.getCurrentOrg().getId(), "High");
-				workOrder.setPriority(priority);
-				
-				workOrder.setDueDate(DateTimeUtil.getDayStartTime(1)-1000);
-				
-				if(AccountUtil.getCurrentOrg().getId() == 92l) {
-					User user = AccountUtil.getUserBean().getUser(848657l);		//suresh+spicinemas@facilio.com user id
-					workOrder.setAssignedTo(user);
+				for(SiteContext site :tasksList.keySet()) {
+					WorkOrderContext workOrder = new WorkOrderContext();
+					
+					workOrder.setSubject("KDM Expiry List - "+site.getName());
+					workOrder.setDescription("KDM's Which are about to expire");
+					
+					TicketCategoryContext category = TicketAPI.getCategory(AccountUtil.getCurrentOrg().getId(), "KDM");
+					
+					workOrder.setCategory(category);
+					
+					TicketPriorityContext priority = TicketAPI.getPriority(AccountUtil.getCurrentOrg().getId(), "High");
+					workOrder.setPriority(priority);
+					
+					workOrder.setDueDate(DateTimeUtil.getDayStartTime(1)-1000);
+					
+					if(AccountUtil.getCurrentOrg().getId() == 92l) {
+						User user = AccountUtil.getUserBean().getUser(848657l);		//suresh+spicinemas@facilio.com user id
+						workOrder.setAssignedTo(user);
+					}
+					
+					workOrder.setSiteId(site.getId());
+					
+					WorkOrderAction woAction = new WorkOrderAction();
+					
+					woAction.setWorkorder(workOrder);
+					
+					List<TaskContext> tasks = tasksList.get(site);
+					
+					Map<String, List<TaskContext>> tasksList1= new HashMap<>();
+					tasksList1.put("default", tasks);
+					woAction.setTasks(tasksList1);
+					
+					woAction.addWorkOrder(workOrder);
 				}
-				
-				WorkOrderAction woAction = new WorkOrderAction();
-				
-				woAction.setWorkorder(workOrder);
-				
-				woAction.setTasks(tasksList);
-				
-				woAction.addWorkOrder(workOrder);
-				
 				System.out.println("Completed");
 			}
 		}

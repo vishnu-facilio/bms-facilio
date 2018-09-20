@@ -184,7 +184,7 @@ public class ProcessXLS implements Command {
 				
 				if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) || importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ENERGY_METER) || importProcessContext.getModule().getName().equals("kdm")) {
 					
-					Long spaceId = ImportAPI.getSpaceIDforAssets(colVal);
+					Long spaceId = ImportAPI.getSpaceID(importProcessContext,colVal,fieldMapping);
 					if( importProcessContext.getModule().getName().equals("kdm")) {
 						props.put("site", spaceId);
 						fieldMapping.remove("site");

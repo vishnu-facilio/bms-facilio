@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.List;
+
 import org.apache.struts2.json.annotations.JSON;
 
 import com.facilio.time.SecondsChronoUnit;
@@ -36,6 +38,25 @@ public class ControllerContext {
 	}
 	public void setMacAddr(String macAddr) {
 		this.macAddr = macAddr;
+	}
+	
+	
+	private long siteId = -1;
+	public void setSiteId(long siteId) {
+		this.siteId = siteId;
+	}
+	
+	public long getSiteId() {
+		return this.siteId;
+	}
+	
+	private List<Long> buildingIds;
+	public List<Long> getBuildingIds() {
+		return this.buildingIds;
+	}
+	
+	public void setBuildingIds(List<Long> buildingIds) {
+		this.buildingIds = buildingIds;
 	}
 	
 	private long dataInterval = -1; //In minutes

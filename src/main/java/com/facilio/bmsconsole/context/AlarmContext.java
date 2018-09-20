@@ -237,7 +237,31 @@ public class AlarmContext extends TicketContext {
 		}
 		return false;
 	}
-
+	
+	private String problem;
+	public String getProblem() {
+		return problem;
+	}
+	public void setProblem(String problem) {
+		this.problem = problem;
+	}
+	
+	private String possibleCauses;
+	public String getPossibleCauses() {
+		return possibleCauses;
+	}
+	public void setPossibleCauses(String possibleCauses) {
+		this.possibleCauses = possibleCauses;
+	}
+	
+	private String recommendation;
+	public String getRecommendation() {
+		return recommendation;
+	}
+	public void setRecommendation(String recommendation) {
+		this.recommendation = recommendation;
+	}
+	
 	public static enum AlarmType {
 		MAINTENANCE(1, "Maintenance"),
 		CRITICAL(2, "Critical"),

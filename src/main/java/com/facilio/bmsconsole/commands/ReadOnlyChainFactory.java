@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
 import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.impl.ChainBase;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -15,24 +14,25 @@ public class ReadOnlyChainFactory extends FacilioChainFactory {
 	    }
 	
 	public static Chain fetchReportDataChain() {
-		Chain c = new ChainBase();
+		Chain c = getDefaultChain();
 		c.addCommand(new FilterXFieldCommand());
 		c.addCommand(new FetchReportDataCommand());
 		c.addCommand(new TransformReportDataCommand());
 		c.addCommand(new CalculateVarianceCommand());
+		c.addCommand(new FetchReportExtraMeta());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain fetchReadingReportChain() {
-		Chain c = new ChainBase();
+		Chain c = getDefaultChain();
 		c.addCommand(new CreateReadingAnalyticsReportCommand());
 		c.addCommand(fetchReportDataChain());
 		return c;
 	}
 	
 	public static Chain fetchWorkorderReportChain() {
-		Chain c = new ChainBase();
+		Chain c = getDefaultChain();
 		c.addCommand(new CreateWorkOrderAnalyticsReportCommand());
 		c.addCommand(fetchReportDataChain());
 		return c;
@@ -52,6 +52,19 @@ public class ReadOnlyChainFactory extends FacilioChainFactory {
 	public static Chain fetchModuleDataDetailsChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new GenericGetModuleDataDetailCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain fetchLatestReadingDataChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetLatestReadingDataCommand());
+		return c;
+	}
+	
+	public static Chain fetchScheduledReportsChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new ScheduledV2ReportListCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}

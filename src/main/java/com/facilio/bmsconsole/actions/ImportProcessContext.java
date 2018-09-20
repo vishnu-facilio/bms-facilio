@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -19,7 +21,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.fw.BeanFactory;
 
-public class ImportProcessContext
+public class ImportProcessContext implements Serializable
 {
 	private static final Logger LOGGER = Logger.getLogger(ImportProcessContext.class.getName());
 	private static org.apache.log4j.Logger log = LogManager.getLogger(ImportProcessContext.class.getName());
@@ -28,6 +30,65 @@ public class ImportProcessContext
 	Integer status,importType;
 	Long importTime;
 	String columnHeadingString,filePath,filePathFailed,fieldMappingString,importJobMeta;
+	Integer newEntries =0;
+	Integer updatedEntries =0; 
+	Integer skippedEntries =0;  //A:Prashanth
+	ArrayList<String> firstRow = new ArrayList<>(); //A:Prashanth
+	Integer mailSetting;
+	Integer importSetting;
+	Integer importMode;
+	Long templateId;
+	
+	
+	public Integer getImportMode() {
+		return this.importMode;
+	}
+	public Long getTemplateId() {
+		return templateId;
+	}
+	public void setTemplateId(Long templateId) {
+		this.templateId = templateId;
+	}
+	public void setImportMode(Integer value) {
+		this.importMode = value;
+	}
+	public Integer getImportSetting() {
+		return this.importSetting;
+	}
+	public void setImportSetting(Integer setting) {
+		this.importSetting = setting;
+	}
+	
+	public void setSkipEntries(int count) {
+		this.skippedEntries = count;
+	}
+	
+
+	public void setMailSetting(Integer mail) {
+		this.mailSetting = mail;
+	}
+	
+	public Integer getMailSetting() {
+		return this.mailSetting;
+	}
+	
+	public int getSkipEntries() {
+		return this.skippedEntries;
+	}
+	
+	public void setupdateEntries(int count) {
+		this.updatedEntries = count;
+	}
+	public int getUpdateEntries() {
+		return this.updatedEntries;
+	}
+	public void setfirstRow(ArrayList firstRow) {
+		this.firstRow = firstRow;
+	}
+	
+	public ArrayList getfirstRow() {
+		return this.firstRow;
+	}
 	
 	public Long getId() {
 		return id;
@@ -38,7 +99,7 @@ public class ImportProcessContext
 	}
 
 	public void setImportJobMeta(String importJobMeta) {
-		this.importJobMeta = importJobMeta;
+   		this.importJobMeta = importJobMeta;
 	}
 	
 	public JSONObject getImportJobMetaJson() throws ParseException {
@@ -92,6 +153,15 @@ public class ImportProcessContext
 
 	public Integer getStatus() {
 		return status;
+	}
+	
+	public void setnewEntries(Integer en)
+	{
+		this.newEntries = en;
+	}
+	
+	public Integer getEntries() {
+		return this.newEntries;
 	}
 
 	public void setStatus(Integer status) {
@@ -254,10 +324,58 @@ public class ImportProcessContext
 		
 	}
 	
+	public enum ImportSetting {
+		INSERT,
+		INSERT_SKIP,
+		UPDATE,
+		UPDATE_NOT_NULL,
+		BOTH,
+		BOTH_NOT_NULL;
+		
+		public int getValue() {
+			return ordinal()+1;
+		}
+		
+		public ImportStatus getImportStatus(int value) {
+			return IMPORT_PROCESS_STATUS_MAP.get(value);
+		}
+		
+		private static final Map<Integer, ImportStatus> IMPORT_PROCESS_STATUS_MAP = Collections.unmodifiableMap(initTypeMap());
+		private static Map<Integer, ImportStatus> initTypeMap() {
+			Map<Integer, ImportStatus> typeMap = new HashMap<>();
+			for(ImportStatus type : ImportStatus.values()) {
+				typeMap.put(type.getValue(), type);
+			}
+			return typeMap;
+		}
+	}
+	
+	public enum ImportMode {
+		NORMAL,
+		READING;
+		
+		public int getValue() {
+			return ordinal()+1;
+		}
+		
+		public ImportStatus getImportMode(int value) {
+			return IMPORT_PROCESS_STATUS_MAP.get(value);
+		}
+		
+		private static final Map<Integer, ImportStatus> IMPORT_PROCESS_STATUS_MAP = Collections.unmodifiableMap(initTypeMap());
+		private static Map<Integer, ImportStatus> initTypeMap() {
+			Map<Integer, ImportStatus> typeMap = new HashMap<>();
+			for(ImportStatus type : ImportStatus.values()) {
+				typeMap.put(type.getValue(), type);
+			}
+			return typeMap;
+		}
+	}
 	public enum ImportStatus {
-		FILE_UPLOADED,
-		FIELDS_MAPED,
-		IMPORTED;
+		UPLOAD_COMPLETE,
+		IN_PROGRESS,
+		IMPORTED,
+		FAILED;
 		
 		public int getValue() {
 			return ordinal()+1;

@@ -17,6 +17,23 @@ public class ReportContext {
 
 	private JSONParser parser = new JSONParser();
 	private long id = -1;
+	
+	int booleanSetting;
+	public int getBooleanSetting() {
+		return booleanSetting;
+	}
+	public void setBooleanSetting(int booleanSetting) {
+		this.booleanSetting = booleanSetting;
+	}
+	
+	public boolean getShowHideAlarm() {
+		return ((booleanSetting & BooleanSettings.SHOW_HIDE_ALARM.booleanValue) == BooleanSettings.SHOW_HIDE_ALARM.booleanValue) ? true : false;  
+	}
+	
+	public void setShowHideAlarm() {
+		booleanSetting =  booleanSetting | BooleanSettings.SHOW_HIDE_ALARM.booleanValue;
+	}
+	
 	public long getId() {
 		return id;
 	}
@@ -79,7 +96,6 @@ public class ReportContext {
 	public void setTabularState(String tabularState) {
 		this.tabularState = tabularState;
 	}
-	
 	private String commonState;
 	public String getCommonState() {
 		return commonState;
@@ -247,5 +263,40 @@ public class ReportContext {
 	}
 	public void setAnalyticsType(AnalyticsType analyticsType) {
 		this.analyticsType = analyticsType;
+	}
+	public static enum BooleanSettings {
+		SHOW_HIDE_ALARM(1,"Alarm",1),
+		SHOW_HIDE_SAFELIMIT(2,"Safe Limit",2),
+		SHOW_HIDE_LEGENT(3,"Legent",4),
+		;
+		
+		int intValue;
+		String name;
+		int booleanValue;
+		public int getIntValue() {
+			return intValue;
+		}
+		public void setIntValue(int intValue) {
+			this.intValue = intValue;
+		}
+		public String getName() {
+			return name;
+		}
+		public void setName(String name) {
+			this.name = name;
+		}
+		BooleanSettings(int intValue,String name, int booleanValue) {
+			this.intValue = intValue;
+			this.name = name;
+			this.booleanValue = booleanValue;
+		}
+		
+		public static BooleanSettings valueOf (int value) {
+			if(value >= 0 && value < values().length) {
+				return values()[value+1];
+			}
+			return null;
+		}
+
 	}
 }

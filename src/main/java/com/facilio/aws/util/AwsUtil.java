@@ -10,6 +10,10 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,6 +35,8 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 
+import com.facilio.sql.DBUtil;
+import com.facilio.transaction.FacilioConnectionPool;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -163,8 +169,68 @@ public class AwsUtil
         }
         return null;
     }
-    
-    public static CreateKeysAndCertificateResult getCertificateResult()
+
+	public static String getClientVersion() {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs;
+		String clientVersion = null;
+		try {
+			String environment = getConfig("environment");
+			if( environment != null ) {
+				conn = FacilioConnectionPool.INSTANCE.getConnection();
+				pstmt = conn.prepareStatement("SELECT version FROM ClientApp WHERE environment=?");
+				pstmt.setString(1, environment);
+				rs = pstmt.executeQuery();
+				if (rs.next()) {
+					clientVersion = rs.getString("version");
+				}
+			}
+		} catch(SQLException | RuntimeException e) {
+			logger.info("Exception while verifying password, ", e);
+		} finally {
+			DBUtil.closeAll(conn, pstmt);
+		}
+		return clientVersion;
+	}
+
+	public static int updateClientVersion(String newVersion) {
+		int updatedRows = 0;
+		if(newVersion != null) {
+			newVersion = newVersion.trim();
+			Connection conn = null;
+			PreparedStatement pstmt = null;
+			try {
+				if(checkIfVersionExistsInS3(newVersion)) {
+					String environment = getConfig("environment");
+					if (environment != null) {
+						conn = FacilioConnectionPool.INSTANCE.getConnection();
+						pstmt = conn.prepareStatement("Update ClientApp set version=? WHERE environment=?");
+						pstmt.setString(1, newVersion);
+						pstmt.setString(2, environment);
+						updatedRows = pstmt.executeUpdate();
+					}
+				}
+			} catch (SQLException | RuntimeException e) {
+				logger.info("Exception while verifying password, ", e);
+			} finally {
+				DBUtil.closeAll(conn, pstmt);
+			}
+		}
+		return updatedRows;
+	}
+
+	private static boolean checkIfVersionExistsInS3(String newVersion) {
+		boolean objectExists = false;
+		String staticBucket = AwsUtil.getConfig("static.bucket");
+		if(staticBucket != null) {
+			AmazonS3 s3Client = getAmazonS3Client();
+			objectExists = s3Client.doesObjectExist(staticBucket, newVersion+"/app.css");
+		}
+		return objectExists;
+	}
+
+	public static CreateKeysAndCertificateResult getCertificateResult()
     {
     	AWSIot awsIot = AWSIotClientBuilder.standard().withCredentials(InstanceProfileCredentialsProvider.createAsyncRefreshingProvider(false)).build();
     

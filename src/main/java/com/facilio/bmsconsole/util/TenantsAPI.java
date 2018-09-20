@@ -13,10 +13,12 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountEmailTemplate;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.DashboardAction;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.DateRange;
@@ -157,12 +159,67 @@ public class TenantsAPI {
 	}
 	
 	
+	public static List<ResourceContext> getUsersTenantId(long userId, long orgId) throws Exception {
+
+		FacilioModule module = ModuleFactory.getTenantsuserModule();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(FieldFactory.getTenantsUserFields())
+														.table(module.getTableName())
+														.andCustomWhere("tenant_users.ORG_USERID = ?", userId)
+														.andCustomWhere("tenant_users.ORGID = ? ", orgId);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		Map<String, Object> values = props.get(0);
+		long value = (long) values.get("tenantId");
+		System.out.println("*********************" +value);
+		
+		
+		FacilioModule modulo = ModuleFactory.getTenantsUtilityMappingModule();
+		GenericSelectRecordBuilder selectBuilde = new GenericSelectRecordBuilder()
+														.select(FieldFactory.getTenantsUtilityMappingFields())
+														.table(modulo.getTableName())
+														.andCustomWhere("tenants_utility_mapping.TENANT_ID = ?", value)
+														.andCustomWhere("tenants_utility_mapping.SHOW_IN_PORTAL = ?", true);
+		List<Map<String, Object>> prop = selectBuilde.get();
+		System.out.println("&&&&&&&&&&&&&&&&&&&" +prop);
+		
+		
+		long Id;
+		List<Long> Ids = new ArrayList<Long>();
+
+		for (Map<String, Object> pro : prop) {
+			Id =  (long) pro.get("assetId");
+			Ids.add(Id);
+			System.out.println("!!!!!!!!!!!!!!!" +Id);
+		}
+		System.out.println("!!!!!!!!!!!!!!!" +Ids);
+		List<ResourceContext> longArray = ResourceAPI.getExtendedResources(Ids,false);
+		System.out.println("$$$$$$$$$$$$$$$$$$$$$" +longArray);
+		
+		
+		return longArray;
+}
 	
-	public static long updatePortalUserAccess(long userId,Object portal_verified) throws Exception {
-		User user = (User) AccountUtil.getUserBean().getUser(userId);
-		if (user.portal_verified == null) {
+	
+	public static long updatePortalUserAccess(long ouiId,Object portal_verified) throws Exception {
+		
+		
+		FacilioModule modulo = ModuleFactory.getOrgUserModule();
+		GenericSelectRecordBuilder selectBuilde = new GenericSelectRecordBuilder()
+														.select(FieldFactory.getOrgUserFields())
+														.table(modulo.getTableName())
+														.andCustomWhere("org_users.ORG_USERID = ?", ouiId);
+		List<Map<String, Object>> prop = selectBuilde.get();
+		
+		Map<String, Object> values = prop.get(0);
+		long userId = (long) values.get("userId");
+		
+		
+		User user = AccountUtil.getUserBean().getPortalUser(userId);
+		if (user.getPortal_verified() == false) {
+		
+			AccountUtil.getUserBean().sendInvitation(user.getOuid(), user);
 			
-			AccountUtil.getUserBean().inviteUser(user.getOrgId(), user);
 		}
 		
 		FacilioModule module = ModuleFactory.getOrgUserModule();
@@ -170,13 +227,13 @@ public class TenantsAPI {
 				.table(module.getTableName())
 				.fields(FieldFactory.getOrgUserFields())
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCustomWhere("ORG_USERID = ?", userId);
+				.andCustomWhere("org_users.USERID = ?", userId);
 		
 		Map<String, Object> value = new HashMap<>();
 		value.put("portal_verified", portal_verified);
 		int count = updateBuilder.update(value);
 		
-		return userId;
+		return count;
 	}
 	 
 	public static TenantContext getTenant(long id, Boolean...fetchTenantOnly) throws Exception {

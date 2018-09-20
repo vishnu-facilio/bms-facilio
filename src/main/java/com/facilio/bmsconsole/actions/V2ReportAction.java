@@ -14,12 +14,14 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
+import com.facilio.bmsconsole.context.ReportInfo;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
@@ -30,7 +32,6 @@ import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportFolderContext;
 import com.facilio.report.context.WorkorderAnalysisContext;
 import com.facilio.report.util.ReportUtil;
-import com.facilio.tasker.ScheduleInfo;
 
 public class V2ReportAction extends FacilioAction {
 	
@@ -250,7 +251,9 @@ public class V2ReportAction extends FacilioAction {
 		if (baseLines != null && !baseLines.isEmpty()) {
 			baseLineList = (JSONArray) parser.parse(baseLines);
 		}
-		
+		if(mode.equals(ReportMode.SERIES)) {
+			setxAggr(0);
+		}
 		
 		context.put(FacilioConstants.ContextNames.START_TIME, startTime);
 		context.put(FacilioConstants.ContextNames.END_TIME, endTime);
@@ -298,6 +301,8 @@ public class V2ReportAction extends FacilioAction {
 		setResult("reportXValues", context.get(FacilioConstants.ContextNames.REPORT_X_VALUES));
 		setResult("reportData", context.get(FacilioConstants.ContextNames.REPORT_DATA));
 		setResult("reportVarianceData", context.get(FacilioConstants.ContextNames.REPORT_VARIANCE_DATA));
+		setResult("reportAlarms", context.get(FacilioConstants.ContextNames.REPORT_ALARMS));
+		setResult("safeLimits", context.get(FacilioConstants.ContextNames.REPORT_SAFE_LIMIT));
 		return SUCCESS;
 	}
 	
@@ -439,44 +444,75 @@ public class V2ReportAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	private int maxCount = -1;
-	public int getMaxCount() {
-		return maxCount;
+	ReportInfo reportInfo;
+	public ReportInfo getReportInfo() {
+		return reportInfo;
 	}
-	public void setMaxCount(int maxCount) {
-		this.maxCount = maxCount;
-	}
-	
-	private ScheduleInfo scheduleInfo;
-	public ScheduleInfo getScheduleInfo() {
-		return scheduleInfo;
-	}
-	public void setScheduleInfo(ScheduleInfo scheduleInfo) {
-		this.scheduleInfo = scheduleInfo;
+	public void setReportInfo(ReportInfo reportInfo) {
+		this.reportInfo = reportInfo;
 	}
 	
 	public String scheduleReport() throws Exception{
 		
 		FacilioContext context = new FacilioContext();
 		
-		emailTemplate.setName("Report");
-		emailTemplate.setFrom("report@${org.domain}.facilio.com");
-
-		context.put(FacilioConstants.ContextNames.REPORT_ID, reportId);
-		context.put(FacilioConstants.ContextNames.FILE_FORMAT, fileFormat);
-		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
-		context.put(FacilioConstants.ContextNames.START_TIME, startTime);
-		context.put(FacilioConstants.ContextNames.END_TIME, endTime);
-		context.put(FacilioConstants.ContextNames.MAX_COUNT, maxCount);
-		context.put(FacilioConstants.ContextNames.SCHEDULE_INFO, scheduleInfo);
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.Workflow.TEMPLATE, reportInfo.getEmailTemplate());
+		context.put(FacilioConstants.ContextNames.SCHEDULE_INFO, reportInfo);
  		
-		Chain scheduleReportChain = FacilioChainFactory.scheduleReportChain();
+		Chain scheduleReportChain = TransactionChainFactory.scheduleReportChain();
 		scheduleReportChain.execute(context);
 		
 		setResult("id", context.get(FacilioConstants.ContextNames.RECORD_ID));
 		
 		return SUCCESS;
+	}
+	
+	public String scheduledList() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
+		Chain scheduleReportListChain = ReadOnlyChainFactory.fetchScheduledReportsChain();
+		scheduleReportListChain.execute(context);
+		setResult("scheduledReports", (List<ReportInfo>) context.get(FacilioConstants.ContextNames.REPORT_LIST));
+		
+		return SUCCESS;
+	}
+	
+	public String deleteScheduledReport () throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
+		Chain delteScheduleChain = TransactionChainFactory.deleteScheduledReportsChain();
+		delteScheduleChain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
+		
+		return SUCCESS;
+	}
+	
+	public String editScheduledReport () throws Exception {
+		FacilioContext context = new FacilioContext();
+		
+		context.put(FacilioConstants.Workflow.TEMPLATE, reportInfo.getEmailTemplate());
+		context.put(FacilioConstants.ContextNames.SCHEDULE_INFO, reportInfo);
+		
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
+		Chain mailReportChain = TransactionChainFactory.updateScheduledReportsChain();
+		mailReportChain.execute(context);
+		
+		setModuleName(reportInfo.getModuleName());
+		scheduledList();
+		
+		return SUCCESS;
+	}
+	
+	private List<Long> ids;
+	public List<Long> getIds() {
+		return ids;
+	}
+	public void setIds(List<Long> ids) {
+		this.ids = ids;
 	}
 	
 }

@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -45,6 +46,7 @@ import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.FacilioTablePrinter;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
@@ -269,7 +271,9 @@ public class CommonCommandUtil {
 
 			body.append(fromClass).append(DELIMITER);
 			
-			body.append("\n Time : ").append(System.currentTimeMillis()).append("\n\nMsg : ")
+			body.append("\n Org Time : ").append(DateTimeUtil.getDateTime())
+				.append("\n Indian Time : ").append(DateTimeUtil.getDateTime(ZoneId.of("Asia/Kolkata")))
+				.append("\n\nMsg : ")
 				.append(msg)
 				.append("\n\nApp Url : ")
 				.append(AwsUtil.getConfig("app.url"));

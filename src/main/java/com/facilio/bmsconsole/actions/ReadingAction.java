@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -12,6 +13,7 @@ import org.json.simple.JSONObject;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
@@ -19,6 +21,7 @@ import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -182,7 +185,18 @@ public class ReadingAction extends FacilioAction {
 		
 		return setReadingValues(context);
 	}
-	
+	public String getResourcesOccupantLatestReadingData() throws Exception {
+		FacilioContext context = new FacilioContext();
+		System.out.println("FIEL NAME " + fieldName);
+		context.put(FacilioConstants.ContextNames.RESOURCE_ID, resourcesId);
+		context.put(FacilioConstants.ContextNames.MODULE_FIELD_NAME, fieldName);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		Chain occupantReadingValue = FacilioChainFactory.getResourcesOccupantReadingValuesChain();
+		occupantReadingValue.execute(context);
+		occupantReadingValues = (Map<String, ReadingDataMeta>) context.get(FacilioConstants.ContextNames.READINGS);
+		setResult("readingValues", occupantReadingValues);
+		return SUCCESS;
+	}
 	public String getAssetSpecificLatestReadingData() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
@@ -344,6 +358,16 @@ public class ReadingAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	private Map<String, ReadingDataMeta> occupantReadingValues;
+	
+	public Map<String, ReadingDataMeta> getOccupantReadingValues() {
+		return occupantReadingValues;
+	}
+
+	public void setOccupantReadingValues(Map<String, ReadingDataMeta> occupantReadingValues) {
+		this.occupantReadingValues = occupantReadingValues;
+	}
+
 	private List<ReadingContext> readingValues;
 	public List<ReadingContext> getReadingValues() {
 		return readingValues;
@@ -424,6 +448,16 @@ public class ReadingAction extends FacilioAction {
 	}
 	public void setParentId(long parentId) {
 		this.parentId = parentId;
+	}
+	
+	private List<Long> resourcesId;
+	
+	public List<Long> getResourcesId() {
+		return resourcesId;
+	}
+
+	public void setResourcesId(List<Long> resourcesId) {
+		this.resourcesId = resourcesId;
 	}
 
 	private Map<String, List<ReadingContext>> readingData;
@@ -806,6 +840,19 @@ public class ReadingAction extends FacilioAction {
 	public String getFormulaFromReadingField () throws Exception {
 		formula = FormulaFieldAPI.getFormulaFieldFromReadingField(id);
 		setResult(FacilioConstants.ContextNames.FORMULA_FIELD, formula);			
+		return SUCCESS;
+	}
+	
+	public String v2GetLatestReadingData() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
+		context.put(FacilioConstants.ContextNames.EXCLUDE_EMPTY_FIELDS, excludeEmptyFields != null ? excludeEmptyFields : true);
+		
+		Chain latestAssetData = ReadOnlyChainFactory.fetchLatestReadingDataChain();
+		latestAssetData.execute(context);
+		
+		setResult("readingValues", context.get(FacilioConstants.ContextNames.READING_DATA_META_LIST));
+		
 		return SUCCESS;
 	}
  }

@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.stat.StatUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -27,6 +28,7 @@ import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.MarkedReadingContext;
 import com.facilio.bmsconsole.context.MarkedReadingContext.MarkType;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.criteria.BuildingOperator;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -531,11 +533,13 @@ public class DeviceAPI
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_DATA_READING);
 			FacilioField energyField=modBean.getField(TOTAL_ENERGY_CONSUMPTION_DELTA, module.getName());
-			if(!isHistorical && isDataGap(meter.getId(),module,firstReadingTime, startTime)) {
+			long resourceId=meter.getId();
+			long previousTime=getPreviousDataTime(resourceId,energyField);
+			if(!isHistorical && getDataGapCount(resourceId,module,firstReadingTime,previousTime)>1) {
 				
 				firstReading.setMarked(true);
 				List<MarkedReadingContext> markedList=new ArrayList<MarkedReadingContext> ();
-				markedList.add(getMarkedReading(firstReading,energyField.getFieldId(),module.getModuleId(),MarkType.HIGH_VALUE_HOURLY_VIOLATION,firstReading,firstReading));
+				markedList.add(MarkingUtil.getMarkedReading(firstReading,energyField.getFieldId(),module.getModuleId(),MarkType.HIGH_VALUE_HOURLY_VIOLATION,firstReading,firstReading));
 				context.put(FacilioConstants.ContextNames.MARKED_READINGS, markedList);
 			}
 			//data Gap implementation ends..
@@ -544,6 +548,22 @@ public class DeviceAPI
 		}
 	}
 
+	
+	private static long getPreviousDataTime(long resourceId,FacilioField energyField) {
+		try {
+			List<Pair<Long, FacilioField>> deltaRdmPairs = new ArrayList<>();
+			deltaRdmPairs.add(Pair.of(resourceId, energyField));
+			List<ReadingDataMeta> metaList = ReadingsAPI.getReadingDataMetaList(deltaRdmPairs) ;
+			for(ReadingDataMeta meta : metaList) {
+				return meta.getTtime();
+			}
+		}
+		catch(Exception e) {
+			LOGGER.error("Exception while fetching previousTime: ", e);
+		}
+		return 0;
+	}
+	
 	public static List<Long> getChildrenMeters(EnergyMeterContext meter) throws Exception {
 		GenericSelectRecordBuilder childMeterBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getVirtualMeterRelFields())
@@ -578,22 +598,21 @@ public class DeviceAPI
 	}
 	
 	
-	public static boolean isDataGap (long resourceId,FacilioModule module, long currentTime, long previousTime)  {
+	public static float getDataGapCount (long resourceId,FacilioModule module, long currentTime, long previousTime)  {
 		
 		try {
-			int dataInterval=ReadingsAPI.getDataInterval(resourceId, module);
+			long dataIntervalSeconds=ReadingsAPI.getDataInterval(resourceId, module)*60;
 			//here doing the floor roundoff..
-			SecondsChronoUnit defaultAdjustUnit = new SecondsChronoUnit(dataInterval * 60);
+			SecondsChronoUnit defaultAdjustUnit = new SecondsChronoUnit(dataIntervalSeconds);
 			ZonedDateTime zdt=	DateTimeUtil.getDateTime(currentTime).truncatedTo(defaultAdjustUnit);
-			if(DateTimeUtil.getMillis(zdt, true)-previousTime > (dataInterval*60*1000)) 
-			{
-				return true;
-			}
+			long timeDiff=DateTimeUtil.getMillis(zdt, true)-previousTime;
+			float gapCount=(float) (timeDiff/(dataIntervalSeconds*1000));
+			return gapCount;
 		}
 		catch(Exception e) {
 			LOGGER.error("Exception while cheking data Gap", e);
 		}
-		return false;
+		return 1;
 	}
 	private static List<ReadingContext> getChildMeterReadings(List<Long> childIds, long startTime, long endTime, int minutesInterval) throws Exception{
 
@@ -780,20 +799,6 @@ public class DeviceAPI
 			}
 			return total;
 		}
-		
-	}
-	
-public static MarkedReadingContext getMarkedReading(ReadingContext reading,long fieldId,long moduleId, MarkType markType, Object currentReading, Object lastReading) {
-		
-		MarkedReadingContext mReading= new MarkedReadingContext();
-		mReading.setReading(reading);
-		mReading.setFieldId(fieldId);
-		mReading.setModuleId(moduleId);
-		mReading.setMarkType(markType);
-		mReading.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-		mReading.setActualValue(String.valueOf(currentReading));
-		mReading.setModifiedValue(String.valueOf(lastReading));
-		return mReading;
 		
 	}
 

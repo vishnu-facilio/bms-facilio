@@ -75,7 +75,7 @@ public class ScheduleReportCommand implements Command {
 				
 				context.put(FacilioConstants.ContextNames.ROWS_UPDATED, count);
 				
-				Long templateId = (Long) context.get(FacilioConstants.Workflow.TEMPLATE_ID);
+				Long templateId = (Long) context.get(FacilioConstants.ContextNames.TEMPLATE_ID);
 				TemplateAPI.deleteTemplate(templateId);
 				
 			}

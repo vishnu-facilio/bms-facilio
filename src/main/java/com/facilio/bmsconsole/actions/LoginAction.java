@@ -449,7 +449,7 @@ public class LoginAction extends FacilioAction{
 			Organization org = AccountUtil.getOrgBean().getOrg(user.getOrgId());
 			invitation.put("email", user.getEmail());
 			invitation.put("orgname", org.getName());
-			if(user.getPassword() == null) {
+			if(user.password() == null) {
 				invitation.put("account_exists", false);
 			} else {
 				invitation.put("account_exists", true);	
@@ -672,8 +672,8 @@ public class LoginAction extends FacilioAction{
 		account = new HashMap<>();
 		account.put("org", AccountUtil.getCurrentOrg());
 		account.put("user", AccountUtil.getCurrentUser());
-		log.info(AccountUtil.getCurrentUser().getEmail()+"))(()()()(((((())))))");
-		log.info(AccountUtil.getCurrentAccount().getOrg().getDomain()+"$$$$$$$$$$$$$$$$$$$$$");
+		//log.info(AccountUtil.getCurrentUser().getEmail()+"))(()()()(((((())))))");
+		//log.info(AccountUtil.getCurrentAccount().getOrg().getDomain()+"$$$$$$$$$$$$$$$$$$$$$");
 		List<User> users = AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId());
 //		List<Group> groups = AccountUtil.getGroupBean().getMyGroups(AccountUtil.getCurrentUser().getId());
 		List<Group> groups = AccountUtil.getGroupBean().getOrgGroups(AccountUtil.getCurrentOrg().getId(), true);
@@ -711,6 +711,7 @@ public class LoginAction extends FacilioAction{
 			data.put("forms", forms);
 		}
 		data.put("mysites", CommonCommandUtil.getMySites());
+		data.put("buildings", SpaceAPI.getAllBuildings());
 		data.put("sites", SpaceAPI.getAllSites());
 		
 		Map<String, Object> config = new HashMap<>();

@@ -1167,9 +1167,7 @@ public class DashboardAction extends ActionSupport {
 				
 				CardType card = CardType.getCardType(widgetStaticContext.getStaticKey());
 				
-				String workflow = CardUtil.replaceWorflowPlaceHolders(card.getWorkflow(), widgetStaticContext.getParamsJson());
-				
-				Object wfResult = WorkflowUtil.getWorkflowExpressionResult(workflow, null);
+				Object wfResult = WorkflowUtil.getWorkflowExpressionResult(card.getWorkflow(), widgetStaticContext.getParamsJson());
 				result.put("result", wfResult);
 				result.put("unit", CardUtil.getUnit(widgetStaticContext.getParamsJson()));
 				
@@ -1296,9 +1294,7 @@ public class DashboardAction extends ActionSupport {
 				
 				CardType card = CardType.getCardType(staticKey);
 				
-				String workflow = CardUtil.replaceWorflowPlaceHolders(card.getWorkflow(), paramsJson);
-				
-				Object wfResult = WorkflowUtil.getWorkflowExpressionResult(workflow, null);
+				Object wfResult = WorkflowUtil.getWorkflowExpressionResult(card.getWorkflow(), paramsJson);
 				
 				result.put("result", wfResult);
 				result.put("unit", CardUtil.getUnit(paramsJson));
@@ -4264,6 +4260,20 @@ public class DashboardAction extends ActionSupport {
 			groupByField.setName("groupBy");
 			fields.add(groupByField);
 			builder.groupBy("groupBy");
+			FacilioField severityfield = modBean.getField("severity", FacilioConstants.ContextNames.ALARM);
+			if(severityfield != null && severityfield.getId() == groupByField.getId()) {
+				JSONObject metaJson = new JSONObject();
+				
+				metaJson.put("Critical", "#ff5959");
+				metaJson.put("Major", "#e79958");
+				metaJson.put("Minor", "#e3c920");
+				metaJson.put("Warning", "#7daeec");
+				metaJson.put("Clear", "#6cbd85");
+				metaJson.put("Fire", "#ca0a0a");
+				metaJson.put("Info", "#086826");
+				
+				report.setMetaJson(metaJson);
+			}
 			groupByString = groupByString + ",groupBy";
 		}
 			

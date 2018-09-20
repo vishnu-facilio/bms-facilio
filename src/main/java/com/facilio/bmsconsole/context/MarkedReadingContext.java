@@ -112,8 +112,9 @@ public class MarkedReadingContext  {
 		HIGH_VALUE,
 		TOO_HIGH_VALUE,
 		HIGH_VALUE_HOURLY_VIOLATION,
-		HIGH_VALUE_DAILY_VIOLATION
-		;
+		HIGH_VALUE_DAILY_VIOLATION,
+		HIGH_VALUE_WEEKLY_VIOLATION,
+		RESET_VALUE;
 		
 		public int getValue() {
 			return ordinal()+1;
@@ -127,4 +128,8 @@ public class MarkedReadingContext  {
 		}
 	}
 	
+	public String toString() {
+		
+		return "Marked Reading resource: "+getResourceId()+" : "+getActualValue()+ " : "+getModifiedValue()+" : "+getMarkType()+" : "+getFieldId();
+	}
 } 

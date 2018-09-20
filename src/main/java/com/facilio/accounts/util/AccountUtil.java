@@ -21,6 +21,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.fw.BeanFactory;
+import com.facilio.fw.TransactionBeanFactory;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -74,6 +75,10 @@ public class AccountUtil {
 	public static UserBean getUserBean() throws Exception {
 		UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
 		return userBean;
+	}
+
+	public static UserBean getTransactionalUserBean() throws Exception {
+		return (UserBean) TransactionBeanFactory.lookup("UserBean");
 	}
 	
 	public static OrgBean getOrgBean() throws Exception {

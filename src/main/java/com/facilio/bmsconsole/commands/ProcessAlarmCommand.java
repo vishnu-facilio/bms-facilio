@@ -1,7 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -17,6 +21,15 @@ import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.constants.FacilioConstants;
 
 public class ProcessAlarmCommand implements Command {
+	
+	private static final List<String> EVENT_INTERNAL_PROPS = Collections.unmodifiableList(initDefaultEventProps());
+	private static List<String> initDefaultEventProps() {
+		List<String> defaultProps = new ArrayList<>();
+		defaultProps.add("eventStateEnum");
+		defaultProps.add("internalStateEnum");
+		
+		return defaultProps;
+	}
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -34,14 +47,22 @@ public class ProcessAlarmCommand implements Command {
 		List<FacilioField> fields = AlarmAPI.getAlarmFields(sourceType);
 		JSONObject additionalInfo = new JSONObject();
 		Set<String> fieldNames = fields.stream().map(FacilioField::getName).collect(Collectors.toSet());
-		Set<String> propNames = alarmInfo.keySet();
 		Set<String> defaultProps = new HashSet<>();
 		defaultProps.add("severityString");
 		defaultProps.add("orgId");
 		
-		for (String propName : propNames) {
-			if (!fieldNames.contains(propName) && !defaultProps.contains(propName)) {
-				additionalInfo.put(propName, alarmInfo.get(propName));
+		Iterator<Map.Entry<String, Object>> itr = alarmInfo.entrySet().iterator();
+		
+		while (itr.hasNext()) {
+			Map.Entry<String, Object> entry = itr.next();
+			Object val = entry.getValue();
+			if (val == null || val.toString().isEmpty()) {
+				itr.remove();
+			}
+			else {
+				if (!fieldNames.contains(entry.getKey()) && !defaultProps.contains(entry.getKey()) && !EVENT_INTERNAL_PROPS.contains(entry.getKey())) {
+					additionalInfo.put(entry.getKey(), val);
+				}
 			}
 		}
 		

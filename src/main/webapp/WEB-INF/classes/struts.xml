@@ -10,10 +10,7 @@
 	<constant name="struts.custom.i18n.resources" value="facilioprops" />
 	<constant name="struts.action.excludePattern" value="/websocket/.*" />
 	<constant name="struts.multipart.maxSize" value="15000000" />
-
-	<constant name="struts.mapper.alwaysSelectFullNamespace"
-		value="true" />
-	<!-- constant name="struts.ui.theme" value="simple"/ -->
+	<constant name="struts.mapper.alwaysSelectFullNamespace" value="true" />
 
 	<include file="bmsconsole.xml" />
 	<include file="serviceportal.xml" />

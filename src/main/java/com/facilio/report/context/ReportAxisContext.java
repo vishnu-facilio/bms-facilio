@@ -1,9 +1,7 @@
 package com.facilio.report.context;
 
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.fw.BeanFactory;
 import com.facilio.unitconversion.Unit;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -36,11 +34,6 @@ public class ReportAxisContext {
 	
 	@JsonIgnore
 	public FacilioField getField() throws Exception {
-		
-		if(field == null && fieldId > 0) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			field = modBean.getField(fieldId);
-		}
 		return field;
 	}
 	public void setField(FacilioField field) {

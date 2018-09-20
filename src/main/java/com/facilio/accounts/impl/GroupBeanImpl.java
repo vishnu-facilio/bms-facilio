@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.StringJoiner;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.util.Strings;
 
 import com.facilio.accounts.bean.GroupBean;
 import com.facilio.accounts.dto.Group;
@@ -14,6 +15,8 @@ import com.facilio.accounts.dto.GroupMember;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountConstants.GroupMemberRole;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -22,6 +25,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -273,10 +277,29 @@ public class GroupBeanImpl implements GroupBean {
 		
 		List<Group> groups = new ArrayList<>();
 		
+		List<Long> siteIds = new ArrayList<>();
+		long siteId = AccountUtil.getCurrentSiteId();
+		if (siteId > 0) {
+			siteIds.add(siteId);
+		} else {
+			List<BaseSpaceContext> sites = CommonCommandUtil.getMySites();
+			if (sites != null && !sites.isEmpty()) {
+				for (BaseSpaceContext b: sites) {
+					siteIds.add(b.getSiteId());
+				}
+			}
+		}
+		
+		String siteCondition = "";
+		
+		if (!siteIds.isEmpty()) {
+			siteCondition = " AND (SITE_ID IS NULL OR SITE_ID IN (" + Strings.join(siteIds, ',') + "))";
+		}
+		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(AccountConstants.getGroupFields())
 				.table(AccountConstants.getGroupModule().getTableName())
-				.andCustomWhere("ORGID = ?", orgId);
+				.andCustomWhere("ORGID = ?" + siteCondition, orgId);
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -296,13 +319,26 @@ public class GroupBeanImpl implements GroupBean {
 		
 		List<Group> groups = new ArrayList<>();
 		
+		List<Long> siteIds = new ArrayList<>();
 		long siteId = AccountUtil.getCurrentSiteId();
+		if (siteId > 0) {
+			siteIds.add(siteId);
+		} else {
+			List<BaseSpaceContext> sites = CommonCommandUtil.getMySites();
+			if (sites != null && !sites.isEmpty()) {
+				for (BaseSpaceContext b: sites) {
+					siteIds.add(b.getSiteId());
+				}
+			}
+		}
 		
 		String siteCondition = "";
 		
-		if (siteId > 0) {
-			siteCondition = " AND (SITE_ID IS NULL OR SITE_ID = " + String.valueOf(siteId) + ")";
+		if (!siteIds.isEmpty()) {
+			siteCondition = " AND (SITE_ID IS NULL OR SITE_ID IN (" + Strings.join(siteIds, ',') + "))";
 		}
+		
+		
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(AccountConstants.getGroupFields())
@@ -310,11 +346,24 @@ public class GroupBeanImpl implements GroupBean {
 				.andCustomWhere("ORGID = ? AND IS_ACTIVE = true"+siteCondition, orgId);
 		
 		List<Map<String, Object>> props = selectBuilder.get();
+		List<Long> ouids = new ArrayList<>();
 		if (props != null && !props.isEmpty()) {
 			for(Map<String, Object> prop : props) {
 				Group group = FieldUtil.getAsBeanFromMap(prop, Group.class);
 				populateGroupEmailAndPhone(group);
+				if (group.getMembers() != null) {
+					for (GroupMember member: group.getMembers()) {
+						long ouid = member.getOuid();
+						ouids.add(ouid);
+					}
+				}
 				groups.add(group);
+			}
+			Map<Long, List<Long>> ouidVsAccSpace = UserBeanImpl.getAccessibleSpaceList(ouids);
+			for (Group group: groups) {
+				for (GroupMember member: group.getMembers()) {
+					member.setAccessibleSpace(ouidVsAccSpace.get(member.getOuid()));
+				}
 			}
 			return groups;
 		}

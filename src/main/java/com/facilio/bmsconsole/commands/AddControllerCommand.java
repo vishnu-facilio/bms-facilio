@@ -1,17 +1,22 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.logging.log4j.util.Strings;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.BuildingContext;
 //import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericInsertRecordBuilder;
 
@@ -25,17 +30,23 @@ public class AddControllerCommand implements Command {
 		if(controllerSettings != null) {
 			controllerSettings.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 			
-//			
-////			CommonCommandUtil.setFwdMail(supportEmail);
-//			ObjectMapper mapper = new ObjectMapper();
-//			mapper.setSerializationInclusion(Include.NON_DEFAULT);
-//			Map<String, Object> controllerSettingsprops = mapper.convertValue(controllerSettings, Map.class);
-////			emailProps.put("autoAssignGroup", ((Map<String, Object>)emailProps.get("autoAssignGroup")).get("id"));
-////			if(emailProps.get("autoAssignGroup")!=null)
-////			{
-////						emailProps.put("autoAssignGroup", ((Map<String, Object>)emailProps.get("autoAssignGroup")).get("id"));
-////			}
-////			System.out.println(emailProps);
+			if (controllerSettings.getSiteId() <= 0) {
+				throw new IllegalArgumentException("Site is mandatory.");
+			}
+			
+			if (controllerSettings.getBuildingIds() != null && !controllerSettings.getBuildingIds().isEmpty()) {
+				
+				List<BuildingContext> buildings = SpaceAPI.getBuildingSpace(Strings.join(controllerSettings.getBuildingIds(), ','));
+				if (buildings == null || buildings.isEmpty()) {
+					throw new IllegalArgumentException("Building does not belong to site.");
+				}
+				
+				for (BuildingContext building: buildings) {
+					if (building.getSiteId() != controllerSettings.getSiteId()) {
+						throw new IllegalArgumentException("Building does not belong to site.");
+					}
+				}
+			}
 			
 			Map<String, Object> controllerSettingsprops = FieldUtil.getAsProperties(controllerSettings);
 			
@@ -46,6 +57,19 @@ public class AddControllerCommand implements Command {
 													.addRecord(controllerSettingsprops);
 			builder.save();
 			controllerSettings.setId((long) controllerSettingsprops.get("id"));
+			
+			if (controllerSettings.getBuildingIds() != null && !controllerSettings.getBuildingIds().isEmpty()) {
+				GenericInsertRecordBuilder relBuilder = new GenericInsertRecordBuilder()
+						.table(ModuleFactory.getControllerBuildingRelModule().getTableName())
+						.fields(FieldFactory.getControllerBuildingRelFields());
+				for (long buildingId: controllerSettings.getBuildingIds()) {
+					Map<String, Object> prop = new HashMap<>();
+					prop.put("buildingId", buildingId);
+					prop.put("controllerId", controllerSettings.getId());
+					relBuilder.addRecord(prop);
+				}
+				relBuilder.save();
+			}
 		}
 		return false;
 	}

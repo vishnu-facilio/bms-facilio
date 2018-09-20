@@ -29,9 +29,9 @@ public class AddTenantUserCommand implements Command {
 		}
 
 		try {
-			//user.getId();
+//			user.getId();
 			AccountUtil.getUserBean().inviteRequester(orgid, user);
-//			setUserId(user.getId());	
+//			user.setOuid(user.getId());	
 		}
 		catch (Exception e) {
 		}

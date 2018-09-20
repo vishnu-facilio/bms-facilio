@@ -965,7 +965,7 @@
 		</action>
 	</package>
 
-	<package name="admin" namespace="/app/admin" extends="homeApi">
+	<package name="admin" namespace="/admin" extends="homeApi">
 		<action name="addJob" class="com.facilio.bmsconsole.actions.AdminAction"
 			method="addJob">
 		</action>
@@ -2177,6 +2177,13 @@
 			</result>
 		</action>
 		
+		<action name="siteMap" class="com.facilio.bmsconsole.actions.AlarmReportAction"
+			method="siteMap">
+				<result name="success" type="json">
+				<param name="root">alarmTypeStats</param>
+			</result>
+		</action>
+		
 		<action name="getAllBuildings" class="com.facilio.bmsconsole.actions.AlarmReportAction"
 			method="getAllBuildings">
 				<result name="success" type="json">
@@ -2327,7 +2334,7 @@
 			<param name="moduleName">space</param>
 			<param name="permission">READ</param>
 			<result name="success" type="json">
-				<param name="includeProperties">reports.*,reportcards,reportcards\[\d+\],reportcards\[\d+\].*</param>
+				<param name="includeProperties">reports.*,reportcards,reportcards\[\d+\],reportcards\[\d+\].*,^mainEnergyMeter.*</param>
 			</result>
 		</action>
 
@@ -2731,7 +2738,7 @@
 	<param name="moduleName">setup</param>
 	<param name="permission">USER_MANAGEMENT</param>
 	<result name="success" type="json">
-	<param name="includeProperties">^user.*</param>
+	<param name="includeProperties">user.*</param>
 	</result>
 	</action>
 	
@@ -2884,8 +2891,25 @@
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
 			</result>
 		</action>
+		<action name="checkImport" class="com.facilio.bmsconsole.actions.ImportDataAction" method="checkImportStatus">
+			<param name="permission">DATA_ADMINISTRATION</param>
+			<result name="success" type="json">
+				<param name="properties">im.*</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+			</result>
+		</action>
+		<action name="importreading" class="com.facilio.bmsconsole.actions.ImportDataAction" method="importReading">
+			<param name="permission">DATA_ADMINISTRATION</param>
+			<result name="success" type="json">
+				<param name="properties">importProcessContext.*</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+			</result>
+		</action>
 	</package>
-
 	<package name="timeseriesPublish" namespace="/iot/api/timeseries" extends="homeApi">
 	<action name="tspublish" class="com.facilio.bmsconsole.actions.TimeSeries"
 			method="publish">

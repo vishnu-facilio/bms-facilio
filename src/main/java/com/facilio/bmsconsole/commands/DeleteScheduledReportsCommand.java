@@ -10,6 +10,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.ReportInfo;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -23,6 +24,11 @@ import com.facilio.tasker.FacilioTimer;
 
 public class DeleteScheduledReportsCommand implements Command {
 	
+	boolean isV2Report;
+	public DeleteScheduledReportsCommand(Boolean... isV2Report) {
+		this.isV2Report = isV2Report.length == 1 ? isV2Report[0] : false;
+	}
+	
 	@Override
 	public boolean execute(Context context) throws Exception {
 		
@@ -32,8 +38,17 @@ public class DeleteScheduledReportsCommand implements Command {
 		}
 		
 		FacilioModule module = ModuleFactory.getReportScheduleInfoModule();
+		List<FacilioField> fields;
+		if (isV2Report) {
+			module = ModuleFactory.getReportScheduleInfo();
+			fields = FieldFactory.getReportScheduleInfo1Fields();
+		}
+		else {
+			module = ModuleFactory.getReportScheduleInfoModule();
+			fields = FieldFactory.getReportScheduleInfoFields();
+		}
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getReportScheduleInfoFields())
+				.select(fields)
 				.table(module.getTableName())
 				.andCondition(CriteriaAPI.getIdCondition(recordIds, module));
 		
@@ -68,9 +83,8 @@ public class DeleteScheduledReportsCommand implements Command {
 			context.put(FacilioConstants.ContextNames.TEMPLATE_ID, templateIds.get(0));
 		}
 		
-		FacilioTimer.deleteJobs(recordIds, "ReportScheduler");
+		FacilioTimer.deleteJobs(recordIds, isV2Report ? "ReportEmailScheduler" : "ReportScheduler");
 		
-		// TODO Auto-generated method stub
 		return false;
 	}
 

@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
@@ -25,7 +26,18 @@ public class InsertReadingDataMetaForNewResourceCommand implements Command {
 		
 		
 		List<FacilioModule> readingModules = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
-		long resourceId= (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+		List<Long> resourceIds= (List<Long>)context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
+		if(resourceIds == null) {
+			Long resourceId = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+			if(resourceId == null) {
+				return false;
+			}
+			else {
+				resourceIds = new ArrayList<Long>();
+				resourceIds.add(resourceId);
+			}
+		}
+		
 		long orgId=AccountUtil.getCurrentOrg().getOrgId();
 		long timestamp=System.currentTimeMillis();
 		if(readingModules == null || readingModules.isEmpty()) {
@@ -36,6 +48,7 @@ public class InsertReadingDataMetaForNewResourceCommand implements Command {
 				.table(ModuleFactory.getReadingDataMetaModule().getTableName())
 				.fields(FieldFactory.getReadingDataMetaFields());
 		
+		for(Long resourceId : resourceIds) {
 		for(FacilioModule module : readingModules) {
 			ReadingInputType type = (ReadingInputType) context.get(FacilioConstants.ContextNames.READING_DATA_META_TYPE);
 			if (type == null) {
@@ -56,7 +69,7 @@ public class InsertReadingDataMetaForNewResourceCommand implements Command {
 			}
 		}
 		builder.save();
-
+		}
 		return false;
 	}
 	

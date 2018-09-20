@@ -190,15 +190,21 @@ public class ReadingsAPI {
 	}
 	
 	public static List<ReadingDataMeta> getReadingDataMetaList(Long resourceId, Collection<FacilioField> fieldList, boolean excludeEmptyFields, ReadingInputType...readingTypes) throws Exception {
-		Map<Long, FacilioField> fieldMap = FieldFactory.getAsIdMap(fieldList);
+		Map<Long, FacilioField> fieldMap = null;
+		if (fieldList != null) {
+			fieldMap = FieldFactory.getAsIdMap(fieldList);
+		}
 		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
 		List<FacilioField> redingFields = FieldFactory.getReadingDataMetaFields();
 		Map<String, FacilioField> readingFieldsMap = FieldFactory.getAsMap(redingFields);
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getReadingDataMetaFields())
 				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("fieldId"), StringUtils.join(fieldMap.keySet(), ","), NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+				
+		if (fieldMap != null) {
+			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("fieldId"), StringUtils.join(fieldMap.keySet(), ","), NumberOperators.EQUALS));
+		}
 		
 		if(resourceId != null) {
 			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("resourceId"), String.valueOf(resourceId), NumberOperators.EQUALS));
@@ -220,7 +226,7 @@ public class ReadingsAPI {
 		return getReadingDataFromProps(stats, fieldMap);
 	}
 	
-	private static List<ReadingDataMeta> getReadingDataFromProps(List<Map<String, Object>> props, Map<Long, FacilioField> fieldMap) {
+	private static List<ReadingDataMeta> getReadingDataFromProps(List<Map<String, Object>> props, Map<Long, FacilioField> fieldMap) throws Exception {
 		if(props != null && !props.isEmpty()) {
 			List<ReadingDataMeta> metaList = new ArrayList<>();
 			for (Map<String, Object> prop : props) {
@@ -236,7 +242,7 @@ public class ReadingsAPI {
 		return resourceId+"_"+field.getFieldId();
 	}
 	
-	private static Map<String, ReadingDataMeta> getRDMMapFromProps (List<Map<String, Object>> props, Map<Long, FacilioField> fieldMap) {
+	private static Map<String, ReadingDataMeta> getRDMMapFromProps (List<Map<String, Object>> props, Map<Long, FacilioField> fieldMap) throws Exception {
 		if(props != null && !props.isEmpty()) {
 			Map<String, ReadingDataMeta> rdmMap = new HashMap<>();
 			for (Map<String, Object> prop : props) {
@@ -248,10 +254,17 @@ public class ReadingsAPI {
 		return null;
 	}
 	
-	private static ReadingDataMeta getRDMFromProp (Map<String, Object> prop, Map<Long, FacilioField> fieldMap) {
+	private static ReadingDataMeta getRDMFromProp (Map<String, Object> prop, Map<Long, FacilioField> fieldMap) throws Exception {
 		ReadingDataMeta meta = FieldUtil.getAsBeanFromMap(prop, ReadingDataMeta.class);
 		Object value = meta.getValue();
-		FacilioField field = fieldMap.get(meta.getFieldId());
+		FacilioField field;
+		if (fieldMap != null) {
+			 field = fieldMap.get(meta.getFieldId());
+		}
+		else {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			field = modBean.getField(meta.getFieldId());
+		}
 		if (field.getDataTypeEnum() == FieldType.ENUM) {
 			if (value != null && value instanceof String) {
 				value = Integer.valueOf((String) value);
@@ -386,12 +399,9 @@ public class ReadingsAPI {
 		String sql = null;
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
 			Map<String,FacilioField>  fieldMap = FieldFactory.getAsMap(fieldsList);
-			Set<Long> resources= new HashSet<Long>();
-			Set<Long> fields= new HashSet<Long>();
 			Map<String, ReadingDataMeta> uniqueRDMs = new HashMap<>();
 			for(ReadingContext readingContext:readingList) {
 				long resourceId=readingContext.getParentId();
-				resources.add(resourceId);
 				long timeStamp=readingContext.getTtime();
 				long readingId = readingContext.getId();
 				Map<String,Object> readings=  readingContext.getReadings();
@@ -414,7 +424,6 @@ public class ReadingsAPI {
 									}
 								}
 							}
-							fields.add(fieldId);
 							String value = val.toString();
 							
 							ReadingDataMeta rdm = uniqueRDMs.get(uniqueKey);
@@ -445,23 +454,31 @@ public class ReadingsAPI {
 			StringBuilder timeBuilder= new StringBuilder();
 			StringBuilder valueBuilder= new StringBuilder();
 			StringBuilder idBuilder= new StringBuilder();
+			StringJoiner whereClause = new StringJoiner(" OR ");
 			long orgId=AccountUtil.getCurrentOrg().getOrgId();
 
 			for (ReadingDataMeta rdm : uniqueRDMs.values()) {
 				timeBuilder.append(getCase(rdm.getResourceId(),rdm.getFieldId(),rdm.getTtime(),false));
 				valueBuilder.append(getCase(rdm.getResourceId(),rdm.getFieldId(),rdm.getValue(),true));
 				idBuilder.append(getCase(rdm.getResourceId(),rdm.getFieldId(),rdm.getReadingDataId(),false));
+				
+				StringBuilder builder = new StringBuilder()
+											.append("(RESOURCE_ID = ")
+											.append(rdm.getResourceId())
+											.append(" AND FIELD_ID = ")
+											.append(rdm.getFieldId())
+											.append(")")
+											;
+				whereClause.add(builder.toString());
 			}
 			
 			if(timeBuilder.length() <= 0 || valueBuilder.length() <= 0) {
 				return null;
 			}
-			String resourceList=StringUtils.join(resources, ",");
-			String fieldList=StringUtils.join(fields, ",");
 			sql = "UPDATE "+ModuleFactory.getReadingDataMetaModule().getTableName()+" SET TTIME = CASE "+timeBuilder.toString()+ " END, "
 					+ "VALUE = CASE "+valueBuilder.toString() + " END, "
 					+ "READING_DATA_ID = CASE "+idBuilder.toString() + " END "
-					+ "WHERE ORGID = "+orgId+" AND RESOURCE_ID IN ("+resourceList+") AND FIELD_ID IN ("+fieldList+")";
+					+ "WHERE ORGID = "+orgId+" AND ("+whereClause.toString()+")";
 			if(sql != null && !sql.isEmpty()) {
 				LOGGER.debug("################ Update RDM sql : "+sql);
 				try(PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){

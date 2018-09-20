@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -22,6 +23,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
+import org.json.JSONException;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -32,8 +36,8 @@ import org.w3c.dom.ls.LSSerializer;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseLineContext;
-import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.BaseLineContext.AdjustType;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -52,6 +56,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
@@ -64,6 +69,7 @@ import com.facilio.workflows.functions.FacilioFunctionsParamType;
 import com.facilio.workflows.functions.FacilioListFunction;
 import com.facilio.workflows.functions.FacilioMapFunction;
 import com.facilio.workflows.functions.FacilioMathFunction;
+import com.facilio.workflows.functions.FacilioReadingFunctions;
 import com.facilio.workflows.functions.FacilioStringFunction;
 import com.facilio.workflows.functions.FacilioWorkflowFunctionInterface;
 import com.facilio.workflows.functions.ThermoPhysicalR134aFunctions;
@@ -616,6 +622,11 @@ public class WorkflowUtil {
 	public static Object getResult(Long workflowId,Map<String,Object> paramMap)  throws Exception  {
 		return getResult(workflowId, paramMap, true);
 	}
+	public static Object getResult(Long workflowId,JSONObject paramMapJSON)  throws Exception  {
+		
+		Map<String, Object> paramMap = FacilioUtil.getAsMap(paramMapJSON);
+		return getResult(workflowId, paramMap, true);
+	}
 	public static Object getResult(Long workflowId,Map<String,Object> paramMap, boolean ignoreNullExpressions)  throws Exception  {
 		LOGGER.fine("getResult() -- workflowid - "+workflowId+" params -- "+paramMap);
 		WorkflowContext workflowContext = getWorkflowContext(workflowId);
@@ -1085,7 +1096,12 @@ public class WorkflowUtil {
 			}
 			else {
 				field = modBean.getField(fieldName, moduleName);
-				operator = field.getDataTypeEnum().getOperator(operatorString);
+				if(FacilioUtil.isNumeric(operatorString)) {
+					operator = Operator.OPERATOR_MAP.get(Integer.parseInt(operatorString));
+				}
+				else {
+					operator = field.getDataTypeEnum().getOperator(operatorString);
+				}
 			}
 			
 			String conditionValue = matcher.group(8); // 8
@@ -1223,22 +1239,17 @@ public class WorkflowUtil {
 		
 		switch(nameSpace) {
 		case "default":
-
 			facilioWorkflowFunction = FacilioDefaultFunction.getFacilioDefaultFunction(functionName);
 			break;
 		case "math" :
-			
 			facilioWorkflowFunction = FacilioMathFunction.getFacilioMathFunction(functionName);
 			break;
 		case "date" :
-			
 			facilioWorkflowFunction = FacilioDateFunction.getFacilioDateFunction(functionName);
 			break;
 		case "thermoPhysical.R134a" :
-			
 			facilioWorkflowFunction = ThermoPhysicalR134aFunctions.getThermoPhysicalR134aFunction(functionName);
 			break;
-			
 		case "cost" :
 			facilioWorkflowFunction = FacilioCostFunction.getFacilioCostFunction(functionName);
 			break;
@@ -1247,6 +1258,12 @@ public class WorkflowUtil {
 			break;
 		case "list" :
 			facilioWorkflowFunction = FacilioListFunction.getFacilioListFunction(functionName);
+			break;
+		case "string" :
+			facilioWorkflowFunction = FacilioStringFunction.getFacilioStringFunction(functionName);
+			break;
+		case "readings" :
+			facilioWorkflowFunction = FacilioReadingFunctions.getFacilioReadingFunctions(functionName);
 			break;
 		}
 		
@@ -1260,22 +1277,17 @@ public class WorkflowUtil {
 		
 		switch(nameSpace) {
 		case "default":
-
 			facilioWorkflowFunction = new ArrayList<>( FacilioDefaultFunction.getAllFunctions().values());
 			break;
 		case "math" :
-			
 			facilioWorkflowFunction = new ArrayList<>( FacilioMathFunction.getAllFunctions().values());
 			break;
 		case "date" :
-			
 			facilioWorkflowFunction = new ArrayList<>( FacilioDateFunction.getAllFunctions().values());
 			break;
 		case "thermoPhysical.R134a" :
-			
 			facilioWorkflowFunction = new ArrayList<>( ThermoPhysicalR134aFunctions.getAllFunctions().values());
 			break;
-			
 		case "cost" :
 			facilioWorkflowFunction = new ArrayList<>( FacilioCostFunction.getAllFunctions().values());
 			break;
@@ -1287,6 +1299,9 @@ public class WorkflowUtil {
 			break;
 		case "string" :
 			facilioWorkflowFunction = new ArrayList<>( FacilioStringFunction.getAllFunctions().values());
+			break;
+		case "readings" :
+			facilioWorkflowFunction = new ArrayList<>( FacilioReadingFunctions.getAllFunctions().values());
 			break;
 		}
 		

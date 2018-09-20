@@ -1,5 +1,6 @@
 package com.facilio.report.context;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,5 +19,19 @@ public class ReportDataContext {
 	}
 	public void setProps(Map<String, List<Map<String, Object>>> props) {
 		this.props = props;
+	}
+	
+	private Map<String, ReportBaseLineContext> baseLineMap;
+	public Map<String, ReportBaseLineContext> getBaseLineMap() {
+		return baseLineMap;
+	}
+	public void setBaseLineMap(Map<String, ReportBaseLineContext> baseLineMap) {
+		this.baseLineMap = baseLineMap;
+	}
+	public void addBaseLine(String name, ReportBaseLineContext baseLine) {
+		if (baseLineMap == null) {
+			baseLineMap = new HashMap<>();
+		}
+		baseLineMap.put(name, baseLine);
 	}
 }

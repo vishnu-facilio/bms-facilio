@@ -67,6 +67,7 @@ public class WorkflowRuleAPI {
 				break;
 			case SLA_RULE:
 				addExtendedProps(ModuleFactory.getSLARuleModule(), FieldFactory.getSLARuleFields(), ruleProps);
+				break;
 			case SCHEDULED_RULE:
 				validateScheduledRule((ScheduledRuleContext) rule);
 				addExtendedProps(ModuleFactory.getScheduledRuleModule(), FieldFactory.getScheduledRuleFields(), ruleProps);

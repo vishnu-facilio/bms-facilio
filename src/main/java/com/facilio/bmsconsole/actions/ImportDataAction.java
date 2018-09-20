@@ -1,36 +1,52 @@
 package com.facilio.bmsconsole.actions;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.actions.ImportProcessContext.ImportStatus;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.FacilioChainFactory.FacilioChain;
 import com.facilio.bmsconsole.commands.data.ProcessSpaceXLS;
+import com.facilio.bmsconsole.commands.data.ProcessXLS;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.jobs.ImportDataJob;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.tasker.FacilioTimer;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class ImportDataAction extends ActionSupport {
 	
 	private static final Logger LOGGER = Logger.getLogger(ImportDataAction.class.getName());
+	
 	private static org.apache.log4j.Logger log = LogManager.getLogger(ImportDataAction.class.getName());
 	public String upload() throws Exception {
 		
@@ -40,13 +56,28 @@ public class ImportDataAction extends ActionSupport {
 		
 		JSONArray columnheadings = ImportAPI.getColumnHeadings(fileUpload);
 		
+		ArrayList<String> firstRow = ImportAPI.getFirstRow(fileUpload);	
+		importProcessContext.setfirstRow(firstRow);
 		importProcessContext.setColumnHeadingString(columnheadings.toJSONString().replaceAll("\"", "\\\""));
-		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule facilioModule = modBean.getModule(getModuleName());
 		
-        importProcessContext.setModuleId(facilioModule.getModuleId());
-        importProcessContext.setStatus(ImportProcessContext.ImportStatus.FILE_UPLOADED.getValue());
+        if(facilioModule.getName().equals(FacilioConstants.ContextNames.ASSET) && (assetCategory != -1)) {
+        	HashMap<String,String> moduleInfo = AssetsAPI.getAssetModuleName(this.assetCategory);
+        	String moduleName = (String) moduleInfo.get(FacilioConstants.ContextNames.MODULE_NAME);
+        	if(!moduleName.equals(FacilioConstants.ContextNames.ASSET)) {
+        		facilioModule = modBean.getModule(moduleName);
+        		importProcessContext.setModuleId(facilioModule.getModuleId());
+        	}
+        	else {
+            	importProcessContext.setModuleId(facilioModule.getModuleId());
+            }
+            
+        }
+        else {
+        	importProcessContext.setModuleId(facilioModule.getModuleId());
+        }
+        importProcessContext.setStatus(ImportProcessContext.ImportStatus.UPLOAD_COMPLETE.getValue());
         
         importProcessContext.setFileId(fileId);
         
@@ -70,6 +101,7 @@ public class ImportDataAction extends ActionSupport {
 	
 	public String getAssets() throws Exception
 	{
+		if(moduleName != null) {
 		switch(moduleName)
 		{
 		  
@@ -82,6 +114,7 @@ public class ImportDataAction extends ActionSupport {
 		}
 		catch (Exception e) {
 			log.info("Exception occurred ", e);
+		}
 		}
 		return SUCCESS;
 	}
@@ -143,7 +176,7 @@ public class ImportDataAction extends ActionSupport {
 	}
 	
 	public String processImport() throws Exception
-	{
+	{	
 		if(assetId > 0) {
 			importProcessContext.setAssetId(assetId);
 			
@@ -152,19 +185,71 @@ public class ImportDataAction extends ActionSupport {
 			
 			importProcessContext.setImportJobMeta(scheduleInfo.toJSONString());
 		}
-		importProcessContext.setStatus(ImportProcessContext.ImportStatus.FIELDS_MAPED.getValue());
 		
-		ImportAPI.updateImportProcess(getImportProcessContext());
+//		if (importProcessContext.getModule().getName().equals("space") || importProcessContext.getModule().getName().equals("Space"))
+//		{
+//			ProcessSpaceXLS.processImport(importProcessContext);
+//			ImportAPI.updateImportProcess(getImportProcessContext());
+//		} 
+		importProcessContext.setStatus(ImportProcessContext.ImportStatus.IN_PROGRESS.getValue());
+		ImportAPI.updateImportProcess(importProcessContext);
+		FacilioTimer.scheduleOneTimeJob(importProcessContext.getId(), "importData" , 5, "priority");
 		
+		return SUCCESS;
+	}
+	
+	public String checkImportStatus() throws Exception {
+		ImportProcessContext im = ImportAPI.getImportProcessContext(importProcessContext.getId());
+		Integer mail = importProcessContext.getMailSetting();
+		Integer status = im.getStatus();
+		JSONObject meta = im.getImportJobMetaJson();
+		Integer setting = importProcessContext.getImportSetting();
 		
-		if (importProcessContext.getModule().getName().equals("space") || importProcessContext.getModule().getName().equals("Space"))
-		{
-			ProcessSpaceXLS.processImport(importProcessContext);
+		if(status == 3 && mail ==null) {
+			if(setting == ImportProcessContext.ImportSetting.INSERT.getValue()) {
+				String inserted = meta.get("Inserted").toString();
+				im.setnewEntries(Integer.parseInt(inserted));
+			}
+			else if(setting == ImportProcessContext.ImportSetting.INSERT_SKIP.getValue()) {
+				String skipped = meta.get("Skipped").toString();
+				String inserted = meta.get("Inserted").toString();
+				im.setSkipEntries(Integer.parseInt(skipped));
+				im.setnewEntries(Integer.parseInt(inserted));
+			}
+			else if(setting == ImportProcessContext.ImportSetting.UPDATE.getValue()) {
+				String updated = meta.get("Updated").toString();
+				im.setupdateEntries(Integer.parseInt(updated));
+			}
+			else if(setting == ImportProcessContext.ImportSetting.UPDATE_NOT_NULL.getValue()) {
+				String updated = meta.get("Updated").toString();
+				im.setupdateEntries(Integer.parseInt(updated));
+			}
+			
+			else if(setting == ImportProcessContext.ImportSetting.BOTH.getValue()) {
+				String inserted = meta.get("Inserted").toString();
+				String updated = meta.get("Updated").toString();
+				im.setnewEntries(Integer.parseInt(inserted));
+				im.setupdateEntries(Integer.parseInt(updated));
+			}
+			else if(setting == ImportProcessContext.ImportSetting.BOTH_NOT_NULL.getValue()) {
+				String inserted = meta.get("Inserted").toString();
+				String updated = meta.get("Updated").toString();
+				im.setnewEntries(Integer.parseInt(inserted));
+				im.setupdateEntries(Integer.parseInt(updated));				
+			}
+			importProcessContext = im;
 		}
-		else
-		{
-			FacilioTimer.scheduleOneTimeJob(importProcessContext.getId(), "importData", 5, "priority");
+		else if(status ==2 && mail!=null) {
+			ImportAPI.updateImportProcess(getImportProcessContext());
 		}
+		return SUCCESS;
+	}
+	
+	public String importReading() throws Exception{
+		
+		importProcessContext.setStatus(ImportProcessContext.ImportStatus.IN_PROGRESS.getValue());
+		ImportAPI.updateImportProcess(importProcessContext);
+		FacilioTimer.scheduleOneTimeJob(importProcessContext.getId(), "importReading", 5, "priority");
 		return SUCCESS;
 	}
 	
@@ -230,7 +315,14 @@ public class ImportDataAction extends ActionSupport {
 
 	ImportProcessContext importProcessContext =new ImportProcessContext();
 	
+	Long assetCategory;
 	
+	public Long getAssetCategory() {
+		return assetCategory;
+	}
+	public void setAssetCategory(Long assetCategory) {
+		this.assetCategory = assetCategory;
+	}
 	public void setModuleName(String module)
 	{
 		LOGGER.severe("Setting module : " + module);
@@ -250,11 +342,12 @@ public class ImportDataAction extends ActionSupport {
 		this.assetId = id;
 	}
 	private long assetId;
-	private String moduleName="Energy";
+	private String moduleName;
 	
 	
 	private List<AssetContext> chillerAssets;
 	public List<AssetContext> getChillerAssets() {
 		return chillerAssets;
 	}
+	
 }

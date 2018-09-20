@@ -1018,7 +1018,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 			Group assignmentGroup = ticket.getAssignmentGroup();
 			long groupSiteId = -1;
 			Set<Long> userSiteIds = new HashSet<>();
-			if (ticket.getAssignedTo() != null) {
+			if (ticket.getAssignedTo() != null && assignedTo.getOuid() != -1) {
 				assignedTo = AccountUtil.getUserBean().getUser(assignedTo.getOuid());
 				List<Long> accessibleSpace = assignedTo.getAccessibleSpace();
 				Map<Long, BaseSpaceContext> idVsBaseSpace = SpaceAPI.getBaseSpaceMap(accessibleSpace);
@@ -1033,7 +1033,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 					}
 				}
 			} 
-			if (assignmentGroup != null) {
+			if (assignmentGroup != null && assignmentGroup.getGroupId() != -1) {
 				assignmentGroup = AccountUtil.getGroupBean().getGroup(assignmentGroup.getGroupId());
 				groupSiteId = assignmentGroup.getSiteId();
 			}

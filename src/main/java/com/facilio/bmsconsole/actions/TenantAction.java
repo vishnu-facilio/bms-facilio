@@ -12,6 +12,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.tenant.RateCardContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.tenant.TenantUserContext;
@@ -40,8 +41,33 @@ public class TenantAction extends ActionSupport {
 	}
 	private boolean show_In_Portal; 
 	
-	
+	private long orgId = -1;
 
+	public long getOrgId() {
+		return orgId;
+	}
+	public void setOrgId(long orgId) {
+		this.orgId = orgId;
+	}
+	
+	List<ResourceContext> item = new ArrayList<>();
+	
+	public List<ResourceContext> getItem() {
+		return item;
+	}
+	public void setItem(List<ResourceContext> item) {
+		this.item = item;
+	}
+
+
+	private long usersId = -1;
+	
+	public long getUsersId() {
+		return usersId;
+	}
+	public void setUsersId(long usersId) {
+		this.usersId = usersId;
+	}
 	public boolean isShow_In_Portal() {
 		return show_In_Portal;
 	}
@@ -156,7 +182,6 @@ private Map<String, Double> readingData;
 //		addTenantUser();
 		return SUCCESS;
 	}
-	
 	private User user;
 	public User getUser() {
 		return user;
@@ -200,7 +225,7 @@ private Map<String, Double> readingData;
 	
 	public String updatePortalAccess() throws Exception {
 		Object portal_verified = null;
-		userId = TenantsAPI.updatePortalUserAccess(user.getId() , user.getPortal_verified());
+		userId = TenantsAPI.updatePortalUserAccess(user.getOuid() , user.getPortal_verified());
 		return SUCCESS;
 	}
 	
@@ -211,6 +236,12 @@ private Map<String, Double> readingData;
 	
 	public String showInPortal() throws Exception {
 		tenantReadingData = TenantsAPI.showInPortalAccess(tenantId,tenantMeterId,show_In_Portal);
+		return SUCCESS;
+	}
+	
+	
+	public String tenantServicePortal() throws Exception {
+		item = TenantsAPI.getUsersTenantId(usersId,orgId);
 		return SUCCESS;
 	}
 

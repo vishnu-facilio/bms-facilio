@@ -128,6 +128,14 @@ public class ModuleFactory {
 		return fieldModule;
 	}
 
+	public static FacilioModule getImportTemplateModule() {
+		FacilioModule importTemplateModule = new FacilioModule();
+		importTemplateModule.setDisplayName("ImportTemplate");
+		importTemplateModule.setName("importTemplate");
+		importTemplateModule.setTableName("ImportTemplate");
+		return importTemplateModule;
+	}
+	
 	public static FacilioModule getAssetsModule() {
 		FacilioModule fieldModule = new FacilioModule();
 		fieldModule.setName(FacilioConstants.ContextNames.ASSET);
@@ -637,6 +645,15 @@ public class ModuleFactory {
 
 		return controllerModule;
 	}
+	
+	public static FacilioModule getControllerBuildingRelModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("controllerBuildingRel");
+		module.setDisplayName("Controller Building Rel");
+		module.setTableName("Controller_Building_Rel");
+		
+		return module;
+	}
 
 	public static FacilioModule getNotificationModule() {
 		FacilioModule notificationModule = new FacilioModule();
@@ -1130,7 +1147,7 @@ public class ModuleFactory {
 		FacilioModule tenants = new FacilioModule();
 		tenants.setName("tenant_users");
 		tenants.setDisplayName("Tenant_Users");
-		tenants.setTableName("Tenant_users");
+		tenants.setTableName("Tenant_Users");
 		return tenants;
 	}
 

@@ -72,9 +72,7 @@ public class FacilioCorsFilter implements Filter {
     }
 
     private void setServerIp() {
-       
-            ip = FacilioContextListener.INSTANCEID;
-      
+        ip = FacilioContextListener.getInstanceId();
     }
 
     private void initialize(HashSet<String> origins, String values) {

@@ -23,13 +23,14 @@ public class TimeSeries extends ActionSupport {
 	{
 		JSONParser parser = new JSONParser();
 		try {
-		JSONObject payLoad = (JSONObject) parser.parse(getDeviceData());
-		TimeSeriesAPI.processPayLoad(getTimestamp(), payLoad);
+			JSONObject payLoad = (JSONObject) parser.parse(getDeviceData());
+			TimeSeriesAPI.processPayLoad(getTimestamp(), payLoad);	
+			return SUCCESS;
 		}
 		catch(Exception e) {
 			LOGGER.info("Error while processing data: ", e);
 		}
-		return SUCCESS;
+		return ERROR;
 	}
 	
 	public String migrateData() throws Exception{

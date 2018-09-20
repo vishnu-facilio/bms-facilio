@@ -8,8 +8,10 @@
     <meta name=msapplication-tap-highlight content=no>
     <meta name=viewport content="user-scalable=no,initial-scale=1,maximum-scale=1,minimum-scale=1,width=device-width">
     <title>Facilio</title>
-    <link rel=icon href=https://static.facilio.in/v71/statics/favicon.png type=image/x-icon>
-    <link rel=manifest href=https://static.facilio.in/v71/statics/manifest.json>
+    <% String staticUrl = com.facilio.aws.util.AwsUtil.getConfig("static.url")+com.facilio.aws.util.AwsUtil.getClientVersion(); %>
+
+    <link rel=icon href=<%=staticUrl%>/statics/favicon.png type=image/x-icon>
+    <link rel=manifest href=<%=staticUrl%>/statics/manifest.json>
 
     <style>
       .app-spinner {
@@ -63,10 +65,10 @@
 
   <script type=text/javascript>
         window.isFacilioAuth = (document.cookie.indexOf('fc.authtype=facilio') !== -1)
+        var __webpack_public_path__ = "<%=staticUrl%>";
   </script>
-  <link href=https://static.facilio.in/v71/app.12621f0850a28d1234a97283ed72dbfc.css rel=stylesheet>
+  <link href=<%=staticUrl%>/app.css rel=stylesheet>
  </head>
-
 
   <body>
       <div id=q-app>
@@ -76,10 +78,9 @@
               <div class=bounce3></div>
           </div>
       </div>
-      <script type=text/javascript src=https://static.facilio.in/v71/js/manifest.450a607be09d5163e5d0.js></script>
-      <script type=text/javascript src=https://static.facilio.in/v71/js/vendor.a30105feec30962a8ce6.js></script>
-      <script type=text/javascript src=https://static.facilio.in/v71/js/app.78bd3f4ed22d53340806.js></script>
-
+      <script type=text/javascript src=<%=staticUrl%>/js/manifest.js></script>
+      <script type=text/javascript src=<%=staticUrl%>/js/vendor.js></script>
+      <script type=text/javascript src=<%=staticUrl%>/js/app.js></script>
   </body>
 
   </html>

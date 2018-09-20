@@ -74,22 +74,20 @@ public class UserAction extends FacilioAction {
 	public void setGroupId(long groupId) {
 		this.groupId = groupId;
 	}
+
 	public String userPickList() throws Exception {
-		
 		if (getGroupId() > 0) {
 			List<GroupMember> memberList = (List<GroupMember>) AccountUtil.getGroupBean().getGroupMembers(getGroupId());
 			this.users = new ArrayList<>();
 			if (memberList != null) {
-				for (GroupMember member : memberList) {
-					this.users.add(member);
-				}
+				this.users.addAll(memberList);
 			}
-		}
-		else {
+		} else {
 			setUsers(AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId()));
 		}
 		return SUCCESS;
 	}
+
 	public String userVerify() throws Exception{
 		Boolean verified = CommonCommandUtil.verifiedUser(getUserId()); 
 		return SUCCESS;
@@ -199,18 +197,21 @@ public class UserAction extends FacilioAction {
 		return SUCCESS;
 	}
 	public String inviteRequester() throws Exception {
-		
-		// setting necessary fields
-		long orgid = AccountUtil.getCurrentOrg().getOrgId();
-//		long portalid = AccountUtil.getPortalInfo().getPortalId();
-//		System.out.println(portalid);
-		user.setOrgId(orgid);
-		if(user.getEmail() == null || user.getEmail().isEmpty()) {
+
+		boolean isEmailEmpty = (user.getEmail() == null ||  user.getEmail().isEmpty());
+		boolean isMobileEmpty = (user.getMobile() == null || user.getMobile().isEmpty());
+		if(isMobileEmpty && isEmailEmpty ) {
+			addFieldError("error", "Please enter a valid mobile number or email");
+			return ERROR;
+		}
+
+		user.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+		if(isEmailEmpty) {
 			user.setEmail(user.getMobile());
 		}
 
 		try {
-			AccountUtil.getUserBean().inviteRequester(orgid, user);
+			AccountUtil.getTransactionalUserBean().inviteRequester(user.getOrgId(), user);
 			setUserId(user.getId());
 			
 		}
@@ -218,13 +219,12 @@ public class UserAction extends FacilioAction {
 			if (e instanceof AccountException) {
 				AccountException ae = (AccountException) e;
 				if (ae.getErrorCode().equals(AccountException.ErrorCode.EMAIL_ALREADY_EXISTS)) {
-					addFieldError("email", "This user already exists in your organization.");
+					addFieldError("error", "This user already exists in your organization.");
 				}
 			}
 			else {
 				log.info("Exception occurred ", e);
-				addFieldError("email", "This user already exists in your organization.");
-				System.out.println("........> Error");
+				addFieldError("error", "This user already exists in your organization.");
 			}
 			return ERROR;
 		}
@@ -232,10 +232,20 @@ public class UserAction extends FacilioAction {
 	}
 	
 	public String addUser() throws Exception {
-		
-		// setting necessary fields
+		boolean isEmailEmpty = (user.getEmail() == null ||  user.getEmail().isEmpty());
+		boolean isMobileEmpty = (user.getMobile() == null || user.getMobile().isEmpty());
+		if(isEmailEmpty && isMobileEmpty) {
+			addFieldError("error", "Please enter a valid mobile number or email");
+			return ERROR;
+		}
+
+		if(user.getRoleId() <=0 ) {
+			addFieldError("error", "Please specify a role for this user");
+			return ERROR;
+		}
+
 		user.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-		if(user.getEmail() == null || user.getEmail().isEmpty()) {
+		if(isEmailEmpty) {
 			user.setEmail(user.getMobile());
 		}
 
@@ -243,12 +253,7 @@ public class UserAction extends FacilioAction {
 		String value = LoginUtil.getUserCookie(request, "fc.authtype");
 		user.setFacilioAuth("facilio".equals(value));
 
-		if(user.getRoleId() <=0 )
-		{
-			addFieldError("role", "This user already exists in your organization.");
-			return ERROR;
 
-		}
 //		Integer availableLicensedUsers = AccountUtil.getUserBean().getAvailableUserLicense(AccountUtil.getCurrentOrg().getOrgId());
 //		if (availableLicensedUsers < 1)
 //		{
@@ -274,13 +279,11 @@ public class UserAction extends FacilioAction {
 			if (e instanceof AccountException) {
 				AccountException ae = (AccountException) e;
 				if (ae.getErrorCode().equals(AccountException.ErrorCode.EMAIL_ALREADY_EXISTS)) {
-					addFieldError("email", "This user already exists in your organization.");
+					addFieldError("error", "This user already exists in your organization.");
 				}
-			}
-			else {
+			} else {
 				log.info("Exception occurred ", e);
-				addFieldError("email", "This user already exists in your organization.");
-				System.out.println("........> Error");
+				addFieldError("error", "This user already exists in your organization.");
 			}
 			return ERROR;
 		}

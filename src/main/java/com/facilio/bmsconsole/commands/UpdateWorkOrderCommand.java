@@ -80,7 +80,7 @@ public class UpdateWorkOrderCommand implements Command {
 					if (oldWo.getStatus().getId() == submittedId) {
 						newWo.setStatus(assignedStatus);
 					} else {
-						if (oldWo.getAssignedTo() != null) {
+						if (workOrder.getAssignedTo() != null && oldWo.getAssignedTo() != null) {
 							if (workOrder.getAssignedTo().getOuid() == -1) {
 								readings.addAll(ShiftAPI.addUserWorkHoursReading(oldWo.getAssignedTo().getOuid(), oldWo.getId(), activityType, "Close", System.currentTimeMillis()));
 								newWo.setStatus(submittedStatus);

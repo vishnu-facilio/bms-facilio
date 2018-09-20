@@ -5,6 +5,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,9 +14,12 @@ import java.util.Map;
 import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.logging.log4j.util.Strings;
 
+import com.facilio.accounts.bean.OrgBean;
 import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.impl.OrgBeanImpl;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
 import com.facilio.accounts.exception.AccountException;
@@ -123,6 +128,11 @@ public class UserBeanImpl implements UserBean {
 				.fields(fields);
 
 		Map<String, Object> props = FieldUtil.getAsProperties(user);
+	
+		if(user.password()!=null)
+		{
+		props.put("password", user.password());
+		}
 		insertBuilder.addRecord(props);
 		insertBuilder.save();
 		long userId = (Long) props.get("id");
@@ -133,22 +143,7 @@ public class UserBeanImpl implements UserBean {
 		return userId;
 	}
 	
-	private long addAdminConsoleUserEntry(User user) throws Exception {
-
-		List<FacilioField> fields = AccountConstants.getUserFields();
-		fields.add(AccountConstants.getUserPasswordField());
-		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-				.table(AccountConstants.getUserModule().getTableName())
-				.fields(fields);
-
-		Map<String, Object> props = FieldUtil.getAsProperties(user);
-		insertBuilder.addRecord(props);
-		insertBuilder.save();
-		long userId = (Long) props.get("id");
-		user.setUid(userId);
-		return userId;
-	}
-
+	
 	private void addFacilioUser(User user){
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -231,6 +226,10 @@ public class UserBeanImpl implements UserBean {
 		
 
 		Map<String, Object> props = FieldUtil.getAsProperties(user);
+		if(user.password()!=null)
+		{
+		props.put("password", user.password());
+		}
 		int updatedRows = updateBuilder.update(props);
 		
 		GenericDeleteRecordBuilder relDeleteBuilder = new GenericDeleteRecordBuilder()
@@ -313,56 +312,17 @@ public class UserBeanImpl implements UserBean {
 	
 	@Override
 	public long inviteAdminConsoleUser(long orgId, User user) throws Exception {
-		
-		User orgUser = getFacilioUser(orgId, user.getEmail());
-		if (orgUser != null) {
-			if (orgUser.getUserType() == AccountConstants.UserType.REQUESTER.getValue()) {
-				orgUser.setUserType(AccountConstants.UserType.USER.getValue());
-				updateUser(orgUser.getId(), orgUser);
-				return orgUser.getId();
-			}
-			else {
-				throw new AccountException(AccountException.ErrorCode.EMAIL_ALREADY_EXISTS, "This user already exists in your organization.");
-			}
-		}
-		
-		long uid = getUid(user.getEmail());
-		if(user.getRoleId() == 0){	
-			throw new AccountException(AccountException.ErrorCode.ROLE_ID_IS_NULL, "RoleID is Null " + user.getEmail());
-		}
-		if (uid == -1) {
-			user.setTimezone(AccountUtil.getCurrentOrg().getTimezone());
-			user.setLanguage(AccountUtil.getCurrentUser().getLanguage());
-			uid = addAdminConsoleUserEntry(user);
-			user.setUid(uid);
-			addAdminConsoleFacilioUser(user);
-			user.setDefaultOrg(true);
-		}
-		user.setUid(uid);
-		user.setOrgId(orgId);
-		user.setInviteAcceptStatus(true);
-		user.setInvitedTime(System.currentTimeMillis());
-		user.setDefaultOrg(true);
-		user.setUserStatus(true);
-		user.setUserType(AccountConstants.UserType.USER.getValue());
-		long ouid = addToORGUsers(user);
-
-		user.setOuid(ouid);
-		Long shiftId = user.getShiftId();
-		
-		if (shiftId != null) {
-			insertShiftRel(ouid, shiftId);
-		}
-		// addAccessibleSpace(user.getOuid(), user.getAccessibleSpace());
-		// LicenseApi.updateUsedLicense(user.getLicenseEnum());
-		return ouid;
+		return inviteUser(orgId, user);
 	}
 
 	@Override
 	public long inviteUser(long orgId, User user) throws Exception {
-		
+
+		if(user.getRoleId() == 0) {
+			throw new AccountException(AccountException.ErrorCode.ROLE_ID_IS_NULL, "RoleID is Null " + user.getEmail());
+		}
+
 		User orgUser = getFacilioUser(orgId, user.getEmail());
-		//System.out.println("----------------->>>>"+orgUser.getEmail());
 		if (orgUser != null) {
 			if (orgUser.getUserType() == AccountConstants.UserType.REQUESTER.getValue()) {
 				orgUser.setUserType(AccountConstants.UserType.USER.getValue());
@@ -375,14 +335,14 @@ public class UserBeanImpl implements UserBean {
 		}
 		
 		long uid = getUid(user.getEmail());
-		if(user.getRoleId() == 0){
-			System.out.println("#####################RoleId is Null");	
-			
-			throw new AccountException(AccountException.ErrorCode.ROLE_ID_IS_NULL, "RoleID is Null " + user.getEmail());
-		}
+
 		if (uid == -1) {
-			user.setTimezone(AccountUtil.getCurrentOrg().getTimezone());
-			user.setLanguage(AccountUtil.getCurrentUser().getLanguage());
+			if( (AccountUtil.getCurrentOrg() != null) && (user.getTimezone() == null) ) {
+				user.setTimezone(AccountUtil.getCurrentOrg().getTimezone());
+			}
+			if( (AccountUtil.getCurrentUser() != null) && (user.getLanguage() == null) ) {
+				user.setLanguage(AccountUtil.getCurrentUser().getLanguage());
+			}
 			uid = addUserEntry(user, false, false);
 			user.setUid(uid);
 			addFacilioUser(user);
@@ -404,8 +364,12 @@ public class UserBeanImpl implements UserBean {
 		}
 		
 		sendInvitation(ouid, user);
-		addAccessibleSpace(user.getOuid(), user.getAccessibleSpace());
-		addAccessibleTeam(user.getOuid(), user.getGroups());
+		if(user.getAccessibleSpace() != null) {
+			addAccessibleSpace(user.getOuid(), user.getAccessibleSpace());
+		}
+		if(user.getGroups() != null) {
+			addAccessibleTeam(user.getOuid(), user.getGroups());
+		}
 		return ouid;
 	}
 
@@ -424,12 +388,13 @@ public class UserBeanImpl implements UserBean {
 		shiftRelInsertBuilder.save();
 	}
 	
-public long inviteRequester(long orgId, User user) throws Exception {
-	
-		Organization portalOrg = AccountUtil.getOrgBean().getPortalOrg(AccountUtil.getCurrentOrg().getDomain());
-		user.setPortalId(portalOrg.getPortalId());
-		long ouid = addRequester(orgId, user, false,true);
-		return ouid;
+	public long inviteRequester(long orgId, User user) throws Exception {
+		if(AccountUtil.getCurrentOrg() != null) {
+			Organization portalOrg = AccountUtil.getOrgBean().getPortalOrg(AccountUtil.getCurrentOrg().getDomain());
+			user.setPortalId(portalOrg.getPortalId());
+			return addRequester(orgId, user, false, true);
+		}
+		return 0L;
 	}
 
 
@@ -482,7 +447,7 @@ public long inviteRequester(long orgId, User user) throws Exception {
 		return hostname + url + inviteToken;
 	}
 	
-	private void sendInvitation(long ouid, User user) throws Exception {
+	public void sendInvitation(long ouid, User user) throws Exception {
 		user.setOuid(ouid);
 		String inviteLink = getUserLink(user,"/invitation/");
 		Map<String, Object> placeholders = new HashMap<>();
@@ -1066,8 +1031,45 @@ public long inviteRequester(long orgId, User user) throws Exception {
 		}
 		return null;
 	}
+	
+	
+	
+	
+	public User getPortalUser(long uid, long portalId) throws Exception {
+		FacilioModule portalInfoModule = AccountConstants.getPortalInfoModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.addAll(AccountConstants.getPortalUserFields());
+		fields.addAll(AccountConstants.getUserFields());
+		fields.addAll(AccountConstants.getOrgUserFields());
+		fields.add(FieldFactory.getOrgIdField(portalInfoModule));
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("faciliorequestors")
+				.innerJoin("PortalInfo")
+				.on("faciliorequestors.PORTALID = PortalInfo.PORTALID")
+				.innerJoin("Users")
+				.on("faciliorequestors.USERID = Users.USERID")
+				.innerJoin("ORG_Users")
+				.on("Users.USERID = ORG_Users.USERID")
+				.andCustomWhere("faciliorequestors.USERID = ? AND DELETED_TIME=-1  AND faciliorequestors.PORTALID = ?", uid, portalId);
 
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			System.out.println(props);
+			return createUserFromProps(props.get(0));
+		}
+		
+		return  null ;
 
+	}
+
+	public User getPortalUser(long uid) throws Exception {
+		return getPortalUser(uid, AccountUtil.getOrgBean().getPortalId());
+	}
+	
+	
+	
 	@Override
 	public List<User> getUsers(Criteria criteria, List<Long>... ouids) throws Exception {
 		
@@ -1245,7 +1247,7 @@ public long inviteRequester(long orgId, User user) throws Exception {
 		return null;
 	}
 	
-	private long addRequester(long orgId, User user, boolean emailVerification,boolean updateifexist) throws Exception {
+	private long addRequester(long orgId, User user, boolean emailVerification, boolean updateifexist) throws Exception {
 		User portalUser = getPortalUserForInternal(user.getEmail(), user.getPortalId());
 		if (portalUser != null) {
 //			log.info("Email Already Registered ");
@@ -1389,6 +1391,26 @@ public long inviteRequester(long orgId, User user) throws Exception {
 				.table(AccountConstants.getGroupMemberModule().getTableName())
 				.andCustomWhere("ORG_USERID = ?", uid);
 		builder.delete();
+	}
+	
+	static Map<Long, List<Long>> getAccessibleSpaceList(Collection<Long> uids) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(AccountConstants.getAccessbileSpaceFields())
+				.table(ModuleFactory.getAccessibleSpaceModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("ORG_USER_ID", "ouid", Strings.join(uids, ','), NumberOperators.EQUALS));
+		
+		Map<Long, List<Long>> ouidsVsAccessibleSpace = new HashMap<>();
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			for(Map<String, Object> prop : props) {
+				if (ouidsVsAccessibleSpace.get(prop.get("ouid")) == null) {
+					ouidsVsAccessibleSpace.put((long) prop.get("ouid"), new ArrayList<>());
+				}
+				ouidsVsAccessibleSpace.get(prop.get("ouid")).add((Long) prop.get("bsid"));
+			}
+			return ouidsVsAccessibleSpace;
+		}
+		return Collections.emptyMap();
 	}
 
 	static List<Long> getAccessibleSpaceList (long uid) throws Exception {

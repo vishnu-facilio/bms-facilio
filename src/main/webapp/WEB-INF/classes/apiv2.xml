@@ -75,6 +75,13 @@
 		</action>
 	</package>
 
+	<package name="importTemplate" namespace="/api/v2/importTemplate" extends="v2Api">
+		<action name="getnames" class="com.facilio.bmsconsole.actions.ImportTemplateAction" method="getTemplateNames"></action>
+		<action name="getnewtemplate" class="com.facilio.bmsconsole.actions.ImportTemplateAction" method="getNewTemplate"></action>
+		<action name="save" class="com.facilio.bmsconsole.actions.ImportTemplateAction" method="saveImportTemplate">
+		<param name="permission">DATA_ADMINISTRATION</param>
+		</action>
+	</package>
 
 	<package name="workOrderApiV2" namespace="/api/v2/workorders" extends="v2Api">
 	
@@ -160,8 +167,8 @@
 		</action>
 	</package>
 	
-	<package name = "alarmApiV2" namespace = "/api/v2/alarms" extends = "v2Api">
-	<action name="*" class="com.facilio.bmsconsole.actions.AlarmAction" method="v2viewAlarm">
+	<package name = "alarmApiV2" namespace="/api/v2/alarms" extends = "v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.AlarmAction" method="v2viewAlarm">
 			<param name="moduleName">alarm</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<param name="id">{1}</param>
@@ -174,12 +181,36 @@
 		</action>
 	</package>
 	
-	<package name="alarmListApiv2" namespace = "/api/v2/alarms/view" extends="v2Api">
-	<action name="*" class="com.facilio.bmsconsole.actions.AlarmAction"
+	<package name="alarmListApiv2" namespace="/api/v2/alarms/view" extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.AlarmAction"
 			method="v2alarmList">
 			<param name="moduleName">alarm</param>
 			<param name="permission">READ,READ_OWN,READ_TEAM</param>
 			<param name="viewName">{1}</param>
+		</action>
+	</package>
+	
+	<package name = "eventApiV2" namespace="/api/v2/events" extends = "v2Api">
+		<action name="*" class="com.facilio.events.actions.EventAction" method="v2viewEvent">
+			<param name="moduleName">alarm</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<param name="eventId">{1}</param>
+		</action>
+	</package>
+	
+	<package name="eventListApiv2" namespace="/api/v2/events/view" extends="v2Api">
+		<action name="*" class="com.facilio.events.actions.EventAction" method="v2eventList">
+			<param name="moduleName">alarm</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
+	
+	<package name="alarmEventListApiv2" namespace="/api/v2/events/alarm" extends="v2Api">
+		<action name="*" class="com.facilio.events.actions.EventAction" method="v2eventList">
+			<param name="moduleName">alarm</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<param name="alarmId">{1}</param>
 		</action>
 	</package>
 	
@@ -284,7 +315,16 @@
 			<param name="id">{1}</param>
 		</action>
 	</package>
+	<package name="assetLatestDataApiv2" namespace="/api/v2/reading/latestdata" extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.ReadingAction" method="v2GetLatestReadingData">
+			<param name="parentId">{1}</param>
+		</action>
+	</package>
 	
+	<package name="readingFieldLatestValuesApiv2" namespace="/api/v2/reading" extends="v2Api">
+		<action name="occupantdata" class="com.facilio.bmsconsole.actions.ReadingAction" method="getResourcesOccupantLatestReadingData">
+		</action>
+	</package>
 	<package name="reportApiv2" namespace="/api/v2/report" extends="v2Api">
 		<action name="readingReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReadingsData">
 		</action>
@@ -318,6 +358,15 @@
 		</action>
 	</package>
 	
+	<package name="scheduledReportApiv2" namespace="/api/v2/report/scheduled" extends="v2Api">
+		<action name="edit" class="com.facilio.bmsconsole.actions.V2ReportAction" method="editScheduledReport">
+		</action>
+		<action name="delete" class="com.facilio.bmsconsole.actions.V2ReportAction" method="deleteScheduledReport">
+		</action>
+		<action name="*" class="com.facilio.bmsconsole.actions.V2ReportAction" method="scheduledList">
+			<param name="moduleName">{1}</param>
+		</action>
+	</package>
 	
 	<package name="resourceApiv2" namespace="/api/v2/resource" extends="v2Api">
 		<action name="getResourcesDetails" class="com.facilio.bmsconsole.actions.ResourceAction" method="getResources">

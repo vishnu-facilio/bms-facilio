@@ -522,6 +522,13 @@
 		<result name="success" type="json">
 				<param name="includeProperties">controllerSettingsId</param>
 			</result>
+		</action>
+		<action name="editcontrollersettings" class="com.facilio.bmsconsole.actions.SetupActions" method="editControllerSettings">
+			<param name="moduleName">setup</param>
+			<param name="permission">CONTROLLER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">controllerSettingsId</param>
+			</result>
 		</action>		
 	</package>
 

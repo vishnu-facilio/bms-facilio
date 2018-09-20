@@ -12,6 +12,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import java.util.Locale;
 
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.ScheduleInfo;
@@ -43,8 +45,7 @@ public class DateTimeUtil
 				return ZoneId.of(zone);
 			}
 		}
-//		return ZoneId.systemDefault();
-		return ZoneId.of("Z");
+		return AwsUtil.isDevelopment() ? ZoneId.systemDefault() : ZoneId.of("Z");
 	}
 	
 	private static Locale getLocale()
@@ -575,29 +576,111 @@ public class DateTimeUtil
 		return Year.from(start).equals(Year.from(end));
 	}
 	
+	public static long getHourStartTimeOf(long time) {
+		return getHourStartTimeOf(time, false);
+	}
+	public static long getHourStartTimeOf(long time, boolean isEpochSecond) {
+		ZonedDateTime zdt = getHourStartTimeOf(getDateTime(time, isEpochSecond));
+		return getLong(zdt, true, isEpochSecond);
+	}
+	public static ZonedDateTime getHourStartTimeOf(ZonedDateTime zdt) {
+		return zdt.truncatedTo(ChronoUnit.HOURS);
+	}
+	
+	public static long getHourEndTimeOf(long time) {
+		return getHourEndTimeOf(time, false);
+	}
+	public static long getHourEndTimeOf(long time, boolean isEpochSecond) {
+		ZonedDateTime zdt = getHourEndTimeOf(getDateTime(time, isEpochSecond));
+		return getLong(zdt, true, isEpochSecond);
+	}
+	public static ZonedDateTime getHourEndTimeOf(ZonedDateTime zdt) {
+		return zdt.plusHours(1).truncatedTo(ChronoUnit.HOURS).minusNanos(1);
+	}
+	
+	public static long getDayStartTimeOf(long time) {
+		return getDayStartTimeOf(time, false);
+	}
+	public static long getDayStartTimeOf(long time, boolean isEpochSecond) {
+		ZonedDateTime zdt = getDayStartTimeOf(getDateTime(time, isEpochSecond));
+		return getLong(zdt, true, isEpochSecond);
+	}
 	public static ZonedDateTime getDayStartTimeOf(ZonedDateTime zdt) {
 		return zdt.toLocalDate().atTime(LocalTime.MIDNIGHT).atZone(getZoneId());
+	}
+	
+	public static long getDayEndTimeOf(long time) {
+		return getDayEndTimeOf(time, false);
+	}
+	public static long getDayEndTimeOf(long time, boolean isEpochSecond) {
+		ZonedDateTime zdt = getDayEndTimeOf(getDateTime(time, isEpochSecond));
+		return getLong(zdt, true, isEpochSecond);
 	}
 	public static ZonedDateTime getDayEndTimeOf(ZonedDateTime zdt) {
 		return zdt.toLocalDate().atTime(LocalTime.MAX).atZone(getZoneId());
 	}
 	
+	public static long getWeekStartTimeOf(long time) {
+		return getWeekStartTimeOf(time, false);
+	}
+	public static long getWeekStartTimeOf(long time, boolean isEpochSecond) {
+		ZonedDateTime zdt = getWeekStartTimeOf(getDateTime(time, isEpochSecond));
+		return getLong(zdt, true, isEpochSecond);
+	}
 	public static ZonedDateTime getWeekStartTimeOf(ZonedDateTime zdt) {
 		return zdt.toLocalDate().atTime(LocalTime.MIDNIGHT).atZone(getZoneId()).with(getWeekFields().dayOfWeek(),1);
+	}
+	
+	public static long getWeekEndTimeOf(long time) {
+		return getWeekEndTimeOf(time, false);
+	}
+	public static long getWeekEndTimeOf(long time, boolean isEpochSecond) {
+		ZonedDateTime zdt = getWeekEndTimeOf(getDateTime(time, isEpochSecond));
+		return getLong(zdt, true, isEpochSecond);
 	}
 	public static ZonedDateTime getWeekEndTimeOf(ZonedDateTime zdt) {
 		return zdt.toLocalDate().atTime(LocalTime.MAX).atZone(getZoneId()).with(getWeekFields().dayOfWeek(),7);
 	}
 	
+	public static long getMonthStartTimeOf(long time) {
+		return getMonthStartTimeOf(time, false);
+	}
+	public static long getMonthStartTimeOf(long time, boolean isEpochSecond) {
+		ZonedDateTime zdt = getMonthStartTimeOf(getDateTime(time, isEpochSecond));
+		return getLong(zdt, true, isEpochSecond);
+	}
 	public static ZonedDateTime getMonthStartTimeOf(ZonedDateTime zdt) {
 		return zdt.toLocalDate().atTime(LocalTime.MIDNIGHT).atZone(getZoneId()).with(TemporalAdjusters.firstDayOfMonth());
+	}
+	
+	public static long getMonthEndTimeOf(long time) {
+		return getMonthEndTimeOf(time, false);
+	}
+	public static long getMonthEndTimeOf(long time, boolean isEpochSecond) {
+		ZonedDateTime zdt = getMonthEndTimeOf(getDateTime(time, isEpochSecond));
+		return getLong(zdt, true, isEpochSecond);
 	}
 	public static ZonedDateTime getMonthEndTimeOf(ZonedDateTime zdt) {
 		return zdt.toLocalDate().atTime(LocalTime.MAX).atZone(getZoneId()).with(TemporalAdjusters.lastDayOfMonth());
 	}
 	
+	public static long getYearStartTimeOf(long time) {
+		return getYearStartTimeOf(time, false);
+	}
+	public static long getYearStartTimeOf(long time, boolean isEpochSecond) {
+		ZonedDateTime zdt = getYearStartTimeOf(getDateTime(time, isEpochSecond));
+		return getLong(zdt, true, isEpochSecond);
+	}
 	public static ZonedDateTime getYearStartTimeOf(ZonedDateTime zdt) {
 		return zdt.toLocalDate().atTime(LocalTime.MIDNIGHT).atZone(getZoneId()).with(TemporalAdjusters.firstDayOfYear());
+	}
+	
+	public static long getYearEndTimeOf(long time) {
+		return getYearEndTimeOf(time, false);
+	}
+	public static long getYearEndTimeOf(long time, boolean isEpochSecond) {
+		ZonedDateTime zdt = getYearEndTimeOf(getDateTime(time, isEpochSecond));
+		return getLong(zdt, true, isEpochSecond);
 	}
 	public static ZonedDateTime getYearEndTimeOf(ZonedDateTime zdt) {
 		return zdt.toLocalDate().atTime(LocalTime.MAX).atZone(getZoneId()).with(TemporalAdjusters.lastDayOfYear());

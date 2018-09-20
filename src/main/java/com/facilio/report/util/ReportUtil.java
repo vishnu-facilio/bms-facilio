@@ -19,9 +19,13 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.fw.BeanFactory;
+import com.facilio.report.context.ReportAxisContext;
 import com.facilio.report.context.ReportContext;
+import com.facilio.report.context.ReportDataContext;
+import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportFolderContext;
+import com.facilio.report.context.ReportXCriteriaContext;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -92,10 +96,48 @@ public class ReportUtil {
 													.andCondition(CriteriaAPI.getIdCondition(reportId, module))
 													;
 		
-		List<Map<String, Object>> props = select.get();
-		if(props != null && !props.isEmpty()) {
-			ReportContext report = FieldUtil.getAsBeanFromMap(props.get(0), ReportContext.class);
-			return report;
+		List<ReportContext> reports = getReportsFromProps(select.get());
+		if (reports != null && !reports.isEmpty()) {
+			return reports.get(0);
+		}
+		return null;
+	}
+	
+	private static List<ReportContext> getReportsFromProps(List<Map<String, Object>> props) throws Exception {
+		if (props != null && !props.isEmpty()) {
+			List<ReportContext> reports = new ArrayList<>();
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			for (Map<String, Object> prop : props) {
+				ReportContext report = FieldUtil.getAsBeanFromMap(prop, ReportContext.class);
+				
+				if (report.getxCriteria() != null) {
+					ReportXCriteriaContext xCriteria = report.getxCriteria();
+					xCriteria.setxField(getField(xCriteria.getxFieldId(), xCriteria.getModuleName(), xCriteria.getxFieldName(), modBean));
+				}
+				
+				for (ReportDataPointContext dataPoint : report.getDataPoints()) {
+					ReportAxisContext xAxis = dataPoint.getxAxis();
+					xAxis.setField(getField(xAxis.getFieldId(), xAxis.getModuleName(), xAxis.getFieldName(), modBean));
+					
+					ReportAxisContext yAxis = dataPoint.getyAxis();
+					yAxis.setField(getField(yAxis.getFieldId(), yAxis.getModuleName(), yAxis.getFieldName(), modBean));
+					
+					dataPoint.setDateField(getField(dataPoint.getDateFieldId(), dataPoint.getDateFieldModuleName(), dataPoint.getDateFieldName(), modBean));
+				}
+				
+				reports.add(report);
+			}
+			return reports;
+		}
+		return null;
+	}
+	
+	private static FacilioField getField(long fieldId, String moduleName, String fieldName, ModuleBean modBean) throws Exception {
+		if (fieldId != -1) {
+			return modBean.getField(fieldId);
+		}
+		else if (moduleName != null && !moduleName.isEmpty() && fieldName != null && !fieldName.isEmpty()) {
+			return modBean.getField(fieldName, moduleName);
 		}
 		return null;
 	}

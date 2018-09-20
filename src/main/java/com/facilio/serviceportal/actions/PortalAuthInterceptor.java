@@ -14,7 +14,6 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.fw.auth.CognitoUtil;
-import com.facilio.fw.util.RequestUtil;
 import com.facilio.util.AuthenticationUtil;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
@@ -25,35 +24,22 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 	private static Logger logger = Logger.getLogger(PortalAuthInterceptor.class.getName());
 	private static org.apache.log4j.Logger log = LogManager.getLogger(PortalAuthInterceptor.class.getName());
 
-	private HashMap customdomains = null;
+	private static HashMap customdomains = null;
+
 	@Override
 	public void init() {
-		// TODO Auto-generated method stub
 		super.init();
-	
+		initHost();
 	}
 	
-	public void initHost()
-	{
+	private void initHost() {
 		try {
 			ServletContext context = ServletActionContext.getServletContext();
-			
-			if (RequestUtil.HOSTNAME==null) {
-			    String host = (String) context.getInitParameter("DOMAINNAME");
-			    RequestUtil.HOSTNAME = host;
-			}
-			if (RequestUtil.MOBILE_HOSTNAME==null) {
-				RequestUtil.MOBILE_HOSTNAME= (String) context.getInitParameter("M_DOMAINNAME");
-			}
-			
-			//System.out.println("PortalAuthInterceptor loaded"+RequestUtil.HOSTNAME);
-			if(customdomains==null)
-			{
-			customdomains = (HashMap) context.getAttribute("customdomains");
+			if(customdomains == null) {
+				customdomains = (HashMap) context.getAttribute("customdomains");
 			}
 			logger.info("Custom domains loaded "+customdomains);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			log.info("Exception occurred ", e);
 		}
 
@@ -61,41 +47,26 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 	
 	@Override
 	public String intercept(ActionInvocation arg0) throws Exception {
-		//System.out.println("This is the interceptopr for service portal" );
-		initHost();
-		
-		
-		//String subdomian =  RequestUtil.getDomainName();
-		
 		try {
-
-			String actionname = ActionContext.getContext().getName();
-
-			boolean bypassauth = actionname.equals("login") || actionname.equals("samllogin");
 			intercept0();
-			boolean validsession =false;
-			if(bypassauth || validsession) {
-			//	System.out.println("inside if");
-				String result = arg0.invoke();
-				return result;
-			} else {
-				
-				// redirect to login page..
-			//	System.out.println("inside else");
-				String result = arg0.invoke();
-				return result;
-			}
+			return arg0.invoke();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			log.info("Exception occurred ", e);
 			return "login";
 		}
-
-	
 	}
 
-	public static String PORTALDOMAIN = null;
-	private String intercept0(){
+	private static String portalDomain = null;
+
+	public static void setPortalDomain(String portalDomainName) {
+		portalDomain = portalDomainName;
+	}
+
+	public static String getPortalDomain(){
+		return portalDomain;
+	}
+
+	private void intercept0() {
         HttpServletRequest request = ServletActionContext.getRequest();
 		CognitoUtil.CognitoUser cognitoUser = null;
 		Account currentAccount = null;
@@ -107,30 +78,22 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 			} else {
 				String domainName = request.getHeader("Origin");
 				logger.info("Getting portal auth info" +domainName);
-
-				System.out.println("Authenticating for "+ domainName);
-				if(domainName!=null) {
-				if (domainName.contains("http://")) {
-					domainName = domainName.replace("http://", "");
-				} else if (domainName.contains("https://")) {
-					domainName = domainName.replace("https://", "");
+				if(domainName != null) {
+					if (domainName.contains("http://")) {
+						domainName = domainName.replace("http://", "");
+					} else if (domainName.contains("https://")) {
+						domainName = domainName.replace("https://", "");
+					}
 				}
-				}
-				if(customdomains!=null)
-				{
+				if(customdomains != null) {
 					logger.info("Matching...  "+ domainName );
-
-				  String orgdomain = (String)customdomains.get(domainName);
-				  if(orgdomain!=null)
-				  {
-					  domainName = orgdomain+"."+PORTALDOMAIN;
-				  }
+					String orgdomain = (String)customdomains.get(domainName);
+					if(orgdomain != null) {
+						domainName = orgdomain+"."+ portalDomain;
+					}
 					logger.info("Found a valid domain for custom domain for "+ domainName);
-
 				}
 				if(domainName != null) {
-					
-					
 					String[] domainArray = domainName.split("\\.");
 					if (domainArray.length > 2) {
 						String subDomain = domainArray[0];
@@ -145,8 +108,8 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 							org = AccountUtil.getOrgBean().getPortalOrg(subDomain);
 						}
 						if (org != null) {
-							Long portalId = org.getPortalId();
-							System.out.println("Portal Domain ......"+portalId);
+							long portalId = org.getPortalId();
+							logger.fine("Portal Domain ......"+portalId);
 							User user = null;
 							if (cognitoUser != null) {
 								user = AccountUtil.getUserBean().getPortalUser(cognitoUser.getEmail(), portalId);
@@ -154,9 +117,7 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 							currentAccount = new Account(org, user);
 							AccountUtil.setCurrentAccount(currentAccount);
 						}
-					}
-					else
-					{
+					} else {
 						System.out.println("Match failed ......");
 					}
 				}
@@ -164,7 +125,6 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 		} catch (Exception e){
 			log.info("Exception occurred ", e);
 		}
-	    return "success";
     }
 
 }

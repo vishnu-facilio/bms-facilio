@@ -89,6 +89,7 @@ public class FetchReportDataCommand implements Command {
 			if (report.getBaseLines() != null && !report.getBaseLines().isEmpty()) {
 				for (ReportBaseLineContext reportBaseLine : report.getBaseLines()) {
 					props.put(reportBaseLine.getBaseLine().getName(), fetchReportData(report, dp, selectBuilder, reportBaseLine));
+					data.addBaseLine(reportBaseLine.getBaseLine().getName(), reportBaseLine);
 				}
 			}
 			

@@ -2336,6 +2336,7 @@ public class FieldFactory {
 
 		fields.add(getIdField(module));
 		fields.add(getOrgIdField(module));
+		fields.add(getSiteIdField());
 
 		FacilioField name = new FacilioField();
 		name.setName("name");
@@ -2350,9 +2351,38 @@ public class FieldFactory {
 		macAddr.setColumnName("MAC_ADDR");
 		macAddr.setModule(module);
 		fields.add(macAddr);
+		
+		FacilioField buildingId = new FacilioField();
+		buildingId.setName("buildingId");
+		buildingId.setDataType(FieldType.NUMBER);
+		buildingId.setColumnName("BUILDING_ID");
+		buildingId.setModule(module);
+		fields.add(buildingId);
+
 
 		fields.add(getField("dataInterval", "DATA_INTERVAL", module, FieldType.NUMBER));
 
+		return fields;
+	}
+	
+	public static List<FacilioField> getControllerBuildingRelFields() {
+		FacilioModule module = ModuleFactory.getControllerBuildingRelModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		FacilioField buildingId = new FacilioField();
+		buildingId.setName("buildingId");
+		buildingId.setDataType(FieldType.NUMBER);
+		buildingId.setColumnName("BUILDING_ID");
+		buildingId.setModule(module);
+		fields.add(buildingId);
+		
+		FacilioField controllerId = new FacilioField();
+		controllerId.setName("controllerId");
+		controllerId.setDataType(FieldType.NUMBER);
+		controllerId.setColumnName("CONTROLLER_ID");
+		controllerId.setModule(module);
+		fields.add(controllerId);
+		
 		return fields;
 	}
 
@@ -3046,8 +3076,8 @@ public class FieldFactory {
 		fields.add(formulaFieldId);
 
 		return fields;
+	
 	}
-
 	public static List<FacilioField> getReportDateFilterFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getReportDateFilter();
@@ -4106,7 +4136,23 @@ public class FieldFactory {
 		fields.add(getField("importTime", "IMPORT_TIME", module, FieldType.NUMBER));
 		fields.add(getField("importType", "IMPORT_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("importJobMeta", "IMPORT_JOB_META", module, FieldType.STRING));
+		fields.add(getField("importSetting","IMPORT_SETTING",module,FieldType.STRING));
+		fields.add(getField("mailSetting","MAIL_SETTING",module,FieldType.STRING));
+		fields.add(getField("importMode","IMPORT_MODE",module,FieldType.NUMBER));
+		fields.add(getField("templateId","TEMPLATE_ID",module,FieldType.NUMBER));
 
+		return fields;
+	}
+	public static List<FacilioField> getImportTemplateFields(){
+		FacilioModule module = ModuleFactory.getImportTemplateModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getField("id","ID",module, FieldType.NUMBER));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("module","MODULE",module,FieldType.STRING));
+		fields.add(getField("templateName","TEMPLATE_NAME",module,FieldType.STRING));
+		fields.add(getField("uniqueMappingString","UNIQUE_MAPPING",module, FieldType.STRING));
+		fields.add(getField("fieldMappingString","FIELD_MAPPING",module,FieldType.STRING));
+		fields.add(getField("save","SYS_SHOW",module,FieldType.NUMBER));
 		return fields;
 	}
 
@@ -4377,6 +4423,8 @@ public class FieldFactory {
 		fields.add(getField("xCriteriaJson", "X_CRITERIA_JSON", module, FieldType.STRING));
 		fields.add(getField("baselineJson", "BASELINE_JSON", module, FieldType.STRING));
 		fields.add(getField("analyticsType", "ANALYTICS_TYPE", module, FieldType.NUMBER));
+		
+		fields.add(getField("booleanSetting", "BOOLEAN_SETTINGS", module, FieldType.NUMBER));
 		return fields;
 	}
 	
