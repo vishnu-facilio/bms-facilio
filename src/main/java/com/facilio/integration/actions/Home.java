@@ -363,7 +363,7 @@ Pragma: no-cache
 		if((Boolean) invitation.get("accepted") && emailaddress != null) {
 			Long userid = (Long)invitation.get("userid");
 			User user = AccountUtil.getUserBean().getUser(userid);
-			if(user.password() == null && password != null) {
+			if(user.getPassword() == null && password != null) {
 				user.setPassword(cryptWithMD5(password));
 				AccountUtil.getUserBean().updateUser(user);
 				
