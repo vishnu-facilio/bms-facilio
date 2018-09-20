@@ -208,7 +208,7 @@ public class TenantsAPI {
 		GenericSelectRecordBuilder selectBuilde = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getOrgUserFields())
 														.table(modulo.getTableName())
-														.andCustomWhere("org_users.ORG_USERID = ?", ouiId);
+														.andCustomWhere("ORG_Users.ORG_USERID = ?", ouiId);
 		List<Map<String, Object>> prop = selectBuilde.get();
 		
 		Map<String, Object> values = prop.get(0);
@@ -227,7 +227,7 @@ public class TenantsAPI {
 				.table(module.getTableName())
 				.fields(FieldFactory.getOrgUserFields())
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCustomWhere("org_users.USERID = ?", userId);
+				.andCustomWhere("ORG_Users.USERID = ?", userId);
 		
 		Map<String, Object> value = new HashMap<>();
 		value.put("portal_verified", portal_verified);
