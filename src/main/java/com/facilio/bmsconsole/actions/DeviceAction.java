@@ -73,7 +73,7 @@ public class DeviceAction extends ActionSupport
 				log.info("Exception occurred ", e);
 			}
 	
-			KinesisProcessor.startProcessor(orgId, orgName);
+			KinesisProcessor.startKinesis();
 	    }
 
 		logger.info("Started event processor for org : " + orgId);

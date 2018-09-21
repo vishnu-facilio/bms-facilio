@@ -137,6 +137,7 @@ public class AwsUtil
 	private static final Properties PROPERTIES = new Properties();
 
 	private static final String SERVERNAME = getConfig("servername");
+	private static final String USER_ID="668907905219";
 
 	private static boolean productionEnvironment = false;
 	private static boolean developmentEnvironment = true;
@@ -549,7 +550,7 @@ public class AwsUtil
 	}
 
 	private static String getUserId() {
-    	if(user == null) {
+    	/*if(user == null) {
     		synchronized (LOCK) {
     			if(user == null) {
 					AmazonIdentityManagement iam = AmazonIdentityManagementClientBuilder.standard()
@@ -561,7 +562,8 @@ public class AwsUtil
 				}
 			}
 		}
-		return user.getUserId();
+		return user.getUserId();*/
+    	return USER_ID;
 	}
 
 	public static void addIotClient(String policyName, String clientId) {
@@ -669,7 +671,7 @@ public class AwsUtil
 	private static void createKinesisStream(AmazonKinesis kinesisClient, String streamName) {
     	try {
 			CreateStreamResult streamResult = kinesisClient.createStream(streamName, 1);
-			logger.info("Stream created : " + streamResult.getSdkHttpMetadata().getHttpStatusCode());
+			logger.info("Stream created : " + streamName + " with status " + streamResult.getSdkHttpMetadata().getHttpStatusCode());
 		} catch (ResourceInUseException resourceInUse){
     		logger.info("Stream exists for name : " + streamName);
 		}
@@ -704,6 +706,7 @@ public class AwsUtil
     	CreateKeysAndCertificateResult certificateResult = createCertificate(iotClient);
     	attachPolicy(iotClient, certificateResult, name);
     	createKinesisStream(getKinesisClient(), name);
+    	createKinesisStream(getKinesisClient(), name+"-error");
     	createIotTopicRule(iotClient, name);
     	return certificateResult;
 	}

@@ -17,11 +17,12 @@ import com.facilio.events.tasker.tasks.EventProcessorFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.timeseries.TimeSeriesProcessorFactory;
 
-public class KinesisProcessor extends TimerTask{
+public class KinesisProcessor {
 
     private static final HashSet<String> STREAMS = new HashSet<>();
     private static org.apache.log4j.Logger log = LogManager.getLogger(KinesisProcessor.class.getName());
     private static final HashSet<String> EXISTING_ORGS = new HashSet<>();
+
 
     private static Properties getLoggingProps(){
         Properties properties = new Properties();
@@ -125,7 +126,7 @@ public class KinesisProcessor extends TimerTask{
     	return null;
     }
 
-    public void run() {
+    public static void startKinesis() {
         updateStream();
         startProcessor();
     }
