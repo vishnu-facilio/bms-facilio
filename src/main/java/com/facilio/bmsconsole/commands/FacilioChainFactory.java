@@ -1353,6 +1353,9 @@ public class FacilioChainFactory {
 		c.addCommand(new SeperateToCategoriesCommand());
 		c.addCommand(new SetModuleForSpecialAssetsCommand());
 		c.addCommand(new BulkPushAssetCommands());
+		c.addCommand(new ForkChainToInstantJobCommand()
+				.addCommand(new InsertReadingDataMetaForNewResourceCommand())
+				.addCommand(new SendEmailCommand()));
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
@@ -1961,6 +1964,7 @@ public class FacilioChainFactory {
 		c.addCommand(new PopulateImportProcessCommand());
 		c.addCommand(new ForkChainToInstantJobCommand()
 				.addCommand(new UpdateBaseAndResourceCommand())
+				.addCommand(new InsertReadingDataMetaForNewResourceCommand())
 				.addCommand(new SendEmailCommand()));
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;

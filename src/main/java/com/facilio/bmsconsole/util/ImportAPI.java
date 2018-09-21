@@ -305,8 +305,6 @@ public class ImportAPI {
 			 else
 			 {
 				 siteId = siteMeta.addSite(siteName);
-				 listOfIds.add(siteId);
-				 addReadingDataMeta(FacilioConstants.ContextNames.SITE, listOfIds);
 			 }
 			 if(siteId != null) {
 				 spaceId = siteId;
@@ -332,9 +330,6 @@ public class ImportAPI {
 			 if(buildingId == null)
 			 {
 				 buildingId = buildingMeta.addBuilding(buildingName, siteId);
-				 listOfIds.clear();
-				 listOfIds.add(buildingId);
-				 addReadingDataMeta(FacilioConstants.ContextNames.BUILDING, listOfIds);
 			 }
 			 
 			 if(buildingId != null) {
@@ -361,9 +356,6 @@ public class ImportAPI {
 		    if(floorId == null)
 		    {
 		    	floorId = floorMeta.addFloor(floorName, siteId, buildingId);
-		    	listOfIds.clear();
-		    	listOfIds.add(floorId);
-				addReadingDataMeta(FacilioConstants.ContextNames.FLOOR, listOfIds);
 		    }
 		    if(floorId != null) {
 				 spaceId = floorId;
@@ -390,8 +382,6 @@ public class ImportAPI {
 				 {
 				 spaceId = spaceMeta.addSpace(spaceName, siteId, buildingId, floorId);
 				 }
-				 listOfIds.clear();
-				 listOfIds.add(spaceId);
 			 }
 			}
 		return spaceId;
@@ -576,19 +566,6 @@ public class ImportAPI {
 		public static final String SYS_FIELD_SHOW ="save";
 	}
 	
-	public static void addReadingDataMeta(String moduleName, List<Long> listOfIds) throws Exception {
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.SPACE_TYPE,moduleName + 's');
-		Chain getSpaceTypeReading = FacilioChainFactory.getReadingsForSpaceTypeChain();
-		getSpaceTypeReading.execute(context);
-		List<FacilioModule> subModules = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
-		
-		FacilioContext readingMetaContext = new FacilioContext();
-		readingMetaContext.put(FacilioConstants.ContextNames.MODULE_LIST, subModules);
-		readingMetaContext.put(FacilioConstants.ContextNames.RECORD_ID_LIST, listOfIds);
-		Chain readingMetaChain = FacilioChainFactory.addReadingMetaDataEntry();
-		readingMetaChain.execute(readingMetaContext);
-	}
 	
 	
 	

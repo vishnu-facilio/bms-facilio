@@ -48,7 +48,7 @@ public class PopulateImportProcessCommand implements Command {
 		StringBuilder emailMessage = new StringBuilder();
 		ArrayListMultimap<String,String> groupedFields = (ArrayListMultimap<String,String>) c.get(ImportAPI.ImportProcessConstants.GROUPED_FIELDS);
 		ArrayListMultimap<String, ReadingContext> groupedReadingContext = (ArrayListMultimap<String, ReadingContext>) c.get(ImportAPI.ImportProcessConstants.GROUPED_READING_CONTEXT);
-		
+		ArrayListMultimap<String, Long> recordsList = (ArrayListMultimap<String, Long>) c.get(FacilioConstants.ContextNames.RECORD_LIST);
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
 		JSONObject meta = new JSONObject();	
 		Integer Setting = importProcessContext.getImportSetting();
@@ -61,12 +61,14 @@ public class PopulateImportProcessCommand implements Command {
 					listOfIds = populateData(groupedReadingContext.get(keys.get(i)),keys.get(i));
 				}
 				if(!listOfIds.isEmpty()) {
-					c.put(FacilioConstants.ContextNames.RECORD_ID_LIST, listOfIds);
+					for(Long id: listOfIds) {
+						recordsList.put(importProcessContext.getModule().getName(), id);
+					}
 				}
 				meta.put("Inserted", groupedReadingContext.size());
 				importProcessContext.setImportJobMeta(meta.toJSONString());
 				emailMessage.append(",Inserted:" + groupedReadingContext.size() +"Updated:"+ 0 +",Skipped:" +0);
-				c.put(FacilioConstants.ContextNames.RECORD_LIST, listOfIds);
+				c.put(FacilioConstants.ContextNames.RECORD_LIST, recordsList);
 		}
 		
 		else if (Setting == ImportProcessContext.ImportSetting.INSERT_SKIP.getValue()) {
@@ -90,6 +92,9 @@ public class PopulateImportProcessCommand implements Command {
 			}
 			
 			listOfIds = populateData(newItems,importProcessContext.getModule().getName());
+			for(Long id: listOfIds) {
+				recordsList.put(importProcessContext.getModule().getName(), id);
+			}
 			c.put(FacilioConstants.ContextNames.RECORD_LIST, listOfIds);
 			
 			Integer Skipped = readingsList.size()-newItems.size();
@@ -134,7 +139,10 @@ public class PopulateImportProcessCommand implements Command {
 			}
 			
 			listOfIds = populateData(insertItems,importProcessContext.getModule().getName());
-			c.put(FacilioConstants.ContextNames.RECORD_ID_LIST,listOfIds);
+			for(Long id: listOfIds) {
+				recordsList.put(importProcessContext.getModule().getName(), id);
+			}
+			c.put(FacilioConstants.ContextNames.RECORD_LIST, listOfIds);
 			
 			updateData(importProcessContext,updateItems);
 			meta.put("Inserted", insertItems.size());
@@ -162,7 +170,10 @@ public class PopulateImportProcessCommand implements Command {
 			}
 			
 			listOfIds = populateData(insertItems,importProcessContext.getModule().getName());
-			c.put(FacilioConstants.ContextNames.RECORD_ID_LIST,listOfIds);
+			for(Long id: listOfIds) {
+				recordsList.put(importProcessContext.getModule().getName(), id);
+			}
+			c.put(FacilioConstants.ContextNames.RECORD_LIST, listOfIds);
 			
 			updateNotNull(importProcessContext,updateItems);
 			meta.put("Inserted", insertItems.size());
