@@ -1,9 +1,6 @@
 package com.facilio.kinesis;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 import org.apache.log4j.LogManager;
 
@@ -20,10 +17,11 @@ import com.facilio.events.tasker.tasks.EventProcessorFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.timeseries.TimeSeriesProcessorFactory;
 
-public class KinesisProcessor {
+public class KinesisProcessor extends TimerTask{
 
     private static final HashSet<String> STREAMS = new HashSet<>();
     private static org.apache.log4j.Logger log = LogManager.getLogger(KinesisProcessor.class.getName());
+    private static final HashSet<String> EXISTING_ORGS = new HashSet<>();
 
     private static Properties getLoggingProps(){
         Properties properties = new Properties();
@@ -33,24 +31,28 @@ public class KinesisProcessor {
         return properties;
     }
 
-    static {
-        updateStream();
-    }
-
     private static void updateStream() {
         try {
             AmazonKinesis kinesis = AwsUtil.getKinesisClient();
             ListStreamsResult streamList = kinesis.listStreams();
             List<String> streamNames = streamList.getStreamNames();
-            if (streamNames != null) {
+            if (streamNames != null && STREAMS.isEmpty()) {
                 STREAMS.addAll(streamNames);
+            } else {
+                if (streamNames != null) {
+                    for (String stream : streamNames) {
+                        if( ! STREAMS.contains(stream)) {
+                            STREAMS.add(stream);
+                        }
+                    }
+                }
             }
         } catch (Exception e){
             log.info("Exception occurred ", e);
         }
     }
 
-    public static void startProcessor() {
+    private static void startProcessor() {
 
 //        PropertyConfigurator.configure(getLoggingProps());
 
@@ -64,16 +66,18 @@ public class KinesisProcessor {
             for (Map<String, Object> prop : props) {
                 Long orgId = (Long) prop.get("orgId");
                 String orgDomainName = (String) prop.get("domain");
-                try {
-                    startProcessor(orgId, orgDomainName);
-                } catch (Exception e) {
+                if( ! EXISTING_ORGS.contains(orgDomainName)) {
                     try {
-                        CommonCommandUtil.emailException("KinesisProcessor", "Exception while starting stream " + orgDomainName, new Exception("Exception while starting stream will retry after 10 sec"));
-                        Thread.sleep(10000L);
                         startProcessor(orgId, orgDomainName);
-                    } catch (InterruptedException | LimitExceededException interrupted) {
-                        log.info("Exception occurred ", interrupted);
-                        CommonCommandUtil.emailException("KinesisProcessor", "Exception while starting stream " + orgDomainName, interrupted);
+                    } catch (Exception e) {
+                        try {
+                            CommonCommandUtil.emailException("KinesisProcessor", "Exception while starting stream " + orgDomainName, new Exception("Exception while starting stream will retry after 10 sec"));
+                            Thread.sleep(10000L);
+                            startProcessor(orgId, orgDomainName);
+                        } catch (InterruptedException | LimitExceededException interrupted) {
+                            log.info("Exception occurred ", interrupted);
+                            CommonCommandUtil.emailException("KinesisProcessor", "Exception while starting stream " + orgDomainName, interrupted);
+                        }
                     }
                 }
             }
@@ -88,9 +92,10 @@ public class KinesisProcessor {
                 System.out.println("Starting kinesis processor for org : " + orgDomainName + " id " + orgId);
                 initiateProcessFactory(orgId, orgDomainName, "event");
                 initiateProcessFactory(orgId, orgDomainName, "timeSeries");
+                EXISTING_ORGS.add(orgDomainName);
             }
         } catch (ResourceNotFoundException e){
-            System.out.println("Kinesis stream not found for org : " + orgDomainName +" id "+ orgId);
+            log.info("Kinesis stream not found for org : " + orgDomainName +" id "+ orgId);
         } catch (Exception e){
             log.info("Exception occurred ", e);
         }
@@ -110,18 +115,19 @@ public class KinesisProcessor {
     private static IRecordProcessorFactory getProcessorFactory(long orgId, String orgDomainName, String type) {
 
     	switch(type){
-
-    	case "event" :{
-    		return new EventProcessorFactory(orgId, orgDomainName);
-    	}
-    	case "timeSeries" :{
-
-    		return new TimeSeriesProcessorFactory(orgId, orgDomainName);
-    	}
-
+            case "event" :{
+                return new EventProcessorFactory(orgId, orgDomainName);
+            }
+            case "timeSeries" :{
+                return new TimeSeriesProcessorFactory(orgId, orgDomainName);
+            }
     	}
     	return null;
     }
-    
-    
+
+    public void run() {
+        updateStream();
+        startProcessor();
+    }
+
 }
