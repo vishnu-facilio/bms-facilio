@@ -74,13 +74,13 @@ public class EventProcessor implements IRecordProcessor {
                 if(object.containsKey(DATA_TYPE)){
                     String dataType = (String)object.get(DATA_TYPE);
                     if("event".equalsIgnoreCase(dataType)){
-                        boolean alarmCreated = processEvents(record.getApproximateArrivalTimestamp().getTime(), object);
+                        boolean alarmCreated = processEvents(record.getApproximateArrivalTimestamp().getTime(), object, record.getPartitionKey());
                         if (alarmCreated) {
                             processRecordsInput.getCheckpointer().checkpoint(record);
                         }
                     }
                 } else {
-                    boolean alarmCreated = processEvents(record.getApproximateArrivalTimestamp().getTime(), object);
+                    boolean alarmCreated = processEvents(record.getApproximateArrivalTimestamp().getTime(), object, record.getPartitionKey());
                     if (alarmCreated) {
                         processRecordsInput.getCheckpointer().checkpoint(record);
                     }
@@ -110,10 +110,10 @@ public class EventProcessor implements IRecordProcessor {
     }
 
 
-    private boolean processEvents(long timestamp, JSONObject object) throws Exception {
+    private boolean processEvents(long timestamp, JSONObject object, String partitionKey) throws Exception {
     	
     	ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-        long currentExecutionTime = bean.processEvents(timestamp, object, eventRules, eventCountMap, lastEventTime);
+        long currentExecutionTime = bean.processEvents(timestamp, object, eventRules, eventCountMap, lastEventTime, partitionKey);
         if(currentExecutionTime != -1) {
         	lastEventTime = currentExecutionTime;
         	return true;

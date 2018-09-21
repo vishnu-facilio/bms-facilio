@@ -44,7 +44,7 @@ public interface ModuleCRUDBean {
 	public void deleteAllData (String moduleName) throws Exception;
 	
 	public long processEvents(long timeStamp, JSONObject payLoad, List<EventRuleContext> eventRules, 
-			Map<String, Integer> eventCountMap, long lastEventTime) throws Exception ;
+			Map<String, Integer> eventCountMap, long lastEventTime, String partitionKey) throws Exception ;
 	
 	public void processTimeSeries(long timeStamp, JSONObject payLoad, Record record, 
 			IRecordProcessorCheckpointer checkpointer) throws Exception;
