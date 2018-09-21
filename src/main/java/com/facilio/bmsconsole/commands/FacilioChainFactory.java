@@ -1220,7 +1220,7 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(new SetModuleForSpecialAssetsCommand());
 		c.addCommand(new LoadAssetFields());
-		c.addCommand(new GenericGetModuleDataDetailCommand());
+		c.addCommand(new GetAssetDetailCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}

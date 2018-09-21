@@ -162,7 +162,7 @@ public class AssetAction extends ActionSupport {
 		Chain assetDetailsChain = FacilioChainFactory.getAssetDetailsChain();
 		assetDetailsChain.execute(context);
 		
-		setAsset((AssetContext) context.get(FacilioConstants.ContextNames.RECORD));
+		setAsset((AssetContext) context.get(FacilioConstants.ContextNames.ASSET));
 		
 		return SUCCESS;
 	}
