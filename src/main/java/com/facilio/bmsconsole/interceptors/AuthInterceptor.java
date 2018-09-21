@@ -82,7 +82,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 								} catch (NumberFormatException ex) {
 									// ignore if header value is wrong
 								}
-								if (sites != null && !sites.isEmpty()) {
+								if (currentSiteId != -1 && sites != null && !sites.isEmpty()) {
 									boolean found = false;
 									for (long id: sites) {
 										if (id == currentSiteId) {
@@ -95,7 +95,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 									}
 								}
 								currentAccount.setCurrentSiteId(currentSiteId);
-								if (accessibleSpace == null) {
+								if (currentSiteId != -1 && accessibleSpace == null) {
 									accessibleSpace = new ArrayList<>();
 									accessibleSpace.add(currentSiteId);
 									currentAccount.getUser().setAccessibleSpace(accessibleSpace);
