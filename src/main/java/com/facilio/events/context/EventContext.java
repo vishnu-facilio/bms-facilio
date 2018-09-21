@@ -61,6 +61,15 @@ public class EventContext {
 	public void setResourceId(long resourceId) {
 		this.resourceId = resourceId;
 	}
+	
+	private long siteId = -1;
+	public long getSiteId() {
+		return siteId;
+	}
+	
+	public void setSiteId(long siteId) {
+		this.siteId = siteId;
+	}
 
 	private String eventMessage;
 	public String getEventMessage() {

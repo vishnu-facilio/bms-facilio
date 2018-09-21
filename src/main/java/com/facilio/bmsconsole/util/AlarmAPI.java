@@ -370,6 +370,7 @@ public class AlarmAPI {
 		
 		obj.put("readingMessage", getMessage(rule, range, reading));
 		obj.put("resourceId", reading.getParentId());
+		obj.put("siteId", ((ResourceContext) reading.getParent()).getSiteId());
 		
 		String resourceName = ((ResourceContext)reading.getParent()).getName();
 		obj.put("source", resourceName);
