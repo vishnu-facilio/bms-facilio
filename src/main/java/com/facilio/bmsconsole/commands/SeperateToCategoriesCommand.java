@@ -1,16 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
-import org.apache.commons.chain.Context;
-
-import com.google.common.collect.Multimap;
-import com.google.common.collect.ArrayListMultimap;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.util.ImportAPI;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 
 public class SeperateToCategoriesCommand implements Command{
 	

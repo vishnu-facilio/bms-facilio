@@ -1,16 +1,5 @@
 package com.facilio.bmsconsole.commands.data;
 
-import org.apache.commons.chain.Chain;
-
-
-import java.sql.*;
-import java.sql.PreparedStatement;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.ArrayListMultimap;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,28 +7,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-import org.apache.log4j.LogManager;
+
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
-import com.facilio.bmsconsole.actions.ReadingAction;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
-import com.facilio.bmsconsole.commands.InsertReadingDataMetaForNewResourceCommand;
-import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TicketContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
-import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
-import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsole.util.ModuleLocalIdUtil;
@@ -47,7 +34,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
-import com.facilio.transaction.FacilioConnectionPool;
+import com.google.common.collect.ArrayListMultimap;
 
 public class PopulateImportProcessCommand implements Command {
 	

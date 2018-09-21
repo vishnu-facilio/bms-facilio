@@ -7,16 +7,12 @@ import org.apache.commons.chain.Chain;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
-import com.facilio.bmsconsole.actions.ImportProcessContext.ImportStatus;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.util.ImportAPI;
-import com.facilio.bmsconsole.util.ImportAPI.ImportProcessConstants;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
-import com.google.common.collect.ArrayListMultimap;
 
 public class ImportReadingJob extends FacilioJob {
 

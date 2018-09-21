@@ -15,8 +15,6 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.constants.FacilioConstants;
 import com.google.common.collect.ArrayListMultimap;
-import com.google.gson.JsonObject;
-import com.sun.xml.bind.v2.schemagen.xmlschema.Import;
 
 public class InsertReadingCommand implements Command {
 

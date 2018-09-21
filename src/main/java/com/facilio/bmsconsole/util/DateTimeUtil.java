@@ -23,6 +23,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
@@ -33,6 +36,8 @@ import com.facilio.tasker.ScheduleInfo;
 
 public class DateTimeUtil 
 {
+	private static final Logger LOGGER = LogManager.getLogger(DateTimeUtil.class.getName());
+	
 	public static final long ONE_HOUR_MILLIS_VALUE = 3600000l;
 	public static final long ONE_MINUTE_MILLIS_VALUE = 60000l;
 	private static ZoneId getZoneId()

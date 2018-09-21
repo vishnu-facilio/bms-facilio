@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.instant.jobs;
 
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;

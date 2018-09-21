@@ -13,7 +13,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
-import com.facilio.accounts.util.AccountEmailTemplate;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.DashboardAction;
 import com.facilio.bmsconsole.context.AssetContext;
