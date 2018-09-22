@@ -30,7 +30,7 @@ public class GetAllCampusCommand implements Command{
 				.beanClass(SiteContext.class)
 				.select(fields)
 				.maxLevel(2)
-				.orderBy("ID");
+				.orderBy("-BaseSpace.LOCAL_ID desc,ID");
 		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(moduleName);
 		if(scopeCriteria != null)
 		{
