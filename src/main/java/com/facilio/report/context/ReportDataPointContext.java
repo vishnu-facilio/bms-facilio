@@ -1,6 +1,7 @@
 package com.facilio.report.context;
 
 import java.util.List;
+import java.util.Map;
 
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -187,6 +188,14 @@ public class ReportDataPointContext {
 	public void setDateField(FacilioField dateField) {
 		dateFieldId = dateField.getFieldId();
 		this.dateField = dateField;
+	}
+	
+	private Map<String, String> aliases; 
+	public Map<String, String> getAliases() {
+		return aliases;
+	}
+	public void setAliases(Map<String, String> aliases) {
+		this.aliases = aliases;
 	}
 
 	public static enum OrderByFunction {

@@ -1,6 +1,7 @@
 package com.facilio.report.context;
 
 import java.util.List;
+import java.util.Map;
 
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 
@@ -21,6 +22,14 @@ public class ReadingAnalysisContext {
 		this.fieldId = fieldId;
 	}
 	
+	private Map<String, String> aliases; 
+	public Map<String, String> getAliases() {
+		return aliases;
+	}
+	public void setAliases(Map<String, String> aliases) {
+		this.aliases = aliases;
+	}
+
 	private AggregateOperator yAggr;
 	public AggregateOperator getyAggrEnum() {
 		return yAggr;
