@@ -197,6 +197,23 @@ public class ReportDataPointContext {
 	public void setAliases(Map<String, String> aliases) {
 		this.aliases = aliases;
 	}
+	
+	private DataPointType type;
+	public DataPointType getTypeEnum() {
+		return type;
+	}
+	public void setType(DataPointType type) {
+		this.type = type;
+	}
+	public int getType() {
+		if (type != null) {
+			return type.getValue();
+		}
+		return -1;
+	}
+	public void setType(int type) {
+		this.type = DataPointType.valueOf(type);
+	}
 
 	public static enum OrderByFunction {
 		ACCENDING ("ASC"),
@@ -222,5 +239,22 @@ public class ReportDataPointContext {
 			return null;
 		}
 		
+	}
+	
+	public static enum DataPointType {
+		MODULE,
+		DERIVATION
+		;
+		
+		public int getValue() {
+			return ordinal() + 1;
+		}
+		
+		public static DataPointType valueOf (int value) {
+			if (value > 0 && value <= values().length) {
+				return values() [value - 1];
+			}
+			return null;
+		}
 	}
 }

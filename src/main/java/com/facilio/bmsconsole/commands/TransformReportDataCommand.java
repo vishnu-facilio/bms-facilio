@@ -78,9 +78,7 @@ public class TransformReportDataCommand implements Command {
 				if (xVal != null) {
 					xVal = getBaseLineAdjustedXVal(xVal, dataPoint.getxAxis(), baseLine);
 					xVal = formatVal(dataPoint.getxAxis().getField(), dataPoint.getxAxis().getAggrEnum(), xVal);
-					if (xValues != null) {
-						xValues.add(xVal);
-					}
+					xValues.add(xVal);
 					Object yVal = prop.get(dataPoint.getyAxis().getField().getName());
 					yVal = formatVal(dataPoint.getyAxis().getField(), dataPoint.getyAxis().getAggrEnum(), yVal);
 					if (dataPoint.getGroupByFields() == null || dataPoint.getGroupByFields().isEmpty()) {
