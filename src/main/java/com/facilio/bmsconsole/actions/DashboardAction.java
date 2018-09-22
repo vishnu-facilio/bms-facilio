@@ -61,6 +61,7 @@ import com.facilio.bmsconsole.context.FormulaContext.EnergyPurposeAggregateOpera
 import com.facilio.bmsconsole.context.FormulaContext.NumberAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.SpaceAggregateOperator;
 import com.facilio.bmsconsole.context.MarkedReadingContext;
+import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -151,6 +152,7 @@ import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -1208,6 +1210,16 @@ public class DashboardAction extends ActionSupport {
 							JSONObject json = new JSONObject();
 							
 							json.put("name", building.getName());
+							
+							if(building.getPhotoId() <= 0) {
+								
+								List<PhotosContext> photos = SpaceAPI.getBaseSpacePhotos(building.getId());
+								
+								if(photos != null && !photos.isEmpty()) {
+									building.setPhotoId(photos.get(0).getPhotoId());
+								}
+							}
+							
 							json.put("avatar", building.getAvatarUrl());
 							json.put("currentVal", json1);
 							
@@ -1339,6 +1351,16 @@ public class DashboardAction extends ActionSupport {
 							JSONObject json = new JSONObject();
 							
 							json.put("name", building.getName());
+							
+							if(building.getPhotoId() <= 0) {
+								
+								List<PhotosContext> photos = SpaceAPI.getBaseSpacePhotos(building.getId());
+								
+								if(photos != null && !photos.isEmpty()) {
+									building.setPhotoId(photos.get(0).getPhotoId());
+								}
+							}
+							
 							json.put("avatar", building.getAvatarUrl());
 							json.put("currentVal", json1);
 							
