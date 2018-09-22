@@ -1271,14 +1271,10 @@ public class DashboardAction extends ActionSupport {
 							}
 							Object wfResult = WorkflowUtil.getResult(widgetVsWorkflowContext.getWorkflowId(), paramMap);
 							
-							if(widgetStaticContext != null && widgetStaticContext.getStaticKey().equals("weathercard") && widgetVsWorkflowContext.getWorkflowName().equals("weather")) {
+							if(widgetStaticContext != null && (widgetStaticContext.getStaticKey().equals("weathercard") || widgetStaticContext.getStaticKey().equals("weathermini")) && widgetVsWorkflowContext.getWorkflowName().equals("weather")) {
 								Map<String,Object> ss = (Map<String, Object>) wfResult;
 								Object temprature = ss.get("temperature");
-								if(AccountUtil.getCurrentOrg().getOrgId() == 104l) {
-									temprature = UnitsUtil.convert(temprature, Unit.CELSIUS, Unit.FAHRENHEIT);
-									ss.put("unit", "F");
-								}
-								if(AccountUtil.getCurrentOrg().getOrgId() == 75l) {
+								if(AccountUtil.getCurrentOrg().getOrgId() == 104l || AccountUtil.getCurrentOrg().getOrgId() == 75l) {
 									ss.put("unit", "F");
 								}
 								DecimalFormat f = new DecimalFormat("##.0");
@@ -1412,11 +1408,10 @@ public class DashboardAction extends ActionSupport {
 							}
 							Object wfResult = WorkflowUtil.getWorkflowExpressionResult(widgetVsWorkflowContext.getWorkflowString(), paramMap);
 							
-							if( staticKey.equals("weathercard") && staticKey.equals("weather")) {
+							if( staticKey.equals("weathercard") || staticKey.equals("weathermini")) {
 								Map<String,Object> ss = (Map<String, Object>) wfResult;
 								Object temprature = ss.get("temperature");
 								if(AccountUtil.getCurrentOrg().getOrgId() == 104l || AccountUtil.getCurrentOrg().getOrgId() == 75l) {
-									temprature = UnitsUtil.convert(temprature, Unit.CELSIUS, Unit.FAHRENHEIT);
 									ss.put("unit", "F");
 								}
 								DecimalFormat f = new DecimalFormat("##.0");
