@@ -64,6 +64,7 @@ import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class TemplateAPI {
@@ -988,7 +989,7 @@ public class TemplateAPI {
 		JSONArray placeHolders = getPlaceholders(template);
 		if (placeHolders != null && !placeHolders.isEmpty()) {
 			List<ParameterContext> params = new ArrayList<>();
-			List<ExpressionContext> expressions = new ArrayList<>();
+			List<WorkflowExpression> expressions = new ArrayList<>();
 			for (int i = 0; i < placeHolders.size(); i++) {
 				String placeHolder = (String) placeHolders.get(i);
 				ParameterContext param = new ParameterContext();
@@ -1002,7 +1003,7 @@ public class TemplateAPI {
 				expressions.add(expression);
 			}
 			WorkflowContext workflow = new WorkflowContext();
-			workflow.setExpressions(expressions);
+			workflow.setWorkflowExpressions(expressions);
 			workflow.setParameters(params);
 			return workflow;
 		}

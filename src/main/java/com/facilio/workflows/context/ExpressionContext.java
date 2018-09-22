@@ -26,7 +26,7 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.workflows.util.ExpressionAggregateOperator;
 import com.facilio.workflows.util.WorkflowUtil;
 
-public class ExpressionContext implements Serializable {
+public class ExpressionContext implements Serializable,WorkflowExpression {
 	
 	private static final Logger LOGGER = Logger.getLogger(ExpressionContext.class.getName());
 	
@@ -226,7 +226,7 @@ public class ExpressionContext implements Serializable {
 		this.variableToExpresionMap = variableToExpresionMap;
 	}
 
-	public Object executeExpression() throws Exception {
+	public Object execute() throws Exception {
 		
 		GenericSelectRecordBuilder selectBuilder = null;
 		if(isCustomFunctionResultEvaluator) {

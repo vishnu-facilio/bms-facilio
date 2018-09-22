@@ -2618,6 +2618,8 @@ public class FieldFactory {
 		dashboardWidgetLayoutPosition.setColumnName("LAYOUT_POSITION");
 		dashboardWidgetLayoutPosition.setModule(module);
 		fields.add(dashboardWidgetLayoutPosition);
+		
+		fields.add(getField("metaJSON", "META_JSON", module, FieldType.STRING));
 
 		return fields;
 	}

@@ -64,6 +64,7 @@ import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class CommonCommandUtil {
@@ -572,7 +573,15 @@ public class CommonCommandUtil {
         			r.setWorkflow(workflowMap.get(workflowId));
         		}
         		if (r.getWorkflow().getResultEvaluator().equals("(b!=-1&&a<b)||(c!=-1&&a>c)")) {
-        			Optional<ExpressionContext> exp = r.getWorkflow().getExpressions().stream().filter(e -> {return e.getName().equals("b");}).findFirst();
+        			
+        			List <ExpressionContext> expresions = new ArrayList<>();
+        			for(WorkflowExpression worklfowExp : r.getWorkflow().getWorkflowExpressions()) {
+        				
+        				if(worklfowExp instanceof ExpressionContext) {
+        					expresions.add((ExpressionContext) worklfowExp);
+        				}
+        			}
+        			Optional<ExpressionContext> exp = expresions.stream().filter(e -> {return e.getName().equals("b");}).findFirst();
         			if (exp.isPresent()) {
         				min = Double.parseDouble((String) exp.get().getConstant());
         				if (min == -1) {
@@ -580,7 +589,7 @@ public class CommonCommandUtil {
         				}
         			}
         			
-        			exp = r.getWorkflow().getExpressions().stream().filter(e -> {return e.getName().equals("c");}).findFirst();
+        			exp = expresions.stream().filter(e -> {return e.getName().equals("c");}).findFirst();
         			if (exp.isPresent()) {
         				max = Double.parseDouble((String) exp.get().getConstant());
         				if (max == -1) {

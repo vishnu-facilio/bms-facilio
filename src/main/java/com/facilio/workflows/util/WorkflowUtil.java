@@ -21,6 +21,7 @@ import java.util.regex.Pattern;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
@@ -56,8 +57,10 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.ExpressionContext;
+import com.facilio.workflows.context.IteratorContext;
 import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.workflows.context.WorkflowFieldContext;
 import com.facilio.workflows.context.WorkflowFunctionContext;
 import com.facilio.workflows.functions.FacilioCostFunction;
@@ -88,7 +91,9 @@ public class WorkflowUtil {
 //	private static final String CONDITION_FORMATTER = "((.*?)`(baseLine\\{(\\d+)\\}\\s*)?([^`]*)`(.*))";
 	private static final String CONDITION_FORMATTER = "((.*?)`(baseLine\\{(\\d+)(\\,*)(\\d*)\\}\\s*)?([^`]*)`(.*))";
 	private static final String CUSTOM_FUNCTION_RESULT_EVALUATOR = "(.*?)(\\.)(.*?)(\\()(.*?)(\\))";
+	private static final String ITERATOR_VARIABLE = "(.*?)(\\,)(.*?)(\\:)(.*+)";
 	private static final String VARIABLE_PLACE_HOLDER = "\\$\\{(.+?)\\}";
+	private static final String ALPHA_NUMERIC_WITH_UNDERSCORE = "^[a-zA-Z0-9_]*$";
 	
 	
 	static {
@@ -136,10 +141,15 @@ public class WorkflowUtil {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		Multimap<String, FacilioField> resultMap = ArrayListMultimap.create();
 		
-		for(ExpressionContext exp : workflowContext.getExpressions()) {
-			String parentId = WorkflowUtil.getParentIdFromCriteria(exp.getCriteria());
-			FacilioField field = modBean.getField(exp.getFieldName(), exp.getModuleName());
-			resultMap.put(parentId, field);
+		for(WorkflowExpression workflowExpression : workflowContext.getWorkflowExpressions()) {
+			
+			if(workflowExpression instanceof ExpressionContext) {
+				
+				ExpressionContext exp = (ExpressionContext) workflowExpression;
+				String parentId = WorkflowUtil.getParentIdFromCriteria(exp.getCriteria());
+				FacilioField field = modBean.getField(exp.getFieldName(), exp.getModuleName());
+				resultMap.put(parentId, field);
+			}
 		}
 		return resultMap;
 	}
@@ -198,7 +208,9 @@ public class WorkflowUtil {
 	static final String PARAMETER_STRING =  "parameter";
 	static final String TYPE_STRING =  "type";
 	static final String EXPRESSION_STRING =  "expression";
+	static final String ITERATOR_STRING =  "iterator";
 	static final String NAME_STRING =  "name";
+	static final String VAR_STRING =  "var";
 	static final String CONSTANT_STRING =  "constant";
 	static final String FUNCTION_STRING =  "function";
 	static final String EXPR_STRING =  "expr";
@@ -319,30 +331,34 @@ public class WorkflowUtil {
 		for(ParameterContext parameter :workflow.getParameters()) {
 			params.add(parameter.getName());
 		}
-		for(ExpressionContext expressionContext : workflow.getExpressions()) {
+		for(WorkflowExpression workflowExpression : workflow.getWorkflowExpressions()) {
 			
-			String expString = expressionContext.getExpressionString();
-			
-			int nameStartIndex = expString.indexOf("<expression name=\"")+"<expression name=\"".length();
-			String name = expString.substring(nameStartIndex, expString.indexOf('"', nameStartIndex));
-			
-			params.add(name.trim());
-			
-			if(expressionContext.getExpressionString().contains("${")) {
+			if(workflowExpression instanceof ExpressionContext) {
+				ExpressionContext expressionContext = (ExpressionContext)  workflowExpression;
 				
-				List<String> allMatch = new ArrayList<String>();
+				String expString = expressionContext.getExpressionString();
 				
-				Pattern pattern = Pattern.compile(VARIABLE_PLACE_HOLDER);
-				Matcher matcher = pattern.matcher(expressionContext.getExpressionString());
+				int nameStartIndex = expString.indexOf("<expression name=\"")+"<expression name=\"".length();
+				String name = expString.substring(nameStartIndex, expString.indexOf('"', nameStartIndex));
+				
+				params.add(name.trim());
+				
+				if(expressionContext.getExpressionString().contains("${")) {
+					
+					List<String> allMatch = new ArrayList<String>();
+					
+					Pattern pattern = Pattern.compile(VARIABLE_PLACE_HOLDER);
+					Matcher matcher = pattern.matcher(expressionContext.getExpressionString());
 
-				while (matcher.find())
-				{
-					allMatch.add(matcher.group());
-				}
-				for(String match :allMatch) {
-					String variable = match.substring(2, match.length()-1);
-					if(!params.contains(variable)) {
-						throw new IllegalArgumentException("Variable - "+variable+" is not declared in params");
+					while (matcher.find())
+					{
+						allMatch.add(matcher.group());
+					}
+					for(String match :allMatch) {
+						String variable = match.substring(2, match.length()-1);
+						if(!params.contains(variable)) {
+							throw new IllegalArgumentException("Variable - "+variable+" is not declared in params");
+						}
 					}
 				}
 			}
@@ -407,47 +423,50 @@ public class WorkflowUtil {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		List<WorkflowFieldContext> workflowFieldContexts = null;
-		for(ExpressionContext expression :workflowContext.getExpressions()) {
+		for(WorkflowExpression workflowExpression :workflowContext.getWorkflowExpressions()) {
 			
-			String fieldName = expression.getFieldName();
-			String moduleName = expression.getModuleName();
-			
-			if(moduleName != null && fieldName != null && !moduleName.startsWith("$")) {
-				LOGGER.fine("moduleName -- "+moduleName +" fieldName -- "+fieldName);
-				FacilioModule module = modBean.getModule(moduleName);
-				FacilioField field = modBean.getField(fieldName, moduleName);
-				if(field != null) {
-					WorkflowFieldContext workflowFieldContext = new WorkflowFieldContext();
-					
-					workflowFieldContext.setOrgId(module.getOrgId());
-					workflowFieldContext.setModuleId(module.getModuleId());
-					workflowFieldContext.setFieldId(field.getId());
-					workflowFieldContext.setWorkflowId(workflowContext.getId());
-					
-					Long parentId = null;
-					if(expression.getCriteria() != null ) {
-						Map<Integer, Condition> conditions = expression.getCriteria().getConditions();
-						for(Condition condition :conditions.values()) {
-							if(condition.getFieldName().equals("parentId") && !condition.getValue().equals("${resourceId}")) {
-								if(condition.getValue() != null && !condition.getValue().contains("${")) {
-									parentId = Long.parseLong(condition.getValue());
+			if(workflowExpression instanceof ExpressionContext) {
+				ExpressionContext expression = (ExpressionContext)  workflowExpression;
+				String fieldName = expression.getFieldName();
+				String moduleName = expression.getModuleName();
+				
+				if(moduleName != null && fieldName != null && !moduleName.startsWith("$")) {
+					LOGGER.fine("moduleName -- "+moduleName +" fieldName -- "+fieldName);
+					FacilioModule module = modBean.getModule(moduleName);
+					FacilioField field = modBean.getField(fieldName, moduleName);
+					if(field != null) {
+						WorkflowFieldContext workflowFieldContext = new WorkflowFieldContext();
+						
+						workflowFieldContext.setOrgId(module.getOrgId());
+						workflowFieldContext.setModuleId(module.getModuleId());
+						workflowFieldContext.setFieldId(field.getId());
+						workflowFieldContext.setWorkflowId(workflowContext.getId());
+						
+						Long parentId = null;
+						if(expression.getCriteria() != null ) {
+							Map<Integer, Condition> conditions = expression.getCriteria().getConditions();
+							for(Condition condition :conditions.values()) {
+								if(condition.getFieldName().equals("parentId") && !condition.getValue().equals("${resourceId}")) {
+									if(condition.getValue() != null && !condition.getValue().contains("${")) {
+										parentId = Long.parseLong(condition.getValue());
+									}
 								}
 							}
 						}
-					}
-					if(parentId != null) {
-						workflowFieldContext.setResourceId(parentId);
-					}
-					if(expression.getAggregateOpperator() != null) {
-						workflowFieldContext.setAggregation(expression.getAggregateOpperator());
-					}
-					
-					if(workflowFieldContexts == null) {
-						workflowFieldContexts = new ArrayList<>();
-					}
-					
-					if(!workflowFieldContexts.contains(workflowFieldContext)) {
-						workflowFieldContexts.add(workflowFieldContext);
+						if(parentId != null) {
+							workflowFieldContext.setResourceId(parentId);
+						}
+						if(expression.getAggregateOpperator() != null) {
+							workflowFieldContext.setAggregation(expression.getAggregateOpperator());
+						}
+						
+						if(workflowFieldContexts == null) {
+							workflowFieldContexts = new ArrayList<>();
+						}
+						
+						if(!workflowFieldContexts.contains(workflowFieldContext)) {
+							workflowFieldContexts.add(workflowFieldContext);
+						}
 					}
 				}
 			}
@@ -460,43 +479,47 @@ public class WorkflowUtil {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		List<WorkflowFieldContext> workflowFieldList = null;
-		for(ExpressionContext expression :workflowContext.getExpressions()) {
+		for(WorkflowExpression workflowExpression :workflowContext.getWorkflowExpressions()) {
 			
-			String fieldName = expression.getFieldName();
-			String moduleName = expression.getModuleName();
-			
-			if(moduleName != null && fieldName != null && !moduleName.startsWith("$")) {
-				LOGGER.fine("moduleName -- "+moduleName +" fieldName -- "+fieldName);
-				FacilioModule module = modBean.getModule(moduleName);
-				FacilioField field = modBean.getField(fieldName, moduleName);
-				if(field != null) {
-					
-					if(workflowFieldList == null) {
-						workflowFieldList = new ArrayList<>();
-					}
-					
-					WorkflowFieldContext workflowFieldContext = new WorkflowFieldContext();
-					
-					workflowFieldContext.setOrgId(module.getOrgId());
-					workflowFieldContext.setModuleId(module.getModuleId());
-					workflowFieldContext.setFieldId(field.getId());
-					workflowFieldContext.setField(field);
-					if (workflowContext.getId() != null) {
-						workflowFieldContext.setWorkflowId(workflowContext.getId());
-					}
-					Long parentId = null;
-					if(expression.getCriteria() != null) {
-						Map<Integer, Condition> conditions = expression.getCriteria().getConditions();
-						for(Condition condition :conditions.values()) {
-							if(condition.getFieldName().equals("parentId") && !condition.getValue().equals("${resourceId}")) {
-								parentId = Long.parseLong(condition.getValue());
+			if(workflowExpression instanceof ExpressionContext) {
+				ExpressionContext expression = (ExpressionContext)  workflowExpression;
+				
+				String fieldName = expression.getFieldName();
+				String moduleName = expression.getModuleName();
+				
+				if(moduleName != null && fieldName != null && !moduleName.startsWith("$")) {
+					LOGGER.fine("moduleName -- "+moduleName +" fieldName -- "+fieldName);
+					FacilioModule module = modBean.getModule(moduleName);
+					FacilioField field = modBean.getField(fieldName, moduleName);
+					if(field != null) {
+						
+						if(workflowFieldList == null) {
+							workflowFieldList = new ArrayList<>();
+						}
+						
+						WorkflowFieldContext workflowFieldContext = new WorkflowFieldContext();
+						
+						workflowFieldContext.setOrgId(module.getOrgId());
+						workflowFieldContext.setModuleId(module.getModuleId());
+						workflowFieldContext.setFieldId(field.getId());
+						workflowFieldContext.setField(field);
+						if (workflowContext.getId() != null) {
+							workflowFieldContext.setWorkflowId(workflowContext.getId());
+						}
+						Long parentId = null;
+						if(expression.getCriteria() != null) {
+							Map<Integer, Condition> conditions = expression.getCriteria().getConditions();
+							for(Condition condition :conditions.values()) {
+								if(condition.getFieldName().equals("parentId") && !condition.getValue().equals("${resourceId}")) {
+									parentId = Long.parseLong(condition.getValue());
+								}
 							}
 						}
+						if(parentId != null) {
+							workflowFieldContext.setResourceId(parentId);
+						}
+						workflowFieldList.add(workflowFieldContext);
 					}
-					if(parentId != null) {
-						workflowFieldContext.setResourceId(parentId);
-					}
-					workflowFieldList.add(workflowFieldContext);
 				}
 			}
 		}
@@ -609,13 +632,18 @@ public class WorkflowUtil {
 	}
 	
 	public static void parseExpression(WorkflowContext workflowContext) throws Exception {
-		List<ExpressionContext> temp= new ArrayList<>();
-		if(workflowContext != null && workflowContext.getExpressions() != null) {
-			for(ExpressionContext expressionContext:workflowContext.getExpressions()) {
-				expressionContext = getExpressionContextFromExpressionString(expressionContext.getExpressionString());
-				temp.add(expressionContext);
+		List<WorkflowExpression> temp= new ArrayList<>();
+		if(workflowContext != null && workflowContext.getWorkflowExpressions() != null) {
+			for(WorkflowExpression workflowExpression : workflowContext.getWorkflowExpressions()) {
+				
+				if(workflowExpression instanceof ExpressionContext) {
+					ExpressionContext expressionContext = (ExpressionContext)  workflowExpression;
+					expressionContext = getExpressionContextFromExpressionString(expressionContext.getExpressionString());
+					temp.add(expressionContext);
+				}
+				
 			}
-			workflowContext.setExpressions(temp);
+			workflowContext.setWorkflowExpressions(temp);
 		}
 	}
 	
@@ -652,6 +680,7 @@ public class WorkflowUtil {
 //				checkType(parameterContext,value);
 				
 				parameterContext.setValue(value);
+				workflowContext.addVariableResultMap(parameterContext.getName(), value);
 			}
 		}
 		return paramterContexts;
@@ -708,93 +737,97 @@ public class WorkflowUtil {
 			 }
 		 }
 
-		 if(workflowContext.getExpressions() != null) {
+		 if(workflowContext.getWorkflowExpressions() != null) {
 			 
-			 for(ExpressionContext expressionContext:workflowContext.getExpressions()) {
+			 for(WorkflowExpression workflowExpression :workflowContext.getWorkflowExpressions()) {
 				 
-				 Element expressionElement = doc.createElement(EXPRESSION_STRING);
-				 expressionElement.setAttribute(NAME_STRING, expressionContext.getName());
-				 
-				 if(expressionContext.getConstant() != null) {
-					 Element valueElement = doc.createElement(CONSTANT_STRING);
-					 valueElement.setTextContent(expressionContext.getConstant().toString());
-					 expressionElement.appendChild(valueElement);
-				 }
-				 else if(expressionContext.getDefaultFunctionContext() != null) {
-					 WorkflowFunctionContext function = expressionContext.getDefaultFunctionContext();
-					 Element valueElement = doc.createElement(FUNCTION_STRING);
-					 if(function.getParams() != null) {
-						 valueElement.setTextContent(function.getNameSpace()+"."+function.getFunctionName()+"("+function.getParams()+")");
-					 }
-					 else {
-						 valueElement.setTextContent(function.getNameSpace()+"."+function.getFunctionName()+"()");
-					 }
-					 expressionElement.appendChild(valueElement);
-				 }
-				 else {
-					 Element moduleElement = doc.createElement(MODULE_STRING);
-					 moduleElement.setAttribute(NAME_STRING, expressionContext.getModuleName());
-					 expressionElement.appendChild(moduleElement);
-					 
-					 
-					 Element criteriaElement = doc.createElement(CRITERIA_STRING);
-					 criteriaElement.setAttribute(PATTERN_STRING, expressionContext.getCriteria().getPattern());
-					 
-					 Map<Integer, Condition> conditionMap =  expressionContext.getCriteria().getConditions();
-					 for(Map.Entry<Integer, Condition> conditionEntry : conditionMap.entrySet()) {
+				 if(workflowExpression instanceof ExpressionContext) {
+						ExpressionContext expressionContext = (ExpressionContext)  workflowExpression;
+						
+						Element expressionElement = doc.createElement(EXPRESSION_STRING);
+						 expressionElement.setAttribute(NAME_STRING, expressionContext.getName());
 						 
-						 Condition condition = conditionEntry.getValue();
-						 Object key = conditionEntry.getKey();
-						 Element conditionElement = doc.createElement(CONDITION_STRING);
-						 conditionElement.setAttribute(SEQUENCE_STRING, key.toString());
-						 if (condition.getOperator() instanceof DateOperators && expressionContext.getConditionSeqVsBaselineId() != null &&  expressionContext.getConditionSeqVsBaselineId().containsKey(key)) {
-							 conditionElement.setTextContent(condition.getFieldName()+"`baseLine{" + expressionContext.getConditionSeqVsBaselineId().get(key) + "}"+condition.getOperator().getOperator()+"`"+condition.getValue());
+						 if(expressionContext.getConstant() != null) {
+							 Element valueElement = doc.createElement(CONSTANT_STRING);
+							 valueElement.setTextContent(expressionContext.getConstant().toString());
+							 expressionElement.appendChild(valueElement);
+						 }
+						 else if(expressionContext.getDefaultFunctionContext() != null) {
+							 WorkflowFunctionContext function = expressionContext.getDefaultFunctionContext();
+							 Element valueElement = doc.createElement(FUNCTION_STRING);
+							 if(function.getParams() != null) {
+								 valueElement.setTextContent(function.getNameSpace()+"."+function.getFunctionName()+"("+function.getParams()+")");
+							 }
+							 else {
+								 valueElement.setTextContent(function.getNameSpace()+"."+function.getFunctionName()+"()");
+							 }
+							 expressionElement.appendChild(valueElement);
 						 }
 						 else {
-							 conditionElement.setTextContent(condition.getFieldName()+"`"+condition.getOperator().getOperator()+"`"+condition.getValue());
-						 }
-						 criteriaElement.appendChild(conditionElement);
-					 }
-					 expressionElement.appendChild(criteriaElement);
-					 
-					 if(expressionContext.getFieldName() != null) {
-						 Element fieldElement = doc.createElement(FIELD_STRING);
-						 fieldElement.setAttribute(NAME_STRING, expressionContext.getFieldName());
-						 if(expressionContext.getAggregateString() != null) {
-							 fieldElement.setAttribute(AGGREGATE_STRING, expressionContext.getAggregateString());
-						 }
-						 
-						 if(expressionContext.getAggregateCondition() != null) {
-							 for(Condition condition : expressionContext.getAggregateCondition()) {
+							 Element moduleElement = doc.createElement(MODULE_STRING);
+							 moduleElement.setAttribute(NAME_STRING, expressionContext.getModuleName());
+							 expressionElement.appendChild(moduleElement);
+							 
+							 
+							 Element criteriaElement = doc.createElement(CRITERIA_STRING);
+							 criteriaElement.setAttribute(PATTERN_STRING, expressionContext.getCriteria().getPattern());
+							 
+							 Map<Integer, Condition> conditionMap =  expressionContext.getCriteria().getConditions();
+							 for(Map.Entry<Integer, Condition> conditionEntry : conditionMap.entrySet()) {
 								 
+								 Condition condition = conditionEntry.getValue();
+								 Object key = conditionEntry.getKey();
 								 Element conditionElement = doc.createElement(CONDITION_STRING);
-								 conditionElement.setTextContent(condition.getFieldName()+"`"+condition.getOperator().getOperator()+"`"+condition.getValue());
-								 fieldElement.appendChild(conditionElement);
+								 conditionElement.setAttribute(SEQUENCE_STRING, key.toString());
+								 if (condition.getOperator() instanceof DateOperators && expressionContext.getConditionSeqVsBaselineId() != null &&  expressionContext.getConditionSeqVsBaselineId().containsKey(key)) {
+									 conditionElement.setTextContent(condition.getFieldName()+"`baseLine{" + expressionContext.getConditionSeqVsBaselineId().get(key) + "}"+condition.getOperator().getOperator()+"`"+condition.getValue());
+								 }
+								 else {
+									 conditionElement.setTextContent(condition.getFieldName()+"`"+condition.getOperator().getOperator()+"`"+condition.getValue());
+								 }
+								 criteriaElement.appendChild(conditionElement);
+							 }
+							 expressionElement.appendChild(criteriaElement);
+							 
+							 if(expressionContext.getFieldName() != null) {
+								 Element fieldElement = doc.createElement(FIELD_STRING);
+								 fieldElement.setAttribute(NAME_STRING, expressionContext.getFieldName());
+								 if(expressionContext.getAggregateString() != null) {
+									 fieldElement.setAttribute(AGGREGATE_STRING, expressionContext.getAggregateString());
+								 }
+								 
+								 if(expressionContext.getAggregateCondition() != null) {
+									 for(Condition condition : expressionContext.getAggregateCondition()) {
+										 
+										 Element conditionElement = doc.createElement(CONDITION_STRING);
+										 conditionElement.setTextContent(condition.getFieldName()+"`"+condition.getOperator().getOperator()+"`"+condition.getValue());
+										 fieldElement.appendChild(conditionElement);
+									 }
+								 }
+								 
+								 expressionElement.appendChild(fieldElement);
+							 }
+							 if(expressionContext.getOrderByFieldName() != null) {
+								 Element orderElement = doc.createElement(ORDER_BY_STRING);
+								 orderElement.setAttribute(NAME_STRING, expressionContext.getOrderByFieldName());
+								 if(expressionContext.getSortBy() != null) {
+									 orderElement.setAttribute(SORT_STRING, expressionContext.getSortBy());
+								 }
+								 expressionElement.appendChild(orderElement);
+							 }
+							 if(expressionContext.getLimit() != null) {
+								 Element limitElement = doc.createElement(LIMIT_STRING);
+								 limitElement.setTextContent(expressionContext.getLimit());
+								 expressionElement.appendChild(limitElement);
+							 }
+							 if(expressionContext.getGroupBy() != null) {
+								 Element groupByElement = doc.createElement(GROUP_BY_STRING);
+								 groupByElement.setTextContent(expressionContext.getGroupBy());
+								 expressionElement.appendChild(groupByElement);
 							 }
 						 }
-						 
-						 expressionElement.appendChild(fieldElement);
-					 }
-					 if(expressionContext.getOrderByFieldName() != null) {
-						 Element orderElement = doc.createElement(ORDER_BY_STRING);
-						 orderElement.setAttribute(NAME_STRING, expressionContext.getOrderByFieldName());
-						 if(expressionContext.getSortBy() != null) {
-							 orderElement.setAttribute(SORT_STRING, expressionContext.getSortBy());
-						 }
-						 expressionElement.appendChild(orderElement);
-					 }
-					 if(expressionContext.getLimit() != null) {
-						 Element limitElement = doc.createElement(LIMIT_STRING);
-						 limitElement.setTextContent(expressionContext.getLimit());
-						 expressionElement.appendChild(limitElement);
-					 }
-					 if(expressionContext.getGroupBy() != null) {
-						 Element groupByElement = doc.createElement(GROUP_BY_STRING);
-						 groupByElement.setTextContent(expressionContext.getGroupBy());
-						 expressionElement.appendChild(groupByElement);
-					 }
-				 }
-				 workflowElement.appendChild(expressionElement);
+						 workflowElement.appendChild(expressionElement);
+				 	}
 			 }
 			 
 			 if(workflowContext.getResultEvaluator() != null) {
@@ -1118,7 +1151,7 @@ public class WorkflowUtil {
 			
 			boolean isWithParamCondition = false;
 			String testString = conditionString+" test";
-			if(testString.split(WorkflowContext.VARIABLE_PLACE_HOLDER).length > 1) {
+			if(testString.split(VARIABLE_PLACE_HOLDER).length > 1) {
 				isWithParamCondition = true;
 			}
 			if (matcher.group(3) != null && !isWithParamCondition) {
@@ -1182,24 +1215,79 @@ public class WorkflowUtil {
         
         workflowContext.setParameters(getParameterListFromWorkflowString(workflow));
         
+        NodeList childNodes = doc.getDocumentElement().getChildNodes();
         
-        NodeList expressionNodes = doc.getElementsByTagName(EXPRESSION_STRING);
-        
-        for (int i = 0; i < expressionNodes.getLength(); i++) {
+        for (int i = 0; i < childNodes.getLength(); i++) {
         	
-        	ExpressionContext expressionContext = new ExpressionContext();
-        	
-        	Node expressionNode = expressionNodes.item(i);
+        	Node expressionNode = childNodes.item(i);
         	 
         	Document document = expressionNode.getOwnerDocument();
-        	DOMImplementationLS domImplLS = (DOMImplementationLS) document.getImplementation();
-        	LSSerializer serializer = domImplLS.createLSSerializer();
-        	String str = serializer.writeToString(expressionNode);
-        	expressionContext.setExpressionString(str);
-             
-            workflowContext.addExpression(expressionContext);
+        	
+        	if(expressionNode.getNodeName().equals(EXPRESSION_STRING)) {
+        		
+        		DOMImplementationLS domImplLS = (DOMImplementationLS) document.getImplementation();
+            	
+            	LSSerializer serializer = domImplLS.createLSSerializer();
+            	
+            	serializer.getDomConfig().setParameter("xml-declaration", Boolean.FALSE);
+            	
+            	String str = serializer.writeToString(expressionNode);
+        		
+        		ExpressionContext expressionContext = new ExpressionContext();
+            	expressionContext.setExpressionString(str);
+                 
+                workflowContext.addWorkflowExpression(expressionContext);
+        	}
+        	else if(expressionNode.getNodeName().equals(ITERATOR_STRING)) {
+        		
+        		IteratorContext iteratorContext = new IteratorContext();
+        		
+            	if(expressionNode.getNodeType() == Node.ELEMENT_NODE) {
+            		Element value = (Element) expressionNode;
+            		
+            		String valueString = value.getAttribute(VAR_STRING);
+            		Pattern condtionStringpattern = Pattern.compile(ITERATOR_VARIABLE);
+             		Matcher matcher = condtionStringpattern.matcher(valueString);
+             		while (matcher.find()) {
+             			if(matcher.group(1) != null) {
+             				iteratorContext.setLoopVariableIndexName(matcher.group(1));
+             			}
+             			if(matcher.group(3) != null) {
+             				iteratorContext.setLoopVariableValueName(matcher.group(3));
+             			}
+             			if(matcher.group(5) != null) {
+             				iteratorContext.setIteratableVariable(matcher.group(5));
+             			}
+             		}
+             		
+             		document.getDocumentElement().normalize();
+             		NodeList iteratorNodes = expressionNode.getChildNodes();
+             		
+             		for (int j = 0; j < iteratorNodes.getLength(); j++) {
+             			Node iteratorExpressionNode = iteratorNodes.item(j);
+                   	 
+                    	if(iteratorExpressionNode.getNodeName().equals(EXPRESSION_STRING)) {
+                    		
+                    		Document iteratorExpressionDoc = iteratorExpressionNode.getOwnerDocument();
+                    		
+                    		DOMImplementationLS domImplLS = (DOMImplementationLS) iteratorExpressionDoc.getImplementation();
+                        	
+                        	LSSerializer serializer = domImplLS.createLSSerializer();
+                        	
+                        	serializer.getDomConfig().setParameter("xml-declaration", Boolean.FALSE);
+                        	
+                        	String str = serializer.writeToString(iteratorExpressionNode);
+                    		
+                    		ExpressionContext expressionContext = new ExpressionContext();
+                        	expressionContext.setExpressionString(str);
+                             
+                        	iteratorContext.addWorkflowExpression(expressionContext);
+                    	}
+             		}
+            	}
+            	 workflowContext.addWorkflowExpression(iteratorContext);
+        	}
         }
-        
         NodeList resultNodes = doc.getElementsByTagName(RESULT_STRING);
         if(resultNodes.getLength() > 0) {
         	Node resultNode = resultNodes.item(0);
@@ -1329,6 +1417,10 @@ public class WorkflowUtil {
 		if(exp == null) {
 			return null;
 		}
+		exp = exp.trim();
+		if(exp.matches(ALPHA_NUMERIC_WITH_UNDERSCORE)) {
+			return variablesMap.get(exp);
+		}
 		Expression expression = new Expression(exp);
 		for(String key : variablesMap.keySet()) {
 			String value = "0";
@@ -1342,5 +1434,33 @@ public class WorkflowUtil {
 		}
 		BigDecimal result = expression.eval();
 		return result.doubleValue();
+	}
+	
+	public static ExpressionContext fillParamterAndParseExpressionContext(ExpressionContext expressionContext,Map<String,Object> variableResultMap) throws Exception {
+		
+		String expressionString = expressionContext.getExpressionString();
+		LOGGER.fine("BEFORE STRING --- "+expressionString);
+		
+		if(expressionContext.getExpressionString().split(VARIABLE_PLACE_HOLDER).length > 1) {
+			for(String key : variableResultMap.keySet()) {
+				String val = null;
+				if (variableResultMap.get(key) != null) {
+					val = variableResultMap.get(key).toString();
+				}
+				else {
+					val = "";
+				}
+				
+				String var = "${"+key+"}";
+				String varRegex = "\\$\\{"+key+"\\}";
+				if(expressionString.contains(var)) {
+					expressionString = expressionString.replaceAll(varRegex, StringEscapeUtils.escapeXml10(val));
+				}
+			}
+		}
+		LOGGER.fine("AFTER STRING --- "+expressionString);
+		expressionContext = WorkflowUtil.getExpressionContextFromExpressionString(expressionString);
+		
+		return expressionContext;
 	}
 }

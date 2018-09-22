@@ -25,6 +25,13 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 	private String headerText;
 	private String headerSubText;
 	private boolean headerIsExport;
+	private String metaJSON;
+	public String getMetaJSON() {
+		return metaJSON;
+	}
+	public void setMetaJSON(String metaJSON) {
+		this.metaJSON = metaJSON;
+	}
 	private List<WidgetVsWorkflowContext> widgetVsWorkflowContexts;
 	
 	public List<WidgetVsWorkflowContext> getWidgetVsWorkflowContexts() {

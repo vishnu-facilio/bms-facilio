@@ -957,8 +957,9 @@ public class DashboardAction extends ActionSupport {
 				if(readingruleContext.getWorkflowId() > 0) {
 					WorkflowContext workflow = WorkflowUtil.getWorkflowContext(readingruleContext.getWorkflowId(), true);
 					
-					for(ExpressionContext exp:workflow.getExpressions()) {
+					for(WorkflowExpression workflowExp:workflow.getWorkflowExpressions()) {
 						
+						ExpressionContext exp = (ExpressionContext) workflowExp;
 						if(exp.getModuleName() != null) {
 							
 							JSONObject dataPoint = new JSONObject();

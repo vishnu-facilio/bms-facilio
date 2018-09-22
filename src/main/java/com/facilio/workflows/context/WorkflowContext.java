@@ -18,8 +18,6 @@ public class WorkflowContext implements Serializable {
 	
 	private static final Logger LOGGER = Logger.getLogger(WorkflowContext.class.getName());
 	
-	public static String VARIABLE_PLACE_HOLDER = "\\$\\{.+\\}";
-
 	private Map<String,List<Map<String,Object>>> cachedData = null;
 
 	private Map<String,ReadingDataMeta> cachedRDM = null;
@@ -48,7 +46,8 @@ public class WorkflowContext implements Serializable {
 	Long orgId;
 	String workflowString;
 	List<ParameterContext> parameters;
-	List<ExpressionContext> expressions;
+	List<WorkflowExpression> workflowExpressions;
+	
 	Map<String,Object> variableResultMap;
 	String resultEvaluator;
 	
@@ -155,19 +154,16 @@ public class WorkflowContext implements Serializable {
 		this.parameters.add(parameter);
 	}
 
-	public List<ExpressionContext> getExpressions() {
-		return expressions;
+	
+	public List<WorkflowExpression> getWorkflowExpressions() {
+		return workflowExpressions;
 	}
-
-	public void setExpressions(List<ExpressionContext> expressions) {
-		this.expressions = expressions;
+	public void setWorkflowExpressions(List<WorkflowExpression> workflowExpressions) {
+		this.workflowExpressions = workflowExpressions;
 	}
-	public void addExpression(ExpressionContext expression) {
-		if(expressions == null) {
-			expressions = new ArrayList<>();
-		}
-//		expression.setWorkflowContext(this);
-		expressions.add(expression);
+	public void addWorkflowExpression(WorkflowExpression expression) {
+		workflowExpressions = workflowExpressions == null ? new ArrayList<>() : workflowExpressions;
+		workflowExpressions.add(expression);
 	}
 
 	public String getResultEvaluator() {
@@ -203,27 +199,13 @@ public class WorkflowContext implements Serializable {
 		for(ParameterContext parameter:parameters) {
 			variableResultMap.put(parameter.getName(), parameter.getValue());
 		}
-		if (expressions != null) {
-			for(int i=0; i<expressions.size(); i++) {
-				
-				
-				ExpressionContext expressionContext = expressions.get(i);
-				
-				expressionContext = fillParamterAndParseExpressionContext(expressionContext);
-				expressionContext.setVariableToExpresionMap(variableResultMap);
-				expressionContext.setWorkflowContext(this);
-				
-				Object res = expressionContext.executeExpression();
-				variableResultMap.put(expressionContext.getName(), res);
-				
-				ParameterContext parameterContext = new ParameterContext();
-				parameterContext.setName(expressionContext.getName());
-				parameterContext.setValue(variableResultMap.get(expressionContext.getName()));
-				this.addParamater(parameterContext);
-				
-				if(i ==0 && getResultEvaluator() == null && isSingleExpression()) {
-					return res;
-				}
+		if (workflowExpressions != null) {
+			
+			executeExpression(workflowExpressions,this);
+			
+			if(getResultEvaluator() == null && isSingleExpression()) {
+				ExpressionContext exp = (ExpressionContext) workflowExpressions.get(0);
+				return variableResultMap.get(exp.getName());
 			}
 		}
 		if(isTerminateExecution()) {
@@ -242,51 +224,56 @@ public class WorkflowContext implements Serializable {
 		return result;
 	}
 	
-	private ExpressionContext fillParamterAndParseExpressionContext(ExpressionContext expressionContext) throws Exception {
+	public static void executeExpression(List<WorkflowExpression> expressions,WorkflowContext workflowContext) throws Exception {
 		
-		String expressionString = expressionContext.getExpressionString();
-		LOGGER.fine("BEFORE STRING --- "+expressionString);
-		
-		if(expressionContext.getExpressionString().split(VARIABLE_PLACE_HOLDER).length > 1) {
-			for(ParameterContext parameter :parameters) {
-				String val = null;
-				if (parameter.getValue() != null) {
-					val = parameter.getValue().toString();
-				}
-				else {
-					val = "";
-				}
+		Map<String, Object> variableResultMap1 = workflowContext.getVariableResultMap();
+		for(int i=0; i<expressions.size(); i++) {
+			
+			WorkflowExpression wokflowExpresion = expressions.get(i);
+			
+			if(wokflowExpresion instanceof ExpressionContext) {
 				
-				String var = "${"+parameter.getName()+"}";
-				String varRegex = "\\$\\{"+parameter.getName()+"\\}";
-				if(expressionString.contains(var)) {
-					expressionString = expressionString.replaceAll(varRegex, StringEscapeUtils.escapeXml10(val));
-				}
+				ExpressionContext expressionContext = (ExpressionContext) wokflowExpresion;
+				expressionContext = WorkflowUtil.fillParamterAndParseExpressionContext(expressionContext,variableResultMap1);
+				expressionContext.setVariableToExpresionMap(variableResultMap1);
+				expressionContext.setWorkflowContext(workflowContext);
+				
+				Object res = expressionContext.execute();
+				variableResultMap1.put(expressionContext.getName(), res);
+			}
+			else if(wokflowExpresion instanceof IteratorContext) {
+		
+				IteratorContext iteratorContext = (IteratorContext) wokflowExpresion;
+				iteratorContext.setVariableToExpresionMap(variableResultMap1);
+				iteratorContext.setWorkflowContext(workflowContext);
+				iteratorContext.execute();
 			}
 		}
-		LOGGER.fine("AFTER STRING --- "+expressionString);
-		expressionContext = WorkflowUtil.getExpressionContextFromExpressionString(expressionString);
-		
-		return expressionContext;
 	}
 	
 	public boolean isSingleExpression() {
-		if(expressions != null && expressions.size() == 1) {
+		if(workflowExpressions != null && workflowExpressions.size() == 1) {
 			return true;
 		}
 		return false;
 	}
 	
 	public boolean isMapReturnWorkflow() {
-		if(expressions != null && expressions.size() == 1 && expressions.get(0).getFieldName() == null && expressions.get(0).getCriteria() != null && expressions.get(0).getModuleName() != null) {
-			return true;
+		if(workflowExpressions != null) {
+			ExpressionContext exp = (ExpressionContext) workflowExpressions.get(0);
+			if(workflowExpressions.size() == 1 && exp != null && exp.getFieldName() == null && exp.getCriteria() != null && exp.getModuleName() != null) {
+				return true;
+			}
 		}
 		return false;
 	}
 	
 	public boolean isListReturnWorkflow() {
-		if(expressions != null && expressions.size() == 1 && expressions.get(0).getFieldName() != null && expressions.get(0).getCriteria() != null && expressions.get(0).getModuleName() != null && expressions.get(0).getAggregateString() == null) {
-			return true;
+		if(workflowExpressions != null) {
+			ExpressionContext exp = (ExpressionContext) workflowExpressions.get(0);
+			if(workflowExpressions.size() == 1 && exp != null && exp.getFieldName() != null && exp.getCriteria() != null && exp.getModuleName() != null && exp.getAggregateString() == null) {
+				return true;
+			}
 		}
 		return false;
 	}
@@ -310,8 +297,11 @@ public class WorkflowContext implements Serializable {
 			return true;
 		}
 		else {
-			if(expressions != null && expressions.size() == 1 && expressions.get(0).getFieldName() != null && expressions.get(0).getCriteria() != null && expressions.get(0).getModuleName() != null && expressions.get(0).getAggregateString() != null) {
-				return true;
+			if(workflowExpressions != null) {
+				ExpressionContext exp = (ExpressionContext) workflowExpressions.get(0);
+				if(workflowExpressions.size() == 1 && exp.getFieldName() != null && exp.getCriteria() != null && exp.getModuleName() != null && exp.getAggregateString() != null) {
+					return true;
+				}
 			}
 		}
 		return false;
