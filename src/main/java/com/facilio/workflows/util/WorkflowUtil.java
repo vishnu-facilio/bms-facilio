@@ -638,7 +638,7 @@ public class WorkflowUtil {
 				
 				if(workflowExpression instanceof ExpressionContext) {
 					ExpressionContext expressionContext = (ExpressionContext)  workflowExpression;
-					expressionContext = getExpressionContextFromExpressionString(expressionContext.getExpressionString());
+					expressionContext = getExpressionContextFromExpressionString(expressionContext.getExpressionString(),expressionContext);
 					temp.add(expressionContext);
 				}
 				
@@ -875,7 +875,7 @@ public class WorkflowUtil {
         return paramterContexts;
 	}
 	
-	public static ExpressionContext getExpressionContextFromExpressionString(String expressionString) throws Exception {
+	public static ExpressionContext getExpressionContextFromExpressionString(String expressionString,ExpressionContext expressionContext) throws Exception {
 		
 		InputStream stream = new ByteArrayInputStream(expressionString.getBytes("UTF-16"));
 		
@@ -889,7 +889,7 @@ public class WorkflowUtil {
 		
 		if (expressionNode.getNodeType() == Node.ELEMENT_NODE) {
 			
-			ExpressionContext expressionContext = new ExpressionContext();
+			expressionContext = expressionContext == null ? new ExpressionContext() : expressionContext;
 			expressionContext.setExpressionString(expressionString);
        	 
             Element expression = (Element) expressionNode;
@@ -1459,7 +1459,7 @@ public class WorkflowUtil {
 			}
 		}
 		LOGGER.fine("AFTER STRING --- "+expressionString);
-		expressionContext = WorkflowUtil.getExpressionContextFromExpressionString(expressionString);
+		expressionContext = WorkflowUtil.getExpressionContextFromExpressionString(expressionString,expressionContext);
 		
 		return expressionContext;
 	}
