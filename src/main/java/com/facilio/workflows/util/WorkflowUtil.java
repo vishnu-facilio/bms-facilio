@@ -141,7 +141,7 @@ public class WorkflowUtil {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		Multimap<String, FacilioField> resultMap = ArrayListMultimap.create();
 		
-		for(WorkflowExpression workflowExpression : workflowContext.getWorkflowExpressions()) {
+		for(WorkflowExpression workflowExpression : workflowContext.getExpressions()) {
 			
 			if(workflowExpression instanceof ExpressionContext) {
 				
@@ -331,7 +331,7 @@ public class WorkflowUtil {
 		for(ParameterContext parameter :workflow.getParameters()) {
 			params.add(parameter.getName());
 		}
-		for(WorkflowExpression workflowExpression : workflow.getWorkflowExpressions()) {
+		for(WorkflowExpression workflowExpression : workflow.getExpressions()) {
 			
 			if(workflowExpression instanceof ExpressionContext) {
 				ExpressionContext expressionContext = (ExpressionContext)  workflowExpression;
@@ -423,7 +423,7 @@ public class WorkflowUtil {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		List<WorkflowFieldContext> workflowFieldContexts = null;
-		for(WorkflowExpression workflowExpression :workflowContext.getWorkflowExpressions()) {
+		for(WorkflowExpression workflowExpression :workflowContext.getExpressions()) {
 			
 			if(workflowExpression instanceof ExpressionContext) {
 				ExpressionContext expression = (ExpressionContext)  workflowExpression;
@@ -479,7 +479,7 @@ public class WorkflowUtil {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		List<WorkflowFieldContext> workflowFieldList = null;
-		for(WorkflowExpression workflowExpression :workflowContext.getWorkflowExpressions()) {
+		for(WorkflowExpression workflowExpression :workflowContext.getExpressions()) {
 			
 			if(workflowExpression instanceof ExpressionContext) {
 				ExpressionContext expression = (ExpressionContext)  workflowExpression;
@@ -633,8 +633,8 @@ public class WorkflowUtil {
 	
 	public static void parseExpression(WorkflowContext workflowContext) throws Exception {
 		List<WorkflowExpression> temp= new ArrayList<>();
-		if(workflowContext != null && workflowContext.getWorkflowExpressions() != null) {
-			for(WorkflowExpression workflowExpression : workflowContext.getWorkflowExpressions()) {
+		if(workflowContext != null && workflowContext.getExpressions() != null) {
+			for(WorkflowExpression workflowExpression : workflowContext.getExpressions()) {
 				
 				if(workflowExpression instanceof ExpressionContext) {
 					ExpressionContext expressionContext = (ExpressionContext)  workflowExpression;
@@ -643,7 +643,7 @@ public class WorkflowUtil {
 				}
 				
 			}
-			workflowContext.setWorkflowExpressions(temp);
+			workflowContext.setExpressions(temp);
 		}
 	}
 	
@@ -737,9 +737,9 @@ public class WorkflowUtil {
 			 }
 		 }
 
-		 if(workflowContext.getWorkflowExpressions() != null) {
+		 if(workflowContext.getExpressions() != null) {
 			 
-			 for(WorkflowExpression workflowExpression :workflowContext.getWorkflowExpressions()) {
+			 for(WorkflowExpression workflowExpression :workflowContext.getExpressions()) {
 				 
 				 if(workflowExpression instanceof ExpressionContext) {
 						ExpressionContext expressionContext = (ExpressionContext)  workflowExpression;

@@ -1003,7 +1003,7 @@ public class TemplateAPI {
 				expressions.add(expression);
 			}
 			WorkflowContext workflow = new WorkflowContext();
-			workflow.setWorkflowExpressions(expressions);
+			workflow.setExpressions(expressions);
 			workflow.setParameters(params);
 			return workflow;
 		}

@@ -387,7 +387,7 @@ public class AlarmAPI {
 				}
 				else {
 					WorkflowContext workflow = rule.getWorkflow();
-					ExpressionContext expression = (ExpressionContext) workflow.getWorkflowExpressions().get(0);
+					ExpressionContext expression = (ExpressionContext) workflow.getExpressions().get(0);
 					if (expression.getLimit() != null) {
 						range = new DateRange();
 						range.setStartTime(reading.getTtime());
@@ -472,7 +472,7 @@ public class AlarmAPI {
 	private static void appendOccurences (StringBuilder msgBuilder, ReadingRuleContext rule) {
 		WorkflowContext workflow = rule.getWorkflow();
 		if (workflow != null) {
-			ExpressionContext expression = (ExpressionContext) workflow.getWorkflowExpressions().get(0);
+			ExpressionContext expression = (ExpressionContext) workflow.getExpressions().get(0);
 			if (expression.getAggregateCondition() != null && !expression.getAggregateCondition().isEmpty()) {
 				msgBuilder.append(" ")
 							.append(getInWords(Integer.parseInt(rule.getPercentage())));
@@ -504,7 +504,7 @@ public class AlarmAPI {
 		String value = null;
 		if (rule.getWorkflow() != null) {
 			
-			ExpressionContext expr = (ExpressionContext) rule.getWorkflow().getWorkflowExpressions().get(0);
+			ExpressionContext expr = (ExpressionContext) rule.getWorkflow().getExpressions().get(0);
 
 			if (expr.getAggregateCondition() != null && !expr.getAggregateCondition().isEmpty()) {
 				Condition aggrCondition = expr.getAggregateCondition().get(0);
@@ -608,7 +608,7 @@ public class AlarmAPI {
 		
 		String functionName = null;
 		if (rule.getWorkflow() != null) {
-			ExpressionContext expr = (ExpressionContext) rule.getWorkflow().getWorkflowExpressions().get(1);
+			ExpressionContext expr = (ExpressionContext) rule.getWorkflow().getExpressions().get(1);
 			functionName = expr.getDefaultFunctionContext().getFunctionName();
 		}
 		

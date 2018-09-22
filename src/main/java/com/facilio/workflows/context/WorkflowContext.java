@@ -155,10 +155,10 @@ public class WorkflowContext implements Serializable {
 	}
 
 	
-	public List<WorkflowExpression> getWorkflowExpressions() {
+	public List<WorkflowExpression> getExpressions() {
 		return expressions;
 	}
-	public void setWorkflowExpressions(List<WorkflowExpression> workflowExpressions) {
+	public void setExpressions(List<WorkflowExpression> workflowExpressions) {
 		this.expressions = workflowExpressions;
 	}
 	public void addWorkflowExpression(WorkflowExpression expression) {

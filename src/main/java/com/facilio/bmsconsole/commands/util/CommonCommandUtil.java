@@ -575,7 +575,7 @@ public class CommonCommandUtil {
         		if (r.getWorkflow().getResultEvaluator().equals("(b!=-1&&a<b)||(c!=-1&&a>c)")) {
         			
         			List <ExpressionContext> expresions = new ArrayList<>();
-        			for(WorkflowExpression worklfowExp : r.getWorkflow().getWorkflowExpressions()) {
+        			for(WorkflowExpression worklfowExp : r.getWorkflow().getExpressions()) {
         				
         				if(worklfowExp instanceof ExpressionContext) {
         					expresions.add((ExpressionContext) worklfowExp);
