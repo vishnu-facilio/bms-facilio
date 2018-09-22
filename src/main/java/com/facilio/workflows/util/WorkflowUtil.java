@@ -632,7 +632,7 @@ public class WorkflowUtil {
 	}
 	
 	public static void parseExpression(WorkflowContext workflowContext) throws Exception {
-		List<WorkflowExpression> temp= new ArrayList<>();
+		List<ExpressionContext> temp= new ArrayList<>();
 		if(workflowContext != null && workflowContext.getExpressions() != null) {
 			for(WorkflowExpression workflowExpression : workflowContext.getExpressions()) {
 				

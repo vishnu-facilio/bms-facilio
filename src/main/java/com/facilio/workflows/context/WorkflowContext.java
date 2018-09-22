@@ -158,8 +158,12 @@ public class WorkflowContext implements Serializable {
 	public List<WorkflowExpression> getExpressions() {
 		return expressions;
 	}
-	public void setExpressions(List<WorkflowExpression> workflowExpressions) {
-		this.expressions = workflowExpressions;
+	public void setExpressions(List<ExpressionContext> workflowExpressions) {
+		if(workflowExpressions != null) {
+			for(ExpressionContext workflowExpression :workflowExpressions) {
+				addWorkflowExpression((WorkflowExpression) workflowExpression);
+			}
+		}
 	}
 	public void addWorkflowExpression(WorkflowExpression expression) {
 		expressions = expressions == null ? new ArrayList<>() : expressions;

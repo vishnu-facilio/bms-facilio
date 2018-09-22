@@ -989,7 +989,7 @@ public class TemplateAPI {
 		JSONArray placeHolders = getPlaceholders(template);
 		if (placeHolders != null && !placeHolders.isEmpty()) {
 			List<ParameterContext> params = new ArrayList<>();
-			List<WorkflowExpression> expressions = new ArrayList<>();
+			List<ExpressionContext> expressions = new ArrayList<>();
 			for (int i = 0; i < placeHolders.size(); i++) {
 				String placeHolder = (String) placeHolders.get(i);
 				ParameterContext param = new ParameterContext();
