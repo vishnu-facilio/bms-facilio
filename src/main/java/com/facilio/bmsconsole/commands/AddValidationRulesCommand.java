@@ -27,7 +27,7 @@ public class AddValidationRulesCommand implements Command {
 			return false; 
 		}
 		
-		Chain addChain = FacilioChainFactory.getAddWorkflowRuleChain();
+		Chain addChain = TransactionChainFactory.getAddWorkflowRuleChain();
 		Chain updateChain = FacilioChainFactory.updateWorkflowRuleChain();
 		
 		for (int i = 0; i < readingRules.size(); ++i) {

@@ -23,6 +23,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
+import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
@@ -131,7 +132,7 @@ public class ResetTriggersCommand implements Command {
 						if(trigger.getId() != currentTrigger.getId()) { //Resetting latest value of other metered triggers
 							long latestValue = getLatestReading(trigger.getReadingRuleId());
 							if(latestValue != -1) {
-								WorkflowRuleAPI.updateLastValueInReadingRule(trigger.getReadingRuleId(), latestValue);
+								ReadingRuleAPI.updateLastValueInReadingRule(trigger.getReadingRuleId(), latestValue);
 							}
 						}
 						break;

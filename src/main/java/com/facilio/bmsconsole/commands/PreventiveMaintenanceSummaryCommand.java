@@ -30,6 +30,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
+import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
@@ -117,7 +118,7 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 			Criteria criteria = new Criteria();
 	        criteria.addAndCondition(CriteriaAPI.getCondition("READING_FIELD_ID", "readingFieldId", j.toString(), NumberOperators.EQUALS));
 	        criteria.addAndCondition(CriteriaAPI.getCondition("RULE_TYPE", "ruleType", String.valueOf(RuleType.VALIDATION_RULE.getIntVal()), NumberOperators.EQUALS));
-	        List<ReadingRuleContext> readingRules = WorkflowRuleAPI.getReadingRules(criteria);
+	        List<ReadingRuleContext> readingRules = ReadingRuleAPI.getReadingRules(criteria);
 	        
 	        if (readingRules != null && !readingRules.isEmpty()) {
 	        	List<Long> workFlowIds = readingRules.stream().map(ReadingRuleContext::getWorkflowId).collect(Collectors.toList());
@@ -168,7 +169,7 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 			Criteria criteria = new Criteria();
 		    criteria.addAndCondition(CriteriaAPI.getCondition("READING_FIELD_ID", "readingFieldId", j.toString(), NumberOperators.EQUALS));
 		    criteria.addAndCondition(CriteriaAPI.getCondition("RULE_TYPE", "ruleType", String.valueOf(RuleType.VALIDATION_RULE.getIntVal()), NumberOperators.EQUALS));
-		    List<ReadingRuleContext> readingRules = WorkflowRuleAPI.getReadingRules(criteria);
+		    List<ReadingRuleContext> readingRules = ReadingRuleAPI.getReadingRules(criteria);
 		    
 		    if (readingRules != null && !readingRules.isEmpty()) {
 		    	List<Long> workFlowIds = readingRules.stream().map(ReadingRuleContext::getWorkflowId).collect(Collectors.toList());

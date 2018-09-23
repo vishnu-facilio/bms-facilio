@@ -24,8 +24,8 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericDeleteRecordBuilder;
@@ -406,7 +406,7 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		if (criteria != null) {
 			Condition condition = criteria.getConditions().get(1);
 			long lastValue = new Double(record.getReading(condition.getFieldName()).toString()).longValue();
-			WorkflowRuleAPI.updateLastValueInReadingRule(getId(), lastValue);
+			ReadingRuleAPI.updateLastValueInReadingRule(getId(), lastValue);
 		}
 	}
 	

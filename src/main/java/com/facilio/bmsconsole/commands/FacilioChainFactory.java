@@ -1632,14 +1632,6 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getAddWorkflowRuleChain() {
-		Chain c = new ChainBase();
-		c.addCommand(new AddWorkflowRuleCommand());
-		c.addCommand(new AddActionsForWorkflowRule());
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
 	public static Chain updateWorkflowRuleChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new UpdateWorkflowRuleCommand());

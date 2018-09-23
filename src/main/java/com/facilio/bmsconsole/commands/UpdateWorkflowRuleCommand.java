@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
 import com.facilio.bmsconsole.view.SLARuleContext;
@@ -17,7 +18,7 @@ public class UpdateWorkflowRuleCommand implements Command {
 		WorkflowRuleContext rule = (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
 		rule.setRuleType(null); //Type is not allowed to be changed
 		if (rule instanceof ReadingRuleContext) {
-			rule = WorkflowRuleAPI.updateReadingRuleWithChildren((ReadingRuleContext) rule);
+			rule = ReadingRuleAPI.updateReadingRuleWithChildren((ReadingRuleContext) rule);
 		}
 		if (rule instanceof SLARuleContext) {
 			rule = WorkflowRuleAPI.updateSLARuleWithChildren((SLARuleContext) rule);

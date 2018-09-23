@@ -134,8 +134,15 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
-	    protected static Chain getDefaultChain()
-	    {
+		public static Chain getAddWorkflowRuleChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddWorkflowRuleCommand());
+			c.addCommand(new AddActionsForWorkflowRule());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
+	    private static Chain getDefaultChain() {
 	    	    return new FacilioChain(true);
 	    }
 }

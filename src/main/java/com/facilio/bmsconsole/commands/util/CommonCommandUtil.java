@@ -51,7 +51,7 @@ import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.FacilioTablePrinter;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
@@ -559,7 +559,7 @@ public class CommonCommandUtil {
     	Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getCondition("READING_FIELD_ID", "readingFieldId", String.valueOf(fieldId), NumberOperators.EQUALS));
         criteria.addAndCondition(CriteriaAPI.getCondition("RULE_TYPE", "ruleType", String.valueOf(RuleType.VALIDATION_RULE.getIntVal()), NumberOperators.EQUALS));
-        List<ReadingRuleContext> readingRules = WorkflowRuleAPI.getReadingRules(criteria);
+        List<ReadingRuleContext> readingRules = ReadingRuleAPI.getReadingRules(criteria);
         Double min = null;
         Double max = null;
         if (readingRules != null && !readingRules.isEmpty()) {

@@ -929,7 +929,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 				Criteria criteria = new Criteria();
 				criteria.addAndCondition(CriteriaAPI.getCondition("READING_FIELD_ID", "readingFieldId", Long.toString(task.getReadingFieldId()), NumberOperators.EQUALS));
 				criteria.addAndCondition(CriteriaAPI.getCondition("RULE_TYPE", "ruleType", String.valueOf(RuleType.VALIDATION_RULE.getIntVal()), NumberOperators.EQUALS));
-				List<ReadingRuleContext> readingRules = WorkflowRuleAPI.getReadingRules(criteria);
+				List<ReadingRuleContext> readingRules = ReadingRuleAPI.getReadingRules(criteria);
 				if (readingRules != null && !readingRules.isEmpty()) {
 					for (ReadingRuleContext r:  readingRules) {
 						long workflowId = r.getWorkflowId();

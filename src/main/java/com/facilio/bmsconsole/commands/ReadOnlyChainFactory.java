@@ -4,15 +4,11 @@ import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.bmsconsole.commands.FacilioChainFactory.FacilioChain;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 
-public class ReadOnlyChainFactory extends FacilioChainFactory {
+public class ReadOnlyChainFactory {
 	private static Logger LOGGER = LogManager.getLogger(ReadOnlyChainFactory.class.getName());
-	   protected static Chain getDefaultChain()
-	    {
-	    	    return new FacilioChain(false);
-	    }
-	
 	public static Chain fetchReportDataChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new FilterXFieldCommand());
@@ -68,4 +64,8 @@ public class ReadOnlyChainFactory extends FacilioChainFactory {
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
+	
+	private static Chain getDefaultChain() {
+		return new FacilioChain(false);
+    }
 }
