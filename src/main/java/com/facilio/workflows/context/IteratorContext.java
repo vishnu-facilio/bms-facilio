@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.workflows.util.WorkflowUtil;
-
 public class IteratorContext implements Serializable,WorkflowExpression {
 
 	String loopVariableIndexName;

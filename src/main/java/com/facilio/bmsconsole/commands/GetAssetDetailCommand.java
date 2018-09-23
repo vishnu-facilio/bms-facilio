@@ -1,17 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.AssetTypeContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 

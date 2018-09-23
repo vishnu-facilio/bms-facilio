@@ -64,7 +64,6 @@ import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
-import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class TemplateAPI {

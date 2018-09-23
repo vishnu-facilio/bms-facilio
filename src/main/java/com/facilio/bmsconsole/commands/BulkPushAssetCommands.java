@@ -5,11 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-import org.apache.log4j.LogManager;
-import org.json.simple.JSONObject;
-import org.apache.commons.chain.Chain;
+
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
@@ -19,7 +18,6 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
-import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsole.util.ModuleLocalIdUtil;
