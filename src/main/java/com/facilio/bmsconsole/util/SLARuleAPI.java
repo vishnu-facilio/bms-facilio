@@ -12,7 +12,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.view.SLARuleContext;
+import com.facilio.bmsconsole.workflow.rule.SLARuleContext;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class SLARuleAPI extends WorkflowRuleAPI {

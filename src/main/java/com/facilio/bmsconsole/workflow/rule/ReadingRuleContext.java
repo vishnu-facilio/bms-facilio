@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.view;
+package com.facilio.bmsconsole.workflow.rule;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
@@ -26,7 +26,6 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
