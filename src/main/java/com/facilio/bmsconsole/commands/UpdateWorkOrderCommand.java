@@ -17,7 +17,6 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -47,17 +46,14 @@ public class UpdateWorkOrderCommand implements Command {
 		WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		List<ReadingContext> readings = new ArrayList<>();
-		if(workOrder != null && recordIds != null && !recordIds.isEmpty()) {
+		List<WorkOrderContext> oldWos = (List<WorkOrderContext>) context.get(FacilioConstants.TicketActivity.OLD_TICKETS);
+		if(workOrder != null && recordIds != null && !recordIds.isEmpty() && oldWos != null && !oldWos.isEmpty()) {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
 			
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-			
-			Condition idCondition = CriteriaAPI.getIdCondition(recordIds, module);
-			List<WorkOrderContext> oldWos = getOldWOs(idCondition, fields);
-			
 			Long lastSyncTime = (Long) context.get(FacilioConstants.ContextNames.LAST_SYNC_TIME);
 			if (lastSyncTime != null && oldWos.get(0).getModifiedTime() > lastSyncTime ) {
 				throw new RuntimeException("The workorder was modified after the last sync");
@@ -136,9 +132,6 @@ public class UpdateWorkOrderCommand implements Command {
 			if (newWos.isEmpty()) {
 				newWos.add(workOrder);
 			}
-			
-			context.put(FacilioConstants.TicketActivity.OLD_TICKETS, oldWos);
-			
 			int rowsUpdated = 0;
 			int woCount = newWos.size();
 			Map<Long, List<UpdateChangeSet>> changeSets = new HashMap<>();
@@ -153,7 +146,7 @@ public class UpdateWorkOrderCommand implements Command {
 					updateBuilder.andCondition(CriteriaAPI.getIdCondition(wo.getId(), module));
 				}
 				else {
-					updateBuilder.andCondition(idCondition);
+					updateBuilder.andCondition(CriteriaAPI.getIdCondition(recordIds, module));
 				}
 				rowsUpdated += updateBuilder.update(wo);
 				
@@ -183,17 +176,6 @@ public class UpdateWorkOrderCommand implements Command {
 			context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
 		}
 		return false;
-	}
-	
-	private List<WorkOrderContext> getOldWOs(Condition ids, List<FacilioField> fields) throws Exception {
-		SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
-															.moduleName(FacilioConstants.ContextNames.WORK_ORDER)
-															.beanClass(WorkOrderContext.class)
-															.select(fields)
-															.andCondition(ids)
-															.orderBy("ID");
-
-		return builder.get();
 	}
 	
 	private boolean validateWorkorderStatus(TicketStatusContext statusObj , WorkOrderContext oldWo) throws Exception {
