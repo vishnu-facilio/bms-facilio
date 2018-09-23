@@ -5,7 +5,6 @@ import java.util.List;
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.FacilioFrequency;
-import com.facilio.leed.context.PMTriggerContext;
 
 public class PreventiveMaintenance extends ResourceContext {
 	
