@@ -183,8 +183,14 @@ public class WorkflowRuleContext {
 		try {
 			boolean workflowFlag = true;
 			if (workflow != null) {
-				double result = (double) WorkflowUtil.getWorkflowExpressionResult(workflow.getWorkflowString(), placeHolders);
-				workflowFlag = result == 1;
+				 Object result = WorkflowUtil.getWorkflowExpressionResult(workflow.getWorkflowString(), placeHolders);
+				 if(result instanceof Boolean) {
+					 workflowFlag = (Boolean) result;
+				 }
+				 else {
+					 double resultDouble = (double) result;
+					 workflowFlag = resultDouble == 1;
+				 }
 			}
 			return workflowFlag;
 		}
