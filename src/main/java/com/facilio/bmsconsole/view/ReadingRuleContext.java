@@ -307,8 +307,14 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		try {
 			boolean workflowFlag = true;
 			if (getWorkflow() != null) {
-				double result = (double) WorkflowUtil.getWorkflowExpressionResult(getWorkflow().getWorkflowString(), placeHolders, currentRDM, true, true);
-				workflowFlag = result == 1;
+				Object result = WorkflowUtil.getWorkflowExpressionResult(getWorkflow().getWorkflowString(), placeHolders, currentRDM, true, true);
+				 if(result instanceof Boolean) {
+					 workflowFlag = (Boolean) result;
+				 }
+				 else {
+					 double resultDouble = (double) result;
+					 workflowFlag = resultDouble == 1;
+				 }
 			}
 			return workflowFlag;
 		}

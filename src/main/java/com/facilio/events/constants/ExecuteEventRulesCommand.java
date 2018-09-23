@@ -63,8 +63,14 @@ public class ExecuteEventRulesCommand implements Command {
 		}
 		boolean workflowFlag = true;
 		if (rule.getWorkflow() != null) {
-			double result = (double) WorkflowUtil.getWorkflowExpressionResult(rule.getWorkflow().getWorkflowString(), rulePlaceHolders);
-			workflowFlag = result == 1;
+			Object result = WorkflowUtil.getWorkflowExpressionResult(rule.getWorkflow().getWorkflowString(), rulePlaceHolders);
+			 if(result instanceof Boolean) {
+				 workflowFlag = (Boolean) result;
+			 }
+			 else {
+				 double resultDouble = (double) result;
+				 workflowFlag = resultDouble == 1;
+			 }
 		}
 		return criteriaFlag && workflowFlag;
 	}
