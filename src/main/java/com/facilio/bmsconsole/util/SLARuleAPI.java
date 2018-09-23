@@ -3,7 +3,9 @@ package com.facilio.bmsconsole.util;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -42,5 +44,11 @@ public class SLARuleAPI extends WorkflowRuleAPI {
 														.andCondition(CriteriaAPI.getIdCondition(ruleId, slaRuleModule));
 		
 		return updateBuilder.update(FieldUtil.getAsProperties(slaRule));
+	}
+	
+	protected static SLARuleContext constructSLARuleFromProps(Map<String, Object> prop, ModuleBean modBean) throws Exception {
+		SLARuleContext slaRule = FieldUtil.getAsBeanFromMap(prop, SLARuleContext.class);
+		slaRule.setResource(ResourceAPI.getResource(slaRule.getResourceId()));
+		return slaRule;
 	}
 }

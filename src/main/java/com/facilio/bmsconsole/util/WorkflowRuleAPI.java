@@ -24,7 +24,6 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.UpdateChangeSet;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
-import com.facilio.bmsconsole.view.SLARuleContext;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
 import com.facilio.bmsconsole.workflow.rule.FieldChangeFieldContext;
@@ -66,7 +65,7 @@ public class WorkflowRuleAPI {
 				addExtendedProps(ModuleFactory.getSLARuleModule(), FieldFactory.getSLARuleFields(), ruleProps);
 				break;
 			case SCHEDULED_RULE:
-				validateScheduledRule((ScheduledRuleContext) rule);
+				ScheduledRuleAPI.validateScheduledRule((ScheduledRuleContext) rule);
 				addExtendedProps(ModuleFactory.getScheduledRuleModule(), FieldFactory.getScheduledRuleFields(), ruleProps);
 				break;
 			default:
@@ -105,27 +104,6 @@ public class WorkflowRuleAPI {
 		
 		if (rule.getRuleTypeEnum() == null) {
 			throw new IllegalArgumentException("Rule Type cannot be null during addition for Workflow");
-		}
-	}
-	
-	private static void validateScheduledRule(ScheduledRuleContext rule) {
-		if (rule.getDateFieldId() == -1) {
-			throw new IllegalArgumentException("Date Field Id cannot be null for Scheduled Rule");
-		}
-		
-		if (rule.getScheduleTypeEnum() == null) {
-			throw new IllegalArgumentException("Schedule Type cannot be null for Scheduled Rule");
-		}
-		
-		switch (rule.getScheduleTypeEnum()) {
-			case BEFORE:
-			case AFTER:
-				if (rule.getInterval() == -1) {
-					throw new IllegalArgumentException("Interval cannot be null for Scheduled Rule with type BEFORE/ AFTER");
-				}
-				break;
-			case ON:
-				break;
 		}
 	}
 	
@@ -535,20 +513,15 @@ public class WorkflowRuleAPI {
 					case READING_RULE:
 					case VALIDATION_RULE:
 						prop.putAll(typeWiseExtendedProps.get(ruleType).get((Long) prop.get("id")));
-						rule = FieldUtil.getAsBeanFromMap(prop, ReadingRuleContext.class);
-						ReadingRuleContext readingRule = ((ReadingRuleContext)rule);
-						readingRule.setReadingField(modBean.getField(((ReadingRuleContext)rule).getReadingFieldId()));
-						ReadingRuleAPI.setMatchedResources(readingRule);
+						rule = ReadingRuleAPI.constructReadingRuleFromProps(prop, modBean);
 						break;
 					case SLA_RULE:
 						prop.putAll(typeWiseExtendedProps.get(ruleType).get((Long) prop.get("id")));
-						rule = FieldUtil.getAsBeanFromMap(prop, SLARuleContext.class);
-						((SLARuleContext)rule).setResource(ResourceAPI.getResource(((SLARuleContext)rule).getResourceId()));
+						rule = SLARuleAPI.constructSLARuleFromProps(prop, modBean);
 						break;
 					case SCHEDULED_RULE:
 						prop.putAll(typeWiseExtendedProps.get(ruleType).get((Long) prop.get("id")));
-						rule = FieldUtil.getAsBeanFromMap(prop, ScheduledRuleContext.class);
-						((ScheduledRuleContext)rule).setDateField(modBean.getField(((ScheduledRuleContext)rule).getDateFieldId()));
+						rule = ScheduledRuleAPI.constructScheduledRuleFromProps(prop, modBean);
 						break;
 					default:
 						rule = FieldUtil.getAsBeanFromMap(prop, WorkflowRuleContext.class);

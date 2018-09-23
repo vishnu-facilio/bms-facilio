@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -25,7 +26,7 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class ReadingRuleAPI extends WorkflowRuleAPI {
-	public static void addReadingRuleInclusionsExlusions(ReadingRuleContext rule) throws SQLException, RuntimeException {
+	protected static void addReadingRuleInclusionsExlusions(ReadingRuleContext rule) throws SQLException, RuntimeException {
 		if (rule.getAssetCategoryId() != -1) {
 			List<Map<String, Object>> inclusionExclusionList = new ArrayList<>();
 			getInclusionExclusionList(rule.getId(), rule.getIncludedResources(), true, inclusionExclusionList);
@@ -190,5 +191,12 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 			return readingRules;
 		}
 		return null;
+	}
+	
+	protected static ReadingRuleContext constructReadingRuleFromProps(Map<String, Object> prop, ModuleBean modBean) throws Exception {
+		ReadingRuleContext readingRule = FieldUtil.getAsBeanFromMap(prop, ReadingRuleContext.class);
+		readingRule.setReadingField(modBean.getField(readingRule.getReadingFieldId()));
+		ReadingRuleAPI.setMatchedResources(readingRule);
+		return readingRule;
 	}
 }
