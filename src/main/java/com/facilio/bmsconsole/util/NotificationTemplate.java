@@ -13,7 +13,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.NotificationContext;
 import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.workflow.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.ActivityType;
 
 public class NotificationTemplate {
 	private static org.apache.log4j.Logger log = LogManager.getLogger(NotificationTemplate.class.getName());

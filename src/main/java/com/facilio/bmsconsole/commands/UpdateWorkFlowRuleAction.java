@@ -5,7 +5,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.ActionAPI;
-import com.facilio.bmsconsole.workflow.ActionContext;
+import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.constants.FacilioConstants;
 
 public class UpdateWorkFlowRuleAction implements Command {

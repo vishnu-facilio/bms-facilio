@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.workflow;
+package com.facilio.bmsconsole.workflow.rule;
 
 import com.facilio.bmsconsole.modules.FacilioField;
 

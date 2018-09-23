@@ -22,9 +22,9 @@ import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
-import com.facilio.bmsconsole.workflow.ActionContext;
-import com.facilio.bmsconsole.workflow.ActionType;
-import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
+import com.facilio.bmsconsole.workflow.rule.ActionContext;
+import com.facilio.bmsconsole.workflow.rule.ActionType;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.workflows.context.WorkflowContext;
 

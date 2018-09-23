@@ -5,7 +5,7 @@ import org.apache.commons.chain.impl.ChainBase;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory.FacilioChain;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 
 public class TransactionChainFactory {
 

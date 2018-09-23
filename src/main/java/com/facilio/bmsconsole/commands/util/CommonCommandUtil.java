@@ -53,7 +53,7 @@ import com.facilio.bmsconsole.util.FacilioTablePrinter;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
-import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.queue.FAWSQueue;

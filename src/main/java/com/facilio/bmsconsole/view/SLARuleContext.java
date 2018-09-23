@@ -5,7 +5,7 @@ import java.util.Map;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 
 public class SLARuleContext extends WorkflowRuleContext {
 	

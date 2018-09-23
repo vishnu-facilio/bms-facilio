@@ -31,7 +31,7 @@ import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
-import com.facilio.bmsconsole.workflow.ActionContext;
+import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.workflows.context.WorkflowContext;

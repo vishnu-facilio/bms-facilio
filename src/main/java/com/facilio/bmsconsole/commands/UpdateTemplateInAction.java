@@ -7,7 +7,7 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.util.ActionAPI;
-import com.facilio.bmsconsole.workflow.ActionContext;
+import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.constants.FacilioConstants;
 
 public class UpdateTemplateInAction implements Command {

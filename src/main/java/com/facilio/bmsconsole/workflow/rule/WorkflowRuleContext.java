@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.workflow;
+package com.facilio.bmsconsole.workflow.rule;
 
 import java.util.HashMap;
 import java.util.List;

@@ -4,7 +4,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.util.NotificationTemplate;
-import com.facilio.bmsconsole.workflow.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.ActivityType;
 
 public class NotificationContext {
 

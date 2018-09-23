@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.workflow;
+package com.facilio.bmsconsole.workflow.rule;
 
 import java.sql.SQLException;
 import java.time.LocalTime;
