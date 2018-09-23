@@ -4,6 +4,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
+import com.facilio.bmsconsole.util.SLARuleAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
 import com.facilio.bmsconsole.view.SLARuleContext;
@@ -21,7 +22,7 @@ public class UpdateWorkflowRuleCommand implements Command {
 			rule = ReadingRuleAPI.updateReadingRuleWithChildren((ReadingRuleContext) rule);
 		}
 		if (rule instanceof SLARuleContext) {
-			rule = WorkflowRuleAPI.updateSLARuleWithChildren((SLARuleContext) rule);
+			rule = SLARuleAPI.updateSLARuleWithChildren((SLARuleContext) rule);
 		}
 		else {
 			rule = WorkflowRuleAPI.updateWorkflowRuleWithChildren(rule);

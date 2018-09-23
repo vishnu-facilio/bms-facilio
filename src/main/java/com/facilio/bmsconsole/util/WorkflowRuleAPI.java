@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -399,36 +398,6 @@ public class WorkflowRuleAPI {
 		if(newRule.getWorkflow() != null && oldRule.getWorkflowId() != -1) {
 			WorkflowUtil.deleteWorkflow(oldRule.getWorkflowId());
 		}
-	}
-	
-	public static SLARuleContext updateSLARuleWithChildren(SLARuleContext rule) throws Exception {
-		SLARuleContext oldRule = (SLARuleContext) getWorkflowRule(rule.getId());
-		updateWorkflowRuleChildIds(rule);
-		updateSLARule(rule, rule.getId());
-		deleteChildIdsForWorkflow(oldRule, rule);
-		
-		if (rule.getName() == null) {
-			rule.setName(oldRule.getName());
-		}
-		return rule;
-	}
-	
-	public static int updateSLARule(SLARuleContext slaRule, long ruleId) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
-		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
-		fields.addAll(FieldFactory.getSLARuleFields());
-		
-		FacilioModule workflowModule = ModuleFactory.getWorkflowRuleModule();
-		FacilioModule slaRuleModule = ModuleFactory.getSLARuleModule();
-		
-		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-														.fields(fields)
-														.table(slaRuleModule.getTableName())
-														.innerJoin(workflowModule.getTableName())
-														.on(slaRuleModule.getTableName()+".ID = "+workflowModule.getTableName()+".ID")
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(workflowModule))
-														.andCondition(CriteriaAPI.getIdCondition(ruleId, slaRuleModule));
-		
-		return updateBuilder.update(FieldUtil.getAsProperties(slaRule));
 	}
 	
 	private static Map<Long, Map<String, Object>> getExtendedProps(FacilioModule module, List<FacilioField> fields, List<Long> ids) throws Exception {
