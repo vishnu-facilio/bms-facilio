@@ -180,6 +180,16 @@
 			<param name="moduleName">alarm</param>
 			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 		</action>
+		
+		<action name="createWorkorder" class="com.facilio.bmsconsole.actions.AlarmAction" method="v2createWorkorder">
+			<param name="moduleName">alarm</param>
+			<param name="permission">CREATE_WO</param>
+		</action>
+		
+		<action name="delete" class="com.facilio.bmsconsole.actions.AlarmAction" method="v2deleteAlarm">
+			<param name="moduleName">alarm</param>
+			<param name="permission">DELETE,DELETE_TEAM,DELETE_OWN</param>
+		</action>
 	</package>
 	
 	<package name="alarmListApiv2" namespace="/api/v2/alarms/view" extends="v2Api">

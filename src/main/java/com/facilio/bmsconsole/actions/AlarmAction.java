@@ -89,6 +89,8 @@ public class AlarmAction extends FacilioAction {
 				
 				Command addWorkOrder = TransactionChainFactory.getAddWorkOrderChain();
 				addWorkOrder.execute(woContext);
+				
+				setWoId(wo.getId());
 			}
 		}
 
@@ -103,6 +105,13 @@ public class AlarmAction extends FacilioAction {
 		this.id = id;
 	}
 	
+	private long woId = -1;
+	public long getWoId() {
+		return woId;
+	}
+	public void setWoId(long woId) {
+		this.woId = woId;
+	}
 	public String deleteAlarm() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.DELETE);
@@ -552,5 +561,17 @@ public class AlarmAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
 		return SUCCESS;
 		
+	}
+	
+	public String v2deleteAlarm() throws Exception{
+		deleteAlarm();
+		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
+		return SUCCESS;
+	}
+	
+	public String v2createWorkorder() throws Exception{
+		createWorkorder();
+		setResult("workorderId", woId);
+		return SUCCESS;
 	}
 }
