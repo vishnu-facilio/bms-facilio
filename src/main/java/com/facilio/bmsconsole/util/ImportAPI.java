@@ -71,8 +71,13 @@ public class ImportAPI {
         	Iterator<Cell> cellItr = row.cellIterator();
         	while (cellItr.hasNext()) {
         		Cell cell = cellItr.next();
-        		String cellValue = cell.getStringCellValue();
-        		columnheadings.add(cellValue);
+        		if(cell.getCellTypeEnum().getCode() == Cell.CELL_TYPE_BLANK) {
+        			columnheadings.add(null);
+        		}
+        		else {
+        			String cellValue = cell.getStringCellValue();
+        			columnheadings.add(cellValue);
+        		}
         	}
         	break;
         }

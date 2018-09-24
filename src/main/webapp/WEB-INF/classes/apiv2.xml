@@ -367,6 +367,8 @@
 		</action>
 		<action name="duplicateReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="duplicateReport">
 		</action>
+		<action name="moveReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="moveReport">
+		</action>
 	</package>
 	
 	<package name="scheduledReportApiv2" namespace="/api/v2/report/scheduled" extends="v2Api">

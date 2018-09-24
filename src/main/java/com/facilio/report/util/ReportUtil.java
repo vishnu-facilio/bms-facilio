@@ -62,6 +62,16 @@ public class ReportUtil {
 		return reportFolders;
 	}
 	
+	public static void moveReport(ReportContext reportContext, long folderId) throws Exception {
+		FacilioModule module = ModuleFactory.getReportModule();
+		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List< FacilioField> updateFields = modbean.getAllFields(module.getName());
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder().table(module.getTableName()).andCustomWhere("WHERE ID = ?", reportContext.getId()).fields(updateFields);
+		
+		Map<String,Object> prop = FieldUtil.getAsProperties(reportContext);
+		updateBuilder.update(prop);
+		
+	}
 	public static List<ReportContext> getReportsFromFolderId(long folderId) throws Exception {
 		
 		FacilioModule module = ModuleFactory.getReportModule();
