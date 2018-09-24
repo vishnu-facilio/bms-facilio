@@ -319,6 +319,7 @@ public class FacilioConstants {
 		
 		public static final String RESOURCE = "resource";
 		public static final String RESOURCE_LIST = "resourceList";
+		public static final String FETCH_RESOURCE_DETAIL = "fetchresourcedetail";
 		
 		public static final String BASE_SPACE_LIST = "basespaces";
 		public static final String BASE_SPACE = "basespace";

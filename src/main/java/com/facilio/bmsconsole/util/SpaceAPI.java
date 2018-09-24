@@ -13,6 +13,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.BuildingContext;
@@ -1055,15 +1056,15 @@ public static long getSitesCount() throws Exception {
 		spaceCond.setValue(spaceId+"");
 
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.select(fields)
-				.table(assetModule.getTableName())
-				.innerJoin(resourceModule.getTableName())
-				.on(assetModule.getTableName()+".ID = "+resourceModule.getTableName()+".ID")
-				.andCustomWhere("Assets.ORGID=?", orgId)
-				.andCondition(spaceCond);
 		
-		List<Map<String, Object>> rs = builder.get();
+		SelectRecordsBuilder selectBuilder = new SelectRecordsBuilder()
+				.select(fields)
+				.module(assetModule)
+				.beanClass(AssetContext.class)
+				.andCondition(spaceCond)
+				.groupBy("Assets.SITE_ID");
+		
+		List<Map<String, Object>> rs = selectBuilder.getAsProps();
 		if (rs == null || rs.isEmpty()) {
 			return 0;
 		}

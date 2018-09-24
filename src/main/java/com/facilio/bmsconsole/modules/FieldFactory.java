@@ -41,12 +41,13 @@ public class FieldFactory {
 		public static List<String> alarmsFieldsInclude = new ArrayList<String>();
 		static {
 			alarmsFieldsInclude.add("isAcknowledged");
-			alarmsFieldsInclude.add("sourceType");
-			alarmsFieldsInclude.add("serialNumber");
+//			alarmsFieldsInclude.add("sourceType");
+//			alarmsFieldsInclude.add("serialNumber");
 			alarmsFieldsInclude.add("clearedBy");
 			alarmsFieldsInclude.add("status");
-			alarmsFieldsInclude.add("type");
-			alarmsFieldsInclude.add("category");
+//			alarmsFieldsInclude.add("type");
+			alarmsFieldsInclude.add("alarmType");
+//			alarmsFieldsInclude.add("category");
 			alarmsFieldsInclude.add("resource");
 			alarmsFieldsInclude.add("severity");
 			alarmsFieldsInclude.add("alarmClass");
@@ -55,7 +56,7 @@ public class FieldFactory {
 			alarmsFieldsInclude.add("previousSeverity");
 			alarmsFieldsInclude.add("createdTime");
 			alarmsFieldsInclude.add("entity");
-			alarmsFieldsInclude.add("noOfAttachments");
+//			alarmsFieldsInclude.add("noOfAttachments");
 		}
 		public static List<String> workOrderFieldsInclude = new ArrayList<String>();
 		static {
