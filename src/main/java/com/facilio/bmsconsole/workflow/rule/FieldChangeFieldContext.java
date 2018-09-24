@@ -40,6 +40,9 @@ public class FieldChangeFieldContext {
 		return field;
 	}
 	public void setField(FacilioField field) {
+		if (field != null) {
+			this.fieldId = field.getFieldId();
+		}
 		this.field = field;
 	}
 

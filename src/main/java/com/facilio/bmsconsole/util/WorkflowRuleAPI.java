@@ -25,6 +25,7 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.UpdateChangeSet;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
 import com.facilio.bmsconsole.workflow.rule.FieldChangeFieldContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ScheduledRuleContext;
@@ -67,6 +68,11 @@ public class WorkflowRuleAPI {
 			case SCHEDULED_RULE:
 				ScheduledRuleAPI.validateScheduledRule((ScheduledRuleContext) rule);
 				addExtendedProps(ModuleFactory.getScheduledRuleModule(), FieldFactory.getScheduledRuleFields(), ruleProps);
+				break;
+			case APPROVAL_RULE:
+				ApprovalRulesAPI.updateChildRuleIds((ApprovalRuleContext) rule);
+				addExtendedProps(ModuleFactory.getApprovalRulesModule(), FieldFactory.getApprovalRuleFields(), FieldUtil.getAsProperties(rule));
+				ApprovalRulesAPI.addApprovers((ApprovalRuleContext) rule);
 				break;
 			default:
 				break;
@@ -290,7 +296,23 @@ public class WorkflowRuleAPI {
 				.select(FieldFactory.getWorkflowEventFields())
 				.table("Workflow_Event")
 				.andCustomWhere("Workflow_Event.ORGID = ? AND Workflow_Event.MODULEID = ?", orgId, moduleId);
-		return getWorkFlowEventsFromMapList(ruleBuilder.get(), orgId);
+		return getWorkFlowEventsFromMapList(ruleBuilder.get());
+	}
+	
+	public static WorkflowEventContext getWorkflowEvent(long id) throws Exception {
+		FacilioModule module = ModuleFactory.getWorkflowEventModule();
+		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getWorkflowEventFields())
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getIdCondition(id, module))
+				;
+		
+		List<WorkflowEventContext> events = getWorkFlowEventsFromMapList(ruleBuilder.get());
+		if (events != null && !events.isEmpty()) {
+			return events.get(0);
+		}
+		return null;
 	}
 	
 	public static List<WorkflowRuleContext> getWorkflowRules(long moduleId) throws Exception {
@@ -411,6 +433,9 @@ public class WorkflowRuleAPI {
 				case SCHEDULED_RULE:
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getScheduledRuleModule(), FieldFactory.getScheduledRuleFields(), entry.getValue()));
 					break;
+				case APPROVAL_RULE:
+					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getApprovalRulesModule(), FieldFactory.getApprovalRuleFields(), entry.getValue()));
+					break;
 				default:
 					break;
 			}
@@ -523,6 +548,9 @@ public class WorkflowRuleAPI {
 						prop.putAll(typeWiseExtendedProps.get(ruleType).get((Long) prop.get("id")));
 						rule = ScheduledRuleAPI.constructScheduledRuleFromProps(prop, modBean);
 						break;
+					case APPROVAL_RULE:
+						prop.putAll(typeWiseExtendedProps.get(ruleType).get((Long) prop.get("id")));
+						rule = ApprovalRulesAPI.constructApprovalRuleFromProps(prop, modBean);
 					default:
 						rule = FieldUtil.getAsBeanFromMap(prop, WorkflowRuleContext.class);
 						break;
@@ -555,11 +583,13 @@ public class WorkflowRuleAPI {
 		return null;
 	}
 	
-	private static List<WorkflowEventContext> getWorkFlowEventsFromMapList(List<Map<String, Object>> props, long orgId) throws Exception {
+	private static List<WorkflowEventContext> getWorkFlowEventsFromMapList(List<Map<String, Object>> props) throws Exception {
 		if(props != null && props.size() > 0) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			List<WorkflowEventContext> workflowEvents = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
 				WorkflowEventContext workflowEvent = FieldUtil.getAsBeanFromMap(prop, WorkflowEventContext.class);
+				workflowEvent.setModule(modBean.getModule(workflowEvent.getModuleId()));
 				workflowEvents.add(workflowEvent);
 			}
 			return workflowEvents;
@@ -567,7 +597,7 @@ public class WorkflowRuleAPI {
 		return null;
 	}
 	
-	public static void deleteWorkFlowRules(List<Long> workflowIds) throws Exception{
+	public static void deleteWorkFlowRules(List<Long> workflowIds) throws Exception {
 		if (workflowIds != null && !workflowIds.isEmpty()) {
 			List<WorkflowRuleContext> rules = getWorkflowRules(workflowIds);
 			
@@ -581,6 +611,14 @@ public class WorkflowRuleAPI {
 				deleteBuilder.delete();
 				
 				for (WorkflowRuleContext rule : rules) {
+					switch (rule.getRuleTypeEnum()) {
+						case APPROVAL_RULE:
+							ApprovalRulesAPI.deleteApprovalRuleChildIds((ApprovalRuleContext) rule);
+							break;
+						default:
+							break;
+					}
+					
 					deleteChildIdsForWorkflow(rule, rule);
 				}
 			}

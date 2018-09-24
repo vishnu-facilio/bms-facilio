@@ -3,9 +3,11 @@ package com.facilio.bmsconsole.commands;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.util.ApprovalRulesAPI;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.SLARuleAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.SLARuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
@@ -21,8 +23,11 @@ public class UpdateWorkflowRuleCommand implements Command {
 		if (rule instanceof ReadingRuleContext) {
 			rule = ReadingRuleAPI.updateReadingRuleWithChildren((ReadingRuleContext) rule);
 		}
-		if (rule instanceof SLARuleContext) {
+		else if (rule instanceof SLARuleContext) {
 			rule = SLARuleAPI.updateSLARuleWithChildren((SLARuleContext) rule);
+		}
+		else if (rule instanceof ApprovalRuleContext) {
+			rule = ApprovalRulesAPI.updateApprovalRuleWithChldren((ApprovalRuleContext) rule);
 		}
 		else {
 			rule = WorkflowRuleAPI.updateWorkflowRuleWithChildren(rule);

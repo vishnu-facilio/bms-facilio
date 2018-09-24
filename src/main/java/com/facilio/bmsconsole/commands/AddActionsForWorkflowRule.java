@@ -37,27 +37,32 @@ public class AddActionsForWorkflowRule implements Command {
 		
 		if (actions != null && !actions.isEmpty()) {
 			for(ActionContext action:actions) {
-				System.out.println(action.getTemplateJson());
-				switch (action.getActionTypeEnum()) {
-					case EMAIL_NOTIFICATION:
-					case BULK_EMAIL_NOTIFICATION:
-						setEmailTemplate(action);
-						break;
-					case SMS_NOTIFICATION:
-					case BULK_SMS_NOTIFICATION:
-						setSMSTemplate(action);
-						break;
-					case PUSH_NOTIFICATION:
-						setMobileTemplate(action);
-						break;
-					case ADD_ALARM:
-						setAlarmTemplate(action, rule);
-						break;
-					case CREATE_WO_FROM_ALARM:
-						setWorkorderTemplate(action, rule);
-						break;
-					default:
-						break;
+				if (action.getTemplate() == null && action.getTemplateJson() != null) {
+					System.out.println(action.getTemplateJson());
+					switch (action.getActionTypeEnum()) {
+						case EMAIL_NOTIFICATION:
+						case BULK_EMAIL_NOTIFICATION:
+							setEmailTemplate(action);
+							break;
+						case SMS_NOTIFICATION:
+						case BULK_SMS_NOTIFICATION:
+							setSMSTemplate(action);
+							break;
+						case PUSH_NOTIFICATION:
+							setMobileTemplate(action);
+							break;
+						case ADD_ALARM:
+							setJsonTemplate(action, rule, Type.ALARM);
+							break;
+						case CREATE_WO_FROM_ALARM:
+							setWorkorderTemplate(action, rule);
+							break;
+						case FIELD_CHANGE:
+							setJsonTemplate(action, rule, Type.JSON);
+							break;
+						default:
+							break;
+					}
 				}
 				action.setTemplateId(TemplateAPI.addTemplate(action.getTemplate()));
 			}
@@ -126,7 +131,7 @@ public class AddActionsForWorkflowRule implements Command {
 		}
 	}
 	
-	private void setAlarmTemplate(ActionContext action, WorkflowRuleContext rule) throws Exception {
+	private void setJsonTemplate(ActionContext action, WorkflowRuleContext rule, Type templateType) throws Exception {
 		List<Map> alarmFieldMatcher = (ArrayList) action.getTemplateJson().get("fieldMatcher");
 		JSONObject content = new JSONObject();
 		for(Map alarmField:alarmFieldMatcher) {
@@ -149,7 +154,7 @@ public class AddActionsForWorkflowRule implements Command {
 		JSONTemplate alarmTemplate = new JSONTemplate();
 		alarmTemplate.setName(rule.getName()+"_alarm_template");
 		alarmTemplate.setContent(content.toJSONString());
-		alarmTemplate.setType(Type.ALARM);
+		alarmTemplate.setType(templateType);
 		action.setTemplate(alarmTemplate);
 		checkAndSetWorkflow(action.getTemplateJson(), alarmTemplate);
 	}
@@ -164,5 +169,4 @@ public class AddActionsForWorkflowRule implements Command {
 		action.setTemplate(woTemplate);
 		checkAndSetWorkflow(action.getTemplateJson(), woTemplate);
 	}
-	
 }

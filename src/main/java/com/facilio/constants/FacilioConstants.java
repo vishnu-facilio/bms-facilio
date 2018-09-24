@@ -631,6 +631,11 @@ public class FacilioConstants {
 		public static final long LOGGED_IN_USER_GROUP_ID = -100;
 	}
 	
+	public static class ApprovalRule {
+		public static final String APPROVAL_RULE_ID_FIELD_NAME = "approvalRuleId";
+		public static final String APPROVAL_STATE_FIELD_NAME = "approvalState";
+	}
+	
 	public static class Workflow {
 		public static final String TEMPLATE = "template";
 		public static final String ACTION_TEMPLATE = "actionTemplate";

@@ -923,6 +923,33 @@ public class FieldFactory {
 		
 		return fields;
 	}
+	
+	public static List<FacilioField> getApprovalRuleFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getApprovalRulesModule();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("approvalRuleId", "APPROVAL_RULE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("rejectionRuleId", "REJECTION_RULE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("approvalFormId", "APPROVAL_FORM_ID", module, FieldType.LOOKUP));
+		fields.add(getField("rejectionFormId", "REJECTION_FORM_ID", module, FieldType.LOOKUP));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getSharingFields(FacilioModule module) {
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("parentId", "PARENT_ID", module, FieldType.LOOKUP));
+		fields.add(getField("userId", "ORG_USERID", module, FieldType.LOOKUP));
+		fields.add(getField("groupId", "GROUP_ID", module, FieldType.LOOKUP));
+		fields.add(getField("type", "SHARING_TYPE", module, FieldType.NUMBER));
+		
+		return fields;
+	}
 
 	public static List<FacilioField> getActionFields() {
 		List<FacilioField> fields = new ArrayList<>();

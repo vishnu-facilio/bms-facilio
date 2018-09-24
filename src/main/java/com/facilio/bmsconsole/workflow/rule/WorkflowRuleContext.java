@@ -242,7 +242,11 @@ public class WorkflowRuleContext {
 		
 		ASSET_ACTION_RULE,
 		CUSTOM_WORKORDER_NOTIFICATION_RULE,
-		SCHEDULED_RULE
+		SCHEDULED_RULE,
+		
+		APPROVAL_RULE(true),
+		REQUEST_APPROVAL_RULE(true),
+		REQUEST_REJECT_RULE(true)
 		;
 		
 		private boolean stopFurtherExecution = false;

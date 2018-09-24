@@ -39,6 +39,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.AlarmAPI;
@@ -46,6 +47,7 @@ import com.facilio.bmsconsole.util.NotificationAPI;
 import com.facilio.bmsconsole.util.SMSUtil;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
@@ -545,6 +547,35 @@ public enum ActionType {
 		public boolean isTemplateNeeded() {
 			// TODO Auto-generated method stub
 			return false;
+		}
+		
+	},
+	FIELD_CHANGE(13) {
+
+		@Override
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
+				Object currentRecord) throws Exception {
+			// TODO Auto-generated method stub
+			if (currentRule.getEvent() == null) {
+				currentRule.setEvent(WorkflowRuleAPI.getWorkflowEvent(currentRule.getEventId()));
+			}
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			WorkflowEventContext event = currentRule.getEvent();
+			List<FacilioField> fields = new ArrayList<>();
+			for (Object key : obj.keySet()) {
+				FacilioField field = modBean.getField((String) key, event.getModule().getName());
+				if (field != null) {
+					fields.add(field);
+				}
+			}
+			
+			UpdateRecordBuilder<ModuleBaseWithCustomFields> updateBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
+																				.fields(fields)
+																				.module(event.getModule())
+																				.andCondition(CriteriaAPI.getIdCondition(((ModuleBaseWithCustomFields) currentRecord).getId(), event.getModule()))
+																				;
+			updateBuilder.update(obj);
+			
 		}
 		
 	}
