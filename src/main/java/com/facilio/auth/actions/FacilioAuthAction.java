@@ -542,6 +542,15 @@ public class FacilioAuthAction extends ActionSupport {
         if(anydomain_allowedforsignup || opensignup || whitelisteddomain) {
             try {
                 AccountUtil.getTransactionalUserBean().createRequestor(AccountUtil.getCurrentOrg().getId(), user);
+                LOGGER.info("user signup done "+user);
+                try {
+					AccountUtil.getUserBean().sendInvitation(AccountUtil.getCurrentOrg().getOrgId(), user);
+					 LOGGER.info("Email invitation sent "+user);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					 LOGGER.log(java.util.logging.Level.SEVERE, "unable to send email", e);
+					 }
+               
             } catch (InvocationTargetException ie) {
                 Throwable e= ie.getTargetException();
                 if(e.getMessage()!=null && e.getMessage().equals("Email Already Registered")) {

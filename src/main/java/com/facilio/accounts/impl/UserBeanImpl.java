@@ -1205,7 +1205,7 @@ public class UserBeanImpl implements UserBean {
 	@Override
 	public long createRequestor(long orgId, User user) throws Exception {
 		// TODO Auto-generated method stub
-		return addRequester(orgId,  user,true,false);
+		return addRequester(orgId,  user,false,false);
 	}
 	
 	private User getPortalUserForInternal(String email, long portalId) throws Exception {
