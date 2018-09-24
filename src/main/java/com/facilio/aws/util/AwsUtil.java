@@ -35,6 +35,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 
+import com.facilio.accounts.util.AccountUtil;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -126,7 +127,7 @@ public class AwsUtil
 	private static volatile AWSCredentialsProvider credentialsProvider = null;
 	private static volatile AWSIot awsIot = null;
 	private static volatile AmazonSQS awsSQS = null;
-	private static volatile User user = null;
+	// private static volatile User user = null;
 	private static volatile AmazonKinesis kinesis = null;
 	private static String region = null;
 	private static final Object LOCK = new Object();
@@ -201,12 +202,18 @@ public class AwsUtil
 			try {
 				if(checkIfVersionExistsInS3(newVersion)) {
 					String environment = getConfig("environment");
-					if (environment != null) {
+					com.facilio.accounts.dto.User currentUser = AccountUtil.getCurrentUser();
+					if (environment != null && currentUser != null) {
 						conn = FacilioConnectionPool.INSTANCE.getConnection();
-						pstmt = conn.prepareStatement("Update ClientApp set version=? WHERE environment=?");
+						pstmt = conn.prepareStatement("Update ClientApp set version=?, updatedTime=?, updatedBy=? WHERE environment=?");
 						pstmt.setString(1, newVersion);
-						pstmt.setString(2, environment);
+						pstmt.setLong(2, System.currentTimeMillis());
+						pstmt.setLong(3, currentUser.getId());
+						pstmt.setString(4, environment);
 						updatedRows = pstmt.executeUpdate();
+						if(updatedRows > 0) {
+						    logger.info("Updated client version successfully");
+                        }
 					}
 				}
 			} catch (SQLException | RuntimeException e) {
@@ -441,7 +448,7 @@ public class AwsUtil
 		}
 		String toAddress = (String)mailJson.get("to");
 		boolean sendEmail = true;
-		if( ! "production".equals(AwsUtil.getConfig("environment")) ) {
+		if( ! isProduction()) {
 			if(toAddress != null) {
 				String to = "";
 				for(String address : toAddress.split(",")) {
@@ -498,7 +505,7 @@ public class AwsUtil
 		if(credentialsProvider == null){
 			synchronized (LOCK) {
 				if(credentialsProvider == null){
-					if("stage".equalsIgnoreCase(AwsUtil.getConfig("environment"))) {
+					if( ! isProduction()) {
 						credentialsProvider = InstanceProfileCredentialsProvider.createAsyncRefreshingProvider(false);
 					} else {
 						credentialsProvider = new AWSStaticCredentialsProvider(getBasicAwsCredentials());
@@ -747,12 +754,10 @@ public class AwsUtil
 	    			continue;
 	    		}
 	    		MimeBodyPart attachment = new MimeBodyPart();
-	    		String environment = AwsUtil.getConfig("environment"); 
 	    		DataSource fileDataSource = null;
-	    		if ("development".equalsIgnoreCase(environment)) {
+	    		if (isDevelopment()) {
 	    			fileDataSource = new FileDataSource(fileUrl);
-	    		}
-	    		else {
+	    		} else {
 	    			URL url = new URL(fileUrl);
 	    			fileDataSource = new URLDataSource(url);
 	    		}

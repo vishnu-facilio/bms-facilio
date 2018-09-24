@@ -90,7 +90,7 @@ public class KinesisProcessor {
         }
     }
 
-    public static void startProcessor(long orgId, String orgDomainName) {
+    private static void startProcessor(long orgId, String orgDomainName) {
         try {
             if(orgDomainName != null && STREAMS.contains(orgDomainName)) {
                 System.out.println("Starting kinesis processor for org : " + orgDomainName + " id " + orgId);

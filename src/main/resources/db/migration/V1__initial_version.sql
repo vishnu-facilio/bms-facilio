@@ -4248,6 +4248,15 @@ CREATE TABLE IF NOT EXISTS server_info (
     CONSTRAINT DEVICE_DETAILS_FK_ORGID FOREIGN KEY (ORGID) REFERENCES Organizations(ORGID)
    );
 
+  CREATE TABLE IF NOT EXISTS ClientApp (
+     id int(11) NOT NULL AUTO_INCREMENT,
+     environment varchar(50) NOT NULL,
+     version varchar(20) NOT NULL,
+     updatedTime bigint(20) DEFAULT NULL,
+     updatedBy bigint(20) DEFAULT NULL,
+     PRIMARY KEY (id)
+   );
+
 -- Triggers
 DELIMITER $$
 
