@@ -1171,10 +1171,15 @@ public class DashboardAction extends ActionSupport {
 				
 				CardType card = CardType.getCardType(widgetStaticContext.getStaticKey());
 				
-				Object wfResult = WorkflowUtil.getWorkflowExpressionResult(card.getWorkflow(), widgetStaticContext.getParamsJson());
-				result.put("result", wfResult);
-				result.put("unit", CardUtil.getUnit(widgetStaticContext.getParamsJson()));
-				
+				if(card.isSingleResultWorkFlow()) {
+					Object wfResult = WorkflowUtil.getWorkflowExpressionResult(card.getWorkflow(), widgetStaticContext.getParamsJson());
+					result.put("result", wfResult);
+					result.put("unit", CardUtil.getUnit(widgetStaticContext.getParamsJson()));
+				}
+				else {
+					Map<String, Object> expResult = WorkflowUtil.getExpressionResultMap(card.getWorkflow(), widgetStaticContext.getParamsJson());
+					result.put("result", expResult);
+				}
 				result.put("widget", widgetStaticContext);
 				setCardResult(result);
 				return SUCCESS;
@@ -1304,10 +1309,16 @@ public class DashboardAction extends ActionSupport {
 				
 				CardType card = CardType.getCardType(staticKey);
 				
-				Object wfResult = WorkflowUtil.getWorkflowExpressionResult(card.getWorkflow(), paramsJson);
+				if(card.isSingleResultWorkFlow()) {
+					Object wfResult = WorkflowUtil.getWorkflowExpressionResult(card.getWorkflow(), paramsJson);
+					result.put("result", wfResult);
+					result.put("unit", CardUtil.getUnit(paramsJson));
+				}
+				else {
+					Map<String, Object> expResult = WorkflowUtil.getExpressionResultMap(card.getWorkflow(), paramsJson);
+					result.put("result", expResult);
+				}
 				
-				result.put("result", wfResult);
-				result.put("unit", CardUtil.getUnit(paramsJson));
 				setCardResult(result);
 				return SUCCESS;
 			}

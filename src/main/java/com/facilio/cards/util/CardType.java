@@ -21,7 +21,7 @@ public enum CardType {
 			"      <field name=\"${fieldName}\" aggregate=\"${aggregateOpperator}\" />\n" + 
 			"   </expression>\n" + 
 			"   <result>a</result>\n" + 
-			"</workflow>"),
+			"</workflow>",true),
 	
 	ENERGY_READING_CARD(2,"energyDataCard","<workflow> \n" + 
 			"	<parameter name=\"baseSpaceId\" type=\"Number\"/> 	\n" + 
@@ -31,13 +31,52 @@ public enum CardType {
 			"		<function>readings.getEnergyReading(baseSpaceId,dateOperator,dateValue)</function>	 	\n" + 
 			"	</expression>\n" + 
 			"	 <result>pow</result>\n" + 
-			"</workflow>"),
+			"</workflow>",true),
+	
+	FAHU_STATUS_CARD(3,"fahuStatusCard","<workflow> 	\n" + 
+			"	<parameter name=\"parentId\" type = \"Number\"/> 	\n" + 
+			"	<expression name=\"runStatus\"> 		\n" + 
+			"		<module name=\"prefilterstatus\"/> 		\n" + 
+			"		<criteria pattern=\"1\"> 			\n" + 
+			"			<condition sequence=\"1\">parentId`=`${parentId}</condition> 		\n" + 
+			"		</criteria> 		\n" + 
+			"		<field name=\"runstatus\" aggregate = \"lastValue\"/> 	\n" + 
+			"	</expression> \n" + 
+			"	<expression name=\"valveFeedback\"> 		\n" + 
+			"		<module name=\"prefilterstatus\"/> 		\n" + 
+			"		<criteria pattern=\"1\"> 			\n" + 
+			"			<condition sequence=\"1\">parentId`=`${parentId}</condition> 		\n" + 
+			"		</criteria> 		\n" + 
+			"		<field name=\"valvefeedback\" aggregate = \"lastValue\"/> 	\n" + 
+			"	</expression> \n" + 
+			"	<expression name=\"tripStatus\"> 		\n" + 
+			"		<module name=\"bagfilterstatus\"/> 		\n" + 
+			"		<criteria pattern=\"1\"> 			\n" + 
+			"			<condition sequence=\"1\">parentId`=`${parentId}</condition> 		\n" + 
+			"		</criteria> 		\n" + 
+			"		<field name=\"tripstatus\" aggregate = \"lastValue\"/> 	\n" + 
+			"	</expression> \n" + 
+			"	<expression name=\"autoStatus\"> 		\n" + 
+			"		<module name=\"prefilterstatus\"/> 		\n" + 
+			"		<criteria pattern=\"1\"> 			\n" + 
+			"			<condition sequence=\"1\">parentId`=`${parentId}</condition> 		\n" + 
+			"		</criteria> 		\n" + 
+			"		<field name=\"automanualstatus\" aggregate = \"lastValue\"/> 	\n" + 
+			"	</expression> \n" + 
+			"</workflow>",false),
 	;
 	
 	private Integer value;
 	private String name;
 	private String workflow;
+	private boolean isSingleResultWorkFlow;
 	
+	public boolean isSingleResultWorkFlow() {
+		return isSingleResultWorkFlow;
+	}
+	public void setSingleResultWorkFlow(boolean isSingleResultWorkFlow) {
+		this.isSingleResultWorkFlow = isSingleResultWorkFlow;
+	}
 	public Integer getValue() {
 		return value;
 	}
@@ -57,10 +96,11 @@ public enum CardType {
 		this.workflow = workflow;
 	}
 	
-	CardType(Integer value,String name,String workflow) {
+	CardType(Integer value,String name,String workflow,boolean isSingleResultWorkFlow) {
 		this.value = value;
 		this.name= name;
 		this.workflow = workflow;
+		this.isSingleResultWorkFlow = isSingleResultWorkFlow;
 	}
 	public static CardType getCardType(String name) {
 		return CARD_TYPE_BY_NAME.get(name);
