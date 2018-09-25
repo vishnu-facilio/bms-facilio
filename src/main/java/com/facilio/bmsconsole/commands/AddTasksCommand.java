@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskSectionContext;
@@ -52,6 +53,7 @@ public class AddTasksCommand implements Command {
 						task.setParentTicketId(workOrder.getId());
 					}
 					task.setSourceType(TicketContext.SourceType.TASK);
+					task.setCreatedBy(AccountUtil.getCurrentUser());
 					
 					builder.addRecord(task);
 				}

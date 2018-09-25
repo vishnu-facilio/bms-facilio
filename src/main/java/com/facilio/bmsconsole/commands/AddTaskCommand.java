@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -22,6 +23,7 @@ public class AddTaskCommand implements Command {
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			task.setCreatedTime(System.currentTimeMillis());
+			task.setCreatedBy(AccountUtil.getCurrentUser());
 			task.setSourceType(TicketContext.SourceType.TASK);
 			
 			InsertRecordBuilder<TaskContext> builder = new InsertRecordBuilder<TaskContext>()
