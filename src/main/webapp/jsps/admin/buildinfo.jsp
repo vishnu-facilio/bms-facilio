@@ -1,5 +1,19 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+    <%@page import="com.facilio.aws.util.AwsUtil, com.facilio.bmsconsole.actions.AdminAction, com.facilio.accounts.util.AccountUtil"%>
+    <%
+  	
+  String version = request.getParameter("version");
+    int aws;
+    String user = null;
+    if (version != null) {
+    	aws = AwsUtil.updateClientVersion(version);
+    	user = AccountUtil.getCurrentUser().getEmail();
+    	AdminAction.reloadBrowser();
+  	}
+    
+  %>
+    
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -46,8 +60,23 @@ function init() {
 <div style="margin-top:30px;">
 <a class="btn btn-default bttn" href="clearcache" role="button">Clear Cache</a>
 </div>
+<div >
+<form action = "" method ="POST">
 <div style="margin-top:30px; margin-bottom:30px;" >
-<a class="btn btn-default bttn" href="reloadbrowser" role="button">Reload all users</a>
+<h3> Update Client Version: </h3> 
+<div style="margin-top:30px">
+Client Version: <input style="margin-left: 10px"  type = "text" name = "version"  placeholder="version" />
+</div>
+<div style="margin-top:30px;" >
+<button  id="show" type="submit"  >Update</button>
+</div>
+<div>
+<% if (user != null) { %>
+ <h4>Last-Update By :  <%= user %></h4>
+<% } %>
+ </div>
+</div>
+</form>
 </div>
 
 

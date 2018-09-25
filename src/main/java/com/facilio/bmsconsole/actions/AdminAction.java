@@ -167,7 +167,7 @@ public class AdminAction extends ActionSupport
 		return SUCCESS ;
 	}
 	
-	public String reloadBrowser() throws IOException
+	public static String reloadBrowser() throws IOException
 	{
 		Message message = new Message(MessageType.BROADCAST);
 		

@@ -216,5 +216,22 @@
 				<param name="includeProperties">res</param>
 			</result>
 		</action>
+		
+		<action name="getallassetreadings" class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="getAllAssetReadings">
+			<param name="moduleName">setup</param>
+			<param name="permission">ASSET_SETTINGS</param>
+			<result name="success" type="json">
+				<param name="includeProperties">moduleMap.*, assetCount.*</param>
+			</result>
+		</action>
+		
+		<action name="readingReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReadingsData">
+			<result name="success" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+			</result>
+		</action>
 	</package>
+	
 </struts>
