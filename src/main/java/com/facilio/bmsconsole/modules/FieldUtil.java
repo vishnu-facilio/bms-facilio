@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -99,7 +100,7 @@ public class FieldUtil {
 					else {
 						BooleanField booleanField = (BooleanField) field;
 						String val = value.toString().trim();
-						if (val.equals("1") || (booleanField.getTrueVal() != null && booleanField.getTrueVal().equalsIgnoreCase(val))) {
+						if ((booleanField.getTrueVal() != null && booleanField.getTrueVal().equalsIgnoreCase(val)) || (NumberUtils.isCreatable(val) && new Double(val) > 0)) {
 							pstmt.setBoolean(paramIndex, true);
 						}
 						else {
@@ -230,7 +231,7 @@ public class FieldUtil {
 					else {
 						BooleanField booleanField = (BooleanField) field;
 						String val = value.toString().trim();
-						if (val.equals("1") || (booleanField.getTrueVal() != null && booleanField.getTrueVal().equalsIgnoreCase(val))) {
+						if ((booleanField.getTrueVal() != null && booleanField.getTrueVal().equalsIgnoreCase(val)) || (NumberUtils.isCreatable(val) && new Double(val) > 0)) {
 							booleanVal = true;
 						}
 						else {
