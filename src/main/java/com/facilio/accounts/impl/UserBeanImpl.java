@@ -399,6 +399,16 @@ public class UserBeanImpl implements UserBean {
 		return user;
 	}
 
+	public static void main(String []args)
+	{
+		UserBeanImpl us = new UserBeanImpl();
+		User s = us.getUserFromToken("i7vGNs_rSB7a3iXEse68EJ_eeBuyxywpjJF2cXh18_fnEthdA0DRlGszbYy02UMq");
+		System.out.println(s.getEmail());
+		System.out.println(s.getUid());
+		System.out.println(s.getOuid());
+
+		
+	}
 	private String getEncodedToken(User user) {
 		return EncryptionUtil.encode(user.getOuid() + USER_TOKEN_REGEX + user.getUid()+ USER_TOKEN_REGEX + user.getEmail() + USER_TOKEN_REGEX + System.currentTimeMillis());
 	}
@@ -428,16 +438,15 @@ public class UserBeanImpl implements UserBean {
 	@Override
 	public void sendInvitation(long ouid, User user) throws Exception {
 		user.setOuid(ouid);
-		String inviteLink = getUserLink(user,"/invitation/");
 		Map<String, Object> placeholders = new HashMap<>();
 		CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(user), placeholders);
 		CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeholders);
 		CommonCommandUtil.appendModuleNameInKey(null, "inviter", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeholders);
-		placeholders.put("invitelink", inviteLink);
 		if (user.getEmail().equals(user.getMobile())) {
 			
 			System.out.println("@@@@@@@@@@@@@@@@@@@@@@ SMS invite Sent");
 			try{
+				String inviteLink = getUserLink(user,"/invitation/");
 			SMSUtil.sendUserLink(user, inviteLink);
 			}
 			catch (Exception e)
@@ -446,11 +455,15 @@ public class UserBeanImpl implements UserBean {
 			}
 		} else {
 			if(user.isPortalUser()) {
-				//System.out.println("Adding portal users"+user);
+				String inviteLink = getUserLink(user,"/emailregistration/");
+				placeholders.put("invitelink", inviteLink);
 				AccountEmailTemplate.PORTAL_SIGNUP.send(placeholders);
 
 			}
 			else {
+				String inviteLink = getUserLink(user,"/invitation/");
+				placeholders.put("invitelink", inviteLink);
+
 			AccountEmailTemplate.INVITE_USER.send(placeholders);
 			}
 		}
