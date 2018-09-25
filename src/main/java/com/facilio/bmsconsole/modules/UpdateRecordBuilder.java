@@ -182,7 +182,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			moduleProps.remove("orgId");
 			moduleProps.remove("moduleId");
 			moduleProps.remove("id");
-			if (FieldUtil.isSiteIdFieldPresent(module)) {
+			if (FieldUtil.isSiteIdFieldPresent(module) && AccountUtil.getCurrentSiteId() != -1) {
 				moduleProps.remove("siteId");
 			}
 			
@@ -292,6 +292,9 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		}
 		
 		updateFields.addAll(fields);
+		if (FieldUtil.isSiteIdFieldPresent(module) && AccountUtil.getCurrentSiteId() == -1) {
+			updateFields.add(FieldFactory.getSiteIdField(module));
+		}
 		builder.fields(updateFields);
 		
 		builder.table(module.getTableName());
@@ -301,6 +304,9 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		while(extendedModule != null) {
 			builder.innerJoin(extendedModule.getTableName())
 					.on(prevModule.getTableName()+".ID = "+extendedModule.getTableName()+".ID");
+			if (FieldUtil.isSiteIdFieldPresent(extendedModule) && AccountUtil.getCurrentSiteId() == -1) {
+				updateFields.add(FieldFactory.getSiteIdField(extendedModule));
+			}
 			prevModule = extendedModule;
 			extendedModule = extendedModule.getExtendModule();
 		}

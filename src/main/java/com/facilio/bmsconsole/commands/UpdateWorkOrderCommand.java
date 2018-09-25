@@ -11,10 +11,13 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 
+import com.facilio.accounts.dto.Group;
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -125,9 +128,38 @@ public class UpdateWorkOrderCommand implements Command {
 						CommonCommandUtil.emailException(ShiftAPI.class.getName(), "Exception occurred while handling work hours", e);
 					}
 				}
+			} else if (workOrder.getSiteId() != -1 && AccountUtil.getCurrentSiteId() == -1) {
+				List<Long> mySites = CommonCommandUtil.getMySiteIds();
+				if (mySites != null && !mySites.isEmpty()) {
+					boolean found = false;
+					for (long siteId: mySites) {
+						if (siteId == workOrder.getSiteId()) {
+							found = true;
+							break;
+						}
+					}
+					if (!found) {
+						throw new IllegalArgumentException("The site is not accessible.");
+					}
+				}
+				
+				for(WorkOrderContext oldWo: oldWos) { 
+					WorkOrderContext newWo = FieldUtil.cloneBean(workOrder, WorkOrderContext.class);
+					newWo.setId(oldWo.getId());
+					newWo.setSiteId(oldWo.getSiteId());
+					newWo.setAssignedTo(new User());
+					newWo.getAssignedTo().setId(-1);
+					newWo.setAssignmentGroup(new Group());
+					newWo.getAssignmentGroup().setId(-1);
+					newWo.setResource(new ResourceContext());
+					newWo.getResource().setId(-1);
+					newWos.add(newWo);
+				}
 			}
 			
-			TicketAPI.validateSiteSpecificData(workOrder, oldWos);
+			if (workOrder.getSiteId() == -1) {
+				TicketAPI.validateSiteSpecificData(workOrder, oldWos);
+			}
 			
 			if (newWos.isEmpty()) {
 				newWos.add(workOrder);

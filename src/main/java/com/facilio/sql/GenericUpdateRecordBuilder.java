@@ -26,7 +26,7 @@ import com.facilio.transaction.FacilioConnectionPool;
 public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, Object>> {
 	private static final Logger LOGGER = LogManager.getLogger(GenericUpdateRecordBuilder.class.getName());
 	private List<FacilioField> fields;
-	private Map<String, FacilioField> fieldMap;
+	private Map<String, List<FacilioField>> fieldMap;
 	private String tableName;
 	private Map<String, Object> value;
 	private StringBuilder joinBuilder = new StringBuilder();
@@ -145,9 +145,13 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 					
 					int paramIndex = 1;
 					for(Map.Entry<String, Object> entry : value.entrySet()) {
-						FacilioField field = fieldMap.get(entry.getKey());
-						if(field != null) {
-							FieldUtil.castOrParseValueAsPerType(pstmt, paramIndex++, field, value.get(field.getName()));
+						List<FacilioField> fields = fieldMap.get(entry.getKey());
+						if (fields != null) {
+							for (FacilioField field: fields) {
+								if(field != null) {
+									FieldUtil.castOrParseValueAsPerType(pstmt, paramIndex++, field, value.get(field.getName()));
+								}
+							}
 						}
 					}
 					
@@ -190,16 +194,18 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 			.append(" SET ");
 		boolean isFirst = true;
 		for(String propKey : value.keySet()) {
-			FacilioField field = fieldMap.get(propKey);
-			if(field != null) {
-				if(isFirst) {
-					isFirst = false;
+			List<FacilioField> fields = fieldMap.get(propKey);
+			if(fields != null) {
+				for (FacilioField field: fields) {
+					if(isFirst) {
+						isFirst = false;
+					}
+					else {
+						sql.append(", ");
+					}
+					sql.append(field.getCompleteColumnName())
+						.append(" = ?");
 				}
-				else {
-					sql.append(", ");
-				}
-				sql.append(field.getCompleteColumnName())
-					.append(" = ?");
 			}
 		}
 		
@@ -214,11 +220,14 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 		return sql.toString();
 	}
 	
-	private Map<String, FacilioField> convertFieldsToMap(List<FacilioField> fields) {
+	private Map<String, List<FacilioField>> convertFieldsToMap(List<FacilioField> fields) {
 		if(fields != null) {
-			Map<String, FacilioField> fieldMap = new HashMap<>();
+			Map<String, List<FacilioField>> fieldMap = new HashMap<>();
 			for(FacilioField field : fields) {
-				fieldMap.put(field.getName(), field);
+				if (fieldMap.get(field.getName()) == null) {
+					fieldMap.put(field.getName(), new ArrayList<>());
+				}
+				fieldMap.get(field.getName()).add(field);
 			}
 			return fieldMap;
 		}

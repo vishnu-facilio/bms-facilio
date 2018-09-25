@@ -7,7 +7,11 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
+import com.facilio.accounts.dto.Group;
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -49,8 +53,17 @@ public class UpdateWorkOrderRequestCommand implements Command {
 				return false;
 			}
 			
-			TicketAPI.validateSiteSpecificData(workOrderRequest, oldWorkOrderRequests);
-			
+			if (workOrderRequest.getSiteId() == -1) {
+				TicketAPI.validateSiteSpecificData(workOrderRequest, oldWorkOrderRequests);
+			} else if (AccountUtil.getCurrentSiteId() == -1){
+				workOrderRequest.setAssignedTo(new User());
+				workOrderRequest.getAssignedTo().setId(-1);
+				workOrderRequest.setAssignmentGroup(new Group());
+				workOrderRequest.getAssignmentGroup().setId(-1);
+				workOrderRequest.setResource(new ResourceContext());
+				workOrderRequest.getResource().setId(-1);
+			}
+
 			String ids = StringUtils.join(recordIds, ",");
 			Condition idCondition = new Condition();
 			idCondition.setField(FieldFactory.getIdField(module));
