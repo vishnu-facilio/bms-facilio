@@ -34,7 +34,14 @@ public enum CardType {
 			"</workflow>",true),
 	
 	FAHU_STATUS_CARD(3,"fahuStatusCard","<workflow> 	\n" + 
-			"	<parameter name=\"parentId\" type = \"Number\"/> 	\n" + 
+			"	<parameter name=\"parentId\" type = \"Number\"/> \n" + 
+			"	<expression name=\"name\"> 		\n" + 
+			"		<module name=\"resource\"/> 		\n" + 
+			"		<criteria pattern=\"1\"> 			\n" + 
+			"			<condition sequence=\"1\">id`=`${parentId}</condition> 		\n" + 
+			"		</criteria> 		\n" + 
+			"		<field name=\"name\" aggregate = \"[0]\"/> 	\n" + 
+			"	</expression> \n" + 
 			"	<expression name=\"runStatus\"> 		\n" + 
 			"		<module name=\"prefilterstatus\"/> 		\n" + 
 			"		<criteria pattern=\"1\"> 			\n" + 
