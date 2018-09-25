@@ -66,7 +66,7 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "production_deployment" ]; then
     sed -i'' "s%log4j.appender.graylog2.facility=.*%log4j.appender.graylog2.facility=production-user%g" $CLASSES_DIR/log4j.properties
     sed -i'' "s%log4j.appender.graylog2.graylogHost=.*%log4j.appender.graylog2.graylogHost=172.31.35.38%g" $CLASSES_DIR/log4j.properties
     sed -i'' "s%cors.allowed.origins=.*%cors.allowed.origins=https://facilio.ae,https://fazilio.com,https://facilio.com,https://facilio.in,https://facilstack.com,https://facilioportal.com,https://wiproenergy.com%g" $CONF_DIR/awsprops.properties
-    sed -i -e 's/localhost:7444/172.31.0.68:7444/g' $CONF_DIR/awsprops.properties
+    sed -i -e 's/localhost:7444/172.31.38.25:7445/g' $CONF_DIR/awsprops.properties
     sed -i -e 's/tmp/home\/ubuntu\/analytics\/temp/g' $CONF_DIR/awsprops.properties
     echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/ubuntu/deployment.log
 fi
@@ -91,7 +91,7 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "production-scheduler" ]; then
     sed -i'' "s%s3.bucket.name=.*%s3.bucket.name=facilio-ae-data%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%log4j.appender.graylog2.facility=.*%log4j.appender.graylog2.facility=production-scheduler%g" $CLASSES_DIR/log4j.properties
     sed -i'' "s%log4j.appender.graylog2.graylogHost=.*%log4j.appender.graylog2.graylogHost=172.31.35.38%g" $CLASSES_DIR/log4j.properties
-    sed -i -e 's/localhost:7444/172.31.0.68:7444/g' $CONF_DIR/awsprops.properties
+    sed -i -e 's/localhost:7444/172.31.38.25:7445/g' $CONF_DIR/awsprops.properties
     sed -i -e 's/tmp/home\/ubuntu\/analytics\/temp/g' $CONF_DIR/awsprops.properties
     sed -i -e 's/stage\/anomaly/prod\/anomaly/g' $CONF_DIR/awsprops.properties
     echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/ubuntu/deployment.log
