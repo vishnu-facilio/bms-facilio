@@ -36,9 +36,10 @@ public class FormFactory {
 	
 	private static Map<FormType, Multimap<String, FacilioForm>> initAllForms() {
 		return ImmutableMap.<FormType, Multimap<String, FacilioForm>>builder()
-				.put(FormType.MOBILE, 
-					ImmutableMultimap.<String, FacilioForm>builder()
+				.put(FormType.MOBILE, ImmutableMultimap.<String, FacilioForm>builder()
 						.put(FacilioConstants.ContextNames.WORK_ORDER, getMobileWorkOrderForm()).build())
+				.put(FormType.WEB, ImmutableMultimap.<String, FacilioForm>builder()
+						.put(FacilioConstants.ContextNames.WORK_ORDER, getWebWorkOrderForm()).build())
 				.put(FormType.PORTAL, ImmutableMultimap.<String, FacilioForm>builder()
 						.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, getServiceWorkRequestForm()).build())
 				.build();
@@ -88,6 +89,28 @@ public class FormFactory {
 		fields.add(new FormField("assignment", FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", Required.REQUIRED, 4));
 		fields.add(new FormField("priority", FieldDisplayType.LOOKUP_SIMPLE, "Priority", Required.OPTIONAL, "ticketpriority", 5));
 		fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachment", Required.OPTIONAL, 6));
+		return fields;
+	}
+
+	public static FacilioForm getWebWorkOrderForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("SUBMIT WORKORDER");
+		form.setName("web_default");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER));
+		form.setFields(getWebWorkOrderFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+	
+	private static List<FormField> getWebWorkOrderFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.REQUIRED, 1));
+		fields.add(new FormField("site", FieldDisplayType.WOASSETSPACECHOOSER, "SITE", Required.REQUIRED, 3));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 4));
+		fields.add(new FormField("category", FieldDisplayType.SELECTBOX, "Category", Required.OPTIONAL, 5));
+		fields.add(new FormField("priority", FieldDisplayType.LOOKUP_SIMPLE, "Priority", Required.OPTIONAL, "ticketpriority", 6));
+		fields.add(new FormField("maintenance_type",FieldDisplayType.LOOKUP_SIMPLE,"Maintance Type", Required.OPTIONAL, 7));
+		fields.add(new FormField("assignment", FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team", Required.OPTIONAL, 8));
 		return fields;
 	}
 

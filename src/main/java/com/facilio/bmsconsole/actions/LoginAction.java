@@ -711,6 +711,10 @@ public class LoginAction extends FacilioAction{
 			Map<String, Set<FacilioForm>> forms = FormsAPI.getAllForms(FormType.MOBILE);
 			data.put("forms", forms);
 		}
+		else {
+			Map<String, Set<FacilioForm>> forms = FormsAPI.getAllForms(FormType.WEB);
+			data.put("forms", forms);
+		}
 		data.put("mysites", CommonCommandUtil.getMySites());
 		data.put("buildings", SpaceAPI.getAllBuildings());
 		data.put("sites", SpaceAPI.getAllSites());
