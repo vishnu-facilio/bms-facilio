@@ -49,11 +49,15 @@ public class CalculateDerivationCommand implements Command {
 		for(ReportDataPointContext rdp : report.getDataPoints()) {
 			
 			if(rdp.getTypeEnum().equals(DataPointType.DERIVATION)) {
-				Long workflowId = rdp.getTransformWorkflowId();
-				if(workflowId != null) {
-					Map<Object,Object> derivationResult = (Map<Object,Object>) WorkflowUtil.getResult(workflowId, wfParams);
-					transformedData.put(rdp.getName(), Collections.singletonMap(FacilioConstants.Reports.ACTUAL_DATA, derivationResult));
+				Map<Object,Object> derivationResult = null; 
+				if(rdp.getTransformWorkflowId() > 0) {
+					derivationResult = (Map<Object,Object>) WorkflowUtil.getResult(rdp.getTransformWorkflowId(), wfParams);
 				}
+				else if(rdp.getTransformWorkflow() != null) {
+					String wfXmlString = WorkflowUtil.getXmlStringFromWorkflow(rdp.getTransformWorkflow());
+					derivationResult = (Map<Object,Object>) WorkflowUtil.getWorkflowExpressionResult(wfXmlString, wfParams);
+				}
+				transformedData.put(rdp.getName(), Collections.singletonMap(FacilioConstants.Reports.ACTUAL_DATA, derivationResult));
 			}
 		}
 		return false;
