@@ -406,6 +406,13 @@ public class V2ReportAction extends FacilioAction {
 		this.fileFormat = FileFormat.getFileFormat(fileFormat);
 	}
 	
+	private String chartType;	// Temp
+	public String getChartType() {
+		return chartType;
+	}
+	public void setChartType(String chartType) {
+		this.chartType = chartType;
+	}
 	public String exportReport() throws Exception{
 		
 		FacilioContext context = new FacilioContext();
@@ -421,6 +428,7 @@ public class V2ReportAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.TABULAR_STATE, tabularState);
 		}
 		context.put(FacilioConstants.ContextNames.FILE_FORMAT, fileFormat);
+		context.put("chartType", chartType);	// Temp
 		
 		exportChain.execute(context);
 		
@@ -452,6 +460,7 @@ public class V2ReportAction extends FacilioAction {
 		}
 		context.put(FacilioConstants.ContextNames.FILE_FORMAT, fileFormat);
 		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
+		context.put("chartType", chartType);	// Temp
 		
 		mailReportChain.execute(context);
 		

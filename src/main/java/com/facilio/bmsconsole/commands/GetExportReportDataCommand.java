@@ -13,6 +13,8 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -21,6 +23,7 @@ import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.ExportUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo.FileFormat;
+import com.facilio.pdf.PdfUtil;
 import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
@@ -111,6 +114,18 @@ public class GetExportReportDataCommand implements Command {
 		String fileUrl = null;
 		if(fileFormat != FileFormat.PDF && fileFormat != FileFormat.IMAGE) {
 			fileUrl = ExportUtil.exportData(fileFormat, "Report Data", table);
+		}
+		else {
+			String url = getClientUrl(report.getDataPoints().get(0).getxAxis().getField().getModule().getName(), report.getId(), fileFormat) + "?";
+			if(report.getDateRange() != null) {
+				url += "daterange=" + report.getDateRange().getStartTime() + "," + report.getDateRange().getEndTime();
+			}
+			String chartType = (String) context.get("chartType");
+			if (chartType != null) {
+				url += "&charttype" + chartType;
+			}
+			
+			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(), url, fileFormat);
 		}
 		
 		context.put(FacilioConstants.ContextNames.FILE_URL, fileUrl);
@@ -248,5 +263,35 @@ public class GetExportReportDataCommand implements Command {
 		}
 		return records;
 	}
-
+	
+	private String getClientUrl(String moduleName, Long reportId, FileFormat fileFormat) {
+		StringBuilder url = new StringBuilder(AwsUtil.getConfig("clientapp.url")).append("/app/");
+		if (moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER)) {
+			url.append("wo");
+		}
+		else if (moduleName.equals(FacilioConstants.ContextNames.ALARM)) {
+			url.append("fa");
+		}
+		else if (moduleName.equals(FacilioConstants.ContextNames.ENERGY_DATA_READING)) {
+			url.append("em");
+		}
+		if (reportId > 0) {
+			url.append("/reports/newview/").append(reportId);			
+		}
+		else {
+			url.append(addAnalyticsConfigAndGetUrl(fileFormat));
+		}
+		if(fileFormat == FileFormat.IMAGE) {
+			url.append("/show");
+		}
+		return url.toString();
+	}
+	
+	private String addAnalyticsConfigAndGetUrl(FileFormat fileFormat) {
+		StringBuilder url = new StringBuilder();
+		if(fileFormat == FileFormat.IMAGE) {
+			url.append("/show");
+		}
+		return url.toString();
+	}
 }
