@@ -197,6 +197,7 @@ public class AwsUtil
 		int updatedRows = 0;
 		if(newVersion != null) {
 			newVersion = newVersion.trim();
+			newVersion = newVersion.replace("/", "");
 			Connection conn = null;
 			PreparedStatement pstmt = null;
 			try {
