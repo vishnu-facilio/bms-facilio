@@ -237,7 +237,9 @@ public class FormulaFieldAPI {
 						workflow.setWorkflowString(WorkflowUtil.getXmlStringFromWorkflow(workflow));
 					}
 					Double resultVal = (Double) WorkflowUtil.getWorkflowExpressionResult(workflow.getWorkflowString(), params, null, ignoreNullValues, false);
-					
+					if (AccountUtil.getCurrentOrg().getId() == 135) {
+						LOGGER.info("Result of Formula : "+fieldName+" for resource : "+resourceId+" : "+resultVal);
+					}
 					if (resultVal != null) {
 						ReadingContext reading = new ReadingContext();
 						reading.setParentId(resourceId);
@@ -257,7 +259,7 @@ public class FormulaFieldAPI {
 						}
 					}
 					long timeTaken = System.currentTimeMillis() - startTime;
-					if (AccountUtil.getCurrentOrg().getId() == 88) {
+					if (AccountUtil.getCurrentOrg().getId() == 135) {
 						LOGGER.info("Time taken for Formula calculation of : "+fieldName+" between "+iStartTime+" and "+iEndTime+" : "+timeTaken);
 					}
 				}
