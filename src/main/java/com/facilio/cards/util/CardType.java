@@ -71,6 +71,14 @@ public enum CardType {
 			"		<field name=\"automanualstatus\" aggregate = \"lastValue\"/> 	\n" + 
 			"	</expression> \n" + 
 			"</workflow>",false),
+	
+	IMAGE_CARD(3,"imagecard","<workflow> 	\n" + 
+			"	<parameter name=\"photoId\" type = \"Number\"/> \n" + 
+			"	<expression name=\"privateUrl\"> 		\n" + 
+			"		<function>default.getFilePrivateUrl(photoId)</function> 	\n" + 
+			"	</expression> \n" + 
+			"	<result>privateUrl</result>\n" + 
+			"</workflow>",true),
 	;
 	
 	private Integer value;

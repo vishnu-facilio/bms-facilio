@@ -9,6 +9,8 @@ import java.util.logging.Level;
 
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.fs.FileStore;
+import com.facilio.fs.FileStoreFactory;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.workflows.exceptions.FunctionParamException;
@@ -122,6 +124,21 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 				return UnitsUtil.convert(value, Unit.valueOf(fromUnit), Unit.valueOf(toUnit));
 			}
 			return null;
+		}
+	},
+	GET_FILE_PRIVATE_URL(6,"getFilePrivateUrl",WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.DECIMAL.getValue(),"fileId")) {
+
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			
+			Long fileId = null;
+			if(objects[0] != null) {
+				fileId = Long.parseLong(objects[0].toString());
+			}
+			
+			return fs.getPrivateUrl(fileId);
 		}
 	},
 	
