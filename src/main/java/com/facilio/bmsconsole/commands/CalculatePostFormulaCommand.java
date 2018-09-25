@@ -103,10 +103,12 @@ public class CalculatePostFormulaCommand implements Command {
 	
 	private boolean containsDependentField(FormulaFieldContext formula, ReadingContext reading, Map<String, FacilioField> fieldMap) {
 		Map<String, Object> readingData = reading.getData();
-		for (String fieldName : readingData.keySet()) {
-			FacilioField field = fieldMap.get(fieldName);
-			if (field != null && formula.getWorkflow().getDependentFieldIds().contains(field.getId())) {
-				return true;
+		if (readingData != null) {
+			for (String fieldName : readingData.keySet()) {
+				FacilioField field = fieldMap.get(fieldName);
+				if (field != null && formula.getWorkflow().getDependentFieldIds().contains(field.getId())) {
+					return true;
+				}
 			}
 		}
 		return false;
