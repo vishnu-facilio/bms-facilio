@@ -71,7 +71,7 @@ public class CalculatePostFormulaCommand implements Command {
 		// TODO Auto-generated method stub
 		if (reading.getReadings() != null && !reading.getReadings().isEmpty()) {
 			for (FormulaFieldContext formula : formulas) {
-				if (formula.getMatchedResourcesIds().contains(reading.getParentId())) {
+				if (formula.getMatchedResourcesIds().contains(reading.getParentId()) && containsDependentField(formula, reading, fieldMap)) {
 					String completedKey = null;
 					if (reading.isNewReading()) {
 						completedKey = formula.getId()+"|"+reading.getParentId();
@@ -99,5 +99,16 @@ public class CalculatePostFormulaCommand implements Command {
 				}
 			}
 		}
+	}
+	
+	private boolean containsDependentField(FormulaFieldContext formula, ReadingContext reading, Map<String, FacilioField> fieldMap) {
+		Map<String, Object> readingData = reading.getData();
+		for (String fieldName : readingData.keySet()) {
+			FacilioField field = fieldMap.get(fieldName);
+			if (field != null && formula.getWorkflow().getDependentFieldIds().contains(field.getId())) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

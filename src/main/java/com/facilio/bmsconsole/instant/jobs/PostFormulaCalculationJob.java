@@ -39,15 +39,14 @@ public class PostFormulaCalculationJob extends InstantJob {
 		// TODO Auto-generated method stub
 		ReadingContext reading = (ReadingContext) context.get(FacilioConstants.ContextNames.READING);
 		FormulaFieldContext formula = (FormulaFieldContext) context.get(FacilioConstants.ContextNames.FORMULA_FIELD);
-		Map<String, FacilioField> fieldMap = (Map<String, FacilioField>) context.get(FacilioConstants.ContextNames.MODULE_FIELD_MAP);
 		try {
 			LOGGER.info("Gonna calculate post formula for : "+reading.getParentId()+"_"+formula.getName());
 			List<ReadingContext> formulaReadings = null;
 			if (reading.isNewReading()) {
-				formulaReadings = calculateNewFormula(formula, reading, fieldMap);
+				formulaReadings = calculateNewFormula(formula, reading);
 			}
 			else {
-				formulaReadings = updateFormula(formula, reading, fieldMap);
+				formulaReadings = updateFormula(formula, reading);
 			}
 			
 			if (formulaReadings != null && !formulaReadings.isEmpty()) {
@@ -64,65 +63,48 @@ public class PostFormulaCalculationJob extends InstantJob {
 		}
 	}
 	
-	private List<ReadingContext> calculateNewFormula(FormulaFieldContext formula, ReadingContext reading, Map<String, FacilioField> fieldMap) throws Exception {
-		Map<String, Object> readingData = reading.getReadings();
+	private List<ReadingContext> calculateNewFormula(FormulaFieldContext formula, ReadingContext reading) throws Exception {
 		if (AccountUtil.getCurrentOrg().getId() == 135) {
 			LOGGER.info("Calculating new formula for : "+formula.getName()+" for resource : "+reading.getParentId());
 			LOGGER.info("Reading : "+reading);
 		}
-		for (String fieldName : readingData.keySet()) {
-			FacilioField field = fieldMap.get(fieldName);
-			if (AccountUtil.getCurrentOrg().getId() == 135) {
-				LOGGER.info("Field Name : "+fieldName);
-				LOGGER.info("Field : "+field);
+		ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(reading.getParentId(), formula.getReadingField());
+		if (AccountUtil.getCurrentOrg().getId() == 135) {
+			LOGGER.info("RDM : "+meta);
+		}
+		List<DateRange> intervals = DateTimeUtil.getTimeIntervals(meta.getTtime()+1, reading.getTtime(), formula.getInterval());
+		LOGGER.info("Intervals for calculation of : "+formula.getName()+" for "+reading.getParentId()+" is "+intervals);
+		if (intervals != null) { //No need to calculate if RDM time is greater
+			long startTime = System.currentTimeMillis();
+			if (intervals.size() > 1) { //If more than one interval has to be calculated, only the last interval will be calculated here. Previous intervals will be done via scheduler
+				long minTime = intervals.get(0).getStartTime();
+				long maxTime = intervals.get(intervals.size() - 2).getEndTime();
+				FormulaFieldAPI.calculateHistoricalDataForSingleResource(formula.getId(), reading.getParentId(), new DateRange(minTime, maxTime));
+				intervals = Collections.singletonList(intervals.get(intervals.size() - 1));
 			}
-			if (field != null && formula.getWorkflow().getDependentFieldIds().contains(field.getId())) {
-				ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(reading.getParentId(), formula.getReadingField());
-				if (AccountUtil.getCurrentOrg().getId() == 135) {
-					LOGGER.info("RDM : "+meta);
-				}
-				List<DateRange> intervals = DateTimeUtil.getTimeIntervals(meta.getTtime()+1, reading.getTtime(), formula.getInterval());
-				LOGGER.info("Intervals for calculation of : "+formula.getName()+" for "+reading.getParentId()+" is "+intervals);
-				if (intervals != null) { //No need to calculate if RDM time is greater
-					long startTime = System.currentTimeMillis();
-					if (intervals.size() > 1) { //If more than one interval has to be calculated, only the last interval will be calculated here. Previous intervals will be done via scheduler
-						long minTime = intervals.get(0).getStartTime();
-						long maxTime = intervals.get(intervals.size() - 2).getEndTime();
-						FormulaFieldAPI.calculateHistoricalDataForSingleResource(formula.getId(), reading.getParentId(), new DateRange(minTime, maxTime));
-						intervals = Collections.singletonList(intervals.get(intervals.size() - 1));
-					}
-					List<ReadingContext> formulaReadings = FormulaFieldAPI.calculateFormulaReadings(reading.getParentId(), formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), false, false);
-					LOGGER.info("Time taken for formula calculation of : "+formula.getName()+" for "+reading.getParentId()+" is "+(System.currentTimeMillis() - startTime));
-					return formulaReadings;
-				}
-			}
+			List<ReadingContext> formulaReadings = FormulaFieldAPI.calculateFormulaReadings(reading.getParentId(), formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), false, false);
+			LOGGER.info("Time taken for formula calculation of : "+formula.getName()+" for "+reading.getParentId()+" is "+(System.currentTimeMillis() - startTime));
+			return formulaReadings;
 		}
 		return null;
 	}
 	
-	private List<ReadingContext>  updateFormula(FormulaFieldContext formula, ReadingContext reading, Map<String, FacilioField> fieldMap) throws Exception {
-		Map<String, Object> readingData = reading.getData();
+	private List<ReadingContext>  updateFormula(FormulaFieldContext formula, ReadingContext reading) throws Exception {
 		long ttime = reading.getTtime();
 		ZonedDateTime zdt = DateTimeUtil.getDateTime(ttime);
 		zdt = zdt.truncatedTo(new SecondsChronoUnit(formula.getInterval() * 60));
 		long startTime = DateTimeUtil.getMillis(zdt, true);
 		long endTime = (startTime + (formula.getInterval() * 60 * 1000)) - 1;
-		ReadingContext oldReading = null;
-		for (String fieldName : readingData.keySet()) {
-			FacilioField field = fieldMap.get(fieldName);
-			if (formula.getWorkflow().getDependentFieldIds().contains(field.getId())) {
-				oldReading = getOldReading(formula, startTime, endTime);
-				List<DateRange> intervals = Collections.singletonList(new DateRange(startTime, endTime));
-				List<ReadingContext> formulaReadings = FormulaFieldAPI.calculateFormulaReadings(reading.getParentId(), formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), false, false);
-				if (formulaReadings != null && !formulaReadings.isEmpty()) {
-					ReadingContext newReading = formulaReadings.get(0);
-					if (oldReading != null) {
-						newReading.setTtime(oldReading.getTtime());
-						newReading.setId(oldReading.getId());
-					}
-					return Collections.singletonList(newReading);
-				}
+		ReadingContext oldReading = getOldReading(formula, startTime, endTime);
+		List<DateRange> intervals = Collections.singletonList(new DateRange(startTime, endTime));
+		List<ReadingContext> formulaReadings = FormulaFieldAPI.calculateFormulaReadings(reading.getParentId(), formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), false, false);
+		if (formulaReadings != null && !formulaReadings.isEmpty()) {
+			ReadingContext newReading = formulaReadings.get(0);
+			if (oldReading != null) {
+				newReading.setTtime(oldReading.getTtime());
+				newReading.setId(oldReading.getId());
 			}
+			return Collections.singletonList(newReading);
 		}
 		return null;
 	}
