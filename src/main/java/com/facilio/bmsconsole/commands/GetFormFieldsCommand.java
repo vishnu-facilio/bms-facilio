@@ -31,22 +31,22 @@ public class GetFormFieldsCommand implements Command {
 				// Temp hack
 				if (moduleName.equals("workorderrequest")) {
 					if (field.getName().equals("resource")) {
-						formFields.add(new FormField(field.getFieldId(),field.getName(), FieldDisplayType.WOASSETSPACECHOOSER, field.getDisplayName(), Required.OPTIONAL, i++));
+						formFields.add(new FormField(field.getFieldId(),field.getName(), FieldDisplayType.WOASSETSPACECHOOSER, field.getDisplayName(), Required.OPTIONAL, i++, 1));
 					} else if (field.getName().equals("requester")) {
-						formFields.add(new FormField(field.getFieldId(), field.getName(), FieldDisplayType.REQUESTER, field.getDisplayName(), Required.REQUIRED, ++i));
+						formFields.add(new FormField(field.getFieldId(), field.getName(), FieldDisplayType.REQUESTER, field.getDisplayName(), Required.REQUIRED, ++i, 1));
 					} else if (field.getName().equals("urgency")) {
-						formFields.add(new FormField(field.getFieldId(), field.getName(), FieldDisplayType.URGENCY, field.getDisplayName(), Required.OPTIONAL, ++i));
+						formFields.add(new FormField(field.getFieldId(), field.getName(), FieldDisplayType.URGENCY, field.getDisplayName(), Required.OPTIONAL, ++i, 1));
 					} else {
-						formFields.add(new FormField(field.getFieldId(), field.getName(), field.getDisplayType(), field.getDisplayName(), Required.OPTIONAL, ++i));	
+						formFields.add(new FormField(field.getFieldId(), field.getName(), field.getDisplayType(), field.getDisplayName(), Required.OPTIONAL, ++i, 1));	
 					}
 				} else {
-					formFields.add(new FormField(field.getFieldId(), field.getName(), field.getDisplayType(), field.getDisplayName(), Required.OPTIONAL, ++i));
+					formFields.add(new FormField(field.getFieldId(), field.getName(), field.getDisplayType(), field.getDisplayName(), Required.OPTIONAL, ++i, 1));
 				}
 			}
 		}
 		// Temp hack
 		if (moduleName.equals("workorderrequest")) {
-			formFields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachment", Required.OPTIONAL, ++i));
+			formFields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachment", Required.OPTIONAL, ++i, 1));
 		}
 		context.put(FacilioConstants.ContextNames.FORM_FIELDS, formFields);
 		return false;

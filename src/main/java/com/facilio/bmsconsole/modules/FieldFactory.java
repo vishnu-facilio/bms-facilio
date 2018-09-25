@@ -176,6 +176,13 @@ public class FieldFactory {
 		sequenceNumber.setModule(module);
 		fields.add(sequenceNumber);
 		
+		FacilioField span = new FacilioField();
+		span.setName("span");
+		span.setDataType(FieldType.NUMBER);
+		span.setColumnName("SPAN");
+		span.setModule(module);
+		
+		fields.add(span);
 		return fields;
 	}
 

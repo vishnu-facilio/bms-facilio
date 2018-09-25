@@ -71,6 +71,15 @@ public class FormField {
 		return this.lookupModuleName;
 	}
 	
+	private int span = 1;
+	public void setSpan(int span) {
+		this.span = span;
+	}
+	
+	public int getSpan() {
+		return this.span;
+	}
+	
 	public enum Required {
 		REQUIRED,
 		OPTIONAL
@@ -78,22 +87,23 @@ public class FormField {
 	
 	public FormField() {}
 	
-	public FormField(long fieldId, String name, FieldDisplayType displayType, String displayName, Required required, int sequenceNumber) {
-		this(name, displayType, displayName, required, sequenceNumber);
+	public FormField(long fieldId, String name, FieldDisplayType displayType, String displayName, Required required, int sequenceNumber, int span) {
+		this(name, displayType, displayName, required, sequenceNumber, span);
 		this.setFieldId(fieldId);
 	}
 	
-	public FormField(String name, FieldDisplayType displayType, String displayName, Required required, String lookupModuleName, int sequenceNumber) {
-		this(name, displayType, displayName, required, sequenceNumber);
+	public FormField(String name, FieldDisplayType displayType, String displayName, Required required, String lookupModuleName, int sequenceNumber, int span) {
+		this(name, displayType, displayName, required, sequenceNumber, span);
 		this.setLookupModuleName(lookupModuleName);
 	}
 	
-	public FormField(String name, FieldDisplayType displayType, String displayName, Required required, int sequenceNumber) {
+	public FormField(String name, FieldDisplayType displayType, String displayName, Required required, int sequenceNumber, int span) {
 		this.name = name;
 		this.displayType = displayType;
 		this.displayName = displayName;
 		this.required = required == Required.REQUIRED;
 		this.sequenceNumber = sequenceNumber;
+		this.span = span;
 	}
 	
 	private String displayName;
