@@ -233,18 +233,6 @@
 				<param name="includeProperties">userId</param>
 			</result>
 			</action>
-			 <action name="addrequester" class="com.facilio.bmsconsole.actions.UserAction" method="addRequester">
-			<param name="moduleName">setup</param>
-			<param name="permission">USER_MANAGEMENT</param>
-			<result name="success" type="json">
-				<param name="includeProperties">userId</param>
-			</result>
-			<result name="error" type="json">
-				<param name="statusCode">500</param>
-				<param name="ignoreHierarchy">false</param>
-				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
-			</result>
-			</action>
 			<action name="resendinvite" class="com.facilio.bmsconsole.actions.UserAction" method="resendInvite">
 			<param name="moduleName">setup</param>
 			<param name="permission">USER_MANAGEMENT</param>

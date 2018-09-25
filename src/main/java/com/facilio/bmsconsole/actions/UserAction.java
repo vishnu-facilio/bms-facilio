@@ -32,6 +32,7 @@ import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
 import com.facilio.accounts.exception.AccountException;
+import com.facilio.accounts.impl.UserBeanImpl;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
@@ -212,7 +213,13 @@ public class UserAction extends FacilioAction {
 		}
 
 		try {
-			AccountUtil.getTransactionalUserBean().inviteRequester(user.getOrgId(), user);
+			long userid = AccountUtil.getTransactionalUserBean().inviteRequester(user.getOrgId(), user);
+			if(userid>0)
+			{
+				// send invite
+				(new UserBeanImpl()).sendInvitation(AccountUtil.getCurrentOrg().getOrgId(), user);
+
+			}
 			setUserId(user.getId());
 			
 		}
@@ -290,21 +297,7 @@ public class UserAction extends FacilioAction {
 		}
 		return SUCCESS;
 	}
-	
-	public String addRequester() throws Exception {
-		
-		// setting necessary fields
-		user.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-		if(user.getEmail() == null || user.getEmail().isEmpty()) {
-			user.setEmail(user.getMobile());
-		}
 
-		
-		long requesterId = AccountUtil.getUserBean().addRequester(AccountUtil.getCurrentOrg().getOrgId(), user);
-		user.setId(requesterId);
-		
-		return SUCCESS;
-	}
 	
 	public String resendInvite() throws Exception {
 		String portal = ServletActionContext.getRequest().getParameter("portal");
@@ -316,7 +309,7 @@ public class UserAction extends FacilioAction {
 			
 			long portalid = AccountUtil.getOrgBean().getPortalId();
 			user.setPortalId(portalid);
-			AccountUtil.getUserBean().sendInvitation(AccountUtil.getCurrentOrg().getOrgId(), user);
+			(new UserBeanImpl()).sendInvitation(AccountUtil.getCurrentOrg().getOrgId(), user);
 		}
 		else
 		{

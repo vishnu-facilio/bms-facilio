@@ -25,6 +25,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
+import com.facilio.accounts.impl.UserBeanImpl;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.PortalInfoAction;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -544,7 +545,7 @@ public class FacilioAuthAction extends ActionSupport {
                 AccountUtil.getTransactionalUserBean().createRequestor(AccountUtil.getCurrentOrg().getId(), user);
                 LOGGER.info("user signup done "+user);
                 try {
-					AccountUtil.getUserBean().sendInvitation(AccountUtil.getCurrentOrg().getOrgId(), user);
+					(new UserBeanImpl()).sendInvitation(AccountUtil.getCurrentOrg().getOrgId(), user,true);
 					 LOGGER.info("Email invitation sent "+user);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block

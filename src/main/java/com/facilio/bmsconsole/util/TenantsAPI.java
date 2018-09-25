@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
+import com.facilio.accounts.impl.UserBeanImpl;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.DashboardAction;
 import com.facilio.bmsconsole.context.AssetContext;
@@ -217,7 +218,7 @@ public class TenantsAPI {
 		User user = AccountUtil.getUserBean().getPortalUser(userId);
 		if (user.getPortal_verified() == false) {
 		
-			AccountUtil.getUserBean().sendInvitation(user.getOuid(), user);
+			(new UserBeanImpl()).sendInvitation(user.getOuid(), user);
 			
 		}
 		

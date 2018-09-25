@@ -435,27 +435,22 @@ public class UserBeanImpl implements UserBean {
 		}
 		return hostname + url + inviteToken;
 	}
-	@Override
 	public void sendInvitation(long ouid, User user) throws Exception {
+			this.sendInvitation(ouid, user,false);
+	}
+	public void sendInvitation(long ouid, User user,boolean registration) throws Exception {
 		user.setOuid(ouid);
 		Map<String, Object> placeholders = new HashMap<>();
 		CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(user), placeholders);
 		CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeholders);
 		CommonCommandUtil.appendModuleNameInKey(null, "inviter", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeholders);
-		if (user.getEmail().equals(user.getMobile())) {
-			
-			System.out.println("@@@@@@@@@@@@@@@@@@@@@@ SMS invite Sent");
-			try{
-				String inviteLink = getUserLink(user,"/invitation/");
-			SMSUtil.sendUserLink(user, inviteLink);
-			}
-			catch (Exception e)
-			{
-			CommonCommandUtil.emailException(user.getEmail(), "cannot send sms for the user", e, null);
-			}
-		} else {
+		
 			if(user.isPortalUser()) {
-				String inviteLink = getUserLink(user,"/emailregistration/");
+				String inviteLink = getUserLink(user,"/invitation/");
+				if(registration)
+				{
+					inviteLink = getUserLink(user,"/emailregistration/");
+				}
 				placeholders.put("invitelink", inviteLink);
 				AccountEmailTemplate.PORTAL_SIGNUP.send(placeholders);
 
@@ -466,7 +461,7 @@ public class UserBeanImpl implements UserBean {
 
 			AccountEmailTemplate.INVITE_USER.send(placeholders);
 			}
-		}
+		
 	}
 	
 	public boolean sendResetPasswordLink(User user) throws Exception {
@@ -1205,7 +1200,7 @@ public class UserBeanImpl implements UserBean {
 		if(AccountUtil.getCurrentOrg() != null) {
 			Organization portalOrg = AccountUtil.getOrgBean().getPortalOrg(AccountUtil.getCurrentOrg().getDomain());
 			user.setPortalId(portalOrg.getPortalId());
-			return addRequester(orgId, user, true, true);
+			return addRequester(orgId, user, false, true);
 		}
 		return 0L;
 	}

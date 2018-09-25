@@ -102,7 +102,7 @@ public interface UserBean {
     
     public boolean verifyUserSession(String email, String token) throws Exception;
 
-	public void sendInvitation(long ouid, User user) throws Exception;
+	//public void sendInvitation(long ouid, User user) throws Exception;
 
 //	public void sendInvitation(long ouid, User user) throws Exception;
 
