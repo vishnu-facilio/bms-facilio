@@ -138,4 +138,18 @@ public class WorkOrderContext extends TicketContext {
 	public void setApprovalRule(ApprovalRuleContext approvalRule) {
 		this.approvalRule = approvalRule;
 	}
+	
+	private Boolean sendForApproval;
+	public Boolean getSendForApproval() {
+		return sendForApproval;
+	}
+	public void setSendForApproval(Boolean sendForApproval) {
+		this.sendForApproval = sendForApproval;
+	}
+	public boolean sendForApproval() {
+		if(sendForApproval != null) {
+			return sendForApproval.booleanValue();
+		}
+		return false;
+	}
 }

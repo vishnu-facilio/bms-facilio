@@ -1,15 +1,22 @@
 package com.facilio.bmsconsole.workflow.rule;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
-import com.opensymphony.xwork2.conversion.annotations.ConversionRule;
-import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
-import com.opensymphony.xwork2.util.Element;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 
 public class ApprovalRuleContext extends WorkflowRuleContext {
 	
@@ -50,7 +57,9 @@ public class ApprovalRuleContext extends WorkflowRuleContext {
 		return approvers;
 	}
 	public void setApprovers(List<SingleSharingContext> approvers) {
-		this.approvers = new SharingContext(approvers);
+		if (approvers != null) {
+			this.approvers = new SharingContext(approvers);
+		}
 	}
 	public void addApprover (SingleSharingContext approver) {
 		if (this.approvers == null) {
@@ -100,10 +109,63 @@ public class ApprovalRuleContext extends WorkflowRuleContext {
 		this.rejectionFormId = rejectionFormId;
 	}
 	
+	private String approvalButton;
+	public String getApprovalButton() {
+		return approvalButton;
+	}
+	public void setApprovalButton(String approvalButton) {
+		this.approvalButton = approvalButton;
+	}
+	
+	private String rejectionButton;
+	public String getRejectionButton() {
+		return rejectionButton;
+	}
+	public void setRejectionButton(String rejectionButton) {
+		this.rejectionButton = rejectionButton;
+	}
+	
+	private Boolean allApprovalRequired;
+	public Boolean getAllApprovalRequired() {
+		return allApprovalRequired;
+	}
+	public void setAllApprovalRequired(Boolean allApprovalRequired) {
+		this.allApprovalRequired = allApprovalRequired;
+	}
+	public boolean isAllApprovalRequired() {
+		if (allApprovalRequired != null) {
+			return allApprovalRequired.booleanValue();
+		}
+		return false;
+	}
+	
 	@Override
 	public void executeWorkflowActions(Object record, Context context, Map<String, Object> placeHolders)
 			throws Exception {
 		// TODO Auto-generated method stub
+		updateRecordApprovalState(record);
 		super.executeWorkflowActions(record, context, placeHolders);
+	}
+	
+	private void updateRecordApprovalState(Object record) throws Exception {
+		if (getEvent() == null) {
+			setEvent(WorkflowRuleAPI.getWorkflowEvent(getEventId()));
+		}
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		WorkflowEventContext event = getEvent();
+		Map<String, Object> prop = new HashMap<>();
+		prop.put(FacilioConstants.ApprovalRule.APPROVAL_STATE_FIELD_NAME, ApprovalState.REQUESTED.getValue());
+		prop.put(FacilioConstants.ApprovalRule.APPROVAL_RULE_ID_FIELD_NAME, getId());
+		
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(modBean.getField(FacilioConstants.ApprovalRule.APPROVAL_STATE_FIELD_NAME, event.getModule().getName()));
+		fields.add(modBean.getField(FacilioConstants.ApprovalRule.APPROVAL_RULE_ID_FIELD_NAME, event.getModule().getName()));
+		
+		UpdateRecordBuilder<ModuleBaseWithCustomFields> updateBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
+																			.fields(fields)
+																			.module(event.getModule())
+																			.andCondition(CriteriaAPI.getIdCondition(((ModuleBaseWithCustomFields) record).getId(), event.getModule()))
+																			;
+		updateBuilder.update(prop);
 	}
 }

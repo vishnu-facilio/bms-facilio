@@ -18,19 +18,6 @@ import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
 public class TicketContext extends ModuleBaseWithCustomFields {
 	private static Logger log = LogManager.getLogger(TicketContext.class.getName());
-	private Boolean sendForApproval;
-	public Boolean getSendForApproval() {
-		return sendForApproval;
-	}
-	public void setSendForApproval(Boolean sendForApproval) {
-		this.sendForApproval = sendForApproval;
-	}
-	public boolean sendForApproval() {
-		if(sendForApproval != null) {
-			return sendForApproval.booleanValue();
-		}
-		return false;
-	}
 	
 	private String subject;
 	public String getSubject() {

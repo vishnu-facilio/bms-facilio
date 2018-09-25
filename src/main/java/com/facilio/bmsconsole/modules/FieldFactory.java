@@ -942,6 +942,9 @@ public class FieldFactory {
 		fields.add(getField("rejectionRuleId", "REJECTION_RULE_ID", module, FieldType.LOOKUP));
 		fields.add(getField("approvalFormId", "APPROVAL_FORM_ID", module, FieldType.LOOKUP));
 		fields.add(getField("rejectionFormId", "REJECTION_FORM_ID", module, FieldType.LOOKUP));
+		fields.add(getField("approvalButton", "APPROVAL_BUTTON", module, FieldType.STRING));
+		fields.add(getField("rejectionButton", "REJECTION_BUTTON", module, FieldType.STRING));
+		fields.add(getField("allApprovalRequired", "ALL_APPROVAL_REQUIRED", module, FieldType.BOOLEAN));
 		
 		return fields;
 	}

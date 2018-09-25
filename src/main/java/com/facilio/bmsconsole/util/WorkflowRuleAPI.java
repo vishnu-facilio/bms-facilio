@@ -551,6 +551,7 @@ public class WorkflowRuleAPI {
 					case APPROVAL_RULE:
 						prop.putAll(typeWiseExtendedProps.get(ruleType).get((Long) prop.get("id")));
 						rule = ApprovalRulesAPI.constructApprovalRuleFromProps(prop, modBean);
+						break;
 					default:
 						rule = FieldUtil.getAsBeanFromMap(prop, WorkflowRuleContext.class);
 						break;
