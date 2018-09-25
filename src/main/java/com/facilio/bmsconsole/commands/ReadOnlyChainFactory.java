@@ -15,6 +15,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new FilterXFieldCommand());
 		c.addCommand(new FetchReportDataCommand());
 		c.addCommand(new TransformReportDataCommand());
+		c.addCommand(new CalculateDerivationCommand());
 		c.addCommand(new CalculateVarianceCommand());
 		c.addCommand(new FetchReportExtraMeta());
 		CommonCommandUtil.addCleanUpCommand(c);
