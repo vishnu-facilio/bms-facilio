@@ -7,9 +7,9 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
-import com.facilio.bmsconsole.view.ReadingRuleContext;
-import com.facilio.bmsconsole.workflow.ActionContext;
-import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
+import com.facilio.bmsconsole.workflow.rule.ActionContext;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 
 public class AddValidationRulesCommand implements Command {
@@ -27,8 +27,8 @@ public class AddValidationRulesCommand implements Command {
 			return false; 
 		}
 		
-		Chain addChain = FacilioChainFactory.getAddWorkflowRuleChain();
-		Chain updateChain = FacilioChainFactory.updateWorkflowRuleChain();
+		Chain addChain = TransactionChainFactory.getAddWorkflowRuleChain();
+		Chain updateChain = TransactionChainFactory.updateWorkflowRuleChain();
 		
 		for (int i = 0; i < readingRules.size(); ++i) {
 			if (readingRules.get(i) == null) {

@@ -21,16 +21,13 @@ public enum FacilioListFunction implements FacilioWorkflowFunctionInterface {
 		
 		public void checkParam(Object... objects) throws Exception {
 			
-			if(objects.length <= 0) {
-				throw new FunctionParamException("Required Object is null");
-			}
 		}
 	},
 	ADD(2,"add") {
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			
-			checkParam();
+			checkParam(objects);
 			
 			List<Object> list = (List<Object>) objects[0];
 			Object element = objects[1];

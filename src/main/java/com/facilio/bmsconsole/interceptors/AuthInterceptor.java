@@ -1,8 +1,9 @@
 
 package com.facilio.bmsconsole.interceptors;
 
+import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.logging.Level;
@@ -17,7 +18,7 @@ import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.fw.auth.CognitoUtil.CognitoUser;
 import com.facilio.fw.auth.LoginUtil;
@@ -58,6 +59,50 @@ public class AuthInterceptor extends AbstractInterceptor {
 				if (AuthenticationUtil.checkIfSameUser(currentAccount, cognitoUser)) {
 					AccountUtil.cleanCurrentAccount();
 					AccountUtil.setCurrentAccount(currentAccount);
+					
+					List<Long> accessibleSpace = null;
+					if (currentAccount.getUser() != null) {
+						accessibleSpace = currentAccount.getUser().getAccessibleSpace();
+					}
+					if (currentAccount != null) {
+						List<Long> sites = CommonCommandUtil.getMySiteIds();
+						if (sites != null && sites.size() == 1) {
+							currentAccount.setCurrentSiteId(sites.get(0));
+							if (accessibleSpace == null) {
+								accessibleSpace = new ArrayList<>();
+								accessibleSpace.add(sites.get(0));
+								currentAccount.getUser().setAccessibleSpace(accessibleSpace);
+							}
+						} else {
+							String currentSite = request.getHeader("X-current-site");
+							long currentSiteId = -1;
+							if (currentSite != null && !currentSite.isEmpty()) {
+								try {
+									currentSiteId = Long.valueOf(currentSite);
+								} catch (NumberFormatException ex) {
+									// ignore if header value is wrong
+								}
+								if (currentSiteId != -1 && sites != null && !sites.isEmpty()) {
+									boolean found = false;
+									for (long id: sites) {
+										if (id == currentSiteId) {
+											found = true;
+											break;
+										}
+									}
+									if (!found) {
+										throw new IllegalArgumentException("Invalid Site.");
+									}
+								}
+								currentAccount.setCurrentSiteId(currentSiteId);
+								if (currentSiteId != -1 && accessibleSpace == null) {
+									accessibleSpace = new ArrayList<>();
+									accessibleSpace.add(currentSiteId);
+									currentAccount.getUser().setAccessibleSpace(accessibleSpace);
+								}
+							}
+						}
+					}
 					request.setAttribute("ORGID", currentAccount.getOrg().getOrgId());
 					request.setAttribute("USERID", currentAccount.getUser().getOuid());
 
@@ -108,7 +153,6 @@ public class AuthInterceptor extends AbstractInterceptor {
 					return Action.ERROR;
 				}
 			}
-
 		} catch (Exception e) {
 			LOGGER.log(Level.SEVERE, "error in auth interceptor", e);
 			return Action.LOGIN;

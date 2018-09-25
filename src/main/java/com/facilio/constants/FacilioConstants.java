@@ -319,6 +319,7 @@ public class FacilioConstants {
 		
 		public static final String RESOURCE = "resource";
 		public static final String RESOURCE_LIST = "resourceList";
+		public static final String FETCH_RESOURCE_DETAIL = "fetchresourcedetail";
 		
 		public static final String BASE_SPACE_LIST = "basespaces";
 		public static final String BASE_SPACE = "basespace";
@@ -629,6 +630,11 @@ public class FacilioConstants {
 		public static final String LOGGED_IN_USER_GROUP = "${LOGGED_USER_GROUP}";
 		public static final long LOGGED_IN_USER_ID = -99;
 		public static final long LOGGED_IN_USER_GROUP_ID = -100;
+	}
+	
+	public static class ApprovalRule {
+		public static final String APPROVAL_RULE_ID_FIELD_NAME = "approvalRuleId";
+		public static final String APPROVAL_STATE_FIELD_NAME = "approvalState";
 	}
 	
 	public static class Workflow {

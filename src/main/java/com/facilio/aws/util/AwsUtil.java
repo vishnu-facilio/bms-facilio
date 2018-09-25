@@ -35,8 +35,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 
-import com.facilio.sql.DBUtil;
-import com.facilio.transaction.FacilioConnectionPool;
+import com.facilio.accounts.util.AccountUtil;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -58,9 +57,6 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 import com.amazonaws.regions.Regions;
-import com.amazonaws.services.identitymanagement.AmazonIdentityManagement;
-import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClientBuilder;
-import com.amazonaws.services.identitymanagement.model.GetUserResult;
 import com.amazonaws.services.identitymanagement.model.User;
 import com.amazonaws.services.iot.AWSIot;
 import com.amazonaws.services.iot.AWSIotClientBuilder;
@@ -102,6 +98,8 @@ import com.amazonaws.services.simpleemail.model.SendEmailRequest;
 import com.amazonaws.services.simpleemail.model.SendRawEmailRequest;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
+import com.facilio.sql.DBUtil;
+import com.facilio.transaction.FacilioConnectionPool;
 
 public class AwsUtil 
 {
@@ -129,7 +127,7 @@ public class AwsUtil
 	private static volatile AWSCredentialsProvider credentialsProvider = null;
 	private static volatile AWSIot awsIot = null;
 	private static volatile AmazonSQS awsSQS = null;
-	private static volatile User user = null;
+	// private static volatile User user = null;
 	private static volatile AmazonKinesis kinesis = null;
 	private static String region = null;
 	private static final Object LOCK = new Object();
@@ -137,6 +135,7 @@ public class AwsUtil
 	private static final Properties PROPERTIES = new Properties();
 
 	private static final String SERVERNAME = getConfig("servername");
+	private static final String USER_ID="668907905219";
 
 	private static boolean productionEnvironment = false;
 	private static boolean developmentEnvironment = true;
@@ -203,12 +202,18 @@ public class AwsUtil
 			try {
 				if(checkIfVersionExistsInS3(newVersion)) {
 					String environment = getConfig("environment");
-					if (environment != null) {
+					com.facilio.accounts.dto.User currentUser = AccountUtil.getCurrentUser();
+					if (environment != null && currentUser != null) {
 						conn = FacilioConnectionPool.INSTANCE.getConnection();
-						pstmt = conn.prepareStatement("Update ClientApp set version=? WHERE environment=?");
+						pstmt = conn.prepareStatement("Update ClientApp set version=?, updatedTime=?, updatedBy=? WHERE environment=?");
 						pstmt.setString(1, newVersion);
-						pstmt.setString(2, environment);
+						pstmt.setLong(2, System.currentTimeMillis());
+						pstmt.setLong(3, currentUser.getId());
+						pstmt.setString(4, environment);
 						updatedRows = pstmt.executeUpdate();
+						if(updatedRows > 0) {
+						    logger.info("Updated client version successfully");
+                        }
 					}
 				}
 			} catch (SQLException | RuntimeException e) {
@@ -443,7 +448,7 @@ public class AwsUtil
 		}
 		String toAddress = (String)mailJson.get("to");
 		boolean sendEmail = true;
-		if( ! "production".equals(AwsUtil.getConfig("environment")) ) {
+		if( ! isProduction()) {
 			if(toAddress != null) {
 				String to = "";
 				for(String address : toAddress.split(",")) {
@@ -500,7 +505,7 @@ public class AwsUtil
 		if(credentialsProvider == null){
 			synchronized (LOCK) {
 				if(credentialsProvider == null){
-					if("stage".equalsIgnoreCase(AwsUtil.getConfig("environment"))) {
+					if( ! isProduction()) {
 						credentialsProvider = InstanceProfileCredentialsProvider.createAsyncRefreshingProvider(false);
 					} else {
 						credentialsProvider = new AWSStaticCredentialsProvider(getBasicAwsCredentials());
@@ -549,7 +554,7 @@ public class AwsUtil
 	}
 
 	private static String getUserId() {
-    	if(user == null) {
+    	/*if(user == null) {
     		synchronized (LOCK) {
     			if(user == null) {
 					AmazonIdentityManagement iam = AmazonIdentityManagementClientBuilder.standard()
@@ -561,7 +566,8 @@ public class AwsUtil
 				}
 			}
 		}
-		return user.getUserId();
+		return user.getUserId();*/
+    	return USER_ID;
 	}
 
 	public static void addIotClient(String policyName, String clientId) {
@@ -669,7 +675,7 @@ public class AwsUtil
 	private static void createKinesisStream(AmazonKinesis kinesisClient, String streamName) {
     	try {
 			CreateStreamResult streamResult = kinesisClient.createStream(streamName, 1);
-			logger.info("Stream created : " + streamResult.getSdkHttpMetadata().getHttpStatusCode());
+			logger.info("Stream created : " + streamName + " with status " + streamResult.getSdkHttpMetadata().getHttpStatusCode());
 		} catch (ResourceInUseException resourceInUse){
     		logger.info("Stream exists for name : " + streamName);
 		}
@@ -704,6 +710,7 @@ public class AwsUtil
     	CreateKeysAndCertificateResult certificateResult = createCertificate(iotClient);
     	attachPolicy(iotClient, certificateResult, name);
     	createKinesisStream(getKinesisClient(), name);
+    	createKinesisStream(getKinesisClient(), name+"-error");
     	createIotTopicRule(iotClient, name);
     	return certificateResult;
 	}
@@ -747,12 +754,10 @@ public class AwsUtil
 	    			continue;
 	    		}
 	    		MimeBodyPart attachment = new MimeBodyPart();
-	    		String environment = AwsUtil.getConfig("environment"); 
 	    		DataSource fileDataSource = null;
-	    		if ("development".equalsIgnoreCase(environment)) {
+	    		if (isDevelopment()) {
 	    			fileDataSource = new FileDataSource(fileUrl);
-	    		}
-	    		else {
+	    		} else {
 	    			URL url = new URL(fileUrl);
 	    			fileDataSource = new URLDataSource(url);
 	    		}

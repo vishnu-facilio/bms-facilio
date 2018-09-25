@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.context;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 import com.facilio.accounts.util.AccountUtil;

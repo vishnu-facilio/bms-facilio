@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
 import java.io.InputStream;
-
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
@@ -22,37 +22,30 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.struts2.components.Bean;
-import org.json.simple.JSONObject;
 
-import com.amazonaws.services.cognitoidentity.model.ResourceConflictException;
-import com.facilio.accounts.bean.UserBean;
-import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.actions.ImportDataAction;
+import com.facilio.bmsconsole.actions.ImportBuildingAction;
+import com.facilio.bmsconsole.actions.ImportFloorAction;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.actions.ImportSiteAction;
-import com.facilio.bmsconsole.actions.ImportTemplateAction;
-import com.facilio.bmsconsole.actions.ImportTemplateContext;
+import com.facilio.bmsconsole.actions.ImportSpaceAction;
 import com.facilio.bmsconsole.commands.data.ProcessXLS;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.context.SiteContext;
-import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.ImportAPI;
@@ -63,7 +56,6 @@ import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
-import com.google.common.collect.Multimap;
 import com.google.common.collect.ArrayListMultimap;
 
 public class ProcessImportCommand implements Command {
@@ -71,6 +63,7 @@ public class ProcessImportCommand implements Command {
 	private static final Logger LOGGER = Logger.getLogger(ProcessImportCommand.class.getName());
 	private static org.apache.log4j.Logger log = LogManager.getLogger(ProcessXLS.class.getName());
 	private static ArrayListMultimap<String, String> groupedFields;
+	private static ArrayListMultimap<String, Long> recordsList = ArrayListMultimap.create();
 
 	@Override
 	public boolean execute(Context c) throws Exception {
@@ -136,11 +129,15 @@ public class ProcessImportCommand implements Command {
 						val = cell.getStringCellValue();
 					} else if (cell.getCellTypeEnum() == CellType.NUMERIC
 							|| cell.getCellTypeEnum() == CellType.FORMULA) {
-						if (HSSFDateUtil.isCellDateFormatted(cell)) {
+						if (cell.getCellTypeEnum() == CellType.NUMERIC && HSSFDateUtil.isCellDateFormatted(cell)) {
 							Date date = cell.getDateCellValue();
 							Instant date1 = date.toInstant();
 							val = (Long) date1.getEpochSecond() * 1000;
-						} else {
+						} 
+						else if(cell.getCellTypeEnum() == CellType.FORMULA) {
+							val = cell.getStringCellValue();
+						}
+						else {
 							val = cell.getNumericCellValue();
 						}
 					} else if (cell.getCellTypeEnum() == CellType.BOOLEAN) {
@@ -174,7 +171,7 @@ public class ProcessImportCommand implements Command {
 					HashMap<String, Object> props = new LinkedHashMap<String, Object>();
 
 					if (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) || (importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
-						Long spaceId = ImportAPI.getSpaceID(importProcessContext, colVal, fieldMapping);
+						Long spaceId = getSpaceID(importProcessContext, colVal, fieldMapping);
 						props.put("purposeSpace", spaceId);
 							
 						props.put(ImportAPI.ImportProcessConstants.RESOURCE_TYPE, ResourceType.ASSET.getValue());
@@ -214,7 +211,7 @@ public class ProcessImportCommand implements Command {
 								for(int z=0 ;z<k+1;z++) {
 								sendToSpaceID.put(fieldMapping.get(spaceFields.get(z)), colVal.get(fieldMapping.get(spaceFields.get(z))));
 								}
-								Long id = ImportAPI.getSpaceID(importProcessContext, sendToSpaceID, fieldMapping);
+								Long id = getSpaceID(importProcessContext, sendToSpaceID, fieldMapping);
 								lookupHolder = new HashMap<>();
 								lookupHolder.put("id", id);
 								props.put(Ids[k],lookupHolder);
@@ -226,7 +223,7 @@ public class ProcessImportCommand implements Command {
 
 					if (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.BUILDING)) {
 					
-						Long buildingId = ImportAPI.getSpaceID(importProcessContext,colVal, fieldMapping);
+						Long buildingId = getSpaceID(importProcessContext,colVal, fieldMapping);
 						lookupHolder = new HashMap<>();
 						lookupHolder.put("id", buildingId);
 						props.put(ImportAPI.ImportProcessConstants.SITE_ID_FIELD,lookupHolder);
@@ -239,7 +236,7 @@ public class ProcessImportCommand implements Command {
 
 					else if (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.FLOOR)) {
 						
-						Long floorId = ImportAPI.getSpaceID(importProcessContext,colVal, fieldMapping);
+						Long floorId = getSpaceID(importProcessContext,colVal, fieldMapping);
 						lookupHolder = new HashMap<>();
 						lookupHolder.put("id", floorId);
 						props.put(ImportAPI.ImportProcessConstants.BUILDING_ID_FIELD,lookupHolder);
@@ -357,6 +354,8 @@ public class ProcessImportCommand implements Command {
 		c.put(ImportAPI.ImportProcessConstants.GROUPED_FIELDS, groupedFields);
 		c.put(ImportAPI.ImportProcessConstants.GROUPED_READING_CONTEXT, groupedContext);
 		c.put(ImportAPI.ImportProcessConstants.READINGS_LIST, readingsList);
+		c.put(FacilioConstants.ContextNames.RECORD_LIST, recordsList);
+		
 		LOGGER.severe(groupedContext.toString());
 		return false;
 	}
@@ -492,5 +491,147 @@ public class ProcessImportCommand implements Command {
 			}
 
 		}
+	}
+	
+	public static Long getSpaceID(ImportProcessContext importProcessContext, HashMap<String, Object> colVal, HashMap<String,String> fieldMapping) throws Exception {
+
+		String siteName =null ,buildingName = null,floorName = null ,spaceName = null;
+		List<Long> listOfIds = new ArrayList<>();
+		if(importProcessContext.getImportMode() == ImportProcessContext.ImportMode.READING.getValue()) {
+			String moduleName = importProcessContext.getModule().getName();
+			String Name = (String) colVal.get(fieldMapping.get("sys__name"));
+			switch (moduleName) {
+			case ImportAPI.ImportProcessConstants.SITE_ID_FIELD:
+				siteName  = Name;
+				break;
+			case ImportAPI.ImportProcessConstants.BUILDING_ID_FIELD:
+				buildingName = Name;
+				break;
+			case ImportAPI.ImportProcessConstants.FLOOR_ID_FIELD:
+				floorName = Name;
+				break;
+			case ImportAPI.ImportProcessConstants.SPACE_FIELD:
+				spaceName = Name;
+				break;
+			}
+		}
+		
+		else {
+			String moduleName = importProcessContext.getModule().getName();
+			siteName = (String) colVal.get(fieldMapping.get(moduleName + "__site"));
+			buildingName = (String) colVal.get(fieldMapping.get(moduleName + "__building"));
+			floorName = (String) colVal.get(fieldMapping.get(moduleName + "__floor"));
+			spaceName = (String) colVal.get(fieldMapping.get(moduleName + "__spaceName"));
+		}
+		
+		ImportSiteAction siteMeta =new ImportSiteAction();
+		ImportBuildingAction buildingMeta =new ImportBuildingAction();
+		ImportFloorAction floorMeta =new ImportFloorAction();
+		ImportSpaceAction spaceMeta =new ImportSpaceAction();
+		
+		Long siteId = null;
+		Long buildingId = null;
+		Long floorId = null;
+		Long spaceId = null;
+		 
+		if(siteName != null && !siteName.equals("")) {
+			 List<SiteContext> sites = SpaceAPI.getAllSites();
+			 HashMap<String, Long> siteMap = new HashMap();
+			 for(SiteContext siteContext : sites)	
+			 {
+				 siteMap.put(siteContext.getName().trim().toLowerCase(), siteContext.getId());
+			 }
+			 if(siteMap.containsKey(siteName.trim().toLowerCase()))
+			 {
+				siteId = siteMeta.getSiteId(siteName);
+			 }
+			 else
+			 {
+				 siteId = siteMeta.addSite(siteName);
+				 recordsList.put("site", siteId);
+			 }
+			 if(siteId != null) {
+				 spaceId = siteId;
+			 }
+		 }
+		 
+		 if(buildingName != null && !buildingName.equals("")) {
+			 if(siteId != null) {
+				 buildingId = buildingMeta.getBuildingId(siteId,buildingName);
+			 }
+			 else {
+				 List<BuildingContext> buildings = SpaceAPI.getAllBuildings();
+				 HashMap<String, Long> buildingMap = new HashMap();
+				 for (BuildingContext buildingContext : buildings)
+				 {
+					 buildingMap.put(buildingContext.getName().trim().toLowerCase(), buildingContext.getId());
+				 }
+				 if(buildingMap.containsKey(buildingName.trim().toLowerCase()))
+				 {
+					 buildingId = buildingMeta.getBuildingId(buildingName);
+				 }
+			 }
+			 if(buildingId == null)
+			 {
+				 buildingId = buildingMeta.addBuilding(buildingName, siteId);
+				 recordsList.put("building", buildingId);
+			 }
+			 
+			 if(buildingId != null) {
+				 spaceId = buildingId;
+			 }
+		 }
+		 if(floorName != null && !floorName.equals("")) {
+			if(buildingId != null) {
+				floorId = floorMeta.getFloorId(buildingId,floorName);
+			}
+			else {
+				
+				 List<FloorContext> floors = SpaceAPI.getAllFloors();
+				 HashMap<String, Long> floorMap = new HashMap();
+				 for (FloorContext floorContext : floors)
+				 {
+					 floorMap.put(floorContext.getName().trim().toLowerCase(), floorContext.getId());
+				 }
+				 if(floorMap.containsKey(floorName.trim()))
+				 {
+					 floorId = floorMeta.getFloorId(floorName);
+				 }
+			}
+		    if(floorId == null)
+		    {
+		    	floorId = floorMeta.addFloor(floorName, siteId, buildingId);
+		    	recordsList.put("floor", floorId);
+		    }
+		    if(floorId != null) {
+				 spaceId = floorId;
+			 }
+		 }
+
+		 if(spaceName != null && !spaceName.equals("")) {
+			 spaceId = null;
+			 if(floorId != null) {
+				 spaceId = spaceMeta.getSpaceId(floorId,spaceName);
+			 }
+			 else if (buildingId != null) {
+				 spaceId = spaceMeta.getSpaceIdFromBuilding(buildingId,spaceName);
+			 }
+			 else if (siteId != null) {
+				 spaceId = spaceMeta.getSpaceIdFromSite(siteId,spaceName);
+			 }
+			if(spaceId == null) {
+				 if (floorName == null)
+				 {
+					 spaceId = spaceMeta.addSpace(spaceName, siteId, buildingId);
+				 }
+				 else
+				 {
+				 spaceId = spaceMeta.addSpace(spaceName, siteId, buildingId, floorId);
+				 }
+				 recordsList.put("space", spaceId);
+			 }
+			}
+		return spaceId;
+	
 	}
 }

@@ -1,5 +1,12 @@
 <!DOCTYPE html>
-
+<%
+	String clientVersion = com.facilio.aws.util.AwsUtil.getClientVersion();
+	if (clientVersion != null && !clientVersion.startsWith("/")) {
+		clientVersion = "/" + clientVersion;
+	}
+	
+	String staticUrl = com.facilio.aws.util.AwsUtil.getConfig("static.url") + clientVersion;
+%>
 <html>
 
 <head>
@@ -8,10 +15,9 @@
     <meta name=msapplication-tap-highlight content=no>
     <meta name=viewport content="user-scalable=no,initial-scale=1,maximum-scale=1,minimum-scale=1,width=device-width">
     <title>Facilio</title>
-    <% String staticUrl = com.facilio.aws.util.AwsUtil.getConfig("static.url")+com.facilio.aws.util.AwsUtil.getClientVersion(); %>
 
-    <link rel=icon href=<%=staticUrl%>/statics/favicon.png type=image/x-icon>
-    <link rel=manifest href=<%=staticUrl%>/statics/manifest.json>
+    <link rel=icon href="<%=staticUrl%>/statics/favicon.png" type=image/x-icon>
+    <link rel=manifest href="<%=staticUrl%>/statics/manifest.json">
 
     <style>
       .app-spinner {
@@ -65,9 +71,9 @@
 
   <script type=text/javascript>
         window.isFacilioAuth = (document.cookie.indexOf('fc.authtype=facilio') !== -1)
-        var __webpack_public_path__ = "<%=staticUrl%>";
+        var webpackPublicPath = "<%=staticUrl%>";
   </script>
-  <link href=<%=staticUrl%>/app.css rel=stylesheet>
+  <link href="<%=staticUrl%>/app.css" rel=stylesheet>
  </head>
 
   <body>
@@ -78,9 +84,9 @@
               <div class=bounce3></div>
           </div>
       </div>
-      <script type=text/javascript src=<%=staticUrl%>/js/manifest.js></script>
-      <script type=text/javascript src=<%=staticUrl%>/js/vendor.js></script>
-      <script type=text/javascript src=<%=staticUrl%>/js/app.js></script>
+      <script type=text/javascript src="<%=staticUrl%>/js/manifest.js"></script>
+      <script type=text/javascript src="<%=staticUrl%>/js/vendor.js"></script>
+      <script type=text/javascript src="<%=staticUrl%>/js/app.js"></script>
   </body>
 
   </html>

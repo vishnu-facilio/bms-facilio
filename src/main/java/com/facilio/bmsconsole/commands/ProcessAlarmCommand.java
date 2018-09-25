@@ -50,6 +50,7 @@ public class ProcessAlarmCommand implements Command {
 		Set<String> defaultProps = new HashSet<>();
 		defaultProps.add("severityString");
 		defaultProps.add("orgId");
+		defaultProps.add("siteId");
 		
 		Iterator<Map.Entry<String, Object>> itr = alarmInfo.entrySet().iterator();
 		

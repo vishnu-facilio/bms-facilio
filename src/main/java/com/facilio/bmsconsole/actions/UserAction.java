@@ -32,6 +32,7 @@ import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
 import com.facilio.accounts.exception.AccountException;
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -306,8 +307,24 @@ public class UserAction extends FacilioAction {
 	}
 	
 	public String resendInvite() throws Exception {
+		String portal = ServletActionContext.getRequest().getParameter("portal");
 		
-		AccountUtil.getUserBean().resendInvite(getUserId());
+		user = AccountUtil.getUserBean().getUser(getUserId());
+		if(user.getUserType() == AccountConstants.UserType.REQUESTER.getValue())
+		{
+			// requestore
+			
+			long portalid = AccountUtil.getOrgBean().getPortalId();
+			user.setPortalId(portalid);
+			AccountUtil.getUserBean().sendInvitation(AccountUtil.getCurrentOrg().getOrgId(), user);
+		}
+		else
+		{
+			// normal user 
+			AccountUtil.getUserBean().resendInvite(getUserId());
+
+		}
+	
 		
 		return SUCCESS;
 	}

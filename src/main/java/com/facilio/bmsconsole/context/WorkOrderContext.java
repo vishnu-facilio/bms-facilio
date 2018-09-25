@@ -8,6 +8,8 @@ import org.apache.log4j.Logger;
 import com.facilio.accounts.dto.User;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
+import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
+import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
@@ -102,5 +104,38 @@ public class WorkOrderContext extends TicketContext {
 		else {
 			return null;
 		}
+	}
+	
+	private ApprovalState approvalState;
+	public ApprovalState getApprovalStateEnum() {
+		return approvalState;
+	}
+	public void setApprovalState(ApprovalState approvalState) {
+		this.approvalState = approvalState;
+	}
+	public int getApprovalState() {
+		if (approvalState != null) {
+			return approvalState.getValue();
+		}
+		return -1;
+	}
+	public void setApprovalState(int approvalState) {
+		this.approvalState = ApprovalState.valueOf(approvalState);
+	}
+	
+	private long approvalRuleId = -1;
+	public long getApprovalRuleId() {
+		return approvalRuleId;
+	}
+	public void setApprovalRuleId(long approvalRuleId) {
+		this.approvalRuleId = approvalRuleId;
+	}
+	
+	private ApprovalRuleContext approvalRule;
+	public ApprovalRuleContext getApprovalRule() {
+		return approvalRule;
+	}
+	public void setApprovalRule(ApprovalRuleContext approvalRule) {
+		this.approvalRule = approvalRule;
 	}
 }

@@ -36,6 +36,7 @@ import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataContext;
 import com.facilio.report.context.ReportDataPointContext;
+import com.facilio.report.context.ReportDataPointContext.DataPointType;
 import com.facilio.report.context.ReportDataPointContext.OrderByFunction;
 import com.facilio.report.context.ReportGroupByField;
 
@@ -195,7 +196,16 @@ public class FetchReportDataCommand implements Command {
 	private List<List<ReportDataPointContext>> groupDataPoints(List<ReportDataPointContext> dataPoints) throws Exception {
 		List<List<ReportDataPointContext>> groupedList = new ArrayList<>();
 		for (ReportDataPointContext dataPoint : dataPoints) {
-			addToMatchedList(dataPoint, groupedList);
+			if(dataPoint.getTypeEnum() == null) {
+				dataPoint.setType(DataPointType.MODULE.getValue());
+			}
+			switch (dataPoint.getTypeEnum()) {
+				case MODULE:
+					addToMatchedList(dataPoint, groupedList);
+					break;
+				case DERIVATION:
+					break;
+			}
 		}
 		return groupedList;
 	}

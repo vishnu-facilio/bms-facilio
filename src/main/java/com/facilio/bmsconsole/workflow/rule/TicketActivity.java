@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.workflow;
+package com.facilio.bmsconsole.workflow.rule;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;

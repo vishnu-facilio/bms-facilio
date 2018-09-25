@@ -10,18 +10,11 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.util.AlarmAPI;
-import com.facilio.bmsconsole.util.AssetsAPI;
-import com.facilio.bmsconsole.util.ResourceAPI;
-import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.workflow.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.wms.message.WmsEvent;
 import com.facilio.wms.util.WmsApi;
@@ -54,24 +47,6 @@ public class AddAlarmCommand implements Command {
 			
 			List<FacilioField> fields = AlarmAPI.getAlarmFields(alarm.getSourceTypeEnum());
 			String moduleName = AlarmAPI.getAlarmModuleName(alarm.getSourceTypeEnum());
-
-			if (alarm.getResource() != null && alarm.getResource().getId() != -1) {
-				long resourceId = alarm.getResource().getId();
-				ResourceContext resource = ResourceAPI.getResource(resourceId);
-				long siteId = -1;
-				if (resource.getResourceTypeEnum() == ResourceType.SPACE) {
-					BaseSpaceContext space = SpaceAPI.getBaseSpace(resourceId);
-					siteId = space.getSiteId();
-				} else {
-					AssetContext asset = AssetsAPI.getAssetInfo(resourceId);
-					if (asset.getSpaceId() != -1) {
-						BaseSpaceContext space = SpaceAPI.getBaseSpace(asset.getSpaceId());
-						siteId = space.getSiteId();
-					}
-				}
-				alarm.setSiteId(siteId);
-			}
-
 			
 			InsertRecordBuilder<AlarmContext> builder = new InsertRecordBuilder<AlarmContext>()
 																.moduleName(moduleName)

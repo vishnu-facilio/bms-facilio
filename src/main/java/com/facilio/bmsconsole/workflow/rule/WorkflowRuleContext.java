@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.workflow;
+package com.facilio.bmsconsole.workflow.rule;
 
 import java.util.HashMap;
 import java.util.List;
@@ -183,8 +183,14 @@ public class WorkflowRuleContext {
 		try {
 			boolean workflowFlag = true;
 			if (workflow != null) {
-				double result = (double) WorkflowUtil.getWorkflowExpressionResult(workflow.getWorkflowString(), placeHolders);
-				workflowFlag = result == 1;
+				 Object result = WorkflowUtil.getWorkflowExpressionResult(workflow.getWorkflowString(), placeHolders);
+				 if(result instanceof Boolean) {
+					 workflowFlag = (Boolean) result;
+				 }
+				 else {
+					 double resultDouble = (double) result;
+					 workflowFlag = resultDouble == 1;
+				 }
 			}
 			return workflowFlag;
 		}
@@ -236,7 +242,11 @@ public class WorkflowRuleContext {
 		
 		ASSET_ACTION_RULE,
 		CUSTOM_WORKORDER_NOTIFICATION_RULE,
-		SCHEDULED_RULE
+		SCHEDULED_RULE,
+		
+		APPROVAL_RULE(true),
+		REQUEST_APPROVAL_RULE(true),
+		REQUEST_REJECT_RULE(true)
 		;
 		
 		private boolean stopFurtherExecution = false;

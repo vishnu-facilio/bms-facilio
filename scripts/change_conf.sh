@@ -53,16 +53,16 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "production_deployment" ]; then
     sed -i'' "s%kinesisServer=.*%kinesisServer=false%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%enable.transaction=.*%enable.transaction=true%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%enable.kinesis=.*%enable.kinesis=false%g" $CONF_DIR/awsprops.properties
-    sed -i -e 's/localhost:9090/app.facilio.ae/g' $CONF_DIR/awsprops.properties
-    sed -i -e 's/localhost:8080/facilio.ae/g' $CONF_DIR/awsprops.properties
+    sed -i -e 's/localhost:9090/app.facilio.com/g' $CONF_DIR/awsprops.properties
+    sed -i -e 's/localhost:8080/facilio.com/g' $CONF_DIR/awsprops.properties
     sed -i'' "s%environment=.*%environment=production%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%redis.enabled=.*%redis.enabled=true%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%redis.db=.*%redis.db=2%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%servername=.*%servername=user-production-1756879720.us-west-2.elb.amazonaws.com%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%s3.bucket.name=.*%s3.bucket.name=facilio-ae-data%g" $CONF_DIR/awsprops.properties
-    sed -i'' "s%api.servername=.*%api.servername=api.facilio.ae%g" $CONF_DIR/awsprops.properties
+    sed -i'' "s%api.servername=.*%api.servername=api.facilio.com%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%static.url=.*%static.url=https://static.facilio.com%g" $CONF_DIR/awsprops.properties
-    sed -i'' "s%websocket.url=.*%websocket.url=wss://api.facilio.ae/websocket%g" $CONF_DIR/awsprops.properties
+    sed -i'' "s%websocket.url=.*%websocket.url=wss://api.facilio.com/websocket%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%log4j.appender.graylog2.facility=.*%log4j.appender.graylog2.facility=production-user%g" $CLASSES_DIR/log4j.properties
     sed -i'' "s%log4j.appender.graylog2.graylogHost=.*%log4j.appender.graylog2.graylogHost=172.31.35.38%g" $CLASSES_DIR/log4j.properties
     sed -i'' "s%cors.allowed.origins=.*%cors.allowed.origins=https://facilio.ae,https://fazilio.com,https://facilio.com,https://facilio.in,https://facilstack.com,https://facilioportal.com,https://wiproenergy.com%g" $CONF_DIR/awsprops.properties
@@ -75,8 +75,8 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "production-scheduler" ]; then
     echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/ubuntu/deployment.log
     cp $META_INF_DIR/context-production.xml $META_INF_DIR/context.xml
     cp $UBUNTU_HOME/setenv.sh $APP_HOME/bin/setenv.sh
-    sed -i -e 's/localhost:9090/app.facilio.ae/g' $CONF_DIR/awsprops.properties
-    sed -i -e 's/localhost:8080/facilio.ae/g' $CONF_DIR/awsprops.properties
+    sed -i -e 's/localhost:9090/app.facilio.com/g' $CONF_DIR/awsprops.properties
+    sed -i -e 's/localhost:8080/facilio.com/g' $CONF_DIR/awsprops.properties
     sed -i'' "s%schedulerServer=.*%schedulerServer=true%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%kinesisServer=.*%kinesisServer=true%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%enable.kinesis=.*%enable.kinesis=true%g" $CONF_DIR/awsprops.properties
@@ -84,9 +84,9 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "production-scheduler" ]; then
     sed -i'' "s%redis.enabled=.*%redis.enabled=true%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%redis.db=.*%redis.db=2%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%servername=.*%servername=user-production-1756879720.us-west-2.elb.amazonaws.com%g" $CONF_DIR/awsprops.properties
-    sed -i'' "s%api.servername=.*%api.servername=api.facilio.ae%g" $CONF_DIR/awsprops.properties
+    sed -i'' "s%api.servername=.*%api.servername=api.facilio.com%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%static.url=.*%static.url=https://static.facilio.com%g" $CONF_DIR/awsprops.properties
-    sed -i'' "s%websocket.url=.*%websocket.url=wss://api.facilio.ae/websocket%g" $CONF_DIR/awsprops.properties
+    sed -i'' "s%websocket.url=.*%websocket.url=wss://api.facilio.com/websocket%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%cors.allowed.origins=.*%cors.allowed.origins=https://facilio.ae,https://fazilio.com,https://facilio.com,https://facilio.in,https://facilstack.com,https://facilioportal.com%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%s3.bucket.name=.*%s3.bucket.name=facilio-ae-data%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%log4j.appender.graylog2.facility=.*%log4j.appender.graylog2.facility=production-scheduler%g" $CLASSES_DIR/log4j.properties

@@ -13,7 +13,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
-import com.facilio.accounts.util.AccountEmailTemplate;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.DashboardAction;
 import com.facilio.bmsconsole.context.AssetContext;
@@ -82,7 +81,7 @@ public class TenantsAPI {
 														.select(FieldFactory.getTenantsUserFields())
 														.table(module.getTableName())
 														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-														.andCustomWhere("tenant_users.TENANTID = ? ", id);
+														.andCustomWhere("Tenant_Users.TENANTID = ? ", id);
 //														.andCondition(CriteriaAPI.getCondition(field, operator)(id, module));
 		List<Map<String, Object>> props = selectBuilder.get();
 		
@@ -146,8 +145,8 @@ public class TenantsAPI {
 				.table(module.getTableName())
 				.fields(FieldFactory.getTenantsUtilityMappingFields())
 //				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
-				.andCustomWhere("tenants_utility_mapping.ASSET_ID = ?", tenantMeterId)
-				.andCustomWhere("tenants_utility_mapping.TENANT_ID = ? ", tenantId);
+				.andCustomWhere("Tenants_Utility_Mapping.ASSET_ID = ?", tenantMeterId)
+				.andCustomWhere("Tenants_Utility_Mapping.TENANT_ID = ? ", tenantId);
 		
 		
 		Map<String , Object> value = new HashMap<>();
@@ -165,8 +164,8 @@ public class TenantsAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getTenantsUserFields())
 														.table(module.getTableName())
-														.andCustomWhere("tenant_users.ORG_USERID = ?", userId)
-														.andCustomWhere("tenant_users.ORGID = ? ", orgId);
+														.andCustomWhere("Tenant_Users.ORG_USERID = ?", userId)
+														.andCustomWhere("Tenant_Users.ORGID = ? ", orgId);
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		Map<String, Object> values = props.get(0);
@@ -178,8 +177,8 @@ public class TenantsAPI {
 		GenericSelectRecordBuilder selectBuilde = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getTenantsUtilityMappingFields())
 														.table(modulo.getTableName())
-														.andCustomWhere("tenants_utility_mapping.TENANT_ID = ?", value)
-														.andCustomWhere("tenants_utility_mapping.SHOW_IN_PORTAL = ?", true);
+														.andCustomWhere("Tenants_Utility_Mapping.TENANT_ID = ?", value)
+														.andCustomWhere("Tenants_Utility_Mapping.SHOW_IN_PORTAL = ?", true);
 		List<Map<String, Object>> prop = selectBuilde.get();
 		System.out.println("&&&&&&&&&&&&&&&&&&&" +prop);
 		
@@ -208,7 +207,7 @@ public class TenantsAPI {
 		GenericSelectRecordBuilder selectBuilde = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getOrgUserFields())
 														.table(modulo.getTableName())
-														.andCustomWhere("org_users.ORG_USERID = ?", ouiId);
+														.andCustomWhere("ORG_Users.ORG_USERID = ?", ouiId);
 		List<Map<String, Object>> prop = selectBuilde.get();
 		
 		Map<String, Object> values = prop.get(0);
@@ -227,7 +226,7 @@ public class TenantsAPI {
 				.table(module.getTableName())
 				.fields(FieldFactory.getOrgUserFields())
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCustomWhere("org_users.USERID = ?", userId);
+				.andCustomWhere("ORG_Users.USERID = ?", userId);
 		
 		Map<String, Object> value = new HashMap<>();
 		value.put("portal_verified", portal_verified);

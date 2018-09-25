@@ -1,8 +1,10 @@
 package com.facilio.report.context;
 
 import java.util.List;
+import java.util.Map;
 
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
+import com.facilio.report.context.ReportDataPointContext.DataPointType;
 
 public class ReadingAnalysisContext {
 	private List<Long> parentId;
@@ -11,6 +13,23 @@ public class ReadingAnalysisContext {
 	}
 	public void setParentId(List<Long> parentId) {
 		this.parentId = parentId;
+	}
+	
+	private DataPointType type;
+	public DataPointType getTypeEnum() {
+		return type;
+	}
+	public void setType(DataPointType type) {
+		this.type = type;
+	}
+	public int getType() {
+		if (type != null) {
+			return type.getValue();
+		}
+		return -1;
+	}
+	public void setType(int type) {
+		this.type = DataPointType.valueOf(type);
 	}
 
 	private long fieldId = -1;
@@ -21,6 +40,14 @@ public class ReadingAnalysisContext {
 		this.fieldId = fieldId;
 	}
 	
+	private Map<String, String> aliases; 
+	public Map<String, String> getAliases() {
+		return aliases;
+	}
+	public void setAliases(Map<String, String> aliases) {
+		this.aliases = aliases;
+	}
+
 	private AggregateOperator yAggr;
 	public AggregateOperator getyAggrEnum() {
 		return yAggr;

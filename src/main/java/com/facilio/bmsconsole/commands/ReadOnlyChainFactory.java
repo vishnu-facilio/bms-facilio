@@ -1,18 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.impl.ChainBase;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.bmsconsole.commands.FacilioChainFactory.FacilioChain;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 
-public class ReadOnlyChainFactory extends FacilioChainFactory {
+public class ReadOnlyChainFactory {
 	private static Logger LOGGER = LogManager.getLogger(ReadOnlyChainFactory.class.getName());
-	   protected static Chain getDefaultChain()
-	    {
-	    	    return new FacilioChain(false);
-	    }
-	
 	public static Chain fetchReportDataChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new FilterXFieldCommand());
@@ -68,4 +65,34 @@ public class ReadOnlyChainFactory extends FacilioChainFactory {
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
+	
+	public static Chain getWorkOrderDetailsChain() {
+		Chain c = new ChainBase();
+		c.addCommand(SetTableNamesCommand.getForWorkOrder());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GetWorkOrderCommand());
+		c.addCommand(new FetchApprovalRulesCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getWorkOrderListChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForWorkOrder());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		//c.addCommand(new GenerateCondtionsFromFiltersCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GetWorkOrderListCommand());
+		c.addCommand(new FetchApprovalRulesCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	private static Chain getDefaultChain() {
+		return new FacilioChain(false);
+    }
 }

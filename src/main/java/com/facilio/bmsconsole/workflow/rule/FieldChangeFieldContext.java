@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.workflow;
+package com.facilio.bmsconsole.workflow.rule;
 
 import com.facilio.bmsconsole.modules.FacilioField;
 
@@ -40,6 +40,9 @@ public class FieldChangeFieldContext {
 		return field;
 	}
 	public void setField(FacilioField field) {
+		if (field != null) {
+			this.fieldId = field.getFieldId();
+		}
 		this.field = field;
 	}
 

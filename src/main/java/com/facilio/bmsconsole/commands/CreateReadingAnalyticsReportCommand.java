@@ -54,6 +54,8 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 				setFields(dataPoint, mode, fieldMap);
 				setCriteriaAndAggr(dataPoint, xAggr, fieldMap, metric);
 				setName(dataPoint, yField, mode, resourceMap, metric);
+				dataPoint.setType(metric.getTypeEnum());
+				dataPoint.setAliases(metric.getAliases());
 				dataPoints.add(dataPoint);
 			}
 			ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);

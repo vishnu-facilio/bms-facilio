@@ -21,7 +21,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.util.DashboardUtil;
-import com.facilio.bmsconsole.workflow.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
@@ -36,8 +36,16 @@ import com.facilio.report.util.ReportUtil;
 public class V2ReportAction extends FacilioAction {
 	
 	private ReportContext reportContext;
+	private Long folderId;
+	
 	public ReportContext getReportContext() {
 		return reportContext;
+	}
+	public Long getFolderId() {
+		return folderId;
+	}
+	public void setFolderId(Long folderId) {
+		this.folderId = folderId;
 	}
 	public void setReportContext(ReportContext reportContext) {
 		this.reportContext = reportContext;
@@ -168,6 +176,13 @@ public class V2ReportAction extends FacilioAction {
 		return setReportResult(context);
 	}
 	
+	public String moveReport() throws Exception {
+		if(reportId>0) {
+			reportContext = ReportUtil.getReport(reportId);
+			ReportUtil.moveReport(reportContext, folderId);
+		}
+		return SUCCESS;
+	}
 	public String duplicateReport() throws Exception {
 		
 		if(reportId > 0) {

@@ -51,9 +51,9 @@ import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.view.ReadingRuleContext;
-import com.facilio.bmsconsole.workflow.ActivityType;
-import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
+import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
@@ -929,7 +929,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 				Criteria criteria = new Criteria();
 				criteria.addAndCondition(CriteriaAPI.getCondition("READING_FIELD_ID", "readingFieldId", Long.toString(task.getReadingFieldId()), NumberOperators.EQUALS));
 				criteria.addAndCondition(CriteriaAPI.getCondition("RULE_TYPE", "ruleType", String.valueOf(RuleType.VALIDATION_RULE.getIntVal()), NumberOperators.EQUALS));
-				List<ReadingRuleContext> readingRules = WorkflowRuleAPI.getReadingRules(criteria);
+				List<ReadingRuleContext> readingRules = ReadingRuleAPI.getReadingRules(criteria);
 				if (readingRules != null && !readingRules.isEmpty()) {
 					for (ReadingRuleContext r:  readingRules) {
 						long workflowId = r.getWorkflowId();

@@ -17,7 +17,7 @@ import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.AssetsAPI;
-import com.facilio.bmsconsole.workflow.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -162,7 +162,7 @@ public class AssetAction extends ActionSupport {
 		Chain assetDetailsChain = FacilioChainFactory.getAssetDetailsChain();
 		assetDetailsChain.execute(context);
 		
-		setAsset((AssetContext) context.get(FacilioConstants.ContextNames.RECORD));
+		setAsset((AssetContext) context.get(FacilioConstants.ContextNames.ASSET));
 		
 		return SUCCESS;
 	}

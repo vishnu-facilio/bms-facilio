@@ -2,12 +2,11 @@ package com.facilio.bmsconsole.commands;
 
 import java.io.Serializable;
 import java.sql.Connection;
-import java.util.logging.Logger;
-import org.apache.log4j.LogManager;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;

@@ -41,12 +41,13 @@ public class FieldFactory {
 		public static List<String> alarmsFieldsInclude = new ArrayList<String>();
 		static {
 			alarmsFieldsInclude.add("isAcknowledged");
-			alarmsFieldsInclude.add("sourceType");
-			alarmsFieldsInclude.add("serialNumber");
+//			alarmsFieldsInclude.add("sourceType");
+//			alarmsFieldsInclude.add("serialNumber");
 			alarmsFieldsInclude.add("clearedBy");
 			alarmsFieldsInclude.add("status");
-			alarmsFieldsInclude.add("type");
-			alarmsFieldsInclude.add("category");
+//			alarmsFieldsInclude.add("type");
+			alarmsFieldsInclude.add("alarmType");
+//			alarmsFieldsInclude.add("category");
 			alarmsFieldsInclude.add("resource");
 			alarmsFieldsInclude.add("severity");
 			alarmsFieldsInclude.add("alarmClass");
@@ -55,7 +56,7 @@ public class FieldFactory {
 			alarmsFieldsInclude.add("previousSeverity");
 			alarmsFieldsInclude.add("createdTime");
 			alarmsFieldsInclude.add("entity");
-			alarmsFieldsInclude.add("noOfAttachments");
+//			alarmsFieldsInclude.add("noOfAttachments");
 		}
 		public static List<String> workOrderFieldsInclude = new ArrayList<String>();
 		static {
@@ -920,6 +921,33 @@ public class FieldFactory {
 		fields.add(getField("ruleId", "RULE_ID", module, FieldType.LOOKUP));
 		fields.add(getField("recordId", "RECORD_ID", module, FieldType.LOOKUP));
 		fields.add(getField("scheduledTime", "SCHEDULED_TIME", module, FieldType.DATE_TIME));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getApprovalRuleFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getApprovalRulesModule();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("approvalRuleId", "APPROVAL_RULE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("rejectionRuleId", "REJECTION_RULE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("approvalFormId", "APPROVAL_FORM_ID", module, FieldType.LOOKUP));
+		fields.add(getField("rejectionFormId", "REJECTION_FORM_ID", module, FieldType.LOOKUP));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getSharingFields(FacilioModule module) {
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("parentId", "PARENT_ID", module, FieldType.LOOKUP));
+		fields.add(getField("userId", "ORG_USERID", module, FieldType.LOOKUP));
+		fields.add(getField("groupId", "GROUP_ID", module, FieldType.LOOKUP));
+		fields.add(getField("type", "SHARING_TYPE", module, FieldType.NUMBER));
 		
 		return fields;
 	}
@@ -2584,40 +2612,42 @@ public class FieldFactory {
 		widgetId.setModule(module);
 		fields.add(widgetId);
 
-		FacilioField dashboardWidgetLayoutWidth = new FacilioField();
-		dashboardWidgetLayoutWidth.setName("layoutWidth");
-		dashboardWidgetLayoutWidth.setDataType(FieldType.NUMBER);
-		dashboardWidgetLayoutWidth.setColumnName("LAYOUT_WIDTH");
-		dashboardWidgetLayoutWidth.setModule(module);
-		fields.add(dashboardWidgetLayoutWidth);
-
-		FacilioField dashboardWidgetLayoutHeight = new FacilioField();
-		dashboardWidgetLayoutHeight.setName("layoutHeight");
-		dashboardWidgetLayoutHeight.setDataType(FieldType.NUMBER);
-		dashboardWidgetLayoutHeight.setColumnName("LAYOUT_HEIGHT");
-		dashboardWidgetLayoutHeight.setModule(module);
-		fields.add(dashboardWidgetLayoutHeight);
-
-		FacilioField xPosition = new FacilioField();
-		xPosition.setName("xPosition");
-		xPosition.setDataType(FieldType.NUMBER);
-		xPosition.setColumnName("X_POSITION");
-		xPosition.setModule(module);
-		fields.add(xPosition);
-
-		FacilioField yPosition = new FacilioField();
-		yPosition.setName("yPosition");
-		yPosition.setDataType(FieldType.NUMBER);
-		yPosition.setColumnName("Y_POSITION");
-		yPosition.setModule(module);
-		fields.add(yPosition);
-
-		FacilioField dashboardWidgetLayoutPosition = new FacilioField();
-		dashboardWidgetLayoutPosition.setName("layoutPosition");
-		dashboardWidgetLayoutPosition.setDataType(FieldType.NUMBER);
-		dashboardWidgetLayoutPosition.setColumnName("LAYOUT_POSITION");
-		dashboardWidgetLayoutPosition.setModule(module);
-		fields.add(dashboardWidgetLayoutPosition);
+//		FacilioField dashboardWidgetLayoutWidth = new FacilioField();
+//		dashboardWidgetLayoutWidth.setName("layoutWidth");
+//		dashboardWidgetLayoutWidth.setDataType(FieldType.NUMBER);
+//		dashboardWidgetLayoutWidth.setColumnName("LAYOUT_WIDTH");
+//		dashboardWidgetLayoutWidth.setModule(module);
+//		fields.add(dashboardWidgetLayoutWidth);
+//
+//		FacilioField dashboardWidgetLayoutHeight = new FacilioField();
+//		dashboardWidgetLayoutHeight.setName("layoutHeight");
+//		dashboardWidgetLayoutHeight.setDataType(FieldType.NUMBER);
+//		dashboardWidgetLayoutHeight.setColumnName("LAYOUT_HEIGHT");
+//		dashboardWidgetLayoutHeight.setModule(module);
+//		fields.add(dashboardWidgetLayoutHeight);
+//
+//		FacilioField xPosition = new FacilioField();
+//		xPosition.setName("xPosition");
+//		xPosition.setDataType(FieldType.NUMBER);
+//		xPosition.setColumnName("X_POSITION");
+//		xPosition.setModule(module);
+//		fields.add(xPosition);
+//
+//		FacilioField yPosition = new FacilioField();
+//		yPosition.setName("yPosition");
+//		yPosition.setDataType(FieldType.NUMBER);
+//		yPosition.setColumnName("Y_POSITION");
+//		yPosition.setModule(module);
+//		fields.add(yPosition);
+//
+//		FacilioField dashboardWidgetLayoutPosition = new FacilioField();
+//		dashboardWidgetLayoutPosition.setName("layoutPosition");
+//		dashboardWidgetLayoutPosition.setDataType(FieldType.NUMBER);
+//		dashboardWidgetLayoutPosition.setColumnName("LAYOUT_POSITION");
+//		dashboardWidgetLayoutPosition.setModule(module);
+//		fields.add(dashboardWidgetLayoutPosition);
+		
+		fields.add(getField("metaJSONString", "META_JSON", module, FieldType.STRING));
 
 		return fields;
 	}

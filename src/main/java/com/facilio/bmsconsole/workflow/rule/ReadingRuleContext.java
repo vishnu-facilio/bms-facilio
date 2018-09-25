@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.view;
+package com.facilio.bmsconsole.workflow.rule;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
@@ -24,9 +24,8 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
-import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -307,8 +306,14 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		try {
 			boolean workflowFlag = true;
 			if (getWorkflow() != null) {
-				double result = (double) WorkflowUtil.getWorkflowExpressionResult(getWorkflow().getWorkflowString(), placeHolders, currentRDM, true, true);
-				workflowFlag = result == 1;
+				Object result = WorkflowUtil.getWorkflowExpressionResult(getWorkflow().getWorkflowString(), placeHolders, currentRDM, true, true);
+				 if(result instanceof Boolean) {
+					 workflowFlag = (Boolean) result;
+				 }
+				 else {
+					 double resultDouble = (double) result;
+					 workflowFlag = resultDouble == 1;
+				 }
 			}
 			return workflowFlag;
 		}
@@ -400,7 +405,7 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		if (criteria != null) {
 			Condition condition = criteria.getConditions().get(1);
 			long lastValue = new Double(record.getReading(condition.getFieldName()).toString()).longValue();
-			WorkflowRuleAPI.updateLastValueInReadingRule(getId(), lastValue);
+			ReadingRuleAPI.updateLastValueInReadingRule(getId(), lastValue);
 		}
 	}
 	

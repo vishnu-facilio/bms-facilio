@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.security.Security;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Date;
@@ -231,7 +232,7 @@ public class S3FileStore extends FileStore {
 			//if here means... need to fetch url & update entry..
 		}
 		
-		String url= fetchUrl(fileInfo,getExpiration());
+		String url= fetchUrl(fileInfo, getExpiration());
 		if(url==null) {
 			return url;
 		}
@@ -284,9 +285,10 @@ public class S3FileStore extends FileStore {
 		} else {
 			try {
 				Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-				String s3ObjectKey = fileInfo.getFilePath()+"?response-content-type="+fileInfo.getContentType();
+				String encodedUrl = URLEncoder.encode(fileInfo.getFilePath(), "UTF-8");
+				String s3ObjectKey = encodedUrl+"?response-content-type="+fileInfo.getContentType();
 				String keyPairId = "APKAJUH5UCWNSYC4DOSQ";
-				String signedUrl = CloudFrontUrlSigner.getSignedURLWithCannedPolicy(SignerUtils.Protocol.https, "files.facilio.in", new File(PRIVATE_KEY_FILE_PATH), s3ObjectKey, keyPairId, new Date(System.currentTimeMillis()+(86400000L)));
+				String signedUrl = CloudFrontUrlSigner.getSignedURLWithCannedPolicy(SignerUtils.Protocol.https, "files.facilio.in", new File(PRIVATE_KEY_FILE_PATH), s3ObjectKey, keyPairId, new Date(System.currentTimeMillis()+getExpiration()));
 				return  signedUrl;
 			} catch (IOException | InvalidKeySpecException e) {
 				log.info("Exception while creating signed Url", e);

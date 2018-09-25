@@ -12,7 +12,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.Cell;
@@ -36,8 +35,6 @@ import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.actions.ImportProcessContext.ImportStatus;
 import com.facilio.bmsconsole.actions.ImportSiteAction;
 import com.facilio.bmsconsole.actions.ImportSpaceAction;
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.data.ProcessXLS;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.FloorContext;
@@ -74,8 +71,13 @@ public class ImportAPI {
         	Iterator<Cell> cellItr = row.cellIterator();
         	while (cellItr.hasNext()) {
         		Cell cell = cellItr.next();
-        		String cellValue = cell.getStringCellValue();
-        		columnheadings.add(cellValue);
+        		if(cell.getCellTypeEnum().getCode() == Cell.CELL_TYPE_BLANK) {
+        			columnheadings.add(null);
+        		}
+        		else {
+        			String cellValue = cell.getStringCellValue();
+        			columnheadings.add(cellValue);
+        		}
         	}
         	break;
         }
@@ -305,8 +307,6 @@ public class ImportAPI {
 			 else
 			 {
 				 siteId = siteMeta.addSite(siteName);
-				 listOfIds.add(siteId);
-				 addReadingDataMeta(FacilioConstants.ContextNames.SITE, listOfIds);
 			 }
 			 if(siteId != null) {
 				 spaceId = siteId;
@@ -332,9 +332,6 @@ public class ImportAPI {
 			 if(buildingId == null)
 			 {
 				 buildingId = buildingMeta.addBuilding(buildingName, siteId);
-				 listOfIds.clear();
-				 listOfIds.add(buildingId);
-				 addReadingDataMeta(FacilioConstants.ContextNames.BUILDING, listOfIds);
 			 }
 			 
 			 if(buildingId != null) {
@@ -361,9 +358,6 @@ public class ImportAPI {
 		    if(floorId == null)
 		    {
 		    	floorId = floorMeta.addFloor(floorName, siteId, buildingId);
-		    	listOfIds.clear();
-		    	listOfIds.add(floorId);
-				addReadingDataMeta(FacilioConstants.ContextNames.FLOOR, listOfIds);
 		    }
 		    if(floorId != null) {
 				 spaceId = floorId;
@@ -390,8 +384,6 @@ public class ImportAPI {
 				 {
 				 spaceId = spaceMeta.addSpace(spaceName, siteId, buildingId, floorId);
 				 }
-				 listOfIds.clear();
-				 listOfIds.add(spaceId);
 			 }
 			}
 		return spaceId;
@@ -576,19 +568,6 @@ public class ImportAPI {
 		public static final String SYS_FIELD_SHOW ="save";
 	}
 	
-	public static void addReadingDataMeta(String moduleName, List<Long> listOfIds) throws Exception {
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.SPACE_TYPE,moduleName + 's');
-		Chain getSpaceTypeReading = FacilioChainFactory.getReadingsForSpaceTypeChain();
-		getSpaceTypeReading.execute(context);
-		List<FacilioModule> subModules = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
-		
-		FacilioContext readingMetaContext = new FacilioContext();
-		readingMetaContext.put(FacilioConstants.ContextNames.MODULE_LIST, subModules);
-		readingMetaContext.put(FacilioConstants.ContextNames.RECORD_ID_LIST, listOfIds);
-		Chain readingMetaChain = FacilioChainFactory.addReadingMetaDataEntry();
-		readingMetaChain.execute(readingMetaContext);
-	}
 	
 	
 	

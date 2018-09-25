@@ -98,10 +98,18 @@ if (buildinfo == null) {
 	        </tr>
 	        <tr>
 	            <td>
-	                Version:
+	                Server Ver:
 	            </td>
 	            <td>
 	                <%= buildinfo.get("version") %>
+	            </td>
+	        </tr>
+	        <tr>
+	            <td>
+	                Client Ver:
+	            </td>
+	            <td>
+	                <%= com.facilio.aws.util.AwsUtil.getClientVersion() %>
 	            </td>
 	        </tr>
 	        <tr>

@@ -8,13 +8,10 @@ import org.apache.log4j.LogManager;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
-import com.facilio.bmsconsole.actions.ImportProcessContext.ImportStatus;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
-import com.facilio.bmsconsole.commands.data.ProcessXLS;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.ImportAPI;
-import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
@@ -54,10 +51,9 @@ public class ImportDataJob extends FacilioJob {
 				bulkAssetImportChain.execute(context);
 			}
 			
-			
-			if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) || (importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
-				ReadingsAPI.updateReadingDataMeta();
-			}
+//			if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) || (importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
+//				ReadingsAPI.updateReadingDataMeta(true);
+//			}
 			
 			importProcessContext.setStatus(ImportProcessContext.ImportStatus.IMPORTED.getValue());
 			ImportAPI.updateImportProcess(importProcessContext);

@@ -20,7 +20,7 @@ import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.leed.commands.AddConsumptionForLeed;
 import com.facilio.leed.commands.AddEnergyMeterCommand;
 import com.facilio.leed.commands.FetchArcAssetsCommand;
@@ -303,35 +303,11 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getWorkOrderDetailsChain() {
-		Chain c = new ChainBase();
-		c.addCommand(SetTableNamesCommand.getForWorkOrder());
-		c.addCommand(new LoadModuleNameCommand());
-		c.addCommand(new LoadAllFieldsCommand());
-		c.addCommand(new GetWorkOrderCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
 	public static Chain getWorkOrderDataChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForWorkOrder());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
-	public static Chain getWorkOrderListChain() {
-		Chain c = new ChainBase();
-		c.addCommand(SetTableNamesCommand.getForWorkOrder());
-		c.addCommand(new LoadModuleNameCommand());
-		c.addCommand(new LoadViewCommand());
-		c.addCommand(new LoadAllFieldsCommand());
-		//c.addCommand(new GenerateCondtionsFromFiltersCommand());
-		c.addCommand(new GenerateCriteriaFromFilterCommand());
-		c.addCommand(new GenerateSearchConditionCommand());
-		c.addCommand(new GetWorkOrderListCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
@@ -1220,7 +1196,7 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(new SetModuleForSpecialAssetsCommand());
 		c.addCommand(new LoadAssetFields());
-		c.addCommand(new GenericGetModuleDataDetailCommand());
+		c.addCommand(new GetAssetDetailCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
@@ -1353,6 +1329,9 @@ public class FacilioChainFactory {
 		c.addCommand(new SeperateToCategoriesCommand());
 		c.addCommand(new SetModuleForSpecialAssetsCommand());
 		c.addCommand(new BulkPushAssetCommands());
+		c.addCommand(new ForkChainToInstantJobCommand()
+				.addCommand(new InsertReadingDataMetaForNewResourceCommand())
+				.addCommand(new SendEmailCommand()));
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
@@ -1625,23 +1604,6 @@ public class FacilioChainFactory {
 	public static Chain getAddTemplateChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new AddTemplateCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
-	public static Chain getAddWorkflowRuleChain() {
-		Chain c = new ChainBase();
-		c.addCommand(new AddWorkflowRuleCommand());
-		c.addCommand(new AddActionsForWorkflowRule());
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
-	public static Chain updateWorkflowRuleChain() {
-		Chain c = new ChainBase();
-		c.addCommand(new UpdateWorkflowRuleCommand());
-		c.addCommand(new DeleterOldRuleActionsCommand());
-		c.addCommand(new AddActionsForWorkflowRule());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
@@ -1961,6 +1923,7 @@ public class FacilioChainFactory {
 		c.addCommand(new PopulateImportProcessCommand());
 		c.addCommand(new ForkChainToInstantJobCommand()
 				.addCommand(new UpdateBaseAndResourceCommand())
+				.addCommand(new InsertReadingDataMetaForNewResourceCommand())
 				.addCommand(new SendEmailCommand()));
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;

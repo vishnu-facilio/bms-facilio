@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,8 +11,6 @@ import java.util.StringJoiner;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioContext;
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -26,15 +23,15 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.UpdateChangeSet;
-import com.facilio.bmsconsole.view.ReadingRuleContext;
-import com.facilio.bmsconsole.view.SLARuleContext;
-import com.facilio.bmsconsole.workflow.ActionContext;
-import com.facilio.bmsconsole.workflow.ActivityType;
-import com.facilio.bmsconsole.workflow.FieldChangeFieldContext;
-import com.facilio.bmsconsole.workflow.ScheduledRuleContext;
-import com.facilio.bmsconsole.workflow.WorkflowEventContext;
-import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
-import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
+import com.facilio.bmsconsole.workflow.rule.ActionContext;
+import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
+import com.facilio.bmsconsole.workflow.rule.FieldChangeFieldContext;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.ScheduledRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -63,14 +60,19 @@ public class WorkflowRuleAPI {
 			case PM_READING_RULE:
 			case VALIDATION_RULE:
 				addExtendedProps(ModuleFactory.getReadingRuleModule(), FieldFactory.getReadingRuleFields(), ruleProps);
-				addReadingRuleInclusionsExlusions((ReadingRuleContext) rule);
+				ReadingRuleAPI.addReadingRuleInclusionsExlusions((ReadingRuleContext) rule);
 				break;
 			case SLA_RULE:
 				addExtendedProps(ModuleFactory.getSLARuleModule(), FieldFactory.getSLARuleFields(), ruleProps);
 				break;
 			case SCHEDULED_RULE:
-				validateScheduledRule((ScheduledRuleContext) rule);
+				ScheduledRuleAPI.validateScheduledRule((ScheduledRuleContext) rule);
 				addExtendedProps(ModuleFactory.getScheduledRuleModule(), FieldFactory.getScheduledRuleFields(), ruleProps);
+				break;
+			case APPROVAL_RULE:
+				ApprovalRulesAPI.updateChildRuleIds((ApprovalRuleContext) rule);
+				addExtendedProps(ModuleFactory.getApprovalRulesModule(), FieldFactory.getApprovalRuleFields(), FieldUtil.getAsProperties(rule));
+				ApprovalRulesAPI.addApprovers((ApprovalRuleContext) rule);
 				break;
 			default:
 				break;
@@ -111,27 +113,6 @@ public class WorkflowRuleAPI {
 		}
 	}
 	
-	private static void validateScheduledRule(ScheduledRuleContext rule) {
-		if (rule.getDateFieldId() == -1) {
-			throw new IllegalArgumentException("Date Field Id cannot be null for Scheduled Rule");
-		}
-		
-		if (rule.getScheduleTypeEnum() == null) {
-			throw new IllegalArgumentException("Schedule Type cannot be null for Scheduled Rule");
-		}
-		
-		switch (rule.getScheduleTypeEnum()) {
-			case BEFORE:
-			case AFTER:
-				if (rule.getInterval() == -1) {
-					throw new IllegalArgumentException("Interval cannot be null for Scheduled Rule with type BEFORE/ AFTER");
-				}
-				break;
-			case ON:
-				break;
-		}
-	}
-	
 	private static void addExtendedProps(FacilioModule module, List<FacilioField> fields, Map<String, Object> ruleProps) throws SQLException, RuntimeException {
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(module.getTableName())
@@ -140,38 +121,7 @@ public class WorkflowRuleAPI {
 		insertBuilder.save();
 	}
 	
-	private static void addReadingRuleInclusionsExlusions(ReadingRuleContext rule) throws SQLException, RuntimeException {
-		if (rule.getAssetCategoryId() != -1) {
-			List<Map<String, Object>> inclusionExclusionList = new ArrayList<>();
-			getInclusionExclusionList(rule.getId(), rule.getIncludedResources(), true, inclusionExclusionList);
-			getInclusionExclusionList(rule.getId(), rule.getExcludedResources(), false, inclusionExclusionList);
-			
-			if (!inclusionExclusionList.isEmpty()) {
-				GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-															.table(ModuleFactory.getReadingRuleInclusionsExclusionsModule().getTableName())
-															.fields(FieldFactory.getReadingRuleInclusionsExclusionsFields())
-															.addRecords(inclusionExclusionList);
-				insertBuilder.save();
-			}
-		}
-	}
-	
-	private static void getInclusionExclusionList(long ruleId, List<Long> resources, boolean isInclude, List<Map<String, Object>> inclusionExclusionList) {
-		if (resources != null && !resources.isEmpty()) {
-			long orgId = AccountUtil.getCurrentOrg().getId();
-			for (Long resourceId : resources) {
-				Map<String, Object> prop = new HashMap<>();
-				prop.put("orgId", orgId);
-				prop.put("ruleId", ruleId);
-				prop.put("resourceId", resourceId);
-				prop.put("isInclude", isInclude);
-				
-				inclusionExclusionList.add(prop);
-			}
-		}
-	}
-	
-	private static final void updateWorkflowRuleChildIds(WorkflowRuleContext workflowRuleContext) throws Exception {
+	protected static final void updateWorkflowRuleChildIds(WorkflowRuleContext workflowRuleContext) throws Exception {
 		if(workflowRuleContext.getCriteria() != null) {
 			workflowRuleContext.getCriteria().validatePattern();
 			long criteriaId = CriteriaAPI.addCriteria(workflowRuleContext.getCriteria(),AccountUtil.getCurrentOrg().getId());
@@ -346,7 +296,23 @@ public class WorkflowRuleAPI {
 				.select(FieldFactory.getWorkflowEventFields())
 				.table("Workflow_Event")
 				.andCustomWhere("Workflow_Event.ORGID = ? AND Workflow_Event.MODULEID = ?", orgId, moduleId);
-		return getWorkFlowEventsFromMapList(ruleBuilder.get(), orgId);
+		return getWorkFlowEventsFromMapList(ruleBuilder.get());
+	}
+	
+	public static WorkflowEventContext getWorkflowEvent(long id) throws Exception {
+		FacilioModule module = ModuleFactory.getWorkflowEventModule();
+		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getWorkflowEventFields())
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getIdCondition(id, module))
+				;
+		
+		List<WorkflowEventContext> events = getWorkFlowEventsFromMapList(ruleBuilder.get());
+		if (events != null && !events.isEmpty()) {
+			return events.get(0);
+		}
+		return null;
 	}
 	
 	public static List<WorkflowRuleContext> getWorkflowRules(long moduleId) throws Exception {
@@ -425,80 +391,13 @@ public class WorkflowRuleAPI {
 		return getWorkFlowsFromMapList(ruleBuilder.get(), true, true);
 	}
 	
-	public static int updateLastValueInReadingRule(long ruleId, long value) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
-		ReadingRuleContext rule = new ReadingRuleContext();
-		rule.setLastValue(value);
-		
-		return updateReadingRule(rule, ruleId);
-	}
-	
-	private static void deleteChildIdsForWorkflow(WorkflowRuleContext oldRule, WorkflowRuleContext newRule) throws Exception {
+	protected static void deleteChildIdsForWorkflow(WorkflowRuleContext oldRule, WorkflowRuleContext newRule) throws Exception {
 		if(newRule.getCriteria() != null && oldRule.getCriteriaId() != -1) {
 			CriteriaAPI.deleteCriteria(oldRule.getCriteriaId());
 		}
 		if(newRule.getWorkflow() != null && oldRule.getWorkflowId() != -1) {
 			WorkflowUtil.deleteWorkflow(oldRule.getWorkflowId());
 		}
-	}
-	
-	public static SLARuleContext updateSLARuleWithChildren(SLARuleContext rule) throws Exception {
-		SLARuleContext oldRule = (SLARuleContext) getWorkflowRule(rule.getId());
-		updateWorkflowRuleChildIds(rule);
-		updateSLARule(rule, rule.getId());
-		deleteChildIdsForWorkflow(oldRule, rule);
-		
-		if (rule.getName() == null) {
-			rule.setName(oldRule.getName());
-		}
-		return rule;
-	}
-	
-	public static int updateSLARule(SLARuleContext slaRule, long ruleId) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
-		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
-		fields.addAll(FieldFactory.getSLARuleFields());
-		
-		FacilioModule workflowModule = ModuleFactory.getWorkflowRuleModule();
-		FacilioModule slaRuleModule = ModuleFactory.getSLARuleModule();
-		
-		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-														.fields(fields)
-														.table(slaRuleModule.getTableName())
-														.innerJoin(workflowModule.getTableName())
-														.on(slaRuleModule.getTableName()+".ID = "+workflowModule.getTableName()+".ID")
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(workflowModule))
-														.andCondition(CriteriaAPI.getIdCondition(ruleId, slaRuleModule));
-		
-		return updateBuilder.update(FieldUtil.getAsProperties(slaRule));
-	}
-	
-	public static ReadingRuleContext updateReadingRuleWithChildren(ReadingRuleContext rule) throws Exception {
-		ReadingRuleContext oldRule = (ReadingRuleContext) getWorkflowRule(rule.getId());
-		updateWorkflowRuleChildIds(rule);
-		updateReadingRule(rule, rule.getId());
-		deleteChildIdsForWorkflow(oldRule, rule);
-		
-		if (rule.getName() == null) {
-			rule.setName(oldRule.getName());
-		}
-		return rule;
-	}
-	
-	public static int updateReadingRule(ReadingRuleContext readingRule, long ruleId) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
-		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
-		fields.addAll(FieldFactory.getReadingRuleFields());
-		
-		FacilioModule workflowModule = ModuleFactory.getWorkflowRuleModule();
-		FacilioModule readingRuleModule = ModuleFactory.getReadingRuleModule();
-		
-		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-														.fields(fields)
-														.table(readingRuleModule.getTableName())
-														.innerJoin(workflowModule.getTableName())
-														.on(readingRuleModule.getTableName()+".ID = "+workflowModule.getTableName()+".ID")
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(workflowModule))
-														.andCondition(CriteriaAPI.getIdCondition(ruleId, readingRuleModule));
-		
-		return updateBuilder.update(FieldUtil.getAsProperties(readingRule));
 	}
 	
 	private static Map<Long, Map<String, Object>> getExtendedProps(FacilioModule module, List<FacilioField> fields, List<Long> ids) throws Exception {
@@ -533,6 +432,9 @@ public class WorkflowRuleAPI {
 					break;
 				case SCHEDULED_RULE:
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getScheduledRuleModule(), FieldFactory.getScheduledRuleFields(), entry.getValue()));
+					break;
+				case APPROVAL_RULE:
+					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getApprovalRulesModule(), FieldFactory.getApprovalRuleFields(), entry.getValue()));
 					break;
 				default:
 					break;
@@ -636,21 +538,19 @@ public class WorkflowRuleAPI {
 					case READING_RULE:
 					case VALIDATION_RULE:
 						prop.putAll(typeWiseExtendedProps.get(ruleType).get((Long) prop.get("id")));
-						rule = FieldUtil.getAsBeanFromMap(prop, ReadingRuleContext.class);
-						ReadingRuleContext readingRule = ((ReadingRuleContext)rule);
-						readingRule.setReadingField(modBean.getField(((ReadingRuleContext)rule).getReadingFieldId()));
-						setMatchedResources(readingRule);
+						rule = ReadingRuleAPI.constructReadingRuleFromProps(prop, modBean);
 						break;
 					case SLA_RULE:
 						prop.putAll(typeWiseExtendedProps.get(ruleType).get((Long) prop.get("id")));
-						rule = FieldUtil.getAsBeanFromMap(prop, SLARuleContext.class);
-						((SLARuleContext)rule).setResource(ResourceAPI.getResource(((SLARuleContext)rule).getResourceId()));
+						rule = SLARuleAPI.constructSLARuleFromProps(prop, modBean);
 						break;
 					case SCHEDULED_RULE:
 						prop.putAll(typeWiseExtendedProps.get(ruleType).get((Long) prop.get("id")));
-						rule = FieldUtil.getAsBeanFromMap(prop, ScheduledRuleContext.class);
-						((ScheduledRuleContext)rule).setDateField(modBean.getField(((ScheduledRuleContext)rule).getDateFieldId()));
+						rule = ScheduledRuleAPI.constructScheduledRuleFromProps(prop, modBean);
 						break;
+					case APPROVAL_RULE:
+						prop.putAll(typeWiseExtendedProps.get(ruleType).get((Long) prop.get("id")));
+						rule = ApprovalRulesAPI.constructApprovalRuleFromProps(prop, modBean);
 					default:
 						rule = FieldUtil.getAsBeanFromMap(prop, WorkflowRuleContext.class);
 						break;
@@ -683,110 +583,13 @@ public class WorkflowRuleAPI {
 		return null;
 	}
 	
-	private static void setMatchedResources (ReadingRuleContext readingRule) throws Exception {
-		if (readingRule.getAssetCategoryId() == -1) {
-			long resourceId = readingRule.getResourceId();
-			readingRule.setMatchedResources(Collections.singletonMap(resourceId, ResourceAPI.getExtendedResource(resourceId)));
-		}
-		else {
-			List<AssetContext> categoryAssets = AssetsAPI.getAssetListOfCategory(readingRule.getAssetCategoryId());
-			if (categoryAssets != null && !categoryAssets.isEmpty()) {
-				fetchInclusionsExclusions(readingRule);
-				
-				Map<Long, ResourceContext> matchedResources = new HashMap<>();
-				for (AssetContext asset : categoryAssets) {
-					if ( (readingRule.getIncludedResources() == null 
-							|| readingRule.getIncludedResources().isEmpty() 
-							|| readingRule.getIncludedResources().contains(asset.getId()))
-							&& (readingRule.getExcludedResources() == null 
-								|| readingRule.getExcludedResources().isEmpty()
-								|| !readingRule.getExcludedResources().contains(asset.getId()))
-							) {
-						matchedResources.put(asset.getId(), asset);
-					}
-				}
-				readingRule.setMatchedResources(matchedResources);
-			}
-		}
-	}
-	
-	private static void fetchInclusionsExclusions (ReadingRuleContext readingRule) throws Exception {
-		FacilioModule module = ModuleFactory.getReadingRuleInclusionsExclusionsModule();
-		List<FacilioField> fields = FieldFactory.getReadingRuleInclusionsExclusionsFields();
-		FacilioField ruleId = FieldFactory.getAsMap(fields).get("ruleId");
-		
-		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-																.table(module.getTableName())
-																.select(fields)
-																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-																.andCondition(CriteriaAPI.getCondition(ruleId, String.valueOf(readingRule.getId()), PickListOperators.IS));
-		
-		List<Map<String, Object>> props = selectRecordBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			List<Long> includedResources = new ArrayList<>();
-			List<Long> excludedResources = new ArrayList<>();
-			
-			for (Map<String, Object> prop : props) {
-				boolean isInclude = (boolean) prop.get("isInclude");
-				if (isInclude) {
-					includedResources.add((Long) prop.get("resourceId"));
-				}
-				else {
-					excludedResources.add((Long) prop.get("resourceId"));
-				}
-			}
-			
-			if (!includedResources.isEmpty()) {
-				readingRule.setIncludedResources(includedResources);
-			}
-			if (!excludedResources.isEmpty()) {
-				readingRule.setExcludedResources(excludedResources);
-			}
-		}
-	}
-	
-	public static List<ReadingRuleContext> getReadingRules() throws Exception {
-		return getReadingRules(null);
-	}
-	
-	public static List<ReadingRuleContext> getReadingRules(Criteria criteria) throws Exception {
-		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
-		fields.addAll(FieldFactory.getReadingRuleFields());
-		
-		FacilioModule workflowModule = ModuleFactory.getWorkflowRuleModule();
-		FacilioModule readingRuleModule = ModuleFactory.getReadingRuleModule();
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-														.select(fields)
-														.table(readingRuleModule.getTableName())
-														.innerJoin(workflowModule.getTableName())
-														.on(readingRuleModule.getTableName()+".ID = "+workflowModule.getTableName()+".ID")
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(workflowModule));
-		
-		if(criteria != null) {
-			selectBuilder.andCriteria(criteria);
-		}
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		if(props != null && !props.isEmpty()) {
-			List<ReadingRuleContext> readingRules = new ArrayList<>();
-			for (Map<String, Object> prop : props) {
-				ReadingRuleContext readingRule = FieldUtil.getAsBeanFromMap(prop, ReadingRuleContext.class);
-				if (readingRule.getCriteriaId() > 0) {
-					readingRule.setCriteria(CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getId(), readingRule.getCriteriaId()));
-				}
-				readingRules.add(readingRule);
-			}
-			return readingRules;
-		}
-		return null;
-	}
-	
-	private static List<WorkflowEventContext> getWorkFlowEventsFromMapList(List<Map<String, Object>> props, long orgId) throws Exception {
+	private static List<WorkflowEventContext> getWorkFlowEventsFromMapList(List<Map<String, Object>> props) throws Exception {
 		if(props != null && props.size() > 0) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			List<WorkflowEventContext> workflowEvents = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
 				WorkflowEventContext workflowEvent = FieldUtil.getAsBeanFromMap(prop, WorkflowEventContext.class);
+				workflowEvent.setModule(modBean.getModule(workflowEvent.getModuleId()));
 				workflowEvents.add(workflowEvent);
 			}
 			return workflowEvents;
@@ -794,7 +597,7 @@ public class WorkflowRuleAPI {
 		return null;
 	}
 	
-	public static void deleteWorkFlowRules(List<Long> workflowIds) throws Exception{
+	public static void deleteWorkFlowRules(List<Long> workflowIds) throws Exception {
 		if (workflowIds != null && !workflowIds.isEmpty()) {
 			List<WorkflowRuleContext> rules = getWorkflowRules(workflowIds);
 			
@@ -808,6 +611,14 @@ public class WorkflowRuleAPI {
 				deleteBuilder.delete();
 				
 				for (WorkflowRuleContext rule : rules) {
+					switch (rule.getRuleTypeEnum()) {
+						case APPROVAL_RULE:
+							ApprovalRulesAPI.deleteApprovalRuleChildIds((ApprovalRuleContext) rule);
+							break;
+						default:
+							break;
+					}
+					
 					deleteChildIdsForWorkflow(rule, rule);
 				}
 			}

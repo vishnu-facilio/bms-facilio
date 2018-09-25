@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.report.context.ReadingAnalysisContext.AnalyticsType;
+import com.facilio.workflows.context.WorkflowContext;
 
 public class ReportContext {
 
@@ -81,14 +82,14 @@ public class ReportContext {
 		this.reportFolderId = reportFolderId;
 	}
 	
-	private long workflowId = -1;
-	public long getWorkflowId() {
-		return workflowId;
+	private WorkflowContext transformWorkflow;
+	public WorkflowContext getTransformWorkflow() {
+		return transformWorkflow;
 	}
-	public void setWorkflowId(long workflowId) {
-		this.workflowId = workflowId;
+	public void setTransformWorkflow(WorkflowContext transformWorkflow) {
+		this.transformWorkflow = transformWorkflow;
 	}
-	
+
 	private String tabularState;
 	public String getTabularState() {
 		return tabularState;

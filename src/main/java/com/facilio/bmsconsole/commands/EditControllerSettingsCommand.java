@@ -8,6 +8,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.logging.log4j.util.Strings;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -57,19 +58,21 @@ public class EditControllerSettingsCommand implements Command {
 		
 		FacilioModule module = ModuleFactory.getControllerModule();
 		
-		long id = new GenericUpdateRecordBuilder()
+		int count = new GenericUpdateRecordBuilder()
 				.table(module.getTableName())
 				.fields(fields)
 				.andCondition(CriteriaAPI.getIdCondition(controllerSettings.getId(), module))
+				.andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getId(), module))
 				.update(controllerSettingsprops);
 		
-		controllerSettings.setId(id);
+		if (count == 0) {
+			return false;
+		}
 		
 		FacilioModule relModule = ModuleFactory.getControllerBuildingRelModule();
 		new GenericDeleteRecordBuilder()
 				.table(relModule.getTableName())
-				.andCondition(CriteriaAPI.getCondition("CONTROLLER_ID","controllerId", Strings.join(controllerSettings.getBuildingIds(), ','),NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(relModule))
+				.andCondition(CriteriaAPI.getCondition("CONTROLLER_ID","controllerId", String.valueOf(controllerSettings.getId()),NumberOperators.EQUALS))
 				.delete();
 		
 		if (controllerSettings.getBuildingIds() != null && !controllerSettings.getBuildingIds().isEmpty()) {

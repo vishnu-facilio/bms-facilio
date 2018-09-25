@@ -61,6 +61,7 @@ import com.facilio.bmsconsole.context.FormulaContext.EnergyPurposeAggregateOpera
 import com.facilio.bmsconsole.context.FormulaContext.NumberAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.SpaceAggregateOperator;
 import com.facilio.bmsconsole.context.MarkedReadingContext;
+import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -130,8 +131,8 @@ import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
-import com.facilio.bmsconsole.view.ReadingRuleContext;
-import com.facilio.bmsconsole.workflow.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.cards.util.CardType;
 import com.facilio.cards.util.CardUtil;
 import com.facilio.constants.FacilioConstants;
@@ -151,6 +152,8 @@ import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.context.WorkflowExpression;
+//import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -955,8 +958,9 @@ public class DashboardAction extends ActionSupport {
 				if(readingruleContext.getWorkflowId() > 0) {
 					WorkflowContext workflow = WorkflowUtil.getWorkflowContext(readingruleContext.getWorkflowId(), true);
 					
-					for(ExpressionContext exp:workflow.getExpressions()) {
+					for(WorkflowExpression workflowExp:workflow.getExpressions()) {
 						
+						ExpressionContext exp = (ExpressionContext) workflowExp;
 						if(exp.getModuleName() != null) {
 							
 							JSONObject dataPoint = new JSONObject();
@@ -1167,10 +1171,15 @@ public class DashboardAction extends ActionSupport {
 				
 				CardType card = CardType.getCardType(widgetStaticContext.getStaticKey());
 				
-				Object wfResult = WorkflowUtil.getWorkflowExpressionResult(card.getWorkflow(), widgetStaticContext.getParamsJson());
-				result.put("result", wfResult);
-				result.put("unit", CardUtil.getUnit(widgetStaticContext.getParamsJson()));
-				
+				if(card.isSingleResultWorkFlow()) {
+					Object wfResult = WorkflowUtil.getWorkflowExpressionResult(card.getWorkflow(), widgetStaticContext.getParamsJson());
+					result.put("result", wfResult);
+					result.put("unit", CardUtil.getUnit(widgetStaticContext.getParamsJson()));
+				}
+				else {
+					Map<String, Object> expResult = WorkflowUtil.getExpressionResultMap(card.getWorkflow(), widgetStaticContext.getParamsJson());
+					result.put("result", expResult);
+				}
 				result.put("widget", widgetStaticContext);
 				setCardResult(result);
 				return SUCCESS;
@@ -1208,6 +1217,16 @@ public class DashboardAction extends ActionSupport {
 							JSONObject json = new JSONObject();
 							
 							json.put("name", building.getName());
+							
+							if(building.getPhotoId() <= 0) {
+								
+								List<PhotosContext> photos = SpaceAPI.getBaseSpacePhotos(building.getId());
+								
+								if(photos != null && !photos.isEmpty()) {
+									building.setPhotoId(photos.get(0).getPhotoId());
+								}
+							}
+							
 							json.put("avatar", building.getAvatarUrl());
 							json.put("currentVal", json1);
 							
@@ -1257,14 +1276,10 @@ public class DashboardAction extends ActionSupport {
 							}
 							Object wfResult = WorkflowUtil.getResult(widgetVsWorkflowContext.getWorkflowId(), paramMap);
 							
-							if(widgetStaticContext != null && widgetStaticContext.getStaticKey().equals("weathercard") && widgetVsWorkflowContext.getWorkflowName().equals("weather")) {
+							if(widgetStaticContext != null && (widgetStaticContext.getStaticKey().equals("weathercard") || widgetStaticContext.getStaticKey().equals("weathermini")) && widgetVsWorkflowContext.getWorkflowName().equals("weather")) {
 								Map<String,Object> ss = (Map<String, Object>) wfResult;
 								Object temprature = ss.get("temperature");
-								if(AccountUtil.getCurrentOrg().getOrgId() == 104l) {
-									temprature = UnitsUtil.convert(temprature, Unit.CELSIUS, Unit.FAHRENHEIT);
-									ss.put("unit", "F");
-								}
-								if(AccountUtil.getCurrentOrg().getOrgId() == 75l) {
+								if(AccountUtil.getCurrentOrg().getOrgId() == 104l || AccountUtil.getCurrentOrg().getOrgId() == 75l) {
 									ss.put("unit", "F");
 								}
 								DecimalFormat f = new DecimalFormat("##.0");
@@ -1294,10 +1309,16 @@ public class DashboardAction extends ActionSupport {
 				
 				CardType card = CardType.getCardType(staticKey);
 				
-				Object wfResult = WorkflowUtil.getWorkflowExpressionResult(card.getWorkflow(), paramsJson);
+				if(card.isSingleResultWorkFlow()) {
+					Object wfResult = WorkflowUtil.getWorkflowExpressionResult(card.getWorkflow(), paramsJson);
+					result.put("result", wfResult);
+					result.put("unit", CardUtil.getUnit(paramsJson));
+				}
+				else {
+					Map<String, Object> expResult = WorkflowUtil.getExpressionResultMap(card.getWorkflow(), paramsJson);
+					result.put("result", expResult);
+				}
 				
-				result.put("result", wfResult);
-				result.put("unit", CardUtil.getUnit(paramsJson));
 				setCardResult(result);
 				return SUCCESS;
 			}
@@ -1339,6 +1360,16 @@ public class DashboardAction extends ActionSupport {
 							JSONObject json = new JSONObject();
 							
 							json.put("name", building.getName());
+							
+							if(building.getPhotoId() <= 0) {
+								
+								List<PhotosContext> photos = SpaceAPI.getBaseSpacePhotos(building.getId());
+								
+								if(photos != null && !photos.isEmpty()) {
+									building.setPhotoId(photos.get(0).getPhotoId());
+								}
+							}
+							
 							json.put("avatar", building.getAvatarUrl());
 							json.put("currentVal", json1);
 							
@@ -1388,11 +1419,10 @@ public class DashboardAction extends ActionSupport {
 							}
 							Object wfResult = WorkflowUtil.getWorkflowExpressionResult(widgetVsWorkflowContext.getWorkflowString(), paramMap);
 							
-							if( staticKey.equals("weathercard") && staticKey.equals("weather")) {
+							if( staticKey.equals("weathercard") || staticKey.equals("weathermini")) {
 								Map<String,Object> ss = (Map<String, Object>) wfResult;
 								Object temprature = ss.get("temperature");
 								if(AccountUtil.getCurrentOrg().getOrgId() == 104l || AccountUtil.getCurrentOrg().getOrgId() == 75l) {
-									temprature = UnitsUtil.convert(temprature, Unit.CELSIUS, Unit.FAHRENHEIT);
 									ss.put("unit", "F");
 								}
 								DecimalFormat f = new DecimalFormat("##.0");

@@ -14,6 +14,14 @@
 			<param name="permission">USER_MANAGEMENT</param> -->
 		</action>
 	</package>
+	
+	<package name="approvalRuleApiV2" namespace="/api/v2/setup/approvalrule" extends="v2Api">
+		<action name="add"  class="com.facilio.bmsconsole.actions.V2WorkflowAction" method="addApprovalRule">
+		</action>
+		
+		<action name="update"  class="com.facilio.bmsconsole.actions.V2WorkflowAction" method="updateApprovalRule">
+		</action>
+	</package>
 
 	<package name="costSetupApiV2" namespace="/api/v2/setup/cost" extends="setupApiV2">
 	</package>

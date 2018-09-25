@@ -12,7 +12,8 @@ import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.workflow.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
 
 public class AddWorkOrderCommand implements Command {
@@ -36,6 +37,8 @@ public class AddWorkOrderCommand implements Command {
 			workOrder.setModifiedTime(workOrder.getCreatedTime());
 			workOrder.setScheduledStart(workOrder.getCreatedTime());
 			workOrder.setEstimatedStart(workOrder.getCreatedTime());
+			workOrder.setApprovalState(ApprovalState.YET_TO_BE_REQUESTED);
+			
 			if (workOrder.getPriority() == null) {
 				workOrder.setPriority(TicketAPI.getPriority(AccountUtil.getCurrentOrg().getId(), "Low"));
 			}

@@ -22,6 +22,7 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.AssetContext;
@@ -30,6 +31,7 @@ import com.facilio.bmsconsole.context.AttachmentContext.AttachmentType;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMReminder;
+import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.ResourceContext;
@@ -51,11 +53,10 @@ import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
-import com.facilio.bmsconsole.workflow.ActivityType;
-import com.facilio.bmsconsole.workflow.TicketActivity;
+import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.TicketActivity;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.leed.context.PMTriggerContext;
 
 public class WorkOrderAction extends FacilioAction {
 
@@ -842,7 +843,7 @@ public class WorkOrderAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getWorkOrderId());
 
-		Chain getWorkOrderChain = FacilioChainFactory.getWorkOrderDetailsChain();
+		Chain getWorkOrderChain = ReadOnlyChainFactory.getWorkOrderDetailsChain();
 		getWorkOrderChain.execute(context);
 
 		setWorkorder((WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER));
@@ -1151,7 +1152,7 @@ public class WorkOrderAction extends FacilioAction {
 		System.out.println("PAGINATION ####### " + pagination);
 
 		System.out.println("View Name : " + getViewName());
-		Chain workOrderListChain = FacilioChainFactory.getWorkOrderListChain();
+		Chain workOrderListChain = ReadOnlyChainFactory.getWorkOrderListChain();
 		workOrderListChain.execute(context);
 
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));

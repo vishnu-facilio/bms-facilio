@@ -6,6 +6,13 @@ import com.facilio.bmsconsole.modules.FieldType;
 
 public class ParameterContext implements Serializable {
 
+	public ParameterContext() {
+		
+	}
+	public ParameterContext(String name,Object value) {
+		this.name = name;
+		this.value = value;
+	}
 	String name;
 	String typeString;
 	Object value;

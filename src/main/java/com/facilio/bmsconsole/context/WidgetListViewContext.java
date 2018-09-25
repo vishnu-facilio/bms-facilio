@@ -30,6 +30,7 @@ public class WidgetListViewContext extends DashboardWidgetContext {
 		
 		resultJson.put("id", getId());
 		resultJson.put("type", getWidgetType().getName());
+		
 		JSONObject layoutJson = new JSONObject();
 		layoutJson.put("height", getLayoutHeight());
 		layoutJson.put("width", getLayoutWidth());
@@ -38,6 +39,15 @@ public class WidgetListViewContext extends DashboardWidgetContext {
 		layoutJson.put("position", getLayoutPosition());
 		
 		resultJson.put("layout", layoutJson);
+		
+		JSONObject mlayoutJson = new JSONObject();
+		mlayoutJson.put("height", getmLayoutHeight());
+		mlayoutJson.put("width", getmLayoutWidth());
+		mlayoutJson.put("x", getmXPosition());
+		mlayoutJson.put("y", getmYPosition());
+		mlayoutJson.put("position", getmLayoutPosition());
+		
+		resultJson.put("mLayout", mlayoutJson);
 		
 		JSONObject headerJson = new JSONObject();
 		headerJson.put("title", getHeaderText());

@@ -223,6 +223,7 @@ public class EventConstants {
 			
 			fields.add(FieldFactory.getIdField(module));
 			fields.add(FieldFactory.getOrgIdField(module));
+			fields.add(FieldFactory.getSiteIdField(module));
 			
 			FacilioField source = new FacilioField();
 			source.setName("entity");

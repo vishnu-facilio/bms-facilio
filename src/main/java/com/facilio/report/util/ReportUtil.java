@@ -21,7 +21,6 @@ import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.ReportAxisContext;
 import com.facilio.report.context.ReportContext;
-import com.facilio.report.context.ReportDataContext;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportFolderContext;
@@ -63,6 +62,16 @@ public class ReportUtil {
 		return reportFolders;
 	}
 	
+	public static void moveReport(ReportContext reportContext, long folderId) throws Exception {
+		FacilioModule module = ModuleFactory.getReportModule();
+		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List< FacilioField> updateFields = modbean.getAllFields(module.getName());
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder().table(module.getTableName()).andCustomWhere("WHERE ID = ?", reportContext.getId()).fields(updateFields);
+		
+		Map<String,Object> prop = FieldUtil.getAsProperties(reportContext);
+		updateBuilder.update(prop);
+		
+	}
 	public static List<ReportContext> getReportsFromFolderId(long folderId) throws Exception {
 		
 		FacilioModule module = ModuleFactory.getReportModule();

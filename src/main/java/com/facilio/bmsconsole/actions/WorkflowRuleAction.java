@@ -10,19 +10,21 @@ import org.json.simple.JSONObject;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.templates.AssignmentTemplate;
 import com.facilio.bmsconsole.templates.SLATemplate;
-import com.facilio.bmsconsole.view.ReadingRuleContext;
-import com.facilio.bmsconsole.view.SLARuleContext;
-import com.facilio.bmsconsole.workflow.ActionContext;
-import com.facilio.bmsconsole.workflow.ActionType;
-import com.facilio.bmsconsole.workflow.ActivityType;
-import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
-import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
+import com.facilio.bmsconsole.workflow.rule.ActionContext;
+import com.facilio.bmsconsole.workflow.rule.ActionType;
+import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SLARuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -120,7 +122,7 @@ public class WorkflowRuleAction extends ActionSupport {
 		//readingRule.setResourceId(getAssetId());
 		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, readingRule);
 		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, actions);
-		Chain addRule = FacilioChainFactory.getAddWorkflowRuleChain();
+		Chain addRule = TransactionChainFactory.getAddWorkflowRuleChain();
 		addRule.execute(facilioContext);
 		
 		return SUCCESS;
@@ -132,7 +134,7 @@ public class WorkflowRuleAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, actions);
 		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, readingRule);
 		
-		Chain updateRule = FacilioChainFactory.updateWorkflowRuleChain();
+		Chain updateRule = TransactionChainFactory.updateWorkflowRuleChain();
 		updateRule.execute(context);
 		
 		readingRule = (ReadingRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
@@ -146,7 +148,7 @@ public class WorkflowRuleAction extends ActionSupport {
 		rule.setRuleType(RuleType.ASSIGNMENT_RULE);
 		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, rule);
 		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, constructAssignmentAction(true));
-		Chain addRule = FacilioChainFactory.getAddWorkflowRuleChain();
+		Chain addRule = TransactionChainFactory.getAddWorkflowRuleChain();
 		addRule.execute(facilioContext);
 		return SUCCESS;
 	}
@@ -156,7 +158,7 @@ public class WorkflowRuleAction extends ActionSupport {
 		rule.setRuleType(RuleType.ASSIGNMENT_RULE);
 		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, rule);
 		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, constructAssignmentAction(false));
-		Chain updateRule = FacilioChainFactory.updateWorkflowRuleChain();
+		Chain updateRule = TransactionChainFactory.updateWorkflowRuleChain();
 		updateRule.execute(facilioContext);
 		return SUCCESS;
 	}
@@ -189,7 +191,7 @@ public class WorkflowRuleAction extends ActionSupport {
 		slaRule.setRuleType(RuleType.SLA_RULE);
 		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, slaRule);
 		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, constructSLAAction(true));
-		Chain addRule = FacilioChainFactory.getAddWorkflowRuleChain();
+		Chain addRule = TransactionChainFactory.getAddWorkflowRuleChain();
 		addRule.execute(facilioContext);
 		return SUCCESS;
 	}
@@ -199,7 +201,7 @@ public class WorkflowRuleAction extends ActionSupport {
 		slaRule.setRuleType(RuleType.SLA_RULE);
 		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, slaRule);
 		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, constructSLAAction(false));
-		Chain updateRule = FacilioChainFactory.updateWorkflowRuleChain();
+		Chain updateRule = TransactionChainFactory.updateWorkflowRuleChain();
 		updateRule.execute(facilioContext);
 		return SUCCESS;
 	}
@@ -348,7 +350,7 @@ public class WorkflowRuleAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, rule);
 		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, actions);
 		
-		Chain addRule = FacilioChainFactory.getAddWorkflowRuleChain();
+		Chain addRule = TransactionChainFactory.getAddWorkflowRuleChain();
 		addRule.execute(context);
 		
 		return SUCCESS;
@@ -360,7 +362,7 @@ public class WorkflowRuleAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, actions);
 		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, rule);
 		
-		Chain updateRule = FacilioChainFactory.updateWorkflowRuleChain();
+		Chain updateRule = TransactionChainFactory.updateWorkflowRuleChain();
 		updateRule.execute(context);
 		
 		rule = (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);

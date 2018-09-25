@@ -23,7 +23,6 @@ import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
@@ -39,7 +38,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.view.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -371,6 +370,7 @@ public class AlarmAPI {
 		
 		obj.put("readingMessage", getMessage(rule, range, reading));
 		obj.put("resourceId", reading.getParentId());
+		obj.put("siteId", ((ResourceContext) reading.getParent()).getSiteId());
 		
 		String resourceName = ((ResourceContext)reading.getParent()).getName();
 		obj.put("source", resourceName);
@@ -387,7 +387,7 @@ public class AlarmAPI {
 				}
 				else {
 					WorkflowContext workflow = rule.getWorkflow();
-					ExpressionContext expression = workflow.getExpressions().get(0);
+					ExpressionContext expression = (ExpressionContext) workflow.getExpressions().get(0);
 					if (expression.getLimit() != null) {
 						range = new DateRange();
 						range.setStartTime(reading.getTtime());
@@ -472,7 +472,7 @@ public class AlarmAPI {
 	private static void appendOccurences (StringBuilder msgBuilder, ReadingRuleContext rule) {
 		WorkflowContext workflow = rule.getWorkflow();
 		if (workflow != null) {
-			ExpressionContext expression = workflow.getExpressions().get(0);
+			ExpressionContext expression = (ExpressionContext) workflow.getExpressions().get(0);
 			if (expression.getAggregateCondition() != null && !expression.getAggregateCondition().isEmpty()) {
 				msgBuilder.append(" ")
 							.append(getInWords(Integer.parseInt(rule.getPercentage())));
@@ -503,7 +503,9 @@ public class AlarmAPI {
 		
 		String value = null;
 		if (rule.getWorkflow() != null) {
-			ExpressionContext expr = rule.getWorkflow().getExpressions().get(0);
+			
+			ExpressionContext expr = (ExpressionContext) rule.getWorkflow().getExpressions().get(0);
+
 			if (expr.getAggregateCondition() != null && !expr.getAggregateCondition().isEmpty()) {
 				Condition aggrCondition = expr.getAggregateCondition().get(0);
 				value = aggrCondition.getValue();
@@ -606,7 +608,7 @@ public class AlarmAPI {
 		
 		String functionName = null;
 		if (rule.getWorkflow() != null) {
-			ExpressionContext expr = rule.getWorkflow().getExpressions().get(1);
+			ExpressionContext expr = (ExpressionContext) rule.getWorkflow().getExpressions().get(1);
 			functionName = expr.getDefaultFunctionContext().getFunctionName();
 		}
 		

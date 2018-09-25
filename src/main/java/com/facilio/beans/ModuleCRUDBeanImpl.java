@@ -31,6 +31,7 @@ import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -47,7 +48,7 @@ import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.ViewFactory;
-import com.facilio.bmsconsole.workflow.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventRuleContext;
@@ -528,7 +529,25 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
 	@Override
 	public long processEvents(long timeStamp, JSONObject payLoad, List<EventRuleContext> eventRules,
-			Map<String, Integer> eventCountMap, long lastEventTime) throws Exception {
+			Map<String, Integer> eventCountMap, long lastEventTime, String partitionKey) throws Exception {
+		if (partitionKey != null && !partitionKey.isEmpty()) {
+			FacilioModule module = ModuleFactory.getControllerModule();
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+					.table(module.getTableName())
+					.select(FieldFactory.getControllerFields())
+					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+					.andCondition(CriteriaAPI.getCondition("MAC_ADDR", "macAddr", partitionKey, StringOperators.IS));
+			List<Map<String, Object>> props = selectBuilder.get();
+			Long siteId = -1l;
+			if (props != null && !props.isEmpty()) {
+				siteId = (Long) props.get(0).get("siteId"); 
+			}
+			
+			if (siteId != -1) {
+				payLoad.put("siteId", siteId);
+			}
+		}
+		
 		return EventAPI.processEvents(timeStamp, payLoad, eventRules, eventCountMap, lastEventTime);
 	}
 

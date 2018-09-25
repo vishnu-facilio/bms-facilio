@@ -1,16 +1,5 @@
 package com.facilio.bmsconsole.commands.data;
 
-import org.apache.commons.chain.Chain;
-
-
-import java.sql.*;
-import java.sql.PreparedStatement;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.ArrayListMultimap;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,28 +7,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-import org.apache.log4j.LogManager;
+
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
-import com.facilio.bmsconsole.actions.ReadingAction;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
-import com.facilio.bmsconsole.commands.InsertReadingDataMetaForNewResourceCommand;
-import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TicketContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
-import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
-import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsole.util.ModuleLocalIdUtil;
@@ -47,7 +34,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
-import com.facilio.transaction.FacilioConnectionPool;
+import com.google.common.collect.ArrayListMultimap;
 
 public class PopulateImportProcessCommand implements Command {
 	
@@ -61,7 +48,7 @@ public class PopulateImportProcessCommand implements Command {
 		StringBuilder emailMessage = new StringBuilder();
 		ArrayListMultimap<String,String> groupedFields = (ArrayListMultimap<String,String>) c.get(ImportAPI.ImportProcessConstants.GROUPED_FIELDS);
 		ArrayListMultimap<String, ReadingContext> groupedReadingContext = (ArrayListMultimap<String, ReadingContext>) c.get(ImportAPI.ImportProcessConstants.GROUPED_READING_CONTEXT);
-		
+		ArrayListMultimap<String, Long> recordsList = (ArrayListMultimap<String, Long>) c.get(FacilioConstants.ContextNames.RECORD_LIST);
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
 		JSONObject meta = new JSONObject();	
 		Integer Setting = importProcessContext.getImportSetting();
@@ -74,12 +61,14 @@ public class PopulateImportProcessCommand implements Command {
 					listOfIds = populateData(groupedReadingContext.get(keys.get(i)),keys.get(i));
 				}
 				if(!listOfIds.isEmpty()) {
-					c.put(FacilioConstants.ContextNames.RECORD_ID_LIST, listOfIds);
+					for(Long id: listOfIds) {
+						recordsList.put(importProcessContext.getModule().getName(), id);
+					}
 				}
 				meta.put("Inserted", groupedReadingContext.size());
 				importProcessContext.setImportJobMeta(meta.toJSONString());
 				emailMessage.append(",Inserted:" + groupedReadingContext.size() +"Updated:"+ 0 +",Skipped:" +0);
-				c.put(FacilioConstants.ContextNames.RECORD_LIST, listOfIds);
+				c.put(FacilioConstants.ContextNames.RECORD_LIST, recordsList);
 		}
 		
 		else if (Setting == ImportProcessContext.ImportSetting.INSERT_SKIP.getValue()) {
@@ -103,6 +92,9 @@ public class PopulateImportProcessCommand implements Command {
 			}
 			
 			listOfIds = populateData(newItems,importProcessContext.getModule().getName());
+			for(Long id: listOfIds) {
+				recordsList.put(importProcessContext.getModule().getName(), id);
+			}
 			c.put(FacilioConstants.ContextNames.RECORD_LIST, listOfIds);
 			
 			Integer Skipped = readingsList.size()-newItems.size();
@@ -147,7 +139,10 @@ public class PopulateImportProcessCommand implements Command {
 			}
 			
 			listOfIds = populateData(insertItems,importProcessContext.getModule().getName());
-			c.put(FacilioConstants.ContextNames.RECORD_ID_LIST,listOfIds);
+			for(Long id: listOfIds) {
+				recordsList.put(importProcessContext.getModule().getName(), id);
+			}
+			c.put(FacilioConstants.ContextNames.RECORD_LIST, listOfIds);
 			
 			updateData(importProcessContext,updateItems);
 			meta.put("Inserted", insertItems.size());
@@ -175,7 +170,10 @@ public class PopulateImportProcessCommand implements Command {
 			}
 			
 			listOfIds = populateData(insertItems,importProcessContext.getModule().getName());
-			c.put(FacilioConstants.ContextNames.RECORD_ID_LIST,listOfIds);
+			for(Long id: listOfIds) {
+				recordsList.put(importProcessContext.getModule().getName(), id);
+			}
+			c.put(FacilioConstants.ContextNames.RECORD_LIST, listOfIds);
 			
 			updateNotNull(importProcessContext,updateItems);
 			meta.put("Inserted", insertItems.size());

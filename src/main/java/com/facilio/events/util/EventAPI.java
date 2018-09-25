@@ -114,6 +114,9 @@ public class EventAPI {
 		    	else if (key.equals("resourceId")) {
 		    		event.setResourceId(Long.parseLong(value));
 		    	}
+		    	else if (key.equals("siteId")) {
+		    		event.setSiteId(Long.parseLong(value));
+		    	}
 		    	else
 		    	{
 		    		event.addAdditionInfo(key, value);

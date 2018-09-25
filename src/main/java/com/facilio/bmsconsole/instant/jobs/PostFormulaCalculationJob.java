@@ -70,17 +70,19 @@ public class PostFormulaCalculationJob extends InstantJob {
 			if (field != null && formula.getWorkflow().getDependentFieldIds().contains(field.getId())) {
 				ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(reading.getParentId(), formula.getReadingField());
 				List<DateRange> intervals = DateTimeUtil.getTimeIntervals(meta.getTtime()+1, reading.getTtime(), formula.getInterval());
-				LOGGER.info("Intervals for calculation of : "+formula.getName()+" for "+reading.getParentId()+" is "+intervals);
-				long startTime = System.currentTimeMillis();
-				if (intervals.size() > 1) { //If more than one interval has to be calculated, only the last interval will be calculated here. Previous intervals will be done via scheduler
-					long minTime = intervals.get(0).getStartTime();
-					long maxTime = intervals.get(intervals.size() - 2).getEndTime();
-					FormulaFieldAPI.calculateHistoricalDataForSingleResource(formula.getId(), reading.getParentId(), new DateRange(minTime, maxTime));
-					intervals = Collections.singletonList(intervals.get(intervals.size() - 1));
+				if (intervals != null) { //No need to calculate if RDM time is greater
+					LOGGER.info("Intervals for calculation of : "+formula.getName()+" for "+reading.getParentId()+" is "+intervals);
+					long startTime = System.currentTimeMillis();
+					if (intervals.size() > 1) { //If more than one interval has to be calculated, only the last interval will be calculated here. Previous intervals will be done via scheduler
+						long minTime = intervals.get(0).getStartTime();
+						long maxTime = intervals.get(intervals.size() - 2).getEndTime();
+						FormulaFieldAPI.calculateHistoricalDataForSingleResource(formula.getId(), reading.getParentId(), new DateRange(minTime, maxTime));
+						intervals = Collections.singletonList(intervals.get(intervals.size() - 1));
+					}
+					List<ReadingContext> formulaReadings = FormulaFieldAPI.calculateFormulaReadings(reading.getParentId(), formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), false, false);
+					LOGGER.info("Time taken for formula calculation of : "+formula.getName()+" for "+reading.getParentId()+" is "+(System.currentTimeMillis() - startTime));
+					return formulaReadings;
 				}
-				List<ReadingContext> formulaReadings = FormulaFieldAPI.calculateFormulaReadings(reading.getParentId(), formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), false, false);
-				LOGGER.info("Time taken for formula calculation of : "+formula.getName()+" for "+reading.getParentId()+" is "+(System.currentTimeMillis() - startTime));
-				return formulaReadings;
 			}
 		}
 		return null;

@@ -174,6 +174,9 @@ public class EventToAlarmCommand implements Command {
 		json.put("alarmClass", event.getAlarmClass());
 		json.put("state", event.getState());
 		json.put("createdTime", event.getCreatedTime());
+		if (event.getSiteId() != -1) {
+			json.put("siteId", event.getSiteId());
+		}
 		if(entityId != -1)
 		{
 			json.put("entityId", entityId);

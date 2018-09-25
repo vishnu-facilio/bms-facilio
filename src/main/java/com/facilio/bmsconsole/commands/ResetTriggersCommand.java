@@ -13,6 +13,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMJobsContext.PMJobsStatus;
+import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.criteria.CommonOperators;
@@ -23,12 +24,12 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
+import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
-import com.facilio.bmsconsole.view.ReadingRuleContext;
-import com.facilio.bmsconsole.workflow.WorkflowEventContext;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.leed.context.PMTriggerContext;
 import com.facilio.tasker.ScheduleInfo.FrequencyType;
 
 public class ResetTriggersCommand implements Command {
@@ -131,7 +132,7 @@ public class ResetTriggersCommand implements Command {
 						if(trigger.getId() != currentTrigger.getId()) { //Resetting latest value of other metered triggers
 							long latestValue = getLatestReading(trigger.getReadingRuleId());
 							if(latestValue != -1) {
-								WorkflowRuleAPI.updateLastValueInReadingRule(trigger.getReadingRuleId(), latestValue);
+								ReadingRuleAPI.updateLastValueInReadingRule(trigger.getReadingRuleId(), latestValue);
 							}
 						}
 						break;

@@ -8,9 +8,11 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
@@ -49,9 +51,9 @@ import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.FacilioTablePrinter;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
-import com.facilio.bmsconsole.view.ReadingRuleContext;
-import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
+import com.facilio.bmsconsole.util.ReadingRuleAPI;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.queue.FAWSQueue;
@@ -62,6 +64,7 @@ import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class CommonCommandUtil {
@@ -435,6 +438,26 @@ public class CommonCommandUtil {
 		return result;		
 	}
     
+    public static List<Long> getMySiteIds() throws Exception {
+    	FacilioModule accessibleSpaceMod = ModuleFactory.getAccessibleSpaceModule();
+		GenericSelectRecordBuilder selectAccessibleBuilder = new GenericSelectRecordBuilder()
+				.select(AccountConstants.getAccessbileSpaceFields())
+				.table(accessibleSpaceMod.getTableName())
+				.andCustomWhere("ORG_USER_ID = ?", AccountUtil.getCurrentAccount().getUser().getOuid());
+		List<Map<String, Object>> props = selectAccessibleBuilder.get();
+		Set<Long> siteIds = new HashSet<>();
+		if (props != null && !props.isEmpty()) {
+			for(Map<String, Object> prop : props) {
+				Long siteId = (Long) prop.get("siteId");
+				if (siteId != null) {
+					siteIds.add(siteId);
+				}
+			}
+		}
+		List<Long> toArray = new ArrayList<>(siteIds);
+		return toArray;
+    }
+    
     public static List<BaseSpaceContext> getMySites() throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
@@ -536,7 +559,7 @@ public class CommonCommandUtil {
     	Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getCondition("READING_FIELD_ID", "readingFieldId", String.valueOf(fieldId), NumberOperators.EQUALS));
         criteria.addAndCondition(CriteriaAPI.getCondition("RULE_TYPE", "ruleType", String.valueOf(RuleType.VALIDATION_RULE.getIntVal()), NumberOperators.EQUALS));
-        List<ReadingRuleContext> readingRules = WorkflowRuleAPI.getReadingRules(criteria);
+        List<ReadingRuleContext> readingRules = ReadingRuleAPI.getReadingRules(criteria);
         Double min = null;
         Double max = null;
         if (readingRules != null && !readingRules.isEmpty()) {
@@ -550,7 +573,15 @@ public class CommonCommandUtil {
         			r.setWorkflow(workflowMap.get(workflowId));
         		}
         		if (r.getWorkflow().getResultEvaluator().equals("(b!=-1&&a<b)||(c!=-1&&a>c)")) {
-        			Optional<ExpressionContext> exp = r.getWorkflow().getExpressions().stream().filter(e -> {return e.getName().equals("b");}).findFirst();
+        			
+        			List <ExpressionContext> expresions = new ArrayList<>();
+        			for(WorkflowExpression worklfowExp : r.getWorkflow().getExpressions()) {
+        				
+        				if(worklfowExp instanceof ExpressionContext) {
+        					expresions.add((ExpressionContext) worklfowExp);
+        				}
+        			}
+        			Optional<ExpressionContext> exp = expresions.stream().filter(e -> {return e.getName().equals("b");}).findFirst();
         			if (exp.isPresent()) {
         				min = Double.parseDouble((String) exp.get().getConstant());
         				if (min == -1) {
@@ -558,7 +589,7 @@ public class CommonCommandUtil {
         				}
         			}
         			
-        			exp = r.getWorkflow().getExpressions().stream().filter(e -> {return e.getName().equals("c");}).findFirst();
+        			exp = expresions.stream().filter(e -> {return e.getName().equals("c");}).findFirst();
         			if (exp.isPresent()) {
         				max = Double.parseDouble((String) exp.get().getConstant());
         				if (max == -1) {

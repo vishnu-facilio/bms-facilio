@@ -374,14 +374,7 @@ public class UserBeanImpl implements UserBean {
 		shiftRelInsertBuilder.save();
 	}
 	
-	public long inviteRequester(long orgId, User user) throws Exception {
-		if(AccountUtil.getCurrentOrg() != null) {
-			Organization portalOrg = AccountUtil.getOrgBean().getPortalOrg(AccountUtil.getCurrentOrg().getDomain());
-			user.setPortalId(portalOrg.getPortalId());
-			return addRequester(orgId, user, false, true);
-		}
-		return 0L;
-	}
+
 
 
 	private User getUserFromToken(String userToken){
@@ -432,7 +425,7 @@ public class UserBeanImpl implements UserBean {
 		}
 		return hostname + url + inviteToken;
 	}
-	
+	@Override
 	public void sendInvitation(long ouid, User user) throws Exception {
 		user.setOuid(ouid);
 		String inviteLink = getUserLink(user,"/invitation/");
@@ -1194,8 +1187,17 @@ public class UserBeanImpl implements UserBean {
 		}
 		return null;
 	}
-	
 	@Override
+	public long inviteRequester(long orgId, User user) throws Exception {
+		if(AccountUtil.getCurrentOrg() != null) {
+			Organization portalOrg = AccountUtil.getOrgBean().getPortalOrg(AccountUtil.getCurrentOrg().getDomain());
+			user.setPortalId(portalOrg.getPortalId());
+			return addRequester(orgId, user, true, true);
+		}
+		return 0L;
+	}
+	
+	
 	public long addRequester(long orgId, User user) throws Exception {
 
 		return addRequester(orgId, user, true,true);
@@ -1203,7 +1205,7 @@ public class UserBeanImpl implements UserBean {
 	@Override
 	public long createRequestor(long orgId, User user) throws Exception {
 		// TODO Auto-generated method stub
-		return addRequester(orgId,  user,true,false);
+		return addRequester(orgId,  user,false,false);
 	}
 	
 	private User getPortalUserForInternal(String email, long portalId) throws Exception {

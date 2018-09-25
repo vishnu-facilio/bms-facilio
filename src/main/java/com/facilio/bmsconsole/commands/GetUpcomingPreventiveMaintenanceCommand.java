@@ -15,6 +15,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.PMJobsContext;
+import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.TriggerType;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -29,7 +30,6 @@ import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.leed.context.PMTriggerContext;
 import com.facilio.tasker.ScheduleInfo;
 
 public class GetUpcomingPreventiveMaintenanceCommand implements Command {

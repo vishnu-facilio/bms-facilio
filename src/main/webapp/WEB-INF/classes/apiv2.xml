@@ -81,6 +81,7 @@
 		<action name="save" class="com.facilio.bmsconsole.actions.ImportTemplateAction" method="saveImportTemplate">
 		<param name="permission">DATA_ADMINISTRATION</param>
 		</action>
+		<action name="deletetemplate" class="com.facilio.bmsconsole.actions.ImportTemplateAction" method="deleteTemplate"></action>
 	</package>
 
 	<package name="workOrderApiV2" namespace="/api/v2/workorders" extends="v2Api">
@@ -178,6 +179,16 @@
 			method="v2updateStatus">
 			<param name="moduleName">alarm</param>
 			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+		</action>
+		
+		<action name="createWorkorder" class="com.facilio.bmsconsole.actions.AlarmAction" method="v2createWorkorder">
+			<param name="moduleName">alarm</param>
+			<param name="permission">CREATE_WO</param>
+		</action>
+		
+		<action name="delete" class="com.facilio.bmsconsole.actions.AlarmAction" method="v2deleteAlarm">
+			<param name="moduleName">alarm</param>
+			<param name="permission">DELETE,DELETE_TEAM,DELETE_OWN</param>
 		</action>
 	</package>
 	
@@ -355,6 +366,8 @@
 		<action name="deleteReportFolder" class="com.facilio.bmsconsole.actions.V2ReportAction" method="deleteReportFolder">
 		</action>
 		<action name="duplicateReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="duplicateReport">
+		</action>
+		<action name="moveReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="moveReport">
 		</action>
 	</package>
 	
