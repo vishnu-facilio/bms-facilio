@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -26,7 +27,16 @@ public class ConstructApprovalRuleActionCommand implements Command {
 			ActionContext action = new ActionContext();
 			action.setActionType(ActionType.FIELD_CHANGE);
 			action.setTemplate(getTemplate(approvalRule));
-			context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, Collections.singletonList(action));
+			
+			List<ActionContext> actions = approvalRule.getActions();
+			if (actions == null) {
+				actions = Collections.singletonList(action);
+			}
+			else {
+				actions.add(action);
+			}
+			
+			context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, actions);
 		}
 		return false;
 	}
