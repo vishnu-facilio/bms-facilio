@@ -7,9 +7,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.workflows.context.WorkflowExpression.WorkflowExpressionType;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class WorkflowContext implements Serializable {
@@ -45,6 +51,41 @@ public class WorkflowContext implements Serializable {
 	String workflowString;
 	List<ParameterContext> parameters;
 	List<WorkflowExpression> expressions;
+	
+	public List<WorkflowExpression> getExpressions() {
+		return expressions;
+	}
+	
+	// only from client
+	public void setExpressions(JSONArray workflowExpressions) throws Exception {
+		if(workflowExpressions != null) {
+			
+			for(int i=0 ;i<workflowExpressions.size();i++) {
+				
+				WorkflowExpression workflowExpression = null;
+				
+				Map workflowExp = (Map)workflowExpressions.get(i);
+				Integer workflowExpressionType = (Integer) workflowExp.get("workflowExpressionType");
+				if(workflowExpressionType == null) {
+					workflowExpressionType = 0;
+				}
+				if(workflowExpressionType <= 0 || workflowExpressionType == WorkflowExpressionType.EXPRESSION.getValue()) {
+					workflowExpression = new ExpressionContext();
+					workflowExpression = FieldUtil.getAsBeanFromMap(workflowExp, ExpressionContext.class);
+				}
+				else if(workflowExpressionType == WorkflowExpressionType.ITERATION.getValue()) {
+					workflowExpression = new IteratorContext();
+					workflowExpression = FieldUtil.getAsBeanFromMap(workflowExp, IteratorContext.class);
+				}
+				addWorkflowExpression(workflowExpression);
+			}
+		}
+	}
+	
+	public void addWorkflowExpression(WorkflowExpression expression) {
+		expressions = expressions == null ? new ArrayList<>() : expressions;
+		expressions.add(expression);
+	}
 	
 	Map<String,Object> variableResultMap;
 	String resultEvaluator;
@@ -150,22 +191,6 @@ public class WorkflowContext implements Serializable {
 			this.parameters = new ArrayList<>();
 		}
 		this.parameters.add(parameter);
-	}
-
-	
-	public List<WorkflowExpression> getExpressions() {
-		return expressions;
-	}
-	public void setExpressions(List<ExpressionContext> workflowExpressions) {
-		if(workflowExpressions != null) {
-			for(ExpressionContext workflowExpression :workflowExpressions) {
-				addWorkflowExpression((WorkflowExpression) workflowExpression);
-			}
-		}
-	}
-	public void addWorkflowExpression(WorkflowExpression expression) {
-		expressions = expressions == null ? new ArrayList<>() : expressions;
-		expressions.add(expression);
 	}
 
 	public String getResultEvaluator() {
@@ -326,4 +351,5 @@ public class WorkflowContext implements Serializable {
 			return null;
 		}
 	}
+
 }

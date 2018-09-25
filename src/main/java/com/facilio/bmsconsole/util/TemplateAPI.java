@@ -988,7 +988,7 @@ public class TemplateAPI {
 		JSONArray placeHolders = getPlaceholders(template);
 		if (placeHolders != null && !placeHolders.isEmpty()) {
 			List<ParameterContext> params = new ArrayList<>();
-			List<ExpressionContext> expressions = new ArrayList<>();
+			WorkflowContext workflow = new WorkflowContext();
 			for (int i = 0; i < placeHolders.size(); i++) {
 				String placeHolder = (String) placeHolders.get(i);
 				ParameterContext param = new ParameterContext();
@@ -999,10 +999,8 @@ public class TemplateAPI {
 				ExpressionContext expression = new ExpressionContext();
 				expression.setName(placeHolder);
 				expression.setConstant("${"+placeHolder+"}");
-				expressions.add(expression);
+				workflow.addWorkflowExpression(expression);
 			}
-			WorkflowContext workflow = new WorkflowContext();
-			workflow.setExpressions(expressions);
 			workflow.setParameters(params);
 			return workflow;
 		}

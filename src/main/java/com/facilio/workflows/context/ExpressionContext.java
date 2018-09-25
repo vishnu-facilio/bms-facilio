@@ -488,4 +488,10 @@ public class ExpressionContext implements Serializable,WorkflowExpression {
 		result = result +"constant -- "+getConstant() +"\n";
 		return result;
 	}
+
+	@Override
+	public int getWorkflowExpresionType() {
+		// TODO Auto-generated method stub
+		return WorkflowExpressionType.EXPRESSION.getValue();
+	}
 }
