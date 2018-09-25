@@ -64,6 +64,7 @@ public class TransactionChainFactory {
 			c.addCommand(SetTableNamesCommand.getForWorkOrder());
 			c.addCommand(new LoadAllFieldsCommand());
 			c.addCommand(new FetchOldWorkOrdersCommand());
+			c.addCommand(new VerifyApprovalCommand());
 			c.addCommand(new UpdateWorkOrderCommand());
 			c.addCommand(new SendNotificationCommand());
 			c.addCommand(new ClearAlarmOnWOCloseCommand());

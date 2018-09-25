@@ -303,35 +303,11 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getWorkOrderDetailsChain() {
-		Chain c = new ChainBase();
-		c.addCommand(SetTableNamesCommand.getForWorkOrder());
-		c.addCommand(new LoadModuleNameCommand());
-		c.addCommand(new LoadAllFieldsCommand());
-		c.addCommand(new GetWorkOrderCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
 	public static Chain getWorkOrderDataChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForWorkOrder());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
-	public static Chain getWorkOrderListChain() {
-		Chain c = new ChainBase();
-		c.addCommand(SetTableNamesCommand.getForWorkOrder());
-		c.addCommand(new LoadModuleNameCommand());
-		c.addCommand(new LoadViewCommand());
-		c.addCommand(new LoadAllFieldsCommand());
-		//c.addCommand(new GenerateCondtionsFromFiltersCommand());
-		c.addCommand(new GenerateCriteriaFromFilterCommand());
-		c.addCommand(new GenerateSearchConditionCommand());
-		c.addCommand(new GetWorkOrderListCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}

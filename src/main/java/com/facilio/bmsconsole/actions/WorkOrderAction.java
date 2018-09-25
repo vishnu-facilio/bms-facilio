@@ -22,6 +22,7 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.AssetContext;
@@ -842,7 +843,7 @@ public class WorkOrderAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getWorkOrderId());
 
-		Chain getWorkOrderChain = FacilioChainFactory.getWorkOrderDetailsChain();
+		Chain getWorkOrderChain = ReadOnlyChainFactory.getWorkOrderDetailsChain();
 		getWorkOrderChain.execute(context);
 
 		setWorkorder((WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER));
@@ -1151,7 +1152,7 @@ public class WorkOrderAction extends FacilioAction {
 		System.out.println("PAGINATION ####### " + pagination);
 
 		System.out.println("View Name : " + getViewName());
-		Chain workOrderListChain = FacilioChainFactory.getWorkOrderListChain();
+		Chain workOrderListChain = ReadOnlyChainFactory.getWorkOrderListChain();
 		workOrderListChain.execute(context);
 
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));

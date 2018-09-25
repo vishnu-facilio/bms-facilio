@@ -59,6 +59,15 @@ public class ApprovalRuleContext extends WorkflowRuleContext {
 		approvers.add(approver);
 	}
 	
+	public boolean hasApprovalPermission() throws Exception {
+		if (approvers == null) {
+			return true;
+		}
+		else {
+			return approvers.isAllowed();
+		}
+	}
+	
 	private List<ActionContext> approvalActions;
 	public List<ActionContext> getApprovalActions() {
 		return approvalActions;
