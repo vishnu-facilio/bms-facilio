@@ -570,7 +570,12 @@ public class AlarmAction extends FacilioAction {
 	}
 	
 	public String v2createWorkorder() throws Exception{
+		List<Long> ids = new ArrayList<>();
+		ids.add(alarm.getId());
+		setId(ids);
+		
 		createWorkorder();
+		
 		setResult("workorderId", woId);
 		return SUCCESS;
 	}
