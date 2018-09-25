@@ -9,6 +9,7 @@ import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -65,13 +66,24 @@ public class PostFormulaCalculationJob extends InstantJob {
 	
 	private List<ReadingContext> calculateNewFormula(FormulaFieldContext formula, ReadingContext reading, Map<String, FacilioField> fieldMap) throws Exception {
 		Map<String, Object> readingData = reading.getReadings();
+		if (AccountUtil.getCurrentOrg().getId() == 135) {
+			LOGGER.info("Calculating new formula for : "+formula.getName()+" for resource : "+reading.getParentId());
+			LOGGER.info("Reading : "+reading);
+		}
 		for (String fieldName : readingData.keySet()) {
 			FacilioField field = fieldMap.get(fieldName);
+			if (AccountUtil.getCurrentOrg().getId() == 135) {
+				LOGGER.info("Field Name : "+fieldName);
+				LOGGER.info("Field : "+field);
+			}
 			if (field != null && formula.getWorkflow().getDependentFieldIds().contains(field.getId())) {
 				ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(reading.getParentId(), formula.getReadingField());
+				if (AccountUtil.getCurrentOrg().getId() == 135) {
+					LOGGER.info("RDM : "+meta);
+				}
 				List<DateRange> intervals = DateTimeUtil.getTimeIntervals(meta.getTtime()+1, reading.getTtime(), formula.getInterval());
+				LOGGER.info("Intervals for calculation of : "+formula.getName()+" for "+reading.getParentId()+" is "+intervals);
 				if (intervals != null) { //No need to calculate if RDM time is greater
-					LOGGER.info("Intervals for calculation of : "+formula.getName()+" for "+reading.getParentId()+" is "+intervals);
 					long startTime = System.currentTimeMillis();
 					if (intervals.size() > 1) { //If more than one interval has to be calculated, only the last interval will be calculated here. Previous intervals will be done via scheduler
 						long minTime = intervals.get(0).getStartTime();
