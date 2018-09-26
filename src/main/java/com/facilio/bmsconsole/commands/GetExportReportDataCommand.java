@@ -122,7 +122,7 @@ public class GetExportReportDataCommand implements Command {
 			}
 			String chartType = (String) context.get("chartType");
 			if (chartType != null) {
-				url += "&charttype" + chartType;
+				url += "&charttype=" + chartType;
 			}
 			
 			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(), url, fileFormat);
