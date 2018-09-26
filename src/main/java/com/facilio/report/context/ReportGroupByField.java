@@ -3,6 +3,7 @@ package com.facilio.report.context;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.NumberField;
+import com.facilio.unitconversion.Metric;
 import com.facilio.unitconversion.Unit;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -43,11 +44,14 @@ public class ReportGroupByField {
 			this.fieldName = field.getName();
 			this.moduleName = field.getModule().getName();
 			
-			if (this.getDataTypeEnum() == null) {
+			if (this.dataType == null) {
 				this.dataType = field.getDataTypeEnum();
 			}
-			if (this.getUnitEnum() == null && field instanceof NumberField) {
-				this.unit = ((NumberField) field).getUnitEnum();
+			if (field instanceof NumberField) {
+				if (this.unitStr == null) {
+					this.unitStr = ((NumberField) field).getUnit();
+				}
+				this.metric = ((NumberField) field).getMetricEnum();
 			}
 		}
 		this.field = field;
@@ -70,21 +74,29 @@ public class ReportGroupByField {
 		this.dataType = FieldType.getCFType(dataType);
 	}
 
-	private Unit unit;
-	public Unit getUnitEnum() {
-		return unit;
+	private String unitStr;
+	public String getUnitStr() {
+		return unitStr;
 	}
-	public void setUnit(Unit unit) {
-		this.unit = unit;
+	public void setUnitStr(String unitStr) {
+		this.unitStr = unitStr;
 	}
-	public int getUnit() {
-		if (unit != null) {
-			return unit.getUnitId();
+
+	private Metric metric;
+	public int getMetric() {
+		if (metric != null) {
+			return metric.getMetricId();
 		}
 		return -1;
 	}
-	public void setUnit(int unit) {
-		this.unit = Unit.valueOf(unit);
+	public void setMetric(int metric) {
+		this.metric = Metric.valueOf(metric);
+	}
+	public Metric getMetricEnum() {
+		return metric;
+	}
+	public void setMetric(Metric metric) {
+		this.metric = metric;
 	}
 	
 	private String joinOn;

@@ -47,8 +47,11 @@ public class ReportAxisContext {
 			if (this.dataType == null) {
 				this.dataType = field.getDataTypeEnum();
 			}
-			if (this.unitStr == null && field instanceof NumberField) {
-				this.unitStr = ((NumberField) field).getUnit();
+			if (field instanceof NumberField) {
+				if (this.unitStr == null) {
+					this.unitStr = ((NumberField) field).getUnit();
+				}
+				this.metric = ((NumberField) field).getMetricEnum();
 			}
 		}
 		this.field = field;
@@ -105,7 +108,16 @@ public class ReportAxisContext {
 	}
 
 	private Metric metric;
-	public Metric getMetric() {
+	public int getMetric() {
+		if (metric != null) {
+			return metric.getMetricId();
+		}
+		return -1;
+	}
+	public void setMetric(int metric) {
+		this.metric = Metric.valueOf(metric);
+	}
+	public Metric getMetricEnum() {
 		return metric;
 	}
 	public void setMetric(Metric metric) {
