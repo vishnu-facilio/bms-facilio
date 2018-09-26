@@ -437,8 +437,8 @@ public class FacilioAuthAction extends ActionSupport {
     public String changePassword() throws Exception {
         User user = AccountUtil.getCurrentUser();
         if(user != null) {
-            boolean verifyOldPassword = verifyPassword(user.getEmail(), getPassword());
-            if (verifyOldPassword) {
+            Boolean verifyOldPassword = verifyPassword(user.getEmail(), getPassword());
+            if (verifyOldPassword != null && verifyOldPassword) {
                 user.setPassword(getNewPassword());
                 AccountUtil.getUserBean().updateUser(user);
                 setJsonresponse("message", "Password changed successfully");
@@ -478,7 +478,8 @@ public class FacilioAuthAction extends ActionSupport {
 
     public String generateAuthToken() {
         LOGGER.info("generateAuthToken() : username :"+getUsername());
-        if(verifyPassword(getUsername(), getPassword())) {
+        Boolean passwordVerified = verifyPassword(getUsername(), getPassword());
+        if(passwordVerified != null && passwordVerified) {
             String jwt = CognitoUtil.createJWT("id", "auth0", getUsername(), System.currentTimeMillis() + 24 * 60 * 60000, false);
             LOGGER.info("Response token is " + jwt);
             setJsonresponse("authtoken", jwt);
@@ -568,8 +569,8 @@ public class FacilioAuthAction extends ActionSupport {
     }
 
     public String changePortalPassword() {
-        boolean verifyOldPassword = verifyPortalPassword(getEmailaddress(), getPassword(), portalId());
-        if(verifyOldPassword) {
+        Boolean verifyOldPassword = verifyPortalPassword(getEmailaddress(), getPassword(), portalId());
+        if(verifyOldPassword != null && verifyOldPassword) {
             try {
                 User user = AccountUtil.getUserBean().getPortalUser(getEmailaddress(), portalId());
                 user.setPassword(getNewPassword());
