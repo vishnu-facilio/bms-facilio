@@ -111,8 +111,7 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 	
 	private void setName(ReportDataPointContext dataPoint, FacilioField yField, ReportMode mode, Map<Long, ResourceContext> resourceMap, ReadingAnalysisContext metric) {
 		
-		if(metric.getType() == DataPointType.DERIVATION.getValue()) {
-			
+		if(metric.getName() != null && !metric.getName().isEmpty()) {
 			dataPoint.setName(metric.getName());
 		}
 		else {

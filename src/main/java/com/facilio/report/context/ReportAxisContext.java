@@ -4,7 +4,7 @@ import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.NumberField;
-import com.facilio.unitconversion.Unit;
+import com.facilio.unitconversion.Metric;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ReportAxisContext {
@@ -44,11 +44,11 @@ public class ReportAxisContext {
 			this.fieldName = field.getName();
 			this.moduleName = field.getModule().getName();
 			
-			if (this.getDataTypeEnum() == null) {
+			if (this.dataType == null) {
 				this.dataType = field.getDataTypeEnum();
 			}
-			if (this.getUnitEnum() == null && field instanceof NumberField) {
-				this.unit = ((NumberField) field).getUnitEnum();
+			if (this.unitStr == null && field instanceof NumberField) {
+				this.unitStr = ((NumberField) field).getUnit();
 			}
 		}
 		this.field = field;
@@ -95,24 +95,23 @@ public class ReportAxisContext {
 	public void setDataType(int dataType) {
 		this.dataType = FieldType.getCFType(dataType);
 	}
-
-	private Unit unit;
-	public Unit getUnitEnum() {
-		return unit;
-	}
-	public void setUnit(Unit unit) {
-		this.unit = unit;
-	}
-	public int getUnit() {
-		if (unit != null) {
-			return unit.getUnitId();
-		}
-		return -1;
-	}
-	public void setUnit(int unit) {
-		this.unit = Unit.valueOf(unit);
-	}
 	
+	private String unitStr;
+	public String getUnitStr() {
+		return unitStr;
+	}
+	public void setUnitStr(String unitStr) {
+		this.unitStr = unitStr;
+	}
+
+	private Metric metric;
+	public Metric getMetric() {
+		return metric;
+	}
+	public void setMetric(Metric metric) {
+		this.metric = metric;
+	}
+
 	// Only for Y Field
 	private String joinOn;
 	public String getJoinOn() {
