@@ -3,6 +3,7 @@ package com.facilio.beans;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -10,7 +11,9 @@ import org.apache.log4j.LogManager;
 
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
+import com.facilio.bmsconsole.tenant.RateCardContext;
 import com.facilio.cache.CacheUtil;
 import com.facilio.fw.LRUCache;
 
@@ -294,6 +297,17 @@ LRUCache modulecache = LRUCache.getModuleCache();
 		dropFieldFromCache(f);
 		return super.deleteField(fieldId);
 	}
+	
+	public int deleteFields(List<Long> fieldIds) throws Exception {
+		long fieldId = 0;
+		for (long prop : fieldIds) {
+			fieldId = prop;
+		}
+		FacilioField f = getField(fieldId);
+		dropFieldFromCache(f);
+		return super.deleteFields(fieldIds);
+	}
+
 	
 	
 	
