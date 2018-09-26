@@ -8,7 +8,7 @@
     String user = null;
     if (version != null) {
     	aws = AwsUtil.updateClientVersion(version);
-    	user = AccountUtil.getCurrentUser().getEmail();
+    	
     	AdminAction.reloadBrowser();
   	}
     
@@ -71,9 +71,10 @@ Client Version: <input style="margin-left: 10px"  type = "text" name = "version"
 <button  id="show" type="submit"  >Update</button>
 </div>
 <div>
-<% if (user != null) { %>
+<% 
+	user = AccountUtil.getCurrentUser().getEmail();
+%>
  <h4>Last-Update By :  <%= user %></h4>
-<% } %>
  </div>
 </div>
 </form>
