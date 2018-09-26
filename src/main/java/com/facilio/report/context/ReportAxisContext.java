@@ -44,6 +44,9 @@ public class ReportAxisContext {
 			this.fieldName = field.getName();
 			this.moduleName = field.getModule().getName();
 			
+			if (this.label == null) {
+				this.label = field.getDisplayName();
+			}
 			if (this.dataType == null) {
 				this.dataType = field.getDataTypeEnum();
 			}

@@ -4,7 +4,6 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.unitconversion.Metric;
-import com.facilio.unitconversion.Unit;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ReportGroupByField {
@@ -44,6 +43,9 @@ public class ReportGroupByField {
 			this.fieldName = field.getName();
 			this.moduleName = field.getModule().getName();
 			
+			if (this.label == null) {
+				this.label = field.getDisplayName();
+			}
 			if (this.dataType == null) {
 				this.dataType = field.getDataTypeEnum();
 			}
@@ -55,6 +57,14 @@ public class ReportGroupByField {
 			}
 		}
 		this.field = field;
+	}
+	
+	private String label;
+	public String getLabel() {
+		return label;
+	}
+	public void setLabel(String label) {
+		this.label = label;
 	}
 	
 	private FieldType dataType;
