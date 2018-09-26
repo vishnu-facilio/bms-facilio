@@ -490,7 +490,7 @@ public class ExpressionContext implements Serializable,WorkflowExpression {
 	}
 
 	@Override
-	public int getWorkflowExpresionType() {
+	public int getWorkflowExpressionType() {
 		// TODO Auto-generated method stub
 		return WorkflowExpressionType.EXPRESSION.getValue();
 	}

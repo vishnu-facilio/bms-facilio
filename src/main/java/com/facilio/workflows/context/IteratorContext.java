@@ -134,7 +134,7 @@ public class IteratorContext implements Serializable,WorkflowExpression {
 		this.workflowContext = workflowContext;
 	}
 	@Override
-	public int getWorkflowExpresionType(){
+	public int getWorkflowExpressionType(){
 		// TODO Auto-generated method stub
 		return WorkflowExpressionType.ITERATION.getValue();
 	}
