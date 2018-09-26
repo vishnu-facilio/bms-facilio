@@ -1,12 +1,10 @@
 package com.facilio.workflows.context;
 
-import com.facilio.workflows.context.WorkflowContext.WorkflowUIMode;
-
 public interface WorkflowExpression {
 	
 	public Object execute() throws Exception;
 	
-	public int getWorkflowExpresionType();
+	public int getWorkflowExpressionType();
 	
 	public enum WorkflowExpressionType {
 		EXPRESSION,

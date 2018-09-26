@@ -8,11 +8,10 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
-import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.workflows.context.WorkflowExpression.WorkflowExpressionType;
@@ -79,6 +78,15 @@ public class WorkflowContext implements Serializable {
 				}
 				addWorkflowExpression(workflowExpression);
 			}
+		}
+	}
+	
+	// From DB
+	public void setExpressions(String workflowExpressions) throws Exception {
+		if (workflowExpressions != null) {
+			JSONParser parser = new JSONParser();
+			JSONArray content = (JSONArray) parser.parse(workflowExpressions);
+			setExpressions(content);
 		}
 	}
 	
