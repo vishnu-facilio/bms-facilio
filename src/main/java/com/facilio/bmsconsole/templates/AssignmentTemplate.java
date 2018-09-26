@@ -41,43 +41,6 @@ public class AssignmentTemplate extends Template {
 		this.assignedUser = assignedUser;
 	}
 	
-//	@SuppressWarnings("unchecked")
-//	@Override
-//	public JSONObject getTemplate(Map<String, Object> placeHolders) {
-//		// TODO Auto-generated method stub
-//		JSONObject obj = new JSONObject();
-//		obj.put("to", getTo(StrSubstitutor.replace(to, placeHolders)));
-//		obj.put("message", StrSubstitutor.replace(message, placeHolders));
-//		return obj;
-//	}
-//	
-//	@Override
-//	public JSONObject getOriginalTemplate() {
-//		JSONObject obj = new JSONObject();
-//		obj.put("to", to);
-//		obj.put("message", message);
-//		
-//		return obj;
-//	}
-//	
-//	
-//	private Object getTo(String to) {
-//		if(to != null && !to.isEmpty()) {
-//			if(to.contains(",")) {
-//				String[] tos = to.trim().split("\\s*,\\s*");
-//				JSONArray toList = new JSONArray();
-//				for(String toAddr : tos) {
-//					toList.add(toAddr);
-//				}
-//				return toList;
-//			}
-//			else {
-//				return to;
-//			}
-//		}
-//		return null;
-//	}
-
 	@Override
 	@JsonInclude(Include.ALWAYS)
 	public int getType() {

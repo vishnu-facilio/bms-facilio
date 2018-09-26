@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.text.StrSubstitutor;
+import org.apache.commons.text.StringSubstitutor;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -36,7 +36,7 @@ public enum AccountEmailTemplate {
 	public JSONObject getTemplate(Map<String, Object> placeHolders) {
 		JSONParser parser = new JSONParser();
 		try {
-			return (JSONObject) parser.parse(StrSubstitutor.replace(templateJson, placeHolders));
+			return (JSONObject) parser.parse(StringSubstitutor.replace(templateJson, placeHolders));
 		} catch (ParseException e) {
 			log.info("Exception occurred ", e);
 		}

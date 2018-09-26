@@ -3,7 +3,7 @@ package com.facilio.bmsconsole.util;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.text.StrSubstitutor;
+import org.apache.commons.text.StringSubstitutor;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -33,7 +33,7 @@ public class NotificationTemplate {
 		
 		JSONParser parser = new JSONParser();
 		try {
-			return (JSONObject) parser.parse(StrSubstitutor.replace(templateJson, placeholders));
+			return (JSONObject) parser.parse(StringSubstitutor.replace(templateJson, placeholders));
 		} catch (ParseException e) {
 			log.info("Exception occurred ", e);
 		}

@@ -269,16 +269,6 @@ public class NotificationAction extends ActionSupport {
 				
 		return SUCCESS;
 	}
-//	public JSONObject getTemplate(Map<String, Object> placeHolders) {
-//		// TODO Auto-generated method stub
-//		JSONObject obj = new JSONObject();
-//		obj.put("sender", StrSubstitutor.replace(from, placeHolders));
-//		obj.put("to", getTo(StrSubstitutor.replace(to, placeHolders)));
-//		obj.put("subject", StrSubstitutor.replace(subject, placeHolders));
-//		obj.put("message", StrSubstitutor.replace(body, placeHolders));
-//		
-//		return obj;
-//	}
 	
 	public JSONObject template;
 	public JSONObject getTemplate() {

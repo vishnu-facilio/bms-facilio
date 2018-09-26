@@ -13,7 +13,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
 
-import org.apache.commons.lang3.text.StrSubstitutor;
+import org.apache.commons.text.StringSubstitutor;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -28,7 +28,7 @@ public class SQLScriptRunner {
 	
 	private final boolean stopOnError;
 	
-	private StrSubstitutor substitutor = null;
+	private StringSubstitutor substitutor = null;
 	private File file = null;
 
 	public SQLScriptRunner(File file, boolean stopOnError, Map<String, String> paramValues) {
@@ -36,7 +36,7 @@ public class SQLScriptRunner {
 		this.stopOnError = stopOnError;
 		
 		if(paramValues != null && paramValues.size() > 0) {
-			substitutor = new StrSubstitutor(paramValues);
+			substitutor = new StringSubstitutor(paramValues);
 		}
 	}
 

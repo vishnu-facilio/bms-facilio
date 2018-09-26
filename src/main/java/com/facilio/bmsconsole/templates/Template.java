@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.text.StrSubstitutor;
+import org.apache.commons.text.StringSubstitutor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -96,7 +96,7 @@ public abstract class Template {
 		if (json != null && workflow != null) {
 			String jsonStr = json.toJSONString();
 			Map<String, Object> params = WorkflowUtil.getExpressionResultMap(workflow.getWorkflowString(), parameters);
-			jsonStr = StrSubstitutor.replace(jsonStr, params);
+			jsonStr = StringSubstitutor.replace(jsonStr, params);// StrSubstitutor.replace(jsonStr, params);
 			JSONParser parser = new JSONParser();
 			return (JSONObject) parser.parse(jsonStr);
 		}
