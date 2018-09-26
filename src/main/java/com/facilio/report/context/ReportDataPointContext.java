@@ -186,7 +186,9 @@ public class ReportDataPointContext {
 		return dateField;
 	}
 	public void setDateField(FacilioField dateField) {
-		dateFieldId = dateField.getFieldId();
+		if (dateField != null) {
+			dateFieldId = dateField.getFieldId();
+		}
 		this.dateField = dateField;
 	}
 	
