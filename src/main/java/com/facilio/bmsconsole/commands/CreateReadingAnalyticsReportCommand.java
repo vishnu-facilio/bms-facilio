@@ -28,6 +28,7 @@ import com.facilio.report.context.ReportAxisContext;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
+import com.facilio.report.context.ReportDataPointContext.DataPointType;
 
 public class CreateReadingAnalyticsReportCommand implements Command {
 
@@ -135,7 +136,7 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 					resourceIds.add(parentId);
 				}
 			}
-			else {
+			else if(metric.getType() != DataPointType.DERIVATION.getValue()) {
 				throw new IllegalArgumentException("In sufficient params for Reading Analysis for one of the metrics");
 			}
 		}
