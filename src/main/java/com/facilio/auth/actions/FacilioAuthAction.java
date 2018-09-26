@@ -545,7 +545,7 @@ public class FacilioAuthAction extends ActionSupport {
                 AccountUtil.getTransactionalUserBean().createRequestor(AccountUtil.getCurrentOrg().getId(), user);
                 LOGGER.info("user signup done "+user);
                 try {
-					(new UserBeanImpl()).sendInvitation(AccountUtil.getCurrentOrg().getOrgId(), user,true);
+					(new UserBeanImpl()).sendInvitation(user.getOuid(), user,true);
 					 LOGGER.info("Email invitation sent "+user);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
