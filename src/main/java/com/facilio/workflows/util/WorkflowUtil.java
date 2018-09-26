@@ -246,6 +246,7 @@ public class WorkflowUtil {
 		workflowContext.setIgnoreMarkedReadings(ignoreMarked);
 		List<ParameterContext> parameterContexts = validateAndGetParameters(workflowContext,paramMap);
 		workflowContext.setParameters(parameterContexts);
+		workflowContext.setIgnoreNullParams(ignoreNullExpressions);
 		return workflowContext.executeWorkflow(ignoreNullExpressions);
 	}
 	
@@ -753,7 +754,7 @@ public class WorkflowUtil {
 					 Element iteratorElement = doc.createElement(ITERATOR_STRING);
 					 iteratorElement.setAttribute(VAR_STRING, iteratorContext.getLoopVariableIndexName()+","+iteratorContext.getLoopVariableValueName()+":"+iteratorContext.getIteratableVariable());
 					 
-					 for(WorkflowExpression itrWorkflowExpression : iteratorContext.getWorkflowExpressions()) {
+					 for(WorkflowExpression itrWorkflowExpression : iteratorContext.getExpressions()) {
 						 
 						 if(itrWorkflowExpression instanceof ExpressionContext) {
 							 Element expressionElement = getExpressionXMLFromExpresionContext(itrWorkflowExpression,doc);
@@ -796,13 +797,18 @@ public class WorkflowUtil {
 		 else if(expressionContext.getDefaultFunctionContext() != null) {
 			 WorkflowFunctionContext function = expressionContext.getDefaultFunctionContext();
 			 Element valueElement = doc.createElement(FUNCTION_STRING);
-			 if(function.getParams() != null) {
+			 if(function.getParams() != null && !function.getParams().equals("")) {
 				 valueElement.setTextContent(function.getNameSpace()+"."+function.getFunctionName()+"("+function.getParams()+")");
 			 }
 			 else {
 				 valueElement.setTextContent(function.getNameSpace()+"."+function.getFunctionName()+"()");
 			 }
 			 expressionElement.appendChild(valueElement);
+		 }
+		 else if(expressionContext.getExpr() != null) {
+			 Element exprElement = doc.createElement(EXPR_STRING);
+			 exprElement.setTextContent(expressionContext.getExpr());
+			 expressionElement.appendChild(exprElement);
 		 }
 		 else {
 			 Element moduleElement = doc.createElement(MODULE_STRING);
@@ -1305,7 +1311,7 @@ public class WorkflowUtil {
                     		ExpressionContext expressionContext = new ExpressionContext();
                         	expressionContext.setExpressionString(str);
                              
-                        	iteratorContext.addWorkflowExpression(expressionContext);
+                        	iteratorContext.addExpression(expressionContext);
                     	}
              		}
             	}

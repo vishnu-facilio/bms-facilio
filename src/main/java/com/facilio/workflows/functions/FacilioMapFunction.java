@@ -14,7 +14,7 @@ public enum FacilioMapFunction implements FacilioWorkflowFunctionInterface {
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			
-			checkParam();
+			checkParam(objects);
 			
 			Map<Object,Object> map = new HashMap<>();
 			return map;
@@ -28,7 +28,7 @@ public enum FacilioMapFunction implements FacilioWorkflowFunctionInterface {
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			
-			checkParam();
+			checkParam(objects);
 			
 			Map<Object,Object> map = (Map<Object, Object>) objects[0];
 			Object key = objects[1];
@@ -50,7 +50,7 @@ public enum FacilioMapFunction implements FacilioWorkflowFunctionInterface {
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			
-			checkParam();
+			checkParam(objects);
 			
 			Map<Object,Object> map = (Map<Object, Object>) objects[0];
 			Map<Object,Object> map1 = (Map<Object, Object>) objects[1];
@@ -71,7 +71,7 @@ public enum FacilioMapFunction implements FacilioWorkflowFunctionInterface {
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			
-			checkParam();
+			checkParam(objects);
 			
 			Map<Object,Object> map = (Map<Object, Object>) objects[0];
 			Object key = objects[1];
@@ -91,7 +91,7 @@ public enum FacilioMapFunction implements FacilioWorkflowFunctionInterface {
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			
-			checkParam();
+			checkParam(objects);
 			
 			Map<Object,Object> map = (Map<Object, Object>) objects[0];
 			List<Object> keys = (List<Object>) objects[1];

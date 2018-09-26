@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.chain.Command;
@@ -55,7 +56,8 @@ public class CalculateDerivationCommand implements Command {
 				}
 				else if(rdp.getTransformWorkflow() != null) {
 					String wfXmlString = WorkflowUtil.getXmlStringFromWorkflow(rdp.getTransformWorkflow());
-					derivationResult = (Map<Object,Object>) WorkflowUtil.getWorkflowExpressionResult(wfXmlString, wfParams);
+					LOGGER.log(Level.SEVERE, "wfXmlString -- "+wfXmlString);
+					derivationResult = (Map<Object,Object>) WorkflowUtil.getWorkflowExpressionResult(wfXmlString, wfParams,null,true,false);
 				}
 				transformedData.put(rdp.getName(), Collections.singletonMap(FacilioConstants.Reports.ACTUAL_DATA, derivationResult));
 			}

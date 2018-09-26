@@ -61,6 +61,8 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 				setName(dataPoint, yField, mode, resourceMap, metric);
 				dataPoint.setType(metric.getTypeEnum());
 				dataPoint.setAliases(metric.getAliases());
+				dataPoint.setTransformWorkflow(metric.getTransformWorkflow());
+				dataPoint.setTransformWorkflowId(metric.getTransformWorkflowId());
 				dataPoints.add(dataPoint);
 			}
 			ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);

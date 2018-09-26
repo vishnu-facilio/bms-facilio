@@ -5,9 +5,25 @@ import java.util.Map;
 
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.report.context.ReportDataPointContext.DataPointType;
+import com.facilio.workflows.context.WorkflowContext;
 
 public class ReadingAnalysisContext {
 	
+	private long transformWorkflowId = -1;
+	public long getTransformWorkflowId() {
+		return transformWorkflowId;
+	}
+	public void setTransformWorkflowId(long transformWorkflowId) {
+		this.transformWorkflowId = transformWorkflowId;
+	}
+	
+	private WorkflowContext transformWorkflow;
+	public WorkflowContext getTransformWorkflow() {
+		return transformWorkflow;
+	}
+	public void setTransformWorkflow(WorkflowContext transformWorkflow) {
+		this.transformWorkflow = transformWorkflow;
+	}
 	String name;
 	public String getName() {
 		return name;

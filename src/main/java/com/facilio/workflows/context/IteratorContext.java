@@ -2,27 +2,31 @@ package com.facilio.workflows.context;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.json.simple.JSONArray;
 
+import com.facilio.bmsconsole.commands.CalculateDerivationCommand;
 import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.workflows.context.WorkflowExpression.WorkflowExpressionType;
 
 public class IteratorContext implements Serializable,WorkflowExpression {
 
+	private static final Logger LOGGER = Logger.getLogger(CalculateDerivationCommand.class.getName());
 	String loopVariableIndexName;
 	String loopVariableValueName;
 	
 	String iteratableVariable;
-	List<WorkflowExpression> workflowExpressions;
-	public List<WorkflowExpression> getWorkflowExpressions() {
-		return workflowExpressions;
+	List<WorkflowExpression> expressions;
+	public List<WorkflowExpression> getExpressions() {
+		return expressions;
 	}
 
 	// only from client
-	public void setWorkflowExpressions(JSONArray workflowExpressions) {
+	public void setExpressions(JSONArray workflowExpressions) {
 		if(workflowExpressions != null) {
 			
 			for(int i=0 ;i<workflowExpressions.size();i++) {
@@ -42,14 +46,14 @@ public class IteratorContext implements Serializable,WorkflowExpression {
 					workflowExpression = new IteratorContext();
 					workflowExpression = FieldUtil.getAsBeanFromMap(workflowExp, IteratorContext.class);
 				}
-				addWorkflowExpression(workflowExpression);
+				addExpression(workflowExpression);
 			}
 		}
 	}
-	public void addWorkflowExpression(WorkflowExpression expression) {
-		workflowExpressions = workflowExpressions == null ? new ArrayList<>() : workflowExpressions; 
+	public void addExpression(WorkflowExpression expression) {
+		expressions = expressions == null ? new ArrayList<>() : expressions; 
 		
-		workflowExpressions.add(expression);
+		expressions.add(expression);
 	}
 	WorkflowContext workflowContext;
 	Map<String,Object> variableToExpresionMap;
@@ -62,17 +66,17 @@ public class IteratorContext implements Serializable,WorkflowExpression {
 		
 		Object iterateObject = variableToExpresionMap.get(iteratableVariable);
 		
-		if(iterateObject instanceof List) {
+		if(iterateObject instanceof Collection) {
 			
-			List iterateList = (List) iterateObject;
+			List iterateList = new ArrayList((Collection)iterateObject);
 			
 			for(int i=0 ; i<iterateList.size() ;i++) {
 				variableToExpresionMap.put(loopVariableIndexName, i);
 				variableToExpresionMap.put(loopVariableValueName, iterateList.get(i));
 				
-				System.out.println("variableToExpresionMap -- "+variableToExpresionMap);
+				LOGGER.log(Level.SEVERE, "variableToExpresionMap -- "+variableToExpresionMap);
 				
-				WorkflowContext.executeExpression(workflowExpressions, workflowContext);
+				WorkflowContext.executeExpression(expressions, workflowContext);
 			}
 			variableToExpresionMap.remove(loopVariableIndexName);
 			variableToExpresionMap.remove(loopVariableValueName);
@@ -96,7 +100,7 @@ public class IteratorContext implements Serializable,WorkflowExpression {
 
 	public boolean isIteratableVariable(Object var) {
 		
-		if(var instanceof List) {
+		if(var instanceof Collection) {
 			return true;
 		}
 		else if(var instanceof Map) {
