@@ -47,13 +47,17 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 			for (ReadingAnalysisContext metric : metrics) {
 				ReportDataPointContext dataPoint = new ReportDataPointContext();
 				
-				ReportAxisContext yAxis = new ReportAxisContext();
-				FacilioField yField = modBean.getField(metric.getFieldId());
-				yAxis.setField(yField);
-				dataPoint.setyAxis(yAxis);
-				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(yField.getModule().getName()));
-				setFields(dataPoint, mode, fieldMap);
-				setCriteriaAndAggr(dataPoint, xAggr, fieldMap, metric);
+				FacilioField yField = null;
+				if(metric.getType() != DataPointType.DERIVATION.getValue()) {
+					ReportAxisContext yAxis = new ReportAxisContext();
+					yField = modBean.getField(metric.getFieldId());
+					yAxis.setField(yField);
+					dataPoint.setyAxis(yAxis);
+					Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(yField.getModule().getName()));
+					setFields(dataPoint, mode, fieldMap);
+					setCriteriaAndAggr(dataPoint, xAggr, fieldMap, metric);
+				}
+				
 				setName(dataPoint, yField, mode, resourceMap, metric);
 				dataPoint.setType(metric.getTypeEnum());
 				dataPoint.setAliases(metric.getAliases());
@@ -106,16 +110,23 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 	}
 	
 	private void setName(ReportDataPointContext dataPoint, FacilioField yField, ReportMode mode, Map<Long, ResourceContext> resourceMap, ReadingAnalysisContext metric) {
-		if (mode == ReportMode.CONSOLIDATED) {
-			dataPoint.setName(yField.getDisplayName());
+		
+		if(metric.getType() == DataPointType.DERIVATION.getValue()) {
+			
+			dataPoint.setName(metric.getName());
 		}
 		else {
-			StringJoiner joiner = new StringJoiner(", ");
-			for (Long parentId : metric.getParentId()) {
-				ResourceContext resource = resourceMap.get(parentId);
-				joiner.add(resource.getName());
+			if (mode == ReportMode.CONSOLIDATED) {
+				dataPoint.setName(yField.getDisplayName());
 			}
-			dataPoint.setName(joiner.toString()+" ("+yField.getDisplayName()+")");
+			else {
+				StringJoiner joiner = new StringJoiner(", ");
+				for (Long parentId : metric.getParentId()) {
+					ResourceContext resource = resourceMap.get(parentId);
+					joiner.add(resource.getName());
+				}
+				dataPoint.setName(joiner.toString()+" ("+yField.getDisplayName()+")");
+			}
 		}
 	}
 	

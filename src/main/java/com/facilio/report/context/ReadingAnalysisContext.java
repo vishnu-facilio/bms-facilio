@@ -7,6 +7,15 @@ import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.report.context.ReportDataPointContext.DataPointType;
 
 public class ReadingAnalysisContext {
+	
+	String name;
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	private List<Long> parentId;
 	public List<Long> getParentId() {
 		return parentId;
