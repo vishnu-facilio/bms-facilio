@@ -309,7 +309,7 @@ public class UserAction extends FacilioAction {
 			
 			long portalid = AccountUtil.getOrgBean().getPortalId();
 			user.setPortalId(portalid);
-			(new UserBeanImpl()).sendInvitation(AccountUtil.getCurrentOrg().getOrgId(), user);
+			(new UserBeanImpl()).sendInvitation(user.getOuid(), user);
 		}
 		else
 		{

@@ -863,7 +863,7 @@ public class UserBeanImpl implements UserBean {
 		return null;
 	}
 
-	public User getUserWithPassword(long ouid) throws Exception {
+	private User getUserWithPassword(long ouid) throws Exception {
 
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getUserFields());
