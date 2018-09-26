@@ -42,7 +42,10 @@ public class ReportAxisContext {
 		if (field != null) {
 			this.fieldId = field.getId();
 			this.fieldName = field.getName();
-			this.moduleName = field.getModule().getName();
+			
+			if (field.getModule() != null) {
+				this.moduleName = field.getModule().getName();
+			}
 			
 			if (this.label == null) {
 				this.label = field.getDisplayName();

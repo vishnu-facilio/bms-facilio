@@ -196,9 +196,6 @@ public class FetchReportDataCommand implements Command {
 	private List<List<ReportDataPointContext>> groupDataPoints(List<ReportDataPointContext> dataPoints) throws Exception {
 		List<List<ReportDataPointContext>> groupedList = new ArrayList<>();
 		for (ReportDataPointContext dataPoint : dataPoints) {
-			if(dataPoint.getTypeEnum() == null) {
-				dataPoint.setType(DataPointType.MODULE.getValue());
-			}
 			switch (dataPoint.getTypeEnum()) {
 				case MODULE:
 					addToMatchedList(dataPoint, groupedList);

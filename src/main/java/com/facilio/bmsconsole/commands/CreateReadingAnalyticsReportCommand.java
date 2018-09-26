@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -45,46 +46,24 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 			AggregateOperator xAggr = (AggregateOperator) context.get(FacilioConstants.ContextNames.REPORT_X_AGGR);
 			List<ReportDataPointContext> dataPoints = new ArrayList<>();
 			for (ReadingAnalysisContext metric : metrics) {
-				ReportDataPointContext dataPoint = new ReportDataPointContext();
-				
-				FacilioField yField = null;
-				if(metric.getType() != DataPointType.DERIVATION.getValue()) {
-					ReportAxisContext yAxis = new ReportAxisContext();
-					yField = modBean.getField(metric.getFieldId());
-					yAxis.setField(yField);
-					dataPoint.setyAxis(yAxis);
-					Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(yField.getModule().getName()));
-					setFields(dataPoint, mode, fieldMap);
-					setCriteriaAndAggr(dataPoint, xAggr, fieldMap, metric);
+				ReportDataPointContext dataPoint = null;
+				switch (metric.getTypeEnum()) {
+					case MODULE:
+						dataPoint = getModuleDataPoint(metric, xAggr, mode, modBean);
+						break;
+					case DERIVATION:
+						dataPoint = getDerivedDataPoint(metric);
+						break;
 				}
 				
-				setName(dataPoint, yField, mode, resourceMap, metric);
+				setName(dataPoint, dataPoint.getyAxis().getField(), mode, resourceMap, metric);
 				dataPoint.setType(metric.getTypeEnum());
 				dataPoint.setAliases(metric.getAliases());
 				dataPoint.setTransformWorkflow(metric.getTransformWorkflow());
 				dataPoint.setTransformWorkflowId(metric.getTransformWorkflowId());
 				dataPoints.add(dataPoint);
 			}
-			ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
-			if(report == null) {
-				report = new ReportContext();
-			}
-			report.setDataPoints(dataPoints);
-			report.setDateOperator(DateOperators.BETWEEN);
-			report.setDateValue(startTime+", "+endTime);
-			CommonReportUtil.fetchBaseLines(report, (List<ReportBaseLineContext>) context.get(FacilioConstants.ContextNames.BASE_LINE_LIST));
-			
-			report.setChartState((String)context.get(FacilioConstants.ContextNames.CHART_STATE));
-			report.setTabularState((String)context.get(FacilioConstants.ContextNames.TABULAR_STATE));
-			
-			if(context.get(FacilioConstants.ContextNames.DATE_OPERATOR) != null) {
-				report.setDateOperator((Integer) context.get(FacilioConstants.ContextNames.DATE_OPERATOR));
-			}
-			
-			if(context.get(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE) != null) {
-				report.setDateValue((String)context.get(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE));
-			}
-			
+			ReportContext report = constructReport((FacilioContext) context, dataPoints, startTime, endTime);
 			context.put(FacilioConstants.ContextNames.REPORT, report);
 		}
 		else {
@@ -94,7 +73,51 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 		return false;
 	}
 	
-	private void setFields (ReportDataPointContext dataPoint, ReportMode mode, Map<String, FacilioField> fieldMap) {
+	private ReportContext constructReport(FacilioContext context, List<ReportDataPointContext> dataPoints, long startTime, long endTime) throws Exception {
+		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
+		if(report == null) {
+			report = new ReportContext();
+		}
+		report.setDataPoints(dataPoints);
+		report.setDateOperator(DateOperators.BETWEEN);
+		report.setDateValue(startTime+", "+endTime);
+		CommonReportUtil.fetchBaseLines(report, (List<ReportBaseLineContext>) context.get(FacilioConstants.ContextNames.BASE_LINE_LIST));
+		
+		report.setChartState((String)context.get(FacilioConstants.ContextNames.CHART_STATE));
+		report.setTabularState((String)context.get(FacilioConstants.ContextNames.TABULAR_STATE));
+		
+		if(context.get(FacilioConstants.ContextNames.DATE_OPERATOR) != null) {
+			report.setDateOperator((Integer) context.get(FacilioConstants.ContextNames.DATE_OPERATOR));
+		}
+		
+		if(context.get(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE) != null) {
+			report.setDateValue((String)context.get(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE));
+		}
+		return report;
+	}
+	
+	private ReportDataPointContext getModuleDataPoint(ReadingAnalysisContext metric, AggregateOperator xAggr, ReportMode mode, ModuleBean modBean) throws Exception {
+		ReportDataPointContext dataPoint = new ReportDataPointContext();
+		ReportAxisContext yAxis = metric.getyAxis();
+		FacilioField yField = modBean.getField(metric.getyAxis().getFieldId());
+		yAxis.setField(yField);
+		dataPoint.setyAxis(yAxis);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(yField.getModule().getName()));
+		setXAndDateFields(dataPoint, xAggr, mode, fieldMap);
+		setCriteria(dataPoint, fieldMap, metric);
+		return dataPoint;
+	}
+	
+	private ReportDataPointContext getDerivedDataPoint(ReadingAnalysisContext metric) {
+		ReportDataPointContext dataPoint = new ReportDataPointContext();
+		ReportAxisContext xAxis = new ReportAxisContext();
+		xAxis.setField(FieldFactory.getField("ttime", "Timestamp", "TTIME", null, FieldType.DATE_TIME));
+		dataPoint.setxAxis(xAxis);
+		dataPoint.setyAxis(metric.getyAxis());
+		return dataPoint;
+	}
+	
+	private void setXAndDateFields (ReportDataPointContext dataPoint, AggregateOperator xAggr, ReportMode mode, Map<String, FacilioField> fieldMap) {
 		FacilioField xField = null;
 		switch (mode) {
 			case SERIES:
@@ -107,6 +130,7 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 		}
 		ReportAxisContext xAxis = new ReportAxisContext();
 		xAxis.setField(xField);
+		xAxis.setAggr(xAggr);
 		dataPoint.setxAxis(xAxis);
 		dataPoint.setDateField(fieldMap.get("ttime"));
 	}
@@ -131,19 +155,16 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 		}
 	}
 	
-	private void setCriteriaAndAggr(ReportDataPointContext dataPoint, AggregateOperator xAggr, Map<String, FacilioField> fieldMap, ReadingAnalysisContext metric) {
+	private void setCriteria(ReportDataPointContext dataPoint, Map<String, FacilioField> fieldMap, ReadingAnalysisContext metric) {
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), metric.getParentId(), NumberOperators.EQUALS));
 		dataPoint.setCriteria(criteria);
-		
-		dataPoint.getxAxis().setAggr(xAggr);
-		dataPoint.getyAxis().setAggr(metric.getyAggrEnum());
 	}
 	
 	private Map<Long, ResourceContext> getResourceMap(List<ReadingAnalysisContext> metrics) throws Exception {
 		Set<Long> resourceIds = new HashSet<>();
 		for (ReadingAnalysisContext metric : metrics) {
-			if (metric.getFieldId() != -1 && metric.getParentId() != null) {
+			if (metric.getyAxis().getFieldId() != -1 && metric.getParentId() != null) {
 				for (Long parentId : metric.getParentId()) {
 					resourceIds.add(parentId);
 				}

@@ -3,7 +3,6 @@ package com.facilio.report.context;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.report.context.ReportDataPointContext.DataPointType;
 import com.facilio.workflows.context.WorkflowContext;
 
@@ -24,7 +23,8 @@ public class ReadingAnalysisContext {
 	public void setTransformWorkflow(WorkflowContext transformWorkflow) {
 		this.transformWorkflow = transformWorkflow;
 	}
-	String name;
+	
+	private String name;
 	public String getName() {
 		return name;
 	}
@@ -40,7 +40,7 @@ public class ReadingAnalysisContext {
 		this.parentId = parentId;
 	}
 	
-	private DataPointType type;
+	private DataPointType type = DataPointType.MODULE;
 	public DataPointType getTypeEnum() {
 		return type;
 	}
@@ -57,14 +57,6 @@ public class ReadingAnalysisContext {
 		this.type = DataPointType.valueOf(type);
 	}
 
-	private long fieldId = -1;
-	public long getFieldId() {
-		return fieldId;
-	}
-	public void setFieldId(long fieldId) {
-		this.fieldId = fieldId;
-	}
-	
 	private Map<String, String> aliases; 
 	public Map<String, String> getAliases() {
 		return aliases;
@@ -73,23 +65,13 @@ public class ReadingAnalysisContext {
 		this.aliases = aliases;
 	}
 
-	private AggregateOperator yAggr;
-	public AggregateOperator getyAggrEnum() {
-		return yAggr;
+	private ReportAxisContext yAxis;
+	public ReportAxisContext getyAxis() {
+		return yAxis;
 	}
-	public void setyAggr(AggregateOperator yAggr) {
-		this.yAggr = yAggr;
+	public void setyAxis(ReportAxisContext yAxis) {
+		this.yAxis = yAxis;
 	}
-	public int getyAggr() {
-		if (yAggr != null) {
-			return yAggr.getValue();
-		}
-		return -1;
-	}
-	public void setyAggr(int yAggr) {
-		this.yAggr = AggregateOperator.getAggregateOperator(yAggr);
-	}
-	
 
 	public static enum ReportMode {
 		TIMESERIES,
