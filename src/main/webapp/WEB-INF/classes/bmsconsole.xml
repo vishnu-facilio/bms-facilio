@@ -58,6 +58,12 @@
 				<param name="includeProperties">users.*</param>
 			</result>
 		</action>
+		<action name="getFormMeta" class="com.facilio.bmsconsole.actions.FormAction"
+			method="fetchFormMeta">
+			<result name="success" type="json">
+				<param name="includeProperties">form.*</param>
+			</result>
+		</action>
 		<action name="validateInviteLink" class="com.facilio.auth.actions.FacilioAuthAction"
 			method="validateInviteLink">
 			<param name="auth">false</param>
@@ -1484,7 +1490,6 @@
 				<param name="root">fieldIds</param>
 			</result>
 		</action>
-
 		<action name="meta" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="metadata">
 			<result name="success" type="json">

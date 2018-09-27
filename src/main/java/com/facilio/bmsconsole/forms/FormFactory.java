@@ -24,6 +24,7 @@ public class FormFactory {
 
 	private static Map<String, FacilioForm> initMap() {
 		Map<String, FacilioForm> forms = new HashMap<>();
+		forms.put("workOrderForm", getWorkOrderForm());
 		forms.put("serviceWorkRequest", getServiceWorkRequestForm());
 		forms.put("loggedInServiceWorkRequest", getLoggedInServiceWorkRequest());
 		return forms;
@@ -70,6 +71,15 @@ public class FormFactory {
 		form.setFormType(FormType.PORTAL);
 		return form;
 	}
+	public static FacilioForm getWorkOrderForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("WORKORDER");
+		form.setName("workOrder");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER_REQUEST));
+		form.setFields(getWebWorkOrderFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
 	
 	public static FacilioForm getMobileWorkOrderForm() {
 		FacilioForm form = new FacilioForm();
@@ -105,12 +115,12 @@ public class FormFactory {
 	private static List<FormField> getWebWorkOrderFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.REQUIRED, 1, 1));
-		fields.add(new FormField("site", FieldDisplayType.WOASSETSPACECHOOSER, "SITE", Required.REQUIRED, 3, 1));
-		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 4, 1));
-		fields.add(new FormField("category", FieldDisplayType.SELECTBOX, "Category", Required.OPTIONAL, 5, 1));
-		fields.add(new FormField("priority", FieldDisplayType.LOOKUP_SIMPLE, "Priority", Required.OPTIONAL, "ticketpriority", 6, 1));
-		fields.add(new FormField("maintenance_type",FieldDisplayType.LOOKUP_SIMPLE,"Maintance Type", Required.OPTIONAL, 7, 1));
-		fields.add(new FormField("assignment", FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team", Required.OPTIONAL, 8, 1));
+		fields.add(new FormField("site", FieldDisplayType.LOOKUP_SIMPLE, "SITE", Required.REQUIRED, "site", 2, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("ticketcategory", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "ticketcategory", 4, 2));
+		fields.add(new FormField("ticketpriority", FieldDisplayType.LOOKUP_SIMPLE, "Priority", Required.OPTIONAL, "ticketpriority", 4, 3));
+		fields.add(new FormField("tickettype",FieldDisplayType.LOOKUP_SIMPLE,"Maintance Type", Required.OPTIONAL, "tickettype", 5, 1));
+		fields.add(new FormField("groups",FieldDisplayType.LOOKUP_SIMPLE,"Team", Required.OPTIONAL, "groups", 6, 1));
 		return fields;
 	}
 

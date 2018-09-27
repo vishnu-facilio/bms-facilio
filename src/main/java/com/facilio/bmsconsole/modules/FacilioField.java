@@ -340,7 +340,8 @@ public class FacilioField implements Serializable {
 		REQUESTER(16, "requester"),
 		URGENCY(17, "urgency"),
 		ATTACHMENT(18, "attachment"), 
-		TEAMSTAFFASSIGNMENT(19, "team-staff-assignment")
+		TEAMSTAFFASSIGNMENT(19, "team-staff-assignment"),
+		TEAM(20, "team")
 		;
 		
 		private int intVal;
