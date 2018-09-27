@@ -9,6 +9,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.TriggerType;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -36,11 +37,13 @@ public class ValidatePMTriggersCommand implements Command {
 		
 		List<PMTriggerContext> pmTriggers = pm.getTriggers();
 		
+		WorkOrderContext workorder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
+		
 		if(pmTriggers != null && !pmTriggers.isEmpty()) {
 			boolean isScheduleOnly = true;
 			for (PMTriggerContext trigger : pmTriggers) {
 				if(trigger.getSchedule() == null) {
-					createReadingForTrigger(trigger);
+					createReadingForTrigger(trigger, workorder);
 				}
 				else if(trigger.getStartTime() == -1) {
 					throw new IllegalArgumentException("Starttime cannot be empty for schedule triggers");
@@ -78,7 +81,7 @@ public class ValidatePMTriggersCommand implements Command {
 		return false;
 	}
 	
-	private void createReadingForTrigger(PMTriggerContext trigger) throws Exception {
+	private void createReadingForTrigger(PMTriggerContext trigger, WorkOrderContext workorder) throws Exception {
 		if(trigger.getReadingFieldId() == -1) {
 			throw new IllegalArgumentException("Reading field cannot be empty for reading triggers");
 		}
@@ -103,6 +106,7 @@ public class ValidatePMTriggersCommand implements Command {
 		rule.setInterval(trigger.getReadingInterval());
 		rule.setReadingFieldId(trigger.getReadingFieldId());
 		rule.setThresholdType(ThresholdType.SIMPLE);
+		rule.setResourceId(workorder.getResource().getId());
 		
 		Condition condition = new Condition();
 		condition.setField(field);
