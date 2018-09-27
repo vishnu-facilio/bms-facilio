@@ -8,8 +8,8 @@ import org.apache.log4j.LogManager;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.constants.FacilioConstants;
@@ -22,7 +22,7 @@ public class ImportDataJob extends FacilioJob {
 	private org.apache.log4j.Logger log = LogManager.getLogger(ImportDataJob.class.getName());
 
 	@Override
-	public void execute(JobContext jc) {
+	public void execute(JobContext jc) throws Exception {
 		ImportProcessContext importProcessContext = null;
 		
 		LOGGER.severe("IMPORT DATA JOB CALLED");
@@ -41,13 +41,13 @@ public class ImportDataJob extends FacilioJob {
 			if(!importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET)) {
 				FacilioContext context = new FacilioContext();
 				context.put(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT, importProcessContext);
-				Chain importChain = FacilioChainFactory.getImportChain();
+				Chain importChain = TransactionChainFactory.getImportChain();
 				importChain.execute(context);
 			}
 			else {
 				FacilioContext context = new FacilioContext();
 				context.put(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT, importProcessContext);
-				Chain bulkAssetImportChain = FacilioChainFactory.getBulkAssertImportChain();
+				Chain bulkAssetImportChain = TransactionChainFactory.getBulkAssertImportChain();
 				bulkAssetImportChain.execute(context);
 			}
 			
@@ -71,6 +71,7 @@ public class ImportDataJob extends FacilioJob {
 			CommonCommandUtil.emailException("Import Failed", "Import failed - orgid -- "+AccountUtil.getCurrentOrg().getId(), e);
 			log.info("Exception occurred ", e);
 			LOGGER.log(Level.SEVERE, e.getMessage(), e);
+			throw e;
 		}
 	}
 

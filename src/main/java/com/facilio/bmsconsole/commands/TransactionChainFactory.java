@@ -4,6 +4,7 @@ import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.impl.ChainBase;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory.FacilioChain;
+import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 
@@ -191,6 +192,31 @@ public class TransactionChainFactory {
 //			c.addCommand(new LoadAllFieldsCommand());
 			c.addCommand(new GenericUpdateModuleDataCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
+		public static Chain getImportChain() {
+			Chain c = new ChainBase();
+			c.addCommand(new ProcessImportCommand());
+			c.addCommand(new PopulateImportProcessCommand());
+			c.addCommand(new ForkChainToInstantJobCommand()
+					.addCommand(new UpdateBaseAndResourceCommand())
+					.addCommand(new InsertReadingDataMetaForNewResourceCommand())
+					.addCommand(new SendEmailCommand()));
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
+		public static Chain getBulkAssertImportChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ProcessImportCommand());
+			c.addCommand(new SeperateToCategoriesCommand());
+			c.addCommand(new SetModuleForSpecialAssetsCommand());
+			c.addCommand(new BulkPushAssetCommands());
+			c.addCommand(new ForkChainToInstantJobCommand()
+					.addCommand(new InsertReadingDataMetaForNewResourceCommand())
+					.addCommand(new SendEmailCommand()));
 			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}

@@ -47,7 +47,7 @@ public abstract class InstantJob {
             execute(context);
             ObjectQueue.deleteObject(InstantJobConf.getInstantJobQueue(), getReceiptHandle());
             FacilioTransactionManager.INSTANCE.getTransactionManager().commit();
-        } catch (NotSupportedException | SystemException | RollbackException |  HeuristicMixedException | HeuristicRollbackException e) {
+        } catch (Exception e) {
             try {
 				FacilioTransactionManager.INSTANCE.getTransactionManager().rollback();
 			} catch (IllegalStateException | SecurityException | SystemException e1) {
@@ -56,6 +56,6 @@ public abstract class InstantJob {
         }
     }
 
-    public abstract void execute(FacilioContext context);
+    public abstract void execute(FacilioContext context) throws Exception;
 
 }

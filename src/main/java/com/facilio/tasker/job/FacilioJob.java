@@ -142,7 +142,7 @@ public abstract class FacilioJob implements Runnable {
 			}
 		}
 	}
-	public abstract void execute(JobContext jc);
+	public abstract void execute(JobContext jc) throws Exception;
 	
 	@Override
 	public String toString() {

@@ -29,7 +29,7 @@ public class PMToWorkOrder extends FacilioJob {
 	private Logger log = LogManager.getLogger(PMToWorkOrder.class.getName());
 
 	@Override
-	public void execute(JobContext jc) {
+	public void execute(JobContext jc) throws Exception {
 		// TODO Auto-generated method stub
 		try {
 			long pmJobId = jc.getJobId();
@@ -70,6 +70,7 @@ public class PMToWorkOrder extends FacilioJob {
 			// TODO Auto-generated catch block
 			CommonCommandUtil.emailException("PMToWorkOrder", "PM Execution failed for pm job : "+jc.getJobId(), e);
 			log.info("Exception occurred ", e);
+			throw e;
 		}
 	}
 }

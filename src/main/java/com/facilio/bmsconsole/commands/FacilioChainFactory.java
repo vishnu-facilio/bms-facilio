@@ -1298,19 +1298,6 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getBulkAssertImportChain() {
-		Chain c = new ChainBase();
-		c.addCommand(new ProcessImportCommand());
-		c.addCommand(new SeperateToCategoriesCommand());
-		c.addCommand(new SetModuleForSpecialAssetsCommand());
-		c.addCommand(new BulkPushAssetCommands());
-		c.addCommand(new ForkChainToInstantJobCommand()
-				.addCommand(new InsertReadingDataMetaForNewResourceCommand())
-				.addCommand(new SendEmailCommand()));
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
 	public static Chain getImportReadingChain() {
 		ChainBase c = new ChainBase();
 		c.addCommand(new DataParseForReadingsCommand());
@@ -1888,18 +1875,6 @@ public class FacilioChainFactory {
 		Chain c = getTransactionChain();
 		c.addCommand(new GetAllSpaceTypeReadingsCommand());
 		c.addCommand(new GetReadingFieldsCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
-	public static Chain getImportChain() {
-		Chain c = new ChainBase();
-		c.addCommand(new ProcessImportCommand());
-		c.addCommand(new PopulateImportProcessCommand());
-		c.addCommand(new ForkChainToInstantJobCommand()
-				.addCommand(new UpdateBaseAndResourceCommand())
-				.addCommand(new InsertReadingDataMetaForNewResourceCommand())
-				.addCommand(new SendEmailCommand()));
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
