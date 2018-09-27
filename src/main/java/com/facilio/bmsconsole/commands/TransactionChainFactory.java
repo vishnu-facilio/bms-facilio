@@ -169,6 +169,32 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain getAddAssetChain() {
+			Chain c = getDefaultChain();
+			//c.addCommand(SetTableNamesCommand.getForAsset());
+			c.addCommand(new SetModuleForSpecialAssetsCommand());
+//			c.addCommand(new LoadAllFieldsCommand());
+			c.addCommand(new LoadAssetFields());
+			c.addCommand(new GenericAddModuleDataCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
+			c.addCommand(FacilioChainFactory.getCategoryReadingsChain());
+			c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
+		public static Chain getUpdateAssetChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new SetModuleForSpecialAssetsCommand());
+//			c.addCommand(SetTableNamesCommand.getForAsset());
+			c.addCommand(new LoadAssetFields());
+//			c.addCommand(new LoadAllFieldsCommand());
+			c.addCommand(new GenericUpdateModuleDataCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
 	    private static Chain getDefaultChain() {
 	    	    return new FacilioChain(true);
 	    }

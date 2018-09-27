@@ -40,9 +40,17 @@ public class GenericAddModuleDataCommand implements Command {
 				insertRecordBuilder.withLocalId();
 			}
 			
+			Boolean withChangeSet = (Boolean) context.get(FacilioConstants.ContextNames.WITH_CHANGE_SET);
+			if (withChangeSet != null && withChangeSet) {
+				insertRecordBuilder.withChangeSet();
+			}
+			
 			long id = insertRecordBuilder.insert(record);
 			record.setId(id);
 			context.put(FacilioConstants.ContextNames.RECORD_ID, id);
+			if (withChangeSet != null && withChangeSet) {
+				context.put(FacilioConstants.ContextNames.CHANGE_SET, insertRecordBuilder.getChangeSet());
+			}
 		}
 		else {
 			throw new IllegalArgumentException("Record cannot be null during addition");

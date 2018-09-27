@@ -35,7 +35,15 @@ public class GenericUpdateModuleDataCommand implements Command {
 																					.fields(fields)
 																					.andCondition(CriteriaAPI.getIdCondition(recordIds, module));
 			
+			Boolean withChangeSet = (Boolean) context.get(FacilioConstants.ContextNames.WITH_CHANGE_SET);
+			if (withChangeSet != null && withChangeSet) {
+				updateBuilder.withChangeSet(ModuleBaseWithCustomFields.class);
+			}
+			
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, updateBuilder.update(record));
+			if (withChangeSet != null && withChangeSet) {
+				context.put(FacilioConstants.ContextNames.CHANGE_SET, updateBuilder.getChangeSet());
+			}
 		}
 		
 		return false;

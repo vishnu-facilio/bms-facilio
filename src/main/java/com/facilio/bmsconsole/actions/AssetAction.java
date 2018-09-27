@@ -10,6 +10,7 @@ import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.FormLayout;
@@ -65,7 +66,8 @@ public class AssetAction extends ActionSupport {
 		}
 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, categoryId);
 		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
-		Chain addAssetChain = FacilioChainFactory.getAddAssetChain();
+		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
+		Chain addAssetChain = TransactionChainFactory.getAddAssetChain();
 		addAssetChain.execute(context);
 		setAssetId(asset.getId());
 		
@@ -83,8 +85,9 @@ public class AssetAction extends ActionSupport {
 			categoryId=assetCategory.getId();
 		}
 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, categoryId);
+		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 		
-		Chain updateAssetChain = FacilioChainFactory.getUpdateAssetChain();
+		Chain updateAssetChain = TransactionChainFactory.getUpdateAssetChain();
 		updateAssetChain.execute(context);
 		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 		
