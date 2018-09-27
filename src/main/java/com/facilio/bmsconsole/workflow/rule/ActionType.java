@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
@@ -63,7 +64,7 @@ public enum ActionType {
 			if (obj != null) {
 				try {
 					String to = (String) obj.get("to");
-					if (to != null && !to.isEmpty()) {
+					if (to != null && !to.isEmpty() && checkIfActiveUserFromEmail(to)) {
 						List<String> emails = new ArrayList<>();
 						AwsUtil.sendEmail(obj);
 
@@ -86,7 +87,7 @@ public enum ActionType {
 			if (obj != null) {
 				try {
 					String to = (String) obj.get("to");
-					if (to != null && !to.isEmpty()) {
+					if (to != null && !to.isEmpty() && checkIfActiveUserFromPhone(to)) {
 						List<String> sms = new ArrayList<>();
 						SMSUtil.sendSMS(obj);
 
@@ -122,7 +123,7 @@ public enum ActionType {
 						List<String> emails = new ArrayList<>();
 						for (Object toEmail : toEmails) {
 							String to = (String) toEmail;
-							if (to != null && !to.isEmpty()) {
+							if (to != null && !to.isEmpty() && checkIfActiveUserFromEmail(to)) {
 								obj.put("to", (String) to);
 								AwsUtil.sendEmail(obj);
 								emails.add(to);
@@ -159,7 +160,7 @@ public enum ActionType {
 						List<String> sms = new ArrayList<>();
 						for (Object toObj : tos) {
 							String to = (String) toObj;
-							if (to != null && !to.isEmpty()) {
+							if (to != null && !to.isEmpty() && checkIfActiveUserFromPhone(to)) {
 								obj.put("to", (String) to);
 								SMSUtil.sendSMS(obj);
 								sms.add(to);
@@ -192,7 +193,10 @@ public enum ActionType {
 							if (toId.isEmpty()) {
 								continue;
 							}
-							reciepents.add(Long.valueOf(toId));
+							long id = Long.valueOf(toId);
+							if (checkIfActiveUserFromId(id)) {
+								reciepents.add(id);
+							}
 						}
 
 						NotificationContext notification = new NotificationContext();
@@ -300,8 +304,7 @@ public enum ActionType {
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fields).table("Users")
 					.innerJoin("ORG_Users").on("Users.USERID = ORG_Users.USERID").innerJoin("User_Mobile_Setting")
 					.on("ORG_Users.USERID = User_Mobile_Setting.USERID")
-					.andCondition(
-							CriteriaAPI.getCondition("ORG_Users.ORG_USERID", "ouid", idList, NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition("ORG_Users.ORG_USERID", "ouid", idList, NumberOperators.EQUALS))
 					.andCustomWhere("ORG_Users.USER_STATUS = true and ORG_Users.DELETED_TIME = -1")
 					.orderBy("USER_MOBILE_SETTING_ID");
 
@@ -626,5 +629,23 @@ public enum ActionType {
 		json.put("to", "+919840425388");
 		json.put("message", "hello world");
 		t.performAction(json, null, null, null);
+	}
+	
+	private static boolean checkIfActiveUserFromEmail(String email) throws Exception {
+		UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
+		User user = userBean.getUserFromEmail(email);
+		return user != null && user.getUserStatus();
+	}
+	
+	private static boolean checkIfActiveUserFromPhone(String phone) throws Exception {
+		UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
+		User user = userBean.getUserFromPhone(phone);
+		return user != null && user.getUserStatus();
+	}
+	
+	private static boolean checkIfActiveUserFromId(long ouid) throws Exception {
+		UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
+		User user = userBean.getUser(ouid);
+		return user != null && user.getUserStatus();
 	}
 }

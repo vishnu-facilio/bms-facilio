@@ -139,63 +139,6 @@ public class LoginAction extends FacilioAction{
 		return signupinfo.get(signupkey);
 	}
 	
-	public String login() throws Exception {
-		
-		if (HOSTNAME == null) {
-			HOSTNAME = (String) ActionContext.getContext().getApplication().get("DOMAINNAME");
-		}
-		
-		HttpServletRequest request = ServletActionContext.getRequest();
-		HttpServletResponse httpResp = ServletActionContext.getResponse();
-		httpResp.addHeader("FC-Login-State", "1"); // to handle login page in ajax response
-		
-		String idToken = LoginUtil.getUserCookie(request, LoginUtil.IDTOKEN_COOKIE_NAME);
-		
-		try {
-			CognitoUser cognitoUser = CognitoUtil.verifyIDToken(idToken);
-			
-			if (cognitoUser != null) {
-
-				Account account = LoginUtil.getAccount(cognitoUser, false);
-
-				String samlRequest = request.getParameter("SAMLRequest");
-				String relay = request.getParameter("relayUrl");
-
-				if (samlRequest != null && !"".equals(samlRequest.trim())) {
-
-					boolean status = handleSAMLLogin(cognitoUser.getEmail(), account.getOrg().getDomain(), samlRequest, relay);
-
-					if (status) {
-						return "samlresponse";
-					}
-					else {
-						return "loginpage";
-					}
-				}
-				else {
-
-					String redirectURL = request.getScheme() + "://" + account.getOrg().getDomain() + HOSTNAME + ":" + request.getServerPort();
-
-					String nextURL = request.getParameter("redirect");
-					if (nextURL == null || nextURL.trim().equals("")) {
-						redirectURL = redirectURL + request.getContextPath() +"/app/index"; 
-					}
-					else {
-						nextURL = (nextURL.startsWith("/") ? nextURL : "/" + nextURL);
-						redirectURL = redirectURL + nextURL;
-					}
-					request.setAttribute("redirect_url", redirectURL);
-
-					return "loginsuccess";
-				}
-			}
-		}
-		catch (Exception e) {
-			log.info("Exception occurred ", e);
-		}
-		
-		return "loginpage";
-	}
 	
 	public String apiLogin() throws Exception {
 		
@@ -229,64 +172,6 @@ public class LoginAction extends FacilioAction{
 		LoginUtil.eraseUserCookie(request, response, "fc.authtype", null);
 		LoginUtil.eraseUserCookie(request, response, "fc.currentSite", null);
 		
-		return SUCCESS;
-	}
-	
-	public String validateUser() throws Exception {
-		
-		if (HOSTNAME == null) {
-			HOSTNAME = (String) ActionContext.getContext().getApplication().get("DOMAINNAME");
-		}
-		
-		// get the identity token and decode it.
-		String idToken = getIdToken();
-		if (idToken == null) {
-			response = "idToken_missing";
-		}
-		else {
-			// Temp identity id generation code
-			/*try {
-			String identityId = CognitoUtil.getIdentityId(idToken);
-			System.out.println("identityId ======>  "+identityId);
-
-			BasicAWSCredentials awsCreds = new BasicAWSCredentials(AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));
-			AWSIot awsIot = AWSIotClientBuilder.standard().withRegion("us-west-2").withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
-
-			AttachPrincipalPolicyRequest policyResult = new AttachPrincipalPolicyRequest().withPolicyName("EM-Policy").withPrincipal(identityId);
-			awsIot.attachPrincipalPolicy(policyResult);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}*/
-
-			CognitoUtil.CognitoUser cognitoUser = CognitoUtil.verifyIDToken(idToken);
-			Account account = LoginUtil.getAccount(cognitoUser, false);
-
-			HttpServletRequest request = ServletActionContext.getRequest();
-			HttpServletResponse httpResp = ServletActionContext.getResponse();
-
-			// setting id token cookie
-			LoginUtil.addUserCookie(httpResp, LoginUtil.IDTOKEN_COOKIE_NAME, idToken, HOSTNAME);
-
-			String redirectURL = request.getScheme() + "://" + account.getOrg().getDomain() + HOSTNAME + ":" + request.getServerPort();
-
-			String nextURL = request.getParameter("redirect");
-			if (nextURL == null || nextURL.trim().equals("")) {
-				redirectURL = redirectURL + request.getContextPath() +"/app/index"; 
-			}
-			else {
-				nextURL = (nextURL.startsWith("/") ? nextURL : "/" + nextURL);
-				redirectURL = redirectURL + nextURL;
-			}
-
-			String samlRequest = request.getParameter("isSAML");
-			if (samlRequest != null && Boolean.parseBoolean(samlRequest)) {
-				response = "reload";
-			}
-			else {
-				response = redirectURL;
-			}
-		}
 		return SUCCESS;
 	}
 	
@@ -359,55 +244,6 @@ public class LoginAction extends FacilioAction{
 	  System.out.println(url);
 	    return url.toString();
 	}	
-	private boolean handleSAMLLogin(String curUser, String subdomain, String samlRequest, String relay) throws Exception {
-		
-		HttpServletRequest request = ServletActionContext.getRequest();
-		
-		String decodedsamlRequest = decodeSAMLRequest(samlRequest);
-		if (decodedsamlRequest == null) {
-			return false;
-		}
-		
-		Document document = SAMLUtil.convertStringToDocument(decodedsamlRequest);
-		document.getDocumentElement().normalize();
-
-		Element authnRequestElement = (Element) document.getFirstChild();
-		String assertionConsumerServiceURL = authnRequestElement.getAttribute("AssertionConsumerServiceURL");
-
-		String spEntityID = document.getElementsByTagName("saml:Issuer").item(0).getTextContent();
-		
-		String requestID = "RANDOMID_"+UUID.randomUUID().toString().replace("-", "");
-
-		String url = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort();
-		if (request.getServerPort() == 80) {
-			url = request.getScheme()+"://"+request.getServerName();
-		}
-
-		User user = AccountUtil.getUserBean().getUser(curUser);
-		
-		JSONObject customAttr = new JSONObject();
-		customAttr.put("Facilio User Id", user.getOuid());
-		customAttr.put("Facilio Org Id", user.getOrgId());
-		customAttr.put("Facilio Domain", subdomain);
-
-		SAMLAttribute samlAttributes = 
-				new SAMLAttribute()
-				.setIssuer(url)
-				.setIntendedAudience(spEntityID)
-				.setInResponseTo(requestID)
-				.setRecipient(assertionConsumerServiceURL)
-				.setEmail(curUser)
-				.setCustomAttr(customAttr);
-
-		String samlResponse = generateSignedSAMLResponse(samlAttributes);
-
-		request.setAttribute("SAMLResponse", samlResponse);
-		request.setAttribute("AssertionConsumerServiceURL", assertionConsumerServiceURL);
-		
-		relay = (relay == null || "".equals(relay.trim())) ? "token" : relay;
-		request.setAttribute("relay", relay);
-		return true;
-	}
 	
 	private JSONObject signupData;
 	
@@ -433,34 +269,6 @@ public class LoginAction extends FacilioAction{
 		return SUCCESS;
 	}
 	
-	public String validateInviteLink() throws Exception
-	{
-		String[] inviteIds = EncryptionUtil.decode(getInviteToken()).split("#");
-		long ouid = Long.parseLong(inviteIds[0]);
-		
-		long inviteLinkExpireTime = (7 * 24 * 60 * 60 * 1000); //7 days in seconds
-		
-		JSONObject invitation = new JSONObject();
-		User user = AccountUtil.getUserBean().getUser(ouid);
-		if ((System.currentTimeMillis() - user.getInvitedTime()) > inviteLinkExpireTime) {
-			invitation.put("error", "link_expired");
-		}
-		else {
-			Organization org = AccountUtil.getOrgBean().getOrg(user.getOrgId());
-			invitation.put("email", user.getEmail());
-			invitation.put("orgname", org.getName());
-			if(user.getPassword() == null) {
-				invitation.put("account_exists", false);
-			} else {
-				invitation.put("account_exists", true);	
-			}
-			invitation.put("userid", ouid);
-		}
-		ActionContext.getContext().getValueStack().set("invitation", invitation);
-		
-		return SUCCESS;
-	}
-
 	public JSONObject acceptUserInvite(String inviteToken) throws Exception {
 		String[] inviteIds = EncryptionUtil.decode(inviteToken).split("#");
 		long ouid = Long.parseLong(inviteIds[0]);
@@ -489,95 +297,12 @@ public class LoginAction extends FacilioAction{
 		return invitation;
 	}
 	
-	public JSONObject acceptRegistrationInvite(String inviteToken) throws Exception {
-		String[] inviteIds = EncryptionUtil.decode(inviteToken).split("#");
-		String email = inviteIds[0];
-		long time = Long.parseLong(inviteIds[1]);
-
-		long inviteLinkExpireTime = (7 * 24 * 60 * 60 * 1000); //7 days in seconds
-
-		JSONObject invitation = new JSONObject();
-
-		User user = AccountUtil.getUserBean().getUser(email);
-			
-		if ((System.currentTimeMillis() - time) > inviteLinkExpireTime) {
-			invitation.put("error", "link_expired");
-		}
-		else {
-			//boolean acceptStatus = AccountUtil.getUserBean().acceptInvite(ouid, null);
-			boolean acceptStatus = (user != null);
-			if (acceptStatus) {
-				user.setUserVerified(true);
-				AccountUtil.getUserBean().updateUser(user);
-				invitation.put("email", email);
-				invitation.put("accepted", true);
-			}
-			else {
-				invitation.put("accepted", false);
-			}
-		}
-		return invitation;
-	}
-	
-	
-	
-
 	public String acceptInvite() throws Exception {
 		
 		JSONObject invitation = acceptUserInvite(getInviteToken());
 		ActionContext.getContext().getValueStack().set("invitation", invitation);
 		
 		return SUCCESS;
-	}
-	
-	public String verifyEmail() throws Exception {
-		
-		JSONObject invitation = acceptRegistrationInvite(getInviteToken());
-		ActionContext.getContext().getValueStack().set("invitation", invitation);
-		
-		return SUCCESS;
-	}
-	
-	public String resetPassword() throws Exception {
-		JSONObject invitation = new JSONObject();
-		if(getInviteToken() != null) {
-			invitation = resetPassword(getInviteToken());
-		} else {
-			User user = AccountUtil.getUserBean().getUser(getEmailaddress());
-			if(user != null) {
-				AccountUtil.getUserBean().sendResetPasswordLink(user);
-				invitation.put("status", "success");
-			} else {
-				invitation.put("status", "failed");
-			}
-		}
-		ActionContext.getContext().getValueStack().set("invitation", invitation);
-		return SUCCESS;
-	}
-	
-	public JSONObject resetPassword(String inviteToken) throws Exception {
-		String[] inviteIds = EncryptionUtil.decode(inviteToken).split("#");
-		String email = inviteIds[0];
-		long time = Long.parseLong(inviteIds[1]);
-
-		long inviteLinkExpireTime = (7 * 24 * 60 * 60 * 1000); //7 days in seconds
-
-		JSONObject invitation = new JSONObject();
-
-		User user = AccountUtil.getUserBean().getUser(email);
-		if ((System.currentTimeMillis() - time) > inviteLinkExpireTime) {
-			invitation.put("error", "link_expired");
-		}
-		else {
-			//boolean acceptStatus = AccountUtil.getUserBean().acceptInvite(ouid, null);
-			if(user != null) {
-				String encryptedPassword = Home.cryptWithMD5(getPassword());
-				user.setPassword(encryptedPassword);
-				AccountUtil.getUserBean().updateUser(user);
-				invitation.put("status", "success");
-			}
-		}
-		return invitation;
 	}
 	
 	private String emailaddress;

@@ -340,17 +340,6 @@ Pragma: no-cache
 		this.emailaddress = emailaddress;
 	}
 
-	public String signupUser() throws Exception	{
-		
-		
-		System.out.println("signupUser() : username :"+username +", password :"+password+", email : "+getEmailaddress() );
-		String encryptedPass = cryptWithMD5(password);
-		
-		return AddNewUserDB(username,encryptedPass,getEmailaddress());
-		
-	//	return SUCCESS;
-	}
-
 	public String signupPortalUser() throws Exception	{
 		System.out.println("signupUser() : username :"+username +", password :"+password+", email : "+getEmailaddress() + "portal " + portalId() );
 		String encryptedPass = cryptWithMD5(password);
@@ -427,61 +416,6 @@ Pragma: no-cache
 		return validatelogin();
 	}
 
-	public String AddNewUserDB(String username, String password, String emailaddress) throws Exception
-	{
-		User userObj = AccountUtil.getUserBean().getUser(emailaddress);
-		if(userObj != null)
-		{
-			setJsonresponse("message", "Email already exists");
-			return ERROR;
-		}
-		Organization orgObj = AccountUtil.getOrgBean().getOrg(getDomainname());
-		if(orgObj != null)
-		{
-			setJsonresponse("message", "Org Domain Name already exists");
-			return ERROR;
-		}
-		System.out.println("### AddNewUserDB() :"+emailaddress);
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		try
-		{
-			/*conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("INSERT INTO faciliousers(username,email,password) VALUES(?,?,?)");
-			pstmt.setString(1, username);
-			pstmt.setString(2, emailaddress);
-			pstmt.setString(3, password);
-			pstmt.executeUpdate();*/
-			
-			JSONObject signupInfo = new JSONObject();
-			signupInfo.put("name", getUsername());
-			signupInfo.put("email", emailaddress);
-			signupInfo.put("cognitoId", "facilio");
-			signupInfo.put("phone", getPhone());
-			signupInfo.put("companyname", getCompanyname());
-			signupInfo.put("domainname", getDomainname());
-			signupInfo.put("isFacilioAuth", true);
-			signupInfo.put("timezone", getTimezone());
-			
-			signupInfo.put("password", password);
-			FacilioContext signupContext = new FacilioContext();
-			signupContext.put(FacilioConstants.ContextNames.SIGNUP_INFO, signupInfo);
-			
-			Chain c = FacilioChainFactory.getOrgSignupChain();
-			c.execute(signupContext);
-		}catch(SQLException | RuntimeException e)
-		{
-			log.info("Exception occurred ", e);
-			setJsonresponse("message", "Error during signup");
-			return ERROR;
-		}
-		finally
-		{
-			DBUtil.closeAll(conn, pstmt);
-		}
-		return validatelogin();
-	}
-	
 	   private static MessageDigest md;
 
 	   public static String cryptWithMD5(String pass){

@@ -852,7 +852,7 @@ public class UserBeanImpl implements UserBean {
 				.table("Users")
 				.innerJoin("ORG_Users")
 				.on("Users.USERID = ORG_Users.USERID")
-				.andCustomWhere("ORG_USERID = ? AND DELETED_TIME = -1", ouid);
+				.andCustomWhere("ORGID = ? AND ORG_USERID = ? AND DELETED_TIME = -1", AccountUtil.getCurrentOrg().getId(), ouid);
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -887,9 +887,9 @@ public class UserBeanImpl implements UserBean {
 	}
 
 	@Override
-	public User getUser(String email) throws Exception {
+	public User getUserFromEmail(String email) throws Exception {
 		
-		/*List<FacilioField> fields = new ArrayList<>();
+		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getUserFields());
 		fields.addAll(AccountConstants.getOrgUserFields());
 		
@@ -898,15 +898,37 @@ public class UserBeanImpl implements UserBean {
 				.table("Users")
 				.innerJoin("ORG_Users")
 				.on("Users.USERID = ORG_Users.USERID")
-				.andCustomWhere("EMAIL = ? AND DELETED_TIME = -1 and ISDEFAULT = ?", email, true);
+				.andCustomWhere("ORGID = ? AND EMAIL = ? AND DELETED_TIME = -1 and ISDEFAULT = ?", AccountUtil.getCurrentOrg().getId(), email, true);
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			User user =  FieldUtil.getAsBeanFromMap(props.get(0), User.class);
+			User user =  createUserFromProps(props.get(0));
 			user.setAccessibleSpace(getAccessibleSpaceList(user.getOuid()));
 			return user;
-//			return FieldUtil.getAsBeanFromMap(props.get(0), User.class);
-		}*/
+		}
+		return null;
+	}
+	
+	@Override
+	public User getUserFromPhone(String phone) throws Exception {
+		
+		List<FacilioField> fields = new ArrayList<>();
+		fields.addAll(AccountConstants.getUserFields());
+		fields.addAll(AccountConstants.getOrgUserFields());
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("Users")
+				.innerJoin("ORG_Users")
+				.on("Users.USERID = ORG_Users.USERID")
+				.andCustomWhere("ORGID = ? AND (PHONE = ? OR MOBILE = ?) AND DELETED_TIME = -1 and ISDEFAULT = ?", AccountUtil.getCurrentOrg().getId(), phone, phone, true);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			User user =  createUserFromProps(props.get(0));
+			user.setAccessibleSpace(getAccessibleSpaceList(user.getOuid()));
+			return user;
+		}
 		return null;
 	}
 
