@@ -40,6 +40,7 @@ import javax.xml.crypto.dsig.keyinfo.X509Data;
 import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
 import javax.xml.crypto.dsig.spec.TransformParameterSpec;
 
+import com.facilio.auth.cookie.FacilioCookie;
 import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -138,7 +139,7 @@ public class LoginAction extends FacilioAction{
 	{
 		return signupinfo.get(signupkey);
 	}
-	
+
 	
 	public String apiLogin() throws Exception {
 		
@@ -156,9 +157,12 @@ public class LoginAction extends FacilioAction{
 		
 		// end user session
 		try {
-			String facilioToken = LoginUtil.getUserCookie(request, "fc.idToken.facilio");
+			String facilioToken = FacilioCookie.getUserCookie(request, "fc.idToken.facilio");
 			if (facilioToken != null) {
-				AccountUtil.getUserBean().endUserSession(AccountUtil.getCurrentUser().getUid(), AccountUtil.getCurrentUser().getEmail(), facilioToken);
+				User currentUser = AccountUtil.getCurrentUser();
+				if(currentUser != null) {
+					AccountUtil.getUserBean().endUserSession(currentUser.getUid(), currentUser.getEmail(), facilioToken);
+				}
 			}
 		}
 		catch (Exception e) {
@@ -168,83 +172,13 @@ public class LoginAction extends FacilioAction{
 		HttpSession session = request.getSession();
 		session.invalidate();
 		
-		LoginUtil.eraseUserCookie(request, response, "fc.idToken.facilio", null);
-		LoginUtil.eraseUserCookie(request, response, "fc.authtype", null);
-		LoginUtil.eraseUserCookie(request, response, "fc.currentSite", null);
-		
+		FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilio", null);
+		FacilioCookie.eraseUserCookie(request, response, "fc.authtype", null);
+		FacilioCookie.eraseUserCookie(request, response, "fc.currentSite", null);
+
 		return SUCCESS;
 	}
-	
-	public String logout() {
-		
-		if (HOSTNAME == null) {
-			HOSTNAME = (String) ActionContext.getContext().getApplication().get("DOMAINNAME");
-		}
-		System.out.println("Logout called");
-		HttpServletRequest httpReq = ServletActionContext.getRequest();
-		HttpServletResponse httpResp = ServletActionContext.getResponse();
-		
-		// end user session
-		try {
-			String facilioToken = LoginUtil.getUserCookie(httpReq, "fc.idToken.facilio");
-			if (facilioToken != null) {
-				AccountUtil.getUserBean().endUserSession(AccountUtil.getCurrentUser().getUid(), AccountUtil.getCurrentUser().getEmail(), facilioToken);
-			}
-		}
-		catch (Exception e) {
-			log.info("Exception occurred ", e);
-		}
-		
-		LoginUtil.eraseUserCookie(httpReq, httpResp, LoginUtil.IDTOKEN_COOKIE_NAME, HOSTNAME);
-		
-		ActionContext.getContext().getSession().remove("USER_INFO");
-		if(httpReq.getServerName().matches(HOSTNAME.substring(1)))
-		{
-			
-			return SUCCESS;
-		}
-		else
-		{
-			
-			System.out.println("redirecting to root domain");
-			httpReq.setAttribute("redirUrl",getURL(httpReq,HOSTNAME.substring(1))+"/logout");
-			return "REDIRECT";
-		}
-		
-		
-	}
-	public static String getURL(HttpServletRequest req) {
-		return getURL( req, null);
-	}
-	public static String getURL(HttpServletRequest req,String overridehostname) {
 
-	    String scheme = req.getScheme();             // http
-	    String serverName = req.getServerName();     // hostname.com
-	    if(overridehostname!=null)
-	    {
-	    	serverName = overridehostname;
-	    }
-	    int serverPort = req.getServerPort();        // 80
-	    String contextPath = req.getContextPath();   // /mywebapp
-	    String servletPath = req.getServletPath();   // /servlet/MyServlet
-	//    String pathInfo = req.getPathInfo();         // /a/b;c=123
-	//    String queryString = req.getQueryString();          // d=789
-
-	    // Reconstruct original requesting URL
-	    StringBuilder url = new StringBuilder();
-	    url.append(scheme).append("://").append(serverName);
-
-	    if (serverPort != 80 && serverPort != 443) {
-	        url.append(":").append(serverPort);
-	    }
-
-	    url.append(contextPath);//.append(servletPath);
-
-	  
-	  System.out.println(url);
-	    return url.toString();
-	}	
-	
 	private JSONObject signupData;
 	
 	public void setSignupData(JSONObject signupData) {
@@ -255,20 +189,7 @@ public class LoginAction extends FacilioAction{
 		return this.signupData;
 	}
 	
-	public String signup() throws Exception
-	{
-		System.out.println("The parameters list::: " + getSignupData());
-		
-		FacilioContext signupContext = new FacilioContext();
-		signupContext.put(FacilioConstants.ContextNames.SIGNUP_INFO, getSignupData());
-		
-		Chain c = FacilioChainFactory.getOrgSignupChain();
-		c.execute(signupContext);
-		
-		response = "success";
-		return SUCCESS;
-	}
-	
+
 	public JSONObject acceptUserInvite(String inviteToken) throws Exception {
 		String[] inviteIds = EncryptionUtil.decode(inviteToken).split("#");
 		long ouid = Long.parseLong(inviteIds[0]);
@@ -296,7 +217,7 @@ public class LoginAction extends FacilioAction{
 		}
 		return invitation;
 	}
-	
+
 	public String acceptInvite() throws Exception {
 		
 		JSONObject invitation = acceptUserInvite(getInviteToken());
@@ -304,7 +225,7 @@ public class LoginAction extends FacilioAction{
 		
 		return SUCCESS;
 	}
-	
+
 	private String emailaddress;
 	
 	private String password;
@@ -342,35 +263,6 @@ public class LoginAction extends FacilioAction{
 	}
 	public void setCreateAccountResp(HashMap<String, Object> createAccountResp) {
 		this.createAccountResp = createAccountResp;
-	}
-	
-	// API Method, so will return json
-	public String newSignup() throws Exception
-	{
-		HttpServletRequest request = ServletActionContext.getRequest();
-		if (!request.getMethod().equalsIgnoreCase("POST")) {
-			createAccountResp.put("error", true);
-			createAccountResp.put("message", "post_only_api");
-		}
-		else {
-			if (getAccount() == null || getAccount().isEmpty()) {
-				createAccountResp = new HashMap<>();
-				createAccountResp.put("error", true);
-				createAccountResp.put("message", "mandatory_fields_missing");
-			}
-			else {
-				FacilioContext orgsignupcontext = new FacilioContext();
-				System.out.println("The parameters list"+ActionContext.getContext().getParameters());
-				orgsignupcontext.put("signupinfo", getAccount());
-				Chain c = FacilioChainFactory.getOrgSignupChain();
-				c.execute(orgsignupcontext);
-				
-				createAccountResp = new HashMap<>();
-				createAccountResp.put("success", true);
-			}
-		}
-		
-		return SUCCESS;
 	}
 
 	public String portalAccount() throws Exception {
@@ -533,11 +425,12 @@ public class LoginAction extends FacilioAction{
 		Cookie cookie = new Cookie("fc.currentOrg", getSwitchOrgDomain());
 		cookie.setMaxAge(60 * 60 * 24 * 365 * 10); // Make the cookie 10 year
 		cookie.setPath("/");
+		cookie.setSecure(true);
 		cookie.setHttpOnly(true);
 		response.addCookie(cookie);
 		
 		
-		LoginUtil.eraseUserCookie(request, response, "fc.currentSite", null);
+		FacilioCookie.eraseUserCookie(request, response, "fc.currentSite", null);
 		return SUCCESS;
 	}
 	

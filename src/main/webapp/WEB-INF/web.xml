@@ -11,6 +11,12 @@
     </param-value>
 </context-param>
 
+<session-config>
+ <cookie-config>
+  <secure>true</secure>
+ </cookie-config>
+</session-config>
+
 <listener>
     <listener-class>org.apache.tiles.web.startup.simple.SimpleTilesListener</listener-class>
 </listener>

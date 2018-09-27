@@ -72,6 +72,7 @@ public class TVAction extends FacilioAction {
 	                cookie.setMaxAge(60 * 60 * 24 * 30);
 	                cookie.setPath("/");
 	                cookie.setHttpOnly(true);
+	                cookie.setSecure(true);
 	                response.addCookie(cookie);
 	                
 	                ScreenUtil.deleteTVPasscode(getCode());

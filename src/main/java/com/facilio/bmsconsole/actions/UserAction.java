@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.facilio.auth.cookie.FacilioCookie;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.log4j.LogManager;
@@ -258,7 +259,7 @@ public class UserAction extends FacilioAction {
 		}
 
 		HttpServletRequest request = ServletActionContext.getRequest();
-		String value = LoginUtil.getUserCookie(request, "fc.authtype");
+		String value = FacilioCookie.getUserCookie(request, "fc.authtype");
 		user.setFacilioAuth("facilio".equals(value));
 
 

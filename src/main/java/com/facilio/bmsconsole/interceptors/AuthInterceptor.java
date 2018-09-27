@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.facilio.auth.cookie.FacilioCookie;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
 
@@ -197,7 +198,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 				return true;
 			}
 			
-			String deviceToken = LoginUtil.getUserCookie(request, "fc.deviceToken");
+			String deviceToken = FacilioCookie.getUserCookie(request, "fc.deviceToken");
 			if (deviceToken != null && !"".equals(deviceToken)) {
 				long connectedScreenId = Long.parseLong(CognitoUtil.validateJWT(deviceToken, "auth0").getSubject().split("_")[0]);
 				RemoteScreenContext remoteScreen = ScreenUtil.getRemoteScreen(connectedScreenId);

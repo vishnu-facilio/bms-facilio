@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.facilio.auth.cookie.FacilioCookie;
 import org.apache.commons.chain.Chain;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
@@ -271,12 +272,14 @@ public class FacilioAuthAction extends ActionSupport {
                 cookie.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
                 cookie.setPath("/");
                 cookie.setHttpOnly(true);
+                cookie.setSecure(true);
                 response.addCookie(cookie);
 
                 Cookie authmodel = new Cookie("fc.authtype", "facilio");
                 authmodel.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
                 authmodel.setPath("/");
                 authmodel.setHttpOnly(false);
+                authmodel.setSecure(true);
                 String parentdomain = request.getServerName().replaceAll("api.", "");
                 authmodel.setDomain(parentdomain);
                 LOGGER.info("#################### facilio.in::: " + request.getServerName());
@@ -596,12 +599,12 @@ public class FacilioAuthAction extends ActionSupport {
 
         session.invalidate();
         if(portalId() > 0) {
-            LoginUtil.eraseUserCookie(request, response, "fc.idToken.facilioportal", null);
+            FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilioportal", null);
         } else {
-            LoginUtil.eraseUserCookie(request, response, "fc.idToken.facilio", null);
+            FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilio", null);
         }
 
-        LoginUtil.eraseUserCookie(request, response, "fc.authtype", null);
+        FacilioCookie.eraseUserCookie(request, response, "fc.authtype", null);
 
         return SUCCESS;
     }

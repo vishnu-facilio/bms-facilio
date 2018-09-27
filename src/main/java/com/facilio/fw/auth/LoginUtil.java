@@ -6,6 +6,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.facilio.auth.cookie.FacilioCookie;
 import org.apache.struts2.ServletActionContext;
 
 import com.facilio.accounts.dto.Account;
@@ -26,7 +27,7 @@ public class LoginUtil {
 		User user = null;
 		
 		HttpServletRequest request = ServletActionContext.getRequest();
-		String currentOrgDomain = LoginUtil.getUserCookie(request, "fc.currentOrg");
+		String currentOrgDomain = FacilioCookie.getUserCookie(request, "fc.currentOrg");
 		
 		if (currentOrgDomain != null) {
 			user = AccountUtil.getUserBean().getFacilioUser(cognitoUser.getEmail(), currentOrgDomain);
@@ -83,43 +84,5 @@ public class LoginUtil {
 		}
 		return new Account(org, user);
 	}
-	
-	public static String getUserCookie(HttpServletRequest request, String key) {
-		Cookie cookies[] = request.getCookies();
-		if (cookies != null && cookies.length > 0) {
-			for (Cookie cookie : cookies) {
-				if (cookie.getName().equalsIgnoreCase(key)) {
-					return cookie.getValue();
-				}
-			}
-		}
-		return null;
-	}
-	
-	public static boolean eraseUserCookie(HttpServletRequest request, HttpServletResponse response, String key, String domain) {
-		Cookie cookies[] = request.getCookies();
-		if (cookies != null && cookies.length > 0) {
-			for (Cookie cookie : cookies) {
-				if (cookie.getName().equalsIgnoreCase(key)) {
-					cookie.setValue("");
-					cookie.setPath("/");
-					if (domain != null) {
-						cookie.setDomain(domain.substring(1));
-					}
-					cookie.setMaxAge(0);
-					response.addCookie(cookie);
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	
-	public static void addUserCookie(HttpServletResponse response, String key, String value, String domain) {
-		
-		Cookie cookie = new Cookie(key, value);
-		cookie.setPath("/");
-		cookie.setDomain(domain.substring(1));
-		response.addCookie(cookie);
-	}
+
 }

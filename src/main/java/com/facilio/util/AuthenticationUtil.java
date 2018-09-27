@@ -3,6 +3,8 @@ package com.facilio.util;
 import javax.servlet.http.HttpServletRequest;
 
 import com.facilio.accounts.dto.Account;
+import com.facilio.auth.cookie.FacilioCookie;
+import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.fw.auth.LoginUtil;
 
@@ -12,9 +14,9 @@ public class AuthenticationUtil {
     public static CognitoUtil.CognitoUser getCognitoUser(HttpServletRequest request,boolean isPortaluser) throws Exception {
         String facilioToken = null;
         if(isPortaluser) {
-        	facilioToken = LoginUtil.getUserCookie(request, "fc.idToken.facilioportal");
+        	facilioToken = FacilioCookie.getUserCookie(request, "fc.idToken.facilioportal");
         } else {
-        	facilioToken = LoginUtil.getUserCookie(request, "fc.idToken.facilio");
+        	facilioToken = FacilioCookie.getUserCookie(request, "fc.idToken.facilio");
         }
         String headerToken = request.getHeader("Authorization");
 
@@ -28,7 +30,7 @@ public class AuthenticationUtil {
                 }
             }
 
-            String overrideSessionCookie = LoginUtil.getUserCookie(request, "fc.overrideSession");
+            String overrideSessionCookie = FacilioCookie.getUserCookie(request, "fc.overrideSession");
             boolean overrideSessionCheck = overrideSessionCookie != null && overrideSessionCookie.equalsIgnoreCase("true");
             CognitoUtil.CognitoUser cognitoUser =  CognitoUtil.verifiyFacilioToken(facilioToken, isPortaluser, overrideSessionCheck);
             return cognitoUser;
