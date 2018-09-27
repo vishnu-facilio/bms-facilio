@@ -145,7 +145,7 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 		return null;
 	}
 	public void setmLayoutHeight(int mLayoutHeight) {
-		getMetaJSON().put("mLayoutWidth", mLayoutHeight);
+		getMetaJSON().put("mLayoutHeight", mLayoutHeight);
 	}
 	public Integer getmXPosition() {
 		
