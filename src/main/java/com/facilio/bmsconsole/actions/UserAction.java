@@ -217,7 +217,7 @@ public class UserAction extends FacilioAction {
 			if(userid>0)
 			{
 				// send invite
-				(new UserBeanImpl()).sendInvitation(AccountUtil.getCurrentOrg().getOrgId(), user);
+				(new UserBeanImpl()).sendInvitation(user.getOuid(), user);
 
 			}
 			setUserId(user.getId());
