@@ -353,6 +353,11 @@ public enum ActionType {
 			}
 
 		}
+		
+		@Override
+		public boolean isTemplateNeeded() {
+			return false;
+		}
 	},
 	ASSIGNMENT_ACTION(9) {
 

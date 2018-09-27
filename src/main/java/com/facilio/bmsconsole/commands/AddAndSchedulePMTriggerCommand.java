@@ -65,6 +65,8 @@ public class AddAndSchedulePMTriggerCommand implements Command {
 			trigger.setPmId(pm.getId());
 			trigger.setOrgId(AccountUtil.getCurrentOrg().getId());
 			if (trigger.getReadingRule() != null) {
+				
+				trigger.getReadingRule().setName("PM_" + pm.getId());
 				long ruleId = WorkflowRuleAPI.addWorkflowRule(trigger.getReadingRule());
 				trigger.setReadingRuleId(ruleId);
 				
