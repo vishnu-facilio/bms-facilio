@@ -40,7 +40,8 @@ public class FormFactory {
 				.put(FormType.MOBILE, ImmutableMultimap.<String, FacilioForm>builder()
 						.put(FacilioConstants.ContextNames.WORK_ORDER, getMobileWorkOrderForm()).build())
 				.put(FormType.WEB, ImmutableMultimap.<String, FacilioForm>builder()
-						.put(FacilioConstants.ContextNames.WORK_ORDER, getWebWorkOrderForm()).build())
+						.put(FacilioConstants.ContextNames.WORK_ORDER, getWebWorkOrderForm())
+						.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, getWebWorkRequestForm()).build())
 				.put(FormType.PORTAL, ImmutableMultimap.<String, FacilioForm>builder()
 						.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, getServiceWorkRequestForm()).build())
 				.build();
@@ -112,6 +113,16 @@ public class FormFactory {
 		return form;
 	}
 	
+	public static FacilioForm getWebWorkRequestForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("WORKORDER");
+		form.setName("web_default");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER_REQUEST));
+		form.setFields(getWebWorkRequestFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+	
 	private static List<FormField> getWebWorkOrderFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.REQUIRED, 1, 1));
@@ -140,6 +151,19 @@ public class FormFactory {
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 3, 1));
 		fields.add(new FormField("urgency", FieldDisplayType.URGENCY, "Urgency", Required.OPTIONAL, 4, 1));
 		fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachment", Required.OPTIONAL, 5, 1));
+		return fields;
+	}
+	
+	private static List<FormField> getWebWorkRequestFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.OPTIONAL, 1, 1));
+		fields.add(new FormField("site", FieldDisplayType.LOOKUP_SIMPLE, "SITE", Required.REQUIRED, 2, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("category", FieldDisplayType.SELECTBOX, "Category", Required.OPTIONAL, 4, 2));
+		fields.add(new FormField("priority", FieldDisplayType.LOOKUP_SIMPLE, "Priority", Required.OPTIONAL, "ticketpriority", 4, 3));
+		fields.add(new FormField("type",FieldDisplayType.LOOKUP_SIMPLE,"Maintance Type", Required.OPTIONAL, 5, 1));
+		fields.add(new FormField("team", FieldDisplayType.TEAM, "Team", Required.REQUIRED, 6, 1));
+		fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachment", Required.OPTIONAL, 7, 1));
 		return fields;
 	}
 }
