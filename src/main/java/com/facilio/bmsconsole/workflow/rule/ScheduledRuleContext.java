@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.workflow.rule;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
@@ -81,19 +82,27 @@ public class ScheduledRuleContext extends WorkflowRuleContext {
 		this.time = LocalTime.parse(time);
 	}
 	
+	private long fetchDateVal(Object record) throws Exception {
+		Long timeVal = (Long) ((ModuleBaseWithCustomFields) record).getDatum(dateField.getName());
+		if (timeVal == null) {
+			timeVal = (Long) PropertyUtils.getProperty(record, dateField.getName());
+		}
+		return timeVal == null ? -1 : timeVal;
+	}
+	
 	@Override
 	public boolean evaluateMisc(String moduleName, Object record, Map<String, Object> placeHolders,
 			FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
-		Long dateVal = (Long) PropertyUtils.getProperty(record, dateField.getName());
-		return dateVal != null && dateVal != -1;
+		long dateVal = fetchDateVal(record);
+		return dateVal != -1;
 	}
 	
 	@Override
 	public void executeWorkflowActions(Object record, Context context, Map<String, Object> placeHolders)
 			throws Exception {
 		// TODO Auto-generated method stub
-		long timeVal = (long) PropertyUtils.getProperty(record, dateField.getName());
+		long timeVal = fetchDateVal(record);
 		long id = ((ModuleBaseWithCustomFields) record).getId();
 		switch (scheduleType) {
 			case BEFORE:
