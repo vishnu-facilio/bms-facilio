@@ -69,6 +69,14 @@ if (buildinfo == null) {
                </a>
            </li>
            <li>
+               <a href="anomalyconsole">
+               <span class="nav-icon">
+              <i class=" sidebar-icon fa fa-info-circle fa-fw "></i> </span>
+               <span class="nav-title">Anomaly Console</span>
+               </a>
+           </li>
+           
+           <li>
                <a href="closewo">
                <span class="nav-icon">
               <i class=" sidebar-icon fa fa-info-circle fa-fw "></i> </span>

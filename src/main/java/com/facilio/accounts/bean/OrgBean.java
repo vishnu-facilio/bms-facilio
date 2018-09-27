@@ -40,6 +40,8 @@ public interface OrgBean {
 	public User getSuperAdmin(long orgId) throws Exception;
 	
 	public void testTransaction(String prefix) throws Exception;
+	
+	public List getEnergyMeterList() throws Exception ;
 
 	Organization getPortalOrg(Long portalId) throws Exception;
 }

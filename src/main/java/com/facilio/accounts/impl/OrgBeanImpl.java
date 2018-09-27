@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.bean.OrgBean;
@@ -15,7 +16,11 @@ import com.facilio.accounts.exception.AccountException;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.actions.EnergyAction;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -25,6 +30,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -437,6 +443,19 @@ public class OrgBeanImpl implements OrgBean {
 		long portalId = portalOrg.getPortalId();
 		org.setPortalId(portalId);
 		return portalId;
+	}
+	
+	
+	
+	public List getEnergyMeterList() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.CV_NAME, "all");
+		
+		Chain getEnergyMeterListChain = FacilioChainFactory.getEnergyMeterListChain();
+		getEnergyMeterListChain.execute(context);
+		
+		return ((List<EnergyMeterContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST));
 	}
 	
 	

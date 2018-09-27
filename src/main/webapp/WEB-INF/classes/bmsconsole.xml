@@ -1007,6 +1007,9 @@
 			<action name="orginfo" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/orginfo.jsp</result>
 			</action>
+			<action name="anomalyconsole" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result type="tiles">adminpage/anomalyconsole.jsp</result>
+			</action>
 			<action name="sqlconsole" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/sqlconsole.jsp</result>
 			</action>
