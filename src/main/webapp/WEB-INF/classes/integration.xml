@@ -37,18 +37,7 @@
 
 		
   	
-    <!-- This should display form to collect username password-->
-    <action name="urjanetlogin" class="com.facilio.integration.actions.Home" >
-		<result >/urjanet/login.jsp</result>
-		</action>
-	    <!-- This should redirect to callback url..-->
-	
-	<action name="loginsubmit" class="com.facilio.integration.actions.Home" method="loginSubmit">
-		
-		<result >/urjanet/login.jsp</result>
-		</action>
-
-	<action name="faciliosubmit" class="com.facilio.auth.actions.FacilioAuthAction" method="validateLogin">
+    <action name="faciliosubmit" class="com.facilio.auth.actions.FacilioAuthAction" method="validateLogin">
 		<param name="auth">false</param>
 		<result name="success" type="json">
 				<param name="includeProperties">jsonresponse.*</param>
@@ -62,16 +51,6 @@
 		<param name="auth">false</param>
 		<result name="success" type="json">
 				<param name="includeProperties">jsonresponse.*</param>
-		</result>
-	</action>
-	
-
-	<action name="opChangePassword" class="com.facilio.integration.actions.Home" method="changePassword">
-		<result name="success" type="json">
-			<param name="includeProperties">jsonresponse.*</param>
-		</result>
-		<result name="error" type="json">
-			<param name="includeProperties">jsonresponse.*</param>
 		</result>
 	</action>
 
@@ -98,20 +77,6 @@
 		<result name="error" type="json">
 			<param name="includeProperties">jsonresponse.*</param>
 		</result>
-	</action>
-
-	<action name="confirmpayment" class="com.facilio.integration.actions.Home" method="confirmPayment">
-		<result name="success" type="json">
-				<param name="includeProperties">jsonresponse.*</param>
-		</result>
-	</action>
-
-	<action name="faciliologin" class="com.facilio.integration.actions.Home">
-		<result>/urjanet/faciliologin.jsp</result>
-	</action>
-
-	<action name="respondToken" class="com.facilio.integration.actions.Home" method="getToken">
-		<result >/urjanet/login.jsp</result>
 	</action>
 			
     <action name="createPdf" class="com.facilio.pdf.actions.PdfAction" method="createPdf">

@@ -132,9 +132,7 @@
 		
   	
     <!-- This should display form to collect username password-->
-    <action name="urjanetlogin" class="com.facilio.integration.actions.Home" >
-		<result >/leed/login.jsp</result>
-		</action>
+
 	    <!-- This should redirect to callback url..-->
 	<!-- 
 	<action name="buildingdetails" class="com.facilio.leed.actions.BuildingHome" method="detailspage">
@@ -147,17 +145,6 @@
 		<result >/leed/BuildingDetails.jsp</result>
 	</action>
 	-->
-	<action name="loginsubmit" class="com.facilio.integration.actions.Home" method="loginSubmit">
-		
-		<result >/leed/login.jsp</result>
-		</action>
-				
-		
-		
-	<action name="respondToken" class="com.facilio.integration.actions.Home" method="getToken">
-		
-		<result >/leed/login.jsp</result>
-		</action>
 	<action name="index" >
 		
 		<result >/leed/index.jsp</result>
