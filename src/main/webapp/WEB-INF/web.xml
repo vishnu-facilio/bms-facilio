@@ -106,10 +106,6 @@
     <filter-name>struts2</filter-name>
     <url-pattern>/api/*</url-pattern>
 </filter-mapping>
-<filter-mapping>
-    <filter-name>struts2</filter-name>
-    <url-pattern>/service/*</url-pattern>
-</filter-mapping>
     <filter-mapping>
         <filter-name>struts2</filter-name>
         <url-pattern>/internal/*</url-pattern>
