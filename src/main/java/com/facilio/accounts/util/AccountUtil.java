@@ -105,6 +105,7 @@ public class AccountUtil {
 	public static final int FEATURE_WIDGET_LEGENDS 		= 64;
 	public static final int FEATURE_SHIFT_HOURS	 		= 128;
 	public static final int FEATURE_SITE_SWITCH = 256;
+	public static final int FEATURE_DERIVATIONS = 512;
 	
 	public static int getFeatureLicense() throws Exception {
 		long orgId = getCurrentOrg().getOrgId();

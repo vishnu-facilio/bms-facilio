@@ -8,6 +8,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -44,7 +45,8 @@ public class AddModuleCommand implements Command {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 					.table("Modules")
 					.select(fields)
-					.andCustomWhere("NAME = ? OR NAME LIKE ?",module.getName(),module.getName() + "_%")
+					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+					.andCustomWhere("NAME = ? OR NAME LIKE ?",module.getName(),module.getName() + "\\_%")
 					.orderBy(moduleField.getColumnName() + " desc")
 					.limit(1);
 		List<Map<String, Object>> props = builder.get();
