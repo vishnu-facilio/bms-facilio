@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.facilio.auth.cookie.FacilioCookie;
+import com.facilio.aws.util.AwsUtil;
 import org.apache.commons.chain.Chain;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
@@ -269,10 +270,14 @@ public class FacilioAuthAction extends ActionSupport {
                 if(portalUser) {
                     cookie = new Cookie("fc.idToken.facilioportal", jwt);
                 }
+                String parentdomain = request.getServerName().replaceAll("api.", "");
                 cookie.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
                 cookie.setPath("/");
                 cookie.setHttpOnly(true);
-                cookie.setSecure(true);
+                if( ! AwsUtil.isDevelopment()) {
+                    cookie.setSecure(true);
+                }
+                cookie.setDomain(parentdomain);
                 response.addCookie(cookie);
 
                 Cookie authmodel = new Cookie("fc.authtype", "facilio");
@@ -280,7 +285,7 @@ public class FacilioAuthAction extends ActionSupport {
                 authmodel.setPath("/");
                 authmodel.setHttpOnly(false);
                 authmodel.setSecure(true);
-                String parentdomain = request.getServerName().replaceAll("api.", "");
+
                 authmodel.setDomain(parentdomain);
                 LOGGER.info("#################### facilio.in::: " + request.getServerName());
                 response.addCookie(authmodel);
