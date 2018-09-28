@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
+import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -45,9 +46,8 @@ public class ValidateAndCreateValuesForInputTaskCommand implements Command {
 				for(int i = 0; i < recordIds.size(); i++) {
 					TaskContext completeRecord = oldTasks.get(recordIds.get(i));
 					if(completeRecord != null) {
-						if(task.getStatus() != null && task.getStatus().getId() != -1) {
-							TicketStatusContext status = TicketAPI.getStatus("Closed");
-							if(status.getId() == task.getStatus().getId()) {
+						if(task.getStatus() != -1) {
+							if(task.getStatusEnum() == TaskStatus.CLOSED) {
 								if (completeRecord.getInputTypeEnum() != InputType.NONE && ((completeRecord.getInputValue() == null || completeRecord.getInputValue().isEmpty())) && (task.getInputValue() == null || task.getInputValue().isEmpty())) {
 									throw new UnsupportedOperationException("Input task cannot be closed without entering input value");
 								}

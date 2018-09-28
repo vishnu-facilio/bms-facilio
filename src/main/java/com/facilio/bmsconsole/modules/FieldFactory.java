@@ -3846,7 +3846,7 @@ public class FieldFactory {
 
 		fields.add(getIdField(module));
 		fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
-		fields.add(getField("statusId", "STATUS_ID", module, FieldType.LOOKUP));
+		fields.add(getField("status", "STATUS", module, FieldType.NUMBER));
 		fields.add(getField("priorityId", "PRIORITY_ID", module, FieldType.LOOKUP));
 		fields.add(getField("categoryId", "CATEGORY_ID", module, FieldType.LOOKUP));
 		fields.add(getField("typeId", "TYPE_ID", module, FieldType.LOOKUP));

@@ -8,6 +8,7 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -44,7 +45,7 @@ public class GetMultipleRelatedTasksCommand implements Command {
 		
 		context.put(FacilioConstants.ContextNames.TASK_MAP, taskMap);
 		
-		TicketAPI.loadTicketLookups(tasks);
+		CommonCommandUtil.loadTaskLookups(tasks);
 		
 		return false;
 	}

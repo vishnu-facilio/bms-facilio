@@ -9,9 +9,14 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
+import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.EnumField;
@@ -21,9 +26,11 @@ import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.templates.TaskTemplate;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.bmsconsole.util.ResourceAPI;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
-import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -72,7 +79,7 @@ public class ValidateTasksCommand implements Command {
 			}
 
 			for(TaskContext task : tasks) {
-				TicketAPI.validateSiteSpecificData(task);
+				validateSiteSpecificData(task);
 				if (task.getUniqueId() == -1) {
 					task.setUniqueId(++maxUniqueId);
 				}
@@ -165,6 +172,47 @@ public class ValidateTasksCommand implements Command {
 			maxId = (int) props.get(0).get("uniqueId");
 		}
 		return maxId;
+	}
+	
+	private static void validateSiteSpecificData(TaskContext task) throws Exception {
+		long siteId = task.getSiteId();
+		
+		if (siteId == -1) {
+			return;
+		}
+		
+		if (task.getResource() != null && task.getResource().getId() != -1) {
+			ResourceContext resource = ResourceAPI.getResource(task.getResource().getId());
+			long resourceSiteId = -1;
+			if (resource.getResourceTypeEnum() == ResourceType.SPACE) {
+				BaseSpaceContext baseSpace = SpaceAPI.getBaseSpace(resource.getId());
+				if (baseSpace.getSpaceTypeEnum() == SpaceType.SITE) {
+					resourceSiteId = baseSpace.getId();
+				} else {
+					resourceSiteId = baseSpace.getSiteId();
+				}
+			} else {
+				AssetContext asset = AssetsAPI.getAssetInfo(resource.getId(), false); //check deleted ?
+				if (asset.getSpaceId() > 0) {
+					BaseSpaceContext baseSpace = SpaceAPI.getBaseSpace(asset.getSpaceId());
+					if (baseSpace.getSpaceTypeEnum() == SpaceType.SITE) {
+						resourceSiteId = baseSpace.getId();
+					} else {
+						resourceSiteId = baseSpace.getSiteId();
+					}
+				}
+			}
+			
+			if (resourceSiteId > 0) {
+				if (resourceSiteId != siteId) {
+					if (resource.getResourceTypeEnum() == ResourceType.SPACE) {
+						throw new IllegalArgumentException("The Space does not belong in the Workorder request's Site.");
+					} else {
+						throw new IllegalArgumentException("The Asset does not belong in the Workorder request's Site.");
+					}
+				}
+			}
+		}
 	}
 
 }

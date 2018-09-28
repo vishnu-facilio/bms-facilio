@@ -15,6 +15,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMReminder;
@@ -151,7 +152,7 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 		context.put(FacilioConstants.ContextNames.TASK_SECTIONS, template.getSectionTemplates());
 		PreventiveMaintenanceAPI.updateResourceDetails(workorder, taskMap);
 		if (listOfTasks != null) {
-			TicketAPI.loadTicketLookups(listOfTasks);
+			CommonCommandUtil.loadTaskLookups(listOfTasks);
 		}
 		
 		List<PMReminder> reminders = PreventiveMaintenanceAPI.getPMReminders(Collections.singletonList(pm.getId()));

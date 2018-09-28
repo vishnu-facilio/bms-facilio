@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
 import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -221,7 +222,7 @@ public class TaskAction extends FacilioAction {
 		if (taskIdList != null) {
 			TaskContext defaultClosedTaskObj = new TaskContext();
 			defaultClosedTaskObj.setParentTicketId(parentTicketId);
-			defaultClosedTaskObj.setStatus(TicketAPI.getStatus("Closed"));
+			defaultClosedTaskObj.setStatus(TaskStatus.CLOSED);
 			context.put(FacilioConstants.ContextNames.TASK, defaultClosedTaskObj);
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, taskIdList);
 			context.put(FacilioConstants.ContextNames.IS_BULK_ACTION, true);

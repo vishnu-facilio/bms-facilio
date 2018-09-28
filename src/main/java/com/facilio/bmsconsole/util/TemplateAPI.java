@@ -30,6 +30,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.billing.context.ExcelTemplate;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -857,6 +858,7 @@ public class TemplateAPI {
 				}
 				List<TaskContext> taskList = entry.getValue();
 				for (TaskContext task : taskList) {
+					task.setStatus(TaskStatus.OPEN);
 					taskTemplateProps.add(FieldUtil.getAsProperties(constructTaskTemplate(task, sectionId, templateId, taskType)));
 				}
 			}
