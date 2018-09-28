@@ -26,7 +26,7 @@ public class FacilioCookie {
                     cookie.setValue("");
                     cookie.setPath("/");
                     if (domain != null) {
-                        cookie.setDomain(domain.substring(1));
+                        cookie.setDomain(domain.startsWith(".") ? domain.substring(1) : domain);
                     }
                     cookie.setMaxAge(0);
                     cookie.setSecure(true);
@@ -42,7 +42,7 @@ public class FacilioCookie {
         Cookie cookie = new Cookie(key, value);
         cookie.setPath("/");
         cookie.setSecure(true);
-        cookie.setDomain(domain.substring(1));
+        cookie.setDomain(domain.startsWith(".") ? domain.substring(1) : domain);
         cookie.setHttpOnly(true);
         response.addCookie(cookie);
     }
@@ -51,7 +51,7 @@ public class FacilioCookie {
         Cookie cookie = new Cookie(key, value);
         cookie.setPath("/");
         cookie.setSecure(true);
-        cookie.setDomain(domain.substring(1));
+        cookie.setDomain(domain.startsWith(".") ? domain.substring(1) : domain);
         cookie.setHttpOnly(true);
         return cookie;
     }
@@ -60,7 +60,7 @@ public class FacilioCookie {
         Cookie cookie = new Cookie(key, value);
         cookie.setPath("/");
         cookie.setSecure(true);
-        cookie.setDomain(domain.substring(1));
+        cookie.setDomain(domain.startsWith(".") ? domain.substring(1) : domain);
         cookie.setHttpOnly(true);
         cookie.setMaxAge(expiry);
         return cookie;

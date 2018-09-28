@@ -603,10 +603,13 @@ public class FacilioAuthAction extends ActionSupport {
         HttpSession session = request.getSession();
 
         session.invalidate();
+        
+        String parentdomain = request.getServerName().replaceAll("app.", "");
+        
         if(portalId() > 0) {
-            FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilioportal", null);
+            FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilioportal", parentdomain);
         } else {
-            FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilio", null);
+            FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilio", parentdomain);
         }
 
         FacilioCookie.eraseUserCookie(request, response, "fc.authtype", null);
