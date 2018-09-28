@@ -573,6 +573,9 @@ public class DashboardUtil {
 			if(report.getY1AxisUnit() != null && report.getY1AxisUnit().equals("kg")) {
 				co2Skip = true;
 			}
+			if(report.getId() == 5481l) {
+				co2Skip = true;
+			}
 			if(meterList != null && !meterList.isEmpty() && !co2Skip) {
 				LOGGER.log(Level.SEVERE, "meterList --- "+meterList);
 				List<Long> bb = new ArrayList<Long>();
