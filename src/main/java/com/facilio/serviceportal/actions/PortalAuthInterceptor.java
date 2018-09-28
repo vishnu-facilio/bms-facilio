@@ -34,7 +34,7 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 	private void initHost() {
 		try {
 			ServletContext context = ServletActionContext.getServletContext();
-			if(customdomains == null) {
+			if(customdomains == null && context != null) {
 				customdomains = (HashMap) context.getAttribute("customdomains");
 			}
 			logger.info("Custom domains loaded "+customdomains);
@@ -75,15 +75,15 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 			if (AuthenticationUtil.checkIfSameUser(currentAccount, cognitoUser)) {
 				AccountUtil.setCurrentAccount(currentAccount);
 			} else {
-				String domainName = request.getHeader("Origin");
-				logger.info("Getting portal auth info" +domainName);
-				if(domainName != null) {
+				String domainName = request.getServerName();
+				logger.info("Getting portal auth info : " +domainName);
+				/*if(domainName != null) {
 					if (domainName.contains("http://")) {
 						domainName = domainName.replace("http://", "");
 					} else if (domainName.contains("https://")) {
 						domainName = domainName.replace("https://", "");
 					}
-				}
+				}*/
 				if(customdomains != null) {
 					logger.info("Matching...  "+ domainName );
 					String orgdomain = (String)customdomains.get(domainName);
