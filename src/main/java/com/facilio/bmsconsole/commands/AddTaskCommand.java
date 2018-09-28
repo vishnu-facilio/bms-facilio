@@ -24,7 +24,7 @@ public class AddTaskCommand implements Command {
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			task.setCreatedTime(System.currentTimeMillis());
 			task.setCreatedBy(AccountUtil.getCurrentUser());
-			task.setStatus(TaskStatus.OPEN);
+			task.setStatusNew(TaskStatus.OPEN);
 			
 			InsertRecordBuilder<TaskContext> builder = new InsertRecordBuilder<TaskContext>()
 															.moduleName(moduleName)

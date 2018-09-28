@@ -477,7 +477,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 					
 			
 					TaskContext ts = new TaskContext();
-					ts.setStatus(TaskStatus.CLOSED);
+					ts.setStatusNew(TaskStatus.CLOSED);
 			
 					updateTaskBuilder.update(ts);
 				

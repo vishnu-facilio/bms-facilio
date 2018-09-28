@@ -28,7 +28,7 @@ public class UpdateClosedTasksCounterCommand implements Command {
 		// TODO Auto-generated method stub
 		TaskContext task = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
 		if(task != null) {
-			if(task.getStatus() != -1) {
+			if(task.getStatusNew() != -1) {
 				long parentTicketId = task.getParentTicketId();
 				if (parentTicketId == -1) {
 					TaskContext oldTask = ((List<TaskContext>) context.get(FacilioConstants.TicketActivity.OLD_TICKETS)).get(0);

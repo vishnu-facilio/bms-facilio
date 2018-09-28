@@ -37,6 +37,8 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
+import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -55,6 +57,7 @@ import com.facilio.bmsconsole.util.FacilioTablePrinter;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
@@ -626,6 +629,19 @@ public class CommonCommandUtil {
 					}
 				}
 			}
+			
+			TicketStatusContext open = TicketAPI.getStatus("Submitted");
+			TicketStatusContext closed = TicketAPI.getStatus("Closed");
+			
+			tasks.stream().forEach(task -> {
+				if (task.getStatusNewEnum() == null || task.getStatusNewEnum() == TaskStatus.OPEN) {
+					task.setStatus(open);
+				} else {
+					task.setStatus(closed);
+				}
+			});
+			
+			
 		}
 	}
 }

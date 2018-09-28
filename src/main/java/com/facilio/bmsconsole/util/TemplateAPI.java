@@ -858,7 +858,7 @@ public class TemplateAPI {
 				}
 				List<TaskContext> taskList = entry.getValue();
 				for (TaskContext task : taskList) {
-					task.setStatus(TaskStatus.OPEN);
+					task.setStatusNew(TaskStatus.OPEN);
 					taskTemplateProps.add(FieldUtil.getAsProperties(constructTaskTemplate(task, sectionId, templateId, taskType)));
 				}
 			}

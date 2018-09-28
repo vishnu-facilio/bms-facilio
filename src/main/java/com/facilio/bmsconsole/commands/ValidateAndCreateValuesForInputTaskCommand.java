@@ -46,8 +46,8 @@ public class ValidateAndCreateValuesForInputTaskCommand implements Command {
 				for(int i = 0; i < recordIds.size(); i++) {
 					TaskContext completeRecord = oldTasks.get(recordIds.get(i));
 					if(completeRecord != null) {
-						if(task.getStatus() != -1) {
-							if(task.getStatusEnum() == TaskStatus.CLOSED) {
+						if(task.getStatusNew() != -1) {
+							if(task.getStatusNewEnum() == TaskStatus.CLOSED) {
 								if (completeRecord.getInputTypeEnum() != InputType.NONE && ((completeRecord.getInputValue() == null || completeRecord.getInputValue().isEmpty())) && (task.getInputValue() == null || task.getInputValue().isEmpty())) {
 									throw new UnsupportedOperationException("Input task cannot be closed without entering input value");
 								}

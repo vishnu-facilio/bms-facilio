@@ -222,7 +222,7 @@ public class UpdateWorkOrderCommand implements Command {
 					.table(module.getTableName())
 					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentTicketId"), String.valueOf(oldWo.getId()), NumberOperators.EQUALS))
-					.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"),"2", NumberOperators.EQUALS));
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("statusNew"),"2", NumberOperators.EQUALS));
 			
 			List<Map<String, Object>> task = builder.get();
 			if (task != null && !task.isEmpty()) {

@@ -77,22 +77,29 @@ public class TaskContext extends ModuleBaseWithCustomFields {
 		}
 		
 	}
-	
-	private TaskStatus status;
-	public TaskStatus getStatusEnum() {
+	private TicketStatusContext status;
+	public TicketStatusContext getStatus() {
 		return status;
 	}
-	public void setStatus(TaskStatus status) {
+	public void setStatus(TicketStatusContext status) {
 		this.status = status;
 	}
-	public int getStatus() {
-		if (status != null) {
-			return status.getValue();
+	
+	private TaskStatus statusNew;
+	public TaskStatus getStatusNewEnum() {
+		return statusNew;
+	}
+	public void setStatusNew(TaskStatus statusNew) {
+		this.statusNew = statusNew;
+	}
+	public int getStatusNew() {
+		if (statusNew != null) {
+			return statusNew.getValue();
 		}
 		return -1;
 	}
-	public void setStatus(int status) {
-		this.status = TaskStatus.valueOf(status);
+	public void setStatusNew(int statusNew) {
+		this.statusNew = TaskStatus.valueOf(statusNew);
 	}
 
 	private long parentTicketId = -1;

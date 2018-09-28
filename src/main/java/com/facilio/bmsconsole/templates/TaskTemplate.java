@@ -197,7 +197,7 @@ public class TaskTemplate extends Template {
 			taskProp.put("readingFieldId", readingFieldId);
 			taskProp.put("sequence", sequence);
 			taskProp.put("attachmentRequired", isAttachmentRequired());
-			taskProp.put("status", getStatus());
+			taskProp.put("statusNew", getStatus());
 			
 			if (priorityId != -1) {
 				taskProp.put("priority", FieldUtil.getLookedUpProp(priorityId));
@@ -242,7 +242,7 @@ public class TaskTemplate extends Template {
 			sectionId = task.getSectionId();
 			sequence = task.getSequence();
 			attachmentRequired = task.isAttachmentRequired();
-			status = task.getStatusEnum();
+			status = task.getStatusNewEnum();
 			if (task.getResource() != null) {
 				resourceId = task.getResource().getId();
 			}
