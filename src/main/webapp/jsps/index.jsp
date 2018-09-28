@@ -6,6 +6,7 @@
 	}
 	
 	String staticUrl = com.facilio.aws.util.AwsUtil.getConfig("static.url") + clientVersion;
+	String servicePortalDomain = com.facilio.aws.util.AwsUtil.getConfig("portal.domain");
 %>
 <html>
 
@@ -72,6 +73,7 @@
   <script type=text/javascript>
         window.isFacilioAuth = (document.cookie.indexOf('fc.authtype=facilio') !== -1)
         var webpackPublicPath = "<%=staticUrl%>";
+        var servicePortalDomain = "<%=servicePortalDomain%>";
   </script>
   <link href="<%=staticUrl%>/app.css" rel=stylesheet>
  </head>
