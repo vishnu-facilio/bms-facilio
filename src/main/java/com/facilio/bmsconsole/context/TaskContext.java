@@ -1,19 +1,107 @@
 package com.facilio.bmsconsole.context;
 
 import java.text.ParseException;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
-public class TaskContext extends TicketContext {
+public class TaskContext extends ModuleBaseWithCustomFields {
 	private static Logger log = LogManager.getLogger(TaskContext.class.getName());
+	
+	private String subject;
+	public String getSubject() {
+		return subject;
+	}
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
+	
+	private String description;
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	
+	private ResourceContext resource;
+	public ResourceContext getResource() {
+		return resource;
+	}
+	public void setResource(ResourceContext resource) {
+		this.resource = resource;
+	}
+	
+	private AssetContext asset;
+	public AssetContext getAsset() {
+		return asset;
+	}
+	public void setAsset(AssetContext asset) {
+		this.asset = asset;
+	}
+	
+	private SpaceContext space;
+	public SpaceContext getSpace() {
+		return space;
+	}
+	public void setSpace(SpaceContext space) {
+		this.space = space;
+	}
+	
+	public enum TaskStatus {
+		OPEN,
+		CLOSED
+		;
+		
+		public int getValue() {
+			return ordinal() + 1;
+		}
+		
+		public static TaskStatus valueOf (int value) {
+			if (value > 0 && value <= values().length) {
+				return values() [value -1];
+			}
+			return null;
+		}
+		
+	}
+	private TicketStatusContext status;
+	public TicketStatusContext getStatus() {
+		return status;
+	}
+	public void setStatus(TicketStatusContext status) {
+		this.status = status;
+	}
+	
+	private TaskStatus statusNew;
+	public TaskStatus getStatusNewEnum() {
+		return statusNew;
+	}
+	public void setStatusNew(TaskStatus statusNew) {
+		this.statusNew = statusNew;
+	}
+	public int getStatusNew() {
+		if (statusNew != null) {
+			return statusNew.getValue();
+		}
+		return -1;
+	}
+	public void setStatusNew(int statusNew) {
+		this.statusNew = TaskStatus.valueOf(statusNew);
+	}
+
 	private long parentTicketId = -1;
 	public long getParentTicketId() {
 		return parentTicketId;
@@ -217,5 +305,22 @@ public class TaskContext extends TicketContext {
 			}
 			return null;
 		}
+	}
+	
+	private long siteId = -1;
+	public void setSiteId(long siteId) {
+		this.siteId = siteId;
+	}
+	
+	public long getSiteId() {
+		return this.siteId;
+	}
+	
+	private User createdBy;
+	public User getCreatedBy() {
+		return createdBy;
+	}
+	public void setCreatedBy(User createdBy) {
+		this.createdBy = createdBy;
 	}
 }

@@ -721,6 +721,23 @@ public class PreventiveMaintenanceAPI {
 		}
 	}
 	
+	private static void updateAssetResource(TaskContext task, Map<Long, Long> oldIdToNewId) {
+		if(task.getAsset() != null && task.getAsset().getId() != -1) {
+			AssetContext asset = task.getAsset();
+			asset.setId(oldIdToNewId.get(asset.getId()));
+			task.setResource(asset);
+		}
+	}
+	
+	private static void checkAndUpdateSpaceResource(TaskContext task, List<Long> oldAssetIds) {
+		if(task.getAsset() != null && task.getAsset().getId() != -1) {
+			oldAssetIds.add(task.getAsset().getId());
+		}
+		else if (task.getSpace() != null && task.getSpace().getId() != -1){
+			task.setResource(task.getSpace());
+		}
+	}
+	
 	private static void checkAndUpdateSpaceResource(TicketContext ticket, List<Long> oldAssetIds) {
 		if(ticket.getAsset() != null && ticket.getAsset().getId() != -1) {
 			oldAssetIds.add(ticket.getAsset().getId());

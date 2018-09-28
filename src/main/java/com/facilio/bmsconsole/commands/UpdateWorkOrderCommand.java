@@ -217,22 +217,12 @@ public class UpdateWorkOrderCommand implements Command {
 			List<FacilioField> fields =  modBean.getAllFields("task");
 			Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 			
-			FacilioModule ticketModule = ModuleFactory.getTicketsModule();
-			Map<String,FacilioField> ticketFieldMap = FieldFactory.getAsMap(FieldFactory.getTicketFields(ticketModule));
-			
-			String statusTable = ModuleFactory.getTicketStatusModule().getTableName();
-			Map<String, FacilioField> statusFieldMap = FieldFactory.getAsMap(modBean.getAllFields("ticketstatus"));
-			
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 					.select(Collections.singletonList(FieldFactory.getField("closedTasks", "COUNT(Tasks.ID)", FieldType.NUMBER)))
 					.table(module.getTableName())
-					.innerJoin(ticketModule.getTableName())
-					.on(module.getTableName()+".ID="+ticketModule.getTableName()+".ID")
-					.innerJoin(statusTable)
-					.on(statusTable+".ID="+ticketModule.getTableName()+"."+ticketFieldMap.get("status").getColumnName())
 					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentTicketId"), String.valueOf(oldWo.getId()), NumberOperators.EQUALS))
-					.andCondition(CriteriaAPI.getCondition(statusFieldMap.get("typeCode"),"2", NumberOperators.EQUALS));
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("statusNew"),"2", NumberOperators.EQUALS));
 			
 			List<Map<String, Object>> task = builder.get();
 			if (task != null && !task.isEmpty()) {

@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -30,7 +31,7 @@ public class GetRelatedTasksCommand implements Command {
 		context.put(FacilioConstants.ContextNames.TASK_LIST, tasks);
 		context.put(FacilioConstants.ContextNames.TASK_MAP, TicketAPI.groupTaskBySection(tasks));
 		
-		TicketAPI.loadTicketLookups(tasks);
+		CommonCommandUtil.loadTaskLookups(tasks);
 		
 		return false;
 	}
