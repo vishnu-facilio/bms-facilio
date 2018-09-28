@@ -270,7 +270,7 @@ public class FacilioAuthAction extends ActionSupport {
                 if(portalUser) {
                     cookie = new Cookie("fc.idToken.facilioportal", jwt);
                 }
-                String parentdomain = request.getServerName().replaceAll("api.", "");
+                String parentdomain = request.getServerName().replaceAll("app.", "");
                 cookie.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
                 cookie.setPath("/");
                 cookie.setHttpOnly(true);
