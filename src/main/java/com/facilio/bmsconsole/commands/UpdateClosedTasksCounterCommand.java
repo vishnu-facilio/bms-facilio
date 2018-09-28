@@ -39,7 +39,7 @@ public class UpdateClosedTasksCounterCommand implements Command {
 				ticket.setNoOfClosedTasks(getClosedTasksCount(parentTicketId));
 				
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				FacilioField field = modBean.getField("noOfClosedTasks", FacilioConstants.ContextNames.TASK);
+				FacilioField field = modBean.getField("noOfClosedTasks", FacilioConstants.ContextNames.WORK_ORDER);
 				List<FacilioField> fields = new ArrayList<>();
 				fields.add(field);
 				
