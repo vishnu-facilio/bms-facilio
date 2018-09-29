@@ -63,8 +63,8 @@ public class ExecuteAllWorkflowsCommand implements Command, Serializable
 		if (historyReading != null && historyReading==true) {
 			return false;
 		}
-		Map<String, List> recordMap = getRecordMap((FacilioContext) context);
-		Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = getChangeSetMap((FacilioContext) context);
+		Map<String, List> recordMap = CommonCommandUtil.getRecordMap((FacilioContext) context);
+		Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = CommonCommandUtil.getChangeSetMap((FacilioContext) context);
 		if(recordMap != null && !recordMap.isEmpty()) {
 			if (recordsPerThread == -1) {
 				fetchAndExecuteRules(recordMap, changeSetMap, (FacilioContext) context);
@@ -94,8 +94,6 @@ public class ExecuteAllWorkflowsCommand implements Command, Serializable
 			}
 			if(activities != null) {
 				Map<Long, List<UpdateChangeSet>> currentChangeSet = changeSetMap == null ? null : changeSetMap.get(moduleName);
-				
-				activities.add(ActivityType.SCHEDULED);
 				if (currentChangeSet != null && !currentChangeSet.isEmpty()) {
 					activities.add(ActivityType.FIELD_CHANGE);
 				}
@@ -176,39 +174,6 @@ public class ExecuteAllWorkflowsCommand implements Command, Serializable
 			return criteria;
 		}
 		return null;
-	}
-	
-	private Map<String, List> getRecordMap(FacilioContext context) {
-		Map<String, List> recordMap = (Map<String, List>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
-		if (recordMap == null) {
-			List records = (List) context.get(FacilioConstants.ContextNames.RECORD_LIST);
-			if(records == null) {
-				Object record = context.get(FacilioConstants.ContextNames.RECORD);
-				if(record != null) {
-					records = Collections.singletonList(record);
-				}
-			}
-			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-			if (moduleName == null || moduleName.isEmpty() || records == null || records.isEmpty()) {
-				LOGGER.log(Level.WARN, "Module Name / Records is null/ empty ==> "+moduleName+"==>"+records);
-				return null;
-			}
-			
-			recordMap = Collections.singletonMap(moduleName, records);
-		}
-		return recordMap;
-	}
-	
-	private Map<String, Map<Long, List<UpdateChangeSet>>> getChangeSetMap(FacilioContext context) {
-		Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = (Map<String, Map<Long, List<UpdateChangeSet>>>) context.get(FacilioConstants.ContextNames.CHANGE_SET_MAP);
-		if (changeSetMap == null) {
-			Map<Long, List<UpdateChangeSet>> changeSet = (Map<Long, List<UpdateChangeSet>>) context.get(FacilioConstants.ContextNames.CHANGE_SET);
-			if (changeSet != null) {
-				String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-				changeSetMap = Collections.singletonMap(moduleName, changeSet);
-			}
-		}
-		return changeSetMap;
 	}
 	
 	private class ParallalWorkflowExecution extends RecursiveAction {

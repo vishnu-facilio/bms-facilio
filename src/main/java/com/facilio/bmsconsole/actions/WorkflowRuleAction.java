@@ -20,7 +20,6 @@ import com.facilio.bmsconsole.templates.SLATemplate;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ActionType;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
-import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.SLARuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;

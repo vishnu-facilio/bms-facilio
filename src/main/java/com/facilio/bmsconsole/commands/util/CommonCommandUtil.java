@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -52,6 +53,7 @@ import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.modules.UpdateChangeSet;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.FacilioTablePrinter;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
@@ -74,7 +76,7 @@ import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class CommonCommandUtil {
-	private static Logger log = LogManager.getLogger(CommonCommandUtil.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(CommonCommandUtil.class.getName());
 	public static final String DELIMITER = "######";
 	public static void setFwdMail(SupportEmailContext supportEmail) {
 		String actualEmail = supportEmail.getActualEmail();
@@ -204,7 +206,7 @@ public class CommonCommandUtil {
 			return pickList;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			log.info("Exception occurred ", e);
+			LOGGER.info("Exception occurred ", e);
 		}
 		return null;	
 	}
@@ -232,7 +234,7 @@ public class CommonCommandUtil {
 			return pickList;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			log.info("Exception occurred ", e);
+			LOGGER.info("Exception occurred ", e);
 		}
 		return null;	
 	}
@@ -308,7 +310,7 @@ public class CommonCommandUtil {
 			}
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
-			log.info("Exception occurred ", e1);
+			LOGGER.info("Exception occurred ", e1);
 		}
 	}
 	
@@ -322,7 +324,7 @@ public class CommonCommandUtil {
 						.append(rs.getString("Status"));
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
-					log.info("Exception occurred ", e);
+					LOGGER.info("Exception occurred ", e);
 				}
 			}
 			if(msg.toLowerCase().contains("timeout")) {
@@ -332,7 +334,7 @@ public class CommonCommandUtil {
 						.append(FacilioTablePrinter.getResultSetData(rs));
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
-					log.info("Exception occurred ", e);
+					LOGGER.info("Exception occurred ", e);
 				}
 			}
 		}
@@ -643,5 +645,38 @@ public class CommonCommandUtil {
 			
 			
 		}
+	}
+	
+	public static Map<String, List> getRecordMap(FacilioContext context) {
+		Map<String, List> recordMap = (Map<String, List>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
+		if (recordMap == null) {
+			List records = (List) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+			if(records == null) {
+				Object record = context.get(FacilioConstants.ContextNames.RECORD);
+				if(record != null) {
+					records = Collections.singletonList(record);
+				}
+			}
+			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+			if (moduleName == null || moduleName.isEmpty() || records == null || records.isEmpty()) {
+				LOGGER.log(Level.WARN, "Module Name / Records is null/ empty ==> "+moduleName+"==>"+records);
+				return null;
+			}
+			
+			recordMap = Collections.singletonMap(moduleName, records);
+		}
+		return recordMap;
+	}
+	
+	public static Map<String, Map<Long, List<UpdateChangeSet>>> getChangeSetMap(FacilioContext context) {
+		Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = (Map<String, Map<Long, List<UpdateChangeSet>>>) context.get(FacilioConstants.ContextNames.CHANGE_SET_MAP);
+		if (changeSetMap == null) {
+			Map<Long, List<UpdateChangeSet>> changeSet = (Map<Long, List<UpdateChangeSet>>) context.get(FacilioConstants.ContextNames.CHANGE_SET);
+			if (changeSet != null) {
+				String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+				changeSetMap = Collections.singletonMap(moduleName, changeSet);
+			}
+		}
+		return changeSetMap;
 	}
 }
