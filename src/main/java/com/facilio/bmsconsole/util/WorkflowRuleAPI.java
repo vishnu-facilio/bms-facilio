@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.util;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -68,6 +69,7 @@ public class WorkflowRuleAPI {
 			case SCHEDULED_RULE:
 				ScheduledRuleAPI.validateScheduledRule((ScheduledRuleContext) rule);
 				addExtendedProps(ModuleFactory.getScheduledRuleModule(), FieldFactory.getScheduledRuleFields(), ruleProps);
+				ScheduledRuleAPI.addScheduledRuleJob((ScheduledRuleContext) rule);
 				break;
 			case APPROVAL_RULE:
 				ApprovalRulesAPI.updateChildRuleIds((ApprovalRuleContext) rule);
@@ -207,6 +209,23 @@ public class WorkflowRuleAPI {
 													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCondition(CriteriaAPI.getIdCondition(rule.getId(), module));
 		return updateBuilder.update(ruleProps);
+	}
+	
+	public static int updateExtendedRule(WorkflowRuleContext extendedRule, FacilioModule extendedModule, List<FacilioField> extendedFieldss) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
+		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
+		fields.addAll(fields);
+		
+		FacilioModule workflowModule = ModuleFactory.getWorkflowRuleModule();
+		
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+														.fields(fields)
+														.table(extendedModule.getTableName())
+														.innerJoin(workflowModule.getTableName())
+														.on(extendedModule.getTableName()+".ID = "+workflowModule.getTableName()+".ID")
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(workflowModule))
+														.andCondition(CriteriaAPI.getIdCondition(extendedRule.getId(), extendedModule));
+		
+		return updateBuilder.update(FieldUtil.getAsProperties(extendedRule));
 	}
 	
 	public static WorkflowRuleContext getWorkflowRule (long ruleId) throws Exception {

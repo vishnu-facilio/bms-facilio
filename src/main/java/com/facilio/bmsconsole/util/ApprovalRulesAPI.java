@@ -1,7 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -16,7 +14,6 @@ import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.PickListOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -31,7 +28,6 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class ApprovalRulesAPI extends WorkflowRuleAPI {
 	protected static void updateChildRuleIds(ApprovalRuleContext rule) throws Exception {
@@ -118,7 +114,7 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 		ApprovalRuleContext oldRule = (ApprovalRuleContext) getWorkflowRule(rule.getId());
 		updateWorkflowRuleChildIds(rule);
 		updateChildRuleIds(rule);
-		updateApprovalRule(rule);
+		updateExtendedRule(rule, ModuleFactory.getApprovalRulesModule(), FieldFactory.getApprovalRuleFields());
 		deleteChildRuleIds(oldRule);
 		
 		if (rule.getName() == null) {
@@ -126,24 +122,6 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 		}
 		
 		return rule;
-	}
-	
-	private static int updateApprovalRule(ApprovalRuleContext approvalRule) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
-		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
-		fields.addAll(FieldFactory.getApprovalRuleFields());
-		
-		FacilioModule workflowModule = ModuleFactory.getWorkflowRuleModule();
-		FacilioModule approvalRuleModule = ModuleFactory.getApprovalRulesModule();
-		
-		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-														.fields(fields)
-														.table(approvalRuleModule.getTableName())
-														.innerJoin(workflowModule.getTableName())
-														.on(approvalRuleModule.getTableName()+".ID = "+workflowModule.getTableName()+".ID")
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(workflowModule))
-														.andCondition(CriteriaAPI.getIdCondition(approvalRule.getId(), approvalRuleModule));
-		
-		return updateBuilder.update(FieldUtil.getAsProperties(approvalRule));
 	}
 	
 	protected static void deleteApprovalRuleChildIds (ApprovalRuleContext rule) throws Exception {
