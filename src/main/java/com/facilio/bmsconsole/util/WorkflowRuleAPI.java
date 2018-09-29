@@ -211,9 +211,9 @@ public class WorkflowRuleAPI {
 		return updateBuilder.update(ruleProps);
 	}
 	
-	public static int updateExtendedRule(WorkflowRuleContext extendedRule, FacilioModule extendedModule, List<FacilioField> extendedFieldss) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
+	public static int updateExtendedRule(WorkflowRuleContext extendedRule, FacilioModule extendedModule, List<FacilioField> extendedFields) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
 		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
-		fields.addAll(fields);
+		fields.addAll(extendedFields);
 		
 		FacilioModule workflowModule = ModuleFactory.getWorkflowRuleModule();
 		
