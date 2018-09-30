@@ -285,8 +285,7 @@ public class S3FileStore extends FileStore {
 		} else {
 			try {
 				Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-				String encodedUrl = URLEncoder.encode(fileInfo.getFilePath(), "UTF-8");
-				String s3ObjectKey = encodedUrl+"?response-content-type="+fileInfo.getContentType();
+				String s3ObjectKey = URLEncoder.encode(fileInfo.getFilePath()+"?response-content-type="+fileInfo.getContentType(), "UTF-8");
 				String keyPairId = "APKAJUH5UCWNSYC4DOSQ";
 				return CloudFrontUrlSigner.getSignedURLWithCannedPolicy(SignerUtils.Protocol.https, AwsUtil.getConfig("files.url"), new File(PRIVATE_KEY_FILE_PATH), s3ObjectKey, keyPairId, new Date(System.currentTimeMillis()+getExpiration()));
 			} catch (IOException | InvalidKeySpecException e) {
