@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -20,12 +22,15 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.tasker.job.JobContext;
 
 public class FetchScheduledRuleMatchingRecordsCommand implements Command {
-
+	
+	private static final Logger LOGGER = LogManager.getLogger(FetchScheduledRuleMatchingRecordsCommand.class.getName());
+	
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		ScheduledRuleContext rule = (ScheduledRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
 		List<ModuleBaseWithCustomFields> records = getRecords(rule, (JobContext) context.get(FacilioConstants.Job.JOB_CONTEXT));
+		LOGGER.info("Matching records of rule : "+rule.getId()+" is : "+records);
 		
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, rule.getEvent().getModule().getName());
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, records);
