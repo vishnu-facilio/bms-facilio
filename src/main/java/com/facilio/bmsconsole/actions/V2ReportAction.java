@@ -226,11 +226,19 @@ public class V2ReportAction extends FacilioAction {
 		return setReportResult(context);
 	}
 	
+	private boolean newFormat = false;
+	public boolean isNewFormat() {
+		return newFormat;
+	}
+	public void setNewFormat(boolean newFormat) {
+		this.newFormat = newFormat;
+	}
+	
 	public String fetchReadingsData() throws Exception {
 		FacilioContext context = new FacilioContext();
 		setReadingsDataContext(context);
 		
-		Chain fetchReadingDataChain = ReadOnlyChainFactory.fetchReadingReportChain();
+		Chain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReadingReportChain() : ReadOnlyChainFactory.fetchReadingReportChain();
 		fetchReadingDataChain.execute(context);
 		
 		return setReportResult(context);
@@ -314,7 +322,7 @@ public class V2ReportAction extends FacilioAction {
 	
 	private String setReportResult(FacilioContext context) {
 		setResult("report", context.get(FacilioConstants.ContextNames.REPORT));
-		setResult("reportXValues", context.get(FacilioConstants.ContextNames.REPORT_X_VALUES));
+		setResult("reportXValues", context.get(FacilioConstants.ContextNames.REPORT_X_VALUES)); //This can be removed from new format
 		setResult("reportData", context.get(FacilioConstants.ContextNames.REPORT_DATA));
 		setResult("reportVarianceData", context.get(FacilioConstants.ContextNames.REPORT_VARIANCE_DATA));
 		setResult("reportAlarms", context.get(FacilioConstants.ContextNames.REPORT_ALARMS));

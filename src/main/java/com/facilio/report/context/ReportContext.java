@@ -240,6 +240,14 @@ public class ReportContext {
 		this.xCriteria = FieldUtil.getAsBeanFromJson(json, ReportXCriteriaContext.class);
 	}
 	
+	private String xAlias;
+	public String getxAlias() {
+		return xAlias;
+	}
+	public void setxAlias(String xAlias) {
+		this.xAlias = xAlias;
+	}
+	
 	@JSON(serialize=false)
 	public String getXCriteriaJson() throws Exception {
 		
@@ -265,29 +273,22 @@ public class ReportContext {
 	public void setAnalyticsType(AnalyticsType analyticsType) {
 		this.analyticsType = analyticsType;
 	}
+	
 	public static enum BooleanSettings {
-		SHOW_HIDE_ALARM(1,"Alarm",1),
-		SHOW_HIDE_SAFELIMIT(2,"Safe Limit",2),
-		SHOW_HIDE_LEGENT(3,"Legent",4),
+		SHOW_HIDE_ALARM("Alarm",1),
+		SHOW_HIDE_SAFELIMIT("Safe Limit",2),
+		SHOW_HIDE_LEGENT("Legent",4),
 		;
 		
-		int intValue;
 		String name;
 		int booleanValue;
 		public int getIntValue() {
-			return intValue;
-		}
-		public void setIntValue(int intValue) {
-			this.intValue = intValue;
+			return ordinal() + 1;
 		}
 		public String getName() {
 			return name;
 		}
-		public void setName(String name) {
-			this.name = name;
-		}
-		BooleanSettings(int intValue,String name, int booleanValue) {
-			this.intValue = intValue;
+		BooleanSettings(String name, int booleanValue) {
 			this.name = name;
 			this.booleanValue = booleanValue;
 		}

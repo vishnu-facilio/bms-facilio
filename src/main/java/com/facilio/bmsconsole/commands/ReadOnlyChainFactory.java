@@ -22,10 +22,28 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain newFetchReportDataChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new FilterXFieldCommand());
+		c.addCommand(new FetchReportDataCommand());
+		c.addCommand(new ConstructReportDataCommand());
+		c.addCommand(new NewTransformReportDataCommand());
+		c.addCommand(new FetchReportExtraMeta());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain fetchReadingReportChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new CreateReadingAnalyticsReportCommand());
 		c.addCommand(fetchReportDataChain());
+		return c;
+	}
+	
+	public static Chain newFetchReadingReportChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new CreateReadingAnalyticsReportCommand());
+		c.addCommand(newFetchReportDataChain());
 		return c;
 	}
 	
