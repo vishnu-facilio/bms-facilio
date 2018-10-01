@@ -47,6 +47,11 @@ public class PsychrometricUtil {
 		return getWetBulbTemperatureFromHumidityRatio(dryBulbTemperature, humidityRatio, pressure);
 	}
 	
+	private static final double KILO = 1.e+03;
+	public static Double getEnthalpy(Map<String,Object> weatherReading) {
+		return (Double) FieldUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("temperature")) * KILO * 1.006;
+	}
+	
 	public static Double getWetBulbTemperatureFromHumidityRatio(Double dryBulbTemperature, Double humidityRatio, Double pressure) {
 		
 		if (!(humidityRatio >= 0)) {

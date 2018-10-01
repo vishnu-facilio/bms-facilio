@@ -87,9 +87,12 @@ public class WeatherDataJob extends FacilioJob {
 		try {
 			Double wetBulbTemperature = PsychrometricUtil.getWetBulbTemperatureFromRelativeHumidity(weatherData);
 			Double dewPointTemperature = PsychrometricUtil.getDewPointTemperatureFromRelativeHumudity(weatherData);
+			Double enthalpy = PsychrometricUtil.getEnthalpy(weatherData);
+			
 			
 			reading.addReading("wetBulbTemperature", wetBulbTemperature);
 			reading.addReading("dewPointTemperature", dewPointTemperature);
+			reading.addReading("enthalpy", enthalpy);
 		}
 		catch (Exception e) {
 			logger.log(Level.ERROR, e.getMessage(), e);
