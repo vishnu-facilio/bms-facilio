@@ -204,6 +204,9 @@ public class WorkflowRuleContext {
 		if (actions == null) {
 			actions = ActionAPI.getActiveActionsFromWorkflowRule(ruleId);
 		}
+		if (this.getId() == 3335) {
+			LOGGER.info("List of actions : "+actions);
+		}
 		if(actions != null) {
 			for(ActionContext action : actions) {
 				action.executeAction(placeHolders, context, this, record);

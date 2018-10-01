@@ -104,4 +104,10 @@ public class ActionContext {
 		}
 		return true;
 	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return id+"::"+actionType+"::"+template;
+	}
 }
