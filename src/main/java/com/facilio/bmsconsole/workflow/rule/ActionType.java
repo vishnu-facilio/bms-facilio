@@ -20,6 +20,7 @@ import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -125,6 +126,11 @@ public enum ActionType {
 							String to = (String) toEmail;
 							if (to != null && !to.isEmpty() && checkIfActiveUserFromEmail(to)) {
 								obj.put("to", (String) to);
+								
+								if (AccountUtil.getCurrentOrg().getId() == 104) {
+									LOGGER.info("Gonna Email : "+obj.toJSONString());
+								}
+								
 								AwsUtil.sendEmail(obj);
 								emails.add(to);
 							}
