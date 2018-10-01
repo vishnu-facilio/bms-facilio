@@ -112,10 +112,13 @@ public class DataParseForReadingsCommand implements Command {
 						val = cell.getStringCellValue();
 					}
 					else if (cell.getCellTypeEnum() == CellType.NUMERIC || cell.getCellTypeEnum() == CellType.FORMULA) {
-						if(HSSFDateUtil.isCellDateFormatted(cell)) {
+						if(HSSFDateUtil.isCellDateFormatted(cell) && cell.getCellTypeEnum() == CellType.NUMERIC) {
 							Date date = cell.getDateCellValue();
 							 Instant date1 = date.toInstant();
 							 val = (Long) date1.getEpochSecond()*1000;
+						}
+						else if(cell.getCellTypeEnum() == CellType.FORMULA) {
+							val = cell.getNumericCellValue();
 						}
 						else {
 							val = cell.getNumericCellValue();
