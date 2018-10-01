@@ -258,7 +258,7 @@ public class FacilioAuthAction extends ActionSupport {
                         } else {
                             user = AccountUtil.getUserBean().getFacilioUser(getUsername());
                         }
-                        if(user != null && ( ! user.isActive())) {
+                        if(user == null) {
                             setJsonresponse("message", "User is deactivated, Please contact admin to activate. ");
                             setJsonresponse("errorcode", "1");
                             return ERROR;
