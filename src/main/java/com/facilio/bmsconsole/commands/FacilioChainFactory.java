@@ -1448,6 +1448,7 @@ public class FacilioChainFactory {
 	
 	public static Chain getExecutePreventiveMaintenanceChain() {
 		Chain c = getTransactionChain();
+		//c.addCommand(new PreparePMForMultipleAsset());
 		c.addCommand(new ExecutePMCommand());
 		c.addCommand(new ResetTriggersCommand());
 		c.addCommand(new SchedulePMRemindersCommand());

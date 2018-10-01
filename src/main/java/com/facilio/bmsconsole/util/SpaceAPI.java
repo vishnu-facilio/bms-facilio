@@ -861,6 +861,12 @@ public static long getSitesCount() throws Exception {
 	public static List<SpaceContext> getSpaceListOfCategory(long category) throws Exception
 	{
 		
+		return getSpaceListOfCategory(-1,category);
+	}
+	
+	public static List<SpaceContext> getSpaceListOfCategory(long baseSpaceId,long category) throws Exception
+	{
+		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SPACE);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SPACE);
@@ -871,10 +877,14 @@ public static long getSitesCount() throws Exception {
 				.moduleName(module.getName())
 				.beanClass(SpaceContext.class)
 				.andCondition(CriteriaAPI.getCondition(categoryField, String.valueOf(category), PickListOperators.IS));
+		
+		if(baseSpaceId > 0) {
+			BaseSpaceContext basespace = getBaseSpace(baseSpaceId);
+			selectBuilder.andCustomWhere("BaseSpace."+basespace.getSpaceTypeEnum().getStringVal().toUpperCase()+"_ID = ?", baseSpaceId);
+		}
 		List<SpaceContext> spaces = selectBuilder.get();
 		return spaces;
 	}
-	
 	
 	public static List<BaseSpaceContext> getAllBaseSpaces(Criteria filterCriteria, Criteria searchCriteria, String orderBy, JSONObject pagination) throws Exception
 	{

@@ -1787,6 +1787,12 @@ public class FieldFactory {
 
 		fields.add(getSiteIdField(module));
 		
+		fields.add(getField("baseSpaceId", "BASE_SPACE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("assetCategoryId", "SPACE_CATEGORY_ID", module, FieldType.LOOKUP));
+		fields.add(getField("spaceCategoryId", "ASSET_CATEGORY_ID", module, FieldType.LOOKUP));
+		fields.add(getField("assignmentType", "ASSIGNMENT_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("pmCreationType", "PM_CREARTION_TYPE", module, FieldType.NUMBER));
+		
 		return fields;
 	}
 
@@ -3630,7 +3636,23 @@ public class FieldFactory {
 		fields.add(getField("scheduleJson", "SCHEDULE_INFO", module, FieldType.STRING));
 		fields.add(getField("startTime", "START_TIME", module, FieldType.DATE_TIME));
 		fields.add(getField("readingRuleId", "READING_RULE_ID", module, FieldType.NUMBER));
+		
+		fields.add(getField("assignedTo", "ASSIGNED_TO", module, FieldType.LOOKUP));
+		fields.add(getField("triggerType", "TRIGGER_TYPE", module, FieldType.NUMBER));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getPMTriggersResourceFields() {
+		FacilioModule module = ModuleFactory.getPMTriggersResourceModule();
+		List<FacilioField> fields = new ArrayList<>();
 
+		fields.add(getIdField(module));
+		fields.add(getField("pmId", "PM_ID", module, FieldType.LOOKUP));
+		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("triggerId", "TRIGGER_ID", module, FieldType.LOOKUP));
+		fields.add(getField("assignedToId", "ASSIGNED_TO", module, FieldType.LOOKUP));
+		
 		return fields;
 	}
 
@@ -3644,6 +3666,7 @@ public class FieldFactory {
 		fields.add(getField("nextExecutionTime", "NEXT_EXECUTION_TIME", module, FieldType.NUMBER));
 		fields.add(getField("templateId", "TEMPLATE_ID", module, FieldType.NUMBER));
 		fields.add(getField("status", "STATUS", module, FieldType.NUMBER));
+		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.NUMBER));
 
 		return fields;
 	}
@@ -3837,6 +3860,24 @@ public class FieldFactory {
 		fields.add(getField("parentWOTemplateId", "PARENT_WO_TEMPLATE_ID", module, FieldType.LOOKUP));
 		fields.add(getField("sequenceNumber", "SEQUENCE_NUMBER", module, FieldType.NUMBER));
 
+		fields.add(getField("assetCategoryId", "SPACE_CATEGORY_ID", module, FieldType.LOOKUP));
+		fields.add(getField("spaceCategoryId", "ASSET_CATEGORY_ID", module, FieldType.LOOKUP));
+		fields.add(getField("assignmentType", "ASSIGNMENT_TYPE", module, FieldType.NUMBER));
+		return fields;
+	}
+	
+	public static List<FacilioField> getPMIncludeExcludeResourceFields() {
+		FacilioModule module = ModuleFactory.getPMIncludeExcludeResourceModule();
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getIdField(module));
+		fields.add(getField("pmId", "PM_ID", module, FieldType.LOOKUP));
+		fields.add(getField("parentType", "PARENT_TYPE", module, FieldType.NUMBER));
+
+		fields.add(getField("taskSectionTemplateId", "TASK_SECTION_TEMPLATE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("taskTemplateId", "TASK_TEMPLATE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("isInclude", "IS_INCLUDE", module, FieldType.BOOLEAN));
 		return fields;
 	}
 
@@ -3861,6 +3902,9 @@ public class FieldFactory {
 		fields.add(getField("sequence", "SEQUENCE", module, FieldType.LOOKUP));
 		fields.add(getField("attachmentRequired", "ATTACHMENT_REQUIRED", module, FieldType.BOOLEAN));
 		fields.add(getField("additionalInfoJsonStr", "ADDITIONAL_INFO", module, FieldType.STRING));
+		fields.add(getField("assignmentType", "ASSIGNMENT_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("assetCategoryId", "ASSET_CATEGORY_ID", module, FieldType.LOOKUP));
+		fields.add(getField("spaceCategoryId", "SPACE_CATEGORY_ID", module, FieldType.LOOKUP));
 		fields.add(getSiteIdField(module));
 
 		return fields;

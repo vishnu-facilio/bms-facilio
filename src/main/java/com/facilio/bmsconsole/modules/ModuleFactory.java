@@ -823,6 +823,14 @@ public class ModuleFactory {
 		pmTriggers.setTableName("PM_Triggers");
 		return pmTriggers;
 	}
+	
+	public static FacilioModule getPMTriggersResourceModule() {
+		FacilioModule pmTriggers = new FacilioModule();
+		pmTriggers.setName("PMTriggersResource");
+		pmTriggers.setDisplayName("PM Triggers Resource");
+		pmTriggers.setTableName("PM_Triggers_Resource");
+		return pmTriggers;
+	}
 
 	public static FacilioModule getPMJobsModule() {
 		FacilioModule pmJobs = new FacilioModule();
@@ -982,6 +990,14 @@ public class ModuleFactory {
 		taskTemplate.setName("tasktemplate");
 		taskTemplate.setDisplayName("Task Template");
 		taskTemplate.setTableName("Task_Template");
+		return taskTemplate;
+	}
+	
+	public static FacilioModule getPMIncludeExcludeResourceModule() {
+		FacilioModule taskTemplate = new FacilioModule();
+		taskTemplate.setName("PMIncludeExcludeResource");
+		taskTemplate.setDisplayName("PM Include Exclude Resource");
+		taskTemplate.setTableName("PM_Include_Exclude_Resource");
 		return taskTemplate;
 	}
 

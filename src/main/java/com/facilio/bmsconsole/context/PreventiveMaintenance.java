@@ -276,4 +276,91 @@ public class PreventiveMaintenance extends ResourceContext {
 	public void setSiteId(long siteId) {
 		this.siteId = siteId;
 	}
+	
+	Long baseSpaceId;
+	
+	public Long getBaseSpaceId() {
+		return baseSpaceId;
+	}
+	public void setBaseSpaceId(Long baseSpaceId) {
+		this.baseSpaceId = baseSpaceId;
+	}
+	
+	Long assetCategoryId;
+	Long spaceCategoryId;
+	
+	public Long getAssetCategoryId() {
+		return assetCategoryId;
+	}
+	public void setAssetCategoryId(Long assetCategoryId) {
+		this.assetCategoryId = assetCategoryId;
+	}
+	public Long getSpaceCategoryId() {
+		return spaceCategoryId;
+	}
+	public void setSpaceCategoryId(Long spaceCategoryId) {
+		this.spaceCategoryId = spaceCategoryId;
+	}
+
+	PMCreationType pmCreationType;
+	
+	public int getPmCreationType() {
+		if(pmCreationType != null) {
+			return pmCreationType.getVal();
+		}
+		return -1;
+	}
+	public void setPmCreationType(int pmCreationType) {
+		this.pmCreationType = PMCreationType.valueOf(pmCreationType);
+	}
+	
+	PMAssignmentType assignmentType;
+	
+	public int getAssignmentType() {
+		if(assignmentType != null) {
+			return assignmentType.getVal();
+		}
+		return -1;
+	}
+	public void setAssignmentType(int assignmentType) {
+		this.assignmentType = PMAssignmentType.valueOf(assignmentType);
+	}
+
+	public static enum PMCreationType {
+		
+		SINGLE, 
+		MULTIPLE, 
+		;
+		public int getVal() {
+			return ordinal() + 1;
+		}
+		private static final PMCreationType[] CREATION_TYPES = PMCreationType.values();
+		public static PMCreationType valueOf(int type) {
+			if (type > 0 && type <= CREATION_TYPES.length) {
+				return CREATION_TYPES[type - 1];
+			}
+			return null;
+		}
+	}
+	
+	public static enum PMAssignmentType {
+		
+		ALL_FLOORS, 
+		ALL_SPACES,
+		SPACE_CATEGORY,
+		ASSET_CATEGORY,
+		CURRENT_ASSET,
+		SPECIFIC_ASSET,
+		;
+		public int getVal() {
+			return ordinal() + 1;
+		}
+		private static final PMAssignmentType[] PM_ASSIGNMENT_TYPES = PMAssignmentType.values();
+		public static PMAssignmentType valueOf(int type) {
+			if (type > 0 && type <= PM_ASSIGNMENT_TYPES.length) {
+				return PM_ASSIGNMENT_TYPES[type - 1];
+			}
+			return null;
+		}
+	}
 }

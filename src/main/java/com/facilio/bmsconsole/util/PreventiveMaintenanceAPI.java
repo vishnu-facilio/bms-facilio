@@ -16,14 +16,18 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.AddAndSchedulePMTriggerCommand;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMJobsContext.PMJobsStatus;
 import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.PMReminder.ReminderType;
 import com.facilio.bmsconsole.context.PMTriggerContext;
+import com.facilio.bmsconsole.context.PMTriggerResourceContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -62,7 +66,116 @@ public class PreventiveMaintenanceAPI {
 	public static List<PMJobsContext> createPMJobs (PreventiveMaintenance pm, PMTriggerContext pmTrigger, long startTime, long endTime) throws Exception { //Both in seconds
 		return createPMJobs(pm, pmTrigger, startTime, endTime, true);
 	}
+	public static List<PMJobsContext> createPMJobsForMultipleResourceAndSchedule (PreventiveMaintenance pm , long endTime, boolean addToDb) throws Exception { //Both in seconds
+		
+		List<Long> addedResourceIds = new ArrayList<>();
+		List<PMJobsContext> pmJobs = new ArrayList<>();
+		List<PMJobsContext> pmJobsToBeScheduled = new ArrayList<>();
+		for(PMTriggerContext pmTrigger : pm.getTriggers()) {
+			
+			if(pmTrigger.getTriggerType() == PMTriggerContext.TriggerType.CUSTOM.getVal()) {
+				
+				long startTime = getStartTimeInSecond(pmTrigger.getStartTime());
+				long nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(startTime);
+				
+				boolean isFirst = true;
+				while(nextExecutionTime <= endTime && (pm.getEndTime() == -1 || nextExecutionTime <= pm.getEndTime())) {
+
+					for(PMTriggerResourceContext pmResourceContext : pmTrigger.getPmTriggerResourceContexts()) {
+						PMJobsContext pmJob = getpmJob(pm, pmTrigger, pmResourceContext.getResourceId(), nextExecutionTime, addToDb);
+						pmJobs.add(pmJob);
+						addedResourceIds.add(pmResourceContext.getResourceId());
+						if(isFirst) {
+							pmJobsToBeScheduled.add(pmJob);
+						}
+					}
+					nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(nextExecutionTime);
+					isFirst = false;
+				}
+			}
+		}
+		
+		for(PMTriggerContext pmTrigger : pm.getTriggers()) {
+			
+			if(pmTrigger.getTriggerType() == PMTriggerContext.TriggerType.DEFAULT.getVal()) {
+				
+				List<Long> resourceIds = getMultipleResourceToBeAddedFromPM(pm);
+				resourceIds.removeAll(addedResourceIds);
+				
+				long startTime = getStartTimeInSecond(pmTrigger.getStartTime());
+				long nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(startTime);
+				
+				boolean isFirst = true;
+				while(nextExecutionTime <= endTime && (pm.getEndTime() == -1 || nextExecutionTime <= pm.getEndTime())) {
+
+					for(Long resourceId :resourceIds) {
+						PMJobsContext pmJob = getpmJob(pm, pmTrigger, resourceId, nextExecutionTime, addToDb);
+						pmJobs.add(pmJob);
+						if(isFirst) {
+							pmJobsToBeScheduled.add(pmJob);
+						}
+					}
+					
+					nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(nextExecutionTime);
+					isFirst = false;
+				}
+				break;
+			}
+		}
+		
+		if(addToDb) {
+			addPMJobs(pmJobs);
+		}
+		PreventiveMaintenanceAPI.schedulePMJob(pmJobsToBeScheduled);
+		return pmJobs;
+	}
+	public static long getStartTimeInSecond(long startTime) {
+		
+		long startTimeInSecond = startTime / 1000;
+		startTimeInSecond = startTimeInSecond - 300; //for calculating next execution time
+
+		return startTimeInSecond;
+	}
+	public static List<Long> getMultipleResourceToBeAddedFromPM(PreventiveMaintenance pm) throws Exception {
+		
+		if(pm.getPmCreationType() == PreventiveMaintenance.PMCreationType.MULTIPLE.getVal()) {
+			
+			List<Long> resourceId = new ArrayList<>();
+			switch(PreventiveMaintenance.PMAssignmentType.valueOf(pm.getAssignmentType())) {
+				case ALL_FLOORS:
+					
+					break;
+				case ALL_SPACES:
+					
+					break;
+				case SPACE_CATEGORY:
+					Long spaceCategoryID = pm.getSpaceCategoryId();
+					List<SpaceContext> spaces = SpaceAPI.getSpaceListOfCategory(pm.getBaseSpaceId(), spaceCategoryID);
+					for(SpaceContext space :spaces) {
+						resourceId.add(space.getId());
+					}
+					break;
+				case ASSET_CATEGORY:
+					
+					break;
+			default:
+				break;
+			}
+			return resourceId;
+		}
+		return null;
+ 	}
 	
+	public static PMJobsContext getpmJob(PreventiveMaintenance pm,PMTriggerContext pmTrigger ,Long resourceId,Long nextExecutionTime, boolean addToDb) {
+		PMJobsContext pmJob = new PMJobsContext();
+		pmJob.setPmId(pm.getId());
+		pmJob.setResourceId(resourceId);
+		pmJob.setPmTriggerId(pmTrigger.getId());
+		pmJob.setNextExecutionTime(nextExecutionTime);
+		pmJob.setProjected(!addToDb);
+		pmJob.setStatus(PMJobsStatus.ACTIVE);
+		return pmJob;
+	}
 	public static List<PMJobsContext> createPMJobs (PreventiveMaintenance pm, PMTriggerContext pmTrigger, long startTime, long endTime, boolean addToDb) throws Exception { //Both in seconds
 		long nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(startTime);
 		int currentCount = pm.getCurrentExecutionCount();
@@ -384,6 +497,13 @@ public class PreventiveMaintenanceAPI {
 	public static void schedulePMJob(PMJobsContext pmJob) throws Exception {
 		FacilioTimer.scheduleOneTimeJob(pmJob.getId(), "PreventiveMaintenance", pmJob.getNextExecutionTime(), "priority");
 		updatePMJobStatus(pmJob.getId(), PMJobsStatus.SCHEDULED);
+	}
+	
+	public static void schedulePMJob(List<PMJobsContext> pmJobs) throws Exception {
+		for(PMJobsContext pmJob :pmJobs) {
+			FacilioTimer.scheduleOneTimeJob(pmJob.getId(), "PreventiveMaintenance", pmJob.getNextExecutionTime(), "priority");
+			updatePMJobStatus(pmJob.getId(), PMJobsStatus.SCHEDULED);
+		}
 	}
 	
 	public static void reSchedulePMJob(PMJobsContext pmJob) throws Exception {
@@ -863,6 +983,31 @@ public class PreventiveMaintenanceAPI {
 		
 		recordBuilder.save();
 		return (long) props.get("id");
+	}
+	
+	public static PMTriggerResourceContext getPMTriggerResource(long pmId , long triggerId, long resourceId) throws Exception {
+		
+		if(pmId > 0 && triggerId > 0  && resourceId > 0) {
+			
+			FacilioModule module = ModuleFactory.getPMTriggersResourceModule();
+			List<FacilioField> fields = FieldFactory.getPMTriggerFields();
+			
+			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+					.select(fields)
+					.table(module.getTableName())
+					.andCustomWhere(module.getTableName()+".PM_ID = ?", pmId)
+					.andCustomWhere(module.getTableName()+".TRIGGER_ID = ?", triggerId)
+					.andCustomWhere(module.getTableName()+".RESOURCE_ID = ?", resourceId);
+			
+			List<Map<String, Object>> props = builder.get();
+			
+			if(props != null && !props.isEmpty()) {
+				PMTriggerResourceContext pmTriggerResourceContext = FieldUtil.getAsBeanFromMap(props.get(0), PMTriggerResourceContext.class);
+				return pmTriggerResourceContext;
+			}
+		}
+		
+		return null;
 	}
 	
 	public static long getPMCount(List<FacilioField> conditionFields, List<Condition> conditions) throws Exception {
