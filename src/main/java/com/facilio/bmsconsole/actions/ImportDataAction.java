@@ -7,11 +7,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FacilioChainFactory.FacilioChain;
+import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.SiteContext;
@@ -176,6 +180,8 @@ public class ImportDataAction extends ActionSupport {
 //			ProcessSpaceXLS.processImport(importProcessContext);
 //			ImportAPI.updateImportProcess(getImportProcessContext());
 //		} 
+		
+		
 		importProcessContext.setStatus(ImportProcessContext.ImportStatus.IN_PROGRESS.getValue());
 		ImportAPI.updateImportProcess(importProcessContext);
 		FacilioTimer.scheduleOneTimeJob(importProcessContext.getId(), "importData" , 5, "priority");

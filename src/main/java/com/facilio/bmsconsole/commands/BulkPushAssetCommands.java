@@ -63,6 +63,7 @@ public class BulkPushAssetCommands implements Command {
 			
 		}
 		JSONObject meta = importProcessContext.getImportJobMetaJson();
+		StringBuilder emailMessage = new StringBuilder();
 		if(meta == null) {
 			JSONObject newMeta = new JSONObject();
 			newMeta.put("Inserted", categoryBasedAsset.size());
@@ -73,6 +74,8 @@ public class BulkPushAssetCommands implements Command {
 			importProcessContext.setImportJobMeta(meta.toJSONString());
 		}
 		
+		emailMessage.append("Added assets: " + categoryBasedAsset.size());
+		context.put(ImportAPI.ImportProcessConstants.EMAIL_MESSAGE, emailMessage);
 //		FacilioModule module = ModuleFactory.getAssetCategoryReadingRelModule();
 //		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, module);
 //		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_IDS, assetCategoryIds);

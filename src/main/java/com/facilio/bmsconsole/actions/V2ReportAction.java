@@ -180,9 +180,10 @@ public class V2ReportAction extends FacilioAction {
 		if(reportId>0) {
 			reportContext = ReportUtil.getReport(reportId);
 			reportContext.setReportFolderId(folderId);
-			ReportUtil.moveReport(reportContext, folderId);
+			ReportUtil.moveReport(reportContext);
+			return SUCCESS;
 		}
-		return SUCCESS;
+		return ERROR;
 	}
 	public String duplicateReport() throws Exception {
 		
