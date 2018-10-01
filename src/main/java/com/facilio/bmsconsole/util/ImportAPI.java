@@ -17,6 +17,7 @@ import org.apache.log4j.LogManager;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -226,13 +227,16 @@ public class ImportAPI {
 			}
 			else {
 				CellType type = cell.getCellTypeEnum();
-				if(type == CellType.NUMERIC) {
-        			if(HSSFDateUtil.isCellDateFormatted(cell)) {
+				if(type == CellType.NUMERIC || type == CellType.FORMULA) {
+        			if(cell.getCellTypeEnum() == CellType.NUMERIC && HSSFDateUtil.isCellDateFormatted(cell)) {
         				Date cellValue = cell.getDateCellValue();
         				SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
         				String cellValueString = format.format(cellValue);
         				cellValueString = cellValueString.replace(" ", "/");
         				firstRow.add(cellValueString);
+        			}
+        			else if(type== CellType.FORMULA) {
+        				firstRow.add(cell.getNumericCellValue());
         			}
         			else {
         				Double cellValue = cell.getNumericCellValue();
