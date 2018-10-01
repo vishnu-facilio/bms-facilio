@@ -236,8 +236,31 @@ public class WorkflowUtil {
 		return moduleName+"-"+resourceId;
 	}
 	
+	private static boolean evalWorkflowResultForBoolean (Object result) {
+		if (result == null) {
+		    return false;
+		}
+		if (result instanceof Boolean) {
+		    return (boolean) result;
+		}
+		else {
+		    double resultDouble = (double) result;
+		    return resultDouble == 1;
+		}
+	}
+	
+	public static boolean getWorkflowExpressionResultAsBoolean(String workflowString,Map<String,Object> paramMap) throws Exception {
+		Object result = getWorkflowExpressionResult(workflowString, paramMap);
+		return evalWorkflowResultForBoolean(result);
+	}
+	
 	public static Object getWorkflowExpressionResult(String workflowString,Map<String,Object> paramMap) throws Exception {
 		return getWorkflowExpressionResult(workflowString, paramMap, null, true, false);
+	}
+	
+	public static boolean getWorkflowExpressionResultAsBoolean(String workflowString,Map<String,Object> paramMap, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked) throws Exception {
+		Object result = getWorkflowExpressionResult(workflowString, paramMap, rdmCache, ignoreNullExpressions, ignoreMarked);
+		return evalWorkflowResultForBoolean(result);
 	}
 	
 	public static Object getWorkflowExpressionResult(String workflowString,Map<String,Object> paramMap, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked) throws Exception {
