@@ -127,13 +127,14 @@ public enum FacilioMapFunction implements FacilioWorkflowFunctionInterface {
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			
+			checkParam(objects);
 			Map<Object,Object> map = (Map<Object, Object>) objects[0];
 			Object key = objects[1];
 			return map.get(key);
 		};
 		
 		public void checkParam(Object... objects) throws Exception {
-			if(objects.length <= 0) {
+			if(objects == null || objects.length <= 1) {
 				throw new FunctionParamException("Required Object is null");
 			}
 		}
