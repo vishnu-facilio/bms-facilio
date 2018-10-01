@@ -182,7 +182,7 @@ public class ImportSpaceAction {
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SPACE);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SPACE);
 		FacilioField field = modBean.getField("name", FacilioConstants.ContextNames.SPACE);
-		FacilioField field1 = modBean.getField("siteId", FacilioConstants.ContextNames.SPACE);
+		FacilioField field1 = modBean.getField("site", FacilioConstants.ContextNames.SPACE);
 		FacilioField field2 = modBean.getField("building", FacilioConstants.ContextNames.SPACE);
 		FacilioField field3 = modBean.getField("floor", FacilioConstants.ContextNames.SPACE);
 		

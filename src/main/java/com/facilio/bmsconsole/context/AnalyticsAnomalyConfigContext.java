@@ -18,6 +18,7 @@ public class AnalyticsAnomalyConfigContext extends ModuleBaseWithCustomFields {
 	private int historyDays;
 	private String startDate;
 	private boolean startDateMode;
+	private int meterInterval;
 	
 	public long getMeterId() {
 		return meterId;
@@ -157,6 +158,15 @@ public class AnalyticsAnomalyConfigContext extends ModuleBaseWithCustomFields {
 		this.startDateMode = startDateMode;
 	}
 
+	public int getMeterInterval() {
+		return meterInterval;
+	}
+
+
+	public void setMeterInterval(int meterInterval) {
+		this.meterInterval = meterInterval;
+	}
+
 	public String toString() {
 			StringBuffer buf = new StringBuffer();
 			buf.append("[meterId = ");
@@ -185,6 +195,8 @@ public class AnalyticsAnomalyConfigContext extends ModuleBaseWithCustomFields {
 			buf.append(historyDays);
 			buf.append(", startDate = ");
 			buf.append(startDate);
+			buf.append(", meterInterval = ");
+			buf.append(meterInterval);
 			
 			return buf.toString();
 	}
