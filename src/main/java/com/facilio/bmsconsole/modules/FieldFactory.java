@@ -3922,6 +3922,7 @@ public class FieldFactory {
 		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.LOOKUP));
 		fields.add(getField("startTime", "START_TIME", module, FieldType.DATE_TIME));
 		fields.add(getField("endTime", "END_TIME", module, FieldType.DATE_TIME));
+		fields.add(getField("isSystem", "IS_SYSTEM", module, FieldType.BOOLEAN));
 
 		return fields;
 	}

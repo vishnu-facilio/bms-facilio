@@ -374,8 +374,8 @@ public class FormulaFieldAPI {
 		BmsJobUtil.scheduleOneTimeJobWithProps(formulaId, "HistoricalFormulaFieldCalculator", 30, "priority", FieldUtil.getAsJSON(range));
 	}
 	
-	public static void calculateHistoricalDataForSingleResource(long formulaId, long resourceId, DateRange range) throws Exception {
-		Map<String, Object> prop = getFormulaFieldResourceJob(formulaId, resourceId);
+	public static void calculateHistoricalDataForSingleResource(long formulaId, long resourceId, DateRange range, boolean isSystem) throws Exception {
+		Map<String, Object> prop = getFormulaFieldResourceJob(formulaId, resourceId, isSystem);
 		long id = -1;
 		if (prop == null) {
 			prop = new HashMap<>();
@@ -384,6 +384,7 @@ public class FormulaFieldAPI {
 			prop.put("resourceId", resourceId);
 			prop.put("startTime", range.getStartTime());
 			prop.put("endTime", range.getEndTime());
+			prop.put("isSystem", isSystem);
 			id = addFormulaFieldResourceJob(prop);
 		}
 		else {
@@ -417,12 +418,13 @@ public class FormulaFieldAPI {
 		updateBuilder.update(prop);
 	}
 	
-	private static Map<String, Object> getFormulaFieldResourceJob(long formulaId, long resourceId) throws Exception {
+	private static Map<String, Object> getFormulaFieldResourceJob(long formulaId, long resourceId, boolean isSystem) throws Exception {
 		FacilioModule module = ModuleFactory.getFormulaFieldResourceJobModule();
 		List<FacilioField> fields = FieldFactory.getFormulaFieldResourceJobFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		FacilioField formulaIdField = fieldMap.get("formulaId");
 		FacilioField resourceIdField = fieldMap.get("resourceId");
+		FacilioField isSystemField = fieldMap.get("isSystem");
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.table(module.getTableName())
@@ -430,6 +432,7 @@ public class FormulaFieldAPI {
 														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(formulaIdField, String.valueOf(formulaId), PickListOperators.IS))
 														.andCondition(CriteriaAPI.getCondition(resourceIdField, String.valueOf(resourceId), PickListOperators.IS))
+														.andCondition(CriteriaAPI.getCondition(isSystemField, String.valueOf(isSystem), BooleanOperators.IS))
 														;
 		
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -677,10 +680,10 @@ public class FormulaFieldAPI {
 	}
 	
 	public static void historicalCalculation(FormulaFieldContext formula, DateRange range) throws Exception {
-		historicalCalculation(formula, range, -1);
+		historicalCalculation(formula, range, -1, true);
 	}
 	
-	public static void historicalCalculation(FormulaFieldContext formula, DateRange range, long singleResourceId) throws Exception {
+	public static void historicalCalculation(FormulaFieldContext formula, DateRange range, long singleResourceId, boolean isSystem) throws Exception {
 		List<DateRange> intervals = getIntervals(formula, range);
 		LOGGER.info(intervals);
 		if (intervals != null && !intervals.isEmpty()) {
@@ -730,7 +733,7 @@ public class FormulaFieldAPI {
 							if (currentFormula.getMatchedResourcesIds().contains(singleResourceId)) {
 								List<Long> dependentFieldIds = currentFormula.getWorkflow().getDependentFieldIds();
 								if (dependentFieldIds.contains(formula.getReadingField().getFieldId())) {
-									calculateHistoricalDataForSingleResource(currentFormula.getId(), singleResourceId, range);
+									calculateHistoricalDataForSingleResource(currentFormula.getId(), singleResourceId, range, isSystem);
 								}
 							}
 						}
