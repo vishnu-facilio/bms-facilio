@@ -1441,7 +1441,7 @@ public class WorkflowUtil {
 		return param;
 	}
 	
-	public static Object evaluateExpression(String exp,Map<String,Object> variablesMap, boolean ignoreNullValues) {
+	public static Object evaluateExpression(String exp,Map<String,Object> variablesMap, boolean ignoreNullValues) throws Exception {
 
 		LOGGER.fine("EXPRESSION STRING IS -- "+exp+" variablesMap -- "+variablesMap);
 		if(exp == null) {
@@ -1462,8 +1462,13 @@ public class WorkflowUtil {
 			}
 			expression.with(key, value);
 		}
-		BigDecimal result = expression.eval();
-		return result.doubleValue();
+		try {
+			BigDecimal result = expression.eval();
+			return result.doubleValue();
+		}
+		catch(ArithmeticException e) {
+			return null;
+		}
 	}
 	
 	public static ExpressionContext fillParamterAndParseExpressionContext(ExpressionContext expressionContext,Map<String,Object> variableResultMap) throws Exception {
