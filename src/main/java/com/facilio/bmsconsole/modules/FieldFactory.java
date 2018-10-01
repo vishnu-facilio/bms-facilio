@@ -4122,7 +4122,7 @@ public class FieldFactory {
 		fields.add(getField("historyDays", "HISTORY_DAYS", module, FieldType.NUMBER));
 		fields.add(getField("startDateMode", "START_DATE_MODE", module, FieldType.BOOLEAN));
 		fields.add(getField("startDate", "START_DATE", module, FieldType.STRING));
-
+		fields.add(getField("meterInterval", "METER_INTERVAL", module, FieldType.NUMBER));
 		return fields;
 	}
 	

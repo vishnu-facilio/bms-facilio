@@ -171,7 +171,7 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 		postData.xAxisDimension = meterConfigContext.getxAxisDimension();
 		postData.yAxisDimension = meterConfigContext.getyAxisDimension();
 		postData.outlierDistance =meterConfigContext.getOutlierDistance();
-		
+		postData.meterInterval =meterConfigContext.getMeterInterval();
 		ObjectMapper mapper = new ObjectMapper();
 		String jsonInString = mapper.writeValueAsString(postData);
 		logger.log(Level.INFO, "refresh anomaly post: " + jsonInString);
@@ -389,6 +389,13 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 			this.outlierDistance = outlierDistance;
 		}
 
+		public int getMeterInterval() {
+			return meterInterval;
+		}
+		public void setMeterInterval(int meterInterval) {
+			this.meterInterval = meterInterval;
+		}
+
 		String readingFile;
 		String temperatureFile;
 		Long organizationID;
@@ -405,5 +412,6 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 		String xAxisDimension;
 		String yAxisDimension;
 		double outlierDistance;
+		int meterInterval;
 	}
 }
