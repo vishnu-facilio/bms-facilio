@@ -84,6 +84,14 @@ public class ResourceContext extends ModuleBaseWithCustomFields {
 	public long getSiteId() {
 		return this.siteId;
 	}
+	
+	private String qrVal;
+	public String getQrVal() {
+		return qrVal;
+	}
+	public void setQrVal(String qrVal) {
+		this.qrVal = qrVal;
+	}
 
 	public static enum ResourceType {
 		SPACE,
