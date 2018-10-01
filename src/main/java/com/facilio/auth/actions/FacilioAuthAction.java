@@ -251,7 +251,19 @@ public class FacilioAuthAction extends ActionSupport {
                     setJsonresponse("errorcode", "1");
                     return ERROR;
                 } else {
-                    if (!validPassword) {
+                    if (validPassword) {
+                        User user;
+                        if(portalUser) {
+                            user = AccountUtil.getUserBean().getPortalUser(getUsername(), portalId());
+                        } else {
+                            user = AccountUtil.getUserBean().getFacilioUser(getUsername());
+                        }
+                        if(user == null) {
+                            setJsonresponse("message", "User is deactivated, Please contact admin to activate. ");
+                            setJsonresponse("errorcode", "1");
+                            return ERROR;
+                        }
+                    } else {
                         LOGGER.info(">>>>> invalid Password :" + getUsername());
                         setJsonresponse("errorcode", "1");
                         return ERROR;

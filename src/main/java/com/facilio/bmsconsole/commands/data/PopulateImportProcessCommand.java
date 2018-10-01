@@ -183,7 +183,7 @@ public class PopulateImportProcessCommand implements Command {
 		
 		}
 		c.put(FacilioConstants.ContextNames.SPACE_TYPE, importProcessContext.getModule().getName()+"s");
-		c.put("emailMessage", emailMessage);
+		c.put(ImportAPI.ImportProcessConstants.EMAIL_MESSAGE, emailMessage);
 //		ImportAPI.updateImportProcess(importProcessContext);
 		
 		return false;

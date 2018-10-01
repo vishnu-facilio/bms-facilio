@@ -126,7 +126,7 @@ public class ProcessImportCommand implements Command {
 					Object val = 0.0;
 					if (cell.getCellTypeEnum() == CellType.STRING) {
 
-						val = cell.getStringCellValue();
+						val = cell.getStringCellValue().trim();
 					} else if (cell.getCellTypeEnum() == CellType.NUMERIC
 							|| cell.getCellTypeEnum() == CellType.FORMULA) {
 						if (cell.getCellTypeEnum() == CellType.NUMERIC && HSSFDateUtil.isCellDateFormatted(cell)) {
@@ -183,7 +183,7 @@ public class ProcessImportCommand implements Command {
 						String siteName = (String) colVal.get(fieldMapping.get(importProcessContext.getModule().getName() + "__site"));
 						List<SiteContext> sites = SpaceAPI.getAllSites();
 						for (SiteContext site : sites) {
-							if (site.getName().equals(siteName)) {
+							if (site.getName().trim().toLowerCase().equals(siteName.trim().toLowerCase())) {
 								props.put("siteId", site.getId());
 								break;
 							}
@@ -497,33 +497,27 @@ public class ProcessImportCommand implements Command {
 
 		String siteName =null ,buildingName = null,floorName = null ,spaceName = null;
 		List<Long> listOfIds = new ArrayList<>();
-		if(importProcessContext.getImportMode() == ImportProcessContext.ImportMode.READING.getValue()) {
-			String moduleName = importProcessContext.getModule().getName();
-			String Name = (String) colVal.get(fieldMapping.get("sys__name"));
-			switch (moduleName) {
-			case ImportAPI.ImportProcessConstants.SITE_ID_FIELD:
-				siteName  = Name;
-				break;
-			case ImportAPI.ImportProcessConstants.BUILDING_ID_FIELD:
-				buildingName = Name;
-				break;
-			case ImportAPI.ImportProcessConstants.FLOOR_ID_FIELD:
-				floorName = Name;
-				break;
-			case ImportAPI.ImportProcessConstants.SPACE_FIELD:
-				spaceName = Name;
-				break;
+		
+		ArrayList<String> additionalSpaces = new ArrayList<>();
+		String moduleName = importProcessContext.getModule().getName();
+		siteName = (String) colVal.get(fieldMapping.get(moduleName + "__site"));
+		buildingName = (String) colVal.get(fieldMapping.get(moduleName + "__building"));
+		floorName = (String) colVal.get(fieldMapping.get(moduleName + "__floor"));
+		spaceName = (String) colVal.get(fieldMapping.get(moduleName + "__spaceName"));
+		
+		if(spaceName != null) {
+			for(int i =0; i<3; i++)
+			{
+				String temp = (String) colVal.get(fieldMapping.get(moduleName + "__subspace" + (i+1)));
+				if(temp != null) {
+					additionalSpaces.add(temp);
+				}
+				else {
+					break;
+				}
 			}
 		}
-		
-		else {
-			String moduleName = importProcessContext.getModule().getName();
-			siteName = (String) colVal.get(fieldMapping.get(moduleName + "__site"));
-			buildingName = (String) colVal.get(fieldMapping.get(moduleName + "__building"));
-			floorName = (String) colVal.get(fieldMapping.get(moduleName + "__floor"));
-			spaceName = (String) colVal.get(fieldMapping.get(moduleName + "__spaceName"));
-		}
-		
+	
 		ImportSiteAction siteMeta =new ImportSiteAction();
 		ImportBuildingAction buildingMeta =new ImportBuildingAction();
 		ImportFloorAction floorMeta =new ImportFloorAction();
@@ -630,6 +624,20 @@ public class ProcessImportCommand implements Command {
 				 }
 				 recordsList.put("space", spaceId);
 			 }
+			}
+		 
+		 if(additionalSpaces.size()>0) {
+				Long tempSpaceId;
+				for(String additionalSpace : additionalSpaces) {
+						tempSpaceId= SpaceAPI.getDependentSpaceId(additionalSpace, spaceId, additionalSpaces.indexOf(additionalSpace)+1);
+						if(tempSpaceId != null) {
+							spaceId = tempSpaceId;
+						}
+						else {
+							spaceId = SpaceAPI.addDependentSpace(additionalSpace, spaceId);
+							recordsList.put("space", spaceId);
+						}
+					}
 			}
 		return spaceId;
 	

@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -236,8 +237,31 @@ public class WorkflowUtil {
 		return moduleName+"-"+resourceId;
 	}
 	
+	private static boolean evalWorkflowResultForBoolean (Object result) {
+		if (result == null) {
+		    return false;
+		}
+		if (result instanceof Boolean) {
+		    return (boolean) result;
+		}
+		else {
+		    double resultDouble = (double) result;
+		    return resultDouble == 1;
+		}
+	}
+	
+	public static boolean getWorkflowExpressionResultAsBoolean(String workflowString,Map<String,Object> paramMap) throws Exception {
+		Object result = getWorkflowExpressionResult(workflowString, paramMap);
+		return evalWorkflowResultForBoolean(result);
+	}
+	
 	public static Object getWorkflowExpressionResult(String workflowString,Map<String,Object> paramMap) throws Exception {
 		return getWorkflowExpressionResult(workflowString, paramMap, null, true, false);
+	}
+	
+	public static boolean getWorkflowExpressionResultAsBoolean(String workflowString,Map<String,Object> paramMap, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked) throws Exception {
+		Object result = getWorkflowExpressionResult(workflowString, paramMap, rdmCache, ignoreNullExpressions, ignoreMarked);
+		return evalWorkflowResultForBoolean(result);
 	}
 	
 	public static Object getWorkflowExpressionResult(String workflowString,Map<String,Object> paramMap, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked) throws Exception {
@@ -1441,7 +1465,7 @@ public class WorkflowUtil {
 		return param;
 	}
 	
-	public static Object evaluateExpression(String exp,Map<String,Object> variablesMap, boolean ignoreNullValues) {
+	public static Object evaluateExpression(String exp,Map<String,Object> variablesMap, boolean ignoreNullValues) throws Exception {
 
 		LOGGER.fine("EXPRESSION STRING IS -- "+exp+" variablesMap -- "+variablesMap);
 		if(exp == null) {
@@ -1452,7 +1476,8 @@ public class WorkflowUtil {
 			return variablesMap.get(exp);
 		}
 		Expression expression = new Expression(exp);
-		for(String key : variablesMap.keySet()) {
+		List<String> keys = expression.getUsedVariables();
+		for(String key : keys) {
 			String value = "0";
 			if(variablesMap.get(key) != null) {
 				value = variablesMap.get(key).toString();
@@ -1462,8 +1487,13 @@ public class WorkflowUtil {
 			}
 			expression.with(key, value);
 		}
-		BigDecimal result = expression.eval();
-		return result.doubleValue();
+		try {
+			BigDecimal result = expression.eval();
+			return result.doubleValue();
+		}
+		catch(ArithmeticException e) {
+			return null;
+		}
 	}
 	
 	public static ExpressionContext fillParamterAndParseExpressionContext(ExpressionContext expressionContext,Map<String,Object> variableResultMap) throws Exception {

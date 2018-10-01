@@ -62,7 +62,7 @@ public class ReportUtil {
 		return reportFolders;
 	}
 	
-	public static void moveReport(ReportContext reportContext, long folderId) throws Exception {
+	public static void moveReport(ReportContext reportContext) throws Exception {
 		FacilioModule module = ModuleFactory.getReportModule();
 		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List< FacilioField> updateFields = modbean.getAllFields(module.getName());

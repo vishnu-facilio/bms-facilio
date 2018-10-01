@@ -592,8 +592,15 @@ public class UserBeanImpl implements UserBean {
 			isDefaultOrg.setColumnName("ISDEFAULT");
 			isDefaultOrg.setModule(AccountConstants.getOrgUserModule());
 
+			FacilioField userStatus = new FacilioField();
+			userStatus.setName("userStatus");
+			userStatus.setDataType(FieldType.BOOLEAN);
+			userStatus.setColumnName("USER_STATUS");
+			userStatus.setModule(AccountConstants.getOrgUserModule());
+
 			List<FacilioField> fields = new ArrayList<>();
 			fields.add(inviteAcceptStatus);
+			fields.add(userStatus);
 			fields.add(isDefaultOrg);
 
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
@@ -604,19 +611,45 @@ public class UserBeanImpl implements UserBean {
 			Map<String, Object> props = new HashMap<>();
 			props.put("inviteAcceptStatus", true);
 			props.put("isDefaultOrg", true);
+			props.put("userStatus", true);
 
 			int updatedRows = updateBuilder.update(props);
 			if (updatedRows > 0) {
-				user = AccountUtil.getUserBean().getUser(user.getOuid());
-				user.setUserVerified(true);
-				user.setPassword(password);
-				updateUser(user);
-				// LicenseApi.updateUsedLicense(user.getLicenseEnum());
-				return true;
+				user = getInvitedUser(user.getOuid());
+				if(user != null) {
+					user.setUserVerified(true);
+					user.setPassword(password);
+					updateUser(user);
+					// LicenseApi.updateUsedLicense(user.getLicenseEnum());
+					return true;
+				}
 			}
 		}
 		return false;
 	}
+
+	private User getInvitedUser(long ouid) throws Exception {
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.addAll(AccountConstants.getUserFields());
+		fields.addAll(AccountConstants.getOrgUserFields());
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("Users")
+				.innerJoin("ORG_Users")
+				.on("Users.USERID = ORG_Users.USERID")
+				.andCustomWhere("ORG_USERID = ? AND DELETED_TIME = -1", ouid);
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			User user =  createUserFromProps(props.get(0));
+			user.setAccessibleSpace(getAccessibleSpaceList(ouid));
+			return user;
+		}
+		return null;
+	}
+
 
 	@Override
 	public boolean updateUser(long ouid, User user) throws Exception {

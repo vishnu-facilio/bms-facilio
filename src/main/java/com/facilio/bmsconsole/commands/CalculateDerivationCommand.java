@@ -12,7 +12,6 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.constants.FacilioConstants;
 import com.facilio.report.context.ReportContext;
-import com.facilio.report.context.ReportDataContext;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportDataPointContext.DataPointType;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -46,7 +45,7 @@ public class CalculateDerivationCommand implements Command {
 				}
 			}
 		}
-		
+		LOGGER.log(Level.SEVERE, "wfParams -- "+wfParams);
 		for(ReportDataPointContext rdp : report.getDataPoints()) {
 			
 			if(rdp.getTypeEnum().equals(DataPointType.DERIVATION)) {
@@ -57,7 +56,7 @@ public class CalculateDerivationCommand implements Command {
 				else if(rdp.getTransformWorkflow() != null) {
 					String wfXmlString = WorkflowUtil.getXmlStringFromWorkflow(rdp.getTransformWorkflow());
 					LOGGER.log(Level.SEVERE, "wfXmlString -- "+wfXmlString);
-					derivationResult = (Map<Object,Object>) WorkflowUtil.getWorkflowExpressionResult(wfXmlString, wfParams,null,true,false);
+					derivationResult = (Map<Object,Object>) WorkflowUtil.getWorkflowExpressionResult(wfXmlString, wfParams);
 				}
 				wfParams.put(rdp.getAliases().get("actual"), derivationResult); //To use one derivation in another
 				transformedData.put(rdp.getName(), Collections.singletonMap(FacilioConstants.Reports.ACTUAL_DATA, derivationResult));
