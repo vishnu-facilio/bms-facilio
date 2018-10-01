@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -1475,7 +1476,8 @@ public class WorkflowUtil {
 			return variablesMap.get(exp);
 		}
 		Expression expression = new Expression(exp);
-		for(String key : variablesMap.keySet()) {
+		List<String> keys = expression.getUsedVariables();
+		for(String key : keys) {
 			String value = "0";
 			if(variablesMap.get(key) != null) {
 				value = variablesMap.get(key).toString();
