@@ -635,6 +635,8 @@ public class WorkflowRuleAPI {
 						case APPROVAL_RULE:
 							ApprovalRulesAPI.deleteApprovalRuleChildIds((ApprovalRuleContext) rule);
 							break;
+						case SCHEDULED_RULE:
+							ScheduledRuleAPI.deleteScheduledRuleJob((ScheduledRuleContext) rule);
 						default:
 							break;
 					}
