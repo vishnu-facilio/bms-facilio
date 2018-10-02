@@ -136,7 +136,7 @@ public class AddActionsForWorkflowRule implements Command {
 		List<Map> fieldMatcher = (ArrayList) action.getTemplateJson().get("fieldMatcher");
 		JSONObject content = new JSONObject();
 		for(Map field:fieldMatcher) {
-			content.put(field.get("field").toString(), field.get("value").toString());
+			content.put(field.get("field").toString(), field.get("value"));
 		}
 		if (rule instanceof ReadingRuleContext) {
 			ReadingRuleContext readingRule = (ReadingRuleContext) rule;
