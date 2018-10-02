@@ -238,12 +238,12 @@ public class WorkflowContext implements Serializable {
 			return 0;
 		}
 		
-		if (AccountUtil.getCurrentOrg().getId() == 135) {
+		if (AccountUtil.getCurrentOrg().getId() == 135 || AccountUtil.getCurrentOrg().getId() == 88) {
 			LOGGER.info("variableToExpresionMap --- "+variableResultMap+" \n\n"+"expString --- "+getResultEvaluator());
 		}
 		
 		result =  WorkflowUtil.evaluateExpression(getResultEvaluator(),variableResultMap, ignoreNullValues);
-		if (AccountUtil.getCurrentOrg().getId() == 135) {
+		if (AccountUtil.getCurrentOrg().getId() == 135 || AccountUtil.getCurrentOrg().getId() == 88) {
 			LOGGER.info("result --- "+result);
 		}
 		return result;
