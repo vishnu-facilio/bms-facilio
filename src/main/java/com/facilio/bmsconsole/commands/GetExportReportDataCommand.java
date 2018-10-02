@@ -116,9 +116,9 @@ public class GetExportReportDataCommand implements Command {
 			fileUrl = ExportUtil.exportData(fileFormat, "Report Data", table);
 		}
 		else {
-			String url = getClientUrl(report.getDataPoints().get(0).getxAxis().getField().getModule().getName(), report.getId(), fileFormat) + "?";
+			String url = getClientUrl(report.getDataPoints().get(0).getxAxis().getField().getModule().getName(), report.getId(), fileFormat) + "?print=true";
 			if(report.getDateRange() != null) {
-				url += "daterange=" + report.getDateRange().getStartTime() + "," + report.getDateRange().getEndTime();
+				url += "&daterange=" + report.getDateRange().getStartTime() + "," + report.getDateRange().getEndTime();
 			}
 			String chartType = (String) context.get("chartType");
 			if (chartType != null) {
