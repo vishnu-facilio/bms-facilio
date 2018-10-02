@@ -31,6 +31,7 @@ import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.NotificationContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -602,6 +603,7 @@ public enum ActionType {
 			LOGGER.info("Action::Add Workorder::"+obj);
 			
 			WorkOrderContext wo = FieldUtil.getAsBeanFromJson(obj, WorkOrderContext.class);
+			wo.setSourceType(SourceType.WORKFLOW_RULE);
 			FacilioContext woContext = new FacilioContext();
 			woContext.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
 
