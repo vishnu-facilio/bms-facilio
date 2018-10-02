@@ -557,6 +557,8 @@ public class FacilioConstants {
 		public static final String EDITED_FORM = "editedFrom";
 		public static final String FORM_OBJECT = "formObject";
 		
+		public static final String QR_VALUE = "qrValue";
+		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();

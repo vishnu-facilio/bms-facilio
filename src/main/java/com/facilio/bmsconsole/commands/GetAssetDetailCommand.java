@@ -14,19 +14,19 @@ public class GetAssetDetailCommand extends GenericGetModuleDataDetailCommand {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		super.execute(context);
 		
-		
-		AssetContext assetContext = (AssetContext) context.get(FacilioConstants.ContextNames.RECORD);
-		
-		if (assetContext.getId() > 0) {
-			if (assetContext.getSpaceId() != -1) {
-				Map<Long, BaseSpaceContext> spaceMap = SpaceAPI.getBaseSpaceMap(Collections.singleton(assetContext.getSpaceId()));
-				assetContext.setSpace(spaceMap.get(assetContext.getSpaceId()));
+		if (context.get(FacilioConstants.ContextNames.ID) != null) {
+			super.execute(context);
+			AssetContext assetContext = (AssetContext) context.get(FacilioConstants.ContextNames.RECORD);
+			if (assetContext.getId() > 0) {
+				if (assetContext.getSpaceId() != -1) {
+					Map<Long, BaseSpaceContext> spaceMap = SpaceAPI.getBaseSpaceMap(Collections.singleton(assetContext.getSpaceId()));
+					assetContext.setSpace(spaceMap.get(assetContext.getSpaceId()));
+				}
+				
 			}
-			
+			context.put(FacilioConstants.ContextNames.ASSET, assetContext);
 		}
-		context.put(FacilioConstants.ContextNames.ASSET, assetContext);
 		return true;
 	}
 	

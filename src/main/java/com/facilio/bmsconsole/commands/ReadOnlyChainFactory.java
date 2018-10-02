@@ -111,6 +111,17 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain getAssetFromQRChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new ParseQRValueCommand());
+		c.addCommand(new FetchAssetFromQRValCommand());
+		c.addCommand(new SetModuleForSpecialAssetsCommand());
+		c.addCommand(new LoadAssetFields());
+		c.addCommand(new GetAssetDetailCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
 	private static Chain getDefaultChain() {
 		return new FacilioChain(false);
     }

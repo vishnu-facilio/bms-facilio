@@ -412,4 +412,11 @@
 		</action>
 	</package>
 	
+	<package name="assetApiV2" namespace="/api/v2/asset/qr" extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.AssetAction"
+			method="fetchAssetFromQR">
+			<param name="qrValue">{1}</param>
+		</action>
+	</package>
+	
 </struts>
