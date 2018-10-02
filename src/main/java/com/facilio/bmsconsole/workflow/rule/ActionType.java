@@ -598,6 +598,9 @@ public enum ActionType {
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
 				Object currentRecord) throws Exception {
 			// TODO Auto-generated method stub
+			
+			LOGGER.info("Action::Add Workorder::"+obj);
+			
 			WorkOrderContext wo = FieldUtil.getAsBeanFromJson(obj, WorkOrderContext.class);
 			FacilioContext woContext = new FacilioContext();
 			woContext.put(FacilioConstants.ContextNames.WORK_ORDER, wo);

@@ -66,6 +66,7 @@ public class FetchScheduledRuleMatchingRecordsCommand implements Command {
 		FacilioModule module = rule.getEvent().getModule();
 		FacilioField dateField = rule.getDateField();
 		DateRange range = getRange(rule, jc);
+		LOGGER.info("Range for rule : "+rule.getId()+" is "+range.toString());
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
@@ -74,6 +75,8 @@ public class FetchScheduledRuleMatchingRecordsCommand implements Command {
 																				.andCondition(CriteriaAPI.getCondition(dateField, range.toString(), DateOperators.BETWEEN))
 																				.beanClass(ModuleBaseWithCustomFields.class)
 																				;
-		return selectBuilder.get();
+		List<ModuleBaseWithCustomFields> records = selectBuilder.get();
+		LOGGER.info(selectBuilder.toString());
+		return records;
 	}
 }
