@@ -4769,6 +4769,12 @@ public class DashboardAction extends ActionSupport {
 			.on(energyMeterModule.getTableName()+".ID="+resourceModule.getTableName()+".ID")
 			.andCondition(CriteriaAPI.getCondition("SYS_DELETED", "deleted", String.valueOf(false), BooleanOperators.IS));
 			
+			Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria("asset");
+			
+			if(scopeCriteria != null) {
+				subBuilder.andCriteria(scopeCriteria);
+			}
+			
 			if(!(report.getId() == 4218l || report.getId() == 2868l || report.getId() == 4225l || report.getId() == 4226l)) { 
 				xAxisField.setColumnName("PARENT_METER_ID");
 			}
