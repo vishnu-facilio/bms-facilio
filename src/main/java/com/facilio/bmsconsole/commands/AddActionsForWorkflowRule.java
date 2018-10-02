@@ -58,6 +58,7 @@ public class AddActionsForWorkflowRule implements Command {
 							setWorkorderTemplate(action, rule);
 							break;
 						case FIELD_CHANGE:
+						case CREATE_WORK_ORDER:
 							setJsonTemplate(action, rule, Type.JSON);
 							break;
 						default:
@@ -132,10 +133,10 @@ public class AddActionsForWorkflowRule implements Command {
 	}
 	
 	private void setJsonTemplate(ActionContext action, WorkflowRuleContext rule, Type templateType) throws Exception {
-		List<Map> alarmFieldMatcher = (ArrayList) action.getTemplateJson().get("fieldMatcher");
+		List<Map> fieldMatcher = (ArrayList) action.getTemplateJson().get("fieldMatcher");
 		JSONObject content = new JSONObject();
-		for(Map alarmField:alarmFieldMatcher) {
-			content.put(alarmField.get("field").toString(), alarmField.get("value").toString());
+		for(Map field:fieldMatcher) {
+			content.put(field.get("field").toString(), field.get("value").toString());
 		}
 		if (rule instanceof ReadingRuleContext) {
 			ReadingRuleContext readingRule = (ReadingRuleContext) rule;
@@ -151,12 +152,12 @@ public class AddActionsForWorkflowRule implements Command {
 				content.put("alarmType", alarmType.getIntVal());
 			}
 		}
-		JSONTemplate alarmTemplate = new JSONTemplate();
-		alarmTemplate.setName(rule.getName()+"_alarm_template");
-		alarmTemplate.setContent(content.toJSONString());
-		alarmTemplate.setType(templateType);
-		action.setTemplate(alarmTemplate);
-		checkAndSetWorkflow(action.getTemplateJson(), alarmTemplate);
+		JSONTemplate jsonTemplate = new JSONTemplate();
+		jsonTemplate.setName(rule.getName()+"_json_template");
+		jsonTemplate.setContent(content.toJSONString());
+		jsonTemplate.setType(templateType);
+		action.setTemplate(jsonTemplate);
+		checkAndSetWorkflow(action.getTemplateJson(), jsonTemplate);
 	}
 	
 	private void setWorkorderTemplate(ActionContext action, WorkflowRuleContext rule) throws Exception {
