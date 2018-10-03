@@ -4739,6 +4739,12 @@ public class DashboardAction extends ActionSupport {
 		JSONArray readingData = null;
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
+		if(report.getCustomReportClass() != null) {
+			Class<? extends CustomReport> classObject = (Class<? extends CustomReport>) Class.forName(report.getCustomReportClass());
+			CustomReport job = classObject.newInstance();
+			readingData = job.getData(report, module, dateFilter, userFilterValues, baseLineId, criteriaId);
+			return readingData;
+		}
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(module.getTableName())
 				.andCustomWhere(module.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId())
