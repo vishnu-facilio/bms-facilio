@@ -15,6 +15,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new FilterXFieldCommand());
 		c.addCommand(new FetchReportDataCommand());
 		c.addCommand(new TransformReportDataCommand());
+		c.addCommand(new CustomTransformReportDataCommand());
 		c.addCommand(new CalculateDerivationCommand());
 		c.addCommand(new CalculateVarianceCommand());
 		c.addCommand(new FetchReportExtraMeta());
@@ -28,6 +29,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new FetchReportDataCommand());
 		c.addCommand(new ConstructReportDataCommand());
 		c.addCommand(new NewTransformReportDataCommand());
+//		c.addCommand(new CustomTransformReportDataCommand()); //Uncomment after changing interface to new format
 		c.addCommand(new FetchReportExtraMeta());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;

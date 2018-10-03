@@ -274,6 +274,23 @@ public class ReportContext {
 		this.analyticsType = analyticsType;
 	}
 	
+	private Class<? extends TransformReportDataIfc> transformClass;
+	public Class<? extends TransformReportDataIfc> getTransformClassObject() {
+		return transformClass;
+	}
+	public void setTransformClass(Class<? extends TransformReportDataIfc> transformClass) {
+		this.transformClass = transformClass;
+	}
+	public String getTransformClass() {
+		if (transformClass != null) {
+			return transformClass.getName();
+		}
+		return null;
+	}
+	public void setTransformClass(String transformClass) throws ClassNotFoundException {
+		this.transformClass = (Class<? extends TransformReportDataIfc>) Class.forName(transformClass);
+	}
+
 	public static enum BooleanSettings {
 		SHOW_HIDE_ALARM("Alarm",1),
 		SHOW_HIDE_SAFELIMIT("Safe Limit",2),

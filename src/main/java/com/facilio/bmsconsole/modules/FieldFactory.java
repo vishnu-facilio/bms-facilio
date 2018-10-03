@@ -4510,6 +4510,7 @@ public class FieldFactory {
 		fields.add(getField("analyticsType", "ANALYTICS_TYPE", module, FieldType.NUMBER));
 		
 		fields.add(getField("booleanSetting", "BOOLEAN_SETTINGS", module, FieldType.NUMBER));
+		fields.add(getField("transformClass", "TRANSFORM_CLASS", module, FieldType.STRING));
 		return fields;
 	}
 	
