@@ -118,8 +118,8 @@ public class GetExportReportDataCommand implements Command {
 		else {
 			StringBuilder url = getClientUrl(report.getDataPoints().get(0).getxAxis().getField().getModule().getName(), report.getId(), fileFormat).append("?print=true");
 			if(report.getDateRange() != null) {
-				url.append("&daterange=").append("{startTime:").append(report.getDateRange().getStartTime()).append(", endTime: ").append(report.getDateRange().getEndTime())
-					.append(", operatorId: ").append(report.getDateOperator()).append(", value: ").append(report.getDateValue())
+				url.append("&daterange=").append("{\"startTime\":").append(report.getDateRange().getStartTime()).append(", \"endTime\": ").append(report.getDateRange().getEndTime())
+					.append(", \"operatorId\": ").append(report.getDateOperator()).append(", \"value\": ").append(report.getDateValue())
 					.append("}");
 			}
 			String chartType = (String) context.get("chartType");
