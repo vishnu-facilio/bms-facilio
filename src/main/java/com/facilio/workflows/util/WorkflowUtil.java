@@ -1477,6 +1477,9 @@ public class WorkflowUtil {
 		}
 		Expression expression = new Expression(exp);
 		List<String> keys = expression.getUsedVariables();
+		if(variablesMap.containsKey("e")) {
+			keys.add("e");
+		}
 		for(String key : keys) {
 			String value = "0";
 			if(variablesMap.get(key) != null) {
