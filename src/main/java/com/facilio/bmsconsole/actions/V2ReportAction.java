@@ -36,7 +36,7 @@ import com.facilio.report.util.ReportUtil;
 public class V2ReportAction extends FacilioAction {
 	
 	private ReportContext reportContext;
-	private Long folderId;
+	private long folderId=-1;
 	
 	public ReportContext getReportContext() {
 		return reportContext;
