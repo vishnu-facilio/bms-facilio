@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -36,6 +37,7 @@ public class GetExportReportDataCommand implements Command {
 	
 	private static ReportContext report;
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean execute(Context context) throws Exception {
 		
@@ -118,9 +120,12 @@ public class GetExportReportDataCommand implements Command {
 		else {
 			StringBuilder url = getClientUrl(report.getDataPoints().get(0).getxAxis().getField().getModule().getName(), report.getId(), fileFormat).append("?print=true");
 			if(report.getDateRange() != null) {
-				url.append("&daterange=").append("{\"startTime\":").append(report.getDateRange().getStartTime()).append(", \"endTime\": ").append(report.getDateRange().getEndTime())
-					.append(", \"operatorId\": ").append(report.getDateOperator()).append(", \"value\": ").append(report.getDateValue())
-					.append("}");
+				JSONObject dateRange = new JSONObject();
+				dateRange.put("startTime", report.getDateRange().getStartTime());
+				dateRange.put("endTime", report.getDateRange().getEndTime());
+				dateRange.put("operatorId", report.getDateOperator());
+				dateRange.put("value", report.getDateValue());
+				url.append("&daterange=").append(dateRange.toJSONString());
 			}
 			String chartType = (String) context.get("chartType");
 			if (chartType != null) {
