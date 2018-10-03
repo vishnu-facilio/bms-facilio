@@ -116,16 +116,18 @@ public class GetExportReportDataCommand implements Command {
 			fileUrl = ExportUtil.exportData(fileFormat, "Report Data", table);
 		}
 		else {
-			String url = getClientUrl(report.getDataPoints().get(0).getxAxis().getField().getModule().getName(), report.getId(), fileFormat) + "?print=true";
+			StringBuilder url = getClientUrl(report.getDataPoints().get(0).getxAxis().getField().getModule().getName(), report.getId(), fileFormat).append("?print=true");
 			if(report.getDateRange() != null) {
-				url += "&daterange=" + report.getDateRange().getStartTime() + "," + report.getDateRange().getEndTime();
+				url.append("&daterange=").append("{startTime:").append(report.getDateRange().getStartTime()).append(", endTime: ").append(report.getDateRange().getEndTime())
+					.append(", operatorId: ").append(report.getDateOperator()).append(", value: ").append(report.getDateValue())
+					.append("}");
 			}
 			String chartType = (String) context.get("chartType");
 			if (chartType != null) {
-				url += "&charttype=" + chartType;
+				url.append("&charttype=").append(chartType);
 			}
 			
-			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(), url, fileFormat);
+			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(), url.toString(), fileFormat);
 		}
 		
 		context.put(FacilioConstants.ContextNames.FILE_URL, fileUrl);
@@ -264,7 +266,7 @@ public class GetExportReportDataCommand implements Command {
 		return records;
 	}
 	
-	private String getClientUrl(String moduleName, Long reportId, FileFormat fileFormat) {
+	private StringBuilder getClientUrl(String moduleName, Long reportId, FileFormat fileFormat) {
 		StringBuilder url = new StringBuilder(AwsUtil.getConfig("clientapp.url")).append("/app/");
 		if (moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER)) {
 			url.append("wo");
@@ -284,7 +286,7 @@ public class GetExportReportDataCommand implements Command {
 		if(fileFormat == FileFormat.IMAGE) {
 			url.append("/show");
 		}
-		return url.toString();
+		return url;
 	}
 	
 	private String addAnalyticsConfigAndGetUrl(FileFormat fileFormat) {

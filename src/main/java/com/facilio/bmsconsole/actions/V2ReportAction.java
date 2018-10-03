@@ -430,6 +430,8 @@ public class V2ReportAction extends FacilioAction {
 		if (reportId != -1) {
 			exportChain = FacilioChainFactory.getExportReportFileChain();
 			setReportWithDataContext(context);
+			reportContext.setDateOperator(dateOperator);
+			reportContext.setDateValue(dateOperatorValue);
 		}
 		else {
 			exportChain = FacilioChainFactory.getExportReadingReportFileChain();
@@ -461,6 +463,8 @@ public class V2ReportAction extends FacilioAction {
 		if (reportId != -1) {
 			mailReportChain = FacilioChainFactory.sendReportMailChain();
 			setReportWithDataContext(context);
+			reportContext.setDateOperator(dateOperator);
+			reportContext.setDateValue(dateOperatorValue);
 		}
 		else {
 			mailReportChain = FacilioChainFactory.sendReadingReportMailChain();
