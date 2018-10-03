@@ -24,8 +24,9 @@ public class ValidateAssetTypeDeletion implements Command {
 		FacilioModule assetModule = ModuleFactory.getAssetsModule();
 		GenericSelectRecordBuilder assetSelectBuilder = new GenericSelectRecordBuilder()
 				.select(Arrays.asList(FieldFactory.getIdField(assetModule))).table(assetModule.getTableName())
+				.innerJoin("Resources").on("Assets.ID=Resources.ID")
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(assetModule))
-				.andCustomWhere("ASSET_TYPE = ?", recordID).limit(1);
+				.andCustomWhere("ASSET_TYPE = ? AND (Resources.SYS_DELETED IS NULL OR Resources.SYS_DELETED = ?)", recordID, false).limit(1);
 		List<Map<String, Object>> result = assetSelectBuilder.get();
 
 		List<String> moduleNames = new ArrayList<>();
