@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -27,45 +28,9 @@ public class EditFormCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		FacilioForm oldForm = ((List<FacilioForm>) context.get(FacilioConstants.ContextNames.FORMS)).get(0);
 		FacilioForm editedForm = (FacilioForm) context.get(FacilioConstants.ContextNames.EDITED_FORM);
-		
+		FacilioModule parent = oldForm.getModule();
 		if (oldForm.getId() == -1) {
-			long orgId = AccountUtil.getCurrentOrg().getId();
-			editedForm.setOrgId(orgId);
-			FacilioModule parent = oldForm.getModule();
-			editedForm.setModule(parent);
-			Map<String, Object> props = FieldUtil.getAsProperties(editedForm);
-			FacilioModule formModule = ModuleFactory.getFormModule();
-			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-					.table(formModule.getTableName())
-					.fields(FieldFactory.getFormFields());
-			
-			insertBuilder.insert(props);
-			
-			long id = (long) props.get("id");
-			
-			List<Map<String, Object>> fieldProps = new ArrayList<>();
-			
-			int i = 1;
-			
-			for (FormField f: editedForm.getFields()) {
-				f.setFormId(id);
-				f.setOrgId(orgId);
-				f.setSequenceNumber(i);
-				Map<String, Object> prop = FieldUtil.getAsProperties(f);
-				if (prop.get("required") == null) {
-					prop.put("required", false);
-				}
-				fieldProps.add(prop);
-				++i;
-			}
-			
-			FacilioModule formFieldModule = ModuleFactory.getFormFieldsModule();
-			GenericInsertRecordBuilder fieldInsertBuilder = new GenericInsertRecordBuilder()
-					.table(formFieldModule.getTableName())
-					.fields(FieldFactory.getFormFieldsFields())
-					.addRecords(fieldProps);
-			
-			fieldInsertBuilder.save();
+			FormsAPI.createForm(editedForm, parent);
 		} else {
 			editedForm.setId(oldForm.getId());
 			Map<String, Object> props = FieldUtil.getAsProperties(editedForm);
