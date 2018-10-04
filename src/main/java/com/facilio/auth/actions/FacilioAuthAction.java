@@ -1,5 +1,6 @@
 package com.facilio.auth.actions;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -321,6 +322,44 @@ public class FacilioAuthAction extends ActionSupport {
         return ERROR;
     }
 
+    public String loadWebView()
+    {
+    	 HttpServletRequest request = ServletActionContext.getRequest();
+         HttpServletResponse response = ServletActionContext.getResponse();
+        String authtoken =  request.getParameter("authtoken");
+        String serviceurl = request.getParameter("serviceurl");
+        
+        Cookie cookie = new Cookie("fc.idToken.facilio", authtoken);
+        
+        String parentdomain = request.getServerName().replaceAll("app.", "");
+        cookie.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        if( ! AwsUtil.isDevelopment()) {
+            cookie.setSecure(true);
+        }
+        cookie.setDomain(parentdomain);
+        response.addCookie(cookie);
+
+        Cookie authmodel = new Cookie("fc.authtype", "facilio");
+        authmodel.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
+        authmodel.setPath("/");
+        authmodel.setHttpOnly(false);
+        authmodel.setSecure(true);
+
+        authmodel.setDomain(parentdomain);
+        LOGGER.info("#################### facilio.in::: " + request.getServerName());
+        response.addCookie(authmodel);
+
+        try {
+			response.sendRedirect(serviceurl);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+       	return null;
+    }
     private Boolean verifyPassword(String emailaddress, String password) {
         boolean passwordValid = false;
         Connection conn = null;
