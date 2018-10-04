@@ -323,14 +323,13 @@ public class FacilioAuthAction extends ActionSupport {
 
     public String loadWebView()
     {
-    	 HttpServletRequest request = ServletActionContext.getRequest();
-         HttpServletResponse response = ServletActionContext.getResponse();
+    	 	HttpServletRequest request = ServletActionContext.getRequest();
+        HttpServletResponse response = ServletActionContext.getResponse();
         String authtoken =  request.getParameter("authtoken");
         String serviceurl = request.getParameter("serviceurl");
+        String parentdomain = request.getServerName().replaceAll("app.", "");
         
         Cookie cookie = new Cookie("fc.idToken.facilio", authtoken);
-        
-        String parentdomain = request.getServerName().replaceAll("app.", "");
         cookie.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
         cookie.setPath("/");
         cookie.setHttpOnly(true);
@@ -349,14 +348,6 @@ public class FacilioAuthAction extends ActionSupport {
         LOGGER.info("#################### facilio.in::: " + request.getServerName());
         response.addCookie(authmodel);
         
-        Cookie facilioCookie = new Cookie("fc.idToken	", "facilio");
-        facilioCookie.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
-        facilioCookie.setPath("/");
-        facilioCookie.setHttpOnly(false);
-        facilioCookie.setSecure(true);
-        facilioCookie.setDomain(parentdomain);
-        response.addCookie(facilioCookie);
-
         try {
 			response.sendRedirect(serviceurl);
 		} catch (IOException e) {
