@@ -427,7 +427,7 @@ public class AwsUtil
 			Message message = new Message().withSubject(subjectContent).withBody(body);
 
 			try {
-				if (AccountUtil.getCurrentOrg().getId() == 104) {
+				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 104) {
 					LOGGER.info("Sending email : "+mailJson.toJSONString());
 				}
 				SendEmailRequest request = new SendEmailRequest().withSource((String) mailJson.get("sender"))
@@ -436,7 +436,7 @@ public class AwsUtil
 						.withRegion(Regions.US_WEST_2).withCredentials(getAWSCredentialsProvider()).build();
 				client.sendEmail(request);
 				LOGGER.info("Email sent!");
-				if (AccountUtil.getCurrentOrg().getId() == 104) {
+				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 104) {
 					LOGGER.info(mailJson.toJSONString());
 				}
 			} catch (Exception ex) {
