@@ -29,6 +29,10 @@ public class FetchReportExtraMeta implements Command {
 		
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
 		
+		if (report.getDataPoints() == null || report.getDataPoints().isEmpty()) {
+			return false;
+		}
+		
 		JSONObject safeLimit = new JSONObject();
 		
 		Map<String,Map<String, List<ReadingAlarmContext>>> alarmsMap = new HashMap<>();

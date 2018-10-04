@@ -8,6 +8,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.constants.FacilioConstants;
 import com.facilio.report.context.ReportContext;
+import com.facilio.report.context.TransformReportDataIfc;
 
 public class CustomTransformReportDataCommand implements Command {
 
@@ -19,9 +20,10 @@ public class CustomTransformReportDataCommand implements Command {
 			Map<String, Map<String, Map<Object, Object>>> reportData = (Map<String, Map<String, Map<Object, Object>>>) context.get(FacilioConstants.ContextNames.REPORT_DATA);
 			Set<Object> xValues = (Set<Object>) context.get(FacilioConstants.ContextNames.REPORT_X_VALUES);
 			if (report.getTransformClassObject() != null) {
-				reportData = report.getTransformClassObject().newInstance().transformReportData(report, reportData, xValues);
-				context.put(FacilioConstants.ContextNames.REPORT_X_VALUES, xValues);
-				context.put(FacilioConstants.ContextNames.REPORT_DATA, reportData);
+				TransformReportDataIfc transformObj = report.getTransformClassObject().newInstance();
+				transformObj.transformReportData(report, reportData, xValues);
+				context.put(FacilioConstants.ContextNames.REPORT_X_VALUES, transformObj.getxValues());
+				context.put(FacilioConstants.ContextNames.REPORT_DATA, transformObj.getReportData());
 			}
 		}
 		return false;

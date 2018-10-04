@@ -22,10 +22,14 @@ public class CalculateDerivationCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		
-		Set<Object> xValues = (Set<Object>) context.get(FacilioConstants.ContextNames.REPORT_X_VALUES);
-		Map<String, Map<String, Map<Object, Object>>> transformedData = (Map<String, Map<String, Map<Object, Object>>>) context.get(FacilioConstants.ContextNames.REPORT_DATA);
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
 		
+		if (report.getDataPoints() == null || report.getDataPoints().isEmpty()) {
+			return false;
+		}
+		
+		Set<Object> xValues = (Set<Object>) context.get(FacilioConstants.ContextNames.REPORT_X_VALUES);
+		Map<String, Map<String, Map<Object, Object>>> transformedData = (Map<String, Map<String, Map<Object, Object>>>) context.get(FacilioConstants.ContextNames.REPORT_DATA);
 		Map<String,Object> wfParams = new HashMap<>();
 		wfParams.put("xValues", xValues);
 		for( ReportDataPointContext rdp : report.getDataPoints()) {
