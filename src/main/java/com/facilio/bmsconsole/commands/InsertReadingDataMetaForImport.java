@@ -22,14 +22,8 @@ public class InsertReadingDataMetaForImport implements Command {
 		ArrayListMultimap<String, Long> recordsList = (ArrayListMultimap<String, Long>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		
 		List<Long> resourceIds = new ArrayList(recordsList.values());
-		System.out.println(resourceIds);
 		List<ResourceContext> resources = ResourceAPI.getResources(resourceIds, false);
-		for( ResourceContext resource : resources) {
-			System.out.println(resource.getName());
-			List<ResourceContext> singleResource = new ArrayList<>();
-			singleResource.add(resource);
-			ReadingsAPI.updateReadingDataMeta(singleResource);
-		}
+		ReadingsAPI.updateReadingDataMeta(resources);
 		LOGGER.severe("READING DATA META UPDATED");
 		return false;
 	}
