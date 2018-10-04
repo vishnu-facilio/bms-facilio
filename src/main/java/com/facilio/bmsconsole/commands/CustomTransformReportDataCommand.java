@@ -15,7 +15,7 @@ public class CustomTransformReportDataCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
-		if (report != null && report.getTransformWorkflow() != null) {
+		if (report != null) {
 			Map<String, Map<String, Map<Object, Object>>> reportData = (Map<String, Map<String, Map<Object, Object>>>) context.get(FacilioConstants.ContextNames.REPORT_DATA);
 			Set<Object> xValues = (Set<Object>) context.get(FacilioConstants.ContextNames.REPORT_X_VALUES);
 			if (report.getTransformClassObject() != null) {
