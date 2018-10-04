@@ -104,7 +104,7 @@ public class AddAndSchedulePMTriggerCommand implements Command {
 				break;
 			case FIXED:
 			case FLOATING:
-				throw new Exception();
+				throw new IllegalArgumentException("PM Of type Multiple cannot have this type of trigger");
 			}
 			if (pmJobs != null) {
 				//nextExecutionTimes.put(trigger.getId(), pmJob.getNextExecutionTime());

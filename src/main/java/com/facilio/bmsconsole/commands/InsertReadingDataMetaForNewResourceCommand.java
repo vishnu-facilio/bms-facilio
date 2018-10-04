@@ -61,7 +61,7 @@ public class InsertReadingDataMetaForNewResourceCommand implements Command,Seria
 						builder.addRecord(FieldUtil.getAsProperties(dataMeta));
 					}
 					builder.save();
-			}
+				}
 				
 			}
 		}

@@ -1434,8 +1434,8 @@ public class FacilioChainFactory {
 		c.addCommand(new ValidatePMTriggersCommand());
 		c.addCommand(new ValidateTasksCommand());
 		c.addCommand(new AddPMReadingsForTasks());
-		c.addCommand(new CreateWorkorderTemplateCommand());
-		c.addCommand(new AddPreventiveMaintenanceCommand());
+		c.addCommand(new CreateWorkorderTemplateCommand());	  // template addition
+		c.addCommand(new AddPreventiveMaintenanceCommand()); // pm addition
 		c.addCommand(new AddResourceReadingRelCommand());
 		c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
 		c.addCommand(new AddAndSchedulePMTriggerCommand());

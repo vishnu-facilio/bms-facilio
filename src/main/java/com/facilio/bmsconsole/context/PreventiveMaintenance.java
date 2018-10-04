@@ -345,7 +345,7 @@ public class PreventiveMaintenance extends ResourceContext {
 	
 	public static enum PMAssignmentType {
 		
-		ALL_FLOORS, 
+		ALL_FLOORS,
 		ALL_SPACES,
 		SPACE_CATEGORY,
 		ASSET_CATEGORY,
