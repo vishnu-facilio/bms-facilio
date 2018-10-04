@@ -1142,8 +1142,7 @@ public static long getSitesCount() throws Exception {
 				.select(fields)
 				.module(assetModule)
 				.beanClass(AssetContext.class)
-				.andCondition(spaceCond)
-				.groupBy("Assets.SITE_ID");
+				.andCondition(spaceCond);
 		
 		List<Map<String, Object>> rs = selectBuilder.getAsProps();
 		if (rs == null || rs.isEmpty()) {
