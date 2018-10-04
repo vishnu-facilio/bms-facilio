@@ -20,8 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.facilio.auth.cookie.FacilioCookie;
-import com.facilio.aws.util.AwsUtil;
 import org.apache.commons.chain.Chain;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
@@ -30,13 +28,14 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.impl.UserBeanImpl;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.auth.cookie.FacilioCookie;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.actions.PortalInfoAction;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.auth.CognitoUtil;
-import com.facilio.fw.auth.LoginUtil;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionContext;
@@ -346,10 +345,17 @@ public class FacilioAuthAction extends ActionSupport {
         authmodel.setPath("/");
         authmodel.setHttpOnly(false);
         authmodel.setSecure(true);
-
         authmodel.setDomain(parentdomain);
         LOGGER.info("#################### facilio.in::: " + request.getServerName());
         response.addCookie(authmodel);
+        
+        Cookie facilioCookie = new Cookie("fc.idToken	", "facilio");
+        facilioCookie.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
+        facilioCookie.setPath("/");
+        facilioCookie.setHttpOnly(false);
+        facilioCookie.setSecure(true);
+        facilioCookie.setDomain(parentdomain);
+        response.addCookie(facilioCookie);
 
         try {
 			response.sendRedirect(serviceurl);
