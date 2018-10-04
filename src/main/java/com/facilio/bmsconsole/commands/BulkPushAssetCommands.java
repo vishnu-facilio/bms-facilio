@@ -31,6 +31,7 @@ public class BulkPushAssetCommands implements Command {
 
 	@Override
 	public boolean execute(Context context)throws Exception {
+		LOGGER.severe("BulkPush Asset");
 		List<FacilioModule> moduleList = new ArrayList<>();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		ArrayListMultimap<String, Long> recordsList = (ArrayListMultimap<String, Long>) context.get(FacilioConstants.ContextNames.RECORD_LIST);

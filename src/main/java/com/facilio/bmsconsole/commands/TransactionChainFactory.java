@@ -184,10 +184,9 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(new ProcessImportCommand());
 			c.addCommand(new PopulateImportProcessCommand());
-			c.addCommand(new ForkChainToInstantJobCommand()
-					.addCommand(new UpdateBaseAndResourceCommand())
-					.addCommand(new InsertReadingDataMetaForNewResourceCommand())
-					.addCommand(new SendEmailCommand()));
+			c.addCommand(new UpdateBaseAndResourceCommand());
+			c.addCommand(new InsertReadingDataMetaForImport());
+			c.addCommand(new SendEmailCommand());
 			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}
@@ -198,9 +197,8 @@ public class TransactionChainFactory {
 			c.addCommand(new SeperateToCategoriesCommand());
 			c.addCommand(new SetModuleForSpecialAssetsCommand());
 			c.addCommand(new BulkPushAssetCommands());
-			c.addCommand(new ForkChainToInstantJobCommand()
-					.addCommand(new InsertReadingDataMetaForNewResourceCommand())
-					.addCommand(new SendEmailCommand()));
+			c.addCommand(new InsertReadingDataMetaForImport());
+			c.addCommand(new SendEmailCommand());
 			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}

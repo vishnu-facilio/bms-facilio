@@ -45,7 +45,6 @@ public class UpdateBaseAndResourceCommand implements Command,Serializable {
 			}
 			if(updateBaseQueryColumn != null) {
 				try { Connection con = FacilioConnectionPool.INSTANCE.getConnection();
-				
 				for(int done= 0 ;done< readingsList.size();) {
 					String updateResourceQuery = "UPDATE Resources SET SPACE_ID = CASE ID";
 					String updateBaseSpaceQuery = "UPDATE BaseSpace SET "+ updateBaseQueryColumn +" = CASE ID";

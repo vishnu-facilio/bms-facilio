@@ -540,11 +540,12 @@ public class ReadingsAPI {
 	}
 	
 	public static void updateReadingDataMeta() throws Exception {
-		updateReadingDataMeta(false);
-	}
-	public static void updateReadingDataMeta(boolean isFromAssetImport) throws Exception {
 
 		List<ResourceContext> resourcesList= ResourceAPI.getAllResources();
+		updateReadingDataMeta(resourcesList);
+	}
+	public static void updateReadingDataMeta(List<ResourceContext> resourcesList) throws Exception {
+		
 		long orgId=AccountUtil.getCurrentOrg().getOrgId();
 		
 		
@@ -560,12 +561,10 @@ public class ReadingsAPI {
 			
 			
 			if(resourceType==ResourceContext.ResourceType.SPACE.getValue()) {
-				if(!isFromAssetImport) {
-					context.put(FacilioConstants.ContextNames.PARENT_ID, resourceId);
-					Chain getSpaceSpecifcReadingsChain = FacilioChainFactory.getSpaceReadingsChain();
-					getSpaceSpecifcReadingsChain.execute(context);
-					moduleList = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
-				}
+				context.put(FacilioConstants.ContextNames.PARENT_ID, resourceId);
+				Chain getSpaceSpecifcReadingsChain = FacilioChainFactory.getSpaceReadingsChain();
+				getSpaceSpecifcReadingsChain.execute(context);
+				moduleList = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
 			}
 			else if(resourceType==ResourceContext.ResourceType.ASSET.getValue()) {
 				context.put(FacilioConstants.ContextNames.PARENT_ID, resourceId);
@@ -599,7 +598,6 @@ public class ReadingsAPI {
 		}
 		builder.save();
 	}
-
 	public static int getDataInterval(long resourceId, FacilioModule module) throws Exception { //Return in minutes	
 		ReadingContext readingContext = new ReadingContext();
 		readingContext.setParentId(resourceId);
