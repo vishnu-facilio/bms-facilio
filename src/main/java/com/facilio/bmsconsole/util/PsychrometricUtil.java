@@ -8,6 +8,12 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 
 public class PsychrometricUtil {
 	
+	private static final double RGAS = 8.31441;            							// Universal gas constant in J/mol/K
+	private static final double MOLMASSAIR = 0.028964;     							// mean molar mass of dry air in kg/mol
+	private static final double KILO = 1.e+03;             							// exact
+	private static final double ZEROC = 273.15;          							  // Zero ºC expressed in K
+	private static final double INVALID = -99999;         								 // Invalid value
+
 	private static double ZERO_CELSIUS = 273.15;            // Zero ºC expressed in K
 
 	public static Double getKelvinFromCelsius(Double celsius) {
@@ -25,6 +31,29 @@ public class PsychrometricUtil {
 		
 		Double dp = getDewPointTemperatureFromRelativeHumudity(weatherReading);
 		System.out.println("dp::::" +dp);
+	}
+	
+	public static Double getMoistAirEnthalpy(Map<String,Object> weatherReading) {
+		
+		Double dryBulbTemperature = (Double) FieldUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("temperature"));
+		Double pressure = ((Double) FieldUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("pressure"))) * 100;
+		Double relativeHumidity = (Double) FieldUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("humidity"));
+		
+		Double humidityRatio = getHumidityRatioFromRelativeHumidity(dryBulbTemperature, relativeHumidity, pressure);
+		
+		return getMoistAirEnthalpy(dryBulbTemperature,humidityRatio);
+	}
+	
+	public static Double getMoistAirEnthalpy(Double dryBulbTemperature,Double pressure,Double relativeHumidity) {
+		
+		Double humidityRatio = getHumidityRatioFromRelativeHumidity(dryBulbTemperature, relativeHumidity, pressure);
+		
+		return getMoistAirEnthalpy(dryBulbTemperature,humidityRatio);
+	}
+	
+	public static Double getMoistAirEnthalpy(Double dryBulbTemperature,Double humidityRatio) {
+		
+		return (1.006*dryBulbTemperature + humidityRatio*(2501.0 + 1.86*dryBulbTemperature))*KILO;
 	}
 	
 	public static Double getDewPointTemperatureFromRelativeHumudity(Map<String,Object> weatherReading) {
@@ -47,7 +76,6 @@ public class PsychrometricUtil {
 		return getWetBulbTemperatureFromHumidityRatio(dryBulbTemperature, humidityRatio, pressure);
 	}
 	
-	private static final double KILO = 1.e+03;
 	public static Double getEnthalpy(Map<String,Object> weatherReading) {
 		return (Double) FieldUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("temperature")) * KILO * 1.006;
 	}

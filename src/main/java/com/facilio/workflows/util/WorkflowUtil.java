@@ -71,6 +71,7 @@ import com.facilio.workflows.functions.FacilioFunctionsParamType;
 import com.facilio.workflows.functions.FacilioListFunction;
 import com.facilio.workflows.functions.FacilioMapFunction;
 import com.facilio.workflows.functions.FacilioMathFunction;
+import com.facilio.workflows.functions.FacilioPsychrometricsFunction;
 import com.facilio.workflows.functions.FacilioReadingFunctions;
 import com.facilio.workflows.functions.FacilioStringFunction;
 import com.facilio.workflows.functions.FacilioWorkflowFunctionInterface;
@@ -1415,6 +1416,9 @@ public class WorkflowUtil {
 		case "readings" :
 			facilioWorkflowFunction = FacilioReadingFunctions.getFacilioReadingFunctions(functionName);
 			break;
+		case "psychrometrics" :
+			facilioWorkflowFunction = FacilioPsychrometricsFunction.getFacilioMathFunction(functionName);
+			break;
 		}
 		
 		
@@ -1452,6 +1456,9 @@ public class WorkflowUtil {
 			break;
 		case "readings" :
 			facilioWorkflowFunction = new ArrayList<>( FacilioReadingFunctions.getAllFunctions().values());
+			break;
+		case "psychrometrics" :
+			facilioWorkflowFunction = new ArrayList<>( FacilioPsychrometricsFunction.getAllFunctions().values());
 			break;
 		}
 		
