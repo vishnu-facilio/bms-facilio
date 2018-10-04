@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.NumberField;
+import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.ExportUtil;
 import com.facilio.constants.FacilioConstants;
@@ -125,7 +126,7 @@ public class GetExportReportDataCommand implements Command {
 				dateRange.put("endTime", report.getDateRange().getEndTime());
 				dateRange.put("operatorId", report.getDateOperator());
 				dateRange.put("value", report.getDateValue());
-				url.append("&daterange=").append(dateRange.toJSONString());
+				url.append("&daterange=").append(ReportsUtil.encodeURIComponent(dateRange.toJSONString()));
 			}
 			String chartType = (String) context.get("chartType");
 			if (chartType != null) {
