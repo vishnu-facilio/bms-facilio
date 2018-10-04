@@ -340,17 +340,17 @@ public class AssetAction extends FacilioAction {
 		this.buildingIds = buildingIds;
 	}
 	
-	private String qrValue;
-	public String getQrValue() {
-		return qrValue;
+	private String value;
+	public String getValue() {
+		return value;
 	}
-	public void setQrValue(String qrValue) {
-		this.qrValue = qrValue;
+	public void setValue(String value) {
+		this.value = value;
 	}
-	
+
 	public String fetchAssetFromQR() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.QR_VALUE, qrValue);
+		context.put(FacilioConstants.ContextNames.QR_VALUE, value);
 		
 		Chain getAssetChain = ReadOnlyChainFactory.getAssetFromQRChain();
 		getAssetChain.execute(context);
