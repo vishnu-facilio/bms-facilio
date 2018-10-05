@@ -782,6 +782,7 @@ public class FormulaFieldAPI {
 		params.put("xValues", currentxValues);
 		String wfXmlString = WorkflowUtil.getXmlStringFromWorkflow(workflow);
 		LOGGER.info("Optimised wfXmlString -- "+wfXmlString);
+		LOGGER.info("Meta -- "+workflow.getMetas());
 		LOGGER.info("wfParams :: "+params);
 		long workflowExecutionStartTime = System.currentTimeMillis();
 		Map<Object, Object> result = (Map<Object,Object>) WorkflowUtil.getWorkflowExpressionResult(wfXmlString, params);
