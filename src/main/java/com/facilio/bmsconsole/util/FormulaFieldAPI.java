@@ -785,7 +785,7 @@ public class FormulaFieldAPI {
 		LOGGER.info("Meta -- "+workflow.getMetas());
 		LOGGER.info("wfParams :: "+params);
 		long workflowExecutionStartTime = System.currentTimeMillis();
-		Map<Object, Object> result = (Map<Object,Object>) WorkflowUtil.getWorkflowExpressionResult(wfXmlString, params);
+		Map<Object, Object> result = (Map<Object,Object>) WorkflowUtil.getWorkflowExpressionResult(wfXmlString, params, null, false, false);
 		LOGGER.info("Time taken for optimised workflow execution : "+(System.currentTimeMillis() - workflowExecutionStartTime));
 		
 		long readingsStartTime = System.currentTimeMillis();
@@ -828,8 +828,8 @@ public class FormulaFieldAPI {
 		if (meta.getResourceId() == -1 && resourceId == -1) {
 			throw new IllegalArgumentException("Both the resource ids cannot be empty");
 		}
-		
-		FacilioField parentId = modBean.getField("parentId", meta.getModuleName());
+		long parentId = resourceId == -1 ? meta.getResourceId() : resourceId;
+		FacilioField parentIdField = modBean.getField("parentId", meta.getModuleName());
 		FacilioField ttime = modBean.getField("ttime", meta.getModuleName());
 		FacilioField valField = modBean.getField(meta.getFieldName(), meta.getModuleName());
 		List<FacilioField> fields = new ArrayList<>();
@@ -838,7 +838,7 @@ public class FormulaFieldAPI {
 		SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
 																	.moduleName(meta.getModuleName())
 																	.select(fields)
-																	.andCondition(CriteriaAPI.getCondition(parentId, String.valueOf(resourceId), PickListOperators.IS))
+																	.andCondition(CriteriaAPI.getCondition(parentIdField, String.valueOf(parentId), PickListOperators.IS))
 																	.andCondition(CriteriaAPI.getCondition(ttime, range.toString(), DateOperators.BETWEEN))
 																	.andCondition(CriteriaAPI.getCondition(valField, CommonOperators.IS_NOT_EMPTY))
 																	;
