@@ -773,11 +773,11 @@ public class FormulaFieldAPI {
 		Map<String, Object> params = new HashMap<>(wfParams);
 		Set<Object> currentxValues = new TreeSet<>(xValues);
 		params.putAll(fetchResourceParams(resourceId, workflow.getMetas(), range, modBean, currentxValues));
-		params.put("xValues", xValues);
+		params.put("xValues", currentxValues);
 		String wfXmlString = WorkflowUtil.getXmlStringFromWorkflow(workflow);
 		LOGGER.info("Optimised wfXmlString -- "+wfXmlString);
-		LOGGER.info("wfParams");
-		Map<Object, Object> result = (Map<Object,Object>) WorkflowUtil.getWorkflowExpressionResult(wfXmlString, wfParams);
+		LOGGER.info("wfParams :: "+params);
+		Map<Object, Object> result = (Map<Object,Object>) WorkflowUtil.getWorkflowExpressionResult(wfXmlString, params);
 		
 		if (result != null && !result.isEmpty()) {
 			List<ReadingContext> readings = new ArrayList<>();
