@@ -220,7 +220,6 @@ public class WorkflowContext implements Serializable {
 	public void setWorkflowUIMode(int workflowUIMode) {
 		this.workflowUIMode = WorkflowUIMode.valueOf(workflowUIMode);
 	}
-
 	public Object executeWorkflow(boolean ignoreNullValues) throws Exception {
 		
 		Object result = null;
@@ -274,9 +273,14 @@ public class WorkflowContext implements Serializable {
 			else if(wokflowExpresion instanceof IteratorContext) {
 		
 				IteratorContext iteratorContext = (IteratorContext) wokflowExpresion;
-				iteratorContext.setVariableToExpresionMap(variableResultMap1);
 				iteratorContext.setWorkflowContext(workflowContext);
 				iteratorContext.execute();
+			}
+			else if(wokflowExpresion instanceof ConditionContext) {
+				
+				ConditionContext conditionContext = (ConditionContext) wokflowExpresion;
+				conditionContext.setWorkflowContext(workflowContext);
+				conditionContext.execute();
 			}
 		}
 	}

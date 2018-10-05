@@ -60,10 +60,10 @@ public class IteratorContext implements Serializable,WorkflowExpression {
 		expressions.add(expression);
 	}
 	WorkflowContext workflowContext;
-	Map<String,Object> variableToExpresionMap;
 	
 	public Object execute() throws Exception {
 		
+		Map<String, Object> variableToExpresionMap = workflowContext.getVariableResultMap();
 		if(iteratableVariable == null || variableToExpresionMap.get(iteratableVariable) == null || !isIteratableVariable(variableToExpresionMap.get(iteratableVariable))) {
 			return null;
 		}
@@ -113,12 +113,6 @@ public class IteratorContext implements Serializable,WorkflowExpression {
 		return false;
 	}
 	
-	public Map<String, Object> getVariableToExpresionMap() {
-		return variableToExpresionMap;
-	}
-	public void setVariableToExpresionMap(Map<String, Object> variableToExpresionMap) {
-		this.variableToExpresionMap = variableToExpresionMap;
-	}
 	public String getLoopVariableValueName() {
 		return loopVariableValueName;
 	}
