@@ -30,6 +30,7 @@ import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -492,6 +493,8 @@ public class SpaceAPI {
 							childSpaces = getFloorChildren(parentSpace.getId());
 							break;
 					case SPACE:
+							childSpaces = getSpaceChildren(parentSpace.getId());
+							break;
 					case ZONE:
 							childSpaces = getZoneChildren(parentSpace.getId());
 							break;
@@ -500,6 +503,37 @@ public class SpaceAPI {
 					spaces.addAll(childSpaces);
 				}
 			}
+			return spaces;
+		}
+		return null;
+	}
+	private static List<BaseSpaceContext> getSpaceChildren(long spaceID) throws Exception {
+		List<Long> spaceIDs = new ArrayList<>();
+		spaceIDs.add(spaceID);
+		return getSpaceChildren(spaceIDs);
+	}
+	
+	
+	private static List<BaseSpaceContext> getSpaceChildren(List<Long> spaceIDs) throws Exception {
+		if(spaceIDs != null && !spaceIDs.isEmpty()) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
+			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE);
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+			Criteria criteria = new Criteria();
+			criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("spaceId1"),spaceIDs , NumberOperators.EQUALS));
+			criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("spaceId2"),spaceIDs , NumberOperators.EQUALS));
+			criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("spaceId3"),spaceIDs , NumberOperators.EQUALS));
+			
+			
+			SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
+																		.select(fields)
+																		.table(module.getTableName())
+																		.moduleName(module.getName())
+																		.beanClass(BaseSpaceContext.class)
+																		.andCriteria(criteria)
+																		;
+			List<BaseSpaceContext> spaces = selectBuilder.get();
 			return spaces;
 		}
 		return null;

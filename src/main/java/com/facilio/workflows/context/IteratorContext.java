@@ -60,7 +60,6 @@ public class IteratorContext implements Serializable,WorkflowExpression {
 		expressions.add(expression);
 	}
 	WorkflowContext workflowContext;
-	
 	public Object execute() throws Exception {
 		
 		Map<String, Object> variableToExpresionMap = workflowContext.getVariableResultMap();
