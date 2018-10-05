@@ -45,8 +45,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.GsonBuilder;
 
 public class AnomalyDetectorJob extends FacilioJob {
-	private static long SEVEN_DAYS_IN_MILLISEC = 7 * 24 * 60 * 60 * 1000L;
-	private static long FIFTEEN_MINUTES_IN_MILLISEC = 15 * 60 * 1000L;
+	private static long THIRTY_MINUTES_IN_MILLISEC = 30 * 60 * 1000L;
 
 	private static final Logger logger = Logger.getLogger(AnomalyDetectorJob.class.getName());
 
@@ -163,7 +162,8 @@ public class AnomalyDetectorJob extends FacilioJob {
 				if(siteIdToWeatherMapping.containsKey(siteId)){
 	    			siteTemperatureReadings = siteIdToWeatherMapping.get(siteId);
 	    		}else {
-	    			siteTemperatureReadings=AnomalySchedulerUtil.getWeatherReadingsForOneSite(startTime, endTime, siteId);
+	    			siteTemperatureReadings=AnomalySchedulerUtil.getWeatherReadingsForOneSite((startTime - THIRTY_MINUTES_IN_MILLISEC),
+	    					endTime, siteId);
 	    			siteIdToWeatherMapping.put(siteId, siteTemperatureReadings);
 	    		}
 
