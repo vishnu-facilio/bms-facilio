@@ -660,16 +660,13 @@ public class WorkflowUtil {
 	public static void parseExpression(WorkflowContext workflowContext) throws Exception {
 		List<WorkflowExpression> temp= new ArrayList<>();
 		if(workflowContext != null && workflowContext.getExpressions() != null) {
-			for(WorkflowExpression workflowExpression : workflowContext.getExpressions()) {
-				
+			for(int i = 0; i < workflowContext.getExpressions().size(); i++) {
+				WorkflowExpression workflowExpression = workflowContext.getExpressions().get(i);
 				if(workflowExpression instanceof ExpressionContext) {
 					ExpressionContext expressionContext = (ExpressionContext)  workflowExpression;
 					expressionContext = getExpressionContextFromExpressionString(expressionContext.getExpressionString(),expressionContext);
-					temp.add(expressionContext);
+					workflowContext.getExpressions().set(i, expressionContext);
 				}
-			}
-			for(WorkflowExpression temp1 :temp) {
-				workflowContext.addWorkflowExpression(temp1);
 			}
 		}
 	}

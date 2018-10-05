@@ -31,7 +31,14 @@ public class SingleResourceHistoricalFormulaCalculatorJob extends FacilioJob {
 			
 			FormulaFieldContext formula = FormulaFieldAPI.getFormulaField(formulaId);
 			DateRange range = new DateRange(startTime, endTime);
-			FormulaFieldAPI.historicalCalculation(formula, range, resourceId, isSystem);
+			
+			switch (formula.getTriggerTypeEnum()) {
+				case POST_LIVE_READING:
+					FormulaFieldAPI.optimisedHistoricalCalculation(formula, range, resourceId, isSystem);
+					break;
+				default:
+					FormulaFieldAPI.historicalCalculation(formula, range, resourceId, isSystem);
+			}
 			
 			String msg = "Time taken for Historical Formula calculation of formula : "+formulaId+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is "+(System.currentTimeMillis() - jobStartTime);
 			LOGGER.info(msg);
