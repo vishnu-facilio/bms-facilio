@@ -244,12 +244,12 @@ public class WorkflowContext implements Serializable {
 		}
 		
 //		if (AccountUtil.getCurrentOrg().getId() == 135 || AccountUtil.getCurrentOrg().getId() == 88) {
-			LOGGER.finer("variableToExpresionMap --- "+variableResultMap+" \n\n"+"expString --- "+getResultEvaluator());
+//			LOGGER.finer("variableToExpresionMap --- "+variableResultMap+" \n\n"+"expString --- "+getResultEvaluator());
 //		}
 		
 		result =  WorkflowUtil.evaluateExpression(getResultEvaluator(),variableResultMap, ignoreNullValues);
 //		if (AccountUtil.getCurrentOrg().getId() == 135 || AccountUtil.getCurrentOrg().getId() == 88) {
-			LOGGER.finer("result --- "+result);
+//			LOGGER.finer("result --- "+result);
 //		}
 		return result;
 	}
