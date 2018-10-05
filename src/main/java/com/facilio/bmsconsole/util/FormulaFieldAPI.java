@@ -732,11 +732,15 @@ public class FormulaFieldAPI {
 				LOGGER.info("Gonna perform optmised historical calculation for formula : "+formula.getId()+" for resource : "+singleResourceId);
 				if (formula.getMatchedResourcesIds().contains(singleResourceId)) {
 					LOGGER.debug("Matched");
+					long workflowStarttime = System.currentTimeMillis();
 					OptimisedFormulaCalculationWorkflow optimisedWorkflow = constructOptimisedWorkflowForHistoricalCalculation(formula.getWorkflow());
+					LOGGER.info("Time taken to generate optimised workflow : "+(System.currentTimeMillis() - workflowStarttime));
 					int deletedData = deleteOlderData(range.getStartTime(), range.getEndTime(), Collections.singletonList(singleResourceId), formula.getReadingField().getModule().getName());
 					LOGGER.info("Deleted rows for formula : "+formula.getName()+" between "+range+" is : "+deletedData);
 					Set<Object> xValues = new TreeSet<>(); 
+					long independentDataStarttime = System.currentTimeMillis();
 					Map<String,Object> wfParams = fetchIndependentParams(optimisedWorkflow.getMetas(), range, modBean, xValues);
+					LOGGER.info("Time taken to fetch independent data : "+(System.currentTimeMillis() - independentDataStarttime));
 					List<ReadingContext> currentReadings = computeOptimisedWorkflow(formula.getReadingField().getModule().getName(), optimisedWorkflow, range, wfParams, xValues, singleResourceId, modBean);
 					if (currentReadings != null && !currentReadings.isEmpty()) {
 						readings.addAll(currentReadings);
@@ -772,13 +776,18 @@ public class FormulaFieldAPI {
 	private static List<ReadingContext> computeOptimisedWorkflow(String fieldName, OptimisedFormulaCalculationWorkflow workflow, DateRange range, Map<String,Object> wfParams, Set<Object> xValues, long resourceId, ModuleBean modBean) throws Exception {
 		Map<String, Object> params = new HashMap<>(wfParams);
 		Set<Object> currentxValues = new TreeSet<>(xValues);
+		long resourceParamsStarttime = System.currentTimeMillis();
 		params.putAll(fetchResourceParams(resourceId, workflow.getMetas(), range, modBean, currentxValues));
+		LOGGER.info("Time taken to fetch resource params : "+(System.currentTimeMillis() - resourceParamsStarttime));
 		params.put("xValues", currentxValues);
 		String wfXmlString = WorkflowUtil.getXmlStringFromWorkflow(workflow);
 		LOGGER.info("Optimised wfXmlString -- "+wfXmlString);
 		LOGGER.info("wfParams :: "+params);
+		long workflowExecutionStartTime = System.currentTimeMillis();
 		Map<Object, Object> result = (Map<Object,Object>) WorkflowUtil.getWorkflowExpressionResult(wfXmlString, params);
+		LOGGER.info("Time taken for optimised workflow execution : "+(System.currentTimeMillis() - workflowExecutionStartTime));
 		
+		long readingsStartTime = System.currentTimeMillis();
 		if (result != null && !result.isEmpty()) {
 			List<ReadingContext> readings = new ArrayList<>();
 			for (Map.Entry<Object, Object> entry : result.entrySet()) {
@@ -790,6 +799,7 @@ public class FormulaFieldAPI {
 			}
 			return readings;
 		}
+		LOGGER.info("Time taken to generate readings from Workflow result : "+(System.currentTimeMillis() - readingsStartTime));
 		return null;
 	}
 	
