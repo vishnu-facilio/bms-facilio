@@ -41,7 +41,7 @@ public class FieldFactory {
 		public static List<String> alarmsFieldsInclude = new ArrayList<String>();
 		static {
 			alarmsFieldsInclude.add("isAcknowledged");
-//			alarmsFieldsInclude.add("sourceType");
+			alarmsFieldsInclude.add("sourceType");
 //			alarmsFieldsInclude.add("serialNumber");
 			alarmsFieldsInclude.add("clearedBy");
 			alarmsFieldsInclude.add("status");
