@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -1267,28 +1269,53 @@ public class WorkflowUtil {
         
         workflowContext.setParameters(getParameterListFromWorkflowString(workflow));
         
-        NodeList childNodes = doc.getDocumentElement().getChildNodes();
+        List<WorkflowExpression> workflowExpressionList = getWorkflowExpression(workflow);
+        
+        workflowContext.setWorkflowExpressions(workflowExpressionList);
+        
+        NodeList resultNodes = doc.getElementsByTagName(RESULT_STRING);
+        if(resultNodes.getLength() > 0) {
+        	Node resultNode = resultNodes.item(0);
+        	if (resultNode.getNodeType() == Node.ELEMENT_NODE) {
+        		Element result  = (Element) resultNode;
+        		String resultString = result.getTextContent();
+        		workflowContext.setResultEvaluator(resultString);
+        	}
+        }
+        return workflowContext;
+	}
+	
+	
+	private static List<WorkflowExpression> getWorkflowExpression(String workflow) throws Exception {
+		
+		LOGGER.log(Level.SEVERE, "workflow -- "+workflow);
+		List<WorkflowExpression> workflowExpressions = new ArrayList<>();
+		InputStream stream = new ByteArrayInputStream(workflow.getBytes("UTF-16"));
+    	
+    	DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+    	DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+    	Document doc = dBuilder.parse(stream);
+        doc.getDocumentElement().normalize();
+        
+		NodeList childNodes = doc.getDocumentElement().getChildNodes();
         
         for (int i = 0; i < childNodes.getLength(); i++) {
         	
         	Node expressionNode = childNodes.item(i);
         	 
         	Document document = expressionNode.getOwnerDocument();
+        	DOMImplementationLS domImplLS = (DOMImplementationLS) document.getImplementation();
+            LSSerializer serializer = domImplLS.createLSSerializer();
+            serializer.getDomConfig().setParameter("xml-declaration", Boolean.FALSE);
         	
         	if(expressionNode.getNodeName().equals(EXPRESSION_STRING)) {
         		
-        		DOMImplementationLS domImplLS = (DOMImplementationLS) document.getImplementation();
-            	
-            	LSSerializer serializer = domImplLS.createLSSerializer();
-            	
-            	serializer.getDomConfig().setParameter("xml-declaration", Boolean.FALSE);
-            	
             	String str = serializer.writeToString(expressionNode);
         		
         		ExpressionContext expressionContext = new ExpressionContext();
             	expressionContext.setExpressionString(str);
                  
-                workflowContext.addWorkflowExpression(expressionContext);
+                workflowExpressions.add(expressionContext);
         	}
         	else if(expressionNode.getNodeName().equals(ITERATOR_STRING)) {
         		
@@ -1312,44 +1339,16 @@ public class WorkflowUtil {
              			}
              		}
              		
-             		document.getDocumentElement().normalize();
-             		NodeList iteratorNodes = expressionNode.getChildNodes();
+             		String str = serializer.writeToString(expressionNode);
              		
-             		for (int j = 0; j < iteratorNodes.getLength(); j++) {
-             			Node iteratorExpressionNode = iteratorNodes.item(j);
-                   	 
-                    	if(iteratorExpressionNode.getNodeName().equals(EXPRESSION_STRING)) {
-                    		
-                    		Document iteratorExpressionDoc = iteratorExpressionNode.getOwnerDocument();
-                    		
-                    		DOMImplementationLS domImplLS = (DOMImplementationLS) iteratorExpressionDoc.getImplementation();
-                        	
-                        	LSSerializer serializer = domImplLS.createLSSerializer();
-                        	
-                        	serializer.getDomConfig().setParameter("xml-declaration", Boolean.FALSE);
-                        	
-                        	String str = serializer.writeToString(iteratorExpressionNode);
-                    		
-                    		ExpressionContext expressionContext = new ExpressionContext();
-                        	expressionContext.setExpressionString(str);
-                             
-                        	iteratorContext.addExpression(expressionContext);
-                    	}
-             		}
+             		List<WorkflowExpression> workflowExpressionList = getWorkflowExpression(str);
+             		
+             		iteratorContext.setWorkflowExpressions(workflowExpressionList);
             	}
-            	 workflowContext.addWorkflowExpression(iteratorContext);
+            	workflowExpressions.add(iteratorContext);
         	}
         }
-        NodeList resultNodes = doc.getElementsByTagName(RESULT_STRING);
-        if(resultNodes.getLength() > 0) {
-        	Node resultNode = resultNodes.item(0);
-        	if (resultNode.getNodeType() == Node.ELEMENT_NODE) {
-        		Element result  = (Element) resultNode;
-        		String resultString = result.getTextContent();
-        		workflowContext.setResultEvaluator(resultString);
-        	}
-        }
-        return workflowContext;
+        return workflowExpressions;
 	}
 	
 	public static Object evalCustomFunctions(WorkflowFunctionContext workflowFunctionContext,Map<String,Object> variableToExpresionMap) throws Exception {

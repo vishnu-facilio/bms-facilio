@@ -50,6 +50,10 @@ public class IteratorContext implements Serializable,WorkflowExpression {
 			}
 		}
 	}
+	public void setWorkflowExpressions(List<WorkflowExpression> workflowExpressions) throws Exception {
+		
+		this.expressions = workflowExpressions;
+	}
 	public void addExpression(WorkflowExpression expression) {
 		expressions = expressions == null ? new ArrayList<>() : expressions; 
 		
@@ -74,7 +78,7 @@ public class IteratorContext implements Serializable,WorkflowExpression {
 				variableToExpresionMap.put(loopVariableIndexName, i);
 				variableToExpresionMap.put(loopVariableValueName, iterateList.get(i));
 				
-				LOGGER.log(Level.SEVERE, "variableToExpresionMap -- "+variableToExpresionMap);
+//				LOGGER.log(Level.SEVERE, "variableToExpresionMap -- "+variableToExpresionMap);
 				
 				WorkflowContext.executeExpression(expressions, workflowContext);
 			}

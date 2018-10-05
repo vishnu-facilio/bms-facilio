@@ -80,6 +80,11 @@ public class WorkflowContext implements Serializable {
 		}
 	}
 	
+	public void setWorkflowExpressions(List<WorkflowExpression> workflowExpressions) throws Exception {
+		
+		this.expressions = workflowExpressions;
+	}
+	
 	public void addWorkflowExpression(WorkflowExpression expression) {
 		expressions = expressions == null ? new ArrayList<>() : expressions;
 		expressions.add(expression);
