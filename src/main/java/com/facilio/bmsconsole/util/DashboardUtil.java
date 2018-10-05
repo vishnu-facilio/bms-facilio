@@ -67,6 +67,7 @@ import com.facilio.bmsconsole.context.SiteContext.SiteType;
 import com.facilio.bmsconsole.context.UserWorkHourReading;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetVsWorkflowContext;
+import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -1128,7 +1129,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 	}
 	
 	
-	public static List<DashboardFolderContext> getDashboardListWithFolder(String moduleName) throws Exception {
+	public static List<DashboardFolderContext> getDashboardListWithFolder(String moduleName,boolean getOnlyMobileDashboard) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
@@ -1139,6 +1140,10 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
 				.andCustomWhere("BASE_SPACE_ID IS NULL")
 				.andCustomWhere("MODULEID = ?", module.getModuleId());
+		
+		if(getOnlyMobileDashboard) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("SHOW_HIDE_MOBILE", "showHideMobile", "true", BooleanOperators.IS));
+		}
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		

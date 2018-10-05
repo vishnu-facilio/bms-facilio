@@ -298,7 +298,11 @@ public class UserBeanImpl implements UserBean {
 	
 	@Override
 	public long inviteAdminConsoleUser(long orgId, User user) throws Exception {
-		return inviteUser(orgId, user);
+		long userId = inviteUser(orgId, user);
+		if(userId > 0) {
+			acceptUser(user);
+		}
+		return userId;
 	}
 
 	@Override
@@ -576,9 +580,12 @@ public class UserBeanImpl implements UserBean {
 
 	@Override
 	public boolean acceptInvite(String token, String password) throws Exception {
-
 		User user = getUserFromToken(token);
+		user.setPassword(password);
+		return acceptUser(user);
+	}
 
+	private boolean acceptUser(User user) throws Exception {
 		if(user != null) {
 			FacilioField inviteAcceptStatus = new FacilioField();
 			inviteAcceptStatus.setName("inviteAcceptStatus");
@@ -618,7 +625,7 @@ public class UserBeanImpl implements UserBean {
 				user = getInvitedUser(user.getOuid());
 				if(user != null) {
 					user.setUserVerified(true);
-					user.setPassword(password);
+					user.setPassword(user.getPassword());
 					updateUser(user);
 					// LicenseApi.updateUsedLicense(user.getLicenseEnum());
 					return true;

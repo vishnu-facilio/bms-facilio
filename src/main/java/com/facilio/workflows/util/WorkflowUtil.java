@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -57,6 +57,10 @@ import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.util.FacilioUtil;
+import com.facilio.workflows.conditions.context.ElseContext;
+import com.facilio.workflows.conditions.context.ElseIfContext;
+import com.facilio.workflows.conditions.context.IfContext;
+import com.facilio.workflows.context.ConditionContext;
 import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.IteratorContext;
 import com.facilio.workflows.context.ParameterContext;
@@ -226,6 +230,9 @@ public class WorkflowUtil {
 	static final String GROUP_BY_STRING =  "groupBy";
 	static final String CONDITION_STRING =  "condition";
 	static final String CONDITIONS_STRING =  "conditions";
+	static final String CONDITION_IF_STRING =  "if";
+	static final String CONDITION_IF_ELSE_STRING =  "elseif";
+	static final String CONDITION_ELSE_STRING =  "else";
 	static final String PATTERN_STRING =  "pattern";
 	static final String SEQUENCE_STRING =  "sequence";
 	static final String RESULT_STRING =  "result";
@@ -1267,28 +1274,53 @@ public class WorkflowUtil {
         
         workflowContext.setParameters(getParameterListFromWorkflowString(workflow));
         
-        NodeList childNodes = doc.getDocumentElement().getChildNodes();
+        List<WorkflowExpression> workflowExpressionList = getWorkflowExpressions(workflow);
+        
+        workflowContext.setWorkflowExpressions(workflowExpressionList);
+        
+        NodeList resultNodes = doc.getElementsByTagName(RESULT_STRING);
+        if(resultNodes.getLength() > 0) {
+        	Node resultNode = resultNodes.item(0);
+        	if (resultNode.getNodeType() == Node.ELEMENT_NODE) {
+        		Element result  = (Element) resultNode;
+        		String resultString = result.getTextContent();
+        		workflowContext.setResultEvaluator(resultString);
+        	}
+        }
+        return workflowContext;
+	}
+	
+	
+	private static List<WorkflowExpression> getWorkflowExpressions(String workflow) throws Exception {
+		
+		LOGGER.log(Level.SEVERE, "workflow -- "+workflow);
+		List<WorkflowExpression> workflowExpressions = new ArrayList<>();
+		InputStream stream = new ByteArrayInputStream(workflow.getBytes("UTF-16"));
+    	
+    	DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+    	DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+    	Document doc = dBuilder.parse(stream);
+        doc.getDocumentElement().normalize();
+        
+		NodeList childNodes = doc.getDocumentElement().getChildNodes();
         
         for (int i = 0; i < childNodes.getLength(); i++) {
         	
         	Node expressionNode = childNodes.item(i);
         	 
         	Document document = expressionNode.getOwnerDocument();
+        	DOMImplementationLS domImplLS = (DOMImplementationLS) document.getImplementation();
+            LSSerializer serializer = domImplLS.createLSSerializer();
+            serializer.getDomConfig().setParameter("xml-declaration", Boolean.FALSE);
         	
         	if(expressionNode.getNodeName().equals(EXPRESSION_STRING)) {
         		
-        		DOMImplementationLS domImplLS = (DOMImplementationLS) document.getImplementation();
-            	
-            	LSSerializer serializer = domImplLS.createLSSerializer();
-            	
-            	serializer.getDomConfig().setParameter("xml-declaration", Boolean.FALSE);
-            	
             	String str = serializer.writeToString(expressionNode);
         		
         		ExpressionContext expressionContext = new ExpressionContext();
             	expressionContext.setExpressionString(str);
                  
-                workflowContext.addWorkflowExpression(expressionContext);
+                workflowExpressions.add(expressionContext);
         	}
         	else if(expressionNode.getNodeName().equals(ITERATOR_STRING)) {
         		
@@ -1312,44 +1344,78 @@ public class WorkflowUtil {
              			}
              		}
              		
-             		document.getDocumentElement().normalize();
-             		NodeList iteratorNodes = expressionNode.getChildNodes();
+             		String str = serializer.writeToString(expressionNode);
              		
-             		for (int j = 0; j < iteratorNodes.getLength(); j++) {
-             			Node iteratorExpressionNode = iteratorNodes.item(j);
-                   	 
-                    	if(iteratorExpressionNode.getNodeName().equals(EXPRESSION_STRING)) {
-                    		
-                    		Document iteratorExpressionDoc = iteratorExpressionNode.getOwnerDocument();
-                    		
-                    		DOMImplementationLS domImplLS = (DOMImplementationLS) iteratorExpressionDoc.getImplementation();
-                        	
-                        	LSSerializer serializer = domImplLS.createLSSerializer();
-                        	
-                        	serializer.getDomConfig().setParameter("xml-declaration", Boolean.FALSE);
-                        	
-                        	String str = serializer.writeToString(iteratorExpressionNode);
-                    		
-                    		ExpressionContext expressionContext = new ExpressionContext();
-                        	expressionContext.setExpressionString(str);
-                             
-                        	iteratorContext.addExpression(expressionContext);
-                    	}
-             		}
+             		List<WorkflowExpression> workflowExpressionList = getWorkflowExpressions(str);
+             		
+             		iteratorContext.setWorkflowExpressions(workflowExpressionList);
             	}
-            	 workflowContext.addWorkflowExpression(iteratorContext);
+            	workflowExpressions.add(iteratorContext);
+        	}
+        	else if(expressionNode.getNodeName().equals(CONDITIONS_STRING)) {
+        		
+        		ConditionContext conditionContext= new ConditionContext();
+        		
+            	if(expressionNode.getNodeType() == Node.ELEMENT_NODE) {
+            		Element value = (Element) expressionNode;
+            		NodeList conditionChildNodes = value.getChildNodes();
+            		
+            		for(int j=0;j<conditionChildNodes.getLength();j++) {
+            			
+            			Node conditionChildNode = conditionChildNodes.item(j);
+            			
+            			if(conditionChildNode.getNodeName().equals(CONDITION_IF_STRING)) {
+            				if(conditionChildNode.getNodeType() == Node.ELEMENT_NODE) {
+            					IfContext ifContext = new IfContext();
+            					Element conditionChildElement = (Element) conditionChildNode;
+            					
+            					ifContext.setCriteria(conditionChildElement.getAttribute(CRITERIA_STRING));
+            					String str = serializer.writeToString(conditionChildElement);
+            					
+            					List<WorkflowExpression> workflowExpressionList = getWorkflowExpressions(str);
+            					
+            					ifContext.setWorkflowExpressions(workflowExpressionList);
+            					
+            					conditionContext.setIfContext(ifContext);
+            				}
+            			}
+            			else if(conditionChildNode.getNodeName().equals(CONDITION_IF_ELSE_STRING)) {
+            				if(conditionChildNode.getNodeType() == Node.ELEMENT_NODE) {
+            					Element conditionChildElement = (Element) conditionChildNode;
+            					
+            					ElseIfContext elseIfContext = new ElseIfContext();
+            					
+            					elseIfContext.setCriteria(conditionChildElement.getAttribute(CRITERIA_STRING));
+            					String str = serializer.writeToString(conditionChildElement);
+            					
+            					List<WorkflowExpression> workflowExpressionList = getWorkflowExpressions(str);
+            					
+            					elseIfContext.setWorkflowExpressions(workflowExpressionList);
+            					
+            					conditionContext.addElseIfContext(elseIfContext);
+            				}
+            			}
+            			else if(conditionChildNode.getNodeName().equals(CONDITION_ELSE_STRING)) {
+            				if(conditionChildNode.getNodeType() == Node.ELEMENT_NODE) {
+            					Element conditionChildElement = (Element) conditionChildNode;
+            					
+            					ElseContext elseContext = new ElseContext();
+            					
+            					String str = serializer.writeToString(conditionChildElement);
+            					
+            					List<WorkflowExpression> workflowExpressionList = getWorkflowExpressions(str);
+            					
+            					elseContext.setWorkflowExpressions(workflowExpressionList);
+            					
+            					conditionContext.setElseContext(elseContext);
+            				}
+            			}
+            		}
+            	}
+            	workflowExpressions.add(conditionContext);
         	}
         }
-        NodeList resultNodes = doc.getElementsByTagName(RESULT_STRING);
-        if(resultNodes.getLength() > 0) {
-        	Node resultNode = resultNodes.item(0);
-        	if (resultNode.getNodeType() == Node.ELEMENT_NODE) {
-        		Element result  = (Element) resultNode;
-        		String resultString = result.getTextContent();
-        		workflowContext.setResultEvaluator(resultString);
-        	}
-        }
-        return workflowContext;
+        return workflowExpressions;
 	}
 	
 	public static Object evalCustomFunctions(WorkflowFunctionContext workflowFunctionContext,Map<String,Object> variableToExpresionMap) throws Exception {

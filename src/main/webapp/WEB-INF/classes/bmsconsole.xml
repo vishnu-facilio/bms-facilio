@@ -31,7 +31,7 @@
 		<default-interceptor-ref name="defaultInterceptor" />
 		<global-results>
 			<result name="login" type="redirect">
-				<param name="location">/home.jsp</param>
+				<param name="location">/app/login</param>
 				<param name="parse">false</param>
 			</result>
 			<result name="unauthorized" type="redirect">

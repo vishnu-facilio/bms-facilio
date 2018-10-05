@@ -2604,8 +2604,15 @@ public class FieldFactory {
 		displayOrder.setDataType(FieldType.NUMBER);
 		displayOrder.setColumnName("DISPLAY_ORDER");
 		displayOrder.setModule(module);
-
 		fields.add(displayOrder);
+		
+		FacilioField showHideMobile = new FacilioField();
+		showHideMobile.setName("showHideMobile");
+		showHideMobile.setDataType(FieldType.BOOLEAN);
+		showHideMobile.setColumnName("SHOW_HIDE_MOBILE");
+		showHideMobile.setModule(module);
+
+		fields.add(showHideMobile);
 
 		return fields;
 	}

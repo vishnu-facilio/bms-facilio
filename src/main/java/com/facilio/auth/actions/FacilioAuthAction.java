@@ -348,6 +348,14 @@ public class FacilioAuthAction extends ActionSupport {
         LOGGER.info("#################### facilio.in::: " + request.getServerName());
         response.addCookie(authmodel);
         
+        Cookie token = new Cookie("fc.idToken", "facilio");
+        token.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
+        token.setPath("/");
+        token.setHttpOnly(false);
+        token.setSecure(true);
+        token.setDomain(request.getServerName());
+        response.addCookie(token);
+        
         try {
 			response.sendRedirect(serviceurl);
 		} catch (IOException e) {

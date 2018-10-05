@@ -80,6 +80,11 @@ public class WorkflowContext implements Serializable {
 		}
 	}
 	
+	public void setWorkflowExpressions(List<WorkflowExpression> workflowExpressions) throws Exception {
+		
+		this.expressions = workflowExpressions;
+	}
+	
 	public void addWorkflowExpression(WorkflowExpression expression) {
 		expressions = expressions == null ? new ArrayList<>() : expressions;
 		expressions.add(expression);
@@ -215,7 +220,6 @@ public class WorkflowContext implements Serializable {
 	public void setWorkflowUIMode(int workflowUIMode) {
 		this.workflowUIMode = WorkflowUIMode.valueOf(workflowUIMode);
 	}
-
 	public Object executeWorkflow(boolean ignoreNullValues) throws Exception {
 		
 		Object result = null;
@@ -238,14 +242,14 @@ public class WorkflowContext implements Serializable {
 			return 0;
 		}
 		
-//		if (AccountUtil.getCurrentOrg().getId() == 135 || AccountUtil.getCurrentOrg().getId() == 88) {
+		if (AccountUtil.getCurrentOrg().getId() == 135) {
 			LOGGER.finer("variableToExpresionMap --- "+variableResultMap+" \n\n"+"expString --- "+getResultEvaluator());
-//		}
+		}
 		
 		result =  WorkflowUtil.evaluateExpression(getResultEvaluator(),variableResultMap, ignoreNullValues);
-//		if (AccountUtil.getCurrentOrg().getId() == 135 || AccountUtil.getCurrentOrg().getId() == 88) {
+		if (AccountUtil.getCurrentOrg().getId() == 135) {
 			LOGGER.finer("result --- "+result);
-//		}
+		}
 		return result;
 	}
 	
@@ -269,9 +273,14 @@ public class WorkflowContext implements Serializable {
 			else if(wokflowExpresion instanceof IteratorContext) {
 		
 				IteratorContext iteratorContext = (IteratorContext) wokflowExpresion;
-				iteratorContext.setVariableToExpresionMap(variableResultMap1);
 				iteratorContext.setWorkflowContext(workflowContext);
 				iteratorContext.execute();
+			}
+			else if(wokflowExpresion instanceof ConditionContext) {
+				
+				ConditionContext conditionContext = (ConditionContext) wokflowExpresion;
+				conditionContext.setWorkflowContext(workflowContext);
+				conditionContext.execute();
 			}
 		}
 	}

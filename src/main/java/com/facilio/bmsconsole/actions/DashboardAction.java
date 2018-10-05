@@ -6870,6 +6870,9 @@ public class DashboardAction extends ActionSupport {
 		else {
 			this.dashboard.setDashboardFolderId(null);
 		}
+		if(dashboardMeta.get("showHideMobile") != null) {
+			this.dashboard.setShowHideMobile((boolean)dashboardMeta.get("showHideMobile"));
+		}
 		this.dashboard.setDashboardName((String) dashboardMeta.get("dashboardName"));
 		
 		List dashboardWidgets = (List) dashboardMeta.get("dashboardWidgets");
@@ -7034,10 +7037,16 @@ public class DashboardAction extends ActionSupport {
 		}
 		return SUCCESS;
 	}
-	
+	boolean getOnlyMobileDashboard;
+	public boolean getGetOnlyMobileDashboard() {
+		return getOnlyMobileDashboard;
+	}
+	public void setGetOnlyMobileDashboard(boolean getOnlyMobileDashboard) {
+		this.getOnlyMobileDashboard = getOnlyMobileDashboard;
+	}
 	public String getDashboardListWithFolder() throws Exception {
 		if (moduleName != null) {
-			dashboardFolders = DashboardUtil.getDashboardListWithFolder(moduleName);
+			dashboardFolders = DashboardUtil.getDashboardListWithFolder(moduleName,getOnlyMobileDashboard);
 		}
 		return SUCCESS;
 	}
