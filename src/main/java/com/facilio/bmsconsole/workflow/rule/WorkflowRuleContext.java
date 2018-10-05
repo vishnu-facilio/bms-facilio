@@ -183,14 +183,7 @@ public class WorkflowRuleContext {
 		try {
 			boolean workflowFlag = true;
 			if (workflow != null) {
-				 Object result = WorkflowUtil.getWorkflowExpressionResult(workflow.getWorkflowString(), placeHolders);
-				 if(result instanceof Boolean) {
-					 workflowFlag = (Boolean) result;
-				 }
-				 else {
-					 double resultDouble = (double) result;
-					 workflowFlag = resultDouble == 1;
-				 }
+				workflowFlag = WorkflowUtil.getWorkflowExpressionResultAsBoolean(workflow.getWorkflowString(), placeHolders);
 			}
 			return workflowFlag;
 		}
@@ -210,6 +203,9 @@ public class WorkflowRuleContext {
 		long ruleId = getId();
 		if (actions == null) {
 			actions = ActionAPI.getActiveActionsFromWorkflowRule(ruleId);
+		}
+		if (this.getId() == 3335) {
+			LOGGER.info("List of actions : "+actions);
 		}
 		if(actions != null) {
 			for(ActionContext action : actions) {

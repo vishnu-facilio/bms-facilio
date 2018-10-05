@@ -4,7 +4,10 @@ import java.util.Map;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
@@ -24,11 +27,31 @@ public class SingleResourceHistoricalFormulaCalculatorJob extends FacilioJob {
 			long endTime = (long) prop.get("endTime");
 			long resourceId = (long) prop.get("resourceId");
 			long formulaId = (long) prop.get("formulaId");
+			boolean isSystem = (boolean) prop.get("isSystem");
 			
 			FormulaFieldContext formula = FormulaFieldAPI.getFormulaField(formulaId);
 			DateRange range = new DateRange(startTime, endTime);
-			FormulaFieldAPI.historicalCalculation(formula, range, resourceId);
-			LOGGER.info("Time taken for Historical Formula calculation of formula : "+formulaId+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is "+(System.currentTimeMillis() - jobStartTime));
+			
+			switch (formula.getTriggerTypeEnum()) {
+				case POST_LIVE_READING:
+					FormulaFieldAPI.optimisedHistoricalCalculation(formula, range, resourceId, isSystem);
+					break;
+				default:
+					FormulaFieldAPI.historicalCalculation(formula, range, resourceId, isSystem);
+			}
+			
+			String msg = "Time taken for Historical Formula calculation of formula : "+formulaId+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is "+(System.currentTimeMillis() - jobStartTime);
+			LOGGER.info(msg);
+			
+			if (AccountUtil.getCurrentOrg().getId() == 88 && !isSystem) {
+				JSONObject json = new JSONObject();
+				json.put("to", "error@facilio.com");
+				json.put("sender", "noreply@facilio.com");
+				json.put("subject", "Historical Calculation completed for Formula : "+formulaId);
+				json.put("message", msg);
+				
+				AwsUtil.sendEmail(json);
+			}
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

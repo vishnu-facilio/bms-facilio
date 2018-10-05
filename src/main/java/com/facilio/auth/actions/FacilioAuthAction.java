@@ -1,5 +1,6 @@
 package com.facilio.auth.actions;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -19,8 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.facilio.auth.cookie.FacilioCookie;
-import com.facilio.aws.util.AwsUtil;
 import org.apache.commons.chain.Chain;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
@@ -29,13 +28,14 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.impl.UserBeanImpl;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.auth.cookie.FacilioCookie;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.actions.PortalInfoAction;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.auth.CognitoUtil;
-import com.facilio.fw.auth.LoginUtil;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionContext;
@@ -251,7 +251,19 @@ public class FacilioAuthAction extends ActionSupport {
                     setJsonresponse("errorcode", "1");
                     return ERROR;
                 } else {
-                    if (!validPassword) {
+                    if (validPassword) {
+                        User user;
+                        if(portalUser) {
+                            user = AccountUtil.getUserBean().getPortalUser(getUsername(), portalId());
+                        } else {
+                            user = AccountUtil.getUserBean().getFacilioUser(getUsername());
+                        }
+                        if(user == null) {
+                            setJsonresponse("message", "User is deactivated, Please contact admin to activate. ");
+                            setJsonresponse("errorcode", "1");
+                            return ERROR;
+                        }
+                    } else {
                         LOGGER.info(">>>>> invalid Password :" + getUsername());
                         setJsonresponse("errorcode", "1");
                         return ERROR;
@@ -270,7 +282,7 @@ public class FacilioAuthAction extends ActionSupport {
                 if(portalUser) {
                     cookie = new Cookie("fc.idToken.facilioportal", jwt);
                 }
-                String parentdomain = request.getServerName().replaceAll("api.", "");
+                String parentdomain = request.getServerName().replaceAll("app.", "");
                 cookie.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
                 cookie.setPath("/");
                 cookie.setHttpOnly(true);
@@ -309,6 +321,42 @@ public class FacilioAuthAction extends ActionSupport {
         return ERROR;
     }
 
+    public String loadWebView()
+    {
+    	 	HttpServletRequest request = ServletActionContext.getRequest();
+        HttpServletResponse response = ServletActionContext.getResponse();
+        String authtoken =  request.getParameter("authtoken");
+        String serviceurl = request.getParameter("serviceurl");
+        String parentdomain = request.getServerName().replaceAll("app.", "");
+        
+        Cookie cookie = new Cookie("fc.idToken.facilio", authtoken);
+        cookie.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        if( ! AwsUtil.isDevelopment()) {
+            cookie.setSecure(true);
+        }
+        cookie.setDomain(parentdomain);
+        response.addCookie(cookie);
+
+        Cookie authmodel = new Cookie("fc.authtype", "facilio");
+        authmodel.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
+        authmodel.setPath("/");
+        authmodel.setHttpOnly(false);
+        authmodel.setSecure(true);
+        authmodel.setDomain(parentdomain);
+        LOGGER.info("#################### facilio.in::: " + request.getServerName());
+        response.addCookie(authmodel);
+        
+        try {
+			response.sendRedirect(serviceurl);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+       	return null;
+    }
     private Boolean verifyPassword(String emailaddress, String password) {
         boolean passwordValid = false;
         Connection conn = null;
@@ -603,10 +651,13 @@ public class FacilioAuthAction extends ActionSupport {
         HttpSession session = request.getSession();
 
         session.invalidate();
+        
+        String parentdomain = request.getServerName().replaceAll("app.", "");
+        
         if(portalId() > 0) {
-            FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilioportal", null);
+            FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilioportal", parentdomain);
         } else {
-            FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilio", null);
+            FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilio", parentdomain);
         }
 
         FacilioCookie.eraseUserCookie(request, response, "fc.authtype", null);

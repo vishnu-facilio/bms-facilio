@@ -264,7 +264,7 @@ public class S3FileStore extends FileStore {
 
 	private String fetchUrl(FileInfo fileInfo, long expiration) {
 
-		if (AwsUtil.isProduction()) {
+		if (AwsUtil.isDevelopment()) {
 
 			GeneratePresignedUrlRequest generatePresignedUrlRequest =
 					new GeneratePresignedUrlRequest(getBucketName(), fileInfo.getFilePath());
@@ -286,10 +286,9 @@ public class S3FileStore extends FileStore {
 			try {
 				Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
 				String encodedUrl = URLEncoder.encode(fileInfo.getFilePath(), "UTF-8");
-				String s3ObjectKey = encodedUrl+"?response-content-type="+fileInfo.getContentType();
+				String s3ObjectKey = encodedUrl+"?response-content-type="+URLEncoder.encode(fileInfo.getContentType(), "UTF-8");
 				String keyPairId = "APKAJUH5UCWNSYC4DOSQ";
-				String signedUrl = CloudFrontUrlSigner.getSignedURLWithCannedPolicy(SignerUtils.Protocol.https, "files.facilio.in", new File(PRIVATE_KEY_FILE_PATH), s3ObjectKey, keyPairId, new Date(System.currentTimeMillis()+getExpiration()));
-				return  signedUrl;
+				return CloudFrontUrlSigner.getSignedURLWithCannedPolicy(SignerUtils.Protocol.https, AwsUtil.getConfig("files.url"), new File(PRIVATE_KEY_FILE_PATH), s3ObjectKey, keyPairId, new Date(System.currentTimeMillis()+getExpiration()));
 			} catch (IOException | InvalidKeySpecException e) {
 				log.info("Exception while creating signed Url", e);
 			}

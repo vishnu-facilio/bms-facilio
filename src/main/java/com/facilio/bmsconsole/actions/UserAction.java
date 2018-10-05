@@ -217,8 +217,10 @@ public class UserAction extends FacilioAction {
 			long userid = AccountUtil.getTransactionalUserBean().inviteRequester(user.getOrgId(), user);
 			if(userid>0)
 			{
+				if (user.getPortal_verified()) {
 				// send invite
 				(new UserBeanImpl()).sendInvitation(user.getOuid(), user);
+				}
 
 			}
 			setUserId(user.getId());

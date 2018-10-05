@@ -112,6 +112,14 @@ public class ReportGroupByField {
 		this.metric = metric;
 	}
 	
+	private String alias;
+	public String getAlias() {
+		return alias;
+	}
+	public void setAlias(String alias) {
+		this.alias = alias;
+	}
+
 	private String joinOn;
 	public String getJoinOn() {
 		return joinOn;

@@ -28,7 +28,7 @@ public class UpdateClosedTasksCounterCommand implements Command {
 		// TODO Auto-generated method stub
 		TaskContext task = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
 		if(task != null) {
-			if(task.getStatus() != null) {
+			if(task.getStatusNew() != -1) {
 				long parentTicketId = task.getParentTicketId();
 				if (parentTicketId == -1) {
 					TaskContext oldTask = ((List<TaskContext>) context.get(FacilioConstants.TicketActivity.OLD_TICKETS)).get(0);
@@ -39,7 +39,7 @@ public class UpdateClosedTasksCounterCommand implements Command {
 				ticket.setNoOfClosedTasks(getClosedTasksCount(parentTicketId));
 				
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				FacilioField field = modBean.getField("noOfClosedTasks", FacilioConstants.ContextNames.TASK);
+				FacilioField field = modBean.getField("noOfClosedTasks", FacilioConstants.ContextNames.WORK_ORDER);
 				List<FacilioField> fields = new ArrayList<>();
 				fields.add(field);
 				
@@ -68,11 +68,7 @@ public class UpdateClosedTasksCounterCommand implements Command {
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table("Tasks")
-														.innerJoin("Tickets")
-														.on("Tasks.ID = Tickets.ID")
-														.innerJoin("TicketStatus")
-														.on("Tickets.STATUS_ID = TicketStatus.ID")
-														.andCustomWhere("TicketStatus.ORGID = ? AND Tickets.ORGID = ? AND Tasks.PARENT_TICKET_ID = ? AND TicketStatus.STATUS_TYPE = 2", orgId, orgId, parentTicketId);
+														.andCustomWhere("Tasks.ORGID = ? AND Tasks.PARENT_TICKET_ID = ? AND Tasks.STATUS = 2", orgId, parentTicketId);
 			
 			List<Map<String, Object>> rs = builder.get();
 			if(rs != null && !rs.isEmpty()) {

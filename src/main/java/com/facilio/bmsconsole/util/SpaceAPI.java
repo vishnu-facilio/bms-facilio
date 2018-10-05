@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.util;
 
+import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,6 +36,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
@@ -175,6 +177,75 @@ public class SpaceAPI {
 		return selectBuilder.get();
 	}
 	
+	public static Long getDependentSpaceId(String spaceName, Long parentSpaceId, Integer heirarchy) throws Exception {
+		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modbean.getModule(FacilioConstants.ContextNames.SPACE);
+		List<FacilioField> fields = modbean.getAllFields(module.getName());
+		String columnName = "SPACE_ID" + heirarchy + " = ?";
+		SelectRecordsBuilder<SpaceContext> selectBuilder = new SelectRecordsBuilder<SpaceContext>();
+		selectBuilder.select(fields).table(module.getTableName()).moduleName(module.getName()).beanClass(SpaceContext.class).andCustomWhere("NAME = ?", spaceName)
+		.andCustomWhere(columnName, parentSpaceId);
+		List<SpaceContext> result = selectBuilder.get();
+		
+		if(!result.isEmpty()) {
+			Long spaceId = result.get(0).getId();
+			return spaceId;
+		}
+		else {
+			return null;
+		}
+		
+	}
+	
+	public static Long addDependentSpace(String spaceName, Long parentSpaceId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SPACE);
+		List<FacilioField> fields = modBean.getAllFields(module.getName());
+		
+		SpaceContext spaceContext = new SpaceContext();
+		spaceContext.setName(spaceName);
+		SpaceContext parentSpace = SpaceAPI.getSpace(parentSpaceId);
+		
+		if(parentSpace.getSpaceId1() != -1) {
+			spaceContext.setSpaceId1(parentSpace.getSpaceId1());
+			if(parentSpace.getSpaceId2() != -1) {
+				spaceContext.setSpaceId2(parentSpace.getSpaceId2());
+				if(parentSpace.getSpaceId3() != -1) {
+					spaceContext.setSpaceId3(parentSpace.getSpaceId3());
+					if(parentSpace.getSpaceId4() != -1) {
+						spaceContext.setSpaceId4(parentSpace.getSpaceId4());
+					}
+					else {
+						spaceContext.setSpaceId4(parentSpace.getSpaceId());
+					}
+				}
+				else {
+					spaceContext.setSpaceId3(parentSpace.getSpaceId());
+				}
+			}
+			else {
+				spaceContext.setSpaceId2(parentSpace.getSpaceId());
+			}
+		}
+		else {
+			spaceContext.setSpaceId1(parentSpace.getSpaceId());
+		}
+		
+		spaceContext.setSiteId(parentSpace.getSiteId());
+		spaceContext.setBuildingId(parentSpace.getBuildingId());
+		spaceContext.setFloorId(parentSpace.getFloorId());
+		
+		
+		spaceContext.setSpaceType(BaseSpaceContext.SpaceType.SPACE);
+		InsertRecordBuilder<SpaceContext> insertRecordBuilder = new InsertRecordBuilder<>();
+		
+		insertRecordBuilder.table(module.getTableName()).module(module).fields(fields);
+		Long spaceId = insertRecordBuilder.insert(spaceContext);
+		
+		
+		return spaceId;
+		
+	}
 	public static BuildingContext getBuildingSpace(long id) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BUILDING);
@@ -790,6 +861,12 @@ public static long getSitesCount() throws Exception {
 	public static List<SpaceContext> getSpaceListOfCategory(long category) throws Exception
 	{
 		
+		return getSpaceListOfCategory(-1,category);
+	}
+	
+	public static List<SpaceContext> getSpaceListOfCategory(long baseSpaceId,long category) throws Exception
+	{
+		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SPACE);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SPACE);
@@ -800,10 +877,14 @@ public static long getSitesCount() throws Exception {
 				.moduleName(module.getName())
 				.beanClass(SpaceContext.class)
 				.andCondition(CriteriaAPI.getCondition(categoryField, String.valueOf(category), PickListOperators.IS));
+		
+		if(baseSpaceId > 0) {
+			BaseSpaceContext basespace = getBaseSpace(baseSpaceId);
+			selectBuilder.andCustomWhere("BaseSpace."+basespace.getSpaceTypeEnum().getStringVal().toUpperCase()+"_ID = ?", baseSpaceId);
+		}
 		List<SpaceContext> spaces = selectBuilder.get();
 		return spaces;
 	}
-	
 	
 	public static List<BaseSpaceContext> getAllBaseSpaces(Criteria filterCriteria, Criteria searchCriteria, String orderBy, JSONObject pagination) throws Exception
 	{
@@ -1061,8 +1142,7 @@ public static long getSitesCount() throws Exception {
 				.select(fields)
 				.module(assetModule)
 				.beanClass(AssetContext.class)
-				.andCondition(spaceCond)
-				.groupBy("Assets.SITE_ID");
+				.andCondition(spaceCond);
 		
 		List<Map<String, Object>> rs = selectBuilder.getAsProps();
 		if (rs == null || rs.isEmpty()) {

@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -70,6 +71,7 @@ import com.facilio.workflows.functions.FacilioFunctionsParamType;
 import com.facilio.workflows.functions.FacilioListFunction;
 import com.facilio.workflows.functions.FacilioMapFunction;
 import com.facilio.workflows.functions.FacilioMathFunction;
+import com.facilio.workflows.functions.FacilioPsychrometricsFunction;
 import com.facilio.workflows.functions.FacilioReadingFunctions;
 import com.facilio.workflows.functions.FacilioStringFunction;
 import com.facilio.workflows.functions.FacilioWorkflowFunctionInterface;
@@ -236,8 +238,31 @@ public class WorkflowUtil {
 		return moduleName+"-"+resourceId;
 	}
 	
+	private static boolean evalWorkflowResultForBoolean (Object result) {
+		if (result == null) {
+		    return false;
+		}
+		if (result instanceof Boolean) {
+		    return (boolean) result;
+		}
+		else {
+		    double resultDouble = (double) result;
+		    return resultDouble == 1;
+		}
+	}
+	
+	public static boolean getWorkflowExpressionResultAsBoolean(String workflowString,Map<String,Object> paramMap) throws Exception {
+		Object result = getWorkflowExpressionResult(workflowString, paramMap);
+		return evalWorkflowResultForBoolean(result);
+	}
+	
 	public static Object getWorkflowExpressionResult(String workflowString,Map<String,Object> paramMap) throws Exception {
 		return getWorkflowExpressionResult(workflowString, paramMap, null, true, false);
+	}
+	
+	public static boolean getWorkflowExpressionResultAsBoolean(String workflowString,Map<String,Object> paramMap, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked) throws Exception {
+		Object result = getWorkflowExpressionResult(workflowString, paramMap, rdmCache, ignoreNullExpressions, ignoreMarked);
+		return evalWorkflowResultForBoolean(result);
 	}
 	
 	public static Object getWorkflowExpressionResult(String workflowString,Map<String,Object> paramMap, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked) throws Exception {
@@ -635,16 +660,13 @@ public class WorkflowUtil {
 	public static void parseExpression(WorkflowContext workflowContext) throws Exception {
 		List<WorkflowExpression> temp= new ArrayList<>();
 		if(workflowContext != null && workflowContext.getExpressions() != null) {
-			for(WorkflowExpression workflowExpression : workflowContext.getExpressions()) {
-				
+			for(int i = 0; i < workflowContext.getExpressions().size(); i++) {
+				WorkflowExpression workflowExpression = workflowContext.getExpressions().get(i);
 				if(workflowExpression instanceof ExpressionContext) {
 					ExpressionContext expressionContext = (ExpressionContext)  workflowExpression;
 					expressionContext = getExpressionContextFromExpressionString(expressionContext.getExpressionString(),expressionContext);
-					temp.add(expressionContext);
+					workflowContext.getExpressions().set(i, expressionContext);
 				}
-			}
-			for(WorkflowExpression temp1 :temp) {
-				workflowContext.addWorkflowExpression(temp1);
 			}
 		}
 	}
@@ -1391,6 +1413,9 @@ public class WorkflowUtil {
 		case "readings" :
 			facilioWorkflowFunction = FacilioReadingFunctions.getFacilioReadingFunctions(functionName);
 			break;
+		case "psychrometrics" :
+			facilioWorkflowFunction = FacilioPsychrometricsFunction.getFacilioMathFunction(functionName);
+			break;
 		}
 		
 		
@@ -1429,6 +1454,9 @@ public class WorkflowUtil {
 		case "readings" :
 			facilioWorkflowFunction = new ArrayList<>( FacilioReadingFunctions.getAllFunctions().values());
 			break;
+		case "psychrometrics" :
+			facilioWorkflowFunction = new ArrayList<>( FacilioPsychrometricsFunction.getAllFunctions().values());
+			break;
 		}
 		
 		
@@ -1441,7 +1469,7 @@ public class WorkflowUtil {
 		return param;
 	}
 	
-	public static Object evaluateExpression(String exp,Map<String,Object> variablesMap, boolean ignoreNullValues) {
+	public static Object evaluateExpression(String exp,Map<String,Object> variablesMap, boolean ignoreNullValues) throws Exception {
 
 		LOGGER.fine("EXPRESSION STRING IS -- "+exp+" variablesMap -- "+variablesMap);
 		if(exp == null) {
@@ -1452,7 +1480,11 @@ public class WorkflowUtil {
 			return variablesMap.get(exp);
 		}
 		Expression expression = new Expression(exp);
-		for(String key : variablesMap.keySet()) {
+		List<String> keys = expression.getUsedVariables();
+		if(variablesMap.containsKey("e")) {
+			keys.add("e");
+		}
+		for(String key : keys) {
 			String value = "0";
 			if(variablesMap.get(key) != null) {
 				value = variablesMap.get(key).toString();
@@ -1462,8 +1494,13 @@ public class WorkflowUtil {
 			}
 			expression.with(key, value);
 		}
-		BigDecimal result = expression.eval();
-		return result.doubleValue();
+		try {
+			BigDecimal result = expression.eval();
+			return result.doubleValue();
+		}
+		catch(ArithmeticException e) {
+			return null;
+		}
 	}
 	
 	public static ExpressionContext fillParamterAndParseExpressionContext(ExpressionContext expressionContext,Map<String,Object> variableResultMap) throws Exception {

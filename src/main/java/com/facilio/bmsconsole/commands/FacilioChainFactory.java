@@ -17,7 +17,6 @@ import com.facilio.accounts.exception.AccountException;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
-import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
@@ -1432,12 +1431,11 @@ public class FacilioChainFactory {
 		Chain c = getTransactionChain();
 		c.addCommand(new AddAttachmentCommand());
 		c.addCommand(new AttachmentContextCommand());
-		
 		c.addCommand(new ValidatePMTriggersCommand());
 		c.addCommand(new ValidateTasksCommand());
 		c.addCommand(new AddPMReadingsForTasks());
-		c.addCommand(new CreateWorkorderTemplateCommand());
-		c.addCommand(new AddPreventiveMaintenanceCommand());
+		c.addCommand(new CreateWorkorderTemplateCommand());	  // template addition
+		c.addCommand(new AddPreventiveMaintenanceCommand()); // pm addition
 		c.addCommand(new AddResourceReadingRelCommand());
 		c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
 		c.addCommand(new AddAndSchedulePMTriggerCommand());
@@ -1450,6 +1448,7 @@ public class FacilioChainFactory {
 	
 	public static Chain getExecutePreventiveMaintenanceChain() {
 		Chain c = getTransactionChain();
+		//c.addCommand(new PreparePMForMultipleAsset());
 		c.addCommand(new ExecutePMCommand());
 		c.addCommand(new ResetTriggersCommand());
 		c.addCommand(new SchedulePMRemindersCommand());

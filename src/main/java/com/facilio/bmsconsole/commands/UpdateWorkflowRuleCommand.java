@@ -6,10 +6,12 @@ import org.apache.commons.chain.Context;
 import com.facilio.bmsconsole.util.ApprovalRulesAPI;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.SLARuleAPI;
+import com.facilio.bmsconsole.util.ScheduledRuleAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.SLARuleContext;
+import com.facilio.bmsconsole.workflow.rule.ScheduledRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -28,6 +30,9 @@ public class UpdateWorkflowRuleCommand implements Command {
 		}
 		else if (rule instanceof ApprovalRuleContext) {
 			rule = ApprovalRulesAPI.updateApprovalRuleWithChldren((ApprovalRuleContext) rule);
+		}
+		else if (rule instanceof ScheduledRuleContext) {
+			rule= ScheduledRuleAPI.updateScheduledRuleWithChildren((ScheduledRuleContext) rule);
 		}
 		else {
 			rule = WorkflowRuleAPI.updateWorkflowRuleWithChildren(rule);

@@ -15,6 +15,7 @@ public enum FacilioFunctionNameSpace {
 	STRING(7,"string"),
 	THERMOPHYSICALR134A(8,"thermoPhysical.R134a"),
 	READINGS(9,"readings"),
+	PSYCHROMETRICS(10,"psychrometrics"),
 	;
 	
 	public Integer value;

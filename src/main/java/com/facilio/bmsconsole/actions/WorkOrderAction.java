@@ -172,6 +172,24 @@ public class WorkOrderAction extends FacilioAction {
 		addPreventiveMaintenance(context);
 		return SUCCESS;
 	}
+	
+	public String addNewPreventiveMaintenance() throws Exception {
+		FacilioContext context = new FacilioContext();
+		if(workOrderString != null) {
+			setWorkordercontex(workOrderString);
+		}
+		if(preventiveMaintenanceString != null) {
+			setPreventiveMaintenancecontex(preventiveMaintenanceString);
+		}
+		if(tasksString != null) {
+			setTaskSectioncontext(tasksString);
+		}
+		if(reminderString != null) {
+			setRemindercontex(reminderString);
+		}
+		addPreventiveMaintenance(context);
+		return SUCCESS;
+	}
 
 	public String addPreventiveMaintenance(FacilioContext context) throws Exception {
 
@@ -180,6 +198,7 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, preventivemaintenance);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
+		context.put(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES, sectionTemplates);
 		context.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
 		
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, this.attachedFiles);
@@ -978,6 +997,16 @@ public class WorkOrderAction extends FacilioAction {
 		this.attachedFilesContentType = attachedFilesContentType;
 	}
 	
+	private String taskSectionString;
+	
+	public String getTaskSectionString() {
+		return taskSectionString;
+	}
+
+	public void setTaskSectionString(String taskSectionString) {
+		this.taskSectionString = taskSectionString;
+	}
+
 	private String tasksString;
 	public String getTasksString() {
 		return tasksString;
@@ -996,6 +1025,17 @@ public class WorkOrderAction extends FacilioAction {
 			}
 		}
 	}
+	
+	public List<TaskSectionTemplate> setTaskSectioncontext(String taskSectionstring) throws Exception {
+		
+		JSONParser parser = new JSONParser();
+		JSONArray obj = (JSONArray) parser.parse(taskSectionstring);
+		
+		List<TaskSectionTemplate> taskSectionContextList = FieldUtil.getAsBeanListFromJsonArray(obj, TaskSectionTemplate.class);
+		setSectionTemplates(taskSectionContextList);
+		return taskSectionContextList;
+	}
+	
 	public Map<String, List<TaskContext>> convertTask(String task_string) throws Exception
 	{
 		Map<String, List<TaskContext>> taskObj = new HashMap<>();

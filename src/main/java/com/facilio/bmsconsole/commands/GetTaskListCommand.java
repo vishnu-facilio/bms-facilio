@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -46,7 +47,7 @@ public class GetTaskListCommand implements Command{
 		Map<Long, TaskSectionContext> sections = TicketAPI.getTaskSections(taskMap.keySet().stream().collect(Collectors.toList()));
 		context.put(FacilioConstants.ContextNames.TASK_SECTIONS, sections);
 		
-		TicketAPI.loadTicketLookups(tasks);
+		CommonCommandUtil.loadTaskLookups(tasks);
 		
 		return false;
 	}

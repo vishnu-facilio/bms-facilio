@@ -10,6 +10,7 @@ import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
@@ -20,9 +21,8 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
 import com.facilio.constants.FacilioConstants;
-import com.opensymphony.xwork2.ActionSupport;
 
-public class AssetAction extends ActionSupport {
+public class AssetAction extends FacilioAction {
 	
 	public String newAsset() throws Exception {
 		
@@ -340,4 +340,22 @@ public class AssetAction extends ActionSupport {
 		this.buildingIds = buildingIds;
 	}
 	
+	private String value;
+	public String getValue() {
+		return value;
+	}
+	public void setValue(String value) {
+		this.value = value;
+	}
+
+	public String fetchAssetFromQR() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.QR_VALUE, value);
+		
+		Chain getAssetChain = ReadOnlyChainFactory.getAssetFromQRChain();
+		getAssetChain.execute(context);
+		setResult("asset", context.get(FacilioConstants.ContextNames.ASSET));
+		
+		return SUCCESS;
+	}
 }

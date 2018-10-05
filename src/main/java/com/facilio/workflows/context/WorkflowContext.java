@@ -234,18 +234,18 @@ public class WorkflowContext implements Serializable {
 			}
 		}
 		if(isTerminateExecution()) {
-			LOGGER.severe("workflow --- "+this.getId()+" has been terminated");
+			LOGGER.finer("workflow --- "+this.getId()+" has been terminated");
 			return 0;
 		}
 		
-		if (AccountUtil.getCurrentOrg().getId() == 135) {
-			LOGGER.info("variableToExpresionMap --- "+variableResultMap+" \n\n"+"expString --- "+getResultEvaluator());
-		}
+//		if (AccountUtil.getCurrentOrg().getId() == 135 || AccountUtil.getCurrentOrg().getId() == 88) {
+			LOGGER.finer("variableToExpresionMap --- "+variableResultMap+" \n\n"+"expString --- "+getResultEvaluator());
+//		}
 		
 		result =  WorkflowUtil.evaluateExpression(getResultEvaluator(),variableResultMap, ignoreNullValues);
-		if (AccountUtil.getCurrentOrg().getId() == 135) {
-			LOGGER.info("result --- "+result);
-		}
+//		if (AccountUtil.getCurrentOrg().getId() == 135 || AccountUtil.getCurrentOrg().getId() == 88) {
+			LOGGER.finer("result --- "+result);
+//		}
 		return result;
 	}
 	

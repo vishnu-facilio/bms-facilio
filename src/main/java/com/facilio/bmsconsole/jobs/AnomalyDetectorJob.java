@@ -62,13 +62,13 @@ public class AnomalyDetectorJob extends FacilioJob {
 
 			Integer anomalyPeriodicity = Integer.parseInt(AwsUtil.getConfig("anomalyPeriodicity"));
 			// get the list of all sub meters
+
 			long correction = 0;
 			
 			if( AwsUtil.getConfig("environment").equals("development")) { // for dev testing purpose time is moved back 
 				correction = System.currentTimeMillis() - 1529948963000L;
 			}
 			
-			//Uncomment below code for DEV testing only
 			long endTime = System.currentTimeMillis() - correction;
 			long startTime = endTime - (2 * anomalyPeriodicity * 60 * 1000L);
 
@@ -240,7 +240,7 @@ public class AnomalyDetectorJob extends FacilioJob {
 		postData.temperatureData = siteTemperatureReadings;
 		postData.energyData = meterReadings;
 		postData.timezone = AccountUtil.getCurrentOrg().getTimezone();
-		
+		postData.meterInterval = configContext.getMeterInterval();
 
 		ObjectMapper mapper = new ObjectMapper();
 		String jsonInString = mapper.writeValueAsString(postData);
@@ -408,6 +408,13 @@ public class AnomalyDetectorJob extends FacilioJob {
 	}
 
 	class CheckAnomalyModelPostData {
+		public int getMeterInterval() {
+			return meterInterval;
+		}
+		public void setMeterInterval(int meterInterval) {
+			this.meterInterval = meterInterval;
+		}
+
 		public Long getMeterID() {
 			return meterID;
 		}
@@ -508,5 +515,6 @@ public class AnomalyDetectorJob extends FacilioJob {
 		double outlierDistance;
 		List<AnalyticsAnomalyContext> energyData;
 		List<TemperatureContext> temperatureData;
+		int meterInterval;
 	}
 }

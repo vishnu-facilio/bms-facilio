@@ -159,5 +159,17 @@ public abstract class Template {
 			}
 		}
 	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		try {
+			return getOriginalTemplate() == null ? "null" : getOriginalTemplate().toJSONString();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
 
 }

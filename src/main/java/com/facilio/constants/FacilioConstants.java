@@ -187,6 +187,7 @@ public class FacilioConstants {
 		public static final String TASK_LIST = "tasks";
 		public static final String TASK_MAP = "taskMap";
 		public static final String TASK_SECTIONS = "taskSections";
+		public static final String TASK_SECTION_TEMPLATES = "taskSectionTemplates";
 		public static final String TASK_SECTION = "taskSection";
 		public static final String DEFAULT_TASK_SECTION = "default";
 		
@@ -556,6 +557,8 @@ public class FacilioConstants {
 		public static final String EDITED_FORM = "editedFrom";
 		public static final String FORM_OBJECT = "formObject";
 		
+		public static final String QR_VALUE = "qrValue";
+		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();
@@ -665,6 +668,7 @@ public class FacilioConstants {
 		public static final String NEXT_EXECUTION_TIME = "NEXT_EXECUTION_TIME";
 		public static final String TABLE_NAME = "Jobs";
 		public static final String FORKED_COMMANDS = "forkedCommands";
+		public static final String JOB_CONTEXT = "jobContext";
 	}
 	public static class Ticket{
 		public static final String STATUS_ID = "status_id";

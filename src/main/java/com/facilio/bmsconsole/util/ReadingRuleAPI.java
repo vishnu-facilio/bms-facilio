@@ -60,38 +60,21 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 	public static int updateLastValueInReadingRule(long ruleId, long value) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
 		ReadingRuleContext rule = new ReadingRuleContext();
 		rule.setLastValue(value);
+		rule.setId(ruleId);
 		
-		return updateReadingRule(rule, ruleId);
+		return updateExtendedRule(rule, ModuleFactory.getReadingRuleModule(), FieldFactory.getReadingRuleFields());
 	}
 	
 	public static ReadingRuleContext updateReadingRuleWithChildren(ReadingRuleContext rule) throws Exception {
 		ReadingRuleContext oldRule = (ReadingRuleContext) getWorkflowRule(rule.getId());
 		updateWorkflowRuleChildIds(rule);
-		updateReadingRule(rule, rule.getId());
+		updateExtendedRule(rule, ModuleFactory.getReadingRuleModule(), FieldFactory.getReadingRuleFields());
 		deleteChildIdsForWorkflow(oldRule, rule);
 		
 		if (rule.getName() == null) {
 			rule.setName(oldRule.getName());
 		}
 		return rule;
-	}
-	
-	public static int updateReadingRule(ReadingRuleContext readingRule, long ruleId) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
-		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
-		fields.addAll(FieldFactory.getReadingRuleFields());
-		
-		FacilioModule workflowModule = ModuleFactory.getWorkflowRuleModule();
-		FacilioModule readingRuleModule = ModuleFactory.getReadingRuleModule();
-		
-		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-														.fields(fields)
-														.table(readingRuleModule.getTableName())
-														.innerJoin(workflowModule.getTableName())
-														.on(readingRuleModule.getTableName()+".ID = "+workflowModule.getTableName()+".ID")
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(workflowModule))
-														.andCondition(CriteriaAPI.getIdCondition(ruleId, readingRuleModule));
-		
-		return updateBuilder.update(FieldUtil.getAsProperties(readingRule));
 	}
 	
 	protected static void setMatchedResources (ReadingRuleContext readingRule) throws Exception {

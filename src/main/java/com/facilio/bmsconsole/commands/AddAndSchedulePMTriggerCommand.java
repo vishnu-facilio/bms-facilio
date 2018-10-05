@@ -94,41 +94,52 @@ public class AddAndSchedulePMTriggerCommand implements Command {
 	
 	private static void schedulePM(PreventiveMaintenance pm, Context context) throws Exception {
 		Map<Long, Long> nextExecutionTimes = new HashMap<>();
-		for (PMTriggerContext trigger : pm.getTriggers()) {
-			if (trigger.getSchedule() != null) {
-				long startTime = getStartTimeInSecond(trigger.getStartTime());
-				PMJobsContext pmJob = null;
-				switch (pm.getTriggerTypeEnum()) {
-				case ONLY_SCHEDULE_TRIGGER:
-					long endTime = DateTimeUtil.getDayStartTime(PreventiveMaintenanceAPI.PM_CALCULATION_DAYS + 1, true) - 1;
-					List<PMJobsContext> pmJobs = PreventiveMaintenanceAPI.createPMJobs(pm, trigger, startTime, endTime);
-					if (pmJobs != null && !pmJobs.isEmpty()) {
-						pmJob = pmJobs.get(0);
-					}
-					else {
+		
+		if(pm.getPmCreationType() == PreventiveMaintenance.PMCreationType.MULTIPLE.getVal()) {
+			List<PMJobsContext> pmJobs = null;
+			switch (pm.getTriggerTypeEnum()) {
+			case ONLY_SCHEDULE_TRIGGER:
+				long endTime = DateTimeUtil.getDayStartTime(PreventiveMaintenanceAPI.PM_CALCULATION_DAYS + 1, true) - 1;
+				pmJobs = PreventiveMaintenanceAPI.createPMJobsForMultipleResourceAndSchedule(pm, endTime,true);
+				break;
+			case FIXED:
+			case FLOATING:
+				throw new IllegalArgumentException("PM Of type Multiple cannot have this type of trigger");
+			}
+			if (pmJobs != null) {
+				//nextExecutionTimes.put(trigger.getId(), pmJob.getNextExecutionTime());
+			}
+		}
+		else {
+			for (PMTriggerContext trigger : pm.getTriggers()) {
+				if (trigger.getSchedule() != null) {
+					long startTime = PreventiveMaintenanceAPI.getStartTimeInSecond(trigger.getStartTime());
+					PMJobsContext pmJob = null;
+					switch (pm.getTriggerTypeEnum()) {
+					case ONLY_SCHEDULE_TRIGGER:
+						long endTime = DateTimeUtil.getDayStartTime(PreventiveMaintenanceAPI.PM_CALCULATION_DAYS + 1, true) - 1;
+						List<PMJobsContext> pmJobs = PreventiveMaintenanceAPI.createPMJobs(pm, trigger, startTime, endTime);
+						if (pmJobs != null && !pmJobs.isEmpty()) {
+							pmJob = pmJobs.get(0);
+						}
+						else {
+							pmJob = PreventiveMaintenanceAPI.createPMJobOnce(pm, trigger, startTime);
+						}
+						break;
+					case FIXED:
+					case FLOATING:
 						pmJob = PreventiveMaintenanceAPI.createPMJobOnce(pm, trigger, startTime);
+						break;
 					}
-					break;
-				case FIXED:
-				case FLOATING:
-					pmJob = PreventiveMaintenanceAPI.createPMJobOnce(pm, trigger, startTime);
-					break;
-				}
-				if (pmJob != null) {
-					PreventiveMaintenanceAPI.schedulePMJob(pmJob);
-					nextExecutionTimes.put(trigger.getId(), pmJob.getNextExecutionTime());
+					if (pmJob != null) {
+						PreventiveMaintenanceAPI.schedulePMJob(pmJob);
+						nextExecutionTimes.put(trigger.getId(), pmJob.getNextExecutionTime());
+					}
 				}
 			}
 		}
 		context.put(FacilioConstants.ContextNames.NEXT_EXECUTION_TIMES, nextExecutionTimes);
 	}
 	
-	private static long getStartTimeInSecond(long startTime) {
-		
-		long startTimeInSecond = startTime / 1000;
-		startTimeInSecond = startTimeInSecond - 300; //for calculating next execution time
-
-		return startTimeInSecond;
-	}
 
 }

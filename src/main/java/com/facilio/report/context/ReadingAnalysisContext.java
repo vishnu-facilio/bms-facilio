@@ -92,23 +92,21 @@ public class ReadingAnalysisContext {
 	
 	public static enum AnalyticsType {
 		
-		PORTFOLIO(1, "Portfolio Analysis"),
-		BUILDING(2, "Building Analysis"),
-		HEAT_MAP(3, "Heat Map Analysis"),
-		REGRESSION(4, "Regression Analysis"),
-		READINGS(5, "Readings Analysis")
+		PORTFOLIO("Portfolio Analysis"),
+		BUILDING("Building Analysis"),
+		HEAT_MAP("Heat Map Analysis"),
+		REGRESSION("Regression Analysis"),
+		READINGS("Readings Analysis")
 		;
 		
-		private int intVal;
 		private String strVal;
 		
-		private AnalyticsType(int intVal, String strVal) {
-			this.intVal = intVal;
+		private AnalyticsType(String strVal) {
 			this.strVal = strVal;
 		}
 		
 		public int getIntVal() {
-			return intVal;
+			return ordinal() + 1;
 		}
 		public String getStringVal() {
 			return strVal;

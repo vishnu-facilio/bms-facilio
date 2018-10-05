@@ -12,10 +12,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.math3.geometry.Space;
 import org.apache.log4j.LogManager;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -225,13 +227,16 @@ public class ImportAPI {
 			}
 			else {
 				CellType type = cell.getCellTypeEnum();
-				if(type == CellType.NUMERIC) {
-        			if(HSSFDateUtil.isCellDateFormatted(cell)) {
+				if(type == CellType.NUMERIC || type == CellType.FORMULA) {
+        			if(cell.getCellTypeEnum() == CellType.NUMERIC && HSSFDateUtil.isCellDateFormatted(cell)) {
         				Date cellValue = cell.getDateCellValue();
         				SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
         				String cellValueString = format.format(cellValue);
         				cellValueString = cellValueString.replace(" ", "/");
         				firstRow.add(cellValueString);
+        			}
+        			else if(type== CellType.FORMULA) {
+        				firstRow.add(cell.getNumericCellValue());
         			}
         			else {
         				Double cellValue = cell.getNumericCellValue();
@@ -256,31 +261,25 @@ public class ImportAPI {
 
 		String siteName =null ,buildingName = null,floorName = null ,spaceName = null;
 		List<Long> listOfIds = new ArrayList<>();
-		if(importProcessContext.getImportMode() == ImportProcessContext.ImportMode.READING.getValue()) {
-			String moduleName = importProcessContext.getModule().getName();
-			String Name = (String) colVal.get(fieldMapping.get("sys__name"));
-			switch (moduleName) {
-			case ImportAPI.ImportProcessConstants.SITE_ID_FIELD:
-				siteName  = Name;
-				break;
-			case ImportAPI.ImportProcessConstants.BUILDING_ID_FIELD:
-				buildingName = Name;
-				break;
-			case ImportAPI.ImportProcessConstants.FLOOR_ID_FIELD:
-				floorName = Name;
-				break;
-			case ImportAPI.ImportProcessConstants.SPACE_FIELD:
-				spaceName = Name;
-				break;
-			}
-		}
 		
-		else {
-			String moduleName = importProcessContext.getModule().getName();
-			siteName = (String) colVal.get(fieldMapping.get(moduleName + "__site"));
-			buildingName = (String) colVal.get(fieldMapping.get(moduleName + "__building"));
-			floorName = (String) colVal.get(fieldMapping.get(moduleName + "__floor"));
-			spaceName = (String) colVal.get(fieldMapping.get(moduleName + "__spaceName"));
+		ArrayList<String> additionalSpaces = new ArrayList<>();
+		String moduleName = importProcessContext.getModule().getName();
+		siteName = (String) colVal.get(fieldMapping.get(moduleName + "__site"));
+		buildingName = (String) colVal.get(fieldMapping.get(moduleName + "__building"));
+		floorName = (String) colVal.get(fieldMapping.get(moduleName + "__floor"));
+		spaceName = (String) colVal.get(fieldMapping.get(moduleName + "__spaceName"));
+		
+		if(spaceName != null) {
+			for(int i =0; i<3; i++)
+			{
+				String temp = (String) colVal.get(fieldMapping.get(moduleName + "__subspace" + (i+1)));
+				if(temp != null) {
+					additionalSpaces.add(temp);
+				}
+				else {
+					break;
+				}
+			}
 		}
 		
 		ImportSiteAction siteMeta =new ImportSiteAction();
@@ -375,6 +374,7 @@ public class ImportAPI {
 			 else if (siteId != null) {
 				 spaceId = spaceMeta.getSpaceIdFromSite(siteId,spaceName);
 			 }
+			 
 			if(spaceId == null) {
 				 if (floorName == null)
 				 {
@@ -385,7 +385,20 @@ public class ImportAPI {
 				 spaceId = spaceMeta.addSpace(spaceName, siteId, buildingId, floorId);
 				 }
 			 }
-			}
+		}
+		 
+		if(additionalSpaces.size()>0) {
+			Long tempSpaceId;
+			for(String additionalSpace : additionalSpaces) {
+					tempSpaceId= SpaceAPI.getDependentSpaceId(additionalSpace, spaceId, additionalSpaces.indexOf(additionalSpace)+1);
+					if(tempSpaceId != null) {
+						spaceId = tempSpaceId;
+					}
+					else {
+						spaceId = SpaceAPI.addDependentSpace(additionalSpace, spaceId);
+					}
+				}
+		}
 		return spaceId;
 	
 	}
@@ -499,6 +512,9 @@ public class ImportAPI {
 				fields.add("building");
 				fields.add("floor");
 				fields.add("spaceName");
+				fields.add("subspace1");
+				fields.add("subspace2");
+				fields.add("subspace3");
 			}
 		}
 		catch(Exception e) {

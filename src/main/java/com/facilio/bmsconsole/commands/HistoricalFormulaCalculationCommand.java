@@ -30,7 +30,7 @@ public class HistoricalFormulaCalculationCommand implements Command {
 			throw new IllegalArgumentException("The given formula : "+formulaId+" is not defined for resource : "+resourceId);
 		}
 		
-		FormulaFieldAPI.calculateHistoricalDataForSingleResource(formulaId, resourceId, range);
+		FormulaFieldAPI.calculateHistoricalDataForSingleResource(formulaId, resourceId, range, false);
 		
 		return false;
 	}

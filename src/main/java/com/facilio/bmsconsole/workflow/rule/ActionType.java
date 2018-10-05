@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -20,6 +19,7 @@ import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -31,6 +31,7 @@ import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.NotificationContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -125,6 +126,11 @@ public enum ActionType {
 							String to = (String) toEmail;
 							if (to != null && !to.isEmpty() && checkIfActiveUserFromEmail(to)) {
 								obj.put("to", (String) to);
+								
+								if (AccountUtil.getCurrentOrg().getId() == 104) {
+									LOGGER.info("Gonna Email : "+obj.toJSONString());
+								}
+								
 								AwsUtil.sendEmail(obj);
 								emails.add(to);
 							}
@@ -475,7 +481,7 @@ public enum ActionType {
 					woContext.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
 					woContext.put(FacilioConstants.ContextNames.INSERT_LEVEL, 2);
 
-					Command addWorkOrder = TransactionChainFactory.getAddWorkOrderChain();
+					Chain addWorkOrder = TransactionChainFactory.getAddWorkOrderChain();
 					addWorkOrder.execute(woContext);
 				} else {
 					AlarmContext alarm = AlarmAPI.getAlarm(wo.getId());
@@ -583,6 +589,26 @@ public enum ActionType {
 																				.andCondition(CriteriaAPI.getIdCondition(((ModuleBaseWithCustomFields) currentRecord).getId(), event.getModule()))
 																				;
 			updateBuilder.update(obj);
+			
+		}
+		
+	},
+	CREATE_WORK_ORDER(14) {
+
+		@Override
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
+				Object currentRecord) throws Exception {
+			// TODO Auto-generated method stub
+			
+			LOGGER.info("Action::Add Workorder::"+obj);
+			
+			WorkOrderContext wo = FieldUtil.getAsBeanFromJson(obj, WorkOrderContext.class);
+			wo.setSourceType(SourceType.WORKFLOW_RULE);
+			FacilioContext woContext = new FacilioContext();
+			woContext.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
+
+			Chain addWorkOrder = TransactionChainFactory.getAddWorkOrderChain();
+			addWorkOrder.execute(woContext);
 			
 		}
 		

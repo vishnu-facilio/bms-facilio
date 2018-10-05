@@ -381,6 +381,9 @@ public class WorkOrderRequestAction extends FacilioAction {
 		}
 		return SUCCESS;
 	}
+	public String workRequestCount () throws Exception {
+		return workOrderRequestList();	
+	}
 	public String workOrderRequestList() throws Exception {
 		// TODO Auto-generated method stub
  		FacilioContext context = new FacilioContext();

@@ -31,13 +31,14 @@ public class ImportDataJob extends FacilioJob {
 			
 			importProcessContext = ImportAPI.getImportProcessContext(jobId);
 			
-			if(!importProcessContext.getImportJobMetaJson().isEmpty() ) {
-				Long assetId = (Long) importProcessContext.getImportJobMetaJson().get("assetId");
-				if(assetId != null) {
-					importProcessContext.setAssetId(assetId);
+			if(importProcessContext.getImportJobMeta() != null) {
+				if(!importProcessContext.getImportJobMetaJson().isEmpty() ) {
+					Long assetId = (Long) importProcessContext.getImportJobMetaJson().get("assetId");
+					if(assetId != null) {
+						importProcessContext.setAssetId(assetId);
+					}
 				}
-			}
-			
+			}	
 			if(!importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET)) {
 				FacilioContext context = new FacilioContext();
 				context.put(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT, importProcessContext);

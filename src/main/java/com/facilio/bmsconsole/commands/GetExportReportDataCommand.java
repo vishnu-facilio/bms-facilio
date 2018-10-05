@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -19,6 +20,7 @@ import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.NumberField;
+import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.ExportUtil;
 import com.facilio.constants.FacilioConstants;
@@ -36,6 +38,7 @@ public class GetExportReportDataCommand implements Command {
 	
 	private static ReportContext report;
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean execute(Context context) throws Exception {
 		
@@ -116,16 +119,21 @@ public class GetExportReportDataCommand implements Command {
 			fileUrl = ExportUtil.exportData(fileFormat, "Report Data", table);
 		}
 		else {
-			String url = getClientUrl(report.getDataPoints().get(0).getxAxis().getField().getModule().getName(), report.getId(), fileFormat) + "?";
+			StringBuilder url = getClientUrl(report.getDataPoints().get(0).getxAxis().getField().getModule().getName(), report.getId(), fileFormat).append("?print=true");
 			if(report.getDateRange() != null) {
-				url += "daterange=" + report.getDateRange().getStartTime() + "," + report.getDateRange().getEndTime();
+				JSONObject dateRange = new JSONObject();
+				dateRange.put("startTime", report.getDateRange().getStartTime());
+				dateRange.put("endTime", report.getDateRange().getEndTime());
+				dateRange.put("operatorId", report.getDateOperator());
+				dateRange.put("value", report.getDateValue());
+				url.append("&daterange=").append(ReportsUtil.encodeURIComponent(dateRange.toJSONString()));
 			}
 			String chartType = (String) context.get("chartType");
 			if (chartType != null) {
-				url += "&charttype=" + chartType;
+				url.append("&charttype=").append(chartType);
 			}
 			
-			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(), url, fileFormat);
+			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(), url.toString(), fileFormat);
 		}
 		
 		context.put(FacilioConstants.ContextNames.FILE_URL, fileUrl);
@@ -264,7 +272,7 @@ public class GetExportReportDataCommand implements Command {
 		return records;
 	}
 	
-	private String getClientUrl(String moduleName, Long reportId, FileFormat fileFormat) {
+	private StringBuilder getClientUrl(String moduleName, Long reportId, FileFormat fileFormat) {
 		StringBuilder url = new StringBuilder(AwsUtil.getConfig("clientapp.url")).append("/app/");
 		if (moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER)) {
 			url.append("wo");
@@ -284,7 +292,7 @@ public class GetExportReportDataCommand implements Command {
 		if(fileFormat == FileFormat.IMAGE) {
 			url.append("/show");
 		}
-		return url.toString();
+		return url;
 	}
 	
 	private String addAnalyticsConfigAndGetUrl(FileFormat fileFormat) {

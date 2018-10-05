@@ -40,7 +40,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SLA_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));
 			c.addCommand(new ForkChainToInstantJobCommand()
-							.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE, RuleType.SCHEDULED_RULE))
+							.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE))
 					);
 			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
@@ -75,7 +75,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SLA_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));
 			c.addCommand(new ForkChainToInstantJobCommand()
-					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE, RuleType.SCHEDULED_RULE))
+					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE))
 					);
 			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
@@ -154,22 +154,6 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
-		public static Chain addApprovalRuleChain() {
-			Chain c = getDefaultChain();
-			c.addCommand(new ConstructApprovalRuleActionCommand());
-			c.addCommand(getAddWorkflowRuleChain());
-			CommonCommandUtil.addCleanUpCommand(c);
-			return c;
-		}
-		
-		public static Chain updateApprovalRuleChain() {
-			Chain c = getDefaultChain();
-			c.addCommand(new ConstructApprovalRuleActionCommand());
-			c.addCommand(updateWorkflowRuleChain());
-			CommonCommandUtil.addCleanUpCommand(c);
-			return c;
-		}
-		
 		public static Chain getAddAssetChain() {
 			Chain c = getDefaultChain();
 			//c.addCommand(SetTableNamesCommand.getForAsset());
@@ -197,13 +181,12 @@ public class TransactionChainFactory {
 		}
 		
 		public static Chain getImportChain() {
-			Chain c = new ChainBase();
+			Chain c = getDefaultChain();
 			c.addCommand(new ProcessImportCommand());
 			c.addCommand(new PopulateImportProcessCommand());
-			c.addCommand(new ForkChainToInstantJobCommand()
-					.addCommand(new UpdateBaseAndResourceCommand())
-					.addCommand(new InsertReadingDataMetaForNewResourceCommand())
-					.addCommand(new SendEmailCommand()));
+			c.addCommand(new UpdateBaseAndResourceCommand());
+			c.addCommand(new InsertReadingDataMetaForImport());
+			c.addCommand(new SendEmailCommand());
 			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}
@@ -214,14 +197,21 @@ public class TransactionChainFactory {
 			c.addCommand(new SeperateToCategoriesCommand());
 			c.addCommand(new SetModuleForSpecialAssetsCommand());
 			c.addCommand(new BulkPushAssetCommands());
-			c.addCommand(new ForkChainToInstantJobCommand()
-					.addCommand(new InsertReadingDataMetaForNewResourceCommand())
-					.addCommand(new SendEmailCommand()));
+			c.addCommand(new InsertReadingDataMetaForImport());
+			c.addCommand(new SendEmailCommand());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
+		public static Chain scheduledRuleExecutionChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new FetchScheduledRuleMatchingRecordsCommand());
+			c.addCommand(new ExecuteSingleWorkflowRuleCommand());
 			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}
 		
 	    private static Chain getDefaultChain() {
-	    	    return new FacilioChain(true);
+	    	return new FacilioChain(true);
 	    }
 }

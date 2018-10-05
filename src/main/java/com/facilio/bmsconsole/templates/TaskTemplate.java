@@ -9,7 +9,9 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
+import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
 import com.facilio.bmsconsole.modules.FieldUtil;
 
 public class TaskTemplate extends Template {
@@ -22,12 +24,21 @@ public class TaskTemplate extends Template {
 		this.description = description;
 	}
 	
-	private long statusId = -1;
-	public long getStatusId() {
-		return statusId;
+	private TaskStatus status;
+	public TaskStatus getStatusEnum() {
+		return status;
 	}
-	public void setStatusId(long statusId) {
-		this.statusId = statusId;
+	public void setStatus(TaskStatus status) {
+		this.status = status;
+	}
+	public int getStatus() {
+		if (status != null) {
+			return status.getValue();
+		}
+		return -1;
+	}
+	public void setStatus(int status) {
+		this.status = TaskStatus.valueOf(status);
 	}
 	
 	private long priorityId = -1;
@@ -187,9 +198,8 @@ public class TaskTemplate extends Template {
 			taskProp.put("readingFieldId", readingFieldId);
 			taskProp.put("sequence", sequence);
 			taskProp.put("attachmentRequired", isAttachmentRequired());
-			if (statusId != -1) {
-				taskProp.put("status", FieldUtil.getLookedUpProp(statusId));
-			}
+			taskProp.put("statusNew", getStatus());
+			
 			if (priorityId != -1) {
 				taskProp.put("priority", FieldUtil.getLookedUpProp(priorityId));
 			}
@@ -228,30 +238,12 @@ public class TaskTemplate extends Template {
 		if (task != null) {
 			setName(task.getSubject());
 			description = task.getDescription();
-			duration = task.getDuration();
 			inputType = task.getInputTypeEnum();
 			readingFieldId = task.getReadingFieldId();
 			sectionId = task.getSectionId();
 			sequence = task.getSequence();
 			attachmentRequired = task.isAttachmentRequired();
-			if (task.getStatus() != null) {
-				statusId = task.getStatus().getId();
-			}
-			if (task.getPriority() != null) {
-				priorityId = task.getPriority().getId();
-			}
-			if (task.getCategory() != null) {
-				categoryId = task.getCategory().getId();
-			}
-			if (task.getType() != null) {
-				typeId = task.getType().getId();
-			}
-			if (task.getAssignmentGroup() != null) {
-				assignmentGroupId = task.getAssignmentGroup().getId();
-			}
-			if (task.getAssignedTo() != null) {
-				assignedToId = task.getAssignedTo().getId();
-			}
+			status = task.getStatusNewEnum();
 			if (task.getResource() != null) {
 				resourceId = task.getResource().getId();
 			}
@@ -294,5 +286,32 @@ public class TaskTemplate extends Template {
 	public void setSiteId(long siteId) {
 		this.siteId = siteId;
 	}
+	
+	Long assetCategoryId;
+	Long spaceCategoryId;
+	
+	public Long getAssetCategoryId() {
+		return assetCategoryId;
+	}
+	public void setAssetCategoryId(Long assetCategoryId) {
+		this.assetCategoryId = assetCategoryId;
+	}
+	public Long getSpaceCategoryId() {
+		return spaceCategoryId;
+	}
+	public void setSpaceCategoryId(Long spaceCategoryId) {
+		this.spaceCategoryId = spaceCategoryId;
+	}
 
+	PMAssignmentType assignmentType;
+	
+	public int getAssignmentType() {
+		if(assignmentType != null) {
+			return assignmentType.getVal();
+		}
+		return -1;
+	}
+	public void setAssignmentType(int assignmentType) {
+		this.assignmentType = PMAssignmentType.valueOf(assignmentType);
+	}
 }

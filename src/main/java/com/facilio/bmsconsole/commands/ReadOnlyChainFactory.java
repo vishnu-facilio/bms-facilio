@@ -15,8 +15,21 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new FilterXFieldCommand());
 		c.addCommand(new FetchReportDataCommand());
 		c.addCommand(new TransformReportDataCommand());
+		c.addCommand(new CustomTransformReportDataCommand());
 		c.addCommand(new CalculateDerivationCommand());
 		c.addCommand(new CalculateVarianceCommand());
+		c.addCommand(new FetchReportExtraMeta());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain newFetchReportDataChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new FilterXFieldCommand());
+		c.addCommand(new FetchReportDataCommand());
+		c.addCommand(new ConstructReportDataCommand());
+		c.addCommand(new NewTransformReportDataCommand());
+//		c.addCommand(new CustomTransformReportDataCommand()); //Uncomment after changing interface to new format
 		c.addCommand(new FetchReportExtraMeta());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
@@ -26,6 +39,13 @@ public class ReadOnlyChainFactory {
 		Chain c = getDefaultChain();
 		c.addCommand(new CreateReadingAnalyticsReportCommand());
 		c.addCommand(fetchReportDataChain());
+		return c;
+	}
+	
+	public static Chain newFetchReadingReportChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new CreateReadingAnalyticsReportCommand());
+		c.addCommand(newFetchReportDataChain());
 		return c;
 	}
 	
@@ -89,6 +109,17 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GenerateSearchConditionCommand());
 		c.addCommand(new GetWorkOrderListCommand());
 		c.addCommand(new FetchApprovalRulesCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAssetFromQRChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new ParseQRValueCommand());
+		c.addCommand(new FetchAssetFromQRValCommand());
+		c.addCommand(new SetModuleForSpecialAssetsCommand());
+		c.addCommand(new LoadAssetFields());
+		c.addCommand(new GetAssetDetailCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}

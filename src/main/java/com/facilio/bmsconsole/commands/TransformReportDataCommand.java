@@ -27,33 +27,35 @@ public class TransformReportDataCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<ReportDataContext> reportData = (List<ReportDataContext>) context.get(FacilioConstants.ContextNames.REPORT_DATA);
-		Map<String, Map<String, Map<Object, Object>>> transformedData = new HashMap<>();
-		Set<Object> xValues = new TreeSet<>();
-		for (ReportDataContext data : reportData ) {
-			Map<String, List<Map<String, Object>>> reportProps = data.getProps();
-			if (reportProps != null && !reportProps.isEmpty()) {
-				for (ReportDataPointContext dataPoint : data.getDataPoints()) {
-					Map<String, Map<Object, Object>> dataPointMap = new HashMap<>();
-					for (Map.Entry<String, List<Map<String, Object>>> entry : reportProps.entrySet()) {
-						List<Map<String, Object>> props = entry.getValue();
-						Map<Object, Object> dataPoints = null;
-						if (FacilioConstants.Reports.ACTUAL_DATA.equals(entry.getKey())) {
-							dataPoints = transformData(dataPoint, xValues, props, null);
+		if (reportData != null) {
+			Map<String, Map<String, Map<Object, Object>>> transformedData = new HashMap<>();
+			Set<Object> xValues = new TreeSet<>();
+			for (ReportDataContext data : reportData ) {
+				Map<String, List<Map<String, Object>>> reportProps = data.getProps();
+				if (reportProps != null && !reportProps.isEmpty()) {
+					for (ReportDataPointContext dataPoint : data.getDataPoints()) {
+						Map<String, Map<Object, Object>> dataPointMap = new HashMap<>();
+						for (Map.Entry<String, List<Map<String, Object>>> entry : reportProps.entrySet()) {
+							List<Map<String, Object>> props = entry.getValue();
+							Map<Object, Object> dataPoints = null;
+							if (FacilioConstants.Reports.ACTUAL_DATA.equals(entry.getKey())) {
+								dataPoints = transformData(dataPoint, xValues, props, null);
+							}
+							else {
+								dataPoints = transformData(dataPoint, xValues, props, data.getBaseLineMap().get(entry.getKey()));  
+							}
+							
+							if (dataPoints != null) {
+								dataPointMap.put(entry.getKey(), dataPoints);
+							}
 						}
-						else {
-							dataPoints = transformData(dataPoint, xValues, props, data.getBaseLineMap().get(entry.getKey()));  
-						}
-						
-						if (dataPoints != null) {
-							dataPointMap.put(entry.getKey(), dataPoints);
-						}
+						transformedData.put(dataPoint.getName(), dataPointMap);
 					}
-					transformedData.put(dataPoint.getName(), dataPointMap);
 				}
 			}
+			context.put(FacilioConstants.ContextNames.REPORT_X_VALUES, xValues);
+			context.put(FacilioConstants.ContextNames.REPORT_DATA, transformedData);
 		}
-		context.put(FacilioConstants.ContextNames.REPORT_X_VALUES, xValues);
-		context.put(FacilioConstants.ContextNames.REPORT_DATA, transformedData);
 		return false;
 	}
 	

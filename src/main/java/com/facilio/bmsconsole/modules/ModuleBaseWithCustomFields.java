@@ -106,4 +106,10 @@ public class ModuleBaseWithCustomFields implements Serializable {
 	public void setSysCreatedTime(long sysCreatedTime) {
 		this.sysCreatedTime = sysCreatedTime;
 	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return id+"::"+data;
+	}
 }

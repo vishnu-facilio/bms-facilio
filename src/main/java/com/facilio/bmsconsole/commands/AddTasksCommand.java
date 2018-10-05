@@ -10,8 +10,8 @@ import org.apache.commons.chain.Context;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
 import com.facilio.bmsconsole.context.TaskSectionContext;
-import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -49,12 +49,11 @@ public class AddTasksCommand implements Command {
 				for(TaskContext task : tasks) {
 					task.setCreatedTime(System.currentTimeMillis());
 					task.setSectionId(sectionId);
+					task.setStatusNew(TaskStatus.OPEN);
 					if(workOrder != null) {
 						task.setParentTicketId(workOrder.getId());
 					}
-					task.setSourceType(TicketContext.SourceType.TASK);
 					task.setCreatedBy(AccountUtil.getCurrentUser());
-					
 					builder.addRecord(task);
 				}
 			});

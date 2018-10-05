@@ -4739,6 +4739,12 @@ public class DashboardAction extends ActionSupport {
 		JSONArray readingData = null;
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
+		if(report.getCustomReportClass() != null) {
+			Class<? extends CustomReport> classObject = (Class<? extends CustomReport>) Class.forName(report.getCustomReportClass());
+			CustomReport job = classObject.newInstance();
+			readingData = job.getData(report, module, dateFilter, userFilterValues, baseLineId, criteriaId);
+			return readingData;
+		}
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(module.getTableName())
 				.andCustomWhere(module.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId())
@@ -4768,6 +4774,12 @@ public class DashboardAction extends ActionSupport {
 			subBuilder.innerJoin(resourceModule.getTableName())
 			.on(energyMeterModule.getTableName()+".ID="+resourceModule.getTableName()+".ID")
 			.andCondition(CriteriaAPI.getCondition("SYS_DELETED", "deleted", String.valueOf(false), BooleanOperators.IS));
+			
+			Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria("asset");
+			
+			if(scopeCriteria != null) {
+				subBuilder.andCriteria(scopeCriteria);
+			}
 			
 			if(!(report.getId() == 4218l || report.getId() == 2868l || report.getId() == 4225l || report.getId() == 4226l)) { 
 				xAxisField.setColumnName("PARENT_METER_ID");

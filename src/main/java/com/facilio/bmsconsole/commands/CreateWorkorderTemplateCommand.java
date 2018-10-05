@@ -44,7 +44,7 @@ public class CreateWorkorderTemplateCommand implements Command {
 		
 		long templateId = -1; 
 		if (type == Template.Type.PM_WORKORDER) {
-			templateId = TemplateAPI.addPMWorkOrderTemplate(workorderTemplate);
+			templateId = TemplateAPI.addPMWorkOrderTemplate(workorderTemplate);		// all addition done here..
 		}
 		else {
 			templateId = TemplateAPI.addWorkOrderTemplate(workorderTemplate);

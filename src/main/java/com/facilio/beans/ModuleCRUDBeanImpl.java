@@ -24,6 +24,7 @@ import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
@@ -476,7 +477,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 					
 			
 					TaskContext ts = new TaskContext();
-					ts.setStatus(ticketStatus.get(0));
+					ts.setStatusNew(TaskStatus.CLOSED);
 			
 					updateTaskBuilder.update(ts);
 				
