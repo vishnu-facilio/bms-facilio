@@ -4613,7 +4613,19 @@ public class DashboardAction extends ActionSupport {
 		 				}
 		 				else {
 		 					Object lbl = thisMap.get("label");
-		 					component.put("label", lbl);
+		 					if(report.getxAxisLabel() != null && report.getxAxisLabel().equals("Assets")) {
+		 						ResourceContext resource = ResourceAPI.getResource((Long) lbl);
+		 						if(resource != null) {
+		 							component.put("label", resource.getName());
+			 						component.put("labelId", lbl);
+		 						}
+		 						else {
+		 							component.put("label", lbl);
+		 						}
+		 					}
+		 					else {
+		 						component.put("label", lbl);
+		 					}
 		 				}
 	 					component.put("value", thisMap.get("value"));
 	 					res.add(component);
