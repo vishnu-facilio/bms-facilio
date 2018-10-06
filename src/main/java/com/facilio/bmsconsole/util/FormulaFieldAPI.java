@@ -28,6 +28,7 @@ import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
 import com.facilio.bmsconsole.context.FormulaFieldContext.ResourceType;
 import com.facilio.bmsconsole.context.FormulaFieldContext.TriggerType;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.CommonOperators;
@@ -824,14 +825,22 @@ public class FormulaFieldAPI {
 		return wfParams;
 	}
 	
-	private static Map<Object, Object> fetchHistoricalData(OptimisedFormulaCalculationMeta meta, long resourceId, DateRange range, ModuleBean modBean, Set<Object> xValues) throws Exception {
+	private static Object fetchHistoricalData(OptimisedFormulaCalculationMeta meta, long resourceId, DateRange range, ModuleBean modBean, Set<Object> xValues) throws Exception {
 		if (meta.getResourceId() == -1 && resourceId == -1) {
 			throw new IllegalArgumentException("Both the resource ids cannot be empty");
 		}
+		
+		
 		long parentId = resourceId == -1 ? meta.getResourceId() : resourceId;
+		FacilioField valField = modBean.getField(meta.getFieldName(), meta.getModuleName());
+		
+		if (meta.isOnlyParentId()) {
+			ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(parentId, valField);
+			return rdm.getValue().toString();
+		}
+		
 		FacilioField parentIdField = modBean.getField("parentId", meta.getModuleName());
 		FacilioField ttime = modBean.getField("ttime", meta.getModuleName());
-		FacilioField valField = modBean.getField(meta.getFieldName(), meta.getModuleName());
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(valField);
 		fields.add(ttime);
@@ -907,23 +916,36 @@ public class FormulaFieldAPI {
 				meta.setModuleName(expr.getModuleName());
 				meta.setFieldName(expr.getFieldName());
 				
+				boolean onlyParentId = true;
 				for (Condition condition : expr.getCriteria().getConditions().values()) {
 					if (condition.getFieldName().equals("parentId")) {
 						if (!condition.getValue().equals("${resourceId}")) {
 							meta.setResourceId(Long.parseLong(condition.getValue()));
 						}
 					}
-					else if (!condition.getFieldName().equals("ttime")) {
+					else if (condition.getFieldName().equals("ttime")) {
+						onlyParentId = false;
+					}
+					else {
 						optimisedWorkflow.addWorkflowExpression(expr);
 						continue;
 					}
 				}
 				
-				optimisedWorkflow.addParamater(getWorkflowParameter(exprName, "map"));
-				
-				ExpressionContext param = new ExpressionContext();
-				param.setName(expr.getName());
-				param.setDefaultFunctionContext(getWorkflowFunction("map", "get", exprName+", value"));
+				ExpressionContext param = null;
+				if (onlyParentId) {
+					meta.setOnlyParentId(true);
+					optimisedWorkflow.addParamater(getWorkflowParameter(exprName, "string"));
+					param = new ExpressionContext();
+					param.setName(expr.getName());
+					param.setConstant("${"+exprName+"}");
+				}
+				else {
+					optimisedWorkflow.addParamater(getWorkflowParameter(exprName, "map"));
+					param = new ExpressionContext();
+					param.setName(expr.getName());
+					param.setDefaultFunctionContext(getWorkflowFunction("map", "get", exprName+", value"));
+				}
 				iterator.addExpression(param);
 				optimisedWorkflow.addMeta(meta);
 			}
@@ -1086,6 +1108,14 @@ public class FormulaFieldAPI {
 		}
 		public void setResourceId(long resourceId) {
 			this.resourceId = resourceId;
+		}
+		
+		private boolean onlyParentId = false;
+		public boolean isOnlyParentId() {
+			return onlyParentId;
+		}
+		public void setOnlyParentId(boolean onlyParentId) {
+			this.onlyParentId = onlyParentId;
 		}
 		
 		@Override
