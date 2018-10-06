@@ -3974,6 +3974,7 @@ public class FieldFactory {
 		fields.add(getField("startTime", "START_TIME", module, FieldType.DATE_TIME));
 		fields.add(getField("endTime", "END_TIME", module, FieldType.DATE_TIME));
 		fields.add(getField("isSystem", "IS_SYSTEM", module, FieldType.BOOLEAN));
+		fields.add(getField("historicalAlarm", "CALCULATE_HISTORICAL_ALARM", module, FieldType.BOOLEAN));
 
 		return fields;
 	}

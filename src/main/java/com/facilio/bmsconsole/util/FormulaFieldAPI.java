@@ -386,7 +386,7 @@ public class FormulaFieldAPI {
 		BmsJobUtil.scheduleOneTimeJobWithProps(formulaId, "HistoricalFormulaFieldCalculator", 30, "priority", FieldUtil.getAsJSON(range));
 	}
 	
-	public static void calculateHistoricalDataForSingleResource(long formulaId, long resourceId, DateRange range, boolean isSystem) throws Exception {
+	public static void calculateHistoricalDataForSingleResource(long formulaId, long resourceId, DateRange range, boolean isSystem, boolean historicalAlarm) throws Exception {
 		Map<String, Object> prop = getFormulaFieldResourceJob(formulaId, resourceId, isSystem);
 		long id = -1;
 		if (prop == null) {
@@ -397,11 +397,12 @@ public class FormulaFieldAPI {
 			prop.put("startTime", range.getStartTime());
 			prop.put("endTime", range.getEndTime());
 			prop.put("isSystem", isSystem);
+			prop.put("historicalAlarm", historicalAlarm);
 			id = addFormulaFieldResourceJob(prop);
 		}
 		else {
 			id = (long) prop.get("id");
-			updateFormulaFieldResourceJob(id, range.getStartTime(), range.getEndTime());
+			updateFormulaFieldResourceJob(id, range.getStartTime(), range.getEndTime(), historicalAlarm);
 			FacilioTimer.deleteJob(id, "SingleResourceHistoricalFormulaFieldCalculator");
 		}
 		FacilioTimer.scheduleOneTimeJob(id, "SingleResourceHistoricalFormulaFieldCalculator", 30, "priority");
@@ -415,11 +416,12 @@ public class FormulaFieldAPI {
 		return insertBuilder.insert(prop);
 	}
 	
-	private static void updateFormulaFieldResourceJob (long id, long startTime, long endTime) throws Exception {
+	private static void updateFormulaFieldResourceJob (long id, long startTime, long endTime, boolean historicalAlarm) throws Exception {
 		FacilioModule module = ModuleFactory.getFormulaFieldResourceJobModule();
 		Map<String, Object> prop = new HashMap<>();
 		prop.put("startTime", startTime);
 		prop.put("endTime", endTime);
+		prop.put("historicalAlarm", historicalAlarm);
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 														.table(module.getTableName())
@@ -691,8 +693,8 @@ public class FormulaFieldAPI {
 		return false;
 	}
 	
-	public static void historicalCalculation(FormulaFieldContext formula, DateRange range) throws Exception {
-		historicalCalculation(formula, range, -1, true);
+	public static void historicalCalculation(FormulaFieldContext formula, DateRange range, boolean historicalAlarm) throws Exception {
+		historicalCalculation(formula, range, -1, true, historicalAlarm);
 	}
 	
 	private static boolean isAllWorkflowFieldsAggregationIsLastVal(WorkflowContext workflow) throws Exception {
@@ -708,7 +710,7 @@ public class FormulaFieldAPI {
 		return true;
 	}
 	
-	public static void optimisedHistoricalCalculation(FormulaFieldContext formula, DateRange range, long singleResourceId, boolean isSystem) throws Exception {
+	public static void optimisedHistoricalCalculation(FormulaFieldContext formula, DateRange range, long singleResourceId, boolean isSystem, boolean historicalAlarm) throws Exception {
 		
 		if (formula.getTriggerTypeEnum() != TriggerType.POST_LIVE_READING) {
 			throw new IllegalArgumentException("Currently only Live reading is supported for optimised historical calculation");
@@ -716,12 +718,12 @@ public class FormulaFieldAPI {
 		
 		if (dependsOnSameModule(formula)) {
 			LOGGER.warn("Calculating the usual way instead of optimised, since formula is depending on itself");
-			historicalCalculation(formula, range, singleResourceId, isSystem);
+			historicalCalculation(formula, range, singleResourceId, isSystem, historicalAlarm);
 		}
 		
 		if (!isAllWorkflowFieldsAggregationIsLastVal(formula.getWorkflow())) {
 			LOGGER.warn("Calculating the usual way instead of optimised, since formula depends on fields who's aggregation is not 'lastValue'");
-			historicalCalculation(formula, range, singleResourceId, isSystem);
+			historicalCalculation(formula, range, singleResourceId, isSystem, historicalAlarm);
 		}
 		
 		List<DateRange> intervals = getIntervals(formula, range);
@@ -767,6 +769,7 @@ public class FormulaFieldAPI {
 				FacilioContext context = new FacilioContext();
 				context.put(FacilioConstants.ContextNames.MODULE_NAME, formula.getReadingField().getModule().getName());
 				context.put(FacilioConstants.ContextNames.READINGS, readings);
+				context.put(FacilioConstants.ContextNames.HISTORY_READINGS, !historicalAlarm);
 
 				Chain addReadingChain = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
 				addReadingChain.execute(context);
@@ -968,7 +971,7 @@ public class FormulaFieldAPI {
 		return optimisedWorkflow;
 	}
 	
-	public static void historicalCalculation(FormulaFieldContext formula, DateRange range, long singleResourceId, boolean isSystem) throws Exception {
+	public static void historicalCalculation(FormulaFieldContext formula, DateRange range, long singleResourceId, boolean isSystem, boolean historicalAlarm) throws Exception {
 		List<DateRange> intervals = getIntervals(formula, range);
 		LOGGER.info(intervals);
 		if (intervals != null && !intervals.isEmpty()) {
@@ -1004,7 +1007,7 @@ public class FormulaFieldAPI {
 				FacilioContext context = new FacilioContext();
 				context.put(FacilioConstants.ContextNames.MODULE_NAME, formula.getReadingField().getModule().getName());
 				context.put(FacilioConstants.ContextNames.READINGS, readings);
-//				context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS, false);
+				context.put(FacilioConstants.ContextNames.HISTORY_READINGS, !historicalAlarm);
 
 				Chain addReadingChain = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
 				addReadingChain.execute(context);
@@ -1018,7 +1021,7 @@ public class FormulaFieldAPI {
 							if (currentFormula.getMatchedResourcesIds().contains(singleResourceId)) {
 								List<Long> dependentFieldIds = currentFormula.getWorkflow().getDependentFieldIds();
 								if (dependentFieldIds.contains(formula.getReadingField().getFieldId())) {
-									calculateHistoricalDataForSingleResource(currentFormula.getId(), singleResourceId, range, isSystem);
+									calculateHistoricalDataForSingleResource(currentFormula.getId(), singleResourceId, range, isSystem, historicalAlarm);
 								}
 							}
 						}

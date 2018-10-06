@@ -809,11 +809,20 @@ public class ReadingAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	private boolean historicalAlarm = false;
+	public boolean isHistoricalAlarm() {
+		return historicalAlarm;
+	}
+	public void setHistoricalAlarm(boolean historicalAlarm) {
+		this.historicalAlarm = historicalAlarm;
+	}
+
 	public String calculateHistoryForFormula() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.FORMULA_FIELD, id);
 		context.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(startTime, endTime));
 		context.put(FacilioConstants.ContextNames.RESOURCE_ID, resourceId);
+		context.put(FacilioConstants.ContextNames.HISTORY_ALARM, historicalAlarm);
 		
 		Chain historicalCalculation = TransactionChainFactory.historicalFormulaCalculationChain();
 		historicalCalculation.execute(context);

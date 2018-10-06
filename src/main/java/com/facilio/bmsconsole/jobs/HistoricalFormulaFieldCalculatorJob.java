@@ -23,13 +23,18 @@ public class HistoricalFormulaFieldCalculatorJob extends FacilioJob {
 		try {
 			long formulaId = jc.getJobId();
 			FormulaFieldContext formula = FormulaFieldAPI.getFormulaField(formulaId);
-			DateRange range = getRange(jc, formula);
+			JSONObject props = BmsJobUtil.getJobProps(jc.getJobId(), jc.getJobName());
+			DateRange range = getRange(jc, formula, props);
+			boolean historicalAlarm = false;
+			if (props.get("historicalAlarm") != null) {
+				historicalAlarm = (boolean) props.get("historicalAlarm");
+			}
 			
 			if (range == null) {
 				logger.log(Level.SEVERE, "Historical Formula calculation not done for formula : "+formulaId+", because no range specified");
 				return;
 			}
-			FormulaFieldAPI.historicalCalculation(formula, range);
+			FormulaFieldAPI.historicalCalculation(formula, range, historicalAlarm);
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -38,8 +43,7 @@ public class HistoricalFormulaFieldCalculatorJob extends FacilioJob {
 		}
 	}
 	
-	private DateRange getRange(JobContext jc, FormulaFieldContext formula) throws Exception {
-		JSONObject props = BmsJobUtil.getJobProps(jc.getJobId(), jc.getJobName());
+	private DateRange getRange(JobContext jc, FormulaFieldContext formula, JSONObject props) throws Exception {
 		long currentTime = DateTimeUtil.getCurrenTime();
 		DateRange range = null;
 		switch (formula.getTriggerTypeEnum()) {

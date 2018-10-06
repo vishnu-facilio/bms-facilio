@@ -28,16 +28,20 @@ public class SingleResourceHistoricalFormulaCalculatorJob extends FacilioJob {
 			long resourceId = (long) prop.get("resourceId");
 			long formulaId = (long) prop.get("formulaId");
 			boolean isSystem = (boolean) prop.get("isSystem");
+			boolean historicalAlarm = false;
+			if (prop.get("historicalAlarm") != null) {
+				historicalAlarm = (boolean) prop.get("historicalAlarm");
+			}
 			
 			FormulaFieldContext formula = FormulaFieldAPI.getFormulaField(formulaId);
 			DateRange range = new DateRange(startTime, endTime);
 			
 			switch (formula.getTriggerTypeEnum()) {
 				case POST_LIVE_READING:
-					FormulaFieldAPI.optimisedHistoricalCalculation(formula, range, resourceId, isSystem);
+					FormulaFieldAPI.optimisedHistoricalCalculation(formula, range, resourceId, isSystem, historicalAlarm);
 					break;
 				default:
-					FormulaFieldAPI.historicalCalculation(formula, range, resourceId, isSystem);
+					FormulaFieldAPI.historicalCalculation(formula, range, resourceId, isSystem, historicalAlarm);
 			}
 			
 			String msg = "Time taken for Historical Formula calculation of formula : "+formulaId+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is "+(System.currentTimeMillis() - jobStartTime);

@@ -513,6 +513,7 @@ public class FacilioConstants {
 		public static final String FORMULA_FIELD_TYPE = "formulaFieldType";
 		public static final String FORMULA_LIST = "formulaList";
 		public static final String HISTORY_READINGS = "historyReadings";
+		public static final String HISTORY_ALARM = "historyAlarm";
 		public static final String ANALYTICS_ANAMOLY = "analyticsAnamoly";
 		public static final String DERIVATION = "derivation";
 		

@@ -79,7 +79,7 @@ public class PostFormulaCalculationJob extends InstantJob {
 			if (intervals.size() > 1) { //If more than one interval has to be calculated, only the last interval will be calculated here. Previous intervals will be done via scheduler
 				long minTime = intervals.get(0).getStartTime();
 				long maxTime = intervals.get(intervals.size() - 2).getEndTime();
-				FormulaFieldAPI.calculateHistoricalDataForSingleResource(formula.getId(), reading.getParentId(), new DateRange(minTime, maxTime), true);
+				FormulaFieldAPI.calculateHistoricalDataForSingleResource(formula.getId(), reading.getParentId(), new DateRange(minTime, maxTime), true, true);
 				intervals = Collections.singletonList(intervals.get(intervals.size() - 1));
 			}
 			List<ReadingContext> formulaReadings = FormulaFieldAPI.calculateFormulaReadings(reading.getParentId(), formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), false, false);
