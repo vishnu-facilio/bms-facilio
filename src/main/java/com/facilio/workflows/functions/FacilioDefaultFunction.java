@@ -1,6 +1,7 @@
 package com.facilio.workflows.functions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +15,7 @@ import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -196,7 +198,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			// TODO Auto-generated method stub
-			if (objects.length < 2) {
+			if (objects == null || objects.length < 2) {
 				return false;
 			}
 			int counter = 0;
@@ -259,6 +261,8 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 				selectFields.add(selectField);
 				builder.select(selectFields);
 			}
+			LOGGER.log(Level.SEVERE, "startTime -- "+startTime);
+			LOGGER.log(Level.SEVERE, "endtime -- "+endtime);
 			if(startTime != null && endtime != null) {
 				Condition condition = CriteriaAPI.getCondition(dateField, startTime+","+endtime, DateOperators.BETWEEN);
 				builder.andCondition(condition);
@@ -268,6 +272,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 				builder.andCondition(condition);
 			}
 			builder.andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getId(), module));
+			builder.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleid", module.getModuleId()+"", NumberOperators.EQUALS));
 			 List<Map<String, Object>> props = builder.get();
 			 LOGGER.log(Level.SEVERE, "builder -- "+builder);
 			 if(props != null && !props.isEmpty()) {
@@ -279,7 +284,6 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 		}
 	},
 	;
-	
 	private Integer value;
 	private String functionName;
 	private String namespace = "default";
