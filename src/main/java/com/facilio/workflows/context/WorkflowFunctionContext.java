@@ -1,6 +1,8 @@
 package com.facilio.workflows.context;
 
-public class WorkflowFunctionContext {
+import java.io.Serializable;
+
+public class WorkflowFunctionContext implements Serializable {
 
 	private String nameSpace;
 	private String functionName;

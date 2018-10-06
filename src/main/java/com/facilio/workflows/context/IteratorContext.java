@@ -1,11 +1,9 @@
 package com.facilio.workflows.context;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.json.simple.JSONArray;
@@ -13,7 +11,7 @@ import org.json.simple.JSONArray;
 import com.facilio.bmsconsole.commands.CalculateDerivationCommand;
 import com.facilio.bmsconsole.modules.FieldUtil;
 
-public class IteratorContext implements Serializable,WorkflowExpression {
+public class IteratorContext implements WorkflowExpression {
 
 	private static final Logger LOGGER = Logger.getLogger(CalculateDerivationCommand.class.getName());
 	String loopVariableIndexName;

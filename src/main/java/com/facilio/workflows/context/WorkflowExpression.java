@@ -1,6 +1,8 @@
 package com.facilio.workflows.context;
 
-public interface WorkflowExpression {
+import java.io.Serializable;
+
+public interface WorkflowExpression extends Serializable {
 	
 	public Object execute() throws Exception;
 	
