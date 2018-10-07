@@ -26,7 +26,7 @@ public class HistoricalFormulaFieldCalculatorJob extends FacilioJob {
 			JSONObject props = BmsJobUtil.getJobProps(jc.getJobId(), jc.getJobName());
 			DateRange range = getRange(jc, formula, props);
 			boolean historicalAlarm = false;
-			if (props.get("historicalAlarm") != null) {
+			if (props != null && props.get("historicalAlarm") != null) {
 				historicalAlarm = (boolean) props.get("historicalAlarm");
 			}
 			
