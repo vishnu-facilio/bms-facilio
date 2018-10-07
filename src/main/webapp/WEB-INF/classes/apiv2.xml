@@ -72,6 +72,7 @@
 	<package name="internalV2" namespace="/v2/internal" extends="v2Api">
 		<action name="handleException" class="com.facilio.bmsconsole.actions.FacilioAction" 
 			method="handleException">
+			<interceptor-ref name="defaultStack" />
 		</action>
 	</package>
 

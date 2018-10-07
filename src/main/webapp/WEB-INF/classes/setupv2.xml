@@ -50,7 +50,17 @@
             <param name="permission">ALARM_SETTINGS</param>
 		</action>
 		
+		<action name="addcustom" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="addWorkflowRule">
+			<param name="moduleName">setup</param>
+            <param name="permission">ALARM_SETTINGS</param>
+		</action>
+		
 		<action name="update" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="updateReadingRule">
+			<param name="moduleName">setup</param>
+            <param name="permission">ALARM_SETTINGS</param>
+		</action>
+		
+		<action name="updatecustom" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="updateWorkflowRule">
 			<param name="moduleName">setup</param>
             <param name="permission">ALARM_SETTINGS</param>
 		</action>
@@ -63,6 +73,62 @@
 		<action name="*"  class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="fetchWorkflow">
 			<param name="moduleName">setup</param>
             <param name="permission">ALARM_SETTINGS</param>
+            <param name="ruleId">{1}</param>
+		</action>
+	</package>
+	
+	<package name="woSetupApiV2" namespace="/api/v2/setup/workorder" extends="v2Api">
+		<action name="rules"  class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="fetchWorkflowRulesOfType">
+			<param name="moduleName">setup</param>
+            <param name="permission">WORKORDER_SETTINGS</param>
+		</action>
+	</package>
+	
+	<package name="woRuleApiV2" namespace="/api/v2/setup/workorder/rules" extends="v2Api">
+	
+		<action name="addcustom" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="addWorkflowRule">
+			<param name="moduleName">setup</param>
+            <param name="permission">WORKORDER_SETTINGS</param>
+		</action>
+		
+		<action name="updatecustom" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="updateWorkflowRule">
+			<param name="moduleName">setup</param>
+            <param name="permission">WORKORDER_SETTINGS</param>
+		</action>
+		
+		<action name="addassignment" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="addAssignmentRule">
+			<param name="moduleName">setup</param>
+            <param name="permission">WORKORDER_SETTINGS</param>
+		</action>
+		
+		<action name="updateassignment" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="updateAssignmentRule">
+			<param name="moduleName">setup</param>
+            <param name="permission">WORKORDER_SETTINGS</param>
+		</action>
+		
+		<action name="addsla" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="addSLARule">
+			<param name="moduleName">setup</param>
+            <param name="permission">WORKORDER_SETTINGS</param>
+		</action>
+		
+		<action name="updatesla" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="updateSLARule">
+			<param name="moduleName">setup</param>
+            <param name="permission">WORKORDER_SETTINGS</param>
+		</action>
+		
+		<action name="delete"  class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="deleteWorkflowRule">
+			<param name="moduleName">setup</param>
+            <param name="permission">WORKORDER_SETTINGS</param>
+		</action>
+		
+		<action name="status"  class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="changeWorkflowStatus">
+			<param name="moduleName">setup</param>
+            <param name="permission">WORKORDER_SETTINGS</param>
+		</action>
+		
+		<action name="*"  class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="fetchWorkflow">
+			<param name="moduleName">setup</param>
+            <param name="permission">WORKORDER_SETTINGS</param>
             <param name="ruleId">{1}</param>
 		</action>
 	</package>

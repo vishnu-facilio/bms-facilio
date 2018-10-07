@@ -13,10 +13,8 @@ public class CostAction extends FacilioAction {
 			return SUCCESS;
 		}
 		catch(Exception e) {
-			setResponseCode(1);
-			LOGGER.error("Error occurred during addition of Utility Provider", e);
-			setMessage(FacilioConstants.ERROR_MESSAGE);
-			return ERROR;
+			LOGGER.error("Error occurred during addition of Utility Provider", e); 
+			throw new IllegalArgumentException(FacilioConstants.ERROR_MESSAGE);
 		}
 	}
 	

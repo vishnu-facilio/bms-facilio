@@ -41,8 +41,7 @@ public class TVAction extends FacilioAction {
 			
 			setResult("code", ScreenUtil.generateTVPasscode(info));
 		} catch (Exception e) {
-			setResponseCode(1);
-			setMessage("passcode_generation_failed");
+			throw new IllegalArgumentException("passcode_generation_failed");
 		}
 		
 		return SUCCESS;
@@ -53,9 +52,7 @@ public class TVAction extends FacilioAction {
 		try {
 			Map<String, Object> codeObj = ScreenUtil.getTVPasscode(getCode());
 			if (codeObj == null) {
-				setResponseCode(1);
-				setMessage("passcode_invalid");
-				return ERROR;
+				throw new IllegalArgumentException("passcode_invalid");
 			}
 			else {
 				Long connectedScreenId = (Long) codeObj.get("connectedScreenId");
@@ -84,9 +81,7 @@ public class TVAction extends FacilioAction {
 					if (currentTime >= expiryTime) {
 						ScreenUtil.deleteTVPasscode(getCode());
 						
-						setResponseCode(1);
-						setMessage("passcode_expired");
-						return ERROR;
+						throw new IllegalArgumentException("passcode_expired");
 					}
 					else {
 						setResponseCode(0);
@@ -96,9 +91,7 @@ public class TVAction extends FacilioAction {
 				}
 			}
 		} catch (Exception e) {
-			setResponseCode(1);
-			setMessage("passcode_error");
-			return ERROR;
+			throw new IllegalArgumentException("passcode_error");
 		}
 	}
 }

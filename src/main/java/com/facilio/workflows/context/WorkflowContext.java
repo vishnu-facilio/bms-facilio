@@ -293,7 +293,7 @@ public class WorkflowContext implements Serializable {
 	}
 	
 	public boolean isMapReturnWorkflow() {
-		if(expressions != null) {
+		if(expressions != null && !expressions.isEmpty()) {
 			ExpressionContext exp = (ExpressionContext) expressions.get(0);
 			if(expressions.size() == 1 && exp != null && exp.getFieldName() == null && exp.getCriteria() != null && exp.getModuleName() != null) {
 				return true;
@@ -303,7 +303,7 @@ public class WorkflowContext implements Serializable {
 	}
 	
 	public boolean isListReturnWorkflow() {
-		if(expressions != null) {
+		if(expressions != null && !expressions.isEmpty()) {
 			ExpressionContext exp = (ExpressionContext) expressions.get(0);
 			if(expressions.size() == 1 && exp != null && exp.getFieldName() != null && exp.getCriteria() != null && exp.getModuleName() != null && exp.getAggregateString() == null) {
 				return true;
@@ -331,7 +331,7 @@ public class WorkflowContext implements Serializable {
 			return true;
 		}
 		else {
-			if(expressions != null) {
+			if(expressions != null && !expressions.isEmpty()) {
 				ExpressionContext exp = (ExpressionContext) expressions.get(0);
 				if(expressions.size() == 1 && exp.getFieldName() != null && exp.getCriteria() != null && exp.getModuleName() != null && exp.getAggregateString() != null) {
 					return true;
