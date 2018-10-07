@@ -298,15 +298,15 @@ public class UserBeanImpl implements UserBean {
 	
 	@Override
 	public long inviteAdminConsoleUser(long orgId, User user) throws Exception {
-		long userId = inviteUser(orgId, user);
+		long userId = inviteUser(orgId, user, false);
 		if(userId > 0) {
 			acceptUser(user);
 		}
 		return userId;
 	}
 
-	@Override
-	public long inviteUser(long orgId, User user) throws Exception {
+
+	private long inviteUser(long orgId, User user, boolean sendInvitation) throws Exception {
 
 		if(user.getRoleId() == 0) {
 			throw new AccountException(AccountException.ErrorCode.ROLE_ID_IS_NULL, "RoleID is Null " + user.getEmail());
@@ -323,7 +323,7 @@ public class UserBeanImpl implements UserBean {
 				throw new AccountException(AccountException.ErrorCode.EMAIL_ALREADY_EXISTS, "This user already exists in your organization.");
 			}
 		}
-		
+
 		long uid = getUid(user.getEmail());
 
 		if (uid == -1) {
@@ -348,12 +348,15 @@ public class UserBeanImpl implements UserBean {
 
 		user.setOuid(ouid);
 		Long shiftId = user.getShiftId();
-		
+
 		if (shiftId != null) {
 			insertShiftRel(ouid, shiftId);
 		}
-		
-		sendInvitation(ouid, user);
+
+		if(sendInvitation) {
+			sendInvitation(ouid, user);
+		}
+
 		if(user.getAccessibleSpace() != null) {
 			addAccessibleSpace(user.getOuid(), user.getAccessibleSpace());
 		}
@@ -361,6 +364,11 @@ public class UserBeanImpl implements UserBean {
 			addAccessibleTeam(user.getOuid(), user.getGroups());
 		}
 		return ouid;
+	}
+
+	@Override
+	public long inviteUser(long orgId, User user) throws Exception {
+		return  inviteUser(orgId, user, true);
 	}
 
 	private void insertShiftRel(long uid, Long shiftId)
@@ -377,9 +385,6 @@ public class UserBeanImpl implements UserBean {
 		shiftRelInsertBuilder.addRecord(relProps);
 		shiftRelInsertBuilder.save();
 	}
-	
-
-
 
 	private User getUserFromToken(String userToken){
 		String[] tokenPortal = userToken.split("&");
