@@ -278,7 +278,7 @@ public class DashboardAction extends ActionSupport {
 		this.moduleName = moduleName;
 	}
 	
-	private JSONArray reportData;
+	public JSONArray reportData;
 	public JSONArray getReportData() {
 		return this.reportData;
 	}

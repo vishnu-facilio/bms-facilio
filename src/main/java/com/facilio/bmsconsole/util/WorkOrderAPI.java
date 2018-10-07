@@ -2,10 +2,15 @@ package com.facilio.bmsconsole.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.chain.Command;
+
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.BuildingOperator;
@@ -22,6 +27,20 @@ public class WorkOrderAPI {
 	
 	private static final Logger LOGGER = Logger.getLogger(WorkOrderAPI.class.getName());
 	
+	public static List<Map<String, Object>> getTasks(Long workorderID) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		Command chain = FacilioChainFactory.getGetTasksOfTicketCommand();
+		FacilioContext context = new FacilioContext();
+		
+		context.put(FacilioConstants.ContextNames.ID, workorderID);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
+		context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME,"Tasks");
+		context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(FacilioConstants.ContextNames.TASK));
+		context.put("isAsMap", true);
+		chain.execute(context);
+		
+		return (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
+	}
 	public static WorkOrderContext getWorkOrder(long ticketId) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
