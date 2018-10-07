@@ -1776,12 +1776,6 @@ public class DashboardAction extends ActionSupport {
 				dateFilter.add(1530383400000l);
 			}
 			
-			if(report.getCustomReportClass() != null) {
-				Class<? extends CustomReport> classObject = (Class<? extends CustomReport>) Class.forName(report.getCustomReportClass());
-				CustomReport job = classObject.newInstance();
-				ticketData = job.getData(report, module, dateFilter, userFilterValues, baseLineId, criteriaId);
-				return ticketData;
-			}
 			if(report.getId() == 2349l) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				
@@ -4054,7 +4048,6 @@ public class DashboardAction extends ActionSupport {
 						}
 						
 						JSONArray resList = new JSONArray();
-							
 						LOGGER.log(Level.SEVERE, "daily --- "+daily);
 							
 						if(daily.containsKey("Critical Service")) {
@@ -4111,6 +4104,50 @@ public class DashboardAction extends ActionSupport {
 				}
 				return ticketData;
 			}
+		}
+		
+		if(report.getCustomReportClass() != null) {
+			
+			if(dateFilter == null && report.getDateFilter() != null) {
+				
+				DateOperators dateOperator = report.getDateFilter().getOperator();
+				DateRange range = dateOperator.getRange(report.getDateFilter().getValue());
+				dateFilter = new JSONArray();
+				dateFilter.add(range.getStartTime());
+				dateFilter.add(range.getEndTime());
+			}
+			
+			if(baseLineId != -1) {
+				BaseLineContext baseLineContext = BaseLineAPI.getBaseLine(baseLineId);
+				DateRange dateRange;
+				if(dateFilter != null) {
+					LOGGER.severe("dateFilter --- "+dateFilter);
+					dateRange = new DateRange((long)dateFilter.get(0), (long)dateFilter.get(1));
+				}
+				else {
+					dateRange = report.getDateFilter().getOperator().getRange(report.getDateFilter().getValue());
+				}
+				Condition dateCondition = baseLineContext.getBaseLineCondition(report.getDateFilter().getField(), dateRange);
+				
+				if(dateCondition != null) {
+					if(dateCondition.getValue() != null && dateCondition.getValue().contains(",")) {
+						String startTimeString  = dateCondition.getValue().substring(0, dateCondition.getValue().indexOf(",")).trim();
+						String endTimeString  = dateCondition.getValue().substring( dateCondition.getValue().indexOf(",")+1,dateCondition.getValue().length()).trim();
+						this.startTime = Long.parseLong(startTimeString);
+						this.endTime = Long.parseLong(endTimeString);
+						
+						dateFilter = new JSONArray();
+						dateFilter.add(this.startTime);
+						dateFilter.add(this.endTime);
+					}
+				}
+			}
+			this.dateFilter = dateFilter;
+			
+			Class<? extends CustomReport> classObject = (Class<? extends CustomReport>) Class.forName(report.getCustomReportClass());
+			CustomReport job = classObject.newInstance();
+			ticketData = job.getData(report, module, dateFilter, userFilterValues, baseLineId, criteriaId);
+			return ticketData;
 		}
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
