@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.events.context.EventContext.EventInternalState;
 import com.facilio.fw.BeanFactory;
 
 public class ApprovalRuleContext extends WorkflowRuleContext {
@@ -139,6 +140,23 @@ public class ApprovalRuleContext extends WorkflowRuleContext {
 		return false;
 	}
 	
+	private ApprovalOrder executeOrder;
+	public ApprovalOrder getExecuteOrder() {
+		return executeOrder;
+	}
+	public void setExecuteOrder(ApprovalOrder executeOrder) {
+		this.executeOrder = executeOrder;
+	}
+	public int getExecuteOrderENUM() {
+		if(executeOrder != null) {
+			return executeOrder.getValue();
+		}
+		return -1;
+	}
+	public void setInternalState(int executeOrder) {
+		this.executeOrder = APPROVAL_ORDER[executeOrder-1];
+	}
+	
 	@Override
 	public void executeWorkflowActions(Object record, Context context, Map<String, Object> placeHolders)
 			throws Exception {
@@ -167,5 +185,23 @@ public class ApprovalRuleContext extends WorkflowRuleContext {
 																			.andCondition(CriteriaAPI.getIdCondition(((ModuleBaseWithCustomFields) record).getId(), event.getModule()))
 																			;
 		updateBuilder.update(prop);
+	}
+	private static final ApprovalOrder[] APPROVAL_ORDER = ApprovalOrder.values();
+
+	public static enum ApprovalOrder {
+		SEQUENTIAL,
+		PARALLEL
+		;
+		
+		public int getValue() {
+			return ordinal() + 1;
+		}
+		
+		public ApprovalOrder valueOf (int value) {
+			if (value > 0 && value <= values().length) {
+				return values() [value - 1];
+			}
+			return null;
+		}
 	}
 }
