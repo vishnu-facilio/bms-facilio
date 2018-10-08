@@ -1538,7 +1538,7 @@ public class WorkflowUtil {
 	}
 	
 	private static final DecimalFormat getDefaultDecimalFormat() {
-		DecimalFormat df = new DecimalFormat("#");
+		DecimalFormat df = new DecimalFormat("#.#");
 		df.setMaximumFractionDigits(20);
 		
 		return df;
@@ -1564,11 +1564,8 @@ public class WorkflowUtil {
 			String value = "0";
 			if(variablesMap.get(key) != null) {
 				value = variablesMap.get(key).toString();
-				if (NumberUtils.isCreatable(value) && !NumberUtils.isDigits(value)) {
+				if (NumberUtils.isCreatable(value)) {
 					value = DEFAULT_DECIMAL_FORMAT.format(Double.parseDouble(value));
-				}
-				if (AccountUtil.getCurrentOrg().getId() == 88 && exp.equals("(a/75)^(1/3)")) {
-					LOGGER.info("(key, value => ("+key+", "+value+")");
 				}
 			}
 			else if (!ignoreNullValues) {
@@ -1582,6 +1579,12 @@ public class WorkflowUtil {
 		}
 		catch(ArithmeticException e) {
 			return null;
+		}
+		catch (NumberFormatException e) {
+			if ("Infinite or NaN".equals(e.getMessage())) {
+				return null;
+			}
+			throw e;
 		}
 	}
 	
