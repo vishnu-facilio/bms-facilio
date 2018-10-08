@@ -1,6 +1,5 @@
 package com.facilio.report.customreport;
 
-import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -10,20 +9,20 @@ import org.apache.commons.chain.Command;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.amazonaws.services.cognitoidp.model.StatusType;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
+import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
 
-public class CustomReportUTC5 implements CustomReport {	//Building wise Result(met,notmet)
+public class CustomReportUTC6 implements CustomReport {	//completed vs pending by task
 
 	private static final Logger LOGGER = Logger.getLogger(CustomReportUTC2.class.getName());
 	@Override
@@ -47,56 +46,39 @@ public class CustomReportUTC5 implements CustomReport {	//Building wise Result(m
 		if(workorders.isEmpty()) {
 			return ticketData;
 		}
+		int completed = 0,pending = 0;
 		for(WorkOrderContext workorder:workorders) {
 			
-			int passed = 0,failed = 0;
-			JSONObject buildingres = new JSONObject();
-			
-			if(!(workorder.getSubject().contains("Daily"))) {
-			
-			continue;
-			}
-			
+			LOGGER.log(Level.INFO, "dateFilter --- "+dateFilter);
 			List<Map<String, Object>> taskMap = WorkOrderAPI.getTasks(workorder.getId());
 			
 			for(Map<String, Object> task : taskMap) {
 				
-				if(task.get("inputValue") != null) {
-					
-					String stringValue = task.get("inputValue").toString();
-					
-					Integer value = 0;
-					if("Met".equals(stringValue) ) {
-						passed = passed + 1;
-					}
-					else if ("Not Met".equals(stringValue)) {
-						failed = failed + 1;
-					}
+				Long statusId = null;
+				if(task.get("status") != null) {
+					statusId = (Long) ((Map<String, Object>)task.get("status")).get("id");
+				}
+				TicketStatusContext status = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getId(), statusId);
+				
+				if(statusId != null && status.getType().equals(com.facilio.bmsconsole.context.TicketStatusContext.StatusType.CLOSED)) {
+					completed ++;
+				}
+				else {
+					pending ++;
 				}
 			}
-			
-			JSONArray resArray = new JSONArray();
-			
-			JSONObject res = new JSONObject();
-			res.put("label", "Met");
-			res.put("value", passed);
-			resArray.add(res);
-			
-			res = new JSONObject();
-			res.put("label", "Not Met");
-			res.put("value", failed);
-			resArray.add(res);
-			
-			buildingres.put("label", workorder.getCreatedTime());
-			buildingres.put("value", resArray);
-			ticketData.add(buildingres);
-			
-			ticketData.add(buildingres);
 		}
-			
 		
-		LOGGER.log(Level.INFO, "23611l buildingres ----"+ticketData);
+		JSONObject res = new JSONObject();
+		res.put("label", "Completed");
+		res.put("value", completed);
+		ticketData.add(res);
+		
+		res = new JSONObject();
+		res.put("label", "Pending");
+		res.put("value", pending);
+		ticketData.add(res);
+		
 		return ticketData;
-
 	}
 }
