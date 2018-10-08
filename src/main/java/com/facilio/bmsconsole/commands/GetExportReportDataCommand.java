@@ -293,9 +293,6 @@ public class GetExportReportDataCommand implements Command {
 		if(fileFormat == FileFormat.IMAGE) {
 			url.append("/show");
 		}
-		if(fileFormat == FileFormat.PDF) {
-			url.append("?chartWidth=850");
-		}
 		return url;
 	}
 	
