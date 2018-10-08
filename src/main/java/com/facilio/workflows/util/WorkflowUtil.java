@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,6 +25,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
 import org.w3c.dom.Document;
@@ -1535,6 +1537,14 @@ public class WorkflowUtil {
 		return param;
 	}
 	
+	private static final DecimalFormat getDefaultDecimalFormat() {
+		DecimalFormat df = new DecimalFormat("#");
+		df.setMaximumFractionDigits(20);
+		
+		return df;
+	}
+	private static final DecimalFormat DEFAULT_DECIMAL_FORMAT = getDefaultDecimalFormat();
+	
 	public static Object evaluateExpression(String exp,Map<String,Object> variablesMap, boolean ignoreNullValues) throws Exception {
 
 		LOGGER.fine("EXPRESSION STRING IS -- "+exp+" variablesMap -- "+variablesMap);
@@ -1554,6 +1564,9 @@ public class WorkflowUtil {
 			String value = "0";
 			if(variablesMap.get(key) != null) {
 				value = variablesMap.get(key).toString();
+				if (NumberUtils.isCreatable(value) && !NumberUtils.isDigits(value)) {
+					value = DEFAULT_DECIMAL_FORMAT.format(Double.parseDouble(value));
+				}
 			}
 			else if (!ignoreNullValues) {
 				return null;
