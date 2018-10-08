@@ -744,7 +744,7 @@ public class FormulaFieldAPI {
 					long independentDataStarttime = System.currentTimeMillis();
 					Map<String,Object> wfParams = fetchIndependentParams(optimisedWorkflow.getMetas(), range, modBean, xValues);
 					LOGGER.info("Time taken to fetch independent data : "+(System.currentTimeMillis() - independentDataStarttime));
-					List<ReadingContext> currentReadings = computeOptimisedWorkflow(formula.getReadingField().getModule().getName(), optimisedWorkflow, range, wfParams, xValues, singleResourceId, modBean);
+					List<ReadingContext> currentReadings = computeOptimisedWorkflow(formula.getReadingField().getName(), optimisedWorkflow, range, wfParams, xValues, singleResourceId, modBean);
 					if (formula.getId() == 144) {
 						LOGGER.info("Historical Readings to be added : "+currentReadings);
 					}
