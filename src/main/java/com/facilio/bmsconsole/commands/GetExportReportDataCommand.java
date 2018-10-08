@@ -294,7 +294,7 @@ public class GetExportReportDataCommand implements Command {
 			url.append("/show");
 		}
 		if(fileFormat == FileFormat.PDF) {
-			url.append("?chartWidth=1000");
+			url.append("?chartWidth=850");
 		}
 		return url;
 	}
