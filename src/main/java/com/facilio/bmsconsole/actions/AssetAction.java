@@ -204,6 +204,7 @@ public class AssetAction extends FacilioAction {
 		
 		setReports((JSONObject) context.get(FacilioConstants.ContextNames.REPORTS));
 		setReportcards((JSONArray) context.get(FacilioConstants.ContextNames.REPORT_CARDS));
+		setResult("assetCards", reportcards);
 		
 		return SUCCESS;
 	}

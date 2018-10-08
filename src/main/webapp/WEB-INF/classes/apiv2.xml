@@ -417,13 +417,12 @@
 	
 		<action name="qr" class="com.facilio.bmsconsole.actions.AssetAction"
 			method="fetchAssetFromQR">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
 		</action>
 		
-		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction"
-				method="v2viewWorkOrder">
-			<param name="moduleName">workorder</param>
-			<param name="permission">READ,READ_TEAM,READ_OWN</param>
-			<param name="workOrderId">{1}</param>
+		<action name="cards" class="com.facilio.bmsconsole.actions.AssetAction"
+			method="reportCards">
 		</action>
 		
 		<action name="*" class="com.facilio.bmsconsole.actions.AssetAction" method="assetDetails">
