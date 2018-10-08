@@ -57,7 +57,7 @@ public class CustomReportUTC4 implements CustomReport {	//Score Trends
 		for(WorkOrderContext workorder:workorders) {
 			
 			int buildingScore = 0;
-			if(!(workorder.getSubject().contains("Daily Maintenance"))) {
+			if(!(workorder.getSubject().contains("Daily"))) {
 				
 				continue;
 			}

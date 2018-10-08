@@ -52,7 +52,7 @@ public class CustomReportUTC5 implements CustomReport {	//Score Trends
 			int passed = 0,failed = 0;
 			JSONObject buildingres = new JSONObject();
 			
-			if(!(workorder.getSubject().contains("Daily Maintenance"))) {
+			if(!(workorder.getSubject().contains("Daily"))) {
 			
 			continue;
 			}
