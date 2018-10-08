@@ -24,7 +24,7 @@ import com.facilio.constants.FacilioConstants;
 
 public class CustomReportUTC6 implements CustomReport {	//completed vs pending by task
 
-	private static final Logger LOGGER = Logger.getLogger(CustomReportUTC2.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(CustomReportUTC6.class.getName());
 	@Override
 	public JSONArray getData(ReportContext report, FacilioModule module, JSONArray dateFilter,
 			JSONObject userFilterValues, long baseLineId, long criteriaId) throws Exception {
@@ -55,16 +55,21 @@ public class CustomReportUTC6 implements CustomReport {	//completed vs pending b
 			for(Map<String, Object> task : taskMap) {
 				
 				Long statusId = null;
+				LOGGER.log(Level.SEVERE, "task --- "+task);
 				if(task.get("status") != null) {
 					statusId = (Long) ((Map<String, Object>)task.get("status")).get("id");
 				}
-				TicketStatusContext status = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getId(), statusId);
+				LOGGER.log(Level.SEVERE, "statusId --- "+statusId);
 				
-				if(statusId != null && status.getType().equals(com.facilio.bmsconsole.context.TicketStatusContext.StatusType.CLOSED)) {
-					completed ++;
-				}
-				else {
-					pending ++;
+				if(statusId != null) {
+					TicketStatusContext status = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getId(), statusId);
+					
+					if(status.getType().equals(com.facilio.bmsconsole.context.TicketStatusContext.StatusType.CLOSED)) {
+						completed ++;
+					}
+					else {
+						pending ++;
+					}
 				}
 			}
 		}
