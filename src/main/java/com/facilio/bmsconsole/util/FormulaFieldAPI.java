@@ -757,7 +757,7 @@ public class FormulaFieldAPI {
 				Set<Object> xValues = new TreeSet<>(); 
 				Map<String,Object> wfParams = fetchIndependentParams(optimisedWorkflow.getMetas(), range, modBean, xValues);
 				for (Long resourceId : formula.getMatchedResourcesIds()) {
-					List<ReadingContext> currentReadings = computeOptimisedWorkflow(formula.getReadingField().getModule().getName(), optimisedWorkflow, range, wfParams, xValues, resourceId, modBean);
+					List<ReadingContext> currentReadings = computeOptimisedWorkflow(formula.getReadingField().getName(), optimisedWorkflow, range, wfParams, xValues, resourceId, modBean);
 					if (currentReadings != null && !currentReadings.isEmpty()) {
 						readings.addAll(currentReadings);
 					}
