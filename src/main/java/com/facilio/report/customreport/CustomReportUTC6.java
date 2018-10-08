@@ -54,17 +54,16 @@ public class CustomReportUTC6 implements CustomReport {	//completed vs pending b
 			
 			for(Map<String, Object> task : taskMap) {
 				
-				Long statusId = null;
+				int statusId = 0;
 				LOGGER.log(Level.SEVERE, "task --- "+task);
-				if(task.get("status") != null) {
-					statusId = (Long) ((Map<String, Object>)task.get("status")).get("id");
+				if(task.get("statusNew") != null) {
+					statusId = (int) task.get("statusNew");
 				}
 				LOGGER.log(Level.SEVERE, "statusId --- "+statusId);
 				
-				if(statusId != null) {
-					TicketStatusContext status = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getId(), statusId);
+				if(statusId > 0) {
 					
-					if(status.getType().equals(com.facilio.bmsconsole.context.TicketStatusContext.StatusType.CLOSED)) {
+					if(statusId == 2) {
 						completed ++;
 					}
 					else {
