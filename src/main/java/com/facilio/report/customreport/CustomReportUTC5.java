@@ -23,7 +23,7 @@ import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
-public class CustomReportUTC5 implements CustomReport {	//Score Trends
+public class CustomReportUTC5 implements CustomReport {	//Building wise Result(met,notmet)
 
 	private static final Logger LOGGER = Logger.getLogger(CustomReportUTC2.class.getName());
 	@Override

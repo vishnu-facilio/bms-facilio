@@ -14,6 +14,9 @@ public enum FacilioPsychrometricsFunction implements FacilioWorkflowFunctionInte
 		public Object execute(Object... objects) throws Exception {
 			
 			checkParam(objects);
+			if(objects == null || objects.length <2 || objects[0] == null || objects[1] == null || objects[2] == null) {
+				return null;
+			}
 			double dryBulbTemperature = Double.parseDouble(objects[0].toString());
 			double pressure = Double.parseDouble(objects[1].toString());
 			double relativeHumidity = Double.parseDouble(objects[2].toString());
