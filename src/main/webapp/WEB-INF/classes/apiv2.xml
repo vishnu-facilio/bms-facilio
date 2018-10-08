@@ -414,8 +414,31 @@
 	</package>
 	
 	<package name="assetApiV2" namespace="/api/v2/assets" extends="v2Api">
+	
 		<action name="qr" class="com.facilio.bmsconsole.actions.AssetAction"
 			method="fetchAssetFromQR">
+		</action>
+		
+		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+				method="v2viewWorkOrder">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<param name="workOrderId">{1}</param>
+		</action>
+		
+		<action name="*" class="com.facilio.bmsconsole.actions.AssetAction" method="assetDetails">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+			<param name="assetId">{1}</param>
+		</action>
+		
+	</package>
+	
+	<package name="assetListApiv2" namespace="/api/v2/assets/view" extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.AssetAction" method="assetList">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+			<param name="viewName">{1}</param>
 		</action>
 	</package>
 	

@@ -273,6 +273,7 @@ public class GetExportReportDataCommand implements Command {
 	}
 	
 	private StringBuilder getClientUrl(String moduleName, Long reportId, FileFormat fileFormat) {
+		moduleName = FacilioConstants.ContextNames.ENERGY_DATA_READING;	// Temp
 		StringBuilder url = new StringBuilder(AwsUtil.getConfig("clientapp.url")).append("/app/");
 		if (moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER)) {
 			url.append("wo");

@@ -142,7 +142,7 @@ public class AssetAction extends FacilioAction {
  		Chain assetList = FacilioChainFactory.getAssetListChain();
  		assetList.execute(context);
  		assets = (List<AssetContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
- 		
+ 		setResult("assets", assets);
 		return SUCCESS;
 	}
 	
@@ -166,7 +166,7 @@ public class AssetAction extends FacilioAction {
 		assetDetailsChain.execute(context);
 		
 		setAsset((AssetContext) context.get(FacilioConstants.ContextNames.ASSET));
-		
+		setResult("asset", asset);
 		return SUCCESS;
 	}
 	
