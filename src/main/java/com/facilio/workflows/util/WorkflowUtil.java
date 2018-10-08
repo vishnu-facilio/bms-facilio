@@ -1567,6 +1567,9 @@ public class WorkflowUtil {
 				if (NumberUtils.isCreatable(value) && !NumberUtils.isDigits(value)) {
 					value = DEFAULT_DECIMAL_FORMAT.format(Double.parseDouble(value));
 				}
+				if (AccountUtil.getCurrentOrg().getId() == 88 && exp.equals("(a/75)^(1/3)")) {
+					LOGGER.info("(key, value => ("+key+", "+value+")");
+				}
 			}
 			else if (!ignoreNullValues) {
 				return null;
