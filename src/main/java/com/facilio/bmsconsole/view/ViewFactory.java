@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext.AssetState;
 import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
@@ -118,6 +119,7 @@ public class ViewFactory {
 		views.put("energy", getTypeAlarms("energy", "Energy Alarms", AlarmType.ENERGY).setOrder(order++));
 		views.put("hvac", getTypeAlarms("hvac", "HVAC Alarms", AlarmType.HVAC).setOrder(order++));
 		views.put("cleared", getSeverityAlarms("cleared", "Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true).setOrder(order++));
+		views.put("anomalies", getSourceTypeAlarms("anomalies", "Anomalies", SourceType.ANOMALY_ALARM).setOrder(order++));
 		views.put("all", getAllAlarms().setOrder(order++));
 		views.put("report", getReportView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.ALARM, views);
@@ -1086,6 +1088,7 @@ public class ViewFactory {
 		
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(alarmCondition);
+		criteria.andCriteria(getCommonAlarmCriteria());
 		
 		FacilioField modifiedTime = new FacilioField();
 		modifiedTime.setColumnName("MODIFIED_TIME");
@@ -1143,6 +1146,51 @@ public class ViewFactory {
 		return criteria;
 	}
 	
+	private static FacilioView getSourceTypeAlarms(String name, String displayName, TicketContext.SourceType sourceType) {
+		
+		FacilioModule module = ModuleFactory.getAlarmsModule();
+		
+		Criteria criteria = getSourceTypeCriteria(sourceType, module, true);
+		
+		FacilioField modifiedTime = new FacilioField();
+		modifiedTime.setColumnName("MODIFIED_TIME");
+		modifiedTime.setName("modifiedTime");
+		modifiedTime.setDataType(FieldType.DATE_TIME);
+		modifiedTime.setModule(module);
+		
+		FacilioView view = new FacilioView();
+		view.setName(name);
+		view.setDisplayName(displayName);
+		view.setCriteria(criteria);
+		view.setSortFields(Arrays.asList(new SortField(modifiedTime, false)));
+		
+		return view;
+	}
+	
+	private static Criteria getCommonAlarmCriteria() {
+		return getSourceTypeCriteria(SourceType.ANOMALY_ALARM,  ModuleFactory.getAlarmsModule(), false);
+	}
+	
+	private static Criteria getSourceTypeCriteria(TicketContext.SourceType sourceType, FacilioModule module, boolean isEqual) {
+		
+		FacilioField sourceField = new FacilioField();
+		sourceField.setName("sourceType");
+		sourceField.setColumnName("SOURCE_TYPE");
+		sourceField.setDataType(FieldType.NUMBER);
+		sourceField.setModule(module);
+		sourceField.setExtendedModule(ModuleFactory.getTicketsModule());
+		
+		Condition sourceCondition = new Condition();
+		sourceCondition.setField(sourceField);
+		sourceCondition.setOperator(isEqual ? NumberOperators.EQUALS : NumberOperators.NOT_EQUALS);
+		sourceCondition.setValue(String.valueOf(sourceType.getIntVal()));
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(sourceCondition);
+		
+		return criteria;
+	}
+	
 	private static FacilioView getMyAlarms() {
 		
 		Criteria criteria = new Criteria();
@@ -1165,6 +1213,7 @@ public class ViewFactory {
 		
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(condition);
+		criteria.andCriteria(getCommonAlarmCriteria());
 		
 		LookupField severityField = new LookupField();
 		severityField.setName("severity");
@@ -1210,6 +1259,7 @@ public class ViewFactory {
 		Criteria criteria = new Criteria();
 		criteria.addOrCondition(emptyCondition);
 		criteria.addOrCondition(falseCondition);
+		criteria.andCriteria(getCommonAlarmCriteria());
 		
 		LookupField severityField = new LookupField();
 		severityField.setName("severity");
