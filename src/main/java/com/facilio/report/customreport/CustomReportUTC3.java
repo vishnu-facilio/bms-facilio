@@ -35,6 +35,7 @@ public class CustomReportUTC3 implements CustomReport {	//Score by Criteria
 		BuildingContext building = SpaceAPI.getBuildingSpace(buildingId);
 		
 		DashboardAction d = new DashboardAction();
+		d.setReportSpaceFilterContext(report.getReportSpaceFilterContext());
 		d.getUTCData();
 		
 		Iterator ittr = d.reportData.iterator();
