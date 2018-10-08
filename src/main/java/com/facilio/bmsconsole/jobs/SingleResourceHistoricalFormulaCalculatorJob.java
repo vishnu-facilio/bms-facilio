@@ -8,6 +8,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
@@ -18,7 +19,7 @@ public class SingleResourceHistoricalFormulaCalculatorJob extends FacilioJob {
 	private static final Logger LOGGER = LogManager.getLogger(SingleResourceHistoricalFormulaCalculatorJob.class.getName());
 	
 	@Override
-	public void execute(JobContext jc) {
+	public void execute(JobContext jc) throws Exception {
 		// TODO Auto-generated method stub
 		try {
 			long jobStartTime = System.currentTimeMillis();
@@ -60,6 +61,8 @@ public class SingleResourceHistoricalFormulaCalculatorJob extends FacilioJob {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			LOGGER.error("Error occurred during formula calculation of single resource for job id : "+jc.getJobId(), e);
+			CommonCommandUtil.emailException(SingleResourceHistoricalFormulaCalculatorJob.class.getName(), "Error occurred during formula calculation of single resource for job id : "+jc.getJobId(), e);
+			throw e;
 		}
 		
 	}
