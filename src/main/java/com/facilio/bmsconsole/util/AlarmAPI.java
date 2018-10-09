@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.util;
 
+import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.lang3.text.WordUtils;
+import org.apache.commons.text.WordUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -483,6 +484,7 @@ public class AlarmAPI {
 		}
 	}
 	
+	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
 	private static void appendSimpleMsg(StringBuilder msgBuilder, NumberOperators operator, ReadingRuleContext rule, ReadingContext reading) {
 		switch (operator) {
 			case EQUALS:
@@ -517,7 +519,7 @@ public class AlarmAPI {
 		
 		if ("${previousValue}".equals(value)) {
 			msgBuilder.append("previous value (")
-						.append(reading.getReading(rule.getReadingField().getName()))
+						.append(DECIMAL_FORMAT.format(reading.getReading(rule.getReadingField().getName())))
 						.append(")");
 		}
 		else {
@@ -592,7 +594,7 @@ public class AlarmAPI {
 	
 	private static void appendAdvancedMsg (StringBuilder msgBuilder, ReadingRuleContext rule, ReadingContext reading) {
 		msgBuilder.append("recorded ")
-					.append(reading.getReading(rule.getReadingField().getName()));
+					.append(DECIMAL_FORMAT.format(reading.getReading(rule.getReadingField().getName())));
 		appendUnit(msgBuilder, rule);
 		
 		msgBuilder.append(" when the complex condition set in '")
@@ -603,7 +605,7 @@ public class AlarmAPI {
 	
 	private static void appendFunctionMsg (StringBuilder msgBuilder, ReadingRuleContext rule, ReadingContext reading) {
 		msgBuilder.append("recorded ")
-					.append(reading.getReading(rule.getReadingField().getName()));
+					.append(DECIMAL_FORMAT.format(reading.getReading(rule.getReadingField().getName())));
 		appendUnit(msgBuilder, rule);
 		
 		String functionName = null;
