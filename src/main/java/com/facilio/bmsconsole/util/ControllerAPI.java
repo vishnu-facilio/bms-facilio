@@ -113,7 +113,7 @@ public class ControllerAPI {
 	private static Map<Long, List<Long>> getControllerBuildingIds(List<Long> ids) throws Exception {
 		FacilioModule module = ModuleFactory.getControllerBuildingRelModule();
 		List<FacilioField> fields = FieldFactory.getControllerBuildingRelFields();
-		FacilioField controllerIdField = FieldFactory.getAsIdMap(fields).get("controllerId");
+		FacilioField controllerIdField = FieldFactory.getAsMap(fields).get("controllerId");
 		
 		List<Map<String, Object>> relProps = new GenericSelectRecordBuilder()
 													.select(fields)
