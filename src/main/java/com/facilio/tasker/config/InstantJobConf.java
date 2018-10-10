@@ -53,6 +53,7 @@ public class InstantJobConf {
 
         public final static class Job {
             private String name, className;
+            private int transactionTimeout;
             private Class<? extends InstantJob> classObject = null;
 
             public Job() {
@@ -75,6 +76,16 @@ public class InstantJobConf {
                 this.className = className;
             }
 
+            @XmlAttribute(name="transactionTimeout")
+            public int getTransactionTimeout() {
+                return transactionTimeout;
+            }
+
+            public void setTransactionTimeout(int transactionTimeout) {
+                this.transactionTimeout = transactionTimeout;
+            }
+
+
             public Class<? extends InstantJob> getClassObject() {
                 if(classObject != null) {
                     return classObject;
@@ -90,7 +101,7 @@ public class InstantJobConf {
             }
             @Override
             public String toString() {
-                return "(name, classname)=("+name+","+className+")";
+                return "(name, classname, transactionTimeout )=("+name+", "+className+", "+transactionTimeout+")";
             }
         }
     }

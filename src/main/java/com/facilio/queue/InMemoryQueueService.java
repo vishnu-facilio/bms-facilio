@@ -153,4 +153,8 @@ public class InMemoryQueueService implements FacilioQueue {
         }
 
     }
+
+    public boolean changeVisibilityTimeout(String queueName, String receiptHandle, int visibilityTimeout) {
+        return false;
+    }
 }

@@ -5,10 +5,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.model.GetQueueUrlResult;
-import com.amazonaws.services.sqs.model.Message;
-import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
-import com.amazonaws.services.sqs.model.ReceiveMessageResult;
+import com.amazonaws.services.sqs.model.*;
 import com.facilio.aws.util.AwsUtil;
 
 public class SQSQueue  implements FacilioQueue {
@@ -79,5 +76,15 @@ public class SQSQueue  implements FacilioQueue {
          queueMessages.add(qMsg);
         }
         return queueMessages;
+    }
+
+    public boolean changeVisibilityTimeout(String queueName, String receiptHandle, int visibilityTimeout) {
+        String url = nameVsURL.get(queueName);
+        if(url != null) {
+            AmazonSQS sqs = AwsUtil.getSQSClient();
+            ChangeMessageVisibilityResult result = sqs.changeMessageVisibility(url, receiptHandle, visibilityTimeout);
+            return (result.getSdkHttpMetadata().getHttpStatusCode() == 200);
+        }
+        return false;
     }
 }

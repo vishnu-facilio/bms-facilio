@@ -29,11 +29,11 @@ public abstract class InstantJob {
         return receiptHandle;
     }
 
-    public final void _execute(FacilioContext context) {
+    public final void _execute(FacilioContext context, int transactionTimeout) {
         try {
             Account account = (Account) context.get(InstantJobConf.getAccountKey());
             FacilioTransactionManager.INSTANCE.getTransactionManager().begin();
-            FacilioTransactionManager.INSTANCE.getTransactionManager().setTransactionTimeout(1795000);
+            FacilioTransactionManager.INSTANCE.getTransactionManager().setTransactionTimeout(transactionTimeout);
 
             if (account != null) {
                 try {

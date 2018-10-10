@@ -46,4 +46,8 @@ public class ObjectQueue {
     public static void deleteObject(String queueName, String receiptHandle) {
     	QueueFactory.getQueue().delete(queueName, receiptHandle);
     }
+
+    public static boolean changeVisibilityTimeout(String queueName, String receiptHandle, int visibilityTimeout) {
+        return QueueFactory.getQueue().changeVisibilityTimeout(queueName, receiptHandle, visibilityTimeout);
+    }
 }

@@ -68,9 +68,13 @@ public enum InstantJobExecutor implements Runnable {
 								if (jobClass != null) {
 									try {
 										final InstantJob job = jobClass.newInstance();
+										if(instantJob.getTransactionTimeout() > 1800) {
+											ObjectQueue.changeVisibilityTimeout(InstantJobConf.getInstantJobQueue(), message.getReceiptHandle(), instantJob.getTransactionTimeout());
+										}
 										job.setReceiptHandle(message.getReceiptHandle());
+
 										LOGGER.debug("Executing job : " + jobName);
-										THREAD_POOL_EXECUTOR.execute(() -> job._execute(context));
+										THREAD_POOL_EXECUTOR.execute(() -> job._execute(context, (instantJob.getTransactionTimeout()-5)*1000));
 									} catch (InstantiationException | IllegalAccessException e) {
 										LOGGER.info("Exception while executing job " + e);
 									}
