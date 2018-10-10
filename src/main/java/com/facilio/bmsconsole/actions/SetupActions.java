@@ -221,7 +221,7 @@ public String importData() throws Exception {
 		
     	setSetup(SetupLayout.getControllerSettingsLayout());
     	
-    	List<ControllerContext> rules= ControllerAPI.getControllerSettings(AccountUtil.getCurrentOrg().getOrgId());
+    	List<ControllerContext> rules= ControllerAPI.getControllerSettings();
 		ActionContext.getContext().getValueStack().set("controllerSettings", rules);
 //    	setControllerSettings((ControllerSettingsContext) context.get(FacilioConstants.ContextNames.CONTROLLER_SETTINGS));
 		return SUCCESS;    	

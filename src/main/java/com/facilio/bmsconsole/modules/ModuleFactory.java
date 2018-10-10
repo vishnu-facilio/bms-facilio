@@ -57,6 +57,15 @@ public class ModuleFactory {
 		moduleMap.put("formFields", getFormFieldsModule());
 		return moduleMap;
 	}
+	
+	private static FacilioModule constructModule (String name, String displayName, String tableName) {
+		FacilioModule module = new FacilioModule();
+		module.setName(name);
+		module.setDisplayName(displayName);
+		module.setTableName(tableName);
+		
+		return module;
+	}
 
 	public static FacilioModule getFormModule() {
 		FacilioModule formModule = new FacilioModule();
@@ -662,6 +671,10 @@ public class ModuleFactory {
 		controllerModule.setTableName("Controller");
 
 		return controllerModule;
+	}
+	
+	public static FacilioModule getControllerActivityModule() {
+		return constructModule("controllerActivity", "Controller Activity", "Controller_Activity");
 	}
 	
 	public static FacilioModule getControllerBuildingRelModule() {
