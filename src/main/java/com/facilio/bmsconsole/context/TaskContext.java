@@ -252,6 +252,14 @@ public class TaskContext extends ModuleBaseWithCustomFields {
 		return false;
 	}
 	
+	private int noOfAttachments = -1;
+	public int getNoOfAttachments() {
+		return noOfAttachments;
+	}
+	public void setNoOfAttachments(int noOfAttachments) {
+		this.noOfAttachments = noOfAttachments;
+	}
+	
 	private String remarks;
 	public String getRemarks() {
 		return remarks;
