@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.util;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.Map;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -17,7 +19,9 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.time.SecondsChronoUnit;
 
 public class ControllerAPI {
 	private static final Logger LOGGER = LogManager.getLogger(ControllerAPI.class.getName());
@@ -132,5 +136,35 @@ public class ControllerAPI {
 			return controllerMap;
 		}
 		return null;
+	}
+	
+	public static long getControllerDataInterval(ControllerContext controller) throws Exception {
+		if (controller.getDataInterval() != -1) {
+			return controller.getDataInterval() * 60;
+		}
+		else {
+			return ReadingsAPI.getOrgDefaultDataIntervalInMin() * 60;
+		}
+	}
+	
+	private static long adjustTime (ControllerContext controller, long time) throws Exception {
+		long dataInterval = getControllerDataInterval(controller);
+		ZonedDateTime zdt = DateTimeUtil.getDateTime(time);
+		return zdt.truncatedTo(new SecondsChronoUnit(dataInterval)).toInstant().toEpochMilli();
+	}
+	
+	public static long addControllerActivity (ControllerContext controller, long time) throws Exception {
+		FacilioModule module = ModuleFactory.getControllerActivityModule();
+		Map<String, Object> prop = new HashMap<>();
+		prop.put("orgId", AccountUtil.getCurrentOrg().getId());
+		prop.put("siteId", controller.getSiteId());
+		prop.put("controllerId", controller.getId());
+		prop.put("createdTime", System.currentTimeMillis());
+		prop.put("recordTime", adjustTime(controller, time));
+		
+		return new GenericInsertRecordBuilder()
+					.fields(FieldFactory.getContollerActivityFields())
+					.table(module.getTableName())
+					.insert(prop);
 	}
 }

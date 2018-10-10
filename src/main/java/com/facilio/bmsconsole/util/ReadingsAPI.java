@@ -62,6 +62,17 @@ public class ReadingsAPI {
 	public static final int DEFAULT_DATA_INTERVAL = 15; //In Minutes
 	public static final SecondsChronoUnit DEFAULT_DATA_INTERVAL_UNIT = new SecondsChronoUnit(DEFAULT_DATA_INTERVAL * 60); 
 	
+	public static int getOrgDefaultDataIntervalInMin() throws Exception {
+		Map<String, String> orgInfo = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.DEFAULT_DATA_INTERVAL);
+		String defaultIntervalProp = orgInfo.get(FacilioConstants.OrgInfoKeys.DEFAULT_DATA_INTERVAL);
+		if (defaultIntervalProp == null || defaultIntervalProp.isEmpty()) {
+			return ReadingsAPI.DEFAULT_DATA_INTERVAL;
+		}
+		else {
+			return Integer.parseInt(defaultIntervalProp);
+		}
+	}
+	
 	public static ReadingInputType getRDMInputTypeFromModuleType(ModuleType type) {
 		switch (type) {
 			case SCHEDULED_FORMULA:
