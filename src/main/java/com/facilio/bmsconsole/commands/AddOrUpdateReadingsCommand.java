@@ -28,6 +28,14 @@ public class AddOrUpdateReadingsCommand implements Command {
 		Chain addOrUpdateChain = FacilioChainFactory.onlyAddOrUpdateReadingsChain();
 		addOrUpdateChain.execute(context);
 		
+		updateCheckPointAndControllerActivity(context);
+		executeWorkflowsRules(context);
+		execureFormulae(context);
+		
+		return false;
+	}
+	
+	private void updateCheckPointAndControllerActivity (Context context) throws Exception {
 		//Update Check point
 		Record record = (Record) context.get(FacilioConstants.ContextNames.KINESIS_RECORD);
 		if (record != null) {
@@ -35,7 +43,7 @@ public class AddOrUpdateReadingsCommand implements Command {
 			checkPointer.checkpoint(record);
 			ControllerContext controller = ControllerAPI.getController(record.getPartitionKey());
 			if (controller != null) {
-				ControllerAPI.addControllerActivity(controller, record.getApproximateArrivalTimestamp().getTime());
+				ControllerAPI.addControllerActivity(controller, record.getApproximateArrivalTimestamp().getTime(), CommonCommandUtil.getReadingMap((FacilioContext) context));
 			}
 			else {
 				CommonCommandUtil.emailException(this.getClass().getName(), "No controller with client id - "+record.getPartitionKey(), "Kindly add proper controller for this");
@@ -50,8 +58,9 @@ public class AddOrUpdateReadingsCommand implements Command {
 				}
 			}
 		}
-		
-		
+	}
+	
+	private void executeWorkflowsRules (Context context) {
 		try {
 			Chain executeWorkflowChain = FacilioChainFactory.executeWorkflowsForReadingChain();
 			executeWorkflowChain.execute(context);
@@ -61,7 +70,9 @@ public class AddOrUpdateReadingsCommand implements Command {
 			LOGGER.error("Error occurred during workflow execution of readings. \n"+readingMap, e);
 			CommonCommandUtil.emailException(this.getClass().getName(), "Error occurred during workflow execution of readings.", e, String.valueOf(readingMap));
 		}
-		
+	}
+	
+	private void execureFormulae (Context context) {
 		try {
 			Chain formulaChain = FacilioChainFactory.calculateFormulaChain();
 			formulaChain.execute(context);
@@ -71,8 +82,6 @@ public class AddOrUpdateReadingsCommand implements Command {
 			LOGGER.error("Error occurred during formula calculation of readings. \n"+readingMap, e);
 			CommonCommandUtil.emailException(this.getClass().getName(), "Error occurred during formula calculation of readings.", e, String.valueOf(readingMap));
 		}
-		
-		return false;
 	}
 
 }

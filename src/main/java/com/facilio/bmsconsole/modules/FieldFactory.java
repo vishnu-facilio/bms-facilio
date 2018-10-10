@@ -2410,7 +2410,7 @@ public class FieldFactory {
 	}
 	
 	public static List<FacilioField> getContollerActivityFields() {
-		FacilioModule module = ModuleFactory.getControllerModule();
+		FacilioModule module = ModuleFactory.getControllerActivityModule();
 		List<FacilioField> fields = new ArrayList<>();
 		
 		fields.add(getIdField(module));
@@ -2419,6 +2419,18 @@ public class FieldFactory {
 		fields.add(getField("controllerId", "CONTROLLER_ID", module, FieldType.LOOKUP));
 		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.DATE_TIME));
 		fields.add(getField("recordTime", "RECORD_TIME", module, FieldType.DATE_TIME));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getContollerActivityRecordsFields() {
+		FacilioModule module = ModuleFactory.getControllerActivityRecordsModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getSiteIdField(module));
+		fields.add(getField("currentRecords", "CURRENT_RECORDS", module, FieldType.STRING));
 		
 		return fields;
 	}

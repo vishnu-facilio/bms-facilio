@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ControllerContext;
+import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.StringOperators;
@@ -153,8 +154,7 @@ public class ControllerAPI {
 		return zdt.truncatedTo(new SecondsChronoUnit(dataInterval)).toInstant().toEpochMilli();
 	}
 	
-	public static long addControllerActivity (ControllerContext controller, long time) throws Exception {
-		FacilioModule module = ModuleFactory.getControllerActivityModule();
+	public static long addControllerActivity (ControllerContext controller, long time, Map<String, List<ReadingContext>> readingMap) throws Exception {
 		Map<String, Object> prop = new HashMap<>();
 		prop.put("orgId", AccountUtil.getCurrentOrg().getId());
 		prop.put("siteId", controller.getSiteId());
@@ -162,9 +162,20 @@ public class ControllerAPI {
 		prop.put("createdTime", System.currentTimeMillis());
 		prop.put("recordTime", adjustTime(controller, time));
 		
-		return new GenericInsertRecordBuilder()
-					.fields(FieldFactory.getContollerActivityFields())
-					.table(module.getTableName())
-					.insert(prop);
+		long id = new GenericInsertRecordBuilder()
+						.fields(FieldFactory.getContollerActivityFields())
+						.table(ModuleFactory.getControllerActivityModule().getTableName())
+						.insert(prop);
+		
+		if (readingMap != null && !readingMap.isEmpty()) {
+			prop.put("currentRecords", FieldUtil.getAsJSON(readingMap).toJSONString());
+			
+			new GenericInsertRecordBuilder()
+				.fields(FieldFactory.getContollerActivityRecordsFields())
+				.table(ModuleFactory.getControllerActivityRecordsModule().getTableName())
+				.insert(prop);
+		}
+		
+		return id;
 	}
 }
