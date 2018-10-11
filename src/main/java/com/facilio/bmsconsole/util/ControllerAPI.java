@@ -178,4 +178,21 @@ public class ControllerAPI {
 		
 		return id;
 	}
+	
+	public static void addControllerBuildingRel (ControllerContext controller) throws Exception {
+		if (controller.getBuildingIds() != null && !controller.getBuildingIds().isEmpty()) {
+			GenericInsertRecordBuilder relBuilder = new GenericInsertRecordBuilder()
+														.table(ModuleFactory.getControllerBuildingRelModule().getTableName())
+														.fields(FieldFactory.getControllerBuildingRelFields());
+			for (long buildingId: controller.getBuildingIds()) {
+				Map<String, Object> prop = new HashMap<>();
+				prop.put("orgId", AccountUtil.getCurrentOrg().getId());
+				prop.put("siteId", controller.getSiteId());
+				prop.put("buildingId", buildingId);
+				prop.put("controllerId", controller.getId());
+				relBuilder.addRecord(prop);
+			}
+			relBuilder.save();
+		}
+	}
 }
