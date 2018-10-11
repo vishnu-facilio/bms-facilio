@@ -2409,7 +2409,7 @@ public class FieldFactory {
 		return fields;
 	}
 	
-	public static List<FacilioField> getContollerActivityFields() {
+	public static List<FacilioField> getControllerActivityFields() {
 		FacilioModule module = ModuleFactory.getControllerActivityModule();
 		List<FacilioField> fields = new ArrayList<>();
 		

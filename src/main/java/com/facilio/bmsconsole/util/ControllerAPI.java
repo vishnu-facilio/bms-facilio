@@ -163,7 +163,7 @@ public class ControllerAPI {
 		prop.put("recordTime", adjustTime(controller, time));
 		
 		long id = new GenericInsertRecordBuilder()
-						.fields(FieldFactory.getContollerActivityFields())
+						.fields(FieldFactory.getControllerActivityFields())
 						.table(ModuleFactory.getControllerActivityModule().getTableName())
 						.insert(prop);
 		
