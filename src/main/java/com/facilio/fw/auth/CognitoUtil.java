@@ -100,7 +100,7 @@ public class CognitoUtil {
 //				String sessionVerify = AwsUtil.getConfig("enable.sessionverify");
 //			if (sessionVerify != null) {
 //					if (Arrays.asList(sessionVerify.split(",")).contains(email)) {
-					boolean override = overrideSessionCheck != null && overrideSessionCheck.length == 1 && overrideSessionCheck[0];
+					boolean override = (overrideSessionCheck != null && overrideSessionCheck.length == 1 && overrideSessionCheck[0]);
 					if (override || AccountUtil.getUserBean().verifyUserSession(faciliouser.getEmail(), idToken)) {
 						return faciliouser;
 					} else {
