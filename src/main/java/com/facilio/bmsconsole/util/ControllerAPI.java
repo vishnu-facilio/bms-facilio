@@ -264,7 +264,6 @@ public class ControllerAPI {
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 														.fields(fields)
 														.table(module.getTableName())
-														.addRecord(prop)
 														;
 		
 		insertBuilder.insert(prop);
