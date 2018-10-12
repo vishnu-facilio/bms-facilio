@@ -235,8 +235,8 @@ public class ControllerAPI {
 														.select(fields)
 														.table(module.getTableName())
 														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-														.andCondition(CriteriaAPI.getCondition(recordTimeField, String.valueOf(time), DateOperators.IS))
-														.andCondition(CriteriaAPI.getCondition(intervalField, String.valueOf(adjustTime(time, dataInterval)), NumberOperators.EQUALS))
+														.andCondition(CriteriaAPI.getCondition(recordTimeField, String.valueOf(adjustTime(time, dataInterval)), DateOperators.IS))
+														.andCondition(CriteriaAPI.getCondition(intervalField, String.valueOf(dataInterval), NumberOperators.EQUALS))
 														;
 		
 		List<Map<String, Object>> props = selectBuilder.get();
