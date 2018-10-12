@@ -36,6 +36,7 @@ import com.facilio.bmsconsole.util.ImageScaleUtil;
 public class S3FileStore extends FileStore {
 
 	private static final String PRIVATE_KEY_FILE_PATH = "/home/ubuntu/pk/pk-APKAJUH5UCWNSYC4DOSQ.pem";
+	private static final long EXPIRATION = 24 * 60* 60 * 1000;
 
 	public S3FileStore(long orgId, long userId) {
 		super(orgId, userId);
@@ -232,7 +233,7 @@ public class S3FileStore extends FileStore {
 			//if here means... need to fetch url & update entry..
 		}
 		
-		String url= fetchUrl(fileInfo, getExpiration());
+		String url= fetchUrl(fileInfo, getExpiration(), false);
 		if(url==null) {
 			return url;
 		}
@@ -262,7 +263,7 @@ public class S3FileStore extends FileStore {
 		return null;
 	}
 
-	private String fetchUrl(FileInfo fileInfo, long expiration) {
+	private String fetchUrl(FileInfo fileInfo, long expiration, boolean isDownloadable) {
 
 		if (AwsUtil.isDevelopment()) {
 
@@ -287,6 +288,9 @@ public class S3FileStore extends FileStore {
 				Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
 				String encodedUrl = URLEncoder.encode(fileInfo.getFilePath(), "UTF-8");
 				String s3ObjectKey = encodedUrl+"?response-content-type="+URLEncoder.encode(fileInfo.getContentType(), "UTF-8");
+				if(isDownloadable) {
+					s3ObjectKey = s3ObjectKey +"&response-content-disposition="+URLEncoder.encode("attachment; filename="+fileInfo.getFileName(),"UTF-8");
+				}
 				String keyPairId = "APKAJUH5UCWNSYC4DOSQ";
 				return CloudFrontUrlSigner.getSignedURLWithCannedPolicy(SignerUtils.Protocol.https, AwsUtil.getConfig("files.url"), new File(PRIVATE_KEY_FILE_PATH), s3ObjectKey, keyPairId, new Date(System.currentTimeMillis()+getExpiration()));
 			} catch (IOException | InvalidKeySpecException e) {
@@ -297,30 +301,12 @@ public class S3FileStore extends FileStore {
 	}
 	
 	private String fetchDownloadUrl(FileInfo fileInfo, long expiration) {
-
-		GeneratePresignedUrlRequest generatePresignedUrlRequest = 
-		              new GeneratePresignedUrlRequest(getBucketName(), fileInfo.getFilePath());
-		generatePresignedUrlRequest.setMethod(HttpMethod.GET);
-		
-		Date expiry = new Date();
-		expiry.setTime(expiry.getTime()+expiration);
-		generatePresignedUrlRequest.setExpiration(expiry);
-		
-		if (fileInfo.getContentType() != null) {
-			ResponseHeaderOverrides resHeaders = new ResponseHeaderOverrides();
-			resHeaders.setContentType(fileInfo.getContentType());
-			resHeaders.setContentDisposition("attachment; filename=" + fileInfo.getFileName());
-			generatePresignedUrlRequest.setResponseHeaders(resHeaders);
-		}
-		             
-		URL url = AwsUtil.getAmazonS3Client().generatePresignedUrl(generatePresignedUrlRequest);
-		return url.toString();
+		return fetchUrl(fileInfo, expiration, true);
 	}
 	
 	
-	private long getExpiration()
-	{
-		return 24 * 60* 60 * 1000;
+	private long getExpiration() {
+		return EXPIRATION;
 	}
 
 	public static void main(String[] args) {
