@@ -200,7 +200,7 @@ public class ControllerAPI {
 																.table(module.getTableName())
 																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																.andCondition(CriteriaAPI.getCondition(macAddrField, macAddr, StringOperators.IS))
-																.andCondition(CriteriaAPI.getCondition(timeField, String.valueOf(timeField), NumberOperators.EQUALS))
+																.andCondition(CriteriaAPI.getCondition(timeField, String.valueOf(time), DateOperators.IS))
 																;
 		
 		List<Map<String, Object>> props = selectRecordBuilder.get();
@@ -225,6 +225,7 @@ public class ControllerAPI {
 	}
 	
 	public static ControllerActivityWatcherContext getActivityWatcher (long time, int dataInterval) throws Exception {
+		LOGGER.info("Fetching watcher for time : "+time+" and interval : "+dataInterval);
 		FacilioModule module = ModuleFactory.getControllerActivityWatcherModule();
 		List<FacilioField> fields = FieldFactory.getContollerActivityWatcherFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
