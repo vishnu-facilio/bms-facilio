@@ -2436,7 +2436,7 @@ public class FieldFactory {
 	}
 	
 	public static List<FacilioField> getContollerActivityWatcherFields() {
-		FacilioModule module = ModuleFactory.getControllerActivityRecordsModule();
+		FacilioModule module = ModuleFactory.getControllerActivityWatcherModule();
 		List<FacilioField> fields = new ArrayList<>();
 		
 		fields.add(getIdField(module));

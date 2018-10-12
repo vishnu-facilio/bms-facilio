@@ -2,9 +2,10 @@ package com.facilio.bmsconsole.instant.jobs;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -27,19 +28,19 @@ public class ControllerActivityWatcherJob extends InstantJob {
 		// TODO Auto-generated method stub
 		try {
 			ControllerActivityWatcherContext watcher = (ControllerActivityWatcherContext) context.get(FacilioConstants.ContextNames.CONTROLLER_ACTIVITY_WATCHER);
-			List<ControllerContext> inCompleteControllers = (List<ControllerContext>) context.get(FacilioConstants.ContextNames.CONTROLLER_LIST);
+			List<ControllerContext> controllers = (List<ControllerContext>) context.get(FacilioConstants.ContextNames.CONTROLLER_LIST);
+			Map<String, ControllerContext> inCompleteControllers = controllers.stream().collect(Collectors.toMap(ControllerContext::getMacAddr, Function.identity()));
 			List<ControllerContext> completedControllers = new ArrayList<>();
 			Map<String, Long> activityIds = new HashMap<>();
 			
 			while (!inCompleteControllers.isEmpty()) {
-				Iterator<ControllerContext> itr = inCompleteControllers.iterator();
-				while (itr.hasNext()) {
-					ControllerContext controller = itr.next();
-					Map<String, Object> activity = ControllerAPI.getControllerActivity(controller, watcher.getRecordTime());
-					if (activity != null) {
-						itr.remove();
-						completedControllers.add(controller);
+				List<Map<String, Object>> activites = ControllerAPI.getControllerActivities(inCompleteControllers.values(), watcher.getRecordTime());
+				if (activites != null && !activites.isEmpty()) {
+					for (Map<String, Object> activity : activites) {
+						ControllerContext controller = inCompleteControllers.get(activity.get("controllerMacAddr"));
 						activityIds.put(controller.getMacAddr(), (Long) activity.get("id"));
+						inCompleteControllers.remove(controller.getMacAddr());
+						completedControllers.add(controller);
 					}
 				}
 				

@@ -3,9 +3,11 @@ package com.facilio.bmsconsole.util;
 import java.sql.SQLException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -185,26 +187,24 @@ public class ControllerAPI {
 		return id;
 	}
 	
-	public static Map<String, Object> getControllerActivity (ControllerContext controller, long time) throws Exception {
+	public static List<Map<String, Object>> getControllerActivities (Collection<ControllerContext> controller, long time) throws Exception {
 		FacilioModule module = ModuleFactory.getControllerActivityModule();
 		List<FacilioField> fields = FieldFactory.getControllerActivityFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		FacilioField macAddrField = fieldMap.get("controllerMacAddr");
 		FacilioField timeField = fieldMap.get("recordTime");
 		
+		String macAddr = controller.stream().map(ControllerContext::getMacAddr).collect(Collectors.joining(","));
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 																.select(fields)
 																.table(module.getTableName())
 																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-																.andCondition(CriteriaAPI.getCondition(macAddrField, controller.getMacAddr(), StringOperators.IS))
+																.andCondition(CriteriaAPI.getCondition(macAddrField, macAddr, StringOperators.IS))
 																.andCondition(CriteriaAPI.getCondition(timeField, String.valueOf(timeField), NumberOperators.EQUALS))
 																;
 		
 		List<Map<String, Object>> props = selectRecordBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			return props.get(0);
-		}
-		return null;
+		return props;
 	}
 	
 	public static void addControllerBuildingRel (ControllerContext controller) throws Exception {
