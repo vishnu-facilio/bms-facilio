@@ -93,6 +93,13 @@ public class AttachmentContext extends ModuleBaseWithCustomFields {
 		}
 		return null;
 	}
+	public String getDownloadUrl() throws Exception {
+		if (this.fileId > 0) {
+			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			return fs.getDownloadUrl(this.fileId);
+		}
+		return null;
+	}
 	
 	public static enum AttachmentType {
 		BEFORE,
