@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.apache.struts2.json.annotations.JSON;
@@ -7,7 +8,7 @@ import org.apache.struts2.json.annotations.JSON;
 import com.facilio.time.SecondsChronoUnit;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class ControllerContext {
+public class ControllerContext implements Serializable {
 	private long id = -1;
 	public long getId() {
 		return id;

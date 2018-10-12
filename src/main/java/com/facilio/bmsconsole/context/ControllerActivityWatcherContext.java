@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.context;
 
-public class ControllerActivityWatcherContext {
+import java.io.Serializable;
+
+public class ControllerActivityWatcherContext implements Serializable {
 	private long id = -1;
 	public long getId() {
 		return id;
