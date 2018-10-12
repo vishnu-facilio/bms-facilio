@@ -31,7 +31,12 @@ public class AuthenticationUtil {
             }
 
             String overrideSessionCookie = FacilioCookie.getUserCookie(request, "fc.overrideSession");
-            boolean overrideSessionCheck = overrideSessionCookie != null && overrideSessionCookie.equalsIgnoreCase("true");
+            boolean overrideSessionCheck = false;
+            if(overrideSessionCookie != null) {
+                if("true".equalsIgnoreCase(overrideSessionCookie)) {
+                    overrideSessionCheck = true;
+                }
+            }
             CognitoUtil.CognitoUser cognitoUser =  CognitoUtil.verifiyFacilioToken(facilioToken, isPortaluser, overrideSessionCheck);
             return cognitoUser;
         }

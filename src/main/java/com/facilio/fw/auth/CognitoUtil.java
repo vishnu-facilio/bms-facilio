@@ -50,8 +50,7 @@ public class CognitoUtil {
 	        .withIssuer(issuer);
 		    builder = builder.withClaim("portaluser", isPortalUser);
 		    
-		    String token =builder.sign(algorithm);
-		    return token;
+		    return builder.sign(algorithm);
 		} catch (UnsupportedEncodingException | JWTCreationException exception){
 			logger.info("exception occurred while creating JWT ", exception);
 		    //UTF-8 encoding not supported
@@ -81,11 +80,10 @@ public class CognitoUtil {
 
 
 	private static CognitoUser verifiyFacilioToken(String idToken) {
-		return verifiyFacilioToken(idToken, false);
+		return verifiyFacilioToken(idToken, false, false);
 	}
 	
-	public static CognitoUser verifiyFacilioToken(String idToken, boolean isPortalUser, Boolean...overrideSessionCheck)
-	{
+	public static CognitoUser verifiyFacilioToken(String idToken, boolean isPortalUser, boolean overrideSessionCheck) {
 		System.out.println("verifiyFacilioToken() :idToken :"+idToken);
 		try {
 			DecodedJWT decodedjwt = validateJWT(idToken, "auth0");
@@ -96,29 +94,21 @@ public class CognitoUtil {
 				faciliouser.setPortaluser(decodedjwt.getClaim("portaluser").asBoolean());
 
 				if (!isPortalUser) {
-					//String email = faciliouser.getEmail();
-//				String sessionVerify = AwsUtil.getConfig("enable.sessionverify");
-//			if (sessionVerify != null) {
-//					if (Arrays.asList(sessionVerify.split(",")).contains(email)) {
-					boolean override = (overrideSessionCheck != null && overrideSessionCheck.length == 1 && overrideSessionCheck[0]);
-					if (override || AccountUtil.getUserBean().verifyUserSession(faciliouser.getEmail(), idToken)) {
+					if (overrideSessionCheck || AccountUtil.getUserBean().verifyUserSession(faciliouser.getEmail(), idToken)) {
 						return faciliouser;
 					} else {
 						// invalid session
 						return null;
 					}
 				}
-//				}
-//			}
 			}
 			return faciliouser;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			logger.info("Exception occurred ", e);
 			return null;
 		}
-		//faciliouser.set
 	}
+
 	public static CognitoUser verifyIDToken(String idToken) throws Exception {
 		if (idToken == null || "".equals(idToken.trim())) {
 			return null;
