@@ -2461,15 +2461,19 @@ public class FieldFactory {
 		buildingId.setColumnName("BUILDING_ID");
 		buildingId.setModule(module);
 		fields.add(buildingId);
-		
+		fields.add(getControllerIdField(module));
+		return fields;
+	}
+	
+	public static FacilioField getControllerIdField(FacilioModule module) {
 		FacilioField controllerId = new FacilioField();
 		controllerId.setName("controllerId");
 		controllerId.setDataType(FieldType.NUMBER);
 		controllerId.setColumnName("CONTROLLER_ID");
+		if (module != null) {
 		controllerId.setModule(module);
-		fields.add(controllerId);
-		
-		return fields;
+		}
+		return controllerId;
 	}
 
 	public static List<FacilioField> getNotificationFields() {

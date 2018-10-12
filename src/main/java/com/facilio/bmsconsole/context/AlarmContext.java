@@ -73,6 +73,15 @@ public class AlarmContext extends TicketContext {
 	public AlarmType getAlarmTypeEnum() {
 		return alarmType;
 	}
+	
+	private long controllerId = -1;
+	public long getControllerId() {
+		return controllerId;
+	}
+	
+	public void setControllerId(long controllerId) {
+		this.controllerId = controllerId;
+	}
 
 	private long createdTime = -1;
 	public long getCreatedTime() {

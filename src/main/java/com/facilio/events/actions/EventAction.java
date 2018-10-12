@@ -277,7 +277,7 @@ public class EventAction extends FacilioAction {
 	
 	public String updateSourceWithResource() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(EventConstants.EventContextNames.SOURCE, source);
+		context.put(FacilioConstants.ContextNames.ID, id);
 		context.put(EventConstants.EventContextNames.RESOURCE_ID, resourceId);
 		
 		Chain updateAssetChain = EventConstants.EventChainFactory.updateNodeToResourceMappingChain();
