@@ -117,6 +117,45 @@ public enum CardType {
 			"		<field name=\"automanualstatus\" aggregate = \"lastValue\"/> 	\n" + 
 			"	</expression> \n" + 
 			"</workflow>",false),
+	
+	FAHU_STATUS_CARD_2(6,"fahuStatusCard2","<workflow> 	\n" + 
+			"	<parameter name=\"parentId\" type = \"Number\"/> \n" + 
+			"	<expression name=\"name\"> 		\n" + 
+			"		<module name=\"resource\"/> 		\n" + 
+			"		<criteria pattern=\"1\"> 			\n" + 
+			"			<condition sequence=\"1\">id`=`${parentId}</condition> 		\n" + 
+			"		</criteria> 		\n" + 
+			"		<field name=\"name\" aggregate = \"[0]\"/> 	\n" + 
+			"	</expression> \n" + 
+			"	<expression name=\"runStatus\"> 		\n" + 
+			"		<module name=\"runstatus\"/> 		\n" + 
+			"		<criteria pattern=\"1\"> 			\n" + 
+			"			<condition sequence=\"1\">parentId`=`${parentId}</condition> 		\n" + 
+			"		</criteria> 		\n" + 
+			"		<field name=\"runstatus\" aggregate = \"lastValue\"/> 	\n" + 
+			"	</expression> \n" + 
+			"	<expression name=\"valveFeedback\"> 		\n" + 
+			"		<module name=\"supplyairtemperature\"/> 		\n" + 
+			"		<criteria pattern=\"1\"> 			\n" + 
+			"			<condition sequence=\"1\">parentId`=`${parentId}</condition> 		\n" + 
+			"		</criteria> 		\n" + 
+			"		<field name=\"valvefeedback\" aggregate = \"lastValue\"/> 	\n" + 
+			"	</expression> \n" + 
+			"	<expression name=\"tripStatus\"> 		\n" + 
+			"		<module name=\"runstatus\"/> 		\n" + 
+			"		<criteria pattern=\"1\"> 			\n" + 
+			"			<condition sequence=\"1\">parentId`=`${parentId}</condition> 		\n" + 
+			"		</criteria> 		\n" + 
+			"		<field name=\"tripstatus\" aggregate = \"lastValue\"/> 	\n" + 
+			"	</expression> \n" + 
+			"	<expression name=\"autoStatus\"> 		\n" + 
+			"		<module name=\"runstatus\"/> 		\n" + 
+			"		<criteria pattern=\"1\"> 			\n" + 
+			"			<condition sequence=\"1\">parentId`=`${parentId}</condition> 		\n" + 
+			"		</criteria> 		\n" + 
+			"		<field name=\"automanualstatus\" aggregate = \"lastValue\"/> 	\n" + 
+			"	</expression> \n" + 
+			"</workflow>",false),
 	;
 	
 	private Integer value;
