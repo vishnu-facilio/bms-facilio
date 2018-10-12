@@ -537,11 +537,12 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			long siteId = -1l;
 			if (controller != null) {
 				siteId = controller.getSiteId(); 
+				payLoad.put("controllerId", controller.getId());
 			}
 			if (siteId != -1) {
 				payLoad.put("siteId", siteId);
 			}
-			payLoad.put("controllerId", controller.getId());
+			
 		}
 		
 		return EventAPI.processEvents(timeStamp, payLoad, eventRules, eventCountMap, lastEventTime);
