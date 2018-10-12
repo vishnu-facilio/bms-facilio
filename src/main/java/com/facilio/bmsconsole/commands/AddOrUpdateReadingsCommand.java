@@ -9,12 +9,8 @@ import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
-import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.util.ControllerAPI;
 import com.facilio.constants.FacilioConstants;
 
 public class AddOrUpdateReadingsCommand implements Command {
@@ -37,26 +33,14 @@ public class AddOrUpdateReadingsCommand implements Command {
 	
 	private void updateCheckPointAndControllerActivity (Context context) throws Exception {
 		//Update Check point
-		Record record = (Record) context.get(FacilioConstants.ContextNames.KINESIS_RECORD);
-		if (record != null) {
-			IRecordProcessorCheckpointer checkPointer = (IRecordProcessorCheckpointer) context.get(FacilioConstants.ContextNames.KINESIS_CHECK_POINTER);
-			checkPointer.checkpoint(record);
-			ControllerContext controller = ControllerAPI.getController(record.getPartitionKey());
-			if (controller != null) {
-				ControllerAPI.addControllerActivity(controller, record.getApproximateArrivalTimestamp().getTime(), CommonCommandUtil.getReadingMap((FacilioContext) context));
-			}
-			else {
-				CommonCommandUtil.emailException(this.getClass().getName(), "No controller with client id - "+record.getPartitionKey(), "Kindly add proper controller for this");
-			}
+		try {
+			Chain controllerActivityChain = TransactionChainFactory.controllerActivityAndWatcherChain();
+			controllerActivityChain.execute(context);
 		}
-		else {
-			String controllerId = (String) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
-			if (controllerId != null && !controllerId.isEmpty()) {
-				ControllerContext controller = ControllerAPI.getController(controllerId);
-				if (controller != null) {
-					//TODO Have to figure what to do with time
-				}
-			}
+		catch (Exception e) {
+			Map<String, List<ReadingContext>> readingMap = (Map<String, List<ReadingContext>>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
+			LOGGER.error("Error occurred while adding controller activity for readings. \n"+readingMap, e);
+			CommonCommandUtil.emailException(this.getClass().getName(), "Error occurred while adding controller activity for readings", e, String.valueOf(readingMap));
 		}
 	}
 	

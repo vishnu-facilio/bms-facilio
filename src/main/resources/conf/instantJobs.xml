@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <instantjob>
     <!--  job name='test' classname= 'com.facilio.bmsconsole.jobs.TestJob' transactionTimeout='1800'/ -->
-    <job name='PostFormulaCalculationJob' classname= 'com.facilio.bmsconsole.instant.jobs.PostFormulaCalculationJob' transactionTimeout='1800'/>
-    <job name='ForkedChain' classname= 'com.facilio.bmsconsole.instant.jobs.ForkedChainJob' transactionTimeout='1800'/>
+    <job name='PostFormulaCalculationJob' classname= 'com.facilio.bmsconsole.instant.jobs.PostFormulaCalculationJob' transactionTimeout='300'/>
+    <job name='ForkedChain' classname= 'com.facilio.bmsconsole.instant.jobs.ForkedChainJob' transactionTimeout='300'/>
+    <job name='ControllerActivityWatcher' classname= 'com.facilio.bmsconsole.instant.jobs.ControllerActivityWatcherJob' transactionTimeout='900'/>
 </instantjob>

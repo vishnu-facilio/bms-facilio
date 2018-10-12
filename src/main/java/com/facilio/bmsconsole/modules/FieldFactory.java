@@ -2416,7 +2416,7 @@ public class FieldFactory {
 		fields.add(getIdField(module));
 		fields.add(getOrgIdField(module));
 		fields.add(getSiteIdField(module));
-		fields.add(getField("controllerId", "CONTROLLER_ID", module, FieldType.LOOKUP));
+		fields.add(getField("controllerMacAddr", "CONTROLLER_MAC_ADDR", module, FieldType.STRING));
 		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.DATE_TIME));
 		fields.add(getField("recordTime", "RECORD_TIME", module, FieldType.DATE_TIME));
 		
@@ -2431,6 +2431,20 @@ public class FieldFactory {
 		fields.add(getOrgIdField(module));
 		fields.add(getSiteIdField(module));
 		fields.add(getField("currentRecords", "CURRENT_RECORDS", module, FieldType.STRING));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getContollerActivityWatcherFields() {
+		FacilioModule module = ModuleFactory.getControllerActivityRecordsModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.DATE_TIME));
+		fields.add(getField("recordTime", "RECORD_TIME", module, FieldType.DATE_TIME));
+		fields.add(getField("dataInterval", "DATA_INTERVAL", module, FieldType.NUMBER));
+		fields.add(getField("completionStatus", "COMPLETION_STATUS", module, FieldType.BOOLEAN));
 		
 		return fields;
 	}

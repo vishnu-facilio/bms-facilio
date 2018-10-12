@@ -211,6 +211,14 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain controllerActivityAndWatcherChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateCheckPointAndAddControllerActivityCommand());
+			c.addCommand(new CheckAndStartWatcherCommand());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
 	    private static Chain getDefaultChain() {
 	    	return new FacilioChain(true);
 	    }

@@ -681,6 +681,10 @@ public class ModuleFactory {
 		return constructModule("controllerActivityRecords", "Controller Activity Records", "Controller_Activity_Records");
 	}
 	
+	public static FacilioModule getControllerActivityWatcherModule() {
+		return constructModule("controllerActvityWatcher", "Controller Actvity Watcher", "Controller_Actvity_Watcher");
+	}
+	
 	public static FacilioModule getControllerBuildingRelModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("controllerBuildingRel");

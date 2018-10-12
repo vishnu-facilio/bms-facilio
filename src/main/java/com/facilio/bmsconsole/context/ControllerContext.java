@@ -59,11 +59,11 @@ public class ControllerContext {
 		this.buildingIds = buildingIds;
 	}
 	
-	private long dataInterval = -1; //In minutes
-	public long getDataInterval() {
+	private int dataInterval = -1; //In minutes
+	public int getDataInterval() {
 		return dataInterval;
 	}
-	public void setDataInterval(long dataInterval) {
+	public void setDataInterval(int dataInterval) {
 		this.dataInterval = dataInterval;
 		this.dateIntervalUnit = new SecondsChronoUnit(dataInterval * 60);
 	}
