@@ -31,6 +31,7 @@ public class CheckAndStartWatcherCommand implements Command {
 					FacilioContext jobContext = new FacilioContext();
 					jobContext.put(FacilioConstants.ContextNames.CONTROLLER_ACTIVITY_WATCHER, watcher);
 					jobContext.put(FacilioConstants.ContextNames.CONTROLLER_LIST, ControllerAPI.getActtiveControllers(controller.getDataInterval()));
+					jobContext.put(FacilioConstants.ContextNames.START_TIME, System.currentTimeMillis());
 					
 					FacilioTimer.scheduleInstantJob("ControllerActivityWatcher", jobContext);
 				}

@@ -22,12 +22,18 @@ public class ControllerActivityWatcherJob extends InstantJob {
 
 	private static final Logger LOGGER = LogManager.getLogger(ControllerActivityWatcherJob.class.getName());
 	private static final long THREAD_SLEEP_BUFFER = 5000;
+	private static final long TIME_OUT = 15 * 60 * 1000;
 	
 	@Override
 	public void execute(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		try {
 			ControllerActivityWatcherContext watcher = (ControllerActivityWatcherContext) context.get(FacilioConstants.ContextNames.CONTROLLER_ACTIVITY_WATCHER);
+			long startTime = (long) context.get(FacilioConstants.ContextNames.START_TIME);
+			if (System.currentTimeMillis() > startTime + TIME_OUT) {
+				LOGGER.info("Ending "+watcher+" because it timed out");
+				return;
+			}
 			List<ControllerContext> controllers = (List<ControllerContext>) context.get(FacilioConstants.ContextNames.CONTROLLER_LIST);
 			Map<String, ControllerContext> inCompleteControllers = controllers.stream().collect(Collectors.toMap(ControllerContext::getMacAddr, Function.identity()));
 			LOGGER.info("Controllers for watcher : "+watcher+" is "+inCompleteControllers);
