@@ -21,10 +21,9 @@ public class ImportReadingJob extends FacilioJob {
 	@Override
 	public void execute(JobContext jc) {
 		ImportProcessContext importProcessContext = null;
-		LOGGER.severe("IMPORT READING JOB CALLED");
-
 		Long jobId = jc.getJobId();
 
+		LOGGER.severe("IMPORT READING JOB CALLED -- "+jobId);
 		try {
 			importProcessContext = ImportAPI.getImportProcessContext(jobId);
 			FacilioContext context = new FacilioContext();
