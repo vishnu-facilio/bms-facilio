@@ -511,11 +511,7 @@ public class AwsUtil
 		if(credentialsProvider == null){
 			synchronized (LOCK) {
 				if(credentialsProvider == null){
-					if( ! isProduction()) {
-						credentialsProvider = InstanceProfileCredentialsProvider.createAsyncRefreshingProvider(false);
-					} else {
-						credentialsProvider = new AWSStaticCredentialsProvider(getBasicAwsCredentials());
-					}
+					credentialsProvider = InstanceProfileCredentialsProvider.createAsyncRefreshingProvider(false);
 				}
 			}
 		}
