@@ -79,7 +79,7 @@ public class ControllerContext implements Serializable {
 	
 	@Override
 	 public String toString() {
-		return "ControllerSettingsContext [id=" + id + ", orgId=" + orgId + ", name=" + name + ","
+		return "Controllers [id=" + id + ", orgId=" + orgId + ", name=" + name + ","
 				+ " ,macAddr=" + macAddr +"]";
 	}
 	public boolean isEmpty() {

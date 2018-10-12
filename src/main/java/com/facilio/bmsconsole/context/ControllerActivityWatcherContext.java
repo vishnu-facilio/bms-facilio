@@ -56,4 +56,17 @@ public class ControllerActivityWatcherContext implements Serializable {
 		}
 		return false;
 	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		StringBuilder builder = new StringBuilder("Controller Watcher [")
+									.append("id : ").append(id).append(", ")
+									.append("recordTime : ").append(recordTime).append(", ")
+									.append("dataInterval : ").append(dataInterval).append(", ")
+									.append("completionStatus : ").append(completionStatus)
+									.append("]")
+									;
+		return builder.toString();
+	}
 }

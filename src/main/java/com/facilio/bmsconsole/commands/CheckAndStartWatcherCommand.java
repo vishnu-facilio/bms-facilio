@@ -2,6 +2,8 @@ package com.facilio.bmsconsole.commands;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.context.ControllerActivityWatcherContext;
 import com.facilio.bmsconsole.context.ControllerContext;
@@ -11,6 +13,8 @@ import com.facilio.tasker.FacilioTimer;
 
 public class CheckAndStartWatcherCommand implements Command {
 
+	private static final Logger LOGGER = LogManager.getLogger(CheckAndStartWatcherCommand.class.getName());
+	
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -21,6 +25,7 @@ public class CheckAndStartWatcherCommand implements Command {
 			ControllerActivityWatcherContext watcher = ControllerAPI.getActivityWatcher(time, dataInterval);
 			
 			if (watcher == null) {
+				LOGGER.info("Starting watcher for interval : "+dataInterval+" at time : "+time);
 				watcher = ControllerAPI.addActivityWatcher(time, dataInterval);
 				FacilioContext jobContext = new FacilioContext();
 				jobContext.put(FacilioConstants.ContextNames.CONTROLLER_ACTIVITY_WATCHER, watcher);

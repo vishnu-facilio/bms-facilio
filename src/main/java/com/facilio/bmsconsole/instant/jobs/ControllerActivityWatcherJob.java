@@ -30,6 +30,7 @@ public class ControllerActivityWatcherJob extends InstantJob {
 			ControllerActivityWatcherContext watcher = (ControllerActivityWatcherContext) context.get(FacilioConstants.ContextNames.CONTROLLER_ACTIVITY_WATCHER);
 			List<ControllerContext> controllers = (List<ControllerContext>) context.get(FacilioConstants.ContextNames.CONTROLLER_LIST);
 			Map<String, ControllerContext> inCompleteControllers = controllers.stream().collect(Collectors.toMap(ControllerContext::getMacAddr, Function.identity()));
+			LOGGER.info("Controllers for watcher : "+watcher+" is "+inCompleteControllers);
 			List<ControllerContext> completedControllers = new ArrayList<>();
 			Map<String, Long> activityIds = new HashMap<>();
 			
