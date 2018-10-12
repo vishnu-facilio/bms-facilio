@@ -77,6 +77,20 @@ public class ControllerContext implements Serializable {
 		return dateIntervalUnit;
 	}
 	
+	private Boolean active;
+	public Boolean getActive() {
+		return active;
+	}
+	public void setActive(Boolean active) {
+		this.active = active;
+	}
+	public boolean isActive() {
+		if (active != null) {
+			return active.booleanValue();
+		}
+		return false;
+	}
+	
 	@Override
 	 public String toString() {
 		return "Controllers [id=" + id + ", orgId=" + orgId + ", name=" + name + ","

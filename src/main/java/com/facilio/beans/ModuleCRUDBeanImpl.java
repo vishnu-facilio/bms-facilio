@@ -533,7 +533,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	public long processEvents(long timeStamp, JSONObject payLoad, List<EventRuleContext> eventRules,
 			Map<String, Integer> eventCountMap, long lastEventTime, String partitionKey) throws Exception {
 		if (partitionKey != null && !partitionKey.isEmpty()) {
-			ControllerContext controller = ControllerAPI.getController(partitionKey);
+			ControllerContext controller = ControllerAPI.getActiveController(partitionKey);
 			long siteId = -1l;
 			if (controller != null) {
 				siteId = controller.getSiteId(); 

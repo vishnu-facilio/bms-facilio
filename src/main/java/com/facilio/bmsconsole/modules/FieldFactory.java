@@ -2405,6 +2405,7 @@ public class FieldFactory {
 
 
 		fields.add(getField("dataInterval", "DATA_INTERVAL", module, FieldType.NUMBER));
+		fields.add(getField("active", "ACTIVE", module, FieldType.BOOLEAN));
 
 		return fields;
 	}

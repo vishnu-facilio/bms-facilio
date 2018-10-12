@@ -27,6 +27,7 @@ public class AddControllerCommand implements Command {
 		ControllerContext controllerSettings = (ControllerContext) context.get(FacilioConstants.ContextNames.CONTROLLER_SETTINGS);
 		
 		if(controllerSettings != null) {
+			controllerSettings.setActive(true);
 			controllerSettings.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 			
 			if (controllerSettings.getSiteId() <= 0) {

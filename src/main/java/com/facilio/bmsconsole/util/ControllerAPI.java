@@ -16,6 +16,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ControllerActivityWatcherContext;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
@@ -34,7 +35,7 @@ import com.facilio.time.SecondsChronoUnit;
 public class ControllerAPI {
 	private static final Logger LOGGER = LogManager.getLogger(ControllerAPI.class.getName());
 
-	public static List<ControllerContext> getControllerSettings() throws Exception {
+	public static List<ControllerContext> getAllControllers() throws Exception {
 		FacilioModule module = ModuleFactory.getControllerModule();
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getControllerFields())
@@ -46,20 +47,23 @@ public class ControllerAPI {
 		return getControllerFromMapList(props, true);
 	}
 	
-	public static ControllerContext getController (String macAddress) throws Exception {
-		return getController(macAddress, false);
+	public static ControllerContext getActiveController (String macAddress) throws Exception {
+		return getActiveController(macAddress, false);
 	}
 	
-	public static ControllerContext getController (String macAddress, boolean fetchBuilding) throws Exception {
+	public static ControllerContext getActiveController (String macAddress, boolean fetchBuilding) throws Exception {
 		FacilioModule module = ModuleFactory.getControllerModule();
 		List<FacilioField> fields = FieldFactory.getControllerFields();
-		FacilioField macAddrField = FieldFactory.getAsMap(fields).get("macAddr");
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields); 
+		FacilioField macAddrField = fieldMap.get("macAddr");
+		FacilioField activeField = fieldMap.get("active");
 		
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(module.getTableName())
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(macAddrField, macAddress, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(activeField, String.valueOf(true), BooleanOperators.IS))
 				;
 		
 		List<Map<String, Object>> controllerList = ruleBuilder.get();
@@ -284,16 +288,20 @@ public class ControllerAPI {
 		return updateBuilder.update(prop);
 	}
 	
-	public static List<ControllerContext> getControllers (int dataInterval) throws Exception {
+	public static List<ControllerContext> getActtiveControllers (int dataInterval) throws Exception {
 		FacilioModule module = ModuleFactory.getControllerModule();
 		List<FacilioField> fields = FieldFactory.getControllerFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioField activeField = fieldMap.get("active");
+		
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(module.getTableName())
 														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCondition(activeField, String.valueOf(true), BooleanOperators.IS))
 														;
 		
-		FacilioField intervalField = FieldFactory.getAsMap(fields).get("dataInterval");
+		FacilioField intervalField = fieldMap.get("dataInterval");
 		if (dataInterval == -1) {
 			ruleBuilder.andCondition(CriteriaAPI.getCondition(intervalField, CommonOperators.IS_EMPTY));
 		}

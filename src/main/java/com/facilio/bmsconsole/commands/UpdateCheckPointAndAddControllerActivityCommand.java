@@ -24,7 +24,7 @@ public class UpdateCheckPointAndAddControllerActivityCommand implements Command 
 			LOGGER.info("Updating check point for controller : "+record.getPartitionKey()+" at "+record.getApproximateArrivalTimestamp().getTime());
 			IRecordProcessorCheckpointer checkPointer = (IRecordProcessorCheckpointer) context.get(FacilioConstants.ContextNames.KINESIS_CHECK_POINTER);
 			checkPointer.checkpoint(record);
-			ControllerContext controller = ControllerAPI.getController(record.getPartitionKey());
+			ControllerContext controller = ControllerAPI.getActiveController(record.getPartitionKey());
 			if (controller != null) {
 				context.put(FacilioConstants.ContextNames.CONTROLLER, controller);
 				context.put(FacilioConstants.ContextNames.CONTROLLER_TIME, record.getApproximateArrivalTimestamp().getTime());
@@ -37,7 +37,7 @@ public class UpdateCheckPointAndAddControllerActivityCommand implements Command 
 		else {
 			String controllerId = (String) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
 			if (controllerId != null && !controllerId.isEmpty()) {
-				ControllerContext controller = ControllerAPI.getController(controllerId);
+				ControllerContext controller = ControllerAPI.getActiveController(controllerId);
 				if (controller != null) {
 					//TODO Have to figure what to do with time
 				}

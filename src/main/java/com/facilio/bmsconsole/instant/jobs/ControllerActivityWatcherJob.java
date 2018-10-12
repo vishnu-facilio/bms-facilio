@@ -40,9 +40,11 @@ public class ControllerActivityWatcherJob extends InstantJob {
 					LOGGER.info("Activities for time : "+watcher.getRecordTime()+" and interval : "+watcher.getDataInterval()+" : "+activites);
 					for (Map<String, Object> activity : activites) {
 						ControllerContext controller = inCompleteControllers.get(activity.get("controllerMacAddr"));
-						activityIds.put(controller.getMacAddr(), (Long) activity.get("id"));
-						inCompleteControllers.remove(controller.getMacAddr());
-						completedControllers.add(controller);
+						if (controller != null) {
+							activityIds.put(controller.getMacAddr(), (Long) activity.get("id"));
+							inCompleteControllers.remove(controller.getMacAddr());
+							completedControllers.add(controller);
+						}
 					}
 				}
 				
