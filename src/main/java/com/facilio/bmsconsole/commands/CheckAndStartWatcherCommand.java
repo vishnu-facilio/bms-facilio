@@ -22,16 +22,21 @@ public class CheckAndStartWatcherCommand implements Command {
 		if (controller != null) {
 			long time = (long) context.get(FacilioConstants.ContextNames.CONTROLLER_TIME);
 			int dataInterval = ControllerAPI.getDataIntervalInMin(controller);
-			ControllerActivityWatcherContext watcher = ControllerAPI.getActivityWatcher(time, dataInterval);
 			
-			if (watcher == null) {
-				LOGGER.info("Starting watcher for interval : "+dataInterval+" at time : "+time);
-				watcher = ControllerAPI.addActivityWatcher(time, dataInterval);
-				FacilioContext jobContext = new FacilioContext();
-				jobContext.put(FacilioConstants.ContextNames.CONTROLLER_ACTIVITY_WATCHER, watcher);
-				jobContext.put(FacilioConstants.ContextNames.CONTROLLER_LIST, ControllerAPI.getActtiveControllers(controller.getDataInterval()));
-				
-				FacilioTimer.scheduleInstantJob("ControllerActivityWatcher", jobContext);
+			try {
+				ControllerActivityWatcherContext watcher = ControllerAPI.getActivityWatcher(time, dataInterval);
+				if (watcher == null) {
+					LOGGER.info("Starting watcher for interval : "+dataInterval+" at time : "+time);
+					watcher = ControllerAPI.addActivityWatcher(time, dataInterval);
+					FacilioContext jobContext = new FacilioContext();
+					jobContext.put(FacilioConstants.ContextNames.CONTROLLER_ACTIVITY_WATCHER, watcher);
+					jobContext.put(FacilioConstants.ContextNames.CONTROLLER_LIST, ControllerAPI.getActtiveControllers(controller.getDataInterval()));
+					
+					FacilioTimer.scheduleInstantJob("ControllerActivityWatcher", jobContext);
+				}
+			}
+			catch (Exception e) {
+				LOGGER.error("Error occurred during addition of watcher for interval : "+dataInterval+" at time : "+time, e);
 			}
 		}
 		return false;
