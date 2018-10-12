@@ -292,7 +292,7 @@ public class ControllerAPI {
 														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														;
 		
-		FacilioField intervalField = FieldFactory.getAsMap(fields).get("");
+		FacilioField intervalField = FieldFactory.getAsMap(fields).get("dataInterval");
 		if (dataInterval == -1) {
 			ruleBuilder.andCondition(CriteriaAPI.getCondition(intervalField, CommonOperators.IS_EMPTY));
 		}
