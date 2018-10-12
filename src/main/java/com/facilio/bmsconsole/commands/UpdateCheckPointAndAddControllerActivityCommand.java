@@ -2,6 +2,8 @@ package com.facilio.bmsconsole.commands;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
 import com.amazonaws.services.kinesis.model.Record;
@@ -12,11 +14,14 @@ import com.facilio.constants.FacilioConstants;
 
 public class UpdateCheckPointAndAddControllerActivityCommand implements Command {
 
+	private static final Logger LOGGER = LogManager.getLogger(UpdateCheckPointAndAddControllerActivityCommand.class.getName());
+	
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		Record record = (Record) context.get(FacilioConstants.ContextNames.KINESIS_RECORD);
 		if (record != null) {
+			LOGGER.info("Updating check point for controller : "+record.getPartitionKey()+" at "+record.getApproximateArrivalTimestamp().getTime());
 			IRecordProcessorCheckpointer checkPointer = (IRecordProcessorCheckpointer) context.get(FacilioConstants.ContextNames.KINESIS_CHECK_POINTER);
 			checkPointer.checkpoint(record);
 			ControllerContext controller = ControllerAPI.getController(record.getPartitionKey());
