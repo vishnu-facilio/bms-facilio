@@ -33,7 +33,7 @@ public class ImportReadingJob extends FacilioJob {
 
 			importProcessContext.setStatus(ImportProcessContext.ImportStatus.IMPORTED.getValue());
 			ImportAPI.updateImportProcess(importProcessContext);
-			LOGGER.severe("READING IMPORT COMPLETE");
+			LOGGER.severe("READING IMPORT COMPLETE -- "+jobId);
 		} 
 		catch (Exception e) {
 			try {
