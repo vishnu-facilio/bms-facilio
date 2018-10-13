@@ -37,6 +37,8 @@ import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
@@ -593,8 +595,13 @@ public class AlarmAPI {
 	}
 	
 	private static void appendAdvancedMsg (StringBuilder msgBuilder, ReadingRuleContext rule, ReadingContext reading) {
-		msgBuilder.append("recorded ")
-					.append(DECIMAL_FORMAT.format(reading.getReading(rule.getReadingField().getName())));
+		msgBuilder.append("recorded ");
+		if (rule.getReadingField().getDataTypeEnum() == FieldType.DECIMAL) {
+			msgBuilder.append(DECIMAL_FORMAT.format(FieldUtil.castOrParseValueAsPerType(rule.getReadingField(), reading.getReading(rule.getReadingField().getName()))));
+		}
+		else {
+			msgBuilder.append(reading.getReading(rule.getReadingField().getName()));
+		}
 		appendUnit(msgBuilder, rule);
 		
 		msgBuilder.append(" when the complex condition set in '")
