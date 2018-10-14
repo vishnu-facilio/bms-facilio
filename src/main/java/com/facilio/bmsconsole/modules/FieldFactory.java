@@ -2395,16 +2395,9 @@ public class FieldFactory {
 		macAddr.setColumnName("MAC_ADDR");
 		macAddr.setModule(module);
 		fields.add(macAddr);
-		
-		FacilioField buildingId = new FacilioField();
-		buildingId.setName("buildingId");
-		buildingId.setDataType(FieldType.NUMBER);
-		buildingId.setColumnName("BUILDING_ID");
-		buildingId.setModule(module);
-		fields.add(buildingId);
-
 
 		fields.add(getField("dataInterval", "DATA_INTERVAL", module, FieldType.NUMBER));
+		fields.add(getField("batchesPerCycle", "BATCHES_PER_CYCLE", module, FieldType.NUMBER));
 		fields.add(getField("active", "ACTIVE", module, FieldType.BOOLEAN));
 
 		return fields;

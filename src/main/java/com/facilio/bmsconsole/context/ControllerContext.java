@@ -77,6 +77,14 @@ public class ControllerContext implements Serializable {
 		return dateIntervalUnit;
 	}
 	
+	private int batchesPerCycle = -1;
+	public int getBatchesPerCycle() {
+		return batchesPerCycle;
+	}
+	public void setBatchesPerCycle(int batchesPerCycle) {
+		this.batchesPerCycle = batchesPerCycle;
+	}
+
 	private Boolean active;
 	public Boolean getActive() {
 		return active;

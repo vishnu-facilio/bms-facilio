@@ -2,8 +2,10 @@ package com.facilio.bmsconsole.instant.jobs;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -38,7 +40,7 @@ public class ControllerActivityWatcherJob extends InstantJob {
 			Map<String, ControllerContext> inCompleteControllers = controllers.stream().collect(Collectors.toMap(ControllerContext::getMacAddr, Function.identity()));
 			LOGGER.info("Controllers for watcher : "+watcher+" is "+inCompleteControllers);
 			List<ControllerContext> completedControllers = new ArrayList<>();
-			Map<String, Long> activityIds = new HashMap<>();
+			Map<String, Set<Long>> activityIds = new HashMap<>();
 			
 			while (!inCompleteControllers.isEmpty()) {
 				List<Map<String, Object>> activites = ControllerAPI.getControllerActivities(inCompleteControllers.values(), watcher.getRecordTime());
@@ -47,9 +49,11 @@ public class ControllerActivityWatcherJob extends InstantJob {
 					for (Map<String, Object> activity : activites) {
 						ControllerContext controller = inCompleteControllers.get(activity.get("controllerMacAddr"));
 						if (controller != null) {
-							activityIds.put(controller.getMacAddr(), (Long) activity.get("id"));
-							inCompleteControllers.remove(controller.getMacAddr());
-							completedControllers.add(controller);
+							int batches = controller.getBatchesPerCycle() == -1 ? 1 : controller.getBatchesPerCycle();
+							if (addAndGetSize(activityIds, controller.getMacAddr(), (long) activity.get("id")) == batches) {
+								inCompleteControllers.remove(controller.getMacAddr());
+								completedControllers.add(controller);
+							}
 						}
 					}
 				}
@@ -63,6 +67,16 @@ public class ControllerActivityWatcherJob extends InstantJob {
 			LOGGER.error("Error occurred in Controller Watcher Job", e);
 			CommonCommandUtil.emailException("ControllerActivityWatcherJob", "Error occurred in Controller Watcher Job", e);
 		}
+	}
+	
+	private int addAndGetSize(Map<String, Set<Long>> activityIds, String macAddr, long activityId) {
+		Set<Long> activities = activityIds.get(macAddr);
+		if (activities == null) {
+			activities = new HashSet<>();
+			activityIds.put(macAddr, activities);
+		}
+		activities.add(activityId);
+		return activities.size();
 	}
 
 }
