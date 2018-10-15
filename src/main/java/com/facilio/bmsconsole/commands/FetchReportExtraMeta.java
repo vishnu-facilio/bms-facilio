@@ -205,7 +205,7 @@ public class FetchReportExtraMeta implements Command {
 			if(alarm.getStartTime() > 0) {
 				for(ReportAlarmContext reportAlarmContext :reportAlarmContextList) {
 					
-					if(reportAlarmContext.getStartTime() <= alarm.getStartTime() && reportAlarmContext.getStartTime() < alarm.getEndTime()) {
+					if(reportAlarmContext.getStartTime() == alarm.getStartTime()) {
 						reportAlarmContext.addOrder();
 						reportAlarmContext.addAlarmContext(alarm);
 					}
