@@ -225,6 +225,10 @@ public class DataParseForReadingsCommand implements Command {
 	}
 	
 	public static Long getAssetByUniqueness(HashMap<String,Object> colVal, String module, HashMap<String,String> uniqueMapping) throws Exception{
+		LOGGER.severe("colVal" + colVal.toString());
+		LOGGER.severe("module" + module);
+		LOGGER.severe("uniqueMapping" + uniqueMapping.toString());
+		
 		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioField> assetFields = new ArrayList<>();
 		
@@ -242,6 +246,8 @@ public class DataParseForReadingsCommand implements Command {
 		}
 		
 		List<? extends ModuleBaseWithCustomFields> props = selectRecordBuilder.get();
+		LOGGER.severe("selectRecord" + selectRecordBuilder.toString());
+		LOGGER.severe("props" + props.toString());
 		Long Id = (Long) props.get(0).getId();
 		return Id;
 		

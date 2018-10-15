@@ -73,7 +73,7 @@ public class ImportAPI {
         	Iterator<Cell> cellItr = row.cellIterator();
         	while (cellItr.hasNext()) {
         		Cell cell = cellItr.next();
-        		if(cell.getCellTypeEnum().getCode() == Cell.CELL_TYPE_BLANK) {
+        		if(cell.getCellType() == Cell.CELL_TYPE_BLANK) {
         			columnheadings.add(null);
         		}
         		else {
