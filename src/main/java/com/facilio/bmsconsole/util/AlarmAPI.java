@@ -594,14 +594,19 @@ public class AlarmAPI {
 		}
 	}
 	
-	private static void appendAdvancedMsg (StringBuilder msgBuilder, ReadingRuleContext rule, ReadingContext reading) {
-		msgBuilder.append("recorded ");
-		if (rule.getReadingField().getDataTypeEnum() == FieldType.DECIMAL) {
-			msgBuilder.append(DECIMAL_FORMAT.format(FieldUtil.castOrParseValueAsPerType(rule.getReadingField(), reading.getReading(rule.getReadingField().getName()))));
+	private static Object formatValue (ReadingContext reading, FacilioField field) {
+		if (field.getDataTypeEnum() == FieldType.DECIMAL) {
+			return DECIMAL_FORMAT.format(FieldUtil.castOrParseValueAsPerType(field, reading.getReading(field.getName())));
 		}
 		else {
-			msgBuilder.append(reading.getReading(rule.getReadingField().getName()));
+			return reading.getReading(field.getName());
 		}
+	}
+	
+	private static void appendAdvancedMsg (StringBuilder msgBuilder, ReadingRuleContext rule, ReadingContext reading) {
+		msgBuilder.append("recorded ")
+					.append(formatValue(reading, rule.getReadingField()));
+		
 		appendUnit(msgBuilder, rule);
 		
 		msgBuilder.append(" when the complex condition set in '")
@@ -612,7 +617,7 @@ public class AlarmAPI {
 	
 	private static void appendFunctionMsg (StringBuilder msgBuilder, ReadingRuleContext rule, ReadingContext reading) {
 		msgBuilder.append("recorded ")
-					.append(DECIMAL_FORMAT.format(reading.getReading(rule.getReadingField().getName())));
+					.append(formatValue(reading, rule.getReadingField()));
 		appendUnit(msgBuilder, rule);
 		
 		String functionName = null;
