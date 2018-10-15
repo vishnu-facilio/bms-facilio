@@ -411,7 +411,7 @@ public class V2ReportAction extends FacilioAction {
 		setResult("reportXValues", context.get(FacilioConstants.ContextNames.REPORT_X_VALUES)); //This can be removed from new format
 		setResult("reportData", context.get(FacilioConstants.ContextNames.REPORT_DATA));
 		setResult("reportVarianceData", context.get(FacilioConstants.ContextNames.REPORT_VARIANCE_DATA));
-		setResult("reportAlarms", context.get(FacilioConstants.ContextNames.REPORT_ALARMS));
+//		setResult("reportAlarms", context.get(FacilioConstants.ContextNames.REPORT_ALARMS));
 		setResult("safeLimits", context.get(FacilioConstants.ContextNames.REPORT_SAFE_LIMIT));
 		setResult(FacilioConstants.ContextNames.REPORT_ALARM_CONTEXT, context.get(FacilioConstants.ContextNames.REPORT_ALARM_CONTEXT));
 		return SUCCESS;
