@@ -7,11 +7,11 @@ public class ReportAlarmContext {
 
 	long startTime;
 	long endTime;
-	int order;
+	int order = 0;
 	List<ReadingAlarmContext> alarmContexts;
 	
 	public int addOrder() {
-		order = order + 1;
+		order++;
 		return order;
 	}
 	public long getStartTime() {
