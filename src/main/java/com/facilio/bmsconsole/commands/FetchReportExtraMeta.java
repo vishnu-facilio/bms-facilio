@@ -1,8 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -13,6 +16,7 @@ import org.json.simple.JSONObject;
 import com.facilio.bmsconsole.actions.AlarmAction;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
+import com.facilio.bmsconsole.context.ReportAlarmContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -36,6 +40,8 @@ public class FetchReportExtraMeta implements Command {
 		JSONObject safeLimit = new JSONObject();
 		
 		Map<String,Map<String, List<ReadingAlarmContext>>> alarmsMap = new HashMap<>();
+		
+		List<ReadingAlarmContext> allAlarms = new ArrayList<>();
 		
 		for(ReportDataPointContext dataPoint :report.getDataPoints()) {
 			
@@ -64,6 +70,8 @@ public class FetchReportExtraMeta implements Command {
 					}
 				}
 				if(report.getDateRange() != null && parentId != null) {
+					
+					Map<String, List<ReadingAlarmContext>> alarmProps = new HashMap<>();
 					
 					JSONObject filterJson = new JSONObject();
 					
@@ -106,8 +114,12 @@ public class FetchReportExtraMeta implements Command {
 					
 					List<ReadingAlarmContext> alarms = alarmAction.getReadingAlarms();
 					
-					Map<String, List<ReadingAlarmContext>> alarmProps = new HashMap<>();
+					for(ReadingAlarmContext alarm :alarms) {
+						alarm.setReportMeta(dataPoint.getName()+"_"+FacilioConstants.Reports.ACTUAL_DATA);
+					}
 					alarmProps.put(FacilioConstants.Reports.ACTUAL_DATA, alarms);
+					
+					allAlarms.addAll(alarms);
 					
 					if (report.getBaseLines() != null && !report.getBaseLines().isEmpty()) {
 						for (ReportBaseLineContext reportBaseLine : report.getBaseLines()) {
@@ -132,18 +144,62 @@ public class FetchReportExtraMeta implements Command {
 								
 								alarms = alarmAction.getReadingAlarms();
 								
+								for(ReadingAlarmContext alarm :alarms) {
+									alarm.setReportMeta(dataPoint.getName()+"_"+reportBaseLine.getBaseLine().getName());
+								}
+								
 								alarmProps.put(reportBaseLine.getBaseLine().getName(), alarms);
+								allAlarms.addAll(alarms);
 							}
-							
 						}
 					}
 					alarmsMap.put(dataPoint.getName(), alarmProps);
 				}
 			}
 		}
+		
+		List<ReportAlarmContext> reportAlarmContextList = getReportAlarms(allAlarms);
+		
 		context.put(FacilioConstants.ContextNames.REPORT_SAFE_LIMIT, safeLimit);
 		context.put(FacilioConstants.ContextNames.REPORT_ALARMS, alarmsMap);
+		context.put(FacilioConstants.ContextNames.REPORT_ALARM_CONTEXT, reportAlarmContextList);
 		return false;
 	}
 
+	private List<ReportAlarmContext> getReportAlarms(List<ReadingAlarmContext> allAlarms) {
+		List<Long> alarmTime = new ArrayList<>();
+		for(ReadingAlarmContext alarm :allAlarms) {
+			if(alarm.getStartTime() > 0) {
+				alarmTime.add(alarm.getStartTime());
+			}
+			if(alarm.getEndTime() > 0) {
+				alarmTime.add(alarm.getEndTime());
+			}
+		}
+		Collections.sort(alarmTime);
+		
+		List<ReportAlarmContext> reportAlarmContextList = new ArrayList<>();
+		
+		for(int i=0;i<alarmTime.size()-1;i++) {
+			
+			ReportAlarmContext reportAlarmContext = new ReportAlarmContext();
+			reportAlarmContext.setStartTime(alarmTime.get(i));
+			reportAlarmContext.setEndTime(alarmTime.get(i+1));
+			
+			reportAlarmContextList.add(reportAlarmContext);
+		}
+		
+		for(ReadingAlarmContext alarm :allAlarms) {
+			if(alarm.getStartTime() > 0) {
+				for(ReportAlarmContext reportAlarmContext :reportAlarmContextList) {
+					
+					if(reportAlarmContext.getStartTime() <= alarm.getStartTime() && reportAlarmContext.getStartTime() > alarm.getEndTime()) {
+						reportAlarmContext.addOrder();
+						reportAlarmContext.addAlarmContext(alarm);
+					}
+				}
+			}
+		}
+		return reportAlarmContextList;
+	}
 }

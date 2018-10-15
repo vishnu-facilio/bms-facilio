@@ -252,6 +252,7 @@ public class FacilioConstants {
 		public static final String REPORT = "report";
 		public static final String REPORT_SAFE_LIMIT = "reportSafeLimit";
 		public static final String REPORT_ALARMS = "reportAlarms";
+		public static final String REPORT_ALARM_CONTEXT = "reportAlarmsContext";
 		public static final String REPORT_LIST = "reportList";
 		public static final String REPORT_COLUMN_LIST = "reportList";
 		public static final String REPORT_USER_FILTER_VALUE = "userFilterValue";
