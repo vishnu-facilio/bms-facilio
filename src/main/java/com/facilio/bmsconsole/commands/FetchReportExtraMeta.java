@@ -21,6 +21,7 @@ import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
+import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
@@ -168,15 +169,26 @@ public class FetchReportExtraMeta implements Command {
 
 	private List<ReportAlarmContext> getReportAlarms(List<ReadingAlarmContext> allAlarms) {
 		List<Long> alarmTime = new ArrayList<>();
+		
+		boolean isCurrentTimeAdded = false;
 		for(ReadingAlarmContext alarm :allAlarms) {
 			if(alarm.getStartTime() > 0) {
-				alarmTime.add(alarm.getStartTime());
+				if(!alarmTime.contains(alarm.getStartTime())) {
+					alarmTime.add(alarm.getStartTime());
+				}
 			}
 			if(alarm.getEndTime() > 0) {
-				alarmTime.add(alarm.getEndTime());
+				if(!alarmTime.contains(alarm.getEndTime())) {
+					alarmTime.add(alarm.getEndTime());
+				}
+			}
+			else if(!isCurrentTimeAdded) {
+				isCurrentTimeAdded = true;
+				alarmTime.add(DateTimeUtil.getCurrenTime());
 			}
 		}
 		Collections.sort(alarmTime);
+		
 		
 		List<ReportAlarmContext> reportAlarmContextList = new ArrayList<>();
 		
