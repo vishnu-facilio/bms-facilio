@@ -1,10 +1,13 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -13,20 +16,26 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.ReportInfo;
 import com.facilio.bmsconsole.context.WidgetChartContext;
+import com.facilio.bmsconsole.context.WidgetStaticContext;
+import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.DateRange;
+import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.cards.util.CardType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.ReadingAnalysisContext;
 import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
+import com.facilio.report.context.ReportAxisContext;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportFolderContext;
@@ -198,6 +207,57 @@ public class V2ReportAction extends FacilioAction {
 			return setReportResult(context);
 		}
 		return ERROR;
+	}
+	
+	long cardWidgetId;
+	
+	public long getCardWidgetId() {
+		return cardWidgetId;
+	}
+	public void setCardWidgetId(long cardWidgetId) {
+		this.cardWidgetId = cardWidgetId;
+	}
+	public String getReadingsFromCard() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		
+		DashboardWidgetContext dashboardWidgetContext =  DashboardUtil.getWidget(cardWidgetId);
+		
+		WidgetStaticContext widgetStaticContext = (WidgetStaticContext) dashboardWidgetContext;
+		
+		List<ReadingAnalysisContext> metrics = new ArrayList<>();
+		if(widgetStaticContext.getStaticKey().equals(CardType.READING_CARD.getName())) {
+			
+			setxAggr(0);
+			
+			JSONObject params = widgetStaticContext.getParamsJson();
+			
+			DateOperators dateOperator = (DateOperators) Operator.OPERATOR_MAP.get((int) params.get("dateOperator"));
+			
+			ReportAxisContext reportaxisContext = new ReportAxisContext();
+			reportaxisContext.setFieldId((Long)params.get("fieldId"));
+			reportaxisContext.setAggr((int)params.get("aggregateFunc"));
+			
+			ReadingAnalysisContext readingAnalysisContext = new ReadingAnalysisContext();
+			readingAnalysisContext.setParentId(Collections.singletonList((Long)params.get("parentId")));
+			readingAnalysisContext.setType(1);
+			readingAnalysisContext.setyAxis(reportaxisContext);
+			
+			metrics.add(readingAnalysisContext);
+			
+			context.put(FacilioConstants.ContextNames.START_TIME, dateOperator.getRange(null).getStartTime());
+			context.put(FacilioConstants.ContextNames.END_TIME, dateOperator.getRange(null).getEndTime());
+			context.put(FacilioConstants.ContextNames.REPORT_X_AGGR, xAggr);
+			context.put(FacilioConstants.ContextNames.REPORT_Y_FIELDS, metrics);
+			context.put(FacilioConstants.ContextNames.REPORT_MODE, mode);
+			
+			Chain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReadingReportChain() : ReadOnlyChainFactory.fetchReadingReportChain();
+			fetchReadingDataChain.execute(context);
+			
+			return setReportResult(context);
+		}
+		
+		return SUCCESS;
 	}
 	
 	public String addWorkOrderReport() throws Exception {
