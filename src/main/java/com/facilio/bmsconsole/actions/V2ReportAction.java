@@ -208,7 +208,16 @@ public class V2ReportAction extends FacilioAction {
 		}
 		return ERROR;
 	}
+	long alarmId;
 	
+	
+	public long getAlarmId() {
+		return alarmId;
+	}
+	public void setAlarmId(long alarmId) {
+		this.alarmId = alarmId;
+	}
+
 	long cardWidgetId;
 	
 	public long getCardWidgetId() {
