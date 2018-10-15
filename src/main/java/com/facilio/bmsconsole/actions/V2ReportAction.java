@@ -257,11 +257,11 @@ public class V2ReportAction extends FacilioAction {
 			
 			JSONObject params = widgetStaticContext.getParamsJson();
 			
-			DateOperators dateOperator = (DateOperators) Operator.OPERATOR_MAP.get((int) params.get("dateOperator"));
+			DateOperators dateOperator = (DateOperators) Operator.OPERATOR_MAP.get(Integer.parseInt(params.get("dateOperator").toString()));
 			
 			ReportAxisContext reportaxisContext = new ReportAxisContext();
 			reportaxisContext.setFieldId((Long)params.get("fieldId"));
-			reportaxisContext.setAggr((int)params.get("aggregateFunc"));
+			reportaxisContext.setAggr(Integer.parseInt(params.get("aggregateFunc").toString()));
 			
 			ReadingAnalysisContext readingAnalysisContext = new ReadingAnalysisContext();
 			readingAnalysisContext.setParentId(Collections.singletonList((Long)params.get("parentId")));
