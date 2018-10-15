@@ -98,6 +98,15 @@ public class ModuleBaseWithCustomFields implements Serializable {
 		}
 		return data.get(key);
 	}
+	private long siteId = -1;
+	
+	public long getSiteId() {
+		return this.siteId;
+	}
+	
+	public void setSiteId(long siteId) {
+		this.siteId = siteId;
+	}
 	
 	private long sysCreatedTime = -1;
 	public long getSysCreatedTime() {
