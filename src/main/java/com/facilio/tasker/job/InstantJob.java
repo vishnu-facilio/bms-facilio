@@ -45,7 +45,7 @@ public abstract class InstantJob {
             context.remove(InstantJobConf.getAccountKey());
             String jobName = (String) context.remove(InstantJobConf.getJobNameKey());
             
-            if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 88) {
+            if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 88 && jobName.equals("ControllerActivityWatcher")) {
             	LOGGER.info("Executing Job "+jobName+" with props : "+context);
             }
             
