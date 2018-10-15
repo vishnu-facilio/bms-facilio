@@ -249,7 +249,7 @@ public class BaseLineContext {
 				blStartZdt = adjustStartTime(dataStartZdt, blStartZdt);
 				blEndZdt = blStartZdt.plusYears(dataEndZdt.getYear() - dataStartZdt.getYear()).with(blEndZdt.toLocalTime());
 				blEndZdt = blEndZdt.withMonth(dataEndZdt.getMonthValue());
-				blEndZdt = withDate(blEndZdt, dataEndZdt,false);
+				blEndZdt = withDate(blEndZdt, dataEndZdt, blStartZdt.equals(blStartZdt.with(TemporalAdjusters.firstDayOfMonth())));
 				blEndZdt = adjustEndTime(dataEndZdt, blEndZdt);
 			case ANY_YEAR:
 				blStartZdt = blStartZdt.withMonth(dataStartZdt.getMonthValue());
@@ -257,7 +257,7 @@ public class BaseLineContext {
 				blStartZdt = adjustStartTime(dataStartZdt, blStartZdt);
 				if (DateTimeUtil.isSameYear(dataStartZdt, dataEndZdt)) {
 					blEndZdt = blEndZdt.withMonth(dataEndZdt.getMonthValue());
-					blEndZdt = withDate(blEndZdt, dataEndZdt,false);
+					blEndZdt = withDate(blEndZdt, dataEndZdt, blStartZdt.equals(blStartZdt.with(TemporalAdjusters.firstDayOfMonth())));
 				}
 				blEndZdt = adjustEndTime(dataEndZdt, blEndZdt);
 				break;
@@ -275,14 +275,14 @@ public class BaseLineContext {
 				blStartZdt = withDate(blStartZdt, dataStartZdt,false);
 				blStartZdt = adjustStartTime(dataStartZdt, blStartZdt);
 				blEndZdt = blStartZdt.plusMonths(dataEndZdt.getMonthValue() - dataStartZdt.getMonthValue()).with(blEndZdt.toLocalTime());
-				blEndZdt = withDate(blEndZdt, dataEndZdt,lastDayCheck);
+				blEndZdt = withDate(blEndZdt, dataEndZdt,lastDayCheck && blStartZdt.equals(blStartZdt.with(TemporalAdjusters.firstDayOfMonth())));
 				blEndZdt = adjustEndTime(dataEndZdt, blEndZdt);
 				break;
 			case ANY_MONTH:
 				blStartZdt = withDate(blStartZdt, dataStartZdt,false);
 				blStartZdt = adjustStartTime(dataStartZdt, blStartZdt);
 				if (DateTimeUtil.isSameMonth(dataStartZdt, dataEndZdt)) {
-					blEndZdt = withDate(blEndZdt, dataEndZdt,lastDayCheck);
+					blEndZdt = withDate(blEndZdt, dataEndZdt,lastDayCheck && blStartZdt.equals(blStartZdt.with(TemporalAdjusters.firstDayOfMonth())));
 				}
 				blEndZdt = adjustEndTime(dataEndZdt, blEndZdt);
 				break;
@@ -469,9 +469,9 @@ public class BaseLineContext {
 	public static enum AdjustType {
 		NONE,
 		WEEK,
-		DATE,
-		MONTH_AND_DATE,
-		FULL_MONTH
+		DATE, //Monthly
+		MONTH_AND_DATE, //Yearly
+		FULL_MONTH //Monthly
 		;
 		
 		public int getValue() {
