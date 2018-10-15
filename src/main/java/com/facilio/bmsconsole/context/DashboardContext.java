@@ -25,6 +25,22 @@ public class DashboardContext extends ModuleBaseWithCustomFields {
 	public void setDashboardFolderId(Long dashboardFolderId) {
 		this.dashboardFolderId = dashboardFolderId;
 	}
+	
+	int dateOperator;
+	String dateValue; 
+
+	public int getDateOperator() {
+		return dateOperator;
+	}
+	public void setDateOperator(int dateOperator) {
+		this.dateOperator = dateOperator;
+	}
+	public String getDateValue() {
+		return dateValue;
+	}
+	public void setDateValue(String dateValue) {
+		this.dateValue = dateValue;
+	}
 
 	private ReportSpaceFilterContext reportSpaceFilterContext;
 	

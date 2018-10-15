@@ -100,6 +100,14 @@ public class V2ReportAction extends FacilioAction {
 		return setReportResult(context);
 	}
 	
+	long dashboardId;
+	
+	public long getDashboardId() {
+		return dashboardId;
+	}
+	public void setDashboardId(long dashboardId) {
+		this.dashboardId = dashboardId;
+	}
 	private void setReportWithDataContext(FacilioContext context) throws Exception {
 		reportContext = ReportUtil.getReport(reportId);
 		
@@ -107,6 +115,14 @@ public class V2ReportAction extends FacilioAction {
 			reportContext.setDateRange(new DateRange(startTime, endTime));
 			reportContext.setDateValue(new DateRange(startTime, endTime).toString());
 		}
+		if(dashboardId > 0) {
+			DateRange range = DashboardUtil.getDateFilterFromDashboard(dashboardId);
+			if(range != null) {
+				reportContext.setDateRange(range);
+				reportContext.setDateValue(range.toString());
+			}
+		}
+		
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 	}
 	

@@ -2653,6 +2653,9 @@ public class FieldFactory {
 		showHideMobile.setModule(module);
 
 		fields.add(showHideMobile);
+		
+		fields.add(getField("dateOperator", "DATE_OPERATOR", module, FieldType.NUMBER));
+		fields.add(getField("dateValue", "DATE_VALUE", module, FieldType.STRING));
 
 		return fields;
 	}

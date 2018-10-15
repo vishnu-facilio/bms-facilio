@@ -3272,6 +3272,19 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		return null;
 	}
 	
+	public static DateRange getDateFilterFromDashboard(long dashboardId) throws Exception {
+		
+		DashboardContext dashboard = DashboardUtil.getDashboardWithWidgets(dashboardId);
+		if(dashboard != null && dashboard.getDateOperator() >0) {
+			DateOperators dateOperators = (DateOperators) Operator.OPERATOR_MAP.get(dashboard.getDateOperator());
+			if(dateOperators != null) {
+				DateRange range = dateOperators.getRange(dashboard.getDateValue());
+				return range;
+			}
+		}
+		return null;
+	}
+	
 	public static List<WidgetChartContext> getWidgetFromDashboard(long reportId,boolean isNewReport) throws Exception {
 		
 		String reportCollumn = null;

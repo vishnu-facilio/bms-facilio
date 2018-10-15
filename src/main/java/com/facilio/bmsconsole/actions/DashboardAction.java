@@ -1649,6 +1649,14 @@ public class DashboardAction extends ActionSupport {
 			reportSpaceFilterContext.setBuildingId(buildingId);
 			reportContext.setReportSpaceFilterContext(reportSpaceFilterContext);
 		}
+		if(dashboardId != null) {
+			DateRange range = DashboardUtil.getDateFilterFromDashboard(dashboardId);
+			if(range != null) {
+				dateFilter = new JSONArray();
+				dateFilter.add(range.getStartTime());
+				dateFilter.add(range.getEndTime());
+			}
+		}
 		if(module.getName().equals("workorder") || module.getName().equals("alarm") || module.getName().equals("workorderrequest")) {
 			reportData = getDataForTickets(reportContext, module, dateFilter, userFilterValues, baseLineId, criteriaId);
 		}
@@ -1657,6 +1665,7 @@ public class DashboardAction extends ActionSupport {
 		}
 		return SUCCESS;
 	}
+	
 	
 	private String[] meterIds;
 	
