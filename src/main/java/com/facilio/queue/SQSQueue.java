@@ -17,7 +17,7 @@ public class SQSQueue  implements FacilioQueue {
         return INSTANCE;
     }
 
-    public void push(String queueName, String message) {
+    public boolean push(String queueName, String message) {
         String url = nameVsURL.get(queueName);
         AmazonSQS sqs = AwsUtil.getSQSClient();
         if(url == null) {
@@ -25,7 +25,8 @@ public class SQSQueue  implements FacilioQueue {
             url = result.getQueueUrl();
             nameVsURL.put(queueName, url);
         }
-        sqs.sendMessage(url, message);
+        SendMessageResult result = sqs.sendMessage(url, message);
+        return (result.getSdkHttpMetadata().getHttpStatusCode() == 200);
     }
 
     public QueueMessage pull(String queueName) {
