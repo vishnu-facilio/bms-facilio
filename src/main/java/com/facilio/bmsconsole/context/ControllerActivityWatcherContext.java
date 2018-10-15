@@ -43,6 +43,14 @@ public class ControllerActivityWatcherContext implements Serializable {
 		this.dataInterval = dataInterval;
 	}
 	
+	private int level = -1;
+	public int getLevel() {
+		return level;
+	}
+	public void setLevel(int level) {
+		this.level = level;
+	}
+
 	private Boolean completionStatus;
 	public Boolean getCompletionStatus() {
 		return completionStatus;
@@ -64,6 +72,7 @@ public class ControllerActivityWatcherContext implements Serializable {
 									.append("id : ").append(id).append(", ")
 									.append("recordTime : ").append(recordTime).append(", ")
 									.append("dataInterval : ").append(dataInterval).append(", ")
+									.append("level : ").append(level).append(", ")
 									.append("completionStatus : ").append(completionStatus)
 									.append("]")
 									;

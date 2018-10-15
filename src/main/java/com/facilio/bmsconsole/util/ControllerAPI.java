@@ -11,11 +11,13 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ControllerActivityWatcherContext;
 import com.facilio.bmsconsole.context.ControllerContext;
-import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.MultiModuleReadingData;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -164,7 +166,7 @@ public class ControllerAPI {
 		return zdt.truncatedTo(new SecondsChronoUnit(dataInterval * 60)).toInstant().toEpochMilli();
 	}
 	
-	public static long addControllerActivity (ControllerContext controller, long time, Map<String, List<ReadingContext>> readingMap) throws Exception {
+	public static long addControllerActivity (ControllerContext controller, long time, MultiModuleReadingData readingData) throws Exception {
 		Map<String, Object> prop = new HashMap<>();
 		prop.put("orgId", AccountUtil.getCurrentOrg().getId());
 		prop.put("siteId", controller.getSiteId());
@@ -179,8 +181,8 @@ public class ControllerAPI {
 						.table(ModuleFactory.getControllerActivityModule().getTableName())
 						.insert(prop);
 		
-		if (readingMap != null && !readingMap.isEmpty()) {
-			prop.put("currentRecords", FieldUtil.getAsJSON(readingMap).toJSONString());
+		if (readingData != null) {
+			prop.put("currentRecords", FieldUtil.getAsJSON(readingData).toJSONString());
 			
 			new GenericInsertRecordBuilder()
 				.fields(FieldFactory.getContollerActivityRecordsFields())
@@ -189,6 +191,28 @@ public class ControllerAPI {
 		}
 		
 		return id;
+	}
+	
+	public static Map<Long, JSONObject> getControllerActivityRecords (Collection<Long> ids) throws Exception {
+		FacilioModule module = ModuleFactory.getControllerActivityRecordsModule();
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.table(module.getTableName())
+														.select(FieldFactory.getContollerActivityRecordsFields())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getIdCondition(ids, module))
+														;
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			JSONParser parser = new JSONParser();
+			Map<Long, JSONObject> records = new HashMap<>();
+			for (Map<String, Object> prop : props) {
+				JSONObject json = (JSONObject) parser.parse(prop.get("currentRecords").toString());
+				records.put((Long) prop.get("id"), json);
+			}
+			return records;
+		}
+		return null;
 	}
 	
 	public static List<Map<String, Object>> getControllerActivities (Collection<ControllerContext> controller, long time) throws Exception {
@@ -228,12 +252,13 @@ public class ControllerAPI {
 		}
 	}
 	
-	public static ControllerActivityWatcherContext getActivityWatcher (long time, int dataInterval) throws Exception {
+	public static ControllerActivityWatcherContext getActivityWatcher (long time, int dataInterval, int level) throws Exception {
 		FacilioModule module = ModuleFactory.getControllerActivityWatcherModule();
 		List<FacilioField> fields = FieldFactory.getContollerActivityWatcherFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		FacilioField recordTimeField = fieldMap.get("recordTime");
 		FacilioField intervalField = fieldMap.get("dataInterval");
+		FacilioField levelField = fieldMap.get("level");
 		time = adjustTime(time, dataInterval);
 		LOGGER.info("Fetching watcher for time : "+time+" and interval : "+dataInterval);
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -242,6 +267,7 @@ public class ControllerAPI {
 														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(recordTimeField, String.valueOf(time), DateOperators.IS))
 														.andCondition(CriteriaAPI.getCondition(intervalField, String.valueOf(dataInterval), NumberOperators.EQUALS))
+														.andCondition(CriteriaAPI.getCondition(levelField, String.valueOf(level), NumberOperators.EQUALS))
 														;
 		
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -251,7 +277,7 @@ public class ControllerAPI {
 		return null;
 	}
 	
-	public static ControllerActivityWatcherContext addActivityWatcher (long time, int dataInterval) throws Exception {
+	public static ControllerActivityWatcherContext addActivityWatcher (long time, int dataInterval, int level) throws Exception {
 		FacilioModule module = ModuleFactory.getControllerActivityWatcherModule();
 		List<FacilioField> fields = FieldFactory.getContollerActivityWatcherFields();
 		
@@ -260,6 +286,7 @@ public class ControllerAPI {
 		prop.put("recordTime", adjustTime(time, dataInterval));
 		prop.put("createdTime", System.currentTimeMillis());
 		prop.put("dataInterval", dataInterval);
+		prop.put("level", level);
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 														.fields(fields)

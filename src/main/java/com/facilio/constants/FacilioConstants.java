@@ -166,6 +166,7 @@ public class FacilioConstants {
 		public static final String WORK_ORDER_TEMPLATE_LIST = "workordertemplates";
 		
 		public static final String CONTROLLER = "controller";
+		public static final String CONTROLLER_LEVEL = "controllerLevel";
 		public static final String CONTROLLER_TIME = "controllerTime";
 		public static final String CONTROLLER_ACTIVITY_WATCHER = "controllerActivityWatcher";
 		public static final String CONTROLLER_LIST = "controllerList";

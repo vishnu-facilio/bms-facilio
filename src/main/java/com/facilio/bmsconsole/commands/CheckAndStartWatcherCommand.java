@@ -22,12 +22,16 @@ public class CheckAndStartWatcherCommand implements Command {
 		if (controller != null) {
 			long time = (long) context.get(FacilioConstants.ContextNames.CONTROLLER_TIME);
 			int dataInterval = ControllerAPI.getDataIntervalInMin(controller);
+			Integer level = (Integer) context.get(FacilioConstants.ContextNames.CONTROLLER_LEVEL);
+			if (level == null) {
+				level = 0;
+			}
 			
 			try {
-				ControllerActivityWatcherContext watcher = ControllerAPI.getActivityWatcher(time, dataInterval);
+				ControllerActivityWatcherContext watcher = ControllerAPI.getActivityWatcher(time, dataInterval, level);
 				if (watcher == null) {
 					LOGGER.info("Starting watcher for interval : "+dataInterval+" at time : "+time);
-					watcher = ControllerAPI.addActivityWatcher(time, dataInterval);
+					watcher = ControllerAPI.addActivityWatcher(time, dataInterval, level);
 					FacilioContext jobContext = new FacilioContext();
 					jobContext.put(FacilioConstants.ContextNames.CONTROLLER_ACTIVITY_WATCHER, watcher);
 					jobContext.put(FacilioConstants.ContextNames.CONTROLLER_LIST, ControllerAPI.getActtiveControllers(controller.getDataInterval()));

@@ -2438,6 +2438,7 @@ public class FieldFactory {
 		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.DATE_TIME));
 		fields.add(getField("recordTime", "RECORD_TIME", module, FieldType.DATE_TIME));
 		fields.add(getField("dataInterval", "DATA_INTERVAL", module, FieldType.NUMBER));
+		fields.add(getField("level", "LEVEL", module, FieldType.NUMBER));
 		fields.add(getField("completionStatus", "COMPLETION_STATUS", module, FieldType.BOOLEAN));
 		
 		return fields;
