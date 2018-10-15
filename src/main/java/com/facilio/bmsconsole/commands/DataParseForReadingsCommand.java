@@ -238,7 +238,7 @@ public class DataParseForReadingsCommand implements Command {
 			FacilioField Field = bean.getField(field, module);
 			assetFields.add(Field);
 			String columnName = Field.getColumnName();
-			selectRecordBuilder.andCustomWhere(columnName+"= ?", (String) colVal.get(uniqueMapping.get(field)));
+			selectRecordBuilder.andCustomWhere(columnName+"= ?",  colVal.get(uniqueMapping.get(field)).toString());
 		}
 		
 		List<? extends ModuleBaseWithCustomFields> props = selectRecordBuilder.get();
