@@ -86,7 +86,11 @@ public class FacilioTimer {
 	public static void scheduleInstantJob(String jobName, FacilioContext context){
 		context.put(InstantJobConf.getJobNameKey(), jobName);
 		context.put(InstantJobConf.getAccountKey(), AccountUtil.getCurrentAccount());
-		ObjectQueue.sendMessage(InstantJobConf.getInstantJobQueue(), context);
+		
+		if (!ObjectQueue.sendMessage(InstantJobConf.getInstantJobQueue(), context)) {
+			throw new IllegalArgumentException("Unable to add instant job to queue");
+		}
+		
 	}
 
 	public static void scheduleOneTimeJob(long jobId, String jobName, int delayInSec, String executorName) throws Exception {
