@@ -1162,6 +1162,8 @@ public class DashboardAction extends ActionSupport {
 	
 	JSONObject paramsJson;
 	
+	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
+	
 	public String getCardData() throws Exception {
 		if(widgetId != null) {
 			
@@ -1178,11 +1180,27 @@ public class DashboardAction extends ActionSupport {
 				
 				if(card.isSingleResultWorkFlow()) {
 					Object wfResult = WorkflowUtil.getWorkflowExpressionResult(card.getWorkflow(), widgetStaticContext.getParamsJson());
+					
+					if(wfResult instanceof Double) {
+						Double value =  (Double) wfResult;
+						wfResult = DECIMAL_FORMAT.format(value);
+					}
 					result.put("result", wfResult);
+					
 					result.put("unit", CardUtil.getUnit(widgetStaticContext.getParamsJson()));
 				}
 				else {
 					Map<String, Object> expResult = WorkflowUtil.getExpressionResultMap(card.getWorkflow(), widgetStaticContext.getParamsJson());
+					
+					Set<String> keys = expResult.keySet();
+					for(String key : keys) {
+						Object obj = expResult.get(key);
+						
+						if(obj instanceof Double) {
+							Double value =  (Double) obj;
+							expResult.put(key, DECIMAL_FORMAT.format(value));
+						}
+					}
 					result.put("result", expResult);
 				}
 				result.put("widget", widgetStaticContext);
