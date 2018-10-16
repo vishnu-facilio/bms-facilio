@@ -12,6 +12,10 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class ShiftAction extends ActionSupport {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public String add() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.SHIFT, this.shift);

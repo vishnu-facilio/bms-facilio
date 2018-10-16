@@ -7,15 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioChainFactory.FacilioChain;
-import com.facilio.bmsconsole.commands.FacilioContext;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.SiteContext;
@@ -34,6 +30,11 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class ImportDataAction extends ActionSupport {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static final Logger LOGGER = Logger.getLogger(ImportDataAction.class.getName());
 	
 	private static org.apache.log4j.Logger log = LogManager.getLogger(ImportDataAction.class.getName());
@@ -53,7 +54,7 @@ public class ImportDataAction extends ActionSupport {
 		
         if(facilioModule.getName().equals(FacilioConstants.ContextNames.ASSET) && (assetCategory != -1)) {
         	HashMap<String,String> moduleInfo = AssetsAPI.getAssetModuleName(this.assetCategory);
-        	String moduleName = (String) moduleInfo.get(FacilioConstants.ContextNames.MODULE_NAME);
+        	String moduleName = moduleInfo.get(FacilioConstants.ContextNames.MODULE_NAME);
         	if(!moduleName.equals(FacilioConstants.ContextNames.ASSET)) {
         		facilioModule = modBean.getModule(moduleName);
         		importProcessContext.setModuleId(facilioModule.getModuleId());

@@ -32,7 +32,6 @@ public class StoreExcelFileCommand implements Command {
 		File excelFile = (File)context.get(BillContext.ContextNames.FILE);
 		String fileName = (String)context.get(BillContext.ContextNames.FILENAME);
 		String contentType = (String)context.get(BillContext.ContextNames.CONTENTTYPE);
-		String storeFileName = templateName+"_"+fileName;
 		System.out.println(">>>> tenantName :"+templateName);
 		System.out.println(">>>> fileName : "+fileName);
 		System.out.println(">>>> contentType"+contentType);
@@ -61,7 +60,7 @@ public class StoreExcelFileCommand implements Command {
 //		final XSSFWorkbook workbook = new XSSFWorkbook(pkg);
 		
 		Map<String,String> placeHolders = new HashMap();
-		ArrayList sheets = new ArrayList();
+		new ArrayList();
 		for(int i = 0; i<workbook.getNumberOfSheets();i++)
 		{
 			String sheetName =  workbook.getSheetName(i);

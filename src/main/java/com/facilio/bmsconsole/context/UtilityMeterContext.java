@@ -1,6 +1,10 @@
 package com.facilio.bmsconsole.context;
 
 public class UtilityMeterContext extends AssetContext {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String assetNo;
 	public String getAssetNo() {
 		return assetNo;

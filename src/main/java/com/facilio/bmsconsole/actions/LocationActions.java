@@ -15,6 +15,10 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class LocationActions extends ActionSupport {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public String execute() throws Exception {
 		
 		setLocations(LocationAPI.getAllLocations(AccountUtil.getCurrentOrg().getOrgId()));

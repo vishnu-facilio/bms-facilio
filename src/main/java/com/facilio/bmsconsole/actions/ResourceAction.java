@@ -7,6 +7,10 @@ import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.constants.FacilioConstants;
 
 public class ResourceAction extends FacilioAction {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private List<Long> resourceId ;
 	
 	public List<Long> getResourceId() {

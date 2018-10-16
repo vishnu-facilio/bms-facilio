@@ -145,7 +145,7 @@ public class ProcessXLS implements Command {
 						if(HSSFDateUtil.isCellDateFormatted(cell)) {
 							Date date = cell.getDateCellValue();
 							 Instant date1 = date.toInstant();
-							 val = (Long) date1.getEpochSecond()*1000;
+							 val = date1.getEpochSecond()*1000;
 						}
 						else {
 							val = cell.getNumericCellValue();

@@ -23,6 +23,11 @@ import net.minidev.json.parser.JSONParser;
 
 public class PortalInfoAction extends ActionSupport 
 {		
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public String getPortalInfo() throws Exception
 	{
 		FacilioContext context = new FacilioContext();

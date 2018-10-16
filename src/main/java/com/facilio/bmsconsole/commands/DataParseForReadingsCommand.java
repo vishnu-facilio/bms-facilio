@@ -115,7 +115,7 @@ public class DataParseForReadingsCommand implements Command {
 						if(HSSFDateUtil.isCellDateFormatted(cell) && cell.getCellTypeEnum() == CellType.NUMERIC) {
 							Date date = cell.getDateCellValue();
 							 Instant date1 = date.toInstant();
-							 val = (Long) date1.getEpochSecond()*1000;
+							 val = date1.getEpochSecond()*1000;
 						}
 						else if(cell.getCellTypeEnum() == CellType.FORMULA) {
 							val = cell.getNumericCellValue();
@@ -248,15 +248,15 @@ public class DataParseForReadingsCommand implements Command {
 		List<? extends ModuleBaseWithCustomFields> props = selectRecordBuilder.get();
 		LOGGER.severe("selectRecord" + selectRecordBuilder.toString());
 		LOGGER.severe("props" + props.toString());
-		Long Id = (Long) props.get(0).getId();
+		Long Id = props.get(0).getId();
+		LOGGER.severe("id -- " + Id);
 		return Id;
-		
 		
 	}
 	public void fieldMapParsing(HashMap<String, String> fieldMapping) throws Exception {
 
 		groupedFields = ArrayListMultimap.create();
-		HashMap<String, String> updatedFieldMapping = new HashMap<>();
+		new HashMap<>();
 		List<String> fieldMappingKeys = new ArrayList<>(fieldMapping.keySet());
 		for (int i = 0; i < fieldMappingKeys.size(); i++) {
 			String[] modulePlusFieldName = fieldMappingKeys.get(i).split("__");

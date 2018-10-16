@@ -5,6 +5,10 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class NoteContext extends ModuleBaseWithCustomFields {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private User createdBy;
 	public User getCreatedBy() {
 		return createdBy;

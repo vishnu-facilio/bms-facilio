@@ -4,6 +4,10 @@ import com.facilio.accounts.dto.User;
 
 public class BuildingContext extends BaseSpaceContext {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private LocationContext location;
 	public LocationContext getLocation() {
 		return location;

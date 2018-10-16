@@ -8,6 +8,10 @@ import com.facilio.bmsconsole.util.FacilioFrequency;
 
 public class PreventiveMaintenance extends ResourceContext {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public String getTitle() {
 		return getName();
 	}

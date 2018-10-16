@@ -4,6 +4,10 @@ import com.facilio.accounts.util.AccountConstants.GroupMemberRole;
 
 public class GroupMember extends User {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long memberId;
 	private long groupId;
 	private long ouid;

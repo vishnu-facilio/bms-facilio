@@ -95,7 +95,7 @@ public class UnitsUtil {
 
 				Map<String, Object> props = new HashMap<>();
 				props.put("unit", unit);
-				int updatedRows = updateBuilder.update(props);
+				updateBuilder.update(props);
 			}
 		}
 	}

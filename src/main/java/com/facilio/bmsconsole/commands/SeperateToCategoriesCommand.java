@@ -17,7 +17,7 @@ public class SeperateToCategoriesCommand implements Command{
 	public boolean execute(Context context) throws Exception{
 		
 		List<ReadingContext> readingsList = (List<ReadingContext>) context.get(ImportAPI.ImportProcessConstants.READINGS_LIST);
-		Map<String,String> fieldMapping  = (Map<String,String>)context.get(ImportAPI.ImportProcessConstants.FIELDS_MAPPING);
+		context.get(ImportAPI.ImportProcessConstants.FIELDS_MAPPING);
 		Multimap<String, ReadingContext> categoryBasedAsset = ArrayListMultimap.create();
 		for(int i =0;i< readingsList.size();i++) {
 			Map<String,Object> category= (Map<String,Object>) readingsList.get(i).getData().get(ImportAPI.ImportProcessConstants.CATEGORY_FROM_CONTEXT);

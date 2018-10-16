@@ -11,6 +11,10 @@ import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 
 public class FacilioField implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long fieldId = -1;
 	
 	public long getFieldId() {

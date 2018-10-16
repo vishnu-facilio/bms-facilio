@@ -10,6 +10,10 @@ import com.facilio.workflows.conditions.context.IfContext;
 
 public class ConditionContext implements Serializable,WorkflowExpression {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	IfContext IfContext;
 	List<ElseIfContext> elseIfContexts;
 	ElseContext elseContext;

@@ -79,7 +79,7 @@ public class ProcessSpaceXLS implements Command {
 //		System.out.println("-----------> checking 6----------->");
 		HashMap<String, String> fieldMapping = importProcessContext.getFieldMapping();			
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
-		List<ReadingContext> readingsList = new ArrayList<ReadingContext>();
+		new ArrayList<ReadingContext>();
 		InputStream ins = fs.readFile(importProcessContext.getFileId());
 		
 		HashMap<Integer, String> colIndex = new HashMap<Integer, String>();
@@ -156,8 +156,7 @@ public class ProcessSpaceXLS implements Command {
 				Long spaceId = null;
 				 
 				System.out.println("Finished loading data from file  "+row_no +" rows . "+importProcessContext+" \n" + new Date(System.currentTimeMillis()));
-				 // HashMap <String, Object> siteHash = new LinkedHashMap<String, Object>();
-				 Iterator it = colVal.entrySet().iterator();
+				 colVal.entrySet().iterator();
 				  
 //				 System.out.println("------------Colval---------------");
 				 

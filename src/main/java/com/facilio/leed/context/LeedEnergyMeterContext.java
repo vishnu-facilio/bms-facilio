@@ -4,6 +4,10 @@ import com.facilio.bmsconsole.context.EnergyMeterContext;
 
 public class LeedEnergyMeterContext extends EnergyMeterContext {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private FuelContext fuelContext;
 	private long meterId;
 	private String serviceProvider;

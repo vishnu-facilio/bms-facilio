@@ -205,7 +205,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				JSONObject woJson = (JSONObject) content.get(FacilioConstants.ContextNames.WORK_ORDER);
 				
 				wo = FieldUtil.getAsBeanFromJson(woJson, WorkOrderContext.class);
-				FacilioContext context = new FacilioContext();
+				new FacilioContext();
 				
 				JSONObject taskContent = (JSONObject) content.get(FacilioConstants.ContextNames.TASK_MAP);
 				if(taskContent != null) {
@@ -270,7 +270,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
 		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
 		
-		Map<String, FacilioField> pmFieldsMap = FieldFactory.getAsMap(fields);
+		FieldFactory.getAsMap(fields);
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(module.getTableName())
@@ -428,7 +428,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		
 		ticketStatus = builder1.get();
 		
-		long tsid = ticketStatus.get(0).getId();
+		ticketStatus.get(0).getId();
 		
 			
 			
@@ -452,7 +452,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			
 			if (tasks != null && !tasks.isEmpty())
 			{
-				StringJoiner taskids = new StringJoiner(",");
+				new StringJoiner(",");
 				List<Long> taskIdList = new ArrayList<>();
 				System.out.println("@@@@@@@@@@@@@@@@@@@@@Number of Tasks in the Workorder: "+tasks.size()+ "for Workorder"+workOrder.getId());
 				String questMark = "";

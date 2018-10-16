@@ -8,6 +8,10 @@ import java.util.stream.IntStream;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class EnumField extends FacilioField {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private List<String> values;
 	public List<String> getValues() {
 		return values;

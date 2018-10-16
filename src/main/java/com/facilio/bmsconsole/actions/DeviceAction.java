@@ -23,6 +23,10 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class DeviceAction extends ActionSupport
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static Logger logger = Logger.getLogger(DeviceAction.class.getName());
 	private static org.apache.log4j.Logger log = LogManager.getLogger(DeviceAction.class.getName());
 
@@ -53,7 +57,7 @@ public class DeviceAction extends ActionSupport
 	    if (url == null) {
 			String orgName = AccountUtil.getCurrentAccount().getOrg().getDomain();
 			CreateKeysAndCertificateResult certificateResult = AwsUtil.signUpIotToKinesis(orgName);
-			String fileName = AwsUtil.getIotKinesisTopic(orgName);
+			AwsUtil.getIotKinesisTopic(orgName);
 			String directoryName = "facilio/";
 	
 			File file = new File(System.getProperty("user.home")+"/fedge.zip");

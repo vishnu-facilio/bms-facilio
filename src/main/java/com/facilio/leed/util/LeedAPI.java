@@ -696,7 +696,7 @@ public class LeedAPI {
 	
 	public static JSONArray getConsumptionData(long deviceId) throws SQLException , RuntimeException 
 	{
-		JSONObject jsonObj = new JSONObject();
+		new JSONObject();
 		JSONArray arr = new JSONArray();
 		Connection conn = null;
 		PreparedStatement pstmt = null;

@@ -24,15 +24,14 @@ public class CustomReportUTC3 implements CustomReport {	//Score by Criteria
 		
 		JSONArray ticketData = new JSONArray();
 		Long buildingId = null;
-		double value = 0;
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		BeanFactory.lookup("ModuleBean");
 		
 		if(report.getReportSpaceFilterContext() != null && report.getReportSpaceFilterContext().getBuildingId() != null) {
 			
 			buildingId = report.getReportSpaceFilterContext().getBuildingId();
 			
 		}
-		BuildingContext building = SpaceAPI.getBuildingSpace(buildingId);
+		SpaceAPI.getBuildingSpace(buildingId);
 		
 		DashboardAction d = new DashboardAction();
 		d.setReportSpaceFilterContext(report.getReportSpaceFilterContext());

@@ -4,6 +4,10 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 public class FacilioReportContext extends FacilioContext{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String reportType;
 	private String moduleName;
 	private JSONArray joins;

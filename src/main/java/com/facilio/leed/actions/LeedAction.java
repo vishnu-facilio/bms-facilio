@@ -34,6 +34,12 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class LeedAction extends ActionSupport {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+
 	private static Logger log = LogManager.getLogger(LeedAction.class.getName());
 
 
@@ -321,7 +327,7 @@ public class LeedAction extends ActionSupport {
 			}
 			long meterId = (long)mJSON.get("id");
 			String meterName = (String)mJSON.get("name");
-			long fuelType = (long)mJSON.get("type");
+			mJSON.get("type");
 			LeedEnergyMeterContext context = new LeedEnergyMeterContext();
 			context.setName(meterName);
 			context.setMeterId(meterId);
@@ -597,16 +603,14 @@ public class LeedAction extends ActionSupport {
 		long transportScore = 0;
 		long baseScore = 0;
 		long totalScore = 0;		
-		HashMap scoreMap = new HashMap();
+		new HashMap();
 		ArcContext arccontext = LeedAPI.getArcContext();
 		LeedIntegrator integ = new LeedIntegrator(arccontext);
-		JSONObject response = (JSONObject)integ.getPerformanceScores(leedId+"");
+		JSONObject response = integ.getPerformanceScores(leedId+"");
 		JSONObject scoMsg = (JSONObject)response.get("message");
 		String errResult = (String)scoMsg.get("result");
-		boolean noScore = false;
 		if(errResult != null && errResult.equalsIgnoreCase("No result found."))
 		{
-			noScore = true;
 		}
 		else
 		{

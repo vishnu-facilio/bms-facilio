@@ -12,12 +12,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.math3.geometry.Space;
 import org.apache.log4j.LogManager;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -260,7 +258,7 @@ public class ImportAPI {
 	public static Long getSpaceID(ImportProcessContext importProcessContext, HashMap<String, Object> colVal, HashMap<String,String> fieldMapping) throws Exception {
 
 		String siteName =null ,buildingName = null,floorName = null ,spaceName = null;
-		List<Long> listOfIds = new ArrayList<>();
+		new ArrayList<>();
 		
 		ArrayList<String> additionalSpaces = new ArrayList<>();
 		String moduleName = importProcessContext.getModule().getName();

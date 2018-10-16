@@ -15,6 +15,10 @@ import com.facilio.screen.util.ScreenUtil;
 
 public class TVAction extends FacilioAction {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String code;
 	
 	public void setCode(String code) {
@@ -62,7 +66,7 @@ public class TVAction extends FacilioAction {
 					
 					String jwt = CognitoUtil.createJWT("id", "auth0", connectedScreenId + "", System.currentTimeMillis() + 24 * 60 * 60000, true);
 
-	                HttpServletRequest request = ServletActionContext.getRequest();
+	                ServletActionContext.getRequest();
 	                HttpServletResponse response = ServletActionContext.getResponse();
 
 	                Cookie cookie = new Cookie("fc.deviceToken", jwt);

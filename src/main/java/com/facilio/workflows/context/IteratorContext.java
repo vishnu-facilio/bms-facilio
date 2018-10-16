@@ -13,6 +13,10 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 
 public class IteratorContext implements WorkflowExpression {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = Logger.getLogger(CalculateDerivationCommand.class.getName());
 	String loopVariableIndexName;
 	String loopVariableValueName;
@@ -84,8 +88,6 @@ public class IteratorContext implements WorkflowExpression {
 			
 		}
 		else if(iterateObject instanceof Map) {
-			
-			Map iterateMap = (Map) iterateObject;
 		}
 		
 		return null;

@@ -96,7 +96,7 @@ public class LeedIntegrator {
         String authToken = null;
         String serverURL1 = target.toURI();
         try {
-        		HttpGet httpget = new HttpGet(serverURL1);
+        		new HttpGet(serverURL1);
         		String loginURL = serverURL1+"/arc/data/dev/auth/login/";
         		HttpPost httppost = new HttpPost(loginURL);
         		httppost.addHeader("Ocp-Apim-Subscription-Key",context.getSubscriptionKey());
@@ -105,8 +105,8 @@ public class LeedIntegrator {
         		Header [] headerNames = httppost.getAllHeaders();	            
         		for(int i=0;i<headerNames.length;i++) 
         		{
-        			String headerName = (String)headerNames[i].getName();
-        			System.out.println(headerName + " = " + (String)headerNames[i].getValue());
+        			String headerName = headerNames[i].getName();
+        			System.out.println(headerName + " = " + headerNames[i].getValue());
         		}
         		String userName = context.getUserName();
         		String password = context.getPassword();

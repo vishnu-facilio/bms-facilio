@@ -369,7 +369,7 @@ public class AssetsAPI {
 				assetMap.put(asset.getId(), asset.getName());
 			}
 			else {
-				assetFieldIds = (List<Long>) categoryAssets.get(asset.getId());
+				assetFieldIds = categoryAssets.get(asset.getId());
 			}
 			assetFieldIds.add(fieldId);
 			categoryVsAssets.put(asset.getCategory().getId(), categoryAssets);
@@ -389,7 +389,7 @@ public class AssetsAPI {
 				readings.put(fieldId, assetIds);
 			}
 			else {
-				assetIds = (Set<Long>) readings.get(fieldId);
+				assetIds = readings.get(fieldId);
 			}
 			assetIds.add(asset.getId());
 			categoryVsFields.put(asset.getCategory().getId(), readings);

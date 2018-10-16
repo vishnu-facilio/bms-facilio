@@ -64,7 +64,7 @@ public class GetAllSpaceTypeReadingsCommand implements Command {
 				BuildingContext building = buildings.get(i);
 				SiteContext site = new SiteContext();
 				site.setId(building.getSiteId());
-				String siteName = ((BaseSpaceContext)parentObjList.get(building.getSiteId())).getName();
+				String siteName = parentObjList.get(building.getSiteId()).getName();
 				site.setName(siteName);
 				building.setSite(site);
 				ids.add(building.getId());
@@ -90,7 +90,7 @@ public class GetAllSpaceTypeReadingsCommand implements Command {
 				FloorContext floor = floors.get(i);
 				BuildingContext building = new BuildingContext();
 				building.setId(floor.getBuildingId());
-				String buildingName = ((BaseSpaceContext)parentObjList.get(floor.getBuildingId())).getName();
+				String buildingName = parentObjList.get(floor.getBuildingId()).getName();
 				building.setName(buildingName);
 				floor.setBuilding(building);
 				ids.add(floor.getId());

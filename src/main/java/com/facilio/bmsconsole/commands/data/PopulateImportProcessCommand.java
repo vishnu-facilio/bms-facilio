@@ -44,7 +44,7 @@ public class PopulateImportProcessCommand implements Command {
 	public boolean execute(Context c) throws Exception{
 		
 		ImportProcessContext importProcessContext = (ImportProcessContext) c.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
-		HashMap<String,String> fieldMapping = (HashMap<String, String>) c.get(ImportAPI.ImportProcessConstants.FIELDS_MAPPING);
+		c.get(ImportAPI.ImportProcessConstants.FIELDS_MAPPING);
 		StringBuilder emailMessage = new StringBuilder();
 		ArrayListMultimap<String,String> groupedFields = (ArrayListMultimap<String,String>) c.get(ImportAPI.ImportProcessConstants.GROUPED_FIELDS);
 		ArrayListMultimap<String, ReadingContext> groupedReadingContext = (ArrayListMultimap<String, ReadingContext>) c.get(ImportAPI.ImportProcessConstants.GROUPED_READING_CONTEXT);
@@ -73,9 +73,9 @@ public class PopulateImportProcessCommand implements Command {
 		
 		else if (Setting == ImportProcessContext.ImportSetting.INSERT_SKIP.getValue()) {
 			List<ReadingContext> readingsList = groupedReadingContext.get(importProcessContext.getModule().getName());
-			InputStream is= fs.readFile(importProcessContext.getFileId());
-			AssetsAPI asset = new AssetsAPI();
-			ImportAPI imp = new ImportAPI();
+			fs.readFile(importProcessContext.getFileId());
+			new AssetsAPI();
+			new ImportAPI();
 			List<ReadingContext> newItems = new ArrayList<ReadingContext>();
 			
 			meta = importProcessContext.getImportJobMetaJson();
@@ -204,7 +204,7 @@ public class PopulateImportProcessCommand implements Command {
 			List<ReadingContext> readingsList = readingsEntireList.subList(fromValue , toValue);
 			
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule module = bean.getModule(importProcessContext.getModuleId());
+			bean.getModule(importProcessContext.getModuleId());
 			ArrayList<String> updateFields = new ArrayList();
 			JSONObject meta = importProcessContext.getImportJobMetaJson();
 			
@@ -245,7 +245,7 @@ public class PopulateImportProcessCommand implements Command {
 			List<ReadingContext> readingsList = readingsEntireList.subList(fromValue , toValue);
 			
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule module = bean.getModule(importProcessContext.getModuleId());
+			bean.getModule(importProcessContext.getModuleId());
 			List<FacilioField> facilioFields = bean.getAllFields(importProcessContext.getModule().getName());
 			ArrayList<String> updateFields = new ArrayList<>();
 			JSONObject meta = importProcessContext.getImportJobMetaJson();
@@ -344,7 +344,7 @@ public class PopulateImportProcessCommand implements Command {
 				Thread.sleep(10000L);
 				
 				for( ReadingContext readingContext : readingsList) {
-					Long id = (Long) readingContext.getId();
+					Long id = readingContext.getId();
 					listOfIds.add(id);
 				}
 				if(moduleName.equals(ImportAPI.ImportProcessConstants.SPACE_FIELD) 

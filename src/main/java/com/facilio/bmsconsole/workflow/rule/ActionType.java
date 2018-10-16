@@ -117,7 +117,7 @@ public enum ActionType {
 						toEmails = (JSONArray) toAddr;
 					} else if (toAddr instanceof String) {
 						toEmails = new JSONArray();
-						toEmails.add((String) toAddr);
+						toEmails.add(toAddr);
 					}
 
 					if (toEmails != null && !toEmails.isEmpty()) {
@@ -125,7 +125,7 @@ public enum ActionType {
 						for (Object toEmail : toEmails) {
 							String to = (String) toEmail;
 							if (to != null && !to.isEmpty() && checkIfActiveUserFromEmail(to)) {
-								obj.put("to", (String) to);
+								obj.put("to", to);
 								
 								if (AccountUtil.getCurrentOrg().getId() == 104) {
 									LOGGER.info("Gonna Email : "+obj.toJSONString());
@@ -160,14 +160,14 @@ public enum ActionType {
 						tos = (JSONArray) toNums;
 					} else if (toNums instanceof String) {
 						tos = new JSONArray();
-						tos.add((String) toNums);
+						tos.add(toNums);
 					}
 					if (tos != null && !tos.isEmpty()) {
 						List<String> sms = new ArrayList<>();
 						for (Object toObj : tos) {
 							String to = (String) toObj;
 							if (to != null && !to.isEmpty() && checkIfActiveUserFromPhone(to)) {
-								obj.put("to", (String) to);
+								obj.put("to", to);
 								SMSUtil.sendSMS(obj);
 								sms.add(to);
 							}
@@ -353,7 +353,7 @@ public enum ActionType {
 
 					if (context != null) {
 						context.put(FacilioConstants.ContextNames.WORK_ORDER,
-								(WorkOrderContext) pmContext.get(FacilioConstants.ContextNames.WORK_ORDER));
+								pmContext.get(FacilioConstants.ContextNames.WORK_ORDER));
 					}
 				}
 			} catch (Exception e) {

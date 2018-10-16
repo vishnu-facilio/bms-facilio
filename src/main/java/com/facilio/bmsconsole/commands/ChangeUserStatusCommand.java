@@ -22,7 +22,7 @@ public class ChangeUserStatusCommand implements Command {
 		User user = (User) context.get(FacilioConstants.ContextNames.USER);
 		
 		if (user != null) {
-			List<FacilioField> fields =  FieldFactory.getOrgUserFields();
+			FieldFactory.getOrgUserFields();
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder().table("ORG_Users").fields(AccountConstants.getOrgUserFields())
 					.andCustomWhere("ORG_USERID = ? AND USERID = ?", user.getOuid(), user.getUid());
 			Map<String, Object> props = FieldUtil.getAsProperties(user);

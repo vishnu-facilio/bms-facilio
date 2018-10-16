@@ -10,6 +10,10 @@ import com.facilio.bmsconsole.util.DateTimeUtil;
 
 public class ReadingContext extends ModuleBaseWithCustomFields {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long actualTtime = -1;
 	public long getActualTtime() {
 		return actualTtime;

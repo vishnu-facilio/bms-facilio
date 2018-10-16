@@ -53,7 +53,12 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class WorkOrderReportAction extends ActionSupport {
 
-    private static Logger log = LogManager.getLogger(WorkOrderReportAction.class.getName());
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private static Logger log = LogManager.getLogger(WorkOrderReportAction.class.getName());
 
     private String type;
 	public String getType() {
@@ -197,7 +202,7 @@ public class WorkOrderReportAction extends ActionSupport {
 		if ("open".equalsIgnoreCase(getType())) {
 			if(getExportData())
 			{
-				List<Map<String, Object>> records = getOpenWorkOrderSummary(null);
+				getOpenWorkOrderSummary(null);
 				FacilioModule module = new FacilioModule();
 				module.setName("openworkorders");
 				module.setDisplayName("Open Workorders");
@@ -420,7 +425,7 @@ public class WorkOrderReportAction extends ActionSupport {
 		JSONParser parser = new JSONParser();
 		String xAxisJSON = "[{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Reports.ALL_COLUMN+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\"Overdue\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\""+FacilioConstants.Reports.AGG_FUNC+"\":\""+FacilioConstants.Reports.COUNT_COLUMN+"\"}]";
 		String joinsJSON = "[{\""+FacilioConstants.Reports.JOIN_TABLE+"\":\""+FacilioConstants.ContextNames.TICKET+"\",\""+FacilioConstants.Reports.JOIN_TYPE+"\":\""+FacilioConstants.Reports.INNER_JOIN+"\"}]";
-		Long nowTime = DateTimeUtil.getCurrenTime();
+		DateTimeUtil.getCurrenTime();
 		String filters = "";
 		if(filterBy!=null && !filterBy.isEmpty()) {
 			filters ="{"+filterBy+",\""+FacilioConstants.Ticket.DUE_DATE+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"Till Yesterday\"}}";
@@ -454,7 +459,7 @@ public class WorkOrderReportAction extends ActionSupport {
 		JSONParser parser = new JSONParser();
 		String xAxisJSON = "[{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Reports.ALL_COLUMN+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\"unassigned\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\""+FacilioConstants.Reports.AGG_FUNC+"\":\""+FacilioConstants.Reports.COUNT_COLUMN+"\"}]";
 		String joinsJSON = "[{\""+FacilioConstants.Reports.JOIN_TABLE+"\":\""+FacilioConstants.ContextNames.TICKET+"\",\""+FacilioConstants.Reports.JOIN_TYPE+"\":\""+FacilioConstants.Reports.INNER_JOIN+"\"}]";
-		Long nowTime = DateTimeUtil.getCurrenTime();
+		DateTimeUtil.getCurrenTime();
 		String filters ="{\""+FacilioConstants.Ticket.ASSIGNED_TO_ID+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"is empty\"}}";
 		JSONArray xAxis = (JSONArray) parser.parse(xAxisJSON);
 		repContext.setXAxis(xAxis);

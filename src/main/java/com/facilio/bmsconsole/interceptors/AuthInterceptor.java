@@ -33,7 +33,11 @@ import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 
 public class AuthInterceptor extends AbstractInterceptor {
 
-    private static final Logger LOGGER = Logger.getLogger(AuthInterceptor.class.getName());
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private static final Logger LOGGER = Logger.getLogger(AuthInterceptor.class.getName());
 
 	@Override
 	public void init() {

@@ -99,7 +99,7 @@ public class ReportExportUtil {
 				setReportData(reportData, reportContext, baseLineComparisionDiff, table, false);
 				
 				for (int j = 0, len = records.size() ; j < len; j++ ) {
-					Map<String, Object> record = (Map<String, Object>) records.get(j);
+					Map<String, Object> record = records.get(j);
 					String rowLabel = record.get(xAxisLabel).toString();
 					Map<String, Object> row;
 					if (!rows.containsKey(rowLabel)) {
@@ -158,7 +158,7 @@ public class ReportExportUtil {
 		List<Map<String, Object>> reportData = (List<Map<String, Object>>) reportData1.stream().filter(data -> ((Map) data).get("label") != null).collect(Collectors.toList());
 		
 		for (int i = 0, len = reportData.size() ; i < len; i++ ) {
-			Map<String, Object> data = (Map<String, Object>) reportData.get(i);
+			Map<String, Object> data = reportData.get(i);
 
 			Map<String, Object> fields = new HashMap<>();
 			records.add(fields);
@@ -174,7 +174,7 @@ public class ReportExportUtil {
 			rowLabel = formatLabel(rowLabel, xAxisField, modVsIds, reportContext.getXAxisAggregateOpperator(), reportContext);
 			fields.put(xAxisLabel, rowLabel);
 			
-			String unit = reportContext.getY1AxisUnit();
+			reportContext.getY1AxisUnit();
 			FieldType valueFieldType = reportContext.getY1AxisField() != null && reportContext.getY1AxisField().getField().getDataTypeEnum() != null ? 
 					reportContext.getY1AxisField().getField().getDataTypeEnum() : null;
 			

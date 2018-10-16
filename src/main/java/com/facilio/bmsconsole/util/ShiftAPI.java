@@ -86,7 +86,7 @@ public class ShiftAPI {
 		
 		props = selectBuilder.get();
 		
-		List<BusinessHourContext> days = new ArrayList<>();
+		new ArrayList<>();
 		Map<Long, List<BusinessHourContext>> parentIdVsContext = new HashMap<>();
 		if (props != null && !props.isEmpty()) {
 			for (Map<String, Object> prop: props) {

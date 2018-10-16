@@ -28,7 +28,7 @@ public class GenerateGrpByQueryCommand implements Command{
 				repContext.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST,selectFields);
 				repContext.put(FacilioConstants.ContextNames.FIELD_NAME_LIST,selectFieldNames);
 			}
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			BeanFactory.lookup("ModuleBean");
 			StringBuilder groupByStr = new StringBuilder();
 			for(int i=0;i<groupByCols.size();i++) {
 				JSONObject thisGroupBy = (JSONObject) groupByCols.get(i);

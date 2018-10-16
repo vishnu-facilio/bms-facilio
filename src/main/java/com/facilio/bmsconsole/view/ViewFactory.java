@@ -1421,7 +1421,7 @@ public class ViewFactory {
 	public static Condition getPreventiveStatusCondition(boolean status) {
 		List<FacilioField> preventiveFields = FieldFactory.getPreventiveMaintenanceFields();
 		Map<String,FacilioField> fieldProps = FieldFactory.getAsMap(preventiveFields);
-		FacilioField statusField = (FacilioField) fieldProps.get("status");
+		FacilioField statusField = fieldProps.get("status");
 		
 		Condition statusCondition = CriteriaAPI.getCondition(statusField, String.valueOf(status),BooleanOperators.IS);
 		

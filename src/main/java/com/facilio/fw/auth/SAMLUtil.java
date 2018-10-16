@@ -218,7 +218,7 @@ public class SAMLUtil {
 		try {
 			byte[] encoded = org.apache.commons.codec.binary.Base64.decodeBase64(keyString);
 			PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(encoded);
-			privKey = (PrivateKey) kf.generatePrivate(keySpec);
+			privKey = kf.generatePrivate(keySpec);
 		}
 		catch(IllegalArgumentException e) {
 			privKey = null;

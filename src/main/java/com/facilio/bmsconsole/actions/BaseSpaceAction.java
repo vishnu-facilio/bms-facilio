@@ -15,6 +15,10 @@ import com.facilio.constants.FacilioConstants;
 @SuppressWarnings("serial")
 public class BaseSpaceAction extends FacilioAction {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	@SuppressWarnings("unchecked")
 	public String baseSpaceList() throws Exception 
 	{

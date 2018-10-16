@@ -41,7 +41,6 @@ import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
 import javax.xml.crypto.dsig.spec.TransformParameterSpec;
 
 import com.facilio.auth.cookie.FacilioCookie;
-import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
@@ -50,7 +49,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.Role;
@@ -58,8 +56,6 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
@@ -82,6 +78,13 @@ import com.facilio.wms.util.WmsApi;
 import com.opensymphony.xwork2.ActionContext;
 
 public class LoginAction extends FacilioAction{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+
+
 	static
 	{
 		System.out.println("Login action loaded");
@@ -189,7 +192,7 @@ public class LoginAction extends FacilioAction{
 	public JSONObject acceptUserInvite(String inviteToken) throws Exception {
 		String[] inviteIds = EncryptionUtil.decode(inviteToken).split("#");
 		long ouid = Long.parseLong(inviteIds[0]);
-		long time = Long.parseLong(inviteIds[1]);
+		Long.parseLong(inviteIds[1]);
 
 		long inviteLinkExpireTime = (7 * 24 * 60 * 60 * 1000); //7 days in seconds
 
@@ -432,8 +435,6 @@ public class LoginAction extends FacilioAction{
 	
 	public static Map<String, Object> getPaymentEndpoint() {
 		String BaseUrl = AwsUtil.getConfig("payment.url");
-		int StaffNumber = 10;
-		int BuildingNumber = 5;
 		String Standard = BaseUrl + "facil-blossom?addons[id][0]=staff-basic&addons[quantity][0]=10&addons[id][1]=buildings&addons[quantity][1]=5";
 		String Professional = BaseUrl + "professional?addons[id][0]=staff-professional&addons[quantity][0]=10&addons[id][1]=building-professional&addons[quantity][1]=5";
 		String Enterprise = BaseUrl + "professional?addons[id][0]=staff-professional&addons[quantity][0]=10&addons[id][1]=building-professional&addons[quantity][1]=5";

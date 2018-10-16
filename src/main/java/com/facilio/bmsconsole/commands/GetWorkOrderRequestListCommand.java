@@ -62,7 +62,7 @@ public class GetWorkOrderRequestListCommand implements Command {
 														.select(fields)
 														.maxLevel(0);
 
-		JSONObject filters = (JSONObject) context.get(FacilioConstants.ContextNames.FILTERS);
+		context.get(FacilioConstants.ContextNames.FILTERS);
 		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
 		if (filterCriteria != null) {
 			builder.andCriteria(filterCriteria);
@@ -136,7 +136,7 @@ public class GetWorkOrderRequestListCommand implements Command {
 				for(WorkOrderRequestContext workOrderRequest : workOrderRequests) {
 					if(workOrderRequest.getRequester() != null)
 					{
-						workOrderRequest.setRequester((User) requesters.get(workOrderRequest.getRequester().getId()));
+						workOrderRequest.setRequester(requesters.get(workOrderRequest.getRequester().getId()));
 					}
 				}
 			}

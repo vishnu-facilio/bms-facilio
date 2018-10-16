@@ -584,7 +584,7 @@ public class DashboardUtil {
 		        meterList.removeAll(bb);
 				if(!meterList.isEmpty()) {
 					
-					List<String> uniqueList = (List<String>) SetUniqueList.decorate(meterList);
+					List<String> uniqueList = SetUniqueList.decorate(meterList);
 					LOGGER.log(Level.SEVERE, "uniqueList --- "+uniqueList);
 			        if(uniqueList.size() == 1) {
 			        	
@@ -715,7 +715,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		        meterList.removeAll(bb);
 				if(!meterList.isEmpty()) {
 					
-					List<String> uniqueList = (List<String>) SetUniqueList.decorate(meterList);
+					List<String> uniqueList = SetUniqueList.decorate(meterList);
 					LOGGER.log(Level.SEVERE, "uniqueList --- "+uniqueList);
 			        if(uniqueList.size() == 1) {
 			        	
@@ -1021,7 +1021,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
 				.andCustomWhere("ID = ?", dashboardId);
 		
-		Long orgId = AccountUtil.getCurrentOrg().getOrgId();
+		AccountUtil.getCurrentOrg().getOrgId();
 		List<Map<String, Object>> props = selectBuilder.get();
 		
 		if (props != null && !props.isEmpty()) {
@@ -2905,7 +2905,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 	public static Integer getLastDashboardDisplayOrder(Long orgid,Long moduleId) throws Exception {
 		
 		if(orgid != null && moduleId != null) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			BeanFactory.lookup("ModuleBean");
 		
 			GenericSelectRecordBuilder select = new GenericSelectRecordBuilder();
 			select.select(FieldFactory.getDashboardFields())
@@ -2936,7 +2936,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 	
 	public static ReportContext UpdateReport(ReportContext reportContext) throws Exception {
 		
-		ReportContext oldReport = getReportContext(reportContext.getId());
+		getReportContext(reportContext.getId());
 		if (reportContext != null) {
 			
 			reportContext.setOrgId(AccountUtil.getCurrentOrg().getId());
@@ -3103,7 +3103,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 								break;
 							case PAUSE:
 							case CLOSE:
-								UserWorkHourReading prevActivity = lastAactivity.get((Long) prop.get("woId"));
+								UserWorkHourReading prevActivity = lastAactivity.get(prop.get("woId"));
 								if (prevActivity == null || (prevActivity != UserWorkHourReading.CLOSE && prevActivity != UserWorkHourReading.PAUSE)) {
 									if (startTimeStack.isEmpty()) {
 										workTime = currentTime - startTime;
@@ -3256,7 +3256,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 	
 	public static DashboardFolderContext getDashboardFolder(long id) throws Exception {
 		
-		 List<DashboardFolderContext> dashboardFolderContexts = new ArrayList<>();
+		 new ArrayList<>();
 		 
 		 GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 					.select(FieldFactory.getDashboardFolderFields())

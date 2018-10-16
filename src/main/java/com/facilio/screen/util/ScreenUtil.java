@@ -128,7 +128,7 @@ public class ScreenUtil {
 		List<ScreenContext> screens = new ArrayList<>();
 		for(Map<String, Object> prop :props) {
 			
-			ScreenContext screenContext = (ScreenContext) FieldUtil.getAsBeanFromMap(prop, ScreenContext.class);
+			ScreenContext screenContext = FieldUtil.getAsBeanFromMap(prop, ScreenContext.class);
 			getScreenDashboardRel(screenContext);
 			screenContext.setRemoteScreens(getAllRemoteScreen(screenContext.getId()));
 			
@@ -149,7 +149,7 @@ public class ScreenUtil {
 		
 		for(Map<String, Object> prop :props) {
 			
-			ScreenContext screenContext = (ScreenContext) FieldUtil.getAsBeanFromMap(prop, ScreenContext.class);
+			ScreenContext screenContext = FieldUtil.getAsBeanFromMap(prop, ScreenContext.class);
 			getScreenDashboardRel(screenContext);
 			
 			return screenContext;
@@ -171,7 +171,7 @@ public class ScreenUtil {
 		List<ScreenDashboardRelContext> screenDashboardRels = new ArrayList<>();
 		for(Map<String, Object> prop :props) {
 			
-			ScreenDashboardRelContext screenDashboardContext = (ScreenDashboardRelContext) FieldUtil.getAsBeanFromMap(prop, ScreenDashboardRelContext.class);
+			ScreenDashboardRelContext screenDashboardContext = FieldUtil.getAsBeanFromMap(prop, ScreenDashboardRelContext.class);
 			
 			DashboardContext db = DashboardUtil.getDashboardWithWidgets(screenDashboardContext.getDashboardId());
 			
@@ -206,7 +206,7 @@ public class ScreenUtil {
 		List<RemoteScreenContext> remoteScreens = new ArrayList<>();
 		for(Map<String, Object> prop :props) {
 			
-			RemoteScreenContext remoteSreenContext = (RemoteScreenContext) FieldUtil.getAsBeanFromMap(prop, RemoteScreenContext.class);
+			RemoteScreenContext remoteSreenContext = FieldUtil.getAsBeanFromMap(prop, RemoteScreenContext.class);
 			
 			if (remoteSreenContext.getScreenId() != null && remoteSreenContext.getScreenId() > 0) {
 				remoteSreenContext.setScreenContext(getScreen(remoteSreenContext.getScreenId()));
@@ -230,7 +230,7 @@ public class ScreenUtil {
 		List<RemoteScreenContext> remoteScreens = new ArrayList<>();
 		for(Map<String, Object> prop :props) {
 			
-			RemoteScreenContext remoteSreenContext = (RemoteScreenContext) FieldUtil.getAsBeanFromMap(prop, RemoteScreenContext.class);
+			RemoteScreenContext remoteSreenContext = FieldUtil.getAsBeanFromMap(prop, RemoteScreenContext.class);
 			
 			if (remoteSreenContext.getScreenId() != null && remoteSreenContext.getScreenId() > 0) {
 				remoteSreenContext.setScreenContext(getScreen(remoteSreenContext.getScreenId()));
@@ -253,7 +253,7 @@ public class ScreenUtil {
 		
 		for(Map<String, Object> prop :props) {
 			
-			RemoteScreenContext remoteScreenContext = (RemoteScreenContext) FieldUtil.getAsBeanFromMap(prop, RemoteScreenContext.class);
+			RemoteScreenContext remoteScreenContext = FieldUtil.getAsBeanFromMap(prop, RemoteScreenContext.class);
 			return remoteScreenContext;
 		}
 		return null;

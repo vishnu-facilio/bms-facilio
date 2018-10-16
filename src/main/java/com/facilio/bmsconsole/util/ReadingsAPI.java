@@ -20,6 +20,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -267,6 +268,7 @@ public class ReadingsAPI {
 	private static ReadingDataMeta getRDMFromProp (Map<String, Object> prop, Map<Long, FacilioField> fieldMap) throws Exception {
 		ReadingDataMeta meta = FieldUtil.getAsBeanFromMap(prop, ReadingDataMeta.class);
 		Object value = meta.getValue();
+		meta.setActualValue((String) value);
 		FacilioField field;
 		if (fieldMap != null) {
 			 field = fieldMap.get(meta.getFieldId());
@@ -429,7 +431,7 @@ public class ReadingsAPI {
 									Object lastReading = meta.getValue();
 									long lastTimeStamp = meta.getTtime();
 									if (lastReading != null && lastTimeStamp != -1 && 
-											!"-1".equals(lastReading.toString()) && !"-1.0".equals(lastReading.toString()) && timeStamp < lastTimeStamp) { //-1.0 for Decimal values
+											!"-1".equals(meta.getActualValue()) && timeStamp < lastTimeStamp) { 
 										continue;
 									}
 								}
@@ -492,7 +494,7 @@ public class ReadingsAPI {
 			if(sql != null && !sql.isEmpty()) {
 				LOGGER.debug("################ Update RDM sql : "+sql);
 				try(PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
-					int rowCount = pstmt.executeUpdate();
+					pstmt.executeUpdate();
 					return uniqueRDMs;
 				}
 			}
@@ -565,6 +567,8 @@ public class ReadingsAPI {
 				.fields(FieldFactory.getReadingDataMetaFields());
 		
 		for(ResourceContext resource:resourcesList) {
+			
+			LOGGER.error("RDM update running for resource -- "+resource.getId());
 			List<FacilioModule>	moduleList=null;
 			int resourceType=	resource.getResourceType();
 			long resourceId=resource.getId();
@@ -691,7 +695,7 @@ public class ReadingsAPI {
 				if (parent.getControllerId() != -1) {
 					ControllerContext controller = controllers.get(parent.getControllerId());
 					if (controller.getDataInterval() != -1) {
-						minuteInterval = (int) controller.getDataInterval();
+						minuteInterval = controller.getDataInterval();
 					}
 				}
 			}

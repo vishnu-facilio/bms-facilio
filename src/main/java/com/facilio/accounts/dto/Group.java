@@ -5,6 +5,10 @@ import java.util.List;
 
 public class Group implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long groupId = -1;
 	private long orgId = -1;
 	private String name;

@@ -115,8 +115,8 @@ public class CommonCommandUtil {
 			
 			while(rs.next()) {
 				User rc = new User();
-				rc.setEmail((String)rs.getString("EMAIL"));
-				rc.setName((String) rs.getString("NAME"));
+				rc.setEmail(rs.getString("EMAIL"));
+				rc.setName(rs.getString("NAME"));
 				
 				requesters.put(rs.getLong("ORG_USERID"), rc);
 			}
@@ -186,7 +186,7 @@ public class CommonCommandUtil {
 	public static Map<Long,Object> getPickList(String moduleName) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioField primaryField = (FacilioField) modBean.getPrimaryField(moduleName);
+		FacilioField primaryField = modBean.getPrimaryField(moduleName);
 		if( primaryField == null) {
 			return null;
 		}
@@ -214,7 +214,7 @@ public class CommonCommandUtil {
 	public static Map<Long,Object> getPickList(List<Long> idList, FacilioModule module) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioField primaryField = (FacilioField) modBean.getPrimaryField(module.getName());
+		FacilioField primaryField = modBean.getPrimaryField(module.getName());
 		if( primaryField == null) {
 			return null;
 		}
@@ -393,7 +393,7 @@ public class CommonCommandUtil {
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			for (Map<String, Object> prop : props) {
-				result.put((String) prop.get("name"), prop.get("value"));
+				result.put(prop.get("name"), prop.get("value"));
 			}
 		}
 		return result;		
@@ -440,7 +440,7 @@ public class CommonCommandUtil {
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			for (Map<String, Object> prop : props) {
-				result.put((String) prop.get("name"), prop.get("value"));
+				result.put(prop.get("name"), prop.get("value"));
 			}
 		}
 		return result;		
@@ -573,7 +573,7 @@ public class CommonCommandUtil {
         if (readingRules != null && !readingRules.isEmpty()) {
         	List<Long> workFlowIds = readingRules.stream().map(ReadingRuleContext::getWorkflowId).collect(Collectors.toList());
             Map<Long, WorkflowContext> workflowMap = WorkflowUtil.getWorkflowsAsMap(workFlowIds, true);
-            Map<Long, List<ReadingRuleContext>> fieldVsRules = new HashMap<>();
+            new HashMap<>();
             
         	for (ReadingRuleContext r:  readingRules) {
         		long workflowId = r.getWorkflowId();

@@ -109,7 +109,7 @@ public class WorkOrderAPI {
 	public static List<WorkOrderContext> getOpenWorkOrderForUser(Long ouid) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+		modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
 		TicketStatusContext status = TicketAPI.getStatus("Closed");
 		
 		SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()

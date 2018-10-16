@@ -31,6 +31,10 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class WorkflowRuleAction extends FacilioAction {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public String execute() throws Exception 
 	{
 	    return SUCCESS;

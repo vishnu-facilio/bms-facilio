@@ -24,7 +24,7 @@ public class LoadAssetFields implements Command {
 		long startTime = System.currentTimeMillis();
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(moduleName);
+		modBean.getModule(moduleName);
 		List<FacilioField> fields = new ArrayList(modBean.getAllFields(moduleName));
 		if (!moduleName.equals(FacilioConstants.ContextNames.ASSET)) {
 			List<FacilioField> customFields = modBean.getAllCustomFields("asset");

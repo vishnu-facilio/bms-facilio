@@ -75,8 +75,7 @@ public class EventRulesAPI {
 	public static final List<EventRuleContext> getAllActiveEventRules() throws Exception {
 		FacilioModule module = EventConstants.EventModuleFactory.getEventRulesModule();
 		List<FacilioField> fields = EventConstants.EventFieldFactory.getEventRulesFields();
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-//		FacilioField active = fieldMap.get("active");
+		FieldFactory.getAsMap(fields);
 		
 		GenericSelectRecordBuilder rulebuilder = new GenericSelectRecordBuilder()
 													.select(fields)

@@ -27,7 +27,7 @@ public class FetchArcAssetsCommand implements Command {
 		JSONObject response = (JSONObject)responseJSON.get("message");
 		System.out.println("FetchArcAssetsCommand.getAssetList().response :"+response);
 		
-		long assetCount = (long)response.get("count");
+		response.get("count");
 		JSONArray assetList = (JSONArray)response.get("results");
 		List<LeedConfigurationContext> leedList = new ArrayList();
 		for(int i=0; i< assetList.size();i++)
@@ -61,7 +61,7 @@ public class FetchArcAssetsCommand implements Command {
 				lng = Double.parseDouble((String)asset.get("geoLang"));
 			}
 			
-			JSONObject scores = (JSONObject)asset.get("scores");
+			asset.get("scores");
 			
 			
 			HashMap scoresMap = getLeedScore(leedId);
@@ -112,13 +112,11 @@ public class FetchArcAssetsCommand implements Command {
 		HashMap scoreMap = new HashMap();
 		ArcContext arccontext = LeedAPI.getArcContext();
 		LeedIntegrator integ = new LeedIntegrator(arccontext);
-		JSONObject response = (JSONObject)integ.getPerformanceScores(leedId+"");
+		JSONObject response = integ.getPerformanceScores(leedId+"");
 		JSONObject scoMsg = (JSONObject)response.get("message");
 		String errResult = (String)scoMsg.get("result");
-		boolean noScore = false;
 		if(errResult != null && errResult.equalsIgnoreCase("No result found."))
 		{
-			noScore = true;
 		}
 		else
 		{

@@ -13,6 +13,11 @@ import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 
 public class CacheInterceptor extends AbstractInterceptor {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public String intercept(ActionInvocation arg0) throws Exception {
 		  HttpServletRequest request =
@@ -46,7 +51,6 @@ public class CacheInterceptor extends AbstractInterceptor {
 
 		 if(cached_url)
 		 {
-			 String cachekey = null;
 			 System.out.println("validating cache..for "+id);
 			 boolean cache_available = false; // TODO write logic to find if the cache available
 			 if(cache_available)

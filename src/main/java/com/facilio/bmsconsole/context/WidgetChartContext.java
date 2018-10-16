@@ -4,6 +4,10 @@ import org.json.simple.JSONObject;
 
 public class WidgetChartContext extends DashboardWidgetContext {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	Long reportId;
 	Long newReportId;
 	public Long getNewReportId() {

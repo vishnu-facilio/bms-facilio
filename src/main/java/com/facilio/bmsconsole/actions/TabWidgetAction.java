@@ -6,6 +6,10 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class TabWidgetAction extends ActionSupport {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private TabWidgetContext tabWidget;
 	public TabWidgetContext getTabWidget() {
 		return tabWidget;

@@ -75,14 +75,13 @@ public class GetLeedDataCommand {
 			JSONObject jsonObj = integ.getConsumptionList(leedId, meterId);
 			System.out.println(">>>> jsonObj : "+jsonObj);
 			String nextURL = (String)((JSONObject)jsonObj.get("message")).get("next");
-			String pageNo;
 			if(nextURL != null)
 			{
-				pageNo = nextURL.substring(nextURL.lastIndexOf("="));
+				nextURL.substring(nextURL.lastIndexOf("="));
 			}
 			
 			JSONArray consumptionarray = (JSONArray)((JSONObject)jsonObj.get("message")).get("results");
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+			new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 			for(int i=0 ; i< consumptionarray.size(); i++)
 			{
 				JSONObject consumption = (JSONObject)consumptionarray.get(i);

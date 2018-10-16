@@ -4,6 +4,10 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 
 public class AnalyticsAnomalyContext extends ModuleBaseWithCustomFields {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long ttime;
 	private double totalEnergyConsumptionDelta;
 	private long parentId;

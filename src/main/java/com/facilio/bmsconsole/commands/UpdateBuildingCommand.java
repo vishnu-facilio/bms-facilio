@@ -31,7 +31,7 @@ public class UpdateBuildingCommand implements Command {
 		{
 			
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);				
+			context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);				
 			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);

@@ -31,8 +31,6 @@ public class CustomReportAswaq2 implements CustomReport {
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		int tcompliance = 0,tnonCompliance = 0,trepeatFinding = 0,total = 0;
-		
 		List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
 		
 		JSONArray ticketData = new JSONArray();
@@ -45,11 +43,11 @@ public class CustomReportAswaq2 implements CustomReport {
 				continue;
 			}
 			
-			int compliance = 0,nonCompliance = 0,repeatFinding = 0,notApplicable = 0;
+			int compliance = 0,nonCompliance = 0,repeatFinding = 0;
 			
 			for(BuildingContext building : SpaceAPI.getAllBuildings()) {
 				
-				compliance = 0;nonCompliance = 0;repeatFinding = 0;notApplicable = 0;
+				compliance = 0;nonCompliance = 0;repeatFinding = 0;
 				for(WorkOrderContext workorder:workorders) {
 					
 					if(workorder.getResource().getId() != building.getId()) {

@@ -8,6 +8,10 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class DashboardSharingContext extends ModuleBaseWithCustomFields {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long dashboardId = -1;
 	public long getDashboardId() {
 		return dashboardId;

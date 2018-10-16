@@ -141,7 +141,6 @@ public class ServicePortalInfo {
 	public static Object updatePortalInfo (ServicePortalInfo data) throws Exception{
 		
 	
-		boolean isLocalConn = false;
 		PreparedStatement psmt = null;
 		Connection conn=null;
 		try {

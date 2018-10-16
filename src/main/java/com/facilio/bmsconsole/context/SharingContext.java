@@ -12,6 +12,11 @@ import com.facilio.fw.BeanFactory;
 
 public class SharingContext extends ArrayList<SingleSharingContext> {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public SharingContext() {
 		super();
 	}

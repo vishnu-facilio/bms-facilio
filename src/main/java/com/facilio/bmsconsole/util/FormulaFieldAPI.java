@@ -229,8 +229,8 @@ public class FormulaFieldAPI {
 	
 	public static List<ReadingContext> calculateFormulaReadings(long resourceId, String moduleName, String fieldName, List<DateRange> intervals, WorkflowContext workflow, boolean ignoreNullValues, boolean addValue) throws Exception {
 		if (intervals != null && !intervals.isEmpty()) {
-			long minTime = intervals.get(0).getStartTime();
-			long maxTime = intervals.get(intervals.size() - 1).getEndTime();
+			intervals.get(0).getStartTime();
+			intervals.get(intervals.size() - 1).getEndTime();
 			
 			List<ReadingContext> readings = new ArrayList<>();
 			for(DateRange interval : intervals) {
@@ -1065,6 +1065,10 @@ public class FormulaFieldAPI {
 	}
 	
 	private static class OptimisedFormulaCalculationWorkflow extends WorkflowContext {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private List<OptimisedFormulaCalculationMeta> metas;
 		public List<OptimisedFormulaCalculationMeta> getMetas() {
 			return metas;

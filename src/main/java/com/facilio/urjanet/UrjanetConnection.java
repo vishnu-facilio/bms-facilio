@@ -46,8 +46,8 @@ public class UrjanetConnection {
 		else if(record.getEntityType() == EntityType.Credential)
 		{
 			Credential obj = (Credential)record;
-			String url = urjanetUrl+obj.getCreateURL();
-			JSONObject createCredentialJSON = obj.getCreateJSON();
+			obj.getCreateURL();
+			obj.getCreateJSON();
 		}
 		return response;
 	}
@@ -249,7 +249,7 @@ public static void main(String args) throws ClientProtocolException, IOException
 public void login(String username, String password)
 {
 	
-	String encoding = Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
+	Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
 	//myHttpPost.setHeader("Authorization", "Basic " + encoding);
 	return;
 }

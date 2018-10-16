@@ -25,7 +25,7 @@ public class UpdateReportColumnSequence implements Command {
 				String sql = "UPDATE Report_Columns SET WIDTH = "+columns.get(i).getWidth()+", SEQUENCE_NUMBER = "+(i+1)+" where ID="+columns.get(i).getId();
 				
 				try (Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql.toString());) {
-					int rowsUpdated = pstmt.executeUpdate();
+					pstmt.executeUpdate();
 				}
 				catch(SQLException e) {
 					log.info("Exception occurred ", e);

@@ -6,6 +6,10 @@ import com.facilio.screen.context.RemoteScreenContext;
 
 public class Account implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Organization org;
 	private User user;
 	private long siteId = -1; 

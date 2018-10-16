@@ -5,6 +5,11 @@ import org.apache.commons.chain.impl.ContextBase;
 public class FacilioContext extends ContextBase {
 //	private Connection conn = null;
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public boolean isTransstarted() {
 		return transstarted;
 	}

@@ -13,6 +13,10 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class ScreenAction extends ActionSupport {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public List<ScreenContext> screenContexts;
 	public List<RemoteScreenContext> remoteScreenContexts;
 	public ScreenContext screenContext;

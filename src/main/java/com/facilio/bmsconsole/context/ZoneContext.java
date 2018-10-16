@@ -4,6 +4,10 @@ import java.util.List;
 
 public class ZoneContext extends BaseSpaceContext {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private List<BaseSpaceContext> basespaces;
 	public List<BaseSpaceContext> getBasespaces() {
 		return basespaces;

@@ -13,6 +13,10 @@ import com.facilio.constants.FacilioConstants;
 
 public class FormAction extends FacilioAction {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String[] formNames;
 	public void setFormNames(String[] formNames) {
 		this.formNames = formNames;

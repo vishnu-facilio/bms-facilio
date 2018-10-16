@@ -2,6 +2,10 @@ package com.facilio.bmsconsole.modules;
 
 public class BooleanField extends FacilioField {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String trueVal;
 	public String getTrueVal() {
 		return trueVal;

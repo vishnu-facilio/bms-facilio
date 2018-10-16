@@ -606,7 +606,7 @@ public class DeviceAPI
 			SecondsChronoUnit defaultAdjustUnit = new SecondsChronoUnit(dataIntervalSeconds);
 			ZonedDateTime zdt=	DateTimeUtil.getDateTime(currentTime).truncatedTo(defaultAdjustUnit);
 			long timeDiff=DateTimeUtil.getMillis(zdt, true)-previousTime;
-			float gapCount=(float) (timeDiff/(dataIntervalSeconds*1000));
+			float gapCount=timeDiff/(dataIntervalSeconds*1000);
 			return gapCount;
 		}
 		catch(Exception e) {

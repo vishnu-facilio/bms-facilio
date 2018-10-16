@@ -16,6 +16,10 @@ import com.facilio.bmsconsole.util.DashboardUtil;
 
 public class ReportContext extends ModuleBaseWithCustomFields {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	Long parentFolderId;
 	ReportFolderContext reportFolderContext;
 	String customReportClass;

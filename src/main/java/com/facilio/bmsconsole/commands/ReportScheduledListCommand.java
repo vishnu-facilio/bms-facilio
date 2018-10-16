@@ -38,7 +38,7 @@ public class ReportScheduledListCommand implements Command {
 		
 		FacilioModule module = ModuleFactory.getReportScheduleInfoModule();
 		FacilioModule reportModule = ModuleFactory.getReport();
-		FacilioModule emailModule = ModuleFactory.getEMailTemplatesModule();
+		ModuleFactory.getEMailTemplatesModule();
 		
 		List<FacilioField> fields = FieldFactory.getReportScheduleInfoFields();
 		fields.addAll(FieldFactory.getReportFields());

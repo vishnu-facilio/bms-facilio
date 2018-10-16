@@ -13,7 +13,12 @@ import com.facilio.constants.FacilioConstants;
 
 public class NoteAction extends FacilioAction {
 
-    private static Logger log = LogManager.getLogger(NoteAction.class.getName());
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private static Logger log = LogManager.getLogger(NoteAction.class.getName());
 	
 	private long noteId;
 	public long getNoteId() {

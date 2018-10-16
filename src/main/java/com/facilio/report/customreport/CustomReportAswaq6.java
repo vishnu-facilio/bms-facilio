@@ -27,7 +27,7 @@ public class CustomReportAswaq6 implements CustomReport {
 			JSONObject userFilterValues, long baseLineId, long criteriaId) throws Exception {
 
 
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		BeanFactory.lookup("ModuleBean");
 		
 		List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
 		

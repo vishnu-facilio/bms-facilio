@@ -59,7 +59,7 @@ public class FetchMeterListCommand implements Command {
 			JSONObject mJSON = (JSONObject)itr.next();			
 			long meterId = (long)mJSON.get("id");
 			String meterName = (String)mJSON.get("name");
-			long fuelType = (long)mJSON.get("type");
+			mJSON.get("type");
 			String unit = (String)mJSON.get("native_unit");
 			
 			JSONObject fuel_type = (JSONObject)mJSON.get("fuel_type");

@@ -6,6 +6,10 @@ import com.facilio.fs.FileStoreFactory;
 
 public class AttachmentContext extends ModuleBaseWithCustomFields {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long parentId = -1;
 	public long getParentId() {
 		return parentId;

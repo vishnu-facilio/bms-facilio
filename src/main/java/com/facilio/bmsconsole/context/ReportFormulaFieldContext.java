@@ -7,6 +7,10 @@ import com.facilio.fw.BeanFactory;
 
 public class ReportFormulaFieldContext extends ModuleBaseWithCustomFields {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	String name;
 	Integer dataType;
 	String formula;

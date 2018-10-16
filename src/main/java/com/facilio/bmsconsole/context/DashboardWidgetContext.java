@@ -14,6 +14,10 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String widgetName;
 	private Integer type;
 	private Long dashboardId;

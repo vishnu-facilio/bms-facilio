@@ -35,9 +35,16 @@ import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.util.WorkflowUtil;
 
 public class ReadingAction extends FacilioAction {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+
 	public String addReading() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PARENT_MODULE, getParentModule());
@@ -658,6 +665,10 @@ public class ReadingAction extends FacilioAction {
 	public String editFormula() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.FORMULA_FIELD, formula);
+		WorkflowContext workflow = formula.getWorkflow();
+		if(workflow!= null && workflow.getExpressions() == null) {
+			WorkflowUtil.parseStringToWorkflowObject(workflow.getWorkflowString(), workflow);
+		}
 		
 		Chain updateEnPIChain = FacilioChainFactory.updateFormulaChain();
 		updateEnPIChain.execute(context);

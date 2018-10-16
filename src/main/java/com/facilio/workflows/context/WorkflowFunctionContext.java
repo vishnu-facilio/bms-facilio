@@ -4,6 +4,10 @@ import java.io.Serializable;
 
 public class WorkflowFunctionContext implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String nameSpace;
 	private String functionName;
 	private String params;

@@ -8,6 +8,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 public class AssetContext extends ResourceContext {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private AssetState state;
 	public int getState() {
 		if(state != null) {

@@ -162,6 +162,11 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class DashboardAction extends ActionSupport {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static final Logger LOGGER = Logger.getLogger(DashboardAction.class.getName());
 	
 	Long baseLineComparisionDiff;
@@ -695,7 +700,7 @@ public class DashboardAction extends ActionSupport {
 				Map<String, Object> props = new HashMap<String, Object>();
 				props.put("chartType", ReportContext.ReportChartType.getWidgetChartType((String) comboChart.get("chartType")).getValue());
 				if (comboChart.get("reportColor") != null) {
-					props.put("reportColor", (String) comboChart.get("reportColor"));
+					props.put("reportColor", comboChart.get("reportColor"));
 				}
 				
 				updateBuilder.update(props);
@@ -967,7 +972,7 @@ public class DashboardAction extends ActionSupport {
 							
 							JSONObject dataPoint = new JSONObject();
 							
-							FacilioModule expModule = modBean.getModule(exp.getModuleName());
+							modBean.getModule(exp.getModuleName());
 							
 							dataPoint.put("module", exp.getModuleName());
 							
@@ -1806,8 +1811,6 @@ public class DashboardAction extends ActionSupport {
 			if(report.getId() == 2349l) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				
-				int tcompliance = 0,tnonCompliance = 0,trepeatFinding = 0,total = 0;
-				
 				List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
 				
 				ticketData = new JSONArray();
@@ -1820,12 +1823,12 @@ public class DashboardAction extends ActionSupport {
 						continue;
 					}
 					
-					int compliance = 0,nonCompliance = 0,repeatFinding = 0,notApplicable = 0;
+					int compliance = 0,nonCompliance = 0,repeatFinding = 0;
 					
 					JSONObject buildingres = new JSONObject();
 					for(BuildingContext building : SpaceAPI.getAllBuildings()) {
 						
-						compliance = 0;nonCompliance = 0;repeatFinding = 0;notApplicable = 0;
+						compliance = 0;nonCompliance = 0;repeatFinding = 0;
 						for(WorkOrderContext workorder:workorders) {
 							
 						//	LOGGER.log(Level.SEVERE, "buildingId --- "+building.getId());
@@ -1906,8 +1909,6 @@ public class DashboardAction extends ActionSupport {
 			else if(report.getId() == 2361l) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				
-				int tcompliance = 0,tnonCompliance = 0,trepeatFinding = 0,total = 0;
-				
 				List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
 				
 				ticketData = new JSONArray();
@@ -1921,11 +1922,11 @@ public class DashboardAction extends ActionSupport {
 					}
 					
 					LOGGER.log(Level.INFO, "23611l passed Category ----"+category.getName());
-					int compliance = 0,nonCompliance = 0,repeatFinding = 0,notApplicable = 0;
+					int compliance = 0,nonCompliance = 0,repeatFinding = 0;
 					
 					for(BuildingContext building : SpaceAPI.getAllBuildings()) {
 						
-						compliance = 0;nonCompliance = 0;repeatFinding = 0;notApplicable = 0;
+						compliance = 0;nonCompliance = 0;repeatFinding = 0;
 						for(WorkOrderContext workorder:workorders) {
 							
 							if(workorder.getResource().getId() != building.getId()) {
@@ -1991,8 +1992,6 @@ public class DashboardAction extends ActionSupport {
 
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				
-				int tcompliance = 0,tnonCompliance = 0,trepeatFinding = 0,total = 0;
-				
 				List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
 				
 				ticketData = new JSONArray();
@@ -2005,11 +2004,11 @@ public class DashboardAction extends ActionSupport {
 						continue;
 					}
 					
-					int compliance = 0,nonCompliance = 0,repeatFinding = 0,notApplicable = 0;
+					int compliance = 0,nonCompliance = 0,repeatFinding = 0;
 					
 					for(BuildingContext building : SpaceAPI.getAllBuildings()) {
 						
-						compliance = 0;nonCompliance = 0;repeatFinding = 0;notApplicable = 0;
+						compliance = 0;nonCompliance = 0;repeatFinding = 0;
 						for(WorkOrderContext workorder:workorders) {
 							
 							if(workorder.getResource().getId() != building.getId()) {
@@ -2078,8 +2077,6 @@ public class DashboardAction extends ActionSupport {
 			else if(report.getId() == 2362l) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				
-				int tcompliance = 0,tnonCompliance = 0,trepeatFinding = 0,total = 0;
-				
 				List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
 				
 				reportData = new JSONArray();
@@ -2092,7 +2089,7 @@ public class DashboardAction extends ActionSupport {
 						continue;
 					}
 					
-					int compliance = 0,nonCompliance = 0,repeatFinding = 0,notApplicable = 0;
+					int compliance = 0,nonCompliance = 0,repeatFinding = 0;
 					
 					
 					Map<Long,Long> qDateRange = new HashMap<>();
@@ -2122,7 +2119,7 @@ public class DashboardAction extends ActionSupport {
 						JSONArray array = new JSONArray(); 
 						for(BuildingContext building : SpaceAPI.getAllBuildings()) {
 							
-							compliance = 0;nonCompliance = 0;repeatFinding = 0;notApplicable = 0;
+							compliance = 0;nonCompliance = 0;repeatFinding = 0;
 							for(WorkOrderContext workorder:workorders) {
 								
 								LOGGER.log(Level.SEVERE, "buildingId --- "+buildingId);
@@ -2194,7 +2191,7 @@ public class DashboardAction extends ActionSupport {
 						else if(fromTime == 1538332200000l) {
 							qres.put("label", "Q4 2018");
 						}
-						Map map = new LinkedHashMap();
+						new LinkedHashMap();
 						ticketData.add(qres);
 						
 					}
@@ -2281,7 +2278,7 @@ public class DashboardAction extends ActionSupport {
 			
 			else if (report.getId() == 2410l) {
 
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				BeanFactory.lookup("ModuleBean");
 				
 				List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
 				
@@ -2446,7 +2443,7 @@ public class DashboardAction extends ActionSupport {
 					ticketData = new JSONArray();
 					for(int i=0;i<qDateRange.size();i++) {
 						
-						int compliance = 0,nonCompliance = 0,repeatFinding = 0,notApplicable = 0;
+						int compliance = 0,nonCompliance = 0,repeatFinding = 0;
 						long fromTime = 0l;
 						if(i==0) {
 							fromTime = 1514745000000l;
@@ -2538,8 +2535,6 @@ public class DashboardAction extends ActionSupport {
 				
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				
-				int tcompliance = 0,tnonCompliance = 0,trepeatFinding = 0,total = 0;
-				
 				List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
 				
 				ticketData = new JSONArray();
@@ -2552,7 +2547,7 @@ public class DashboardAction extends ActionSupport {
 						continue;
 					}
 					
-					int compliance = 0,nonCompliance = 0,repeatFinding = 0,notApplicable = 0;
+					int compliance = 0,nonCompliance = 0,repeatFinding = 0;
 					
 					for(WorkOrderContext workorder:workorders) {
 						
@@ -2834,7 +2829,7 @@ public class DashboardAction extends ActionSupport {
 			
 			else if (report.getId() == 3942l) {	//2P
 
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				BeanFactory.lookup("ModuleBean");
 				
 				List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
 				
@@ -2905,7 +2900,7 @@ public class DashboardAction extends ActionSupport {
 			
 			else if (report.getId() == 4056l) {	//2B
 
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				BeanFactory.lookup("ModuleBean");
 				
 				List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
 				
@@ -3253,7 +3248,6 @@ public class DashboardAction extends ActionSupport {
 								
 								String stringValue = task.get("inputValue").toString();
 								
-								Integer value = 0;
 								if("Met".equals(stringValue) ) {
 									passed = passed + 1;
 								}
@@ -3352,7 +3346,6 @@ public class DashboardAction extends ActionSupport {
 									
 									String stringValue = task.get("inputValue").toString();
 									
-									Integer value = 0;
 									if("Met".equals(stringValue)) {
 										passed = passed + 1;
 									}
@@ -3479,7 +3472,7 @@ public class DashboardAction extends ActionSupport {
 					if(!(pm.getName().contains("Daily : Cross verify BMS readings with Meter Readings") || pm.getName().contains("Daily : Cleaning of IBMS equipments") || pm.getName().contains("Daily : BMS hardware/software problems checking") || pm.getName().contains("Daily : Ensure that all equipment operate at design"))) {
 						continue;
 					}
-					int failed =0,passed = 0;
+					int failed =0;
 					 List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrderFromPMId(pm.getId());
 					 
 					 for(WorkOrderContext workorder : workorders) {
@@ -3514,7 +3507,6 @@ public class DashboardAction extends ActionSupport {
 									failed++;
 								}
 								else {
-									passed++;
 								}
 							}
 						}
@@ -3699,7 +3691,7 @@ public class DashboardAction extends ActionSupport {
 					if(!(pm.getName().contains("Daily : Cross verify BMS readings with Meter Readings") || pm.getName().contains("Daily : Cleaning of IBMS equipments") || pm.getName().contains("Daily : BMS hardware/software problems checking") || pm.getName().contains("Daily : Ensure that all equipment operate at design"))) {
 						continue;
 					}
-					int failed =0,passed = 0;
+					int failed =0;
 					 List<WorkOrderContext> workorders = WorkOrderAPI.getWorkOrderFromPMId(pm.getId());
 					 
 					 for(WorkOrderContext workorder : workorders) {
@@ -3729,7 +3721,6 @@ public class DashboardAction extends ActionSupport {
 									failed++;
 								}
 								else {
-									passed++;
 								}
 							}
 						}
@@ -3746,7 +3737,7 @@ public class DashboardAction extends ActionSupport {
 					}
 				}
 				
-				JSONArray resArray = new JSONArray();
+				new JSONArray();
 				
 				for(BuildingContext building :SpaceAPI.getAllBuildings()) {
 					
@@ -3928,7 +3919,7 @@ public class DashboardAction extends ActionSupport {
 
 				buildingId = report.getReportSpaceFilterContext().getBuildingId();
 				
-				BuildingContext building = SpaceAPI.getBuildingSpace(buildingId);
+				SpaceAPI.getBuildingSpace(buildingId);
 				
 				getUTCData();
 				
@@ -4553,7 +4544,7 @@ public class DashboardAction extends ActionSupport {
 							if(spaceResourceMap.get(buildingId).contains(spaceId)) {
 								
 								if(buildingRes.get(buildingId) != null) {
-									JSONObject map = (JSONObject) buildingRes.get(buildingId);
+									JSONObject map = buildingRes.get(buildingId);
 									if(map.containsKey(groupBy)) {
 										Double value1 = (Double) map.get(groupBy);
 										value1 = value1 + value;
@@ -5757,7 +5748,7 @@ public class DashboardAction extends ActionSupport {
 					if ((report.getY1AxisField() != null && report.getY1AxisField().getField().getName().contains("cost")) || (reportFieldLabelMap != null && reportFieldLabelMap.containsKey(report.getY1AxisField().getField().getName()) && reportFieldLabelMap.get(report.getY1AxisField().getField().getName()) != null && reportFieldLabelMap.get(report.getY1AxisField().getField().getName()).toString().contains("cost"))) {
 						
 						if(meterIdsUsed != null ) {
-							Criteria parentCriteria = criteria != null ? criteria : report.getCriteria();
+							report.getCriteria();
 							Double totalKwh = DashboardAction.getTotalKwh(meterIdsUsed, this.startTime, this.endTime);
 							Double totalCost = (Double) variance.get("sum");
 							
@@ -5934,7 +5925,7 @@ public class DashboardAction extends ActionSupport {
 		 					}
 		 					else {
 		 						Double d = (Double) thisMap.get("value");
-		 						Double concatVal = d + (Double) tmpComp.get("value");
+		 						tmpComp.get("value");
 		 						tmpComp.put("value", thisMap.get("value"));
 		 					}
 		 				}
@@ -5946,8 +5937,8 @@ public class DashboardAction extends ActionSupport {
 		 					}
 		 					else if ("eui".equalsIgnoreCase(report.getY1AxisUnit())) {
 		 						Double d = (Double) thisMap.get("value");
-		 						LOGGER.severe("(Long) component.get -- "+(Long) component.get("label"));
-		 						Double buildingArea = buildingVsArea.get((Long) component.get("label"));
+		 						LOGGER.severe("(Long) component.get -- "+component.get("label"));
+		 						Double buildingArea = buildingVsArea.get(component.get("label"));
 		 						double eui = ReportsUtil.getEUI(d, buildingArea);
 		 						component.put("value", eui);
 		 						component.put("orig_value", d);
@@ -6149,7 +6140,7 @@ public class DashboardAction extends ActionSupport {
 			if (baseLineId != -1) {
 				BaseLineContext baseLineContext = BaseLineAPI.getBaseLine(baseLineId);
 				
-				Condition condition = baseLineContext.getBaseLineCondition(reportContext.getDateFilter().getField(), new DateRange((long)timeRange.get(0), (long)timeRange.get(1)));
+				Condition condition = baseLineContext.getBaseLineCondition(reportContext.getDateFilter().getField(), new DateRange(timeRange.get(0), timeRange.get(1)));
 				String baseLineStartValue = condition.getValue().substring(0,condition.getValue().indexOf(",")).trim();
 				String baseLineEndValue = condition.getValue().substring(condition.getValue().indexOf(",")+1, condition.getValue().length()).trim();
 				
@@ -6219,7 +6210,7 @@ public class DashboardAction extends ActionSupport {
 				continue;
 			}
 			
-			int compliance = 0,nonCompliance = 0,repeatFinding = 0,notApplicable = 0;
+			int compliance = 0,nonCompliance = 0,repeatFinding = 0;
 			for(WorkOrderContext workorder:workorders) {
 				
 				LOGGER.log(Level.SEVERE, "buildingId --- "+buildingId);
@@ -6235,7 +6226,7 @@ public class DashboardAction extends ActionSupport {
 					continue;
 				}
 				if(AccountUtil.getCurrentOrg().getOrgId() == 108l) {
-					compliance = 0;nonCompliance = 0;repeatFinding = 0;notApplicable = 0;
+					compliance = 0;nonCompliance = 0;repeatFinding = 0;
 				}
 				
 				Command chain = FacilioChainFactory.getGetTasksOfTicketCommand();
@@ -6268,7 +6259,6 @@ public class DashboardAction extends ActionSupport {
 							repeatFinding += aswaqrep;
 						}
 						else if (subject.endsWith("Not Applicable")) {
-							notApplicable += aswaqna;
 						}
 					}
 				}
@@ -6625,7 +6615,7 @@ public class DashboardAction extends ActionSupport {
 	private List<String> getDistinctLabel(List<Map<String, Object>> rs) {
 		List<String> labels = new ArrayList<>();
 		for(Map<String, Object> prop:rs) {
-			if(!labels.contains((String)prop.get("label"))) {
+			if(!labels.contains(prop.get("label"))) {
 				labels.add((String)prop.get("label"));
 			}
 		}
