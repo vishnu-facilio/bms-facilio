@@ -641,6 +641,17 @@ public class SpaceAPI {
 																	.maxLevel(0)
 																	.beanClass(BuildingContext.class)
 																	.andCustomWhere("BaseSpace.SITE_ID =? AND SPACE_TYPE=?",siteId,BaseSpaceContext.SpaceType.BUILDING.getIntVal());
+		
+		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(module.getName());
+		if (scopeCriteria != null) {
+			selectBuilder.andCriteria(scopeCriteria);
+		}
+		
+		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(module.getName(),"read");
+		if (permissionCriteria != null) {
+			selectBuilder.andCriteria(permissionCriteria);
+		}
+		
 		List<BuildingContext> buildings = selectBuilder.get();
 		return buildings;
 	}
@@ -657,6 +668,18 @@ public class SpaceAPI {
 																	.maxLevel(0)
 																	.beanClass(BuildingContext.class)
 																	.andCustomWhere("SPACE_TYPE=?",BaseSpaceContext.SpaceType.BUILDING.getIntVal());
+		
+		
+		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(module.getName());
+		if (scopeCriteria != null) {
+			selectBuilder.andCriteria(scopeCriteria);
+		}
+		
+		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(module.getName(),"read");
+		if (permissionCriteria != null) {
+			selectBuilder.andCriteria(permissionCriteria);
+		}
+		
 		List<BuildingContext> buildings = selectBuilder.get();
 		return buildings;
 	}
