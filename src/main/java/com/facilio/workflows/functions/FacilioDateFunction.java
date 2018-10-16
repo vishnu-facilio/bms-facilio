@@ -141,6 +141,102 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 			}
 		}
 	},
+	CURRENT_HOUR(7,"getCurrentHour") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			int hour = 0;
+			if(objects == null || objects.length == 0) {
+				
+				ZonedDateTime zdt = DateTimeUtil.getZonedDateTime(DateTimeUtil.getCurrenTime());
+				hour = zdt.getHour();
+			}
+			else {
+				Long startTime = Long.parseLong( objects[0].toString());
+				ZonedDateTime zdt = DateTimeUtil.getZonedDateTime(startTime);
+				hour = zdt.getHour();
+			}
+			
+			return hour;
+		};
+		public void checkParam(Object... objects) throws Exception {
+
+		}
+	},
+	CURRENT_DATE(8,"getCurrentDate") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			int date = 0;
+			if(objects == null || objects.length == 0) {
+				
+				ZonedDateTime zdt = DateTimeUtil.getZonedDateTime(DateTimeUtil.getCurrenTime());
+				date = zdt.getDayOfMonth();
+			}
+			else {
+				Long startTime = Long.parseLong( objects[0].toString());
+				ZonedDateTime zdt = DateTimeUtil.getZonedDateTime(startTime);
+				date = zdt.getDayOfMonth();
+			}
+			
+			return date;
+		};
+		public void checkParam(Object... objects) throws Exception {
+
+		}
+	},
+	CURRENT_DAY(9,"getCurrentDay") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			int day = 0;
+			if(objects == null || objects.length == 0) {
+				
+				ZonedDateTime zdt = DateTimeUtil.getZonedDateTime(DateTimeUtil.getCurrenTime());
+				day = zdt.getDayOfWeek().getValue();
+			}
+			else {
+				Long startTime = Long.parseLong( objects[0].toString());
+				ZonedDateTime zdt = DateTimeUtil.getZonedDateTime(startTime);
+				day = zdt.getDayOfWeek().getValue();
+			}
+			
+			return day;
+		};
+		public void checkParam(Object... objects) throws Exception {
+
+		}
+	},
+	CURRENT_MONTH(10,"getCurrentMonth") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			int month = 0;
+			if(objects == null || objects.length == 0) {
+				
+				ZonedDateTime zdt = DateTimeUtil.getZonedDateTime(DateTimeUtil.getCurrenTime());
+				month = zdt.getMonth().getValue();
+			}
+			else {
+				Long startTime = Long.parseLong( objects[0].toString());
+				ZonedDateTime zdt = DateTimeUtil.getZonedDateTime(startTime);
+				month = zdt.getMonth().getValue();
+			}
+			
+			return month;
+		};
+		public void checkParam(Object... objects) throws Exception {
+
+		}
+	},
 	;
 	private Integer value;
 	private String functionName;
