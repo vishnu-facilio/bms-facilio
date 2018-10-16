@@ -565,10 +565,11 @@ public class ReadingsAPI {
 		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getReadingDataMetaModule().getTableName())
 				.fields(FieldFactory.getReadingDataMetaFields());
-		
+		LOGGER.error("resourcesList size -- "+resourcesList.size());
+		int i=0;
 		for(ResourceContext resource:resourcesList) {
 			
-			LOGGER.error("RDM update running for resource -- "+resource.getId());
+			LOGGER.error(++i +" RDM update running for resource -- "+resource.getId());
 			List<FacilioModule>	moduleList=null;
 			int resourceType=	resource.getResourceType();
 			long resourceId=resource.getId();
