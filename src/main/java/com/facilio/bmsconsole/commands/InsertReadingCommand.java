@@ -52,6 +52,9 @@ public class InsertReadingCommand implements Command {
 
 	public static void insertReadings(String moduleName,List<ReadingContext> readingsContext) throws Exception {
 		
+		if(readingsContext == null || readingsContext.isEmpty()) {
+			return;
+		}
 		LOGGER.log(Level.SEVERE, "moduleName - "+moduleName +" readingsContext count -- "+readingsContext.size());
 		
 		Map<String, List<ReadingContext>> readingMap= Collections.singletonMap(moduleName, readingsContext);
