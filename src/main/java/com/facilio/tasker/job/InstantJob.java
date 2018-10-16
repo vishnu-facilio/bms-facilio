@@ -3,10 +3,6 @@ package com.facilio.tasker.job;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 
 import com.facilio.accounts.dto.Account;

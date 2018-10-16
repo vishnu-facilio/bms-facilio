@@ -66,6 +66,14 @@ public class ReadingDataMeta implements Serializable {
 	public void setValue(Object value) {
 		this.value = value;
 	}
+	
+	private String actualValue;
+	public String getActualValue() {
+		return actualValue;
+	}
+	public void setActualValue(String actualValue) {
+		this.actualValue = actualValue;
+	}
 
 	private long readingDataId = -1;
 	public long getReadingDataId() {

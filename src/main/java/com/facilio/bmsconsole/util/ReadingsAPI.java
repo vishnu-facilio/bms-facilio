@@ -267,6 +267,7 @@ public class ReadingsAPI {
 	private static ReadingDataMeta getRDMFromProp (Map<String, Object> prop, Map<Long, FacilioField> fieldMap) throws Exception {
 		ReadingDataMeta meta = FieldUtil.getAsBeanFromMap(prop, ReadingDataMeta.class);
 		Object value = meta.getValue();
+		meta.setActualValue((String) value);
 		FacilioField field;
 		if (fieldMap != null) {
 			 field = fieldMap.get(meta.getFieldId());
@@ -429,7 +430,7 @@ public class ReadingsAPI {
 									Object lastReading = meta.getValue();
 									long lastTimeStamp = meta.getTtime();
 									if (lastReading != null && lastTimeStamp != -1 && 
-											!"-1".equals(lastReading.toString()) && !"-1.0".equals(lastReading.toString()) && timeStamp < lastTimeStamp) { //-1.0 for Decimal values
+											!"-1".equals(meta.getActualValue()) && timeStamp < lastTimeStamp) { 
 										continue;
 									}
 								}
