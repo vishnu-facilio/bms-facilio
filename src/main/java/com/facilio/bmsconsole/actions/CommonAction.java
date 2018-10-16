@@ -8,6 +8,10 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class CommonAction extends ActionSupport {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private WorkflowContext workflow;
 	public WorkflowContext getWorkflow() {
 		return workflow;

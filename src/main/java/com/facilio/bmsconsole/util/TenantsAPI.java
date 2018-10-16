@@ -76,7 +76,7 @@ public class TenantsAPI {
 		if (id<=0 ) {
 			return null;
 		}
-		TenantContext tenant = getTenant(id, true);
+		getTenant(id, true);
 		FacilioModule module = ModuleFactory.getTenantsuserModule();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getTenantsUserFields())
@@ -105,7 +105,7 @@ public class TenantsAPI {
 				
 				TenantUserContext tenantUser = FieldUtil.getAsBeanFromMap(prop, TenantUserContext.class);
 				
-				User user = (User) AccountUtil.getUserBean().getUser(tenantUser.getOuid());
+				User user = AccountUtil.getUserBean().getUser(tenantUser.getOuid());
 				
 				tenantUser.setOrgUser(user);
 				
@@ -152,7 +152,7 @@ public class TenantsAPI {
 		
 		Map<String , Object> value = new HashMap<>();
 		value.put("showInPortal", isShow_In_Portal);
-		int count = updateBuilder.update(value);
+		updateBuilder.update(value);
 		
 		return  tenantMeterId;
 		

@@ -14,21 +14,16 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.bean.UserBean;
-import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.LoginAction;
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.sql.DBUtil;
@@ -37,6 +32,10 @@ import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class Home extends ActionSupport {
+/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 /*
  * redirect_uri = https://platform.zoho.com/auth/conns/urjanet/redirect
 response_type = code

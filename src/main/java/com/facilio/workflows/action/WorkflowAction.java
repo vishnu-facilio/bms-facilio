@@ -12,6 +12,11 @@ import com.facilio.workflows.util.WorkflowUtil;
 
 public class WorkflowAction extends FacilioAction {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static org.apache.log4j.Logger log = LogManager.getLogger(WorkflowUtil.class.getName());
 	
 	List<FacilioFunctionNameSpace> namespaces;

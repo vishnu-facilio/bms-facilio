@@ -12,7 +12,7 @@ public class ValidateZoneFieldsCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		ZoneContext zoneContext = (ZoneContext) context.get(FacilioConstants.ContextNames.ZONE);
+		context.get(FacilioConstants.ContextNames.ZONE);
 		return false;
 	}
 

@@ -14,7 +14,11 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class PdfAction extends ActionSupport {
 
-    private String url;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private String url;
     private long orgId;
     private String username;
     private InputStream fileInputStream;

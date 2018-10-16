@@ -9,6 +9,10 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class FacilioAction extends ActionSupport {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int responseCode = 0;
 	public int getResponseCode() {
 		return responseCode;

@@ -367,7 +367,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		for(Map<String, Object> record: records) {
 			for(FacilioField field : selectFields) {
 				if(field != null && field.getDataTypeEnum() == FieldType.FILE && record.get(field.getName()) != null) {
-					record.put(field.getName()+"Url", fileUrls.get((Long) record.get(field.getName())));
+					record.put(field.getName()+"Url", fileUrls.get(record.get(field.getName())));
 				}
 			}
 		}

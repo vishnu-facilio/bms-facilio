@@ -12,7 +12,7 @@ public class ValidateSpaceFieldsCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		SpaceContext spaceContext = (SpaceContext) context.get(FacilioConstants.ContextNames.SPACE);
+		context.get(FacilioConstants.ContextNames.SPACE);
 		return false;
 	}
 

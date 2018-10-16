@@ -16,7 +16,6 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.events.context.EventContext.EventInternalState;
 import com.facilio.fw.BeanFactory;
 
 public class ApprovalRuleContext extends WorkflowRuleContext {

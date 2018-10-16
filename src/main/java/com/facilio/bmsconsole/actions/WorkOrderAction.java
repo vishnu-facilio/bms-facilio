@@ -60,7 +60,11 @@ import com.facilio.fw.BeanFactory;
 
 public class WorkOrderAction extends FacilioAction {
 
-    private static Logger log = LogManager.getLogger(WorkOrderAction.class.getName());
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private static Logger log = LogManager.getLogger(WorkOrderAction.class.getName());
 
     public String newWorkOrder() throws Exception {
 

@@ -39,6 +39,12 @@ import com.facilio.workflows.util.WorkflowUtil;
 
 public class ReadingAction extends FacilioAction {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+
 	public String addReading() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PARENT_MODULE, getParentModule());

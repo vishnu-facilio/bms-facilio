@@ -23,6 +23,11 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class TenantAction extends ActionSupport {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private long id = -1;
 	public long getId() {
 		return id;
@@ -224,7 +229,6 @@ private Map<String, Double> readingData;
 	}
 	
 	public String updatePortalAccess() throws Exception {
-		Object portal_verified = null;
 		userId = TenantsAPI.updatePortalUserAccess(user.getOuid() , user.getPortal_verified());
 		return SUCCESS;
 	}

@@ -19,8 +19,7 @@ public class LoadControllerSettingsCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		// TODO Auto-generated method stub
-		List<FacilioField> fields = FieldFactory.getControllerFields();
+		FieldFactory.getControllerFields();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table("Controller")
 				.select(FieldFactory.getControllerFields())

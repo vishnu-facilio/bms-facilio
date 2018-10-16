@@ -2,6 +2,10 @@ package com.facilio.bmsconsole.context;
 
 public class SpaceContext extends BaseSpaceContext {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private SiteContext site;
 	public SiteContext getSite() {
 		if ((site == null || site.getId() == -1) && super.getSiteId() != -1) {

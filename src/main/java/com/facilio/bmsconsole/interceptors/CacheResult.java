@@ -11,6 +11,10 @@ import com.opensymphony.xwork2.ActionInvocation;
 
 public class CacheResult extends JSONResult {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	@Override
 	public void execute(ActionInvocation invocation)
             throws Exception

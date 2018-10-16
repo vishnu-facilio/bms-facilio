@@ -2,10 +2,7 @@ package com.facilio.fw.auth;
 
 import java.util.Locale;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.facilio.auth.cookie.FacilioCookie;
 import org.apache.struts2.ServletActionContext;
 

@@ -15,9 +15,6 @@ public class ArcLoginCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		// TODO Auto-generated method stub
-		boolean isLoginRequired = false;
-		List<LeedConfigurationContext> leedList = null;
 		ArcContext  credentials = (ArcContext)context.get(LeedConstants.ContextNames.ARCCONTEXT);
 		LeedIntegrator leedInt = new LeedIntegrator();
 		credentials = leedInt.LoginArcServer(credentials);

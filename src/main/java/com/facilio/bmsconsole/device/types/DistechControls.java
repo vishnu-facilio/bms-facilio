@@ -88,7 +88,7 @@ public class DistechControls
 		while(iterator.hasNext())
 		{
 			JSONObject analogDataPoints = new JSONObject();
-			JSONObject json = (JSONObject) iterator.next();
+			JSONObject json = iterator.next();
 			String inst = ((Long)json.get("instance")).toString();
 			String name = (String)json.get("value");
 			analogDataPoints.put("name", name);
@@ -103,7 +103,7 @@ public class DistechControls
 		iterator = array.iterator();
 		while(iterator.hasNext())
 		{
-			JSONObject json = (JSONObject) iterator.next();
+			JSONObject json = iterator.next();
 			String inst = ((Long)json.get("instance")).toString();
 			JSONObject analogDataPoints = (JSONObject) dataPointMap.get(inst);
 			
@@ -139,7 +139,7 @@ public class DistechControls
 		while(iterator.hasNext())
 		{
 			JSONObject analogDataPoints = new JSONObject();
-			JSONObject json = (JSONObject)iterator.next();
+			JSONObject json = iterator.next();
 			String inst = ((Long)json.get("instance")).toString();
 			String value = (String)json.get("value");
 			analogDataPoints.put("value", value);

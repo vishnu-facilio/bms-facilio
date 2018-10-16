@@ -21,8 +21,7 @@ public enum ActivityType {
 	CREATE(1) {
 		@Override
 		public String getMessage(JSONObject json) {
-			// TODO Auto-generated method stub
-			String moduleName = (String) json.get(FacilioConstants.ContextNames.MODULE_NAME);
+			json.get(FacilioConstants.ContextNames.MODULE_NAME);
 			//return "created a new "+moduleName;
 			return "created Work Order";
 		}
@@ -30,8 +29,7 @@ public enum ActivityType {
 	EDIT(1 << 1) {
 		@Override
 		public String getMessage(JSONObject json) {
-			// TODO Auto-generated method stub
-			String moduleName = (String) json.get(FacilioConstants.ContextNames.MODULE_NAME);
+			json.get(FacilioConstants.ContextNames.MODULE_NAME);
 			//return "updated the "+moduleName;
 			return "updated Work Order";
 		}
@@ -60,8 +58,7 @@ public enum ActivityType {
 	ASSIGN_TICKET(1 << 4) {
 		@Override
 		public String getMessage(JSONObject json) {
-			// TODO Auto-generated method stub
-			String moduleName = (String) json.get(FacilioConstants.ContextNames.MODULE_NAME);
+			json.get(FacilioConstants.ContextNames.MODULE_NAME);
 			//return "assigned the "+moduleName+" to ";
 			return "assigned the Work Order to ";
 		}

@@ -144,7 +144,7 @@ public class AnomalyDetectorJob extends FacilioJob {
 			Map<Long, AnalyticsAnomalyConfigContext> meterConfigurations,
 			long startTime, long endTime, Long siteId, long orgID) {
 		String moduleName="dummyModuleName";
-		ObjectMapper mapper = new ObjectMapper();
+		new ObjectMapper();
         Map<Long, List<TemperatureContext>> siteIdToWeatherMapping = new HashMap<>();
         
     	try {

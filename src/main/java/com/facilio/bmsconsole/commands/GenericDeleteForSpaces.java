@@ -18,7 +18,7 @@ public class GenericDeleteForSpaces implements Command {
 		// TODO Auto-generated method stub
 		
 		long building = (long) context.get(FacilioConstants.ContextNames.ID);
-		String moduleNameSpace = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
 		DeleteRecordBuilder<BaseSpaceContext> deleteAs = new DeleteRecordBuilder<BaseSpaceContext>()

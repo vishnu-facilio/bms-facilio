@@ -8,6 +8,10 @@ import com.opensymphony.xwork2.ModelDriven;
 public class ServicePortalSetupAction extends SetupActions<ServicePortalInfo> implements ModelDriven{
 //public class ServicePortalSetupAction extends ActionSupport {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public String servicePortal() throws Exception {
 
 		System.out.println("Serviceportal called");

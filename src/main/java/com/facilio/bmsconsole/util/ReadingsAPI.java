@@ -494,7 +494,7 @@ public class ReadingsAPI {
 			if(sql != null && !sql.isEmpty()) {
 				LOGGER.debug("################ Update RDM sql : "+sql);
 				try(PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
-					int rowCount = pstmt.executeUpdate();
+					pstmt.executeUpdate();
 					return uniqueRDMs;
 				}
 			}
@@ -695,7 +695,7 @@ public class ReadingsAPI {
 				if (parent.getControllerId() != -1) {
 					ControllerContext controller = controllers.get(parent.getControllerId());
 					if (controller.getDataInterval() != -1) {
-						minuteInterval = (int) controller.getDataInterval();
+						minuteInterval = controller.getDataInterval();
 					}
 				}
 			}

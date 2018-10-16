@@ -19,6 +19,10 @@ import com.facilio.constants.FacilioConstants;
 
 public class Role implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = Logger.getLogger(Role.class.getName());
 	private static org.apache.log4j.Logger log = LogManager.getLogger(Role.class.getName());
 

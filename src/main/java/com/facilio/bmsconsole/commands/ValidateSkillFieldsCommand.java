@@ -12,7 +12,7 @@ public class ValidateSkillFieldsCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		SkillContext skillContext = (SkillContext) context.get(FacilioConstants.ContextNames.SKILL);
+		context.get(FacilioConstants.ContextNames.SKILL);
 		return false;
 	}
 

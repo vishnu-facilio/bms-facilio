@@ -4,6 +4,10 @@ import java.io.Serializable;
 
 public class UpdateChangeSet implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long recordId = -1;
 	public long getRecordId() {
 		return recordId;

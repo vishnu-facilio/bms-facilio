@@ -13,6 +13,10 @@ import com.opensymphony.xwork2.ActionSupport;
 public class InternalActions extends ActionSupport {
 	//All actions in this should be done via a bean
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public String addAlarmFromEvent() throws Exception {
 		
 		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", (Long) alarmInfo.get("orgId"));

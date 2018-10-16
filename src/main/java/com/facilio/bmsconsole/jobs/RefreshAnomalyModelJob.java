@@ -215,7 +215,6 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 	}
 
 	private void buildEnergyAnomalyModel(AnalyticsAnomalyConfigContext meterContext, long startTime, long endTime) {
-		String moduleName = "dummyModuleName";
 		ObjectMapper mapper = new ObjectMapper();
 		String postURL = AwsUtil.getConfig("anomalyCheckServiceURL") + "/refreshAnomalyModel";
 

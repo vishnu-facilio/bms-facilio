@@ -31,6 +31,10 @@ public class SkillActions extends ActionSupport {
 //		this.setup = setup;
 //	}
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private ActionForm actionForm;
 
 	public ActionForm getActionForm() {

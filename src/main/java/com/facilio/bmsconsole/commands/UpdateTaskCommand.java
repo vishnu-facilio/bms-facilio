@@ -119,7 +119,7 @@ public class UpdateTaskCommand implements Command {
 	private void updateParentTicketStatus(Context context, ActivityType activityType, TaskContext task) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule taskModule = modBean.getModule(FacilioConstants.ContextNames.TASK);
+		modBean.getModule(FacilioConstants.ContextNames.TASK);
 		
 		// Assuming that parent ticket will be always Workorder
 		FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);

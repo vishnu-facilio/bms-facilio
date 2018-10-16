@@ -44,6 +44,10 @@ import com.facilio.report.util.ReportUtil;
 
 public class V2ReportAction extends FacilioAction {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private ReportContext reportContext;
 	private long folderId=-1;
 	
@@ -598,7 +602,7 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
 		Chain scheduleReportListChain = ReadOnlyChainFactory.fetchScheduledReportsChain();
 		scheduleReportListChain.execute(context);
-		setResult("scheduledReports", (List<ReportInfo>) context.get(FacilioConstants.ContextNames.REPORT_LIST));
+		setResult("scheduledReports", context.get(FacilioConstants.ContextNames.REPORT_LIST));
 		
 		return SUCCESS;
 	}

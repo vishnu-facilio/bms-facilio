@@ -14,6 +14,11 @@ import com.facilio.bmsconsole.util.DashboardUtil;
 
 public class DashboardContext extends ModuleBaseWithCustomFields {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static Logger log = LogManager.getLogger(DashboardContext.class.getName());
 
 	private String dashboardName;

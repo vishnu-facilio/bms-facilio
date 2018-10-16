@@ -26,6 +26,11 @@ public class SpaceBudIntegrationCommand implements Command {
 	
 	class Attribute extends JSONObject
 	{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public Attribute(String meterid,Object reading)
 		{
 			super.put("meter_id",meterid);

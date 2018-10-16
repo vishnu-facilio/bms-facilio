@@ -20,7 +20,7 @@ public class InsertReadingCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		List<ReadingContext> readingContexts = (List<ReadingContext>) context.get(ImportAPI.ImportProcessConstants.READINGS_LIST);
+		context.get(ImportAPI.ImportProcessConstants.READINGS_LIST);
 		ImportProcessContext importProcessContext =(ImportProcessContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
 		ArrayListMultimap<String, ReadingContext> groupedContext = (ArrayListMultimap<String, ReadingContext>) context.get(ImportAPI.ImportProcessConstants.GROUPED_READING_CONTEXT);
 		ArrayListMultimap<String , String> groupedFields = (ArrayListMultimap<String, String>) context.get(ImportAPI.ImportProcessConstants.GROUPED_FIELDS);

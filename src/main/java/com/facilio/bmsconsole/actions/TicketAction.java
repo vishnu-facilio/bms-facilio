@@ -42,6 +42,10 @@ public class TicketAction extends ActionSupport {
 		return SUCCESS;
 	}*/
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private List<FacilioField> fields;
 	
 	public List getFormlayout()
@@ -110,8 +114,6 @@ public class TicketAction extends ActionSupport {
 		
 		setTicket((TicketContext) context.get(FacilioConstants.ContextNames.TICKET));
 		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
-		
-		TicketContext tc =this.ticket;
 		
 		setTasks((Map<Long, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP));
 		setSections((Map<Long, TaskSectionContext>) context.get(FacilioConstants.ContextNames.TASK_SECTIONS));

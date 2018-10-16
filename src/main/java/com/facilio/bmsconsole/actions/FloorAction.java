@@ -23,6 +23,11 @@ import com.opensymphony.xwork2.ActionSupport;
 @SuppressWarnings("serial")
 public class FloorAction extends ActionSupport {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@SuppressWarnings("unchecked")
 	public String floorList() throws Exception 
 	{

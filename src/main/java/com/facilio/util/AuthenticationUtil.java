@@ -4,9 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.facilio.accounts.dto.Account;
 import com.facilio.auth.cookie.FacilioCookie;
-import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.fw.auth.CognitoUtil;
-import com.facilio.fw.auth.LoginUtil;
 
 
 public class AuthenticationUtil {

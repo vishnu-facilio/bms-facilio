@@ -31,7 +31,7 @@ public class UpdateZoneCommand implements Command {
 			
 			SpaceAPI.updateZoneInfo(zone, children);
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
+			context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);

@@ -3,9 +3,11 @@ package com.facilio.bmsconsole.context;
 import java.io.Serializable;
 import java.util.List;
 
-import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
-
 public class TaskSectionContext implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long id = -1;
 	public long getId() {
 		return id;

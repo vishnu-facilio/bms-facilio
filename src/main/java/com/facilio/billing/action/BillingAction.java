@@ -13,6 +13,12 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class BillingAction extends ActionSupport {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+
 	public String GenerateTemplate() throws Exception
 	{
 		FacilioContext context = new FacilioContext();

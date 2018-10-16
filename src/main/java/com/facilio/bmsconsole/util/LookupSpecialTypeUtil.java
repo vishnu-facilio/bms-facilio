@@ -126,7 +126,7 @@ public class LookupSpecialTypeUtil {
 	public static Map<Long, Object> getPickList(String specialType, List<Long> idList) throws Exception {
 		
 		Criteria criteria = new Criteria();
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		BeanFactory.lookup("ModuleBean");
 		if(FacilioConstants.ContextNames.USERS.equals(specialType) || FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
 			
 			FacilioField field=FieldFactory.getField("ouid", "ORG_USERID",getModule(specialType), FieldType.NUMBER);

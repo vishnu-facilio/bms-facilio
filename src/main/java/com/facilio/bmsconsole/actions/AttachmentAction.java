@@ -19,6 +19,10 @@ import com.facilio.fs.FileStoreFactory;
 
 public class AttachmentAction  extends FacilioAction {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static Logger log = LogManager.getLogger(AttachmentAction.class.getName());
 	private String module;
 	public String getModule() {

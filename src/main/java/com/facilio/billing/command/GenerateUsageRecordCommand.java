@@ -28,8 +28,7 @@ public class GenerateUsageRecordCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		// TODO Auto-generated method stub
-		FileStore fs = FileStoreFactory.getInstance().getFileStore();
+		FileStoreFactory.getInstance().getFileStore();
 		long startTime = (long)context.get(BillContext.ContextNames.STARTTIME);
 		long endTime = (long)context.get(BillContext.ContextNames.ENDTIME);
 		long templateId = (long)context.get(BillContext.ContextNames.TEMPLATEID);
@@ -41,9 +40,9 @@ public class GenerateUsageRecordCommand implements Command {
 	
 	public String HandleBillGeneration(Map<String,String> placeHolders,long templateId,long startTime, long endTime) throws Exception
 	{
-		long orgId = AccountUtil.getCurrentOrg().getOrgId();
+		AccountUtil.getCurrentOrg().getOrgId();
 		ExcelTemplate excelobject = (ExcelTemplate)TemplateAPI.getTemplate(templateId);
-		String excelName = excelobject.getName();
+		excelobject.getName();
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
 		String fileURL = null;
 		long fileId = excelobject.getExcelFileId();

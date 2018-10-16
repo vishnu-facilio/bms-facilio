@@ -5,6 +5,10 @@ import com.facilio.unitconversion.Unit;
 
 public class NumberField extends FacilioField {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int unitId = -1;
 	
 	public int getUnitId() {

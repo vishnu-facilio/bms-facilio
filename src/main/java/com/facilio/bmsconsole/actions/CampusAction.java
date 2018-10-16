@@ -23,6 +23,11 @@ import com.opensymphony.xwork2.ActionSupport;
 @SuppressWarnings("serial")
 public class CampusAction extends ActionSupport {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@SuppressWarnings("unchecked")
 	public String campusList() throws Exception 
 	{

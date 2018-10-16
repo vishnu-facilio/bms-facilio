@@ -4,6 +4,10 @@ import com.facilio.accounts.dto.Organization;
 
 public class ArcContext extends Organization {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String userName;
 	private String password;
 	private String subscriptionKey;

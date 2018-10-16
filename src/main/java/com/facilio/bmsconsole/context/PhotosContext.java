@@ -5,6 +5,10 @@ import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 
 public class PhotosContext extends ModuleBaseWithCustomFields {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long parentId;
 	public long getParentId() {
 		return parentId;

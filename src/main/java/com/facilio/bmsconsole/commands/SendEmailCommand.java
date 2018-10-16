@@ -20,6 +20,10 @@ import com.facilio.fs.FileStoreFactory;
 
 public class SendEmailCommand implements Command,Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = LogManager.getLogger(SendEmailCommand.class.getName());
 	
 	@Override

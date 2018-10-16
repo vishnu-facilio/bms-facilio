@@ -48,7 +48,7 @@ public class GetExportReportDataCommand implements Command {
 		ReportMode mode = (ReportMode)context.get(FacilioConstants.ContextNames.REPORT_MODE);
 		
 		if (mode == null) {
-			String chartStateString = (String) report.getChartState();
+			String chartStateString = report.getChartState();
 			JSONParser parser = new JSONParser();
 			Map<String, Object> chartState = (Map<String, Object>) parser.parse(chartStateString);
 			if (chartState != null && chartState.containsKey("common")) {
@@ -61,7 +61,7 @@ public class GetExportReportDataCommand implements Command {
 		Map<Long, ReportBaseLineContext> baseLineMap = null;
 		
 		List<String> currentHeaderKeys = new ArrayList<>();
-		Map<String, Map<String, Object>> rows = new LinkedHashMap<>();
+		new LinkedHashMap<>();
 	    if (mode == ReportMode.SERIES) {
 	    	  currentHeaderKeys.add(SERIES_X_HEADER);
 	    	  currentHeaderKeys.addAll(reportData.values().stream().filter(val -> val != null && !val.isEmpty()).findFirst().get().keySet());
@@ -180,7 +180,7 @@ public class GetExportReportDataCommand implements Command {
 				String colName = isBaseLine ? (String) col.get("dp") : ((String) col.get("name"));
 				if ((String) col.get("displayName") != null) {
 					headers.add((String) col.get("displayName"));
-					col.put("header", (String) col.get("displayName"));
+					col.put("header", col.get("displayName"));
 				}
 				else {
 					ReportDataPointContext dataPoint = dataMap.get(colName);
@@ -239,7 +239,7 @@ public class GetExportReportDataCommand implements Command {
 			
 			String format = "EEEE, MMMM dd, yyyy hh:mm a";
 			
-			List<Map<String, Object>> xValueList = new ArrayList<>();
+			new ArrayList<>();
 			AggregateOperator aggr = report.getDataPoints().get(0).getxAxis().getAggrEnum();
 			if (aggr != null && aggr instanceof DateAggregateOperator) {
 				String dateFormat = ((DateAggregateOperator)aggr).getFormat();

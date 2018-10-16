@@ -12,7 +12,7 @@ public class ValidateFloorFieldsCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		FloorContext campusContext = (FloorContext) context.get(FacilioConstants.ContextNames.FLOOR);
+		context.get(FacilioConstants.ContextNames.FLOOR);
 		return false;
 	}
 

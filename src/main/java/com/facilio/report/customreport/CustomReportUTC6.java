@@ -5,22 +5,16 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.chain.Command;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import com.amazonaws.services.cognitoidp.model.StatusType;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
-import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
-import com.facilio.constants.FacilioConstants;
 
 public class CustomReportUTC6 implements CustomReport {	//completed vs pending by task
 

@@ -7,6 +7,10 @@ import java.util.Map;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class TicketStatusContext extends ModuleBaseWithCustomFields {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String status;
 	public String getStatus() {
 		return status;

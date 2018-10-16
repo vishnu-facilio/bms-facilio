@@ -22,7 +22,7 @@ public class GenerateSortingQueryCommand implements Command {
 		context.put(FacilioConstants.ContextNames.SORTING_QUERY, null);	
 		JSONObject sortObj = (JSONObject) context.get(FacilioConstants.ContextNames.SORTING);
 		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
+		context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		StringBuilder orderBy = new StringBuilder();
 		if (sortObj != null && !sortObj.isEmpty()) {
 

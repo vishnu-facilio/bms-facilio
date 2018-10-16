@@ -180,7 +180,7 @@ public class WorkflowUtil {
 		if(CHILLER_TEMP_VS_PRESSURE == null) {
 
 			WorkflowUtil w = new WorkflowUtil();
-			URL res = w.getClass().getClassLoader().getResource("conf/chillerdata.csv");
+			w.getClass().getClassLoader().getResource("conf/chillerdata.csv");
 			File chillerCSVFile = new File(w.getClass().getClassLoader().getResource("conf/chillerdata.csv").getFile());
 	        String line = "";
 	        String cvsSplitBy = ",";
@@ -415,7 +415,7 @@ public class WorkflowUtil {
 		
 		validateWorkflow(workflow);
 		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		BeanFactory.lookup("ModuleBean");
 		
 		workflow.setWorkflowUIMode(workflowContext.getWorkflowUIMode());
 		
@@ -667,7 +667,7 @@ public class WorkflowUtil {
 	}
 	
 	public static void parseExpression(WorkflowContext workflowContext) throws Exception {
-		List<WorkflowExpression> temp= new ArrayList<>();
+		new ArrayList<>();
 		if(workflowContext != null && workflowContext.getExpressions() != null) {
 			for(int i = 0; i < workflowContext.getExpressions().size(); i++) {
 				WorkflowExpression workflowExpression = workflowContext.getExpressions().get(i);

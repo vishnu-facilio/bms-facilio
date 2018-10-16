@@ -18,6 +18,10 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class ViewAction extends ActionSupport {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public String viewList() throws Exception
 	{
 		FacilioContext context = new FacilioContext();
@@ -32,7 +36,7 @@ public class ViewAction extends ActionSupport {
 	
 	public String getViewDetail() throws Exception
 	{
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		BeanFactory.lookup("ModuleBean");
 		if (moduleName == null) {
 			moduleName = "workorder";
 		}

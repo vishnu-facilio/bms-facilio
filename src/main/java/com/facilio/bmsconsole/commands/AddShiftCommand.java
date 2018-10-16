@@ -33,7 +33,7 @@ public class AddShiftCommand implements Command {
 				.addRecord(props);
 		shiftBuilder.save();
 		
-		long shiftId = (long) props.get("id");
+		props.get("id");
 		List<BusinessHourContext> days = shift.getDays();
 		
 		ShiftAPI.scheduleJobs(days);

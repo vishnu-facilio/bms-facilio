@@ -24,6 +24,11 @@ import com.facilio.constants.FacilioConstants;
 
 public class AssetAction extends FacilioAction {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public String newAsset() throws Exception {
 		
 		FacilioContext context = new FacilioContext();

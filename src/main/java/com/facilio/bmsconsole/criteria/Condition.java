@@ -16,6 +16,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Condition implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long conditionId = -1;
 	public long getConditionId() {
 		return conditionId;

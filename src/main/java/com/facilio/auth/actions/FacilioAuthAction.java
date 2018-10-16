@@ -43,7 +43,12 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class FacilioAuthAction extends ActionSupport {
 
-    private static final Logger LOGGER = Logger.getLogger(FacilioAuthAction.class.getName());
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private static final Logger LOGGER = Logger.getLogger(FacilioAuthAction.class.getName());
 
     private String username = null;
     private String password = null;

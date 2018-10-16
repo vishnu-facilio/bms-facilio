@@ -9,6 +9,10 @@ import com.facilio.time.SecondsChronoUnit;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ControllerContext implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long id = -1;
 	public long getId() {
 		return id;

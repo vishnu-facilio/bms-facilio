@@ -3,6 +3,10 @@ package com.facilio.bmsconsole.context;
 import java.io.Serializable;
 
 public class ControllerActivityWatcherContext implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long id = -1;
 	public long getId() {
 		return id;

@@ -18,6 +18,10 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class RoleAction extends ActionSupport {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private SetupLayout setup;
 	public SetupLayout getSetup() {
 		return this.setup;

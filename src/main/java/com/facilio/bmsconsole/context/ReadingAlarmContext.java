@@ -2,6 +2,10 @@ package com.facilio.bmsconsole.context;
 
 public class ReadingAlarmContext extends AlarmContext {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long readingFieldId = -1;
 	public long getReadingFieldId() {
 		return readingFieldId;

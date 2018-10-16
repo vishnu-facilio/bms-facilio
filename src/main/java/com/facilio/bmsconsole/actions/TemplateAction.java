@@ -21,6 +21,10 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class TemplateAction extends ActionSupport {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long id = -1;
 	public long getId() {
 		return id;

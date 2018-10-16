@@ -4,6 +4,10 @@ import com.facilio.bmsconsole.context.BuildingContext;
 
 public class LeedConfigurationContext extends BuildingContext {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long leedId;
 	private String buildingStatus;
 	private long leedScore;

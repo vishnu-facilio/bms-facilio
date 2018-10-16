@@ -6,6 +6,10 @@ import org.apache.log4j.Logger;
 import com.facilio.constants.FacilioConstants;
 
 public class CostAction extends FacilioAction {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = LogManager.getLogger(CostAction.class.getName());
 	
 	public String addUtilityProvider() {

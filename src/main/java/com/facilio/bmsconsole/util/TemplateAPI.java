@@ -673,7 +673,7 @@ public class TemplateAPI {
 	
 	private static ExcelTemplate getExcelTemplateFromMap(Map<String, Object> templateMap) throws Exception {
 		ExcelTemplate template = FieldUtil.getAsBeanFromMap(templateMap, ExcelTemplate.class);
-		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
+		AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
 		//template.setWorkbook(WorkbookFactory.create(FileStoreFactory.getInstance().getFileStore(superAdmin.getId()).readFile(template.getExcelFileId())));
 		return template;
 	}
@@ -723,14 +723,13 @@ public class TemplateAPI {
 				TaskContext task = template.getTask();
 				
 				String sectionName = null;
-				long sectionId = -1;
 				if (template.getSectionId() == -1) {
 					sectionName = FacilioConstants.ContextNames.DEFAULT_TASK_SECTION;
 				}
 				else {
 					TaskSectionTemplate sectionTemplate = sectionMap.get(template.getSectionId());
 					sectionName = sectionTemplate.getName();
-					sectionId = sectionTemplate.getId();
+					sectionTemplate.getId();
 				}
 				List<TaskContext> tasks = taskMap.get(sectionName);
 				if (tasks == null) {

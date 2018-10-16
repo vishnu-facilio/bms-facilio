@@ -15,8 +15,6 @@ public class UrjanetLoginCommand  implements Command
 {
 		@Override
 		public boolean execute(Context context) throws Exception {
-			// TODO Auto-generated method stub
-			boolean isLoginRequired = false;
 			UtilityProviderCredentials  credentials = (UtilityProviderCredentials)context.get(UrjanetConstants.ContextNames.CREDENTIAL);
 			UrjanetConnection connection = new UrjanetConnection();
 			JSONObject createJSON = new JSONObject();

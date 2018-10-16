@@ -81,7 +81,7 @@ public class GetUpcomingPreventiveMaintenanceCommand implements Command {
 						if(trigger.getSchedule().getFrequencyTypeEnum() == ScheduleInfo.FrequencyType.DO_NOT_REPEAT) {
 							if(trigger.getStartTime() > startTime && trigger.getStartTime() <= endTime) {
 								PMJobsContext pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger.getId(), startTime, false);
-								Pair<PMJobsContext, PreventiveMaintenance> pair = new ImmutablePair<PMJobsContext, PreventiveMaintenance>(pmJob, pm);
+								new ImmutablePair<PMJobsContext, PreventiveMaintenance>(pmJob, pm);
 								pmJobList.add(pmJob);
 							}
 						}

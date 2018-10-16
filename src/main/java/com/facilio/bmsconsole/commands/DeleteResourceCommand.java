@@ -25,7 +25,7 @@ public class DeleteResourceCommand implements Command {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
 			
-			List<ResourceContext> records = ResourceAPI.getExtendedResources(recordIds, true);
+			ResourceAPI.getExtendedResources(recordIds, true);
 			
 			DeleteRecordBuilder<? extends ResourceContext> deleteBuilder = new DeleteRecordBuilder<ResourceContext>()
 																				.module(module)

@@ -30,7 +30,7 @@ public class GetTicketActivitesCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		long ticketId = (long) context.get(FacilioConstants.ContextNames.TICKET_ID);
-		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		context.get(FacilioConstants.ContextNames.MODULE_NAME);
 //		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioField> fields = FieldFactory.getTicketActivityFields();
 		if(ticketId != -1) {

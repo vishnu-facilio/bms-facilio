@@ -4,6 +4,10 @@ import org.json.simple.JSONObject;
 
 public class WidgetWebContext extends DashboardWidgetContext {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String webUrl;
 	
 	public String getWebUrl() {

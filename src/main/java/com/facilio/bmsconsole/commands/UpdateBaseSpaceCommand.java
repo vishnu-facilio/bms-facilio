@@ -25,7 +25,7 @@ public class UpdateBaseSpaceCommand implements Command {
 		{
 
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.SPACE_TYPE);
-			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);	
+			context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);	
 
 
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

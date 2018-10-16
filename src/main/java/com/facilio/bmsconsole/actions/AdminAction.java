@@ -29,6 +29,10 @@ import com.opensymphony.xwork2.util.ValueStack;
 
 public class AdminAction extends ActionSupport
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static Logger logger = Logger.getLogger(AdminAction.class.getName());
 	private static org.apache.log4j.Logger log = org.apache.log4j.LogManager.getLogger(AdminAction.class.getName());
 	

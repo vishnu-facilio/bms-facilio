@@ -6,6 +6,10 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.unitconversion.Unit;
 
 public class ReadingDataMeta implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long orgId = -1;
 	int unit = -1;
 	public int getUnit() {

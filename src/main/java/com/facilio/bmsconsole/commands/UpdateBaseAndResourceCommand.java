@@ -21,11 +21,15 @@ import com.facilio.transaction.FacilioConnectionPool;
 import com.google.common.collect.ArrayListMultimap;
 
 public class UpdateBaseAndResourceCommand implements Command,Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static Logger LOGGER = Logger.getLogger(UpdateBaseAndResourceCommand.class.getName());
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		ArrayListMultimap<String, ReadingContext> groupedContext = (ArrayListMultimap<String, ReadingContext>) context.get(ImportAPI.ImportProcessConstants.GROUPED_READING_CONTEXT);
+		context.get(ImportAPI.ImportProcessConstants.GROUPED_READING_CONTEXT);
 		ArrayListMultimap<String, Long> recordsList = (ArrayListMultimap<String, Long>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		
 		for(String module : recordsList.keySet()) {

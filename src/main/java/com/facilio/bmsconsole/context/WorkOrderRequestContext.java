@@ -14,6 +14,10 @@ import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
 public class WorkOrderRequestContext extends TicketContext {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static Logger log = LogManager.getLogger(WorkOrderRequestContext.class.getName());
 	private User requester;
 	public User getRequester() {
