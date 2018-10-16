@@ -128,7 +128,7 @@ public class FormsAPI {
 		return forms;
 	}
 
-	public static void createForm(FacilioForm editedForm, FacilioModule parent)
+	public static long createForm(FacilioForm editedForm, FacilioModule parent)
 			throws Exception {
 		long orgId = AccountUtil.getCurrentOrg().getId();
 		editedForm.setOrgId(orgId);
@@ -166,6 +166,7 @@ public class FormsAPI {
 				.addRecords(fieldProps);
 		
 		fieldInsertBuilder.save();
+		return id;
 	}
 	
 	public static List<FacilioForm> getFromsFromDB(Collection<Long> ids) throws Exception {

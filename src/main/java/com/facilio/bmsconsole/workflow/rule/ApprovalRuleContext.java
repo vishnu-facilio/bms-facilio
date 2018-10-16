@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.context.EventContext.EventInternalState;
 import com.facilio.fw.BeanFactory;
@@ -37,6 +38,22 @@ public class ApprovalRuleContext extends WorkflowRuleContext {
 		this.approvalRule = approvalRule;
 	}
 	
+	private FacilioForm approvalForm;
+	
+	public FacilioForm getApprovalForm() {
+		return approvalForm;
+	}
+	public void setApprovalForm(FacilioForm approvalForm) {
+		this.approvalForm = approvalForm;
+	}
+	private FacilioForm rejectionForm;
+	public FacilioForm getRejectionForm() {
+		return rejectionForm;
+	}
+	public void setRejectionForm(FacilioForm rejectionForm) {
+		this.rejectionForm = rejectionForm;
+	}
+
 	private long rejectionRuleId = -1;
 	public long getRejectionRuleId() {
 		return rejectionRuleId;
