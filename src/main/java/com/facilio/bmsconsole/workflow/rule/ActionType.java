@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.workflow.rule;
 
+import java.sql.Date;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -382,14 +383,14 @@ public enum ActionType {
 			WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
 			WorkOrderContext updateWO = new WorkOrderContext();
 
-			if (assignedToUserId != -1) {
+			if (assignedToUserId != -1  && (workOrder.getAssignedTo() == null || workOrder.getAssignedTo().getOuid() == -1)) {
 				User user = new User();
 				user.setOuid(assignedToUserId);
 				workOrder.setAssignedTo(user);
 				updateWO.setAssignedTo(user);
 			}
 
-			if (assignGroupId != -1) {
+			if (assignGroupId != -1 && (workOrder.getAssignmentGroup() == null || workOrder.getAssignmentGroup().getGroupId() == -1)) {
 				Group group = new Group();
 				group.setId(assignGroupId);
 				workOrder.setAssignmentGroup(group);
@@ -419,6 +420,7 @@ public enum ActionType {
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
 				Object currentRecord) {
 
+//			long duedate = -1;
 			WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
 			if (workOrder.getPriority() == null) {
 				return;
@@ -434,8 +436,8 @@ public enum ActionType {
 			while (iter.hasNext()) {
 				JSONObject slaPolicy = (JSONObject) iter.next();
 				long priorityId = Long.parseLong((String) slaPolicy.get("priority"));
-				if (priorityId == workorderpriority) {
-					duration = Long.parseLong(slaPolicy.get("duration").toString()) * 1000;
+				if (priorityId == workorderpriority && slaPolicy.get("duration") != null) {
+						duration = Long.parseLong(slaPolicy.get("duration").toString()) * 1000;
 				}
 
 			}
