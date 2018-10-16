@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
@@ -18,6 +20,7 @@ import com.google.common.collect.ArrayListMultimap;
 
 public class InsertReadingCommand implements Command {
 
+	private static final Logger LOGGER = Logger.getLogger(InsertReadingCommand.class.getName());
 	@Override
 	public boolean execute(Context context) throws Exception {
 		context.get(ImportAPI.ImportProcessConstants.READINGS_LIST);
@@ -48,6 +51,9 @@ public class InsertReadingCommand implements Command {
 	}
 
 	public static void insertReadings(String moduleName,List<ReadingContext> readingsContext) throws Exception {
+		
+		LOGGER.log(Level.SEVERE, "moduleName - "+moduleName +" readingsContext count -- "+readingsContext.size());
+		
 		Map<String, List<ReadingContext>> readingMap= Collections.singletonMap(moduleName, readingsContext);
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.HISTORY_READINGS,true);
