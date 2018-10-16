@@ -53,8 +53,10 @@ public class DataParseForReadingsCommand implements Command {
 		ArrayListMultimap<String, ReadingContext> groupedContext = ArrayListMultimap.create();
 		ImportProcessContext importProcessContext = (ImportProcessContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
 		Long templateID = importProcessContext.getTemplateId();
+		LOGGER.severe("templateID -- "+templateID);
 		ImportTemplateAction importTemplateAction = new ImportTemplateAction();
 		ImportTemplateContext importTemplateContext = importTemplateAction.fetchTemplate(templateID);
+		LOGGER.severe("importTemplateContext getFieldMappingString-- "+importTemplateContext.getFieldMappingString());
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
 		InputStream is = fs.readFile(importProcessContext.getFileId());
 		HashMap<String,String> fieldMapping = importTemplateContext.getFieldMapping();
