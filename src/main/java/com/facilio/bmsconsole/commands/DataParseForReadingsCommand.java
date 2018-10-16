@@ -247,7 +247,6 @@ public class DataParseForReadingsCommand implements Command {
 		
 		List<? extends ModuleBaseWithCustomFields> props = selectRecordBuilder.get();
 		LOGGER.severe("selectRecord" + selectRecordBuilder.toString());
-		LOGGER.severe("props" + props.toString());
 		Long Id = props.get(0).getId();
 		LOGGER.severe("id -- " + Id);
 		return Id;
@@ -255,6 +254,7 @@ public class DataParseForReadingsCommand implements Command {
 	}
 	public void fieldMapParsing(HashMap<String, String> fieldMapping) throws Exception {
 
+		LOGGER.severe("fieldMapping -- " + fieldMapping);
 		groupedFields = ArrayListMultimap.create();
 		new HashMap<>();
 		List<String> fieldMappingKeys = new ArrayList<>(fieldMapping.keySet());
@@ -283,5 +283,6 @@ public class DataParseForReadingsCommand implements Command {
 			}
 			
 		}
+		LOGGER.severe("groupedFields -- " + groupedFields);
 	}
 }
