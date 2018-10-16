@@ -1,6 +1,11 @@
 package com.facilio.report.context;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
+import com.facilio.bmsconsole.modules.BooleanField;
+import com.facilio.bmsconsole.modules.EnumField;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.NumberField;
@@ -40,6 +45,8 @@ public class ReportAxisContext {
 	}
 	public void setField(FacilioField field) {
 		if (field != null) {
+
+			
 			this.fieldId = field.getId();
 			this.fieldName = field.getName();
 			
@@ -53,11 +60,23 @@ public class ReportAxisContext {
 			if (this.dataType == null) {
 				this.dataType = field.getDataTypeEnum();
 			}
+			
 			if (field instanceof NumberField) {
 				if (this.unitStr == null) {
 					this.unitStr = ((NumberField) field).getUnit();
 				}
 				this.metric = ((NumberField) field).getMetricEnum();
+			}
+			else if (field instanceof BooleanField) {
+				BooleanField boolField = (BooleanField) field;
+				if (boolField.getTrueVal() != null && !boolField.getTrueVal().isEmpty()) {
+					enumMap = new HashMap<>();
+					enumMap.put(1, boolField.getTrueVal());
+					enumMap.put(0, boolField.getFalseVal());
+				}
+			}
+			else if (field instanceof EnumField) {
+				enumMap = ((EnumField) field).getEnumMap();
 			}
 		}
 		this.field = field;
@@ -137,5 +156,13 @@ public class ReportAxisContext {
 	}
 	public void setJoinOn(String joinOn) {
 		this.joinOn = joinOn;
+	}
+	
+	private Map<Integer, Object> enumMap;
+	public Map<Integer, Object> getEnumMap() {
+		return enumMap;
+	}
+	public void setEnumMap(Map<Integer, Object> enumMap) {
+		this.enumMap = enumMap;
 	}
 }
