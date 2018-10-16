@@ -568,7 +568,7 @@ public class ReadingsAPI {
 		
 		for(ResourceContext resource:resourcesList) {
 			
-			LOGGER.log(Priority.ERROR, "\n\n RDM update running for resource -- "+resource.getId());
+			LOGGER.error("\n\n RDM update running for resource -- "+resource.getId());
 			List<FacilioModule>	moduleList=null;
 			int resourceType=	resource.getResourceType();
 			long resourceId=resource.getId();
