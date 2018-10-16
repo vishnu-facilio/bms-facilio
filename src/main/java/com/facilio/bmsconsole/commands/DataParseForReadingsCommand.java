@@ -249,8 +249,8 @@ public class DataParseForReadingsCommand implements Command {
 		LOGGER.severe("selectRecord" + selectRecordBuilder.toString());
 		LOGGER.severe("props" + props.toString());
 		Long Id = (Long) props.get(0).getId();
+		LOGGER.severe("id -- " + Id);
 		return Id;
-		
 		
 	}
 	public void fieldMapParsing(HashMap<String, String> fieldMapping) throws Exception {

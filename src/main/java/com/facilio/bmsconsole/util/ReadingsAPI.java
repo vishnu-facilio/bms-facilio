@@ -20,6 +20,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -566,6 +567,8 @@ public class ReadingsAPI {
 				.fields(FieldFactory.getReadingDataMetaFields());
 		
 		for(ResourceContext resource:resourcesList) {
+			
+			LOGGER.log(Priority.ERROR, "\n\n RDM update running for resource -- "+resource.getId());
 			List<FacilioModule>	moduleList=null;
 			int resourceType=	resource.getResourceType();
 			long resourceId=resource.getId();
