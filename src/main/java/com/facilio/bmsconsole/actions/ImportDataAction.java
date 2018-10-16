@@ -229,11 +229,11 @@ public class ImportDataAction extends ActionSupport {
 				im.setnewEntries(Integer.parseInt(inserted));
 				im.setupdateEntries(Integer.parseInt(updated));				
 			}
-			importProcessContext = im;
 		}
 		else if(status ==2 && mail!=null) {
 			ImportAPI.updateImportProcess(getImportProcessContext());
 		}
+		importProcessContext = im;
 		return SUCCESS;
 	}
 	

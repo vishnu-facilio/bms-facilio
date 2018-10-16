@@ -13,6 +13,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
+import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileStore;
@@ -38,11 +39,11 @@ public class SendEmailCommand implements Command,Serializable{
 			if (mailSetting != null) {
 				User user = AccountUtil.getCurrentUser();
 				FileInfo fileInfo = fs.getFileInfo(importProcessContext.getFileId());
-				JSONObject email = new JSONObject();
-				email.put("to", user.getEmail());
-				email.put("subject", "Import of " + fileInfo.getFileName());
-				email.put("message",emailMessage.toString());
-				AwsUtil.sendEmail(email);
+				EMailTemplate template = new EMailTemplate();
+				template.setTo(user.getEmail());
+				template.setMessage(emailMessage.toString());
+				template.setSubject("Import of" + fileInfo.getFileName());
+				AwsUtil.sendEmail(template.getOriginalTemplate());
 			}
 			else {
 				emailMessage.delete(0, emailMessage.length());
