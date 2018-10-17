@@ -102,7 +102,7 @@ public class CalculatePostFormulaCommand implements Command {
 						context.put(FacilioConstants.ContextNames.MODULE_FIELD_MAP, fieldMap);
 						
 						if (controllerTime != null) {
-							ControllerContext formulaController = getFormulaController(formula);
+							ControllerContext formulaController = getFormulaController(formula, completedKey);
 							context.put(FacilioConstants.ContextNames.CONTROLLER, formulaController);
 							context.put(FacilioConstants.ContextNames.CONTROLLER_TIME, controllerTime);
 							context.put(FacilioConstants.ContextNames.CONTROLLER_LEVEL, controllerLevel);
@@ -120,9 +120,8 @@ public class CalculatePostFormulaCommand implements Command {
 		}
 	}
 	
-	private ControllerContext getFormulaController (FormulaFieldContext formula) {
+	private ControllerContext getFormulaController (FormulaFieldContext formula, String name) {
 		ControllerContext controller = new ControllerContext();
-		String name = formula.getReadingField().getModule().getName()+"_"+formula.getReadingField().getName();
 		controller.setMacAddr(name);
 		controller.setDataInterval(formula.getInterval());
 		controller.setName(name);
