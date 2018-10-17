@@ -44,12 +44,14 @@ public class ControllerActivityWatcherJob extends InstantJob {
 			}
 			List<ControllerContext> controllers = (List<ControllerContext>) context.get(FacilioConstants.ContextNames.CONTROLLER_LIST);
 			Set<Long> activityIds = keepCheckingAndGetActivityIds(controllers, watcher);
+			LOGGER.info("Completed listning : "+activityIds);
 			Map<Long, JSONObject> activityRecords = ControllerAPI.getControllerActivityRecords(activityIds);
 			List<ControllerContext> formulaControllers = startPostFormulaCalculation(activityRecords, watcher);
 			if (formulaControllers != null && !formulaControllers.isEmpty()) {
 				ControllerActivityWatcherContext nextLevelWatcher = ControllerAPI.addActivityWatcher(watcher.getRecordTime(), watcher.getDataInterval(), watcher.getLevel() + 1);
 				ControllerAPI.scheduleControllerActivityJob(nextLevelWatcher, formulaControllers);
 			}
+			LOGGER.info("Gonna mark as complete for "+watcher);
 			ControllerAPI.markWatcherAsComplete(watcher.getId());
 		}
 		catch (Exception e) {
