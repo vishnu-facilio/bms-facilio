@@ -48,6 +48,12 @@ public class FacilioUtil {
     	}
     	return str.matches("-?\\d+(\\.\\d+)?");  //match a number with optional '-' and decimal. eg  : (-10.23)
     }
+    public static JSONArray getSingleTonJsonArray(Object o) {
+    	JSONArray jsonArray = new JSONArray();
+    	jsonArray.add(o);
+    	return jsonArray;
+    }
+    
     public static Map<String, Object> getAsMap(JSONObject object) throws JSONException {
 	    Map<String, Object> map = new HashMap<String, Object>();
 

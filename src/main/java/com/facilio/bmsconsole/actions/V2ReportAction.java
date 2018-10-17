@@ -1,9 +1,12 @@
 package com.facilio.bmsconsole.actions;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.chain.Chain;
 import org.json.simple.JSONArray;
@@ -16,19 +19,29 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
+import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.ReportInfo;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetStaticContext;
+import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.criteria.Operator;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.templates.EMailTemplate;
+import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.bmsconsole.util.DateTimeUtil;
+import com.facilio.bmsconsole.util.ResourceAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.cards.util.CardType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo.FileFormat;
@@ -41,6 +54,11 @@ import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportFolderContext;
 import com.facilio.report.context.WorkorderAnalysisContext;
 import com.facilio.report.util.ReportUtil;
+import com.facilio.util.FacilioUtil;
+import com.facilio.workflows.context.ExpressionContext;
+import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.context.WorkflowExpression;
+import com.facilio.workflows.util.WorkflowUtil;
 
 public class V2ReportAction extends FacilioAction {
 	
@@ -246,7 +264,19 @@ public class V2ReportAction extends FacilioAction {
 	public void setCardWidgetId(long cardWidgetId) {
 		this.cardWidgetId = cardWidgetId;
 	}
-	public String getReadingsFromCard() throws Exception {
+	public String fetchReadingsFromAlarm() throws Exception {
+		
+		getDataPointFromAlarm();
+		
+		FacilioContext context = new FacilioContext();
+		setReadingsDataContext(context);
+		
+		Chain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReadingReportChain() : ReadOnlyChainFactory.fetchReadingReportChain();
+		fetchReadingDataChain.execute(context);
+		
+		return setReportResult(context);
+	}
+	public String fetchReadingsFromCard() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
 		
@@ -375,6 +405,110 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.REPORT_Y_FIELDS, FieldUtil.getAsBeanListFromJsonArray(fieldArray, ReadingAnalysisContext.class));
 		context.put(FacilioConstants.ContextNames.REPORT_MODE, mode);
 		context.put(FacilioConstants.ContextNames.BASE_LINE_LIST, FieldUtil.getAsBeanListFromJsonArray(baseLineList, ReportBaseLineContext.class));
+	}
+	
+	
+	private void getDataPointFromAlarm() throws Exception {
+
+		AlarmContext alarm = AlarmAPI.getAlarm(alarmId);
+		
+		ReadingAlarmContext readingAlarmContext = AlarmAPI.getReadingAlarmContext(alarmId);
+		
+		ReadingRuleContext readingruleContext = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(readingAlarmContext.getRuleId());
+
+		JSONArray dataPoints = new JSONArray();
+		
+		if(readingruleContext != null) {
+			ResourceContext resource = ResourceAPI.getResource(alarm.getResource().getId());
+			ResourceContext currentResource = resource;
+			
+			if(readingruleContext.getThresholdType() == ReadingRuleContext.ThresholdType.ADVANCED.getValue()) {
+				
+				Set readingMap = new HashSet();
+				if(readingruleContext.getWorkflowId() > 0) {
+					WorkflowContext workflow = WorkflowUtil.getWorkflowContext(readingruleContext.getWorkflowId(), true);
+					
+					for(WorkflowExpression workflowExp:workflow.getExpressions()) {
+						
+						ExpressionContext exp = (ExpressionContext) workflowExp;
+						if(exp.getModuleName() != null) {
+							
+							JSONObject dataPoint = new JSONObject();
+							
+							FacilioField readingField = null;
+							if(exp.getFieldName() != null ) {
+								readingField = DashboardUtil.getField(exp.getModuleName(), exp.getFieldName());
+								
+								JSONObject yAxisJson = new JSONObject();
+								yAxisJson.put("fieldId", readingField.getFieldId());
+								yAxisJson.put("aggr", 0);
+								
+								dataPoint.put("yAxis", yAxisJson.toJSONString());
+								
+							}
+							if(exp.getCriteria() != null) {
+								Map<Integer, Condition> conditions = exp.getCriteria().getConditions();
+								
+								for(Integer key : conditions.keySet()) {
+									
+									Condition condition = conditions.get(key);
+									
+									if(condition.getFieldName().equals("parentId")) {
+										resource = condition.getValue().equals("${resourceId}") ? currentResource : ResourceAPI.getResource(Long.parseLong(condition.getValue()));
+										
+										dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()).toJSONString());
+										
+										break;
+									}
+								}
+							}
+							dataPoint.put("type", 5);
+							if(!readingMap.contains(resource.getId() + "_" + readingField.getFieldId())) {
+								readingMap.add(resource.getId() + "_" + readingField.getFieldId());
+								dataPoints.add(dataPoint);								
+							}
+						}
+					}
+				}
+			}
+			else {
+				JSONObject dataPoint = new JSONObject();
+				
+				dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()).toJSONString());
+				
+				JSONObject yAxisJson = new JSONObject();
+				yAxisJson.put("fieldId", readingruleContext.getReadingFieldId());
+				yAxisJson.put("aggr", 0);
+				
+				dataPoint.put("yAxis", yAxisJson.toJSONString());
+				
+				dataPoint.put("type", 5);
+				
+				dataPoints.add(dataPoint);
+			}
+			
+			if(readingruleContext.getBaselineId() != -1) {
+				JSONArray baselineArray = new JSONArray();
+				JSONObject baselineJson = new JSONObject();
+				baselineJson.put("baseLineId", readingruleContext.getBaselineId());
+				baselineArray.add(baselineJson);
+				baseLines = baselineArray.toJSONString();
+			}
+			
+			ZonedDateTime startTime = DateTimeUtil.getDayStartTimeOf(DateTimeUtil.getZonedDateTime(readingAlarmContext.getStartTime()));
+			ZonedDateTime endTime = null;
+			if(readingAlarmContext.getEndTime() > 0) {
+				endTime = DateTimeUtil.getDayEndTimeOf(DateTimeUtil.getZonedDateTime(readingAlarmContext.getEndTime()));
+			}
+			else {
+				endTime = DateTimeUtil.getDayEndTimeOf(startTime);
+			}
+			
+			this.startTime = startTime.toInstant().toEpochMilli();
+			this.endTime = endTime.toInstant().toEpochMilli();
+			setxAggr(0);
+		}
+		fields =  dataPoints.toJSONString();
 	}
 	
 	private ReadingAnalysisContext.ReportMode mode = ReportMode.TIMESERIES;
