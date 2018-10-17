@@ -10,6 +10,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -24,24 +25,30 @@ public class AddOrUpdateReadingsCommand implements Command {
 		Chain addOrUpdateChain = FacilioChainFactory.onlyAddOrUpdateReadingsChain();
 		addOrUpdateChain.execute(context);
 		
-		updateCheckPointAndControllerActivity(context);
+		ControllerContext controller = updateCheckPointAndControllerActivity(context);
 		executeWorkflowsRules(context);
-		execureFormulae(context);
+		
+		if (controller == null) {
+			execureFormulae(context);
+		}
 		
 		return false;
 	}
 	
-	private void updateCheckPointAndControllerActivity (Context context) throws Exception {
+	private ControllerContext updateCheckPointAndControllerActivity (Context context) throws Exception {
 		//Update Check point
 		try {
 			Chain controllerActivityChain = TransactionChainFactory.controllerActivityAndWatcherChain();
 			controllerActivityChain.execute(context);
+			
+			return (ControllerContext) context.get(FacilioConstants.ContextNames.CONTROLLER);
 		}
 		catch (Exception e) {
 			Map<String, List<ReadingContext>> readingMap = (Map<String, List<ReadingContext>>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
 			LOGGER.error("Error occurred while adding controller activity for readings. \n"+readingMap, e);
 			CommonCommandUtil.emailException(this.getClass().getName(), "Error occurred while adding controller activity for readings", e, String.valueOf(readingMap));
 		}
+		return null;
 	}
 	
 	private void executeWorkflowsRules (Context context) {

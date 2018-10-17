@@ -9,7 +9,6 @@ import com.facilio.bmsconsole.context.ControllerActivityWatcherContext;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.util.ControllerAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.tasker.FacilioTimer;
 
 public class CheckAndStartWatcherCommand implements Command {
 
@@ -23,25 +22,20 @@ public class CheckAndStartWatcherCommand implements Command {
 			long time = (long) context.get(FacilioConstants.ContextNames.CONTROLLER_TIME);
 			int dataInterval = ControllerAPI.getDataIntervalInMin(controller);
 			Integer level = (Integer) context.get(FacilioConstants.ContextNames.CONTROLLER_LEVEL);
-			if (level == null) {
+			if (level == null) { //Starting watcher only for level 0 because for subsequent levels, watcher will started by prev level watcher
 				level = 0;
-			}
-			
-			try {
-				ControllerActivityWatcherContext watcher = ControllerAPI.getActivityWatcher(time, dataInterval, level);
-				if (watcher == null) {
-					LOGGER.info("Starting watcher for interval : "+dataInterval+" at time : "+time);
-					watcher = ControllerAPI.addActivityWatcher(time, dataInterval, level);
-					FacilioContext jobContext = new FacilioContext();
-					jobContext.put(FacilioConstants.ContextNames.CONTROLLER_ACTIVITY_WATCHER, watcher);
-					jobContext.put(FacilioConstants.ContextNames.CONTROLLER_LIST, ControllerAPI.getActtiveControllers(controller.getDataInterval()));
-					jobContext.put(FacilioConstants.ContextNames.START_TIME, System.currentTimeMillis());
-					
-					FacilioTimer.scheduleInstantJob("ControllerActivityWatcher", jobContext);
+				
+				try {
+					ControllerActivityWatcherContext watcher = ControllerAPI.getActivityWatcher(time, dataInterval, level);
+					if (watcher == null) {
+						LOGGER.info("Starting watcher for interval : "+dataInterval+" at time : "+time);
+						watcher = ControllerAPI.addActivityWatcher(time, dataInterval, level);
+						ControllerAPI.scheduleControllerActivityJob(watcher, ControllerAPI.getActtiveControllers(controller.getDataInterval()));
+					}
 				}
-			}
-			catch (Exception e) {
-				LOGGER.error("Error occurred during addition of watcher for interval : "+dataInterval+" at time : "+time, e);
+				catch (Exception e) {
+					LOGGER.error("Error occurred during addition of watcher for interval : "+dataInterval+" at time : "+time, e);
+				}
 			}
 		}
 		return false;

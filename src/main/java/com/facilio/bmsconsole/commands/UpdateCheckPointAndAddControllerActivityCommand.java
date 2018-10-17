@@ -33,26 +33,37 @@ public class UpdateCheckPointAndAddControllerActivityCommand implements Command 
 				context.put(FacilioConstants.ContextNames.CONTROLLER, controller);
 				context.put(FacilioConstants.ContextNames.CONTROLLER_TIME, record.getApproximateArrivalTimestamp().getTime());
 				
-				MultiModuleReadingData readingData = new MultiModuleReadingData();
-				readingData.setReadingMap(CommonCommandUtil.getReadingMap((FacilioContext) context));
-				readingData.setReadingDataMeta((Map<String, ReadingDataMeta>) context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META));
-				
-				ControllerAPI.addControllerActivity(controller, record.getApproximateArrivalTimestamp().getTime(), readingData);
+				addControllerActivity((FacilioContext) context, controller, record.getApproximateArrivalTimestamp().getTime());
 			}
 			else {
 				CommonCommandUtil.emailException(this.getClass().getName(), "No controller with client id - "+record.getPartitionKey(), "Kindly add proper controller for this");
 			}
 		}
 		else {
-			String controllerId = (String) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
-			if (controllerId != null && !controllerId.isEmpty()) {
-				ControllerContext controller = ControllerAPI.getActiveController(controllerId);
-				if (controller != null) {
-					//TODO Have to figure what to do with time
+			ControllerContext controller = (ControllerContext) context.get(FacilioConstants.ContextNames.CONTROLLER);
+			if (controller != null) {
+				long controllerTime = (long) context.get(FacilioConstants.ContextNames.CONTROLLER_TIME);
+				addControllerActivity((FacilioContext) context, controller, controllerTime);
+			}
+			else {
+				String controllerId = (String) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
+				if (controllerId != null && !controllerId.isEmpty()) {
+					controller = ControllerAPI.getActiveController(controllerId);
+					if (controller != null) {
+						//TODO Have to figure what to do with time
+					}
 				}
 			}
 		}
 		return false;
+	}
+	
+	private void addControllerActivity(FacilioContext context, ControllerContext controller, long recordTime) throws Exception {
+		MultiModuleReadingData readingData = new MultiModuleReadingData();
+		readingData.setReadingMap(CommonCommandUtil.getReadingMap(context));
+		readingData.setReadingDataMeta((Map<String, ReadingDataMeta>) context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META));
+		
+		ControllerAPI.addControllerActivity(controller, recordTime, readingData);
 	}
 
 }

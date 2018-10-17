@@ -9,13 +9,20 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ControllerActivityWatcherContext;
 import com.facilio.bmsconsole.context.ControllerContext;
+import com.facilio.bmsconsole.context.MultiModuleReadingData;
+import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.ControllerAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.job.InstantJob;
@@ -24,7 +31,7 @@ public class ControllerActivityWatcherJob extends InstantJob {
 
 	private static final Logger LOGGER = LogManager.getLogger(ControllerActivityWatcherJob.class.getName());
 	private static final long THREAD_SLEEP_BUFFER = 5000;
-	private static final long TIME_OUT = 15 * 60 * 1000;
+	private static final long TIME_OUT = 20 * 60 * 1000;
 	
 	@Override
 	public void execute(FacilioContext context) throws Exception {
@@ -37,30 +44,13 @@ public class ControllerActivityWatcherJob extends InstantJob {
 				return;
 			}
 			List<ControllerContext> controllers = (List<ControllerContext>) context.get(FacilioConstants.ContextNames.CONTROLLER_LIST);
-			Map<String, ControllerContext> inCompleteControllers = controllers.stream().collect(Collectors.toMap(ControllerContext::getMacAddr, Function.identity()));
-			LOGGER.info("Controllers for watcher : "+watcher+" is "+inCompleteControllers);
-			List<ControllerContext> completedControllers = new ArrayList<>();
-			Map<String, Set<Long>> activityIds = new HashMap<>();
-			
-			while (!inCompleteControllers.isEmpty()) {
-				List<Map<String, Object>> activites = ControllerAPI.getControllerActivities(inCompleteControllers.values(), watcher.getRecordTime());
-				if (activites != null && !activites.isEmpty()) {
-					LOGGER.info("Activities for time : "+watcher.getRecordTime()+" and interval : "+watcher.getDataInterval()+" : "+activites);
-					for (Map<String, Object> activity : activites) {
-						ControllerContext controller = inCompleteControllers.get(activity.get("controllerMacAddr"));
-						if (controller != null) {
-							int batches = controller.getBatchesPerCycle() == -1 ? 1 : controller.getBatchesPerCycle();
-							if (addAndGetSize(activityIds, controller.getMacAddr(), (long) activity.get("id")) == batches) {
-								inCompleteControllers.remove(controller.getMacAddr());
-								completedControllers.add(controller);
-							}
-						}
-					}
-				}
-				
-				Thread.sleep(THREAD_SLEEP_BUFFER);
+			Set<Long> activityIds = keepCheckingAndGetActivityIds(controllers, watcher);
+			Map<Long, JSONObject> activityRecords = ControllerAPI.getControllerActivityRecords(activityIds);
+			List<ControllerContext> formulaControllers = startPostFormulaCalculation(activityRecords, watcher);
+			if (formulaControllers != null && !formulaControllers.isEmpty()) {
+				ControllerActivityWatcherContext nextLevelWatcher = ControllerAPI.addActivityWatcher(watcher.getRecordTime(), watcher.getDataInterval(), watcher.getLevel() + 1);
+				ControllerAPI.scheduleControllerActivityJob(nextLevelWatcher, formulaControllers);
 			}
-			
 			ControllerAPI.markWatcherAsComplete(watcher.getId());
 		}
 		catch (Exception e) {
@@ -69,14 +59,78 @@ public class ControllerActivityWatcherJob extends InstantJob {
 		}
 	}
 	
-	private int addAndGetSize(Map<String, Set<Long>> activityIds, String macAddr, long activityId) {
+	private Set<Long> keepCheckingAndGetActivityIds(List<ControllerContext> controllers, ControllerActivityWatcherContext watcher) throws Exception {
+		Map<String, ControllerContext> inCompleteControllers = controllers.stream().collect(Collectors.toMap(ControllerContext::getMacAddr, Function.identity()));
+		LOGGER.info("Controllers for watcher : "+watcher+" is "+inCompleteControllers);
+//		List<ControllerContext> completedControllers = new ArrayList<>();
+		Map<String, Set<Long>> activityMap = new HashMap<>();
+		Set<Long> activityIds = new HashSet<>();
+		
+		while (!inCompleteControllers.isEmpty()) {
+			List<Map<String, Object>> activites = ControllerAPI.getControllerActivities(inCompleteControllers.values(), watcher.getRecordTime());
+			if (activites != null && !activites.isEmpty()) {
+				LOGGER.info("Activities for time : "+watcher.getRecordTime()+" and interval : "+watcher.getDataInterval()+" : "+activites);
+				for (Map<String, Object> activity : activites) {
+					ControllerContext controller = inCompleteControllers.get(activity.get("controllerMacAddr"));
+					if (controller != null) {
+						int batches = controller.getBatchesPerCycle() == -1 ? 1 : controller.getBatchesPerCycle();
+						Set<Long> activities = addAndGet(activityMap, controller.getMacAddr(), (long) activity.get("id"));
+						if (activites.size() == batches) {
+							inCompleteControllers.remove(controller.getMacAddr());
+//							completedControllers.add(controller);
+							activityIds.addAll(activities);
+						}
+					}
+				}
+			}
+			
+			Thread.sleep(THREAD_SLEEP_BUFFER);
+		}
+		
+		return activityIds;
+	}
+	
+	private List<ControllerContext> startPostFormulaCalculation(Map<Long, JSONObject> activityRecords, ControllerActivityWatcherContext watcher) throws Exception {
+		if (activityRecords != null && !activityRecords.isEmpty()) {
+			Map<String, List<ReadingContext>> readingMap = new HashMap<>();
+			Map<String, ReadingDataMeta> readingDataMeta = new HashMap<>();
+			for (JSONObject json : activityRecords.values()) {
+				MultiModuleReadingData currentData = FieldUtil.getAsBeanFromJson(json, MultiModuleReadingData.class);
+				if (currentData.getReadingMap() != null && !currentData.getReadingMap().isEmpty()) {
+					for (Map.Entry<String, List<ReadingContext>> entry : currentData.getReadingMap().entrySet()) {
+						List<ReadingContext> readings = readingMap.get(entry.getKey());
+						if (readings == null) {
+							readingMap.put(entry.getKey(), entry.getValue());
+						}
+						else {
+							readings.addAll(entry.getValue());
+						}
+					}
+					readingDataMeta.putAll(currentData.getReadingDataMeta());
+				}
+			}
+			
+			FacilioContext formulaJC = new FacilioContext();
+			formulaJC.put(FacilioConstants.ContextNames.READINGS_MAP, readingMap);
+			formulaJC.put(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META, readingDataMeta);
+			formulaJC.put(FacilioConstants.ContextNames.CONTROLLER_LEVEL, watcher.getLevel() + 1);
+			formulaJC.put(FacilioConstants.ContextNames.CONTROLLER_TIME, watcher.getRecordTime());
+			
+			Chain formulaChain = FacilioChainFactory.calculateFormulaChain();
+			formulaChain.execute(formulaJC);
+			
+			return (List<ControllerContext>) formulaJC.get(FacilioConstants.ContextNames.CONTROLLER_LIST);
+		}
+		return null;
+	}
+	
+	private Set<Long> addAndGet(Map<String, Set<Long>> activityIds, String macAddr, long activityId) {
 		Set<Long> activities = activityIds.get(macAddr);
 		if (activities == null) {
 			activities = new HashSet<>();
 			activityIds.put(macAddr, activities);
 		}
 		activities.add(activityId);
-		return activities.size();
+		return activities;
 	}
-
 }

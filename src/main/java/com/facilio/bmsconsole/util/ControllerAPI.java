@@ -15,6 +15,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ControllerActivityWatcherContext;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.MultiModuleReadingData;
@@ -29,9 +30,11 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.SecondsChronoUnit;
 
 public class ControllerAPI {
@@ -296,6 +299,15 @@ public class ControllerAPI {
 		insertBuilder.insert(prop);
 		
 		return FieldUtil.getAsBeanFromMap(prop, ControllerActivityWatcherContext.class);
+	}
+	
+	public static void scheduleControllerActivityJob (ControllerActivityWatcherContext watcher, List<ControllerContext> controllers) {
+		FacilioContext jobContext = new FacilioContext();
+		jobContext.put(FacilioConstants.ContextNames.CONTROLLER_ACTIVITY_WATCHER, watcher);
+		jobContext.put(FacilioConstants.ContextNames.CONTROLLER_LIST, controllers);
+		jobContext.put(FacilioConstants.ContextNames.START_TIME, System.currentTimeMillis());
+		
+		FacilioTimer.scheduleInstantJob("ControllerActivityWatcher", jobContext);
 	}
 	
 	public static int markWatcherAsComplete (long id) throws SQLException {

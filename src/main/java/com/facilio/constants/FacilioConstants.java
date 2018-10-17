@@ -94,7 +94,6 @@ public class FacilioConstants {
 	}
 	
 	public static class ContextNames {
-		public static final String CONTROLLER_ID = "controllerId";
 		public static final String KINESIS_RECORD = "kinesisRecord";
 		public static final String KINESIS_CHECK_POINTER = "kinesisCheckPointer";
 		
@@ -165,6 +164,7 @@ public class FacilioConstants {
 		public static final String WORK_ORDER_TEMPLATE = "workordertemplate";
 		public static final String WORK_ORDER_TEMPLATE_LIST = "workordertemplates";
 		
+		public static final String CONTROLLER_ID = "controllerId";
 		public static final String CONTROLLER = "controller";
 		public static final String CONTROLLER_LEVEL = "controllerLevel";
 		public static final String CONTROLLER_TIME = "controllerTime";
