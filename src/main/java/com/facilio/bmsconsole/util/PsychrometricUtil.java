@@ -77,9 +77,13 @@ public class PsychrometricUtil {
 	}
 	
 	public static Double getEnthalpy(Map<String,Object> weatherReading) {
-		return (Double) FieldUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("temperature")) * KILO * 1.006;
+		double dryBulbTemperature = (Double) FieldUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("temperature"));
+		return getEnthalpy(dryBulbTemperature);
 	}
 	
+	public static Double getEnthalpy(Double dryBulbTemperature) {
+		return dryBulbTemperature * KILO * 1.006;
+	}
 	public static Double getWetBulbTemperatureFromHumidityRatio(Double dryBulbTemperature, Double humidityRatio, Double pressure) {
 		
 		if (!(humidityRatio >= 0)) {

@@ -30,8 +30,52 @@ public enum FacilioPsychrometricsFunction implements FacilioWorkflowFunctionInte
 			}
 		}
 	},
+	
+	GET_DEW_POINT_TEMPERATURE(2,"getDewPointTemperature") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			if(objects == null || objects.length <2 || objects[0] == null || objects[1] == null || objects[2] == null) {
+				return null;
+			}
+			double dryBulbTemperature = Double.parseDouble(objects[0].toString());
+			double pressure = Double.parseDouble(objects[1].toString());
+			double relativeHumidity = Double.parseDouble(objects[2].toString());
+			
+			return PsychrometricUtil.getDewPointTemperatureFromHumidityRatio(dryBulbTemperature, relativeHumidity, pressure);
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects == null || objects.length == 0) {
+				throw new FunctionParamException("Required Object is null or empty");
+			}
+		}
+	},
+	
+	GET_WET_BULB_TEMPERATURE(3,"getWetBulbTemperature") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			if(objects == null || objects.length <2 || objects[0] == null || objects[1] == null || objects[2] == null) {
+				return null;
+			}
+			double dryBulbTemperature = Double.parseDouble(objects[0].toString());
+			double pressure = Double.parseDouble(objects[1].toString());
+			double relativeHumidity = Double.parseDouble(objects[2].toString());
+			
+			return PsychrometricUtil.getWetBulbTemperatureFromHumidityRatio(dryBulbTemperature, relativeHumidity, pressure);
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects == null || objects.length == 0) {
+				throw new FunctionParamException("Required Object is null or empty");
+			}
+		}
+	},
+	
 	;
-
 	private Integer value;
 	private String functionName;
 	private String namespace = "psychrometrics";
