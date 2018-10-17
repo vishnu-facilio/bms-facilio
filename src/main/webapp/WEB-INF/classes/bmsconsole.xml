@@ -419,7 +419,7 @@
 		<action name="updateserviceportal" class="com.facilio.bmsconsole.actions.PortalInfoAction"
 			method="updateServicePortal">
 			<param name="moduleName">setup</param>
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<param name="permission">GENERAL</param>
 			<result name="success" type="json">
 				<param name="includeProperties">signup_allowed</param>
 			</result>
@@ -427,7 +427,7 @@
 		<action name="savessoconfig" class="com.facilio.bmsconsole.actions.PortalInfoAction"
 			method="saveSSOConfiguration">
 			<param name="moduleName">setup</param>
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<param name="permission">GENERAL</param>
 			<result name="success" type="json">
 				<param name="includeProperties">signup_allowed</param>
 			</result>
@@ -435,7 +435,7 @@
 		<action name="getportalinfo" class="com.facilio.bmsconsole.actions.PortalInfoAction"
 			method="getPortalInfo">
 			<param name="moduleName">setup</param>
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<param name="permission">GENERAL</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^protalInfo.*</param>
 			</result>
