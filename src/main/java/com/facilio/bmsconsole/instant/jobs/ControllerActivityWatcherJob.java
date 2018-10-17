@@ -66,18 +66,18 @@ public class ControllerActivityWatcherJob extends InstantJob {
 		Set<Long> activityIds = new HashSet<>();
 		
 		while (!inCompleteControllers.isEmpty()) {
-			List<Map<String, Object>> activites = ControllerAPI.getControllerActivities(inCompleteControllers.values(), watcher.getRecordTime());
-			if (activites != null && !activites.isEmpty()) {
-				LOGGER.info("Activities for time : "+watcher.getRecordTime()+" and interval : "+watcher.getDataInterval()+" : "+activites);
-				for (Map<String, Object> activity : activites) {
+			List<Map<String, Object>> activities = ControllerAPI.getControllerActivities(inCompleteControllers.values(), watcher.getRecordTime());
+			if (activities != null && !activities.isEmpty()) {
+				LOGGER.info("Activities for time : "+watcher.getRecordTime()+" and interval : "+watcher.getDataInterval()+" : "+activities);
+				for (Map<String, Object> activity : activities) {
 					ControllerContext controller = inCompleteControllers.get(activity.get("controllerMacAddr"));
 					if (controller != null) {
 						int batches = controller.getBatchesPerCycle() == -1 ? 1 : controller.getBatchesPerCycle();
-						Set<Long> activities = addAndGet(activityMap, controller.getMacAddr(), (long) activity.get("id"));
-						if (activites.size() == batches) {
+						Set<Long> currentActivities = addAndGet(activityMap, controller.getMacAddr(), (long) activity.get("id"));
+						if (currentActivities.size() == batches) {
 							inCompleteControllers.remove(controller.getMacAddr());
 //							completedControllers.add(controller);
-							activityIds.addAll(activities);
+							activityIds.addAll(currentActivities);
 						}
 					}
 				}
