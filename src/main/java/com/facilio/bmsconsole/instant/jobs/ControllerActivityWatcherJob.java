@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.instant.jobs;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
