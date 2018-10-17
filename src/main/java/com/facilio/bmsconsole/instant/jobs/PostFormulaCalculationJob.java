@@ -53,6 +53,10 @@ public class PostFormulaCalculationJob extends InstantJob {
 				FacilioContext formulContext = new FacilioContext();
 				formulContext.put(FacilioConstants.ContextNames.MODULE_NAME, formula.getReadingField().getModule().getName());
 				formulContext.put(FacilioConstants.ContextNames.READINGS, formulaReadings);
+				formulContext.put(FacilioConstants.ContextNames.CONTROLLER, context.get(FacilioConstants.ContextNames.CONTROLLER));
+				formulContext.put(FacilioConstants.ContextNames.CONTROLLER_TIME, context.get(FacilioConstants.ContextNames.CONTROLLER_TIME));
+				formulContext.put(FacilioConstants.ContextNames.CONTROLLER_LEVEL, context.get(FacilioConstants.ContextNames.CONTROLLER_LEVEL));
+				
 				Chain addReading = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
 				addReading.execute(formulContext);
 			}
