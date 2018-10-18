@@ -462,7 +462,7 @@ public class V2ReportAction extends FacilioAction {
 									}
 								}
 							}
-							dataPoint.put("type", 5);
+							dataPoint.put("type", 1);
 							if(!readingMap.contains(resource.getId() + "_" + readingField.getFieldId())) {
 								readingMap.add(resource.getId() + "_" + readingField.getFieldId());
 								dataPoints.add(dataPoint);								
@@ -482,7 +482,7 @@ public class V2ReportAction extends FacilioAction {
 				
 				dataPoint.put("yAxis", yAxisJson);
 				
-				dataPoint.put("type", 5);
+				dataPoint.put("type", 1);
 				
 				dataPoints.add(dataPoint);
 			}
