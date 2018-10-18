@@ -443,7 +443,7 @@ public class V2ReportAction extends FacilioAction {
 								yAxisJson.put("fieldId", readingField.getFieldId());
 								yAxisJson.put("aggr", 0);
 								
-								dataPoint.put("yAxis", yAxisJson.toJSONString());
+								dataPoint.put("yAxis", yAxisJson);
 								
 							}
 							if(exp.getCriteria() != null) {
@@ -456,7 +456,7 @@ public class V2ReportAction extends FacilioAction {
 									if(condition.getFieldName().equals("parentId")) {
 										resource = condition.getValue().equals("${resourceId}") ? currentResource : ResourceAPI.getResource(Long.parseLong(condition.getValue()));
 										
-										dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()).toJSONString());
+										dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
 										
 										break;
 									}
@@ -474,13 +474,13 @@ public class V2ReportAction extends FacilioAction {
 			else {
 				JSONObject dataPoint = new JSONObject();
 				
-				dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()).toJSONString());
+				dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
 				
 				JSONObject yAxisJson = new JSONObject();
 				yAxisJson.put("fieldId", readingruleContext.getReadingFieldId());
 				yAxisJson.put("aggr", 0);
 				
-				dataPoint.put("yAxis", yAxisJson.toJSONString());
+				dataPoint.put("yAxis", yAxisJson);
 				
 				dataPoint.put("type", 5);
 				
