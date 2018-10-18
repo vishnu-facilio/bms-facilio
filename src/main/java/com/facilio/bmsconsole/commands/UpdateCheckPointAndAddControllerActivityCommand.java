@@ -25,7 +25,7 @@ public class UpdateCheckPointAndAddControllerActivityCommand implements Command 
 		// TODO Auto-generated method stub
 		Record record = (Record) context.get(FacilioConstants.ContextNames.KINESIS_RECORD);
 		if (record != null) {
-			LOGGER.info("Updating check point for controller : "+record.getPartitionKey()+" at "+record.getApproximateArrivalTimestamp().getTime());
+			LOGGER.debug("Updating check point for controller : "+record.getPartitionKey()+" at "+record.getApproximateArrivalTimestamp().getTime());
 			IRecordProcessorCheckpointer checkPointer = (IRecordProcessorCheckpointer) context.get(FacilioConstants.ContextNames.KINESIS_CHECK_POINTER);
 			checkPointer.checkpoint(record);
 			ControllerContext controller = ControllerAPI.getActiveController(record.getPartitionKey());

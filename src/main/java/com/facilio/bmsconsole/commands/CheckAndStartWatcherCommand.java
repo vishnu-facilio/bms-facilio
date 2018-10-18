@@ -28,7 +28,7 @@ public class CheckAndStartWatcherCommand implements Command {
 				try {
 					ControllerActivityWatcherContext watcher = ControllerAPI.getActivityWatcher(time, dataInterval, level);
 					if (watcher == null) {
-						LOGGER.info("Starting watcher for interval : "+dataInterval+" at time : "+time);
+						LOGGER.debug("Starting watcher for interval : "+dataInterval+" at time : "+time);
 						watcher = ControllerAPI.addActivityWatcher(time, dataInterval, level);
 						ControllerAPI.scheduleControllerActivityJob(watcher, ControllerAPI.getActtiveControllers(controller.getDataInterval()));
 					}

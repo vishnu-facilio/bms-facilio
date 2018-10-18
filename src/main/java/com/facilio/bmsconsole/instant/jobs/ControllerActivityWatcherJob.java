@@ -70,7 +70,7 @@ public class ControllerActivityWatcherJob extends InstantJob {
 		while (!inCompleteControllers.isEmpty()) {
 			List<Map<String, Object>> activities = ControllerAPI.getControllerActivities(inCompleteControllers.values(), watcher.getRecordTime());
 			if (activities != null && !activities.isEmpty()) {
-				LOGGER.info("Activities for time : "+watcher.getRecordTime()+" and interval : "+watcher.getDataInterval()+" : "+activities);
+				LOGGER.debug("Activities for time : "+watcher.getRecordTime()+" and interval : "+watcher.getDataInterval()+" : "+activities);
 				for (Map<String, Object> activity : activities) {
 					ControllerContext controller = inCompleteControllers.get(activity.get("controllerMacAddr"));
 					if (controller != null) {

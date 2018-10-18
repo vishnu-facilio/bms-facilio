@@ -263,7 +263,7 @@ public class ControllerAPI {
 		FacilioField intervalField = fieldMap.get("dataInterval");
 		FacilioField levelField = fieldMap.get("level");
 		time = adjustTime(time, dataInterval);
-		LOGGER.info("Fetching watcher for time : "+time+" and interval : "+dataInterval);
+		LOGGER.debug("Fetching watcher for time : "+time+" and interval : "+dataInterval);
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(module.getTableName())
