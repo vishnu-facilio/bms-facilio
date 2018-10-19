@@ -327,29 +327,29 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 			}
 			else {
 				long firstFlapDiff = reading.getTtime() - (long)flaps.get(0).get("flapTime");
-				if (AccountUtil.getCurrentOrg().getId() == 135) {
-					LOGGER.info(getId()+"::First flap diff : "+firstFlapDiff+"::"+overPeriod);
-				}
+//				if (AccountUtil.getCurrentOrg().getId() == 135) {
+					LOGGER.debug(getId()+"::First flap diff : "+firstFlapDiff+"::"+overPeriod);
+//				}
 				if (firstFlapDiff < (overPeriod * 1000)) { // If the first flap is within over period, add flap and return false
 					addFlap(reading.getTtime(), reading.getParentId());
-					if (AccountUtil.getCurrentOrg().getId() == 135) {
-						LOGGER.info(getId()+"::Within over period so ignoring");
-					}
+//					if (AccountUtil.getCurrentOrg().getId() == 135) {
+						LOGGER.debug(getId()+"::Within over period so ignoring");
+//					}
 					return false;
 				}
 				else if (firstFlapDiff <= ((overPeriod * 1000) + OVER_PERIOD_BUFFER)) {
 					deleteAllFlaps(reading.getParentId());
-					if (AccountUtil.getCurrentOrg().getId() == 135) {
-						LOGGER.info(getId()+"::Rule passed");
-					}
+//					if (AccountUtil.getCurrentOrg().getId() == 135) {
+						LOGGER.debug(getId()+"::Rule passed");
+//					}
 					return true;
 				}
 				else {
 					deleteAllFlaps(reading.getParentId());
 					addFlap(reading.getTtime(), reading.getParentId());
-					if (AccountUtil.getCurrentOrg().getId() == 135) {
-						LOGGER.info(getId()+"::Over buffer");
-					}
+//					if (AccountUtil.getCurrentOrg().getId() == 135) {
+						LOGGER.debug(getId()+"::Over buffer");
+//					}
 					return false;
 				}
 			}
