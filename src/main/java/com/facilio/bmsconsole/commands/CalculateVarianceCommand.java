@@ -51,6 +51,9 @@ public class CalculateVarianceCommand implements Command {
 			Double min = null ,max = null,avg = null,sum = (double) 0;
 			
 			for(Object value1 :collection) {
+				if (value1 == null) {
+					continue;
+				}
 				
 				Double value = Double.parseDouble(value1.toString());
 				sum = sum + value;
