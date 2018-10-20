@@ -229,6 +229,10 @@ public class ModuleFactory {
 		readingRuleInclusionsExclusions.setTableName("Reading_Rule_Inclusions_Exclusions");
 		return readingRuleInclusionsExclusions;
 	}
+	
+	public static FacilioModule getReadingRuleAlarmMetaModule() {
+		return constructModule("readingRuleAlarmMeta", "Reading Rule Alarm Meta", "Reading_Rule_Alarm_Meta");
+	}
 
 	public static FacilioModule getSLARuleModule() {
 		FacilioModule slarule = new FacilioModule();

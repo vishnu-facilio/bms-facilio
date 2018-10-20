@@ -116,6 +116,16 @@ public class AlarmAPI {
 		}
 	}
 	
+	public static boolean isReadingAlarm (SourceType type) {
+		switch (type) {
+			case THRESHOLD_ALARM:
+			case ANOMALY_ALARM:
+				return true;
+			default:
+				return false;
+		}
+	}
+	
 	private static Map<SourceType, Map<Long, ? extends AlarmContext>> getTypeWiseAlarms (Map<SourceType, List<Long>> typeWiseIds) throws Exception {
 		Map<SourceType, Map<Long,? extends AlarmContext>> typewiseAlarms = new HashMap<>();
 		

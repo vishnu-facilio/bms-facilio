@@ -557,7 +557,7 @@ public class WorkflowRuleAPI {
 					case READING_RULE:
 					case VALIDATION_RULE:
 						prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
-						rule = ReadingRuleAPI.constructReadingRuleFromProps(prop, modBean);
+						rule = ReadingRuleAPI.constructReadingRuleFromProps(prop, modBean, fetchChildren);
 						break;
 					case SLA_RULE:
 						prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));

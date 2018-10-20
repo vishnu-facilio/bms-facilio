@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.workflow.rule;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -11,7 +12,6 @@ import java.util.Map;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
@@ -415,33 +415,39 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		}
 	}
 	
+	private Object getMetric(ReadingContext reading) {
+		if (!isMatchingResource(reading)) {
+			return null;
+		}
+		Object currentMetric = FieldUtil.castOrParseValueAsPerType(readingField, reading.getReading(readingField.getName()));
+		return currentMetric;
+	}
+	
 	@Override
 	public boolean evaluateMisc(String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		ReadingContext reading = (ReadingContext) record;
-		if (!checkForParentResource(reading)) {
+		Object currentMetric = getMetric(reading);
+		if (currentMetric == null) {
 			return false;
 		}
-		Object currentReadingObj = FieldUtil.castOrParseValueAsPerType(readingField, reading.getReading(readingField.getName()));
-		if (currentReadingObj == null) {
-			return false;
-		}
+		
 		switch (thresholdType) {
 			case FLAPPING:
 				boolean singleFlap = false;
 				Map<String, ReadingDataMeta> metaMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
 				ReadingDataMeta meta = metaMap.get(ReadingsAPI.getRDMKey(reading.getParentId(), readingField));
 				Object prevValue = meta.getValue();
-				if (currentReadingObj instanceof Number) {
+				if (currentMetric instanceof Number) {
 					double prevVal = Double.valueOf(prevValue.toString());
-					double currentVal = Double.valueOf(currentReadingObj.toString());
+					double currentVal = Double.valueOf(currentMetric.toString());
 					double minVal = Math.min(prevVal, currentVal);
 					double maxVal = Math.max(prevVal, currentVal);
 					
 					singleFlap = minVal <= minFlapValue && maxVal >= maxFlapValue;
 				}
-				else if (currentReadingObj instanceof Boolean) {
-					singleFlap = currentReadingObj != (Boolean) prevValue;
+				else if (currentMetric instanceof Boolean) {
+					singleFlap = currentMetric != (Boolean) prevValue;
 				}
 				return singleFlap && isFlappedNTimes(reading);
 			default:
@@ -450,7 +456,7 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		return true;
 	}
 	
-	private boolean checkForParentResource(ReadingContext reading) {
+	private boolean isMatchingResource(ReadingContext reading) {
 		if (matchedResources != null && !matchedResources.isEmpty()) {
 			ResourceContext parent = matchedResources.get(reading.getParentId());
 			if (parent != null) {
@@ -580,4 +586,13 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		rulePlaceHolders.put("ttime", ((ReadingContext) record).getTtime());
 		return rulePlaceHolders;
 	}
+	
+	private Map<Long, ReadingRuleAlarmMeta> alarmMetaMap;
+	public Map<Long, ReadingRuleAlarmMeta> getAlarmMetaMap() {
+		return alarmMetaMap;
+	}
+	public void setAlarmMetaMap(Map<Long, ReadingRuleAlarmMeta> alarmMetaMap) {
+		this.alarmMetaMap = alarmMetaMap;
+	}
+	
 }

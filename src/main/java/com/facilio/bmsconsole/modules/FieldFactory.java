@@ -891,6 +891,21 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	public static List<FacilioField> getReadingRuleAlarmMetaFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getReadingRuleAlarmMetaModule();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("alarmId", "ALARM_ID", module, FieldType.LOOKUP));
+		fields.add(getField("ruleId", "RULE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("readingFieldId", "READING_FIELD_ID", module, FieldType.LOOKUP));
+		fields.add(getField("clear", "IS_CLEAR", module, FieldType.BOOLEAN));
+		
+		return fields;
+	}
 
 	public static List<FacilioField> getSLARuleFields() {
 		List<FacilioField> fields = new ArrayList<>();

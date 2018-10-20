@@ -20,9 +20,11 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleAlarmMeta;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class ReadingRuleAPI extends WorkflowRuleAPI {
 	protected static void addReadingRuleInclusionsExlusions(ReadingRuleContext rule) throws SQLException, RuntimeException {
@@ -76,7 +78,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		return rule;
 	}
 	
-	protected static void setMatchedResources (ReadingRuleContext readingRule) throws Exception {
+	private static void setMatchedResources (ReadingRuleContext readingRule) throws Exception {
 		if (readingRule.getAssetCategoryId() == -1) {
 			long resourceId = readingRule.getResourceId();
 			readingRule.setMatchedResources(Collections.singletonMap(resourceId, ResourceAPI.getExtendedResource(resourceId)));
@@ -175,10 +177,86 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		return null;
 	}
 	
-	protected static ReadingRuleContext constructReadingRuleFromProps(Map<String, Object> prop, ModuleBean modBean) throws Exception {
+	protected static ReadingRuleContext constructReadingRuleFromProps(Map<String, Object> prop, ModuleBean modBean, boolean fetchChildren) throws Exception {
 		ReadingRuleContext readingRule = FieldUtil.getAsBeanFromMap(prop, ReadingRuleContext.class);
 		readingRule.setReadingField(modBean.getField(readingRule.getReadingFieldId()));
-		ReadingRuleAPI.setMatchedResources(readingRule);
+		setMatchedResources(readingRule);
+		
+		if (fetchChildren) {
+			fetchAlarmMeta(readingRule);
+		}
+		
 		return readingRule;
+	}
+	
+	private static void fetchAlarmMeta (ReadingRuleContext rule) throws Exception {
+		FacilioModule module = ModuleFactory.getReadingRuleAlarmMetaModule();
+		List<FacilioField> fields = FieldFactory.getReadingRuleAlarmMetaFields();
+		FacilioField ruleField = FieldFactory.getAsMap(fields).get("ruleId");
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(fields)
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCondition(ruleField, String.valueOf(rule.getId()), PickListOperators.IS))
+														;
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			Map<Long, ReadingRuleAlarmMeta> alarmMetaMap = new HashMap<>();
+			for (Map<String, Object> prop : props) {
+				ReadingRuleAlarmMeta alarmMeta = FieldUtil.getAsBeanFromMap(prop, ReadingRuleAlarmMeta.class);
+				alarmMetaMap.put(alarmMeta.getResourceId(), alarmMeta);
+			}
+			rule.setAlarmMetaMap(alarmMetaMap);
+		}
+	}
+	
+	public static long addAlarmMeta (long alarmId, long resourceId, ReadingRuleContext rule) throws Exception {
+		Map<String, Object> prop = new HashMap<>();
+		prop.put("orgId", AccountUtil.getCurrentOrg().getId());
+		prop.put("alarmId", alarmId);
+		prop.put("ruleId", rule.getId());
+		prop.put("resourceId", resourceId);
+		prop.put("readingFieldId", rule.getReadingFieldId());
+		prop.put("clear", false);
+		
+		return new GenericInsertRecordBuilder()
+					.table(ModuleFactory.getReadingRuleAlarmMetaModule().getTableName())
+					.fields(FieldFactory.getReadingRuleAlarmMetaFields())
+					.insert(prop)
+					;
+	}
+	
+	public static void markAlarmMetaAsNotClear (long id, long alarmId) throws SQLException {
+		FacilioModule module = ModuleFactory.getReadingRuleAlarmMetaModule();
+		
+		Map<String, Object> prop = new HashMap<>();
+		prop.put("alarmId", alarmId);
+		prop.put("clear", false);
+		
+		new GenericUpdateRecordBuilder()
+			.table(module.getTableName())
+			.fields(FieldFactory.getReadingRuleAlarmMetaFields())
+			.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+			.andCondition(CriteriaAPI.getIdCondition(id, module))
+			.update(prop)
+			;
+	}
+	
+	public static void markAlarmMetaAsClear (long alarmId) throws SQLException {
+		FacilioModule module = ModuleFactory.getReadingRuleAlarmMetaModule();
+		List<FacilioField> fields = FieldFactory.getReadingRuleAlarmMetaFields();
+		FacilioField alarmIdField = FieldFactory.getAsMap(fields).get("alarmId");
+		
+		Map<String, Object> prop = new HashMap<>();
+		prop.put("clear", true);
+		
+		new GenericUpdateRecordBuilder()
+			.table(module.getTableName())
+			.fields(FieldFactory.getReadingRuleAlarmMetaFields())
+			.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+			.andCondition(CriteriaAPI.getCondition(alarmIdField, String.valueOf(alarmId), PickListOperators.IS))
+			.update(prop)
+			;
 	}
 }

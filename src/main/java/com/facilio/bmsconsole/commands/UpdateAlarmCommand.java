@@ -13,6 +13,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AlarmSeverityContext;
+import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -21,6 +22,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.AlarmAPI;
+import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
 import com.facilio.constants.FacilioConstants;
@@ -78,6 +80,10 @@ public class UpdateAlarmCommand implements Command {
 				AlarmContext alarmObj = getAlarmObj(idCondition, moduleName, fields);
 				if(alarmObj != null) {
 					AlarmAPI.updateAlarmDetailsInTicket(alarmObj, alarm);
+					
+					if (isCleared && AlarmAPI.isReadingAlarm(alarmObj.getSourceTypeEnum())) {
+						ReadingRuleAPI.markAlarmMetaAsClear(alarmObj.getId());
+					}
 				}
 			}
 			

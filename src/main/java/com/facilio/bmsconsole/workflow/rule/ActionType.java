@@ -47,12 +47,14 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.NotificationAPI;
+import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.SMSUtil;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
+import com.facilio.events.context.EventContext;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
@@ -241,6 +243,27 @@ public enum ActionType {
 					addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, obj);
 					Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
 					getAddEventChain.execute(addEventContext);
+					
+					if (currentRule instanceof ReadingRuleContext) {
+						EventContext event = (EventContext) addEventContext.get(EventConstants.EventContextNames.EVENT);
+						if (event.getAlarmId() != -1) {
+							Map<Long, ReadingRuleAlarmMeta> metaMap = ((ReadingRuleContext) currentRule).getAlarmMetaMap();
+							long resourceId = ((ReadingContext) currentRecord).getParentId();
+							if (metaMap != null && !metaMap.isEmpty()) {
+								ReadingRuleAlarmMeta alarmMeta = metaMap.get(resourceId);
+								if (alarmMeta == null) {
+									ReadingRuleAPI.addAlarmMeta(event.getAlarmId(), resourceId, (ReadingRuleContext) currentRule);
+								}
+								else if (alarmMeta.isClear()) {
+									ReadingRuleAPI.markAlarmMetaAsNotClear(alarmMeta.getId(), event.getAlarmId());
+								}
+							}
+							else {
+								ReadingRuleAPI.addAlarmMeta(event.getAlarmId(), resourceId, (ReadingRuleContext) currentRule);
+							}
+						}
+					}
+					
 				} catch (Exception e) {
 					LOGGER.error("Exception occurred ", e);
 				}
