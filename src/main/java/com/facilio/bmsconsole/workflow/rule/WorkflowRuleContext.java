@@ -199,7 +199,7 @@ public class WorkflowRuleContext {
 		return rulePlaceHolders;
 	}
 	
-	public void executeWorkflowActions(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
+	public void executeTrueActions(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
 		long ruleId = getId();
 		if (actions == null) {
 			actions = ActionAPI.getActiveActionsFromWorkflowRule(ruleId);
@@ -212,6 +212,10 @@ public class WorkflowRuleContext {
 				action.executeAction(placeHolders, context, this, record);
 			}
 		}
+	}
+	
+	public void executeFalseActions(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
+		//TODO Add true or false boolean in actions
 	}
 	
 	private List<FieldChangeFieldContext> fields;

@@ -689,7 +689,10 @@ public class WorkflowRuleAPI {
 		
 		boolean result = fieldChangeFlag && miscFlag && criteriaFlag && workflowFlag;
 		if(result) {
-			workflowRule.executeWorkflowActions(record, context, rulePlaceHolders);
+			workflowRule.executeTrueActions(record, context, rulePlaceHolders);
+		}
+		else {
+			workflowRule.executeFalseActions(record, context, rulePlaceHolders);
 		}
 		return result;
 	}

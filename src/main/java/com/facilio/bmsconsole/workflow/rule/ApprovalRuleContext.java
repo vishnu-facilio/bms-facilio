@@ -174,11 +174,11 @@ public class ApprovalRuleContext extends WorkflowRuleContext {
 	}
 	
 	@Override
-	public void executeWorkflowActions(Object record, Context context, Map<String, Object> placeHolders)
+	public void executeTrueActions(Object record, Context context, Map<String, Object> placeHolders)
 			throws Exception {
 		// TODO Auto-generated method stub
 		updateRecordApprovalState(record);
-		super.executeWorkflowActions(record, context, placeHolders);
+		super.executeTrueActions(record, context, placeHolders);
 	}
 	
 	private void updateRecordApprovalState(Object record) throws Exception {

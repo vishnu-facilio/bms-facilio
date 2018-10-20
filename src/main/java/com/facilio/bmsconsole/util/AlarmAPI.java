@@ -50,24 +50,6 @@ import com.facilio.workflows.context.WorkflowContext;
 
 public class AlarmAPI {
 	
-	public static AlarmContext getAlarm(Long alarmId) throws Exception {
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
-		SelectRecordsBuilder<AlarmContext> selectBuilder = new SelectRecordsBuilder<AlarmContext>()
-				.select(modBean.getAllFields(FacilioConstants.ContextNames.ALARM))
-				.module(modBean.getModule(FacilioConstants.ContextNames.ALARM))
-				.beanClass(AlarmContext.class)
-				.andCondition(CriteriaAPI.getCondition("Alarms.ID", "id", ""+alarmId, NumberOperators.EQUALS));
-		
-		List<AlarmContext> props = selectBuilder.get();
-		
-		if(props != null && !props.isEmpty()) {
-			return props.get(0);
-		}
-		return null;
-	}
-	
 	public static ReadingAlarmContext getReadingAlarmContext(Long alarmId) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

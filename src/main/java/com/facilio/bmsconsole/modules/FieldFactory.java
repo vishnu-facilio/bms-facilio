@@ -867,6 +867,7 @@ public class FieldFactory {
 		fields.add(getField("percentage", "PERCENTAGE", module, FieldType.STRING));
 		fields.add(getField("readingFieldId", "READING_FIELD_ID", module, FieldType.NUMBER));
 		fields.add(getField("thresholdType", "THRESHOLD_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("clearAlarm", "CLEAR_ALARM", module, FieldType.BOOLEAN));
 		fields.add(getField("occurences", "OCCURENCES", module, FieldType.NUMBER));
 		fields.add(getField("overPeriod", "OVER_PERIOD", module, FieldType.NUMBER));
 		fields.add(getField("consecutive", "IS_CONSECUTIVE", module, FieldType.BOOLEAN));
