@@ -10,7 +10,6 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.tenant.RateCardContext;
 import com.facilio.bmsconsole.tenant.RateCardServiceContext;
-import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.workflows.util.WorkflowUtil;
 

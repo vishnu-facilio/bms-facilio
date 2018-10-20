@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.workflow.rule;
 
-import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;

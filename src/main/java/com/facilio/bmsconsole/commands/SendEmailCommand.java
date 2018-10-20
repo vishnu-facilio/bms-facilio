@@ -7,7 +7,6 @@ import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
-import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;

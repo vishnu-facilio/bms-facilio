@@ -10,7 +10,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.facilio.auth.cookie.FacilioCookie;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.log4j.LogManager;
@@ -36,6 +35,7 @@ import com.facilio.accounts.exception.AccountException;
 import com.facilio.accounts.impl.UserBeanImpl;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;

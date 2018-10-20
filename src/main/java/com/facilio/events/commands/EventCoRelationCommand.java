@@ -4,7 +4,6 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;

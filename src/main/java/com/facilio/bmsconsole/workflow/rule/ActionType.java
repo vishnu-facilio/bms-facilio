@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.workflow.rule;
 
-import java.sql.Date;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;

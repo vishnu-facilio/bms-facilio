@@ -7,7 +7,6 @@ import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;

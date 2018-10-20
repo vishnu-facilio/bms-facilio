@@ -5,7 +5,6 @@ import java.util.List;
 import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ViewField;

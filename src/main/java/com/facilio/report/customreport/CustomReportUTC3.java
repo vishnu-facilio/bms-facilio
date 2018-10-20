@@ -6,9 +6,7 @@ import java.util.logging.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.DashboardAction;
-import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.SpaceAPI;

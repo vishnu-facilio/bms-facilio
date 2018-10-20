@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.PMJobsContext;
