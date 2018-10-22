@@ -43,7 +43,7 @@ public enum FacilioPsychrometricsFunction implements FacilioWorkflowFunctionInte
 			double pressure = Double.parseDouble(objects[1].toString());
 			double relativeHumidity = Double.parseDouble(objects[2].toString());
 			
-			return PsychrometricUtil.getDewPointTemperatureFromHumidityRatio(dryBulbTemperature, relativeHumidity, pressure);
+			return PsychrometricUtil.getDewPointTemperatureFromRelativeHumidity(dryBulbTemperature, relativeHumidity, pressure);
 		};
 		
 		public void checkParam(Object... objects) throws Exception {
@@ -65,7 +65,7 @@ public enum FacilioPsychrometricsFunction implements FacilioWorkflowFunctionInte
 			double pressure = Double.parseDouble(objects[1].toString());
 			double relativeHumidity = Double.parseDouble(objects[2].toString());
 			
-			return PsychrometricUtil.getWetBulbTemperatureFromHumidityRatio(dryBulbTemperature, relativeHumidity, pressure);
+			return PsychrometricUtil.getWetBulbTemperatureFromRelativeHumidity(dryBulbTemperature, relativeHumidity, pressure);
 		};
 		
 		public void checkParam(Object... objects) throws Exception {

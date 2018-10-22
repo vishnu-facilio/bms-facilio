@@ -66,12 +66,22 @@ public class PsychrometricUtil {
 		return getDewPointTemperatureFromHumidityRatio(dryBulbTemperature, humidityRatio, pressure);
 	}
 	
+	public static Double getDewPointTemperatureFromRelativeHumidity(Double dryBulbTemperature, Double relativeHumidity, Double pressure) {
+		Double humidityRatio = getHumidityRatioFromRelativeHumidity(dryBulbTemperature, relativeHumidity, pressure);
+		return getDewPointTemperatureFromHumidityRatio(dryBulbTemperature, humidityRatio, pressure);
+	}
+	
 	public static Double getWetBulbTemperatureFromRelativeHumidity(Map<String,Object> weatherReading) {
 		
 		Double dryBulbTemperature = (Double) FieldUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("temperature"));
 		Double pressure = ((Double) FieldUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("pressure"))) * 100;
 		Double relativeHumidity = (Double) FieldUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("humidity"));
 		
+		Double humidityRatio = getHumidityRatioFromRelativeHumidity(dryBulbTemperature, relativeHumidity, pressure);
+		return getWetBulbTemperatureFromHumidityRatio(dryBulbTemperature, humidityRatio, pressure);
+	}
+	
+	public static Double getWetBulbTemperatureFromRelativeHumidity (Double dryBulbTemperature, Double relativeHumidity, Double pressure) {
 		Double humidityRatio = getHumidityRatioFromRelativeHumidity(dryBulbTemperature, relativeHumidity, pressure);
 		return getWetBulbTemperatureFromHumidityRatio(dryBulbTemperature, humidityRatio, pressure);
 	}
