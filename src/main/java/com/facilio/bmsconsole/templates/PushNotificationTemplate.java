@@ -12,6 +12,11 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 public class PushNotificationTemplate extends Template{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static Logger log = LogManager.getLogger(PushNotificationTemplate.class.getName());
 
 	private String to;

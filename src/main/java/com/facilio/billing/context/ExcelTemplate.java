@@ -11,6 +11,10 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 public class ExcelTemplate extends Template{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	@Override
 	public JSONObject getOriginalTemplate() {
 		

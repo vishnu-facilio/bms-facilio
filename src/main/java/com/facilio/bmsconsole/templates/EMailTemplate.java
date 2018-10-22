@@ -7,6 +7,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 public class EMailTemplate extends Template {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String from;
 	public String getFrom() {
 		return from;

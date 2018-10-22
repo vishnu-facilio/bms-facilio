@@ -8,6 +8,10 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 public class SMSTemplate extends Template {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String from;
 	public String getFrom() {
 		return from;

@@ -10,6 +10,10 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 public class JSONTemplate extends Template {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static Logger log = LogManager.getLogger(JSONTemplate.class.getName());
 	private long contentId = -1;
 	public long getContentId() {

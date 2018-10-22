@@ -10,6 +10,10 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class AssignmentTemplate extends Template {
 
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	long assignedGroupId = -1;
 	long assignedUserId = -1;
 	

@@ -17,6 +17,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class WorkorderTemplate extends Template {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	@Override
 	public String getName() {
 		// TODO Auto-generated method stub

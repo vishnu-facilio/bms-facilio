@@ -16,6 +16,10 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 
 public class TaskTemplate extends Template {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String description;
 	public String getDescription() {
 		return description;
