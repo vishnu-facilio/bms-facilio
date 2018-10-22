@@ -21,6 +21,10 @@ import com.facilio.fw.BeanFactory;
 
 public class ApprovalRuleContext extends WorkflowRuleContext {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long approvalRuleId = -1;
 	public long getApprovalRuleId() {
 		return approvalRuleId;

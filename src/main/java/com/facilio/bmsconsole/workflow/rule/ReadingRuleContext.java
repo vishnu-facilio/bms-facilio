@@ -40,6 +40,11 @@ import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class ReadingRuleContext extends WorkflowRuleContext {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static final Logger LOGGER = LogManager.getLogger(ReadingRuleContext.class.getName());
 	
 	private long startValue = -1;

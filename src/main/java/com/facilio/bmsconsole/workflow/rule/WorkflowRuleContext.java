@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.workflow.rule;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,11 @@ import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
-public class WorkflowRuleContext {
+public class WorkflowRuleContext implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = LogManager.getLogger(WorkflowRuleContext.class.getName());
 	private long orgId = -1;
 	public long getOrgId() {
