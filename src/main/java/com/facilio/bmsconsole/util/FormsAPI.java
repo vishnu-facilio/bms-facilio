@@ -150,6 +150,9 @@ public class FormsAPI {
 			f.setFormId(id);
 			f.setOrgId(orgId);
 			f.setSequenceNumber(i);
+			if (f.getSpan() == -1) {
+				f.setSpan(1);
+			}
 			Map<String, Object> prop = FieldUtil.getAsProperties(f);
 			if (prop.get("required") == null) {
 				prop.put("required", false);

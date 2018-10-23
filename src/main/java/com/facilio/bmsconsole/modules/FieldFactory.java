@@ -149,7 +149,7 @@ public class FieldFactory {
 		fields.add(formId);
 		
 		FacilioField displayType = new FacilioField();
-		displayType.setName("displayTypeInt");
+		displayType.setName("displayType");
 		displayType.setDataType(FieldType.NUMBER);
 		displayType.setColumnName("DISPLAY_TYPE");
 		displayType.setModule(module);

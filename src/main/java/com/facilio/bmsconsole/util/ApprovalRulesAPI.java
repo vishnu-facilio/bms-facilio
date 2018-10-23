@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
+import com.facilio.bmsconsole.forms.FacilioForm;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -32,11 +33,14 @@ import com.facilio.fw.BeanFactory;
 public class ApprovalRulesAPI extends WorkflowRuleAPI {
 	protected static void updateChildRuleIds(ApprovalRuleContext rule) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule("workOrder");
 		if (rule.getApprovalRuleId() == -1) {
 			if (rule.getApprovalRule() == null) {
 				if (rule.getApprovalActions() != null && !rule.getApprovalActions().isEmpty()) {
 					rule.setApprovalRule(getRequestApprovalRejectRule(rule, true, modBean));
 					rule.setApprovalRuleId(addWorkflowRule(rule.getApprovalRule(), rule.getApprovalActions()));
+					rule.setApprovalFormId(FormsAPI.createForm(rule.getApprovalForm(), module));
+
 				}
 			}
 			else {
@@ -44,18 +48,21 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 				rule.setApprovalRuleId(addWorkflowRule(rule.getApprovalRule(), rule.getApprovalActions()));
 			}
 		}
-		
+
+			
 		if (rule.getRejectionRuleId() == -1) {
 			if (rule.getRejectionRule() == null) {
 				if (rule.getRejectionActions() != null && !rule.getRejectionActions().isEmpty()) {
 					rule.setRejectionRule(getRequestApprovalRejectRule(rule, false, modBean));
 					rule.setRejectionRuleId(addWorkflowRule(rule.getRejectionRule(), rule.getRejectionActions()));
+					rule.setRejectionFormId(FormsAPI.createForm(rule.getRejectionForm(), module));
 				}
 			}
 			else {
 				updateEventAndCriteria(rule.getRejectionRule(), rule, false, modBean);
 				rule.setRejectionRuleId(addWorkflowRule(rule.getRejectionRule(), rule.getRejectionActions()));
 			}
+
 		}
 	}
 	
