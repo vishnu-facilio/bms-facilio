@@ -335,6 +335,26 @@ public class User implements Serializable {
 
 			criteria = new Criteria();
 			criteria.addAndCondition(condition);
+			
+			String siteColumn = "SITE_ID";
+			switch (moduleName) {
+			case "workorder": siteColumn = "WorkOrders.SITE_ID";
+			break;
+			case "workorderrequest": siteColumn = "WorkOrderRequests.SITE_ID";
+			break;
+			case "planned": siteColumn = "Preventive_Maintenance.SITE_ID";
+			break;
+			case "alarm": siteColumn = "Alarms.SITE_ID";
+			break;
+			}
+			
+			Condition siteCondition = new Condition();
+			siteCondition.setColumnName(siteColumn);
+			siteCondition.setFieldName("siteId");
+			siteCondition.setOperator(BuildingOperator.BUILDING_IS);
+			siteCondition.setValue(StringUtils.join(accessibleSpace, ","));
+			
+			criteria.addOrCondition(siteCondition);
 		}
 		if(moduleName.equals("asset")) {
 			Condition condition = new Condition();
