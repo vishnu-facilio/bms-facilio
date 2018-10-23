@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ReportAlarmContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.util.AlarmAPI;
@@ -107,7 +108,7 @@ public class FetchReportExtraMeta implements Command {
 			}
 		}
 		
-		List<ReportAlarmContext> reportAlarmContextList = getReportAlarms(allAlarms);
+		List<ReportAlarmContext> reportAlarmContextList = getReportAlarms(allAlarms,report.getDateRange());
 		
 		context.put(FacilioConstants.ContextNames.REPORT_SAFE_LIMIT, safeLimit);
 		context.put(FacilioConstants.ContextNames.REPORT_ALARMS, alarmsMap);
@@ -115,27 +116,28 @@ public class FetchReportExtraMeta implements Command {
 		return false;
 	}
 
-	private List<ReportAlarmContext> getReportAlarms(List<ReadingAlarmContext> allAlarms) {
+	private List<ReportAlarmContext> getReportAlarms(List<ReadingAlarmContext> allAlarms, DateRange dateRange) {
 		List<Long> alarmTime = new ArrayList<>();
 		
 		boolean isCurrentTimeAdded = false;
 		for(ReadingAlarmContext alarm :allAlarms) {
 			if(alarm.getCreatedTime() > 0) {
-				if(!alarmTime.contains(alarm.getCreatedTime())) {
+				if(!alarmTime.contains(alarm.getCreatedTime()) &&  alarm.getCreatedTime() >= dateRange.getStartTime() ) {
 					alarmTime.add(alarm.getCreatedTime());
 				}
 			}
 			if(alarm.getClearedTime() > 0) {
-				if(!alarmTime.contains(alarm.getClearedTime())) {
+				if(!alarmTime.contains(alarm.getClearedTime())  &&  alarm.getClearedTime() <= dateRange.getEndTime() ) {
 					alarmTime.add(alarm.getClearedTime());
 				}
 			}
 			else if(!isCurrentTimeAdded) {
 				isCurrentTimeAdded = true;
-				alarmTime.add(DateTimeUtil.getCurrenTime());
+				alarmTime.add(dateRange.getEndTime());
 			}
 		}
 		Collections.sort(alarmTime);
+		
 		
 		
 		List<ReportAlarmContext> reportAlarmContextList = new ArrayList<>();
@@ -155,7 +157,15 @@ public class FetchReportExtraMeta implements Command {
 				
 				if(alarm.getCreatedTime() > 0) {
 					
-					if(reportAlarmContext.getStartTime() <= alarm.getCreatedTime() && reportAlarmContext.getEndTime() > alarm.getCreatedTime()) {
+					Long clearedTime = null;
+					if(alarm.getClearedTime() > 0) {
+						clearedTime = alarm.getClearedTime() < dateRange.getEndTime() ? alarm.getClearedTime() : dateRange.getEndTime();  
+					}
+					else {
+						clearedTime = dateRange.getEndTime();
+					}
+					
+					if(reportAlarmContext.getStartTime() >= alarm.getCreatedTime() && reportAlarmContext.getStartTime() < clearedTime) {
 						reportAlarmContext.addOrder();
 						reportAlarmContext.addAlarmContext(alarm);
 					}
