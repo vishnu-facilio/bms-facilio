@@ -261,6 +261,13 @@ public class V2ReportAction extends FacilioAction {
 	public long getCardWidgetId() {
 		return cardWidgetId;
 	}
+	JSONObject cardParamJson; 
+	public JSONObject getCardParamJson() {
+		return cardParamJson;
+	}
+	public void setCardParamJson(JSONObject cardParamJson) {
+		this.cardParamJson = cardParamJson;
+	}
 	public void setCardWidgetId(long cardWidgetId) {
 		this.cardWidgetId = cardWidgetId;
 	}
@@ -289,15 +296,21 @@ public class V2ReportAction extends FacilioAction {
 		
 		FacilioContext context = new FacilioContext();
 		
-		DashboardWidgetContext dashboardWidgetContext =  DashboardUtil.getWidget(cardWidgetId);
+		JSONObject params = null;
 		
-		WidgetStaticContext widgetStaticContext = (WidgetStaticContext) dashboardWidgetContext;
+		if(cardParamJson != null) {
+			params = cardParamJson;
+		}
+		else if(cardWidgetId > 0) {
+			DashboardWidgetContext dashboardWidgetContext =  DashboardUtil.getWidget(cardWidgetId);
+			
+			WidgetStaticContext widgetStaticContext = (WidgetStaticContext) dashboardWidgetContext;
+			params = widgetStaticContext.getParamsJson();
+		}
 		
 		List<ReadingAnalysisContext> metrics = new ArrayList<>();
-		if(widgetStaticContext.getStaticKey().equals(CardType.READING_CARD.getName()) || widgetStaticContext.getStaticKey().equals("readingWithGraphCard")) {
+		if(params != null) {
 			
-			JSONObject params = widgetStaticContext.getParamsJson();
-
 			int xAggrInt = params.get("xAggr") != null ? Integer.parseInt(params.get("xAggr").toString()) : 0;
 			setxAggr(xAggrInt);
 			

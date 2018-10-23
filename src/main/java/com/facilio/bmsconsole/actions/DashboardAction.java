@@ -1383,6 +1383,33 @@ public class DashboardAction extends ActionSupport {
 				setCardResult(result);
 				return SUCCESS;
 			}
+			else if(CardUtil.isExtraCard(staticKey)) {
+				
+				result = new HashMap<>();
+				
+				if(staticKey.equals("readingWithGraphCard")) {
+					
+					V2ReportAction reportAction = new V2ReportAction();
+					
+					reportAction.setCardParamJson(paramsJson);
+					
+					reportAction.fetchReadingsFromCard();
+					
+					FacilioContext context = reportAction.getResultContext();
+					
+					result.put("result", context);
+					
+					Map<Long, ReadingRuleAlarmMeta> alarmMeta = ReadingRuleAPI.fetchAlarmMeta((Long)paramsJson.get("parentId"), (Long)paramsJson.get("fieldId"));
+					 
+					List<AlarmContext> alarms = AlarmAPI.getAlarms(alarmMeta.keySet());
+					
+					result.put("alarmSeverity", AlarmAPI.getMaxSeverity(alarms));
+					
+					setCardResult(result);
+					return SUCCESS;
+					
+				}
+			}
 			
 			
 			List<WidgetVsWorkflowContext> workflowList = DashboardUtil.getCardWorkflowBasedOnStaticKey(staticKey);
