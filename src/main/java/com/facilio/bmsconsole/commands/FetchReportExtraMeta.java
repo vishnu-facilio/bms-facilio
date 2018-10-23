@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
+import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.report.context.ReportBaseLineContext;
@@ -73,46 +74,10 @@ public class FetchReportExtraMeta implements Command {
 					
 					Map<String, List<ReadingAlarmContext>> alarmProps = new HashMap<>();
 					
-					JSONObject filterJson = new JSONObject();
 					
 					Long fieldId = dataPoint.getyAxis().getFieldId();
 					
-					JSONObject fieldJson = new JSONObject();
-					fieldJson.put("operatorId", NumberOperators.EQUALS.getOperatorId());
-					JSONArray value = new JSONArray();
-					value.add(""+fieldId);
-					fieldJson.put("value", value);
-					
-					filterJson.put("readingFieldId", fieldJson);
-					
-					JSONObject resourceJson = new JSONObject();
-					resourceJson.put("operatorId", PickListOperators.IS.getOperatorId());
-					
-					value = new JSONArray();
-					value.add(""+parentId);
-					
-					resourceJson.put("value", value);
-					
-					filterJson.put("resource", resourceJson);
-					
-					JSONObject timeRangeJson = new JSONObject();
-					timeRangeJson.put("operatorId", DateOperators.BETWEEN.getOperatorId());
-					
-					value = new JSONArray();
-					
-					value.add(report.getDateRange().getStartTime()+"");
-					value.add(report.getDateRange().getEndTime()+"");
-					
-					timeRangeJson.put("value", value);
-					
-					filterJson.put("startTime", timeRangeJson);
-					
-					AlarmAction alarmAction = new AlarmAction();
-					alarmAction.setFilters(filterJson.toJSONString());
-					
-					alarmAction.fetchReadingAlarms();
-					
-					List<ReadingAlarmContext> alarms = alarmAction.getReadingAlarms();
+					List<ReadingAlarmContext> alarms = AlarmAPI.getReadingAlarms(parentId,fieldId,report.getDateRange().getStartTime(),report.getDateRange().getEndTime());
 					
 					for(ReadingAlarmContext alarm :alarms) {
 						alarm.setReportMeta(dataPoint.getName()+"_"+FacilioConstants.Reports.ACTUAL_DATA);
@@ -126,23 +91,7 @@ public class FetchReportExtraMeta implements Command {
 
 							if(reportBaseLine.getBaseLineRange() != null) {
 								
-								timeRangeJson = new JSONObject();
-								timeRangeJson.put("operatorId", DateOperators.BETWEEN.getOperatorId());
-								
-								value = new JSONArray();
-								
-								value.add(reportBaseLine.getBaseLineRange().getStartTime()+"");
-								value.add(reportBaseLine.getBaseLineRange().getEndTime()+"");
-								
-								timeRangeJson.put("value", value);
-								filterJson.remove("startTime");
-								filterJson.put("startTime", timeRangeJson);
-								
-								alarmAction.setFilters(filterJson.toJSONString());
-								
-								alarmAction.fetchReadingAlarms();
-								
-								alarms = alarmAction.getReadingAlarms();
+								alarms = AlarmAPI.getReadingAlarms(parentId,fieldId,reportBaseLine.getBaseLineRange().getStartTime(),reportBaseLine.getBaseLineRange().getEndTime());
 								
 								for(ReadingAlarmContext alarm :alarms) {
 									alarm.setReportMeta(dataPoint.getName()+"_"+reportBaseLine.getBaseLine().getName());
@@ -171,14 +120,14 @@ public class FetchReportExtraMeta implements Command {
 		
 		boolean isCurrentTimeAdded = false;
 		for(ReadingAlarmContext alarm :allAlarms) {
-			if(alarm.getStartTime() > 0) {
-				if(!alarmTime.contains(alarm.getStartTime())) {
-					alarmTime.add(alarm.getStartTime());
+			if(alarm.getCreatedTime() > 0) {
+				if(!alarmTime.contains(alarm.getCreatedTime())) {
+					alarmTime.add(alarm.getCreatedTime());
 				}
 			}
-			if(alarm.getEndTime() > 0) {
-				if(!alarmTime.contains(alarm.getEndTime())) {
-					alarmTime.add(alarm.getEndTime());
+			if(alarm.getClearedTime() > 0) {
+				if(!alarmTime.contains(alarm.getClearedTime())) {
+					alarmTime.add(alarm.getClearedTime());
 				}
 			}
 			else if(!isCurrentTimeAdded) {
@@ -200,16 +149,19 @@ public class FetchReportExtraMeta implements Command {
 			reportAlarmContextList.add(reportAlarmContext);
 		}
 		
-		for(ReadingAlarmContext alarm :allAlarms) {
-			if(alarm.getStartTime() > 0) {
-				for(ReportAlarmContext reportAlarmContext :reportAlarmContextList) {
+		for(ReportAlarmContext reportAlarmContext :reportAlarmContextList) {
+			
+			for(ReadingAlarmContext alarm :allAlarms) {
+				
+				if(alarm.getCreatedTime() > 0) {
 					
-					if(reportAlarmContext.getStartTime() == alarm.getStartTime()) {
+					if(reportAlarmContext.getStartTime() <= alarm.getCreatedTime() && reportAlarmContext.getEndTime() > alarm.getCreatedTime()) {
 						reportAlarmContext.addOrder();
 						reportAlarmContext.addAlarmContext(alarm);
 					}
 				}
 			}
+			
 		}
 		return reportAlarmContextList;
 	}

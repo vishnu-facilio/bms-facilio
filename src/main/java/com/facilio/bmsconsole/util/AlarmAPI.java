@@ -28,7 +28,9 @@ import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.DateRange;
@@ -330,6 +332,34 @@ public class AlarmAPI {
 			}
 		}
 		return null;
+	}
+	
+	public static List<ReadingAlarmContext> getReadingAlarms(Long resourceId,Long fieldId,Long startTime,Long endTime) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		SelectRecordsBuilder<ReadingAlarmContext> selectBuilder = new SelectRecordsBuilder<ReadingAlarmContext>()
+				.select(modBean.getAllFields(FacilioConstants.ContextNames.READING_ALARM))
+				.module(modBean.getModule(FacilioConstants.ContextNames.READING_ALARM))
+				.beanClass(ReadingAlarmContext.class);
+		
+		selectBuilder.andCondition(CriteriaAPI.getCondition(modBean.getField("resource", FacilioConstants.ContextNames.READING_ALARM), ""+resourceId, NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition(modBean.getField("readingFieldId", FacilioConstants.ContextNames.READING_ALARM), ""+fieldId, NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition(modBean.getField("createdTime", FacilioConstants.ContextNames.READING_ALARM), ""+endTime, NumberOperators.LESS_THAN_EQUAL));
+		
+		Condition condition1 = CriteriaAPI.getCondition(modBean.getField("clearedTime", FacilioConstants.ContextNames.READING_ALARM), ""+startTime, NumberOperators.GREATER_THAN_EQUAL);
+		Condition condition2 = CriteriaAPI.getCondition(modBean.getField("clearedTime", FacilioConstants.ContextNames.READING_ALARM), "", CommonOperators.IS_EMPTY);
+		
+		Criteria criteria = new Criteria();
+		
+		criteria.addOrCondition(condition1);
+		criteria.addOrCondition(condition2);
+		
+		selectBuilder.andCriteria(criteria);
+		
+		List<ReadingAlarmContext> props = selectBuilder.get();
+		
+		return props;
 	}
 	
 	public static AlarmType getAlarmTypeFromAssetCategory(long categoryId) throws Exception {
