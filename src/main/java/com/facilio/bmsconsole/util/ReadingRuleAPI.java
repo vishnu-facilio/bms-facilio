@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -209,6 +210,32 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 			}
 			rule.setAlarmMetaMap(alarmMetaMap);
 		}
+	}
+	
+	public static Map<Long, ReadingRuleAlarmMeta> fetchAlarmMeta (long resourceId,long fieldId) throws Exception {
+		FacilioModule module = ModuleFactory.getReadingRuleAlarmMetaModule();
+		List<FacilioField> fields = FieldFactory.getReadingRuleAlarmMetaFields();
+		
+		FacilioField resourceIdField = FieldFactory.getAsMap(fields).get("resourceId");
+		FacilioField fieldIdField = FieldFactory.getAsMap(fields).get("readingFieldId");
+		
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(fields)
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCondition(resourceIdField, String.valueOf(resourceId), NumberOperators.EQUALS))
+														.andCondition(CriteriaAPI.getCondition(fieldIdField, String.valueOf(fieldId), NumberOperators.EQUALS))
+														;
+		List<Map<String, Object>> props = selectBuilder.get();
+		Map<Long, ReadingRuleAlarmMeta> alarmMetaMap = new HashMap<>();
+		if (props != null && !props.isEmpty()) {
+			for (Map<String, Object> prop : props) {
+				ReadingRuleAlarmMeta alarmMeta = FieldUtil.getAsBeanFromMap(prop, ReadingRuleAlarmMeta.class);
+				alarmMetaMap.put(alarmMeta.getAlarmId(),alarmMeta);
+			}
+		}
+		return alarmMetaMap;
 	}
 	
 	public static long addAlarmMeta (long alarmId, long resourceId, ReadingRuleContext rule) throws Exception {

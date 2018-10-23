@@ -126,6 +126,7 @@ import com.facilio.bmsconsole.util.ExportUtil;
 import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
+import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
@@ -133,6 +134,7 @@ import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleAlarmMeta;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.cards.util.CardType;
 import com.facilio.cards.util.CardUtil;
@@ -1214,7 +1216,7 @@ public class DashboardAction extends ActionSupport {
 				return SUCCESS;
 			}
 			
-			else if(CardUtil.isExtraCard(widgetStaticContext.getStaticKey())) { 
+			else if(CardUtil.isExtraCard(widgetStaticContext.getStaticKey())) {
 				
 				result = new HashMap<>();
 				
@@ -1229,6 +1231,16 @@ public class DashboardAction extends ActionSupport {
 					FacilioContext context = reportAction.getResultContext();
 					
 					result.put("result", context);
+					
+					JSONObject params = widgetStaticContext.getParamsJson();
+					
+					
+					 Map<Long, ReadingRuleAlarmMeta> alarmMeta = ReadingRuleAPI.fetchAlarmMeta((Long)params.get("parentId"), (Long)params.get("fieldId"));
+					 
+					List<AlarmContext> alarms = AlarmAPI.getAlarms(alarmMeta.keySet());
+					
+					result.put("alarmSeverity", AlarmAPI.getMaxSeverity(alarms));
+					
 					setCardResult(result);
 					return SUCCESS;
 					
