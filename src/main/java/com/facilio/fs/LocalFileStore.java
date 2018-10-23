@@ -27,13 +27,25 @@ public class LocalFileStore extends FileStore {
 			rootPath = fcDataFolder.getFile() + File.separator + "facilio-data" + File.separator + getOrgId() + File.separator + "files";
 			
 			File rootDir = new File(rootPath);
-			if (!rootDir.exists() || !!rootDir.isDirectory()) {
+			if (!(rootDir.exists() && rootDir.isDirectory())) {
 				rootDir.mkdirs();
 			}
 		}
 		return rootPath;
 	}
 
+	/*
+
+	select t.VIRTUAL_METER_ID as vm_id, @pv:=t.CHILD_METER_ID as c_id from (select * from Virtual_Energy_Meter_Rel order by VIRTUAL_METER_ID desc) t join (select @pv:=890168)tmp where t.VIRTUAL_METER_ID=@pv;
+
+select * from Resources where ORGID=88 and RESOURCE_TYPE=2
+ select * from Assets where PARENT_ASSET_ID IS NOT NULL and ORGID=88
+select * from Energy_Meter where orgid=88
+select * from Virtual_Energy_Meter_Rel where VIRTUAL_METER_ID=ENERGYMETER_ID
+
+
+	*
+	 */
 	@Override
 	public long addFile(String fileName, File file, String contentType) throws Exception {
 		long fileId = addDummyFileEntry(fileName);

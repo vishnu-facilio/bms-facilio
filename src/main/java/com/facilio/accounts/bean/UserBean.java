@@ -56,8 +56,6 @@ public interface UserBean {
 	
 	public Map<Long, User> getUsersAsMap(Criteria criteria, List<Long>... ouids) throws Exception;
 
-	User getFacilioUser(long orgId, String email) throws Exception;
-
 	public User getUser(long orgId, String email) throws Exception;
 	
 	public List<Organization> getOrgs(long uid) throws Exception;

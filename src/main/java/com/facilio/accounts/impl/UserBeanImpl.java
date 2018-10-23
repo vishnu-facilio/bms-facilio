@@ -1176,8 +1176,8 @@ public class UserBeanImpl implements UserBean {
 		return selectBuilder.get();
 	}
 
-	@Override
-	public User getFacilioUser(long orgId, String email) throws Exception {
+
+	private User getFacilioUser(long orgId, String email) throws Exception {
 
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getUserFields());
@@ -1190,7 +1190,7 @@ public class UserBeanImpl implements UserBean {
 				.on("Users.USERID = faciliousers.USERID")
 				.innerJoin("ORG_Users")
 				.on("Users.USERID = ORG_Users.USERID")
-				.andCustomWhere("ORGID = ? AND (faciliousers.email = ? or faciliousers.mobile = ?) AND DELETED_TIME = -1", orgId, email, email);
+				.andCustomWhere("ORGID = ? AND (faciliousers.email = ? or faciliousers.mobile = ?)", orgId, email, email);
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -1756,6 +1756,4 @@ public class UserBeanImpl implements UserBean {
 		}
 		return user;
 	}
-
-
 }
