@@ -68,7 +68,7 @@ public enum InstantJobExecutor implements Runnable {
 								if (jobClass != null) {
 									try {
 										final InstantJob job = jobClass.newInstance();
-										if(instantJob.getTransactionTimeout() > 1800) {
+										if(instantJob.getTransactionTimeout() != InstantJobConf.getDefaultTimeOut()) {
 											ObjectQueue.changeVisibilityTimeout(InstantJobConf.getInstantJobQueue(), message.getReceiptHandle(), instantJob.getTransactionTimeout());
 										}
 										job.setReceiptHandle(message.getReceiptHandle());

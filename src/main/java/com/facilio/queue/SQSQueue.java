@@ -12,6 +12,7 @@ import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
 import com.amazonaws.services.sqs.model.ReceiveMessageResult;
 import com.amazonaws.services.sqs.model.SendMessageResult;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.tasker.config.InstantJobConf;
 
 public class SQSQueue  implements FacilioQueue {
 
@@ -68,7 +69,7 @@ public class SQSQueue  implements FacilioQueue {
         List<Message> messageList = new ArrayList<>();
         List<QueueMessage> queueMessages = new ArrayList<>();
         while (messageList.size() < limit) {
-            ReceiveMessageRequest request = new ReceiveMessageRequest().withMaxNumberOfMessages(10).withVisibilityTimeout(1800).withQueueUrl(url);
+            ReceiveMessageRequest request = new ReceiveMessageRequest().withMaxNumberOfMessages(10).withVisibilityTimeout(InstantJobConf.getDefaultTimeOut()).withQueueUrl(url);
             ReceiveMessageResult result = sqs.receiveMessage(request);
             if(result.getMessages().size() == 0) {
                 break;

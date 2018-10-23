@@ -19,7 +19,8 @@ public class InstantJobConf {
     private static final String JOB_NAME_KEY = "INSTANT_JOB";
     private static final String ACCOUNT_KEY = "INSTANT_JOB_ACCOUNT";
     private static final String INSTANT_JOB_QUEUE = "InstantJob";
-
+    private static final int DEFAULT_TIME_OUT = 300; //In Seconds
+    
     public static String getJobNameKey() {
         return JOB_NAME_KEY;
     }
@@ -30,6 +31,10 @@ public class InstantJobConf {
 
     public static String getInstantJobQueue() {
         return INSTANT_JOB_QUEUE;
+    }
+    
+    public static int getDefaultTimeOut() {
+    	return DEFAULT_TIME_OUT;
     }
 
     private List<Job> jobs;

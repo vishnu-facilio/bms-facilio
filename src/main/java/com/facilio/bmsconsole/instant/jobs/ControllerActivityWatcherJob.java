@@ -30,7 +30,7 @@ public class ControllerActivityWatcherJob extends InstantJob {
 
 	private static final Logger LOGGER = LogManager.getLogger(ControllerActivityWatcherJob.class.getName());
 	private static final long THREAD_SLEEP_BUFFER = 5000;
-	private static final long TIME_OUT = 20 * 60 * 1000;
+	private static final long TIME_OUT = 15 * 60 * 1000;
 	
 	@Override
 	public void execute(FacilioContext context) throws Exception {
