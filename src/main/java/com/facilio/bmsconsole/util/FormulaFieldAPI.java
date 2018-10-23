@@ -907,7 +907,7 @@ public class FormulaFieldAPI {
 		
 		for (WorkflowExpression expression : workflow.getExpressions()) {
 			ExpressionContext expr = (ExpressionContext) expression;
-			if (expr.getConstant() == null && expr.getDefaultFunctionContext() == null) {
+			if (expr.getConstant() == null && expr.getDefaultFunctionContext() == null && expr.getExpr() == null) {
 				
 				if (expr.getCriteria() == null || expr.getCriteria().isEmpty()) {
 					optimisedWorkflow.addWorkflowExpression(expr);
