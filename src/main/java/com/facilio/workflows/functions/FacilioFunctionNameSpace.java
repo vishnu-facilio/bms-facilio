@@ -16,6 +16,7 @@ public enum FacilioFunctionNameSpace {
 	THERMOPHYSICALR134A(8,"thermoPhysical.R134a"),
 	READINGS(9,"readings"),
 	PSYCHROMETRICS(10,"psychrometrics"),
+	ENERGYMETER(11,"energyMeter"),
 	;
 	
 	public Integer value;

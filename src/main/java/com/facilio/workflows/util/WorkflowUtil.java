@@ -72,6 +72,7 @@ import com.facilio.workflows.context.WorkflowFunctionContext;
 import com.facilio.workflows.functions.FacilioCostFunction;
 import com.facilio.workflows.functions.FacilioDateFunction;
 import com.facilio.workflows.functions.FacilioDefaultFunction;
+import com.facilio.workflows.functions.FacilioEnergyMeterFunction;
 import com.facilio.workflows.functions.FacilioFunctionsParamType;
 import com.facilio.workflows.functions.FacilioListFunction;
 import com.facilio.workflows.functions.FacilioMapFunction;
@@ -1483,9 +1484,10 @@ public class WorkflowUtil {
 		case "psychrometrics" :
 			facilioWorkflowFunction = FacilioPsychrometricsFunction.getFacilioMathFunction(functionName);
 			break;
+		case "energyMeter" :
+			facilioWorkflowFunction = FacilioEnergyMeterFunction.getFacilioEnergyMeterFunction(functionName);
+			break;
 		}
-		
-		
 		return facilioWorkflowFunction;
 	}
 	
@@ -1524,8 +1526,10 @@ public class WorkflowUtil {
 		case "psychrometrics" :
 			facilioWorkflowFunction = new ArrayList<>( FacilioPsychrometricsFunction.getAllFunctions().values());
 			break;
+		case "energyMeter" :
+			facilioWorkflowFunction = new ArrayList<>( FacilioEnergyMeterFunction.getAllFunctions().values());
+			break;
 		}
-		
 		
 		return facilioWorkflowFunction;
 	}

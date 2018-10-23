@@ -29,6 +29,7 @@ import com.facilio.bmsconsole.context.MarkedReadingContext;
 import com.facilio.bmsconsole.context.MarkedReadingContext.MarkType;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.BuildingOperator;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -76,6 +77,57 @@ public class DeviceAPI
 			return controllers;
 		}
 		return null;
+	}
+	
+	public static List<EnergyMeterContext> getPhysicalMeter(Long baseSpaceId) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER);
+
+		SelectRecordsBuilder<EnergyMeterContext> selectBuilder = new SelectRecordsBuilder<EnergyMeterContext>()
+				.select(modBean.getAllFields(module.getName()))
+				.module(module)
+				.beanClass(EnergyMeterContext.class)
+				.maxLevel(0);
+		
+		if (baseSpaceId != null) {
+			FacilioField spaceIdFld = modBean.getField("purposeSpace", module.getName());
+			
+			Condition spaceCond = new Condition();
+			spaceCond.setField(spaceIdFld);
+			spaceCond.setOperator(BuildingOperator.BUILDING_IS);
+			spaceCond.setValue(baseSpaceId+"");
+			
+			selectBuilder.andCondition(spaceCond);
+		}
+		selectBuilder.andCondition(CriteriaAPI.getCondition("IS_VIRTUAL","isVirtual","false",BooleanOperators.IS));
+		return selectBuilder.get();
+		
+	}
+	public static List<EnergyMeterContext> getVirtualMeters(Long baseSpaceId) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER);
+
+		SelectRecordsBuilder<EnergyMeterContext> selectBuilder = new SelectRecordsBuilder<EnergyMeterContext>()
+				.select(modBean.getAllFields(module.getName()))
+				.module(module)
+				.beanClass(EnergyMeterContext.class)
+				.maxLevel(0);
+		
+		if (baseSpaceId != null) {
+			FacilioField spaceIdFld = modBean.getField("purposeSpace", module.getName());
+			
+			Condition spaceCond = new Condition();
+			spaceCond.setField(spaceIdFld);
+			spaceCond.setOperator(BuildingOperator.BUILDING_IS);
+			spaceCond.setValue(baseSpaceId+"");
+			
+			selectBuilder.andCondition(spaceCond);
+		}
+		selectBuilder.andCondition(CriteriaAPI.getCondition("IS_VIRTUAL","isVirtual","true",BooleanOperators.IS));
+		return selectBuilder.get();
+		
 	}
 	
 	public static Map<Long, ControllerContext> getAllControllersAsMap() throws Exception {
