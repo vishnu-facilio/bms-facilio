@@ -1172,6 +1172,7 @@ public class DashboardAction extends ActionSupport {
 	public String getCardData() throws Exception {
 		if(widgetId != null) {
 			
+			
 			DashboardWidgetContext dashboardWidgetContext =  DashboardUtil.getWidget(widgetId);
 			
 			WidgetStaticContext widgetStaticContext = (WidgetStaticContext) dashboardWidgetContext;
@@ -1213,6 +1214,26 @@ public class DashboardAction extends ActionSupport {
 				return SUCCESS;
 			}
 			
+			else if(CardUtil.isExtraCard(widgetStaticContext.getStaticKey())) { 
+				
+				result = new HashMap<>();
+				
+				if(widgetStaticContext.getStaticKey().equals("readingWithGraphCard")) {
+					
+					V2ReportAction reportAction = new V2ReportAction();
+					
+					reportAction.setCardWidgetId(widgetId);
+					
+					reportAction.fetchReadingsFromCard();
+					
+					FacilioContext context = reportAction.getResultContext();
+					
+					result.put("result", context);
+					setCardResult(result);
+					return SUCCESS;
+					
+				}
+			}
 			if(dashboardWidgetContext.getWidgetVsWorkflowContexts() != null) {
 				
 				result = new HashMap<>();

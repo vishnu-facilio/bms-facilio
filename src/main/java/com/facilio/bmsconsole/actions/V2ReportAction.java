@@ -276,6 +276,15 @@ public class V2ReportAction extends FacilioAction {
 		
 		return setReportResult(context);
 	}
+	FacilioContext resultContext;
+	
+	public FacilioContext getResultContext() {
+		return resultContext;
+	}
+	public void setResultContext(FacilioContext resultContext) {
+		this.resultContext = resultContext;
+	}
+	
 	public String fetchReadingsFromCard() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
@@ -285,11 +294,12 @@ public class V2ReportAction extends FacilioAction {
 		WidgetStaticContext widgetStaticContext = (WidgetStaticContext) dashboardWidgetContext;
 		
 		List<ReadingAnalysisContext> metrics = new ArrayList<>();
-		if(widgetStaticContext.getStaticKey().equals(CardType.READING_CARD.getName())) {
-			
-			setxAggr(0);
+		if(widgetStaticContext.getStaticKey().equals(CardType.READING_CARD.getName()) || widgetStaticContext.getStaticKey().equals("readingWithGraphCard")) {
 			
 			JSONObject params = widgetStaticContext.getParamsJson();
+
+			int xAggrInt = params.get("xAggr") != null ? Integer.parseInt(params.get("xAggr").toString()) : 0;
+			setxAggr(xAggrInt);
 			
 			DateOperators dateOperator = (DateOperators) Operator.OPERATOR_MAP.get(Integer.parseInt(params.get("dateOperator").toString()));
 			
@@ -309,6 +319,7 @@ public class V2ReportAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.REPORT_X_AGGR, xAggr);
 			context.put(FacilioConstants.ContextNames.REPORT_Y_FIELDS, metrics);
 			context.put(FacilioConstants.ContextNames.REPORT_MODE, mode);
+			context.put(FacilioConstants.ContextNames.REPORT_CALLING_FROM, "card");
 			
 			Chain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReadingReportChain() : ReadOnlyChainFactory.fetchReadingReportChain();
 			fetchReadingDataChain.execute(context);
@@ -552,6 +563,7 @@ public class V2ReportAction extends FacilioAction {
 //		setResult("reportAlarms", context.get(FacilioConstants.ContextNames.REPORT_ALARMS));
 		setResult("safeLimits", context.get(FacilioConstants.ContextNames.REPORT_SAFE_LIMIT));
 		setResult(FacilioConstants.ContextNames.REPORT_ALARM_CONTEXT, context.get(FacilioConstants.ContextNames.REPORT_ALARM_CONTEXT));
+		resultContext = context;
 		return SUCCESS;
 	}
 	

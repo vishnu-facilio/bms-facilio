@@ -18,6 +18,14 @@ public class CardUtil {
 		return CardType.CARD_TYPE_BY_NAME.keySet().contains(key);
 	}
 	
+	public static boolean isExtraCard(String key) {
+		
+		if(key.equals("readingWithGraphCard")) {
+			return true;
+		}
+		return false;
+	}
+	
 	public static Unit getUnit(JSONObject params) throws Exception {
 		
 		if(params == null) {

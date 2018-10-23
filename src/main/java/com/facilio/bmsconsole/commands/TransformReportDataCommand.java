@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -27,6 +28,29 @@ public class TransformReportDataCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<ReportDataContext> reportData = (List<ReportDataContext>) context.get(FacilioConstants.ContextNames.REPORT_DATA);
+		String reportCallingFrom = (String) context.get(FacilioConstants.ContextNames.REPORT_CALLING_FROM);
+		
+		if(reportCallingFrom != null && reportCallingFrom.equals("card") && reportData != null) {
+			
+			List<Double> cardResult = new ArrayList<>();
+			for (ReportDataContext data : reportData ) {
+				Map<String, List<Map<String, Object>>> reportProps = data.getProps();
+				if (reportProps != null && !reportProps.isEmpty()) {
+					for (ReportDataPointContext dataPoint : data.getDataPoints()) {
+						for (Map.Entry<String, List<Map<String, Object>>> entry : reportProps.entrySet()) {
+							List<Map<String, Object>> props = entry.getValue();
+							
+							for(Map<String, Object> prop :props) {
+								Object yVal = prop.get(dataPoint.getyAxis().getField().getName());
+								cardResult.add((Double) yVal);
+							}
+						}
+					}
+				}
+			}
+			context.put(FacilioConstants.ContextNames.REPORT_CARD_DATA, cardResult);
+		}
+		
 		if (reportData != null) {
 			Map<String, Map<String, Map<Object, Object>>> transformedData = new HashMap<>();
 			Set<Object> xValues = new TreeSet<>();
