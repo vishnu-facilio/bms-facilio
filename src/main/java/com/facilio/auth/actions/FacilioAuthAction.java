@@ -410,17 +410,37 @@ public class FacilioAuthAction extends ActionSupport {
         }
         return -1L;
     }
-
+    
     private Boolean verifyPortalPassword(String emailAddress, String password, long portalId) {
+       	String query  = "SELECT Users.password FROM Users inner join faciliorequestors on Users.USERID=faciliorequestors.USERID WHERE faciliorequestors.email = ? and USER_VERIFIED=1 and PORTALID = ?";
+    			return verifyPortalPassword(emailAddress,  password,  portalId,query);
+    }
+    
+    private Boolean verifyPortalPassword(String emailAddress, String password, String portaldomain) {
+    	String query  = "select Users.password from Users, faciliorequestors,PortalInfo,Organizations where Users.USERID=faciliorequestors.USERID and PortalInfo.PORTALID=faciliorequestors.PORTALID and Organizations.ORGID=PortalInfo.ORGID and faciliorequestors.email = ? and USER_VERIFIED=1 and FACILIODOMAINNAME = ?";
+
+
+    	     return verifyPortalPassword(emailAddress,  password,  portaldomain,query);
+    	
+    }
+
+    private Boolean verifyPortalPassword(String emailAddress, String password, Object portalId,String query) {
         boolean passwordValid = false;
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs;
         try {
             conn = FacilioConnectionPool.INSTANCE.getConnection();
-            pstmt = conn.prepareStatement("SELECT Users.password FROM Users inner join faciliorequestors on Users.USERID=faciliorequestors.USERID WHERE faciliorequestors.email = ? and USER_VERIFIED=1 and PORTALID = ?");
+            pstmt = conn.prepareStatement(query);
             pstmt.setString(1, emailAddress);
-            pstmt.setLong(2, portalId);
+            if(portalId instanceof Long)
+            {
+            pstmt.setLong(2, (Long)portalId);
+            }
+            else
+            {
+            	pstmt.setString(2, (String)portalId);
+            }
             rs = pstmt.executeQuery();
             if(rs.next()) {
                 String storedPass = rs.getString("password");
@@ -547,9 +567,12 @@ public class FacilioAuthAction extends ActionSupport {
 
     public String generateAuthToken() {
         LOGGER.info("generateAuthToken() : username :"+getUsername());
-        Boolean passwordVerified = verifyPassword(getUsername(), getPassword());
+        Boolean passwordVerified = false;
+        boolean isportaluser=false;
+       
+        	passwordVerified = verifyPassword(getUsername(), getPassword());        
         if(passwordVerified != null && passwordVerified) {
-            String jwt = CognitoUtil.createJWT("id", "auth0", getUsername(), System.currentTimeMillis() + 24 * 60 * 60000, false);
+            String jwt = CognitoUtil.createJWT("id", "auth0", getUsername(), System.currentTimeMillis() + 24 * 60 * 60000, isportaluser);
             LOGGER.info("Response token is " + jwt);
             setJsonresponse("authtoken", jwt);
             setJsonresponse("username", getUsername());
@@ -559,6 +582,22 @@ public class FacilioAuthAction extends ActionSupport {
         return SUCCESS;
     }
 
+    
+    public String generatePortalAuthToken() {
+       Boolean validPassword = verifyPortalPassword(getUsername(), getPassword(), getDomainname()); 
+       if(validPassword != null && validPassword) {
+           String jwt = CognitoUtil.createJWT("id", "auth0", getUsername(), System.currentTimeMillis() + 24 * 60 * 60000, true);
+
+
+           LOGGER.info("Response token is " + jwt);
+           setJsonresponse("authtoken", jwt);
+           setJsonresponse("username", getUsername());
+       } else {
+           setJsonresponse("message", "Invalid username / password");
+       }
+       return SUCCESS;
+    	
+    }
 
     public String signupPortalUser() throws Exception	{
         LOGGER.info("signupUser() : username :"+getUsername() +", password :"+password+", email : "+getEmailaddress() + "portal " + portalId() );
