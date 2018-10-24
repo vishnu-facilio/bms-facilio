@@ -104,7 +104,7 @@ public enum Unit {
 	CUBICFOOT(72,"Cubic Foot","ft<sup>3</sup>",Metric.LIQUID,"si/28.3168","this*28.3168"),
 	CUBICINCH(73,"Cubic Inch","in<sup>3</sup>",Metric.LIQUID,"si*61.0237","this/61.0237"),
 	USGALLON(74,"US Gallon","G",Metric.LIQUID,"si/3.78541","this*3.78541"),
-	IMPERIALGALLON(75,"Imperial Gallon","G",Metric.LIQUID,"si/4.54609","this*4.54609"),
+	IMPERIALGALLON(75,"Imperial Gallon","IG",Metric.LIQUID,"si/4.54609","this*4.54609"),
 	
 	AED(83,"AED","AED",Metric.CURRENCY),
 	DOLLER(84,"Doller","$",Metric.CURRENCY),
