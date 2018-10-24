@@ -734,7 +734,8 @@ public class AlarmAPI {
 				return alarmSeverityMap.get(cardinalityList.get(0));
 			}
 		}
-		return null;
+		
+		return getAlarmSeverity("Clear");
 	}
 	
 	public static WorkOrderContext getNewWOForAlarm (AlarmContext alarm) throws Exception {

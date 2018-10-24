@@ -73,7 +73,10 @@ public class FetchReportExtraMeta implements Command {
 				}
 				if(report.getDateRange() != null && parentId != null) {
 					
-					long alarmId = (long) context.get(FacilioConstants.ContextNames.ALARM_ID);
+					long alarmId = -1;
+					if(context.get(FacilioConstants.ContextNames.ALARM_ID) != null) {
+						alarmId = (long) context.get(FacilioConstants.ContextNames.ALARM_ID);
+					}
 					
 					Map<String, List<ReadingAlarmContext>> alarmProps = new HashMap<>();
 					
