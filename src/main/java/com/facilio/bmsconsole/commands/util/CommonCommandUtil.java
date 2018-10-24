@@ -241,28 +241,31 @@ public class CommonCommandUtil {
 	
 	public static void emailAlert (String subject, String msg) {
 		try {
-			Organization org = AccountUtil.getCurrentOrg();
 			
-			JSONObject json = new JSONObject();
-			json.put("sender", "alert@facilio.com");
-			json.put("to", "error+alert@facilio.com");
-			json.put("subject", org.getOrgId()+" - "+subject);
-			
-			StringBuilder body = new StringBuilder()
-									.append(msg)
-									.append("\n\nInfo : \n--------\n")
-									.append("\n Org Time : ").append(DateTimeUtil.getDateTime())
-									.append("\n Indian Time : ").append(DateTimeUtil.getDateTime(ZoneId.of("Asia/Kolkata")))
-									.append("\n\nMsg : ")
-									.append(msg)
-									.append("\n\nApp Url : ")
-									.append(AwsUtil.getConfig("app.url"))
-									.append("\n\nOrg Info : \n--------\n")
-									.append(org.toString())
-									;
-			json.put("message", body.toString());
-			
-			AwsUtil.sendEmail(json);
+			if (AwsUtil.isProduction()) {
+				Organization org = AccountUtil.getCurrentOrg();
+				
+				JSONObject json = new JSONObject();
+				json.put("sender", "alert@facilio.com");
+				json.put("to", "error+alert@facilio.com");
+				json.put("subject", org.getOrgId()+" - "+subject);
+				
+				StringBuilder body = new StringBuilder()
+										.append(msg)
+										.append("\n\nInfo : \n--------\n")
+										.append("\n Org Time : ").append(DateTimeUtil.getDateTime())
+										.append("\n Indian Time : ").append(DateTimeUtil.getDateTime(ZoneId.of("Asia/Kolkata")))
+										.append("\n\nMsg : ")
+										.append(msg)
+										.append("\n\nApp Url : ")
+										.append(AwsUtil.getConfig("app.url"))
+										.append("\n\nOrg Info : \n--------\n")
+										.append(org.toString())
+										;
+				json.put("message", body.toString());
+				
+				AwsUtil.sendEmail(json);
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
