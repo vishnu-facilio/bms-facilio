@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.util;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,6 +28,7 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
@@ -196,5 +198,15 @@ public class FormsAPI {
 			return formMap;
 		}
 		return null;
+	}
+	
+	public static int deleteForms (Collection<Long> ids) throws SQLException {
+		FacilioModule module = ModuleFactory.getFormModule();
+		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getIdCondition(ids, module))
+														;
+		return deleteBuilder.delete();
 	}
 }
