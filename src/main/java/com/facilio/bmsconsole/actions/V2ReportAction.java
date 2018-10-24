@@ -271,18 +271,7 @@ public class V2ReportAction extends FacilioAction {
 	public void setCardWidgetId(long cardWidgetId) {
 		this.cardWidgetId = cardWidgetId;
 	}
-	public String fetchReadingsFromAlarm() throws Exception {
-		
-		getDataPointFromAlarm();
-		
-		FacilioContext context = new FacilioContext();
-		setReadingsDataContext(context);
-		
-		Chain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReadingReportChain() : ReadOnlyChainFactory.fetchReadingReportChain();
-		fetchReadingDataChain.execute(context);
-		
-		return setReportResult(context);
-	}
+	
 	FacilioContext resultContext;
 	
 	public FacilioContext getResultContext() {
@@ -377,8 +366,22 @@ public class V2ReportAction extends FacilioAction {
 	public void setNewFormat(boolean newFormat) {
 		this.newFormat = newFormat;
 	}
-	
+	public String fetchReadingsFromAlarm() throws Exception {
+		
+		getDataPointFromAlarm();
+		
+		FacilioContext context = new FacilioContext();
+		setReadingsDataContext(context);
+		
+		Chain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReadingReportChain() : ReadOnlyChainFactory.fetchReadingReportChain();
+		fetchReadingDataChain.execute(context);
+		
+		return setReportResult(context);
+	}
 	public String fetchReadingsData() throws Exception {
+		if(alarmId > 0) {
+			getDataPointFromAlarm();
+		}
 		FacilioContext context = new FacilioContext();
 		setReadingsDataContext(context);
 		
@@ -520,15 +523,18 @@ public class V2ReportAction extends FacilioAction {
 				baselineArray.add(baselineJson);
 				baseLines = baselineArray.toJSONString();
 			}
-			long modifiedTime = readingAlarmContext.getCreatedTime();
-			if(readingAlarmContext.getModifiedTime() > 0) {
-				modifiedTime = readingAlarmContext.getModifiedTime();
-			}
-			ZonedDateTime startTime = DateTimeUtil.getDayStartTimeOf(DateTimeUtil.getZonedDateTime(modifiedTime));
-			ZonedDateTime endTime = DateTimeUtil.getDayEndTimeOf(DateTimeUtil.getZonedDateTime(modifiedTime));
 			
-			this.startTime = startTime.toInstant().toEpochMilli();
-			this.endTime = endTime.toInstant().toEpochMilli();
+			if(this.startTime <= 0 && this.endTime <= 0) {
+				long modifiedTime = readingAlarmContext.getCreatedTime();
+				if(readingAlarmContext.getModifiedTime() > 0) {
+					modifiedTime = readingAlarmContext.getModifiedTime();
+				}
+				ZonedDateTime startTime = DateTimeUtil.getDayStartTimeOf(DateTimeUtil.getZonedDateTime(modifiedTime));
+				ZonedDateTime endTime = DateTimeUtil.getDayEndTimeOf(DateTimeUtil.getZonedDateTime(modifiedTime));
+				
+				this.startTime = startTime.toInstant().toEpochMilli();
+				this.endTime = endTime.toInstant().toEpochMilli();
+			}
 			setxAggr(0);
 		}
 		fields =  dataPoints.toJSONString();
