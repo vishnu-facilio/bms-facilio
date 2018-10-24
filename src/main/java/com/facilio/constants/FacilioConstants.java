@@ -176,6 +176,7 @@ public class FacilioConstants {
 		public static final String WORK_ORDER_REQUEST = "workorderrequest";
 		public static final String WORK_ORDER_REQUEST_LIST = "workorderrequests";
 		public static final String WORK_ORDER_REQUEST_COUNT = "workorderrequestcount";
+		public static final String APPROVAL ="approval";
 
 		
 		public static final String ALARM_SEVERITY = "alarmseverity";

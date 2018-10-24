@@ -133,6 +133,20 @@
 		</action>
 	</package>
 	
+	<package name="approvalListApiV2" namespace="/api/v2/approval/view" extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.ApprovalAction"
+			method="v2approvalList">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<param name="viewName">{1}</param>
+			<result name="success" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+				<param name="excludeProperties">result.subViewCount.*\.criteria</param>
+			</result>
+		</action>
+	</package>
+	
 	
 	<package name="workOrderRequestApiV2" namespace="/api/v2/workorderrequests" extends="v2Api">
 		

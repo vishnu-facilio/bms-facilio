@@ -36,7 +36,7 @@ public class ViewAction extends ActionSupport {
 	public String getViewDetail() throws Exception
 	{
 		BeanFactory.lookup("ModuleBean");
-		if (moduleName == null) {
+		if (moduleName == null || moduleName.equals("approval")) {
 			moduleName = "workorder";
 		}
 		
