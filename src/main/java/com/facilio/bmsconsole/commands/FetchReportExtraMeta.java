@@ -122,12 +122,12 @@ public class FetchReportExtraMeta implements Command {
 		boolean isCurrentTimeAdded = false;
 		for(ReadingAlarmContext alarm :allAlarms) {
 			if(alarm.getCreatedTime() > 0) {
-				if(!alarmTime.contains(alarm.getCreatedTime()) &&  alarm.getCreatedTime() >= dateRange.getStartTime() ) {
+				if(!alarmTime.contains(alarm.getCreatedTime()) ) {
 					alarmTime.add(alarm.getCreatedTime());
 				}
 			}
 			if(alarm.getClearedTime() > 0) {
-				if(!alarmTime.contains(alarm.getClearedTime())  &&  alarm.getClearedTime() <= dateRange.getEndTime() ) {
+				if(!alarmTime.contains(alarm.getClearedTime()) ) {
 					alarmTime.add(alarm.getClearedTime());
 				}
 			}
@@ -136,14 +136,24 @@ public class FetchReportExtraMeta implements Command {
 				alarmTime.add(dateRange.getEndTime());
 			}
 		}
+		if(!alarmTime.contains(dateRange.getStartTime()) ) {
+			alarmTime.add(dateRange.getStartTime());
+		}
+		if(!alarmTime.contains(dateRange.getEndTime()) ) {
+			alarmTime.add(dateRange.getEndTime());
+		}
 		Collections.sort(alarmTime);
-		
-		
 		
 		List<ReportAlarmContext> reportAlarmContextList = new ArrayList<>();
 		
 		for(int i=0;i<alarmTime.size()-1;i++) {
 			
+			if(alarmTime.get(i) < dateRange.getStartTime()) {
+				continue;
+			}
+			if(alarmTime.get(i) >= dateRange.getEndTime()) {
+				break;
+			}
 			ReportAlarmContext reportAlarmContext = new ReportAlarmContext();
 			reportAlarmContext.setStartTime(alarmTime.get(i));
 			reportAlarmContext.setEndTime(alarmTime.get(i+1));
@@ -173,6 +183,12 @@ public class FetchReportExtraMeta implements Command {
 			}
 			
 		}
-		return reportAlarmContextList;
+		List<ReportAlarmContext> reportAlarmContextListnew = new ArrayList<>();
+		for(ReportAlarmContext reportAlarmContext :reportAlarmContextList) {
+			if(reportAlarmContext.getOrder() > 0) {
+				reportAlarmContextListnew.add(reportAlarmContext);
+			}
+		}
+		return reportAlarmContextListnew;
 	}
 }
