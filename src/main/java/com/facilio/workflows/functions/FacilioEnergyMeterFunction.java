@@ -13,7 +13,7 @@ import com.facilio.workflows.util.WorkflowUtil;
 
 public enum FacilioEnergyMeterFunction implements FacilioWorkflowFunctionInterface {
 	
-	GET_PHYSICAL_METER_COUNT(1,"getPhysicalMeterCount",WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.NUMBER.getValue(),"spaceId") ) {
+	GET_PHYSICAL_METER_COUNT(1,"getPhysicalMeterCount",WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.NUMBER.getValue(),"spaceId"),WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.NUMBER.getValue(),"purposeId")) {
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			
@@ -24,8 +24,12 @@ public enum FacilioEnergyMeterFunction implements FacilioWorkflowFunctionInterfa
 			}
 			
 			Long spaceId = Long.parseLong(objects[0].toString());
+			Long purposeId = null;
+			if(objects.length > 1 && objects[1] != null) {
+				purposeId = Long.parseLong(objects[1].toString());
+			}
 			
-			List<EnergyMeterContext> meters = DeviceAPI.getPhysicalMeter(spaceId);
+			List<EnergyMeterContext> meters = DeviceAPI.getPhysicalMeter(spaceId,purposeId);
 
 			return meters.size();
 		};
@@ -37,7 +41,7 @@ public enum FacilioEnergyMeterFunction implements FacilioWorkflowFunctionInterfa
 		}
 	},
 	
-	GET_VIRTUAL_METER_COUNT(2,"getVirtualMeterCount",WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.NUMBER.getValue(),"spaceId") ) {
+	GET_VIRTUAL_METER_COUNT(2,"getVirtualMeterCount",WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.NUMBER.getValue(),"spaceId"),WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.NUMBER.getValue(),"purposeId")) {
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			
@@ -49,7 +53,12 @@ public enum FacilioEnergyMeterFunction implements FacilioWorkflowFunctionInterfa
 			
 			Long spaceId = Long.parseLong(objects[0].toString());
 			
-			List<EnergyMeterContext> meters = DeviceAPI.getVirtualMeters(spaceId);
+			Long purposeId = null;
+			if(objects.length > 1 && objects[1] != null) {
+				purposeId = Long.parseLong(objects[1].toString());
+			}
+			
+			List<EnergyMeterContext> meters = DeviceAPI.getVirtualMeters(spaceId,purposeId);
 
 			return meters.size();
 		};

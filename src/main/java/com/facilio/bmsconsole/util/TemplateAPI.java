@@ -905,7 +905,7 @@ public class TemplateAPI {
 		return sectionMap;
 	}
 	
-	private static long addNewWorkOrderTemplate(WorkorderTemplate template, Type woType, Type taskType, Type sectionType) throws Exception {
+	public static long addNewWorkOrderTemplate(WorkorderTemplate template, Type woType, Type taskType, Type sectionType) throws Exception {
 		addDefaultProps(template);
 		template.setType(woType);
 		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);

@@ -1234,12 +1234,13 @@ public class DashboardAction extends ActionSupport {
 					
 					JSONObject params = widgetStaticContext.getParamsJson();
 					
-					
 					 Map<Long, ReadingRuleAlarmMeta> alarmMeta = ReadingRuleAPI.fetchAlarmMeta((Long)params.get("parentId"), (Long)params.get("fieldId"));
 					 
 					List<AlarmContext> alarms = AlarmAPI.getAlarms(alarmMeta.keySet());
 					
 					result.put("alarmSeverity", AlarmAPI.getMaxSeverity(alarms));
+					
+					result.put("unit", CardUtil.getUnit(params));
 					
 					setCardResult(result);
 					return SUCCESS;
@@ -1404,6 +1405,8 @@ public class DashboardAction extends ActionSupport {
 					List<AlarmContext> alarms = AlarmAPI.getAlarms(alarmMeta.keySet());
 					
 					result.put("alarmSeverity", AlarmAPI.getMaxSeverity(alarms));
+					
+					result.put("unit", CardUtil.getUnit(paramsJson));
 					
 					setCardResult(result);
 					return SUCCESS;

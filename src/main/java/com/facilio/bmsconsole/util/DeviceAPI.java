@@ -79,7 +79,7 @@ public class DeviceAPI
 		return null;
 	}
 	
-	public static List<EnergyMeterContext> getPhysicalMeter(Long baseSpaceId) throws Exception {
+	public static List<EnergyMeterContext> getPhysicalMeter(Long baseSpaceId,Long purposeId) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER);
@@ -100,11 +100,15 @@ public class DeviceAPI
 			
 			selectBuilder.andCondition(spaceCond);
 		}
+		
+		if(purposeId != null) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(modBean.getField("purpose", module.getName()), ""+purposeId, NumberOperators.EQUALS));
+		}
 		selectBuilder.andCondition(CriteriaAPI.getCondition("IS_VIRTUAL","isVirtual","false",BooleanOperators.IS));
 		return selectBuilder.get();
 		
 	}
-	public static List<EnergyMeterContext> getVirtualMeters(Long baseSpaceId) throws Exception {
+	public static List<EnergyMeterContext> getVirtualMeters(Long baseSpaceId,Long purposeId) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER);
@@ -124,6 +128,9 @@ public class DeviceAPI
 			spaceCond.setValue(baseSpaceId+"");
 			
 			selectBuilder.andCondition(spaceCond);
+		}
+		if(purposeId != null) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(modBean.getField("purpose", module.getName()), ""+purposeId, NumberOperators.EQUALS));
 		}
 		selectBuilder.andCondition(CriteriaAPI.getCondition("IS_VIRTUAL","isVirtual","true",BooleanOperators.IS));
 		return selectBuilder.get();
