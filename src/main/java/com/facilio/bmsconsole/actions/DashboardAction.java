@@ -1170,7 +1170,6 @@ public class DashboardAction extends ActionSupport {
 	JSONObject paramsJson;
 	
 	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
-	
 	public String getCardData() throws Exception {
 		if(widgetId != null) {
 			
@@ -1189,7 +1188,10 @@ public class DashboardAction extends ActionSupport {
 				if(card.isSingleResultWorkFlow()) {
 					Object wfResult = WorkflowUtil.getWorkflowExpressionResult(card.getWorkflow(), widgetStaticContext.getParamsJson());
 					
-					if(wfResult instanceof Double) {
+					if(wfResult instanceof Boolean) {
+						wfResult = CardUtil.getBooleanStringValue(wfResult,paramsJson);
+					}
+					else if(wfResult instanceof Double) {
 						Double value =  (Double) wfResult;
 						wfResult = DECIMAL_FORMAT.format(value);
 					}
@@ -1374,6 +1376,14 @@ public class DashboardAction extends ActionSupport {
 				
 				if(card.isSingleResultWorkFlow()) {
 					Object wfResult = WorkflowUtil.getWorkflowExpressionResult(card.getWorkflow(), paramsJson);
+					
+					if(wfResult instanceof Boolean) {
+						wfResult = CardUtil.getBooleanStringValue(wfResult,paramsJson);
+					}
+					else if(wfResult instanceof Double) {
+						Double value =  (Double) wfResult;
+						wfResult = DECIMAL_FORMAT.format(value);
+					}
 					result.put("result", wfResult);
 					result.put("unit", CardUtil.getUnit(paramsJson));
 				}
