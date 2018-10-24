@@ -32,7 +32,7 @@ public class TransformReportDataCommand implements Command {
 		
 		if(reportCallingFrom != null && reportCallingFrom.equals("card") && reportData != null) {
 			
-			Map<Object,Double> cardResult = new HashMap<>();
+			Map<Object,Object> cardResult = new HashMap<>();
 			for (ReportDataContext data : reportData ) {
 				Map<String, List<Map<String, Object>>> reportProps = data.getProps();
 				if (reportProps != null && !reportProps.isEmpty()) {
@@ -43,7 +43,7 @@ public class TransformReportDataCommand implements Command {
 							for(Map<String, Object> prop :props) {
 								Object yVal = prop.get(dataPoint.getyAxis().getField().getName());
 								Object xVal = prop.get(dataPoint.getxAxis().getField().getName());
-								cardResult.put(xVal,(Double) yVal);
+								cardResult.put(xVal, yVal);
 							}
 						}
 					}
