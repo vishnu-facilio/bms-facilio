@@ -284,6 +284,13 @@ public class CriteriaAPI {
 		return condition;
 	}
 	
+	@SuppressWarnings("rawtypes")
+	public static Condition getConditionFromList (String colName,String fieldName,Collection<Long> values,Operator operator)
+	{
+		String val = StringUtils.join(values, ",");
+		return getCondition(colName, fieldName, val, operator);
+	}
+	
 	public static Condition getCondition (FacilioField field,Criteria value,Operator operator) {
 		Condition condition = new Condition();
 		condition.setField(field);

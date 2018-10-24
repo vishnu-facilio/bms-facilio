@@ -230,21 +230,32 @@ public class GroupBeanImpl implements GroupBean {
 		if (group.getMembers() != null && !group.getMembers().isEmpty()) {
 			StringJoiner emails = new StringJoiner(",");
 			StringJoiner phones = new StringJoiner(",");
+			StringJoiner ids = new StringJoiner(",");
 			for (GroupMember member : group.getMembers()) {
 				if (member.getEmail() != null && !member.getEmail().isEmpty()) {
 					emails.add(member.getEmail());
 				}
-				if (member.getPhone() != null && !member.getPhone().isEmpty()) {
+				
+				if (member.getMobile() != null && !member.getMobile().isEmpty()) {
+					phones.add(member.getMobile());
+				}
+				else if (member.getPhone() != null && !member.getPhone().isEmpty()) {
 					phones.add(member.getPhone());
 				}
+				
+				ids.add(String.valueOf(member.getOuid()));
 			}
 			
-			if (emails.length() > 0) {
-				group.setGroupMembersEmail(emails.toString());
-			}
-			
-			if (phones.length() > 0) {
-				group.setGroupMembersPhone(phones.toString());
+			if (ids.length() > 0) {
+				group.setGroupMembersIds(ids.toString());
+				
+				if (emails.length() > 0) {
+					group.setGroupMembersEmail(emails.toString());
+				}
+				
+				if (phones.length() > 0) {
+					group.setGroupMembersPhone(phones.toString());
+				}
 			}
 		}
 	}

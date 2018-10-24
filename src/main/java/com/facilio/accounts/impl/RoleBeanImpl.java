@@ -4,14 +4,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.logging.Logger;
 
 import com.facilio.accounts.bean.RoleBean;
+import com.facilio.accounts.dto.Group;
+import com.facilio.accounts.dto.GroupMember;
 import com.facilio.accounts.dto.Permissions;
 import com.facilio.accounts.dto.Role;
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -128,67 +135,128 @@ public class RoleBeanImpl implements RoleBean {
 		}
 		return false;
 	}
+	
+	private void populateEmailAndPhone(Role role, List<User> users) throws Exception {
+		if (users != null && !users.isEmpty()) {
+			StringJoiner emails = new StringJoiner(",");
+			StringJoiner phones = new StringJoiner(",");
+			StringJoiner ids = new StringJoiner(",");
+			for (User user : users) {
+				if (user.getEmail() != null && !user.getEmail().isEmpty()) {
+					emails.add(user.getEmail());
+				}
+				
+				if (user.getMobile() != null && !user.getMobile().isEmpty()) {
+					phones.add(user.getMobile());
+				}
+				else if (user.getPhone() != null && !user.getPhone().isEmpty()) {
+					phones.add(user.getPhone());
+				}
+				
+				ids.add(String.valueOf(user.getOuid()));
+			}
+			if (ids.length() > 0) {
+				role.setRoleMembersIds(ids.toString());
+				
+				if (emails.length() > 0) {
+					role.setRoleMembersEmail(emails.toString());
+				}
+				
+				if (phones.length() > 0) {
+					role.setRoleMembersPhone(phones.toString());
+				}
+			}
+		}
+	}
 
-
+	private List<Role> getRolesFromProps (List<Map<String, Object>> props, boolean fetchMembers) throws Exception {
+		if (props != null && !props.isEmpty()) {
+			List<Role> roles = new ArrayList<>();
+			List<Long> roleIds = fetchMembers ? new ArrayList<>() : null;
+			for(Map<String, Object> prop : props) {
+				Role roleObj = FieldUtil.getAsBeanFromMap(prop, Role.class);
+				List<Permissions> permissions = getPermissions(roleObj.getId());
+				roleObj.setPermissions(permissions);
+				roles.add(roleObj);
+				
+				if (fetchMembers) {
+					roleIds.add(roleObj.getId());
+				}
+			}
+			
+			if (fetchMembers) {
+				Map<Long, List<User>> roleUsers = AccountUtil.getUserBean().getUsersWithRole(roleIds);
+				if (roleUsers != null && !roleUsers.isEmpty()) {
+					for (Role role : roles) {
+						populateEmailAndPhone(role, roleUsers.get(role.getId()));
+					}
+				}
+			}
+			return roles;
+		}
+		return null;
+	}
+	
 	@Override
 	public Role getRole(long roleId) throws Exception {
+		return getRole(roleId, true);
+	}
+
+	@Override
+	public Role getRole(long roleId, boolean fetchMembers) throws Exception {
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(AccountConstants.getRoleFields())
 				.table(AccountConstants.getRoleModule().getTableName())
 				.andCustomWhere("ROLE_ID = ?", roleId);
 		
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			Role roleObj = FieldUtil.getAsBeanFromMap(props.get(0), Role.class);
-			List<Permissions> permissions = getPermissions(roleObj.getId());
-			roleObj.setPermissions(permissions);
-			return roleObj;
-//			return FieldUtil.getAsBeanFromMap(props.get(0), Role.class);
+		List<Role> roles = getRolesFromProps(selectBuilder.get(), fetchMembers);
+		if (roles != null && !roles.isEmpty()) {
+			return roles.get(0);
 		}
 		return null;
 	}
-
+	
 	@Override
 	public Role getRole(long orgId, String roleName) throws Exception {
+		return getRole(orgId, roleName, true);
+	}
+
+	@Override
+	public Role getRole(long orgId, String roleName, boolean fetchMembers) throws Exception {
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(AccountConstants.getRoleFields())
 				.table(AccountConstants.getRoleModule().getTableName())
 				.andCustomWhere("ORGID = ? AND NAME = ?", orgId, roleName);
 		
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			Role roleObj = FieldUtil.getAsBeanFromMap(props.get(0), Role.class);
-			List<Permissions> permissions = getPermissions(roleObj.getId());
-			roleObj.setPermissions(permissions);
-			return roleObj;
-//			return FieldUtil.getAsBeanFromMap(props.get(0), Role.class);
+		List<Role> roles = getRolesFromProps(selectBuilder.get(), fetchMembers);
+		if (roles != null && !roles.isEmpty()) {
+			return roles.get(0);
 		}
 		return null;
 	}
 
 	@Override
 	public List<Role> getRoles(long orgId) throws Exception {
-		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(AccountConstants.getRoleFields())
 				.table(AccountConstants.getRoleModule().getTableName())
 				.andCustomWhere("ORGID = ?", orgId);
 		
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			List<Role> roles = new ArrayList<>();
-			for(Map<String, Object> prop : props) {
-				Role roleObj = FieldUtil.getAsBeanFromMap(prop, Role.class);
-				List<Permissions> permissions = getPermissions(roleObj.getId());
-				roleObj.setPermissions(permissions);
-				roles.add(roleObj);
-//				roles.add(FieldUtil.getAsBeanFromMap(prop, Role.class));
-			}
-			return roles;
-		}
-		return null;
+		return getRolesFromProps(selectBuilder.get(), true);
+	}
+	
+	@Override
+	public List<Role> getRoles(Criteria criteria) throws Exception {
+		FacilioModule module = AccountConstants.getRoleModule();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(AccountConstants.getRoleFields())
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCriteria(criteria);
+		
+		return getRolesFromProps(selectBuilder.get(), true);
 	}
 	
 	public Map<String, Role> getRoleMap() throws Exception {

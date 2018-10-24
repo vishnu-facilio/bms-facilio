@@ -119,6 +119,14 @@ public class Group implements Serializable {
 		this.groupMembersPhone = groupMembersPhone;
 	}
 	
+	private String groupMembersIds;
+	public String getGroupMembersIds() {
+		return groupMembersIds;
+	}
+	public void setGroupMembersIds(String groupMembersIds) {
+		this.groupMembersIds = groupMembersIds;
+	}
+	
 	private List<GroupMember> members;
 	public List<GroupMember> getMembers() {
 		return members;

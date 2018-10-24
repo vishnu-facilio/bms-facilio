@@ -98,6 +98,30 @@ public class Role implements Serializable {
 		permissions.add(permission);
 	}
 	
+	private String roleMembersEmail;
+	public String getRoleMembersEmail() {
+		return roleMembersEmail;
+	}
+	public void setRoleMembersEmail(String roleMembersEmail) {
+		this.roleMembersEmail = roleMembersEmail;
+	}
+	
+	private String roleMembersPhone;
+	public String getRoleMembersPhone() {
+		return roleMembersPhone;
+	}
+	public void setRoleMembersPhone(String roleMembersPhone) {
+		this.roleMembersPhone = roleMembersPhone;
+	}
+	
+	private String roleMembersIds;
+	public String getRoleMembersIds() {
+		return roleMembersIds;
+	}
+	public void setRoleMembersIds(String roleMembersIds) {
+		this.roleMembersIds = roleMembersIds;
+	}
+	
 	public Criteria permissionCriteria(String moduleName, String action)
 	{
 		Criteria criteria = null;

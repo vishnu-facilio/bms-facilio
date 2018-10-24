@@ -1,5 +1,6 @@
 package com.facilio.accounts.bean;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -53,6 +54,8 @@ public interface UserBean {
 	public User getUserFromPhone(String phone) throws Exception;
 	
 	public List<User> getUsers(Criteria criteria, List<Long>... ouids) throws Exception;
+	
+	public Map<Long, List<User>> getUsersWithRole(Collection<Long> roleIds) throws Exception;
 	
 	public Map<Long, User> getUsersAsMap(Criteria criteria, List<Long>... ouids) throws Exception;
 
