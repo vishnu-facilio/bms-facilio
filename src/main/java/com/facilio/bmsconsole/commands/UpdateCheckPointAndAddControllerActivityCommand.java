@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.MultiModuleReadingData;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.util.ControllerAPI;
+import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.constants.FacilioConstants;
 
 public class UpdateCheckPointAndAddControllerActivityCommand implements Command {
@@ -33,6 +34,14 @@ public class UpdateCheckPointAndAddControllerActivityCommand implements Command 
 			if (controller != null) {
 				
 				if (!controller.isActive()) {
+					StringBuilder msg = new StringBuilder()
+											.append("The Controller with Mac Addr - ")
+											.append(controller.getMacAddr())
+											.append(" has been made active because data was received at time : ")
+											.append(DateTimeUtil.getFormattedTime(record.getApproximateArrivalTimestamp().getTime()))
+											;
+					
+					CommonCommandUtil.emailAlert("Making Controller as active - "+controller.getMacAddr(), msg.toString());
 					ControllerAPI.makeControllerActive(Collections.singletonList(controller.getId()));
 				}
 				
@@ -42,7 +51,7 @@ public class UpdateCheckPointAndAddControllerActivityCommand implements Command 
 				addControllerActivity((FacilioContext) context, controller, record.getApproximateArrivalTimestamp().getTime());
 			}
 			else {
-				CommonCommandUtil.emailException(this.getClass().getName(), "No controller with client id - "+record.getPartitionKey(), "Kindly add proper controller for this");
+				CommonCommandUtil.emailAlert("No controller with client id - "+record.getPartitionKey(), "No controller with client id - "+record.getPartitionKey()+"\nKindly add proper controller for this");
 			}
 		}
 		else {

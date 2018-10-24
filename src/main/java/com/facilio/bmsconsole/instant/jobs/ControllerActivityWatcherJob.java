@@ -23,6 +23,7 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.ControllerAPI;
+import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.job.InstantJob;
 
@@ -46,14 +47,14 @@ public class ControllerActivityWatcherJob extends InstantJob {
 				return;
 			}
 			Set<Long> activityIds = keepCheckingAndGetActivityIds(controllers, watcher);
-			LOGGER.info("Completed listening : "+activityIds);
+			LOGGER.debug("Completed listening : "+activityIds);
 			Map<Long, JSONObject> activityRecords = ControllerAPI.getControllerActivityRecords(activityIds);
 			List<ControllerContext> formulaControllers = startPostFormulaCalculation(activityRecords, watcher);
 			if (formulaControllers != null && !formulaControllers.isEmpty()) {
 				ControllerActivityWatcherContext nextLevelWatcher = ControllerAPI.addActivityWatcher(watcher.getRecordTime(), watcher.getDataInterval(), watcher.getLevel() + 1);
 				ControllerAPI.scheduleControllerActivityJob(nextLevelWatcher, formulaControllers);
 			}
-			LOGGER.info("Gonna mark as complete for "+watcher);
+			LOGGER.debug("Gonna mark as complete for "+watcher);
 			ControllerAPI.markWatcherAsComplete(watcher.getId());
 		}
 		catch (Exception e) {
@@ -81,6 +82,15 @@ public class ControllerActivityWatcherJob extends InstantJob {
 																			.map(ControllerContext::getId)
 																			.collect(Collectors.toList())
 																			);
+				
+				StringBuilder msg = new StringBuilder()
+										.append("The following Controller have been made inactive because we didn't receive data for time : ")
+										.append(DateTimeUtil.getFormattedTime(watcher.getRecordTime()))
+										.append("\n")
+										.append(inCompleteControllers.values().stream().map(ControllerContext::getMacAddr).collect(Collectors.joining(", ")))
+										;
+				
+				CommonCommandUtil.emailAlert("Controller made inactive", msg.toString());
 			}
 		}
 	}
