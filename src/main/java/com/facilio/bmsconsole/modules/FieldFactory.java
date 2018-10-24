@@ -759,6 +759,7 @@ public class FieldFactory {
 
 		fields.add(getIdField(module));
 		fields.add(getOrgIdField(module));
+		fields.add(getSiteIdField(module));
 		fields.add(getNameField(module));
 
 		FacilioField description = new FacilioField();
@@ -954,6 +955,7 @@ public class FieldFactory {
 		
 		fields.add(getIdField(module));
 		fields.add(getOrgIdField(module));
+		fields.add(getSiteIdField(module));
 		fields.add(getField("approvalRuleId", "APPROVAL_RULE_ID", module, FieldType.LOOKUP));
 		fields.add(getField("rejectionRuleId", "REJECTION_RULE_ID", module, FieldType.LOOKUP));
 		fields.add(getField("approvalFormId", "APPROVAL_FORM_ID", module, FieldType.LOOKUP));

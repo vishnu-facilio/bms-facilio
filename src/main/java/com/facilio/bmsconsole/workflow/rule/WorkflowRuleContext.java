@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -31,6 +32,14 @@ public class WorkflowRuleContext implements Serializable {
 		this.orgId = orgId;
 	}
 	
+	private long siteId = -1;
+	public long getSiteId() {
+		return siteId;
+	}
+	public void setSiteId(long siteId) {
+		this.siteId = siteId;
+	}
+
 	private long id = -1;
 	public long getId() {
 		return id;
@@ -173,6 +182,9 @@ public class WorkflowRuleContext implements Serializable {
 	}
 	
 	public boolean evaluateMisc (String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
+		if (record instanceof ModuleBaseWithCustomFields && siteId != -1) {
+			return ((ModuleBaseWithCustomFields) record).getSiteId() == siteId;
+		}
 		return true;
 	}
 	
