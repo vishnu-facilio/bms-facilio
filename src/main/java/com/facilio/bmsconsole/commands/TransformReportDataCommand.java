@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -151,9 +150,21 @@ public class TransformReportDataCommand implements Command {
 			val = ((DateAggregateOperator)aggr).getAdjustedTimestamp((long) val);
 		}
 		
-		if (field.getDataTypeEnum() == FieldType.DECIMAL) {
-			return DECIMAL_FORMAT.format(val);
+		switch (field.getDataTypeEnum()) {
+			case DECIMAL:
+				return DECIMAL_FORMAT.format(val);
+			case BOOLEAN:
+				if (val.toString().equals("true")) {
+					return 1;
+				}
+				else if (val.toString().equals("false")) {
+					return 0;
+				}
+				break;
+			default:
+				break;
 		}
+		
 		return val;
 	}
 }

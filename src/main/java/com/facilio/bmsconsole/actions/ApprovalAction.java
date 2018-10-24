@@ -17,6 +17,11 @@ import com.facilio.constants.FacilioConstants;
 public class ApprovalAction extends FacilioAction {
 
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@SuppressWarnings("unchecked")
 	public String approvalList() throws Exception {
 		// TODO Auto-generated method stub
