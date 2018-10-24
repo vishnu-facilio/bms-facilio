@@ -38,13 +38,15 @@ public class ControllerActivityWatcherJob extends InstantJob {
 		try {
 			ControllerActivityWatcherContext watcher = (ControllerActivityWatcherContext) context.get(FacilioConstants.ContextNames.CONTROLLER_ACTIVITY_WATCHER);
 			long startTime = (long) context.get(FacilioConstants.ContextNames.START_TIME);
-			if (System.currentTimeMillis() > startTime + TIME_OUT) {
+			long jobStartTime = System.currentTimeMillis();
+			List<ControllerContext> controllers = (List<ControllerContext>) context.get(FacilioConstants.ContextNames.CONTROLLER_LIST);
+			if (jobStartTime > startTime + TIME_OUT) { //Make controllers inactive and return
 				LOGGER.info("Ending "+watcher+" because it timed out");
+				markInCompleteControllersAsInActive(watcher, controllers);
 				return;
 			}
-			List<ControllerContext> controllers = (List<ControllerContext>) context.get(FacilioConstants.ContextNames.CONTROLLER_LIST);
 			Set<Long> activityIds = keepCheckingAndGetActivityIds(controllers, watcher);
-			LOGGER.info("Completed listning : "+activityIds);
+			LOGGER.info("Completed listening : "+activityIds);
 			Map<Long, JSONObject> activityRecords = ControllerAPI.getControllerActivityRecords(activityIds);
 			List<ControllerContext> formulaControllers = startPostFormulaCalculation(activityRecords, watcher);
 			if (formulaControllers != null && !formulaControllers.isEmpty()) {
@@ -57,6 +59,29 @@ public class ControllerActivityWatcherJob extends InstantJob {
 		catch (Exception e) {
 			LOGGER.error("Error occurred in Controller Watcher Job", e);
 			CommonCommandUtil.emailException("ControllerActivityWatcherJob", "Error occurred in Controller Watcher Job", e);
+		}
+	}
+	
+	private void markInCompleteControllersAsInActive(ControllerActivityWatcherContext watcher, List<ControllerContext> controllers) throws Exception {
+		Map<String, ControllerContext> inCompleteControllers = controllers.stream()
+																			.filter(c -> c.getId() > 0)
+																			.collect(Collectors.toMap(ControllerContext::getMacAddr, Function.identity()));
+		
+		if (inCompleteControllers != null && !inCompleteControllers.isEmpty()) {
+			List<Map<String, Object>> activities = ControllerAPI.getControllerActivities(inCompleteControllers.values(), watcher.getRecordTime());
+			if (activities != null && !activities.isEmpty()) {
+				for (Map<String, Object> activity : activities) {
+					inCompleteControllers.remove(activity.get("controllerMacAddr"));
+				}
+			}
+			
+			if (!inCompleteControllers.isEmpty()) {
+				ControllerAPI.makeControllerInActive(inCompleteControllers.values()
+																			.stream()
+																			.map(ControllerContext::getId)
+																			.collect(Collectors.toList())
+																			);
+			}
 		}
 	}
 	
@@ -134,4 +159,6 @@ public class ControllerActivityWatcherJob extends InstantJob {
 		activities.add(activityId);
 		return activities;
 	}
+	
+	
 }

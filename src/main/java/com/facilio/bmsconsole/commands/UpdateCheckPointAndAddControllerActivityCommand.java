@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
 import java.util.Map;
 
 import org.apache.commons.chain.Command;
@@ -28,8 +29,13 @@ public class UpdateCheckPointAndAddControllerActivityCommand implements Command 
 			LOGGER.debug("Updating check point for controller : "+record.getPartitionKey()+" at "+record.getApproximateArrivalTimestamp().getTime());
 			IRecordProcessorCheckpointer checkPointer = (IRecordProcessorCheckpointer) context.get(FacilioConstants.ContextNames.KINESIS_CHECK_POINTER);
 			checkPointer.checkpoint(record);
-			ControllerContext controller = ControllerAPI.getActiveController(record.getPartitionKey());
+			ControllerContext controller = ControllerAPI.getController(record.getPartitionKey());
 			if (controller != null) {
+				
+				if (!controller.isActive()) {
+					ControllerAPI.makeControllerActive(Collections.singletonList(controller.getId()));
+				}
+				
 				context.put(FacilioConstants.ContextNames.CONTROLLER, controller);
 				context.put(FacilioConstants.ContextNames.CONTROLLER_TIME, record.getApproximateArrivalTimestamp().getTime());
 				

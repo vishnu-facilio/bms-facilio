@@ -78,6 +78,31 @@ public class ControllerAPI {
 		}
 		return null;
 	}
+	
+	public static ControllerContext getController (String macAddress) throws Exception {
+		return getController(macAddress, false);
+	}
+	
+	public static ControllerContext getController (String macAddress, boolean fetchBuilding) throws Exception {
+		FacilioModule module = ModuleFactory.getControllerModule();
+		List<FacilioField> fields = FieldFactory.getControllerFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields); 
+		FacilioField macAddrField = fieldMap.get("macAddr");
+		
+		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCondition(macAddrField, macAddress, StringOperators.IS))
+				;
+		
+		List<Map<String, Object>> controllerList = ruleBuilder.get();
+		List<ControllerContext> controllers = getControllerFromMapList(controllerList, fetchBuilding);
+		if (controllers != null && !controllers.isEmpty()) {
+			return controllers.get(0);
+		}
+		return null;
+	}
 
 	public static ControllerContext getController(long id) throws Exception {
 		return getController(id, false);
@@ -349,5 +374,32 @@ public class ControllerAPI {
 		
 		List<Map<String, Object>> props = ruleBuilder.get();
 		return getControllerFromMapList(props, false);
+	}
+	
+	public static int makeControllerInActive (List<Long> ids) throws SQLException {
+		Map<String, Object> prop = new HashMap<>();
+		prop.put("active", false);
+		
+		return updateController(prop, ids);
+	}
+	
+	public static int makeControllerActive (List<Long> ids) throws SQLException {
+		Map<String, Object> prop = new HashMap<>();
+		prop.put("active", true);
+		
+		return updateController(prop, ids);
+	}
+	
+	private static int updateController (Map<String,Object> prop, List<Long> ids) throws SQLException {
+		FacilioModule module = ModuleFactory.getControllerModule();
+		List<FacilioField> fields = FieldFactory.getControllerFields();
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(module.getTableName())
+				.fields(fields)
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getIdCondition(ids, module))
+				;
+
+		return updateBuilder.update(prop);
 	}
 }
