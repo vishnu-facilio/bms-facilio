@@ -363,6 +363,7 @@ public class FormulaFieldAPI {
 				.andCondition(CriteriaAPI.getCondition(triggerTypeField, String.valueOf(TriggerType.PRE_LIVE_READING.getValue()), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(active, String.valueOf(true), BooleanOperators.IS))
 				.andCondition(CriteriaAPI.getCondition(moduleIdField, moduleIds, PickListOperators.IS))
+				.orderBy("ID")
 				;
 
 		List<FormulaFieldContext> formulas = getFormulaFieldsFromProps(selectBuilder.get(), false);
