@@ -429,6 +429,8 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.REPORT_Y_FIELDS, FieldUtil.getAsBeanListFromJsonArray(fieldArray, ReadingAnalysisContext.class));
 		context.put(FacilioConstants.ContextNames.REPORT_MODE, mode);
 		context.put(FacilioConstants.ContextNames.BASE_LINE_LIST, FieldUtil.getAsBeanListFromJsonArray(baseLineList, ReportBaseLineContext.class));
+		
+		context.put(FacilioConstants.ContextNames.ALARM_ID, alarmId);
 	}
 	
 	
@@ -518,15 +520,12 @@ public class V2ReportAction extends FacilioAction {
 				baselineArray.add(baselineJson);
 				baseLines = baselineArray.toJSONString();
 			}
-			
-			ZonedDateTime startTime = DateTimeUtil.getDayStartTimeOf(DateTimeUtil.getZonedDateTime(readingAlarmContext.getStartTime()));
-			ZonedDateTime endTime = null;
-			if(readingAlarmContext.getEndTime() > 0) {
-				endTime = DateTimeUtil.getDayEndTimeOf(DateTimeUtil.getZonedDateTime(readingAlarmContext.getEndTime()));
+			long modifiedTime = readingAlarmContext.getCreatedTime();
+			if(readingAlarmContext.getModifiedTime() > 0) {
+				modifiedTime = readingAlarmContext.getModifiedTime();
 			}
-			else {
-				endTime = DateTimeUtil.getDayEndTimeOf(startTime);
-			}
+			ZonedDateTime startTime = DateTimeUtil.getDayStartTimeOf(DateTimeUtil.getZonedDateTime(modifiedTime));
+			ZonedDateTime endTime = DateTimeUtil.getDayEndTimeOf(DateTimeUtil.getZonedDateTime(modifiedTime));
 			
 			this.startTime = startTime.toInstant().toEpochMilli();
 			this.endTime = endTime.toInstant().toEpochMilli();

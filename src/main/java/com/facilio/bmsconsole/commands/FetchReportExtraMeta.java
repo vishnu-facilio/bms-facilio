@@ -73,12 +73,16 @@ public class FetchReportExtraMeta implements Command {
 				}
 				if(report.getDateRange() != null && parentId != null) {
 					
+					long alarmId = (long) context.get(FacilioConstants.ContextNames.ALARM_ID);
+					
 					Map<String, List<ReadingAlarmContext>> alarmProps = new HashMap<>();
 					
 					
 					Long fieldId = dataPoint.getyAxis().getFieldId();
 					
 					List<ReadingAlarmContext> alarms = AlarmAPI.getReadingAlarms(parentId,fieldId,report.getDateRange().getStartTime(),report.getDateRange().getEndTime());
+					
+					alarms = filterAlarmAndGetList(alarms,alarmId);
 					
 					for(ReadingAlarmContext alarm :alarms) {
 						alarm.setReportMeta(dataPoint.getName()+"_"+FacilioConstants.Reports.ACTUAL_DATA);
@@ -93,6 +97,8 @@ public class FetchReportExtraMeta implements Command {
 							if(reportBaseLine.getBaseLineRange() != null) {
 								
 								alarms = AlarmAPI.getReadingAlarms(parentId,fieldId,reportBaseLine.getBaseLineRange().getStartTime(),reportBaseLine.getBaseLineRange().getEndTime());
+								
+								alarms = filterAlarmAndGetList(alarms,alarmId);
 								
 								for(ReadingAlarmContext alarm :alarms) {
 									alarm.setReportMeta(dataPoint.getName()+"_"+reportBaseLine.getBaseLine().getName());
@@ -114,6 +120,23 @@ public class FetchReportExtraMeta implements Command {
 		context.put(FacilioConstants.ContextNames.REPORT_ALARMS, alarmsMap);
 		context.put(FacilioConstants.ContextNames.REPORT_ALARM_CONTEXT, reportAlarmContextList);
 		return false;
+	}
+
+	private List<ReadingAlarmContext> filterAlarmAndGetList(List<ReadingAlarmContext> alarms, long alarmId) {
+		
+		List<ReadingAlarmContext> newAlarmList = new ArrayList<>();
+		
+		if(alarmId > 0) {
+			for(ReadingAlarmContext alarm : alarms) {
+				if(alarm.getId() == alarmId) {
+					newAlarmList.add(alarm);
+				}
+			}
+		}
+		else {
+			newAlarmList = alarms;
+		}
+		return newAlarmList;
 	}
 
 	private List<ReportAlarmContext> getReportAlarms(List<ReadingAlarmContext> allAlarms, DateRange dateRange) {
