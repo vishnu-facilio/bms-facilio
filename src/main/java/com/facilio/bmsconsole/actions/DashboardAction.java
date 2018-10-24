@@ -1242,6 +1242,7 @@ public class DashboardAction extends ActionSupport {
 					
 					result.put("unit", CardUtil.getUnit(params));
 					
+					result.put("widget", widgetStaticContext);
 					setCardResult(result);
 					return SUCCESS;
 					
