@@ -1189,7 +1189,7 @@ public class DashboardAction extends ActionSupport {
 					Object wfResult = WorkflowUtil.getWorkflowExpressionResult(card.getWorkflow(), widgetStaticContext.getParamsJson());
 					
 					if(wfResult instanceof Boolean) {
-						wfResult = CardUtil.getBooleanStringValue(wfResult,paramsJson);
+						wfResult = CardUtil.getBooleanStringValue(wfResult,widgetStaticContext.getParamsJson());
 					}
 					else if(wfResult instanceof Double) {
 						Double value =  (Double) wfResult;
