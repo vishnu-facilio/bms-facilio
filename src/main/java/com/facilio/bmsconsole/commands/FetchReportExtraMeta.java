@@ -83,7 +83,7 @@ public class FetchReportExtraMeta implements Command {
 					
 					Long fieldId = dataPoint.getyAxis().getFieldId();
 					
-					List<ReadingAlarmContext> alarms = AlarmAPI.getReadingAlarms(parentId,fieldId,report.getDateRange().getStartTime(),report.getDateRange().getEndTime());
+					List<ReadingAlarmContext> alarms = AlarmAPI.getReadingAlarms(parentId,fieldId,report.getDateRange().getStartTime(),report.getDateRange().getEndTime(),false);
 					
 					alarms = filterAlarmAndGetList(alarms,alarmId);
 					
@@ -99,7 +99,7 @@ public class FetchReportExtraMeta implements Command {
 
 							if(reportBaseLine.getBaseLineRange() != null) {
 								
-								alarms = AlarmAPI.getReadingAlarms(parentId,fieldId,reportBaseLine.getBaseLineRange().getStartTime(),reportBaseLine.getBaseLineRange().getEndTime());
+								alarms = AlarmAPI.getReadingAlarms(parentId,fieldId,reportBaseLine.getBaseLineRange().getStartTime(),reportBaseLine.getBaseLineRange().getEndTime(),false);
 								
 								alarms = filterAlarmAndGetList(alarms,alarmId);
 								
@@ -145,6 +145,9 @@ public class FetchReportExtraMeta implements Command {
 	private List<ReportAlarmContext> getReportAlarms(List<ReadingAlarmContext> allAlarms, DateRange dateRange) {
 		List<Long> alarmTime = new ArrayList<>();
 		
+		if(dateRange.getEndTime() > DateTimeUtil.getCurrenTime()) {
+			dateRange.setEndTime(DateTimeUtil.getCurrenTime());
+		}
 		boolean isCurrentTimeAdded = false;
 		for(ReadingAlarmContext alarm :allAlarms) {
 			if(alarm.getCreatedTime() > 0) {
