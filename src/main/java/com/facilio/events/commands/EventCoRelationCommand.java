@@ -4,7 +4,6 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
@@ -35,7 +34,7 @@ public class EventCoRelationCommand implements Command {
 									break;
 								case TRANSFORM:
 									long coRelTransformTemplateId = rule.getCoRelTransformTemplateId();
-									JSONTemplate template = (JSONTemplate) TemplateAPI.getTemplate(coRelTransformTemplateId);
+								TemplateAPI.getTemplate(coRelTransformTemplateId);
 //									event = EventAPI.transformEvent(event, template);
 									break;
 							}

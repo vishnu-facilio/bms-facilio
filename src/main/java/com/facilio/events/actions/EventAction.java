@@ -21,6 +21,10 @@ import com.facilio.events.util.EventRulesAPI;
 @SuppressWarnings("serial")
 public class EventAction extends FacilioAction {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JSONObject payload;
 	public JSONObject getPayload() {
 		return payload;
@@ -192,12 +196,10 @@ public class EventAction extends FacilioAction {
 	@SuppressWarnings("unchecked")
 	public String eventRules() throws Exception {
 		
-		FacilioContext context = new FacilioContext();
-//		Chain eventRulesChain = EventConstants.EventChainFactory.getActiveEventRuleChain();
-//		eventRulesChain.execute(context);
+		new FacilioContext();
 		
 		
-		setEventRules((List<EventRuleContext>) EventRulesAPI.getAllActiveEventRules());
+		setEventRules(EventRulesAPI.getAllActiveEventRules());
 		
 		return SUCCESS;
 	}
@@ -277,12 +279,12 @@ public class EventAction extends FacilioAction {
 	
 	public String updateSourceWithResource() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(EventConstants.EventContextNames.SOURCE, source);
+		context.put(FacilioConstants.ContextNames.ID, id);
 		context.put(EventConstants.EventContextNames.RESOURCE_ID, resourceId);
 		
 		Chain updateAssetChain = EventConstants.EventChainFactory.updateNodeToResourceMappingChain();
 		updateAssetChain.execute(context);
-		setResult(FacilioConstants.ContextNames.RESULT, (String) context.get(FacilioConstants.ContextNames.RESULT));
+		setResult(FacilioConstants.ContextNames.RESULT, context.get(FacilioConstants.ContextNames.RESULT));
 		return SUCCESS;
 	}
 	

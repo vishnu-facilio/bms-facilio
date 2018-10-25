@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.templates.AssignmentTemplate;
 import com.facilio.bmsconsole.templates.SLATemplate;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ActionType;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
@@ -27,10 +28,13 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
-import com.opensymphony.xwork2.ActionSupport;
 
-public class WorkflowRuleAction extends ActionSupport {
+public class WorkflowRuleAction extends FacilioAction {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public String execute() throws Exception 
 	{
 	    return SUCCESS;
@@ -108,7 +112,9 @@ public class WorkflowRuleAction extends ActionSupport {
 
 	public String addReadingRule() throws Exception {
 		readingRule.setRuleType(WorkflowRuleContext.RuleType.READING_RULE);
-		return commonAddReadingRule();
+		commonAddReadingRule();
+		setResult("rule", readingRule);
+		return SUCCESS;
 	}
 	
 	public String addPMReadingRule() throws Exception {
@@ -137,6 +143,7 @@ public class WorkflowRuleAction extends ActionSupport {
 		updateRule.execute(context);
 		
 		readingRule = (ReadingRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
+		setResult("rule", readingRule);
 		
 		return SUCCESS;
 	}
@@ -149,6 +156,7 @@ public class WorkflowRuleAction extends ActionSupport {
 		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, constructAssignmentAction(true));
 		Chain addRule = TransactionChainFactory.getAddWorkflowRuleChain();
 		addRule.execute(facilioContext);
+		setResult("rule", rule);
 		return SUCCESS;
 	}
 	
@@ -159,6 +167,7 @@ public class WorkflowRuleAction extends ActionSupport {
 		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, constructAssignmentAction(false));
 		Chain updateRule = TransactionChainFactory.updateWorkflowRuleChain();
 		updateRule.execute(facilioContext);
+		setResult("rule", rule);
 		return SUCCESS;
 	}
 	
@@ -192,6 +201,7 @@ public class WorkflowRuleAction extends ActionSupport {
 		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, constructSLAAction(true));
 		Chain addRule = TransactionChainFactory.getAddWorkflowRuleChain();
 		addRule.execute(facilioContext);
+		setResult("rule", slaRule);
 		return SUCCESS;
 	}
 	
@@ -202,6 +212,7 @@ public class WorkflowRuleAction extends ActionSupport {
 		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, constructSLAAction(false));
 		Chain updateRule = TransactionChainFactory.updateWorkflowRuleChain();
 		updateRule.execute(facilioContext);
+		setResult("rule", slaRule);
 		return SUCCESS;
 	}
 	
@@ -243,17 +254,9 @@ public class WorkflowRuleAction extends ActionSupport {
 		Chain deleteRule = FacilioChainFactory.getDeleteWorkflowRuleChain();
 		deleteRule.execute(context);
 		
-		result = context.get(FacilioConstants.ContextNames.RESULT).toString();
+		setResult("result", context.get(FacilioConstants.ContextNames.RESULT));
 		
 		return SUCCESS;
-	}
-	
-	private String result;
-	public String getResult() {
-		return result;
-	}
-	public void setResult(String result) {
-		this.result = result;
 	}
 	
 	private List<Long> id;
@@ -291,6 +294,7 @@ public class WorkflowRuleAction extends ActionSupport {
 		Chain workflowRuleType = FacilioChainFactory.getWorkflowRuleOfTypeChain();
 		workflowRuleType.execute(context);
 		workflowRuleList = (List<WorkflowRuleContext>) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST);
+		setResult("rules", workflowRuleList);
 		return SUCCESS;
 	}
 	
@@ -303,6 +307,7 @@ public class WorkflowRuleAction extends ActionSupport {
 		Chain workflowRuleType = FacilioChainFactory.fetchWorkflowRulesOfTypeChain();
 		workflowRuleType.execute(context);
 		workflowRuleList = (List<WorkflowRuleContext>) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST);
+		setResult("rules", workflowRuleList);
 		return SUCCESS;
 	}
 	
@@ -321,6 +326,7 @@ public class WorkflowRuleAction extends ActionSupport {
 		fetchWorkflowChain.execute(context);
 		
 		rule = (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
+		setResult("rule", rule);
 		return SUCCESS;
 	}
 	
@@ -351,7 +357,7 @@ public class WorkflowRuleAction extends ActionSupport {
 		
 		Chain addRule = TransactionChainFactory.getAddWorkflowRuleChain();
 		addRule.execute(context);
-		
+		setResult("rule", rule);
 		return SUCCESS;
 	}
 	
@@ -365,7 +371,7 @@ public class WorkflowRuleAction extends ActionSupport {
 		updateRule.execute(context);
 		
 		rule = (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
-		
+		setResult("rule", rule);
 		return SUCCESS;
 	}
 	
@@ -406,5 +412,25 @@ public class WorkflowRuleAction extends ActionSupport {
 	}
 	public void setModule(String module) {
 		this.module = module;
+	}
+	
+	private Boolean status;
+	public Boolean getStatus() {
+		if (status == null) {
+			return false;
+		}
+		return status;
+	}
+	public void setStatus(Boolean status) {
+		this.status = status;
+	}
+	
+	public String changeWorkflowStatus() throws Exception {
+		WorkflowRuleContext workFlow = new WorkflowRuleContext();
+		workFlow.setStatus(status);
+		workFlow.setId(ruleId);
+		WorkflowRuleAPI.updateWorkflowRule(workFlow);
+		setResult("result", "success");
+		return SUCCESS;
 	}
 }

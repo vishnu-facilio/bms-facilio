@@ -9,6 +9,11 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class UrjanetAction extends ActionSupport{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public String UserAdd() throws Exception
 	{
 		   FacilioContext context = new FacilioContext();    

@@ -9,6 +9,10 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 
 public class ModuleBaseWithCustomFields implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long orgId = -1;
 	public long getOrgId() {
 		return orgId;
@@ -97,6 +101,15 @@ public class ModuleBaseWithCustomFields implements Serializable {
 			return null;
 		}
 		return data.get(key);
+	}
+	private long siteId = -1;
+	
+	public long getSiteId() {
+		return this.siteId;
+	}
+	
+	public void setSiteId(long siteId) {
+		this.siteId = siteId;
 	}
 	
 	private long sysCreatedTime = -1;

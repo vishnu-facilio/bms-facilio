@@ -17,6 +17,10 @@ import com.facilio.fw.BeanFactory;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class TicketStatusAction extends ActionSupport {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static Logger log = LogManager.getLogger(TicketStatusAction.class.getName());
 	public String statusList() throws Exception {
 		FacilioContext context = new FacilioContext();

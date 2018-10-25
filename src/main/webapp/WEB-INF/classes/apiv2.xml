@@ -72,6 +72,7 @@
 	<package name="internalV2" namespace="/v2/internal" extends="v2Api">
 		<action name="handleException" class="com.facilio.bmsconsole.actions.FacilioAction" 
 			method="handleException">
+			<interceptor-ref name="defaultStack" />
 		</action>
 	</package>
 
@@ -83,6 +84,14 @@
 		</action>
 		<action name="deletetemplate" class="com.facilio.bmsconsole.actions.ImportTemplateAction" method="deleteTemplate"></action>
 	</package>
+	
+	
+		<package name="viewApiV2" namespace="/api/v2/views" extends="v2Api">
+		<action name="viewList" class="com.facilio.bmsconsole.actions.ViewAction"
+			method="v2viewlist">
+		</action>
+		</package>
+	
 
 	<package name="workOrderApiV2" namespace="/api/v2/workorders" extends="v2Api">
 	
@@ -104,6 +113,12 @@
 			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 		</action>
 		
+		
+		
+		
+		
+		
+		
 		<action name="sync" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="syncOfflineWorkOrders">
 			<param name="moduleName">workorder</param>
@@ -121,6 +136,20 @@
 	<package name="workOrderListApiV2" namespace="/api/v2/workorders/view" extends="v2Api">
 		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="v2workOrderList">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<param name="viewName">{1}</param>
+			<result name="success" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+				<param name="excludeProperties">result.subViewCount.*\.criteria</param>
+			</result>
+		</action>
+	</package>
+	
+	<package name="approvalListApiV2" namespace="/api/v2/approval/view" extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.ApprovalAction"
+			method="v2approvalList">
 			<param name="moduleName">workorder</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<param name="viewName">{1}</param>
@@ -339,6 +368,10 @@
 	<package name="reportApiv2" namespace="/api/v2/report" extends="v2Api">
 		<action name="readingReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReadingsData">
 		</action>
+		<action name="fetchReadingsFromCard" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReadingsFromCard">
+		</action>
+		<action name="fetchReadingsFromAlarm" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReadingsFromAlarm">
+		</action>
 		<action name="workorderReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchWorkorderData">
 		</action>
 		<action name="addReadingReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="addOrUpdateReadingReport">
@@ -409,6 +442,39 @@
 		<action name="*" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="getModuleDataList">
 			<param name="viewName">{1}</param>
+		</action>
+	</package>
+	
+	<package name="assetApiV2" namespace="/api/v2/assets" extends="v2Api">
+	
+		<action name="qr" class="com.facilio.bmsconsole.actions.AssetAction"
+			method="fetchAssetFromQR">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+		</action>
+		
+		<action name="cards" class="com.facilio.bmsconsole.actions.AssetAction"
+			method="reportCards">
+		</action>
+		
+		<action name="*" class="com.facilio.bmsconsole.actions.AssetAction" method="assetDetails">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+			<param name="assetId">{1}</param>
+		</action>
+		
+	</package>
+	
+	<package name="assetListApiv2" namespace="/api/v2/assets/view" extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.AssetAction" method="assetList">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
+	
+	<package name="workflowApiv2" namespace="/api/v2/workflow" extends="v2Api">
+		<action name="xml" class="com.facilio.workflows.action.WorkflowAction" method="getWorkflowXmlFromObject">
 		</action>
 	</package>
 	

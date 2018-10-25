@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.workflow.rule;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,11 +13,16 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
-public class WorkflowRuleContext {
+public class WorkflowRuleContext implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = LogManager.getLogger(WorkflowRuleContext.class.getName());
 	private long orgId = -1;
 	public long getOrgId() {
@@ -26,6 +32,14 @@ public class WorkflowRuleContext {
 		this.orgId = orgId;
 	}
 	
+	private long siteId = -1;
+	public long getSiteId() {
+		return siteId;
+	}
+	public void setSiteId(long siteId) {
+		this.siteId = siteId;
+	}
+
 	private long id = -1;
 	public long getId() {
 		return id;
@@ -168,6 +182,9 @@ public class WorkflowRuleContext {
 	}
 	
 	public boolean evaluateMisc (String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
+		if (record instanceof ModuleBaseWithCustomFields && siteId != -1) {
+			return ((ModuleBaseWithCustomFields) record).getSiteId() == siteId;
+		}
 		return true;
 	}
 	
@@ -199,16 +216,23 @@ public class WorkflowRuleContext {
 		return rulePlaceHolders;
 	}
 	
-	public void executeWorkflowActions(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
+	public void executeTrueActions(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
 		long ruleId = getId();
 		if (actions == null) {
 			actions = ActionAPI.getActiveActionsFromWorkflowRule(ruleId);
+		}
+		if (this.getId() == 3335) {
+			LOGGER.info("List of actions : "+actions);
 		}
 		if(actions != null) {
 			for(ActionContext action : actions) {
 				action.executeAction(placeHolders, context, this, record);
 			}
 		}
+	}
+	
+	public void executeFalseActions(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
+		//TODO Add true or false boolean in actions
 	}
 	
 	private List<FieldChangeFieldContext> fields;

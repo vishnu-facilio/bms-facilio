@@ -450,6 +450,29 @@ public class FieldUtil {
 		return mapper.convertValue(properties, classObj);
 	}
 	
+	public static Object getBooleanResultString(Object value,String moduleName,String fieldName) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioField field = modBean.getField(fieldName, moduleName);
+		return getBooleanResultString(value,field);
+	}
+	
+	public static Object getBooleanResultString(Object value,FacilioField field) {
+		
+		if(field.getDataType() == FieldType.BOOLEAN.getTypeAsInt() && field instanceof BooleanField) {
+			BooleanField booleanField = (BooleanField) field;
+			String result = null;
+			if((Boolean)value.equals(Boolean.TRUE)) {
+				result = booleanField.getTrueVal() != null ?  booleanField.getTrueVal() : "1";
+			}
+			else {
+				result = booleanField.getFalseVal() != null ?  booleanField.getFalseVal() : "0";
+			}
+			return result;
+		}
+		return value;
+	}
+	
 	
 	public static void addFiles(List<FacilioField> fields, List<Map<String, Object>> values) throws Exception {
 		List<FacilioField> fileFields = fields.stream().filter(field -> field.getDataTypeEnum() == FieldType.FILE).collect(Collectors.toList());

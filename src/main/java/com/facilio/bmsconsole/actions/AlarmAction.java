@@ -41,6 +41,10 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class AlarmAction extends FacilioAction {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static Logger log = LogManager.getLogger(AlarmAction.class.getName());
 	private AlarmContext alarm;
 	public AlarmContext getAlarm() {

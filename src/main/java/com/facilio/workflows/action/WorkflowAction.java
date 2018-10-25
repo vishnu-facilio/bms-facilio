@@ -6,11 +6,17 @@ import java.util.List;
 import org.apache.log4j.LogManager;
 
 import com.facilio.bmsconsole.actions.FacilioAction;
+import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.functions.FacilioFunctionNameSpace;
 import com.facilio.workflows.functions.FacilioWorkflowFunctionInterface;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class WorkflowAction extends FacilioAction {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	private static org.apache.log4j.Logger log = LogManager.getLogger(WorkflowUtil.class.getName());
 	
@@ -70,6 +76,19 @@ public class WorkflowAction extends FacilioAction {
 			log.error(e);
 			return ERROR;
 		}
+	}
+	
+	private WorkflowContext workflow;
+	public WorkflowContext getWorkflow() {
+		return workflow;
+	}
+	public void setWorkflow(WorkflowContext workflow) {
+		this.workflow = workflow;
+	}
+	
+	public String getWorkflowXmlFromObject() throws Exception {
+		setResult("workflowString", WorkflowUtil.getXmlStringFromWorkflow(workflow));
+		return SUCCESS;
 	}
 	
 }

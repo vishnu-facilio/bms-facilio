@@ -20,7 +20,7 @@ public class GetPreventiveMaintenanceCommand implements Command {
 		// TODO Auto-generated method stub
 		
 		Criteria criteria = new Criteria();
-		String count = (String) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_COUNT);
+		context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_COUNT);
 
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		JSONObject filters = (JSONObject) context.get(FacilioConstants.ContextNames.FILTERS);

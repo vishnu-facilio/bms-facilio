@@ -6,7 +6,6 @@ import org.apache.commons.chain.Context;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
@@ -28,8 +27,7 @@ public class EventTransformCommand implements Command {
 					Criteria criteria = CriteriaAPI.getCriteria(orgId, rule.getTransformCriteriaId());
 					boolean isMatched = criteria.computePredicate().evaluate(event);
 					if(isMatched) {
-						JSONTemplate template = (JSONTemplate) TemplateAPI.getTemplate(rule.getTransformAlertTemplateId());
-//						event = EventAPI.transformEvent(event, template);
+						TemplateAPI.getTemplate(rule.getTransformAlertTemplateId());
 					}
 				}
 				event.setInternalState(EventInternalState.TRANSFORMED);

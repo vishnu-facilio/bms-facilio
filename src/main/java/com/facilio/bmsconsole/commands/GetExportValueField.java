@@ -104,7 +104,7 @@ public class GetExportValueField implements Command{
 	}
 	
 	private Map<String,Object> exportFormatObject (List<FacilioField> fieldList,List<EventContext> events, Map<Long, Map<String, Object>> readings, long parentId) throws Exception {
-		Map<Long , ReadingContext> readingList = new HashMap<Long, ReadingContext>();
+		new HashMap<Long, ReadingContext>();
 		List<Object> records = new ArrayList<Object>();
 		List<String> header = new ArrayList<String>();
 		Map<String, FacilioField> headerFields = new HashMap<String, FacilioField>();

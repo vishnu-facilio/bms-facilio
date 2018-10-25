@@ -8,6 +8,10 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class ViewSharingContext extends ModuleBaseWithCustomFields {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long viewId = -1;
 	public long getViewId() {
 		return viewId;

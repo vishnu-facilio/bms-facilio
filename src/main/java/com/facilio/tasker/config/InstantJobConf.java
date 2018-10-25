@@ -19,7 +19,8 @@ public class InstantJobConf {
     private static final String JOB_NAME_KEY = "INSTANT_JOB";
     private static final String ACCOUNT_KEY = "INSTANT_JOB_ACCOUNT";
     private static final String INSTANT_JOB_QUEUE = "InstantJob";
-
+    private static final int DEFAULT_TIME_OUT = 300; //In Seconds
+    
     public static String getJobNameKey() {
         return JOB_NAME_KEY;
     }
@@ -30,6 +31,10 @@ public class InstantJobConf {
 
     public static String getInstantJobQueue() {
         return INSTANT_JOB_QUEUE;
+    }
+    
+    public static int getDefaultTimeOut() {
+    	return DEFAULT_TIME_OUT;
     }
 
     private List<Job> jobs;
@@ -53,6 +58,7 @@ public class InstantJobConf {
 
         public final static class Job {
             private String name, className;
+            private int transactionTimeout;
             private Class<? extends InstantJob> classObject = null;
 
             public Job() {
@@ -75,6 +81,16 @@ public class InstantJobConf {
                 this.className = className;
             }
 
+            @XmlAttribute(name="transactionTimeout")
+            public int getTransactionTimeout() {
+                return transactionTimeout;
+            }
+
+            public void setTransactionTimeout(int transactionTimeout) {
+                this.transactionTimeout = transactionTimeout;
+            }
+
+
             public Class<? extends InstantJob> getClassObject() {
                 if(classObject != null) {
                     return classObject;
@@ -90,7 +106,7 @@ public class InstantJobConf {
             }
             @Override
             public String toString() {
-                return "(name, classname)=("+name+","+className+")";
+                return "(name, classname, transactionTimeout )=("+name+", "+className+", "+transactionTimeout+")";
             }
         }
     }

@@ -18,6 +18,10 @@ import com.google.common.base.Objects;
 
 public class Criteria extends ExpressionEvaluator<Predicate> implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public Criteria() {
 		// TODO Auto-generated constructor stub
 		super.setRegEx(SPLIT_REG_EX);

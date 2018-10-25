@@ -17,9 +17,7 @@ public class WorkflowRuleCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		String module = this.module;
-		String action = this.action;
-		long ticketId = (Long) context.get("ticketId");
+		context.get("ticketId");
 		
 		
 		

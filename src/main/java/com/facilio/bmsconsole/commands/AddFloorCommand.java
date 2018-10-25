@@ -52,7 +52,7 @@ public class AddFloorCommand implements Command {
 	private void updateSiteId(FloorContext floor) throws Exception {
 		if(floor.getBuilding() != null) {
 			long buildingId = floor.getBuilding().getId();
-			BuildingContext building = (BuildingContext) SpaceAPI.getBuildingSpace(buildingId);
+			BuildingContext building = SpaceAPI.getBuildingSpace(buildingId);
 			floor.setSiteId(building.getSiteId());
 		}
 	}

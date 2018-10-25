@@ -8,6 +8,10 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 public class WebNotificationTemplate extends Template{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String to;
 
 	public String getTo() {

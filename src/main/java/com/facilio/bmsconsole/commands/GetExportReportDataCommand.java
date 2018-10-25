@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -19,6 +20,7 @@ import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.NumberField;
+import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.ExportUtil;
 import com.facilio.constants.FacilioConstants;
@@ -36,6 +38,7 @@ public class GetExportReportDataCommand implements Command {
 	
 	private static ReportContext report;
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean execute(Context context) throws Exception {
 		
@@ -45,7 +48,7 @@ public class GetExportReportDataCommand implements Command {
 		ReportMode mode = (ReportMode)context.get(FacilioConstants.ContextNames.REPORT_MODE);
 		
 		if (mode == null) {
-			String chartStateString = (String) report.getChartState();
+			String chartStateString = report.getChartState();
 			JSONParser parser = new JSONParser();
 			Map<String, Object> chartState = (Map<String, Object>) parser.parse(chartStateString);
 			if (chartState != null && chartState.containsKey("common")) {
@@ -58,7 +61,7 @@ public class GetExportReportDataCommand implements Command {
 		Map<Long, ReportBaseLineContext> baseLineMap = null;
 		
 		List<String> currentHeaderKeys = new ArrayList<>();
-		Map<String, Map<String, Object>> rows = new LinkedHashMap<>();
+		new LinkedHashMap<>();
 	    if (mode == ReportMode.SERIES) {
 	    	  currentHeaderKeys.add(SERIES_X_HEADER);
 	    	  currentHeaderKeys.addAll(reportData.values().stream().filter(val -> val != null && !val.isEmpty()).findFirst().get().keySet());
@@ -116,16 +119,21 @@ public class GetExportReportDataCommand implements Command {
 			fileUrl = ExportUtil.exportData(fileFormat, "Report Data", table);
 		}
 		else {
-			String url = getClientUrl(report.getDataPoints().get(0).getxAxis().getField().getModule().getName(), report.getId(), fileFormat) + "?";
+			StringBuilder url = getClientUrl(report.getDataPoints().get(0).getxAxis().getField().getModule().getName(), report.getId(), fileFormat).append("?print=true");
 			if(report.getDateRange() != null) {
-				url += "daterange=" + report.getDateRange().getStartTime() + "," + report.getDateRange().getEndTime();
+				JSONObject dateRange = new JSONObject();
+				dateRange.put("startTime", report.getDateRange().getStartTime());
+				dateRange.put("endTime", report.getDateRange().getEndTime());
+				dateRange.put("operatorId", report.getDateOperator());
+				dateRange.put("value", report.getDateValue());
+				url.append("&daterange=").append(ReportsUtil.encodeURIComponent(dateRange.toJSONString()));
 			}
 			String chartType = (String) context.get("chartType");
 			if (chartType != null) {
-				url += "&charttype=" + chartType;
+				url.append("&charttype=").append(chartType);
 			}
 			
-			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(), url, fileFormat);
+			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(), url.toString(), fileFormat);
 		}
 		
 		context.put(FacilioConstants.ContextNames.FILE_URL, fileUrl);
@@ -172,7 +180,7 @@ public class GetExportReportDataCommand implements Command {
 				String colName = isBaseLine ? (String) col.get("dp") : ((String) col.get("name"));
 				if ((String) col.get("displayName") != null) {
 					headers.add((String) col.get("displayName"));
-					col.put("header", (String) col.get("displayName"));
+					col.put("header", col.get("displayName"));
 				}
 				else {
 					ReportDataPointContext dataPoint = dataMap.get(colName);
@@ -231,7 +239,7 @@ public class GetExportReportDataCommand implements Command {
 			
 			String format = "EEEE, MMMM dd, yyyy hh:mm a";
 			
-			List<Map<String, Object>> xValueList = new ArrayList<>();
+			new ArrayList<>();
 			AggregateOperator aggr = report.getDataPoints().get(0).getxAxis().getAggrEnum();
 			if (aggr != null && aggr instanceof DateAggregateOperator) {
 				String dateFormat = ((DateAggregateOperator)aggr).getFormat();
@@ -264,7 +272,8 @@ public class GetExportReportDataCommand implements Command {
 		return records;
 	}
 	
-	private String getClientUrl(String moduleName, Long reportId, FileFormat fileFormat) {
+	private StringBuilder getClientUrl(String moduleName, Long reportId, FileFormat fileFormat) {
+		moduleName = FacilioConstants.ContextNames.ENERGY_DATA_READING;	// Temp
 		StringBuilder url = new StringBuilder(AwsUtil.getConfig("clientapp.url")).append("/app/");
 		if (moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER)) {
 			url.append("wo");
@@ -284,7 +293,7 @@ public class GetExportReportDataCommand implements Command {
 		if(fileFormat == FileFormat.IMAGE) {
 			url.append("/show");
 		}
-		return url.toString();
+		return url;
 	}
 	
 	private String addAnalyticsConfigAndGetUrl(FileFormat fileFormat) {

@@ -32,6 +32,10 @@ import com.facilio.exception.ReadingValidationException;
 
 public class TaskAction extends FacilioAction {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static Logger log = LogManager.getLogger(TaskAction.class.getName());
 	//New Task Props
 	public String newTask() throws Exception {

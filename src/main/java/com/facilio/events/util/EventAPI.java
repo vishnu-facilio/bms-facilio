@@ -14,9 +14,13 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.events.constants.EventConstants;
@@ -138,14 +142,14 @@ public class EventAPI {
 	    event.setInternalState(EventInternalState.ADDED);
 	    
 	    if(event.getSource() != null) {
-	    	long resourceId = getResourceFromSource(event.getSource(), orgId);
+	    	long resourceId = getResourceFromSource(event.getSource(), orgId,event.getControllerId());
 	    	if(resourceId != -1) {
 	    		if(resourceId != 0) {
 	    			event.setResourceId(resourceId);
 	    		}
 	    	}
 	    	else {
-	    		addSourceToResourceMapping(event.getSource(), orgId);
+	    		addSourceToResourceMapping(event.getSource(), orgId,event.getControllerId());
 	    	}
 	    }
 	    
@@ -160,11 +164,15 @@ public class EventAPI {
 		updatebuilder.update(FieldUtil.getAsProperties(event));
 	}
 	
-	public static long getResourceFromSource(String source, long orgId) throws Exception {
+	public static long getResourceFromSource(String source, long orgId,long controllerId) throws Exception {
+		FacilioModule module=EventConstants.EventModuleFactory.getSourceToResourceMappingModule();
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-																.table(EventConstants.EventModuleFactory.getSourceToResourceMappingModule().getTableName())
+																.table(module.getTableName())
 																.select(EventConstants.EventFieldFactory.getSourceToResourceMappingFields())
-																.andCustomWhere("ORGID = ? AND SOURCE = ?", orgId, source);
+																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+																.andCondition(CriteriaAPI.getCondition("SOURCE",EventConstants.EventContextNames.SOURCE, source, StringOperators.IS))
+																.andCondition(getControllerIdCondition(controllerId, module));
+																//.andCustomWhere("ORGID = ? AND SOURCE = ? AND CONTROLLER_ID = ?", orgId, source,controllerId);
 		
 		List<Map<String, Object>> props = selectRecordBuilder.get();
 		if(props != null && !props.isEmpty()) {
@@ -192,10 +200,12 @@ public class EventAPI {
 		builder.save();
 	}
 	
-	public static long addSourceToResourceMapping(String source, long orgId) throws SQLException, RuntimeException {
+	public static long addSourceToResourceMapping(String source, long orgId,long controllerId) throws SQLException, RuntimeException {
 		Map<String, Object> prop = new HashMap<>();
 		prop.put("orgId", orgId);
 		prop.put(EventConstants.EventContextNames.SOURCE, source);
+		prop.put(EventConstants.EventContextNames.CONTROLLER_ID, controllerId);
+
 		GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
 																.table(EventConstants.EventModuleFactory.getSourceToResourceMappingModule().getTableName())
 																.fields(EventConstants.EventFieldFactory.getSourceToResourceMappingFields())
@@ -205,17 +215,31 @@ public class EventAPI {
 		return (long) prop.get("id");
 	}
 	
-	public static void updateResourceForSource(long assetId, String source, long orgId) throws SQLException {
+	public static void updateResourceForSource(long assetId, String source, long orgId,long controllerId) throws SQLException {
+		FacilioModule module=EventConstants.EventModuleFactory.getSourceToResourceMappingModule();
 		Map<String, Object> prop = new HashMap<>();
 		prop.put(EventConstants.EventContextNames.RESOURCE_ID, assetId);
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-														.table(EventConstants.EventModuleFactory.getSourceToResourceMappingModule().getTableName())
+														.table(module.getTableName())
 														.fields(EventConstants.EventFieldFactory.getSourceToResourceMappingFields())
-														.andCustomWhere("ORGID = ? AND SOURCE = ?", orgId, source);
-		
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCondition("SOURCE",EventConstants.EventContextNames.SOURCE, source, StringOperators.IS))
+														.andCondition(getControllerIdCondition(controllerId, module));		
 		updateBuilder.update(prop);
 	}
 	
+	
+	public static void updateResourceForSource(long assetId, long id, long orgId) throws SQLException {
+		FacilioModule module=EventConstants.EventModuleFactory.getSourceToResourceMappingModule();
+		Map<String, Object> prop = new HashMap<>();
+		prop.put(EventConstants.EventContextNames.RESOURCE_ID, assetId);
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+														.table(module.getTableName())
+														.fields(EventConstants.EventFieldFactory.getSourceToResourceMappingFields())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getIdCondition(id, module));		
+		updateBuilder.update(prop);
+	}
 	public static List<Map<String, Object>> getAllSources(long orgId) throws Exception {
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 																.table(EventConstants.EventModuleFactory.getSourceToResourceMappingModule().getTableName())
@@ -257,5 +281,13 @@ public class EventAPI {
 			return events;
 		}
 		return null;
+	}
+	
+	private static Condition getControllerIdCondition(long id,FacilioModule module) {
+		Condition idCondition = new Condition();
+		idCondition.setField(FieldFactory.getControllerIdField(module));
+		idCondition.setOperator(NumberOperators.EQUALS);
+		idCondition.setValue(String.valueOf(id));
+		return idCondition;
 	}
 }

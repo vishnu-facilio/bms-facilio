@@ -418,7 +418,7 @@ public class ExportUtil {
 				FacilioField field = vf.getField();
 				if (field.getDataTypeEnum()==FieldType.LOOKUP) {
 
-					FacilioField parentField = vf.getParentField();
+					vf.getParentField();
 					Map<String, Object> recordProp = FieldUtil.getAsProperties(record);
 					Map value = (Map) getValue(recordProp, vf);
 					if(value == null || !value.containsKey("id") || (long)value.get("id") == -1){

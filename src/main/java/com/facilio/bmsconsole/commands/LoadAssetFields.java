@@ -10,7 +10,6 @@ import org.apache.log4j.Logger;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -24,7 +23,7 @@ public class LoadAssetFields implements Command {
 		long startTime = System.currentTimeMillis();
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(moduleName);
+		modBean.getModule(moduleName);
 		List<FacilioField> fields = new ArrayList(modBean.getAllFields(moduleName));
 		if (!moduleName.equals(FacilioConstants.ContextNames.ASSET)) {
 			List<FacilioField> customFields = modBean.getAllCustomFields("asset");

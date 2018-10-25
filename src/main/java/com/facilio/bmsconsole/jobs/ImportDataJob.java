@@ -25,9 +25,11 @@ public class ImportDataJob extends FacilioJob {
 	public void execute(JobContext jc) throws Exception {
 		ImportProcessContext importProcessContext = null;
 		
-		LOGGER.severe("IMPORT DATA JOB CALLED");
+		
 		try {
 			long jobId = jc.getJobId();
+			
+			LOGGER.severe("IMPORT DATA JOB CALLED -- "+jobId);
 			
 			importProcessContext = ImportAPI.getImportProcessContext(jobId);
 			
@@ -58,7 +60,7 @@ public class ImportDataJob extends FacilioJob {
 			
 			importProcessContext.setStatus(ImportProcessContext.ImportStatus.IMPORTED.getValue());
 			ImportAPI.updateImportProcess(importProcessContext);
-			LOGGER.severe("IMPORT DATA JOB COMPLETED");
+			LOGGER.severe("IMPORT DATA JOB COMPLETED -- " +jobId);
 		}
 		catch(Exception e) {
 			try {

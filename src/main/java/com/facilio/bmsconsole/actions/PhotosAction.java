@@ -17,6 +17,10 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class PhotosAction extends ActionSupport {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static org.apache.log4j.Logger log = LogManager.getLogger(PhotosAction.class.getName());
 
 	public String addBaseSpacePhotos() throws Exception {

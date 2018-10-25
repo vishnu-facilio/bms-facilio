@@ -126,7 +126,7 @@ public class HandleExcelFile {
 	{
 		Map<String,String> placeHolders = new HashMap();
 		XSSFWorkbook workbook = new XSSFWorkbook(fis);
-		ArrayList sheets = new ArrayList();
+		new ArrayList();
 		for(int i =0;i<workbook.getNumberOfSheets();i++)
 		{
 			String sheetName  = workbook.getSheetName(i);
@@ -159,7 +159,7 @@ public class HandleExcelFile {
 	public static void FetchKeyValuePair(Workbook workbook)
 	{
 		Map<String,String> placeHolders = new HashMap();
-		ArrayList sheets = new ArrayList();
+		new ArrayList();
 		for(int i = 0; i<workbook.getNumberOfSheets();i++)
 		{
 			String sheetName =  workbook.getSheetName(i);

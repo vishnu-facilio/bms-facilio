@@ -10,7 +10,6 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.tenant.RateCardContext;
 import com.facilio.bmsconsole.tenant.RateCardServiceContext;
-import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.workflows.util.WorkflowUtil;
 
@@ -19,7 +18,7 @@ public class CalculateFormulaService implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 
-		TenantContext tenant = (TenantContext) context.get(TenantsAPI.TENANT_CONTEXT);
+		context.get(TenantsAPI.TENANT_CONTEXT);
 		RateCardContext rateCard = (RateCardContext) context.get(TenantsAPI.RATECARD_CONTEXT);
 		
 		
@@ -32,7 +31,6 @@ public class CalculateFormulaService implements Command {
 		double formulaSumValue = 0.0;
 		if(formulaServices != null && !formulaServices.isEmpty()) {
 			Map<Long,Double> formulaVsValue = new HashMap<>();
-			double tax = 0;
 			List<Map<String, Object>> itemDetails = new ArrayList<>();
 			
 			for(RateCardServiceContext formulaService :formulaServices) {

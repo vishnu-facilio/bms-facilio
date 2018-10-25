@@ -126,7 +126,7 @@ public class FormFactory {
 	private static List<FormField> getWebWorkOrderFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.REQUIRED, 1, 1));
-		fields.add(new FormField("site", FieldDisplayType.LOOKUP_SIMPLE, "SITE", Required.REQUIRED, "site", 2, 1));
+		fields.add(new FormField("site", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 2, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 3, 1));
 		fields.add(new FormField("ticketcategory", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "ticketcategory", 4, 2));
 		fields.add(new FormField("ticketpriority", FieldDisplayType.LOOKUP_SIMPLE, "Priority", Required.OPTIONAL, "ticketpriority", 4, 3));
@@ -157,7 +157,7 @@ public class FormFactory {
 	private static List<FormField> getWebWorkRequestFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.OPTIONAL, 1, 1));
-		fields.add(new FormField("site", FieldDisplayType.LOOKUP_SIMPLE, "SITE", Required.REQUIRED, 2, 1));
+		fields.add(new FormField("site", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, 2, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 3, 1));
 		fields.add(new FormField("category", FieldDisplayType.SELECTBOX, "Category", Required.OPTIONAL, 4, 2));
 		fields.add(new FormField("priority", FieldDisplayType.LOOKUP_SIMPLE, "Priority", Required.OPTIONAL, "ticketpriority", 4, 3));

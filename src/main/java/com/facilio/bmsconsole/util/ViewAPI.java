@@ -267,7 +267,7 @@ public class ViewAPI {
 		}
 	}
 	
-	/*public static long editView(long viewId, FacilioView view) throws Exception {
+	public static long updateView(long viewId, FacilioView view) throws Exception {
 		try {
 			FacilioView oldView = getView(viewId);
 			Criteria criteria = view.getCriteria();
@@ -283,13 +283,15 @@ public class ViewAPI {
 															.fields(FieldFactory.getViewFields())
 															.andCondition(CriteriaAPI.getIdCondition(viewId, viewModule));
 			
-			updateBuilder.update(viewProp);
+			int count = updateBuilder.update(viewProp);
 			
 			if(criteria != null) {
 				CriteriaAPI.deleteCriteria(oldView.getCriteriaId());
 			}
 			
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			// TODO update sort fields and view columns
+			
+			/*ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module;
 			if (LookupSpecialTypeUtil.isSpecialType(view.getModuleName())) {
 				module =  modBean.getModule(view.getModuleName());
@@ -308,15 +310,15 @@ public class ViewAPI {
 				}
 				
 				customizeViewSortColumns((long) viewProp.get("id"), defaultSortFileds);
-			}
+			}*/
 			
-			return (long) viewProp.get("id");
+			return count;
 			
 		} catch (Exception e) {
 			log.info("Exception occurred ", e);
 			throw e;
 		}
-	}*/
+	}
 	
 	public static void customizeViews(List<FacilioView> views) throws Exception {
 		

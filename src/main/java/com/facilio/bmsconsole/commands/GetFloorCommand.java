@@ -25,7 +25,7 @@ public class GetFloorCommand implements Command {
 		if(floorId > 0) 
 		{
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
+			context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);

@@ -8,6 +8,10 @@ import java.time.temporal.TemporalUnit;
 
 public class SecondsChronoUnit implements TemporalUnit, Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Duration duration;
 	public SecondsChronoUnit() {
 		

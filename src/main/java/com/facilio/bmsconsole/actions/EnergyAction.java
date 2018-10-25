@@ -22,6 +22,10 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class EnergyAction extends ActionSupport {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public String addEnergyMeter() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);

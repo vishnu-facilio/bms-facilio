@@ -280,6 +280,11 @@ public class FormLayout {
 }
 class Panel extends ArrayList<FacilioField>
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public enum Type {
 		
 		QUARTER(3),

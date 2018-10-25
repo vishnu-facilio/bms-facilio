@@ -94,7 +94,7 @@ public class FacilioContextListener implements ServletContextListener {
 
 
 		initDBConnectionPool();
-		Operator test = Operator.OPERATOR_MAP.get(1);
+		Operator.OPERATOR_MAP.get(1);
 		try {
 			try {
 				migrateSchemaChanges();

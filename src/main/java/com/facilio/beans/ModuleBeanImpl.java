@@ -421,15 +421,15 @@ public class ModuleBeanImpl implements ModuleBean {
 				switch(type) {
 					case NUMBER:
 					case DECIMAL:
-						prop.putAll(extendedPropsMap.get(type).get((Long) prop.get("fieldId")));
+						prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
 						fields.add(FieldUtil.getAsBeanFromMap(prop, NumberField.class));
 						break;
 					case BOOLEAN:
-						prop.putAll(extendedPropsMap.get(type).get((Long) prop.get("fieldId")));
+						prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
 						fields.add(FieldUtil.getAsBeanFromMap(prop, BooleanField.class));
 						break;
 					case LOOKUP:
-						prop.putAll(extendedPropsMap.get(type).get((Long) prop.get("fieldId")));
+						prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
 						Long lookupModuleId = (Long) prop.get("lookupModuleId");
 						if(lookupModuleId != null) {
 							FacilioModule lookupModule = getMod(lookupModuleId);
@@ -438,7 +438,7 @@ public class ModuleBeanImpl implements ModuleBean {
 						fields.add(FieldUtil.getAsBeanFromMap(prop, LookupField.class));
 						break;
 					case ENUM:
-						prop.putAll(extendedPropsMap.get(type).get((Long) prop.get("fieldId")));
+						prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
 						fields.add(FieldUtil.getAsBeanFromMap(prop, EnumField.class));
 						break;
 					default:
@@ -518,7 +518,7 @@ public class ModuleBeanImpl implements ModuleBean {
 	public List<FacilioField> getAllFields(String moduleName) throws Exception {
 		
 		if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {
-			return (ArrayList<FacilioField>) LookupSpecialTypeUtil.getAllFields(moduleName);
+			return LookupSpecialTypeUtil.getAllFields(moduleName);
 		}
 		
 		FacilioModule module = getMod(moduleName);
@@ -894,7 +894,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		// TODO Auto-generated method stub
 		
 		if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {
-			return (ArrayList<FacilioField>) LookupSpecialTypeUtil.getAllFields(moduleName);
+			return LookupSpecialTypeUtil.getAllFields(moduleName);
 		}
 		
 		FacilioModule module = getMod(moduleName);

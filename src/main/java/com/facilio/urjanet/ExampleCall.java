@@ -17,11 +17,11 @@ public class ExampleCall {
 	{
 		UrjanetConnection api = new UrjanetConnection("raj-facilio","Facilio2017#");
 		Account accEntity =  new Account();
-		Credential credEntity = new Credential();
-		Meter meterEntity = new Meter();
-		Attribute attrEntity = new Attribute();
-		ChangeLog clogEntity = new ChangeLog();
-		Template templateEntity = new Template();
+		new Credential();
+		new Meter();
+		new Attribute();
+		new ChangeLog();
+		new Template();
 		Provider providerEntity = new Provider();
 		
 		JSONObject result = null;

@@ -6,6 +6,10 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class ReportFolderContext extends ModuleBaseWithCustomFields {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long id = -1;
 	public long getId() {
 		return id;

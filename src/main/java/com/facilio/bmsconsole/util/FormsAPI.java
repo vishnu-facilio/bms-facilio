@@ -1,6 +1,9 @@
 package com.facilio.bmsconsole.util;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -8,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -24,6 +28,8 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericDeleteRecordBuilder;
+import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class FormsAPI {
@@ -121,5 +127,86 @@ public class FormsAPI {
 		}
 		
 		return forms;
+	}
+
+	public static long createForm(FacilioForm editedForm, FacilioModule parent)
+			throws Exception {
+		long orgId = AccountUtil.getCurrentOrg().getId();
+		editedForm.setOrgId(orgId);
+		editedForm.setModule(parent);
+		Map<String, Object> props = FieldUtil.getAsProperties(editedForm);
+		FacilioModule formModule = ModuleFactory.getFormModule();
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(formModule.getTableName())
+				.fields(FieldFactory.getFormFields());
+		
+		insertBuilder.insert(props);
+		
+		long id = (long) props.get("id");
+		
+		List<Map<String, Object>> fieldProps = new ArrayList<>();
+		
+		int i = 1;
+		
+		for (FormField f: editedForm.getFields()) {
+			f.setFormId(id);
+			f.setOrgId(orgId);
+			f.setSequenceNumber(i);
+			if (f.getSpan() == -1) {
+				f.setSpan(1);
+			}
+			Map<String, Object> prop = FieldUtil.getAsProperties(f);
+			if (prop.get("required") == null) {
+				prop.put("required", false);
+			}
+			fieldProps.add(prop);
+			++i;
+		}
+		
+		FacilioModule formFieldModule = ModuleFactory.getFormFieldsModule();
+		GenericInsertRecordBuilder fieldInsertBuilder = new GenericInsertRecordBuilder()
+				.table(formFieldModule.getTableName())
+				.fields(FieldFactory.getFormFieldsFields())
+				.addRecords(fieldProps);
+		
+		fieldInsertBuilder.save();
+		return id;
+	}
+	
+	public static List<FacilioForm> getFromsFromDB(Collection<Long> ids) throws Exception {
+		Criteria formNameCriteria = new Criteria();
+		formNameCriteria.addAndCondition(CriteriaAPI.getIdCondition(ids, ModuleFactory.getFormModule()));
+		List<FacilioForm> forms = getFormFromDB(formNameCriteria);
+		return forms;
+	}
+	
+	public static FacilioForm getFormFromDB(long id) throws Exception {
+		List<FacilioForm> forms = getFromsFromDB(Arrays.asList(id));
+		if (forms != null && !forms.isEmpty()) {
+			return forms.get(0);
+		}
+		return null;
+	}
+	
+	public static Map<Long, FacilioForm> getFormsAsMap(Collection<Long> ids) throws Exception {
+		List<FacilioForm> forms = getFromsFromDB(ids);
+		if (forms != null && !forms.isEmpty()) {
+			Map<Long, FacilioForm> formMap = new HashMap<>();
+			for (FacilioForm form: forms) {
+				formMap.put(form.getId(), form);
+			}
+			return formMap;
+		}
+		return null;
+	}
+	
+	public static int deleteForms (Collection<Long> ids) throws SQLException {
+		FacilioModule module = ModuleFactory.getFormModule();
+		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getIdCondition(ids, module))
+														;
+		return deleteBuilder.delete();
 	}
 }

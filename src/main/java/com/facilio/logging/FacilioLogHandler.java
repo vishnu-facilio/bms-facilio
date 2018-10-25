@@ -30,6 +30,8 @@ public class FacilioLogHandler extends Handler {
             Logger logger = LOGGER_MAP.getOrDefault(loggerName, LogManager.getLogger(loggerName));
             logger.log(LEVEL_MAP.getOrDefault(record.getLevel(), org.apache.log4j.Level.INFO), record.getMessage(), record.getThrown());
             LOGGER_MAP.put(loggerName, logger);
+        } else {
+            // forget
         }
     }
 

@@ -15,7 +15,7 @@ public class DeleteTaskCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 
-		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 

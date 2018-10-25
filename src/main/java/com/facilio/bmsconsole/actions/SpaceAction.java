@@ -26,6 +26,11 @@ import com.opensymphony.xwork2.ActionSupport;
 @SuppressWarnings("serial")
 public class SpaceAction extends ActionSupport {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@SuppressWarnings("unchecked")
 	public String spaceList() throws Exception 
 	{

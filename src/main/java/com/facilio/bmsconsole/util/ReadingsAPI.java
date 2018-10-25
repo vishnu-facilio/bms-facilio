@@ -62,6 +62,17 @@ public class ReadingsAPI {
 	public static final int DEFAULT_DATA_INTERVAL = 15; //In Minutes
 	public static final SecondsChronoUnit DEFAULT_DATA_INTERVAL_UNIT = new SecondsChronoUnit(DEFAULT_DATA_INTERVAL * 60); 
 	
+	public static int getOrgDefaultDataIntervalInMin() throws Exception {
+		Map<String, String> orgInfo = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.DEFAULT_DATA_INTERVAL);
+		String defaultIntervalProp = orgInfo.get(FacilioConstants.OrgInfoKeys.DEFAULT_DATA_INTERVAL);
+		if (defaultIntervalProp == null || defaultIntervalProp.isEmpty()) {
+			return ReadingsAPI.DEFAULT_DATA_INTERVAL;
+		}
+		else {
+			return Integer.parseInt(defaultIntervalProp);
+		}
+	}
+	
 	public static ReadingInputType getRDMInputTypeFromModuleType(ModuleType type) {
 		switch (type) {
 			case SCHEDULED_FORMULA:
@@ -256,6 +267,7 @@ public class ReadingsAPI {
 	private static ReadingDataMeta getRDMFromProp (Map<String, Object> prop, Map<Long, FacilioField> fieldMap) throws Exception {
 		ReadingDataMeta meta = FieldUtil.getAsBeanFromMap(prop, ReadingDataMeta.class);
 		Object value = meta.getValue();
+		meta.setActualValue((String) value);
 		FacilioField field;
 		if (fieldMap != null) {
 			 field = fieldMap.get(meta.getFieldId());
@@ -418,7 +430,7 @@ public class ReadingsAPI {
 									Object lastReading = meta.getValue();
 									long lastTimeStamp = meta.getTtime();
 									if (lastReading != null && lastTimeStamp != -1 && 
-											!"-1".equals(lastReading.toString()) && !"-1.0".equals(lastReading.toString()) && timeStamp < lastTimeStamp) { //-1.0 for Decimal values
+											!"-1".equals(meta.getActualValue()) && timeStamp < lastTimeStamp) { 
 										continue;
 									}
 								}
@@ -481,7 +493,7 @@ public class ReadingsAPI {
 			if(sql != null && !sql.isEmpty()) {
 				LOGGER.debug("################ Update RDM sql : "+sql);
 				try(PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
-					int rowCount = pstmt.executeUpdate();
+					pstmt.executeUpdate();
 					return uniqueRDMs;
 				}
 			}
@@ -540,19 +552,23 @@ public class ReadingsAPI {
 	}
 	
 	public static void updateReadingDataMeta() throws Exception {
-		updateReadingDataMeta(false);
-	}
-	public static void updateReadingDataMeta(boolean isFromAssetImport) throws Exception {
 
 		List<ResourceContext> resourcesList= ResourceAPI.getAllResources();
+		updateReadingDataMeta(resourcesList);
+	}
+	public static void updateReadingDataMeta(List<ResourceContext> resourcesList) throws Exception {
+		
 		long orgId=AccountUtil.getCurrentOrg().getOrgId();
 		
 		
 		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getReadingDataMetaModule().getTableName())
 				.fields(FieldFactory.getReadingDataMetaFields());
-		
+		LOGGER.error("resourcesList size -- "+resourcesList.size());
+		int i=0;
 		for(ResourceContext resource:resourcesList) {
+			
+			LOGGER.error(++i +" RDM update running for resource -- "+resource.getId());
 			List<FacilioModule>	moduleList=null;
 			int resourceType=	resource.getResourceType();
 			long resourceId=resource.getId();
@@ -560,12 +576,10 @@ public class ReadingsAPI {
 			
 			
 			if(resourceType==ResourceContext.ResourceType.SPACE.getValue()) {
-				if(!isFromAssetImport) {
-					context.put(FacilioConstants.ContextNames.PARENT_ID, resourceId);
-					Chain getSpaceSpecifcReadingsChain = FacilioChainFactory.getSpaceReadingsChain();
-					getSpaceSpecifcReadingsChain.execute(context);
-					moduleList = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
-				}
+				context.put(FacilioConstants.ContextNames.PARENT_ID, resourceId);
+				Chain getSpaceSpecifcReadingsChain = FacilioChainFactory.getSpaceReadingsChain();
+				getSpaceSpecifcReadingsChain.execute(context);
+				moduleList = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
 			}
 			else if(resourceType==ResourceContext.ResourceType.ASSET.getValue()) {
 				context.put(FacilioConstants.ContextNames.PARENT_ID, resourceId);
@@ -599,7 +613,6 @@ public class ReadingsAPI {
 		}
 		builder.save();
 	}
-
 	public static int getDataInterval(long resourceId, FacilioModule module) throws Exception { //Return in minutes	
 		ReadingContext readingContext = new ReadingContext();
 		readingContext.setParentId(resourceId);
@@ -682,7 +695,7 @@ public class ReadingsAPI {
 				if (parent.getControllerId() != -1) {
 					ControllerContext controller = controllers.get(parent.getControllerId());
 					if (controller.getDataInterval() != -1) {
-						minuteInterval = (int) controller.getDataInterval();
+						minuteInterval = controller.getDataInterval();
 					}
 				}
 			}

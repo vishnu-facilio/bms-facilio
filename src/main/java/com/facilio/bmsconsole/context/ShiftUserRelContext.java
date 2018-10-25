@@ -3,6 +3,10 @@ package com.facilio.bmsconsole.context;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class ShiftUserRelContext extends ModuleBaseWithCustomFields {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long shiftId;
 	private long ouid;
 	

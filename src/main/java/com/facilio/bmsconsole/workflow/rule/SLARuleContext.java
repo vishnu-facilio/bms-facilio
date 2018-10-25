@@ -8,6 +8,10 @@ import com.facilio.bmsconsole.context.WorkOrderContext;
 
 public class SLARuleContext extends WorkflowRuleContext {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long resourceId = -1;
 	
 	public long getResourceId() {

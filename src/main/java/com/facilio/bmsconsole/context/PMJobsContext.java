@@ -3,6 +3,16 @@ package com.facilio.bmsconsole.context;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 
 public class PMJobsContext {
+	
+	long resourceId = -1;
+	
+	public long getResourceId() {
+		return resourceId;
+	}
+	public void setResourceId(long resourceId) {
+		this.resourceId = resourceId;
+	}
+
 	private long id = -1;
 	public long getId() {
 		return id;

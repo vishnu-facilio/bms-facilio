@@ -4,9 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.facilio.accounts.dto.Account;
 import com.facilio.auth.cookie.FacilioCookie;
-import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.fw.auth.CognitoUtil;
-import com.facilio.fw.auth.LoginUtil;
 
 
 public class AuthenticationUtil {
@@ -31,7 +29,12 @@ public class AuthenticationUtil {
             }
 
             String overrideSessionCookie = FacilioCookie.getUserCookie(request, "fc.overrideSession");
-            boolean overrideSessionCheck = overrideSessionCookie != null && overrideSessionCookie.equalsIgnoreCase("true");
+            boolean overrideSessionCheck = false;
+            if(overrideSessionCookie != null) {
+                if("true".equalsIgnoreCase(overrideSessionCookie)) {
+                    overrideSessionCheck = true;
+                }
+            }
             CognitoUtil.CognitoUser cognitoUser =  CognitoUtil.verifiyFacilioToken(facilioToken, isPortaluser, overrideSessionCheck);
             return cognitoUser;
         }

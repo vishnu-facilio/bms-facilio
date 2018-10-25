@@ -4,6 +4,10 @@ import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 
 public class LookupField extends FacilioField {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private FacilioModule lookupModule;
 	public FacilioModule getLookupModule() {
 		return lookupModule;

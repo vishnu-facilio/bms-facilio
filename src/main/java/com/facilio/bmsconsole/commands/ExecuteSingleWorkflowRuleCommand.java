@@ -28,6 +28,7 @@ public class ExecuteSingleWorkflowRuleCommand implements Command {
 		// TODO Auto-generated method stub
 		WorkflowRuleContext rule = (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
 		Map<String, List> recordMap = CommonCommandUtil.getRecordMap((FacilioContext) context);
+		LOGGER.info("Record Map : "+recordMap);
 		Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = CommonCommandUtil.getChangeSetMap((FacilioContext) context);
 		
 		if (rule != null && recordMap != null && !recordMap.isEmpty()) {
@@ -47,7 +48,8 @@ public class ExecuteSingleWorkflowRuleCommand implements Command {
 					List<UpdateChangeSet> changeSet = currentChangeSet == null ? null : currentChangeSet.get( ((ModuleBaseWithCustomFields)record).getId() );
 					Map<String, Object> recordPlaceHolders = new HashMap<>(placeHolders);
 					CommonCommandUtil.appendModuleNameInKey(moduleName, moduleName, FieldUtil.getAsProperties(record), recordPlaceHolders);
-					WorkflowRuleAPI.evaluateWorkflow(rule, moduleName, record, changeSet, recordPlaceHolders, (FacilioContext) context);
+					boolean result = WorkflowRuleAPI.evaluateWorkflow(rule, moduleName, record, changeSet, recordPlaceHolders, (FacilioContext) context);
+					LOGGER.info("Result of record : "+((ModuleBaseWithCustomFields) record).getId()+" for for rule : "+rule.getId()+" is "+result);
 				}
 				
 			}

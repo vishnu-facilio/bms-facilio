@@ -11,6 +11,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class FacilioModule implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long moduleId = -1;
 	public long getModuleId() {
 		return moduleId;

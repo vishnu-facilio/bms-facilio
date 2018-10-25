@@ -6,6 +6,10 @@ import com.facilio.fs.FileStoreFactory;
 
 public class AttachmentContext extends ModuleBaseWithCustomFields {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long parentId = -1;
 	public long getParentId() {
 		return parentId;
@@ -90,6 +94,13 @@ public class AttachmentContext extends ModuleBaseWithCustomFields {
 		if (this.fileId > 0) {
 			FileStore fs = FileStoreFactory.getInstance().getFileStore();
 			return fs.getPrivateUrl(this.fileId);
+		}
+		return null;
+	}
+	public String getDownloadUrl() throws Exception {
+		if (this.fileId > 0) {
+			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			return fs.getDownloadUrl(this.fileId);
 		}
 		return null;
 	}

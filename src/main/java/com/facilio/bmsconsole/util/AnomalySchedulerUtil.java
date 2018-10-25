@@ -88,7 +88,7 @@ public class AnomalySchedulerUtil {
 	
 	public static List<AnalyticsAnomalyConfigContext> getAllAssetConfigs(String moduleName, long orgID) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(moduleName);
+		modBean.getModule(moduleName);
 		List<AnalyticsAnomalyConfigContext> listOfReadings=new ArrayList<AnalyticsAnomalyConfigContext>();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getAnomalyConfigFields())
@@ -142,7 +142,7 @@ public class AnomalySchedulerUtil {
 	public static LinkedHashSet<Long> getExistingAnomalyIDs(String moduleName,  String anomalyIDList) throws Exception{
 		LinkedHashSet<Long> setOfAnomalyIDs=new LinkedHashSet<>();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(moduleName);
+		modBean.getModule(moduleName);
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getAnomalyIDFields())
 				.table(anomalyIdTable)

@@ -23,12 +23,16 @@ public class GetViewListCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule moduleObj = modBean.getModule(moduleName);
+		FacilioModule moduleObj = null;
 		Map<String,FacilioView> viewMap = ViewFactory.getModuleViews(moduleName);
 		List<FacilioView> dbViews;
 		if (LookupSpecialTypeUtil.isSpecialType(moduleName)) {
 			dbViews = ViewAPI.getAllViews(moduleName);
 		} else {
+			if (moduleName.equals("approval")) {
+				moduleName = "workorder";
+			}
+			moduleObj = modBean.getModule(moduleName);
 			dbViews = ViewAPI.getAllViews(moduleObj.getModuleId());
 		}
 		

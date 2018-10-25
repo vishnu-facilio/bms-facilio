@@ -57,7 +57,7 @@ public class ImportTemplateContext{
 		if(!getModuleJSON().isEmpty()) {
 			moduleMapping = new HashMap<>();
 			for(Object key : getModuleJSON().keySet()) {
-				moduleMapping.put((String) key, (String) moduleMapping.get(key));
+				moduleMapping.put((String) key, moduleMapping.get(key));
 			}
 		}
 		return moduleMapping;
@@ -119,10 +119,10 @@ public class ImportTemplateContext{
 	
 	public HashMap<String, String> getFieldMapping() throws Exception {
 		if(!getFieldMappingJSON().isEmpty()) {
-		fieldMapping = new HashMap<>();
+			fieldMapping = new HashMap<>();
 			for(Object key : fieldMappingJSON.keySet()) {
 				fieldMapping.put((String) key, (String) fieldMappingJSON.get(key));
-		}
+			}
 		}
 		return fieldMapping;
 	}

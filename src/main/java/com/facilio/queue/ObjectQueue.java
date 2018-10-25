@@ -14,12 +14,12 @@ public class ObjectQueue {
 
     private static final Logger LOGGER = Logger.getLogger(ObjectQueue.class.getName());
 
-    public static void sendMessage(String queueName, Serializable serializable) throws SerializationException {
+    public static boolean sendMessage(String queueName, Serializable serializable) throws SerializationException {
         if (serializable == null) {
-            return;
+            return false;
         }
         String serializedString = Base64.encodeAsString(SerializationUtils.serialize(serializable));
-        QueueFactory.getQueue().push(queueName, serializedString);
+        return QueueFactory.getQueue().push(queueName, serializedString);
     }
 
     public static List<ObjectMessage> getObjects(String queueName, int limit) {
@@ -45,5 +45,9 @@ public class ObjectQueue {
 
     public static void deleteObject(String queueName, String receiptHandle) {
     	QueueFactory.getQueue().delete(queueName, receiptHandle);
+    }
+
+    public static boolean changeVisibilityTimeout(String queueName, String receiptHandle, int visibilityTimeout) {
+        return QueueFactory.getQueue().changeVisibilityTimeout(queueName, receiptHandle, visibilityTimeout);
     }
 }

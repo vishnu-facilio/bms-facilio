@@ -1,9 +1,11 @@
 package com.facilio.bmsconsole.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.apache.commons.chain.Chain;
 
@@ -32,6 +34,7 @@ import com.facilio.fw.BeanFactory;
 public class ApprovalRulesAPI extends WorkflowRuleAPI {
 	protected static void updateChildRuleIds(ApprovalRuleContext rule) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule("workOrder");
 		if (rule.getApprovalRuleId() == -1) {
 			if (rule.getApprovalRule() == null) {
 				if (rule.getApprovalActions() != null && !rule.getApprovalActions().isEmpty()) {
@@ -44,7 +47,15 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 				rule.setApprovalRuleId(addWorkflowRule(rule.getApprovalRule(), rule.getApprovalActions()));
 			}
 		}
-		
+		if (rule.getApprovalFormId() == -1) {
+			if (rule.getApprovalForm() == null) {
+				throw new IllegalArgumentException("Approval Form cannot be empty for approval rule");
+			}
+			else {
+				rule.setApprovalFormId(FormsAPI.createForm(rule.getApprovalForm(), module));
+			}
+		}
+			
 		if (rule.getRejectionRuleId() == -1) {
 			if (rule.getRejectionRule() == null) {
 				if (rule.getRejectionActions() != null && !rule.getRejectionActions().isEmpty()) {
@@ -55,6 +66,14 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 			else {
 				updateEventAndCriteria(rule.getRejectionRule(), rule, false, modBean);
 				rule.setRejectionRuleId(addWorkflowRule(rule.getRejectionRule(), rule.getRejectionActions()));
+			}
+		}
+		if (rule.getRejectionFormId() == -1) {
+			if (rule.getRejectionForm() == null) {
+				throw new IllegalArgumentException("Rejection Form cannot be empty for approval rule");
+			}
+			else {
+				rule.setRejectionFormId(FormsAPI.createForm(rule.getRejectionForm(), module));
 			}
 		}
 	}
@@ -116,6 +135,7 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 		updateChildRuleIds(rule);
 		updateExtendedRule(rule, ModuleFactory.getApprovalRulesModule(), FieldFactory.getApprovalRuleFields());
 		deleteChildRuleIds(oldRule);
+		deleteChildIdsForWorkflow(oldRule, rule);
 		
 		if (rule.getName() == null) {
 			rule.setName(oldRule.getName());
@@ -129,18 +149,19 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 	}
 	
 	private static void deleteChildRuleIds (ApprovalRuleContext rule) throws Exception {
-		List<Long> workflowIds = new ArrayList<>();
+		List<Long> workflowRuleIds = new ArrayList<>();
 		if (rule.getApprovalRuleId() != -1) {
-			workflowIds.add(rule.getApprovalRuleId());
+			workflowRuleIds.add(rule.getApprovalRuleId());
 		}
 		
 		if (rule.getRejectionRuleId() != -1) {
-			workflowIds.add(rule.getRejectionRuleId());
+			workflowRuleIds.add(rule.getRejectionRuleId());
 		}
 		
-		if (!workflowIds.isEmpty()) {
-			deleteWorkFlowRules(workflowIds);
+		if (!workflowRuleIds.isEmpty()) {
+			deleteWorkFlowRules(workflowRuleIds);
 		}
+		FormsAPI.deleteForms(Arrays.asList(rule.getApprovalFormId(), rule.getRejectionFormId()));
 	}
 	
 	protected static ApprovalRuleContext constructApprovalRuleFromProps(Map<String, Object> prop, ModuleBean modBean) throws Exception {

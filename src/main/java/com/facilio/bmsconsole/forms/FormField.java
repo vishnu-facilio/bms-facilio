@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.forms;
 
+import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FacilioField.FieldDisplayType;
 
 public class FormField {
@@ -71,13 +73,12 @@ public class FormField {
 		return this.lookupModuleName;
 	}
 	
-	private int span = 1;
+	private int span = -1;
+	public int getSpan() {
+		return span;
+	}
 	public void setSpan(int span) {
 		this.span = span;
-	}
-	
-	public int getSpan() {
-		return this.span;
 	}
 	
 	public enum Required {
@@ -135,29 +136,29 @@ public class FormField {
 	public long getFieldId() {
 		return this.fieldId;
 	}
-	
 	private FieldDisplayType displayType;
-	
-	public FieldDisplayType getDisplayType() {
-		return displayType;
-	}
-	
-	public void setDisplayType(FieldDisplayType displayType) {
-		this.displayType = displayType;
-	}
-	
-	public void setDisplayType(int displayType) {
-		this.displayType = FieldDisplayType.TYPE_MAP.get(displayType);
-	}
-	
-	public void setDisplayTypeInt(int displayType) {
-		this.displayType = FieldDisplayType.TYPE_MAP.get(displayType);
-	}
-	
-	public int getDisplayTypeInt() {
-		if (displayType != null) {
+	public int getDisplayType() {
+		if(displayType != null) {
 			return displayType.getIntValForDB();
 		}
 		return -1;
+	}
+	public void getDisplayType(int displayType) {
+		this.displayType = FieldDisplayType.TYPE_MAP.get(displayType);
+	}
+	public void setDisplayType(int displayType) {
+		this.displayType = FieldDisplayType.TYPE_MAP.get(displayType);
+	}
+	public void setDisplayType(FieldDisplayType displayType) {
+		this.displayType = displayType;
+	}
+	public String getDisplayTypeVal() {
+		if(displayType != null) {
+			return displayType.getHtml5Type();
+		}
+		return null;
+	}
+	public FieldDisplayType getDisplayTypeEnum() {
+		return displayType;
 	}
 }

@@ -3,7 +3,6 @@ package com.facilio.beans;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -11,9 +10,7 @@ import org.apache.log4j.LogManager;
 
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
-import com.facilio.bmsconsole.tenant.RateCardContext;
 import com.facilio.cache.CacheUtil;
 import com.facilio.fw.LRUCache;
 
@@ -90,7 +87,7 @@ LRUCache modulecache = LRUCache.getModuleCache();
 		
 		if (modules == null) {
 			
-			modules = (List<FacilioModule>) super.getAllSubModules(moduleName);
+			modules = super.getAllSubModules(moduleName);
 			
 			CacheUtil.set(CacheUtil.SUB_MODULE_KEY(getOrgId(), moduleName), new ArrayList<>(modules));
 			
@@ -110,7 +107,7 @@ LRUCache modulecache = LRUCache.getModuleCache();
 		
 		if (modules == null) {
 			
-			modules = (List<FacilioModule>) super.getAllSubModules(moduleId);
+			modules = super.getAllSubModules(moduleId);
 			
 			CacheUtil.set(CacheUtil.SUB_MODULE_KEY(getOrgId(), moduleId), new ArrayList<>(modules));
 			
@@ -132,7 +129,7 @@ LRUCache modulecache = LRUCache.getModuleCache();
 		
 		if (modules == null) {
 			
-			modules = (List<FacilioModule>) super.getSubModules(moduleName, types);
+			modules = super.getSubModules(moduleName, types);
 			
 			CacheUtil.set(CacheUtil.SUB_MODULE_KEY(getOrgId(), moduleName, types), new ArrayList<>(modules));
 			
@@ -154,7 +151,7 @@ LRUCache modulecache = LRUCache.getModuleCache();
 		
 		if (modules == null) {
 			
-			modules = (List<FacilioModule>) super.getSubModules(moduleId, types);
+			modules = super.getSubModules(moduleId, types);
 			
 			CacheUtil.set(CacheUtil.SUB_MODULE_KEY(getOrgId(), moduleId, types), new ArrayList<>(modules));
 			
@@ -189,8 +186,7 @@ LRUCache modulecache = LRUCache.getModuleCache();
 	@Override
 	public List<FacilioField> getAllFields(String moduleName) throws Exception {
 		
-		//ArrayList<FacilioField> fields = (ArrayList<FacilioField>) CacheUtil.get(CacheUtil.FIELDS_KEY(getOrgId(), moduleName));
-		long begintime = System.currentTimeMillis();
+		System.currentTimeMillis();
 		LRUCache cache = 	LRUCache.getModuleFieldsCache();
 		
 		Object key = CacheUtil.FIELDS_KEY(getOrgId(), moduleName);

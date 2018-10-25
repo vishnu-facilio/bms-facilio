@@ -4,6 +4,10 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class EnergyMeterContext extends AssetContext {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public long getControllerId() {
 		return super.getParentAssetId();
 	}

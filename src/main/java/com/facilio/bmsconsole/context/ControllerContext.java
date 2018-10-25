@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.apache.struts2.json.annotations.JSON;
@@ -7,7 +8,11 @@ import org.apache.struts2.json.annotations.JSON;
 import com.facilio.time.SecondsChronoUnit;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class ControllerContext {
+public class ControllerContext implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long id = -1;
 	public long getId() {
 		return id;
@@ -59,11 +64,11 @@ public class ControllerContext {
 		this.buildingIds = buildingIds;
 	}
 	
-	private long dataInterval = -1; //In minutes
-	public long getDataInterval() {
+	private int dataInterval = -1; //In minutes
+	public int getDataInterval() {
 		return dataInterval;
 	}
-	public void setDataInterval(long dataInterval) {
+	public void setDataInterval(int dataInterval) {
 		this.dataInterval = dataInterval;
 		this.dateIntervalUnit = new SecondsChronoUnit(dataInterval * 60);
 	}
@@ -76,9 +81,31 @@ public class ControllerContext {
 		return dateIntervalUnit;
 	}
 	
+	private int batchesPerCycle = -1;
+	public int getBatchesPerCycle() {
+		return batchesPerCycle;
+	}
+	public void setBatchesPerCycle(int batchesPerCycle) {
+		this.batchesPerCycle = batchesPerCycle;
+	}
+
+	private Boolean active;
+	public Boolean getActive() {
+		return active;
+	}
+	public void setActive(Boolean active) {
+		this.active = active;
+	}
+	public boolean isActive() {
+		if (active != null) {
+			return active.booleanValue();
+		}
+		return false;
+	}
+	
 	@Override
 	 public String toString() {
-		return "ControllerSettingsContext [id=" + id + ", orgId=" + orgId + ", name=" + name + ","
+		return "Controllers [id=" + id + ", orgId=" + orgId + ", name=" + name + ","
 				+ " ,macAddr=" + macAddr +"]";
 	}
 	public boolean isEmpty() {

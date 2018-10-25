@@ -53,8 +53,10 @@ public class DataParseForReadingsCommand implements Command {
 		ArrayListMultimap<String, ReadingContext> groupedContext = ArrayListMultimap.create();
 		ImportProcessContext importProcessContext = (ImportProcessContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
 		Long templateID = importProcessContext.getTemplateId();
+		LOGGER.severe("templateID -- "+templateID);
 		ImportTemplateAction importTemplateAction = new ImportTemplateAction();
 		ImportTemplateContext importTemplateContext = importTemplateAction.fetchTemplate(templateID);
+		LOGGER.severe("importTemplateContext getFieldMappingString-- "+importTemplateContext.getFieldMappingString());
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
 		InputStream is = fs.readFile(importProcessContext.getFileId());
 		HashMap<String,String> fieldMapping = importTemplateContext.getFieldMapping();
@@ -115,7 +117,7 @@ public class DataParseForReadingsCommand implements Command {
 						if(HSSFDateUtil.isCellDateFormatted(cell) && cell.getCellTypeEnum() == CellType.NUMERIC) {
 							Date date = cell.getDateCellValue();
 							 Instant date1 = date.toInstant();
-							 val = (Long) date1.getEpochSecond()*1000;
+							 val = date1.getEpochSecond()*1000;
 						}
 						else if(cell.getCellTypeEnum() == CellType.FORMULA) {
 							val = cell.getNumericCellValue();
@@ -225,6 +227,10 @@ public class DataParseForReadingsCommand implements Command {
 	}
 	
 	public static Long getAssetByUniqueness(HashMap<String,Object> colVal, String module, HashMap<String,String> uniqueMapping) throws Exception{
+		LOGGER.severe("colVal" + colVal.toString());
+		LOGGER.severe("module" + module);
+		LOGGER.severe("uniqueMapping" + uniqueMapping.toString());
+		
 		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioField> assetFields = new ArrayList<>();
 		
@@ -238,19 +244,21 @@ public class DataParseForReadingsCommand implements Command {
 			FacilioField Field = bean.getField(field, module);
 			assetFields.add(Field);
 			String columnName = Field.getColumnName();
-			selectRecordBuilder.andCustomWhere(columnName+"= ?", (String) colVal.get(uniqueMapping.get(field)));
+			selectRecordBuilder.andCustomWhere(columnName+"= ?",  colVal.get(uniqueMapping.get(field)).toString());
 		}
 		
 		List<? extends ModuleBaseWithCustomFields> props = selectRecordBuilder.get();
-		Long Id = (Long) props.get(0).getId();
+		LOGGER.severe("selectRecord" + selectRecordBuilder.toString());
+		Long Id = props.get(0).getId();
+		LOGGER.severe("id -- " + Id);
 		return Id;
-		
 		
 	}
 	public void fieldMapParsing(HashMap<String, String> fieldMapping) throws Exception {
 
+		LOGGER.severe("fieldMapping -- " + fieldMapping);
 		groupedFields = ArrayListMultimap.create();
-		HashMap<String, String> updatedFieldMapping = new HashMap<>();
+		new HashMap<>();
 		List<String> fieldMappingKeys = new ArrayList<>(fieldMapping.keySet());
 		for (int i = 0; i < fieldMappingKeys.size(); i++) {
 			String[] modulePlusFieldName = fieldMappingKeys.get(i).split("__");
@@ -277,5 +285,6 @@ public class DataParseForReadingsCommand implements Command {
 			}
 			
 		}
+		LOGGER.severe("groupedFields -- " + groupedFields);
 	}
 }

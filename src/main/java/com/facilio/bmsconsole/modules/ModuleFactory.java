@@ -57,6 +57,15 @@ public class ModuleFactory {
 		moduleMap.put("formFields", getFormFieldsModule());
 		return moduleMap;
 	}
+	
+	private static FacilioModule constructModule (String name, String displayName, String tableName) {
+		FacilioModule module = new FacilioModule();
+		module.setName(name);
+		module.setDisplayName(displayName);
+		module.setTableName(tableName);
+		
+		return module;
+	}
 
 	public static FacilioModule getFormModule() {
 		FacilioModule formModule = new FacilioModule();
@@ -219,6 +228,10 @@ public class ModuleFactory {
 		readingRuleInclusionsExclusions.setDisplayName("Reading Rule Include/ Exclude list");
 		readingRuleInclusionsExclusions.setTableName("Reading_Rule_Inclusions_Exclusions");
 		return readingRuleInclusionsExclusions;
+	}
+	
+	public static FacilioModule getReadingRuleAlarmMetaModule() {
+		return constructModule("readingRuleAlarmMeta", "Reading Rule Alarm Meta", "Reading_Rule_Alarm_Meta");
 	}
 
 	public static FacilioModule getSLARuleModule() {
@@ -664,6 +677,18 @@ public class ModuleFactory {
 		return controllerModule;
 	}
 	
+	public static FacilioModule getControllerActivityModule() {
+		return constructModule("controllerActivity", "Controller Activity", "Controller_Activity");
+	}
+	
+	public static FacilioModule getControllerActivityRecordsModule() {
+		return constructModule("controllerActivityRecords", "Controller Activity Records", "Controller_Activity_Records");
+	}
+	
+	public static FacilioModule getControllerActivityWatcherModule() {
+		return constructModule("controllerActivityWatcher", "Controller Activity Watcher", "Controller_Activity_Watcher");
+	}
+	
 	public static FacilioModule getControllerBuildingRelModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("controllerBuildingRel");
@@ -821,6 +846,14 @@ public class ModuleFactory {
 		pmTriggers.setName("pmtrigger");
 		pmTriggers.setDisplayName("Preventive Maintenance Triggers");
 		pmTriggers.setTableName("PM_Triggers");
+		return pmTriggers;
+	}
+	
+	public static FacilioModule getPMTriggersResourceModule() {
+		FacilioModule pmTriggers = new FacilioModule();
+		pmTriggers.setName("PMTriggersResource");
+		pmTriggers.setDisplayName("PM Triggers Resource");
+		pmTriggers.setTableName("PM_Triggers_Resource");
 		return pmTriggers;
 	}
 
@@ -982,6 +1015,14 @@ public class ModuleFactory {
 		taskTemplate.setName("tasktemplate");
 		taskTemplate.setDisplayName("Task Template");
 		taskTemplate.setTableName("Task_Template");
+		return taskTemplate;
+	}
+	
+	public static FacilioModule getPMIncludeExcludeResourceModule() {
+		FacilioModule taskTemplate = new FacilioModule();
+		taskTemplate.setName("PMIncludeExcludeResource");
+		taskTemplate.setDisplayName("PM Include Exclude Resource");
+		taskTemplate.setTableName("PM_Include_Exclude_Resource");
 		return taskTemplate;
 	}
 

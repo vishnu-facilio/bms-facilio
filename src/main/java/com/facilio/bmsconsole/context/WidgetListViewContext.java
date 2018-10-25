@@ -4,6 +4,10 @@ import org.json.simple.JSONObject;
 
 public class WidgetListViewContext extends DashboardWidgetContext {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	String viewName;
 	
 	public String getViewName() {

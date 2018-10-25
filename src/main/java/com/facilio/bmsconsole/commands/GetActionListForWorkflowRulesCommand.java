@@ -37,9 +37,11 @@ public class GetActionListForWorkflowRulesCommand implements Command {
 						if (approvalRule.getRejectionRuleId() != -1) {
 							approvalRule.setRejectionActions(ActionAPI.getAllActionsFromWorkflowRule(AccountUtil.getCurrentOrg().getId(), approvalRule.getRejectionRuleId()));
 						}
+						List<ActionContext> actions = ActionAPI.getAllActionsFromWorkflowRule(AccountUtil.getCurrentOrg().getId(), rule.getId());
+						rule.setActions(actions);
 						break;
 					default:
-						List<ActionContext> actions = ActionAPI.getAllActionsFromWorkflowRule(AccountUtil.getCurrentOrg().getId(), rule.getId());
+						 actions = ActionAPI.getAllActionsFromWorkflowRule(AccountUtil.getCurrentOrg().getId(), rule.getId());
 						rule.setActions(actions);
 						break;
 				}

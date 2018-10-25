@@ -141,8 +141,7 @@ public class LRUCache<K, V>{
     				  // do nothing
     				  continue;
     			  } else {
-    				  // remove last element
-    				Node removedelement =   list.remove(list.size()-1);
+    				  list.remove(list.size()-1);
     				if(list.size() > 0) {
 						maxtime = list.get(list.size() - 1).lastaccessedtime;
 					}
@@ -164,7 +163,12 @@ public class LRUCache<K, V>{
     }
     class SortedArrayList<T> extends ArrayList<T> {
 
-        @SuppressWarnings("unchecked")
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@SuppressWarnings("unchecked")
         void insertSorted(T value) {
             add(value);
             Comparable<T> cmp = (Comparable<T>) value;

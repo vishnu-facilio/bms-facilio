@@ -8,10 +8,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ResourceContext;
@@ -24,9 +28,11 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.events.constants.EventConstants;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -34,6 +40,11 @@ import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class ReadingRuleContext extends WorkflowRuleContext {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static final Logger LOGGER = LogManager.getLogger(ReadingRuleContext.class.getName());
 	
 	private long startValue = -1;
@@ -179,6 +190,20 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		this.thresholdType = thresholdType;
 	}
 	
+	private Boolean clearAlarm;
+	public Boolean getClearAlarm() {
+		return clearAlarm;
+	}
+	public void setClearAlarm(Boolean clearAlarm) {
+		this.clearAlarm = clearAlarm;
+	}
+	public boolean clearAlarm() {
+		if (clearAlarm != null) {
+			return clearAlarm.booleanValue();
+		}
+		return false;
+	}
+
 	private int flapCount = -1;
 	public int getFlapCount() {
 		return flapCount;
@@ -326,17 +351,29 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 			}
 			else {
 				long firstFlapDiff = reading.getTtime() - (long)flaps.get(0).get("flapTime");
+//				if (AccountUtil.getCurrentOrg().getId() == 135) {
+					LOGGER.debug(getId()+"::First flap diff : "+firstFlapDiff+"::"+overPeriod);
+//				}
 				if (firstFlapDiff < (overPeriod * 1000)) { // If the first flap is within over period, add flap and return false
 					addFlap(reading.getTtime(), reading.getParentId());
+//					if (AccountUtil.getCurrentOrg().getId() == 135) {
+						LOGGER.debug(getId()+"::Within over period so ignoring");
+//					}
 					return false;
 				}
 				else if (firstFlapDiff <= ((overPeriod * 1000) + OVER_PERIOD_BUFFER)) {
 					deleteAllFlaps(reading.getParentId());
+//					if (AccountUtil.getCurrentOrg().getId() == 135) {
+						LOGGER.debug(getId()+"::Rule passed");
+//					}
 					return true;
 				}
 				else {
 					deleteAllFlaps(reading.getParentId());
 					addFlap(reading.getTtime(), reading.getParentId());
+//					if (AccountUtil.getCurrentOrg().getId() == 135) {
+						LOGGER.debug(getId()+"::Over buffer");
+//					}
 					return false;
 				}
 			}
@@ -402,33 +439,39 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		}
 	}
 	
+	private Object getMetric(ReadingContext reading) {
+		if (!isMatchingResource(reading)) {
+			return null;
+		}
+		Object currentMetric = FieldUtil.castOrParseValueAsPerType(readingField, reading.getReading(readingField.getName()));
+		return currentMetric;
+	}
+	
 	@Override
 	public boolean evaluateMisc(String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		ReadingContext reading = (ReadingContext) record;
-		if (!checkForParentResource(reading)) {
+		Object currentMetric = getMetric(reading);
+		if (currentMetric == null) {
 			return false;
 		}
-		Object currentReadingObj = FieldUtil.castOrParseValueAsPerType(readingField, reading.getReading(readingField.getName()));
-		if (currentReadingObj == null) {
-			return false;
-		}
+		
 		switch (thresholdType) {
 			case FLAPPING:
 				boolean singleFlap = false;
 				Map<String, ReadingDataMeta> metaMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
 				ReadingDataMeta meta = metaMap.get(ReadingsAPI.getRDMKey(reading.getParentId(), readingField));
 				Object prevValue = meta.getValue();
-				if (currentReadingObj instanceof Number) {
+				if (currentMetric instanceof Number) {
 					double prevVal = Double.valueOf(prevValue.toString());
-					double currentVal = Double.valueOf(currentReadingObj.toString());
+					double currentVal = Double.valueOf(currentMetric.toString());
 					double minVal = Math.min(prevVal, currentVal);
 					double maxVal = Math.max(prevVal, currentVal);
 					
 					singleFlap = minVal <= minFlapValue && maxVal >= maxFlapValue;
 				}
-				else if (currentReadingObj instanceof Boolean) {
-					singleFlap = currentReadingObj != (Boolean) prevValue;
+				else if (currentMetric instanceof Boolean) {
+					singleFlap = currentMetric != (Boolean) prevValue;
 				}
 				return singleFlap && isFlappedNTimes(reading);
 			default:
@@ -437,7 +480,7 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		return true;
 	}
 	
-	private boolean checkForParentResource(ReadingContext reading) {
+	private boolean isMatchingResource(ReadingContext reading) {
 		if (matchedResources != null && !matchedResources.isEmpty()) {
 			ResourceContext parent = matchedResources.get(reading.getParentId());
 			if (parent != null) {
@@ -567,4 +610,47 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		rulePlaceHolders.put("ttime", ((ReadingContext) record).getTtime());
 		return rulePlaceHolders;
 	}
+	
+	private Map<Long, ReadingRuleAlarmMeta> alarmMetaMap;
+	public Map<Long, ReadingRuleAlarmMeta> getAlarmMetaMap() {
+		return alarmMetaMap;
+	}
+	public void setAlarmMetaMap(Map<Long, ReadingRuleAlarmMeta> alarmMetaMap) {
+		this.alarmMetaMap = alarmMetaMap;
+	}
+	
+	@Override
+	public void executeFalseActions(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
+		// TODO Auto-generated method stub
+		ReadingContext reading = (ReadingContext) record;
+		if (getMetric(reading) != null) {
+			if (clearAlarm()) {
+				ReadingRuleAlarmMeta alarmMeta = alarmMetaMap != null ? alarmMetaMap.get(reading.getParentId()) : null;
+				if (alarmMeta != null && !alarmMeta.isClear()) {
+					AlarmContext alarm = AlarmAPI.getAlarm(alarmMeta.getAlarmId());
+					
+					FacilioContext addEventContext = new FacilioContext();
+					addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, constructClearEvent(alarm));
+					Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
+					getAddEventChain.execute(addEventContext);
+					
+				}
+			}
+			
+			super.executeFalseActions(record, context, placeHolders);
+		}
+	}
+	
+	private JSONObject constructClearEvent(AlarmContext alarm) {
+		JSONObject event = new JSONObject();
+		
+		event.put("entity", alarm.getEntity());
+		event.put("source", alarm.getSource());
+		event.put("resourceId", alarm.getResource().getId());
+		event.put("siteId", alarm.getSiteId());
+		event.put("severity", FacilioConstants.Alarm.CLEAR_SEVERITY);
+		
+		return event;
+	}
+	
 }

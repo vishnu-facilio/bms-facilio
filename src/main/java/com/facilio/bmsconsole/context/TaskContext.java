@@ -1,10 +1,7 @@
 package com.facilio.bmsconsole.context;
 
 import java.text.ParseException;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -18,6 +15,11 @@ import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
 public class TaskContext extends ModuleBaseWithCustomFields {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static Logger log = LogManager.getLogger(TaskContext.class.getName());
 	
 	private String subject;
@@ -250,6 +252,14 @@ public class TaskContext extends ModuleBaseWithCustomFields {
 			return attachmentRequired.booleanValue();
 		}
 		return false;
+	}
+	
+	private int noOfAttachments = -1;
+	public int getNoOfAttachments() {
+		return noOfAttachments;
+	}
+	public void setNoOfAttachments(int noOfAttachments) {
+		this.noOfAttachments = noOfAttachments;
 	}
 	
 	private String remarks;

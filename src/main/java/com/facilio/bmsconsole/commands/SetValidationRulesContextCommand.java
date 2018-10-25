@@ -7,7 +7,6 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -16,7 +15,7 @@ public class SetValidationRulesContextCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		List<List<ReadingRuleContext>> readingRules = (List<List<ReadingRuleContext>>) context.get(FacilioConstants.ContextNames.READING_RULES_LIST);
-		List<List<List<ActionContext>>> actionsList = (List<List<List<ActionContext>>>) context.get(FacilioConstants.ContextNames.ACTIONS_LIST);
+		context.get(FacilioConstants.ContextNames.ACTIONS_LIST);
 		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.MODULE_FIELD_LIST);
 		FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
 		

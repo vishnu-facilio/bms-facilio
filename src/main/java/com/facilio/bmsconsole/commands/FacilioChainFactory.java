@@ -1434,8 +1434,8 @@ public class FacilioChainFactory {
 		c.addCommand(new ValidatePMTriggersCommand());
 		c.addCommand(new ValidateTasksCommand());
 		c.addCommand(new AddPMReadingsForTasks());
-		c.addCommand(new CreateWorkorderTemplateCommand());
-		c.addCommand(new AddPreventiveMaintenanceCommand());
+		c.addCommand(new CreateWorkorderTemplateCommand());	  // template addition
+		c.addCommand(new AddPreventiveMaintenanceCommand());  // PM addition
 		c.addCommand(new AddResourceReadingRelCommand());
 		c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
 		c.addCommand(new AddAndSchedulePMTriggerCommand());
@@ -1448,6 +1448,7 @@ public class FacilioChainFactory {
 	
 	public static Chain getExecutePreventiveMaintenanceChain() {
 		Chain c = getTransactionChain();
+		//c.addCommand(new PreparePMForMultipleAsset());
 		c.addCommand(new ExecutePMCommand());
 		c.addCommand(new ResetTriggersCommand());
 		c.addCommand(new SchedulePMRemindersCommand());
@@ -1616,6 +1617,14 @@ public class FacilioChainFactory {
 		c.addCommand(new GetViewListCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
+	}
+	
+	public static Chain getViewListsChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new GetViewListsCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	
 	}
 	
 	public static Chain getAddViewChain() {

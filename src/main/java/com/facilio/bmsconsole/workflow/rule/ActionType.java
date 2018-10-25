@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -20,6 +19,7 @@ import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -31,6 +31,7 @@ import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.NotificationContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -45,12 +46,14 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.NotificationAPI;
+import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.SMSUtil;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
+import com.facilio.events.context.EventContext;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
@@ -116,7 +119,7 @@ public enum ActionType {
 						toEmails = (JSONArray) toAddr;
 					} else if (toAddr instanceof String) {
 						toEmails = new JSONArray();
-						toEmails.add((String) toAddr);
+						toEmails.add(toAddr);
 					}
 
 					if (toEmails != null && !toEmails.isEmpty()) {
@@ -124,7 +127,12 @@ public enum ActionType {
 						for (Object toEmail : toEmails) {
 							String to = (String) toEmail;
 							if (to != null && !to.isEmpty() && checkIfActiveUserFromEmail(to)) {
-								obj.put("to", (String) to);
+								obj.put("to", to);
+								
+								if (AccountUtil.getCurrentOrg().getId() == 104) {
+									LOGGER.info("Gonna Email : "+obj.toJSONString());
+								}
+								
 								AwsUtil.sendEmail(obj);
 								emails.add(to);
 							}
@@ -154,14 +162,14 @@ public enum ActionType {
 						tos = (JSONArray) toNums;
 					} else if (toNums instanceof String) {
 						tos = new JSONArray();
-						tos.add((String) toNums);
+						tos.add(toNums);
 					}
 					if (tos != null && !tos.isEmpty()) {
 						List<String> sms = new ArrayList<>();
 						for (Object toObj : tos) {
 							String to = (String) toObj;
 							if (to != null && !to.isEmpty() && checkIfActiveUserFromPhone(to)) {
-								obj.put("to", (String) to);
+								obj.put("to", to);
 								SMSUtil.sendSMS(obj);
 								sms.add(to);
 							}
@@ -234,6 +242,27 @@ public enum ActionType {
 					addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, obj);
 					Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
 					getAddEventChain.execute(addEventContext);
+					
+					if (currentRule instanceof ReadingRuleContext) {
+						EventContext event = (EventContext) addEventContext.get(EventConstants.EventContextNames.EVENT);
+						if (event.getAlarmId() != -1) {
+							Map<Long, ReadingRuleAlarmMeta> metaMap = ((ReadingRuleContext) currentRule).getAlarmMetaMap();
+							long resourceId = ((ReadingContext) currentRecord).getParentId();
+							if (metaMap != null && !metaMap.isEmpty()) {
+								ReadingRuleAlarmMeta alarmMeta = metaMap.get(resourceId);
+								if (alarmMeta == null) {
+									ReadingRuleAPI.addAlarmMeta(event.getAlarmId(), resourceId, (ReadingRuleContext) currentRule);
+								}
+								else if (alarmMeta.isClear()) {
+									ReadingRuleAPI.markAlarmMetaAsNotClear(alarmMeta.getId(), event.getAlarmId());
+								}
+							}
+							else {
+								ReadingRuleAPI.addAlarmMeta(event.getAlarmId(), resourceId, (ReadingRuleContext) currentRule);
+							}
+						}
+					}
+					
 				} catch (Exception e) {
 					LOGGER.error("Exception occurred ", e);
 				}
@@ -347,7 +376,7 @@ public enum ActionType {
 
 					if (context != null) {
 						context.put(FacilioConstants.ContextNames.WORK_ORDER,
-								(WorkOrderContext) pmContext.get(FacilioConstants.ContextNames.WORK_ORDER));
+								pmContext.get(FacilioConstants.ContextNames.WORK_ORDER));
 					}
 				}
 			} catch (Exception e) {
@@ -376,14 +405,14 @@ public enum ActionType {
 			WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
 			WorkOrderContext updateWO = new WorkOrderContext();
 
-			if (assignedToUserId != -1) {
+			if (assignedToUserId != -1  && (workOrder.getAssignedTo() == null || workOrder.getAssignedTo().getOuid() == -1)) {
 				User user = new User();
 				user.setOuid(assignedToUserId);
 				workOrder.setAssignedTo(user);
 				updateWO.setAssignedTo(user);
 			}
 
-			if (assignGroupId != -1) {
+			if (assignGroupId != -1 && (workOrder.getAssignmentGroup() == null || workOrder.getAssignmentGroup().getGroupId() == -1)) {
 				Group group = new Group();
 				group.setId(assignGroupId);
 				workOrder.setAssignmentGroup(group);
@@ -413,6 +442,7 @@ public enum ActionType {
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
 				Object currentRecord) {
 
+//			long duedate = -1;
 			WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
 			if (workOrder.getPriority() == null) {
 				return;
@@ -428,8 +458,8 @@ public enum ActionType {
 			while (iter.hasNext()) {
 				JSONObject slaPolicy = (JSONObject) iter.next();
 				long priorityId = Long.parseLong((String) slaPolicy.get("priority"));
-				if (priorityId == workorderpriority) {
-					duration = Long.parseLong(slaPolicy.get("duration").toString()) * 1000;
+				if (priorityId == workorderpriority && slaPolicy.get("duration") != null) {
+						duration = Long.parseLong(slaPolicy.get("duration").toString()) * 1000;
 				}
 
 			}
@@ -475,7 +505,7 @@ public enum ActionType {
 					woContext.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
 					woContext.put(FacilioConstants.ContextNames.INSERT_LEVEL, 2);
 
-					Command addWorkOrder = TransactionChainFactory.getAddWorkOrderChain();
+					Chain addWorkOrder = TransactionChainFactory.getAddWorkOrderChain();
 					addWorkOrder.execute(woContext);
 				} else {
 					AlarmContext alarm = AlarmAPI.getAlarm(wo.getId());
@@ -583,6 +613,26 @@ public enum ActionType {
 																				.andCondition(CriteriaAPI.getIdCondition(((ModuleBaseWithCustomFields) currentRecord).getId(), event.getModule()))
 																				;
 			updateBuilder.update(obj);
+			
+		}
+		
+	},
+	CREATE_WORK_ORDER(14) {
+
+		@Override
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
+				Object currentRecord) throws Exception {
+			// TODO Auto-generated method stub
+			
+			LOGGER.info("Action::Add Workorder::"+obj);
+			
+			WorkOrderContext wo = FieldUtil.getAsBeanFromJson(obj, WorkOrderContext.class);
+			wo.setSourceType(SourceType.WORKFLOW_RULE);
+			FacilioContext woContext = new FacilioContext();
+			woContext.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
+
+			Chain addWorkOrder = TransactionChainFactory.getAddWorkOrderChain();
+			addWorkOrder.execute(woContext);
 			
 		}
 		

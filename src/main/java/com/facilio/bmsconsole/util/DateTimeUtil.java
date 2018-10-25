@@ -318,6 +318,36 @@ public class DateTimeUtil
 		
 	}
 	
+	public static long getQuarterStartTimeOf(long milliseconds) {
+		LocalDateTime day = LocalDateTime.ofInstant(Instant.ofEpochMilli(getDayStartTimeOf(milliseconds)), getZoneId());
+		LocalDateTime firstQuarter = day.with(day.getMonth().firstMonthOfQuarter()).with(TemporalAdjusters.firstDayOfMonth());
+		return getLong(firstQuarter.atZone(getZoneId()), true);
+	}
+	
+	public static long getQuarterEndTimeOf(long milliseconds) {
+		LocalDateTime day = LocalDateTime.ofInstant(Instant.ofEpochMilli(getDayStartTimeOf(milliseconds)), getZoneId());
+		LocalDateTime firstQuarter = day.with(day.getMonth().firstMonthOfQuarter()).with(TemporalAdjusters.firstDayOfMonth());
+		LocalDateTime lastQuarter = firstQuarter.plusMonths(2).with(TemporalAdjusters.lastDayOfMonth()).toLocalDate().atTime(LocalTime.MAX);
+		return getLong(lastQuarter.atZone(getZoneId()),true);
+	}
+	
+	public static long getQuarterStartTime(int interval) {
+		return getQuarterStartTime(getZoneId(), interval).toInstant().toEpochMilli();
+	}
+	public static ZonedDateTime getQuarterStartTime(ZoneId zoneId, int interval) {
+		LocalDateTime day = LocalDateTime.ofInstant(Instant.ofEpochMilli(getDayStartTime()), zoneId);
+		LocalDateTime thisQuarter = day.with(day.getMonth().firstMonthOfQuarter()).with(TemporalAdjusters.firstDayOfMonth());
+		LocalDateTime quarterStart = thisQuarter.plusMonths(interval * 3).with(TemporalAdjusters.firstDayOfMonth());
+		return quarterStart.atZone(zoneId);
+	}
+	public static long getQuarterEndTime(int interval) {
+		return getQuarterEndTime(getZoneId(), interval).toInstant().toEpochMilli();
+	}
+	public static ZonedDateTime getQuarterEndTime(ZoneId zoneId, int interval) {
+		LocalDateTime quarterStart = getQuarterStartTime(zoneId, interval).toLocalDateTime();
+		LocalDateTime quarterEnd = quarterStart.plusMonths(2).with(TemporalAdjusters.lastDayOfMonth()).toLocalDate().atTime(LocalTime.MAX);
+		return quarterEnd.atZone(zoneId);
+	}
 	public static long getAnyYearThisMonthEndTime(int interval, Boolean... seconds)
 	{
 		return getAnyYearThisMonthEndTime(getZoneId(),interval,seconds);

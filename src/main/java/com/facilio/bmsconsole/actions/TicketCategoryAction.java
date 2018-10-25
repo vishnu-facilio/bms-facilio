@@ -12,6 +12,10 @@ import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class TicketCategoryAction extends ActionSupport {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public String categoryList() throws Exception {
 		FacilioContext context = new FacilioContext();
 		

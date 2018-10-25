@@ -31,7 +31,7 @@
 		<default-interceptor-ref name="defaultInterceptor" />
 		<global-results>
 			<result name="login" type="redirect">
-				<param name="location">/home.jsp</param>
+				<param name="location">/app/login</param>
 				<param name="parse">false</param>
 			</result>
 			<result name="unauthorized" type="redirect">
@@ -419,7 +419,7 @@
 		<action name="updateserviceportal" class="com.facilio.bmsconsole.actions.PortalInfoAction"
 			method="updateServicePortal">
 			<param name="moduleName">setup</param>
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<param name="permission">GENERAL</param>
 			<result name="success" type="json">
 				<param name="includeProperties">signup_allowed</param>
 			</result>
@@ -427,7 +427,7 @@
 		<action name="savessoconfig" class="com.facilio.bmsconsole.actions.PortalInfoAction"
 			method="saveSSOConfiguration">
 			<param name="moduleName">setup</param>
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<param name="permission">GENERAL</param>
 			<result name="success" type="json">
 				<param name="includeProperties">signup_allowed</param>
 			</result>
@@ -435,7 +435,7 @@
 		<action name="getportalinfo" class="com.facilio.bmsconsole.actions.PortalInfoAction"
 			method="getPortalInfo">
 			<param name="moduleName">setup</param>
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<param name="permission">GENERAL</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^protalInfo.*</param>
 			</result>
@@ -1577,6 +1577,15 @@
 
 		<action name="addPreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="addPreventiveMaintenance">
+			<param name="moduleName">planned</param>
+			<param name="permission">CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^workorder.*</param>
+			</result>
+		</action>
+		
+		<action name="addNewPreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="addNewPreventiveMaintenance">
 			<param name="moduleName">planned</param>
 			<param name="permission">CREATE</param>
 			<result name="success" type="json">

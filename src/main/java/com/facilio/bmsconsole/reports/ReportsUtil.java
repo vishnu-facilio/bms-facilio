@@ -101,7 +101,7 @@ public class ReportsUtil
 	public static double roundOff(double value, int decimalDigits)
 	{
 		double multiplier =Math.pow(10, decimalDigits);;
-		return (double)Math.round(value*multiplier)/ multiplier ;
+		return Math.round(value*multiplier)/ multiplier ;
 	}
 	
 	public static String[] getCost(Double kWh)

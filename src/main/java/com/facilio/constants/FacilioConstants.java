@@ -164,14 +164,19 @@ public class FacilioConstants {
 		public static final String WORK_ORDER_TEMPLATE = "workordertemplate";
 		public static final String WORK_ORDER_TEMPLATE_LIST = "workordertemplates";
 		
+		public static final String CONTROLLER_ID = "controllerId";
 		public static final String CONTROLLER = "controller";
-		public static final String CONTROLLER_LIST = "controllerSetting";
+		public static final String CONTROLLER_LEVEL = "controllerLevel";
+		public static final String CONTROLLER_TIME = "controllerTime";
+		public static final String CONTROLLER_ACTIVITY_WATCHER = "controllerActivityWatcher";
+		public static final String CONTROLLER_LIST = "controllerList";
 		public static final String CONTROLLER_SETTINGS = "controllerSettings";
 		public static final String FEDGE_CERT_FILE_ID = "fedgeCertFileId";
 		
 		public static final String WORK_ORDER_REQUEST = "workorderrequest";
 		public static final String WORK_ORDER_REQUEST_LIST = "workorderrequests";
 		public static final String WORK_ORDER_REQUEST_COUNT = "workorderrequestcount";
+		public static final String APPROVAL ="approval";
 
 		
 		public static final String ALARM_SEVERITY = "alarmseverity";
@@ -187,6 +192,7 @@ public class FacilioConstants {
 		public static final String TASK_LIST = "tasks";
 		public static final String TASK_MAP = "taskMap";
 		public static final String TASK_SECTIONS = "taskSections";
+		public static final String TASK_SECTION_TEMPLATES = "taskSectionTemplates";
 		public static final String TASK_SECTION = "taskSection";
 		public static final String DEFAULT_TASK_SECTION = "default";
 		
@@ -248,6 +254,7 @@ public class FacilioConstants {
 		public static final String REPORT = "report";
 		public static final String REPORT_SAFE_LIMIT = "reportSafeLimit";
 		public static final String REPORT_ALARMS = "reportAlarms";
+		public static final String REPORT_ALARM_CONTEXT = "reportAlarmsContext";
 		public static final String REPORT_LIST = "reportList";
 		public static final String REPORT_COLUMN_LIST = "reportList";
 		public static final String REPORT_USER_FILTER_VALUE = "userFilterValue";
@@ -265,12 +272,15 @@ public class FacilioConstants {
 		public static final String REPORT_X_AGGR = "xAggr";
 		public static final String REPORT_Y_AGGR = "yAggr";
 		public static final String REPORT_DATA = "reportData";
+		public static final String REPORT_CARD_DATA = "reportCardData";
 		public static final String REPORT_VARIANCE_DATA = "reportVarianceData";
 		public static final String REPORT_X_VALUES = "reportXValues";
 		public static final String REPORT_X_FIELD = "reportXField";
 		public static final String REPORT_Y_FIELDS = "reportYFields";
 		public static final String REPORT_FIELDS = "reportFields";
 		public static final String REPORT_MODE = "reportMode";
+		
+		public static final String REPORT_CALLING_FROM = "reportCallingFrom";
 		
 		public static final String NOTE = "note";
 		public static final String NOTE_LIST = "notes";
@@ -460,9 +470,13 @@ public class FacilioConstants {
 		public static final String PAGINATION = "pagination";
 		public static final String CURRENT_EXECUTION_TIME = "currentexecutiontime";
 		public static final String NEXT_EXECUTION_TIMES = "nextexecutiontimes";
+		public static final String GROUP_STATUS = "groupStatus";
+
 		
 		public static final String VIEWID = "viewId";
 		public static final String VIEW_LIST = "views";
+		public static final String GROUP_VIEWS = "groupViews";
+
 		public static final String VIEWCOLUMNS = "viewColumns";
 		public static final String PARENT_VIEW = "parentView";
 		public static final String VIEW_COUNT = "viewCount";
@@ -477,6 +491,7 @@ public class FacilioConstants {
 		public static final String FILE_URL = "fileUrl";
 		public static final String DATE_FILTER = "dateFilter";
 		public static final String START_TIME = "startTime";
+		public static final String ALARM_ID = "alarmId";
 		public static final String SCHEDULE_INFO = "schedule";
 		public static final String END_TIME = "endTime";
 		public static final String MAX_COUNT = "maxCount";
@@ -512,6 +527,7 @@ public class FacilioConstants {
 		public static final String FORMULA_FIELD_TYPE = "formulaFieldType";
 		public static final String FORMULA_LIST = "formulaList";
 		public static final String HISTORY_READINGS = "historyReadings";
+		public static final String HISTORY_ALARM = "historyAlarm";
 		public static final String ANALYTICS_ANAMOLY = "analyticsAnamoly";
 		public static final String DERIVATION = "derivation";
 		
@@ -555,6 +571,8 @@ public class FacilioConstants {
 		public static final String FORM_FIELDS = "formFields";
 		public static final String EDITED_FORM = "editedFrom";
 		public static final String FORM_OBJECT = "formObject";
+		
+		public static final String QR_VALUE = "qrValue";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {

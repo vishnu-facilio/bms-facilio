@@ -115,8 +115,8 @@ public class CommonCommandUtil {
 			
 			while(rs.next()) {
 				User rc = new User();
-				rc.setEmail((String)rs.getString("EMAIL"));
-				rc.setName((String) rs.getString("NAME"));
+				rc.setEmail(rs.getString("EMAIL"));
+				rc.setName(rs.getString("NAME"));
 				
 				requesters.put(rs.getLong("ORG_USERID"), rc);
 			}
@@ -186,7 +186,7 @@ public class CommonCommandUtil {
 	public static Map<Long,Object> getPickList(String moduleName) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioField primaryField = (FacilioField) modBean.getPrimaryField(moduleName);
+		FacilioField primaryField = modBean.getPrimaryField(moduleName);
 		if( primaryField == null) {
 			return null;
 		}
@@ -214,7 +214,7 @@ public class CommonCommandUtil {
 	public static Map<Long,Object> getPickList(List<Long> idList, FacilioModule module) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioField primaryField = (FacilioField) modBean.getPrimaryField(module.getName());
+		FacilioField primaryField = modBean.getPrimaryField(module.getName());
 		if( primaryField == null) {
 			return null;
 		}
@@ -237,6 +237,40 @@ public class CommonCommandUtil {
 			LOGGER.info("Exception occurred ", e);
 		}
 		return null;	
+	}
+	
+	public static void emailAlert (String subject, String msg) {
+		try {
+			
+			if (AwsUtil.isProduction()) {
+				Organization org = AccountUtil.getCurrentOrg();
+				
+				JSONObject json = new JSONObject();
+				json.put("sender", "alert@facilio.com");
+				json.put("to", "error+alert@facilio.com");
+				json.put("subject", org.getOrgId()+" - "+subject);
+				
+				StringBuilder body = new StringBuilder()
+										.append(msg)
+										.append("\n\nInfo : \n--------\n")
+										.append("\n Org Time : ").append(DateTimeUtil.getDateTime())
+										.append("\n Indian Time : ").append(DateTimeUtil.getDateTime(ZoneId.of("Asia/Kolkata")))
+										.append("\n\nMsg : ")
+										.append(msg)
+										.append("\n\nApp Url : ")
+										.append(AwsUtil.getConfig("app.url"))
+										.append("\n\nOrg Info : \n--------\n")
+										.append(org.toString())
+										;
+				json.put("message", body.toString());
+				
+				AwsUtil.sendEmail(json);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+								
 	}
 	
 	public static void emailException(String fromClass, String msg, Throwable e) {
@@ -393,7 +427,7 @@ public class CommonCommandUtil {
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			for (Map<String, Object> prop : props) {
-				result.put((String) prop.get("name"), prop.get("value"));
+				result.put(prop.get("name"), prop.get("value"));
 			}
 		}
 		return result;		
@@ -440,7 +474,7 @@ public class CommonCommandUtil {
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			for (Map<String, Object> prop : props) {
-				result.put((String) prop.get("name"), prop.get("value"));
+				result.put(prop.get("name"), prop.get("value"));
 			}
 		}
 		return result;		
@@ -573,7 +607,7 @@ public class CommonCommandUtil {
         if (readingRules != null && !readingRules.isEmpty()) {
         	List<Long> workFlowIds = readingRules.stream().map(ReadingRuleContext::getWorkflowId).collect(Collectors.toList());
             Map<Long, WorkflowContext> workflowMap = WorkflowUtil.getWorkflowsAsMap(workFlowIds, true);
-            Map<Long, List<ReadingRuleContext>> fieldVsRules = new HashMap<>();
+            new HashMap<>();
             
         	for (ReadingRuleContext r:  readingRules) {
         		long workflowId = r.getWorkflowId();
@@ -679,4 +713,6 @@ public class CommonCommandUtil {
 		}
 		return changeSetMap;
 	}
+	
+	
 }

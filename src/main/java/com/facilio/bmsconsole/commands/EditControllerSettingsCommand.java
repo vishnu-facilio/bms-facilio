@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,10 +17,10 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.ControllerAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericDeleteRecordBuilder;
-import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class EditControllerSettingsCommand implements Command {
@@ -72,21 +71,11 @@ public class EditControllerSettingsCommand implements Command {
 		FacilioModule relModule = ModuleFactory.getControllerBuildingRelModule();
 		new GenericDeleteRecordBuilder()
 				.table(relModule.getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(relModule))
 				.andCondition(CriteriaAPI.getCondition("CONTROLLER_ID","controllerId", String.valueOf(controllerSettings.getId()),NumberOperators.EQUALS))
 				.delete();
 		
-		if (controllerSettings.getBuildingIds() != null && !controllerSettings.getBuildingIds().isEmpty()) {
-			GenericInsertRecordBuilder relBuilder = new GenericInsertRecordBuilder()
-					.table(ModuleFactory.getControllerBuildingRelModule().getTableName())
-					.fields(FieldFactory.getControllerBuildingRelFields());
-			for (long buildingId: controllerSettings.getBuildingIds()) {
-				Map<String, Object> prop = new HashMap<>();
-				prop.put("buildingId", buildingId);
-				prop.put("controllerId", controllerSettings.getId());
-				relBuilder.addRecord(prop);
-			}
-			relBuilder.save();
-		}
+		ControllerAPI.addControllerBuildingRel(controllerSettings);
 		
 		return false;
 	}

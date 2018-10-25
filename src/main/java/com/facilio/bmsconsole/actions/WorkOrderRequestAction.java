@@ -34,6 +34,10 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
 public class WorkOrderRequestAction extends FacilioAction {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static Logger log = LogManager.getLogger(WorkOrderRequestAction.class.getName());
 
 	public String newWorkOrderRequest() throws Exception {
@@ -380,6 +384,9 @@ public class WorkOrderRequestAction extends FacilioAction {
 			workorderrequest = props.get(0);
 		}
 		return SUCCESS;
+	}
+	public String workRequestCount () throws Exception {
+		return workOrderRequestList();	
 	}
 	public String workOrderRequestList() throws Exception {
 		// TODO Auto-generated method stub

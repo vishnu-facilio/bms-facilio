@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -492,6 +491,8 @@ public class SpaceAPI {
 							childSpaces = getFloorChildren(parentSpace.getId());
 							break;
 					case SPACE:
+							childSpaces = getSpaceChildren(parentSpace.getId());
+							break;
 					case ZONE:
 							childSpaces = getZoneChildren(parentSpace.getId());
 							break;
@@ -500,6 +501,37 @@ public class SpaceAPI {
 					spaces.addAll(childSpaces);
 				}
 			}
+			return spaces;
+		}
+		return null;
+	}
+	private static List<BaseSpaceContext> getSpaceChildren(long spaceID) throws Exception {
+		List<Long> spaceIDs = new ArrayList<>();
+		spaceIDs.add(spaceID);
+		return getSpaceChildren(spaceIDs);
+	}
+	
+	
+	private static List<BaseSpaceContext> getSpaceChildren(List<Long> spaceIDs) throws Exception {
+		if(spaceIDs != null && !spaceIDs.isEmpty()) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
+			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE);
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+			Criteria criteria = new Criteria();
+			criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("spaceId1"),spaceIDs , NumberOperators.EQUALS));
+			criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("spaceId2"),spaceIDs , NumberOperators.EQUALS));
+			criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("spaceId3"),spaceIDs , NumberOperators.EQUALS));
+			
+			
+			SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
+																		.select(fields)
+																		.table(module.getTableName())
+																		.moduleName(module.getName())
+																		.beanClass(BaseSpaceContext.class)
+																		.andCriteria(criteria)
+																		;
+			List<BaseSpaceContext> spaces = selectBuilder.get();
 			return spaces;
 		}
 		return null;
@@ -609,6 +641,17 @@ public class SpaceAPI {
 																	.maxLevel(0)
 																	.beanClass(BuildingContext.class)
 																	.andCustomWhere("BaseSpace.SITE_ID =? AND SPACE_TYPE=?",siteId,BaseSpaceContext.SpaceType.BUILDING.getIntVal());
+		
+		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(module.getName());
+		if (scopeCriteria != null) {
+			selectBuilder.andCriteria(scopeCriteria);
+		}
+		
+		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(module.getName(),"read");
+		if (permissionCriteria != null) {
+			selectBuilder.andCriteria(permissionCriteria);
+		}
+		
 		List<BuildingContext> buildings = selectBuilder.get();
 		return buildings;
 	}
@@ -625,6 +668,18 @@ public class SpaceAPI {
 																	.maxLevel(0)
 																	.beanClass(BuildingContext.class)
 																	.andCustomWhere("SPACE_TYPE=?",BaseSpaceContext.SpaceType.BUILDING.getIntVal());
+		
+		
+		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(module.getName());
+		if (scopeCriteria != null) {
+			selectBuilder.andCriteria(scopeCriteria);
+		}
+		
+		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(module.getName(),"read");
+		if (permissionCriteria != null) {
+			selectBuilder.andCriteria(permissionCriteria);
+		}
+		
 		List<BuildingContext> buildings = selectBuilder.get();
 		return buildings;
 	}
@@ -861,6 +916,12 @@ public static long getSitesCount() throws Exception {
 	public static List<SpaceContext> getSpaceListOfCategory(long category) throws Exception
 	{
 		
+		return getSpaceListOfCategory(-1,category);
+	}
+	
+	public static List<SpaceContext> getSpaceListOfCategory(long baseSpaceId,long category) throws Exception
+	{
+		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SPACE);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SPACE);
@@ -871,10 +932,14 @@ public static long getSitesCount() throws Exception {
 				.moduleName(module.getName())
 				.beanClass(SpaceContext.class)
 				.andCondition(CriteriaAPI.getCondition(categoryField, String.valueOf(category), PickListOperators.IS));
+		
+		if(baseSpaceId > 0) {
+			BaseSpaceContext basespace = getBaseSpace(baseSpaceId);
+			selectBuilder.andCustomWhere("BaseSpace."+basespace.getSpaceTypeEnum().getStringVal().toUpperCase()+"_ID = ?", baseSpaceId);
+		}
 		List<SpaceContext> spaces = selectBuilder.get();
 		return spaces;
 	}
-	
 	
 	public static List<BaseSpaceContext> getAllBaseSpaces(Criteria filterCriteria, Criteria searchCriteria, String orderBy, JSONObject pagination) throws Exception
 	{
@@ -1088,7 +1153,7 @@ public static long getSitesCount() throws Exception {
 		spaceCond.setOperator(BuildingOperator.BUILDING_IS);
 		spaceCond.setValue(spaceId+"");
 		
-		long orgId = AccountUtil.getCurrentOrg().getOrgId();
+		AccountUtil.getCurrentOrg().getOrgId();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Alarms")
@@ -1126,14 +1191,13 @@ public static long getSitesCount() throws Exception {
 		spaceCond.setOperator(BuildingOperator.BUILDING_IS);
 		spaceCond.setValue(spaceId+"");
 
-		long orgId = AccountUtil.getCurrentOrg().getOrgId();
+		AccountUtil.getCurrentOrg().getOrgId();
 		
 		SelectRecordsBuilder selectBuilder = new SelectRecordsBuilder()
 				.select(fields)
 				.module(assetModule)
 				.beanClass(AssetContext.class)
-				.andCondition(spaceCond)
-				.groupBy("Assets.SITE_ID");
+				.andCondition(spaceCond);
 		
 		List<Map<String, Object>> rs = selectBuilder.getAsProps();
 		if (rs == null || rs.isEmpty()) {

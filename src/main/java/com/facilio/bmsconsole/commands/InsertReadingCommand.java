@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
@@ -18,9 +20,10 @@ import com.google.common.collect.ArrayListMultimap;
 
 public class InsertReadingCommand implements Command {
 
+	private static final Logger LOGGER = Logger.getLogger(InsertReadingCommand.class.getName());
 	@Override
 	public boolean execute(Context context) throws Exception {
-		List<ReadingContext> readingContexts = (List<ReadingContext>) context.get(ImportAPI.ImportProcessConstants.READINGS_LIST);
+		context.get(ImportAPI.ImportProcessConstants.READINGS_LIST);
 		ImportProcessContext importProcessContext =(ImportProcessContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
 		ArrayListMultimap<String, ReadingContext> groupedContext = (ArrayListMultimap<String, ReadingContext>) context.get(ImportAPI.ImportProcessConstants.GROUPED_READING_CONTEXT);
 		ArrayListMultimap<String , String> groupedFields = (ArrayListMultimap<String, String>) context.get(ImportAPI.ImportProcessConstants.GROUPED_FIELDS);
@@ -48,10 +51,19 @@ public class InsertReadingCommand implements Command {
 	}
 
 	public static void insertReadings(String moduleName,List<ReadingContext> readingsContext) throws Exception {
+		
+		if(readingsContext == null || readingsContext.isEmpty()) {
+			return;
+		}
+		LOGGER.log(Level.SEVERE, "moduleName - "+moduleName +" readingsContext count -- "+readingsContext.size());
+		
 		Map<String, List<ReadingContext>> readingMap= Collections.singletonMap(moduleName, readingsContext);
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.HISTORY_READINGS,true);
-		context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS,false);
+		
+		//TODO Have to check if this takes more time
+//		context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS,false);
+		
 		context.put(FacilioConstants.ContextNames.READINGS_MAP , readingMap);
 		Chain importDataChain = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
 		importDataChain.execute(context);	

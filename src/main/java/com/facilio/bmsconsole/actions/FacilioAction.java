@@ -9,6 +9,10 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class FacilioAction extends ActionSupport {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int responseCode = 0;
 	public int getResponseCode() {
 		return responseCode;
@@ -21,7 +25,7 @@ public class FacilioAction extends ActionSupport {
 	public String getMessage() {
 		return message;
 	}
-	public void setMessage(String message) {
+	private void setMessage(String message) {
 		this.message = message;
 	}
 	
@@ -34,19 +38,15 @@ public class FacilioAction extends ActionSupport {
 	}
 	
 	public String handleException() {
-		setMessage(exception);
-		return ERROR;
-	}
-	
-	public void setMessage(Exception e) {
 		this.responseCode = 1;
-		if (e instanceof IllegalArgumentException) {
-			this.message = e.getMessage();			
+		if (exception != null && exception instanceof IllegalArgumentException) {
+			this.message = exception.getMessage();			
 		}
 		else {
 			this.message = FacilioConstants.ERROR_MESSAGE;
 		}
-		setStackTrace(e);
+		setStackTrace(exception);
+		return ERROR;
 	}
 	
 	private JSONObject result;
@@ -67,8 +67,10 @@ public class FacilioAction extends ActionSupport {
 		return stackTrace;
 	}
 	public void setStackTrace(Exception e) {
-		this.stackTrace = ExceptionUtils.getStackTrace(e);
-		LogManager.getLogger(this.getClass().getName()).error("Exception occured: - ", e);
+		if (e != null) {
+			this.stackTrace = ExceptionUtils.getStackTrace(e);
+			LogManager.getLogger(this.getClass().getName()).error("Exception occured: - ", e);
+		}
 	}
 	
 	

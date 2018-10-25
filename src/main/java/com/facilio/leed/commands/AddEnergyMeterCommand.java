@@ -17,14 +17,14 @@ public class AddEnergyMeterCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		
-		long buildingId = (long)context.get(LeedConstants.ContextNames.BUILDINGID);
+		context.get(LeedConstants.ContextNames.BUILDINGID);
 		long leedId = (long) context.get(LeedConstants.ContextNames.LEEDID);
 		String meterName = (String)context.get(LeedConstants.ContextNames.METERNAME);
 		String meterTypeAdded = (String)context.get(LeedConstants.ContextNames.METERTYPE);
 		JSONObject meterInfo = new JSONObject();
 		meterInfo.put("name", meterName);
 		meterInfo.put("included", "true");
-		FuelContext fcontext = new FuelContext();
+		new FuelContext();
 		
 		if(meterTypeAdded.equalsIgnoreCase("water"))
 		{	

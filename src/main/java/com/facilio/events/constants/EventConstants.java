@@ -44,6 +44,7 @@ public class EventConstants {
 		public static final String FIELD_ID = "fieldId";
 		public static final String TYPE = "type";
 		public static final String PARENT_ID = "parentId";
+		public static final String CONTROLLER_ID = "controllerId";
 	}
 	
 	public static class EventChainFactory {
@@ -570,6 +571,14 @@ public class EventConstants {
 			assetId.setColumnName("RESOURCE_ID");
 			assetId.setModule(module);
 			fields.add(assetId);
+			
+			
+			FacilioField controllerId = new FacilioField();
+			controllerId.setName(EventConstants.EventContextNames.CONTROLLER_ID);
+			controllerId.setDataType(FieldType.NUMBER);
+			controllerId.setColumnName("CONTROLLER_ID");
+			controllerId.setModule(module);
+			fields.add(controllerId);
 			
 			return fields;
 		}

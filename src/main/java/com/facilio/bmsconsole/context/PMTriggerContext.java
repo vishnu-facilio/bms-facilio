@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.context;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -135,5 +136,52 @@ public class PMTriggerContext {
 	}
 	public void setEndReading(long endReading) {
 		this.endReading = endReading;
+	}
+	
+	TriggerType triggerType;
+	
+	Long assignedTo;
+	
+	public int getTriggerType() {
+		if(triggerType != null) {
+			return triggerType.getVal();
+		}
+		return -1;
+	}
+	public void setTriggerType(int triggerType) {
+		this.triggerType = TriggerType.valueOf(triggerType);
+	}
+	public Long getAssignedTo() {
+		return assignedTo;
+	}
+	public void setAssignedTo(Long assignedTo) {
+		this.assignedTo = assignedTo;
+	}
+	
+	List<PMTriggerResourceContext> pmTriggerResourceContexts;
+
+	public List<PMTriggerResourceContext> getPmTriggerResourceContexts() {
+		return pmTriggerResourceContexts;
+	}
+	public void setPmTriggerResourceContexts(List<PMTriggerResourceContext> pmTriggerResourceContexts) {
+		this.pmTriggerResourceContexts = pmTriggerResourceContexts;
+	}
+
+	public enum TriggerType {
+		
+		DEFAULT,
+		CUSTOM,
+		;
+		
+		public int getVal() {
+			return ordinal() + 1;
+		}
+		private static final TriggerType[] PM_TRIGGER_TYPES = TriggerType.values();
+		public static TriggerType valueOf(int type) {
+			if (type > 0 && type <= PM_TRIGGER_TYPES.length) {
+				return PM_TRIGGER_TYPES[type - 1];
+			}
+			return null;
+		}
 	}
 }

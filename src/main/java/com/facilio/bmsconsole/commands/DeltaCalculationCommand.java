@@ -314,6 +314,6 @@ public class DeltaCalculationCommand implements Command {
 	}
 	
 	private void sendEmail(String subject, String body) {
-		CommonCommandUtil.emailException("DeltaCalculationCommand", subject, body);
+		CommonCommandUtil.emailAlert(subject, body);
 	}
 }

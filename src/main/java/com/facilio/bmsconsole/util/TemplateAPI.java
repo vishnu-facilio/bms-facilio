@@ -673,7 +673,7 @@ public class TemplateAPI {
 	
 	private static ExcelTemplate getExcelTemplateFromMap(Map<String, Object> templateMap) throws Exception {
 		ExcelTemplate template = FieldUtil.getAsBeanFromMap(templateMap, ExcelTemplate.class);
-		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
+		AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
 		//template.setWorkbook(WorkbookFactory.create(FileStoreFactory.getInstance().getFileStore(superAdmin.getId()).readFile(template.getExcelFileId())));
 		return template;
 	}
@@ -723,14 +723,13 @@ public class TemplateAPI {
 				TaskContext task = template.getTask();
 				
 				String sectionName = null;
-				long sectionId = -1;
 				if (template.getSectionId() == -1) {
 					sectionName = FacilioConstants.ContextNames.DEFAULT_TASK_SECTION;
 				}
 				else {
 					TaskSectionTemplate sectionTemplate = sectionMap.get(template.getSectionId());
 					sectionName = sectionTemplate.getName();
-					sectionId = sectionTemplate.getId();
+					sectionTemplate.getId();
 				}
 				List<TaskContext> tasks = taskMap.get(sectionName);
 				if (tasks == null) {
@@ -819,6 +818,14 @@ public class TemplateAPI {
 		return taskTemplate;
 	}
 	
+	private static TaskTemplate fillDefaultPropsTaskTemplate(TaskTemplate taskTemplate, long sectionId, long woTemplateId, Type type) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		taskTemplate.setSectionId(sectionId);
+		taskTemplate.setParentTemplateId(woTemplateId);
+		taskTemplate.setType(type);
+		taskTemplate.setOrgId(AccountUtil.getCurrentOrg().getId());
+		return taskTemplate;
+	}
+	
 	public static long addTaskGroupTemplate (TaskSectionTemplate template) throws Exception {
 		addDefaultProps(template);
 		template.setType(Type.TASK_GROUP);
@@ -845,10 +852,10 @@ public class TemplateAPI {
 		addDefaultProps(template);
 		template.setType(woType);
 		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
-		long templateId = insertTemplateWithExtendedProps(ModuleFactory.getWorkOrderTemplateModule(), FieldFactory.getWorkOrderTemplateFields(), templateProps);
+		long templateId = insertTemplateWithExtendedProps(ModuleFactory.getWorkOrderTemplateModule(), FieldFactory.getWorkOrderTemplateFields(), templateProps); //inserting WO template
 		Map<String, List<TaskContext>> tasks = template.getTasks();
 		if (tasks != null && !tasks.isEmpty()) {
-			Map<String, Long> sectionMap = addSectionTemplatesForWO(templateId, tasks.keySet(), sectionType);
+			Map<String, Long> sectionMap = addSectionTemplatesForWO(templateId, tasks.keySet(), sectionType);	//add sections
 			List<Map<String, Object>> taskTemplateProps = new ArrayList<>();
 			for (Entry<String, List<TaskContext>> entry : tasks.entrySet()) {
 				long sectionId = -1;
@@ -862,8 +869,49 @@ public class TemplateAPI {
 					taskTemplateProps.add(FieldUtil.getAsProperties(constructTaskTemplate(task, sectionId, templateId, taskType)));
 				}
 			}
-			insertTemplatesWithExtendedProps(ModuleFactory.getTaskTemplateModule(), FieldFactory.getTaskTemplateFields(), taskTemplateProps);
+			insertTemplatesWithExtendedProps(ModuleFactory.getTaskTemplateModule(), FieldFactory.getTaskTemplateFields(), taskTemplateProps); //add tasks
 		}
+		return templateId;
+	}
+	
+	private static Map<String, Long> addSectionTemplatesForWO(List<TaskSectionTemplate> sectionTemplates,long woTemplateId, Type taskType,Type sectiontype) throws Exception {
+		List<Map<String, Object>> templatePropList = new ArrayList<>();
+		
+		for (TaskSectionTemplate sectionTemplate : sectionTemplates) {
+			//sectionTemplate.setType(sectiontype);
+			if (!sectionTemplate.getName().equals(FacilioConstants.ContextNames.DEFAULT_TASK_SECTION)) {
+				templatePropList.add(FieldUtil.getAsProperties(sectionTemplate));
+			}
+		}
+		insertTemplatesWithExtendedProps(ModuleFactory.getTaskSectionTemplateModule(), FieldFactory.getTaskSectionTemplateFields(), templatePropList);
+		Map<String, Long> sectionMap = new HashMap<>();
+		for (Map<String, Object> prop : templatePropList) {
+			sectionMap.put((String)prop.get("name"), (Long)prop.get("id"));
+		}
+		
+		List<Map<String, Object>> taskTemplateProps = new ArrayList<>();
+		for (TaskSectionTemplate sectionTemplate : sectionTemplates) {
+			if(sectionMap.get(sectionTemplate.getName()) != null) {
+				
+				sectionTemplate.setId(sectionMap.get(sectionTemplate.getName()));
+			}
+			
+			for(TaskTemplate taskTeplate : sectionTemplate.getTaskTemplates()) {
+				fillDefaultPropsTaskTemplate(taskTeplate, sectionTemplate.getId(), woTemplateId, taskType);
+				taskTemplateProps.add(FieldUtil.getAsProperties(taskTeplate));
+			}
+		}
+		insertTemplatesWithExtendedProps(ModuleFactory.getTaskTemplateModule(), FieldFactory.getTaskTemplateFields(), taskTemplateProps); //add tasks
+		return sectionMap;
+	}
+	
+	public static long addNewWorkOrderTemplate(WorkorderTemplate template, Type woType, Type taskType, Type sectionType) throws Exception {
+		addDefaultProps(template);
+		template.setType(woType);
+		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
+		long templateId = insertTemplateWithExtendedProps(ModuleFactory.getWorkOrderTemplateModule(), FieldFactory.getWorkOrderTemplateFields(), templateProps); //inserting WO template
+		
+		addSectionTemplatesForWO(template.getSectionTemplates(), templateId,taskType, sectionType);
 		return templateId;
 	}
 	

@@ -4,6 +4,10 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class SpaceCategoryContext extends ModuleBaseWithCustomFields {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String name;
 	public String getName() {
 		return name;

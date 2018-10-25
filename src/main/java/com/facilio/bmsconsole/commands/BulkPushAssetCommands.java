@@ -15,7 +15,6 @@ import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.util.AssetsAPI;
@@ -31,8 +30,9 @@ public class BulkPushAssetCommands implements Command {
 
 	@Override
 	public boolean execute(Context context)throws Exception {
+		LOGGER.severe("BulkPush Asset");
 		List<FacilioModule> moduleList = new ArrayList<>();
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		BeanFactory.lookup("ModuleBean");
 		ArrayListMultimap<String, Long> recordsList = (ArrayListMultimap<String, Long>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		List<Long> assetCategoryIds = new ArrayList<>();
 		ImportProcessContext importProcessContext = (ImportProcessContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
@@ -111,7 +111,7 @@ public static List<Long> populateData(ImportProcessContext importProcessContext,
 				
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			
-			List<FacilioField> fieldList = bean.getAllFields(moduleName);
+			bean.getAllFields(moduleName);
 			InsertRecordBuilder<ReadingContext> readingBuilder = new InsertRecordBuilder<ReadingContext>()
 					.table(moduleTableName)
 					.moduleName(moduleName)

@@ -1,14 +1,19 @@
 package com.facilio.bmsconsole.util;
 
+import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import javax.print.attribute.standard.Severity;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.lang3.text.WordUtils;
+import org.apache.commons.text.WordUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -27,7 +32,9 @@ import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.DateRange;
@@ -36,6 +43,8 @@ import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
@@ -46,24 +55,6 @@ import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.WorkflowContext;
 
 public class AlarmAPI {
-	
-	public static AlarmContext getAlarm(Long alarmId) throws Exception {
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
-		SelectRecordsBuilder<AlarmContext> selectBuilder = new SelectRecordsBuilder<AlarmContext>()
-				.select(modBean.getAllFields(FacilioConstants.ContextNames.ALARM))
-				.module(modBean.getModule(FacilioConstants.ContextNames.ALARM))
-				.beanClass(AlarmContext.class)
-				.andCondition(CriteriaAPI.getCondition("Alarms.ID", "id", ""+alarmId, NumberOperators.EQUALS));
-		
-		List<AlarmContext> props = selectBuilder.get();
-		
-		if(props != null && !props.isEmpty()) {
-			return props.get(0);
-		}
-		return null;
-	}
 	
 	public static ReadingAlarmContext getReadingAlarmContext(Long alarmId) throws Exception {
 		
@@ -110,6 +101,16 @@ public class AlarmAPI {
 					}
 				}
 			}
+		}
+	}
+	
+	public static boolean isReadingAlarm (SourceType type) {
+		switch (type) {
+			case THRESHOLD_ALARM:
+			case ANOMALY_ALARM:
+				return true;
+			default:
+				return false;
 		}
 	}
 	
@@ -180,10 +181,10 @@ public class AlarmAPI {
 					if(sourceAlarm.getSource() != null) {
 						String description;
 						if(sourceAlarm.isAcknowledged()) {
-							description = MessageFormat.format("A{0} alarm raised from {1} has been acknowledged.\n\nAlarm details : \nAlarm Class - {2}\nSource - {1}\nLocation - {3}",sourceAlarm.getAlarmTypeVal() != null? " "+sourceAlarm.getAlarmTypeVal():"n",sourceAlarm.getSource(),sourceAlarm.getAlarmClass(), resource.getName());
+							description = MessageFormat.format("A{0} alarm raised from {1} has been acknowledged.\n\nAlarm details : \nSource - {1}\nLocation - {2}",sourceAlarm.getAlarmTypeVal() != null? " "+sourceAlarm.getAlarmTypeVal():"n",sourceAlarm.getSource(), resource.getName());
 						}
 						else {
-							description = MessageFormat.format("A{0} alarm raised from {1} is waiting for acknowledgement.\n\nAlarm details : \nAlarm Class - {2}\nSource - {1}\nLocation - {3}",sourceAlarm.getAlarmTypeVal() != null? " "+sourceAlarm.getAlarmTypeVal():"n",sourceAlarm.getSource(),sourceAlarm.getAlarmClass(), resource.getName());
+							description = MessageFormat.format("A{0} alarm raised from {1} is waiting for acknowledgement.\n\nAlarm details : \nSource - {1}\nLocation - {2}",sourceAlarm.getAlarmTypeVal() != null? " "+sourceAlarm.getAlarmTypeVal():"n",sourceAlarm.getSource(),resource.getName());
 						}
 						destinationAlarm.setDescription(description);
 					}
@@ -194,18 +195,18 @@ public class AlarmAPI {
 					
 					if(sourceAlarm.isAcknowledged()) {
 						if(space != null) {
-							description = MessageFormat.format("A{0} alarm raised from {1} has been acknowledged.\n\nAlarm details : \nAlarm Class - {3}\nSource - {1}\nLocation - {2}",sourceAlarm.getAlarmTypeVal() != null? " "+sourceAlarm.getAlarmTypeVal():"n",resource.getName(), space.getName(), sourceAlarm.getAlarmClass());
+							description = MessageFormat.format("A{0} alarm raised from {1} has been acknowledged.\n\nAlarm details : \nSource - {1}\nLocation - {2}",sourceAlarm.getAlarmTypeVal() != null? " "+sourceAlarm.getAlarmTypeVal():"n",resource.getName(), space.getName());
 						}
 						else {
-							description = MessageFormat.format("A{0} alarm raised from {1} has been acknowledged.\n\nAlarm details : \nAlarm Class - {2}\nSource - {1}",sourceAlarm.getAlarmTypeVal() != null? " "+sourceAlarm.getAlarmTypeVal():"n",resource.getName(),sourceAlarm.getAlarmClass());
+							description = MessageFormat.format("A{0} alarm raised from {1} has been acknowledged.\n\nAlarm details : \nSource - {1}",sourceAlarm.getAlarmTypeVal() != null? " "+sourceAlarm.getAlarmTypeVal():"n",resource.getName());
 						}
 					}
 					else {
 						if(space != null) {
-							description = MessageFormat.format("A{0} alarm raised from {1} is waiting for acknowledgement.\n\nAlarm details : \nAlarm Class - {3}\nSource - {1}\nLocation - {2}",sourceAlarm.getAlarmTypeVal() != null? " "+sourceAlarm.getAlarmTypeVal():"n",resource.getName(), space.getName(),sourceAlarm.getAlarmClass());
+							description = MessageFormat.format("A{0} alarm raised from {1} is waiting for acknowledgement.\n\nAlarm details : \nSource - {1}\nLocation - {2}",sourceAlarm.getAlarmTypeVal() != null? " "+sourceAlarm.getAlarmTypeVal():"n",resource.getName(), space.getName());
 						}
 						else {
-							description = MessageFormat.format("A{0} alarm raised from {1} is waiting for acknowledgement.\n\nAlarm details : \nAlarm Class - {2}\nSource - {1}",sourceAlarm.getAlarmTypeVal() != null? " "+sourceAlarm.getAlarmTypeVal():"n",resource.getName(),sourceAlarm.getAlarmClass());
+							description = MessageFormat.format("A{0} alarm raised from {1} is waiting for acknowledgement.\n\nAlarm details : \nSource - {1}",sourceAlarm.getAlarmTypeVal() != null? " "+sourceAlarm.getAlarmTypeVal():"n",resource.getName());
 						}
 					}
 					destinationAlarm.setDescription(description);
@@ -214,10 +215,10 @@ public class AlarmAPI {
 		}
 		else {
 			if(sourceAlarm.isAcknowledged()) {
-				destinationAlarm.setDescription(MessageFormat.format("A{0} alarm raised from {1} has been acknowledged.\n\nAlarm details : \nAlarm Class - {2}\nSource - {1}",sourceAlarm.getAlarmTypeVal() != null? " "+sourceAlarm.getAlarmTypeVal():"n",sourceAlarm.getSource(), sourceAlarm.getAlarmClass()));
+				destinationAlarm.setDescription(MessageFormat.format("A{0} alarm raised from {1} has been acknowledged.\n\nAlarm details : \nSource - {1}",sourceAlarm.getAlarmTypeVal() != null? " "+sourceAlarm.getAlarmTypeVal():"n",sourceAlarm.getSource()));
 			}
 			else {
-				destinationAlarm.setDescription(MessageFormat.format("A{0} alarm raised from {1} is waiting for acknowledgement.\n\nAlarm details : \nAlarm Class - {2}\nSource - {1}",sourceAlarm.getAlarmTypeVal() != null? " "+sourceAlarm.getAlarmTypeVal():"n",sourceAlarm.getSource(), sourceAlarm.getAlarmClass()));
+				destinationAlarm.setDescription(MessageFormat.format("A{0} alarm raised from {1} is waiting for acknowledgement.\n\nAlarm details : \nSource - {1}",sourceAlarm.getAlarmTypeVal() != null? " "+sourceAlarm.getAlarmTypeVal():"n",sourceAlarm.getSource()));
 			}
 		}
 	}
@@ -335,6 +336,36 @@ public class AlarmAPI {
 			}
 		}
 		return null;
+	}
+	
+	public static List<ReadingAlarmContext> getReadingAlarms(Long resourceId,Long fieldId,Long startTime,Long endTime,boolean isWithAnomaly) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		SelectRecordsBuilder<ReadingAlarmContext> selectBuilder = new SelectRecordsBuilder<ReadingAlarmContext>()
+				.select(modBean.getAllFields(FacilioConstants.ContextNames.READING_ALARM))
+				.module(modBean.getModule(FacilioConstants.ContextNames.READING_ALARM))
+				.beanClass(ReadingAlarmContext.class);
+		
+		selectBuilder.andCondition(CriteriaAPI.getCondition(modBean.getField("resource", FacilioConstants.ContextNames.READING_ALARM), ""+resourceId, NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition(modBean.getField("readingFieldId", FacilioConstants.ContextNames.READING_ALARM), ""+fieldId, NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition(modBean.getField("createdTime", FacilioConstants.ContextNames.READING_ALARM), ""+endTime, NumberOperators.LESS_THAN_EQUAL));
+		
+		Condition condition1 = CriteriaAPI.getCondition(modBean.getField("clearedTime", FacilioConstants.ContextNames.READING_ALARM), ""+startTime, NumberOperators.GREATER_THAN_EQUAL);
+		Condition condition2 = CriteriaAPI.getCondition(modBean.getField("clearedTime", FacilioConstants.ContextNames.READING_ALARM), "", CommonOperators.IS_EMPTY);
+		
+		Criteria criteria = new Criteria();
+		
+		criteria.addOrCondition(condition1);
+		criteria.addOrCondition(condition2);
+		
+		selectBuilder.andCriteria(criteria);
+		if(!isWithAnomaly) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(modBean.getField("sourceType", FacilioConstants.ContextNames.READING_ALARM), ""+SourceType.ANOMALY_ALARM.getIntVal(), NumberOperators.NOT_EQUALS));
+		}
+		List<ReadingAlarmContext> props = selectBuilder.get();
+		
+		return props;
 	}
 	
 	public static AlarmType getAlarmTypeFromAssetCategory(long categoryId) throws Exception {
@@ -483,6 +514,7 @@ public class AlarmAPI {
 		}
 	}
 	
+	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
 	private static void appendSimpleMsg(StringBuilder msgBuilder, NumberOperators operator, ReadingRuleContext rule, ReadingContext reading) {
 		switch (operator) {
 			case EQUALS:
@@ -517,7 +549,7 @@ public class AlarmAPI {
 		
 		if ("${previousValue}".equals(value)) {
 			msgBuilder.append("previous value (")
-						.append(reading.getReading(rule.getReadingField().getName()))
+						.append(DECIMAL_FORMAT.format(reading.getReading(rule.getReadingField().getName())))
 						.append(")");
 		}
 		else {
@@ -590,9 +622,19 @@ public class AlarmAPI {
 		}
 	}
 	
+	private static Object formatValue (ReadingContext reading, FacilioField field) {
+		if (field.getDataTypeEnum() == FieldType.DECIMAL) {
+			return DECIMAL_FORMAT.format(FieldUtil.castOrParseValueAsPerType(field, reading.getReading(field.getName())));
+		}
+		else {
+			return reading.getReading(field.getName());
+		}
+	}
+	
 	private static void appendAdvancedMsg (StringBuilder msgBuilder, ReadingRuleContext rule, ReadingContext reading) {
 		msgBuilder.append("recorded ")
-					.append(reading.getReading(rule.getReadingField().getName()));
+					.append(formatValue(reading, rule.getReadingField()));
+		
 		appendUnit(msgBuilder, rule);
 		
 		msgBuilder.append(" when the complex condition set in '")
@@ -603,7 +645,7 @@ public class AlarmAPI {
 	
 	private static void appendFunctionMsg (StringBuilder msgBuilder, ReadingRuleContext rule, ReadingContext reading) {
 		msgBuilder.append("recorded ")
-					.append(reading.getReading(rule.getReadingField().getName()));
+					.append(formatValue(reading, rule.getReadingField()));
 		appendUnit(msgBuilder, rule);
 		
 		String functionName = null;
@@ -651,6 +693,51 @@ public class AlarmAPI {
 			return alarms.get(0);
 		}
 		return null;
+	}
+	
+	public static List<AlarmContext> getAlarms(Collection<Long> ids) throws Exception {
+		String moduleName = FacilioConstants.ContextNames.ALARM;
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		List<FacilioField> fields = modBean.getAllFields(moduleName);
+		SelectRecordsBuilder<AlarmContext> builder = new SelectRecordsBuilder<AlarmContext>()
+													.module(module)
+													.beanClass(AlarmContext.class)
+													.select(fields)
+													.andCondition(CriteriaAPI.getIdCondition(ids, module));
+													;
+		
+		List<AlarmContext> alarms = builder.get();
+		
+		return alarms;
+	}
+	
+	public static AlarmSeverityContext getMaxSeverity(List<AlarmContext> alarms) throws Exception {
+		
+		List<Long> severityList = new ArrayList<>();
+		
+		for(AlarmContext alarm :alarms) {
+			severityList.add(alarm.getSeverity().getId());
+		}
+		
+		Map<Integer,AlarmSeverityContext> alarmSeverityMap = new HashMap<>();
+		Map<Long, AlarmSeverityContext> severities = getAlarmSeverityMap(severityList);
+		
+		if(severities != null) {
+			for(Long key :severities.keySet()) {
+				AlarmSeverityContext sev = severities.get(key);
+				alarmSeverityMap.put(sev.getCardinality(), sev);
+			}
+			
+			List<Integer> cardinalityList = new ArrayList<>(alarmSeverityMap.keySet());
+			Collections.sort(cardinalityList);
+			
+			if(cardinalityList != null && !cardinalityList.isEmpty()) {
+				return alarmSeverityMap.get(cardinalityList.get(0));
+			}
+		}
+		
+		return getAlarmSeverity("Clear");
 	}
 	
 	public static WorkOrderContext getNewWOForAlarm (AlarmContext alarm) throws Exception {

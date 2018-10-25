@@ -16,7 +16,6 @@ import com.facilio.accounts.exception.AccountException;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
-import com.facilio.bmsconsole.actions.EnergyAction;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
@@ -229,7 +228,7 @@ public class OrgBeanImpl implements OrgBean {
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
-				User user = UserBeanImpl.createUserFromProps(prop);
+				User user = UserBeanImpl.createUserFromProps(prop, true, false);
 				user.setFacilioAuth(true);
 				users.add(user);
 			}
@@ -299,7 +298,7 @@ public class OrgBeanImpl implements OrgBean {
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
-				User user = UserBeanImpl.createUserFromProps(prop);
+				User user = UserBeanImpl.createUserFromProps(prop, true, false);
 				user.setAccessibleSpace(UserBeanImpl.getAccessibleSpaceList(user.getOuid()));
 				user.setGroups(UserBeanImpl.getAccessibleGroupList(user.getOuid()));
 				users.add(user);
@@ -323,7 +322,7 @@ public class OrgBeanImpl implements OrgBean {
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
-				users.add(UserBeanImpl.createUserFromProps(prop));
+				users.add(UserBeanImpl.createUserFromProps(prop, true, false));
 			}
 			return users;
 		}
@@ -336,7 +335,7 @@ public class OrgBeanImpl implements OrgBean {
 		if (props != null && !props.isEmpty()) {
 			Map<Long, User> users = new HashMap<>();
 			for(Map<String, Object> prop : props) {
-				User user = UserBeanImpl.createUserFromProps(prop);
+				User user = UserBeanImpl.createUserFromProps(prop, true, false);
 				users.put(user.getId(), user);
 			}
 			return users;
@@ -378,7 +377,7 @@ public class OrgBeanImpl implements OrgBean {
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
-				users.add(UserBeanImpl.createUserFromProps(prop));
+				users.add(UserBeanImpl.createUserFromProps(prop, true, false));
 			}
 			return users;
 		}
@@ -402,7 +401,7 @@ public class OrgBeanImpl implements OrgBean {
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
-				users.add(UserBeanImpl.createUserFromProps(prop));
+				users.add(UserBeanImpl.createUserFromProps(prop, true, false));
 			}
 			return users;
 		}
@@ -412,7 +411,7 @@ public class OrgBeanImpl implements OrgBean {
 	@Override
 	public User getSuperAdmin(long orgId) throws Exception {
 		
-		Role superAdminRole = AccountUtil.getRoleBean().getRole(orgId, AccountConstants.DefaultRole.SUPER_ADMIN);
+		Role superAdminRole = AccountUtil.getRoleBean().getRole(orgId, AccountConstants.DefaultRole.SUPER_ADMIN, false);
 		
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getUserFields());
@@ -429,7 +428,7 @@ public class OrgBeanImpl implements OrgBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			return UserBeanImpl.createUserFromProps(props.get(0));
+			return UserBeanImpl.createUserFromProps(props.get(0), true, false);
 		}
 		return null;
 	}

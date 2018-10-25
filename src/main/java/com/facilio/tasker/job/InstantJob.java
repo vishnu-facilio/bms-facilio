@@ -3,10 +3,6 @@ package com.facilio.tasker.job;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 
 import com.facilio.accounts.dto.Account;
@@ -29,11 +25,11 @@ public abstract class InstantJob {
         return receiptHandle;
     }
 
-    public final void _execute(FacilioContext context) {
+    public final void _execute(FacilioContext context, int transactionTimeout) {
         try {
             Account account = (Account) context.get(InstantJobConf.getAccountKey());
             FacilioTransactionManager.INSTANCE.getTransactionManager().begin();
-            FacilioTransactionManager.INSTANCE.getTransactionManager().setTransactionTimeout(1795000);
+            FacilioTransactionManager.INSTANCE.getTransactionManager().setTransactionTimeout(transactionTimeout);
 
             if (account != null) {
                 try {
@@ -43,7 +39,12 @@ public abstract class InstantJob {
                 }
             }
             context.remove(InstantJobConf.getAccountKey());
-            context.remove(InstantJobConf.getJobNameKey());
+            String jobName = (String) context.remove(InstantJobConf.getJobNameKey());
+            
+//            if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 88 && jobName.equals("ControllerActivityWatcher")) {
+//            	LOGGER.info("Executing Job "+jobName+" with props : "+context);
+//            }
+            
             execute(context);
             ObjectQueue.deleteObject(InstantJobConf.getInstantJobQueue(), getReceiptHandle());
             FacilioTransactionManager.INSTANCE.getTransactionManager().commit();

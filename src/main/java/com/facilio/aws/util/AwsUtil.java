@@ -35,7 +35,6 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 
-import com.facilio.accounts.util.AccountUtil;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -53,11 +52,9 @@ import org.json.simple.parser.JSONParser;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 import com.amazonaws.regions.Regions;
-import com.amazonaws.services.identitymanagement.model.User;
 import com.amazonaws.services.iot.AWSIot;
 import com.amazonaws.services.iot.AWSIotClientBuilder;
 import com.amazonaws.services.iot.client.AWSIotException;
@@ -98,13 +95,14 @@ import com.amazonaws.services.simpleemail.model.SendEmailRequest;
 import com.amazonaws.services.simpleemail.model.SendRawEmailRequest;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class AwsUtil 
 {
 
-	private static Logger logger = LogManager.getLogger(AwsUtil.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(AwsUtil.class.getName());
 	
 	private static final String AWS_PROPERTY_FILE = "conf/awsprops.properties";
 	
@@ -153,7 +151,7 @@ public class AwsUtil
 				productionEnvironment = "production".equalsIgnoreCase(environment);
 				developmentEnvironment = "development".equalsIgnoreCase(environment);
 			} catch (IOException e) {
-				logger.info("Exception while trying to load property file " + AWS_PROPERTY_FILE);
+				LOGGER.info("Exception while trying to load property file " + AWS_PROPERTY_FILE);
 			}
 		}
 	}
@@ -186,7 +184,7 @@ public class AwsUtil
 				}
 			}
 		} catch(SQLException | RuntimeException e) {
-			logger.info("Exception while verifying password, ", e);
+			LOGGER.info("Exception while verifying password, ", e);
 		} finally {
 			DBUtil.closeAll(conn, pstmt);
 		}
@@ -213,12 +211,12 @@ public class AwsUtil
 						pstmt.setString(4, environment);
 						updatedRows = pstmt.executeUpdate();
 						if(updatedRows > 0) {
-						    logger.info("Updated client version successfully");
+						    LOGGER.info("Updated client version successfully");
                         }
 					}
 				}
 			} catch (SQLException | RuntimeException e) {
-				logger.info("Exception while verifying password, ", e);
+				LOGGER.info("Exception while verifying password, ", e);
 			} finally {
 				DBUtil.closeAll(conn, pstmt);
 			}
@@ -340,9 +338,9 @@ public class AwsUtil
 		    }
 			
 		    CloseableHttpResponse response = client.execute(post);
-			logger.info("\nSending 'POST' request to URL : " + url);
-			logger.info("Post parameters : " + post.getEntity());
-			logger.info("Response Code : " +  response.getStatusLine().getStatusCode());
+			LOGGER.info("\nSending 'POST' request to URL : " + url);
+			LOGGER.info("Post parameters : " + post.getEntity());
+			LOGGER.info("Response Code : " +  response.getStatusLine().getStatusCode());
 	 
 			BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 			String line = "";
@@ -354,7 +352,7 @@ public class AwsUtil
     	}
 		catch (Exception e) 
     	{
-			logger.info("Executing doHttpPost ::::url:::" + url, e);
+			LOGGER.info("Executing doHttpPost ::::url:::" + url, e);
 		} 
     	finally 
     	{
@@ -428,14 +426,20 @@ public class AwsUtil
 			Message message = new Message().withSubject(subjectContent).withBody(body);
 
 			try {
+				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 104) {
+					LOGGER.info("Sending email : "+mailJson.toJSONString());
+				}
 				SendEmailRequest request = new SendEmailRequest().withSource((String) mailJson.get("sender"))
 						.withDestination(destination).withMessage(message);
 				AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
 						.withRegion(Regions.US_WEST_2).withCredentials(getAWSCredentialsProvider()).build();
 				client.sendEmail(request);
-				logger.debug("Email sent!");
+				LOGGER.info("Email sent!");
+				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 104) {
+					LOGGER.info(mailJson.toJSONString());
+				}
 			} catch (Exception ex) {
-				logger.info("Error message: " + ex.getMessage());
+				LOGGER.info("Error message: " + ex.getMessage());
 				throw ex;
 			}
 		}
@@ -482,10 +486,10 @@ public class AwsUtil
 				AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
 						.withRegion(Regions.US_WEST_2).withCredentials(getAWSCredentialsProvider()).build();
 				client.sendRawEmail(request);
-				logger.info("Email sent!");
+				LOGGER.info("Email sent!");
 			} catch (Exception ex) {
-				logger.info("The email was not sent.");
-				logger.info("Error message: " + ex.getMessage());
+				LOGGER.info("The email was not sent.");
+				LOGGER.info("Error message: " + ex.getMessage());
 				throw ex;
 			}
 		}
@@ -506,11 +510,7 @@ public class AwsUtil
 		if(credentialsProvider == null){
 			synchronized (LOCK) {
 				if(credentialsProvider == null){
-					if( ! isProduction()) {
-						credentialsProvider = InstanceProfileCredentialsProvider.createAsyncRefreshingProvider(false);
-					} else {
-						credentialsProvider = new AWSStaticCredentialsProvider(getBasicAwsCredentials());
-					}
+					credentialsProvider = InstanceProfileCredentialsProvider.createAsyncRefreshingProvider(false);
 				}
 			}
 		}
@@ -597,9 +597,9 @@ public class AwsUtil
 					.withPolicyDocument(getPolicyDoc(policyName, clients.toArray(new String[]{})).toString())
 					.withSetAsDefault(true);
 			CreatePolicyVersionResult versionResult = client.createPolicyVersion(versionRequest);
-			logger.info("Policy updated for " + policyName + ", with " + versionResult.getPolicyDocument() + ", status: " + versionResult.getSdkHttpMetadata().getHttpStatusCode());
+			LOGGER.info("Policy updated for " + policyName + ", with " + versionResult.getPolicyDocument() + ", status: " + versionResult.getSdkHttpMetadata().getHttpStatusCode());
 		} catch (Exception e){
-    		logger.info("Error ",e);
+    		LOGGER.info("Error ",e);
 		}
 	}
 
@@ -642,9 +642,9 @@ public class AwsUtil
     	try {
 			CreatePolicyRequest policyRequest = new CreatePolicyRequest().withPolicyName(name).withPolicyDocument(getPolicyDoc(name, new String[] { getIotArnClientId(name)}).toString());
 			CreatePolicyResult policyResult = iotClient.createPolicy(policyRequest);
-			logger.info("Policy created : " + policyResult.getPolicyArn() + " version " + policyResult.getPolicyVersionId());
+			LOGGER.info("Policy created : " + policyResult.getPolicyArn() + " version " + policyResult.getPolicyVersionId());
 		} catch (ResourceAlreadyExistsException resourceExists){
-    		logger.info("Policy already exists for name : " + name);
+    		LOGGER.info("Policy already exists for name : " + name);
 		}
 	}
 
@@ -656,7 +656,7 @@ public class AwsUtil
 	private static void attachPolicy(AWSIot iotClient, CreateKeysAndCertificateResult certificateResult, String policyName){
 		AttachPolicyRequest attachPolicyRequest = new AttachPolicyRequest().withPolicyName(policyName).withTarget(certificateResult.getCertificateArn());
 		AttachPolicyResult attachPolicyResult = iotClient.attachPolicy(attachPolicyRequest);
-		logger.info("Attached policy : " + attachPolicyResult.getSdkHttpMetadata().getHttpStatusCode());
+		LOGGER.info("Attached policy : " + attachPolicyResult.getSdkHttpMetadata().getHttpStatusCode());
 	}
 
 	public static AmazonKinesis getKinesisClient() {
@@ -676,9 +676,9 @@ public class AwsUtil
 	private static void createKinesisStream(AmazonKinesis kinesisClient, String streamName) {
     	try {
 			CreateStreamResult streamResult = kinesisClient.createStream(streamName, 1);
-			logger.info("Stream created : " + streamName + " with status " + streamResult.getSdkHttpMetadata().getHttpStatusCode());
+			LOGGER.info("Stream created : " + streamName + " with status " + streamResult.getSdkHttpMetadata().getHttpStatusCode());
 		} catch (ResourceInUseException resourceInUse){
-    		logger.info("Stream exists for name : " + streamName);
+    		LOGGER.info("Stream exists for name : " + streamName);
 		}
 	}
 
@@ -699,9 +699,9 @@ public class AwsUtil
 
 			CreateTopicRuleResult topicRuleResult = iotClient.createTopicRule(topicRuleRequest);
 
-			logger.info("Topic Rule created : " + topicRuleResult.getSdkHttpMetadata().getHttpStatusCode());
+			LOGGER.info("Topic Rule created : " + topicRuleResult.getSdkHttpMetadata().getHttpStatusCode());
 		} catch (ResourceAlreadyExistsException resourceExists ){
-    		logger.info("Topic Rule already exists for name : " + topicName);
+    		LOGGER.info("Topic Rule already exists for name : " + topicName);
 		}
 	}
 

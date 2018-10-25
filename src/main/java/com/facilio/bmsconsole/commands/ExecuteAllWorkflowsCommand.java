@@ -41,6 +41,10 @@ import com.google.common.collect.Lists;
 
 public class ExecuteAllWorkflowsCommand implements Command, Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = LogManager.getLogger(ExecuteAllWorkflowsCommand.class.getName());
 	private RuleType[] ruleTypes;
 	private int recordsPerThread = -1;
@@ -122,7 +126,7 @@ public class ExecuteAllWorkflowsCommand implements Command, Serializable
 						CommonCommandUtil.appendModuleNameInKey(moduleName, moduleName, FieldUtil.getAsProperties(record), recordPlaceHolders);
 						List<WorkflowRuleContext> currentWorkflows = workflowRules;
 						while (currentWorkflows != null && !currentWorkflows.isEmpty()) {
-							Criteria childCriteria = executeWorkflows(currentWorkflows, moduleName, record, changeSet, it, recordPlaceHolders, (FacilioContext) context);
+							Criteria childCriteria = executeWorkflows(currentWorkflows, moduleName, record, changeSet, it, recordPlaceHolders, context);
 							if (childCriteria == null) {
 								break;
 							}
@@ -178,6 +182,10 @@ public class ExecuteAllWorkflowsCommand implements Command, Serializable
 	
 	private class ParallalWorkflowExecution extends RecursiveAction {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private Account account;
 		private Map<String, List> recordMap = null;
 		private Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = null;

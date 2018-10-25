@@ -30,7 +30,12 @@ public class HistoricalFormulaCalculationCommand implements Command {
 			throw new IllegalArgumentException("The given formula : "+formulaId+" is not defined for resource : "+resourceId);
 		}
 		
-		FormulaFieldAPI.calculateHistoricalDataForSingleResource(formulaId, resourceId, range, false);
+		Boolean historicalAlarm = (Boolean) context.get(FacilioConstants.ContextNames.HISTORY_ALARM);
+		if (historicalAlarm == null) {
+			historicalAlarm = false;
+		}
+		
+		FormulaFieldAPI.calculateHistoricalDataForSingleResource(formulaId, resourceId, range, false, historicalAlarm);
 		
 		return false;
 	}

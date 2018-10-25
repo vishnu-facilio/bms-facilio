@@ -6,7 +6,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
@@ -27,7 +26,7 @@ public class CustomReportAswaq6 implements CustomReport {
 			JSONObject userFilterValues, long baseLineId, long criteriaId) throws Exception {
 
 
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		BeanFactory.lookup("ModuleBean");
 		
 		List<TicketCategoryContext> categories = TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId());
 		

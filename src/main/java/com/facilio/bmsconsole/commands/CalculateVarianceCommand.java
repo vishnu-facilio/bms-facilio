@@ -1,7 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Command;
@@ -9,6 +12,7 @@ import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 import com.facilio.constants.FacilioConstants;
+import com.facilio.util.FacilioUtil;
 
 public class CalculateVarianceCommand implements Command {
 
@@ -30,7 +34,7 @@ public class CalculateVarianceCommand implements Command {
 					
 					Map<Object, Object> data = aggregateReportData.get(aggregateResult);
 					
-					JSONObject variance = getStandardVariance(data.values());
+					JSONObject variance = getStandardVariance(data);
 					
 					res.put(aggregateResult, variance);
 				}
@@ -44,13 +48,17 @@ public class CalculateVarianceCommand implements Command {
 		return false;
 	}
 
-	public JSONObject getStandardVariance(Collection<Object> collection) {
+	public JSONObject getStandardVariance(Map<Object, Object> data) {
 		
 		JSONObject variance = new JSONObject();
+		Collection<Object> collection = data.values();
 		try {
 			Double min = null ,max = null,avg = null,sum = (double) 0;
 			
 			for(Object value1 :collection) {
+				if (value1 == null) {
+					continue;
+				}
 				
 				Double value = Double.parseDouble(value1.toString());
 				sum = sum + value;
@@ -67,10 +75,17 @@ public class CalculateVarianceCommand implements Command {
 			if(sum > 0 && collection.size() > 0) {
 				avg = sum / collection.size();
 			}
-			variance.put("min", min);
-			variance.put("max", max);
-			variance.put("avg", avg);
-			variance.put("sum", sum);
+			
+			List keys = new ArrayList<>(data.keySet());
+			if(keys != null && !keys.isEmpty()) {
+				Collections.sort(keys);
+				variance.put("lastValue", data.get(keys.get(keys.size()-1)));
+			}
+			
+			variance.put("min", FacilioUtil.decimalClientFormat(min));
+			variance.put("max", FacilioUtil.decimalClientFormat(max));
+			variance.put("avg", FacilioUtil.decimalClientFormat(avg));
+			variance.put("sum", FacilioUtil.decimalClientFormat(sum));
 			
 		}
 		catch(Exception e) {

@@ -47,8 +47,12 @@ public class FetchReportDataCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
-		String xValues = (String) context.get(FacilioConstants.ContextNames.REPORT_X_VALUES);
 		
+		if (report.getDataPoints() == null || report.getDataPoints().isEmpty()) {
+			return false;
+		}
+		
+		String xValues = (String) context.get(FacilioConstants.ContextNames.REPORT_X_VALUES);
 		if (report.getxCriteria() != null && xValues == null) {
 			return false;
 		}

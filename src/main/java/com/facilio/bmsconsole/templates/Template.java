@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.templates;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,8 +14,12 @@ import org.json.simple.parser.ParseException;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
-public abstract class Template {
+public abstract class Template implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long id;
 	public long getId() {
 		return id;
@@ -158,6 +163,18 @@ public abstract class Template {
 				throw new IllegalArgumentException("Invalid Template Type val");
 			}
 		}
+	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		try {
+			return getOriginalTemplate() == null ? "null" : getOriginalTemplate().toJSONString();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }

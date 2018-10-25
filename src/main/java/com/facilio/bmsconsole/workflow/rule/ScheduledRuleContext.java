@@ -10,6 +10,10 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class ScheduledRuleContext extends WorkflowRuleContext {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long dateFieldId = -1;
 	public long getDateFieldId() {
 		return dateFieldId;

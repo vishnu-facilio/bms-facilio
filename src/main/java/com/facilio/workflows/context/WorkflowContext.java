@@ -18,6 +18,11 @@ import com.facilio.workflows.util.WorkflowUtil;
 
 public class WorkflowContext implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static final Logger LOGGER = Logger.getLogger(WorkflowContext.class.getName());
 	
 	private Map<String,List<Map<String,Object>>> cachedData = null;
@@ -78,6 +83,11 @@ public class WorkflowContext implements Serializable {
 				addWorkflowExpression(workflowExpression);
 			}
 		}
+	}
+	
+	public void setWorkflowExpressions(List<WorkflowExpression> workflowExpressions) throws Exception {
+		
+		this.expressions = workflowExpressions;
 	}
 	
 	public void addWorkflowExpression(WorkflowExpression expression) {
@@ -215,7 +225,6 @@ public class WorkflowContext implements Serializable {
 	public void setWorkflowUIMode(int workflowUIMode) {
 		this.workflowUIMode = WorkflowUIMode.valueOf(workflowUIMode);
 	}
-
 	public Object executeWorkflow(boolean ignoreNullValues) throws Exception {
 		
 		Object result = null;
@@ -234,16 +243,16 @@ public class WorkflowContext implements Serializable {
 			}
 		}
 		if(isTerminateExecution()) {
-			LOGGER.severe("workflow --- "+this.getId()+" has been terminated");
+			LOGGER.info("workflow --- "+this.getId()+" has been terminated");
 			return 0;
 		}
 		
-		if (AccountUtil.getCurrentOrg().getId() == 135) {
+		if (AccountUtil.getCurrentOrg().getId() == 135/* || (AccountUtil.getCurrentOrg().getId() == 88 && (getResultEvaluator().equals("(a)*(c-d)") || getResultEvaluator().equals("(a)*(c-d)*(e)*(f)") || getResultEvaluator().equals("(a)*(c-d)*(e)*(f)")))*/) {
 			LOGGER.info("variableToExpresionMap --- "+variableResultMap+" \n\n"+"expString --- "+getResultEvaluator());
 		}
 		
 		result =  WorkflowUtil.evaluateExpression(getResultEvaluator(),variableResultMap, ignoreNullValues);
-		if (AccountUtil.getCurrentOrg().getId() == 135) {
+		if (AccountUtil.getCurrentOrg().getId() == 135/* || (AccountUtil.getCurrentOrg().getId() == 88)*/) {
 			LOGGER.info("result --- "+result);
 		}
 		return result;
@@ -269,9 +278,14 @@ public class WorkflowContext implements Serializable {
 			else if(wokflowExpresion instanceof IteratorContext) {
 		
 				IteratorContext iteratorContext = (IteratorContext) wokflowExpresion;
-				iteratorContext.setVariableToExpresionMap(variableResultMap1);
 				iteratorContext.setWorkflowContext(workflowContext);
 				iteratorContext.execute();
+			}
+			else if(wokflowExpresion instanceof ConditionContext) {
+				
+				ConditionContext conditionContext = (ConditionContext) wokflowExpresion;
+				conditionContext.setWorkflowContext(workflowContext);
+				conditionContext.execute();
 			}
 		}
 	}
@@ -284,7 +298,7 @@ public class WorkflowContext implements Serializable {
 	}
 	
 	public boolean isMapReturnWorkflow() {
-		if(expressions != null) {
+		if(expressions != null && !expressions.isEmpty()) {
 			ExpressionContext exp = (ExpressionContext) expressions.get(0);
 			if(expressions.size() == 1 && exp != null && exp.getFieldName() == null && exp.getCriteria() != null && exp.getModuleName() != null) {
 				return true;
@@ -294,7 +308,7 @@ public class WorkflowContext implements Serializable {
 	}
 	
 	public boolean isListReturnWorkflow() {
-		if(expressions != null) {
+		if(expressions != null && !expressions.isEmpty()) {
 			ExpressionContext exp = (ExpressionContext) expressions.get(0);
 			if(expressions.size() == 1 && exp != null && exp.getFieldName() != null && exp.getCriteria() != null && exp.getModuleName() != null && exp.getAggregateString() == null) {
 				return true;
@@ -322,7 +336,7 @@ public class WorkflowContext implements Serializable {
 			return true;
 		}
 		else {
-			if(expressions != null) {
+			if(expressions != null && !expressions.isEmpty()) {
 				ExpressionContext exp = (ExpressionContext) expressions.get(0);
 				if(expressions.size() == 1 && exp.getFieldName() != null && exp.getCriteria() != null && exp.getModuleName() != null && exp.getAggregateString() != null) {
 					return true;

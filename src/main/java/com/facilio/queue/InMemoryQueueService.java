@@ -25,9 +25,10 @@ public class InMemoryQueueService implements FacilioQueue {
     }
 
     @Override
-    public void push(String queueName, String message) {
+    public boolean push(String queueName, String message) {
         InMemoryQueue inMemoryQueue = getOrCreateQueue(queueName);
         inMemoryQueue.push(message);
+        return true;
     }
 
     @Override
@@ -152,5 +153,9 @@ public class InMemoryQueueService implements FacilioQueue {
             deletedMessages.putIfAbsent(messageId, EMPTY_MSG);
         }
 
+    }
+
+    public boolean changeVisibilityTimeout(String queueName, String receiptHandle, int visibilityTimeout) {
+        return false;
     }
 }

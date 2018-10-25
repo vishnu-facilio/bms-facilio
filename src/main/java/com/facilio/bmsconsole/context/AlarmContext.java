@@ -20,6 +20,10 @@ import com.facilio.events.context.EventContext;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
 public class AlarmContext extends TicketContext {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static Logger log = LogManager.getLogger(AlarmContext.class.getName());
 	private Boolean isAcknowledged;
 	public boolean isAcknowledged() {
@@ -72,6 +76,15 @@ public class AlarmContext extends TicketContext {
 	}
 	public AlarmType getAlarmTypeEnum() {
 		return alarmType;
+	}
+	
+	private long controllerId = -1;
+	public long getControllerId() {
+		return controllerId;
+	}
+	
+	public void setControllerId(long controllerId) {
+		this.controllerId = controllerId;
 	}
 
 	private long createdTime = -1;

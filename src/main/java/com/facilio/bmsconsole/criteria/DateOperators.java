@@ -2227,6 +2227,487 @@ public enum DateOperators implements Operator<String> {
 			return true;
 		}
 	},
+	CURRENT_N_DAY(62, "Current N Day"){
+		@Override
+		public String getWhereClause(String columnName, String value) {
+			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
+				StringBuilder builder = new StringBuilder();
+				builder.append(DateTimeUtil.getDayStartTimeOf(Long.parseLong(value)))
+						.append("<=")
+						.append(columnName)
+						.append(" AND ")
+						.append(columnName)
+						.append("<=")
+						.append(DateTimeUtil.getDayEndTimeOf(Long.parseLong(value)));
+				return builder.toString();
+			}
+			return null;
+		}
+		
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						if(object != null && object instanceof Long) {
+							long currentVal = (long) object;
+							return DateTimeUtil.getDayStartTimeOf(Long.parseLong(value)) <= currentVal &&currentVal <= DateTimeUtil.getDayEndTimeOf(Long.parseLong(value));
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
+
+	
+		@Override 
+		public DateRange getRange(String value) {
+			return new DateRange(DateTimeUtil.getDayStartTimeOf(Long.parseLong(value)), DateTimeUtil.getDayEndTimeOf(Long.parseLong(value)));
+		}
+		@Override
+		public boolean isDynamicOperator() {
+			return true;
+		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+		
+		
+	},
+	CURRENT_N_WEEK(63, "Current N Week"){
+		@Override
+		public String getWhereClause(String columnName, String value) {
+			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
+				StringBuilder builder = new StringBuilder();
+				builder.append(DateTimeUtil.getWeekStartTimeOf(Long.parseLong(value)))
+						.append("<=")
+						.append(columnName)
+						.append(" AND ")
+						.append(columnName)
+						.append("<=")
+						.append(DateTimeUtil.getWeekEndTimeOf(Long.parseLong(value)));
+				return builder.toString();
+			}
+			return null;
+		}
+		
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						if(object != null && object instanceof Long) {
+							long currentVal = (long) object;
+							return DateTimeUtil.getWeekStartTimeOf(Long.parseLong(value)) <= currentVal &&currentVal <= DateTimeUtil.getWeekEndTimeOf(Long.parseLong(value));
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
+
+	
+		@Override 
+		public DateRange getRange(String value) {
+			return new DateRange(DateTimeUtil.getWeekStartTimeOf(Long.parseLong(value)), DateTimeUtil.getWeekEndTimeOf(Long.parseLong(value)));
+		}
+		@Override
+		public boolean isDynamicOperator() {
+			return true;
+		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+		
+		
+	},
+	CURRENT_N_MONTH(64, "Current N Month"){
+		@Override
+		public String getWhereClause(String columnName, String value) {
+			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
+				StringBuilder builder = new StringBuilder();
+				builder.append(DateTimeUtil.getMonthStartTimeOf(Long.parseLong(value)))
+						.append("<=")
+						.append(columnName)
+						.append(" AND ")
+						.append(columnName)
+						.append("<=")
+						.append(DateTimeUtil.getMonthEndTimeOf(Long.parseLong(value)));
+				return builder.toString();
+			}
+			return null;
+		}
+		
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						if(object != null && object instanceof Long) {
+							long currentVal = (long) object;
+							return DateTimeUtil.getMonthStartTimeOf(Long.parseLong(value)) <= currentVal &&currentVal <= DateTimeUtil.getMonthEndTimeOf(Long.parseLong(value));
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
+
+	
+		@Override 
+		public DateRange getRange(String value) {
+			return new DateRange(DateTimeUtil.getMonthStartTimeOf(Long.parseLong(value)), DateTimeUtil.getMonthEndTimeOf(Long.parseLong(value)));
+		}
+		@Override
+		public boolean isDynamicOperator() {
+			return true;
+		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+	},
+	CURRENT_N_YEAR(65, "Current N Year"){
+		@Override
+		public String getWhereClause(String columnName, String value) {
+			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
+				StringBuilder builder = new StringBuilder();
+				builder.append(DateTimeUtil.getYearStartTimeOf(Long.parseLong(value)))
+						.append("<=")
+						.append(columnName)
+						.append(" AND ")
+						.append(columnName)
+						.append("<=")
+						.append(DateTimeUtil.getYearEndTimeOf(Long.parseLong(value)));
+				return builder.toString();
+			}
+			return null;
+		}
+		
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						if(object != null && object instanceof Long) {
+							long currentVal = (long) object;
+							return DateTimeUtil.getYearStartTimeOf(Long.parseLong(value)) <= currentVal &&currentVal <= DateTimeUtil.getYearEndTimeOf(Long.parseLong(value));
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
+
+	
+		@Override 
+		public DateRange getRange(String value) {
+			return new DateRange(DateTimeUtil.getYearStartTimeOf(Long.parseLong(value)), DateTimeUtil.getYearEndTimeOf(Long.parseLong(value)));
+		}
+		@Override
+		public boolean isDynamicOperator() {
+			return true;
+		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+	},
+	THIS_MONTH_TILL_YESTERDAY(66, "Current N Year"){
+		@Override
+		public String getWhereClause(String columnName, String value) {
+			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
+				StringBuilder builder = new StringBuilder();
+				if(DateTimeUtil.getDayStartTime() == DateTimeUtil.getMonthStartTime()) {
+					builder.append(DateTimeUtil.getMonthStartTime(-1));
+				}
+				else {
+					builder.append(DateTimeUtil.getMonthStartTime());
+				}
+						builder.append("<=")
+						.append(columnName)
+						.append(" AND ")
+						.append(columnName)
+						.append("<=")
+						.append(DateTimeUtil.getDayStartTime() -1 );
+				return builder.toString();
+			}
+			return null;
+		}
+		
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						if(object != null && object instanceof Long) {
+							long currentVal = (long) object;
+							if(DateTimeUtil.getDayStartTime() == DateTimeUtil.getMonthStartTime()) {
+								return DateTimeUtil.getMonthStartTimeOf(-1) <= currentVal &&currentVal <= (DateTimeUtil.getDayStartTime(-1) - 1);
+							}
+							else {
+								return DateTimeUtil.getMonthStartTime() <= currentVal &&currentVal <= (DateTimeUtil.getDayStartTime(-1) - 1);
+							}
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
+
+	
+		@Override 
+		public DateRange getRange(String value) {
+			if(DateTimeUtil.getDayStartTime() == DateTimeUtil.getMonthStartTime()) {
+				return new DateRange(DateTimeUtil.getMonthStartTime(-1), DateTimeUtil.getDayStartTime() - 1);
+			}
+			else {
+				return new DateRange(DateTimeUtil.getMonthStartTime(), DateTimeUtil.getDayStartTime() - 1);
+			}
+		}
+		@Override
+		public boolean isDynamicOperator() {
+			return true;
+		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+	},
+	CURRENT_N_QUARTER(67, "Current N Quarter"){
+		@Override
+		public String getWhereClause(String columnName, String value) {
+			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
+				StringBuilder builder = new StringBuilder();
+				builder.append(DateTimeUtil.getQuarterStartTimeOf(Long.parseLong(value)))
+						.append("<=")
+						.append(columnName)
+						.append(" AND ")
+						.append(columnName)
+						.append("<=")
+						.append(DateTimeUtil.getQuarterEndTimeOf(Long.parseLong(value)));
+				return builder.toString();
+			}
+			return null;
+		}
+		
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						if(object != null && object instanceof Long) {
+							long currentVal = (long) object;
+							return DateTimeUtil.getQuarterStartTimeOf(Long.parseLong(value)) <= currentVal &&currentVal <= DateTimeUtil.getQuarterEndTimeOf(Long.parseLong(value));
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
+
+	
+		@Override 
+		public DateRange getRange(String value) {
+			return new DateRange(DateTimeUtil.getQuarterStartTimeOf(Long.parseLong(value)), DateTimeUtil.getQuarterEndTimeOf(Long.parseLong(value)));
+		}
+		@Override
+		public boolean isDynamicOperator() {
+			return true;
+		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+		
+		
+	},
+	THIS_QUARTER(68, "This Quarter"){
+		@Override
+		public String getWhereClause(String columnName, String value) {
+			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
+				StringBuilder builder = new StringBuilder();
+				builder.append(DateTimeUtil.getQuarterStartTime(0))
+						.append("<=")
+						.append(columnName)
+						.append(" AND ")
+						.append(columnName)
+						.append("<=")
+						.append(DateTimeUtil.getQuarterEndTime(0));
+				return builder.toString();
+			}
+			return null;
+		}
+		
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						if(object != null && object instanceof Long) {
+							long currentVal = (long) object;
+							return DateTimeUtil.getQuarterStartTime(0) <= currentVal &&currentVal <= DateTimeUtil.getQuarterEndTimeOf(0);
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
+
+	
+		@Override 
+		public DateRange getRange(String value) {
+			return new DateRange(DateTimeUtil.getQuarterStartTime(0), DateTimeUtil.getQuarterEndTime(0));
+		}
+		@Override
+		public boolean isDynamicOperator() {
+			return true;
+		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		
+		
+	},
+	LAST_QUARTER(69, "This Quarter"){
+		@Override
+		public String getWhereClause(String columnName, String value) {
+			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
+				StringBuilder builder = new StringBuilder();
+				builder.append(DateTimeUtil.getQuarterStartTime(-1))
+						.append("<=")
+						.append(columnName)
+						.append(" AND ")
+						.append(columnName)
+						.append("<=")
+						.append(DateTimeUtil.getQuarterEndTime(-1));
+				return builder.toString();
+			}
+			return null;
+		}
+		
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						if(object != null && object instanceof Long) {
+							long currentVal = (long) object;
+							return DateTimeUtil.getQuarterStartTime(-1) <= currentVal &&currentVal <= DateTimeUtil.getQuarterEndTimeOf(-1);
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
+
+	
+		@Override 
+		public DateRange getRange(String value) {
+			return new DateRange(DateTimeUtil.getQuarterStartTime(-1), DateTimeUtil.getQuarterEndTime(-1));
+		}
+		@Override
+		public boolean isDynamicOperator() {
+			return true;
+		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		
+		
+	},
 	LAST_N_MONTHS(51, "Last N Months") {
 		@Override
 		public String getWhereClause(String columnName, String value) {

@@ -20,6 +20,10 @@ import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 
 
 public class PortalAuthInterceptor extends AbstractInterceptor {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static Logger logger = Logger.getLogger(PortalAuthInterceptor.class.getName());
 	private static org.apache.log4j.Logger log = LogManager.getLogger(PortalAuthInterceptor.class.getName());
 

@@ -62,7 +62,7 @@ public class AddTaskTicketActivityCommand implements Command {
 		}
 		
 		List<TaskContext> tasks = (List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST);
-		Map<Long, TaskContext> newTicketMap = new HashMap<>();
+		new HashMap<>();
 		if(tasks == null || tasks.isEmpty()) {
 			TaskContext task = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
 			tasks = Collections.singletonList(task);

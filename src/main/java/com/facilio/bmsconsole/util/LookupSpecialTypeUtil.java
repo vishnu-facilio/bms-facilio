@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.facilio.accounts.dto.Group;
+import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
@@ -14,11 +16,10 @@ import com.facilio.bmsconsole.context.BusinessHoursList;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
@@ -30,6 +31,7 @@ public class LookupSpecialTypeUtil {
 	public static boolean isSpecialType(String specialType) {
 		return FacilioConstants.ContextNames.USERS.equals(specialType)
 				|| FacilioConstants.ContextNames.GROUPS.equals(specialType)
+				|| FacilioConstants.ContextNames.ROLE.equals(specialType)
 				|| FacilioConstants.ContextNames.REQUESTER.equals(specialType)
 				|| FacilioConstants.ContextNames.BUSINESS_HOUR.equals(specialType)
 				|| EventConstants.EventContextNames.EVENT.equals(specialType)
@@ -40,23 +42,17 @@ public class LookupSpecialTypeUtil {
 	
 	public static FacilioField getIdField (String specialType) {
 		if(FacilioConstants.ContextNames.USERS.equals(specialType) || 
-				FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
+			FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
 			return FieldFactory.getAsMap(AccountConstants.getOrgUserFields()).get("ouid");
 		}
 		else if (FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
 			return FieldFactory.getAsMap(AccountConstants.getGroupFields()).get("groupId"); 
 		}
-		else if(FacilioConstants.ContextNames.BUSINESS_HOUR.equals(specialType)) {
-			return FieldFactory.getIdField(ModuleFactory.getBusinessHoursModule());
-		}
-		else if(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE.equals(specialType)) {
-			return FieldFactory.getIdField(ModuleFactory.getPreventiveMaintenancetModule());
-		}
-		else if(EventConstants.EventContextNames.EVENT.equals(specialType)) {
-			return FieldFactory.getIdField(EventConstants.EventModuleFactory.getEventModule());
+		else if (FacilioConstants.ContextNames.ROLE.equals(specialType)) {
+			return FieldFactory.getAsMap(AccountConstants.getRoleFields()).get("roleId");
 		}
 		else {
-			return null;
+			return FieldFactory.getIdField(getModule(specialType));
 		}
 	}
 	
@@ -89,6 +85,10 @@ public class LookupSpecialTypeUtil {
 			}
 			return groupList;
 		}
+		else if (FacilioConstants.ContextNames.ROLE.equals(specialType)) {
+			List<Role> roles = AccountUtil.getRoleBean().getRoles(AccountUtil.getCurrentOrg().getId());
+			return roles.stream().collect(Collectors.toMap(Role::getRoleId, Role::getName));
+		}
 		return null;
 	}
 	
@@ -111,6 +111,9 @@ public class LookupSpecialTypeUtil {
 		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
 			return AccountUtil.getGroupBean().getGroup(id);
 		}
+		else if (FacilioConstants.ContextNames.ROLE.equals(specialType)) {
+			return AccountUtil.getRoleBean().getRole(id);
+		}
 		else if(FacilioConstants.ContextNames.BUSINESS_HOUR.equals(specialType)) {
 			return BusinessHoursAPI.getBusinessHours(id);
 		}
@@ -124,23 +127,9 @@ public class LookupSpecialTypeUtil {
 	}
 	
 	public static Map<Long, Object> getPickList(String specialType, List<Long> idList) throws Exception {
-		
 		Criteria criteria = new Criteria();
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		if(FacilioConstants.ContextNames.USERS.equals(specialType) || FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
-			
-			FacilioField field=FieldFactory.getField("ouid", "ORG_USERID",getModule(specialType), FieldType.NUMBER);
-			criteria.addAndCondition(CriteriaAPI.getCondition(field,idList, NumberOperators.EQUALS));
-		}
-		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
-			FacilioField field=FieldFactory.getField("groupId", "GROUPID",getModule(specialType), FieldType.NUMBER);
-			criteria.addAndCondition(CriteriaAPI.getCondition(field,idList, NumberOperators.EQUALS));
-		}
-		else {
-			criteria.addAndCondition(CriteriaAPI.getIdCondition(idList, getModule(specialType)));
-		}
-		
-		List<Object> list=  getObjects(specialType,criteria);
+		criteria.addAndCondition(CriteriaAPI.getCondition(getIdField(specialType), idList, PickListOperators.IS));
+		List<Object> list = getObjects(specialType,criteria);
 		return getPrimaryFieldValues(specialType, list);
 	}
 	
@@ -151,6 +140,9 @@ public class LookupSpecialTypeUtil {
 		}
 		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
 			return AccountUtil.getGroupBean().getGroups(criteria);
+		}
+		else if (FacilioConstants.ContextNames.ROLE.equals(specialType)) {
+			return AccountUtil.getRoleBean().getRoles(criteria);
 		}
 		else if(FacilioConstants.ContextNames.BUSINESS_HOUR.equals(specialType)) {
 			return null; //Returning null for now
@@ -181,6 +173,11 @@ public class LookupSpecialTypeUtil {
 			Group group = new Group();
 			group.setGroupId(id);
 			return group;
+		}
+		else if (FacilioConstants.ContextNames.ROLE.equals(specialType)) {
+			Role role = new Role();
+			role.setRoleId(id);;
+			return role;
 		}
 		else if(FacilioConstants.ContextNames.BUSINESS_HOUR.equals(specialType)) {
 			BusinessHoursList businessHours = new BusinessHoursList();
@@ -215,6 +212,12 @@ public class LookupSpecialTypeUtil {
 			Group group = AccountUtil.getGroupBean().getGroup(id);
 			if(group != null) {
 				return group.getName();
+			}
+		}
+		else if (FacilioConstants.ContextNames.ROLE.equals(specialType)) {
+			Role role = AccountUtil.getRoleBean().getRole(id);
+			if (role != null) {
+				return role.getName();
 			}
 		}
 		else if(FacilioConstants.ContextNames.BUSINESS_HOUR.equals(specialType)) {
@@ -265,6 +268,9 @@ public class LookupSpecialTypeUtil {
 				}
 			}
 		}
+		else if (FacilioConstants.ContextNames.ROLE.equals(specialType)) {
+			return listObjects.stream().collect(Collectors.toMap(r -> ((Role) r).getId(), r -> ((Role) r).getName()));
+		}
 		else if(FacilioConstants.ContextNames.BUSINESS_HOUR.equals(specialType)) {
 			
 			for(Object obj:listObjects) {
@@ -302,6 +308,9 @@ public class LookupSpecialTypeUtil {
 		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
 			return AccountConstants.getGroupModule();
 		}
+		else if (FacilioConstants.ContextNames.ROLE.equals(specialType)) {
+			return AccountConstants.getRoleModule();
+		}
 		else if(FacilioConstants.ContextNames.BUSINESS_HOUR.equals(specialType)) {
 			return ModuleFactory.getBusinessHoursModule();
 		}
@@ -325,6 +334,9 @@ public class LookupSpecialTypeUtil {
 		}
 		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
 			return AccountConstants.getGroupFields();
+		}
+		else if (FacilioConstants.ContextNames.ROLE.equals(specialType)) {
+			return AccountConstants.getRoleFields();
 		}
 		else if(FacilioConstants.ContextNames.BUSINESS_HOUR.equals(specialType)) {
 			return FieldFactory.getBusinessHoursFields();

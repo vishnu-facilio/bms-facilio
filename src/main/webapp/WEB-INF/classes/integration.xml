@@ -68,7 +68,12 @@
 			<param name="includeProperties">jsonresponse.*</param>
 		</result>
 	</action>
-	
+	<action name="apiPortallogin" class="com.facilio.auth.actions.FacilioAuthAction" method="generatePortalAuthToken">
+		<param name="auth">false</param>
+		<result name="success" type="json">
+			<param name="includeProperties">jsonresponse.*</param>
+		</result>
+	</action>	
 	<action name="apisignup" class="com.facilio.auth.actions.FacilioAuthAction" method="signupUser">
 		<param name="auth">false</param>
 		<result name="success" type="json">
@@ -78,7 +83,15 @@
 			<param name="includeProperties">jsonresponse.*</param>
 		</result>
 	</action>
-			
+	<action name="loadWebView" class="com.facilio.auth.actions.FacilioAuthAction" method="loadWebView">
+		<param name="auth">false</param>
+		<result name="success" type="json">
+			<param name="includeProperties">jsonresponse.*</param>
+		</result>
+		<result name="error" type="json">
+			<param name="includeProperties">jsonresponse.*</param>
+		</result>
+	</action>			
     <action name="createPdf" class="com.facilio.pdf.actions.PdfAction" method="createPdf">
         <result name="success" type="stream">
           <param name="contentType">application/octet-stream</param>

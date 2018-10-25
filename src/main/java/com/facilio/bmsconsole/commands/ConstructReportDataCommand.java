@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -19,17 +20,22 @@ import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataContext;
 import com.facilio.report.context.ReportDataPointContext;
+import com.facilio.report.context.ReportGroupByField;
 
 public class ConstructReportDataCommand implements Command {
 
 	private static final String DEFAULT_X_ALIAS = "X";
+	
+	private List<Map<String, Object>> initList() { //In case we wanna implement a sorted list
+		return new ArrayList<>();
+	}
 	
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<ReportDataContext> reportData = (List<ReportDataContext>) context.get(FacilioConstants.ContextNames.REPORT_DATA);
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
-		List<Map<String, Object>> transformedData = new ArrayList<> ();
+		List<Map<String, Object>> transformedData = initList();
 		Map<String, Object> intermediateData = new HashMap<>();
 		for (ReportDataContext data : reportData ) {
 			Map<String, List<Map<String, Object>>> reportProps = data.getProps();
@@ -37,7 +43,12 @@ public class ConstructReportDataCommand implements Command {
 				for (ReportDataPointContext dataPoint : data.getDataPoints()) {
 					for (Map.Entry<String, List<Map<String, Object>>> entry : reportProps.entrySet()) {
 						List<Map<String, Object>> props = entry.getValue();
-						constructData(report, dataPoint, props, data.getBaseLineMap().get(entry.getKey()), transformedData, intermediateData);
+						if (FacilioConstants.Reports.ACTUAL_DATA.equals(entry.getKey())) {
+							constructData(report, dataPoint, props, null, transformedData, intermediateData);
+						}
+						else {
+							constructData(report, dataPoint, props, data.getBaseLineMap().get(entry.getKey()), transformedData, intermediateData);
+						}
 					}
 				}
 			}
@@ -55,30 +66,32 @@ public class ConstructReportDataCommand implements Command {
 					xVal = formatVal(dataPoint.getxAxis().getField(), dataPoint.getxAxis().getAggrEnum(), xVal);
 					Object yVal = prop.get(dataPoint.getyAxis().getField().getName());
 					yVal = formatVal(dataPoint.getyAxis().getField(), dataPoint.getyAxis().getAggrEnum(), yVal);
-					if (dataPoint.getGroupByFields() == null || dataPoint.getGroupByFields().isEmpty()) {
-						constructAndAddData(xVal, yVal, getyAlias(dataPoint, baseLine), report, transformedData, directHelperData);
+					
+					StringJoiner key = new StringJoiner("|");
+					key.add(xVal.toString());
+					Map<String, Object> data = null;
+					if (dataPoint.getGroupByFields() != null && !dataPoint.getGroupByFields().isEmpty()) {
+						data = new HashMap<>();
+						for (ReportGroupByField groupBy : dataPoint.getGroupByFields()) {
+							FacilioField field = groupBy.getField();
+							Object groupByVal = prop.get(field.getName());
+							groupByVal = formatVal(field, null, groupByVal);
+							data.put(groupBy.getAlias(), groupByVal);
+							key.add(groupBy.getAlias()+"_"+groupByVal.toString());
+						}
 					}
-					else {
-//						Map<String, Object> data = new HashMap<>();
-//						data.put(getyAlias(dataPoint, baseLine), yVal);
-//						for (ReportGroupByField groupBy : dataPoint.getGroupByFields()) {
-//							FacilioField field = groupBy.getField();
-//							Object groupByVal = prop.get(field.getName());
-//							groupByVal = formatVal(field, null, groupByVal);
-//							data.put(groupBy.getAlias(), groupByVal);
-//						}
-					}
+					constructAndAddData(key.toString(), data, xVal, yVal, getyAlias(dataPoint, baseLine), report, transformedData, directHelperData);
 				}
 			}
 		}
 	}
 	
-	private void constructAndAddData(Object xVal, Object yVal, String yAlias, ReportContext report, List<Map<String, Object>> transformedData, Map<String, Object> intermediateData) {
-		Map<String, Object> data = (Map<String, Object>) intermediateData.get(xVal.toString());
+	private void constructAndAddData(String key, Map<String, Object> existingData, Object xVal, Object yVal, String yAlias, ReportContext report, List<Map<String, Object>> transformedData, Map<String, Object> intermediateData) {
+		Map<String, Object> data = (Map<String, Object>) intermediateData.get(key);
 		if (data == null) {
-			data = new HashMap<>();
+			data = existingData == null ? new HashMap<>() : existingData;
 			data.put(getxAlias(report), xVal);
-			intermediateData.put(xVal.toString(), data);
+			intermediateData.put(key, data);
 			transformedData.add(data);
 		}
 		data.put(yAlias, yVal);
@@ -115,8 +128,19 @@ public class ConstructReportDataCommand implements Command {
 			val = ((DateAggregateOperator)aggr).getAdjustedTimestamp((long) val);
 		}
 		
-		if (field.getDataTypeEnum() == FieldType.DECIMAL) {
-			return DECIMAL_FORMAT.format(val);
+		switch (field.getDataTypeEnum()) {
+			case DECIMAL:
+				return DECIMAL_FORMAT.format(val);
+			case BOOLEAN:
+				if (val.toString().equals("true")) {
+					return 1;
+				}
+				else if (val.toString().equals("false")) {
+					return 0;
+				}
+				break;
+			default:
+				break;
 		}
 		return val;
 	}

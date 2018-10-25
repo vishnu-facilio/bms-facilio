@@ -46,7 +46,7 @@ public class ValidateFormCommand implements Command {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		for (FormField f: form.getFields()) {
-			if (f.getDisplayType() == FieldDisplayType.ATTACHMENT) {
+			if (f.getDisplayTypeEnum() == FieldDisplayType.ATTACHMENT) {
 				continue;
 			}
 			
@@ -56,7 +56,7 @@ public class ValidateFormCommand implements Command {
 					throw new IllegalArgumentException(f.getDisplayName() + " is mandartory.");
 				}
 				
-				if (f.getDisplayType() == FieldDisplayType.REQUESTER) {
+				if (f.getDisplayTypeEnum() == FieldDisplayType.REQUESTER) {
 					User u = (User) value;
 					if (u.getName() == null || u.getName().isEmpty()) {
 						throw new IllegalArgumentException("User name should not be empty");
@@ -67,7 +67,7 @@ public class ValidateFormCommand implements Command {
 				}
 			}
 			
-			switch (f.getDisplayType()) {
+			switch (f.getDisplayTypeEnum()) {
 			case LOOKUP_SIMPLE:
 			case LOOKUP_POPUP:
 				Map<Long, String> map = null;

@@ -8,6 +8,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
@@ -15,6 +16,10 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 
 public class TaskTemplate extends Template {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String description;
 	public String getDescription() {
 		return description;
@@ -285,5 +290,32 @@ public class TaskTemplate extends Template {
 	public void setSiteId(long siteId) {
 		this.siteId = siteId;
 	}
+	
+	Long assetCategoryId;
+	Long spaceCategoryId;
+	
+	public Long getAssetCategoryId() {
+		return assetCategoryId;
+	}
+	public void setAssetCategoryId(Long assetCategoryId) {
+		this.assetCategoryId = assetCategoryId;
+	}
+	public Long getSpaceCategoryId() {
+		return spaceCategoryId;
+	}
+	public void setSpaceCategoryId(Long spaceCategoryId) {
+		this.spaceCategoryId = spaceCategoryId;
+	}
 
+	PMAssignmentType assignmentType;
+	
+	public int getAssignmentType() {
+		if(assignmentType != null) {
+			return assignmentType.getVal();
+		}
+		return -1;
+	}
+	public void setAssignmentType(int assignmentType) {
+		this.assignmentType = PMAssignmentType.valueOf(assignmentType);
+	}
 }

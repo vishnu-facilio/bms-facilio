@@ -132,7 +132,7 @@ public class ProcessImportCommand implements Command {
 						if (cell.getCellTypeEnum() == CellType.NUMERIC && HSSFDateUtil.isCellDateFormatted(cell)) {
 							Date date = cell.getDateCellValue();
 							Instant date1 = date.toInstant();
-							val = (Long) date1.getEpochSecond() * 1000;
+							val = date1.getEpochSecond() * 1000;
 						} 
 						else if(cell.getCellTypeEnum() == CellType.FORMULA) {
 							val = cell.getStringCellValue();
@@ -230,7 +230,7 @@ public class ProcessImportCommand implements Command {
 						props.put("resourceType", ResourceType.SPACE.getValue());
 						props.put("spaceType", BaseSpaceContext.SpaceType.BUILDING.getIntVal());
 						
-						String moduleName = importProcessContext.getModule().getName();
+						importProcessContext.getModule().getName();
 					
 					}
 
@@ -465,7 +465,7 @@ public class ProcessImportCommand implements Command {
 	public void fieldMapParsing(HashMap<String, String> fieldMapping) throws Exception {
 
 		groupedFields = ArrayListMultimap.create();
-		HashMap<String, String> updatedFieldMapping = new HashMap<>();
+		new HashMap<>();
 		List<String> fieldMappingKeys = new ArrayList<>(fieldMapping.keySet());
 		for (int i = 0; i < fieldMappingKeys.size(); i++) {
 			String[] modulePlusFieldName = fieldMappingKeys.get(i).split("__");
@@ -496,7 +496,7 @@ public class ProcessImportCommand implements Command {
 	public static Long getSpaceID(ImportProcessContext importProcessContext, HashMap<String, Object> colVal, HashMap<String,String> fieldMapping) throws Exception {
 
 		String siteName =null ,buildingName = null,floorName = null ,spaceName = null;
-		List<Long> listOfIds = new ArrayList<>();
+		new ArrayList<>();
 		
 		ArrayList<String> additionalSpaces = new ArrayList<>();
 		String moduleName = importProcessContext.getModule().getName();

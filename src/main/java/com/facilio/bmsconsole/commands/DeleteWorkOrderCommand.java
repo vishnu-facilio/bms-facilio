@@ -15,7 +15,7 @@ public class DeleteWorkOrderCommand implements Command {
 		// TODO Auto-generated method stub
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		if(recordIds != null && !recordIds.isEmpty()) {
-			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+			context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			
 			String condition = "ID IN (";

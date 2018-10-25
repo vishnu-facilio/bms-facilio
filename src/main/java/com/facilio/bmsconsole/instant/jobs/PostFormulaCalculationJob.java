@@ -14,6 +14,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
@@ -24,6 +25,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.ControllerAPI;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
@@ -49,12 +51,24 @@ public class PostFormulaCalculationJob extends InstantJob {
 				formulaReadings = updateFormula(formula, reading);
 			}
 			
+			ControllerContext controller = (ControllerContext) context.get(FacilioConstants.ContextNames.CONTROLLER);
 			if (formulaReadings != null && !formulaReadings.isEmpty()) {
 				FacilioContext formulContext = new FacilioContext();
 				formulContext.put(FacilioConstants.ContextNames.MODULE_NAME, formula.getReadingField().getModule().getName());
-				formulContext.put(FacilioConstants.ContextNames.READINGS, formulaReadings);
+				formulContext.put(FacilioConstants.ContextNames.READINGS, formulaReadings); 
+				
+				if (controller != null) {
+					formulContext.put(FacilioConstants.ContextNames.CONTROLLER, controller);
+					formulContext.put(FacilioConstants.ContextNames.CONTROLLER_TIME, context.get(FacilioConstants.ContextNames.CONTROLLER_TIME));
+					formulContext.put(FacilioConstants.ContextNames.CONTROLLER_LEVEL, context.get(FacilioConstants.ContextNames.CONTROLLER_LEVEL));
+				}
+				
 				Chain addReading = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
 				addReading.execute(formulContext);
+			}
+			else if (controller != null) {
+				long controllerTime = (long) context.get(FacilioConstants.ContextNames.CONTROLLER_TIME);
+				ControllerAPI.addControllerActivity(controller, controllerTime, null); //Adding activity to mark completion even though there won't be any record
 			}
 		}
 		catch (Exception e) {
@@ -79,7 +93,7 @@ public class PostFormulaCalculationJob extends InstantJob {
 			if (intervals.size() > 1) { //If more than one interval has to be calculated, only the last interval will be calculated here. Previous intervals will be done via scheduler
 				long minTime = intervals.get(0).getStartTime();
 				long maxTime = intervals.get(intervals.size() - 2).getEndTime();
-				FormulaFieldAPI.calculateHistoricalDataForSingleResource(formula.getId(), reading.getParentId(), new DateRange(minTime, maxTime), true);
+				FormulaFieldAPI.calculateHistoricalDataForSingleResource(formula.getId(), reading.getParentId(), new DateRange(minTime, maxTime), true, true);
 				intervals = Collections.singletonList(intervals.get(intervals.size() - 1));
 			}
 			List<ReadingContext> formulaReadings = FormulaFieldAPI.calculateFormulaReadings(reading.getParentId(), formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), false, false);

@@ -3,6 +3,11 @@ package com.facilio.collections;
 import java.util.HashMap;
 
 public class UniqueMap<K, V> extends HashMap<K, V> {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public V put(K key, V value) {
 		// TODO Auto-generated method stub

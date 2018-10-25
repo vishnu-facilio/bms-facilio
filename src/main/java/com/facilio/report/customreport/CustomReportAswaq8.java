@@ -51,7 +51,7 @@ public class CustomReportAswaq8 implements CustomReport {
 			JSONArray ticketData = new JSONArray();
 			for(int i=0;i<qDateRange.size();i++) {
 				
-				int compliance = 0,nonCompliance = 0,repeatFinding = 0,notApplicable = 0;
+				int compliance = 0,nonCompliance = 0,repeatFinding = 0;
 				long fromTime = 0l;
 				if(i==0) {
 					fromTime = 1514745000000l;

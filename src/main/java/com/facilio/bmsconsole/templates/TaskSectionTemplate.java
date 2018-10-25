@@ -4,11 +4,16 @@ import java.util.List;
 
 import org.json.simple.JSONObject;
 
+import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class TaskSectionTemplate extends Template {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Boolean isEditable;
 	public Boolean getIsEditable() {
 		return isEditable;
@@ -61,5 +66,39 @@ public class TaskSectionTemplate extends Template {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	Long assetCategoryId;
+	Long spaceCategoryId;
+	
+	public Long getAssetCategoryId() {
+		return assetCategoryId;
+	}
+	public void setAssetCategoryId(Long assetCategoryId) {
+		this.assetCategoryId = assetCategoryId;
+	}
+	public Long getSpaceCategoryId() {
+		return spaceCategoryId;
+	}
+	public void setSpaceCategoryId(Long spaceCategoryId) {
+		this.spaceCategoryId = spaceCategoryId;
+	}
 
+	PMAssignmentType assignmentType;
+	
+	public int getAssignmentType() {
+		if(assignmentType != null) {
+			return assignmentType.getVal();
+		}
+		return -1;
+	}
+	public void setAssignmentType(int assignmentType) {
+		this.assignmentType = PMAssignmentType.valueOf(assignmentType);
+	}
+	
+	Long resourceId;
+	public Long getResourceId() {
+		return resourceId;
+	}
+	public void setResourceId(Long resourceId) {
+		this.resourceId = resourceId;
+	}
 }

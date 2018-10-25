@@ -1,11 +1,9 @@
 package com.facilio.workflows.context;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.json.simple.JSONArray;
@@ -13,8 +11,12 @@ import org.json.simple.JSONArray;
 import com.facilio.bmsconsole.commands.CalculateDerivationCommand;
 import com.facilio.bmsconsole.modules.FieldUtil;
 
-public class IteratorContext implements Serializable,WorkflowExpression {
+public class IteratorContext implements WorkflowExpression {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = Logger.getLogger(CalculateDerivationCommand.class.getName());
 	String loopVariableIndexName;
 	String loopVariableValueName;
@@ -50,16 +52,19 @@ public class IteratorContext implements Serializable,WorkflowExpression {
 			}
 		}
 	}
+	public void setWorkflowExpressions(List<WorkflowExpression> workflowExpressions) throws Exception {
+		
+		this.expressions = workflowExpressions;
+	}
 	public void addExpression(WorkflowExpression expression) {
 		expressions = expressions == null ? new ArrayList<>() : expressions; 
 		
 		expressions.add(expression);
 	}
 	WorkflowContext workflowContext;
-	Map<String,Object> variableToExpresionMap;
-	
 	public Object execute() throws Exception {
 		
+		Map<String, Object> variableToExpresionMap = workflowContext.getVariableResultMap();
 		if(iteratableVariable == null || variableToExpresionMap.get(iteratableVariable) == null || !isIteratableVariable(variableToExpresionMap.get(iteratableVariable))) {
 			return null;
 		}
@@ -74,7 +79,7 @@ public class IteratorContext implements Serializable,WorkflowExpression {
 				variableToExpresionMap.put(loopVariableIndexName, i);
 				variableToExpresionMap.put(loopVariableValueName, iterateList.get(i));
 				
-				LOGGER.log(Level.SEVERE, "variableToExpresionMap -- "+variableToExpresionMap);
+//				LOGGER.log(Level.SEVERE, "variableToExpresionMap -- "+variableToExpresionMap);
 				
 				WorkflowContext.executeExpression(expressions, workflowContext);
 			}
@@ -83,8 +88,6 @@ public class IteratorContext implements Serializable,WorkflowExpression {
 			
 		}
 		else if(iterateObject instanceof Map) {
-			
-			Map iterateMap = (Map) iterateObject;
 		}
 		
 		return null;
@@ -109,12 +112,6 @@ public class IteratorContext implements Serializable,WorkflowExpression {
 		return false;
 	}
 	
-	public Map<String, Object> getVariableToExpresionMap() {
-		return variableToExpresionMap;
-	}
-	public void setVariableToExpresionMap(Map<String, Object> variableToExpresionMap) {
-		this.variableToExpresionMap = variableToExpresionMap;
-	}
 	public String getLoopVariableValueName() {
 		return loopVariableValueName;
 	}

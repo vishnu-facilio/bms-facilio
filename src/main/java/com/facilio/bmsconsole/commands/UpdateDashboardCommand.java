@@ -38,7 +38,7 @@ public class UpdateDashboardCommand implements Command {
 					.andCustomWhere(ModuleFactory.getDashboardModule().getTableName()+".ID = ?", dashboard.getId());
 
 			Map<String, Object> props = FieldUtil.getAsProperties(dashboard);
-			int updatedRows = updateBuilder.update(props);
+			updateBuilder.update(props);
 			
 			List<DashboardWidgetContext> existingWidgets = DashboardUtil.getDashboardWidgetsFormDashboardId(dashboard.getId());
 			

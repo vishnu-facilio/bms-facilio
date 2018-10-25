@@ -74,8 +74,12 @@ public class ScheduledRuleAPI extends WorkflowRuleAPI {
 	}
 	
 	protected static void updateScheduledRuleJob(ScheduledRuleContext rule) throws Exception {
-		FacilioTimer.deleteJob(rule.getId(), "ScheduledRuleExecution");
+		deleteScheduledRuleJob(rule);
 		addScheduledRuleJob(rule);
+	}
+	
+	protected static void deleteScheduledRuleJob(ScheduledRuleContext rule) throws Exception {
+		FacilioTimer.deleteJob(rule.getId(), "ScheduledRuleExecution");
 	}
 	
 	public static ScheduledRuleContext updateScheduledRuleWithChildren(ScheduledRuleContext rule) throws Exception {

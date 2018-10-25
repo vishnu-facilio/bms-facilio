@@ -6,6 +6,10 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class NewUserAction extends ActionSupport {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Map<Long, String> roles;
 	public Map<Long, String> getRoles() {
 		return roles;

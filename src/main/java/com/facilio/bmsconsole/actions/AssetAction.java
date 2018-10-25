@@ -10,6 +10,7 @@ import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
@@ -20,10 +21,14 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
 import com.facilio.constants.FacilioConstants;
-import com.opensymphony.xwork2.ActionSupport;
 
-public class AssetAction extends ActionSupport {
+public class AssetAction extends FacilioAction {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public String newAsset() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
@@ -142,7 +147,7 @@ public class AssetAction extends ActionSupport {
  		Chain assetList = FacilioChainFactory.getAssetListChain();
  		assetList.execute(context);
  		assets = (List<AssetContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
- 		
+ 		setResult("assets", assets);
 		return SUCCESS;
 	}
 	
@@ -166,7 +171,7 @@ public class AssetAction extends ActionSupport {
 		assetDetailsChain.execute(context);
 		
 		setAsset((AssetContext) context.get(FacilioConstants.ContextNames.ASSET));
-		
+		setResult("asset", asset);
 		return SUCCESS;
 	}
 	
@@ -204,6 +209,7 @@ public class AssetAction extends ActionSupport {
 		
 		setReports((JSONObject) context.get(FacilioConstants.ContextNames.REPORTS));
 		setReportcards((JSONArray) context.get(FacilioConstants.ContextNames.REPORT_CARDS));
+		setResult("assetCards", reportcards);
 		
 		return SUCCESS;
 	}
@@ -340,4 +346,22 @@ public class AssetAction extends ActionSupport {
 		this.buildingIds = buildingIds;
 	}
 	
+	private String value;
+	public String getValue() {
+		return value;
+	}
+	public void setValue(String value) {
+		this.value = value;
+	}
+
+	public String fetchAssetFromQR() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.QR_VALUE, value);
+		
+		Chain getAssetChain = ReadOnlyChainFactory.getAssetFromQRChain();
+		getAssetChain.execute(context);
+		setResult("asset", context.get(FacilioConstants.ContextNames.ASSET));
+		
+		return SUCCESS;
+	}
 }

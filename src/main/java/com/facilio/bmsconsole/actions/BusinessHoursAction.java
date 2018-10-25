@@ -10,6 +10,10 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class BusinessHoursAction extends ActionSupport {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public String addBussinessHours() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException, RuntimeException {
 		if(businessHours != null && !businessHours.isEmpty()) {
 			id = BusinessHoursAPI.addBusinessHours(businessHours);

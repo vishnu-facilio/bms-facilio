@@ -195,13 +195,11 @@ public class PerformAssetAction implements Command {
 						.select(modBean.getAllFields(module.getName()))
 						;
 				
-				String expiryDay  = null;
 				Long siteId = null;
-				int operatorId = -1;
 				if(criteria != null && criteria.getConditions() != null && !criteria.getConditions().isEmpty()) {
 					 Condition condition = criteria.getConditions().get(1);
-					 expiryDay = condition.getValue();
-					 operatorId = condition.getOperatorId();
+					 condition.getValue();
+					 condition.getOperatorId();
 				}
 				selectBuilder.andCriteria(criteria);
 				

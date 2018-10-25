@@ -9,6 +9,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
@@ -30,6 +33,8 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class ResourceAPI {
+	
+	private static final Logger LOGGER = LogManager.getLogger(ReadingsAPI.class.getName());
 	public static ResourceContext getResource(long id) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
@@ -103,6 +108,7 @@ public class ResourceAPI {
 																		.beanClass(ResourceContext.class);
 		
 		List<ResourceContext> resources = resourceBuilder.get();
+		LOGGER.error("builder -- "+resourceBuilder);
 		return resources;									
 	}
 	

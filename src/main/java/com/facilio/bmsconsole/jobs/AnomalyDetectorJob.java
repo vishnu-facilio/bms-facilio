@@ -45,8 +45,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.GsonBuilder;
 
 public class AnomalyDetectorJob extends FacilioJob {
-	private static long SEVEN_DAYS_IN_MILLISEC = 7 * 24 * 60 * 60 * 1000L;
-	private static long FIFTEEN_MINUTES_IN_MILLISEC = 15 * 60 * 1000L;
+	private static long THIRTY_MINUTES_IN_MILLISEC = 30 * 60 * 1000L;
 
 	private static final Logger logger = Logger.getLogger(AnomalyDetectorJob.class.getName());
 
@@ -62,9 +61,13 @@ public class AnomalyDetectorJob extends FacilioJob {
 
 			Integer anomalyPeriodicity = Integer.parseInt(AwsUtil.getConfig("anomalyPeriodicity"));
 			// get the list of all sub meters
-			//long correction = 0;
-			//Uncomment below code for DEV testing only
-			long correction = System.currentTimeMillis() - 1529948963000L;
+
+			long correction = 0;
+			
+			if( AwsUtil.getConfig("environment").equals("development")) { // for dev testing purpose time is moved back 
+				correction = System.currentTimeMillis() - 1529948963000L;
+			}
+			
 			long endTime = System.currentTimeMillis() - correction;
 			long startTime = endTime - (2 * anomalyPeriodicity * 60 * 1000L);
 
@@ -141,7 +144,7 @@ public class AnomalyDetectorJob extends FacilioJob {
 			Map<Long, AnalyticsAnomalyConfigContext> meterConfigurations,
 			long startTime, long endTime, Long siteId, long orgID) {
 		String moduleName="dummyModuleName";
-		ObjectMapper mapper = new ObjectMapper();
+		new ObjectMapper();
         Map<Long, List<TemperatureContext>> siteIdToWeatherMapping = new HashMap<>();
         
     	try {
@@ -159,7 +162,8 @@ public class AnomalyDetectorJob extends FacilioJob {
 				if(siteIdToWeatherMapping.containsKey(siteId)){
 	    			siteTemperatureReadings = siteIdToWeatherMapping.get(siteId);
 	    		}else {
-	    			siteTemperatureReadings=AnomalySchedulerUtil.getWeatherReadingsForOneSite(startTime, endTime, siteId);
+	    			siteTemperatureReadings=AnomalySchedulerUtil.getWeatherReadingsForOneSite((startTime - THIRTY_MINUTES_IN_MILLISEC),
+	    					endTime, siteId);
 	    			siteIdToWeatherMapping.put(siteId, siteTemperatureReadings);
 	    		}
 

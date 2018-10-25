@@ -104,7 +104,7 @@ public enum AccountEmailTemplate {
 				break;
 			case 5:
 				json.put("sender", "support@facilio.com");
-				json.put("to", "alert@facilio.com");
+				json.put("to", "alerts@facilio.com");
 				json.put("subject","${user.name} with a mailId  ${user.email} has signedUp in [Facilio]" );
 				json.put("message", "Hi ${user.name}, Please click the below link to verify your email address. ${invitelink}\n" 
 						+ "Name:" + "${user.name}\n" + "Email:" + "${user.email}" + "Timezone:" + "${user.timezone}" );

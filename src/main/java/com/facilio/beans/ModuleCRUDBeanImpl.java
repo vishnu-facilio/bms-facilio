@@ -21,6 +21,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TaskContext;
@@ -32,7 +33,6 @@ import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -45,6 +45,7 @@ import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
+import com.facilio.bmsconsole.util.ControllerAPI;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -204,7 +205,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				JSONObject woJson = (JSONObject) content.get(FacilioConstants.ContextNames.WORK_ORDER);
 				
 				wo = FieldUtil.getAsBeanFromJson(woJson, WorkOrderContext.class);
-				FacilioContext context = new FacilioContext();
+				new FacilioContext();
 				
 				JSONObject taskContent = (JSONObject) content.get(FacilioConstants.ContextNames.TASK_MAP);
 				if(taskContent != null) {
@@ -269,7 +270,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
 		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
 		
-		Map<String, FacilioField> pmFieldsMap = FieldFactory.getAsMap(fields);
+		FieldFactory.getAsMap(fields);
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(module.getTableName())
@@ -427,7 +428,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		
 		ticketStatus = builder1.get();
 		
-		long tsid = ticketStatus.get(0).getId();
+		ticketStatus.get(0).getId();
 		
 			
 			
@@ -451,7 +452,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			
 			if (tasks != null && !tasks.isEmpty())
 			{
-				StringJoiner taskids = new StringJoiner(",");
+				new StringJoiner(",");
 				List<Long> taskIdList = new ArrayList<>();
 				System.out.println("@@@@@@@@@@@@@@@@@@@@@Number of Tasks in the Workorder: "+tasks.size()+ "for Workorder"+workOrder.getId());
 				String questMark = "";
@@ -532,21 +533,16 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	public long processEvents(long timeStamp, JSONObject payLoad, List<EventRuleContext> eventRules,
 			Map<String, Integer> eventCountMap, long lastEventTime, String partitionKey) throws Exception {
 		if (partitionKey != null && !partitionKey.isEmpty()) {
-			FacilioModule module = ModuleFactory.getControllerModule();
-			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-					.table(module.getTableName())
-					.select(FieldFactory.getControllerFields())
-					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-					.andCondition(CriteriaAPI.getCondition("MAC_ADDR", "macAddr", partitionKey, StringOperators.IS));
-			List<Map<String, Object>> props = selectBuilder.get();
-			Long siteId = -1l;
-			if (props != null && !props.isEmpty()) {
-				siteId = (Long) props.get(0).get("siteId"); 
+			ControllerContext controller = ControllerAPI.getActiveController(partitionKey);
+			long siteId = -1l;
+			if (controller != null) {
+				siteId = controller.getSiteId(); 
+				payLoad.put("controllerId", controller.getId());
 			}
-			
 			if (siteId != -1) {
 				payLoad.put("siteId", siteId);
 			}
+			
 		}
 		
 		return EventAPI.processEvents(timeStamp, payLoad, eventRules, eventCountMap, lastEventTime);

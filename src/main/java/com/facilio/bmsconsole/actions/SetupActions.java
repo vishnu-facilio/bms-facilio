@@ -34,6 +34,10 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class SetupActions<T> extends ActionSupport {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static org.apache.log4j.Logger log = LogManager.getLogger(SetupActions.class.getName());
 
 	static
@@ -221,7 +225,7 @@ public String importData() throws Exception {
 		
     	setSetup(SetupLayout.getControllerSettingsLayout());
     	
-    	List<ControllerContext> rules= ControllerAPI.getControllerSettings(AccountUtil.getCurrentOrg().getOrgId());
+    	List<ControllerContext> rules= ControllerAPI.getAllControllers();
 		ActionContext.getContext().getValueStack().set("controllerSettings", rules);
 //    	setControllerSettings((ControllerSettingsContext) context.get(FacilioConstants.ContextNames.CONTROLLER_SETTINGS));
 		return SUCCESS;    	

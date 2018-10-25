@@ -556,19 +556,19 @@ public class WorkflowRuleAPI {
 					case PM_READING_RULE:
 					case READING_RULE:
 					case VALIDATION_RULE:
-						prop.putAll(typeWiseExtendedProps.get(ruleType).get((Long) prop.get("id")));
-						rule = ReadingRuleAPI.constructReadingRuleFromProps(prop, modBean);
+						prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
+						rule = ReadingRuleAPI.constructReadingRuleFromProps(prop, modBean, fetchChildren);
 						break;
 					case SLA_RULE:
-						prop.putAll(typeWiseExtendedProps.get(ruleType).get((Long) prop.get("id")));
+						prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
 						rule = SLARuleAPI.constructSLARuleFromProps(prop, modBean);
 						break;
 					case SCHEDULED_RULE:
-						prop.putAll(typeWiseExtendedProps.get(ruleType).get((Long) prop.get("id")));
+						prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
 						rule = ScheduledRuleAPI.constructScheduledRuleFromProps(prop, modBean);
 						break;
 					case APPROVAL_RULE:
-						prop.putAll(typeWiseExtendedProps.get(ruleType).get((Long) prop.get("id")));
+						prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
 						rule = ApprovalRulesAPI.constructApprovalRuleFromProps(prop, modBean);
 						break;
 					default:
@@ -635,6 +635,8 @@ public class WorkflowRuleAPI {
 						case APPROVAL_RULE:
 							ApprovalRulesAPI.deleteApprovalRuleChildIds((ApprovalRuleContext) rule);
 							break;
+						case SCHEDULED_RULE:
+							ScheduledRuleAPI.deleteScheduledRuleJob((ScheduledRuleContext) rule);
 						default:
 							break;
 					}
@@ -676,18 +678,21 @@ public class WorkflowRuleAPI {
 		
 		fieldChangeFlag = evalFieldChange(workflowRule, changeSet);
 		if (fieldChangeFlag) {
-			miscFlag = workflowRule.evaluateMisc(moduleName, record, rulePlaceHolders, (FacilioContext) context);
+			miscFlag = workflowRule.evaluateMisc(moduleName, record, rulePlaceHolders, context);
 			if (miscFlag) {
-				criteriaFlag = workflowRule.evaluateCriteria(moduleName, record, rulePlaceHolders, (FacilioContext) context);
+				criteriaFlag = workflowRule.evaluateCriteria(moduleName, record, rulePlaceHolders, context);
 				if (criteriaFlag) {
-					workflowFlag = workflowRule.evaluateWorkflowExpression(moduleName, record, rulePlaceHolders, (FacilioContext) context);
+					workflowFlag = workflowRule.evaluateWorkflowExpression(moduleName, record, rulePlaceHolders, context);
 				}
 			}
 		}
 		
 		boolean result = fieldChangeFlag && miscFlag && criteriaFlag && workflowFlag;
 		if(result) {
-			workflowRule.executeWorkflowActions(record, context, rulePlaceHolders);
+			workflowRule.executeTrueActions(record, context, rulePlaceHolders);
+		}
+		else {
+			workflowRule.executeFalseActions(record, context, rulePlaceHolders);
 		}
 		return result;
 	}

@@ -8,6 +8,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Chain;
@@ -26,8 +28,11 @@ import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
 import com.facilio.bmsconsole.context.FormulaFieldContext.ResourceType;
 import com.facilio.bmsconsole.context.FormulaFieldContext.TriggerType;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
+import com.facilio.bmsconsole.criteria.CommonOperators;
+import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.DateRange;
@@ -40,6 +45,7 @@ import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -48,8 +54,14 @@ import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.tasker.ScheduleInfo.FrequencyType;
+import com.facilio.workflows.context.ExpressionContext;
+import com.facilio.workflows.context.IteratorContext;
 import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.context.WorkflowExpression;
+import com.facilio.workflows.context.WorkflowFieldContext;
+import com.facilio.workflows.context.WorkflowFunctionContext;
+import com.facilio.workflows.util.ExpressionAggregateOperator;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class FormulaFieldAPI {
@@ -217,8 +229,8 @@ public class FormulaFieldAPI {
 	
 	public static List<ReadingContext> calculateFormulaReadings(long resourceId, String moduleName, String fieldName, List<DateRange> intervals, WorkflowContext workflow, boolean ignoreNullValues, boolean addValue) throws Exception {
 		if (intervals != null && !intervals.isEmpty()) {
-			long minTime = intervals.get(0).getStartTime();
-			long maxTime = intervals.get(intervals.size() - 1).getEndTime();
+			intervals.get(0).getStartTime();
+			intervals.get(intervals.size() - 1).getEndTime();
 			
 			List<ReadingContext> readings = new ArrayList<>();
 			for(DateRange interval : intervals) {
@@ -351,6 +363,7 @@ public class FormulaFieldAPI {
 				.andCondition(CriteriaAPI.getCondition(triggerTypeField, String.valueOf(TriggerType.PRE_LIVE_READING.getValue()), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(active, String.valueOf(true), BooleanOperators.IS))
 				.andCondition(CriteriaAPI.getCondition(moduleIdField, moduleIds, PickListOperators.IS))
+				.orderBy("ID")
 				;
 
 		List<FormulaFieldContext> formulas = getFormulaFieldsFromProps(selectBuilder.get(), false);
@@ -374,7 +387,7 @@ public class FormulaFieldAPI {
 		BmsJobUtil.scheduleOneTimeJobWithProps(formulaId, "HistoricalFormulaFieldCalculator", 30, "priority", FieldUtil.getAsJSON(range));
 	}
 	
-	public static void calculateHistoricalDataForSingleResource(long formulaId, long resourceId, DateRange range, boolean isSystem) throws Exception {
+	public static void calculateHistoricalDataForSingleResource(long formulaId, long resourceId, DateRange range, boolean isSystem, boolean historicalAlarm) throws Exception {
 		Map<String, Object> prop = getFormulaFieldResourceJob(formulaId, resourceId, isSystem);
 		long id = -1;
 		if (prop == null) {
@@ -385,11 +398,12 @@ public class FormulaFieldAPI {
 			prop.put("startTime", range.getStartTime());
 			prop.put("endTime", range.getEndTime());
 			prop.put("isSystem", isSystem);
+			prop.put("historicalAlarm", historicalAlarm);
 			id = addFormulaFieldResourceJob(prop);
 		}
 		else {
 			id = (long) prop.get("id");
-			updateFormulaFieldResourceJob(id, range.getStartTime(), range.getEndTime());
+			updateFormulaFieldResourceJob(id, range.getStartTime(), range.getEndTime(), historicalAlarm);
 			FacilioTimer.deleteJob(id, "SingleResourceHistoricalFormulaFieldCalculator");
 		}
 		FacilioTimer.scheduleOneTimeJob(id, "SingleResourceHistoricalFormulaFieldCalculator", 30, "priority");
@@ -403,11 +417,12 @@ public class FormulaFieldAPI {
 		return insertBuilder.insert(prop);
 	}
 	
-	private static void updateFormulaFieldResourceJob (long id, long startTime, long endTime) throws Exception {
+	private static void updateFormulaFieldResourceJob (long id, long startTime, long endTime, boolean historicalAlarm) throws Exception {
 		FacilioModule module = ModuleFactory.getFormulaFieldResourceJobModule();
 		Map<String, Object> prop = new HashMap<>();
 		prop.put("startTime", startTime);
 		prop.put("endTime", endTime);
+		prop.put("historicalAlarm", historicalAlarm);
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 														.table(module.getTableName())
@@ -679,11 +694,285 @@ public class FormulaFieldAPI {
 		return false;
 	}
 	
-	public static void historicalCalculation(FormulaFieldContext formula, DateRange range) throws Exception {
-		historicalCalculation(formula, range, -1, true);
+	public static void historicalCalculation(FormulaFieldContext formula, DateRange range, boolean historicalAlarm) throws Exception {
+		historicalCalculation(formula, range, -1, true, historicalAlarm);
 	}
 	
-	public static void historicalCalculation(FormulaFieldContext formula, DateRange range, long singleResourceId, boolean isSystem) throws Exception {
+	private static boolean isAllWorkflowFieldsAggregationIsLastVal(WorkflowContext workflow) throws Exception {
+		List<WorkflowFieldContext> fields = WorkflowUtil.getWorkflowFields(workflow.getId());
+		
+		if (fields != null) {
+			for (WorkflowFieldContext field : fields) {
+				if (field.getAggregationEnum() != ExpressionAggregateOperator.LAST_VALUE) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
+	public static void optimisedHistoricalCalculation(FormulaFieldContext formula, DateRange range, long singleResourceId, boolean isSystem, boolean historicalAlarm) throws Exception {
+		
+		if (formula.getTriggerTypeEnum() != TriggerType.POST_LIVE_READING) {
+			throw new IllegalArgumentException("Currently only Live reading is supported for optimised historical calculation");
+		}
+		
+		if (dependsOnSameModule(formula)) {
+			LOGGER.warn("Calculating the usual way instead of optimised, since formula is depending on itself");
+			historicalCalculation(formula, range, singleResourceId, isSystem, historicalAlarm);
+		}
+		
+		if (!isAllWorkflowFieldsAggregationIsLastVal(formula.getWorkflow())) {
+			LOGGER.warn("Calculating the usual way instead of optimised, since formula depends on fields who's aggregation is not 'lastValue'");
+			historicalCalculation(formula, range, singleResourceId, isSystem, historicalAlarm);
+		}
+		
+		List<DateRange> intervals = getIntervals(formula, range);
+		LOGGER.info(intervals);
+		if (intervals != null && !intervals.isEmpty()) {
+			List<ReadingContext> readings = new ArrayList<>();
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			if (singleResourceId != -1) {
+				LOGGER.info("Gonna perform optmised historical calculation for formula : "+formula.getId()+" for resource : "+singleResourceId);
+				if (formula.getMatchedResourcesIds().contains(singleResourceId)) {
+					LOGGER.debug("Matched");
+					long workflowStarttime = System.currentTimeMillis();
+					OptimisedFormulaCalculationWorkflow optimisedWorkflow = constructOptimisedWorkflowForHistoricalCalculation(formula.getWorkflow());
+					LOGGER.info("Time taken to generate optimised workflow : "+(System.currentTimeMillis() - workflowStarttime));
+					int deletedData = deleteOlderData(range.getStartTime(), range.getEndTime(), Collections.singletonList(singleResourceId), formula.getReadingField().getModule().getName());
+					LOGGER.info("Deleted rows for formula : "+formula.getName()+" between "+range+" is : "+deletedData);
+					Set<Object> xValues = new TreeSet<>(); 
+					long independentDataStarttime = System.currentTimeMillis();
+					Map<String,Object> wfParams = fetchIndependentParams(optimisedWorkflow.getMetas(), range, modBean, xValues);
+					LOGGER.info("Time taken to fetch independent data : "+(System.currentTimeMillis() - independentDataStarttime));
+					List<ReadingContext> currentReadings = computeOptimisedWorkflow(formula.getReadingField().getName(), optimisedWorkflow, range, wfParams, xValues, singleResourceId, modBean);
+					if (currentReadings != null && !currentReadings.isEmpty()) {
+						readings.addAll(currentReadings);
+					}
+				}
+			}
+			else {
+				OptimisedFormulaCalculationWorkflow optimisedWorkflow = constructOptimisedWorkflowForHistoricalCalculation(formula.getWorkflow());
+				int deletedData = deleteOlderData(range.getStartTime(), range.getEndTime(), formula.getMatchedResourcesIds(), formula.getReadingField().getModule().getName());
+				LOGGER.info("Deleted rows for formula : "+formula.getName()+" between "+range+" is : "+deletedData);
+				Set<Object> xValues = new TreeSet<>(); 
+				Map<String,Object> wfParams = fetchIndependentParams(optimisedWorkflow.getMetas(), range, modBean, xValues);
+				for (Long resourceId : formula.getMatchedResourcesIds()) {
+					List<ReadingContext> currentReadings = computeOptimisedWorkflow(formula.getReadingField().getName(), optimisedWorkflow, range, wfParams, xValues, resourceId, modBean);
+					if (currentReadings != null && !currentReadings.isEmpty()) {
+						readings.addAll(currentReadings);
+					}
+				}
+			}
+			
+			LOGGER.info("Historical Data to be added for formula "+readings.size());
+			if (!readings.isEmpty()) {
+				FacilioContext context = new FacilioContext();
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, formula.getReadingField().getModule().getName());
+				context.put(FacilioConstants.ContextNames.READINGS, readings);
+				context.put(FacilioConstants.ContextNames.HISTORY_READINGS, !historicalAlarm);
+
+				Chain addReadingChain = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
+				addReadingChain.execute(context);
+			}
+		}
+	}
+	
+	private static List<ReadingContext> computeOptimisedWorkflow(String fieldName, OptimisedFormulaCalculationWorkflow workflow, DateRange range, Map<String,Object> wfParams, Set<Object> xValues, long resourceId, ModuleBean modBean) throws Exception {
+		Map<String, Object> params = new HashMap<>(wfParams);
+		Set<Object> currentxValues = new TreeSet<>(xValues);
+		long resourceParamsStarttime = System.currentTimeMillis();
+		params.putAll(fetchResourceParams(resourceId, workflow.getMetas(), range, modBean, currentxValues));
+		LOGGER.info("Time taken to fetch resource params : "+(System.currentTimeMillis() - resourceParamsStarttime));
+		params.put("xValues", currentxValues);
+		String wfXmlString = WorkflowUtil.getXmlStringFromWorkflow(workflow);
+		LOGGER.info("Optimised wfXmlString -- "+wfXmlString);
+		LOGGER.info("Meta -- "+workflow.getMetas());
+		LOGGER.info("wfParams :: "+params);
+		long workflowExecutionStartTime = System.currentTimeMillis();
+		Map<Object, Object> result = (Map<Object,Object>) WorkflowUtil.getWorkflowExpressionResult(wfXmlString, params, null, false, false);
+		LOGGER.info("Time taken for optimised workflow execution : "+(System.currentTimeMillis() - workflowExecutionStartTime));
+		
+		long readingsStartTime = System.currentTimeMillis();
+		if (result != null && !result.isEmpty()) {
+			List<ReadingContext> readings = new ArrayList<>();
+			for (Map.Entry<Object, Object> entry : result.entrySet()) {
+				ReadingContext reading = new ReadingContext();
+				reading.setParentId(resourceId);
+				reading.setTtime((long) entry.getKey());
+				reading.addReading(fieldName, entry.getValue());
+				readings.add(reading);
+			}
+			return readings;
+		}
+		LOGGER.info("Time taken to generate readings from Workflow result : "+(System.currentTimeMillis() - readingsStartTime));
+		return null;
+	}
+	
+	private static Map<String,Object> fetchResourceParams(long resourceId, List<OptimisedFormulaCalculationMeta> metas, DateRange range, ModuleBean modBean, Set<Object> xValues) throws Exception {
+		Map<String,Object> wfParams = new HashMap<>();
+		for (OptimisedFormulaCalculationMeta meta : metas) {
+			if (meta.getResourceId() == -1) {
+				wfParams.put(meta.getParamName(), fetchHistoricalData(meta, resourceId, range, modBean, xValues));
+			}
+		}
+		return wfParams;
+	}
+	
+	private static Map<String,Object> fetchIndependentParams(List<OptimisedFormulaCalculationMeta> metas, DateRange range, ModuleBean modBean, Set<Object> xValues) throws Exception {
+		Map<String,Object> wfParams = new HashMap<>();
+		for (OptimisedFormulaCalculationMeta meta : metas) {
+			if (meta.getResourceId() != -1) {
+				wfParams.put(meta.getParamName(), fetchHistoricalData(meta, -1, range, modBean, xValues));
+			}
+		}
+		return wfParams;
+	}
+	
+	private static Object fetchHistoricalData(OptimisedFormulaCalculationMeta meta, long resourceId, DateRange range, ModuleBean modBean, Set<Object> xValues) throws Exception {
+		if (meta.getResourceId() == -1 && resourceId == -1) {
+			throw new IllegalArgumentException("Both the resource ids cannot be empty");
+		}
+		
+		
+		long parentId = resourceId == -1 ? meta.getResourceId() : resourceId;
+		FacilioField valField = modBean.getField(meta.getFieldName(), meta.getModuleName());
+		
+		if (meta.isOnlyParentId()) {
+			ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(parentId, valField);
+			return rdm.getValue().toString();
+		}
+		
+		FacilioField parentIdField = modBean.getField("parentId", meta.getModuleName());
+		FacilioField ttime = modBean.getField("ttime", meta.getModuleName());
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(valField);
+		fields.add(ttime);
+		SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
+																	.moduleName(meta.getModuleName())
+																	.select(fields)
+																	.andCondition(CriteriaAPI.getCondition(parentIdField, String.valueOf(parentId), PickListOperators.IS))
+																	.andCondition(CriteriaAPI.getCondition(ttime, range.toString(), DateOperators.BETWEEN))
+																	.andCondition(CriteriaAPI.getCondition(valField, CommonOperators.IS_NOT_EMPTY))
+																	;
+		
+		Map<Object, Object> values = new HashMap<>();
+		List<Map<String, Object>> props = selectBuilder.getAsProps();
+		
+		if (props != null && !props.isEmpty()) {
+			for (Map<String, Object> prop : props) {
+				Object timeVal = prop.get("ttime");
+				xValues.add(timeVal);
+				Object val = prop.get(meta.getFieldName());
+				values.put(timeVal, val);
+			}
+		}
+		
+		return values;
+	}
+	
+	private static WorkflowFunctionContext getWorkflowFunction (String nameSpace, String name, String params) {
+		WorkflowFunctionContext function = new WorkflowFunctionContext();
+		function.setFunctionName(name);
+		function.setNameSpace(nameSpace);
+		
+		if (params != null) {
+			function.setParams(params);
+		}
+		return function;
+	}
+	
+	private static ParameterContext getWorkflowParameter (String name, String type) {
+		ParameterContext param = new ParameterContext();
+		param.setName(name);
+		param.setTypeString(type);
+		return param;
+	}
+	
+	public static OptimisedFormulaCalculationWorkflow constructOptimisedWorkflowForHistoricalCalculation (WorkflowContext workflow) {
+		OptimisedFormulaCalculationWorkflow optimisedWorkflow = new OptimisedFormulaCalculationWorkflow();
+		
+		optimisedWorkflow.addParamater(getWorkflowParameter("xValues", "list"));
+		
+		ExpressionContext result = new ExpressionContext();
+		result.setName("result");
+		result.setDefaultFunctionContext(getWorkflowFunction("map", "create", null));
+		
+		optimisedWorkflow.addWorkflowExpression(result);
+		optimisedWorkflow.setResultEvaluator("result");
+		
+		IteratorContext iterator = new IteratorContext();
+		iterator.setIteratableVariable("xValues");
+		iterator.setLoopVariableIndexName("index");
+		iterator.setLoopVariableValueName("value");
+		
+		for (WorkflowExpression expression : workflow.getExpressions()) {
+			ExpressionContext expr = (ExpressionContext) expression;
+			if (expr.getConstant() == null && expr.getDefaultFunctionContext() == null && expr.getExpr() == null) {
+				
+				if (expr.getCriteria() == null || expr.getCriteria().isEmpty()) {
+					optimisedWorkflow.addWorkflowExpression(expr);
+					continue;
+				}
+				String exprName = "param"+expr.getName();
+				OptimisedFormulaCalculationMeta meta = new OptimisedFormulaCalculationMeta();
+				meta.setParamName(exprName);
+				meta.setModuleName(expr.getModuleName());
+				meta.setFieldName(expr.getFieldName());
+				
+				boolean onlyParentId = true;
+				for (Condition condition : expr.getCriteria().getConditions().values()) {
+					if (condition.getFieldName().equals("parentId")) {
+						if (!condition.getValue().equals("${resourceId}")) {
+							meta.setResourceId(Long.parseLong(condition.getValue()));
+						}
+					}
+					else if (condition.getFieldName().equals("ttime")) {
+						onlyParentId = false;
+					}
+					else {
+						optimisedWorkflow.addWorkflowExpression(expr);
+						continue;
+					}
+				}
+				
+				ExpressionContext param = null;
+				if (onlyParentId) {
+					meta.setOnlyParentId(true);
+					optimisedWorkflow.addParamater(getWorkflowParameter(exprName, "string"));
+					param = new ExpressionContext();
+					param.setName(expr.getName());
+					param.setConstant("${"+exprName+"}");
+				}
+				else {
+					optimisedWorkflow.addParamater(getWorkflowParameter(exprName, "map"));
+					param = new ExpressionContext();
+					param.setName(expr.getName());
+					param.setDefaultFunctionContext(getWorkflowFunction("map", "get", exprName+", value"));
+				}
+				iterator.addExpression(param);
+				optimisedWorkflow.addMeta(meta);
+			}
+			else {
+				iterator.addExpression(expr);
+			}
+		}
+		ExpressionContext itrResult = new ExpressionContext();
+		itrResult.setName("itrResult");
+		itrResult.setExpr(workflow.getResultEvaluator());
+		iterator.addExpression(itrResult);
+		
+		ExpressionContext itrResultPut = new ExpressionContext();
+		itrResultPut.setName("put");
+		itrResultPut.setDefaultFunctionContext(getWorkflowFunction("map", "put", "result, value, itrResult"));
+		iterator.addExpression(itrResultPut);
+		
+		optimisedWorkflow.addWorkflowExpression(iterator);
+		
+		return optimisedWorkflow;
+	}
+	
+	public static void historicalCalculation(FormulaFieldContext formula, DateRange range, long singleResourceId, boolean isSystem, boolean historicalAlarm) throws Exception {
 		List<DateRange> intervals = getIntervals(formula, range);
 		LOGGER.info(intervals);
 		if (intervals != null && !intervals.isEmpty()) {
@@ -692,7 +981,7 @@ public class FormulaFieldAPI {
 			if (singleResourceId != -1) {
 				LOGGER.info("Gonna calculate historical formula of : "+formula.getId()+" for resource : "+singleResourceId);
 				if (formula.getMatchedResourcesIds().contains(singleResourceId)) {
-					LOGGER.info("Matched");
+					LOGGER.debug("Matched");
 					int deletedData = deleteOlderData(range.getStartTime(), range.getEndTime(), Collections.singletonList(singleResourceId), formula.getReadingField().getModule().getName());
 					LOGGER.info("Deleted rows for formula : "+formula.getName()+" between "+range+" is : "+deletedData);
 					
@@ -719,7 +1008,7 @@ public class FormulaFieldAPI {
 				FacilioContext context = new FacilioContext();
 				context.put(FacilioConstants.ContextNames.MODULE_NAME, formula.getReadingField().getModule().getName());
 				context.put(FacilioConstants.ContextNames.READINGS, readings);
-//				context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS, false);
+				context.put(FacilioConstants.ContextNames.HISTORY_READINGS, !historicalAlarm);
 
 				Chain addReadingChain = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
 				addReadingChain.execute(context);
@@ -733,7 +1022,7 @@ public class FormulaFieldAPI {
 							if (currentFormula.getMatchedResourcesIds().contains(singleResourceId)) {
 								List<Long> dependentFieldIds = currentFormula.getWorkflow().getDependentFieldIds();
 								if (dependentFieldIds.contains(formula.getReadingField().getFieldId())) {
-									calculateHistoricalDataForSingleResource(currentFormula.getId(), singleResourceId, range, isSystem);
+									calculateHistoricalDataForSingleResource(currentFormula.getId(), singleResourceId, range, isSystem, historicalAlarm);
 								}
 							}
 						}
@@ -774,6 +1063,74 @@ public class FormulaFieldAPI {
 				return DateTimeUtil.getTimeIntervals(range.getStartTime(), range.getEndTime(), schedule);
 		}
 		return null;
+	}
+	
+	private static class OptimisedFormulaCalculationWorkflow extends WorkflowContext {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private List<OptimisedFormulaCalculationMeta> metas;
+		public List<OptimisedFormulaCalculationMeta> getMetas() {
+			return metas;
+		}
+		public void setMetas(List<OptimisedFormulaCalculationMeta> metas) {
+			this.metas = metas;
+		}
+		public void addMeta(OptimisedFormulaCalculationMeta meta) {
+			if (metas == null) {
+				metas = new ArrayList<>();
+			}
+			metas.add(meta);
+		}
+	}
+	
+	private static class OptimisedFormulaCalculationMeta {
+		private String paramName;
+		public String getParamName() {
+			return paramName;
+		}
+		public void setParamName(String paramName) {
+			this.paramName = paramName;
+		}
+		
+		private String moduleName;
+		public String getModuleName() {
+			return moduleName;
+		}
+		public void setModuleName(String moduleName) {
+			this.moduleName = moduleName;
+		}
+		
+		private String fieldName;
+		public String getFieldName() {
+			return fieldName;
+		}
+		public void setFieldName(String fieldName) {
+			this.fieldName = fieldName;
+		}
+		
+		private long resourceId = -1;
+		public long getResourceId() {
+			return resourceId;
+		}
+		public void setResourceId(long resourceId) {
+			this.resourceId = resourceId;
+		}
+		
+		private boolean onlyParentId = false;
+		public boolean isOnlyParentId() {
+			return onlyParentId;
+		}
+		public void setOnlyParentId(boolean onlyParentId) {
+			this.onlyParentId = onlyParentId;
+		}
+		
+		@Override
+		public String toString() {
+			// TODO Auto-generated method stub
+			return paramName+"::"+moduleName+"::"+fieldName+"::"+resourceId;
+		}
 	}
 
 }

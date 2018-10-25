@@ -24,6 +24,11 @@ import com.google.common.collect.ArrayListMultimap;
 
 public class InsertReadingDataMetaForNewResourceCommand implements Command,Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -61,7 +66,7 @@ public class InsertReadingDataMetaForNewResourceCommand implements Command,Seria
 						builder.addRecord(FieldUtil.getAsProperties(dataMeta));
 					}
 					builder.save();
-			}
+				}
 				
 			}
 		}

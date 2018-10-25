@@ -7,12 +7,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.StringOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsole.modules.NumberField;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
+import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
+import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.exceptions.FunctionParamException;
 import com.facilio.workflows.util.WorkflowUtil;
 
@@ -31,7 +47,6 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			List<Object> list = (List<Object>) objects[0];
 			boolean allEqual = list.isEmpty() || list.stream().allMatch(list.get(0)::equals);
 
-			System.out.println("list --  "+list+"  allEqual --- "+allEqual);
 			return allEqual;
 		};
 		
@@ -142,43 +157,132 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 		}
 	},
 	
-//	FATCH_DATA(6,"fetchData") {
-//		@Override
-//		public Object execute(Object... objects) throws Exception {
-//			// TODO Auto-generated method stub
-//			if (objects.length < 2) {
-//				return false;
-//			}
-//			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-//			String moduleName = (String) objects[0];
-//			String criteriaString = (String) objects[1];
-//			Criteria criteria = WorkflowUtil.parseCriteriaString(moduleName, criteriaString);
-//			String fieldName = null, aggregateCondition = null;
-//			
-//			if(objects[2] != null) {
-//				fieldName = (String) objects[2];
-//			}
-//			if(objects[3] != null) {
-//				aggregateCondition = (String) objects[3];
-//			}
-//			
-//			FacilioModule module = modBean.getModule(moduleName);
-//			
-//			SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>();
-//			builder.module(module);
-//			builder.andCriteria(criteria);
-//			
-//			if(fieldName != null) {
-//				
-//				if(aggregateCondition != null) {
-//					
-//				}
-//			}
-//			return null;
-//		}
-//	},
-	;
+	FATCH_DATA(6,"fetchData") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			if (objects.length < 2) {
+				return false;
+			}
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			String moduleName = (String) objects[0];
+			String criteriaString = (String) objects[1];
+			Criteria criteria = WorkflowUtil.parseCriteriaString(moduleName, criteriaString);
+			String fieldName = null, aggregateCondition = null;
+			
+			if(objects[2] != null) {
+				fieldName = (String) objects[2];
+			}
+			if(objects[3] != null) {
+				aggregateCondition = (String) objects[3];
+			}
+			
+			FacilioModule module = modBean.getModule(moduleName);
+			
+			SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>();
+			builder.module(module);
+			builder.andCriteria(criteria);
+			
+			if(fieldName != null) {
+				
+				if(aggregateCondition != null) {
+					
+				}
+			}
+			return null;
+		}
+	},
 	
+	SUM_DATA(7,"sumData") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			if (objects == null || objects.length < 2) {
+				return false;
+			}
+			int counter = 0;
+			FacilioModule module = null;
+			FacilioField field = null;
+			
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			
+			String arg1 = objects[counter++].toString();
+			
+			if(FacilioUtil.isNumeric(arg1)) {
+				field = modBean.getField(Long.parseLong(arg1));
+				module = field.getModule();
+			}
+			else {
+				String moduleName =  arg1;
+				String fieldName = (String) objects[counter++];
+				
+				module = modBean.getModule(moduleName);
+				field = modBean.getField(fieldName, moduleName);
+			}
+			
+			String startTime = null,endtime = null;
+			
+			if(counter < objects.length && objects[counter] != null) {
+				startTime = objects[counter++].toString();
+			}
+			if(counter < objects.length && objects[counter] != null) {
+				endtime = objects[counter++].toString();
+			}
+			String parentIds = null;			//comma seperated values
+			if(counter < objects.length && objects[counter] != null) {
+				parentIds = objects[counter++].toString();
+			}
+			FacilioField dateField = modBean.getField("ttime", module.getName());
+			FacilioField parentField = modBean.getField("parentId", module.getName());
+			
+			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
+			builder.table(module.getTableName());
+			
+			if(field != null) {
+				
+				List<FacilioField> selectFields = new ArrayList<>();
+				String selectFieldString = "sum("+field.getColumnName()+")";
+				FacilioField selectField = null;
+				if(field instanceof NumberField) {
+					NumberField numberField =  (NumberField)field;
+					NumberField selectFieldNumber = new NumberField();
+					selectFieldNumber.setMetric(numberField.getMetric());
+					selectField = selectFieldNumber;
+				}
+				else {
+					selectField = new FacilioField();
+				}
+				selectField.setName(field.getName());
+				selectField.setDisplayName(field.getDisplayName());
+				selectField.setColumnName(selectFieldString);
+				selectField.setFieldId(field.getFieldId());
+				
+				selectFields.add(selectField);
+				builder.select(selectFields);
+			}
+			LOGGER.log(Level.SEVERE, "startTime -- "+startTime);
+			LOGGER.log(Level.SEVERE, "endtime -- "+endtime);
+			if(startTime != null && endtime != null) {
+				Condition condition = CriteriaAPI.getCondition(dateField, startTime+","+endtime, DateOperators.BETWEEN);
+				builder.andCondition(condition);
+			}
+			if(parentIds != null) {
+				Condition condition = CriteriaAPI.getCondition(parentField, parentIds, StringOperators.IS);
+				builder.andCondition(condition);
+			}
+			builder.andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getId(), module));
+			builder.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleid", module.getModuleId()+"", NumberOperators.EQUALS));
+			 List<Map<String, Object>> props = builder.get();
+			 LOGGER.log(Level.SEVERE, "builder -- "+builder);
+			 if(props != null && !props.isEmpty()) {
+				 Object sum = props.get(0).get(field.getName());
+				 LOGGER.log(Level.SEVERE, "res -- "+sum);
+				 return Double.parseDouble(sum.toString());
+			 }
+			return null;
+		}
+	},
+	;
 	private Integer value;
 	private String functionName;
 	private String namespace = "default";

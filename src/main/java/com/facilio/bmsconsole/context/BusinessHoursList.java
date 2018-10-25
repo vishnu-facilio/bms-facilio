@@ -3,6 +3,10 @@ package com.facilio.bmsconsole.context;
 import java.util.ArrayList;
 
 public class BusinessHoursList extends ArrayList<BusinessHourContext> {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long orgId = -1;
 	public long getOrgId() {
 		return orgId;

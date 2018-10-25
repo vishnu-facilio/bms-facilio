@@ -23,6 +23,10 @@ import com.facilio.fw.BeanFactory;
 
 public class ImportProcessContext implements Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = Logger.getLogger(ImportProcessContext.class.getName());
 	private static org.apache.log4j.Logger log = LogManager.getLogger(ImportProcessContext.class.getName());
 	
@@ -311,7 +315,7 @@ public class ImportProcessContext implements Serializable
 	
 	public String getFieldValue(String key) {
 
-		return (String)fieldMapping.get(key);
+		return fieldMapping.get(key);
 	}
 	JSONObject fieldMappingJSON;
 	public JSONObject getFieldMappingJSON() throws ParseException {

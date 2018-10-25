@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.Collections;
-import java.util.List;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -11,7 +10,6 @@ import org.apache.log4j.Logger;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.constants.FacilioConstants;
@@ -31,7 +29,7 @@ public class UpdateBuildingCommand implements Command {
 		{
 			
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);				
+			context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);				
 			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);

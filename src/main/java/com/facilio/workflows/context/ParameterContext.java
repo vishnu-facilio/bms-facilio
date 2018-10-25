@@ -6,6 +6,10 @@ import com.facilio.bmsconsole.modules.FieldType;
 
 public class ParameterContext implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public ParameterContext() {
 		
 	}

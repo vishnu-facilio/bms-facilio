@@ -11,6 +11,10 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
 
 public class V2WorkflowAction extends FacilioAction {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private ApprovalRuleContext approvalRule;
 	public ApprovalRuleContext getApprovalRule() {
 		return approvalRule;

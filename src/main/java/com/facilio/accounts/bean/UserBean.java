@@ -1,5 +1,6 @@
 package com.facilio.accounts.bean;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -54,9 +55,9 @@ public interface UserBean {
 	
 	public List<User> getUsers(Criteria criteria, List<Long>... ouids) throws Exception;
 	
+	public Map<Long, List<User>> getUsersWithRole(Collection<Long> roleIds) throws Exception;
+	
 	public Map<Long, User> getUsersAsMap(Criteria criteria, List<Long>... ouids) throws Exception;
-
-	User getFacilioUser(long orgId, String email) throws Exception;
 
 	public User getUser(long orgId, String email) throws Exception;
 	

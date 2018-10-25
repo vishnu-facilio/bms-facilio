@@ -22,8 +22,8 @@ public class AssignTicketCommand implements Command {
 		Long assignedTo = (Long) context.get(FacilioConstants.ContextNames.ASSIGNED_TO_ID);
 		
 		if(ticketId != null) {
-			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
+			context.get(FacilioConstants.ContextNames.MODULE_NAME);
+			context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			
 			Connection conn = FacilioConnectionPool.INSTANCE.getConnection();
 			

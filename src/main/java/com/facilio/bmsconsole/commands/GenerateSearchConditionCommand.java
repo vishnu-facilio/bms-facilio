@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -24,7 +23,7 @@ public class GenerateSearchConditionCommand implements Command {
 		long startTime = System.currentTimeMillis();
 		JSONObject searchObj = (JSONObject) context.get(FacilioConstants.ContextNames.SEARCH);
 		if(searchObj != null && !searchObj.isEmpty()) {
-			List<Condition> conditionList = new ArrayList<>();
+			new ArrayList<>();
 			
 			String searchQuery = (String) searchObj.get("query");
 			String fields = (String) searchObj.get("fields");

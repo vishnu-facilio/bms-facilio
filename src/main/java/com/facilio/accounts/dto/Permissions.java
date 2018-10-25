@@ -5,6 +5,11 @@ import java.io.Serializable;
 import com.facilio.accounts.util.AccountConstants;
 
 public class Permissions implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public Permissions() {
 		super();
 	}

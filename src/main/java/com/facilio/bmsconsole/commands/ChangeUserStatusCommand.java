@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Command;
@@ -8,7 +7,6 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
-import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.constants.FacilioConstants;
@@ -22,7 +20,7 @@ public class ChangeUserStatusCommand implements Command {
 		User user = (User) context.get(FacilioConstants.ContextNames.USER);
 		
 		if (user != null) {
-			List<FacilioField> fields =  FieldFactory.getOrgUserFields();
+			FieldFactory.getOrgUserFields();
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder().table("ORG_Users").fields(AccountConstants.getOrgUserFields())
 					.andCustomWhere("ORG_USERID = ? AND USERID = ?", user.getOuid(), user.getUid());
 			Map<String, Object> props = FieldUtil.getAsProperties(user);

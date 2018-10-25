@@ -17,6 +17,11 @@ import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
 public class TicketContext extends ModuleBaseWithCustomFields {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static Logger log = LogManager.getLogger(TicketContext.class.getName());
 	
 	private String subject;
@@ -412,7 +417,8 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		THRESHOLD_ALARM(6, "Threshold Alarm"),
 		WEB_REQUEST(7, "Web Request"),
 		ANOMALY_ALARM(9, "Anomaly Alarm"),
-		SERVICE_PORTAL_REQUEST(10, "Service Portal Request")
+		SERVICE_PORTAL_REQUEST(10, "Service Portal Request"),
+		WORKFLOW_RULE(11, "Workflow Rule")
 		;
 		
 		private int intVal;

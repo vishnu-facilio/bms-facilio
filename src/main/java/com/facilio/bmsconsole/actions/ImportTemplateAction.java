@@ -17,6 +17,10 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class ImportTemplateAction extends FacilioAction {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	ImportTemplateContext importTemplateContext;
 	
 	public String saveImportTemplate() throws Exception{
@@ -30,7 +34,7 @@ public class ImportTemplateAction extends FacilioAction {
 		Map<String,Object> props = FieldUtil.getAsProperties(importTemplateContext);
 		insertRecordBuilder.addRecord(props);
 		insertRecordBuilder.save();	
-		setResult("templateId", (Long) props.get("id"));
+		setResult("templateId", props.get("id"));
 		return SUCCESS;
 	}
 	public String deleteTemplate() throws Exception {

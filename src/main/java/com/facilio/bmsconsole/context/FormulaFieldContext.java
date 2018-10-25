@@ -10,6 +10,10 @@ import com.facilio.workflows.context.WorkflowContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class FormulaFieldContext implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long id = -1;
 	public long getId() {
 		return id;

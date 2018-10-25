@@ -10,7 +10,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.facilio.auth.cookie.FacilioCookie;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.log4j.LogManager;
@@ -36,6 +35,7 @@ import com.facilio.accounts.exception.AccountException;
 import com.facilio.accounts.impl.UserBeanImpl;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -44,13 +44,16 @@ import com.facilio.bmsconsole.context.SetupLayout;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
-import com.facilio.fw.auth.LoginUtil;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionContext;
 
 public class UserAction extends FacilioAction {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static Logger log = LogManager.getLogger(UserAction.class.getName());
 	private SetupLayout setup;
 	public SetupLayout getSetup() {
@@ -80,7 +83,7 @@ public class UserAction extends FacilioAction {
 
 	public String userPickList() throws Exception {
 		if (getGroupId() > 0) {
-			List<GroupMember> memberList = (List<GroupMember>) AccountUtil.getGroupBean().getGroupMembers(getGroupId());
+			List<GroupMember> memberList = AccountUtil.getGroupBean().getGroupMembers(getGroupId());
 			this.users = new ArrayList<>();
 			if (memberList != null) {
 				this.users.addAll(memberList);
@@ -92,7 +95,7 @@ public class UserAction extends FacilioAction {
 	}
 
 	public String userVerify() throws Exception{
-		Boolean verified = CommonCommandUtil.verifiedUser(getUserId()); 
+		CommonCommandUtil.verifiedUser(getUserId()); 
 		return SUCCESS;
 	}
 	public String userList() throws Exception {
@@ -142,9 +145,9 @@ public class UserAction extends FacilioAction {
 //		        .build();
 		
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
-		List<Role> roles = AccountUtil.getRoleBean().getRoles(orgId);
+		AccountUtil.getRoleBean().getRoles(orgId);
 		// AccountUtil.getUserBean().updateUserLicense(2, 4);
-		Role admin = AccountUtil.getRoleBean().getRole(orgId, "Administrator");
+		Role admin = AccountUtil.getRoleBean().getRole(orgId, "Administrator", false);
 		System.out.println(admin.getId());
 //		for ( Role role : roles){
 //		AccountUtil.getUserBean().addUserLicense(orgId, role.getRoleId(), 2);
@@ -303,7 +306,7 @@ public class UserAction extends FacilioAction {
 
 	
 	public String resendInvite() throws Exception {
-		String portal = ServletActionContext.getRequest().getParameter("portal");
+		ServletActionContext.getRequest().getParameter("portal");
 		
 		user = AccountUtil.getUserBean().getUser(getUserId());
 		if(user.getUserType() == AccountConstants.UserType.REQUESTER.getValue())
@@ -441,8 +444,8 @@ public class UserAction extends FacilioAction {
                       .expiryMonth((Integer.parseInt(card.get("expiryMonth").toString())))
                       .expiryYear((Integer.parseInt(card.get("expiryYear").toString())))
                       .cvv((String) card.get("cvv")).request();
-    Customer customer = result.customer();
-    Card card = result.card();
+    result.customer();
+    result.card();
     // System.out.println(result);
     return null;
   }
@@ -451,7 +454,7 @@ public class UserAction extends FacilioAction {
 	
 	public String updateMyProfile() throws Exception{
 		subscriptionInfo();
-		boolean status = AccountUtil.getUserBean().updateUser(AccountUtil.getCurrentUser().getId(), user);
+		AccountUtil.getUserBean().updateUser(AccountUtil.getCurrentUser().getId(), user);
 		
 		return SUCCESS;
 	}

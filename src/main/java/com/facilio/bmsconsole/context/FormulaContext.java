@@ -315,7 +315,7 @@ public class FormulaContext {
 			FacilioField selectField = new FacilioField();
 			selectField.setName(field.getName());
 			selectField.setDisplayName(field.getDisplayName());
-			selectField.setColumnName("MAX("+field.getCompleteColumnName()+")");
+			selectField.setColumnName("MIN("+field.getCompleteColumnName()+")");
 			selectField.setFieldId(field.getFieldId());
 			return selectField;
 		}

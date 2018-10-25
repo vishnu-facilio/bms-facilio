@@ -42,7 +42,7 @@ public class CustomReportAswaq4 implements CustomReport {
 				continue;
 			}
 			
-			int compliance = 0,nonCompliance = 0,repeatFinding = 0,notApplicable = 0;
+			int compliance = 0,nonCompliance = 0,repeatFinding = 0;
 			
 			
 			Map<Long,Long> qDateRange = new HashMap<>();
@@ -72,7 +72,7 @@ public class CustomReportAswaq4 implements CustomReport {
 				JSONArray array = new JSONArray(); 
 				for(BuildingContext building : SpaceAPI.getAllBuildings()) {
 					
-					compliance = 0;nonCompliance = 0;repeatFinding = 0;notApplicable = 0;
+					compliance = 0;nonCompliance = 0;repeatFinding = 0;
 					for(WorkOrderContext workorder:workorders) {
 						
 						if(workorder.getResource().getId() != building.getId()) {
@@ -139,7 +139,7 @@ public class CustomReportAswaq4 implements CustomReport {
 				else if(fromTime == 1538332200000l) {
 					qres.put("label", "Q4 2018");
 				}
-				Map map = new LinkedHashMap();
+				new LinkedHashMap();
 				ticketData.add(qres);
 				
 			}

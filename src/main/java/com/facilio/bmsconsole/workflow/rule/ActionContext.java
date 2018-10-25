@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.workflow.rule;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
@@ -9,7 +10,11 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.util.TemplateAPI;
 
-public class ActionContext {
+public class ActionContext implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long id = -1;
 	public long getId() {
 		return id;
@@ -70,7 +75,8 @@ public class ActionContext {
 	public void setTemplate(Template template) {
 		this.template = template;
 	}
-	JSONObject templateJson;
+	
+	private JSONObject templateJson;
 	public JSONObject getTemplateJson() {
 		return templateJson;
 	}
@@ -103,5 +109,11 @@ public class ActionContext {
 			actionType.performAction(FieldUtil.getAsJSON(placeHolders), context, currentRule, currentRecord);
 		}
 		return true;
+	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return id+"::"+actionType+"::"+template;
 	}
 }

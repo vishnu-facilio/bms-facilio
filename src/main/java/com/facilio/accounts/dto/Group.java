@@ -5,6 +5,10 @@ import java.util.List;
 
 public class Group implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long groupId = -1;
 	private long orgId = -1;
 	private String name;
@@ -113,6 +117,14 @@ public class Group implements Serializable {
 	}
 	public void setGroupMembersPhone(String groupMembersPhone) {
 		this.groupMembersPhone = groupMembersPhone;
+	}
+	
+	private String groupMembersIds;
+	public String getGroupMembersIds() {
+		return groupMembersIds;
+	}
+	public void setGroupMembersIds(String groupMembersIds) {
+		this.groupMembersIds = groupMembersIds;
 	}
 	
 	private List<GroupMember> members;

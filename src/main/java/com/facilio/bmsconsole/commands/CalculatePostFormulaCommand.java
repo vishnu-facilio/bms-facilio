@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -17,6 +18,7 @@ import org.apache.log4j.Logger;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext.TriggerType;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -47,6 +49,10 @@ public class CalculatePostFormulaCommand implements Command {
 			LOGGER.debug(formulaFields);
 			if (formulaFields != null && !formulaFields.isEmpty()) {
 				Set<String> completedFormulas = new HashSet<>();
+				Long controllerTime = (Long) context.get(FacilioConstants.ContextNames.CONTROLLER_TIME);
+				Integer controllerLevel = (Integer) context.get(FacilioConstants.ContextNames.CONTROLLER_LEVEL);
+				List<ControllerContext> controllers = controllerTime == null ? null : new ArrayList<>();
+				
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				for (Entry<String, List<ReadingContext>> entry : readingMap.entrySet()) {
 					String moduleName = entry.getKey();
@@ -55,10 +61,14 @@ public class CalculatePostFormulaCommand implements Command {
 						Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(entry.getKey()));
 						if (readings != null && !readings.isEmpty()) {
 							for (ReadingContext reading : readings) {
-								calculateDependentFormulas(reading, completedFormulas, formulaFields, fieldMap);
+								calculateDependentFormulas(reading, completedFormulas, formulaFields, fieldMap, controllers, controllerTime, controllerLevel);
 							}
 						}
 					}
+				}
+				
+				if (controllers != null) {
+					context.put(FacilioConstants.ContextNames.CONTROLLER_LIST, controllers);
 				}
 			}
 			LOGGER.info(AccountUtil.getCurrentOrg().getId()+"::Time taken for post formula calculation for modules : "+readingMap.keySet()+" is "+(System.currentTimeMillis() - processStarttime));
@@ -67,7 +77,7 @@ public class CalculatePostFormulaCommand implements Command {
 		return false;
 	}
 
-	private void calculateDependentFormulas(ReadingContext reading, Set<String> completedFormulas, List<FormulaFieldContext> formulas, Map<String, FacilioField> fieldMap) throws Exception {
+	private void calculateDependentFormulas(ReadingContext reading, Set<String> completedFormulas, List<FormulaFieldContext> formulas, Map<String, FacilioField> fieldMap, List<ControllerContext> formulaControllers, Long controllerTime, Integer controllerLevel) throws Exception {
 		// TODO Auto-generated method stub
 		if (reading.getReadings() != null && !reading.getReadings().isEmpty()) {
 			for (FormulaFieldContext formula : formulas) {
@@ -91,6 +101,15 @@ public class CalculatePostFormulaCommand implements Command {
 						context.put(FacilioConstants.ContextNames.FORMULA_FIELD, formula);
 						context.put(FacilioConstants.ContextNames.MODULE_FIELD_MAP, fieldMap);
 						
+						if (controllerTime != null) {
+							ControllerContext formulaController = getFormulaController(formula, completedKey);
+							context.put(FacilioConstants.ContextNames.CONTROLLER, formulaController);
+							context.put(FacilioConstants.ContextNames.CONTROLLER_TIME, controllerTime);
+							context.put(FacilioConstants.ContextNames.CONTROLLER_LEVEL, controllerLevel);
+							
+							formulaControllers.add(formulaController);
+						}
+						
 						FacilioTimer.scheduleInstantJob("PostFormulaCalculationJob", context);
 						LOGGER.debug("Adding instant job for Post formula calculation for  : "+completedKey);
 						
@@ -99,6 +118,16 @@ public class CalculatePostFormulaCommand implements Command {
 				}
 			}
 		}
+	}
+	
+	private ControllerContext getFormulaController (FormulaFieldContext formula, String name) {
+		ControllerContext controller = new ControllerContext();
+		controller.setMacAddr(name);
+		controller.setDataInterval(formula.getInterval());
+		controller.setName(name);
+		controller.setActive(true);
+		
+		return controller;
 	}
 	
 	private boolean containsDependentField(FormulaFieldContext formula, ReadingContext reading, Map<String, FacilioField> fieldMap) {

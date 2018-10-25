@@ -14,6 +14,11 @@ import com.facilio.bmsconsole.util.DashboardUtil;
 
 public class DashboardContext extends ModuleBaseWithCustomFields {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static Logger log = LogManager.getLogger(DashboardContext.class.getName());
 
 	private String dashboardName;
@@ -24,6 +29,22 @@ public class DashboardContext extends ModuleBaseWithCustomFields {
 	}
 	public void setDashboardFolderId(Long dashboardFolderId) {
 		this.dashboardFolderId = dashboardFolderId;
+	}
+	
+	int dateOperator;
+	String dateValue; 
+
+	public int getDateOperator() {
+		return dateOperator;
+	}
+	public void setDateOperator(int dateOperator) {
+		this.dateOperator = dateOperator;
+	}
+	public String getDateValue() {
+		return dateValue;
+	}
+	public void setDateValue(String dateValue) {
+		this.dateValue = dateValue;
 	}
 
 	private ReportSpaceFilterContext reportSpaceFilterContext;
@@ -61,6 +82,15 @@ public class DashboardContext extends ModuleBaseWithCustomFields {
 	private String linkName;
 	
 	private Integer displayOrder;
+	
+	private boolean showHideMobile;
+	
+	public boolean getShowHideMobile() {
+		return showHideMobile;
+	}
+	public void setShowHideMobile(boolean showHideMobile) {
+		this.showHideMobile = showHideMobile;
+	}
 	
 	public Integer getDisplayOrder() {
 		return displayOrder;

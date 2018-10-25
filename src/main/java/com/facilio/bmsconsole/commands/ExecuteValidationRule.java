@@ -78,7 +78,7 @@ public class ExecuteValidationRule implements Command {
 					CommonCommandUtil.appendModuleNameInKey(moduleName, moduleName, FieldUtil.getAsProperties(record), recordPlaceHolders);
 					List<WorkflowRuleContext> currentWorkflows = workflowRules;
 					while (currentWorkflows != null && !currentWorkflows.isEmpty()) {
-						Criteria childCriteria = executeWorkflows(currentWorkflows, moduleName, record, it, recordPlaceHolders, (FacilioContext) context);
+						Criteria childCriteria = executeWorkflows(currentWorkflows, moduleName, record, it, recordPlaceHolders, context);
 						if (childCriteria == null) {
 							break;
 						}
@@ -97,13 +97,13 @@ public class ExecuteValidationRule implements Command {
 			Criteria criteria = new Criteria();
 			
 			for(WorkflowRuleContext workflowRule : workflowRules) {
-				Map<String, Object> rulePlaceHolders = workflowRule.constructPlaceHolders(moduleName, record, recordPlaceHolders, (FacilioContext) context);
+				Map<String, Object> rulePlaceHolders = workflowRule.constructPlaceHolders(moduleName, record, recordPlaceHolders, context);
 				boolean miscFlag = false, criteriaFlag = false, workflowFlag = false;
-				miscFlag = workflowRule.evaluateMisc(moduleName, record, rulePlaceHolders, (FacilioContext) context);
+				miscFlag = workflowRule.evaluateMisc(moduleName, record, rulePlaceHolders, context);
 				if (miscFlag) {
-					criteriaFlag = workflowRule.evaluateCriteria(moduleName, record, rulePlaceHolders, (FacilioContext) context);
+					criteriaFlag = workflowRule.evaluateCriteria(moduleName, record, rulePlaceHolders, context);
 					if (criteriaFlag) {
-						workflowFlag = workflowRule.evaluateWorkflowExpression(moduleName, record, rulePlaceHolders, (FacilioContext) context);
+						workflowFlag = workflowRule.evaluateWorkflowExpression(moduleName, record, rulePlaceHolders, context);
 					}
 				}
 				

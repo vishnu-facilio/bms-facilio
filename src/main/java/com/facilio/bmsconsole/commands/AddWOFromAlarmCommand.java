@@ -15,7 +15,6 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -23,8 +22,7 @@ public class AddWOFromAlarmCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		// TODO Auto-generated method stub
-		ActivityType eventType = (ActivityType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
+		context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
 		AlarmContext oldalarm = (AlarmContext) context.get(FacilioConstants.ContextNames.ALARM);
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		if(oldalarm.isWoCreated() && recordIds != null && !recordIds.isEmpty()) {

@@ -7,6 +7,10 @@ import java.util.Map;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class TemperatureContext extends ModuleBaseWithCustomFields {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long ttime;
 	private double temperature;
 	

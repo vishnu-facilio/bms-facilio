@@ -70,6 +70,16 @@ public class EventContext {
 	public void setSiteId(long siteId) {
 		this.siteId = siteId;
 	}
+	
+
+	private long controllerId = -1;
+	public long getControllerId() {
+		return controllerId;
+	}
+	
+	public void setControllerId(long controllerId) {
+		this.controllerId = controllerId;
+	}
 
 	private String eventMessage;
 	public String getEventMessage() {

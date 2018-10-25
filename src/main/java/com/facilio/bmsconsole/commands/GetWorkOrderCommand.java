@@ -1,11 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -46,6 +49,12 @@ public class GetWorkOrderCommand implements Command {
 				context.put(FacilioConstants.ContextNames.WORK_ORDER, workOrder);
 				
 				TicketAPI.loadRelatedModules(workOrder);
+				
+				Map<Long, List<TaskContext>> taskMap = workOrder.getTasks();
+				if (taskMap != null) {
+					List<TaskContext> tasks = taskMap.values().stream().flatMap(c -> c.stream()).collect(Collectors.toList());
+					context.put(FacilioConstants.ContextNames.TASK_LIST, tasks);
+				}
 			}
 		}
 		else {

@@ -19,6 +19,10 @@ import com.facilio.constants.FacilioConstants;
 
 public class Role implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = Logger.getLogger(Role.class.getName());
 	private static org.apache.log4j.Logger log = LogManager.getLogger(Role.class.getName());
 
@@ -92,6 +96,30 @@ public class Role implements Serializable {
 	}
 	public void addPermission(Permissions permission) {
 		permissions.add(permission);
+	}
+	
+	private String roleMembersEmail;
+	public String getRoleMembersEmail() {
+		return roleMembersEmail;
+	}
+	public void setRoleMembersEmail(String roleMembersEmail) {
+		this.roleMembersEmail = roleMembersEmail;
+	}
+	
+	private String roleMembersPhone;
+	public String getRoleMembersPhone() {
+		return roleMembersPhone;
+	}
+	public void setRoleMembersPhone(String roleMembersPhone) {
+		this.roleMembersPhone = roleMembersPhone;
+	}
+	
+	private String roleMembersIds;
+	public String getRoleMembersIds() {
+		return roleMembersIds;
+	}
+	public void setRoleMembersIds(String roleMembersIds) {
+		this.roleMembersIds = roleMembersIds;
 	}
 	
 	public Criteria permissionCriteria(String moduleName, String action)

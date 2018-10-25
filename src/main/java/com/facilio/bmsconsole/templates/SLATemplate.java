@@ -10,6 +10,10 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 public class SLATemplate extends Template {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JSONArray slaPolicyJson;
 	public JSONArray getSlaPolicyJson() {
 		return slaPolicyJson;

@@ -9,6 +9,10 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 public class BaseSpaceContext extends ResourceContext {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private double area = -1;
 	public double getArea() {
 		return area;
