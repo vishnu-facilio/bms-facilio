@@ -116,7 +116,8 @@ public class ExecuteAllWorkflowsCommand implements Command, Serializable
 					Map<String, Object> placeHolders = new HashMap<>();
 					CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeHolders);
 					CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeHolders);
-					
+					placeHolders.put("org", AccountUtil.getCurrentOrg());
+					placeHolders.put("user", AccountUtil.getCurrentUser());
 					List records = new LinkedList<>(entry.getValue());
 					Iterator it = records.iterator();
 					while (it.hasNext()) {

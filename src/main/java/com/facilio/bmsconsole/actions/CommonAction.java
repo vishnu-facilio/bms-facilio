@@ -1,12 +1,16 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.ExportUtil;
+import com.facilio.bmsconsole.util.FreeMarkerAPI;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
-import com.opensymphony.xwork2.ActionSupport;
 
-public class CommonAction extends ActionSupport {
+public class CommonAction extends FacilioAction {
 	
 	/**
 	 * 
@@ -20,24 +24,36 @@ public class CommonAction extends ActionSupport {
 		this.workflow = workflow;
 	}
 	
-	private Object result;
-	public Object getResult() {
-		return result;
-	}
-	public void setResult(Object result) {
-		this.result = result;
-	}
-	
 	public String executeWorkflow() throws Exception {
 		if (workflow.getWorkflowString() == null) {
 			workflow.setWorkflowString(WorkflowUtil.getXmlStringFromWorkflow(workflow));
 		}
-		result = WorkflowUtil.getWorkflowExpressionResult(workflow.getWorkflowString(), null);
+		setResult("workflowResult", WorkflowUtil.getWorkflowExpressionResult(workflow.getWorkflowString(), null));
 		return SUCCESS;
 	}
 	
 	public String exportModule() throws Exception {
 		fileUrl = ExportUtil.exportModule(FileFormat.getFileFormat(type), moduleName, viewName);
+		return SUCCESS;
+	}
+	
+	private String ftl;
+	public String getFtl() {
+		return ftl;
+	}
+	public void setFtl(String ftl) {
+		this.ftl = ftl;
+	}
+	
+	public String parseFtl() throws Exception {
+		if (workflow.getWorkflowString() == null) {
+			workflow.setWorkflowString(WorkflowUtil.getXmlStringFromWorkflow(workflow));
+		}
+		Map<String, Object> parameters = new HashMap<String,Object>();
+		parameters.put("org", AccountUtil.getCurrentOrg());
+		Map<String, Object> params = WorkflowUtil.getExpressionResultMap(workflow.getWorkflowString(), parameters);
+		
+		setResult("parsedFtl", FreeMarkerAPI.processTemplate(ftl, params));
 		return SUCCESS;
 	}
 	

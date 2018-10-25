@@ -114,18 +114,25 @@ public abstract class Template implements Serializable {
 	public final JSONObject getTemplate(Map<String, Object> parameters) throws Exception {
 		JSONObject json = getOriginalTemplate();
 		if (json != null && workflow != null) {
-			String jsonStr = json.toJSONString();
 			Map<String, Object> params = WorkflowUtil.getExpressionResultMap(workflow.getWorkflowString(), parameters);
 			
+			JSONObject parsedJson = null;
 			if (isFtl()) {
-				jsonStr = FreeMarkerAPI.processTemplate(jsonStr, params);
+				// StrSubstitutor.replace(jsonStr, params);
+				parsedJson = new JSONObject();
+				for (Object key : json.keySet()) {
+					parsedJson.put(key, FreeMarkerAPI.processTemplate(json.get(key).toString(), params));
+				}
+				parameters.put("mailType", "html");
 			}
 			else {
+				String jsonStr = json.toJSONString();
 				jsonStr = StringSubstitutor.replace(jsonStr, params);// StrSubstitutor.replace(jsonStr, params);
+				JSONParser parser = new JSONParser();
+				parsedJson = (JSONObject) parser.parse(jsonStr);
 			}
 			
-			JSONParser parser = new JSONParser();
-			return (JSONObject) parser.parse(jsonStr);
+			return parsedJson;
 		}
 		return json;
 	}
