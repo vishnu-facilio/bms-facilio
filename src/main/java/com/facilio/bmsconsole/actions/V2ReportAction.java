@@ -529,11 +529,11 @@ public class V2ReportAction extends FacilioAction {
 				if(readingAlarmContext.getModifiedTime() > 0) {
 					modifiedTime = readingAlarmContext.getModifiedTime();
 				}
-				ZonedDateTime startTime = DateTimeUtil.getDayStartTimeOf(DateTimeUtil.getZonedDateTime(modifiedTime));
-				ZonedDateTime endTime = DateTimeUtil.getDayEndTimeOf(DateTimeUtil.getZonedDateTime(modifiedTime));
 				
-				this.startTime = startTime.toInstant().toEpochMilli();
-				this.endTime = endTime.toInstant().toEpochMilli();
+				DateRange range = DateOperators.CURRENT_N_DAY.getRange(""+modifiedTime);
+				
+				this.startTime = range.getStartTime();
+				this.endTime = range.getEndTime();
 			}
 			setxAggr(0);
 		}
@@ -574,7 +574,15 @@ public class V2ReportAction extends FacilioAction {
 	}
 	
 	private String setReportResult(FacilioContext context) {
-		setResult("report", context.get(FacilioConstants.ContextNames.REPORT));
+		if(context.get(FacilioConstants.ContextNames.REPORT) != null) {
+			
+			reportContext = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
+			
+			if(alarmId  > 0) {
+				reportContext.setDateOperator(DateOperators.CURRENT_N_DAY.getOperatorId());
+			}
+			setResult("report", reportContext);
+		}
 		setResult("reportXValues", context.get(FacilioConstants.ContextNames.REPORT_X_VALUES)); //This can be removed from new format
 		setResult("reportData", context.get(FacilioConstants.ContextNames.REPORT_DATA));
 		setResult("reportVarianceData", context.get(FacilioConstants.ContextNames.REPORT_VARIANCE_DATA));
