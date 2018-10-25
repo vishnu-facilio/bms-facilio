@@ -61,6 +61,7 @@ public class FieldFactory {
 		public static List<String> workOrderFieldsInclude = new ArrayList<String>();
 		static {
 			workOrderFieldsInclude.add("actualWorkDuration");
+			workOrderFieldsInclude.add("subject");
 			workOrderFieldsInclude.add("actualWorkEnd");
 			workOrderFieldsInclude.add("assignedBy");
 			workOrderFieldsInclude.add("assignedTo");
