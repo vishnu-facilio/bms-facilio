@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
+import com.facilio.bmsconsole.forms.FacilioForm.LabelPosition;
 import com.facilio.bmsconsole.forms.FormField.Required;
 import com.facilio.bmsconsole.modules.FacilioField.FieldDisplayType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
@@ -59,6 +60,7 @@ public class FormFactory {
 		form.setName("loggedInServiceWorkRequest");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER_REQUEST));
 		form.setFormType(FormType.PORTAL);
+		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getLoggedInServiceWorkRequestFormFields());
 		return form;
 	}
@@ -68,6 +70,7 @@ public class FormFactory {
 		form.setDisplayName("SUBMIT A REQUEST");
 		form.setName("serviceWorkRequest");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER_REQUEST));
+		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getServiceWorkRequestFormFields());
 		form.setFormType(FormType.PORTAL);
 		return form;
@@ -77,6 +80,7 @@ public class FormFactory {
 		form.setDisplayName("WORKORDER");
 		form.setName("workOrder");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER_REQUEST));
+		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getWebWorkOrderFormFields());
 		form.setFormType(FormType.WEB);
 		return form;
@@ -87,6 +91,7 @@ public class FormFactory {
 		form.setDisplayName("SUBMIT WORKORDER");
 		form.setName("mobile_default");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER));
+		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getMobileWorkOrderFormFields());
 		form.setFormType(FormType.MOBILE);
 		return form;
@@ -108,6 +113,7 @@ public class FormFactory {
 		form.setDisplayName("SUBMIT WORKORDER");
 		form.setName("web_default");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER));
+		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getWebWorkOrderFormFields());
 		form.setFormType(FormType.WEB);
 		return form;
@@ -118,6 +124,7 @@ public class FormFactory {
 		form.setDisplayName("WORKORDER");
 		form.setName("web_default");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER_REQUEST));
+		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getWebWorkRequestFormFields());
 		form.setFormType(FormType.WEB);
 		return form;
@@ -128,9 +135,9 @@ public class FormFactory {
 		fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("site", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 2, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 3, 1));
-		fields.add(new FormField("ticketcategory", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "ticketcategory", 4, 2));
-		fields.add(new FormField("ticketpriority", FieldDisplayType.LOOKUP_SIMPLE, "Priority", Required.OPTIONAL, "ticketpriority", 4, 3));
-		fields.add(new FormField("tickettype",FieldDisplayType.LOOKUP_SIMPLE,"Maintance Type", Required.OPTIONAL, "tickettype", 5, 1));
+		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "ticketcategory", 4, 2));
+		fields.add(new FormField("priority", FieldDisplayType.LOOKUP_SIMPLE, "Priority", Required.OPTIONAL, "ticketpriority", 4, 3));
+		fields.add(new FormField("type",FieldDisplayType.LOOKUP_SIMPLE,"Maintance Type", Required.OPTIONAL, "tickettype", 5, 1));
 		fields.add(new FormField("groups",FieldDisplayType.LOOKUP_SIMPLE,"Team", Required.OPTIONAL, "groups", 6, 1));
 		return fields;
 	}

@@ -129,6 +129,12 @@ public class FieldFactory {
 		formType.setModule(module);
 		fields.add(formType);
 		
+		FacilioField labelPosition = new FacilioField();
+		labelPosition.setName("labelPosition");
+		labelPosition.setDataType(FieldType.NUMBER);
+		labelPosition.setColumnName("FORM_TYPE");
+		labelPosition.setModule(module);
+		fields.add(labelPosition);
 		
 		return fields;
 	}
