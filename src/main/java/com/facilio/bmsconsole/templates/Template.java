@@ -11,6 +11,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.facilio.bmsconsole.util.FreeMarkerAPI;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
@@ -96,12 +97,33 @@ public abstract class Template implements Serializable {
 		this.type = Type.TYPE_MAP.get(type);
 	}
 	
+	private Boolean ftl;
+	public Boolean getFtl() {
+		return ftl;
+	}
+	public void setFtl(Boolean ftl) {
+		this.ftl = ftl;
+	}
+	public boolean isFtl() {
+		if (ftl != null) {
+			return ftl.booleanValue();
+		}
+		return false;
+	}
+	
 	public final JSONObject getTemplate(Map<String, Object> parameters) throws Exception {
 		JSONObject json = getOriginalTemplate();
 		if (json != null && workflow != null) {
 			String jsonStr = json.toJSONString();
 			Map<String, Object> params = WorkflowUtil.getExpressionResultMap(workflow.getWorkflowString(), parameters);
-			jsonStr = StringSubstitutor.replace(jsonStr, params);// StrSubstitutor.replace(jsonStr, params);
+			
+			if (isFtl()) {
+				jsonStr = FreeMarkerAPI.processTemplate(jsonStr, params);
+			}
+			else {
+				jsonStr = StringSubstitutor.replace(jsonStr, params);// StrSubstitutor.replace(jsonStr, params);
+			}
+			
 			JSONParser parser = new JSONParser();
 			return (JSONObject) parser.parse(jsonStr);
 		}

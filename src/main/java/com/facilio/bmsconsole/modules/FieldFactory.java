@@ -967,6 +967,22 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	public static List<FacilioField> getApprovalStepsFields () {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getApprovalRulesModule();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getSiteIdField(module));
+		fields.add(getField("ruleId", "RULE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("recordId", "RECORD_ID", module, FieldType.LOOKUP));
+		fields.add(getField("actionBy", "ACTION_BY", module, FieldType.LOOKUP));
+		fields.add(getField("approverGroup", "APPROVER_GROUP", module, FieldType.LOOKUP));
+		fields.add(getField("action", "ACTION", module, FieldType.NUMBER));
+		
+		return fields;
+	}
+	
 	public static List<FacilioField> getSharingFields(FacilioModule module) {
 		List<FacilioField> fields = new ArrayList<>();
 		
@@ -1465,6 +1481,7 @@ public class FieldFactory {
 		fields.add(placeholder);
 
 		fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.LOOKUP));
+		fields.add(getField("ftl", "IS_FTL", module, FieldType.BOOLEAN));
 
 		return fields;
 	}

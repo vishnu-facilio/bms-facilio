@@ -124,6 +124,7 @@ public class ExecuteAllWorkflowsCommand implements Command, Serializable
 						List<UpdateChangeSet> changeSet = currentChangeSet == null ? null : currentChangeSet.get( ((ModuleBaseWithCustomFields)record).getId() );
 						Map<String, Object> recordPlaceHolders = new HashMap<>(placeHolders);
 						CommonCommandUtil.appendModuleNameInKey(moduleName, moduleName, FieldUtil.getAsProperties(record), recordPlaceHolders);
+						recordPlaceHolders.put(moduleName, record);
 						List<WorkflowRuleContext> currentWorkflows = workflowRules;
 						while (currentWorkflows != null && !currentWorkflows.isEmpty()) {
 							Criteria childCriteria = executeWorkflows(currentWorkflows, moduleName, record, changeSet, it, recordPlaceHolders, context);
