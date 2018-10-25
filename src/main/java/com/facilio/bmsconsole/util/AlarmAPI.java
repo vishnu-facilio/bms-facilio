@@ -8,9 +8,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import javax.print.attribute.standard.Severity;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.text.WordUtils;
@@ -388,6 +385,7 @@ public class AlarmAPI {
 	public static void addReadingAlarmProps(JSONObject obj, ReadingRuleContext rule, ReadingContext reading) throws Exception {
 		obj.put("readingFieldId", rule.getReadingFieldId());
 		obj.put("readingDataId", reading.getId());
+		obj.put("readingVal", reading.getReading(rule.getReadingField().getName()));
 		obj.put("ruleId", rule.getId());
 		if (rule.getBaselineId() != -1) {
 			obj.put("baselineId", rule.getBaselineId());

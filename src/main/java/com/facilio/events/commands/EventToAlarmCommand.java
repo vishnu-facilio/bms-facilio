@@ -141,6 +141,7 @@ public class EventToAlarmCommand implements Command {
 				alarm.put("endTime", event.getAdditionInfo().get("endTime"));
 				alarm.put("readingMessage", event.getAdditionInfo().get("readingMessage"));
 				alarm.put("readingDataId", event.getAdditionInfo().get("readingDataId"));
+				alarm.put("readingVal", event.getAdditionInfo().get("readingVal"));
 				alarm.put("ruleId", event.getAdditionInfo().get("ruleId"));
 			}
 		}
