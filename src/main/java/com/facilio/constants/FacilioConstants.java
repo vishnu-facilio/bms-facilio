@@ -342,6 +342,7 @@ public class FacilioConstants {
 		public static final String ASSET_CATEGORY = "assetcategory";
 		public static final String ASSET_DEPARTMENT = "assetdepartment";
 		public static final String ENERGY_METER = "energymeter";
+		public static final String WATER_METER = "watermeter";
 		public static final String CHILLER = "chiller";
 		public static final String CHILLER_PRIMARY_PUMP = "chillerprimarypump";
 		public static final String CHILLER_SECONDARY_PUMP = "chillersecondarypump";
@@ -361,6 +362,7 @@ public class FacilioConstants {
 		public static final String SET_POINT_READING = "setpointreading";
 		public static final String ENERGY_DATA_READING = "energydata";
 		public static final String UTILITY_BILL_READING = "utilitybillreading";
+		public static final String WATER_READING = "waterreading";
 		
 		public static final String BASE_SPACE_PHOTOS = "basespacephotos";
 		public static final String ASSET_PHOTOS = "assetphotos";

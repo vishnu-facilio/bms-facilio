@@ -79,6 +79,11 @@ public class SetModuleForSpecialAssetsCommand implements Command{
 				moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.ENERGY_METER);
 				moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Energy_Meter");
 			}
+			else if(assetCategoryName.trim().equalsIgnoreCase("Water Meter"))
+			{
+				moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WATER_METER);
+				moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Water_Meter");
+			}
 			else if(assetCategoryName.trim().equalsIgnoreCase("Chiller"))
 			{
 				moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.CHILLER);

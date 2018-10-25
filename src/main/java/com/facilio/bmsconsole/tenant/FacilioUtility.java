@@ -17,9 +17,9 @@ public enum FacilioUtility {
 	},
 	WATER {
 		@Override
-		public FacilioField getReadingField() {
-			// TODO Auto-generated method stub
-			return null;
+		public FacilioField getReadingField() throws Exception {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			return modBean.getField("waterConsumptionDelta", FacilioConstants.ContextNames.WATER_READING);
 		}
 	},
 	NATURAL_GAS {
