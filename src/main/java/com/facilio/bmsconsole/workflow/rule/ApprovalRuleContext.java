@@ -7,17 +7,21 @@ import java.util.Map;
 
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericInsertRecordBuilder;
 
 public class ApprovalRuleContext extends WorkflowRuleContext {
 	
@@ -223,5 +227,38 @@ public class ApprovalRuleContext extends WorkflowRuleContext {
 			}
 			return null;
 		}
+	}
+	
+	public void addApprovalStep (long recordId, ApprovalState action) throws Exception {
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+													.table(ModuleFactory.getApprovalStepsModule().getTableName())
+													.fields(FieldFactory.getApprovalStepsFields())
+													;
+		
+		List<SingleSharingContext> matchingApprovers = approvers.getMatching();
+		if (matchingApprovers == null || matchingApprovers.isEmpty()) {
+			insertBuilder.addRecord(constructStep(recordId, null, action));
+		}
+		else {
+			for (SingleSharingContext approver : matchingApprovers) {
+				insertBuilder.addRecord(constructStep(recordId, approver, action));
+			}
+		}
+		insertBuilder.save();
+	}
+	
+	private Map<String, Object> constructStep(long recordId, SingleSharingContext approver, ApprovalState action) {
+		Map<String, Object> prop = new HashMap<>();
+		prop.put("orgId", AccountUtil.getCurrentOrg().getId());
+		prop.put("siteId", getSiteId());
+		prop.put("ruleId", getId());
+		prop.put("recordId", recordId);
+		prop.put("actionBy", AccountUtil.getCurrentUser().getId());
+		prop.put("action", action.getValue());
+		if (approver != null) {
+			prop.put("approverGroup", approver.getId());
+		}
+		
+		return prop;
 	}
 }

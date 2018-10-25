@@ -25,10 +25,10 @@ public class VerifyApprovalCommand implements Command {
 		
 		if (oldWos != null && !oldWos.isEmpty() && workOrder != null) {
 			workOrder.setApprovalRuleId(-1); //Approval Rule ID cannot be changed by user action
-			List<Long> workflowIds = new ArrayList<>();
+			List<Long> ruleIds = new ArrayList<>();
 			for (WorkOrderContext wo : oldWos) {
 				if (wo.getApprovalStateEnum() == ApprovalState.REQUESTED) {
-					workflowIds.add(wo.getApprovalRuleId());
+					ruleIds.add(wo.getApprovalRuleId());
 					
 					if (workOrder.getApprovalStateEnum() != ApprovalState.APPROVED && workOrder.getApprovalStateEnum() != ApprovalState.REJECTED) {
 						throw new IllegalArgumentException("Work Request has to be either approved or rejected. It can't be updated until then.");
@@ -36,15 +36,19 @@ public class VerifyApprovalCommand implements Command {
 				}
 			}
 			
-			if (!workflowIds.isEmpty()) {
-				List<WorkflowRuleContext> rules = WorkflowRuleAPI.getWorkflowRules(workflowIds);
+			if (!ruleIds.isEmpty()) {
+				List<WorkflowRuleContext> rules = WorkflowRuleAPI.getWorkflowRules(ruleIds);
 				Map<Long, ApprovalRuleContext> ruleMap = rules.stream()
 														.collect(Collectors.toMap(WorkflowRuleContext::getId, r -> (ApprovalRuleContext) r));
 				
 				for (WorkOrderContext wo : oldWos) {
 					if (wo.getApprovalStateEnum() == ApprovalState.REQUESTED) {
-						if (!ruleMap.get(wo.getApprovalRuleId()).hasApprovalPermission()) {
+						ApprovalRuleContext rule = ruleMap.get(wo.getApprovalRuleId()); 
+						if (!rule.hasApprovalPermission()) {
 							throw new IllegalArgumentException("You are not authorised to perform this operation");
+						}
+						else {
+							rule.addApprovalStep(wo.getId(), workOrder.getApprovalStateEnum());
 						}
 					}
 				}
@@ -53,5 +57,4 @@ public class VerifyApprovalCommand implements Command {
 		
 		return false;
 	}
-
 }

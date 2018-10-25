@@ -35,34 +35,58 @@ public class SharingContext extends ArrayList<SingleSharingContext> {
 		}
 		
 		for (SingleSharingContext permission : this) {
-			switch (permission.getTypeEnum()) {
-				case USER:
-					if (permission.getUserId() == user.getOuid()) {
-						return true;
-					}
-					break;
-				case ROLE:
-					if (permission.getRoleId() == user.getRoleId()) {
-						return true;
-					}
-				case GROUP:
-					if (permission.getGroupMembers() == null) {
-						GroupBean groupBean = (GroupBean) BeanFactory.lookup("GroupBean");
-						List<GroupMember> members = groupBean.getGroupMembers(permission.getGroupId());
-						permission.setGroupMembers(members);
-					}
-					
-					if (permission.getGroupMembers() != null && !permission.getGroupMembers().isEmpty()) {
-						for (GroupMember member : permission.getGroupMembers()) {
-							if (member.getOuid() == user.getOuid()) {
-								return true;
-							}
-						}
-					}
-					
-					break;
+			if (isMatching(permission, user)) {
+				return true;
 			}
 		}
 		return false;
+	}
+	
+	private boolean isMatching (SingleSharingContext permission, User user) throws Exception {
+		switch (permission.getTypeEnum()) {
+			case USER:
+				if (permission.getUserId() == user.getOuid()) {
+					return true;
+				}
+				break;
+			case ROLE:
+				if (permission.getRoleId() == user.getRoleId()) {
+					return true;
+				}
+			case GROUP:
+				if (permission.getGroupMembers() == null) {
+					GroupBean groupBean = (GroupBean) BeanFactory.lookup("GroupBean");
+					List<GroupMember> members = groupBean.getGroupMembers(permission.getGroupId());
+					permission.setGroupMembers(members);
+				}
+				
+				if (permission.getGroupMembers() != null && !permission.getGroupMembers().isEmpty()) {
+					for (GroupMember member : permission.getGroupMembers()) {
+						if (member.getOuid() == user.getOuid()) {
+							return true;
+						}
+					}
+				}
+				break;
+		}
+		return false;
+	}
+	
+	public List<SingleSharingContext> getMatching() throws Exception {
+		return getMatching(AccountUtil.getCurrentUser());
+	}
+	
+	public List<SingleSharingContext> getMatching (User user) throws Exception {
+		if (isEmpty()) {
+			return null;
+		}
+		
+		List<SingleSharingContext> matchingPermissions = new ArrayList<>();
+		for (SingleSharingContext permission : this) {
+			if (isMatching(permission, user)) {
+				matchingPermissions.add(permission);
+			}
+		}
+		return matchingPermissions;
 	}
 }
