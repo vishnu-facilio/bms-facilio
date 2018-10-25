@@ -67,6 +67,10 @@
 			method="v2attachmentList">
 		</action>
 		
+		<action name="executeworkflow" class="com.facilio.bmsconsole.actions.CommonAction"
+			method="executeWorkflow">
+		</action>
+		
 		<action name="parseftl" class="com.facilio.bmsconsole.actions.CommonAction"
 			method="parseFtl">
 		</action>

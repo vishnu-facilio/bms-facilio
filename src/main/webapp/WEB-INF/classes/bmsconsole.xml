@@ -234,12 +234,6 @@
 				<param name="includeProperties">alarms,alarms\[\d+\],alarms\[\d+\].*</param>
 			</result>
 		</action>
-		<action name="executeworkflow" class="com.facilio.bmsconsole.actions.CommonAction"
-			method="executeWorkflow">
-			<result name="success" type="json">
-				<param name="includeProperties">result</param>
-			</result>
-		</action>
 		<action name="exportModule" class="com.facilio.bmsconsole.actions.CommonAction"
 			method="exportModule">
 			<result name="success" type="json">
