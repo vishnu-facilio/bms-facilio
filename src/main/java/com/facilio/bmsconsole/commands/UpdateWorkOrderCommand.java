@@ -48,57 +48,44 @@ public class UpdateWorkOrderCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
-		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
+		WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER); //WorkOrders to be updated in bulk
+		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST); //All IDs (bulk and individual) of WOs to be updated
 		List<ReadingContext> readings = new ArrayList<>();
 		List<WorkOrderContext> oldWos = (List<WorkOrderContext>) context.get(FacilioConstants.TicketActivity.OLD_TICKETS);
+		List<WorkOrderContext> newWos = (List<WorkOrderContext>) context.get(FacilioConstants.ContextNames.WORK_ORDER_LIST); //WorkOrders to be updated individually. But should be present in oldWOs
 		if(workOrder != null && recordIds != null && !recordIds.isEmpty() && oldWos != null && !oldWos.isEmpty()) {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
-			
-			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-			Long lastSyncTime = (Long) context.get(FacilioConstants.ContextNames.LAST_SYNC_TIME);
-			if (lastSyncTime != null && oldWos.get(0).getModifiedTime() > lastSyncTime ) {
-				throw new RuntimeException("The workorder was modified after the last sync");
-			}
-			
-			List<WorkOrderContext> newWos = new ArrayList<WorkOrderContext>();
-			updateWODetails(workOrder);
 			ActivityType activityType = (ActivityType)context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
+			Map<Long, List<UpdateChangeSet>> changeSets = new HashMap<>();
 			
-			if (workOrder.getAssignedTo() != null || workOrder.getAssignmentGroup() != null) {
-				updateStatus(workOrder, oldWos, newWos, readings, activityType);
+			int rowsUpdated = 0;
+			Map<Long, WorkOrderContext> oldWoMap = oldWos.stream().collect(Collectors.toMap(WorkOrderContext::getId, Function.identity()));
+			if (newWos != null && !newWos.isEmpty()) {
+				for (WorkOrderContext wo : newWos) {
+					rowsUpdated += updateWorkOrders(wo, module, Collections.singletonList(oldWoMap.remove(wo.getId())), readings, activityType, changeSets, (FacilioContext) context);
+				}
 			}
-			else if(workOrder.getStatus() != null) {
-				validateCloseStatus(workOrder, oldWos, newWos, readings, activityType, (FacilioContext) context);
-			}
-			else if (workOrder.getSiteId() != -1 && AccountUtil.getCurrentSiteId() == -1) {
-				transferToAnotherSite(workOrder, oldWos, newWos);
-			}
-			
-			if (workOrder.getSiteId() == -1) {
-				TicketAPI.validateSiteSpecificData(workOrder, oldWos);
-			}
-			
-			if (newWos.isEmpty()) {
-				bulkUpdate(moduleName, fields, oldWos, workOrder, (FacilioContext) context);
-			}
-			else {
-				individualUpdate(moduleName, fields, oldWos, newWos, (FacilioContext) context);
-			}
+			rowsUpdated += updateWorkOrders(workOrder, module, oldWoMap.values().stream().collect(Collectors.toList()), readings, activityType, changeSets, (FacilioContext) context);
 			
 			if(TYPES.contains(activityType) || workOrder.getPriority() != null) {
 				SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
-						.moduleName(moduleName)
+						.module(module)
 						.beanClass(WorkOrderContext.class)
-						.select(fields)
+						.select(modBean.getAllFields(moduleName))
 						.andCondition(CriteriaAPI.getIdCondition(recordIds, module))
 						.orderBy("ID");
 
 				List<WorkOrderContext> workOrders = builder.get();
 				context.put(FacilioConstants.ContextNames.RECORD_LIST, workOrders);
+			}
+			
+			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
+			
+			if (!changeSets.isEmpty()) {
+				context.put(FacilioConstants.ContextNames.CHANGE_SET, changeSets);
 			}
 		}
 		
@@ -111,36 +98,68 @@ public class UpdateWorkOrderCommand implements Command {
 		return false;
 	}
 	
-	private void bulkUpdate(String moduleName, List<FacilioField> fields, List<WorkOrderContext> oldWos, WorkOrderContext wo, FacilioContext context) throws Exception {
-		UpdateRecordBuilder<WorkOrderContext> updateBuilder = new UpdateRecordBuilder<WorkOrderContext>()
-				.moduleName(moduleName)
-				.fields(fields)
-				.withChangeSet(oldWos)
-				;
+	private int updateWorkOrders (WorkOrderContext workOrder, FacilioModule module, List<WorkOrderContext> oldWos, List<ReadingContext> readings, ActivityType activityType, Map<Long, List<UpdateChangeSet>> changeSets, FacilioContext context) throws Exception {
+		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+		Long lastSyncTime = (Long) context.get(FacilioConstants.ContextNames.LAST_SYNC_TIME);
+		if (lastSyncTime != null && oldWos.get(0).getModifiedTime() > lastSyncTime ) {
+			throw new RuntimeException("The workorder was modified after the last sync");
+		}
 		
-		context.put(FacilioConstants.ContextNames.ROWS_UPDATED, updateBuilder.update(wo));
-		context.put(FacilioConstants.ContextNames.CHANGE_SET, updateBuilder.getChangeSet());
+		List<WorkOrderContext> newWos = new ArrayList<WorkOrderContext>();
+		updateWODetails(workOrder);
 		
+		if (workOrder.getAssignedTo() != null || workOrder.getAssignmentGroup() != null) {
+			updateStatus(workOrder, oldWos, newWos, readings, activityType);
+		}
+		else if(workOrder.getStatus() != null) {
+			validateCloseStatus(workOrder, oldWos, newWos, readings, activityType, context);
+		}
+		else if (workOrder.getSiteId() != -1 && AccountUtil.getCurrentSiteId() == -1) {
+			transferToAnotherSite(workOrder);
+		}
+		
+		if (workOrder.getSiteId() == -1) {
+			TicketAPI.validateSiteSpecificData(workOrder, oldWos);
+		}
+		
+		if (newWos.isEmpty()) {
+			return bulkUpdate(module, fields, oldWos, workOrder, changeSets, context);
+		}
+		else {
+			return individualUpdate(module, fields, oldWos, newWos, changeSets, context);
+		}
 	}
 	
-	private void individualUpdate (String moduleName, List<FacilioField> fields, List<WorkOrderContext> oldWos, List<WorkOrderContext> newWos, FacilioContext context) throws Exception {
+	private int bulkUpdate(FacilioModule module, List<FacilioField> fields, List<WorkOrderContext> oldWos, WorkOrderContext wo, Map<Long, List<UpdateChangeSet>> changeSets, FacilioContext context) throws Exception {
+		UpdateRecordBuilder<WorkOrderContext> updateBuilder = new UpdateRecordBuilder<WorkOrderContext>()
+				.module(module)
+				.fields(fields)
+				.withChangeSet(oldWos)
+				; //No where condition because Old records are specified
+		
+		int rowsUpdated = updateBuilder.update(wo);
+		if (updateBuilder.getChangeSet() != null) {
+			changeSets.putAll(updateBuilder.getChangeSet());
+		}
+		return rowsUpdated;
+	}
+	
+	private int individualUpdate (FacilioModule module, List<FacilioField> fields, List<WorkOrderContext> oldWos, List<WorkOrderContext> newWos, Map<Long, List<UpdateChangeSet>> changeSets, FacilioContext context) throws Exception {
 		int rowsUpdated = 0;
-		Map<Long, List<UpdateChangeSet>> changeSets = new HashMap<>();
 		Map<Long, WorkOrderContext> oldWoMap = oldWos.stream().collect(Collectors.toMap(WorkOrderContext::getId, Function.identity()));
 		for (WorkOrderContext wo : newWos) {
 			UpdateRecordBuilder<WorkOrderContext> updateBuilder = new UpdateRecordBuilder<WorkOrderContext>()
-					.moduleName(moduleName)
+					.module(module)
 					.fields(fields)
 					.withChangeSet(Collections.singletonList(oldWoMap.get(wo.getId())))
-					;
+					; //No where condition because Old records are specified
 			
 			rowsUpdated += updateBuilder.update(wo);
 			if (updateBuilder.getChangeSet() != null) {
 				changeSets.putAll(updateBuilder.getChangeSet());
 			}
 		}
-		context.put(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
-		context.put(FacilioConstants.ContextNames.CHANGE_SET, changeSets);
+		return rowsUpdated;
 	}
 	
 	private Map<String, TicketStatusContext> statusMap = null;
@@ -152,7 +171,7 @@ public class UpdateWorkOrderCommand implements Command {
 		return statusMap; 
 	}
 	
-	private void transferToAnotherSite (WorkOrderContext workOrder, List<WorkOrderContext> oldWos, List<WorkOrderContext> newWos) throws Exception {
+	private void transferToAnotherSite (WorkOrderContext workOrder) throws Exception {
 		List<Long> mySites = CommonCommandUtil.getMySiteIds();
 		if (mySites != null && !mySites.isEmpty()) {
 			boolean found = false;
@@ -167,18 +186,13 @@ public class UpdateWorkOrderCommand implements Command {
 			}
 		}
 		
-		for(WorkOrderContext oldWo: oldWos) { 
-			WorkOrderContext newWo = FieldUtil.cloneBean(workOrder, WorkOrderContext.class);
-			newWo.setId(oldWo.getId());
-			newWo.setSiteId(oldWo.getSiteId());
-			newWo.setAssignedTo(new User());
-			newWo.getAssignedTo().setId(-1);
-			newWo.setAssignmentGroup(new Group());
-			newWo.getAssignmentGroup().setId(-1);
-			newWo.setResource(new ResourceContext());
-			newWo.getResource().setId(-1);
-			newWos.add(newWo);
-		}
+		//Creating multiple New WOs is unnecessary here 
+		workOrder.setAssignedTo(new User());
+		workOrder.getAssignedTo().setId(-1);
+		workOrder.setAssignmentGroup(new Group());
+		workOrder.getAssignmentGroup().setId(-1);
+		workOrder.setResource(new ResourceContext());
+		workOrder.getResource().setId(-1);
 	}
 	
 	private void validateCloseStatus (WorkOrderContext workOrder, List<WorkOrderContext> oldWos, List<WorkOrderContext> newWos, List<ReadingContext> userReadings, ActivityType activityType, FacilioContext context) throws Exception {
