@@ -197,6 +197,7 @@ public class TransactionChainFactory {
 			c.addCommand(new SeperateToCategoriesCommand());
 			c.addCommand(new SetModuleForSpecialAssetsCommand());
 			c.addCommand(new BulkPushAssetCommands());
+			c.addCommand(new UpdateBaseAndResourceCommand());
 			c.addCommand(new InsertReadingDataMetaForImport());
 			c.addCommand(new SendEmailCommand());
 			CommonCommandUtil.addCleanUpCommand(c);

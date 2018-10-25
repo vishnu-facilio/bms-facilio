@@ -213,21 +213,17 @@ public class SpaceAPI {
 					spaceContext.setSpaceId3(parentSpace.getSpaceId3());
 					if(parentSpace.getSpaceId4() != -1) {
 						spaceContext.setSpaceId4(parentSpace.getSpaceId4());
+					}else {
+						spaceContext.setSpaceId4(parentSpace.getId());
 					}
-					else {
-						spaceContext.setSpaceId4(parentSpace.getSpaceId());
-					}
+				}else {
+					spaceContext.setSpaceId3(parentSpace.getId());
 				}
-				else {
-					spaceContext.setSpaceId3(parentSpace.getSpaceId());
-				}
+			}else {
+				spaceContext.setSpaceId2(parentSpace.getId());
 			}
-			else {
-				spaceContext.setSpaceId2(parentSpace.getSpaceId());
-			}
-		}
-		else {
-			spaceContext.setSpaceId1(parentSpace.getSpaceId());
+		}else {
+			spaceContext.setSpaceId1(parentSpace.getId());
 		}
 		
 		spaceContext.setSiteId(parentSpace.getSiteId());
