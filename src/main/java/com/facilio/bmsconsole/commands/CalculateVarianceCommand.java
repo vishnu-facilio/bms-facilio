@@ -9,6 +9,7 @@ import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 import com.facilio.constants.FacilioConstants;
+import com.facilio.util.FacilioUtil;
 
 public class CalculateVarianceCommand implements Command {
 
@@ -70,10 +71,10 @@ public class CalculateVarianceCommand implements Command {
 			if(sum > 0 && collection.size() > 0) {
 				avg = sum / collection.size();
 			}
-			variance.put("min", min);
-			variance.put("max", max);
-			variance.put("avg", avg);
-			variance.put("sum", sum);
+			variance.put("min", FacilioUtil.decimalClientFormat(min));
+			variance.put("max", FacilioUtil.decimalClientFormat(max));
+			variance.put("avg", FacilioUtil.decimalClientFormat(avg));
+			variance.put("sum", FacilioUtil.decimalClientFormat(sum));
 			
 		}
 		catch(Exception e) {

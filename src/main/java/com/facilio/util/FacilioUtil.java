@@ -3,6 +3,7 @@ package com.facilio.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,6 +22,8 @@ public class FacilioUtil {
     private static final String PROPERTY_FILE = "conf/facilio.properties";
     private static final Properties PROPERTIES = new Properties();
     private static Logger log = LogManager.getLogger(FacilioUtil.class.getName());
+    
+    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
 
     static {
         URL resource = FacilioUtil.class.getClassLoader().getResource(PROPERTY_FILE);
@@ -47,6 +50,14 @@ public class FacilioUtil {
     		return false;
     	}
     	return str.matches("-?\\d+(\\.\\d+)?");  //match a number with optional '-' and decimal. eg  : (-10.23)
+    }
+    
+    public static Double decimalClientFormat(Double d) {
+    	
+    	if(d != null) {
+    		d = Double.parseDouble(DECIMAL_FORMAT.format(d));
+    	}
+    	return d;
     }
     public static JSONArray getSingleTonJsonArray(Object o) {
     	JSONArray jsonArray = new JSONArray();
