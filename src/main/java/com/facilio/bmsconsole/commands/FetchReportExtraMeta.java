@@ -83,7 +83,7 @@ public class FetchReportExtraMeta implements Command {
 					
 					Long fieldId = dataPoint.getyAxis().getFieldId();
 					
-					List<ReadingAlarmContext> alarms = AlarmAPI.getReadingAlarms(parentId,fieldId,report.getDateRange().getStartTime(),report.getDateRange().getEndTime());
+					List<ReadingAlarmContext> alarms = AlarmAPI.getReadingAlarms(parentId,fieldId,report.getDateRange().getStartTime(),report.getDateRange().getEndTime(),false);
 					
 					alarms = filterAlarmAndGetList(alarms,alarmId);
 					
@@ -99,7 +99,7 @@ public class FetchReportExtraMeta implements Command {
 
 							if(reportBaseLine.getBaseLineRange() != null) {
 								
-								alarms = AlarmAPI.getReadingAlarms(parentId,fieldId,reportBaseLine.getBaseLineRange().getStartTime(),reportBaseLine.getBaseLineRange().getEndTime());
+								alarms = AlarmAPI.getReadingAlarms(parentId,fieldId,reportBaseLine.getBaseLineRange().getStartTime(),reportBaseLine.getBaseLineRange().getEndTime(),false);
 								
 								alarms = filterAlarmAndGetList(alarms,alarmId);
 								

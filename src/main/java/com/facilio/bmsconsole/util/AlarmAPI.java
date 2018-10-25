@@ -338,7 +338,7 @@ public class AlarmAPI {
 		return null;
 	}
 	
-	public static List<ReadingAlarmContext> getReadingAlarms(Long resourceId,Long fieldId,Long startTime,Long endTime) throws Exception {
+	public static List<ReadingAlarmContext> getReadingAlarms(Long resourceId,Long fieldId,Long startTime,Long endTime,boolean isWithAnomaly) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -360,7 +360,9 @@ public class AlarmAPI {
 		criteria.addOrCondition(condition2);
 		
 		selectBuilder.andCriteria(criteria);
-		
+		if(!isWithAnomaly) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(modBean.getField("sourceType", FacilioConstants.ContextNames.READING_ALARM), ""+SourceType.ANOMALY_ALARM.getIntVal(), NumberOperators.NOT_EQUALS));
+		}
 		List<ReadingAlarmContext> props = selectBuilder.get();
 		
 		return props;
