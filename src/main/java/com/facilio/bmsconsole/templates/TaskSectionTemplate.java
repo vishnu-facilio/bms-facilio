@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.templates;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.json.simple.JSONObject;
@@ -46,21 +47,31 @@ public class TaskSectionTemplate extends Template {
 	
 	private List<TaskContext> tasks;
 	public List<TaskContext> getTasks() {
+		if(tasks == null && taskTemplates != null && !taskTemplates.isEmpty()) {
+			for(TaskTemplate taskTemplate :taskTemplates) {
+				addTasks(taskTemplate.getTask());
+			}
+		}
 		return tasks;
 	}
 	public void setTasks(List<TaskContext> tasks) {
 		this.tasks = tasks;
 	}
 	
-	@JsonIgnore
+	public void addTasks(TaskContext task) {
+		
+		this.tasks = this.tasks == null ? new ArrayList<>() : this.tasks;
+		this.tasks.add(task);
+	}
+	
 	private List<TaskTemplate> taskTemplates;
+	
 	public List<TaskTemplate> getTaskTemplates() {
 		return taskTemplates;
 	}
 	public void setTaskTemplates(List<TaskTemplate> taskTemplates) {
 		this.taskTemplates = taskTemplates;
 	}
-	
 	@Override
 	public JSONObject getOriginalTemplate() {
 		// TODO Auto-generated method stub

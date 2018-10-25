@@ -879,9 +879,8 @@ public class TemplateAPI {
 		
 		for (TaskSectionTemplate sectionTemplate : sectionTemplates) {
 			//sectionTemplate.setType(sectiontype);
-			if (!sectionTemplate.getName().equals(FacilioConstants.ContextNames.DEFAULT_TASK_SECTION)) {
-				templatePropList.add(FieldUtil.getAsProperties(sectionTemplate));
-			}
+			sectionTemplate.setOrgId(AccountUtil.getCurrentOrg().getId());
+			templatePropList.add(FieldUtil.getAsProperties(sectionTemplate));
 		}
 		insertTemplatesWithExtendedProps(ModuleFactory.getTaskSectionTemplateModule(), FieldFactory.getTaskSectionTemplateFields(), templatePropList);
 		Map<String, Long> sectionMap = new HashMap<>();

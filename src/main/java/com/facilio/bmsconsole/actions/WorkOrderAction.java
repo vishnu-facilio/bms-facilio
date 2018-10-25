@@ -19,6 +19,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -1037,6 +1038,12 @@ public class WorkOrderAction extends FacilioAction {
 		
 		List<TaskSectionTemplate> taskSectionContextList = FieldUtil.getAsBeanListFromJsonArray(obj, TaskSectionTemplate.class);
 		setSectionTemplates(taskSectionContextList);
+		
+		tasks = new HashMap<>();
+		for(TaskSectionTemplate taskSectionContext :taskSectionContextList) {
+			tasks.put(taskSectionContext.getName(), taskSectionContext.getTasks());
+		}
+		sectionTemplates = taskSectionContextList;
 		return taskSectionContextList;
 	}
 	
