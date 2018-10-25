@@ -84,6 +84,14 @@
 		</action>
 		<action name="deletetemplate" class="com.facilio.bmsconsole.actions.ImportTemplateAction" method="deleteTemplate"></action>
 	</package>
+	
+	
+		<package name="viewApiV2" namespace="/api/v2/views" extends="v2Api">
+		<action name="viewList" class="com.facilio.bmsconsole.actions.ViewAction"
+			method="v2viewlist">
+		</action>
+		</package>
+	
 
 	<package name="workOrderApiV2" namespace="/api/v2/workorders" extends="v2Api">
 	
@@ -104,6 +112,12 @@
 			<param name="moduleName">workorder</param>
 			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 		</action>
+		
+		
+		
+		
+		
+		
 		
 		<action name="sync" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="syncOfflineWorkOrders">

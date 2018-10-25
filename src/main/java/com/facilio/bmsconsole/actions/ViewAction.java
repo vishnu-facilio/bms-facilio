@@ -1,6 +1,9 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
@@ -15,7 +18,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.opensymphony.xwork2.ActionSupport;
 
-public class ViewAction extends ActionSupport {
+public class ViewAction extends FacilioAction {
 	
 	/**
 	 * 
@@ -33,6 +36,24 @@ public class ViewAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String v2viewlist() throws Exception{
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.GROUP_STATUS, true);
+
+		Chain getViewListsChain = FacilioChainFactory.getViewListsChain();
+		getViewListsChain.execute(context);
+		setViews((List<FacilioView>) context.get(FacilioConstants.ContextNames.VIEW_LIST));
+		setGroupViews((LinkedHashMap) context.get(FacilioConstants.ContextNames.GROUP_VIEWS));
+
+		setResult("views", views);
+
+		setResult("groupViews", groupViews);
+
+		return SUCCESS;
+	}
+	
+
 	public String getViewDetail() throws Exception
 	{
 		BeanFactory.lookup("ModuleBean");
@@ -145,6 +166,25 @@ public class ViewAction extends ActionSupport {
 	}
 	public void setViews(List<FacilioView> views) {
 		this.views = views;
+	}
+	
+	
+	
+	private LinkedHashMap groupViews;
+	
+		
+	
+	
+
+	public LinkedHashMap getGroupViews() {
+		return groupViews;
+	}
+
+
+
+
+	public void setGroupViews(LinkedHashMap groupViews) {
+		this.groupViews = groupViews;
 	}
 
 	private FacilioView view;

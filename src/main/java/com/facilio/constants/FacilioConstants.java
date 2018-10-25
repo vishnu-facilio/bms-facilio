@@ -470,9 +470,13 @@ public class FacilioConstants {
 		public static final String PAGINATION = "pagination";
 		public static final String CURRENT_EXECUTION_TIME = "currentexecutiontime";
 		public static final String NEXT_EXECUTION_TIMES = "nextexecutiontimes";
+		public static final String GROUP_STATUS = "groupStatus";
+
 		
 		public static final String VIEWID = "viewId";
 		public static final String VIEW_LIST = "views";
+		public static final String GROUP_VIEWS = "groupViews";
+
 		public static final String VIEWCOLUMNS = "viewColumns";
 		public static final String PARENT_VIEW = "parentView";
 		public static final String VIEW_COUNT = "viewCount";

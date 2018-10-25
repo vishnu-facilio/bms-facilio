@@ -1619,6 +1619,14 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getViewListsChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new GetViewListsCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	
+	}
+	
 	public static Chain getAddViewChain() {
 		Chain c = getTransactionChain();
 		c.addCommand(new LoadViewCommand());
