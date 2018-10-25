@@ -170,8 +170,11 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 		postData.dimension2Value =  meterConfigContext.getDimension2Value();
 		postData.xAxisDimension = meterConfigContext.getxAxisDimension();
 		postData.yAxisDimension = meterConfigContext.getyAxisDimension();
-		postData.outlierDistance =meterConfigContext.getOutlierDistance();
-		postData.meterInterval =meterConfigContext.getMeterInterval();
+		postData.outlierDistance = meterConfigContext.getOutlierDistance();
+		postData.meterInterval = meterConfigContext.getMeterInterval();
+		postData.clusterSize = meterConfigContext.getClusterSize();
+		postData.bucketSize = meterConfigContext.getBucketSize();
+		
 		ObjectMapper mapper = new ObjectMapper();
 		String jsonInString = mapper.writeValueAsString(postData);
 		logger.log(Level.INFO, "refresh anomaly post: " + jsonInString);
@@ -214,86 +217,6 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 		temperatureWriter.close();
 	}
 
-	private void buildEnergyAnomalyModel(AnalyticsAnomalyConfigContext meterContext, long startTime, long endTime) {
-		String moduleName = "dummyModuleName";
-		ObjectMapper mapper = new ObjectMapper();
-		String postURL = AwsUtil.getConfig("anomalyCheckServiceURL") + "/refreshAnomalyModel";
-
-		logger.log(Level.INFO, " RefreshAnomalyModel : " + startTime + "  "  + endTime);
-		
-		try {
-			String meterName = meterContext.getMeterId() + "";
-			String tempDir = AwsUtil.getConfig("anomalyTempDir");
-			
-			long currentTimeInSecs=System.currentTimeMillis() / 1000;
-			
-			String energyBaseFileName = meterName + "_" + currentTimeInSecs + "_meter.txt";
-			String weatherBaseFileName = meterName + "_" + currentTimeInSecs +  "_weather.txt";
-			
-			String energyFileName = tempDir +  File.separator + energyBaseFileName;
-			String weatherFileName = tempDir +  File.separator + weatherBaseFileName; 
-
-			/*
-			long meterID =meterContext.getMeterId();
-			long organisationID=meterContext.getOrgId();
-					
-			writeEnergyReadingFile(moduleName, meterID, organisationID, startTime, endTime, energyFileName);
-			writeWeatherReadingFile(moduleName, organisationID, startTime, endTime, weatherFileName);
-			*/
-			
-			writeEnergyReadingFile(energyFileName, null);
-			writeWeatherReadingFile(weatherFileName, null);
-	
-			logger.log(Level.INFO, " RefreshAnomalyModel :  files written ");
-			
-			
-			String bucket = AwsUtil.getConfig("anomalyBucket");
-			String filePath = AwsUtil.getConfig("anomalyBucketDir");
-	
-			String meterFileUrl="";
-			String weatherFileUrl="";
-			if ("development".equalsIgnoreCase(AwsUtil.getConfig("environment"))) {
-				weatherBaseFileName = "1256_1530861012_weather.txt";
-				energyBaseFileName = "1256_1530861012_meter.txt";
-				meterFileUrl = "http://localhost:8000/" + energyBaseFileName;
-				
-			}else {
-				logger.log(Level.INFO, " RefreshAnomalyModel :  files written ");
-				meterFileUrl = S3FileStore.getURL(bucket, filePath + File.separator + energyBaseFileName , new File(energyFileName));
-				weatherFileUrl = S3FileStore.getURL(bucket, filePath + File.separator + weatherBaseFileName, new File(weatherFileName));
-				logger.log(Level.INFO, " RefreshAnomalyModel :  files written " + meterFileUrl + " " + weatherFileUrl);
-			}
-			
-				BuildAnomalyModelPostData postData=new BuildAnomalyModelPostData();
-				postData.timezone = AccountUtil.getCurrentOrg().getTimezone();
-				postData.readingFile=meterFileUrl;
-				postData.temperatureFile=weatherFileUrl;
-				postData.organizationID=AccountUtil.getCurrentOrg().getId();
-				postData.meterID = meterContext.getMeterId();
-				postData.constant1 = meterContext.getConstant1();
-				postData.constant2 = meterContext.getConstant2();
-				postData.maxDistance = meterContext.getMaxDistance();
-				postData.dimension1 = meterContext.getDimension1Buckets();
-				postData.dimension2 = meterContext.getDimension2Buckets();
-				postData.dimension1Value =  meterContext.getDimension1Value();
-				postData.dimension2Value =  meterContext.getDimension2Value();
-				postData.xAxisDimension = meterContext.getxAxisDimension();
-				postData.yAxisDimension = meterContext.getyAxisDimension();
-				postData.outlierDistance =meterContext.getOutlierDistance();
-				
-				String jsonInString = mapper.writeValueAsString(postData);
-				logger.log(Level.INFO, "RefreshAnomalyJob:  post body is " + jsonInString);
-				
-				Map<String, String> headers = new HashMap<>();
-				headers.put("Content-Type","application/json");
-				String result=AwsUtil.doHttpPost(postURL, headers, null, jsonInString);
-			logger.log(Level.INFO, " result is " + result);
-		} catch (Exception e) {
-			logger.log(Level.INFO, "RefreshAnomalyJob: Exception " + e.getMessage());
-			logger.log(Level.SEVERE, e.getMessage(), e);
-		}
-	}
-	
 	class BuildAnomalyModelPostData {
 		public String getTimezone() {
 			return timezone;
@@ -395,6 +318,22 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 		public void setMeterInterval(int meterInterval) {
 			this.meterInterval = meterInterval;
 		}
+		
+		public int getClusterSize() {
+			return clusterSize;
+		}
+		
+		public void setClusterSize(int clusterSize) {
+			this.clusterSize = clusterSize;
+		}
+		
+		public int getBucketSize() {
+			return bucketSize;
+		}
+		
+		public void setBucketSize(int bucketSize) {
+			this.bucketSize = bucketSize;
+		}
 
 		String readingFile;
 		String temperatureFile;
@@ -413,5 +352,7 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 		String yAxisDimension;
 		double outlierDistance;
 		int meterInterval;
+		int clusterSize;
+		int bucketSize;
 	}
 }

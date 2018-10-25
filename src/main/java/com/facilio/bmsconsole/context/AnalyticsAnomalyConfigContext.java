@@ -19,6 +19,8 @@ public class AnalyticsAnomalyConfigContext extends ModuleBaseWithCustomFields {
 	private String startDate;
 	private boolean startDateMode;
 	private int meterInterval;
+	private int clusterSize;
+	private int bucketSize;
 	
 	public long getMeterId() {
 		return meterId;
@@ -166,6 +168,22 @@ public class AnalyticsAnomalyConfigContext extends ModuleBaseWithCustomFields {
 	public void setMeterInterval(int meterInterval) {
 		this.meterInterval = meterInterval;
 	}
+	
+	public int getClusterSize() {
+		return clusterSize;		
+	}
+	
+	public void setClusterSize(int clusterSize) {
+		this.clusterSize = clusterSize;
+	}
+	
+	public int getBucketSize() {
+		return bucketSize;
+	}
+	
+	public void setBucketSize(int bucketSize) {
+		this.bucketSize = bucketSize;
+	}
 
 	public String toString() {
 			StringBuffer buf = new StringBuffer();
@@ -197,6 +215,10 @@ public class AnalyticsAnomalyConfigContext extends ModuleBaseWithCustomFields {
 			buf.append(startDate);
 			buf.append(", meterInterval = ");
 			buf.append(meterInterval);
+			buf.append(", clusterSize = ");
+			buf.append(clusterSize);
+			buf.append(", bucketSize = ");
+			buf.append(bucketSize);
 			
 			return buf.toString();
 	}
