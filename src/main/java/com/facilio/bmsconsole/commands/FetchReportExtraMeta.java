@@ -145,6 +145,9 @@ public class FetchReportExtraMeta implements Command {
 	private List<ReportAlarmContext> getReportAlarms(List<ReadingAlarmContext> allAlarms, DateRange dateRange) {
 		List<Long> alarmTime = new ArrayList<>();
 		
+		if(dateRange.getEndTime() > DateTimeUtil.getCurrenTime()) {
+			dateRange.setEndTime(DateTimeUtil.getCurrenTime());
+		}
 		boolean isCurrentTimeAdded = false;
 		for(ReadingAlarmContext alarm :allAlarms) {
 			if(alarm.getCreatedTime() > 0) {
