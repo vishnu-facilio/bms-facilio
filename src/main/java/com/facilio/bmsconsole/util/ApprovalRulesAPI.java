@@ -129,6 +129,7 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 	}
 	
 	public static ApprovalRuleContext updateApprovalRuleWithChldren(ApprovalRuleContext rule) throws Exception {
+		ApprovalRulesAPI.validateScheduledRule(rule);
 		ApprovalRuleContext oldRule = (ApprovalRuleContext) getWorkflowRule(rule.getId());
 		updateWorkflowRuleChildIds(rule);
 		updateChildRuleIds(rule);
@@ -167,6 +168,13 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 		ApprovalRuleContext approvalRule = FieldUtil.getAsBeanFromMap(prop, ApprovalRuleContext.class);
 		approvalRule.setApprovers(SharingAPI.getSharing(approvalRule.getId(), ModuleFactory.getApproversModule()));
 		return approvalRule;
+	}
+
+	public static void validateScheduledRule(ApprovalRuleContext rule) {
+		// TODO Auto-generated method stub
+		if (rule.isAllApprovalRequired() && rule.getApprovalOrderEnum() == null) {
+			throw new IllegalArgumentException("Approval Order is mandatory when everyone's approval is required.");
+		}
 	}
 	
 }

@@ -9,6 +9,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
@@ -41,16 +42,24 @@ public class VerifyApprovalCommand implements Command {
 				Map<Long, ApprovalRuleContext> ruleMap = rules.stream()
 														.collect(Collectors.toMap(WorkflowRuleContext::getId, r -> (ApprovalRuleContext) r));
 				
+				List<WorkOrderContext> newWos = new ArrayList<>();
 				for (WorkOrderContext wo : oldWos) {
 					if (wo.getApprovalStateEnum() == ApprovalState.REQUESTED) {
 						ApprovalRuleContext rule = ruleMap.get(wo.getApprovalRuleId()); 
 						if (!rule.hasApprovalPermission()) {
 							throw new IllegalArgumentException("You are not authorised to perform this operation");
 						}
-						else {
-							rule.addApprovalStep(wo.getId(), workOrder.getApprovalStateEnum());
+						else if (!rule.verified(wo.getId(), workOrder.getApprovalStateEnum())) {
+							WorkOrderContext newWo = FieldUtil.cloneBean(workOrder, WorkOrderContext.class);
+							newWo.setId(wo.getId());
+							newWo.setApprovalState(ApprovalState.REQUESTED);
+							newWos.add(newWo);
 						}
 					}
+				}
+				
+				if (!newWos.isEmpty()) {
+					context.put(FacilioConstants.ContextNames.WORK_ORDER_LIST, newWos);
 				}
 			}
 		}

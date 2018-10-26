@@ -68,7 +68,10 @@ public class UpdateWorkOrderCommand implements Command {
 					rowsUpdated += updateWorkOrders(wo, module, Collections.singletonList(oldWoMap.remove(wo.getId())), readings, activityType, changeSets, (FacilioContext) context);
 				}
 			}
-			rowsUpdated += updateWorkOrders(workOrder, module, oldWoMap.values().stream().collect(Collectors.toList()), readings, activityType, changeSets, (FacilioContext) context);
+			
+			if (!oldWoMap.isEmpty()) {
+				rowsUpdated += updateWorkOrders(workOrder, module, oldWoMap.values().stream().collect(Collectors.toList()), readings, activityType, changeSets, (FacilioContext) context);
+			}
 			
 			if(TYPES.contains(activityType) || workOrder.getPriority() != null) {
 				SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()

@@ -986,6 +986,7 @@ public class FieldFactory {
 		fields.add(getField("actionBy", "ACTION_BY", module, FieldType.LOOKUP));
 		fields.add(getField("approverGroup", "APPROVER_GROUP", module, FieldType.LOOKUP));
 		fields.add(getField("action", "APPROVAL_ACTION", module, FieldType.NUMBER));
+		fields.add(getField("actionTime", "ACTION_TIME", module, FieldType.DATE_TIME));
 		
 		return fields;
 	}
