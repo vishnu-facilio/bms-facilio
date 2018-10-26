@@ -121,7 +121,17 @@ public abstract class Template implements Serializable {
 				// StrSubstitutor.replace(jsonStr, params);
 				parsedJson = new JSONObject();
 				for (Object key : json.keySet()) {
-					parsedJson.put(key, FreeMarkerAPI.processTemplate(json.get(key).toString(), params));
+					Object value = json.get(key);
+					if (value instanceof JSONArray) {
+						JSONArray newArray = new JSONArray();
+						for(Object arrayVal: (JSONArray)value) {
+							newArray.add(FreeMarkerAPI.processTemplate(arrayVal.toString(), params));
+						}
+						parsedJson.put(key, newArray);
+					}
+					else {
+						parsedJson.put(key, FreeMarkerAPI.processTemplate(json.get(key).toString(), params));
+					}
 				}
 				parameters.put("mailType", "html");
 			}
