@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +17,12 @@ import com.facilio.bmsconsole.workflow.rule.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
 
-public class ClearAlarmOnWOCloseCommand implements Command {
+public class ClearAlarmOnWOCloseCommand implements Command, Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	public boolean execute(Context context) throws Exception {
