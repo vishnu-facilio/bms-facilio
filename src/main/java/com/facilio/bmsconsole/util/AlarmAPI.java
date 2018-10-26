@@ -53,6 +53,19 @@ import com.facilio.workflows.context.WorkflowContext;
 
 public class AlarmAPI {
 	
+	public static JSONObject constructClearEvent(AlarmContext alarm, String msg) {
+		JSONObject event = new JSONObject();
+		
+		event.put("entity", alarm.getEntity());
+		event.put("source", alarm.getSource());
+		event.put("message", msg);
+		event.put("resourceId", alarm.getResource().getId());
+		event.put("siteId", alarm.getSiteId());
+		event.put("severity", FacilioConstants.Alarm.CLEAR_SEVERITY);
+		
+		return event;
+	}
+	
 	public static ReadingAlarmContext getReadingAlarmContext(Long alarmId) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

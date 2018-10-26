@@ -630,7 +630,7 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 					AlarmContext alarm = AlarmAPI.getAlarm(alarmMeta.getAlarmId());
 					
 					FacilioContext addEventContext = new FacilioContext();
-					addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, constructClearEvent(alarm));
+					addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, AlarmAPI.constructClearEvent(alarm, "Clearing Alarm because associated rule executed false for the associated resource"));
 					Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
 					getAddEventChain.execute(addEventContext);
 					
@@ -640,17 +640,4 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 			super.executeFalseActions(record, context, placeHolders);
 		}
 	}
-	
-	private JSONObject constructClearEvent(AlarmContext alarm) {
-		JSONObject event = new JSONObject();
-		
-		event.put("entity", alarm.getEntity());
-		event.put("source", alarm.getSource());
-		event.put("resourceId", alarm.getResource().getId());
-		event.put("siteId", alarm.getSiteId());
-		event.put("severity", FacilioConstants.Alarm.CLEAR_SEVERITY);
-		
-		return event;
-	}
-	
 }
