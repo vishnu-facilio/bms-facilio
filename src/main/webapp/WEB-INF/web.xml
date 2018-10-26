@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app id="WebApp_9" version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+<web-app id="WebApp_9" version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 
 <display-name>BMS Console</display-name>
 <context-param>
@@ -128,6 +128,10 @@
         <servlet-name>clientapp</servlet-name>
         <jsp-file>/jsps/index.jsp</jsp-file>
     </servlet>
+    <servlet>
+        <servlet-name>sandbox</servlet-name>
+        <jsp-file>/jsps/dummyindex.jsp</jsp-file>
+    </servlet>
     <servlet-mapping>
         <servlet-name>clientapp</servlet-name>
         <url-pattern>/app/*</url-pattern>
@@ -140,7 +144,10 @@
         <servlet-name>clientapp</servlet-name>
         <url-pattern>/service/*</url-pattern>
     </servlet-mapping>
-    
+    <servlet-mapping>
+        <servlet-name>sandbox</servlet-name>
+        <url-pattern>/sandbox/*</url-pattern>
+    </servlet-mapping>
     <welcome-file-list>
         <welcome-file>/jsps/index.jsp</welcome-file>
     </welcome-file-list>
