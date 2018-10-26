@@ -50,8 +50,8 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SLA_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));
 			c.addCommand(new ForkChainToInstantJobCommand()
-							.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE))
-					);
+				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE))
+			);
 			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}
@@ -84,9 +84,9 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SLA_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));
 			c.addCommand(new ForkChainToInstantJobCommand()
-					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE))
-					.addCommand(new ClearAlarmOnWOCloseCommand())
-					);
+				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE))
+				.addCommand(new ClearAlarmOnWOCloseCommand())
+			);
 			c.addCommand(new ConstructTicketNotesCommand());
 			c.addCommand(getAddNotesChain());
 			CommonCommandUtil.addCleanUpCommand(c);
@@ -263,6 +263,9 @@ public class TransactionChainFactory {
 			c.addCommand(SetTableNamesCommand.getForAlarm());
 			c.addCommand(new UpdateAlarmCommand());
 			c.addCommand(new AddWOFromAlarmCommand());
+			c.addCommand(new ForkChainToInstantJobCommand()
+				.addCommand(new AddClearCommentInWoOnAlarmClearCommand())
+			);
 			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(new ConstructTicketNotesCommand());
 			c.addCommand(getAddNotesChain());

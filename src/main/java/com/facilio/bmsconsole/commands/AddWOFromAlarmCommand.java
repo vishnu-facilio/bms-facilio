@@ -22,7 +22,6 @@ public class AddWOFromAlarmCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
 		AlarmContext oldalarm = (AlarmContext) context.get(FacilioConstants.ContextNames.ALARM);
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		if(oldalarm.isWoCreated() && recordIds != null && !recordIds.isEmpty()) {

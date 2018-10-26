@@ -289,6 +289,14 @@ public class AlarmContext extends TicketContext {
 		return false;
 	}
 	
+	private long woId = -1;
+	public long getWoId() {
+		return woId;
+	}
+	public void setWoId(long woId) {
+		this.woId = woId;
+	}
+	
 	public static enum AlarmType {
 		MAINTENANCE(1, "Maintenance"),
 		CRITICAL(2, "Critical"),

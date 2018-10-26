@@ -529,8 +529,9 @@ public class TicketAPI {
 		if((ticket.getAssignedTo() != null || ticket.getAssignmentGroup() != null) && (statusObj == null || statusObj.getStatus().equals("Submitted"))) {
 			ticket.setStatus(TicketAPI.getStatus("Assigned"));
 		}
+		statusObj = ticket.getStatus();
 		
-		if (oldTicket != null) {
+		if (oldTicket != null && statusObj != null) {
 			if ("Work in Progress".equalsIgnoreCase(statusObj.getStatus())) {
 				if (oldTicket.getActualWorkStart() != -1) {
 					ticket.setResumedWorkStart(System.currentTimeMillis());
