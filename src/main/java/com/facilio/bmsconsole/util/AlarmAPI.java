@@ -59,7 +59,11 @@ public class AlarmAPI {
 		event.put("entity", alarm.getEntity());
 		event.put("source", alarm.getSource());
 		event.put("message", msg);
-		event.put("resourceId", alarm.getResource().getId());
+		
+		if (alarm.getResource() != null && alarm.getResource().getId() > 0) {
+			event.put("resourceId", alarm.getResource().getId());
+		}
+		
 		event.put("siteId", alarm.getSiteId());
 		event.put("severity", FacilioConstants.Alarm.CLEAR_SEVERITY);
 		
