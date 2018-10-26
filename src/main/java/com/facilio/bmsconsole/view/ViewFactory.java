@@ -43,7 +43,13 @@ public class ViewFactory {
 	private static Map<String, Map<String, List<String>>> groupViews = Collections.unmodifiableMap(initializeViews1());
 
 	public static FacilioView getView (String moduleName, String viewName) {
-		FacilioView view = getModuleViews(moduleName).get(viewName);
+		FacilioView view;
+		if (viewName.contains("approval_")) {
+			view = getModuleViews(FacilioConstants.ContextNames.APPROVAL).get(viewName);
+		}
+		else {
+			view = getModuleViews(moduleName).get(viewName);
+		}
 		if(view != null) {
 			List<ViewField> columns = ColumnFactory.getColumns(moduleName, viewName);
 			view.setFields(columns);
@@ -81,10 +87,10 @@ public class ViewFactory {
 		
 		order = 1;
 		views = new LinkedHashMap<>();
-		views.put("requested", getRequestedApproval().setOrder(order++));
-		views.put("approved", getApprovedApproval().setOrder(order++));
-		views.put("rejected", getRejectedApproval().setOrder(order++));
-		views.put("all", getAllApproval().setOrder(order++));
+		views.put("approval_requested", getRequestedApproval().setOrder(order++));
+		views.put("approval_approved", getApprovedApproval().setOrder(order++));
+		views.put("approval_rejected", getRejectedApproval().setOrder(order++));
+		views.put("approval_all", getAllApproval().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.APPROVAL, views);
 		
 		order = 1;
@@ -720,7 +726,7 @@ public class ViewFactory {
 		field.setName("approvalState");
 		field.setColumnName("APPROVAL_STATE");
 		field.setDataType(FieldType.NUMBER);
-		FacilioModule approvalStateModule = ModuleFactory.getApproversModule();
+		FacilioModule approvalStateModule = ModuleFactory.getWorkOrdersModule();
 		field.setModule(approvalStateModule);
 		
 		Condition condition = new Condition();

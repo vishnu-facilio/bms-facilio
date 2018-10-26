@@ -212,186 +212,118 @@ public class TicketAPI {
 	
 	public static TicketStatusContext getStatus(String status) throws Exception
 	{
-		try
-		{
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			SelectRecordsBuilder<TicketStatusContext> builder = new SelectRecordsBuilder<TicketStatusContext>()
-																.table("TicketStatus")
-																.moduleName("ticketstatus")
-																.beanClass(TicketStatusContext.class)
-																.select(modBean.getAllFields("ticketstatus"))
-																.andCustomWhere("STATUS = ?", status)
-																.orderBy("ID");
-			List<TicketStatusContext> statuses = builder.get();
-			return statuses.get(0);
-		}
-		catch (Exception e) {
-			log.info("Exception occurred ", e);
-			throw e;
-		}
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		SelectRecordsBuilder<TicketStatusContext> builder = new SelectRecordsBuilder<TicketStatusContext>()
+															.moduleName(FacilioConstants.ContextNames.TICKET_STATUS)
+															.beanClass(TicketStatusContext.class)
+															.select(modBean.getAllFields(FacilioConstants.ContextNames.TICKET_STATUS))
+															.andCustomWhere("STATUS = ?", status)
+															.orderBy("ID");
+		List<TicketStatusContext> statuses = builder.get();
+		return statuses.get(0);
 	}
 	
 	public static List<TicketPriorityContext> getPriorties(long orgId) throws Exception
 	{
-		try
-		{
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			SelectRecordsBuilder<TicketPriorityContext> builder = new SelectRecordsBuilder<TicketPriorityContext>()
-																.table("TicketPriority")
-																.moduleName(FacilioConstants.ContextNames.TICKET_PRIORITY)
-																.beanClass(TicketPriorityContext.class)
-																.select(modBean.getAllFields(FacilioConstants.ContextNames.TICKET_PRIORITY))
-																.andCustomWhere("ORGID = ?", orgId)
-																.orderBy("ID");
-			return builder.get();
-		}
-		catch (Exception e) {
-			log.info("Exception occurred ", e);
-			throw e;
-		}
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		SelectRecordsBuilder<TicketPriorityContext> builder = new SelectRecordsBuilder<TicketPriorityContext>()
+															.moduleName(FacilioConstants.ContextNames.TICKET_PRIORITY)
+															.beanClass(TicketPriorityContext.class)
+															.select(modBean.getAllFields(FacilioConstants.ContextNames.TICKET_PRIORITY))
+															.orderBy("ID");
+		return builder.get();
 	}
 	
 	public static List<TicketTypeContext> getTypes(long orgId) throws Exception
 	{
-		try
-		{
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			SelectRecordsBuilder<TicketTypeContext> builder = new SelectRecordsBuilder<TicketTypeContext>()
-																.table("TicketType")
-																.moduleName(FacilioConstants.ContextNames.TICKET_TYPE)
-																.beanClass(TicketTypeContext.class)
-																.select(modBean.getAllFields(FacilioConstants.ContextNames.TICKET_TYPE))
-																.andCustomWhere("ORGID = ?", orgId)
-																.orderBy("ID");
-			return builder.get();
-		}
-		catch (Exception e) {
-			log.info("Exception occurred ", e);
-			throw e;
-		}
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		SelectRecordsBuilder<TicketTypeContext> builder = new SelectRecordsBuilder<TicketTypeContext>()
+															.table("TicketType")
+															.moduleName(FacilioConstants.ContextNames.TICKET_TYPE)
+															.beanClass(TicketTypeContext.class)
+															.select(modBean.getAllFields(FacilioConstants.ContextNames.TICKET_TYPE))
+															.andCustomWhere("ORGID = ?", orgId)
+															.orderBy("ID");
+		return builder.get();
 	}
 	
 	public static List<TicketCategoryContext> getCategories(long orgId) throws Exception
 	{
-		try
-		{
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			SelectRecordsBuilder<TicketCategoryContext> builder = new SelectRecordsBuilder<TicketCategoryContext>()
-																.table("TicketCategory")
-																.moduleName(FacilioConstants.ContextNames.TICKET_CATEGORY)
-																.beanClass(TicketCategoryContext.class)
-																.select(modBean.getAllFields(FacilioConstants.ContextNames.TICKET_CATEGORY))
-																.andCustomWhere("ORGID = ?", orgId)
-																.orderBy("ID");
-			return builder.get();
-		}
-		catch (Exception e) {
-			log.info("Exception occurred ", e);
-			throw e;
-		}
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		SelectRecordsBuilder<TicketCategoryContext> builder = new SelectRecordsBuilder<TicketCategoryContext>()
+															.table("TicketCategory")
+															.moduleName(FacilioConstants.ContextNames.TICKET_CATEGORY)
+															.beanClass(TicketCategoryContext.class)
+															.select(modBean.getAllFields(FacilioConstants.ContextNames.TICKET_CATEGORY))
+															.andCustomWhere("ORGID = ?", orgId)
+															.orderBy("ID");
+		return builder.get();
 	}
 	
 	public static TicketCategoryContext getCategory(long orgId, String category) throws Exception
 	{
-		try
-		{
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			SelectRecordsBuilder<TicketCategoryContext> builder = new SelectRecordsBuilder<TicketCategoryContext>()
-																.table("TicketCategory")
-																.moduleName(FacilioConstants.ContextNames.TICKET_CATEGORY)
-																.beanClass(TicketCategoryContext.class)
-																.select(modBean.getAllFields(FacilioConstants.ContextNames.TICKET_CATEGORY))
-																.andCustomWhere("ORGID = ? AND NAME = ?", orgId, category)
-																.orderBy("ID");
-			List<TicketCategoryContext> categories = builder.get();
-			return categories.get(0);
-		}
-		catch (Exception e) {
-			log.info("Exception occurred ", e);
-			throw e;
-		}
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		SelectRecordsBuilder<TicketCategoryContext> builder = new SelectRecordsBuilder<TicketCategoryContext>()
+															.table("TicketCategory")
+															.moduleName(FacilioConstants.ContextNames.TICKET_CATEGORY)
+															.beanClass(TicketCategoryContext.class)
+															.select(modBean.getAllFields(FacilioConstants.ContextNames.TICKET_CATEGORY))
+															.andCustomWhere("ORGID = ? AND NAME = ?", orgId, category)
+															.orderBy("ID");
+		List<TicketCategoryContext> categories = builder.get();
+		return categories.get(0);
 	}
 	
 	public static TicketCategoryContext getCategory(long orgId, long id) throws Exception
 	{
-		try
-		{
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			SelectRecordsBuilder<TicketCategoryContext> builder = new SelectRecordsBuilder<TicketCategoryContext>()
-																.table("TicketCategory")
-																.moduleName(FacilioConstants.ContextNames.TICKET_CATEGORY)
-																.beanClass(TicketCategoryContext.class)
-																.select(modBean.getAllFields(FacilioConstants.ContextNames.TICKET_CATEGORY))
-																.andCustomWhere("ORGID = ? AND ID = ?", orgId, id);
-																
-			List<TicketCategoryContext> categories = builder.get();
-			return categories.get(0);
-		}
-		catch (Exception e) {
-			log.info("Exception occurred ", e);
-			throw e;
-		}
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		SelectRecordsBuilder<TicketCategoryContext> builder = new SelectRecordsBuilder<TicketCategoryContext>()
+															.table("TicketCategory")
+															.moduleName(FacilioConstants.ContextNames.TICKET_CATEGORY)
+															.beanClass(TicketCategoryContext.class)
+															.select(modBean.getAllFields(FacilioConstants.ContextNames.TICKET_CATEGORY))
+															.andCustomWhere("ORGID = ? AND ID = ?", orgId, id);
+															
+		List<TicketCategoryContext> categories = builder.get();
+		return categories.get(0);
 	}
 	
 	public static TicketPriorityContext getPriority(long orgId, String priority) throws Exception
 	{
-		try
-		{
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			SelectRecordsBuilder<TicketPriorityContext> builder = new SelectRecordsBuilder<TicketPriorityContext>()
-																.table("TicketPriority")
-																.moduleName(FacilioConstants.ContextNames.TICKET_PRIORITY)
-																.beanClass(TicketPriorityContext.class)
-																.select(modBean.getAllFields(FacilioConstants.ContextNames.TICKET_PRIORITY))
-																.andCustomWhere("ORGID = ? AND PRIORITY = ?", orgId, priority)
-																.orderBy("ID");
-			List<TicketPriorityContext> categories = builder.get();
-			return categories.get(0);
-		}
-		catch (Exception e) {
-			log.info("Exception occurred ", e);
-			throw e;
-		}
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		SelectRecordsBuilder<TicketPriorityContext> builder = new SelectRecordsBuilder<TicketPriorityContext>()
+															.table("TicketPriority")
+															.moduleName(FacilioConstants.ContextNames.TICKET_PRIORITY)
+															.beanClass(TicketPriorityContext.class)
+															.select(modBean.getAllFields(FacilioConstants.ContextNames.TICKET_PRIORITY))
+															.andCustomWhere("ORGID = ? AND PRIORITY = ?", orgId, priority)
+															.orderBy("ID");
+		List<TicketPriorityContext> categories = builder.get();
+		return categories.get(0);
 	}
 	
 	public static TicketStatusContext getStatus(long orgId, long id) throws Exception
 	{
-		try
-		{
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			SelectRecordsBuilder<TicketStatusContext> builder = new SelectRecordsBuilder<TicketStatusContext>()
-																.table("TicketStatus")
-																.moduleName("ticketstatus")
-																.beanClass(TicketStatusContext.class)
-																.select(modBean.getAllFields("ticketstatus"))
-																.andCustomWhere("ORGID = ? AND ID = ?", orgId, id)
-																.orderBy("ID");
-			List<TicketStatusContext> statuses = builder.get();
-			return statuses.get(0);
-		}
-		catch (Exception e) {
-			log.info("Exception occurred ", e);
-			throw e;
-		}
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		SelectRecordsBuilder<TicketStatusContext> builder = new SelectRecordsBuilder<TicketStatusContext>()
+															.table("TicketStatus")
+															.moduleName("ticketstatus")
+															.beanClass(TicketStatusContext.class)
+															.select(modBean.getAllFields("ticketstatus"))
+															.andCustomWhere("ORGID = ? AND ID = ?", orgId, id)
+															.orderBy("ID");
+		List<TicketStatusContext> statuses = builder.get();
+		return statuses.get(0);
 	}
 	
 	public static List<TicketStatusContext> getAllStatus() throws Exception
 	{
-		try
-		{
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			SelectRecordsBuilder<TicketStatusContext> builder = new SelectRecordsBuilder<TicketStatusContext>()
-																.table("TicketStatus")
-																.moduleName("ticketstatus")
-																.beanClass(TicketStatusContext.class)
-																.select(modBean.getAllFields("ticketstatus"));
-			 return builder.get();
-		
-		}
-		catch (Exception e) {
-			log.info("Exception occurred ", e);
-			throw e;
-		}
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		SelectRecordsBuilder<TicketStatusContext> builder = new SelectRecordsBuilder<TicketStatusContext>()
+															.moduleName(FacilioConstants.ContextNames.TICKET_STATUS)
+															.beanClass(TicketStatusContext.class)
+															.select(modBean.getAllFields(FacilioConstants.ContextNames.TICKET_STATUS));
+		 return builder.get();
 	}
 	
 	public static List<TaskContext> getRelatedTasks(long ticketId) throws Exception {

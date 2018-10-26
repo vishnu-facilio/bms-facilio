@@ -72,6 +72,7 @@ public class WorkflowRuleAPI {
 				ScheduledRuleAPI.addScheduledRuleJob((ScheduledRuleContext) rule);
 				break;
 			case APPROVAL_RULE:
+				ApprovalRulesAPI.validateScheduledRule((ApprovalRuleContext) rule);
 				ApprovalRulesAPI.updateChildRuleIds((ApprovalRuleContext) rule);
 				addExtendedProps(ModuleFactory.getApprovalRulesModule(), FieldFactory.getApprovalRuleFields(), FieldUtil.getAsProperties(rule));
 				ApprovalRulesAPI.addApprovers((ApprovalRuleContext) rule);

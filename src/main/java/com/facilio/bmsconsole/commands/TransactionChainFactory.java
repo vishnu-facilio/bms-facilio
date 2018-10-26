@@ -68,7 +68,6 @@ public class TransactionChainFactory {
 			c.addCommand(new VerifyApprovalCommand());
 			c.addCommand(new UpdateWorkOrderCommand());
 			c.addCommand(new SendNotificationCommand());
-			c.addCommand(new ClearAlarmOnWOCloseCommand());
 			c.addCommand(new AddTicketActivityCommand());
 //			c.addCommand(getAddOrUpdateReadingValuesChain());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
@@ -76,6 +75,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));
 			c.addCommand(new ForkChainToInstantJobCommand()
 					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE))
+					.addCommand(new ClearAlarmOnWOCloseCommand())
 					);
 			CommonCommandUtil.addCleanUpCommand(c);
 			return c;

@@ -17,6 +17,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMJobsContext.PMJobsStatus;
 import com.facilio.bmsconsole.context.PMReminder;
@@ -139,16 +140,20 @@ public class PreventiveMaintenanceAPI {
 		if(pm.getPmCreationType() == PreventiveMaintenance.PMCreationType.MULTIPLE.getVal()) {
 			
 			List<Long> resourceId = new ArrayList<>();
+			Long baseSpaceId = pm.getBaseSpaceId();
 			switch(PreventiveMaintenance.PMAssignmentType.valueOf(pm.getAssignmentType())) {
 				case ALL_FLOORS:
-					
+					List<BaseSpaceContext> floors = SpaceAPI.getBuildingFloors(baseSpaceId);
+					for(BaseSpaceContext floor :floors) {
+						resourceId.add(floor.getId());
+					}
 					break;
 				case ALL_SPACES:
-					
+					resourceId = SpaceAPI.getSpaceIdListForBuilding(baseSpaceId);
 					break;
 				case SPACE_CATEGORY:
 					Long spaceCategoryID = pm.getSpaceCategoryId();
-					List<SpaceContext> spaces = SpaceAPI.getSpaceListOfCategory(pm.getBaseSpaceId(), spaceCategoryID);
+					List<SpaceContext> spaces = SpaceAPI.getSpaceListOfCategory(baseSpaceId, spaceCategoryID);
 					for(SpaceContext space :spaces) {
 						resourceId.add(space.getId());
 					}
