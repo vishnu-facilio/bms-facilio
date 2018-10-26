@@ -21,7 +21,7 @@ public enum FacilioModuleFunctions implements FacilioWorkflowFunctionInterface {
 			checkParam(objects);
 			
 			if(objects[0] == null) {
-				return false;
+				return null;
 			}
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			
@@ -49,7 +49,7 @@ public enum FacilioModuleFunctions implements FacilioWorkflowFunctionInterface {
 			checkParam(objects);
 			
 			if(objects[0] == null) {
-				return false;
+				return null;
 			}
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			

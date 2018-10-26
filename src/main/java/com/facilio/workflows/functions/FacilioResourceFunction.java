@@ -20,7 +20,7 @@ public enum FacilioResourceFunction implements FacilioWorkflowFunctionInterface 
 			checkParam(objects);
 			
 			if(objects[0] == null) {
-				return false;
+				return null;
 			}
 			
 			Long resourceId = Long.parseLong(objects[0].toString());

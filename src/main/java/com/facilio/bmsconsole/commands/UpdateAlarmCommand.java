@@ -76,7 +76,7 @@ public class UpdateAlarmCommand implements Command {
 			}
 			
 			if(recordIds.size() == 1) {
-				AlarmContext alarmObj = getAlarmObj(idCondition, moduleName, fields);
+				AlarmContext alarmObj = getAlarmObj(idCondition, moduleName, fields, false);
 				if(alarmObj != null) {
 					AlarmAPI.updateAlarmDetailsInTicket(alarmObj, alarm);
 					TicketAPI.updateTicketStatus(null, alarm, alarmObj, false);
@@ -106,7 +106,7 @@ public class UpdateAlarmCommand implements Command {
 																		.andCondition(idCondition);
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, updateBuilder.update(alarm));
 			if(recordIds.size() == 1) {
-				AlarmContext alarmObj = getAlarmObj(idCondition, moduleName, fields);
+				AlarmContext alarmObj = getAlarmObj(idCondition, moduleName, fields, true);
 				if(alarmObj != null) {
 					context.put(FacilioConstants.ContextNames.RECORD, alarmObj);
 				}
@@ -139,7 +139,7 @@ public class UpdateAlarmCommand implements Command {
 		return false;
 	}
 	
-	private AlarmContext getAlarmObj(Condition idCondition, String moduleName, List<FacilioField> fields) throws Exception {
+	private AlarmContext getAlarmObj(Condition idCondition, String moduleName, List<FacilioField> fields, boolean fetchExtended) throws Exception {
 		SelectRecordsBuilder<AlarmContext> builder = new SelectRecordsBuilder<AlarmContext>()
 																.moduleName(moduleName)
 																.beanClass(AlarmContext.class)
@@ -148,6 +148,9 @@ public class UpdateAlarmCommand implements Command {
 		
 		List<AlarmContext> alarms = builder.get();
 		if(alarms != null && !alarms.isEmpty()) {
+			if (fetchExtended) {
+				AlarmAPI.loadExtendedAlarms(alarms);
+			}
 			return alarms.get(0);
 		}
 		return null;
