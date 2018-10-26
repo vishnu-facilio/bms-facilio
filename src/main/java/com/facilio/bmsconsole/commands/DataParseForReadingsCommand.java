@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,7 +15,9 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -57,13 +60,16 @@ public class DataParseForReadingsCommand implements Command {
 		ImportTemplateAction importTemplateAction = new ImportTemplateAction();
 		ImportTemplateContext importTemplateContext = importTemplateAction.fetchTemplate(templateID);
 		LOGGER.severe("importTemplateContext getFieldMappingString-- "+importTemplateContext.getFieldMappingString());
+		
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
 		InputStream is = fs.readFile(importProcessContext.getFileId());
 		HashMap<String,String> fieldMapping = importTemplateContext.getFieldMapping();
 		HashMap<String,String> uniqueMapping = importTemplateContext.getUniqueMapping();
 		List<ReadingContext> readingContexts = new ArrayList<>();
-//		importProcessContext.setStatus(ImportProcessContext.ImportStatus.IN_PROGRESS.getValue());
-//		ImportAPI.updateImportProcess(importProcessContext);
+		HashMap<Integer, HashMap<String,Object>> nullUniqueFields = new HashMap<>();
+		HashMap<Integer, HashMap<String, Object>> nullResources = new HashMap<>();
+		JSONObject templateMeta = importTemplateContext.getTemplateMetaJSON();
+		JSONObject dateFormats = (JSONObject) templateMeta.get(ImportAPI.ImportProcessConstants.DATE_FORMATS);
 		fieldMapParsing(fieldMapping);
 		
 		List<String> moduleNames = new ArrayList<>(groupedFields.keySet());
@@ -116,8 +122,8 @@ public class DataParseForReadingsCommand implements Command {
 					else if (cell.getCellTypeEnum() == CellType.NUMERIC || cell.getCellTypeEnum() == CellType.FORMULA) {
 						if(HSSFDateUtil.isCellDateFormatted(cell) && cell.getCellTypeEnum() == CellType.NUMERIC) {
 							Date date = cell.getDateCellValue();
-							 Instant date1 = date.toInstant();
-							 val = date1.getEpochSecond()*1000;
+							Instant date1 = date.toInstant();
+							val = date1.getEpochSecond()*1000;
 						}
 						else if(cell.getCellTypeEnum() == CellType.FORMULA) {
 							val = cell.getNumericCellValue();
@@ -134,6 +140,26 @@ public class DataParseForReadingsCommand implements Command {
 					}
 					colVal.put(cellName, val);
 
+				}
+				
+				// check for null uniqueMappingField
+				if(uniqueMapping != null) {
+					for(String key: uniqueMapping.keySet()) {
+						String columnName = uniqueMapping.get(key);
+						if(colVal.get(columnName) == null) {
+							nullUniqueFields.put(row_no, colVal);
+							break;
+						}
+						else {
+							continue;
+						}
+					}
+					LOGGER.severe("Unique fields null:" + nullUniqueFields.toString());
+				}
+				if(!(nullUniqueFields.isEmpty())) {
+					if((nullUniqueFields.get(row_no)!= null)){
+						continue;
+					}
 				}
 				
 				if(colVal.values() == null || colVal.values().isEmpty()) {
@@ -153,6 +179,12 @@ public class DataParseForReadingsCommand implements Command {
 				}
 				LOGGER.severe("row -- "+row_no+" colVal --- "+colVal);
 				
+//				for(String key: colVal.keySet()) {
+//					String field = fieldMapping.get(key);
+//					ModuleBean bean = (ModuleBean) BeanFactory.lookup("moduleBean");
+//					bean.getF
+//					
+//				}
 				
 				
 				for(String module : moduleNames) {
@@ -165,6 +197,11 @@ public class DataParseForReadingsCommand implements Command {
 						Long parentId =(Long) meta.get(ImportAPI.ImportProcessConstants.PARENT_ID_FIELD);
 						if(parentId == null) {
 							parentId = getAssetByUniqueness(colVal, importProcessContext.getModule().getName(), uniqueMapping);
+							// check for null in resources
+							if(parentId == null) {
+								nullResources.put(row_no, colVal);
+								continue;
+							}
 							props.put(ImportAPI.ImportProcessConstants.PARENT_ID_FIELD, parentId);
 						}
 						else {
@@ -191,7 +228,8 @@ public class DataParseForReadingsCommand implements Command {
 						try {
 							if(facilioField.getDataTypeEnum().equals(FieldType.DATE_TIME) || facilioField.getDataTypeEnum().equals(FieldType.DATE)) {
 								if(!(cellValue instanceof Long)) {
-									long millis = DateTimeUtil.getTime(cellValue.toString(), "dd-MM-yyyy HH:mm");
+									Instant dateInstant = DateTimeUtil.getTime(dateFormats.get(fieldMapping.get(key)).toString(),cellValue.toString());
+									long millis = dateInstant.toEpochMilli();
 									if(!props.containsKey(field)) {
 										props.put(field, millis);
 									}
@@ -199,7 +237,7 @@ public class DataParseForReadingsCommand implements Command {
 								} 
 							}
 						} catch (Exception e) {
-							LOGGER.severe("exception ---" + e.getMessage());
+							LOGGER.severe("exception ---" + e);
 						}
 						}
 					}
@@ -222,6 +260,8 @@ public class DataParseForReadingsCommand implements Command {
 		context.put(ImportAPI.ImportProcessConstants.READINGS_LIST, readingContexts);
 		context.put(ImportAPI.ImportProcessConstants.GROUPED_READING_CONTEXT, groupedContext);
 		context.put(ImportAPI.ImportProcessConstants.GROUPED_FIELDS, groupedFields);
+		context.put(ImportAPI.ImportProcessConstants.NULL_UNIQUE_FIELDS, nullUniqueFields);
+		context.put(ImportAPI.ImportProcessConstants.NULL_RESOURCES, nullResources);
 		
 		return false;
 	}
@@ -241,17 +281,29 @@ public class DataParseForReadingsCommand implements Command {
 		selectRecordBuilder.table(assetModule.getTableName()).select(facilioFields).beanClass(BeanClassName).module(assetModule);
 		
 		for(String field : uniqueMapping.keySet()) {
-			FacilioField Field = bean.getField(field, module);
-			assetFields.add(Field);
+			List<FacilioField> moduleFields = bean.getAllFields(module);
+			FacilioField Field = null;
+			for(FacilioField facilioField: moduleFields) {
+				if(facilioField.getName().equals(field)) {
+					assetFields.add(facilioField);
+					Field = facilioField;
+				}
+			}
+			// FacilioField Field = bean.getField(field, module);
 			String columnName = Field.getColumnName();
 			selectRecordBuilder.andCustomWhere(columnName+"= ?",  colVal.get(uniqueMapping.get(field)).toString());
 		}
 		
 		List<? extends ModuleBaseWithCustomFields> props = selectRecordBuilder.get();
 		LOGGER.severe("selectRecord" + selectRecordBuilder.toString());
-		Long Id = props.get(0).getId();
-		LOGGER.severe("id -- " + Id);
-		return Id;
+		if(!props.isEmpty()) {
+			Long Id = props.get(0).getId();
+			LOGGER.severe("id -- " + Id);
+			return Id;
+		}
+		else {
+			return null;
+		}
 		
 	}
 	public void fieldMapParsing(HashMap<String, String> fieldMapping) throws Exception {

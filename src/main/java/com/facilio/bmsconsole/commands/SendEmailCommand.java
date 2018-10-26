@@ -7,6 +7,7 @@ import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
+import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
@@ -42,7 +43,9 @@ public class SendEmailCommand implements Command,Serializable{
 				template.setTo(user.getEmail());
 				template.setMessage(emailMessage.toString());
 				template.setSubject("Import of" + fileInfo.getFileName());
-				AwsUtil.sendEmail(template.getOriginalTemplate());
+				JSONObject emailJSON = template.getOriginalTemplate();
+				emailJSON.put("mailType", "html");
+				AwsUtil.sendEmail(emailJSON);
 			}
 			else {
 				emailMessage.delete(0, emailMessage.length());

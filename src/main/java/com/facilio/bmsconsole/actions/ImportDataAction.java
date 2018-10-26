@@ -46,7 +46,7 @@ public class ImportDataAction extends ActionSupport {
 		
 		JSONArray columnheadings = ImportAPI.getColumnHeadings(fileUpload);
 		
-		ArrayList<String> firstRow = ImportAPI.getFirstRow(fileUpload);	
+		JSONObject firstRow = ImportAPI.getFirstRow(fileUpload);	
 		importProcessContext.setfirstRow(firstRow);
 		importProcessContext.setColumnHeadingString(columnheadings.toJSONString().replaceAll("\"", "\\\""));
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -201,6 +201,10 @@ public class ImportDataAction extends ActionSupport {
 			if(setting == ImportProcessContext.ImportSetting.INSERT.getValue()) {
 				String inserted = meta.get("Inserted").toString();
 				im.setnewEntries(Integer.parseInt(inserted));
+				if(importProcessContext.getImportMode() == 2) {
+					String Skipped = meta.get("Skipped").toString();
+					im.setSkipEntries(Integer.parseInt(Skipped));
+				}
 			}
 			else if(setting == ImportProcessContext.ImportSetting.INSERT_SKIP.getValue()) {
 				String skipped = meta.get("Skipped").toString();

@@ -4335,6 +4335,7 @@ public class FieldFactory {
 		fields.add(getField("uniqueMappingString","UNIQUE_MAPPING",module, FieldType.STRING));
 		fields.add(getField("fieldMappingString","FIELD_MAPPING",module,FieldType.STRING));
 		fields.add(getField("save","SYS_SHOW",module,FieldType.NUMBER));
+		fields.add(getField("templateMeta", "TEMPLATE_META", module,FieldType.STRING));
 		return fields;
 	}
 

@@ -23,8 +23,26 @@ public class ImportTemplateContext{
 	HashMap<String,String> uniqueMapping;
 	HashMap<String,String> fieldMapping;
 	HashMap<String,String> moduleMapping;
+	JSONObject templateMetaJSON = new JSONObject();
+	String templateMeta;
 
 	
+	public JSONObject getTemplateMetaJSON() throws ParseException{
+		if(templateMeta != null) {
+			JSONParser jsonParser = new JSONParser();
+			templateMetaJSON = (JSONObject) jsonParser.parse(templateMeta);
+		}
+		return templateMetaJSON;
+	}
+	public void setTemplateMetaJSON(JSONObject templateMetaJSON) {
+		this.templateMetaJSON = templateMetaJSON;
+	}
+	public String getTemplateMeta() {
+		return templateMeta;
+	}
+	public void setTemplateMeta(String templateMeta) {
+		this.templateMeta = templateMeta;
+	}
 	public Long getSave() {
 		return save;
 	}

@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.util;
 
 import java.io.File;
+
 import java.io.Reader;
 import java.io.StringReader;
 import java.text.SimpleDateFormat;
@@ -26,6 +27,7 @@ import org.json.simple.parser.JSONParser;
 import org.supercsv.io.CsvListReader;
 import org.supercsv.io.ICsvListReader;
 import org.supercsv.prefs.CsvPreference;
+import org.apache.poi.ss.usermodel.DataFormatter;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -211,45 +213,51 @@ public class ImportAPI {
 		}
 		ProcessXLS.populateData(importProcessContext, readingsList);
 	}
-	public static ArrayList getFirstRow (File excelfile)throws Exception {
-		ArrayList firstRow = new ArrayList<>();
+	public static JSONObject getFirstRow (File excelfile)throws Exception {
+		JSONObject firstRow = new JSONObject();
+		JSONArray columnHeadings = getColumnHeadings(excelfile);
 		Workbook workbook = WorkbookFactory.create(excelfile);
 		Sheet datatypeSheet = workbook.getSheetAt(0);
 		Row row = datatypeSheet.getRow(1);
 		int lastCellNum = row.getLastCellNum();
 		
+		
 		for(int i =0; i< lastCellNum; i++) {
 			Cell cell = row.getCell(i);
-			if(cell == null || (cell.getCellType() == Cell.CELL_TYPE_BLANK)) {
-				firstRow.add(null);
+			if(columnHeadings.get(i) == null || columnHeadings.get(i) == "null") {
+				continue;
 			}
 			else {
-				CellType type = cell.getCellTypeEnum();
-				if(type == CellType.NUMERIC || type == CellType.FORMULA) {
-        			if(cell.getCellTypeEnum() == CellType.NUMERIC && HSSFDateUtil.isCellDateFormatted(cell)) {
-        				Date cellValue = cell.getDateCellValue();
-        				SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-        				String cellValueString = format.format(cellValue);
-        				cellValueString = cellValueString.replace(" ", "/");
-        				firstRow.add(cellValueString);
-        			}
-        			else if(type== CellType.FORMULA) {
-        				firstRow.add(cell.getNumericCellValue());
-        			}
-        			else {
-        				Double cellValue = cell.getNumericCellValue();
-        				firstRow.add(cellValue);
-        			}
-        		}
-        		else if(type== CellType.BOOLEAN) {
-        			Boolean cellValue = cell.getBooleanCellValue();
-        			firstRow.add(cellValue);
-        		}
-        		else if(type == CellType.STRING)
-        		{
-        			String cellValue = cell.getStringCellValue();
-        			firstRow.add(cellValue);
-        		}
+				if(cell == null || (cell.getCellType() == Cell.CELL_TYPE_BLANK)) {
+					firstRow.put(columnHeadings.get(i), null);
+				}
+				else {
+					CellType type = cell.getCellTypeEnum();
+					if(type == CellType.NUMERIC || type == CellType.FORMULA) {
+	        			if(cell.getCellTypeEnum() == CellType.NUMERIC && HSSFDateUtil.isCellDateFormatted(cell)) {
+	        				DataFormatter df = new DataFormatter();
+	        				String cellValueString = df.formatCellValue(cell);
+	        				firstRow.put(columnHeadings.get(i),cellValueString);
+	        			}
+	        			else if(type== CellType.FORMULA) {
+	        				Double cellValue = cell.getNumericCellValue();
+	        				firstRow.put(columnHeadings.get(i), cellValue);
+	        			}
+	        			else {
+	        				Double cellValue = cell.getNumericCellValue();
+	        				firstRow.put(columnHeadings.get(i),cellValue);
+	        			}
+	        		}
+	        		else if(type== CellType.BOOLEAN) {
+	        			Boolean cellValue = cell.getBooleanCellValue();
+	        			firstRow.put(columnHeadings.get(i), cellValue);
+	        		}
+	        		else if(type == CellType.STRING)
+	        		{
+	        			String cellValue = cell.getStringCellValue();
+	        			firstRow.put(columnHeadings.get(i), cellValue);
+	        		}
+				}
 			}
 		}
 		return firstRow;
@@ -580,6 +588,9 @@ public class ImportAPI {
 		public static final String UNIQUE_MAPPING = "uniqueMapping";
 		public static final String FIELD_MAPPING = "fieldMapping";
 		public static final String SYS_FIELD_SHOW ="save";
+		public static final String NULL_UNIQUE_FIELDS = "nullUniqueFields";
+		public static final String NULL_RESOURCES = "nullResources";
+		public static final String DATE_FORMATS = "dateFormats";
 	}
 	
 	

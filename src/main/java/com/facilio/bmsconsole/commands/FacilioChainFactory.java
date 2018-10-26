@@ -1266,6 +1266,7 @@ public class FacilioChainFactory {
 		ChainBase c = new ChainBase();
 		c.addCommand(new DataParseForReadingsCommand());
 		c.addCommand(new InsertReadingCommand());
+		c.addCommand(new WriteSkippedToFileCommand());
 		c.addCommand(new SendEmailCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
