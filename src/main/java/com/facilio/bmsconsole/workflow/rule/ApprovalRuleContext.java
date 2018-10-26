@@ -236,7 +236,7 @@ public class ApprovalRuleContext extends WorkflowRuleContext {
 	
 	public boolean verified(long recordId, ApprovalState action) throws Exception {
 		boolean result = true;
-		List<SingleSharingContext> matchingApprovers = approvers.getMatching();
+		List<SingleSharingContext> matchingApprovers = approvers == null ? null : approvers.getMatching();
 		if (action == ApprovalState.APPROVED && allApprovalRequired && approvalOrder == ApprovalOrder.PARALLEL) {
 			if (approvers != null && approvers.size() > 1) {
 				List<Long> previousApprovers = fetchPreviousApprovers(recordId);

@@ -43,17 +43,19 @@ public class ViewFactory {
 	private static Map<String, Map<String, List<String>>> groupViews = Collections.unmodifiableMap(initializeViews1());
 
 	public static FacilioView getView (String moduleName, String viewName) {
-		FacilioView view;
-		if (viewName.contains("approval_")) {
-			view = getModuleViews(FacilioConstants.ContextNames.APPROVAL).get(viewName);
-		}
-		else {
-			view = getModuleViews(moduleName).get(viewName);
-		}
-		if(view != null) {
-			List<ViewField> columns = ColumnFactory.getColumns(moduleName, viewName);
-			view.setFields(columns);
-			view.setDefault(true);
+		FacilioView view = null;
+		if (viewName != null) {
+			if (viewName.contains("approval_")) {
+				view = getModuleViews(FacilioConstants.ContextNames.APPROVAL).get(viewName);
+			}
+			else {
+				view = getModuleViews(moduleName).get(viewName);
+			}
+			if(view != null) {
+				List<ViewField> columns = ColumnFactory.getColumns(moduleName, viewName);
+				view.setFields(columns);
+				view.setDefault(true);
+			}
 		}
 		return view;
 	}
