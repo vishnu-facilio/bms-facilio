@@ -316,8 +316,7 @@ public class ProcessImportCommand implements Command {
 										if (facilioField.getDataTypeEnum().equals(FieldType.DATE_TIME)
 												|| facilioField.getDataTypeEnum().equals(FieldType.DATE)) {
 											if (!(cellValue instanceof Long)) {
-												long millis = DateTimeUtil.getTime(cellValue.toString(),
-														"dd-MM-yyyy HH:mm");
+												long millis = DateTimeUtil.getTime(cellValue.toString(),"dd-MM-yyyy HH:mm").toEpochMilli();
 												if (!props.containsKey(field)) {
 													props.put(field, millis);
 												}
