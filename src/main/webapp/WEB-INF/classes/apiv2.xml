@@ -484,6 +484,8 @@
 	<package name="workflowApiv2" namespace="/api/v2/workflow" extends="v2Api">
 		<action name="xml" class="com.facilio.workflows.action.WorkflowAction" method="getWorkflowXmlFromObject">
 		</action>
+		<action name="execute" class="com.facilio.bmsconsole.actions.CommonAction" method="executeWorkflow">
+		</action>
 	</package>
 	
 </struts>

@@ -92,6 +92,9 @@ public class AddActionsForWorkflowRule implements Command {
 		emailTemplate.setSubject((String) action.getTemplateJson().get("subject"));
 		emailTemplate.setMessage((String) action.getTemplateJson().get("message"));
 		emailTemplate.setType(Type.EMAIL);
+		if (action.getTemplateJson().containsKey("ftl")) {
+			emailTemplate.setFtl((Boolean) action.getTemplateJson().get("ftl"));
+		}
 		action.setTemplate(emailTemplate);
 		
 		checkAndSetWorkflow(action.getTemplateJson(), emailTemplate);
