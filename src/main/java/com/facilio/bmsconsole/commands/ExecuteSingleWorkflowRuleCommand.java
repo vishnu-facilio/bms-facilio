@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,9 +9,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.UpdateChangeSet;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
@@ -32,10 +29,7 @@ public class ExecuteSingleWorkflowRuleCommand implements Command {
 		Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = CommonCommandUtil.getChangeSetMap((FacilioContext) context);
 		
 		if (rule != null && recordMap != null && !recordMap.isEmpty()) {
-			Map<String, Object> placeHolders = new HashMap<>();
-			CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeHolders);
-			CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeHolders);
-			
+			Map<String, Object> placeHolders = WorkflowRuleAPI.getOrgPlaceHolders();
 			for (Map.Entry<String, List> entry : recordMap.entrySet()) {
 				String moduleName = entry.getKey();
 				if (moduleName == null || moduleName.isEmpty() || entry.getValue() == null || entry.getValue().isEmpty()) {
@@ -46,8 +40,7 @@ public class ExecuteSingleWorkflowRuleCommand implements Command {
 				
 				for (Object record : entry.getValue()) {
 					List<UpdateChangeSet> changeSet = currentChangeSet == null ? null : currentChangeSet.get( ((ModuleBaseWithCustomFields)record).getId() );
-					Map<String, Object> recordPlaceHolders = new HashMap<>(placeHolders);
-					CommonCommandUtil.appendModuleNameInKey(moduleName, moduleName, FieldUtil.getAsProperties(record), recordPlaceHolders);
+					Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, record, placeHolders);
 					boolean result = WorkflowRuleAPI.evaluateWorkflow(rule, moduleName, record, changeSet, recordPlaceHolders, (FacilioContext) context);
 					LOGGER.info("Result of record : "+((ModuleBaseWithCustomFields) record).getId()+" for for rule : "+rule.getId()+" is "+result);
 				}

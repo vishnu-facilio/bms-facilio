@@ -12,6 +12,7 @@ import java.util.StringJoiner;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -42,6 +43,23 @@ import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class WorkflowRuleAPI {
+	
+	public static Map<String, Object> getOrgPlaceHolders() throws Exception {
+		Map<String, Object> placeHolders = new HashMap<>();
+		CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeHolders);
+		CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeHolders);
+		placeHolders.put("org", AccountUtil.getCurrentOrg());
+		placeHolders.put("user", AccountUtil.getCurrentUser());
+		
+		return placeHolders;
+	}
+	
+	public static Map<String, Object> getRecordPlaceHolders(String moduleName, Object record, Map<String, Object> currentPlaceholders) throws Exception {
+		Map<String, Object> recordPlaceHolders = currentPlaceholders == null ? new HashMap<>() : new HashMap<>(currentPlaceholders);
+		CommonCommandUtil.appendModuleNameInKey(moduleName, moduleName, FieldUtil.getAsProperties(record), recordPlaceHolders);
+		recordPlaceHolders.put(moduleName, record);
+		return recordPlaceHolders;
+	}
 	
 	public static long addWorkflowRule(WorkflowRuleContext rule) throws Exception {
 		rule.setOrgId(AccountUtil.getCurrentOrg().getId());
