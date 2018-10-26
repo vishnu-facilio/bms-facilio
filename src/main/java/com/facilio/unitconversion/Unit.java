@@ -8,7 +8,7 @@ import java.util.Map;
 
 public enum Unit {
 	
-	// last id -- 85
+	// last id -- 87
 	
 	KWH(1,"Kilo Watt Hour","kWh",Metric.ENERGY),
 	HECTOWH(76,"Hecto Watt Hour","hWh",Metric.ENERGY,"si*10","this/10"),
@@ -109,6 +109,9 @@ public enum Unit {
 	AED(83,"AED","AED",Metric.CURRENCY),
 	DOLLER(84,"Doller","$",Metric.CURRENCY),
 	INR(85,"inr","₹",Metric.CURRENCY),
+	EURO(86,"euro","£",Metric.CURRENCY),
+	
+	PERCENTAGE(87,"percentage","%",Metric.PERCENTAGE),
 	;
 	
 	int unitId;

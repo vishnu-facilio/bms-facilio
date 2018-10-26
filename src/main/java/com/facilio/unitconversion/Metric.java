@@ -23,6 +23,7 @@ public enum Metric {
 	TORQUE(13,"Torque",69),
 	LIQUID(14,"Liquid",70),
 	CURRENCY(15,"Currency"),
+	PERCENTAGE(16,"Percentage"),
 	;
 	
 	public static Map<Integer, Metric> getMetricMap() {
