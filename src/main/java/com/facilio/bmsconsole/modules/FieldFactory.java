@@ -56,6 +56,7 @@ public class FieldFactory {
 			alarmsFieldsInclude.add("previousSeverity");
 			alarmsFieldsInclude.add("createdTime");
 			alarmsFieldsInclude.add("entity");
+			alarmsFieldsInclude.add("autoClear");
 //			alarmsFieldsInclude.add("noOfAttachments");
 		}
 		public static List<String> workOrderFieldsInclude = new ArrayList<String>();
@@ -3859,6 +3860,7 @@ public class FieldFactory {
 		fields.add(getField("reportId", "REPORTID", module, FieldType.NUMBER));
 		fields.add(getField("fileFormat", "FILE_FORMAT", module, FieldType.NUMBER));
 		fields.add(getField("templateId", "TEMPLATEID", module, FieldType.NUMBER));
+		fields.add(getField("printParams", "PRINT_PARAMS", module, FieldType.STRING));
 
 		return fields;
 	}
