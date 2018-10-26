@@ -133,6 +133,10 @@ public class EventToAlarmCommand implements Command {
 		alarm.put("orgId", event.getOrgId());
 		alarm.put("modifiedTime", event.getCreatedTime());
 		
+		if (event.getComment() != null && !event.getComment().isEmpty()) {
+			alarm.put("comment", event.getComment());
+		}
+		
 		if (event.getAdditionInfo() != null) {
 			Long sourceType = (Long) FieldUtil.castOrParseValueAsPerType(FieldType.NUMBER, event.getAdditionInfo().get("sourceType"));
 			if (sourceType != null && (sourceType == SourceType.THRESHOLD_ALARM.getIntVal() || sourceType == SourceType.ANOMALY_ALARM.getIntVal())) {
@@ -144,6 +148,7 @@ public class EventToAlarmCommand implements Command {
 				alarm.put("readingVal", event.getAdditionInfo().get("readingVal"));
 				alarm.put("ruleId", event.getAdditionInfo().get("ruleId"));
 			}
+			alarm.put("autoClear", event.getAdditionInfo().get("autoClear"));
 		}
 
 //		JSONObject content = new JSONObject();
@@ -175,6 +180,11 @@ public class EventToAlarmCommand implements Command {
 		json.put("alarmClass", event.getAlarmClass());
 		json.put("state", event.getState());
 		json.put("createdTime", event.getCreatedTime());
+		
+		if (event.getComment() != null && !event.getComment().isEmpty()) {
+			json.put("comment", event.getComment());
+		}
+		
 		if (event.getSiteId() != -1) {
 			json.put("siteId", event.getSiteId());
 		}

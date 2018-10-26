@@ -10,6 +10,16 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 
 public class TransactionChainFactory {
 
+		public static Chain getAddNotesChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new LoadAllFieldsCommand());
+			c.addCommand(new AddNotesCommand());
+			c.addCommand(new ExecuteNoteWorkflowCommand());
+			c.addCommand(new AddNoteTicketActivityCommand());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+	
 		public static Chain historicalFormulaCalculationChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new HistoricalFormulaCalculationCommand());
@@ -77,6 +87,8 @@ public class TransactionChainFactory {
 					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE))
 					.addCommand(new ClearAlarmOnWOCloseCommand())
 					);
+			c.addCommand(new ConstructTicketNotesCommand());
+			c.addCommand(getAddNotesChain());
 			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}
@@ -216,6 +228,44 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(new UpdateCheckPointAndAddControllerActivityCommand());
 			c.addCommand(new CheckAndStartWatcherCommand());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
+		public static Chain getAddAlarmFromEventChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ProcessAlarmCommand());
+			c.addCommand(getAddAlarmChain());
+			return c;
+		}
+		
+		public static Chain getAddAlarmChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForAlarm());
+			c.addCommand(new AddAlarmCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
+			c.addCommand(new AddAlarmFollowersCommand());
+			c.addCommand(new ConstructTicketNotesCommand());
+			c.addCommand(getAddNotesChain());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
+		public static Chain updateAlarmFromJsonChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ProcessAlarmCommand());
+			c.addCommand(getUpdateAlarmChain());
+			return c;
+		}
+		
+		public static Chain getUpdateAlarmChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForAlarm());
+			c.addCommand(new UpdateAlarmCommand());
+			c.addCommand(new AddWOFromAlarmCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
+			c.addCommand(new ConstructTicketNotesCommand());
+			c.addCommand(getAddNotesChain());
 			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}

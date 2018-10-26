@@ -284,6 +284,7 @@ public class FacilioConstants {
 		
 		public static final String NOTE = "note";
 		public static final String NOTE_LIST = "notes";
+		public static final String COMMENT = "comment";
 		
 		public static final String MODULE_FIELD = "moduleField";
 		public static final String MODULE_FIELD_NAME = "fieldName";

@@ -52,7 +52,7 @@ public class ClearAlarmOnWOCloseCommand implements Command, Serializable {
 				if (alarms != null && !alarms.isEmpty()) {
 					for (AlarmContext alarm : alarms) {
 						FacilioContext addEventContext = new FacilioContext();
-						addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, AlarmAPI.constructClearEvent(alarm, "Clearing Alarm because associated Workorder was closed"));
+						addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, AlarmAPI.constructClearEvent(alarm, "System auto cleared Alarm because associated Workorder was closed"));
 						Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
 						getAddEventChain.execute(addEventContext);
 					}

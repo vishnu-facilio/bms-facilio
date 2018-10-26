@@ -519,7 +519,7 @@ public enum ActionType {
 					noteContext.put(FacilioConstants.ContextNames.TICKET_MODULE, FacilioConstants.ContextNames.WORK_ORDER);
 					noteContext.put(FacilioConstants.ContextNames.NOTE, note);
 
-					Chain addNote = FacilioChainFactory.getAddNoteChain();
+					Chain addNote = TransactionChainFactory.getAddNotesChain();
 					addNote.execute(noteContext);
 				}
 			} catch (Exception e) {

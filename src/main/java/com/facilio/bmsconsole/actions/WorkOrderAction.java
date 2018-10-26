@@ -19,7 +19,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -836,6 +835,14 @@ public class WorkOrderAction extends FacilioAction {
 		return updateWorkOrder(context);
 	}
 	
+	private String comment;
+	public String getComment() {
+		return comment;
+	}
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+
 	private void setUpdateWorkorderContext(FacilioContext context) throws Exception {
 		ActivityType activityType = ActivityType.EDIT;
 		if (workorder.getStatus() != null) {
@@ -848,6 +855,7 @@ public class WorkOrderAction extends FacilioAction {
 			activityType = ActivityType.ASSIGN_TICKET;
 		}
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, activityType);
+		context.put(FacilioConstants.ContextNames.COMMENT, comment);
 	}
 
 	private String updateWorkOrder(FacilioContext context) throws Exception {

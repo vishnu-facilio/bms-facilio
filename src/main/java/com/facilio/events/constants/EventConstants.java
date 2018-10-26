@@ -361,6 +361,8 @@ public class EventConstants {
 			description.setModule(module);
 			fields.add(description);
 			
+			fields.add(FieldFactory.getField("comment", "COMMENT", module, FieldType.STRING));
+			
 			FacilioField additionalInfo = new FacilioField();
 			additionalInfo.setName("additionalInfoJsonStr");
 			additionalInfo.setDisplayName("Additional Info");

@@ -71,7 +71,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ALARM, alarmInfo);
 		
-		Chain addAlarmChain = FacilioChainFactory.getAddAlarmFromEventChain();
+		Chain addAlarmChain = TransactionChainFactory.getAddAlarmFromEventChain();
 		addAlarmChain.execute(context);
 		AlarmContext alarm = (AlarmContext) context.get(FacilioConstants.ContextNames.ALARM);
 		return alarm;
@@ -124,7 +124,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			context.put(FacilioConstants.ContextNames.ALARM, alarm);
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
 
-			Chain updateAlarm = FacilioChainFactory.getUpdateAlarmChain();
+			Chain updateAlarm = TransactionChainFactory.getUpdateAlarmChain();
 			updateAlarm.execute(context);
 
 			return (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
@@ -139,7 +139,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		context.put(FacilioConstants.ContextNames.ALARM, alarmInfo);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
 
-		Chain updateAlarm = FacilioChainFactory.updateAlarmFromJsonChain();
+		Chain updateAlarm = TransactionChainFactory.updateAlarmFromJsonChain();
 		updateAlarm.execute(context);
 
 		return (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
@@ -156,7 +156,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			context.put(FacilioConstants.ContextNames.ALARM, alarm);
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
 
-			Chain updateAlarm = FacilioChainFactory.getUpdateAlarmChain();
+			Chain updateAlarm = TransactionChainFactory.getUpdateAlarmChain();
 			updateAlarm.execute(context);
 			return (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 		}

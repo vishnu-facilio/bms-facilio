@@ -412,24 +412,6 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getAddAlarmFromEventChain() {
-		Chain c = getTransactionChain();
-		c.addCommand(new ProcessAlarmCommand());
-		c.addCommand(getAddAlarmChain());
-		return c;
-	}
-	
-	public static Chain getAddAlarmChain() {
-		Chain c = getTransactionChain();
-//		c.addCommand(getAddTicketChain());
-		c.addCommand(SetTableNamesCommand.getForAlarm());
-		c.addCommand(new AddAlarmCommand());
-		c.addCommand(new ExecuteAllWorkflowsCommand());
-		c.addCommand(new AddAlarmFollowersCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
 	public static Chain getDeleteAlarmChain() {
 		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForAlarm());
@@ -469,23 +451,6 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadViewCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetAlarmCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
-	public static Chain updateAlarmFromJsonChain() {
-		Chain c = getTransactionChain();
-		c.addCommand(new ProcessAlarmCommand());
-		c.addCommand(getUpdateAlarmChain());
-		return c;
-	}
-	
-	public static Chain getUpdateAlarmChain() {
-		Chain c = getTransactionChain();
-		c.addCommand(SetTableNamesCommand.getForAlarm());
-		c.addCommand(new UpdateAlarmCommand());
-		c.addCommand(new AddWOFromAlarmCommand());
-		c.addCommand(new ExecuteAllWorkflowsCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
@@ -1989,16 +1954,6 @@ public class FacilioChainFactory {
 		Chain c = getTransactionChain();
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetPhotosCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
-	public static Chain getAddNoteChain() {
-		Chain c = getTransactionChain();
-		c.addCommand(new LoadAllFieldsCommand());
-		c.addCommand(new AddNoteCommand());
-		c.addCommand(new ExecuteNoteWorkflowCommand());
-		c.addCommand(new AddNoteTicketActivityCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
