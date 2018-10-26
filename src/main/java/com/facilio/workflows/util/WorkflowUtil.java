@@ -1435,8 +1435,15 @@ public class WorkflowUtil {
 			objects = new Object[paramList.length];
 			
 			for(String param:paramList) {
-				Object obj = variableToExpresionMap.get(param);
-				objects[objectIndex++] = obj;
+				
+				if(param != null && (param.startsWith("'") &&  param.endsWith("'")) ) {
+					// param is a constant
+					objects[objectIndex++] = param.substring(1, param.length()-1);
+				}
+				else {
+					Object obj = variableToExpresionMap.get(param);
+					objects[objectIndex++] = obj;
+				}
 			}
 		}
 		if(objects == null) {
