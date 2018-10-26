@@ -1457,7 +1457,6 @@ public class WorkflowUtil {
 		
 	}
 	
-	
 	public static FacilioWorkflowFunctionInterface getFacilioFunction(String nameSpace,String functionName) {
 		
 		FacilioWorkflowFunctionInterface facilioWorkflowFunction = null;
@@ -1497,7 +1496,6 @@ public class WorkflowUtil {
 			facilioWorkflowFunction = FacilioEnergyMeterFunction.getFacilioEnergyMeterFunction(functionName);
 			break;
 		case "module" :
-			
 			facilioWorkflowFunction = FacilioModuleFunctions.getFacilioModuleFunctions(functionName);
 			break;
 		case "resource" :
