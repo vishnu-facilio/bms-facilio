@@ -177,6 +177,22 @@ public class PreventiveMaintenanceAPI {
 		return resourceIds;
  	}
 	
+	public static PreventiveMaintenance getPm(Long pmID) throws Exception {
+		
+		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder();
+		select.select(FieldFactory.getPreventiveMaintenanceFields());
+		select.table(ModuleFactory.getPreventiveMaintenancetModule().getTableName());
+		select.andCondition(CriteriaAPI.getIdCondition(pmID, ModuleFactory.getPreventiveMaintenancetModule()));
+		
+		List<Map<String, Object>> props = select.get();
+		
+		if(props != null && !props.isEmpty()) {
+			PreventiveMaintenance pm = FieldUtil.getAsBeanFromMap(props.get(0), PreventiveMaintenance.class);
+			return pm;
+		}
+		return null;
+	}
+	
 	public static PMJobsContext getpmJob(PreventiveMaintenance pm,PMTriggerContext pmTrigger ,Long resourceId,Long nextExecutionTime, boolean addToDb) {
 		PMJobsContext pmJob = new PMJobsContext();
 		pmJob.setPmId(pm.getId());
