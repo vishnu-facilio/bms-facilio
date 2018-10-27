@@ -41,7 +41,7 @@ public class DateTimeUtil
 	
 	public static final long ONE_HOUR_MILLIS_VALUE = 3600000l;
 	public static final long ONE_MINUTE_MILLIS_VALUE = 60000l;
-	public static ZoneId getZoneId()
+	private static ZoneId getZoneId()
 	{
 		//TODO TimeZone related changes to be done.
 		Organization org = AccountUtil.getCurrentOrg();
@@ -135,7 +135,7 @@ public class DateTimeUtil
 	//if format is null it will take the 
 	//default yyyy-MM-dd format for parsing the date String..
 	
-	public static Instant getTime(String datePattern, String dateString) {
+	public static Instant getTimeInstant(String datePattern, String dateString) {
 		DateTimeFormatter FMT = new DateTimeFormatterBuilder()
 			    .appendPattern(datePattern)
 			    .parseDefaulting(ChronoField.NANO_OF_DAY, 0)

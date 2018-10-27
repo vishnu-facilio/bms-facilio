@@ -228,7 +228,7 @@ public class DataParseForReadingsCommand implements Command {
 						try {
 							if(facilioField.getDataTypeEnum().equals(FieldType.DATE_TIME) || facilioField.getDataTypeEnum().equals(FieldType.DATE)) {
 								if(!(cellValue instanceof Long)) {
-									Instant dateInstant = DateTimeUtil.getTime(dateFormats.get(fieldMapping.get(key)).toString(),cellValue.toString());
+									Instant dateInstant = DateTimeUtil.getTimeInstant(dateFormats.get(fieldMapping.get(key)).toString(),cellValue.toString());
 									long millis = dateInstant.toEpochMilli();
 									if(!props.containsKey(field)) {
 										props.put(field, millis);
