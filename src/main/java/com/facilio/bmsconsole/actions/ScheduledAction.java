@@ -11,6 +11,10 @@ import com.facilio.constants.FacilioConstants;
 
 public class ScheduledAction extends FacilioAction {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private ScheduledActionContext scheduledAction;
 
 	public ScheduledActionContext getScheduledAction() {

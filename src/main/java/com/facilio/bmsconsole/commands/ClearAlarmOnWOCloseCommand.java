@@ -7,7 +7,10 @@ import java.util.List;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -24,6 +27,8 @@ public class ClearAlarmOnWOCloseCommand implements Command, Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	private static final Logger LOGGER = LogManager.getLogger(ClearAlarmOnWOCloseCommand.class.getName());
+	
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -51,8 +56,13 @@ public class ClearAlarmOnWOCloseCommand implements Command, Serializable {
 				
 				if (alarms != null && !alarms.isEmpty()) {
 					for (AlarmContext alarm : alarms) {
+						if (AccountUtil.getCurrentOrg().getId() == 135) {
+							LOGGER.info("Auto Clearing alarm "+alarm.getId()+" since WO was closed");
+						}
+						
 						FacilioContext addEventContext = new FacilioContext();
 						addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, AlarmAPI.constructClearEvent(alarm, "System auto cleared Alarm because associated Workorder was closed"));
+						
 						Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
 						getAddEventChain.execute(addEventContext);
 					}

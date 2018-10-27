@@ -14,12 +14,12 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -631,9 +631,12 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 					AlarmContext alarm = AlarmAPI.getAlarm(alarmMeta.getAlarmId());
 					
 					JSONObject json = AlarmAPI.constructClearEvent(alarm, "System auto cleared Alarm because associated rule executed false for the associated resource");
-					json.put("sourceType", SourceType.THRESHOLD_ALARM.getIntVal());
 					json.put("readingDataId", reading.getId());
 					json.put("readingVal", reading.getReading(getReadingField().getName()));
+					
+					if (AccountUtil.getCurrentOrg().getId() == 135) {
+						LOGGER.info("Clearing alarm for rule : "+getId()+" for resource : "+reading.getParentId());
+					}
 					
 					FacilioContext addEventContext = new FacilioContext();
 					addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, json);

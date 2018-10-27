@@ -251,12 +251,22 @@ public enum ActionType {
 						if (event.getAlarmId() != -1) {
 							Map<Long, ReadingRuleAlarmMeta> metaMap = ((ReadingRuleContext) currentRule).getAlarmMetaMap();
 							long resourceId = ((ReadingContext) currentRecord).getParentId();
+							
+							if (AccountUtil.getCurrentOrg().getId() == 135) {
+								LOGGER.info("Meta map of rule : "+currentRule.getId()+" when creating alarm for resource "+((ReadingContext)currentRecord).getParentId()+" : "+metaMap);
+							}
+							
 							if (metaMap != null && !metaMap.isEmpty()) {
 								ReadingRuleAlarmMeta alarmMeta = metaMap.get(resourceId);
 								if (alarmMeta == null) {
 									ReadingRuleAPI.addAlarmMeta(event.getAlarmId(), resourceId, (ReadingRuleContext) currentRule);
 								}
 								else if (alarmMeta.isClear()) {
+									
+									if (AccountUtil.getCurrentOrg().getId() == 135) {
+										LOGGER.info("Updating meta with alarm id : "+event.getAlarmId()+" for rule : "+currentRule.getId()+" for resource : "+((ReadingContext)currentRecord).getParentId());
+									}
+									
 									ReadingRuleAPI.markAlarmMetaAsNotClear(alarmMeta.getId(), event.getAlarmId());
 								}
 							}

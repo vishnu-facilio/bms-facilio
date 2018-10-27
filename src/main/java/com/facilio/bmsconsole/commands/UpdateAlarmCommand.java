@@ -6,6 +6,8 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.User;
@@ -31,6 +33,8 @@ import com.facilio.wms.util.WmsApi;
 
 public class UpdateAlarmCommand implements Command {
 
+	private static final Logger LOGGER = LogManager.getLogger(UpdateAlarmCommand.class.getName());
+	
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -109,6 +113,10 @@ public class UpdateAlarmCommand implements Command {
 				}
 				
 				if (isCleared && AlarmAPI.isReadingAlarm(alarmObj.getSourceTypeEnum())) {
+					if (AccountUtil.getCurrentOrg().getId() == 135) {
+						LOGGER.info("Updating meta as clear alarm : "+alarmObj.getId()+" for resource : "+alarm.getResource().getId());
+					}
+					
 					ReadingRuleAPI.markAlarmMetaAsClear(alarmObj.getId());
 				}
 			}
