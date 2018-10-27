@@ -364,7 +364,9 @@ public class ExpressionContext implements WorkflowExpression {
 				selectBuilder.select(selectFields);
 			}
 			else {
-				selectBuilder.select(modBean.getAllFields(moduleName));
+				List<FacilioField> fields = new ArrayList<>(modBean.getAllFields(moduleName));
+				fields.add(FieldFactory.getIdField(module));
+				selectBuilder.select(fields);
 				if(getAggregateOpperator() != null && getAggregateOpperator().equals(ExpressionAggregateOperator.COUNT_RUNNING_TIME)) {
 					selectBuilder.orderBy("TTIME");
 				}

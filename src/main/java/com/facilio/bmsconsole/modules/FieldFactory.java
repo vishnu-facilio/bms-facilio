@@ -957,6 +957,21 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	public static List<FacilioField> getScheduledActionFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getScheduledActionModule();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getSiteIdField(module));
+		fields.add(getField("name", "NAME", module, FieldType.STRING));
+		fields.add(getField("actionId", "ACTION_ID", module, FieldType.NUMBER));
+		fields.add(getField("frequency", "FREQUENCY_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("time", "JOB_TIME", module, FieldType.STRING));
+		
+		return fields;
+	}
+	
 	public static List<FacilioField> getApprovalRuleFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getApprovalRulesModule();

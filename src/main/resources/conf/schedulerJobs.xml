@@ -30,6 +30,7 @@
 	 
 	 <job name='HistoricalRunForReadingRule' classname = 'com.facilio.bmsconsole.jobs.HistoricalRunForReadingRule' transactionTimeout='72000000'/>
 	 <job name='ScheduledRuleExecution' classname = 'com.facilio.bmsconsole.jobs.ScheduledRuleExecutionJob' transactionTimeout='900000'/>
+	 <job name='ScheduledActionExecution' classname = 'com.facilio.bmsconsole.jobs.ScheduledActionExecutionJob' transactionTimeout='900000'/>
 	 
 	 <!-- Shift jobs -->
 	 <job name='StartShift' classname= 'com.facilio.bmsconsole.jobs.ShiftStartJob' transactionTimeout='300000'/>

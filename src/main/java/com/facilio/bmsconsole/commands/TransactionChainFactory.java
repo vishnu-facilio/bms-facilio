@@ -157,6 +157,14 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain getAddScheduledActionChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddActionsForWorkflowRule());
+			c.addCommand(new AddScheduledActionCommand());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
 		public static Chain updateWorkflowRuleChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new UpdateWorkflowRuleCommand());

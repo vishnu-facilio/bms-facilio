@@ -31,6 +31,11 @@
 		</action>
 	</package>
 	
+	<package name="scheduledActionApiV2" namespace="/api/v2/setup/scheduledaction" extends="v2Api">
+		<action name="add"  class="com.facilio.bmsconsole.actions.ScheduledAction" method="addScheduledAction">
+		</action>
+	</package>
+	
 	<package name="alarmSetupApiV2" namespace="/api/v2/setup/alarm" extends="v2Api">
 		<action name="rules"  class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="newFetchWorkflowRulesOfType">
 			<param name="moduleName">setup</param>

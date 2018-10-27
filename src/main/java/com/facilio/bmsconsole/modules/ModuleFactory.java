@@ -262,6 +262,15 @@ public class ModuleFactory {
 		return scheduledRuleJob;
 	}
 	
+	public static FacilioModule getScheduledActionModule() {
+		FacilioModule scheduledRule = new FacilioModule();
+		scheduledRule.setName("scheduledAction");
+		scheduledRule.setDisplayName("Scheduled Actions");
+		scheduledRule.setTableName("Scheduled_Actions");
+		
+		return scheduledRule;
+	}
+	
 	public static FacilioModule getApprovalRulesModule() {
 		FacilioModule approvalRules = new FacilioModule();
 		approvalRules.setName("approvalRules");

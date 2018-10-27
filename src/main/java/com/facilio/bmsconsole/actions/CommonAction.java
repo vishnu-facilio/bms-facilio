@@ -45,12 +45,23 @@ public class CommonAction extends FacilioAction {
 		this.ftl = ftl;
 	}
 	
+	private Map<String, Object> parameters;
+	public Map<String, Object> getParameters() {
+		return parameters;
+	}
+	public void setParameters(Map<String, Object> parameters) {
+		this.parameters = parameters;
+	}
+	
 	public String parseFtl() throws Exception {
 		if (workflow.getWorkflowString() == null) {
 			workflow.setWorkflowString(WorkflowUtil.getXmlStringFromWorkflow(workflow));
 		}
 		Map<String, Object> parameters = new HashMap<String,Object>();
 		parameters.put("org", AccountUtil.getCurrentOrg());
+		if (this.parameters != null) {
+			parameters.putAll(this.parameters);
+		}
 		Map<String, Object> params = WorkflowUtil.getExpressionResultMap(workflow.getWorkflowString(), parameters);
 		
 		setResult("parsedFtl", FreeMarkerAPI.processTemplate(ftl, params));

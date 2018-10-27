@@ -71,8 +71,11 @@ public class AddActionsForWorkflowRule implements Command {
 			
 			if(rule != null) {
 				ActionAPI.addWorkflowRuleActionRel(rule.getId(), actions);
+				rule.setActions(actions);
 			}
-			rule.setActions(actions);
+			else {
+				context.put(FacilioConstants.ContextNames.ACTIONS_LIST, actions);
+			}
 		}
 		return false;
 	}
