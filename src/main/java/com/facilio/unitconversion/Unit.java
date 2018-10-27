@@ -8,7 +8,7 @@ import java.util.Map;
 
 public enum Unit {
 	
-	// last id -- 87
+	// last id -- 88
 	
 	KWH(1,"Kilo Watt Hour","kWh",Metric.ENERGY),
 	HECTOWH(76,"Hecto Watt Hour","hWh",Metric.ENERGY,"si*10","this/10"),
@@ -112,6 +112,7 @@ public enum Unit {
 	EURO(86,"euro","£",Metric.CURRENCY),
 	
 	PERCENTAGE(87,"percentage","%",Metric.PERCENTAGE),
+	PERCENTAGE_DIV_100(88,"percentage","%",Metric.PERCENTAGE,"si/100","this*100"),	// do not use this in ORG_UNITS
 	;
 	
 	int unitId;
