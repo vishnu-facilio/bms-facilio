@@ -65,6 +65,7 @@ public class CommonAction extends FacilioAction {
 		Map<String, Object> params = WorkflowUtil.getExpressionResultMap(workflow.getWorkflowString(), parameters);
 		
 		setResult("parsedFtl", FreeMarkerAPI.processTemplate(ftl, params));
+		setResult("workflowResultMap", params);
 		return SUCCESS;
 	}
 	
