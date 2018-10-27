@@ -31,14 +31,14 @@ public class ClearAlarmOnWOCloseCommand implements Command, Serializable {
 		List<WorkOrderContext> workOrders = (List<WorkOrderContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		if(workOrders != null && !workOrders.isEmpty()) {
 			TicketStatusContext closeStatus = TicketAPI.getStatus("Closed");
-			List<Long> alarmIds = new ArrayList<>();
+			List<Long> woIds = new ArrayList<>();
 			for (WorkOrderContext workOrder : workOrders) {
 				if (workOrder.getStatus() != null && workOrder.getStatus().getId() == closeStatus.getId()) {
 					switch(workOrder.getSourceTypeEnum()) {
 						case ALARM:
 						case THRESHOLD_ALARM:
 						case ANOMALY_ALARM:
-							alarmIds.add(workOrder.getId());
+							woIds.add(workOrder.getId());
 							break;
 						default:
 							break;
@@ -46,8 +46,8 @@ public class ClearAlarmOnWOCloseCommand implements Command, Serializable {
 				}
 			}
 			
-			if (!alarmIds.isEmpty()) {
-				List<AlarmContext> alarms = AlarmAPI.getAlarms(alarmIds);
+			if (!woIds.isEmpty()) {
+				List<AlarmContext> alarms = AlarmAPI.getActiveAlarmsFromWoId(woIds);
 				
 				if (alarms != null && !alarms.isEmpty()) {
 					for (AlarmContext alarm : alarms) {

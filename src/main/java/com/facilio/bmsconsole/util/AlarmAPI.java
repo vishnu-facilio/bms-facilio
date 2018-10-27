@@ -37,6 +37,7 @@ import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.Operator;
+import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -53,7 +54,7 @@ import com.facilio.workflows.context.WorkflowContext;
 
 public class AlarmAPI {
 	
-	public static JSONObject constructClearEvent(AlarmContext alarm, String msg) {
+	public static JSONObject constructClearEvent(AlarmContext alarm, String msg) throws Exception {
 		JSONObject event = new JSONObject();
 		
 		event.put("entity", alarm.getEntity());
@@ -65,6 +66,13 @@ public class AlarmAPI {
 		event.put("siteId", alarm.getSiteId());
 		event.put("severity", FacilioConstants.Alarm.CLEAR_SEVERITY);
 		event.put("comment", msg);
+		
+		if (isReadingAlarm(alarm.getSourceTypeEnum())) {
+			ReadingAlarmContext readingAlarm = getReadingAlarmContext(alarm.getId());
+			event.put("sourceType", readingAlarm.getSourceTypeEnum().getIntVal());
+			event.put("ruleId", readingAlarm.getRuleId());
+			event.put("readingFieldId", readingAlarm.getReadingFieldId());
+		}
 		
 		return event;
 	}
@@ -723,6 +731,27 @@ public class AlarmAPI {
 		
 		List<AlarmContext> alarms = builder.get();
 		
+		return alarms;
+	}
+	
+	public static List<AlarmContext> getActiveAlarmsFromWoId (Collection<Long> ids) throws Exception {
+		String moduleName = FacilioConstants.ContextNames.ALARM;
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		List<FacilioField> fields = modBean.getAllFields(moduleName);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioField woIdField = fieldMap.get("woId");
+		FacilioField severityField = fieldMap.get("severity");
+		AlarmSeverityContext clearSeverity = getAlarmSeverity(FacilioConstants.Alarm.CLEAR_SEVERITY);
+		SelectRecordsBuilder<AlarmContext> builder = new SelectRecordsBuilder<AlarmContext>()
+													.module(module)
+													.beanClass(AlarmContext.class)
+													.select(fields)
+													.andCondition(CriteriaAPI.getCondition(woIdField, ids, PickListOperators.IS))
+													.andCondition(CriteriaAPI.getCondition(severityField, String.valueOf(clearSeverity.getId()), PickListOperators.ISN_T))
+													;
+		
+		List<AlarmContext> alarms = builder.get();
 		return alarms;
 	}
 	

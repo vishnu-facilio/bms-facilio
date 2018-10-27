@@ -81,9 +81,6 @@ public class UpdateAlarmCommand implements Command {
 					AlarmAPI.updateAlarmDetailsInTicket(alarmObj, alarm);
 					TicketAPI.updateTicketStatus(null, alarm, alarmObj, false);
 					TicketAPI.updateTicketAssignedBy(alarm);
-					if (isCleared && AlarmAPI.isReadingAlarm(alarmObj.getSourceTypeEnum())) {
-						ReadingRuleAPI.markAlarmMetaAsClear(alarmObj.getId());
-					}
 				}
 			}
 			
@@ -109,6 +106,10 @@ public class UpdateAlarmCommand implements Command {
 				AlarmContext alarmObj = getAlarmObj(idCondition, moduleName, fields, true);
 				if(alarmObj != null) {
 					context.put(FacilioConstants.ContextNames.RECORD, alarmObj);
+				}
+				
+				if (isCleared && AlarmAPI.isReadingAlarm(alarmObj.getSourceTypeEnum())) {
+					ReadingRuleAPI.markAlarmMetaAsClear(alarmObj.getId());
 				}
 			}
 			

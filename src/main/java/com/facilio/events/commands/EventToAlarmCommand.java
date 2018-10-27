@@ -70,7 +70,7 @@ public class EventToAlarmCommand implements Command {
 
 					List<AlarmContext> alarms = builder.get();
 					long severityId = alarms.get(0).getSeverity().getId();
-					if(AlarmAPI.getAlarmSeverity(severityId).getSeverity().equals("Clear"))
+					if(AlarmAPI.getAlarmSeverity(severityId).getSeverity().equals(FacilioConstants.Alarm.CLEAR_SEVERITY))
 					{
 						createAlarm = true;
 						entityId = alarms.get(0).getEntityId();
