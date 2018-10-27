@@ -1297,7 +1297,7 @@ public class WorkflowUtil {
 	
 	private static List<WorkflowExpression> getWorkflowExpressions(String workflow) throws Exception {
 		
-		LOGGER.log(Level.SEVERE, "workflow -- "+workflow);
+//		LOGGER.log(Level.SEVERE, "workflow -- "+workflow);
 		List<WorkflowExpression> workflowExpressions = new ArrayList<>();
 		InputStream stream = new ByteArrayInputStream(workflow.getBytes("UTF-16"));
     	
