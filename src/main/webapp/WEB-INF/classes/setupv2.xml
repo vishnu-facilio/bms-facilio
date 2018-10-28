@@ -34,6 +34,8 @@
 	<package name="scheduledActionApiV2" namespace="/api/v2/setup/scheduledaction" extends="v2Api">
 		<action name="add"  class="com.facilio.bmsconsole.actions.ScheduledAction" method="addScheduledAction">
 		</action>
+		<action name="run"  class="com.facilio.bmsconsole.actions.ScheduledAction" method="executeScheduledAction">
+		</action>
 	</package>
 	
 	<package name="alarmSetupApiV2" namespace="/api/v2/setup/alarm" extends="v2Api">
