@@ -1017,7 +1017,7 @@ public class PreventiveMaintenanceAPI {
 		if(pmId > 0 && triggerId > 0  && resourceId > 0) {
 			
 			FacilioModule module = ModuleFactory.getPMTriggersResourceModule();
-			List<FacilioField> fields = FieldFactory.getPMTriggerFields();
+			List<FacilioField> fields = FieldFactory.getPMTriggersResourceFields();
 			
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 					.select(fields)

@@ -1413,9 +1413,16 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getExecutePreventiveMaintenanceChain() {
+		return getExecutePreventiveMaintenanceChain(false);
+	}
+	public static Chain getExecutePreventiveMaintenanceChain(boolean isMultipleWo) {
 		Chain c = getTransactionChain();
-		//c.addCommand(new PreparePMForMultipleAsset());
-		c.addCommand(new ExecutePMCommand());
+		if(isMultipleWo) {
+			c.addCommand(new PreparePMForMultipleAsset());
+		}
+		else {
+			c.addCommand(new ExecutePMCommand());
+		}
 		c.addCommand(new ResetTriggersCommand());
 		c.addCommand(new SchedulePMRemindersCommand());
 		CommonCommandUtil.addCleanUpCommand(c);

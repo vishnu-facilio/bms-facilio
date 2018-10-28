@@ -8,12 +8,14 @@ import java.util.Map;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PMTriggerResourceContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext;
@@ -34,6 +36,7 @@ public class PreparePMForMultipleAsset implements Command {
 		PMTriggerContext pmTrigger = (PMTriggerContext) context.get(FacilioConstants.ContextNames.PM_CURRENT_TRIGGER);
 		PMJobsContext pmJob = (PMJobsContext) context.get(FacilioConstants.ContextNames.PM_CURRENT_JOB);
 		Long pmId = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+
 		if(pmId != null && pmId != -1 && pmJob.getResourceId() > 0) {
 			
 			PreventiveMaintenance pm = PreventiveMaintenanceAPI.getActivePM(pmId);
@@ -52,22 +55,28 @@ public class PreparePMForMultipleAsset implements Command {
 				woTemplate.setAssignedToId(pmTriggerResource.getAssignedToId());
 			}
 			else {
-				woTemplate.setAssignedToId(pmTrigger.getAssignedTo());
+				woTemplate.setAssignedToId(pmTrigger.getAssignedTo() != null ? pmTrigger.getAssignedTo() : -1);
 			}
 			
 			List<TaskSectionTemplate> sectiontemplates = woTemplate.getSectionTemplates();
-			WorkOrderContext woContext = new WorkOrderContext();	// woTemplate
+			
+			JSONObject content = template.getTemplate(null);
+			
+			WorkOrderContext woContext = FieldUtil.getAsBeanFromJson(content, WorkOrderContext.class);
 			
 			woContext.setResource(ResourceAPI.getResource(pmJob.getResourceId()));
 			
 			Map<String, List<TaskContext>> taskMap = new HashMap<>();
 			for(TaskSectionTemplate sectiontemplate :sectiontemplates) {
 				
+				Template sectionTemplate = TemplateAPI.getTemplate(sectiontemplate.getId());
+				sectiontemplate = (TaskSectionTemplate)sectionTemplate;
+				
 				 List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(sectiontemplate.getAssignmentType()), woContext.getResource().getId(), sectiontemplate.getSpaceCategoryId(), sectiontemplate.getAssetCategoryId(),sectiontemplate.getResourceId());
 				 
 				 for(Long resourceId :resourceIds) {
 					 ResourceContext sectionResource = ResourceAPI.getResource(resourceId);
-					 String sectionName = sectionResource.getName() + sectiontemplate.getName();
+					 String sectionName = sectionResource.getName() + " - " +sectiontemplate.getName();
 					 
 					 List<TaskTemplate> taskTemplates = sectiontemplate.getTaskTemplates();
 					 
@@ -99,7 +108,7 @@ public class PreparePMForMultipleAsset implements Command {
 			//Temp fix. Have to be removed eventually
 			PreventiveMaintenanceAPI.updateResourceDetails(woContext, taskMap);
 			Chain addWOChain = TransactionChainFactory.getAddWorkOrderChain();
-			addWOChain.execute(context);
+			addWOChain.execute(addWocontext);
 
 			//incrementPMCount(pm);
 		}
