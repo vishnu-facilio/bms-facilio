@@ -3,10 +3,12 @@ package com.facilio.bmsconsole.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.lang3.tuple.Pair;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -15,6 +17,7 @@ import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.PickListOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -29,6 +32,7 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class ApprovalRulesAPI extends WorkflowRuleAPI {
 	protected static void updateChildRuleIds(ApprovalRuleContext rule) throws Exception {
@@ -175,6 +179,49 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 		if (rule.isAllApprovalRequired() && rule.getApprovalOrderEnum() == null) {
 			throw new IllegalArgumentException("Approval Order is mandatory when everyone's approval is required.");
 		}
+	}
+	
+	public static Map<Long, List<Long>> fetchPreviousSteps(List<Pair<Long, Long>> recordAndRuleIdPairs) throws Exception {
+		FacilioModule module = ModuleFactory.getApprovalStepsModule();
+		List<FacilioField> fields = FieldFactory.getApprovalStepsFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioField recordIdField = fieldMap.get("recordId");
+		FacilioField ruleIdField = fieldMap.get("ruleId");
+		
+		Criteria criteria = new Criteria();
+		for (Pair<Long, Long> pair : recordAndRuleIdPairs) {
+			Criteria stepCriteria = new Criteria();
+			stepCriteria.addAndCondition(CriteriaAPI.getCondition(recordIdField, String.valueOf(pair.getLeft()), PickListOperators.IS));
+			stepCriteria.addAndCondition(CriteriaAPI.getCondition(ruleIdField, String.valueOf(pair.getRight()), PickListOperators.IS));
+			
+			criteria.orCriteria(stepCriteria);
+		}
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.table(module.getTableName())
+														.select(fields)
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCriteria(criteria)
+														;
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			Map<Long, List<Long>> previousSteps = new HashMap<>();
+			for (Map<String, Object> prop : props) {
+				Long woId = (Long) prop.get("recordId");
+				Long approverId = (Long) prop.get("approverGroup");
+				
+				List<Long> approversId = previousSteps.get(woId);
+				if (approversId == null) {
+					approversId = new ArrayList<>();
+					previousSteps.put(woId, approversId);
+				}
+				approversId.add(approverId);
+			}
+			
+			return previousSteps;
+		}
+		return null;
 	}
 	
 }

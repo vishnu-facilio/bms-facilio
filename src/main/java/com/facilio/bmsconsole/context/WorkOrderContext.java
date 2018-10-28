@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.context;
 
 import java.text.ParseException;
+import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -143,6 +144,14 @@ public class WorkOrderContext extends TicketContext {
 		this.approvalRule = approvalRule;
 	}
 	
+	private List<SingleSharingContext> waitingApprovals;
+	public List<SingleSharingContext> getWaitingApprovals() {
+		return waitingApprovals;
+	}
+	public void setWaitingApprovals(List<SingleSharingContext> waitingApprovals) {
+		this.waitingApprovals = waitingApprovals;
+	}
+
 	private Boolean sendForApproval;
 	public Boolean getSendForApproval() {
 		return sendForApproval;

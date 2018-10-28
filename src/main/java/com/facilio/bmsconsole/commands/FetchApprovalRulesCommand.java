@@ -5,12 +5,16 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.tuple.Pair;
 
+import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.util.ApprovalRulesAPI;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
@@ -33,9 +37,11 @@ public class FetchApprovalRulesCommand implements Command {
 		
 		if (workOrders != null && !workOrders.isEmpty()) {
 			List<Long> ruleIds = new ArrayList<>();
+			List<Pair<Long, Long>> recordAndRuleIdPairs = new ArrayList<>();
 			for (WorkOrderContext wo : workOrders) {
 				if (wo.getApprovalStateEnum() == ApprovalState.REQUESTED) {
 					ruleIds.add(wo.getApprovalRuleId());
+					recordAndRuleIdPairs.add(Pair.of(wo.getId(), wo.getApprovalRuleId()));
 				}
 			}
 			
@@ -73,9 +79,22 @@ public class FetchApprovalRulesCommand implements Command {
 					}
 				}
 				
+				Map<Long, List<Long>> previousSteps = ApprovalRulesAPI.fetchPreviousSteps(recordAndRuleIdPairs);
 				for (WorkOrderContext wo : workOrders) {
 					if (wo.getApprovalStateEnum() == ApprovalState.REQUESTED) {
-						wo.setApprovalRule(ruleMap.get(wo.getApprovalRuleId()));
+						ApprovalRuleContext rule = ruleMap.get(wo.getApprovalRuleId()); 
+						wo.setApprovalRule(rule);
+						
+						if (rule.getApprovers() != null) {
+							List<Long> currentPreviousSteps = previousSteps != null ? previousSteps.get(wo.getId()) : null;
+							if (currentPreviousSteps != null) {
+								List<SingleSharingContext> waitingApprovals = rule.getApprovers().stream().filter(a -> !currentPreviousSteps.contains(a.getId())).collect(Collectors.toList());
+								wo.setWaitingApprovals(waitingApprovals);
+							}
+							else {
+								wo.setWaitingApprovals(rule.getApprovers());
+							}
+						}
 					}
 				}
 			}
