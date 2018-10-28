@@ -70,7 +70,7 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 									List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(resourceId, formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), true, false);
 									
 									if (AccountUtil.getCurrentOrg().getId() == 88) {
-										LOGGER.info("Readings to be added for Formula : "+formula.getName()+" is "+currentReadings);
+										LOGGER.info("Readings to be added for Formula : "+formula.getName()+" between the intervals ("+intervals+") is "+currentReadings);
 									}
 									
 									if (currentReadings != null && !currentReadings.isEmpty()) {
