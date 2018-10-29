@@ -245,7 +245,7 @@ public class ImportProcessContext implements Serializable
 	public JSONArray getFields() throws Exception
 	{
 		if(getModule() != null) {
-			return ImportAPI.getFields(getModule().getName());
+			return ImportAPI.getFields(getModule().getName(), getImportMode());
 		}
 		return null;
 	}

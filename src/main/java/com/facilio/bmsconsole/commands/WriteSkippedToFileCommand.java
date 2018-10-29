@@ -56,7 +56,7 @@ public class WriteSkippedToFileCommand implements Command {
 			newFileStream.close();
 			
 			//File newFile = new File(fs.getFileInfo(importProcessContext.getFileId()).getFilePath() + File.separator + newFileName);
-			long fileId = fs.addFile(newFileName, newFile, "application/xls");
+			long fileId = fs.addFile(newFileName+"." + oldFileNameArray[(oldFileNameArray.length) -1] , newFile, "application/xls");
 			
 			String fileUrl= fs.getPrivateUrl(fileId);
 			emailMessage.append("<a href="+fileUrl+"Click here to view skipped entries</a>");

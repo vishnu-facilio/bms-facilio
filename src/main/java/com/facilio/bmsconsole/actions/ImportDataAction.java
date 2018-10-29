@@ -49,6 +49,7 @@ public class ImportDataAction extends ActionSupport {
 		JSONObject firstRow = ImportAPI.getFirstRow(fileUpload);	
 		importProcessContext.setfirstRow(firstRow);
 		importProcessContext.setColumnHeadingString(columnheadings.toJSONString().replaceAll("\"", "\\\""));
+		importProcessContext.setImportMode(getImportMode());
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule facilioModule = modBean.getModule(getModuleName());
 		
@@ -301,7 +302,14 @@ public class ImportDataAction extends ActionSupport {
 
 	private static String UPDATEQUERY = "update  ImportProcess set FIELD_MAPPING='#FIELD_MAPPING#' where IMPORTID_ID=#IMPORTID#";	
 
+	Integer importMode;
 
+	public Integer getImportMode() {
+		return importMode;
+	}
+	public void setImportMode(Integer importMode) {
+		this.importMode = importMode;
+	}
 	public ImportProcessContext getImportProcessContext() {
 		return importProcessContext;
 	}
