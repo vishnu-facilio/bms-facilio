@@ -3974,6 +3974,9 @@ public class FieldFactory {
 		fields.add(getField("assetCategoryId", "SPACE_CATEGORY_ID", module, FieldType.LOOKUP));
 		fields.add(getField("spaceCategoryId", "ASSET_CATEGORY_ID", module, FieldType.LOOKUP));
 		fields.add(getField("assignmentType", "ASSIGNMENT_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("inputType", "INPUT_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("readingFieldId", "READING_ID", module, FieldType.LOOKUP));
+		fields.add(getField("attachmentRequired", "ATTACHMENT_REQUIRED", module, FieldType.BOOLEAN));
 		return fields;
 	}
 	

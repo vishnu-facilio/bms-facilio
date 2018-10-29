@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
@@ -85,10 +86,12 @@ public class PreparePMForMultipleAsset implements Command {
 						 
 						 List<Long> taskResourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(taskTemplate.getAssignmentType()), sectionResource.getId(), taskTemplate.getSpaceCategoryId(), taskTemplate.getAssetCategoryId(),taskTemplate.getResourceId());
 						 
+						 applySectionSettingsIfApplicable(sectiontemplate,taskTemplate);
 						 for(Long taskResourceId :taskResourceIds) {
 							 ResourceContext taskResource = ResourceAPI.getResource(taskResourceId);
 							 TaskContext task = taskTemplate.getTask();
 							 task.setResource(taskResource);
+							 
 							 tasks.add(task);
 						 }
 					 }
@@ -113,6 +116,23 @@ public class PreparePMForMultipleAsset implements Command {
 			//incrementPMCount(pm);
 		}
 		return false;
+	}
+
+	private void applySectionSettingsIfApplicable(TaskSectionTemplate sectiontemplate, TaskTemplate taskTemplate) {
+		
+		if(taskTemplate.getAssignmentType() == PreventiveMaintenance.PMAssignmentType.CURRENT_ASSET.getVal()) {
+			
+			if(!taskTemplate.isAttachmentRequired()) {
+				taskTemplate.setAttachmentRequired(sectiontemplate.isAttachmentRequired());
+			}
+			if(taskTemplate.getInputType() <= InputType.NONE.getVal() && sectiontemplate.getInputType() > InputType.NONE.getVal()) {
+				
+				taskTemplate.setInputType(sectiontemplate.getInputType());
+				if(sectiontemplate.getReadingFieldId() > 0) {
+					taskTemplate.setReadingFieldId(sectiontemplate.getReadingFieldId());
+				}
+			}
+		}
 	}
 
 }
