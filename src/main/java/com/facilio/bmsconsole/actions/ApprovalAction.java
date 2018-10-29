@@ -25,7 +25,8 @@ public class ApprovalAction extends FacilioAction {
 	@SuppressWarnings("unchecked")
 	public String approvalList() throws Exception {
 		// TODO Auto-generated method stub
-		
+		 setViewName("approval_" + getViewName());
+
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
 		context.put(FacilioConstants.ContextNames.WO_DUE_STARTTIME, getStartTime());

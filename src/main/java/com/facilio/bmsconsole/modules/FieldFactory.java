@@ -992,7 +992,7 @@ public class FieldFactory {
 	
 	public static List<FacilioField> getApprovalStepsFields () {
 		List<FacilioField> fields = new ArrayList<>();
-		FacilioModule module = ModuleFactory.getApprovalRulesModule();
+		FacilioModule module = ModuleFactory.getApprovalStepsModule();
 		
 		fields.add(getIdField(module));
 		fields.add(getOrgIdField(module));

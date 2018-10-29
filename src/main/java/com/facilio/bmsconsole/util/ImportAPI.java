@@ -489,7 +489,7 @@ public class ImportAPI {
 		return null;
 	}
 	
-	public static JSONArray getFields(String module)
+	public static JSONArray getFields(String module, Integer importMode)
 	{
 		JSONArray fields = new JSONArray();
 		
@@ -510,6 +510,7 @@ public class ImportAPI {
 				fields.remove("space");
 				fields.remove("localId");
 				fields.remove("resourceType");
+				if(importMode == 1 || importMode == null) {
 				if(module.equals(FacilioConstants.ContextNames.ENERGY_METER)) {
 					fields.remove("purposeSpace");
 				}
@@ -521,6 +522,7 @@ public class ImportAPI {
 				fields.add("subspace1");
 				fields.add("subspace2");
 				fields.add("subspace3");
+			}
 			}
 		}
 		catch(Exception e) {

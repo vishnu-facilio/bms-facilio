@@ -30,6 +30,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.billing.context.ExcelTemplate;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -822,6 +823,9 @@ public class TemplateAPI {
 		taskTemplate.setSectionId(sectionId);
 		taskTemplate.setParentTemplateId(woTemplateId);
 		taskTemplate.setType(type);
+		if(taskTemplate.getInputType() < 0) {
+			taskTemplate.setInputType(InputType.NONE);
+		}
 		taskTemplate.setOrgId(AccountUtil.getCurrentOrg().getId());
 		return taskTemplate;
 	}
@@ -880,6 +884,8 @@ public class TemplateAPI {
 		for (TaskSectionTemplate sectionTemplate : sectionTemplates) {
 			//sectionTemplate.setType(sectiontype);
 			sectionTemplate.setOrgId(AccountUtil.getCurrentOrg().getId());
+			sectionTemplate.setParentWOTemplateId(woTemplateId);
+			sectionTemplate.setType(Type.WO_TASK_SECTION);
 			templatePropList.add(FieldUtil.getAsProperties(sectionTemplate));
 		}
 		insertTemplatesWithExtendedProps(ModuleFactory.getTaskSectionTemplateModule(), FieldFactory.getTaskSectionTemplateFields(), templatePropList);

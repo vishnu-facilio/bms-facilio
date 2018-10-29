@@ -90,7 +90,7 @@
 		<action name="save" class="com.facilio.bmsconsole.actions.ImportTemplateAction" method="saveImportTemplate">
 		<param name="permission">DATA_ADMINISTRATION</param>
 		</action>
-		<action name="deletetemplate" class="com.facilio.bmsconsole.actions.ImportTemplateAction" method="deleteTemplate"></action>
+		<action name="deletetemplate" class="com.facilio.bmsconsole.actions.ImportTemplateAction" method="updateTemplate"></action>
 	</package>
 	
 	

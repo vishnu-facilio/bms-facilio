@@ -657,10 +657,10 @@ public class ViewFactory {
 		createdTime.setName("createdTime");
 		createdTime.setDataType(FieldType.NUMBER);
 		createdTime.setColumnName("CREATED_TIME");
-		createdTime.setModule(ModuleFactory.getWorkOrderRequestsModule());
+		createdTime.setModule(ModuleFactory.getWorkOrdersModule());
 		
 		FacilioView rejectedApproval = new FacilioView();
-		rejectedApproval.setName("approval_rejected");
+		rejectedApproval.setName("rejected");
 		rejectedApproval.setDisplayName("Rejected Approval");
 		rejectedApproval.setCriteria(criteria);
 		rejectedApproval.setSortFields(Arrays.asList(new SortField(createdTime, false)));
@@ -675,10 +675,10 @@ public class ViewFactory {
 		createdTime.setName("createdTime");
 		createdTime.setDataType(FieldType.NUMBER);
 		createdTime.setColumnName("CREATED_TIME");
-		createdTime.setModule(ModuleFactory.getWorkOrderRequestsModule());
+		createdTime.setModule(ModuleFactory.getWorkOrdersModule());
 		
 		FacilioView rejectedApproval = new FacilioView();
-		rejectedApproval.setName("approval_approved");
+		rejectedApproval.setName("approved");
 		rejectedApproval.setDisplayName("Approved Approval");
 		rejectedApproval.setCriteria(criteria);
 		rejectedApproval.setSortFields(Arrays.asList(new SortField(createdTime, false)));
@@ -693,10 +693,10 @@ public class ViewFactory {
 		createdTime.setName("createdTime");
 		createdTime.setDataType(FieldType.NUMBER);
 		createdTime.setColumnName("CREATED_TIME");
-		createdTime.setModule(ModuleFactory.getWorkOrderRequestsModule());
+		createdTime.setModule(ModuleFactory.getWorkOrdersModule());
 	
 		FacilioView rejectedApproval = new FacilioView();
-		rejectedApproval.setName("approval_requested");
+		rejectedApproval.setName("requested");
 		rejectedApproval.setDisplayName("Requested Approval");
 		rejectedApproval.setCriteria(criteria);
 		rejectedApproval.setSortFields(Arrays.asList(new SortField(createdTime, false)));
@@ -705,16 +705,16 @@ public class ViewFactory {
 	
 	private static FacilioView getAllApproval() {
 		
-		Criteria criteria = getApprovalStateCriteria(ApprovalState.REQUESTED);
+		Criteria criteria = getAllApprovalStateCriteria();
 	
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("createdTime");
 		createdTime.setDataType(FieldType.NUMBER);
 		createdTime.setColumnName("CREATED_TIME");
-		createdTime.setModule(ModuleFactory.getWorkOrderRequestsModule());
+		createdTime.setModule(ModuleFactory.getWorkOrdersModule());
 	
 		FacilioView rejectedApproval = new FacilioView();
-		rejectedApproval.setName("approval_all");
+		rejectedApproval.setName("all");
 		rejectedApproval.setDisplayName("All Approval");
 		rejectedApproval.setCriteria(criteria);
 		rejectedApproval.setSortFields(Arrays.asList(new SortField(createdTime, false)));
@@ -735,6 +735,26 @@ public class ViewFactory {
 		condition.setField(field);
 		condition.setOperator(NumberOperators.EQUALS);
 		condition.setValue(String.valueOf(status.getValue()));
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(condition);
+		
+		return criteria;
+	}
+	
+	public static Criteria  getAllApprovalStateCriteria() {
+		FacilioField field = new FacilioField();
+		field.setName("approvalState");
+		field.setColumnName("APPROVAL_STATE");
+		field.setDataType(FieldType.NUMBER);
+		FacilioModule approvalStateModule = ModuleFactory.getWorkOrdersModule();
+		field.setModule(approvalStateModule);
+		
+		Condition condition = new Condition();
+		condition.setField(field);
+		condition.setOperator(NumberOperators.EQUALS);
+		List<String> list = Arrays.asList(String.valueOf(ApprovalState.REQUESTED.getValue()), String.valueOf(ApprovalState.REJECTED.getValue()), String.valueOf(ApprovalState.APPROVED.getValue()));
+		condition.setValue(String.join(", ", list));
 		
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(condition);
