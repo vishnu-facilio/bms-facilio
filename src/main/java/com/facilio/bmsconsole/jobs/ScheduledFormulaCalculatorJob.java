@@ -62,9 +62,7 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 								List<ReadingContext> readings = new ArrayList<>();
 								for (Long resourceId : formula.getMatchedResourcesIds()) {
 									ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(resourceId, formula.getReadingField());
-									long lastReadingTime = meta.getTtime();
-									ZonedDateTime zdt = DateTimeUtil.getDateTime(lastReadingTime).plusHours(1).truncatedTo(ChronoUnit.HOURS);
-									long startTime = DateTimeUtil.getMillis(zdt, true);
+									long startTime = getStartTime(formula, meta.getTtime());
 									ScheduleInfo schedule = FormulaFieldAPI.getSchedule(formula.getFrequencyEnum());
 									List<DateRange> intervals = DateTimeUtil.getTimeIntervals(startTime, endTime, schedule);
 									List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(resourceId, formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), true, false);
@@ -104,6 +102,17 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 			LOGGER.info("Exception occurred ", e);
 			CommonCommandUtil.emailException("ScheduledFormulaCalculatorJobENPI", "EnPI Calculation job failed for orgid : "+jc.getOrgId(), e);
 		}
+	}
+	
+	private long getStartTime (FormulaFieldContext formula, long lastReadingTime) {
+		ZonedDateTime zdt = null;
+		if (formula.getFrequencyEnum() == FacilioFrequency.HOURLY) {
+			zdt = DateTimeUtil.getDateTime(lastReadingTime).plusHours(1).truncatedTo(ChronoUnit.HOURS);
+		}
+		else {
+			zdt = DateTimeUtil.getDateTime(lastReadingTime).plusDays(1).truncatedTo(ChronoUnit.DAYS);
+		}
+		return DateTimeUtil.getMillis(zdt, true);
 	}
 	
 	private boolean isCalculatable(FormulaFieldContext formula, List<Long> calculatedFieldIds) throws Exception {
