@@ -196,7 +196,8 @@ public class DataParseForReadingsCommand implements Command {
 					if(!meta.isEmpty()) {
 						Long parentId =(Long) meta.get(ImportAPI.ImportProcessConstants.PARENT_ID_FIELD);
 						if(parentId == null) {
-							parentId = getAssetByUniqueness(colVal, importProcessContext.getModule().getName(), uniqueMapping);
+							System.out.println(importTemplateContext.getModuleMapping());
+							parentId = getAssetByUniqueness(colVal, importTemplateContext.getModuleMapping().get("subModule"), uniqueMapping);
 							// check for null in resources
 							if(parentId == null) {
 								nullResources.put(row_no, colVal);
