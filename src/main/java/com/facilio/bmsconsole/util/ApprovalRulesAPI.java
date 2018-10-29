@@ -52,7 +52,7 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 		}
 		if (rule.getApprovalFormId() == -1) {
 			if (rule.getApprovalForm() == null) {
-				throw new IllegalArgumentException("Approval Form cannot be empty for approval rule");
+//				throw new IllegalArgumentException("Approval Form cannot be empty for approval rule");
 			}
 			else {
 				rule.setApprovalFormId(FormsAPI.createForm(rule.getApprovalForm(), module));
@@ -73,7 +73,7 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 		}
 		if (rule.getRejectionFormId() == -1) {
 			if (rule.getRejectionForm() == null) {
-				throw new IllegalArgumentException("Rejection Form cannot be empty for approval rule");
+//				throw new IllegalArgumentException("Rejection Form cannot be empty for approval rule");
 			}
 			else {
 				rule.setRejectionFormId(FormsAPI.createForm(rule.getRejectionForm(), module));
@@ -138,8 +138,8 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 		updateWorkflowRuleChildIds(rule);
 		updateChildRuleIds(rule);
 		updateExtendedRule(rule, ModuleFactory.getApprovalRulesModule(), FieldFactory.getApprovalRuleFields());
-		deleteChildRuleIds(oldRule);
 		deleteChildIdsForWorkflow(oldRule, rule);
+		deleteChildRuleIds(oldRule);
 		
 		if (rule.getName() == null) {
 			rule.setName(oldRule.getName());
