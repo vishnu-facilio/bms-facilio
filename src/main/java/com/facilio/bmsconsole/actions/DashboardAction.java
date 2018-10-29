@@ -7253,6 +7253,32 @@ public class DashboardAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String toggleMobileDashboard() throws Exception {
+		if(buildingId != null) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(moduleName);
+			
+			dashboard = DashboardUtil.getDashboardForBaseSpace(buildingId, module.getModuleId());
+			linkName = (dashboard != null) ? dashboard.getLinkName() : linkName;
+		}
+		dashboard = DashboardUtil.getDashboardWithWidgets(linkName, moduleName);
+		
+		Boolean mobileEnabled = !dashboard.getShowHideMobile();
+		
+		dashboard = new DashboardContext();
+		dashboard.setShowHideMobile(mobileEnabled);
+		dashboard.setId(dashboard.getId());
+		DashboardUtil.updateDashboardPublishStatus(dashboard);
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
+		
+		Chain enableMobileDashboardChain = FacilioChainFactory.getEnableMobileDashboardChain();
+		enableMobileDashboardChain.execute(context);
+		
+		return SUCCESS;
+	}
+	
 	private JSONArray dashboardJson;
 	
 	public void setDashboardJson(JSONArray dashboardJson) {

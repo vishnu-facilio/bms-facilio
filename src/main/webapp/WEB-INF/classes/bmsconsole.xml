@@ -3362,6 +3362,11 @@
 				<param name="includeProperties">dashboards</param>
 			</result>
 		</action>
+		<action name="toggleMobileDashboard" class="com.facilio.bmsconsole.actions.DashboardAction" method="toggleMobileDashboard">
+			<result name="success" type="json">
+				<param name="includeProperties">dashboard</param>
+			</result>
+		</action>
 		<action name="addDerivation" class="com.facilio.bmsconsole.actions.DashboardAction" method="addDerivation">
 			<result name="success" type="json">
 				<param name="includeProperties">^derivation.*</param>

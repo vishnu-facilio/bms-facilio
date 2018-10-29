@@ -980,6 +980,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 			dashboardJson.put("dashboardFolderId", dashboard.getDashboardFolderId());
 			dashboardJson.put("linkName", dashboard.getLinkName());
 			dashboardJson.put("children", childrenArray);
+			dashboardJson.put("mobileEnabled", dashboard.getShowHideMobile());
 			result.add(dashboardJson);
 		 }
 		return result;

@@ -1984,6 +1984,14 @@ public class FacilioChainFactory {
 	public static Chain getUpdateDashboardChain() {
 		Chain c = getTransactionChain();
 		c.addCommand(new UpdateDashboardCommand());
+		c.addCommand(new EnableMobileDashboardCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getEnableMobileDashboardChain() {
+		Chain c = getTransactionChain();
+		c.addCommand(new EnableMobileDashboardCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
