@@ -30,7 +30,7 @@ public class InsertReadingCommand implements Command {
 		ArrayListMultimap<String , String> groupedFields = (ArrayListMultimap<String, String>) context.get(ImportAPI.ImportProcessConstants.GROUPED_FIELDS);
 		List<String> keys = new ArrayList(groupedFields.keySet());
 		HashMap<Integer, HashMap<String, Object>> nullUniqueFields = (HashMap<Integer,HashMap<String,Object>>) context.get(ImportAPI.ImportProcessConstants.NULL_UNIQUE_FIELDS);
-		HashMap<Integer, HashMap<String, Object>> nullResources = (HashMap<Integer,HashMap<String,Object>>) context.get(ImportAPI.ImportProcessConstants.NULL_UNIQUE_FIELDS);
+		HashMap<Integer, HashMap<String, Object>> nullResources = (HashMap<Integer,HashMap<String,Object>>) context.get(ImportAPI.ImportProcessConstants.NULL_RESOURCES);
 		int nullFields = 0;
 		for(int i=0; i<keys.size(); i++) {
 		insertReadings(keys.get(i),groupedContext.get(keys.get(i)));
