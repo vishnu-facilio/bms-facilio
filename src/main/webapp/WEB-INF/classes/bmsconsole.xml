@@ -1587,6 +1587,17 @@
 			</result>
 		</action>
 		
+		<action name="getScopeFilteredValuesForPM" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="getScopeFilteredValuesForPM">
+			<param name="moduleName">planned</param>
+			<param name="permission">CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">spaceCategoryIds,spaceCategoryIds\[\d+\],spaceCategoryIds\[\d+\].*,assetCategoryIds,assetCategoryIds\[\d+\],assetCategoryIds\[\d+\].*,^hasFloor.*</param>
+				<!-- <param name="includeProperties">spaceCategoryIds,spaceCategoryIds\[\d+\],spaceCategoryIds\[\d+\].*</param>
+				<param name="includeProperties"></param> -->
+			</result>
+		</action>
+		
 		<action name="addBulkPreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="addBulkPreventiveMaintenance">
 			<param name="moduleName">planned</param>
