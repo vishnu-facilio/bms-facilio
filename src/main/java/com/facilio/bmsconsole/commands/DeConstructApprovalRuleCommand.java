@@ -42,7 +42,7 @@ public class DeConstructApprovalRuleCommand implements Command {
 		List<ApproverContext> approvers = new ArrayList<>();
 		
 		WorkflowRuleContext onApprovalRule = rule;
-		while (onApprovalRule instanceof ApprovalRuleContext) {
+		while (onApprovalRule != null && onApprovalRule instanceof ApprovalRuleContext) {
 			List<ApproverContext> currentApprovers = ((ApprovalRuleContext)onApprovalRule).getApprovers();
 			if (currentApprovers != null && !currentApprovers.isEmpty()) {
 				Map<Long, ActionContext> actionMap = onApprovalRule.getActions() == null ? null : onApprovalRule.getActions().stream().collect(Collectors.toMap(ActionContext::getId, Function.identity())); 
@@ -63,7 +63,9 @@ public class DeConstructApprovalRuleCommand implements Command {
 			WorkflowRuleContext childRule = ((ApprovalRuleContext)onApprovalRule).getApprovalRule();
 			onApprovalRule = childRule;
 		}
-		rule.setApprovalActions(onApprovalRule.getActions());
+		if (onApprovalRule != null) {
+			rule.setApprovalActions(onApprovalRule.getActions());
+		}
 		rule.setApprovers(approvers);
 	}
 		

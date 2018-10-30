@@ -22,20 +22,25 @@ public class FetchChildRulesOfApprovalRuleCommand implements Command {
 		if (approvalRule != null) {
 			List<WorkflowRuleContext> rules = new ArrayList<>();
 			rules.add(approvalRule);
-			WorkflowRuleContext onRejectionRule = WorkflowRuleAPI.getWorkflowRule(approvalRule.getRejectionRuleId());
-			rules.add(onRejectionRule);
-			approvalRule.setRejectionRule(onRejectionRule);
+			
+			if (approvalRule.getRejectionRuleId() != -1) {
+				WorkflowRuleContext onRejectionRule = WorkflowRuleAPI.getWorkflowRule(approvalRule.getRejectionRuleId());
+				rules.add(onRejectionRule);
+				approvalRule.setRejectionRule(onRejectionRule);
+			}
 			
 			WorkflowRuleContext onApprovalRule = approvalRule;
 			List<Long> approverIds = new ArrayList<>();
-			while (onApprovalRule instanceof ApprovalRuleContext) {
-				WorkflowRuleContext childRule = WorkflowRuleAPI.getWorkflowRule(((ApprovalRuleContext)onApprovalRule).getApprovalRuleId());
-				rules.add(childRule);
-				((ApprovalRuleContext)onApprovalRule).setApprovalRule(childRule);
-				List<ApproverContext> approvers = ((ApprovalRuleContext)onApprovalRule).getApprovers();
-				if (approvers != null && !approvers.isEmpty()) {
-					approverIds.addAll(approvers.stream().map(ApproverContext::getId).collect(Collectors.toList()));
+			while (onApprovalRule != null && onApprovalRule instanceof ApprovalRuleContext) {
+				WorkflowRuleContext childRule = null;
+				if (((ApprovalRuleContext)onApprovalRule).getApprovalRuleId() != -1) {
+					childRule = WorkflowRuleAPI.getWorkflowRule(((ApprovalRuleContext)onApprovalRule).getApprovalRuleId());
+					rules.add(childRule);
+					((ApprovalRuleContext)onApprovalRule).setApprovalRule(childRule);
 				}
+				
+				List<ApproverContext> approvers = ((ApprovalRuleContext)onApprovalRule).getApprovers();
+				approverIds.addAll(approvers.stream().map(ApproverContext::getId).collect(Collectors.toList()));
 				
 				onApprovalRule = childRule;
 			}

@@ -94,11 +94,10 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 	protected static void addApprovers(ApprovalRuleContext rule) throws Exception {
 		if (rule.getApprovers() != null && !rule.getApprovers().isEmpty()) {
 			SharingAPI.addSharing((SharingContext<ApproverContext>) rule.getApprovers(), rule.getId(), ModuleFactory.getApproversModule());
-			addApproverActionsRel((SharingContext<ApproverContext>) rule.getApprovers());
 		}
 	}
 	
-	private static void addApproverActionsRel (SharingContext<ApproverContext> approvers) throws Exception {
+	public static void addApproverActionsRel (List<ApproverContext> approvers) throws Exception {
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 														.table(ModuleFactory.getApproverActionsRelModule().getTableName())
 														.fields(FieldFactory.getApproverActionsRelFields())

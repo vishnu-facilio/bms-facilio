@@ -24,6 +24,11 @@
 		
 		<action name="*"  class="com.facilio.bmsconsole.actions.V2WorkflowAction" method="fetchApprovalRule">
             <param name="ruleId">{1}</param>
+            <result name="success" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+				<param name="excludeProperties">result.rule.actions</param>
+			</result>
 		</action>
 	</package>
 	

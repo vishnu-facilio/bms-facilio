@@ -161,6 +161,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(new ConstructApprovalRuleCommand());
 			c.addCommand(addWorkflowRuleChain());
+			c.addCommand(new AddApproverActionRelCommand());
 			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}
@@ -186,6 +187,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(new ConstructApprovalRuleCommand());
 			c.addCommand(updateWorkflowRuleChain());
+			c.addCommand(new AddApproverActionRelCommand());
 			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}
