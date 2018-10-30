@@ -259,6 +259,7 @@ public class DataParseForReadingsCommand implements Command {
 			}
 		}
 		context.put(ImportAPI.ImportProcessConstants.READINGS_LIST, readingContexts);
+		context.put(ImportAPI.ImportProcessConstants.IMPORT_TEMPLATE_CONTEXT, importTemplateContext);
 		context.put(ImportAPI.ImportProcessConstants.GROUPED_READING_CONTEXT, groupedContext);
 		context.put(ImportAPI.ImportProcessConstants.GROUPED_FIELDS, groupedFields);
 		context.put(ImportAPI.ImportProcessConstants.NULL_UNIQUE_FIELDS, nullUniqueFields);

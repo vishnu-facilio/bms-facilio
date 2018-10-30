@@ -593,6 +593,7 @@ public class ImportAPI {
 		public static final String NULL_UNIQUE_FIELDS = "nullUniqueFields";
 		public static final String NULL_RESOURCES = "nullResources";
 		public static final String DATE_FORMATS = "dateFormats";
+		public static final String IMPORT_TEMPLATE_CONTEXT = "importTemplateContext";
 	}
 	
 	
