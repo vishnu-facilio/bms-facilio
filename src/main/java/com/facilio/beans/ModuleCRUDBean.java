@@ -18,6 +18,8 @@ public interface ModuleCRUDBean {
 	
 	public long addWorkOrderRequest(WorkOrderRequestContext workOrderRequest, List<File> attachedFiles,
 			List<String> attachedFileNames, List<String> attachedFilesContentType) throws Exception;
+	public long addWorkOrder(WorkOrderContext workOrder, List<File> attachedFiles,
+			List<String> attachedFileNames, List<String> attachedFilesContentType) throws Exception;
 	
 	public AlarmContext processAlarm(JSONObject alarmInfo) throws Exception;
 	
