@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -37,7 +38,7 @@ public class ImportProcessContext implements Serializable
 	Integer newEntries =0;
 	Integer updatedEntries =0; 
 	Integer skippedEntries =0;  //A:Prashanth
-	ArrayList<String> firstRow = new ArrayList<>(); //A:Prashanth
+	JSONObject firstRow = new JSONObject(); //A:Prashanth
 	Integer mailSetting;
 	Integer importSetting;
 	Integer importMode;
@@ -86,11 +87,11 @@ public class ImportProcessContext implements Serializable
 	public int getUpdateEntries() {
 		return this.updatedEntries;
 	}
-	public void setfirstRow(ArrayList firstRow) {
+	public void setfirstRow(JSONObject firstRow) {
 		this.firstRow = firstRow;
 	}
 	
-	public ArrayList getfirstRow() {
+	public JSONObject getfirstRow() {
 		return this.firstRow;
 	}
 	
@@ -244,7 +245,7 @@ public class ImportProcessContext implements Serializable
 	public JSONArray getFields() throws Exception
 	{
 		if(getModule() != null) {
-			return ImportAPI.getFields(getModule().getName());
+			return ImportAPI.getFields(getModule().getName(), getImportMode());
 		}
 		return null;
 	}

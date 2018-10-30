@@ -32,47 +32,56 @@ public class AddActionsForWorkflowRule implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		List<ActionContext> actions = (List<ActionContext>) context.get(FacilioConstants.ContextNames.WORKFLOW_ACTION);
+		List<ActionContext> actions = (List<ActionContext>) context.get(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST);
 		WorkflowRuleContext rule = (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
 		
 		if (actions != null && !actions.isEmpty()) {
+			List<ActionContext> actionsToBeAdded = new ArrayList<>();
 			for(ActionContext action:actions) {
-				if (action.getTemplate() == null && action.getTemplateJson() != null) {
-					System.out.println(action.getTemplateJson());
-					switch (action.getActionTypeEnum()) {
-						case EMAIL_NOTIFICATION:
-						case BULK_EMAIL_NOTIFICATION:
-							setEmailTemplate(action);
-							break;
-						case SMS_NOTIFICATION:
-						case BULK_SMS_NOTIFICATION:
-							setSMSTemplate(action);
-							break;
-						case PUSH_NOTIFICATION:
-							setMobileTemplate(action);
-							break;
-						case ADD_ALARM:
-							setJsonTemplate(action, rule, Type.ALARM);
-							break;
-						case CREATE_WO_FROM_ALARM:
-							setWorkorderTemplate(action, rule);
-							break;
-						case FIELD_CHANGE:
-						case CREATE_WORK_ORDER:
-							setJsonTemplate(action, rule, Type.JSON);
-							break;
-						default:
-							break;
+				if (action.getId() == -1) {
+					if (action.getTemplate() == null && action.getTemplateJson() != null) {
+						System.out.println(action.getTemplateJson());
+						switch (action.getActionTypeEnum()) {
+							case EMAIL_NOTIFICATION:
+							case BULK_EMAIL_NOTIFICATION:
+								setEmailTemplate(action);
+								break;
+							case SMS_NOTIFICATION:
+							case BULK_SMS_NOTIFICATION:
+								setSMSTemplate(action);
+								break;
+							case PUSH_NOTIFICATION:
+								setMobileTemplate(action);
+								break;
+							case ADD_ALARM:
+								setJsonTemplate(action, rule, Type.ALARM);
+								break;
+							case CREATE_WO_FROM_ALARM:
+								setWorkorderTemplate(action, rule);
+								break;
+							case FIELD_CHANGE:
+							case CREATE_WORK_ORDER:
+								setJsonTemplate(action, rule, Type.JSON);
+								break;
+							default:
+								break;
+						}
 					}
+					if (action.getTemplateId() == -1) {
+						action.setTemplateId(TemplateAPI.addTemplate(action.getTemplate()));
+					}
+					actionsToBeAdded.add(action);
 				}
-				action.setTemplateId(TemplateAPI.addTemplate(action.getTemplate()));
 			}
-			ActionAPI.addActions(actions);
+			ActionAPI.addActions(actionsToBeAdded);
 			
 			if(rule != null) {
 				ActionAPI.addWorkflowRuleActionRel(rule.getId(), actions);
+				rule.setActions(actions);
 			}
-			rule.setActions(actions);
+			else {
+				context.put(FacilioConstants.ContextNames.ACTIONS_LIST, actions);
+			}
 		}
 		return false;
 	}
@@ -92,6 +101,9 @@ public class AddActionsForWorkflowRule implements Command {
 		emailTemplate.setSubject((String) action.getTemplateJson().get("subject"));
 		emailTemplate.setMessage((String) action.getTemplateJson().get("message"));
 		emailTemplate.setType(Type.EMAIL);
+		if (action.getTemplateJson().containsKey("ftl")) {
+			emailTemplate.setFtl((Boolean) action.getTemplateJson().get("ftl"));
+		}
 		action.setTemplate(emailTemplate);
 		
 		checkAndSetWorkflow(action.getTemplateJson(), emailTemplate);

@@ -4,20 +4,29 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericInsertRecordBuilder;
+import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class ApprovalRuleContext extends WorkflowRuleContext {
 	
@@ -73,18 +82,18 @@ public class ApprovalRuleContext extends WorkflowRuleContext {
 		this.rejectionRule = rejectionRule;
 	}
 	
-	private SharingContext approvers;
-	public List<SingleSharingContext> getApprovers() {
+	private SharingContext<ApproverContext> approvers;
+	public List<ApproverContext> getApprovers() {
 		return approvers;
 	}
-	public void setApprovers(List<SingleSharingContext> approvers) {
+	public void setApprovers(List<ApproverContext> approvers) {
 		if (approvers != null) {
-			this.approvers = new SharingContext(approvers);
+			this.approvers = new SharingContext<>(approvers);
 		}
 	}
-	public void addApprover (SingleSharingContext approver) {
+	public void addApprover (ApproverContext approver) {
 		if (this.approvers == null) {
-			this.approvers = new SharingContext(approvers);
+			this.approvers = new SharingContext<>(approvers);
 		}
 		approvers.add(approver);
 	}
@@ -160,22 +169,23 @@ public class ApprovalRuleContext extends WorkflowRuleContext {
 		return false;
 	}
 	
-	private ApprovalOrder executeOrder;
-	public ApprovalOrder getExecuteOrder() {
-		return executeOrder;
+	private ApprovalOrder approvalOrder;
+	public ApprovalOrder getApprovalOrderEnum() {
+		return approvalOrder;
 	}
-	public void setExecuteOrder(ApprovalOrder executeOrder) {
-		this.executeOrder = executeOrder;
+	public void setApprovalOrder(ApprovalOrder approvalOrder) {
+		this.approvalOrder = approvalOrder;
 	}
-	public int getExecuteOrderENUM() {
-		if(executeOrder != null) {
-			return executeOrder.getValue();
+	public int getApprovalOrder() {
+		if (approvalOrder != null) {
+			return approvalOrder.getValue();
 		}
 		return -1;
 	}
-	public void setInternalState(int executeOrder) {
-		this.executeOrder = APPROVAL_ORDER[executeOrder-1];
+	public void setApprovalOrder(int approvalOrder) {
+		this.approvalOrder = ApprovalOrder.valueOf(approvalOrder);
 	}
+	
 	
 	@Override
 	public void executeTrueActions(Object record, Context context, Map<String, Object> placeHolders)
@@ -206,7 +216,6 @@ public class ApprovalRuleContext extends WorkflowRuleContext {
 																			;
 		updateBuilder.update(prop);
 	}
-	private static final ApprovalOrder[] APPROVAL_ORDER = ApprovalOrder.values();
 
 	public static enum ApprovalOrder {
 		SEQUENTIAL,
@@ -217,11 +226,88 @@ public class ApprovalRuleContext extends WorkflowRuleContext {
 			return ordinal() + 1;
 		}
 		
-		public ApprovalOrder valueOf (int value) {
+		public static ApprovalOrder valueOf (int value) {
 			if (value > 0 && value <= values().length) {
 				return values() [value - 1];
 			}
 			return null;
 		}
+	}
+	
+	public boolean verified(long recordId, ApprovalState action) throws Exception {
+		boolean result = true;
+		List<SingleSharingContext> matchingApprovers = approvers == null ? null : approvers.getMatching();
+		if (action == ApprovalState.APPROVED && allApprovalRequired && approvalOrder == ApprovalOrder.PARALLEL) {
+			if (approvers != null && approvers.size() > 1) {
+				List<Long> previousApprovers = fetchPreviousApprovers(recordId);
+				Map<Long, SingleSharingContext> approverMap = approvers.stream().collect(Collectors.toMap(SingleSharingContext::getId, Function.identity()));
+				if (previousApprovers != null && !previousApprovers.isEmpty()) {
+					for (Long id : previousApprovers) {
+						approverMap.remove(id);
+					}
+				}
+				for (SingleSharingContext approver : matchingApprovers) {
+					approverMap.remove(approver.getId());
+				}
+				result = approverMap.isEmpty();
+			}
+		}
+		addApprovalStep(recordId, action, matchingApprovers);
+		return result;
+	}
+	
+	private List<Long> fetchPreviousApprovers(long recordId) throws Exception {
+		FacilioModule module = ModuleFactory.getApprovalStepsModule();
+		List<FacilioField> fields = FieldFactory.getApprovalStepsFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioField recordIdField = fieldMap.get("recordId");
+		FacilioField ruleIdField = fieldMap.get("ruleId");
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.table(module.getTableName())
+														.select(fields)
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCondition(ruleIdField, String.valueOf(getId()), PickListOperators.IS))
+														.andCondition(CriteriaAPI.getCondition(recordIdField, String.valueOf(recordId), PickListOperators.IS))
+														;
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			return props.stream().map(p -> (Long) p.get("id")).collect(Collectors.toList());
+		}
+		return null;
+	}
+	
+	private void addApprovalStep (long recordId, ApprovalState action, List<SingleSharingContext> matchingApprovers) throws Exception {
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+													.table(ModuleFactory.getApprovalStepsModule().getTableName())
+													.fields(FieldFactory.getApprovalStepsFields())
+													;
+		
+		if (matchingApprovers == null || matchingApprovers.isEmpty()) {
+			insertBuilder.addRecord(constructStep(recordId, null, action));
+		}
+		else {
+			for (SingleSharingContext approver : matchingApprovers) {
+				insertBuilder.addRecord(constructStep(recordId, approver, action));
+			}
+		}
+		insertBuilder.save();
+	}
+	
+	private Map<String, Object> constructStep(long recordId, SingleSharingContext approver, ApprovalState action) {
+		Map<String, Object> prop = new HashMap<>();
+		prop.put("orgId", AccountUtil.getCurrentOrg().getId());
+		prop.put("siteId", getSiteId());
+		prop.put("ruleId", getId());
+		prop.put("recordId", recordId);
+		prop.put("actionBy", AccountUtil.getCurrentUser().getId());
+		prop.put("action", action.getValue());
+		prop.put("actionTime", System.currentTimeMillis());
+		if (approver != null) {
+			prop.put("approverGroup", approver.getId());
+		}
+		
+		return prop;
 	}
 }

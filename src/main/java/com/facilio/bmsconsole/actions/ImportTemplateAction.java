@@ -37,7 +37,7 @@ public class ImportTemplateAction extends FacilioAction {
 		setResult("templateId", props.get("id"));
 		return SUCCESS;
 	}
-	public String deleteTemplate() throws Exception {
+	public String updateTemplate() throws Exception {
 		GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder();
 		FacilioModule importtemplateModule = ModuleFactory.getImportTemplateModule();
 		List<FacilioField> fields = FieldFactory.getImportTemplateFields();

@@ -77,8 +77,10 @@ import com.facilio.workflows.functions.FacilioFunctionsParamType;
 import com.facilio.workflows.functions.FacilioListFunction;
 import com.facilio.workflows.functions.FacilioMapFunction;
 import com.facilio.workflows.functions.FacilioMathFunction;
+import com.facilio.workflows.functions.FacilioModuleFunctions;
 import com.facilio.workflows.functions.FacilioPsychrometricsFunction;
 import com.facilio.workflows.functions.FacilioReadingFunctions;
+import com.facilio.workflows.functions.FacilioResourceFunction;
 import com.facilio.workflows.functions.FacilioStringFunction;
 import com.facilio.workflows.functions.FacilioWorkflowFunctionInterface;
 import com.facilio.workflows.functions.ThermoPhysicalR134aFunctions;
@@ -1295,7 +1297,7 @@ public class WorkflowUtil {
 	
 	private static List<WorkflowExpression> getWorkflowExpressions(String workflow) throws Exception {
 		
-		LOGGER.log(Level.SEVERE, "workflow -- "+workflow);
+//		LOGGER.log(Level.SEVERE, "workflow -- "+workflow);
 		List<WorkflowExpression> workflowExpressions = new ArrayList<>();
 		InputStream stream = new ByteArrayInputStream(workflow.getBytes("UTF-16"));
     	
@@ -1433,8 +1435,15 @@ public class WorkflowUtil {
 			objects = new Object[paramList.length];
 			
 			for(String param:paramList) {
-				Object obj = variableToExpresionMap.get(param);
-				objects[objectIndex++] = obj;
+				
+				if(param != null && (param.startsWith("'") &&  param.endsWith("'")) ) {
+					// param is a constant
+					objects[objectIndex++] = param.substring(1, param.length()-1);
+				}
+				else {
+					Object obj = variableToExpresionMap.get(param);
+					objects[objectIndex++] = obj;
+				}
 			}
 		}
 		if(objects == null) {
@@ -1447,7 +1456,6 @@ public class WorkflowUtil {
 		return defaultFunctions.execute(objects);
 		
 	}
-	
 	
 	public static FacilioWorkflowFunctionInterface getFacilioFunction(String nameSpace,String functionName) {
 		
@@ -1486,6 +1494,12 @@ public class WorkflowUtil {
 			break;
 		case "energyMeter" :
 			facilioWorkflowFunction = FacilioEnergyMeterFunction.getFacilioEnergyMeterFunction(functionName);
+			break;
+		case "module" :
+			facilioWorkflowFunction = FacilioModuleFunctions.getFacilioModuleFunctions(functionName);
+			break;
+		case "resource" :
+			facilioWorkflowFunction = FacilioResourceFunction.getFacilioResourceFunction(functionName);
 			break;
 		}
 		return facilioWorkflowFunction;
@@ -1528,6 +1542,12 @@ public class WorkflowUtil {
 			break;
 		case "energyMeter" :
 			facilioWorkflowFunction = new ArrayList<>( FacilioEnergyMeterFunction.getAllFunctions().values());
+			break;
+		case "module" :
+			facilioWorkflowFunction = new ArrayList<>( FacilioModuleFunctions.getAllFunctions().values());
+			break;
+		case "resource" :
+			facilioWorkflowFunction = new ArrayList<>( FacilioResourceFunction.getAllFunctions().values());
 			break;
 		}
 		

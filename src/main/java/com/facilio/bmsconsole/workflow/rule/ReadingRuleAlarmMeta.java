@@ -69,4 +69,16 @@ public class ReadingRuleAlarmMeta implements Serializable {
 		}
 		return false;
 	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return new StringBuilder("Alarm Meta [id:").append(id)
+					.append(", alarmId: ").append(alarmId)
+					.append(", ruleId: ").append(ruleId)
+					.append(", resourceId: ").append(resourceId)
+					.append(", readingFieldId: ").append(readingFieldId)
+					.append(", clear: ").append(clear)
+					.toString();
+	}
 }

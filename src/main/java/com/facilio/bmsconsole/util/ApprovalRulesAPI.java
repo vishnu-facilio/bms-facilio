@@ -1,14 +1,19 @@
 package com.facilio.bmsconsole.util;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.lang3.tuple.Pair;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -16,6 +21,7 @@ import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.PickListOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -24,12 +30,15 @@ import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
+import com.facilio.bmsconsole.workflow.rule.ApproverContext;
 import com.facilio.bmsconsole.workflow.rule.FieldChangeFieldContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericInsertRecordBuilder;
+import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class ApprovalRulesAPI extends WorkflowRuleAPI {
 	protected static void updateChildRuleIds(ApprovalRuleContext rule) throws Exception {
@@ -48,11 +57,13 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 			}
 		}
 		if (rule.getApprovalFormId() == -1) {
-			if (rule.getApprovalForm() == null) {
-				throw new IllegalArgumentException("Approval Form cannot be empty for approval rule");
-			}
-			else {
-				rule.setApprovalFormId(FormsAPI.createForm(rule.getApprovalForm(), module));
+			if (rule.getApprovalForm() != null) {
+				if (rule.getApprovalForm().getId() == -1) {
+					rule.setApprovalFormId(FormsAPI.createForm(rule.getApprovalForm(), module));
+				}
+				else {
+					rule.setApprovalFormId(rule.getApprovalForm().getId());
+				}
 			}
 		}
 			
@@ -69,27 +80,82 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 			}
 		}
 		if (rule.getRejectionFormId() == -1) {
-			if (rule.getRejectionForm() == null) {
-				throw new IllegalArgumentException("Rejection Form cannot be empty for approval rule");
-			}
-			else {
-				rule.setRejectionFormId(FormsAPI.createForm(rule.getRejectionForm(), module));
+			if (rule.getRejectionForm() != null) {
+				if (rule.getRejectionForm().getId() == -1) {
+					rule.setRejectionFormId(FormsAPI.createForm(rule.getRejectionForm(), module));
+				}
+				else {
+					rule.setRejectionFormId(rule.getRejectionForm().getId());
+				}
 			}
 		}
 	}
 	
 	protected static void addApprovers(ApprovalRuleContext rule) throws Exception {
 		if (rule.getApprovers() != null && !rule.getApprovers().isEmpty()) {
-			SharingAPI.addSharing((SharingContext) rule.getApprovers(), rule.getId(), ModuleFactory.getApproversModule());
+			SharingAPI.addSharing((SharingContext<ApproverContext>) rule.getApprovers(), rule.getId(), ModuleFactory.getApproversModule());
+			addApproverActionsRel((SharingContext<ApproverContext>) rule.getApprovers());
 		}
+	}
+	
+	private static void addApproverActionsRel (SharingContext<ApproverContext> approvers) throws Exception {
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+														.table(ModuleFactory.getApproverActionsRelModule().getTableName())
+														.fields(FieldFactory.getApproverActionsRelFields())
+														;
+		
+		for (ApproverContext approver : approvers) {
+			if (approver.getActions() != null && !approver.getActions().isEmpty()) {
+				for (ActionContext action : approver.getActions()) {
+					Map<String, Object> prop = new HashMap<>();
+					prop.put("orgId", AccountUtil.getCurrentOrg().getId());
+					prop.put("approverId", approver.getId());
+					prop.put("actionId", action.getId());
+					
+					insertBuilder.addRecord(prop);
+				}
+			}
+		}
+		insertBuilder.save();
+	}
+	
+	public static Map<Long, List<Long>> getApproverActionMap(Collection<Long> ids) throws Exception {
+		FacilioModule module = ModuleFactory.getApproverActionsRelModule();
+		List<FacilioField> fields = FieldFactory.getApproverActionsRelFields();
+		FacilioField approverIdField = FieldFactory.getAsMap(fields).get("approverId");
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.table(module.getTableName())
+														.select(fields)
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCondition(approverIdField, ids, PickListOperators.IS))
+														;
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			Map<Long, List<Long>> approverActionMap = new HashMap<>();
+			for (Map<String, Object> prop : props) {
+				Long approverId = (Long) prop.get("approverId");
+				Long actionId = (Long) prop.get("actionId");
+				
+				List<Long> actions = approverActionMap.get(approverId);
+				if (actions == null) {
+					actions = new ArrayList<>();
+					approverActionMap.put(approverId, actions);
+				}
+				actions.add(actionId);
+			}
+			return approverActionMap;
+		}
+		return null;
 	}
 	
 	private static long addWorkflowRule(WorkflowRuleContext rule, List<ActionContext> actions) throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, rule);
-		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, actions);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, actions);
 		
-		Chain addRule = TransactionChainFactory.getAddWorkflowRuleChain();
+		Chain addRule = TransactionChainFactory.addWorkflowRuleChain();
 		addRule.execute(context);
 		
 		return rule.getId();
@@ -129,19 +195,29 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 		rule.setCriteria(criteria);
 	}
 	
-	public static ApprovalRuleContext updateApprovalRuleWithChldren(ApprovalRuleContext rule) throws Exception {
+	public static ApprovalRuleContext updateApprovalRuleWithChldren(ApprovalRuleContext rule) throws Exception {	
+		ApprovalRulesAPI.validateApprovalRule(rule);
 		ApprovalRuleContext oldRule = (ApprovalRuleContext) getWorkflowRule(rule.getId());
+		deleteApprovers(oldRule);
 		updateWorkflowRuleChildIds(rule);
 		updateChildRuleIds(rule);
 		updateExtendedRule(rule, ModuleFactory.getApprovalRulesModule(), FieldFactory.getApprovalRuleFields());
-		deleteChildRuleIds(oldRule);
+		addApprovers(rule);
 		deleteChildIdsForWorkflow(oldRule, rule);
+		deleteChildRuleIds(oldRule);
 		
 		if (rule.getName() == null) {
 			rule.setName(oldRule.getName());
 		}
 		
 		return rule;
+	}
+	
+	private static int deleteApprovers (ApprovalRuleContext rule) throws SQLException {
+		if (rule.getApprovers() != null && !rule.getApprovers().isEmpty()) {
+			return SharingAPI.deleteSharing(rule.getApprovers().stream().map(ApproverContext::getId).collect(Collectors.toList()), ModuleFactory.getApproversModule());
+		}
+		return 0;
 	}
 	
 	protected static void deleteApprovalRuleChildIds (ApprovalRuleContext rule) throws Exception {
@@ -166,7 +242,61 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 	
 	protected static ApprovalRuleContext constructApprovalRuleFromProps(Map<String, Object> prop, ModuleBean modBean) throws Exception {
 		ApprovalRuleContext approvalRule = FieldUtil.getAsBeanFromMap(prop, ApprovalRuleContext.class);
-		approvalRule.setApprovers(SharingAPI.getSharing(approvalRule.getId(), ModuleFactory.getApproversModule()));
+		approvalRule.setApprovers(SharingAPI.getSharing(approvalRule.getId(), ModuleFactory.getApproversModule(), ApproverContext.class));
 		return approvalRule;
 	}
+
+	public static void validateApprovalRule(ApprovalRuleContext rule) {
+		// TODO Auto-generated method stub
+		if (rule.getApprovers() != null 
+				&& rule.getApprovers().size() > 1 
+				&& rule.isAllApprovalRequired() 
+				&& rule.getApprovalOrderEnum() == null) {
+			throw new IllegalArgumentException("Approval Order is mandatory when everyone's approval is required.");
+		}
+	}
+	
+	public static Map<Long, List<Long>> fetchPreviousSteps(List<Pair<Long, Long>> recordAndRuleIdPairs) throws Exception {
+		FacilioModule module = ModuleFactory.getApprovalStepsModule();
+		List<FacilioField> fields = FieldFactory.getApprovalStepsFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioField recordIdField = fieldMap.get("recordId");
+		FacilioField ruleIdField = fieldMap.get("ruleId");
+		
+		Criteria criteria = new Criteria();
+		for (Pair<Long, Long> pair : recordAndRuleIdPairs) {
+			Criteria stepCriteria = new Criteria();
+			stepCriteria.addAndCondition(CriteriaAPI.getCondition(recordIdField, String.valueOf(pair.getLeft()), PickListOperators.IS));
+			stepCriteria.addAndCondition(CriteriaAPI.getCondition(ruleIdField, String.valueOf(pair.getRight()), PickListOperators.IS));
+			
+			criteria.orCriteria(stepCriteria);
+		}
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.table(module.getTableName())
+														.select(fields)
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCriteria(criteria)
+														;
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			Map<Long, List<Long>> previousSteps = new HashMap<>();
+			for (Map<String, Object> prop : props) {
+				Long woId = (Long) prop.get("recordId");
+				Long approverId = (Long) prop.get("approverGroup");
+				
+				List<Long> approversId = previousSteps.get(woId);
+				if (approversId == null) {
+					approversId = new ArrayList<>();
+					previousSteps.put(woId, approversId);
+				}
+				approversId.add(approverId);
+			}
+			
+			return previousSteps;
+		}
+		return null;
+	}
+	
 }

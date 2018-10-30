@@ -284,6 +284,7 @@ public class FacilioConstants {
 		
 		public static final String NOTE = "note";
 		public static final String NOTE_LIST = "notes";
+		public static final String COMMENT = "comment";
 		
 		public static final String MODULE_FIELD = "moduleField";
 		public static final String MODULE_FIELD_NAME = "fieldName";
@@ -342,6 +343,7 @@ public class FacilioConstants {
 		public static final String ASSET_CATEGORY = "assetcategory";
 		public static final String ASSET_DEPARTMENT = "assetdepartment";
 		public static final String ENERGY_METER = "energymeter";
+		public static final String WATER_METER = "watermeter";
 		public static final String CHILLER = "chiller";
 		public static final String CHILLER_PRIMARY_PUMP = "chillerprimarypump";
 		public static final String CHILLER_SECONDARY_PUMP = "chillersecondarypump";
@@ -361,6 +363,7 @@ public class FacilioConstants {
 		public static final String SET_POINT_READING = "setpointreading";
 		public static final String ENERGY_DATA_READING = "energydata";
 		public static final String UTILITY_BILL_READING = "utilitybillreading";
+		public static final String WATER_READING = "waterreading";
 		
 		public static final String BASE_SPACE_PHOTOS = "basespacephotos";
 		public static final String ASSET_PHOTOS = "assetphotos";
@@ -463,9 +466,11 @@ public class FacilioConstants {
 		public static final String WORKFLOW_UPDATE = "workflowUpdate";
 		public static final String WORKFLOW_RULE = "workflowRule";
 		public static final String WORKFLOW_RULE_LIST="workflowRuleList";
+		public static final String APPROVAL_RULE = "approvalRule";
+		public static final String APPROVER_ID_LIST = "approverIdList";
 		public static final String READING_RULE_LIST ="readingRules";
 		public static final String WORKFLOW_RULE_TYPE = "workflowRuleType";
-		public static final String WORKFLOW_ACTION="workflowAction";
+		public static final String WORKFLOW_ACTION_LIST="workflowActions";
 		public static final String WORKFLOW_ACTION_ID="workflowActionId";
 		public static final String PAGINATION = "pagination";
 		public static final String CURRENT_EXECUTION_TIME = "currentexecutiontime";

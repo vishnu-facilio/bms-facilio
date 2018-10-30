@@ -121,8 +121,10 @@ public class EventAPI {
 		    	else if (key.equals("siteId")) {
 		    		event.setSiteId(Long.parseLong(value));
 		    	}
-		    	else
-		    	{
+		    	else if (key.equals("comment")) {
+		    		event.setComment(value);
+		    	}
+		    	else {
 		    		event.addAdditionInfo(key, value);
 		    	}
 	    	}

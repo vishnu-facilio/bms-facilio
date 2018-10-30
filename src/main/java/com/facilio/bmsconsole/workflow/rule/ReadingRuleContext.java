@@ -14,6 +14,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -629,8 +630,16 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 				if (alarmMeta != null && !alarmMeta.isClear()) {
 					AlarmContext alarm = AlarmAPI.getAlarm(alarmMeta.getAlarmId());
 					
+					JSONObject json = AlarmAPI.constructClearEvent(alarm, "System auto cleared Alarm because associated rule executed false for the associated resource");
+					json.put("readingDataId", reading.getId());
+					json.put("readingVal", reading.getReading(getReadingField().getName()));
+					
+					if (AccountUtil.getCurrentOrg().getId() == 135) {
+						LOGGER.info("Clearing alarm for rule : "+getId()+" for resource : "+reading.getParentId());
+					}
+					
 					FacilioContext addEventContext = new FacilioContext();
-					addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, constructClearEvent(alarm));
+					addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, json);
 					Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
 					getAddEventChain.execute(addEventContext);
 					
@@ -640,17 +649,4 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 			super.executeFalseActions(record, context, placeHolders);
 		}
 	}
-	
-	private JSONObject constructClearEvent(AlarmContext alarm) {
-		JSONObject event = new JSONObject();
-		
-		event.put("entity", alarm.getEntity());
-		event.put("source", alarm.getSource());
-		event.put("resourceId", alarm.getResource().getId());
-		event.put("siteId", alarm.getSiteId());
-		event.put("severity", FacilioConstants.Alarm.CLEAR_SEVERITY);
-		
-		return event;
-	}
-	
 }

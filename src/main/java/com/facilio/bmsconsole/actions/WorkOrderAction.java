@@ -25,16 +25,20 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ActionForm;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.AttachmentContext.AttachmentType;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.TaskSectionContext;
@@ -44,12 +48,15 @@ import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
@@ -57,6 +64,7 @@ import com.facilio.bmsconsole.workflow.rule.ActivityType;
 import com.facilio.bmsconsole.workflow.rule.TicketActivity;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.util.FacilioUtil;
 
 public class WorkOrderAction extends FacilioAction {
 
@@ -411,6 +419,202 @@ public class WorkOrderAction extends FacilioAction {
 		updatePreventiveMaintenance(context);
 		return SUCCESS;
 	}
+	
+	public Long getSpaceCategoryId() {
+		return spaceCategoryId;
+	}
+
+	public void setSpaceCategoryId(Long spaceCategoryId) {
+		this.spaceCategoryId = spaceCategoryId;
+	}
+
+	public Long getAssetCategoryId() {
+		return assetCategoryId;
+	}
+
+	public void setAssetCategoryId(Long assetCategoryId) {
+		this.assetCategoryId = assetCategoryId;
+	}
+
+	public List<Long> getIncludeIds() {
+		return includeIds;
+	}
+
+	public void setIncludeIds(List<Long> includeIds) {
+		this.includeIds = includeIds;
+	}
+
+	public List<Long> getExcludeIds() {
+		return excludeIds;
+	}
+
+	public void setExcludeIds(List<Long> excludeIds) {
+		this.excludeIds = excludeIds;
+	}
+
+	public List<Long> getParentResourceIds() {
+		return parentResourceIds;
+	}
+
+	public void setParentResourceIds(List<Long> parentResourceIds) {
+		this.parentResourceIds = parentResourceIds;
+	}
+
+	public Long getBuildingId() {
+		return buildingId;
+	}
+
+	public void setBuildingId(Long buildingId) {
+		this.buildingId = buildingId;
+	}
+
+	public PMAssignmentType getAssignmentType() {
+		return assignmentType;
+	}
+
+	public void setAssignmentType(PMAssignmentType assignmentType) {
+		this.assignmentType = assignmentType;
+	}
+
+	public PMAssignmentType getParentAssignmentType() {
+		return parentAssignmentType;
+	}
+
+	public void setParentAssignmentType(PMAssignmentType parentAssignmentType) {
+		this.parentAssignmentType = parentAssignmentType;
+	}
+
+	public List<Long> getAssetCategoryIds() {
+		return assetCategoryIds;
+	}
+
+	public void setAssetCategoryIds(List<Long> assetCategoryIds) {
+		this.assetCategoryIds = assetCategoryIds;
+	}
+
+	public List<Long> getSpaceCategoryIds() {
+		return spaceCategoryIds;
+	}
+
+	public void setSpaceCategoryIds(List<Long> spaceCategoryIds) {
+		this.spaceCategoryIds = spaceCategoryIds;
+	}
+
+	public boolean isHasFloor() {
+		return hasFloor;
+	}
+
+	public void setHasFloor(boolean hasFloor) {
+		this.hasFloor = hasFloor;
+	}
+	
+	Long spaceCategoryId;
+	Long assetCategoryId;
+	List<Long> includeIds;
+	List<Long> excludeIds;
+	List<Long> parentResourceIds;
+	Long buildingId;
+	PMAssignmentType assignmentType;
+	PMAssignmentType parentAssignmentType;
+
+	List<Long> assetCategoryIds;
+	List<Long> spaceCategoryIds;
+	boolean hasFloor;
+	
+	public String getScopeFilteredValuesForPM() throws Exception {
+		
+		if(buildingId > 0) {															// only building selected case
+			List<BaseSpaceContext> floors = SpaceAPI.getBuildingFloors(buildingId);
+			if(floors != null && !floors.isEmpty()) {
+				hasFloor = true;
+			}
+			assetCategoryIds = AssetsAPI.getAssetCategoryIds(buildingId);
+			spaceCategoryIds = SpaceAPI.getSpaceCategoryIds(buildingId);
+		}
+		
+		if(assignmentType != null) {
+			
+			if(assignmentType.equals(PMAssignmentType.ALL_FLOORS)) {
+				List<Long> floorsIds = new ArrayList<>();
+				
+				if(includeIds != null) {
+					floorsIds = includeIds;
+				}
+				else {
+					floorsIds = getIdsFromContextList(SpaceAPI.getBuildingFloors(buildingId));
+					if(excludeIds != null) {
+						floorsIds.removeAll(excludeIds);
+					}
+				}
+				
+				assetCategoryIds = AssetsAPI.getAssetCategoryIds(floorsIds);
+				spaceCategoryIds = SpaceAPI.getSpaceCategoryIds(floorsIds);
+			}
+			else if(assignmentType.equals(PMAssignmentType.SPACE_CATEGORY)) {
+				
+				if(parentAssignmentType == null) {
+					List<Long> spaceIds = new ArrayList<>();
+					
+					if(includeIds != null) {
+						spaceIds = includeIds;
+					}
+					else {
+						spaceIds = getIdsFromSpaceContextList(SpaceAPI.getSpaceListOfCategory(buildingId, spaceCategoryId));
+						if(excludeIds != null) {
+							spaceIds.removeAll(excludeIds);
+						}
+					}
+					
+					assetCategoryIds = AssetsAPI.getAssetCategoryIds(spaceIds);
+					spaceCategoryIds = SpaceAPI.getSpaceCategoryIds(spaceIds);
+				}
+				else {
+					List<Long> spaceIds = new ArrayList<>();
+					
+					if(includeIds != null) {
+						spaceIds = includeIds;
+					}
+					else {
+						spaceIds = getIdsFromSpaceContextList(SpaceAPI.getSpaceListOfCategory(parentResourceIds, spaceCategoryId));
+						if(excludeIds != null) {
+							spaceIds.removeAll(excludeIds);
+						}
+					}
+					
+					assetCategoryIds = AssetsAPI.getAssetCategoryIds(spaceIds);
+					spaceCategoryIds = SpaceAPI.getSpaceCategoryIds(spaceIds);
+				}
+			}
+			else if(assignmentType.equals(PMAssignmentType.ASSET_CATEGORY)) {
+				
+				assetCategoryIds = AssetsAPI.getSubCategoryIds(assetCategoryId);
+			}
+		}
+		return SUCCESS;
+	}
+	
+	 private List<Long> getIdsFromSpaceContextList(List<SpaceContext> spaceListOfCategory) {
+		 List<Long> ids = null;
+	    	if(spaceListOfCategory != null && !spaceListOfCategory.isEmpty()) {
+	    		ids = new ArrayList<>();
+	    		for(ModuleBaseWithCustomFields context :spaceListOfCategory) {
+	    			ids.add(context.getId());
+	    		}
+	    	}
+	    	return ids;
+	}
+
+	public List<Long> getIdsFromContextList(List<BaseSpaceContext> contexts) {
+	    	
+	    	List<Long> ids = null;
+	    	if(contexts != null && !contexts.isEmpty()) {
+	    		ids = new ArrayList<>();
+	    		for(ModuleBaseWithCustomFields context :contexts) {
+	    			ids.add(context.getId());
+	    		}
+	    	}
+	    	return ids;
+	 }
 
 	public String updatePreventiveMaintenance(FacilioContext context) throws Exception {
 
@@ -835,6 +1039,14 @@ public class WorkOrderAction extends FacilioAction {
 		return updateWorkOrder(context);
 	}
 	
+	private String comment;
+	public String getComment() {
+		return comment;
+	}
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+
 	private void setUpdateWorkorderContext(FacilioContext context) throws Exception {
 		ActivityType activityType = ActivityType.EDIT;
 		if (workorder.getStatus() != null) {
@@ -847,6 +1059,7 @@ public class WorkOrderAction extends FacilioAction {
 			activityType = ActivityType.ASSIGN_TICKET;
 		}
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, activityType);
+		context.put(FacilioConstants.ContextNames.COMMENT, comment);
 	}
 
 	private String updateWorkOrder(FacilioContext context) throws Exception {
@@ -1037,6 +1250,12 @@ public class WorkOrderAction extends FacilioAction {
 		
 		List<TaskSectionTemplate> taskSectionContextList = FieldUtil.getAsBeanListFromJsonArray(obj, TaskSectionTemplate.class);
 		setSectionTemplates(taskSectionContextList);
+		
+		tasks = new HashMap<>();
+		for(TaskSectionTemplate taskSectionContext :taskSectionContextList) {
+			tasks.put(taskSectionContext.getName(), taskSectionContext.getTasks());
+		}
+		sectionTemplates = taskSectionContextList;
 		return taskSectionContextList;
 	}
 	

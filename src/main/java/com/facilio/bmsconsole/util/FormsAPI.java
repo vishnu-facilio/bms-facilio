@@ -92,12 +92,13 @@ public class FormsAPI {
 		List<FacilioForm> forms = new ArrayList<>();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule fieldsModule = ModuleFactory.getFormFieldsModule();
-		GenericSelectRecordBuilder fieldSelectBuilder = new GenericSelectRecordBuilder()
-				.table(fieldsModule.getTableName())
-				.select(FieldFactory.getFormFieldsFields())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(fieldsModule));
 	
 		for (Map<String, Object> prop: props) {
+			GenericSelectRecordBuilder fieldSelectBuilder = new GenericSelectRecordBuilder()
+					.table(fieldsModule.getTableName())
+					.select(FieldFactory.getFormFieldsFields())
+					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(fieldsModule));
+			
 			FacilioForm form = FieldUtil.getAsBeanFromMap(prop, FacilioForm.class);
 			long modid = form.getModuleId();
 			form.setModule(modBean.getModule(modid));
@@ -140,9 +141,7 @@ public class FormsAPI {
 				.table(formModule.getTableName())
 				.fields(FieldFactory.getFormFields());
 		
-		insertBuilder.insert(props);
-		
-		long id = (long) props.get("id");
+		long id = insertBuilder.insert(props);
 		
 		List<Map<String, Object>> fieldProps = new ArrayList<>();
 		
@@ -170,6 +169,7 @@ public class FormsAPI {
 				.addRecords(fieldProps);
 		
 		fieldInsertBuilder.save();
+		editedForm.setId(id);
 		return id;
 	}
 	

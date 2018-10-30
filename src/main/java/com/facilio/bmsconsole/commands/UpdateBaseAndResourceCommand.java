@@ -6,11 +6,14 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.ImportAPI;
@@ -18,6 +21,8 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.google.common.collect.ArrayListMultimap;
+
+import nl.basjes.shaded.org.springframework.util.StringUtils;
 
 public class UpdateBaseAndResourceCommand implements Command,Serializable {
 	/**
@@ -28,9 +33,14 @@ public class UpdateBaseAndResourceCommand implements Command,Serializable {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		context.get(ImportAPI.ImportProcessConstants.GROUPED_READING_CONTEXT);
+		Connection con = null;
+		try{
+			con = FacilioConnectionPool.INSTANCE.getConnection();	//ConnectionPool does not return the same connection (Caution)	
+		}catch(Exception e) {
+			LOGGER.severe(e.toString());
+		}
 		ArrayListMultimap<String, Long> recordsList = (ArrayListMultimap<String, Long>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
-		
+		Organization org = AccountUtil.getCurrentOrg();
 		for(String module : recordsList.keySet()) {
 			ModuleBean modBean = (ModuleBean)BeanFactory.lookup("ModuleBean");
 			FacilioModule facilioModule = modBean.getModule(module);
@@ -55,7 +65,6 @@ public class UpdateBaseAndResourceCommand implements Command,Serializable {
 				}
 			}
 			if(facilioModule.getExtendModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE)) {
-				try { Connection con = FacilioConnectionPool.INSTANCE.getConnection();
 				for(int done= 0 ;done< readingsList.size();) {
 					String updateResourceQuery = "UPDATE Resources SET SPACE_ID = CASE ID";
 					String updateBaseSpaceQuery = "UPDATE BaseSpace SET "+ updateBaseQueryColumn +" = CASE ID";
@@ -73,25 +82,19 @@ public class UpdateBaseAndResourceCommand implements Command,Serializable {
 						updateBaseSpaceQuery = updateBaseSpaceQuery + " WHEN " + readingsList.get(temp1) + " THEN " + readingsList.get(temp1);
 					}
 					
-					updateResourceQuery = updateResourceQuery + " else SPACE_ID end;";
-					PreparedStatement pstmt = con.prepareStatement(updateResourceQuery, Statement.RETURN_GENERATED_KEYS);
+					updateResourceQuery = updateResourceQuery + " else SPACE_ID end WHERE ORGID = " + org.getId() + " AND ID IN (" + StringUtils.arrayToCommaDelimitedString(readingsList.toArray()) +");";
+					PreparedStatement pstmt = con.prepareStatement(updateResourceQuery);
 					pstmt.executeUpdate();
 					if(updateBaseQueryColumn != null) {
-						updateBaseSpaceQuery = updateBaseSpaceQuery + " else " + updateBaseQueryColumn + " end;";
-						PreparedStatement basepstmt = con.prepareStatement(updateBaseSpaceQuery, Statement.RETURN_GENERATED_KEYS);
+						updateBaseSpaceQuery = updateBaseSpaceQuery + " else " + updateBaseQueryColumn + " end WHERE ORGID = " + org.getId() + " AND ID IN (" + StringUtils.arrayToCommaDelimitedString(readingsList.toArray()) +");";
+						PreparedStatement basepstmt = con.prepareStatement(updateBaseSpaceQuery);
 						basepstmt.executeUpdate();
-					}
-					
-					
+					}		
 					done = done + tempList.size();
 				}
-				}catch(Exception e) {
-					LOGGER.severe(e.toString());
 				}
-				LOGGER.severe("UPDATED BASE and RESOURCE");
-			}
-			}
-				
+		}
+		LOGGER.severe("UPDATED BASE and RESOURCE");	
 		return false;
 	}
 

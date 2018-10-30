@@ -29,7 +29,7 @@ public class FetchScheduledRuleMatchingRecordsCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		ScheduledRuleContext rule = (ScheduledRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
-		List<ModuleBaseWithCustomFields> records = getRecords(rule, (JobContext) context.get(FacilioConstants.Job.JOB_CONTEXT));
+		List<? extends ModuleBaseWithCustomFields> records = getRecords(rule, (JobContext) context.get(FacilioConstants.Job.JOB_CONTEXT));
 		LOGGER.info("Matching records of rule : "+rule.getId()+" is : "+records);
 		
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, rule.getEvent().getModule().getName());
@@ -62,18 +62,23 @@ public class FetchScheduledRuleMatchingRecordsCommand implements Command {
 		return null;
 	}
 	
-	private List<ModuleBaseWithCustomFields> getRecords(ScheduledRuleContext rule, JobContext jc) throws Exception {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private List<? extends ModuleBaseWithCustomFields> getRecords(ScheduledRuleContext rule, JobContext jc) throws Exception {
 		FacilioModule module = rule.getEvent().getModule();
 		FacilioField dateField = rule.getDateField();
 		DateRange range = getRange(rule, jc);
 		LOGGER.info("Range for rule : "+rule.getId()+" is "+range.toString());
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
+		Class beanClassName = FacilioConstants.ContextNames.getClassFromModuleName(module.getName());
+		if (beanClassName == null) {
+			beanClassName = ModuleBaseWithCustomFields.class;
+		}
 		SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 																				.select(modBean.getAllFields(module.getName()))
 																				.module(module)
 																				.andCondition(CriteriaAPI.getCondition(dateField, range.toString(), DateOperators.BETWEEN))
-																				.beanClass(ModuleBaseWithCustomFields.class)
+																				.beanClass(beanClassName)
 																				;
 		List<ModuleBaseWithCustomFields> records = selectBuilder.get();
 		LOGGER.info(selectBuilder.toString());

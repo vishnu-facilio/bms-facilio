@@ -8,7 +8,7 @@ import java.util.Map;
 
 public enum Unit {
 	
-	// last id -- 85
+	// last id -- 88
 	
 	KWH(1,"Kilo Watt Hour","kWh",Metric.ENERGY),
 	HECTOWH(76,"Hecto Watt Hour","hWh",Metric.ENERGY,"si*10","this/10"),
@@ -96,19 +96,23 @@ public enum Unit {
 	
 	NEWTON_METER(69,"Newton Meter","N m",Metric.TORQUE),
 	
-	LITRE(70,"Litre","l",Metric.LIQUID),
-	MILILITRE(71,"Mili Litre","ml",Metric.LIQUID,"si*1000","this/1000"),
-	DECALITRE(77,"Deca Litre","dl",Metric.LIQUID,"si/10","this*10"),
-	KILOLITRE(78,"Kilo Litre","kl",Metric.LIQUID,"si/1000","this*1000"),
-	CUBICMETER(81,"Cubic Meter","m<sup>3</sup>",Metric.LIQUID,"si/1000","this*1000"),
-	CUBICFOOT(72,"Cubic Foot","ft<sup>3</sup>",Metric.LIQUID,"si/28.3168","this*28.3168"),
-	CUBICINCH(73,"Cubic Inch","in<sup>3</sup>",Metric.LIQUID,"si*61.0237","this/61.0237"),
-	USGALLON(74,"US Gallon","G",Metric.LIQUID,"si/3.78541","this*3.78541"),
-	IMPERIALGALLON(75,"Imperial Gallon","IG",Metric.LIQUID,"si/4.54609","this*4.54609"),
+	LITRE(70,"Litre","l",Metric.VOLUME),
+	MILILITRE(71,"Mili Litre","ml",Metric.VOLUME,"si*1000","this/1000"),
+	DECALITRE(77,"Deca Litre","dl",Metric.VOLUME,"si/10","this*10"),
+	KILOLITRE(78,"Kilo Litre","kl",Metric.VOLUME,"si/1000","this*1000"),
+	CUBICMETER(81,"Cubic Meter","m<sup>3</sup>",Metric.VOLUME,"si/1000","this*1000"),
+	CUBICFOOT(72,"Cubic Foot","ft<sup>3</sup>",Metric.VOLUME,"si/28.3168","this*28.3168"),
+	CUBICINCH(73,"Cubic Inch","in<sup>3</sup>",Metric.VOLUME,"si*61.0237","this/61.0237"),
+	USGALLON(74,"US Gallon","G",Metric.VOLUME,"si/3.78541","this*3.78541"),
+	IMPERIALGALLON(75,"Imperial Gallon","IG",Metric.VOLUME,"si/4.54609","this*4.54609"),
 	
 	AED(83,"AED","AED",Metric.CURRENCY),
 	DOLLER(84,"Doller","$",Metric.CURRENCY),
 	INR(85,"inr","₹",Metric.CURRENCY),
+	EURO(86,"euro","£",Metric.CURRENCY),
+	
+	PERCENTAGE(87,"percentage","%",Metric.PERCENTAGE),
+	PERCENTAGE_DIV_100(88,"percentage","%",Metric.PERCENTAGE,"si/100","this*100"),	// do not use this in ORG_UNITS
 	;
 	
 	int unitId;

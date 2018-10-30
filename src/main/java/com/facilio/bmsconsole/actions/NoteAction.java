@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -44,13 +45,12 @@ public class NoteAction extends FacilioAction {
 		return addNote(module);
 	}
 	
-	private String addNote(String moduleName) throws Exception 
-	{
+	private String addNote(String moduleName) throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.TICKET_MODULE, ticketModuleName);
 		context.put(FacilioConstants.ContextNames.NOTE, note);
-		Chain addNote = FacilioChainFactory.getAddNoteChain();
+		Chain addNote = TransactionChainFactory.getAddNotesChain();
 		addNote.execute(context);
 		
 		setNoteId(note.getId());

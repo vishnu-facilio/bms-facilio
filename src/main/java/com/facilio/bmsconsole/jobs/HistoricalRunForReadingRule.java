@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -87,7 +88,18 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 				executeWorkflows(readingRule, readings, currentFields, fields);
 				LOGGER.info("Time taken for Historical Run for Reading Rule : "+jc.getJobId()+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is "+(System.currentTimeMillis() - processStartTime));
 			}
-			LOGGER.info("Total Time taken for Historical Run for Reading Rule : "+jc.getJobId()+" between "+startTime+" and "+endTime+" is "+(System.currentTimeMillis() - jobStartTime));
+			long timeTaken = (System.currentTimeMillis() - jobStartTime);
+			LOGGER.info("Total Time taken for Historical Run for Reading Rule : "+jc.getJobId()+" between "+startTime+" and "+endTime+" is "+timeTaken);
+			
+			if (AccountUtil.getCurrentOrg().getId() == 135) {
+				JSONObject json = new JSONObject();
+				json.put("to", "praveen@facilio.com, manthosh@facilio.com, shivaraj@facilio.com");
+				json.put("sender", "noreply@facilio.com");
+				json.put("subject", "Historical Run completed for Rule : "+jc.getJobId());
+				json.put("message", "Total Time taken for Historical Run for Reading Rule : "+jc.getJobId()+" between "+startTime+" and "+endTime+" is "+timeTaken);
+				
+				AwsUtil.sendEmail(json);
+			}
 		}
 		catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);

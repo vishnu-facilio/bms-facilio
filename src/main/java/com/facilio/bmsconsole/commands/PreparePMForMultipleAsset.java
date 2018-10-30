@@ -1,16 +1,28 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PMTriggerResourceContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.TaskContext.InputType;
+import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
+import com.facilio.bmsconsole.templates.TaskTemplate;
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
@@ -25,6 +37,7 @@ public class PreparePMForMultipleAsset implements Command {
 		PMTriggerContext pmTrigger = (PMTriggerContext) context.get(FacilioConstants.ContextNames.PM_CURRENT_TRIGGER);
 		PMJobsContext pmJob = (PMJobsContext) context.get(FacilioConstants.ContextNames.PM_CURRENT_JOB);
 		Long pmId = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+
 		if(pmId != null && pmId != -1 && pmJob.getResourceId() > 0) {
 			
 			PreventiveMaintenance pm = PreventiveMaintenanceAPI.getActivePM(pmId);
@@ -43,17 +56,83 @@ public class PreparePMForMultipleAsset implements Command {
 				woTemplate.setAssignedToId(pmTriggerResource.getAssignedToId());
 			}
 			else {
-				woTemplate.setAssignedToId(pmTrigger.getAssignedTo());
+				woTemplate.setAssignedToId(pmTrigger.getAssignedTo() != null ? pmTrigger.getAssignedTo() : -1);
 			}
 			
 			List<TaskSectionTemplate> sectiontemplates = woTemplate.getSectionTemplates();
 			
+			JSONObject content = template.getTemplate(null);
+			
+			WorkOrderContext woContext = FieldUtil.getAsBeanFromJson(content, WorkOrderContext.class);
+			
+			woContext.setResource(ResourceAPI.getResource(pmJob.getResourceId()));
+			
+			Map<String, List<TaskContext>> taskMap = new HashMap<>();
 			for(TaskSectionTemplate sectiontemplate :sectiontemplates) {
 				
+				Template sectionTemplate = TemplateAPI.getTemplate(sectiontemplate.getId());
+				sectiontemplate = (TaskSectionTemplate)sectionTemplate;
+				
+				 List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(sectiontemplate.getAssignmentType()), woContext.getResource().getId(), sectiontemplate.getSpaceCategoryId(), sectiontemplate.getAssetCategoryId(),sectiontemplate.getResourceId());
+				 
+				 for(Long resourceId :resourceIds) {
+					 ResourceContext sectionResource = ResourceAPI.getResource(resourceId);
+					 String sectionName = sectionResource.getName() + " - " +sectiontemplate.getName();
+					 
+					 List<TaskTemplate> taskTemplates = sectiontemplate.getTaskTemplates();
+					 
+					 List<TaskContext> tasks = new ArrayList<TaskContext>();
+					 for(TaskTemplate taskTemplate :taskTemplates) {
+						 
+						 List<Long> taskResourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(taskTemplate.getAssignmentType()), sectionResource.getId(), taskTemplate.getSpaceCategoryId(), taskTemplate.getAssetCategoryId(),taskTemplate.getResourceId());
+						 
+						 applySectionSettingsIfApplicable(sectiontemplate,taskTemplate);
+						 for(Long taskResourceId :taskResourceIds) {
+							 ResourceContext taskResource = ResourceAPI.getResource(taskResourceId);
+							 TaskContext task = taskTemplate.getTask();
+							 task.setResource(taskResource);
+							 
+							 tasks.add(task);
+						 }
+					 }
+					 taskMap.put(sectionName, tasks);
+				 }
 			}
+			woContext.setSourceType(TicketContext.SourceType.PREVENTIVE_MAINTENANCE);
+			woContext.setPm(pm);
+			FacilioContext addWocontext = new FacilioContext();
+			addWocontext.put(FacilioConstants.ContextNames.WORK_ORDER, woContext);
+			addWocontext.put(FacilioConstants.ContextNames.REQUESTER, woContext.getRequester());
+			addWocontext.put(FacilioConstants.ContextNames.TASK_MAP, taskMap);
+			addWocontext.put(FacilioConstants.ContextNames.IS_PM_EXECUTION, true);
+			addWocontext.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
+			addWocontext.put(FacilioConstants.ContextNames.ATTACHMENT_CONTEXT_LIST, woContext.getAttachments());
 			
+			//Temp fix. Have to be removed eventually
+			PreventiveMaintenanceAPI.updateResourceDetails(woContext, taskMap);
+			Chain addWOChain = TransactionChainFactory.getAddWorkOrderChain();
+			addWOChain.execute(addWocontext);
+
+			//incrementPMCount(pm);
 		}
 		return false;
+	}
+
+	private void applySectionSettingsIfApplicable(TaskSectionTemplate sectiontemplate, TaskTemplate taskTemplate) {
+		
+		if(taskTemplate.getAssignmentType() == PreventiveMaintenance.PMAssignmentType.CURRENT_ASSET.getVal()) {
+			
+			if(!taskTemplate.isAttachmentRequired()) {
+				taskTemplate.setAttachmentRequired(sectiontemplate.isAttachmentRequired());
+			}
+			if(taskTemplate.getInputType() <= InputType.NONE.getVal() && sectiontemplate.getInputType() > InputType.NONE.getVal()) {
+				
+				taskTemplate.setInputType(sectiontemplate.getInputType());
+				if(sectiontemplate.getReadingFieldId() > 0) {
+					taskTemplate.setReadingFieldId(sectiontemplate.getReadingFieldId());
+				}
+			}
+		}
 	}
 
 }

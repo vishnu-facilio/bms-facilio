@@ -17,6 +17,8 @@ public enum FacilioFunctionNameSpace {
 	READINGS(9,"readings"),
 	PSYCHROMETRICS(10,"psychrometrics"),
 	ENERGYMETER(11,"energyMeter"),
+	MODULE(12,"module"),
+	RESOURCE(13,"resource"),
 	;
 	
 	public Integer value;

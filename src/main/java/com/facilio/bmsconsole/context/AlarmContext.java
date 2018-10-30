@@ -24,7 +24,7 @@ public class AlarmContext extends TicketContext {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static Logger log = LogManager.getLogger(AlarmContext.class.getName());
+	private static Logger LOGGER = LogManager.getLogger(AlarmContext.class.getName());
 	private Boolean isAcknowledged;
 	public boolean isAcknowledged() {
 		if(isAcknowledged != null) {
@@ -101,7 +101,7 @@ public class AlarmContext extends TicketContext {
 				try {
 					this.createdTime = FacilioConstants.HTML5_DATE_FORMAT_1.parse(createdTime).getTime();
 				} catch (java.text.ParseException e1) {
-					log.info("Exception occurred ", e1);
+					LOGGER.info("Exception occurred ", e1);
 				}
 			}
 		}
@@ -275,6 +275,28 @@ public class AlarmContext extends TicketContext {
 		this.recommendation = recommendation;
 	}
 	
+	private Boolean autoClear;
+	public Boolean getAutoClear() {
+		return autoClear;
+	}
+	public void setAutoClear(Boolean autoClear) {
+		this.autoClear = autoClear;
+	}
+	public boolean isAutoClear() {
+		if (autoClear != null) {
+			return autoClear.booleanValue();
+		}
+		return false;
+	}
+	
+	private long woId = -1;
+	public long getWoId() {
+		return woId;
+	}
+	public void setWoId(long woId) {
+		this.woId = woId;
+	}
+	
 	public static enum AlarmType {
 		MAINTENANCE(1, "Maintenance"),
 		CRITICAL(2, "Critical"),
@@ -384,5 +406,11 @@ public class AlarmContext extends TicketContext {
 			this.relatedEvents = new ArrayList<>();
 		}
 		relatedEvents.add(relatedEvent);
+	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return "Alarm : ["+getId()+", "+getSubject()+"]";
 	}
 }

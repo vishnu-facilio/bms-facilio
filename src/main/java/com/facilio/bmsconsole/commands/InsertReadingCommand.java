@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -28,21 +29,31 @@ public class InsertReadingCommand implements Command {
 		ArrayListMultimap<String, ReadingContext> groupedContext = (ArrayListMultimap<String, ReadingContext>) context.get(ImportAPI.ImportProcessConstants.GROUPED_READING_CONTEXT);
 		ArrayListMultimap<String , String> groupedFields = (ArrayListMultimap<String, String>) context.get(ImportAPI.ImportProcessConstants.GROUPED_FIELDS);
 		List<String> keys = new ArrayList(groupedFields.keySet());
-		
-		
+		HashMap<Integer, HashMap<String, Object>> nullUniqueFields = (HashMap<Integer,HashMap<String,Object>>) context.get(ImportAPI.ImportProcessConstants.NULL_UNIQUE_FIELDS);
+		HashMap<Integer, HashMap<String, Object>> nullResources = (HashMap<Integer,HashMap<String,Object>>) context.get(ImportAPI.ImportProcessConstants.NULL_RESOURCES);
+		int nullFields = 0;
 		for(int i=0; i<keys.size(); i++) {
 		insertReadings(keys.get(i),groupedContext.get(keys.get(i)));
 		}
 		StringBuilder emailMessage = new StringBuilder();
 		emailMessage.append("Inserted Readings: " + groupedContext.size());
+		if(nullUniqueFields != null) {
+			nullFields = nullFields + nullUniqueFields.size();
+		}
+		if(nullResources !=  null) {
+			nullFields = nullFields + nullResources.size();
+		}
+		emailMessage.append("Skipped Readings:" + nullFields);
 		JSONObject meta = importProcessContext.getImportJobMetaJson();
 		if(meta == null) {
 			JSONObject metainfo = new JSONObject();
 			metainfo.put("Inserted", groupedContext.size());
+			metainfo.put("Skipped", nullFields);
 			importProcessContext.setImportJobMeta(metainfo.toJSONString());
 		}
 		else {
 			meta.put("Inserted", groupedContext.size());
+			meta.put("Skipped", nullFields);
 			importProcessContext.setImportJobMeta(meta.toJSONString());
 		}
 //		ImportAPI.updateImportProcess(importProcessContext);

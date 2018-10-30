@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -22,30 +23,30 @@ public class AddNoteTicketActivityCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		NoteContext note = (NoteContext) context.get(FacilioConstants.ContextNames.NOTE);
-		if(note != null) {
+		List<NoteContext> notes = (List<NoteContext>) context.get(FacilioConstants.ContextNames.NOTE_LIST);
+		if(notes != null && !notes.isEmpty()) {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			if(FacilioConstants.ContextNames.TICKET_NOTES.equals(moduleName)) {
-				long parentId = note.getParentId();
-				ActivityType activityType = (ActivityType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
-				if(parentId != -1 && activityType != null && activityType == ActivityType.ADD_TICKET_NOTE) {
-					context.put(FacilioConstants.TicketActivity.MODIFIED_TIME, System.currentTimeMillis());
-					context.put(FacilioConstants.TicketActivity.MODIFIED_USER, AccountUtil.getCurrentUser().getId());
-					addActivity(context);
+				
+				for (NoteContext note : notes) {
+					long parentId = note.getParentId();
+					ActivityType activityType = (ActivityType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
+					if(parentId != -1 && activityType != null && activityType == ActivityType.ADD_TICKET_NOTE) {
+						addActivity(note, activityType);
+					}
 				}
 			}
 		}
 		return false;
 	}
 		
-	private void addActivity(Context context) throws SQLException, RuntimeException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-		NoteContext note = (NoteContext) context.get(FacilioConstants.ContextNames.NOTE);
+	private void addActivity(NoteContext note, ActivityType activityType) throws SQLException, RuntimeException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		
 		TicketActivity activity = new TicketActivity();
 		activity.setTicketId(note.getParentId());
-		activity.setModifiedTime((long) context.get(FacilioConstants.TicketActivity.MODIFIED_TIME));
-		activity.setModifiedBy((long) context.get(FacilioConstants.TicketActivity.MODIFIED_USER));
-		activity.setActivityType((ActivityType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE));
+		activity.setModifiedTime(System.currentTimeMillis());
+		activity.setModifiedBy(AccountUtil.getCurrentUser().getId());
+		activity.setActivityType(activityType);
 		activity.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		
 		JSONObject info = new JSONObject();

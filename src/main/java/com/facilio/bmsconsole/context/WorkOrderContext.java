@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.context;
 
 import java.text.ParseException;
+import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -10,6 +11,7 @@ import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
+import com.facilio.bmsconsole.workflow.rule.ApproverContext;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
@@ -143,6 +145,14 @@ public class WorkOrderContext extends TicketContext {
 		this.approvalRule = approvalRule;
 	}
 	
+	private List<ApproverContext> waitingApprovals;
+	public List<ApproverContext> getWaitingApprovals() {
+		return waitingApprovals;
+	}
+	public void setWaitingApprovals(List<ApproverContext> waitingApprovals) {
+		this.waitingApprovals = waitingApprovals;
+	}
+
 	private Boolean sendForApproval;
 	public Boolean getSendForApproval() {
 		return sendForApproval;

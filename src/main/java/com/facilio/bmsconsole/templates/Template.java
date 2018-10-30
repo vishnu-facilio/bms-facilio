@@ -11,6 +11,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.facilio.bmsconsole.util.FreeMarkerAPI;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
@@ -96,14 +97,52 @@ public abstract class Template implements Serializable {
 		this.type = Type.TYPE_MAP.get(type);
 	}
 	
+	private Boolean ftl;
+	public Boolean getFtl() {
+		return ftl;
+	}
+	public void setFtl(Boolean ftl) {
+		this.ftl = ftl;
+	}
+	public boolean isFtl() {
+		if (ftl != null) {
+			return ftl.booleanValue();
+		}
+		return false;
+	}
+	
 	public final JSONObject getTemplate(Map<String, Object> parameters) throws Exception {
 		JSONObject json = getOriginalTemplate();
 		if (json != null && workflow != null) {
-			String jsonStr = json.toJSONString();
 			Map<String, Object> params = WorkflowUtil.getExpressionResultMap(workflow.getWorkflowString(), parameters);
-			jsonStr = StringSubstitutor.replace(jsonStr, params);// StrSubstitutor.replace(jsonStr, params);
-			JSONParser parser = new JSONParser();
-			return (JSONObject) parser.parse(jsonStr);
+			
+			JSONObject parsedJson = null;
+			if (isFtl()) {
+				// StrSubstitutor.replace(jsonStr, params);
+				parsedJson = new JSONObject();
+				for (Object key : json.keySet()) {
+					Object value = json.get(key);
+					if (value instanceof JSONArray) {
+						JSONArray newArray = new JSONArray();
+						for(Object arrayVal: (JSONArray)value) {
+							newArray.add(FreeMarkerAPI.processTemplate(arrayVal.toString(), params));
+						}
+						parsedJson.put(key, newArray);
+					}
+					else {
+						parsedJson.put(key, FreeMarkerAPI.processTemplate(json.get(key).toString(), params));
+					}
+				}
+				parameters.put("mailType", "html");
+			}
+			else {
+				String jsonStr = json.toJSONString();
+				jsonStr = StringSubstitutor.replace(jsonStr, params);// StrSubstitutor.replace(jsonStr, params);
+				JSONParser parser = new JSONParser();
+				parsedJson = (JSONObject) parser.parse(jsonStr);
+			}
+			
+			return parsedJson;
 		}
 		return json;
 	}

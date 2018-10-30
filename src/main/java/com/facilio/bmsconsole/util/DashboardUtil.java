@@ -102,6 +102,7 @@ import com.facilio.workflows.util.WorkflowUtil;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
+import com.google.gson.JsonObject;
 
 public class DashboardUtil {
 	
@@ -3461,5 +3462,20 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 	
 		return null;
 	
+	}
+	
+	public static JSONObject getCardParams(JSONObject jsonObject) {
+		try {
+			if(jsonObject != null && jsonObject.containsKey("fieldId")) {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioField field = modBean.getField((Long) jsonObject.get("fieldId"));
+				jsonObject.put("moduleName", field.getModule().getName());
+				jsonObject.put("fieldName", field.getName());
+			}
+		}
+		catch(Exception e) {
+			LOGGER.log(Level.SEVERE, e.getMessage(),e);
+		}
+		return jsonObject;
 	}
 }

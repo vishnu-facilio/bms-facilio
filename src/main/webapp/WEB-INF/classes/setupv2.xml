@@ -21,6 +21,10 @@
 		
 		<action name="update"  class="com.facilio.bmsconsole.actions.V2WorkflowAction" method="updateApprovalRule">
 		</action>
+		
+		<action name="*"  class="com.facilio.bmsconsole.actions.V2WorkflowAction" method="fetchApprovalRule">
+            <param name="ruleId">{1}</param>
+		</action>
 	</package>
 	
 	<package name="scheduledRuleApiV2" namespace="/api/v2/setup/scheduledrule" extends="v2Api">
@@ -28,6 +32,13 @@
 		</action>
 		
 		<action name="update"  class="com.facilio.bmsconsole.actions.V2WorkflowAction" method="updateScheduledRule">
+		</action>
+	</package>
+	
+	<package name="scheduledActionApiV2" namespace="/api/v2/setup/scheduledaction" extends="v2Api">
+		<action name="add"  class="com.facilio.bmsconsole.actions.ScheduledAction" method="addScheduledAction">
+		</action>
+		<action name="run"  class="com.facilio.bmsconsole.actions.ScheduledAction" method="executeScheduledAction">
 		</action>
 	</package>
 	

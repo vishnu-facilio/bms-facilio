@@ -20,11 +20,13 @@ import org.apache.log4j.Logger;
 import com.amazonaws.services.s3.model.S3Object;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -100,14 +102,20 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 		SupportEmailContext supportEmail = getSupportEmail(parser); 
 		
 		if(supportEmail != null) {
-			WorkOrderRequestContext workOrderRequest = new WorkOrderRequestContext();
+			TicketContext ticketContext;
+			if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_APPROVAL)) {
+				ticketContext = new WorkOrderContext();
+				((WorkOrderContext)ticketContext).setSendForApproval(true);
+			}
+			else {
+				ticketContext = new WorkOrderRequestContext();
+			}
 			
 			User requester = new User();
 			requester.setEmail(parser.getFrom());
-			workOrderRequest.setRequester(requester);
 			
-			workOrderRequest.setSubject(parser.getSubject());
-			workOrderRequest.setDescription(StringUtils.trim(parser.getPlainContent()));
+			ticketContext.setSubject(parser.getSubject());
+			ticketContext.setDescription(StringUtils.trim(parser.getPlainContent()));
 			
 			List<DataSource> attachments = parser.getAttachmentList();
 			List<File> attachedFiles = null;
@@ -137,19 +145,27 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 			}
 			
 			if (supportEmail.getAutoAssignGroupId() != -1) {
-				workOrderRequest.setAssignmentGroup((Group) LookupSpecialTypeUtil.getEmptyLookedupObject(FacilioConstants.ContextNames.GROUPS, supportEmail.getAutoAssignGroupId()));
+				ticketContext.setAssignmentGroup((Group) LookupSpecialTypeUtil.getEmptyLookedupObject(FacilioConstants.ContextNames.GROUPS, supportEmail.getAutoAssignGroupId()));
 			}
 			
 			if (supportEmail.getSiteId() != -1) {
 				SiteContext site = new SiteContext();
 				site.setId(supportEmail.getSiteId());
-				workOrderRequest.setResource(site);
+				ticketContext.setResource(site);
 			}
 			
-			workOrderRequest.setSourceType(TicketContext.SourceType.EMAIL_REQUEST);
+			ticketContext.setSourceType(TicketContext.SourceType.EMAIL_REQUEST);
 			
 			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", supportEmail.getOrgId());
-			long requestId = bean.addWorkOrderRequest(workOrderRequest, attachedFiles, attachedFilesFileName, attachedFilesContentType);
+			long requestId;
+			if (ticketContext instanceof WorkOrderContext) {
+				((WorkOrderContext) ticketContext).setRequester(requester);
+				requestId = bean.addWorkOrder((WorkOrderContext) ticketContext, attachedFiles, attachedFilesFileName, attachedFilesContentType);
+			}
+			else {
+				((WorkOrderRequestContext) ticketContext).setRequester(requester);
+				requestId = bean.addWorkOrderRequest((WorkOrderRequestContext) ticketContext, attachedFiles, attachedFilesFileName, attachedFilesContentType);
+			}
 			LOGGER.info("Added Workorder from Email Parser : " + requestId );
 			return requestId;
 		}

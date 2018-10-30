@@ -412,24 +412,6 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getAddAlarmFromEventChain() {
-		Chain c = getTransactionChain();
-		c.addCommand(new ProcessAlarmCommand());
-		c.addCommand(getAddAlarmChain());
-		return c;
-	}
-	
-	public static Chain getAddAlarmChain() {
-		Chain c = getTransactionChain();
-//		c.addCommand(getAddTicketChain());
-		c.addCommand(SetTableNamesCommand.getForAlarm());
-		c.addCommand(new AddAlarmCommand());
-		c.addCommand(new ExecuteAllWorkflowsCommand());
-		c.addCommand(new AddAlarmFollowersCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
 	public static Chain getDeleteAlarmChain() {
 		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForAlarm());
@@ -469,23 +451,6 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadViewCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetAlarmCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
-	public static Chain updateAlarmFromJsonChain() {
-		Chain c = getTransactionChain();
-		c.addCommand(new ProcessAlarmCommand());
-		c.addCommand(getUpdateAlarmChain());
-		return c;
-	}
-	
-	public static Chain getUpdateAlarmChain() {
-		Chain c = getTransactionChain();
-		c.addCommand(SetTableNamesCommand.getForAlarm());
-		c.addCommand(new UpdateAlarmCommand());
-		c.addCommand(new AddWOFromAlarmCommand());
-		c.addCommand(new ExecuteAllWorkflowsCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
@@ -1111,20 +1076,6 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain fetchWorkflowRulesOfTypeChain() {
-		Chain c = new ChainBase();
-		c.addCommand(new GetWorkFlowOfRuleTypeCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
-	public static Chain fetchWorkflowRuleWithActionChain() {
-		Chain c = new ChainBase();
-		c.addCommand(new FetchWorkflowRuleCommand());
-		c.addCommand(new GetActionListForWorkflowRulesCommand());
-		return c;
-	}
-	
 	public static Chain getUpdateWorkflowRuleAction() {
 		Chain c = getTransactionChain();
 		c.addCommand(new UpdateWorkFlowRuleAction());
@@ -1301,6 +1252,7 @@ public class FacilioChainFactory {
 		ChainBase c = new ChainBase();
 		c.addCommand(new DataParseForReadingsCommand());
 		c.addCommand(new InsertReadingCommand());
+		c.addCommand(new WriteSkippedToFileCommand());
 		c.addCommand(new SendEmailCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
@@ -1447,9 +1399,16 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getExecutePreventiveMaintenanceChain() {
+		return getExecutePreventiveMaintenanceChain(false);
+	}
+	public static Chain getExecutePreventiveMaintenanceChain(boolean isMultipleWo) {
 		Chain c = getTransactionChain();
-		//c.addCommand(new PreparePMForMultipleAsset());
-		c.addCommand(new ExecutePMCommand());
+		if(isMultipleWo) {
+			c.addCommand(new PreparePMForMultipleAsset());
+		}
+		else {
+			c.addCommand(new ExecutePMCommand());
+		}
 		c.addCommand(new ResetTriggersCommand());
 		c.addCommand(new SchedulePMRemindersCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
@@ -1989,16 +1948,6 @@ public class FacilioChainFactory {
 		Chain c = getTransactionChain();
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetPhotosCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
-	public static Chain getAddNoteChain() {
-		Chain c = getTransactionChain();
-		c.addCommand(new LoadAllFieldsCommand());
-		c.addCommand(new AddNoteCommand());
-		c.addCommand(new ExecuteNoteWorkflowCommand());
-		c.addCommand(new AddNoteTicketActivityCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}

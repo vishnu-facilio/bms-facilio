@@ -14,7 +14,12 @@ import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
+import com.facilio.bmsconsole.criteria.CommonOperators;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
@@ -28,6 +33,7 @@ import com.facilio.events.context.EventToAlarmFieldMapping;
 import com.facilio.events.util.EventRulesAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.google.common.base.Strings;
 
 public class EventToAlarmCommand implements Command {
 
@@ -41,11 +47,19 @@ public class EventToAlarmCommand implements Command {
 				event.setEventState(EventState.IGNORED);
 			}
 			else {
-				long orgId = AccountUtil.getCurrentOrg().getOrgId();
+				FacilioModule module = EventConstants.EventModuleFactory.getEventModule();
+				List<FacilioField> fields = EventConstants.EventFieldFactory.getEventFields();
+				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+				FacilioField messageKeyField = fieldMap.get("messageKey");
+				FacilioField alarmIdField = fieldMap.get("alarmId");
+				
+				setMessageKey(event);
 				GenericSelectRecordBuilder eventSelectBuilder = new GenericSelectRecordBuilder()
-						.select(EventConstants.EventFieldFactory.getEventFields())
-						.table("Event")
-						.andCustomWhere("ORGID = ? AND MESSAGE_KEY = ? AND ALARM_ID IS NOT NULL", orgId, event.getMessageKey())
+						.select(fields)
+						.table(module.getTableName())
+						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+						.andCondition(CriteriaAPI.getCondition(messageKeyField, event.getMessageKey(), StringOperators.IS))
+						.andCondition(CriteriaAPI.getCondition(alarmIdField, CommonOperators.IS_NOT_EMPTY))
 						.orderBy("CREATED_TIME DESC")
 						.limit(1)
 						;
@@ -70,7 +84,7 @@ public class EventToAlarmCommand implements Command {
 
 					List<AlarmContext> alarms = builder.get();
 					long severityId = alarms.get(0).getSeverity().getId();
-					if(AlarmAPI.getAlarmSeverity(severityId).getSeverity().equals("Clear"))
+					if(AlarmAPI.getAlarmSeverity(severityId).getSeverity().equals(FacilioConstants.Alarm.CLEAR_SEVERITY))
 					{
 						createAlarm = true;
 						entityId = alarms.get(0).getEntityId();
@@ -123,6 +137,26 @@ public class EventToAlarmCommand implements Command {
 		event = FieldUtil.getAsBeanFromMap(eventProp, EventContext.class);
 	}
 	
+	private void setMessageKey (EventContext event) {
+		Long sourceType = (Long) FieldUtil.castOrParseValueAsPerType(FieldType.NUMBER, event.getAdditionInfo().get("sourceType"));
+		if (sourceType != null) {
+			SourceType type = SourceType.getType(sourceType.intValue());
+			String msgKey = null;
+			switch (type) {
+				case THRESHOLD_ALARM:
+					msgKey = event.getResourceId()+"_"+event.getAdditionInfo().get("ruleId");
+					break;
+				case ANOMALY_ALARM:
+					msgKey = event.getResourceId()+"_"+Strings.nullToEmpty(event.getEntity());
+					break;
+				default:
+					msgKey = Strings.nullToEmpty(event.getSource())+"_"+Strings.nullToEmpty(event.getEntity());
+					break;
+			}
+			event.setMessageKey(msgKey);
+		}
+	}
+	
 	@SuppressWarnings("unchecked")
 	private void updateAlarm(long alarmId, EventContext event) throws Exception {
 		JSONObject alarm = new JSONObject();
@@ -133,6 +167,10 @@ public class EventToAlarmCommand implements Command {
 		alarm.put("orgId", event.getOrgId());
 		alarm.put("modifiedTime", event.getCreatedTime());
 		
+		if (event.getComment() != null && !event.getComment().isEmpty()) {
+			alarm.put("comment", event.getComment());
+		}
+		
 		if (event.getAdditionInfo() != null) {
 			Long sourceType = (Long) FieldUtil.castOrParseValueAsPerType(FieldType.NUMBER, event.getAdditionInfo().get("sourceType"));
 			if (sourceType != null && (sourceType == SourceType.THRESHOLD_ALARM.getIntVal() || sourceType == SourceType.ANOMALY_ALARM.getIntVal())) {
@@ -141,8 +179,10 @@ public class EventToAlarmCommand implements Command {
 				alarm.put("endTime", event.getAdditionInfo().get("endTime"));
 				alarm.put("readingMessage", event.getAdditionInfo().get("readingMessage"));
 				alarm.put("readingDataId", event.getAdditionInfo().get("readingDataId"));
+				alarm.put("readingVal", event.getAdditionInfo().get("readingVal"));
 				alarm.put("ruleId", event.getAdditionInfo().get("ruleId"));
 			}
+			alarm.put("autoClear", event.getAdditionInfo().get("autoClear"));
 		}
 
 //		JSONObject content = new JSONObject();
@@ -174,6 +214,11 @@ public class EventToAlarmCommand implements Command {
 		json.put("alarmClass", event.getAlarmClass());
 		json.put("state", event.getState());
 		json.put("createdTime", event.getCreatedTime());
+		
+		if (event.getComment() != null && !event.getComment().isEmpty()) {
+			json.put("comment", event.getComment());
+		}
+		
 		if (event.getSiteId() != -1) {
 			json.put("siteId", event.getSiteId());
 		}

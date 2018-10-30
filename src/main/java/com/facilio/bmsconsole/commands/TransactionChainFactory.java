@@ -10,6 +10,16 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 
 public class TransactionChainFactory {
 
+		public static Chain getAddNotesChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new LoadAllFieldsCommand());
+			c.addCommand(new AddNotesCommand());
+			c.addCommand(new ExecuteNoteWorkflowCommand());
+			c.addCommand(new AddNoteTicketActivityCommand());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+	
 		public static Chain historicalFormulaCalculationChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new HistoricalFormulaCalculationCommand());
@@ -38,10 +48,10 @@ public class TransactionChainFactory {
 			c.addCommand(getAddTasksChain());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SLA_RULE));
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.CHILD_APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));
 			c.addCommand(new ForkChainToInstantJobCommand()
-							.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE))
-					);
+				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE))
+			);
 			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}
@@ -68,15 +78,17 @@ public class TransactionChainFactory {
 			c.addCommand(new VerifyApprovalCommand());
 			c.addCommand(new UpdateWorkOrderCommand());
 			c.addCommand(new SendNotificationCommand());
-			c.addCommand(new ClearAlarmOnWOCloseCommand());
 			c.addCommand(new AddTicketActivityCommand());
 //			c.addCommand(getAddOrUpdateReadingValuesChain());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SLA_RULE));
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.CHILD_APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));
 			c.addCommand(new ForkChainToInstantJobCommand()
-					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE))
-					);
+				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE))
+				.addCommand(new ClearAlarmOnWOCloseCommand())
+			);
+			c.addCommand(new ConstructTicketNotesCommand());
+			c.addCommand(getAddNotesChain());
 			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}
@@ -137,10 +149,26 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
-		public static Chain getAddWorkflowRuleChain() {
+		public static Chain addWorkflowRuleChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddWorkflowRuleCommand());
 			c.addCommand(new AddActionsForWorkflowRule());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
+		public static Chain addApprovalRuleChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ConstructApprovalRuleCommand());
+			c.addCommand(addWorkflowRuleChain());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
+		public static Chain getAddScheduledActionChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddActionsForWorkflowRule());
+			c.addCommand(new AddScheduledActionCommand());
 			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}
@@ -150,6 +178,14 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateWorkflowRuleCommand());
 			c.addCommand(new DeleterOldRuleActionsCommand());
 			c.addCommand(new AddActionsForWorkflowRule());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
+		public static Chain updateApprovalRuleChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ConstructApprovalRuleCommand());
+			c.addCommand(updateWorkflowRuleChain());
 			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}
@@ -197,6 +233,7 @@ public class TransactionChainFactory {
 			c.addCommand(new SeperateToCategoriesCommand());
 			c.addCommand(new SetModuleForSpecialAssetsCommand());
 			c.addCommand(new BulkPushAssetCommands());
+			c.addCommand(new UpdateBaseAndResourceCommand());
 			c.addCommand(new InsertReadingDataMetaForImport());
 			c.addCommand(new SendEmailCommand());
 			CommonCommandUtil.addCleanUpCommand(c);
@@ -215,6 +252,47 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(new UpdateCheckPointAndAddControllerActivityCommand());
 			c.addCommand(new CheckAndStartWatcherCommand());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
+		public static Chain getAddAlarmFromEventChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ProcessAlarmCommand());
+			c.addCommand(getAddAlarmChain());
+			return c;
+		}
+		
+		public static Chain getAddAlarmChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForAlarm());
+			c.addCommand(new AddAlarmCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
+			c.addCommand(new AddAlarmFollowersCommand());
+			c.addCommand(new ConstructTicketNotesCommand());
+			c.addCommand(getAddNotesChain());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
+		public static Chain updateAlarmFromJsonChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ProcessAlarmCommand());
+			c.addCommand(getUpdateAlarmChain());
+			return c;
+		}
+		
+		public static Chain getUpdateAlarmChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForAlarm());
+			c.addCommand(new UpdateAlarmCommand());
+			c.addCommand(new AddWOFromAlarmCommand());
+			c.addCommand(new ForkChainToInstantJobCommand()
+				.addCommand(new AddClearCommentInWoOnAlarmClearCommand())
+			);
+			c.addCommand(new ExecuteAllWorkflowsCommand());
+			c.addCommand(new ConstructTicketNotesCommand());
+			c.addCommand(getAddNotesChain());
 			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}

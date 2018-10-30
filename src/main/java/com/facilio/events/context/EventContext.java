@@ -235,6 +235,14 @@ public class EventContext {
 		JSONParser parser = new JSONParser();
 		additionInfo = (JSONObject) parser.parse(jsonStr);
 	}
+	
+	private String comment;
+	public String getComment() {
+		return comment;
+	}
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
 
 	private static final EventInternalState[] INETERNAL_STATES = EventInternalState.values();
 	public static enum EventInternalState {

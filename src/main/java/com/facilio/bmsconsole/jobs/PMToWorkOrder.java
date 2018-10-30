@@ -13,12 +13,14 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMJobsContext.PMJobsStatus;
 import com.facilio.bmsconsole.context.PMTriggerContext;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.tasker.job.FacilioJob;
@@ -63,7 +65,12 @@ public class PMToWorkOrder extends FacilioJob {
 				context.put(FacilioConstants.ContextNames.PM_CURRENT_TRIGGER, pmTrigger);
 				context.put(FacilioConstants.ContextNames.PM_CURRENT_JOB, pmJob);
 				
-				Chain executePm = FacilioChainFactory.getExecutePreventiveMaintenanceChain();
+				PreventiveMaintenance pm = PreventiveMaintenanceAPI.getPm(pmTrigger.getPmId());
+				boolean isMultiple = false; 
+				if(pm != null && pm.getPmCreationType() == PreventiveMaintenance.PMCreationType.MULTIPLE.getVal()) {
+					isMultiple = true;
+				}
+				Chain executePm = FacilioChainFactory.getExecutePreventiveMaintenanceChain(isMultiple);
 				executePm.execute(context);
 			}
 		} catch (Exception e) {

@@ -56,11 +56,13 @@ public class FieldFactory {
 			alarmsFieldsInclude.add("previousSeverity");
 			alarmsFieldsInclude.add("createdTime");
 			alarmsFieldsInclude.add("entity");
+			alarmsFieldsInclude.add("autoClear");
 //			alarmsFieldsInclude.add("noOfAttachments");
 		}
 		public static List<String> workOrderFieldsInclude = new ArrayList<String>();
 		static {
 			workOrderFieldsInclude.add("actualWorkDuration");
+			workOrderFieldsInclude.add("subject");
 			workOrderFieldsInclude.add("actualWorkEnd");
 			workOrderFieldsInclude.add("assignedBy");
 			workOrderFieldsInclude.add("assignedTo");
@@ -129,6 +131,12 @@ public class FieldFactory {
 		formType.setModule(module);
 		fields.add(formType);
 		
+		FacilioField labelPosition = new FacilioField();
+		labelPosition.setName("labelPosition");
+		labelPosition.setDataType(FieldType.NUMBER);
+		labelPosition.setColumnName("LABEL_POSITION");
+		labelPosition.setModule(module);
+		fields.add(labelPosition);
 		
 		return fields;
 	}
@@ -949,6 +957,21 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	public static List<FacilioField> getScheduledActionFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getScheduledActionModule();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getSiteIdField(module));
+		fields.add(getField("name", "NAME", module, FieldType.STRING));
+		fields.add(getField("actionId", "ACTION_ID", module, FieldType.NUMBER));
+		fields.add(getField("frequency", "FREQUENCY_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("time", "JOB_TIME", module, FieldType.STRING));
+		
+		return fields;
+	}
+	
 	public static List<FacilioField> getApprovalRuleFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getApprovalRulesModule();
@@ -967,6 +990,23 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	public static List<FacilioField> getApprovalStepsFields () {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getApprovalStepsModule();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getSiteIdField(module));
+		fields.add(getField("ruleId", "RULE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("recordId", "RECORD_ID", module, FieldType.LOOKUP));
+		fields.add(getField("actionBy", "ACTION_BY", module, FieldType.LOOKUP));
+		fields.add(getField("approverGroup", "APPROVER_GROUP", module, FieldType.LOOKUP));
+		fields.add(getField("action", "APPROVAL_ACTION", module, FieldType.NUMBER));
+		fields.add(getField("actionTime", "ACTION_TIME", module, FieldType.DATE_TIME));
+		
+		return fields;
+	}
+	
 	public static List<FacilioField> getSharingFields(FacilioModule module) {
 		List<FacilioField> fields = new ArrayList<>();
 		
@@ -974,6 +1014,7 @@ public class FieldFactory {
 		fields.add(getOrgIdField(module));
 		fields.add(getField("parentId", "PARENT_ID", module, FieldType.LOOKUP));
 		fields.add(getField("userId", "ORG_USERID", module, FieldType.LOOKUP));
+		fields.add(getField("roleId", "ROLE_ID", module, FieldType.LOOKUP));
 		fields.add(getField("groupId", "GROUP_ID", module, FieldType.LOOKUP));
 		fields.add(getField("type", "SHARING_TYPE", module, FieldType.NUMBER));
 		
@@ -1015,6 +1056,18 @@ public class FieldFactory {
 		status.setModule(module);
 		fields.add(status);
 
+		return fields;
+	}
+	
+	public static List<FacilioField> getApproverActionsRelFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getApproverActionsRelModule();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("approverId", "APPROVER_ID", module, FieldType.LOOKUP));
+		fields.add(getField("actionId", "ACTION_ID", module, FieldType.LOOKUP));
+		
 		return fields;
 	}
 
@@ -1465,6 +1518,7 @@ public class FieldFactory {
 		fields.add(placeholder);
 
 		fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.LOOKUP));
+		fields.add(getField("ftl", "IS_FTL", module, FieldType.BOOLEAN));
 
 		return fields;
 	}
@@ -3834,6 +3888,7 @@ public class FieldFactory {
 		fields.add(getField("reportId", "REPORTID", module, FieldType.NUMBER));
 		fields.add(getField("fileFormat", "FILE_FORMAT", module, FieldType.NUMBER));
 		fields.add(getField("templateId", "TEMPLATEID", module, FieldType.NUMBER));
+		fields.add(getField("printParams", "PRINT_PARAMS", module, FieldType.STRING));
 
 		return fields;
 	}
@@ -3932,6 +3987,9 @@ public class FieldFactory {
 		fields.add(getField("assetCategoryId", "SPACE_CATEGORY_ID", module, FieldType.LOOKUP));
 		fields.add(getField("spaceCategoryId", "ASSET_CATEGORY_ID", module, FieldType.LOOKUP));
 		fields.add(getField("assignmentType", "ASSIGNMENT_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("inputType", "INPUT_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("readingFieldId", "READING_ID", module, FieldType.LOOKUP));
+		fields.add(getField("attachmentRequired", "ATTACHMENT_REQUIRED", module, FieldType.BOOLEAN));
 		return fields;
 	}
 	
@@ -4326,6 +4384,7 @@ public class FieldFactory {
 		fields.add(getField("uniqueMappingString","UNIQUE_MAPPING",module, FieldType.STRING));
 		fields.add(getField("fieldMappingString","FIELD_MAPPING",module,FieldType.STRING));
 		fields.add(getField("save","SYS_SHOW",module,FieldType.NUMBER));
+		fields.add(getField("templateMeta", "TEMPLATE_META", module,FieldType.STRING));
 		return fields;
 	}
 

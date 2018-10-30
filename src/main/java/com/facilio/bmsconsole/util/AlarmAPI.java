@@ -8,9 +8,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import javax.print.attribute.standard.Severity;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.text.WordUtils;
@@ -40,6 +37,7 @@ import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.Operator;
+import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -55,6 +53,29 @@ import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.WorkflowContext;
 
 public class AlarmAPI {
+	
+	public static JSONObject constructClearEvent(AlarmContext alarm, String msg) throws Exception {
+		JSONObject event = new JSONObject();
+		
+		event.put("entity", alarm.getEntity());
+		event.put("source", alarm.getSource());
+		if (alarm.getResource() != null && alarm.getResource().getId() > 0) {
+			event.put("resourceId", alarm.getResource().getId());
+		}
+		event.put("autoClear", true);
+		event.put("siteId", alarm.getSiteId());
+		event.put("severity", FacilioConstants.Alarm.CLEAR_SEVERITY);
+		event.put("comment", msg);
+		
+		if (isReadingAlarm(alarm.getSourceTypeEnum())) {
+			ReadingAlarmContext readingAlarm = getReadingAlarmContext(alarm.getId());
+			event.put("sourceType", readingAlarm.getSourceTypeEnum().getIntVal());
+			event.put("ruleId", readingAlarm.getRuleId());
+			event.put("readingFieldId", readingAlarm.getReadingFieldId());
+		}
+		
+		return event;
+	}
 	
 	public static ReadingAlarmContext getReadingAlarmContext(Long alarmId) throws Exception {
 		
@@ -388,6 +409,7 @@ public class AlarmAPI {
 	public static void addReadingAlarmProps(JSONObject obj, ReadingRuleContext rule, ReadingContext reading) throws Exception {
 		obj.put("readingFieldId", rule.getReadingFieldId());
 		obj.put("readingDataId", reading.getId());
+		obj.put("readingVal", reading.getReading(rule.getReadingField().getName()));
 		obj.put("ruleId", rule.getId());
 		if (rule.getBaselineId() != -1) {
 			obj.put("baselineId", rule.getBaselineId());
@@ -709,6 +731,27 @@ public class AlarmAPI {
 		
 		List<AlarmContext> alarms = builder.get();
 		
+		return alarms;
+	}
+	
+	public static List<AlarmContext> getActiveAlarmsFromWoId (Collection<Long> ids) throws Exception {
+		String moduleName = FacilioConstants.ContextNames.ALARM;
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		List<FacilioField> fields = modBean.getAllFields(moduleName);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioField woIdField = fieldMap.get("woId");
+		FacilioField severityField = fieldMap.get("severity");
+		AlarmSeverityContext clearSeverity = getAlarmSeverity(FacilioConstants.Alarm.CLEAR_SEVERITY);
+		SelectRecordsBuilder<AlarmContext> builder = new SelectRecordsBuilder<AlarmContext>()
+													.module(module)
+													.beanClass(AlarmContext.class)
+													.select(fields)
+													.andCondition(CriteriaAPI.getCondition(woIdField, ids, PickListOperators.IS))
+													.andCondition(CriteriaAPI.getCondition(severityField, String.valueOf(clearSeverity.getId()), PickListOperators.ISN_T))
+													;
+		
+		List<AlarmContext> alarms = builder.get();
 		return alarms;
 	}
 	

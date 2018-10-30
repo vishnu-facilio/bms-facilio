@@ -80,7 +80,7 @@ public class AlarmAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.ALARM, alarm);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 
-		Chain updateAlarm = FacilioChainFactory.getUpdateAlarmChain();
+		Chain updateAlarm = TransactionChainFactory.getUpdateAlarmChain();
 		updateAlarm.execute(context);
 		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 		

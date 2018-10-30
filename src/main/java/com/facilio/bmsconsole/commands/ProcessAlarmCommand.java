@@ -52,6 +52,8 @@ public class ProcessAlarmCommand implements Command {
 		defaultProps.add("orgId");
 		defaultProps.add("siteId");
 		
+		String comment = (String) alarmInfo.remove("comment");
+		
 		Iterator<Map.Entry<String, Object>> itr = alarmInfo.entrySet().iterator();
 		
 		while (itr.hasNext()) {
@@ -73,6 +75,7 @@ public class ProcessAlarmCommand implements Command {
 			alarm.setAdditionInfo(additionalInfo);
 		}
 		context.put(FacilioConstants.ContextNames.ALARM, alarm);
+		context.put(FacilioConstants.ContextNames.COMMENT, comment);
 		
 		return false;
 	}

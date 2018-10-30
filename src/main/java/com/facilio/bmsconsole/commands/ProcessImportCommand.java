@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,6 +23,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
@@ -77,7 +79,9 @@ public class ProcessImportCommand implements Command {
 		InputStream ins = fs.readFile(importProcessContext.getFileId());
 		List<String> moduleNames = new ArrayList<>(groupedFields.keySet());
 		Map<String, Long> lookupHolder;
-
+		
+		JSONObject importMeta = importProcessContext.getImportJobMetaJson();
+		JSONObject dateFormats = (JSONObject) importMeta.get(ImportAPI.ImportProcessConstants.DATE_FORMATS);
 //		importProcessContext.setStatus(ImportProcessContext.ImportStatus.IN_PROGRESS.getValue());
 //		ImportAPI.updateImportProcess(importProcessContext);
 
@@ -132,7 +136,7 @@ public class ProcessImportCommand implements Command {
 						if (cell.getCellTypeEnum() == CellType.NUMERIC && HSSFDateUtil.isCellDateFormatted(cell)) {
 							Date date = cell.getDateCellValue();
 							Instant date1 = date.toInstant();
-							val = date1.getEpochSecond() * 1000;
+							val = date1.getEpochSecond()*1000;
 						} 
 						else if(cell.getCellTypeEnum() == CellType.FORMULA) {
 							val = cell.getStringCellValue();
@@ -316,8 +320,7 @@ public class ProcessImportCommand implements Command {
 										if (facilioField.getDataTypeEnum().equals(FieldType.DATE_TIME)
 												|| facilioField.getDataTypeEnum().equals(FieldType.DATE)) {
 											if (!(cellValue instanceof Long)) {
-												long millis = DateTimeUtil.getTime(cellValue.toString(),
-														"dd-MM-yyyy HH:mm");
+												long millis = DateTimeUtil.getTime(cellValue.toString(),"dd/MM/yyyy HH:mm:ss");
 												if (!props.containsKey(field)) {
 													props.put(field, millis);
 												}
@@ -496,7 +499,6 @@ public class ProcessImportCommand implements Command {
 	public static Long getSpaceID(ImportProcessContext importProcessContext, HashMap<String, Object> colVal, HashMap<String,String> fieldMapping) throws Exception {
 
 		String siteName =null ,buildingName = null,floorName = null ,spaceName = null;
-		new ArrayList<>();
 		
 		ArrayList<String> additionalSpaces = new ArrayList<>();
 		String moduleName = importProcessContext.getModule().getName();

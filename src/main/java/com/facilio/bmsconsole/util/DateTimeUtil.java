@@ -11,6 +11,7 @@ import java.time.Year;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
@@ -53,7 +54,7 @@ public class DateTimeUtil
 		return AwsUtil.isDevelopment() ? ZoneId.systemDefault() : ZoneId.of("Z");
 	}
 	
-	private static Locale getLocale()
+	public static Locale getLocale()
 	{
 		//TODO Locale related changes to be done..
 		//like OrgInfo.getCurrentOrgInfo().getLocale() & set the Locale..
@@ -133,6 +134,18 @@ public class DateTimeUtil
 
 	//if format is null it will take the 
 	//default yyyy-MM-dd format for parsing the date String..
+	
+	public static Instant getTimeInstant(String datePattern, String dateString) {
+		DateTimeFormatter FMT = new DateTimeFormatterBuilder()
+			    .appendPattern(datePattern)
+			    .parseDefaulting(ChronoField.NANO_OF_DAY, 0)
+			    .toFormatter()
+			    .withZone(DateTimeUtil.getZoneId())
+			    .withLocale(DateTimeUtil.getLocale());
+		
+		Instant instant = FMT.parse(dateString, Instant::from);
+		return instant;
+	}
 	public static long getDayEndTime(String date,String format,Boolean... seconds)
 	{
 		ZonedDateTime zdt= ZonedDateTime.of(LocalDate.parse(date,getDateTimeFormat(format)),LocalTime.MAX,getZoneId());

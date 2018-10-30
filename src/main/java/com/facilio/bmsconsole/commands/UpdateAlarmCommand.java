@@ -6,6 +6,8 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.User;
@@ -31,6 +33,8 @@ import com.facilio.wms.util.WmsApi;
 
 public class UpdateAlarmCommand implements Command {
 
+	private static final Logger LOGGER = LogManager.getLogger(UpdateAlarmCommand.class.getName());
+	
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -76,13 +80,11 @@ public class UpdateAlarmCommand implements Command {
 			}
 			
 			if(recordIds.size() == 1) {
-				AlarmContext alarmObj = getAlarmObj(idCondition, moduleName, fields);
+				AlarmContext alarmObj = getAlarmObj(idCondition, moduleName, fields, false);
 				if(alarmObj != null) {
 					AlarmAPI.updateAlarmDetailsInTicket(alarmObj, alarm);
-					
-					if (isCleared && AlarmAPI.isReadingAlarm(alarmObj.getSourceTypeEnum())) {
-						ReadingRuleAPI.markAlarmMetaAsClear(alarmObj.getId());
-					}
+					TicketAPI.updateTicketStatus(null, alarm, alarmObj, false);
+					TicketAPI.updateTicketAssignedBy(alarm);
 				}
 			}
 			
@@ -105,9 +107,16 @@ public class UpdateAlarmCommand implements Command {
 																		.andCondition(idCondition);
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, updateBuilder.update(alarm));
 			if(recordIds.size() == 1) {
-				AlarmContext alarmObj = getAlarmObj(idCondition, moduleName, fields);
+				AlarmContext alarmObj = getAlarmObj(idCondition, moduleName, fields, true);
 				if(alarmObj != null) {
 					context.put(FacilioConstants.ContextNames.RECORD, alarmObj);
+					
+					if (isCleared && AlarmAPI.isReadingAlarm(alarmObj.getSourceTypeEnum())) {
+						if (AccountUtil.getCurrentOrg().getId() == 135) {
+							LOGGER.info("Updating meta as clear alarm : "+alarmObj.getId()+" for resource : "+(alarmObj.getResource() == null ? "" : alarmObj.getResource().getId()));
+						}
+						ReadingRuleAPI.markAlarmMetaAsClear(alarmObj.getId());
+					}
 				}
 			}
 			
@@ -138,7 +147,7 @@ public class UpdateAlarmCommand implements Command {
 		return false;
 	}
 	
-	private AlarmContext getAlarmObj(Condition idCondition, String moduleName, List<FacilioField> fields) throws Exception {
+	private AlarmContext getAlarmObj(Condition idCondition, String moduleName, List<FacilioField> fields, boolean fetchExtended) throws Exception {
 		SelectRecordsBuilder<AlarmContext> builder = new SelectRecordsBuilder<AlarmContext>()
 																.moduleName(moduleName)
 																.beanClass(AlarmContext.class)
@@ -147,6 +156,9 @@ public class UpdateAlarmCommand implements Command {
 		
 		List<AlarmContext> alarms = builder.get();
 		if(alarms != null && !alarms.isEmpty()) {
+			if (fetchExtended) {
+				AlarmAPI.loadExtendedAlarms(alarms);
+			}
 			return alarms.get(0);
 		}
 		return null;

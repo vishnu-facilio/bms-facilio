@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.commands;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,7 +27,6 @@ import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.UpdateChangeSet;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
@@ -112,18 +110,20 @@ public class ExecuteAllWorkflowsCommand implements Command, Serializable
 				parentCriteria.addAndCondition(CriteriaAPI.getCondition(parentRule, CommonOperators.IS_EMPTY));
 				parentCriteria.addAndCondition(CriteriaAPI.getCondition(onSuccess, CommonOperators.IS_EMPTY));
 				List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(moduleId, activities, parentCriteria, ruleTypes);
+				
+				if (AccountUtil.getCurrentOrg().getId() == 133 && FacilioConstants.ContextNames.ALARM.equals(moduleName)) {
+					LOGGER.info("Records : "+entry.getValue());
+					LOGGER.info("Matching Rules : "+workflowRules);
+				}
+				
 				if (workflowRules != null && !workflowRules.isEmpty()) {
-					Map<String, Object> placeHolders = new HashMap<>();
-					CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeHolders);
-					CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeHolders);
-					
+					Map<String, Object> placeHolders = WorkflowRuleAPI.getOrgPlaceHolders();
 					List records = new LinkedList<>(entry.getValue());
 					Iterator it = records.iterator();
 					while (it.hasNext()) {
 						Object record = it.next();
 						List<UpdateChangeSet> changeSet = currentChangeSet == null ? null : currentChangeSet.get( ((ModuleBaseWithCustomFields)record).getId() );
-						Map<String, Object> recordPlaceHolders = new HashMap<>(placeHolders);
-						CommonCommandUtil.appendModuleNameInKey(moduleName, moduleName, FieldUtil.getAsProperties(record), recordPlaceHolders);
+						Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, record, placeHolders);
 						List<WorkflowRuleContext> currentWorkflows = workflowRules;
 						while (currentWorkflows != null && !currentWorkflows.isEmpty()) {
 							Criteria childCriteria = executeWorkflows(currentWorkflows, moduleName, record, changeSet, it, recordPlaceHolders, context);
@@ -154,6 +154,10 @@ public class ExecuteAllWorkflowsCommand implements Command, Serializable
 							itr.remove();
 							break;
 						}
+					}
+					
+					if (AccountUtil.getCurrentOrg().getId() == 133 && FacilioConstants.ContextNames.ALARM.equals(moduleName)) {
+						LOGGER.info("Result of rule : "+workflowRule.getId()+" for record : "+record+" is "+result);
 					}
 					
 					Criteria currentCriteria = new Criteria();

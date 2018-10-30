@@ -1178,7 +1178,7 @@ public class DashboardAction extends ActionSupport {
 			
 			WidgetStaticContext widgetStaticContext = (WidgetStaticContext) dashboardWidgetContext;
 			Map<String,Object> result = null;
-			
+			widgetStaticContext.setParamsJson(DashboardUtil.getCardParams(widgetStaticContext.getParamsJson()));
 			if(CardUtil.isGetDataFromEnum(widgetStaticContext.getStaticKey())) {
 				
 				result = new HashMap<>();
@@ -1367,6 +1367,7 @@ public class DashboardAction extends ActionSupport {
 		else if(staticKey != null) {
 			
 			Map<String,Object> result = null;
+			paramsJson = DashboardUtil.getCardParams(paramsJson);
 			
 			if(CardUtil.isGetDataFromEnum(staticKey)) {
 				

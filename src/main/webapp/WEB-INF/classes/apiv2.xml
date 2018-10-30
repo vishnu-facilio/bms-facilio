@@ -67,6 +67,14 @@
 			method="v2attachmentList">
 		</action>
 		
+		<action name="executeworkflow" class="com.facilio.bmsconsole.actions.CommonAction"
+			method="executeWorkflow">
+		</action>
+		
+		<action name="parseftl" class="com.facilio.bmsconsole.actions.CommonAction"
+			method="parseFtl">
+		</action>
+		
 	</package>
 	
 	<package name="internalV2" namespace="/v2/internal" extends="v2Api">
@@ -82,7 +90,7 @@
 		<action name="save" class="com.facilio.bmsconsole.actions.ImportTemplateAction" method="saveImportTemplate">
 		<param name="permission">DATA_ADMINISTRATION</param>
 		</action>
-		<action name="deletetemplate" class="com.facilio.bmsconsole.actions.ImportTemplateAction" method="deleteTemplate"></action>
+		<action name="deletetemplate" class="com.facilio.bmsconsole.actions.ImportTemplateAction" method="updateTemplate"></action>
 	</package>
 	
 	
@@ -475,6 +483,8 @@
 	
 	<package name="workflowApiv2" namespace="/api/v2/workflow" extends="v2Api">
 		<action name="xml" class="com.facilio.workflows.action.WorkflowAction" method="getWorkflowXmlFromObject">
+		</action>
+		<action name="execute" class="com.facilio.bmsconsole.actions.CommonAction" method="executeWorkflow">
 		</action>
 	</package>
 	

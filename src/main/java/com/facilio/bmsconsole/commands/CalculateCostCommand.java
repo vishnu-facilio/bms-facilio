@@ -53,23 +53,26 @@ public class CalculateCostCommand implements Command {
 				long billStartTime = CostAPI.getBillStartTime(asset, DateTimeUtil.getZonedDateTime(interval.getStartTime())).toInstant().toEpochMilli();
 				long prevDayEnd = interval.getStartTime() - 1;
 				for (ReadingContext reading : readings) {
-					if (billStartTime <= reading.getTtime() && reading.getTtime() <= interval.getEndTime()) {
-						totalUnits += (double) reading.getReading(utilityField.getName());
-					}
-					if (billStartTime <= reading.getTtime() && reading.getTtime() <= prevDayEnd) {
-						totalPrevDayUnits += (double) reading.getReading(utilityField.getName());
+					Double val = (Double) reading.getReading(utilityField.getName());
+					if (val != null) {
+						if (billStartTime <= reading.getTtime() && reading.getTtime() <= interval.getEndTime()) {
+							totalUnits += val;
+						}
+						if (billStartTime <= reading.getTtime() && reading.getTtime() <= prevDayEnd) {
+							totalPrevDayUnits += val;
+						}
 					}
 				}
 				LOGGER.info("Calculating '"+cost.getName()+"' cost for : "+asset.getAssetId()+" between "+interval);
-				LOGGER.debug("Current Total Units : "+totalUnits);
-				LOGGER.debug("Prev Day Total Units : "+totalPrevDayUnits);
+				LOGGER.info("Current Total Units : "+totalUnits);
+				LOGGER.info("Prev Day Total Units : "+totalPrevDayUnits);
 				ReadingContext reading = getCostReading(cost, asset, maxUnitWiseSlabs, interval, totalUnits, totalPrevDayUnits, totalCostField, slabCostField, fieldIdMap);
-				LOGGER.debug("Cost reading : "+reading);
+				LOGGER.info("Cost reading : "+reading);
 				if (reading != null) {
 					costReadings.add(reading);
 				}
 			}
-			LOGGER.debug("Cost Reading size : "+costReadings.size());
+			LOGGER.info("Cost Reading size : "+costReadings.size());
 			context.put(FacilioConstants.ContextNames.COST_READINGS, costReadings);
 		}
 		return false;

@@ -262,6 +262,7 @@ public class WorkflowRuleContext implements Serializable {
 		SCHEDULED_RULE,
 		
 		APPROVAL_RULE(true),
+		CHILD_APPROVAL_RULE(true),
 		REQUEST_APPROVAL_RULE(true),
 		REQUEST_REJECT_RULE(true)
 		;
@@ -297,6 +298,7 @@ public class WorkflowRuleContext implements Serializable {
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return id+"::"+name;
+		return "Workflow Rule ["+id+", "+name+"]";
+		
 	}
 }

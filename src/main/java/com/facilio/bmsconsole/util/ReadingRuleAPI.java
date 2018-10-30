@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
@@ -28,6 +31,9 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class ReadingRuleAPI extends WorkflowRuleAPI {
+	
+	private static final Logger LOGGER = LogManager.getLogger(ReadingRuleAPI.class.getName());
+	
 	protected static void addReadingRuleInclusionsExlusions(ReadingRuleContext rule) throws SQLException, RuntimeException {
 		if (rule.getAssetCategoryId() != -1) {
 			List<Map<String, Object>> inclusionExclusionList = new ArrayList<>();
@@ -247,6 +253,10 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		prop.put("readingFieldId", rule.getReadingFieldId());
 		prop.put("clear", false);
 		
+		if (AccountUtil.getCurrentOrg().getId() == 135) {
+			LOGGER.info("Adding alarm meta "+prop);
+		}
+		
 		return new GenericInsertRecordBuilder()
 					.table(ModuleFactory.getReadingRuleAlarmMetaModule().getTableName())
 					.fields(FieldFactory.getReadingRuleAlarmMetaFields())
@@ -255,6 +265,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 	}
 	
 	public static void markAlarmMetaAsNotClear (long id, long alarmId) throws SQLException {
+		
 		FacilioModule module = ModuleFactory.getReadingRuleAlarmMetaModule();
 		
 		Map<String, Object> prop = new HashMap<>();

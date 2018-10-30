@@ -21,6 +21,14 @@ public class ReadingAlarmContext extends AlarmContext {
 	public void setReadingDataId(long readingDataId) {
 		this.readingDataId = readingDataId;
 	}
+	
+	private String readingVal;
+	public String getReadingVal() {
+		return readingVal;
+	}
+	public void setReadingVal(String readingVal) {
+		this.readingVal = readingVal;
+	}
 
 	private long baselineId = -1;
 	public long getBaselineId() {

@@ -101,6 +101,32 @@ public class FacilioForm {
 		return this.formType;
 	}
 	
+	public int getLabelPosition() {
+		if (labelPosition != null) {
+			return labelPosition.getIntVal();
+		}
+		return -1;
+	}
+
+	public void setLabelPosition(int val) {
+		this.labelPosition = LabelPosition.getLabelPosition(val);
+	}
+	
+	public void setLabelPosition(LabelPosition val) {
+		this.labelPosition = val;
+	}
+	
+	public LabelPosition getLabelPositionEnum() {
+		return this.labelPosition;
+	}
+	
+	public String getLabelPositionVal() {
+		if (this.labelPosition != null) {
+			return this.labelPosition.getStringVal();
+		}
+		return null;
+	}
+
 	public enum FormType {
 		WEB(1, "web"),
 		MOBILE(2, "mobile"),
@@ -136,7 +162,49 @@ public class FacilioForm {
 			
 			return typeMap;
 		}
-		
-		
 	}
+	
+	private LabelPosition labelPosition;
+	
+	public enum LabelPosition {
+		TOP(1, "top"),
+		LEFT(2, "left");
+		
+		private int intVal;
+		public int getIntVal() {
+			return intVal;
+		}
+
+		public void setIntVal(int intVal) {
+			this.intVal = intVal;
+		}
+
+		private String stringVal;
+		
+		private LabelPosition(int intVal, String stringVal) {
+			this.intVal = intVal;
+			this.setStringVal(stringVal);
+		}
+		
+		public static LabelPosition getLabelPosition(int intVal) {
+			return typeMap.get(intVal);
+		}
+		
+		private static final Map<Integer, LabelPosition> typeMap = Collections.unmodifiableMap(initTypeMap());
+		private static Map<Integer, LabelPosition> initTypeMap() {
+			Map<Integer, LabelPosition> typeMap = new HashMap<>();
+			for (LabelPosition type: values()) {
+				typeMap.put(type.intVal, type);
+			}
+			return typeMap;
+		}
+
+		public String getStringVal() {
+			return stringVal;
+		}
+
+		public void setStringVal(String stringVal) {
+			this.stringVal = stringVal;
+		}
+	} 
 }
