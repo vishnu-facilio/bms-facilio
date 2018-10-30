@@ -57,11 +57,13 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 			}
 		}
 		if (rule.getApprovalFormId() == -1) {
-			if (rule.getApprovalForm() == null) {
-//				throw new IllegalArgumentException("Approval Form cannot be empty for approval rule");
-			}
-			else {
-				rule.setApprovalFormId(FormsAPI.createForm(rule.getApprovalForm(), module));
+			if (rule.getApprovalForm() != null) {
+				if (rule.getApprovalForm().getId() == -1) {
+					rule.setApprovalFormId(FormsAPI.createForm(rule.getApprovalForm(), module));
+				}
+				else {
+					rule.setApprovalFormId(rule.getApprovalForm().getId());
+				}
 			}
 		}
 			
@@ -78,11 +80,13 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 			}
 		}
 		if (rule.getRejectionFormId() == -1) {
-			if (rule.getRejectionForm() == null) {
-//				throw new IllegalArgumentException("Rejection Form cannot be empty for approval rule");
-			}
-			else {
-				rule.setRejectionFormId(FormsAPI.createForm(rule.getRejectionForm(), module));
+			if (rule.getRejectionForm() != null) {
+				if (rule.getRejectionForm().getId() == -1) {
+					rule.setRejectionFormId(FormsAPI.createForm(rule.getRejectionForm(), module));
+				}
+				else {
+					rule.setRejectionFormId(rule.getRejectionForm().getId());
+				}
 			}
 		}
 	}
