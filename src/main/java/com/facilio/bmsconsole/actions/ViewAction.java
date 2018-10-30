@@ -1,9 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
@@ -16,7 +14,6 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.opensymphony.xwork2.ActionSupport;
 
 public class ViewAction extends FacilioAction {
 	
@@ -58,6 +55,9 @@ public class ViewAction extends FacilioAction {
 	{
 		BeanFactory.lookup("ModuleBean");
 		if (moduleName == null || moduleName.equals("approval")) {
+			if (moduleName.equals("approval")) {
+				viewName = "approval_" + viewName;
+			}
 			moduleName = "workorder";
 		}
 		
