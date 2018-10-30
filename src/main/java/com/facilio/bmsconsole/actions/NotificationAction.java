@@ -267,7 +267,7 @@ public class NotificationAction extends ActionSupport {
 	
 	public String updateWorkFlowRuleAction() throws Exception { 
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, action);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, action);
 
 		Command updateAction = FacilioChainFactory.getUpdateWorkflowRuleAction();
 		updateAction.execute(context);

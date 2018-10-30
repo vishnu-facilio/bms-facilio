@@ -1057,6 +1057,18 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	public static List<FacilioField> getApproverActionsRelFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getApproverActionsRelModule();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("approverId", "APPROVER_ID", module, FieldType.LOOKUP));
+		fields.add(getField("actionId", "ACTION_ID", module, FieldType.LOOKUP));
+		
+		return fields;
+	}
 
 	public static List<FacilioField> getUserFields() {
 		List<FacilioField> fields = new ArrayList<>();

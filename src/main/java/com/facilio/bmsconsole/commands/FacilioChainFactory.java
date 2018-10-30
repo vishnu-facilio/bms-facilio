@@ -1076,20 +1076,6 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain fetchWorkflowRulesOfTypeChain() {
-		Chain c = new ChainBase();
-		c.addCommand(new GetWorkFlowOfRuleTypeCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
-	public static Chain fetchWorkflowRuleWithActionChain() {
-		Chain c = new ChainBase();
-		c.addCommand(new FetchWorkflowRuleCommand());
-		c.addCommand(new GetActionListForWorkflowRulesCommand());
-		return c;
-	}
-	
 	public static Chain getUpdateWorkflowRuleAction() {
 		Chain c = getTransactionChain();
 		c.addCommand(new UpdateWorkFlowRuleAction());

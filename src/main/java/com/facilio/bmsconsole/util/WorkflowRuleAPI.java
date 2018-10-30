@@ -90,7 +90,8 @@ public class WorkflowRuleAPI {
 				ScheduledRuleAPI.addScheduledRuleJob((ScheduledRuleContext) rule);
 				break;
 			case APPROVAL_RULE:
-				ApprovalRulesAPI.validateScheduledRule((ApprovalRuleContext) rule);
+			case CHILD_APPROVAL_RULE:
+				ApprovalRulesAPI.validateApprovalRule((ApprovalRuleContext) rule);
 				ApprovalRulesAPI.updateChildRuleIds((ApprovalRuleContext) rule);
 				addExtendedProps(ModuleFactory.getApprovalRulesModule(), FieldFactory.getApprovalRuleFields(), FieldUtil.getAsProperties(rule));
 				ApprovalRulesAPI.addApprovers((ApprovalRuleContext) rule);
@@ -472,6 +473,7 @@ public class WorkflowRuleAPI {
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getScheduledRuleModule(), FieldFactory.getScheduledRuleFields(), entry.getValue()));
 					break;
 				case APPROVAL_RULE:
+				case CHILD_APPROVAL_RULE:
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getApprovalRulesModule(), FieldFactory.getApprovalRuleFields(), entry.getValue()));
 					break;
 				default:
@@ -587,6 +589,7 @@ public class WorkflowRuleAPI {
 						rule = ScheduledRuleAPI.constructScheduledRuleFromProps(prop, modBean);
 						break;
 					case APPROVAL_RULE:
+					case CHILD_APPROVAL_RULE:
 						prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
 						rule = ApprovalRulesAPI.constructApprovalRuleFromProps(prop, modBean);
 						break;
@@ -652,6 +655,7 @@ public class WorkflowRuleAPI {
 				for (WorkflowRuleContext rule : rules) {
 					switch (rule.getRuleTypeEnum()) {
 						case APPROVAL_RULE:
+						case CHILD_APPROVAL_RULE:
 							ApprovalRulesAPI.deleteApprovalRuleChildIds((ApprovalRuleContext) rule);
 							break;
 						case SCHEDULED_RULE:

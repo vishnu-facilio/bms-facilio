@@ -11,7 +11,6 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.tuple.Pair;
 
-import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.util.ApprovalRulesAPI;
@@ -19,6 +18,7 @@ import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
+import com.facilio.bmsconsole.workflow.rule.ApproverContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -88,7 +88,7 @@ public class FetchApprovalRulesCommand implements Command {
 						if (rule.getApprovers() != null) {
 							List<Long> currentPreviousSteps = previousSteps != null ? previousSteps.get(wo.getId()) : null;
 							if (currentPreviousSteps != null) {
-								List<SingleSharingContext> waitingApprovals = rule.getApprovers().stream().filter(a -> !currentPreviousSteps.contains(a.getId())).collect(Collectors.toList());
+								List<ApproverContext> waitingApprovals = rule.getApprovers().stream().filter(a -> !currentPreviousSteps.contains(a.getId())).collect(Collectors.toList());
 								wo.setWaitingApprovals(waitingApprovals);
 							}
 							else {

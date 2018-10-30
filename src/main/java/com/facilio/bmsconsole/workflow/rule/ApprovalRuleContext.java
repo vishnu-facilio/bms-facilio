@@ -82,18 +82,18 @@ public class ApprovalRuleContext extends WorkflowRuleContext {
 		this.rejectionRule = rejectionRule;
 	}
 	
-	private SharingContext approvers;
-	public List<SingleSharingContext> getApprovers() {
+	private SharingContext<ApproverContext> approvers;
+	public List<ApproverContext> getApprovers() {
 		return approvers;
 	}
-	public void setApprovers(List<SingleSharingContext> approvers) {
+	public void setApprovers(List<ApproverContext> approvers) {
 		if (approvers != null) {
-			this.approvers = new SharingContext(approvers);
+			this.approvers = new SharingContext<>(approvers);
 		}
 	}
-	public void addApprover (SingleSharingContext approver) {
+	public void addApprover (ApproverContext approver) {
 		if (this.approvers == null) {
-			this.approvers = new SharingContext(approvers);
+			this.approvers = new SharingContext<>(approvers);
 		}
 		approvers.add(approver);
 	}

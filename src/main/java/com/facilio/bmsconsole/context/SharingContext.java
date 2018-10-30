@@ -10,7 +10,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.fw.BeanFactory;
 
-public class SharingContext extends ArrayList<SingleSharingContext> {
+public class SharingContext<E extends SingleSharingContext> extends ArrayList<E> {
 	
 	/**
 	 * 
@@ -21,7 +21,7 @@ public class SharingContext extends ArrayList<SingleSharingContext> {
 		super();
 	}
 	
-	public SharingContext(Collection<SingleSharingContext> c) {
+	public SharingContext(Collection<E> c) {
 		super(c);
 	}
 	

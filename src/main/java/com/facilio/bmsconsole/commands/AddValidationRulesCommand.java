@@ -27,7 +27,7 @@ public class AddValidationRulesCommand implements Command {
 			return false; 
 		}
 		
-		Chain addChain = TransactionChainFactory.getAddWorkflowRuleChain();
+		Chain addChain = TransactionChainFactory.addWorkflowRuleChain();
 		Chain updateChain = TransactionChainFactory.updateWorkflowRuleChain();
 		
 		for (int i = 0; i < readingRules.size(); ++i) {
@@ -43,9 +43,9 @@ public class AddValidationRulesCommand implements Command {
 				}
 				context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, rule);
 				if (actionsList.get(i) != null && !actionsList.get(i).isEmpty()) {
-					context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, actionsList.get(i).get(j));
+					context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, actionsList.get(i).get(j));
 				} else {
-					context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, null);
+					context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, null);
 				}
 				if (rule.getId() != -1) {
 					updateChain.execute(context);

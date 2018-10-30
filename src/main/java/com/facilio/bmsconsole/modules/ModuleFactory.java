@@ -289,6 +289,10 @@ public class ModuleFactory {
 		return approvers;
 	}
 	
+	public static FacilioModule getApproverActionsRelModule() {
+		return constructModule("approverActionsRel", "Approver Actions Rel", "Approver_Actions_Rel");
+	}
+	
 	public static FacilioModule getApprovalStepsModule() {
 		return constructModule("approvalSteps", "Approval Steps", "Approval_Steps");
 	}
