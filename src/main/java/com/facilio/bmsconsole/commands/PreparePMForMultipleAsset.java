@@ -73,7 +73,7 @@ public class PreparePMForMultipleAsset implements Command {
 				Template sectionTemplate = TemplateAPI.getTemplate(sectiontemplate.getId());
 				sectiontemplate = (TaskSectionTemplate)sectionTemplate;
 				
-				 List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(sectiontemplate.getAssignmentType()), woContext.getResource().getId(), sectiontemplate.getSpaceCategoryId(), sectiontemplate.getAssetCategoryId(),sectiontemplate.getResourceId());
+				 List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(sectiontemplate.getAssignmentType()), woContext.getResource().getId(), sectiontemplate.getSpaceCategoryId(), sectiontemplate.getAssetCategoryId(),sectiontemplate.getResourceId(),sectiontemplate.getPmIncludeExcludeResourceContexts());
 				 
 				 for(Long resourceId :resourceIds) {
 					 ResourceContext sectionResource = ResourceAPI.getResource(resourceId);
@@ -84,7 +84,7 @@ public class PreparePMForMultipleAsset implements Command {
 					 List<TaskContext> tasks = new ArrayList<TaskContext>();
 					 for(TaskTemplate taskTemplate :taskTemplates) {
 						 
-						 List<Long> taskResourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(taskTemplate.getAssignmentType()), sectionResource.getId(), taskTemplate.getSpaceCategoryId(), taskTemplate.getAssetCategoryId(),taskTemplate.getResourceId());
+						 List<Long> taskResourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(taskTemplate.getAssignmentType()), sectionResource.getId(), taskTemplate.getSpaceCategoryId(), taskTemplate.getAssetCategoryId(),taskTemplate.getResourceId(),taskTemplate.getPmIncludeExcludeResourceContexts());
 						 
 						 applySectionSettingsIfApplicable(sectiontemplate,taskTemplate);
 						 for(Long taskResourceId :taskResourceIds) {
@@ -120,18 +120,11 @@ public class PreparePMForMultipleAsset implements Command {
 
 	private void applySectionSettingsIfApplicable(TaskSectionTemplate sectiontemplate, TaskTemplate taskTemplate) {
 		
-		if(taskTemplate.getAssignmentType() == PreventiveMaintenance.PMAssignmentType.CURRENT_ASSET.getVal()) {
-			
-			if(!taskTemplate.isAttachmentRequired()) {
-				taskTemplate.setAttachmentRequired(sectiontemplate.isAttachmentRequired());
-			}
-			if(taskTemplate.getInputType() <= InputType.NONE.getVal() && sectiontemplate.getInputType() > InputType.NONE.getVal()) {
-				
-				taskTemplate.setInputType(sectiontemplate.getInputType());
-				if(sectiontemplate.getReadingFieldId() > 0) {
-					taskTemplate.setReadingFieldId(sectiontemplate.getReadingFieldId());
-				}
-			}
+		if(!taskTemplate.isAttachmentRequired()) {
+			taskTemplate.setAttachmentRequired(sectiontemplate.isAttachmentRequired());
+		}
+		if(taskTemplate.getInputType() <= InputType.NONE.getVal() && sectiontemplate.getInputType() > InputType.NONE.getVal()) {
+			taskTemplate.setInputType(sectiontemplate.getInputType());
 		}
 	}
 

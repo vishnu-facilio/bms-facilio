@@ -28,6 +28,8 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.billing.context.ExcelTemplate;
+import com.facilio.bmsconsole.context.PMIncludeExcludeResourceContext;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
@@ -40,6 +42,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.templates.AssignmentTemplate;
 import com.facilio.bmsconsole.templates.DefaultTemplate;
@@ -63,6 +66,7 @@ import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
@@ -767,6 +771,7 @@ public class TemplateAPI {
 	
 	private static TaskSectionTemplate getTaskGroupTemplateFromMap(Map<String, Object> templateMap) throws Exception {
 		TaskSectionTemplate template = FieldUtil.getAsBeanFromMap(templateMap, TaskSectionTemplate.class);
+		template.setPmIncludeExcludeResourceContexts(getPMIncludeExcludeList(null,template.getId(),null));
 		template.setTasks(getTasksFromSection(template));
 		return template;
 	}
@@ -782,6 +787,7 @@ public class TemplateAPI {
 			List<TaskTemplate> taskTemplates = new ArrayList<>();
 			for (Map<String, Object> prop : taskProps) {
 				TaskTemplate template = FieldUtil.getAsBeanFromMap(prop, TaskTemplate.class);
+				template.setPmIncludeExcludeResourceContexts(getPMIncludeExcludeList(null,null,template.getId()));
 				TaskContext task = template.getTask();
 				tasks.add(task);
 				taskTemplates.add(template);
@@ -790,6 +796,36 @@ public class TemplateAPI {
 			return tasks;
 		}
 		return null;
+	}
+	
+	public static List<PMIncludeExcludeResourceContext> getPMIncludeExcludeList(Long pmId,Long taskSectionId,Long taskId) throws Exception {
+
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
+		builder.table(ModuleFactory.getPMIncludeExcludeResourceModule().getTableName())
+		.select(FieldFactory.getPMIncludeExcludeResourceFields());
+		
+		if(pmId != null && pmId > 0) {
+			builder.andCustomWhere("PM_ID = ? ", pmId);
+			builder.andCustomWhere("PARENT_TYPE = ? ", PMIncludeExcludeResourceContext.ParentType.PM.getVal());
+		}
+		else if(taskSectionId != null && taskSectionId > 0) {
+			builder.andCustomWhere("TASK_SECTION_TEMPLATE_ID = ? ", taskSectionId);
+			builder.andCustomWhere("PARENT_TYPE = ? ", PMIncludeExcludeResourceContext.ParentType.TASK_SECTION_TEMPLATE.getVal());
+		}
+		else if(taskId != null && taskId > 0) {
+			builder.andCustomWhere("TASK_TEMPLATE_ID = ? ", taskId);
+			builder.andCustomWhere("PARENT_TYPE = ? ", PMIncludeExcludeResourceContext.ParentType.TASK_TEMPLATE.getVal());
+		}
+		List<Map<String, Object>> props = builder.get();
+		
+		List<PMIncludeExcludeResourceContext> pmIncludeExcludeResourceContexts = new ArrayList<>();
+		if(props != null && !props.isEmpty()) {
+			for(Map<String, Object> prop :props) {
+				PMIncludeExcludeResourceContext pmIncludeExcludeResourceContext = FieldUtil.getAsBeanFromMap(prop, PMIncludeExcludeResourceContext.class);
+				pmIncludeExcludeResourceContexts.add(pmIncludeExcludeResourceContext);
+			}
+		}
+		return pmIncludeExcludeResourceContexts;
 	}
 	
 	private static JSONTemplate getJSONTemplateFromMap(Map<String, Object> templateMap) throws Exception {
@@ -889,27 +925,90 @@ public class TemplateAPI {
 			templatePropList.add(FieldUtil.getAsProperties(sectionTemplate));
 		}
 		insertTemplatesWithExtendedProps(ModuleFactory.getTaskSectionTemplateModule(), FieldFactory.getTaskSectionTemplateFields(), templatePropList);
+		
 		Map<String, Long> sectionMap = new HashMap<>();
 		for (Map<String, Object> prop : templatePropList) {
 			sectionMap.put((String)prop.get("name"), (Long)prop.get("id"));
 		}
 		
-		List<Map<String, Object>> taskTemplateProps = new ArrayList<>();
+		
 		for (TaskSectionTemplate sectionTemplate : sectionTemplates) {
 			if(sectionMap.get(sectionTemplate.getName()) != null) {
 				
-				sectionTemplate.setId(sectionMap.get(sectionTemplate.getName()));
+				Long id = sectionMap.get(sectionTemplate.getName());
+				sectionTemplate.setId(id);
+				
+				addIncludeExcludePropsForSection(sectionTemplate);
 			}
 			
 			for(TaskTemplate taskTeplate : sectionTemplate.getTaskTemplates()) {
 				fillDefaultPropsTaskTemplate(taskTeplate, sectionTemplate.getId(), woTemplateId, taskType);
-				taskTemplateProps.add(FieldUtil.getAsProperties(taskTeplate));
+				Map<String, Object> props = FieldUtil.getAsProperties(taskTeplate);
+				insertTemplateWithExtendedProps(ModuleFactory.getTaskTemplateModule(), FieldFactory.getTaskTemplateFields(),props); //add tasks
+				
+				taskTeplate.setId((Long)props.get("id"));
+				
+				addIncludeExcludePropsForTask(taskTeplate);
 			}
 		}
-		insertTemplatesWithExtendedProps(ModuleFactory.getTaskTemplateModule(), FieldFactory.getTaskTemplateFields(), taskTemplateProps); //add tasks
 		return sectionMap;
 	}
 	
+	public static void addIncludeExcludePropsForSection(TaskSectionTemplate sectionTemplate) throws Exception {
+		
+		if(sectionTemplate.getPmIncludeExcludeResourceContexts() != null && !sectionTemplate.getPmIncludeExcludeResourceContexts().isEmpty()) {
+			
+			List<Map<String, Object>> props = new ArrayList<>();
+			for(PMIncludeExcludeResourceContext includeExcludeProps :sectionTemplate.getPmIncludeExcludeResourceContexts()) {
+				includeExcludeProps.setTaskSectionTemplateId(sectionTemplate.getId());
+				Map<String, Object> map = FieldUtil.getAsProperties(includeExcludeProps);
+				props.add(map);
+			}
+			
+			addPMIncludeExclude(props);
+		}
+	}
+	
+	public static void addIncludeExcludePropsForPM(PreventiveMaintenance pm) throws Exception {
+		
+		if(pm.getPmIncludeExcludeResourceContexts() != null && !pm.getPmIncludeExcludeResourceContexts().isEmpty()) {
+			
+			List<Map<String, Object>> props = new ArrayList<>();
+			for(PMIncludeExcludeResourceContext includeExcludeProps :pm.getPmIncludeExcludeResourceContexts()) {
+				includeExcludeProps.setPmId(pm.getId());
+				Map<String, Object> map = FieldUtil.getAsProperties(includeExcludeProps);
+				props.add(map);
+			}
+			
+			addPMIncludeExclude(props);
+		}
+	}
+	
+	public static void addIncludeExcludePropsForTask(TaskTemplate taskTemplate) throws Exception {
+		
+		if(taskTemplate.getPmIncludeExcludeResourceContexts() != null && !taskTemplate.getPmIncludeExcludeResourceContexts().isEmpty()) {
+			
+			List<Map<String, Object>> props = new ArrayList<>();
+			for(PMIncludeExcludeResourceContext includeExcludeProps :taskTemplate.getPmIncludeExcludeResourceContexts()) {
+				includeExcludeProps.setTaskTemplateId(taskTemplate.getId());
+				Map<String, Object> map = FieldUtil.getAsProperties(includeExcludeProps);
+				props.add(map);
+			}
+			addPMIncludeExclude(props);
+		}
+	}
+	
+	private static void addPMIncludeExclude(List<Map<String, Object>> props)  throws Exception {
+		FacilioModule includeExcludeModule = ModuleFactory.getPMIncludeExcludeResourceModule();
+		
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(includeExcludeModule.getTableName())
+				.fields(FieldFactory.getPMIncludeExcludeResourceFields())
+				.addRecords(props);
+
+		insertBuilder.save();
+	}
+
 	public static long addNewWorkOrderTemplate(WorkorderTemplate template, Type woType, Type taskType, Type sectionType) throws Exception {
 		addDefaultProps(template);
 		template.setType(woType);

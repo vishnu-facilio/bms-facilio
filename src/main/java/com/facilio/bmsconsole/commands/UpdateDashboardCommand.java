@@ -50,12 +50,10 @@ public class UpdateDashboardCommand implements Command {
 				for (int i = 0; i < widgets.size(); i++) {
 					
 					DashboardWidgetContext widget = widgets.get(i);
-					System.out.println("22222 id -- "+widget.getId() +" "+ widget.getWidgetName() +" "+widget.getType());
 					widgetMapping.put(widget.getId(), true);
 					
 					if(widget.getId() <= 0) {
 						
-						System.out.println("111111 id -- "+widget.getId() +" "+ widget.getWidgetName() +" "+widget.getType() +" "+ dashboard.getId());
 						
 						Chain addWidgetChain = FacilioChainFactory.getAddWidgetChain();
 
@@ -66,7 +64,6 @@ public class UpdateDashboardCommand implements Command {
 						addWidgetChain.execute(context);
 						
 						widget = (DashboardWidgetContext) context.get(FacilioConstants.ContextNames.WIDGET);
-						System.out.println(" ssss -- "+widget.getId());
 					}
 				}
 			}
@@ -89,7 +86,6 @@ public class UpdateDashboardCommand implements Command {
 
 					Map<String, Object> props1 = FieldUtil.getAsProperties(updatedWidgets.get(i));
 					
-					System.out.println(" dashboard update props --- "+props1);
 					updateBuilder.update(props1);
 					
 					if(updatedWidgets.get(i).getType().equals(DashboardWidgetContext.WidgetType.STATIC.getValue())) {

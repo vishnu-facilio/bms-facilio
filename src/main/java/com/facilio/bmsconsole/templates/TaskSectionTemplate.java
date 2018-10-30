@@ -7,6 +7,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
+import com.facilio.bmsconsole.context.PMIncludeExcludeResourceContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -16,6 +17,15 @@ public class TaskSectionTemplate extends Template {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	List<PMIncludeExcludeResourceContext> pmIncludeExcludeResourceContexts;
+	
+	public List<PMIncludeExcludeResourceContext> getPmIncludeExcludeResourceContexts() {
+		return pmIncludeExcludeResourceContexts;
+	}
+	public void setPmIncludeExcludeResourceContexts(List<PMIncludeExcludeResourceContext> pmIncludeExcludeResourceContexts) {
+		this.pmIncludeExcludeResourceContexts = pmIncludeExcludeResourceContexts;
+	}
 	private Boolean isEditable;
 	public Boolean getIsEditable() {
 		return isEditable;

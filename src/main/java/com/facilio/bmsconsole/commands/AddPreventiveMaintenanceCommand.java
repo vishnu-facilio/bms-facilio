@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -35,6 +36,7 @@ public class AddPreventiveMaintenanceCommand implements Command {
 		builder.save();
 		long id = (long) pmProps.get("id");
 		pm.setId(id);
+		TemplateAPI.addIncludeExcludePropsForPM(pm);
 		context.put(FacilioConstants.ContextNames.PARENT_ID, id);
 		context.put(FacilioConstants.ContextNames.RECORD_ID, id);
 		return false;

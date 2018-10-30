@@ -3985,9 +3985,8 @@ public class FieldFactory {
 		fields.add(getField("isEditable", "IS_EDITABLE", module, FieldType.BOOLEAN));
 		fields.add(getField("parentWOTemplateId", "PARENT_WO_TEMPLATE_ID", module, FieldType.LOOKUP));
 		fields.add(getField("sequenceNumber", "SEQUENCE_NUMBER", module, FieldType.NUMBER));
-
-		fields.add(getField("assetCategoryId", "SPACE_CATEGORY_ID", module, FieldType.LOOKUP));
-		fields.add(getField("spaceCategoryId", "ASSET_CATEGORY_ID", module, FieldType.LOOKUP));
+		fields.add(getField("spaceCategoryId", "SPACE_CATEGORY_ID", module, FieldType.LOOKUP));
+		fields.add(getField("assetCategoryId", "ASSET_CATEGORY_ID", module, FieldType.LOOKUP));
 		fields.add(getField("assignmentType", "ASSIGNMENT_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("inputType", "INPUT_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("readingFieldId", "READING_ID", module, FieldType.LOOKUP));
