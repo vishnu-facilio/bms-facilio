@@ -83,6 +83,7 @@ public class FieldFactory {
 			workOrderFieldsInclude.add("sourceType");
 			workOrderFieldsInclude.add("status");
 			workOrderFieldsInclude.add("type");
+			workOrderFieldsInclude.add("sendForApproval");
 		}
 		public static List<String> energyFieldsInclude = new ArrayList<String>();
 		static {
@@ -986,6 +987,7 @@ public class FieldFactory {
 		fields.add(getField("approvalButton", "APPROVAL_BUTTON", module, FieldType.STRING));
 		fields.add(getField("rejectionButton", "REJECTION_BUTTON", module, FieldType.STRING));
 		fields.add(getField("allApprovalRequired", "ALL_APPROVAL_REQUIRED", module, FieldType.BOOLEAN));
+		fields.add(getField("approvalOrder", "APPROVAL_ORDER", module, FieldType.NUMBER));
 		
 		return fields;
 	}

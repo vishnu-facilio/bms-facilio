@@ -20,12 +20,11 @@ public class ConstructApprovalRuleCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		ApprovalRuleContext rule = (ApprovalRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
-		
 		if (rule.getApprovers() == null || rule.getApprovers().isEmpty()) {
 			throw new IllegalArgumentException("Atleast one approver is required for for adding Approval rule");
 		}
-		
-		if (rule.getApprovers().size() > 1 && rule.getAllApprovalRequired()) {
+		context.put(FacilioConstants.ContextNames.APPROVER_LIST, rule.getApprovers());
+		if (rule.getApprovers().size() > 1 && rule.isAllApprovalRequired()) {
 			if (rule.getApprovalOrderEnum() == null) {
 				throw new IllegalArgumentException("Approval Order is mandatory when everyone's approval is required");
 			}
@@ -47,12 +46,14 @@ public class ConstructApprovalRuleCommand implements Command {
 		List<ApproverContext> approvers = rule.getApprovers();
 		List<ActionContext> approvalActions = rule.getApprovalActions();
 		ApprovalRuleContext currentRule = null;
+		int i = 1;
 		for (ApproverContext approver : approvers) {
 			if (currentRule == null) {
 				currentRule = rule;
 			}
 			else {
 				ApprovalRuleContext childRule = new ApprovalRuleContext();
+				childRule.setName(rule.getName()+"_Child_Approval_Rule_"+(i++));
 				childRule.setRuleType(RuleType.CHILD_APPROVAL_RULE);
 				currentRule.setApprovalRule(childRule);
 				currentRule = childRule;
@@ -65,10 +66,10 @@ public class ConstructApprovalRuleCommand implements Command {
 			currentRule.setRejectionForm(rule.getRejectionForm());
 		}
 		currentRule.setApprovalActions(approvalActions);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, rule.getActions());
 	}
 
 	private void defaultConstruction (ApprovalRuleContext rule, FacilioContext context) throws Exception {
-		
 		List<ActionContext> actions = new ArrayList<>();
 		for (ApproverContext approver : rule.getApprovers()) {
 			if (approver.getActions() != null) {

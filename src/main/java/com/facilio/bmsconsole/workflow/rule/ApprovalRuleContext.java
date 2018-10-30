@@ -162,6 +162,9 @@ public class ApprovalRuleContext extends WorkflowRuleContext {
 	public void setAllApprovalRequired(Boolean allApprovalRequired) {
 		this.allApprovalRequired = allApprovalRequired;
 	}
+	public void setAllApprovalRequired(boolean allApprovalRequired) {
+		this.allApprovalRequired = allApprovalRequired;
+	}
 	public boolean isAllApprovalRequired() {
 		if (allApprovalRequired != null) {
 			return allApprovalRequired.booleanValue();
