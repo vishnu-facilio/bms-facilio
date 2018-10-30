@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,9 +19,13 @@ import com.facilio.bmsconsole.context.AnalyticsAnomalyConfigContext;
 import com.facilio.bmsconsole.context.AnalyticsAnomalyContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.TemperatureContext;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.AnomalySchedulerUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.fs.S3FileStore;
+import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -139,7 +144,13 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 	    			}else {
 	    				s3EnergyFileUrl = S3FileStore.getURL(bucket, filePath + File.separator + energyBaseFileName, new File(energyAbsoluteFilePath));
 	    			}
+
+	    			long createdTime = System.currentTimeMillis();
+	    			String createdDate = DateTimeUtil.getFormattedTime(createdTime,"yyyy-MM-dd");
 	    			
+	    			s3URLInsertRow(meterID,  orgID, createdDate, createdTime, 0L, s3EnergyFileUrl, 1);
+	    			s3URLInsertRow(meterID,  orgID, createdDate, createdTime, 1L, s3WeatherFileUrl, 1);
+
 	    			doRefreshAnomalyModel(meterID, orgID, s3EnergyFileUrl, s3WeatherFileUrl,meterConfigContext);
 	    			
 	    			try {
@@ -215,6 +226,17 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 
 		temperatureWriter.write(temperatureInfo);
 		temperatureWriter.close();
+	}
+
+	private void s3URLInsertRow(long meterId, long orgID, String createdDate, long createdTime, long fileType, String s3URL, int isValid)
+			throws Exception {
+        List<Map<String, Object>> props = new ArrayList<>();
+        S3URLInsertRow s3URLrow= new S3URLInsertRow (meterId, orgID, createdDate, createdTime, fileType, s3URL, isValid);  	 
+        props.add(FieldUtil.getAsProperties(s3URLrow));
+        GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
+                    .table(ModuleFactory.getAnalyticsAnomalyS3URLModule().getTableName())
+                    .fields(FieldFactory.getAnomalyS3URLfileds()).addRecords(props);
+        insertRecordBuilder.save();
 	}
 
 	class BuildAnomalyModelPostData {

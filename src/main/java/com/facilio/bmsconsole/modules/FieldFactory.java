@@ -4276,6 +4276,22 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	public static List<FacilioField> getAnomalyS3URLfileds() {
+		FacilioModule module = ModuleFactory.getAnalyticsAnomalyS3URLModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getField("meterId", "METER_ID", module, FieldType.NUMBER));
+		fields.add(getOrgIdField(module));
+		//fields.add(getOrgIdField(module));
+		//fields.add(getField("orgId", "ORG_ID", module, FieldType.NUMBER));
+		fields.add(getField("createdDate", "CREATED_DATE", module, FieldType.STRING));
+		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
+		fields.add(getField("s3URL", "S3_URL", module, FieldType.STRING));
+		fields.add(getField("isValid", "IS_VALID", module, FieldType.NUMBER));
+		fields.add(getField("fileType", "FILE_TYPE", module,FieldType.NUMBER));
+		
+		return fields;
+	}
 
 	public static List<FacilioField> getImportProcessFields() {
 		FacilioModule module = ModuleFactory.getImportProcessModule();

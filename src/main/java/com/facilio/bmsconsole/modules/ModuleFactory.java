@@ -1169,7 +1169,16 @@ public class ModuleFactory {
 
 		return analyticsAnomalyIDListJob;
 	}
-
+	
+	public static FacilioModule getAnalyticsAnomalyS3URLModule() {
+		FacilioModule analyticsAnomalyS3URL = new FacilioModule();
+		analyticsAnomalyS3URL.setName("s3URLList");
+		analyticsAnomalyS3URL.setDisplayName("s3 URL List");
+		analyticsAnomalyS3URL.setTableName("Anomaly_S3_URL_Data");
+		
+		return analyticsAnomalyS3URL;
+	}
+	
 	public static FacilioModule getDerivationsModule() {
 		FacilioModule taskSection = new FacilioModule();
 		taskSection.setName("derivations");
