@@ -523,15 +523,6 @@ public class WorkOrderAction extends FacilioAction {
 	
 	public String getScopeFilteredValuesForPM() throws Exception {
 		
-		if(buildingId > 0) {															// only building selected case
-			List<BaseSpaceContext> floors = SpaceAPI.getBuildingFloors(buildingId);
-			if(floors != null && !floors.isEmpty()) {
-				hasFloor = true;
-			}
-			assetCategoryIds = AssetsAPI.getAssetCategoryIds(buildingId);
-			spaceCategoryIds = SpaceAPI.getSpaceCategoryIds(buildingId);
-		}
-		
 		if(assignmentType != null) {
 			
 			if(assignmentType.equals(PMAssignmentType.ALL_FLOORS)) {
@@ -589,6 +580,14 @@ public class WorkOrderAction extends FacilioAction {
 				
 				assetCategoryIds = AssetsAPI.getSubCategoryIds(assetCategoryId);
 			}
+		}
+		else if(buildingId > 0) {															// only building selected case
+			List<BaseSpaceContext> floors = SpaceAPI.getBuildingFloors(buildingId);
+			if(floors != null && !floors.isEmpty()) {
+				hasFloor = true;
+			}
+			assetCategoryIds = AssetsAPI.getAssetCategoryIds(buildingId);
+			spaceCategoryIds = SpaceAPI.getSpaceCategoryIds(buildingId);
 		}
 		return SUCCESS;
 	}
