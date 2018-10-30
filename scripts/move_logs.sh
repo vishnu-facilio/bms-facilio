@@ -15,7 +15,7 @@ do
     if [ "$file" != "catalina.out" -a "$file" != "serverlog" -a "$file" != "resultset" -a "$file" != "l4jaccesslog" ]; then
         dateString=`echo $file | cut -d '.' -f 2 | cut -d '_' -f 1`
         if [ $dateString != $today ]; then
-            sudo aws s3 mv $APP_HOME/logs/$file s3://$logsBucket/$servername/$logDir/$ipAddress/
+            sudo aws s3 mv $APP_HOME/logs/$file s3://$logsBucket/$logDir/$servername/$ipAddress/
         fi
     fi
 done
