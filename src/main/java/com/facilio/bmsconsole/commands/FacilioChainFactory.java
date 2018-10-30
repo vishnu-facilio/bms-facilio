@@ -1877,7 +1877,7 @@ public class FacilioChainFactory {
 	
 	public static Chain executeWorkflowsForReadingChain() {
 		Chain c = new ChainBase();
-		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.READING_RULE, RuleType.PM_READING_RULE, RuleType.VALIDATION_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(false, RuleType.READING_RULE, RuleType.PM_READING_RULE, RuleType.VALIDATION_RULE));
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
