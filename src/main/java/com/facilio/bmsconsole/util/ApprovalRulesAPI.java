@@ -236,7 +236,18 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 		if (!workflowRuleIds.isEmpty()) {
 			deleteWorkFlowRules(workflowRuleIds);
 		}
-		FormsAPI.deleteForms(Arrays.asList(rule.getApprovalFormId(), rule.getRejectionFormId()));
+		
+		List<Long> formIds = new ArrayList<>();
+		if (rule.getApprovalFormId() != -1) {
+			formIds.add(rule.getApprovalFormId());
+		}
+		if(rule.getRejectionFormId() != -1) {
+			formIds.add(rule.getRejectionFormId());
+		}
+		
+		if (!formIds.isEmpty()) {
+			FormsAPI.deleteForms(formIds);
+		}
 	}
 	
 	protected static ApprovalRuleContext constructApprovalRuleFromProps(Map<String, Object> prop, ModuleBean modBean) throws Exception {
