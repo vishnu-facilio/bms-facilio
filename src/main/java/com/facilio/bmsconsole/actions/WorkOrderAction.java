@@ -472,10 +472,6 @@ public class WorkOrderAction extends FacilioAction {
 		return assignmentType;
 	}
 
-	public void setAssignmentType(PMAssignmentType assignmentType) {
-		this.assignmentType = assignmentType;
-	}
-	
 	public void setAssignmentType(int assignmentType) {
 		this.assignmentType = PMAssignmentType.valueOf(assignmentType);
 	}
@@ -484,10 +480,6 @@ public class WorkOrderAction extends FacilioAction {
 		return parentAssignmentType;
 	}
 
-	public void setParentAssignmentType(PMAssignmentType parentAssignmentType) {
-		this.parentAssignmentType = parentAssignmentType;
-	}
-	
 	public void setParentAssignmentType(int assignmentType) {
 		this.parentAssignmentType = PMAssignmentType.valueOf(assignmentType);
 	}
