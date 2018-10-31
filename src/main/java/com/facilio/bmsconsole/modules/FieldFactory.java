@@ -85,6 +85,17 @@ public class FieldFactory {
 			workOrderFieldsInclude.add("type");
 			workOrderFieldsInclude.add("sendForApproval");
 		}
+		public static List<String> approvalFormFields = new ArrayList<String>();
+		static {
+			approvalFormFields.add("assignedTo");
+			approvalFormFields.add("assignmentGroup");
+			approvalFormFields.add("category");
+			approvalFormFields.add("priority");
+			approvalFormFields.add("requester");
+			approvalFormFields.add("resource");
+			approvalFormFields.add("comment");
+			approvalFormFields.add("dueDate");
+		}
 		public static List<String> energyFieldsInclude = new ArrayList<String>();
 		static {
 			energyFieldsInclude.add("id");

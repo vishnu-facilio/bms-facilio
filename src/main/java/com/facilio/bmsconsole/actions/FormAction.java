@@ -1,15 +1,21 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 
 public class FormAction extends FacilioAction {
 	
@@ -99,6 +105,20 @@ public class FormAction extends FacilioAction {
 	
 	public void setResult(String result) {
 		this.res = result;
+	}
+	
+	public String loadFormFields() throws Exception {
+		List<FacilioField> allFields = new ArrayList();
+		List<FacilioField> fields = new ArrayList();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");		
+		allFields.addAll(modBean.getAllFields("workorder"));
+		for(FacilioField fieldObject:allFields) {
+			if(FieldFactory.Fields.approvalFormFields.contains(fieldObject.getName()) || !fieldObject.isDefault()) {
+				fields.add(fieldObject);
+			}
+		}
+		setResult(FacilioConstants.ContextNames.FORM_FIELDS, fields);
+		return SUCCESS;
 	}
 	
 	public String editForm() throws Exception {
