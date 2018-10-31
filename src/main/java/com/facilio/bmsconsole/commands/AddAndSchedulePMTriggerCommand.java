@@ -96,10 +96,12 @@ public class AddAndSchedulePMTriggerCommand implements Command {
 			
 			List<PMTriggerResourceContext> pmTriggerResources = pm.getTriggers().get(i).getPmTriggerResourceContexts();
 			
-			for(PMTriggerResourceContext pmTriggerResource :pmTriggerResources) {
-				pmTriggerResource.setPmId(pm.getId());
-				pmTriggerResource.setTriggerId((long) triggerProp.get("id"));
-				insertBuilder1.addRecord(FieldUtil.getAsProperties(pmTriggerResource));
+			if(pmTriggerResources != null) {
+				for(PMTriggerResourceContext pmTriggerResource :pmTriggerResources) {
+					pmTriggerResource.setPmId(pm.getId());
+					pmTriggerResource.setTriggerId((long) triggerProp.get("id"));
+					insertBuilder1.addRecord(FieldUtil.getAsProperties(pmTriggerResource));
+				}
 			}
 		}
 		insertBuilder1.save();
