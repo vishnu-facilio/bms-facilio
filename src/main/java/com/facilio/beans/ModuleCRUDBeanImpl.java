@@ -106,6 +106,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, attachedFiles);
 		 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, attachedFileNames);
 		 		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, attachedFilesContentType);
+		 		context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
 			}
 			
 			Command addWorkOrderRequest = FacilioChainFactory.getAddWorkOrderRequestChain();
@@ -127,6 +128,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, attachedFiles);
 		 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, attachedFileNames);
 		 		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, attachedFilesContentType);
+		 		context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
 			}
 			
 			Command addWorkOrder = TransactionChainFactory.getAddWorkOrderChain();
