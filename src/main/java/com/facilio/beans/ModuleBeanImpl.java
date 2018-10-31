@@ -522,7 +522,6 @@ public class ModuleBeanImpl implements ModuleBean {
 		}
 		
 		FacilioModule module = getMod(moduleName);
-		System.out.println(">>>>>><<<<<<<"+ module);
 		Map<Long, FacilioModule> moduleMap = splitModules(module);
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getSelectFieldFields())
@@ -812,7 +811,6 @@ public class ModuleBeanImpl implements ModuleBean {
 				rs = pstmt.getGeneratedKeys();
 				rs.next();
 				long moduleId = rs.getLong(1);
-				System.out.println("Added Custom Module with ID : "+moduleId);
 				return moduleId;
 			}
 		}
@@ -861,7 +859,6 @@ public class ModuleBeanImpl implements ModuleBean {
 		//FacilioModule fm = getModule("ticketstatus");
 		String nextstatequery =" select STATE_ID,group_concat(concat('{\"Activity\":\"',ACTIVITY_NAME,'\", \"state\":\"',NEXT_STATE_ID,'\", \"StatusDesc\":\" ',STATUS,'\"}')) from TicketStateFlow,TicketStatus  where TicketStatus.ID=NEXT_STATE_ID and TicketStatus.ORGID=" + getOrgId() +" group by STATE_ID ";
 
-		System.out.println(nextstatequery);
 		try(java.sql.Connection con = FacilioConnectionPool.getInstance().getConnection();
 				Statement stmt = con.createStatement();
 				ResultSet rs = stmt.executeQuery(nextstatequery);) {
@@ -871,14 +868,11 @@ public class ModuleBeanImpl implements ModuleBean {
 			{
 				String oldstate = rs.getString(1);
 				String nextstates = rs.getString(2);
-				System.out.println("["+ nextstates +"]");
 				JSONArray nextstats =(JSONArray) new JSONParser().parse("["+ nextstates +"]");
 			
-				//System.out.println("For  "+oldstate+"\n"+stateflow);
 	
 				stateflow.put(oldstate, nextstats);
 			}
-			//System.out.println("The stateflow for ticket "+stateflow);
 			return stateflow;
 		}
 		
@@ -898,7 +892,6 @@ public class ModuleBeanImpl implements ModuleBean {
 		}
 		
 		FacilioModule module = getMod(moduleName);
-		System.out.println(">>>>>><<<<<<<"+ module);
 		Map<Long, FacilioModule> moduleMap = splitModules(module);
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getSelectFieldFields())

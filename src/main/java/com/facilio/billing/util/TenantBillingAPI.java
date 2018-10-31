@@ -65,7 +65,6 @@ public class TenantBillingAPI {
 				.table("Tenant")
 				.andCustomWhere("Tenant.ID = ?", tenantId);
 		List<Map<String, Object>> pmProps = selectRecordBuilder.get();
-		System.out.println(">>>>>>>>>>>>> pmProps :"+pmProps);
 		return pmProps;
 		
 	}
