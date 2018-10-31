@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.workflow.rule;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +26,7 @@ import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
@@ -195,6 +197,7 @@ public class ApprovalRuleContext extends WorkflowRuleContext {
 			throws Exception {
 		// TODO Auto-generated method stub
 		updateRecordApprovalState(record);
+		deletePreviousApprovalSteps(((ModuleBaseWithCustomFields) record).getId());
 		super.executeTrueActions(record, context, placeHolders);
 	}
 	
@@ -218,6 +221,22 @@ public class ApprovalRuleContext extends WorkflowRuleContext {
 																			.andCondition(CriteriaAPI.getIdCondition(((ModuleBaseWithCustomFields) record).getId(), event.getModule()))
 																			;
 		updateBuilder.update(prop);
+	}
+	
+	private int deletePreviousApprovalSteps(long id) throws Exception {
+		FacilioModule module = ModuleFactory.getApprovalStepsModule();
+		List<FacilioField> fields = FieldFactory.getApprovalStepsFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioField ruleIdField = fieldMap.get("ruleId");
+		FacilioField recordIdField = fieldMap.get("recordId");
+		
+		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCondition(ruleIdField, String.valueOf(getId()), PickListOperators.IS))
+														.andCondition(CriteriaAPI.getCondition(recordIdField, String.valueOf(id), PickListOperators.IS))
+														;
+		return deleteBuilder.delete();
 	}
 
 	public static enum ApprovalOrder {

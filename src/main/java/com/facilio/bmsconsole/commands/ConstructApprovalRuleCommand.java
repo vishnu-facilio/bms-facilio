@@ -64,6 +64,8 @@ public class ConstructApprovalRuleCommand implements Command {
 			currentRule.setRejectionActions(rule.getRejectionActions());
 			currentRule.setApprovalForm(rule.getApprovalForm());
 			currentRule.setRejectionForm(rule.getRejectionForm());
+			currentRule.setApprovalButton(rule.getApprovalButton());
+			currentRule.setRejectionButton(rule.getRejectionButton());
 		}
 		currentRule.setApprovalActions(approvalActions);
 		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, rule.getActions());
