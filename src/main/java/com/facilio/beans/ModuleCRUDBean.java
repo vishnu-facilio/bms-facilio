@@ -23,6 +23,8 @@ public interface ModuleCRUDBean {
 	
 	public AlarmContext processAlarm(JSONObject alarmInfo) throws Exception;
 	
+	public Boolean isFeatureEnabled(int license) throws Exception;
+	
 	public int deleteAlarm(List<Long> id) throws Exception;
 	
 	public WorkOrderContext CloseAllWorkOrder() throws Exception;

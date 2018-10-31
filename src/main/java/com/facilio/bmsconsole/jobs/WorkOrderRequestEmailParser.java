@@ -102,8 +102,10 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 		SupportEmailContext supportEmail = getSupportEmail(parser); 
 		
 		if(supportEmail != null) {
+			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", supportEmail.getOrgId());
+			
 			TicketContext ticketContext;
-			if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_APPROVAL)) {
+			if (bean.isFeatureEnabled(AccountUtil.FEATURE_APPROVAL)) {
 				ticketContext = new WorkOrderContext();
 				((WorkOrderContext)ticketContext).setSendForApproval(true);
 			}
@@ -156,7 +158,6 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 			
 			ticketContext.setSourceType(TicketContext.SourceType.EMAIL_REQUEST);
 			
-			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", supportEmail.getOrgId());
 			long requestId;
 			if (ticketContext instanceof WorkOrderContext) {
 				((WorkOrderContext) ticketContext).setRequester(requester);

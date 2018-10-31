@@ -575,4 +575,9 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		return EventRulesAPI.getActiveEventRules();
 	}
 
+	@Override
+	public Boolean isFeatureEnabled(int license) throws Exception {
+		return AccountUtil.isFeatureEnabled(license);
+	}
+
 }
