@@ -3757,6 +3757,7 @@ public class FieldFactory {
 
 		fields.add(getIdField(module));
 		fields.add(getOrgIdField(module));
+		fields.add(getField("name", "NAME", module, FieldType.STRING));
 		fields.add(getField("pmId", "PM_ID", module, FieldType.NUMBER));
 		fields.add(getField("scheduleJson", "SCHEDULE_INFO", module, FieldType.STRING));
 		fields.add(getField("startTime", "START_TIME", module, FieldType.DATE_TIME));

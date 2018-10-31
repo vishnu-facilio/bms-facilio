@@ -5,6 +5,13 @@ public class PMTriggerResourceContext {
 	Long id;
 	Long pmId;
 	Long resourceId;
+	ResourceContext resource;
+	public ResourceContext getResource() {
+		return resource;
+	}
+	public void setResource(ResourceContext resource) {
+		this.resource = resource;
+	}
 	Long triggerId;
 	Long assignedToId;
 	

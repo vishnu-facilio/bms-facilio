@@ -16,6 +16,14 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 public class PMTriggerContext {
 	
+	String name;
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	private long id = -1;
 	public long getId() {
 		return id;

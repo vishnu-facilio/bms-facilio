@@ -75,7 +75,7 @@ public class PreventiveMaintenanceAPI {
 		List<PMJobsContext> pmJobsToBeScheduled = new ArrayList<>();
 		for(PMTriggerContext pmTrigger : pm.getTriggers()) {
 			
-			if(pmTrigger.getTriggerType() == PMTriggerContext.TriggerType.CUSTOM.getVal()) {
+			if(pmTrigger.getTriggerType() == PMTriggerContext.TriggerType.CUSTOM.getVal() && pmTrigger.getPmTriggerResourceContexts() != null) {
 				
 				long startTime = getStartTimeInSecond(pmTrigger.getStartTime());
 				long nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(startTime);
@@ -845,6 +845,10 @@ public class PreventiveMaintenanceAPI {
 			for(Map<String, Object> prop :props) {
 				
 				PMTriggerResourceContext pmTriggerResourceContext = FieldUtil.getAsBeanFromMap(prop, PMTriggerResourceContext.class);
+				
+				if(pmTriggerResourceContext.getResourceId() != null && pmTriggerResourceContext.getResourceId() > 0) {
+					pmTriggerResourceContext.setResource(ResourceAPI.getResource(pmTriggerResourceContext.getResourceId()));
+				}
 				res.add(pmTriggerResourceContext);
 			}
 		}
