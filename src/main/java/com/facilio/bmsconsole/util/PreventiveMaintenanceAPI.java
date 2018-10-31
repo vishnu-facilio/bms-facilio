@@ -815,6 +815,8 @@ public class PreventiveMaintenanceAPI {
 		Map<Long, List<PMTriggerContext>> pmTriggers = new HashMap<>();
 		for(Map<String, Object> triggerProp : triggerProps) {
 			PMTriggerContext trigger = FieldUtil.getAsBeanFromMap(triggerProp, PMTriggerContext.class);
+			
+			trigger.setPmTriggerResourceContexts(getPMTriggerResources(trigger.getId()));
 			List<PMTriggerContext> triggerList = pmTriggers.get(trigger.getPmId());
 			if(triggerList == null) {
 				triggerList = new ArrayList<>();
@@ -824,6 +826,29 @@ public class PreventiveMaintenanceAPI {
 		}
 		
 		return pmTriggers;
+	}
+	
+	public static List<PMTriggerResourceContext> getPMTriggerResources(Long triggerId) throws Exception {
+		
+		FacilioModule module = ModuleFactory.getPMTriggersResourceModule();
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getPMTriggersResourceFields())
+				.table(module.getTableName())
+				.andCustomWhere("TRIGGER_ID = ?",triggerId);
+				;
+				
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		List<PMTriggerResourceContext> res = new ArrayList<>();
+		if(props != null && !props.isEmpty()) {
+			for(Map<String, Object> prop :props) {
+				
+				PMTriggerResourceContext pmTriggerResourceContext = FieldUtil.getAsBeanFromMap(prop, PMTriggerResourceContext.class);
+				res.add(pmTriggerResourceContext);
+			}
+		}
+		return res;
 	}
 	
 	public static List<PMTriggerContext> getPMTriggers(PreventiveMaintenance pm) throws Exception {
