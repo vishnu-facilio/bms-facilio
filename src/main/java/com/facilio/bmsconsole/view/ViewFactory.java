@@ -1720,6 +1720,23 @@ public class ViewFactory {
 		
 		subViewsMap.put("workorder-myopen", subViews);
 		
+		// My SubViews
+		subViews = new ArrayList<>();
+		
+		subviewDetail = new HashMap<>(); 
+		subviewDetail.put("name", "overdue");
+		subviewDetail.put("displayName", "Overdue");
+		subviewDetail.put("criteria", getCriteriaForView("overdue", workorderModule));
+		subViews.add(subviewDetail);
+		subviewDetail = new HashMap<>(); 
+		subviewDetail.put("name", "duetoday");
+		subviewDetail.put("displayName", "Due Today");
+		subviewDetail.put("criteria", getCriteriaForView("duetoday", workorderModule));
+		subViews.add(subviewDetail);
+		subViews.add(getAllSubViewDetail(workorderModule));
+		
+		subViewsMap.put("workorder-open", subViews);
+		
 		// Resolved
 		subViews = new ArrayList<>();
 		
