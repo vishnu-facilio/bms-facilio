@@ -15,8 +15,13 @@ do
     if [ "$file" != "catalina.out" -a "$file" != "serverlog" -a "$file" != "resultset" -a "$file" != "l4jaccesslog" ]; then
         dateString=`echo $file | cut -d '.' -f 2 | cut -d '_' -f 1`
         if [ $dateString != $today ]; then
-            gzip $file
-            sudo aws s3 mv $APP_HOME/logs/$file".gz" s3://$logsBucket/$logDir/$servername/$ipAddress/
+            gzip $APP_HOME/logs/$file
+            if [ -f $APP_HOME/logs/$file ]; then
+                sudo aws s3 mv $APP_HOME/logs/$file s3://$logsBucket/$logDir/$servername/$ipAddress/
+            fi
+            if [ -f $APP_HOME/logs/$file".gz" ]; then
+                sudo aws s3 mv $APP_HOME/logs/$file".gz" s3://$logsBucket/$logDir/$servername/$ipAddress/
+            fi
         fi
     fi
 done
