@@ -53,7 +53,7 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 			}
 			else {
 				updateEventAndCriteria(rule.getApprovalRule(), rule, true, modBean);
-				rule.setApprovalRuleId(addWorkflowRule(rule.getApprovalRule(), rule.getApprovalActions()));
+				rule.setApprovalRuleId(addWorkflowRule(rule.getApprovalRule(), rule.getApprovalRule().getActions()));
 			}
 		}
 		if (rule.getApprovalFormId() == -1) {
@@ -76,7 +76,7 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 			}
 			else {
 				updateEventAndCriteria(rule.getRejectionRule(), rule, false, modBean);
-				rule.setRejectionRuleId(addWorkflowRule(rule.getRejectionRule(), rule.getRejectionActions()));
+				rule.setRejectionRuleId(addWorkflowRule(rule.getRejectionRule(), rule.getRejectionRule().getActions()));
 			}
 		}
 		if (rule.getRejectionFormId() == -1) {
