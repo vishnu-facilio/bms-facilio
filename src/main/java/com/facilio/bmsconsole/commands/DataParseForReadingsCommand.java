@@ -68,6 +68,7 @@ public class DataParseForReadingsCommand implements Command {
 		List<ReadingContext> readingContexts = new ArrayList<>();
 		HashMap<Integer, HashMap<String,Object>> nullUniqueFields = new HashMap<>();
 		HashMap<Integer, HashMap<String, Object>> nullResources = new HashMap<>();
+		HashMap<Integer, HashMap<String, Object>> duplicateEntries = new HashMap<>();
 		JSONObject templateMeta = importTemplateContext.getTemplateMetaJSON();
 		JSONObject dateFormats = (JSONObject) templateMeta.get(ImportAPI.ImportProcessConstants.DATE_FORMATS);
 		fieldMapParsing(fieldMapping);
@@ -191,12 +192,10 @@ public class DataParseForReadingsCommand implements Command {
 					List<String> fields  = new ArrayList(groupedFields.get(module));
 					
 					HashMap<String,Object> props = new HashMap<>();
-					
 					JSONObject meta = importTemplateContext.getModuleJSON();
 					if(!meta.isEmpty()) {
 						Long parentId =(Long) meta.get(ImportAPI.ImportProcessConstants.PARENT_ID_FIELD);
 						if(parentId == null) {
-							System.out.println(importTemplateContext.getModuleMapping());
 							parentId = getAssetByUniqueness(colVal, importTemplateContext.getModuleMapping().get("subModule"), uniqueMapping);
 							// check for null in resources
 							if(parentId == null) {
@@ -229,8 +228,14 @@ public class DataParseForReadingsCommand implements Command {
 						try {
 							if(facilioField.getDataTypeEnum().equals(FieldType.DATE_TIME) || facilioField.getDataTypeEnum().equals(FieldType.DATE)) {
 								if(!(cellValue instanceof Long)) {
-									Instant dateInstant = DateTimeUtil.getTimeInstant(dateFormats.get(fieldMapping.get(key)).toString(),cellValue.toString());
-									long millis = dateInstant.toEpochMilli();
+									long millis = 0;
+									if(dateFormats.get(fieldMapping.get(key)).equals(ImportAPI.ImportProcessConstants.TIME_STAMP_STRING)) {
+										millis = Long.parseLong(cellValue.toString());
+									}
+									else {
+										Instant dateInstant = DateTimeUtil.getTimeInstant(dateFormats.get(fieldMapping.get(key)).toString(),cellValue.toString());
+										millis = dateInstant.toEpochMilli();
+									}
 									if(!props.containsKey(field)) {
 										props.put(field, millis);
 									}
@@ -251,10 +256,38 @@ public class DataParseForReadingsCommand implements Command {
 					}
 					}
 				});
+//					if(uniqueMapping.isEmpty()) {
+//						for(ReadingContext readingContext: readingContexts) {
+//							if(readingContext.getData().get(ImportAPI.ImportProcessConstants.T_TIME) == props.get(ImportAPI.ImportProcessConstants.T_TIME)) {
+//								colVal.add()
+//								duplicateEntries.put(row_no, colVal);
+//								break;
+//							}
+//							else {
+//								LOGGER.severe("props ---" + props);
+//								ReadingContext NonDuplicateReadingContext = FieldUtil.getAsBeanFromMap(props, ReadingContext.class);
+//								readingContexts.add(NonDuplicateReadingContext );
+//								groupedContext.put(module, NonDuplicateReadingContext );
+//							}
+//						}
+//					}
+//					else {
+//						for(ReadingContext readingContext: readingContexts) {
+//							boolean value = true;
+//							for(String uniqueField: uniqueMapping.keySet()) {
+//								value = value & readingContext.getData().get(uniqueField).equals(props.get(uniqueField));
+//							}
+//							value = value & readingContext.getData().get(ImportAPI.ImportProcessConstants.T_TIME).equals(props.get(ImportAPI.ImportProcessConstants.T_TIME));
+//							if(value) {
+//								duplicateEntries.put(row_no,colVal);
+//								break;
+//							}
+//						}
+//					}
 					LOGGER.severe("props ---" + props);
-					ReadingContext readingContext = FieldUtil.getAsBeanFromMap(props, ReadingContext.class);
-					readingContexts.add(readingContext);
-					groupedContext.put(module, readingContext);
+					ReadingContext NonDuplicateReadingContext = FieldUtil.getAsBeanFromMap(props, ReadingContext.class);
+					readingContexts.add(NonDuplicateReadingContext );
+					groupedContext.put(module, NonDuplicateReadingContext );
 				}
 			}
 		}
