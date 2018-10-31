@@ -665,7 +665,6 @@ public class UserBeanImpl implements UserBean {
 	public boolean updateUser(long ouid, User user) throws Exception {
 		
 		boolean userUpdateStatus = updateUserEntry(user);
-		System.out.println("User status ----->"+ userUpdateStatus) ;
 		if (userUpdateStatus) {
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 					.table(AccountConstants.getOrgUserModule().getTableName())
@@ -990,7 +989,6 @@ public class UserBeanImpl implements UserBean {
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			User user =  createUserFromProps(props.get(0), true, true);
-		System.out.println(user.getEmail()+"$$$$$$$$$$$$$$$$$$$$$"+ user.getMobile());
 			return user;
 		}
 		
@@ -1102,7 +1100,6 @@ public class UserBeanImpl implements UserBean {
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			System.out.println(props);
 			return createUserFromProps(props.get(0), true, false);
 		}
 		

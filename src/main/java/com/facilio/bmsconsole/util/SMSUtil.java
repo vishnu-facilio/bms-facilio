@@ -13,6 +13,8 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.google.i18n.phonenumbers.NumberParseException;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.twilio.sdk.Twilio;
 import com.twilio.sdk.type.PhoneNumber;
 
@@ -35,7 +37,11 @@ public class SMSUtil {
 		
 		String message = (String) obj.get("message");
 		String to = (String) obj.get("to");
-		
+		int countrycode = getISDCode(to);
+		if(countrycode == 91)
+		{
+			//TODO send SMS using India vendor
+		}
 		com.twilio.sdk.resource.api.v2010.account.Message tmessage = com.twilio.sdk.resource.api.v2010.account.Message.create(ACCOUNTS_ID,
 		    new com.twilio.sdk.type.PhoneNumber(to),  // To number
 		    new com.twilio.sdk.type.PhoneNumber("+16106248741"),  // From number
@@ -210,11 +216,45 @@ public class SMSUtil {
 	
 	public static void main(String args[])
 	{
-		JSONObject obj = new JSONObject();
+		/*JSONObject obj = new JSONObject();
 		obj.put("to", "919840425388");
 		obj.put("message", "Hello world");
-		sendSMS(obj);
+		sendSMS(obj);*/
+		
+		PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
+		try {
+		    // phone must begin with '+'
+			String phone = "+971565387215";
+		    com.google.i18n.phonenumbers.Phonenumber.PhoneNumber numberProto = phoneUtil.parse(phone, "");
+		    int countryCode = numberProto.getCountryCode();
+		    System.out.println("Hello" + countryCode);
+		} catch (NumberParseException e) {
+		    System.err.println("NumberParseException was thrown: " + e.toString());
+		}
 
 	}
+	
+	private static int  getISDCode(String phone)
+	{
+		/*JSONObject obj = new JSONObject();
+		obj.put("to", "919840425388");
+		obj.put("message", "Hello world");
+		sendSMS(obj);*/
+		
+		PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
+		try {
+		    // phone must begin with '+'
+			//String phone = "+971565387215";
+		    com.google.i18n.phonenumbers.Phonenumber.PhoneNumber numberProto = phoneUtil.parse(phone, "");
+		    int countryCode = numberProto.getCountryCode();
+		    System.out.println("Hello" + countryCode);
+		    return countryCode;
+		} catch (NumberParseException e) {
+		    System.err.println("NumberParseException was thrown: " + e.toString());
+		    return -1;
+		}
+
+	}
+
 	
 }

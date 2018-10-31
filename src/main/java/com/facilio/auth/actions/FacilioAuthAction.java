@@ -621,7 +621,6 @@ public class FacilioAuthAction extends ActionSupport {
         boolean opensignup = portalInfo.isSignup_allowed();  // SIGNUP_ALLOWED
         boolean anydomain_allowedforsignup = portalInfo.is_anyDomain_allowed();
 
-        System.out.println("Is signup allowed for all "+opensignup);
         
         if(!opensignup) {
         	setJsonresponse("message", "Signup not allowed for this portal");
