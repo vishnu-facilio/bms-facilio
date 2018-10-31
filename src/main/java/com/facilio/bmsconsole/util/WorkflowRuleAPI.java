@@ -682,8 +682,8 @@ public class WorkflowRuleAPI {
 				for (FieldChangeFieldContext field : rule.getFields()) {
 					for (UpdateChangeSet changeSet : changeSetList) {
 						if (field.getFieldId() == changeSet.getFieldId() 
-								&& (field.getOldValue() == null || field.getOldValue().toString().equals(changeSet.getOldValue().toString()))
-								&& (field.getNewValue() == null || field.getNewValue().toString().equals(changeSet.getNewValue().toString()))
+								&& (field.getOldValue() == null || ( changeSet.getOldValue() != null && field.getOldValue().toString().equals(changeSet.getOldValue().toString())) )
+								&& (field.getNewValue() == null || ( changeSet.getNewValue() != null &&  field.getNewValue().toString().equals(changeSet.getNewValue().toString())) )
 								) {
 							return true;
 						}
