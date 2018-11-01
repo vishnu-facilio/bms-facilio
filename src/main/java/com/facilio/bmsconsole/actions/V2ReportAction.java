@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.actions;
 
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -37,12 +37,10 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.DashboardUtil;
-import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
-import com.facilio.cards.util.CardType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
@@ -445,6 +443,19 @@ public class V2ReportAction extends FacilioAction {
 		ReadingAlarmContext readingAlarmContext = AlarmAPI.getReadingAlarmContext(alarmId);
 		
 		ReadingRuleContext readingruleContext = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(readingAlarmContext.getRuleId());
+		
+		Map<String, Object> aliasMap = null;
+		if (fields != null) {
+			aliasMap = new HashMap<String, Object>();
+			JSONParser parser = new JSONParser();
+			JSONArray fieldArray = (JSONArray) parser.parse(fields);
+			List<ReadingAnalysisContext> fieldList = FieldUtil.getAsBeanListFromJsonArray(fieldArray, ReadingAnalysisContext.class);
+			for(ReadingAnalysisContext field: fieldList) {
+				if (field.getyAxis() != null) {
+					aliasMap.put(field.getParentId() + "_" + field.getyAxis().getFieldId(), field.getAliases());
+				}
+			}
+		}
 
 		JSONArray dataPoints = new JSONArray();
 		
@@ -494,7 +505,11 @@ public class V2ReportAction extends FacilioAction {
 							}
 							dataPoint.put("type", 1);
 							if(!readingMap.contains(resource.getId() + "_" + readingField.getFieldId())) {
-								readingMap.add(resource.getId() + "_" + readingField.getFieldId());
+								String key = resource.getId() + "_" + readingField.getFieldId();
+								readingMap.add(key);
+								if (aliasMap != null && aliasMap.containsKey(key)) {
+									dataPoint.put("alias", aliasMap.get(key));
+								}
 								dataPoints.add(dataPoint);								
 							}
 						}
@@ -513,6 +528,10 @@ public class V2ReportAction extends FacilioAction {
 				dataPoint.put("yAxis", yAxisJson);
 				
 				dataPoint.put("type", 1);
+				String key = dataPoint.get("parentId") + "_" + yAxisJson.get("fieldId");
+				if (aliasMap != null && aliasMap.containsKey(key)) {
+					dataPoint.put("alias", aliasMap.get(key));
+				}
 				
 				dataPoints.add(dataPoint);
 			}
