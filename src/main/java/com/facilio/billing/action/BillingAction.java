@@ -30,7 +30,6 @@ public class BillingAction extends ActionSupport {
 		handleExcelFileUploadChain.execute(context);
 		ExcelTemplate excelTemplate = (ExcelTemplate) context.get(BillContext.ContextNames.EXCELOBJECT);
 		setExcelTemplate(excelTemplate);
-		System.out.println("##### Generate Template End Request");
 		return SUCCESS;
 	}
 	

@@ -21,6 +21,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.actions.ImportProcessContext;
+import com.facilio.bmsconsole.actions.ImportTemplateContext;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileStore;
@@ -35,6 +36,7 @@ public class WriteSkippedToFileCommand implements Command {
 		
 
 		ImportProcessContext importProcessContext = (ImportProcessContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
+		ImportTemplateContext importTemplateContext = (ImportTemplateContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_TEMPLATE_CONTEXT);
 		HashMap<Integer,HashMap<String,Object>> nullUniqueFields  = (HashMap<Integer,HashMap<String,Object>>) context.get(ImportAPI.ImportProcessConstants.NULL_UNIQUE_FIELDS);
 		HashMap<Integer,HashMap<String,Object>> nullResources  = (HashMap<Integer,HashMap<String,Object>>) context.get(ImportAPI.ImportProcessConstants.NULL_RESOURCES);
 		if(!nullUniqueFields.isEmpty() || !nullResources.isEmpty()) {
@@ -43,10 +45,10 @@ public class WriteSkippedToFileCommand implements Command {
 			StringBuilder emailMessage = (StringBuilder) context.get(ImportAPI.ImportProcessConstants.EMAIL_MESSAGE);
 			
 			if(!nullUniqueFields.isEmpty()) {
-				writeToSheet("Null Identity Fields",nullUniqueFields, createHelper);
+				writeToSheet("Identity field data is mandatory",nullUniqueFields, createHelper);
 			}
 			if(!nullResources.isEmpty()) {
-				writeToSheet("No resource", nullResources, createHelper);
+				writeToSheet(importTemplateContext.getModuleMapping().get("baseModule")+ "not found in the system", nullResources, createHelper);
 			}
 			String[] oldFileNameArray = fs.getFileInfo(importProcessContext.getFileId()).getFileName().split("[.]");
 			String newFileName = oldFileNameArray[0] + "_skipLog" ;

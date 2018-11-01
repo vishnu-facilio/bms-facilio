@@ -241,6 +241,8 @@ public class AnomalyDetectorJob extends FacilioJob {
 		postData.energyData = meterReadings;
 		postData.timezone = AccountUtil.getCurrentOrg().getTimezone();
 		postData.meterInterval = configContext.getMeterInterval();
+		postData.clusterSize = configContext.getClusterSize();
+		postData.bucketSize = configContext.getBucketSize();
 
 		ObjectMapper mapper = new ObjectMapper();
 		String jsonInString = mapper.writeValueAsString(postData);
@@ -414,7 +416,23 @@ public class AnomalyDetectorJob extends FacilioJob {
 		public void setMeterInterval(int meterInterval) {
 			this.meterInterval = meterInterval;
 		}
-
+		
+		public int getClusterSize() {
+			return clusterSize;
+		}
+		
+		public void setClusterSize(int clusterSize) {
+			this.clusterSize = clusterSize;
+		}
+		
+		public int getBucketSize() {
+			return bucketSize;
+		}
+		
+		public void setBucketSize(int bucketSize) {
+			this.bucketSize = bucketSize;
+		}
+		
 		public Long getMeterID() {
 			return meterID;
 		}
@@ -516,5 +534,7 @@ public class AnomalyDetectorJob extends FacilioJob {
 		List<AnalyticsAnomalyContext> energyData;
 		List<TemperatureContext> temperatureData;
 		int meterInterval;
+		int clusterSize;
+		int bucketSize;
 	}
 }

@@ -52,7 +52,6 @@ public class FacilioContext extends ContextBase {
 	
 	private void cleanup() throws Exception
 	{
-		//System.out.println("Closing connection ....");
 		
 	}
 }

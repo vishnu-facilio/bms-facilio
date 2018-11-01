@@ -106,11 +106,35 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, attachedFiles);
 		 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, attachedFileNames);
 		 		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, attachedFilesContentType);
+		 		context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
 			}
 			
 			Command addWorkOrderRequest = FacilioChainFactory.getAddWorkOrderRequestChain();
 			addWorkOrderRequest.execute(context);
 			return workOrderRequest.getId();
+		}
+		return -1;
+	}
+	
+	@Override
+	public long addWorkOrder(WorkOrderContext workOrder, List<File> attachedFiles, List<String> attachedFileNames,
+			List<String> attachedFilesContentType) throws Exception {
+		if (workOrder != null) {
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.REQUESTER, workOrder.getRequester());
+			context.put(FacilioConstants.ContextNames.WORK_ORDER, workOrder);
+
+			if (attachedFiles != null && !attachedFiles.isEmpty() && attachedFileNames != null && !attachedFileNames.isEmpty() && attachedFilesContentType != null && !attachedFilesContentType.isEmpty()) {
+				context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, attachedFiles);
+		 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, attachedFileNames);
+		 		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, attachedFilesContentType);
+		 		context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
+			}
+			
+			Command addWorkOrder = TransactionChainFactory.getAddWorkOrderChain();
+			addWorkOrder.execute(context);
+			
+			return workOrder.getId();
 		}
 		return -1;
 	}
@@ -551,6 +575,11 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	@Override
 	public List<EventRuleContext> getActiveEventRules() throws Exception {
 		return EventRulesAPI.getActiveEventRules();
+	}
+
+	@Override
+	public Boolean isFeatureEnabled(int license) throws Exception {
+		return AccountUtil.isFeatureEnabled(license);
 	}
 
 }

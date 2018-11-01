@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -30,13 +31,16 @@ import com.facilio.bmsconsole.criteria.BuildingOperator;
 import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -120,6 +124,69 @@ public class AssetsAPI {
 		List<AssetContext> assets = selectBuilder.get();
 		if(assets != null && !assets.isEmpty()) {
 			return assets.get(0);
+		}
+		return null;
+	}
+	
+	public static List<Long> getAssetCategoryIds(Long baseSpaceID) throws Exception {
+		
+		return getAssetCategoryIds(Collections.singletonList(baseSpaceID));
+	}
+	
+	public static List<Long> getAssetCategoryIds(List<Long> baseSpaceIds) throws Exception {
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+		FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+		
+		List<FacilioField> selectFields = new ArrayList<>();
+		
+		
+		FacilioField spaceIdField = modBean.getField("space", assetModule.getName());
+		
+		FacilioField categoryField = modBean.getField("category", assetModule.getName());
+		FacilioField selectField = new FacilioField();
+		selectField.setName(categoryField.getName());
+		selectField.setDisplayName(categoryField.getDisplayName());
+		selectField.setColumnName("DISTINCT("+categoryField.getColumnName()+")");
+		
+		selectFields.add(selectField);
+		
+		GenericSelectRecordBuilder newSelectBuilder = new GenericSelectRecordBuilder()
+				.table(assetModule.getTableName())
+				.innerJoin(resourceModule.getTableName())
+				.on(assetModule.getTableName()+".ID = "+resourceModule.getTableName()+".ID")
+				.andCondition(CriteriaAPI.getCondition(spaceIdField, baseSpaceIds, NumberOperators.EQUALS))	// change to buildingIs if nedded
+				.select(selectFields);
+		
+		 List<Map<String, Object>> props = newSelectBuilder.get();
+		
+		List<Long> categoryIds = new ArrayList<>();
+		if(props != null) {
+			for(Map<String, Object> prop :props) {
+				categoryIds.add((Long)prop.get(selectField.getName()));
+			}
+		}
+		
+		return categoryIds; 
+	}
+	
+	public static List<Long> getSubCategoryIds(Long assetCategoryId) throws Exception {
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET_CATEGORY);
+		
+		FacilioField parentCategoryField = modBean.getField("parentCategoryId", assetModule.getName());
+		
+		SelectRecordsBuilder<AssetCategoryContext> newSelectBuilder = new SelectRecordsBuilder<AssetCategoryContext>()
+				.module(assetModule)
+				.andCondition(CriteriaAPI.getCondition(parentCategoryField, Collections.singletonList(assetCategoryId), NumberOperators.EQUALS))	// change to buildingIs if nedded
+				.select(modBean.getAllFields(FacilioConstants.ContextNames.ASSET_CATEGORY));
+		
+		 Map<Long, AssetCategoryContext> props = newSelectBuilder.getAsMap();
+		
+		if(props != null) {
+			return new ArrayList<>(props.keySet());
 		}
 		return null;
 	}

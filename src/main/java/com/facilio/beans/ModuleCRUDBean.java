@@ -18,8 +18,12 @@ public interface ModuleCRUDBean {
 	
 	public long addWorkOrderRequest(WorkOrderRequestContext workOrderRequest, List<File> attachedFiles,
 			List<String> attachedFileNames, List<String> attachedFilesContentType) throws Exception;
+	public long addWorkOrder(WorkOrderContext workOrder, List<File> attachedFiles,
+			List<String> attachedFileNames, List<String> attachedFilesContentType) throws Exception;
 	
 	public AlarmContext processAlarm(JSONObject alarmInfo) throws Exception;
+	
+	public Boolean isFeatureEnabled(int license) throws Exception;
 	
 	public int deleteAlarm(List<Long> id) throws Exception;
 	

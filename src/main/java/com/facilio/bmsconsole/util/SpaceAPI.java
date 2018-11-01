@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.util;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,7 @@ import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
@@ -915,7 +917,11 @@ public static long getSitesCount() throws Exception {
 		return getSpaceListOfCategory(-1,category);
 	}
 	
-	public static List<SpaceContext> getSpaceListOfCategory(long baseSpaceId,long category) throws Exception
+	public static List<SpaceContext> getSpaceListOfCategory(long baseSpaceId,long category) throws Exception {
+		return getSpaceListOfCategory(Collections.singletonList(baseSpaceId),category);
+	}
+	
+	public static List<SpaceContext> getSpaceListOfCategory(List<Long> baseSpaceIds,long category) throws Exception
 	{
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -929,9 +935,9 @@ public static long getSitesCount() throws Exception {
 				.beanClass(SpaceContext.class)
 				.andCondition(CriteriaAPI.getCondition(categoryField, String.valueOf(category), PickListOperators.IS));
 		
-		if(baseSpaceId > 0) {
-			BaseSpaceContext basespace = getBaseSpace(baseSpaceId);
-			selectBuilder.andCustomWhere("BaseSpace."+basespace.getSpaceTypeEnum().getStringVal().toUpperCase()+"_ID = ?", baseSpaceId);
+		if(baseSpaceIds != null && !baseSpaceIds.isEmpty()) {
+			BaseSpaceContext basespace = getBaseSpace(baseSpaceIds.get(0));
+			selectBuilder.andCustomWhere("BaseSpace."+basespace.getSpaceTypeEnum().getStringVal().toUpperCase()+"_ID in( ? )", StringUtils.join(baseSpaceIds, ","));
 		}
 		List<SpaceContext> spaces = selectBuilder.get();
 		return spaces;
@@ -1204,6 +1210,76 @@ public static long getSitesCount() throws Exception {
 		}
 	}
 	
+	public static List<Long> getSpaceCategoryIds(Long baseSpaceID) throws Exception {
+		return getSpaceCategoryIds(Collections.singletonList(baseSpaceID));
+	}
+	
+	
+	public static List<Long> getSpaceCategoryIds(List<Long> baseSpaceID) throws Exception {
+		
+		SpaceType spacetype = null;
+		if(baseSpaceID != null && !baseSpaceID.isEmpty()) {
+			Long id = baseSpaceID.get(0);
+			BaseSpaceContext basespace = SpaceAPI.getBaseSpace(id);
+			spacetype = basespace.getSpaceTypeEnum();
+		}
+		List<Long> categoryIds = new ArrayList<>();
+		
+		if(spacetype != null) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule spaceModule = modBean.getModule(FacilioConstants.ContextNames.SPACE);
+			FacilioModule baseSpaceModule = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
+			
+			List<FacilioField> selectFields = new ArrayList<>();
+			
+			
+			FacilioField spaceCategoryField = modBean.getField("spaceCategory", spaceModule.getName());
+			FacilioField selectField = new FacilioField();
+			selectField.setName(spaceCategoryField.getName());
+			selectField.setDisplayName(spaceCategoryField.getDisplayName());
+			selectField.setColumnName("DISTINCT("+spaceCategoryField.getColumnName()+")");
+			
+			selectFields.add(selectField);
+			
+			GenericSelectRecordBuilder newSelectBuilder = new GenericSelectRecordBuilder()
+					.table(spaceModule.getTableName())
+					.innerJoin(baseSpaceModule.getTableName())
+					.on(spaceModule.getTableName()+".ID = "+baseSpaceModule.getTableName()+".ID")
+					.select(selectFields);
+			
+			if(spacetype.equals(SpaceType.SITE)) {
+				newSelectBuilder.andCondition(CriteriaAPI.getCondition("SITE_ID", "SITE_ID", StringUtils.join(baseSpaceID, ","), NumberOperators.EQUALS));
+				newSelectBuilder.andCustomWhere("BUILDING_ID IS NULL");
+			}
+			else if(spacetype.equals(SpaceType.BUILDING)) {
+				newSelectBuilder.andCondition(CriteriaAPI.getCondition("BUILDING_ID", "BUILDING_ID", StringUtils.join(baseSpaceID, ","), NumberOperators.EQUALS));
+				newSelectBuilder.andCustomWhere("FLOOR_ID IS NULL");
+			}
+			else if(spacetype.equals(SpaceType.FLOOR)) {
+				newSelectBuilder.andCondition(CriteriaAPI.getCondition("FLOOR_ID", "FLOOR_ID", StringUtils.join(baseSpaceID, ","), NumberOperators.EQUALS));
+				newSelectBuilder.andCustomWhere("SPACE_ID1 IS NULL");
+			}
+			else if(spacetype.equals(SpaceType.SPACE)) {
+				List<Condition> conditions = new ArrayList<>();
+				conditions.add(CriteriaAPI.getCondition("SPACE_ID1", "SPACE_ID1", StringUtils.join(baseSpaceID, ","), NumberOperators.EQUALS));
+				conditions.add(CriteriaAPI.getCondition("SPACE_ID2", "SPACE_ID2", StringUtils.join(baseSpaceID, ","), NumberOperators.EQUALS));
+				conditions.add(CriteriaAPI.getCondition("SPACE_ID3", "SPACE_ID3", StringUtils.join(baseSpaceID, ","), NumberOperators.EQUALS));
+				conditions.add(CriteriaAPI.getCondition("SPACE_ID4", "SPACE_ID4", StringUtils.join(baseSpaceID, ","), NumberOperators.EQUALS));
+				
+				Criteria criteria = new Criteria();
+				criteria.groupOrConditions(conditions);
+				newSelectBuilder.andCriteria(criteria);
+			}
+			 List<Map<String, Object>> props = newSelectBuilder.get();
+			
+			if(props != null) {
+				for(Map<String, Object> prop :props) {
+					categoryIds.add((Long)prop.get(selectField.getName()));
+				}
+			}
+		}
+		return categoryIds; 
+	}
 	
 public static List<Map<String,Object>> getBuildingArea(String buildingList) throws Exception {
 		

@@ -141,9 +141,7 @@ public class FormsAPI {
 				.table(formModule.getTableName())
 				.fields(FieldFactory.getFormFields());
 		
-		insertBuilder.insert(props);
-		
-		long id = (long) props.get("id");
+		long id = insertBuilder.insert(props);
 		
 		List<Map<String, Object>> fieldProps = new ArrayList<>();
 		
@@ -171,6 +169,7 @@ public class FormsAPI {
 				.addRecords(fieldProps);
 		
 		fieldInsertBuilder.save();
+		editedForm.setId(id);
 		return id;
 	}
 	

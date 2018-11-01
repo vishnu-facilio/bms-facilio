@@ -348,7 +348,6 @@ public class AwsUtil
 			{
 				result.append(line);
 			}
-		//	System.out.println(result.toString());
     	}
 		catch (Exception e) 
     	{

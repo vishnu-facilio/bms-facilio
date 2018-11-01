@@ -75,7 +75,7 @@ public class ImportTemplateContext{
 		if(!getModuleJSON().isEmpty()) {
 			moduleMapping = new HashMap<>();
 			for(Object key : getModuleJSON().keySet()) {
-				moduleMapping.put((String) key, moduleMapping.get(key));
+				moduleMapping.put((String) key, getModuleJSON().get(key).toString());
 			}
 		}
 		return moduleMapping;

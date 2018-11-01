@@ -1587,6 +1587,17 @@
 			</result>
 		</action>
 		
+		<action name="getScopeFilteredValuesForPM" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="getScopeFilteredValuesForPM">
+			<param name="moduleName">planned</param>
+			<param name="permission">CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">spaceCategoryIds,spaceCategoryIds\[\d+\],spaceCategoryIds\[\d+\].*,assetCategoryIds,assetCategoryIds\[\d+\],assetCategoryIds\[\d+\].*,^hasFloor.*</param>
+				<!-- <param name="includeProperties">spaceCategoryIds,spaceCategoryIds\[\d+\],spaceCategoryIds\[\d+\].*</param>
+				<param name="includeProperties"></param> -->
+			</result>
+		</action>
+		
 		<action name="addBulkPreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="addBulkPreventiveMaintenance">
 			<param name="moduleName">planned</param>
@@ -2875,24 +2886,24 @@
 		</action>
 		<action name="getAssets" class="com.facilio.bmsconsole.actions.ImportDataAction"
 			method="getAssets">
-				<param name="moduleName">setup</param>
-				<param name="permission">DATA_ADMINISTRATION</param>
+				<!-- <param name="moduleName">setup</param>
+				<param name="permission">ASSET_SETTINGS</param> -->
 				<result name="success" type="json">
 				<param name="includeProperties">energyMeters,energyMeters\[\d+\],energyMeters\[\d+\].*,chillerAssets,chillerAssets\[\d+\],chillerAssets\[\d+\].*</param>
 			</result>
 		</action>
 		<action name="upload" class="com.facilio.bmsconsole.actions.ImportDataAction"
 			method="upload">
-				<!--  <param name="moduleName">setup</param> -->
-				<param name="permission">DATA_ADMINISTRATION</param>
+				<!--  <param name="moduleName">setup</param> 
+				<param name="permission">ASSET_SETTINGS</param> -->
 				<result name="success" type="json">
 				<param name="includeProperties">importProcessContext.*</param>
 			</result>
 		</action>
 		<action name="processImport" class="com.facilio.bmsconsole.actions.ImportDataAction"
 			method="processImport">
-				<!--  <param name="moduleName">setup</param> -->
-				<param name="permission">DATA_ADMINISTRATION</param>
+				<!--  <param name="moduleName">setup</param> 
+				<param name="permission">ASSET_SETTINGS</param> -->
 				<result name="success" type="json">
 				<param name="statusCode">200</param>
 			</result>
@@ -2903,7 +2914,6 @@
 			</result>
 		</action>
 		<action name="checkImport" class="com.facilio.bmsconsole.actions.ImportDataAction" method="checkImportStatus">
-			<param name="permission">DATA_ADMINISTRATION</param>
 			<result name="success" type="json">
 				<param name="properties">im.*</param>
 			</result>
@@ -2912,7 +2922,6 @@
 			</result>
 		</action>
 		<action name="importreading" class="com.facilio.bmsconsole.actions.ImportDataAction" method="importReading">
-			<param name="permission">DATA_ADMINISTRATION</param>
 			<result name="success" type="json">
 				<param name="properties">importProcessContext.*</param>
 			</result>

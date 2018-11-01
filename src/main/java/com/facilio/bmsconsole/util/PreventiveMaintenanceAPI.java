@@ -18,6 +18,7 @@ import org.json.simple.JSONObject;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.PMIncludeExcludeResourceContext;
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMJobsContext.PMJobsStatus;
 import com.facilio.bmsconsole.context.PMReminder;
@@ -74,7 +75,7 @@ public class PreventiveMaintenanceAPI {
 		List<PMJobsContext> pmJobsToBeScheduled = new ArrayList<>();
 		for(PMTriggerContext pmTrigger : pm.getTriggers()) {
 			
-			if(pmTrigger.getTriggerType() == PMTriggerContext.TriggerType.CUSTOM.getVal()) {
+			if(pmTrigger.getTriggerType() == PMTriggerContext.TriggerType.CUSTOM.getVal() && pmTrigger.getPmTriggerResourceContexts() != null) {
 				
 				long startTime = getStartTimeInSecond(pmTrigger.getStartTime());
 				long nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(startTime);
@@ -100,7 +101,7 @@ public class PreventiveMaintenanceAPI {
 			
 			if(pmTrigger.getTriggerType() == PMTriggerContext.TriggerType.DEFAULT.getVal()) {
 				
-				List<Long> resourceIds = getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(pm.getPmCreationType()),pm.getBaseSpaceId(),pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null);
+				List<Long> resourceIds = getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(pm.getPmCreationType()),pm.getBaseSpaceId(),pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
 				resourceIds.removeAll(addedResourceIds);
 				
 				long startTime = getStartTimeInSecond(pmTrigger.getStartTime());
@@ -137,9 +138,28 @@ public class PreventiveMaintenanceAPI {
 
 		return startTimeInSecond;
 	}
-	public static List<Long> getMultipleResourceToBeAddedFromPM(PMAssignmentType pmAssignmentType,Long resourceId,Long spaceCategoryID,Long assetCategoryID,Long currentAssetId) throws Exception {
+	public static List<Long> getMultipleResourceToBeAddedFromPM(PMAssignmentType pmAssignmentType,Long resourceId,Long spaceCategoryID,Long assetCategoryID,Long currentAssetId, List<PMIncludeExcludeResourceContext> includeExcludeRess) throws Exception {
 		
-			
+		List<Long> includedIds = null;
+		List<Long> excludedIds = null;
+		if(includeExcludeRess != null && !includeExcludeRess.isEmpty()) {
+			for(PMIncludeExcludeResourceContext includeExcludeRes :includeExcludeRess) {
+				if(includeExcludeRes.isInclude()) {
+					includedIds = includedIds == null ? new ArrayList<>() : includedIds; 
+					includedIds.add(includeExcludeRes.getResourceId());
+				}
+				else {
+					excludedIds = excludedIds == null ? new ArrayList<>() : excludedIds;
+					excludedIds.add(includeExcludeRes.getResourceId());
+				}
+			}
+		}
+		if(includedIds != null) {
+			if(excludedIds != null) {
+				includedIds.removeAll(excludedIds);
+			}
+			return includedIds;
+		}
 		List<Long> resourceIds = new ArrayList<>();
 		switch(pmAssignmentType) {
 			case ALL_FLOORS:
@@ -173,7 +193,9 @@ public class PreventiveMaintenanceAPI {
 		default:
 			break;
 		}
-		
+		if(excludedIds != null) {
+			resourceIds.removeAll(excludedIds);
+		}
 		return resourceIds;
  	}
 	
@@ -188,6 +210,7 @@ public class PreventiveMaintenanceAPI {
 		
 		if(props != null && !props.isEmpty()) {
 			PreventiveMaintenance pm = FieldUtil.getAsBeanFromMap(props.get(0), PreventiveMaintenance.class);
+			pm.setPmIncludeExcludeResourceContexts(TemplateAPI.getPMIncludeExcludeList(pm.getId(), null, null));
 			return pm;
 		}
 		return null;
@@ -792,6 +815,8 @@ public class PreventiveMaintenanceAPI {
 		Map<Long, List<PMTriggerContext>> pmTriggers = new HashMap<>();
 		for(Map<String, Object> triggerProp : triggerProps) {
 			PMTriggerContext trigger = FieldUtil.getAsBeanFromMap(triggerProp, PMTriggerContext.class);
+			
+			trigger.setPmTriggerResourceContexts(getPMTriggerResources(trigger.getId()));
 			List<PMTriggerContext> triggerList = pmTriggers.get(trigger.getPmId());
 			if(triggerList == null) {
 				triggerList = new ArrayList<>();
@@ -801,6 +826,33 @@ public class PreventiveMaintenanceAPI {
 		}
 		
 		return pmTriggers;
+	}
+	
+	public static List<PMTriggerResourceContext> getPMTriggerResources(Long triggerId) throws Exception {
+		
+		FacilioModule module = ModuleFactory.getPMTriggersResourceModule();
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getPMTriggersResourceFields())
+				.table(module.getTableName())
+				.andCustomWhere("TRIGGER_ID = ?",triggerId);
+				;
+				
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		List<PMTriggerResourceContext> res = new ArrayList<>();
+		if(props != null && !props.isEmpty()) {
+			for(Map<String, Object> prop :props) {
+				
+				PMTriggerResourceContext pmTriggerResourceContext = FieldUtil.getAsBeanFromMap(prop, PMTriggerResourceContext.class);
+				
+				if(pmTriggerResourceContext.getResourceId() != null && pmTriggerResourceContext.getResourceId() > 0) {
+					pmTriggerResourceContext.setResource(ResourceAPI.getResource(pmTriggerResourceContext.getResourceId()));
+				}
+				res.add(pmTriggerResourceContext);
+			}
+		}
+		return res;
 	}
 	
 	public static List<PMTriggerContext> getPMTriggers(PreventiveMaintenance pm) throws Exception {

@@ -11,6 +11,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
+import com.facilio.bmsconsole.context.PMTriggerResourceContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -60,6 +61,9 @@ public class AddAndSchedulePMTriggerCommand implements Command {
 	private void addTriggersAndReadings(PreventiveMaintenance pm) throws Exception {
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getPMTriggersModule().getTableName()).fields(FieldFactory.getPMTriggerFields());
+		
+		GenericInsertRecordBuilder insertBuilder1 = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getPMTriggersResourceModule().getTableName()).fields(FieldFactory.getPMTriggersResourceFields());
 
 		for (PMTriggerContext trigger : pm.getTriggers()) {
 			trigger.setPmId(pm.getId());
@@ -89,7 +93,18 @@ public class AddAndSchedulePMTriggerCommand implements Command {
 		for (int i = 0; i < triggerProps.size(); i++) {
 			Map<String, Object> triggerProp = triggerProps.get(i);
 			pm.getTriggers().get(i).setId((long) triggerProp.get("id"));
+			
+			List<PMTriggerResourceContext> pmTriggerResources = pm.getTriggers().get(i).getPmTriggerResourceContexts();
+			
+			if(pmTriggerResources != null) {
+				for(PMTriggerResourceContext pmTriggerResource :pmTriggerResources) {
+					pmTriggerResource.setPmId(pm.getId());
+					pmTriggerResource.setTriggerId((long) triggerProp.get("id"));
+					insertBuilder1.addRecord(FieldUtil.getAsProperties(pmTriggerResource));
+				}
+			}
 		}
+		insertBuilder1.save();
 	}
 	
 	private static void schedulePM(PreventiveMaintenance pm, Context context) throws Exception {

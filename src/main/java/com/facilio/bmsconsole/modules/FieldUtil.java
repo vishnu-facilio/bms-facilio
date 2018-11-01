@@ -343,6 +343,7 @@ public class FieldUtil {
 			ObjectMapper mapper = getMapper(bean.getClass());
 			properties = mapper.convertValue(bean, Map.class);
 		}
+		System.out.println("######" + properties + "#####");
 		return properties;
 	}
 	
@@ -353,6 +354,7 @@ public class FieldUtil {
 		{
 			ObjectMapper mapper = getMapper(bean.getClass());
 			properties = mapper.convertValue(bean, JSONObject.class);
+			
 		}
 		return properties;
 	}

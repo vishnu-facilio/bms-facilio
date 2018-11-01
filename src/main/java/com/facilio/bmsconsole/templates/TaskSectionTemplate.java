@@ -6,6 +6,8 @@ import java.util.List;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
+import com.facilio.bmsconsole.context.TaskContext.InputType;
+import com.facilio.bmsconsole.context.PMIncludeExcludeResourceContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -15,6 +17,15 @@ public class TaskSectionTemplate extends Template {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	List<PMIncludeExcludeResourceContext> pmIncludeExcludeResourceContexts;
+	
+	public List<PMIncludeExcludeResourceContext> getPmIncludeExcludeResourceContexts() {
+		return pmIncludeExcludeResourceContexts;
+	}
+	public void setPmIncludeExcludeResourceContexts(List<PMIncludeExcludeResourceContext> pmIncludeExcludeResourceContexts) {
+		this.pmIncludeExcludeResourceContexts = pmIncludeExcludeResourceContexts;
+	}
 	private Boolean isEditable;
 	public Boolean getIsEditable() {
 		return isEditable;
@@ -25,6 +36,45 @@ public class TaskSectionTemplate extends Template {
 	public boolean isEditable() {
 		if (isEditable != null) {
 			return isEditable.booleanValue();
+		}
+		return false;
+	}
+	
+	private InputType inputType;
+	public int getInputType() {
+		if(inputType != null) {
+			return inputType.getVal();
+		}
+		return -1;
+	}
+	public void setInputType(int inputType) {
+		this.inputType = InputType.valueOf(inputType);
+	}
+	public void setInputType(InputType inputType) {
+		this.inputType = inputType;
+	}
+	public InputType getInputTypeEnum() {
+		return inputType;
+	}
+	
+	private long readingFieldId = -1;
+	public long getReadingFieldId() {
+		return readingFieldId;
+	}
+	public void setReadingFieldId(long readingId) {
+		this.readingFieldId = readingId;
+	}
+	
+	private Boolean attachmentRequired;
+	public Boolean getAttachmentRequired() {
+		return attachmentRequired;
+	}
+	public void setAttachmentRequired(boolean attachmentRequired) {
+		this.attachmentRequired = attachmentRequired;
+	}
+	public boolean isAttachmentRequired() {
+		if(attachmentRequired != null) {
+			return attachmentRequired.booleanValue();
 		}
 		return false;
 	}

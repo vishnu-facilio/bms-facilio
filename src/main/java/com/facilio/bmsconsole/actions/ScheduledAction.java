@@ -29,7 +29,7 @@ public class ScheduledAction extends FacilioAction {
 	public String addScheduledAction() throws Exception {
 		FacilioContext facilioContext = new FacilioContext();
 		facilioContext.put(FacilioConstants.ContextNames.SCHEDULE_INFO, scheduledAction);
-		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, Collections.singletonList(scheduledAction.getAction()));
+		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(scheduledAction.getAction()));
 		Chain addAction = TransactionChainFactory.getAddScheduledActionChain();
 		addAction.execute(facilioContext);
 		setResult("action", scheduledAction);

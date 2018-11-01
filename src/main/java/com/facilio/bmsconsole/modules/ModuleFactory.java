@@ -289,6 +289,10 @@ public class ModuleFactory {
 		return approvers;
 	}
 	
+	public static FacilioModule getApproverActionsRelModule() {
+		return constructModule("approverActionsRel", "Approver Actions Rel", "Approver_Actions_Rel");
+	}
+	
 	public static FacilioModule getApprovalStepsModule() {
 		return constructModule("approvalSteps", "Approval Steps", "Approval_Steps");
 	}
@@ -1182,7 +1186,16 @@ public class ModuleFactory {
 
 		return analyticsAnomalyIDListJob;
 	}
-
+	
+	public static FacilioModule getAnalyticsAnomalyS3URLModule() {
+		FacilioModule analyticsAnomalyS3URL = new FacilioModule();
+		analyticsAnomalyS3URL.setName("s3URLList");
+		analyticsAnomalyS3URL.setDisplayName("s3 URL List");
+		analyticsAnomalyS3URL.setTableName("Anomaly_S3_URL_Data");
+		
+		return analyticsAnomalyS3URL;
+	}
+	
 	public static FacilioModule getDerivationsModule() {
 		FacilioModule taskSection = new FacilioModule();
 		taskSection.setName("derivations");

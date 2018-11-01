@@ -407,4 +407,10 @@ public class AlarmContext extends TicketContext {
 		}
 		relatedEvents.add(relatedEvent);
 	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return "Alarm : ["+getId()+", "+getSubject()+"]";
+	}
 }

@@ -83,6 +83,18 @@ public class FieldFactory {
 			workOrderFieldsInclude.add("sourceType");
 			workOrderFieldsInclude.add("status");
 			workOrderFieldsInclude.add("type");
+			workOrderFieldsInclude.add("sendForApproval");
+		}
+		public static List<String> approvalFormFields = new ArrayList<String>();
+		static {
+			approvalFormFields.add("assignedTo");
+			approvalFormFields.add("assignmentGroup");
+			approvalFormFields.add("category");
+			approvalFormFields.add("priority");
+			approvalFormFields.add("requester");
+			approvalFormFields.add("resource");
+			approvalFormFields.add("comment");
+			approvalFormFields.add("dueDate");
 		}
 		public static List<String> energyFieldsInclude = new ArrayList<String>();
 		static {
@@ -986,6 +998,7 @@ public class FieldFactory {
 		fields.add(getField("approvalButton", "APPROVAL_BUTTON", module, FieldType.STRING));
 		fields.add(getField("rejectionButton", "REJECTION_BUTTON", module, FieldType.STRING));
 		fields.add(getField("allApprovalRequired", "ALL_APPROVAL_REQUIRED", module, FieldType.BOOLEAN));
+		fields.add(getField("approvalOrder", "APPROVAL_ORDER", module, FieldType.NUMBER));
 		
 		return fields;
 	}
@@ -1014,6 +1027,7 @@ public class FieldFactory {
 		fields.add(getOrgIdField(module));
 		fields.add(getField("parentId", "PARENT_ID", module, FieldType.LOOKUP));
 		fields.add(getField("userId", "ORG_USERID", module, FieldType.LOOKUP));
+		fields.add(getField("roleId", "ROLE_ID", module, FieldType.LOOKUP));
 		fields.add(getField("groupId", "GROUP_ID", module, FieldType.LOOKUP));
 		fields.add(getField("type", "SHARING_TYPE", module, FieldType.NUMBER));
 		
@@ -1055,6 +1069,18 @@ public class FieldFactory {
 		status.setModule(module);
 		fields.add(status);
 
+		return fields;
+	}
+	
+	public static List<FacilioField> getApproverActionsRelFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getApproverActionsRelModule();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("approverId", "APPROVER_ID", module, FieldType.LOOKUP));
+		fields.add(getField("actionId", "ACTION_ID", module, FieldType.LOOKUP));
+		
 		return fields;
 	}
 
@@ -3742,6 +3768,7 @@ public class FieldFactory {
 
 		fields.add(getIdField(module));
 		fields.add(getOrgIdField(module));
+		fields.add(getField("name", "NAME", module, FieldType.STRING));
 		fields.add(getField("pmId", "PM_ID", module, FieldType.NUMBER));
 		fields.add(getField("scheduleJson", "SCHEDULE_INFO", module, FieldType.STRING));
 		fields.add(getField("startTime", "START_TIME", module, FieldType.DATE_TIME));
@@ -3970,10 +3997,12 @@ public class FieldFactory {
 		fields.add(getField("isEditable", "IS_EDITABLE", module, FieldType.BOOLEAN));
 		fields.add(getField("parentWOTemplateId", "PARENT_WO_TEMPLATE_ID", module, FieldType.LOOKUP));
 		fields.add(getField("sequenceNumber", "SEQUENCE_NUMBER", module, FieldType.NUMBER));
-
-		fields.add(getField("assetCategoryId", "SPACE_CATEGORY_ID", module, FieldType.LOOKUP));
-		fields.add(getField("spaceCategoryId", "ASSET_CATEGORY_ID", module, FieldType.LOOKUP));
+		fields.add(getField("spaceCategoryId", "SPACE_CATEGORY_ID", module, FieldType.LOOKUP));
+		fields.add(getField("assetCategoryId", "ASSET_CATEGORY_ID", module, FieldType.LOOKUP));
 		fields.add(getField("assignmentType", "ASSIGNMENT_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("inputType", "INPUT_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("readingFieldId", "READING_ID", module, FieldType.LOOKUP));
+		fields.add(getField("attachmentRequired", "ATTACHMENT_REQUIRED", module, FieldType.BOOLEAN));
 		return fields;
 	}
 	
@@ -4280,6 +4309,8 @@ public class FieldFactory {
 		fields.add(getField("startDateMode", "START_DATE_MODE", module, FieldType.BOOLEAN));
 		fields.add(getField("startDate", "START_DATE", module, FieldType.STRING));
 		fields.add(getField("meterInterval", "METER_INTERVAL", module, FieldType.NUMBER));
+		fields.add(getField("clusterSize", "CLUSTER_SIZE", module, FieldType.NUMBER));
+		fields.add(getField("bucketSize", "BUCKET_SIZE", module, FieldType.NUMBER));
 		return fields;
 	}
 	
@@ -4314,6 +4345,22 @@ public class FieldFactory {
 		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
 		fields.add(getField("outlierDistance", "OUTLIER_DISTANCE", module, FieldType.DECIMAL));
 
+		return fields;
+	}
+	
+	public static List<FacilioField> getAnomalyS3URLfileds() {
+		FacilioModule module = ModuleFactory.getAnalyticsAnomalyS3URLModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getField("meterId", "METER_ID", module, FieldType.NUMBER));
+		fields.add(getOrgIdField(module));
+		//fields.add(getOrgIdField(module));
+		//fields.add(getField("orgId", "ORG_ID", module, FieldType.NUMBER));
+		fields.add(getField("createdDate", "CREATED_DATE", module, FieldType.STRING));
+		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
+		fields.add(getField("s3URL", "S3_URL", module, FieldType.STRING));
+		fields.add(getField("isValid", "IS_VALID", module, FieldType.NUMBER));
+		fields.add(getField("fileType", "FILE_TYPE", module,FieldType.NUMBER));
+		
 		return fields;
 	}
 

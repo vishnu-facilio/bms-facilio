@@ -48,7 +48,7 @@ public class TransactionChainFactory {
 			c.addCommand(getAddTasksChain());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SLA_RULE));
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.CHILD_APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));
 			c.addCommand(new ForkChainToInstantJobCommand()
 				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE))
 			);
@@ -82,7 +82,7 @@ public class TransactionChainFactory {
 //			c.addCommand(getAddOrUpdateReadingValuesChain());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SLA_RULE));
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.CHILD_APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));
 			c.addCommand(new ForkChainToInstantJobCommand()
 				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE))
 				.addCommand(new ClearAlarmOnWOCloseCommand())
@@ -149,10 +149,19 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
-		public static Chain getAddWorkflowRuleChain() {
+		public static Chain addWorkflowRuleChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddWorkflowRuleCommand());
 			c.addCommand(new AddActionsForWorkflowRule());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
+		public static Chain addApprovalRuleChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ConstructApprovalRuleCommand());
+			c.addCommand(addWorkflowRuleChain());
+			c.addCommand(new AddApproverActionRelCommand());
 			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}
@@ -170,6 +179,15 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateWorkflowRuleCommand());
 			c.addCommand(new DeleterOldRuleActionsCommand());
 			c.addCommand(new AddActionsForWorkflowRule());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
+		public static Chain updateApprovalRuleChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ConstructApprovalRuleCommand());
+			c.addCommand(updateWorkflowRuleChain());
+			c.addCommand(new AddApproverActionRelCommand());
 			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}

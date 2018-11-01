@@ -46,6 +46,7 @@ public class ExecuteAllWorkflowsCommand implements Command, Serializable
 	private static final Logger LOGGER = LogManager.getLogger(ExecuteAllWorkflowsCommand.class.getName());
 	private RuleType[] ruleTypes;
 	private int recordsPerThread = -1;
+	private boolean propagateError = true;
 	public ExecuteAllWorkflowsCommand(RuleType... ruleTypes) {
 		// TODO Auto-generated constructor stub
 		this.ruleTypes = ruleTypes;
@@ -55,6 +56,12 @@ public class ExecuteAllWorkflowsCommand implements Command, Serializable
 		if (recordsPerThread > 0) {
 			this.recordsPerThread = recordsPerThread;
 		}
+		this.ruleTypes = ruleTypes;
+	}
+	
+	public ExecuteAllWorkflowsCommand(boolean propogateError, RuleType... ruleTypes) {
+		// TODO Auto-generated constructor stub
+		this.propagateError = propogateError;
 		this.ruleTypes = ruleTypes;
 	}
 	
@@ -110,6 +117,12 @@ public class ExecuteAllWorkflowsCommand implements Command, Serializable
 				parentCriteria.addAndCondition(CriteriaAPI.getCondition(parentRule, CommonOperators.IS_EMPTY));
 				parentCriteria.addAndCondition(CriteriaAPI.getCondition(onSuccess, CommonOperators.IS_EMPTY));
 				List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(moduleId, activities, parentCriteria, ruleTypes);
+				
+				if (AccountUtil.getCurrentOrg().getId() == 133 && FacilioConstants.ContextNames.ALARM.equals(moduleName)) {
+					LOGGER.info("Records : "+entry.getValue());
+					LOGGER.info("Matching Rules : "+workflowRules);
+				}
+				
 				if (workflowRules != null && !workflowRules.isEmpty()) {
 					Map<String, Object> placeHolders = WorkflowRuleAPI.getOrgPlaceHolders();
 					List records = new LinkedList<>(entry.getValue());
@@ -132,7 +145,7 @@ public class ExecuteAllWorkflowsCommand implements Command, Serializable
 		}
 	}
 	
-	private static Criteria executeWorkflows(List<WorkflowRuleContext> workflowRules, String moduleName, Object record, List<UpdateChangeSet> changeSet, Iterator itr, Map<String, Object> recordPlaceHolders, FacilioContext context) throws Exception {
+	private Criteria executeWorkflows(List<WorkflowRuleContext> workflowRules, String moduleName, Object record, List<UpdateChangeSet> changeSet, Iterator itr, Map<String, Object> recordPlaceHolders, FacilioContext context) throws Exception {
 		if(workflowRules != null && !workflowRules.isEmpty()) {
 			Map<String, FacilioField> fields = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleFields());
 			FacilioField parentRule = fields.get("parentRuleId");
@@ -148,6 +161,10 @@ public class ExecuteAllWorkflowsCommand implements Command, Serializable
 							itr.remove();
 							break;
 						}
+					}
+					
+					if (AccountUtil.getCurrentOrg().getId() == 133 && FacilioConstants.ContextNames.ALARM.equals(moduleName)) {
+						LOGGER.info("Result of rule : "+workflowRule.getId()+" for record : "+record+" is "+result);
 					}
 					
 					Criteria currentCriteria = new Criteria();
@@ -166,7 +183,10 @@ public class ExecuteAllWorkflowsCommand implements Command, Serializable
 								.append(moduleName);
 					}
 					LOGGER.log(Level.ERROR, builder.toString(), e);
-					throw e;
+					
+					if (propagateError) {
+						throw e;
+					}
 				}
 			}
 			return criteria;

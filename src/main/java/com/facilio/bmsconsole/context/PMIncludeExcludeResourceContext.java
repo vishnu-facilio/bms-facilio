@@ -7,7 +7,7 @@ public class PMIncludeExcludeResourceContext {
 	Long taskSectionTemplateId;
 	Long taskTemplateId;
 	Long resourceId;
-	boolean isInclude;
+	Boolean isInclude;
 	int parentType;
 	
 	public Long getId() {
@@ -43,7 +43,7 @@ public class PMIncludeExcludeResourceContext {
 	public boolean isInclude() {
 		return isInclude;
 	}
-	public void setInclude(boolean isInclude) {
+	public void setIsInclude(boolean isInclude) {
 		this.isInclude = isInclude;
 	}
 	

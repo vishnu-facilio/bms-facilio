@@ -223,10 +223,8 @@ LRUCache modulecache = LRUCache.getModuleCache();
 			
 			cache.put(key, field);
 			
-			//System.out.println( "getField result from DB for Id: "+fieldId);
 		}
 		else {
-			//System.out.println("getField result from CACHE for Id: "+fieldId);
 		}
 		return field;
 		}

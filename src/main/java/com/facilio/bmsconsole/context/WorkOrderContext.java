@@ -11,6 +11,7 @@ import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
+import com.facilio.bmsconsole.workflow.rule.ApproverContext;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
@@ -144,11 +145,11 @@ public class WorkOrderContext extends TicketContext {
 		this.approvalRule = approvalRule;
 	}
 	
-	private List<SingleSharingContext> waitingApprovals;
-	public List<SingleSharingContext> getWaitingApprovals() {
+	private List<ApproverContext> waitingApprovals;
+	public List<ApproverContext> getWaitingApprovals() {
 		return waitingApprovals;
 	}
-	public void setWaitingApprovals(List<SingleSharingContext> waitingApprovals) {
+	public void setWaitingApprovals(List<ApproverContext> waitingApprovals) {
 		this.waitingApprovals = waitingApprovals;
 	}
 

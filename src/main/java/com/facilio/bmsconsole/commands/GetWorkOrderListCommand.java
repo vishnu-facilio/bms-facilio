@@ -152,8 +152,10 @@ public class GetWorkOrderListCommand implements Command {
 	
 	private List<Map<String, Object>> setSubViewCount(FacilioView view) throws Exception {
 		List<Map<String, Object>> subViews = ViewFactory.getSubViewsCriteria(FacilioConstants.ContextNames.WORK_ORDER, view.getName());
-		for(Map<String, Object> subView: subViews) {
-			setWorkOrderCount(subView, view.getCriteria());
+		if (subViews != null) {
+			for(Map<String, Object> subView: subViews) {
+				setWorkOrderCount(subView, view.getCriteria());
+			}
 		}
 		return subViews;
 	}

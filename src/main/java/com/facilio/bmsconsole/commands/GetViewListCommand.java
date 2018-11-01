@@ -25,20 +25,22 @@ public class GetViewListCommand implements Command {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule moduleObj = null;
 		Map<String,FacilioView> viewMap = ViewFactory.getModuleViews(moduleName);
-		List<FacilioView> dbViews;
+		List<FacilioView> dbViews = null;
 		if (LookupSpecialTypeUtil.isSpecialType(moduleName)) {
 			dbViews = ViewAPI.getAllViews(moduleName);
 		} else {
-			if (moduleName.equals("approval")) {
-				moduleName = "workorder";
+			if (!moduleName.equals("approval")) {
+				moduleObj = modBean.getModule(moduleName);
+				dbViews = ViewAPI.getAllViews(moduleObj.getModuleId());
 			}
-			moduleObj = modBean.getModule(moduleName);
-			dbViews = ViewAPI.getAllViews(moduleObj.getModuleId());
 		}
 		
-		for(FacilioView view: dbViews) {
-			viewMap.put(view.getName(), view);
+		if (dbViews != null) {
+			for(FacilioView view: dbViews) {
+				viewMap.put(view.getName(), view);
+			}
 		}
+		
 		viewMap.entrySet().removeIf(enrty -> enrty.getValue().isHidden());
 		List<FacilioView> allViews = new ArrayList<>(viewMap.values());
 		allViews.sort(Comparator.comparing(FacilioView::getSequenceNumber, (s1, s2) -> {

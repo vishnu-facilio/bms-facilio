@@ -103,7 +103,9 @@ public class SiteContext extends BaseSpaceContext {
 		RESIDENTIAL(3, "Residential"),
 		OFFICE(4, "Office"),
 		COMMERCIAL(5, "Commercial"),
-		COMPOUND(6, "Compound")
+		COMPOUND(6, "Compound"),
+		UNIVERSITY(7,"University"),
+		RETAIL(8,"Retail"),
 		;
 		
 		private int intVal;

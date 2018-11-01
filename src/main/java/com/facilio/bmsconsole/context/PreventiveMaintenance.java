@@ -347,6 +347,15 @@ public class PreventiveMaintenance extends ResourceContext {
 		}
 	}
 	
+	List<PMIncludeExcludeResourceContext> pmIncludeExcludeResourceContexts;
+	
+	public List<PMIncludeExcludeResourceContext> getPmIncludeExcludeResourceContexts() {
+		return pmIncludeExcludeResourceContexts;
+	}
+	public void setPmIncludeExcludeResourceContexts(List<PMIncludeExcludeResourceContext> pmIncludeExcludeResourceContexts) {
+		this.pmIncludeExcludeResourceContexts = pmIncludeExcludeResourceContexts;
+	}
+
 	public static enum PMAssignmentType {
 		
 		ALL_FLOORS,

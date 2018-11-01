@@ -403,6 +403,13 @@
             <artifactId>bcprov-jdk15on</artifactId>
             <version>1.54</version>
         </dependency>
+       <!-- https://mvnrepository.com/artifact/com.googlecode.libphonenumber/libphonenumber -->
+<dependency>
+    <groupId>com.googlecode.libphonenumber</groupId>
+    <artifactId>libphonenumber</artifactId>
+    <version>3.5</version>
+</dependency>
+    
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
 		<dependency>
 		    <groupId>org.apache.commons</groupId>

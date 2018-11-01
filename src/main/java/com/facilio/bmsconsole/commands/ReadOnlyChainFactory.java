@@ -125,6 +125,31 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain fetchWorkflowRulesOfTypeChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetWorkFlowOfRuleTypeCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain fetchWorkflowRuleWithActionsChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new FetchWorkflowRuleCommand());
+		c.addCommand(new GetActionListForWorkflowRulesCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain fetchApprovalRuleWithActionsChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new FetchWorkflowRuleCommand());
+		c.addCommand(new FetchChildRulesOfApprovalRuleCommand());
+		c.addCommand(new GetActionListForWorkflowRulesCommand());
+		c.addCommand(new DeConstructApprovalRuleCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
 	private static Chain getDefaultChain() {
 		return new FacilioChain(false);
     }

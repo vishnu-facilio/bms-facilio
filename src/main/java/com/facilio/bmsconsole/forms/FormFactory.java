@@ -28,6 +28,7 @@ public class FormFactory {
 		forms.put("workOrderForm", getWorkOrderForm());
 		forms.put("serviceWorkRequest", getServiceWorkRequestForm());
 		forms.put("loggedInServiceWorkRequest", getLoggedInServiceWorkRequest());
+		forms.put("approvalForm", getApprovalForm());
 		return forms;
 	}
 	
@@ -85,6 +86,16 @@ public class FormFactory {
 		form.setFormType(FormType.WEB);
 		return form;
 	}
+	public static FacilioForm getApprovalForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Approval");
+		form.setName("workOrder");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getWebApprovalFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
 	
 	public static FacilioForm getMobileWorkOrderForm() {
 		FacilioForm form = new FacilioForm();
@@ -139,6 +150,19 @@ public class FormFactory {
 		fields.add(new FormField("priority", FieldDisplayType.LOOKUP_SIMPLE, "Priority", Required.OPTIONAL, "ticketpriority", 4, 3));
 		fields.add(new FormField("type",FieldDisplayType.LOOKUP_SIMPLE,"Maintance Type", Required.OPTIONAL, "tickettype", 5, 1));
 		fields.add(new FormField("groups",FieldDisplayType.LOOKUP_SIMPLE,"Team", Required.OPTIONAL, "groups", 6, 1));
+		return fields;
+	}
+	
+	private static List<FormField> getWebApprovalFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("site", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 2, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "ticketcategory", 4, 2));
+		fields.add(new FormField("priority", FieldDisplayType.LOOKUP_SIMPLE, "Priority", Required.OPTIONAL, "ticketpriority", 4, 3));
+		fields.add(new FormField("type",FieldDisplayType.LOOKUP_SIMPLE,"Maintance Type", Required.OPTIONAL, "tickettype", 5, 1));
+		fields.add(new FormField("groups",FieldDisplayType.LOOKUP_SIMPLE,"Team", Required.OPTIONAL, "groups", 6, 1));
+		fields.add(new FormField("attachments", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, "attachment", 7, 1));
 		return fields;
 	}
 

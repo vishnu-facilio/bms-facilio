@@ -12,7 +12,7 @@ public class UpdateWorkFlowRuleAction implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		ActionContext action = (ActionContext) context.get(FacilioConstants.ContextNames.WORKFLOW_ACTION);
+		ActionContext action = (ActionContext) context.get(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST);
 		
 		if (action != null) {
 			

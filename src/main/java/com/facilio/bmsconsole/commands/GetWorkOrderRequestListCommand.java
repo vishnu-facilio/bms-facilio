@@ -90,7 +90,6 @@ public class GetWorkOrderRequestListCommand implements Command {
 		}
 		
 		if (AccountUtil.getCurrentAccount().getUser().getUserType() != 2) {
-			System.out.println(AccountUtil.getCurrentAccount());
 			Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(moduleName,"read");
 			if(permissionCriteria != null) {
 				builder.andCriteria(permissionCriteria);
@@ -192,7 +191,6 @@ public class GetWorkOrderRequestListCommand implements Command {
 		}
 
 		if (AccountUtil.getCurrentAccount().getUser().getUserType() != 2) {
-			System.out.println(AccountUtil.getCurrentAccount());
 			Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(workorderRequestModule.getName(),"read");
 			if(permissionCriteria != null) {
 				selectBuilder.andCriteria(permissionCriteria);

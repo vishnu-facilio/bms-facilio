@@ -334,6 +334,13 @@
 		</action>
 		
 	</package>
+	<package name="formsApiv2" namespace="/api/v2/form" extends="v2Api">
+		<action name="fields" class="com.facilio.bmsconsole.actions.FormAction" method="loadFormFields">
+			<param name="moduleName">{1}</param>
+		</action>
+		
+	</package>
+	
 	
 	<package name="readingRuleHistoricalRunApiV2" namespace="/api/v2/reading/rule/historicalrun" extends="v2Api">
 		<action name="*" class="com.facilio.bmsconsole.actions.ReadingAction" method="runThroughRule">
