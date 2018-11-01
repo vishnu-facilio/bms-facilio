@@ -420,6 +420,28 @@ public class WorkOrderAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	
+	public String updateNewPreventiveMaintenance() throws Exception {
+		FacilioContext context = new FacilioContext();
+		if(workOrderString != null) {
+			setWorkordercontex(workOrderString);
+		}
+		if(preventiveMaintenanceString != null) {
+			setPreventiveMaintenancecontex(preventiveMaintenanceString);
+		}
+		if(tasksString != null) {
+			setTaskSectioncontext(tasksString);
+		}
+		if(reminderString != null) {
+			setRemindercontex(reminderString);
+		}
+		if(deleteReadingRulesListString != null) {
+			this.deleteReadingRulesList = convertDeleteReadingRulesListString(deleteReadingRulesListString);
+		}
+		updatePreventiveMaintenance(context);
+		return SUCCESS;
+	}
+	
 	public Long getSpaceCategoryId() {
 		return spaceCategoryId;
 	}
@@ -614,7 +636,7 @@ public class WorkOrderAction extends FacilioAction {
 	    	}
 	    	return ids;
 	 }
-
+	
 	public String updatePreventiveMaintenance(FacilioContext context) throws Exception {
 
 		workorder.setRequester(null);
@@ -624,6 +646,7 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, preventivemaintenance);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
+		context.put(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES, sectionTemplates);
 		context.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
 		context.put(FacilioConstants.ContextNames.IS_UPDATE_PM, true);
 		context.put(FacilioConstants.ContextNames.DEL_READING_RULE_IDS, this.deleteReadingRulesList);

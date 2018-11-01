@@ -735,6 +735,7 @@ public class TemplateAPI {
 					TaskSectionTemplate sectionTemplate = sectionMap.get(template.getSectionId());
 					sectionName = sectionTemplate.getName();
 					sectionTemplate.getId();
+					sectionTemplate.addTaskTemplates(template);
 				}
 				List<TaskContext> tasks = taskMap.get(sectionName);
 				if (tasks == null) {

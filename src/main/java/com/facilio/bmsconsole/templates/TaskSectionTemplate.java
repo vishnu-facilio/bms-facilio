@@ -122,6 +122,10 @@ public class TaskSectionTemplate extends Template {
 	public void setTaskTemplates(List<TaskTemplate> taskTemplates) {
 		this.taskTemplates = taskTemplates;
 	}
+	public void addTaskTemplates(TaskTemplate taskTemplate) {
+		this.taskTemplates = this.taskTemplates == null ? new ArrayList<>() : this.taskTemplates;  
+		this.taskTemplates.add(taskTemplate);
+	}
 	@Override
 	public JSONObject getOriginalTemplate() {
 		// TODO Auto-generated method stub

@@ -90,7 +90,7 @@ public class AddPMReadingsForTasks implements Command {
 						task.setReadingField(stringField);
 					}
 					else {
-						checkAndUpdateField(task, modBean);
+						checkAndUpdateField(task, modBean);	// update pm case
 					}
 					break;
 				case NUMBER:

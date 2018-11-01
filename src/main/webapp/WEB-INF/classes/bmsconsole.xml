@@ -1616,6 +1616,15 @@
 			</result>
 		</action>
 		
+		<action name="updateNewPreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="updateNewPreventiveMaintenance">
+			<param name="moduleName">planned</param>
+			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^workorder.*</param>
+			</result>
+		</action>
+		
 		<action name="deletepm" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="deletePreventiveMaintenance">
 			<param name="moduleName">planned</param>
