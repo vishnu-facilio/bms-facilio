@@ -12,8 +12,10 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioField.FieldDisplayType;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -117,6 +119,9 @@ public class FormAction extends FacilioAction {
 				fields.add(fieldObject);
 			}
 		}
+		FacilioField comments = FieldFactory.getField("comment", "Comment" ,null , modBean.getModule("workorder"), FieldType.STRING);
+		comments.setDisplayType(FieldDisplayType.TICKETNOTES);
+		fields.add(comments);
 		setResult(FacilioConstants.ContextNames.FORM_FIELDS, fields);
 		return SUCCESS;
 	}
