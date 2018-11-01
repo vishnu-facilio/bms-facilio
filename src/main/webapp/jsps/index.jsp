@@ -11,14 +11,14 @@
 <html>
 
 <head>
-    <meta charset=utf-8>
-    <meta name=format-detection content="telephone=no">
-    <meta name=msapplication-tap-highlight content=no>
-    <meta name=viewport content="user-scalable=no,initial-scale=1,maximum-scale=1,minimum-scale=1,width=device-width">
+    <meta charset="utf-8">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="user-scalable=no,initial-scale=1,maximum-scale=1,minimum-scale=1,width=device-width">
     <title>Facilio</title>
 
-    <link rel=icon href="<%=staticUrl%>/statics/favicon.png" type=image/x-icon>
-    <link rel=manifest href="<%=staticUrl%>/statics/manifest.json">
+    <link rel="icon" href="<%=staticUrl%>/statics/favicon.png" type="image/x-icon">
+    <link rel="manifest" href="<%=staticUrl%>/statics/manifest.json">
 
     <style>
       .app-spinner {
@@ -70,25 +70,25 @@
 
   </style>
 
-  <script type=text/javascript>
+  <script type="text/javascript">
         window.isFacilioAuth = (document.cookie.indexOf('fc.authtype=facilio') !== -1)
         var webpackPublicPath = "<%=staticUrl%>";
         var servicePortalDomain = "<%=servicePortalDomain%>";
   </script>
-  <link href="<%=staticUrl%>/app.css" rel=stylesheet>
+  <link href="<%=staticUrl%>/app.css" rel="stylesheet">
  </head>
 
   <body>
-      <div id=q-app>
-          <div class=app-spinner>
-              <div class=bounce1></div>
-              <div class=bounce2></div>
-              <div class=bounce3></div>
+      <div id="q-app">
+          <div class="app-spinner">
+              <div class="bounce1"></div>
+              <div class="bounce2"></div>
+              <div class="bounce3"></div>
           </div>
       </div>
-      <script type=text/javascript src="<%=staticUrl%>/js/manifest.js"></script>
-      <script type=text/javascript src="<%=staticUrl%>/js/vendor.js"></script>
-      <script type=text/javascript src="<%=staticUrl%>/js/app.js"></script>
+      <script type="text/javascript" charset="UTF-8" src="<%=staticUrl%>/js/manifest.js"></script>
+      <script type="text/javascript" charset="UTF-8" src="<%=staticUrl%>/js/vendor.js"></script>
+      <script type="text/javascript" charset="UTF-8" src="<%=staticUrl%>/js/app.js"></script>
   </body>
   
   <script src="//cdn.quilljs.com/1.3.6/quill.min.js"></script>
