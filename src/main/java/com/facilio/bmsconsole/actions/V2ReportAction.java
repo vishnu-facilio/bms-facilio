@@ -508,7 +508,7 @@ public class V2ReportAction extends FacilioAction {
 								String key = resource.getId() + "_" + readingField.getFieldId();
 								readingMap.add(key);
 								if (aliasMap != null && aliasMap.containsKey(key)) {
-									dataPoint.put("alias", aliasMap.get(key));
+									dataPoint.put("aliases", aliasMap.get(key));
 								}
 								dataPoints.add(dataPoint);								
 							}
@@ -530,7 +530,7 @@ public class V2ReportAction extends FacilioAction {
 				dataPoint.put("type", 1);
 				String key = dataPoint.get("parentId") + "_" + yAxisJson.get("fieldId");
 				if (aliasMap != null && aliasMap.containsKey(key)) {
-					dataPoint.put("alias", aliasMap.get(key));
+					dataPoint.put("aliases", aliasMap.get(key));
 				}
 				
 				dataPoints.add(dataPoint);
