@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -378,7 +377,7 @@ public class V2ReportAction extends FacilioAction {
 		return setReportResult(context);
 	}
 	public String fetchReadingsData() throws Exception {
-		if(alarmId > 0) {
+		if(alarmId > 0 && fields == null) {
 			getDataPointFromAlarm();
 		}
 		FacilioContext context = new FacilioContext();
@@ -444,19 +443,6 @@ public class V2ReportAction extends FacilioAction {
 		
 		ReadingRuleContext readingruleContext = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(readingAlarmContext.getRuleId());
 		
-		Map<String, Object> aliasMap = null;
-		if (fields != null) {
-			aliasMap = new HashMap<String, Object>();
-			JSONParser parser = new JSONParser();
-			JSONArray fieldArray = (JSONArray) parser.parse(fields);
-			List<ReadingAnalysisContext> fieldList = FieldUtil.getAsBeanListFromJsonArray(fieldArray, ReadingAnalysisContext.class);
-			for(ReadingAnalysisContext field: fieldList) {
-				if (field.getyAxis() != null) {
-					aliasMap.put(field.getParentId() + "_" + field.getyAxis().getFieldId(), field.getAliases());
-				}
-			}
-		}
-
 		JSONArray dataPoints = new JSONArray();
 		
 		if(readingruleContext != null) {
@@ -505,11 +491,7 @@ public class V2ReportAction extends FacilioAction {
 							}
 							dataPoint.put("type", 1);
 							if(!readingMap.contains(resource.getId() + "_" + readingField.getFieldId())) {
-								String key = resource.getId() + "_" + readingField.getFieldId();
-								readingMap.add(key);
-								if (aliasMap != null && aliasMap.containsKey(key)) {
-									dataPoint.put("aliases", aliasMap.get(key));
-								}
+								readingMap.add(resource.getId() + "_" + readingField.getFieldId());
 								dataPoints.add(dataPoint);								
 							}
 						}
@@ -528,11 +510,6 @@ public class V2ReportAction extends FacilioAction {
 				dataPoint.put("yAxis", yAxisJson);
 				
 				dataPoint.put("type", 1);
-				String key = dataPoint.get("parentId") + "_" + yAxisJson.get("fieldId");
-				if (aliasMap != null && aliasMap.containsKey(key)) {
-					dataPoint.put("aliases", aliasMap.get(key));
-				}
-				
 				dataPoints.add(dataPoint);
 			}
 			
