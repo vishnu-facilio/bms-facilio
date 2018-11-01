@@ -227,6 +227,9 @@ public class PreventiveMaintenanceAPI {
 		return pmJob;
 	}
 	public static List<PMJobsContext> createPMJobs (PreventiveMaintenance pm, PMTriggerContext pmTrigger, long startTime, long endTime, boolean addToDb) throws Exception { //Both in seconds
+		return createPMJobs(pm,pmTrigger,null,startTime,endTime,addToDb);
+	}
+	public static List<PMJobsContext> createPMJobs (PreventiveMaintenance pm, PMTriggerContext pmTrigger,Long resourceId, long startTime, long endTime, boolean addToDb) throws Exception { //Both in seconds
 		long nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(startTime);
 		int currentCount = pm.getCurrentExecutionCount();
 		List<PMJobsContext> pmJobs = new ArrayList<>();
@@ -237,6 +240,7 @@ public class PreventiveMaintenanceAPI {
 			pmJob.setNextExecutionTime(nextExecutionTime);
 			pmJob.setProjected(!addToDb);
 			pmJob.setStatus(PMJobsStatus.ACTIVE);
+			pmJob.setResourceId(resourceId);
 			pmJobs.add(pmJob);
 			nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(nextExecutionTime);
 			currentCount++;
