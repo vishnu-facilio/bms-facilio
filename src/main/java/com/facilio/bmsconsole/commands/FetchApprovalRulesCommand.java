@@ -11,6 +11,9 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.tuple.Pair;
 
+import com.facilio.accounts.dto.Group;
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.util.ApprovalRulesAPI;
@@ -80,6 +83,7 @@ public class FetchApprovalRulesCommand implements Command {
 				}
 				
 				Map<Long, List<Long>> previousSteps = ApprovalRulesAPI.fetchPreviousSteps(recordAndRuleIdPairs);
+				List<Long> groupIds = null;
 				for (WorkOrderContext wo : workOrders) {
 					if (wo.getApprovalStateEnum() == ApprovalState.REQUESTED) {
 						ApprovalRuleContext rule = ruleMap.get(wo.getApprovalRuleId()); 
@@ -93,6 +97,36 @@ public class FetchApprovalRulesCommand implements Command {
 							}
 							else {
 								wo.setWaitingApprovals(rule.getApprovers());
+							}
+							User currentUser = AccountUtil.getCurrentUser();
+							
+							for(ApproverContext approverContext: wo.getWaitingApprovals()) {
+								switch(approverContext.getTypeEnum()) {
+									case USER:
+										if (currentUser.getOuid() == approverContext.getUserId()) {
+											wo.setCanCurrentUserApprove(true);
+										}
+										break;
+									case ROLE:
+										if (currentUser.getRoleId() == approverContext.getRoleId()) {
+											wo.setCanCurrentUserApprove(true);
+										}
+										break;
+									case GROUP:
+										if (groupIds == null) {
+											List<Group> myGroups = AccountUtil.getGroupBean().getMyGroups(currentUser.getOuid());
+											if (myGroups != null && !myGroups.isEmpty()) {
+												groupIds = myGroups.stream().map(gp -> gp.getGroupId()).collect(Collectors.toList());
+											}
+											else {
+												groupIds = new ArrayList<>();
+											}
+										}
+										if (groupIds.contains(approverContext.getGroupId())) {
+											wo.setCanCurrentUserApprove(true);
+										}
+										break;
+								}
 							}
 						}
 					}
