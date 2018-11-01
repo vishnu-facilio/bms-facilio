@@ -43,7 +43,7 @@ public class PMIncludeExcludeResourceContext {
 	public boolean isInclude() {
 		return isInclude;
 	}
-	public void setIsInclude(boolean isInclude) {
+	public void setIsInclude(Boolean isInclude) {
 		this.isInclude = isInclude;
 	}
 	

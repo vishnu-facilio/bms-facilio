@@ -66,6 +66,8 @@ public class PMToWorkOrder extends FacilioJob {
 				context.put(FacilioConstants.ContextNames.PM_CURRENT_JOB, pmJob);
 				
 				PreventiveMaintenance pm = PreventiveMaintenanceAPI.getPm(pmTrigger.getPmId());
+				
+				context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 				boolean isMultiple = false; 
 				if(pm != null && pm.getPmCreationType() == PreventiveMaintenance.PMCreationType.MULTIPLE.getVal()) {
 					isMultiple = true;

@@ -51,6 +51,7 @@ public class ResetTriggersCommand implements Command {
 			long currentExecutionTime = (Long) context.get(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME);
 			PMTriggerContext currentTrigger = (PMTriggerContext) context.get(FacilioConstants.ContextNames.PM_CURRENT_TRIGGER); 
 			Boolean reset = (Boolean) context.get(FacilioConstants.ContextNames.PM_RESET_TRIGGERS);
+			PMJobsContext currentJob = (PMJobsContext) context.get(FacilioConstants.ContextNames.PM_CURRENT_JOB);
 			if(reset != null && reset) {
 				reset = true;
 			}
@@ -63,10 +64,9 @@ public class ResetTriggersCommand implements Command {
 					PreventiveMaintenanceAPI.setPMInActive(pm.getId());
 				}
 				else if(reset) {
-					resetPMTriggers(pm, currentTrigger, pmTriggersMap.get(pm.getId()), currentExecutionTime, nextExecutionTimes);
+					resetPMTriggers(pm, currentTrigger, pmTriggersMap.get(pm.getId()),currentJob, currentExecutionTime, nextExecutionTimes);
 				}
 			}
-			PMJobsContext currentJob = (PMJobsContext) context.get(FacilioConstants.ContextNames.PM_CURRENT_JOB);
 			if (currentJob != null) {
 				PreventiveMaintenanceAPI.updatePMJobStatus(currentJob.getId(), PMJobsStatus.COMPLETED);
 			}
@@ -77,7 +77,7 @@ public class ResetTriggersCommand implements Command {
 		return false;
 	}
 	
-	private void resetPMTriggers(PreventiveMaintenance pm, PMTriggerContext currentTrigger, List<PMTriggerContext> triggers, long currentExecutionTime, Map<Long, Long> nextExecutionTimes) throws Exception {
+	private void resetPMTriggers(PreventiveMaintenance pm, PMTriggerContext currentTrigger, List<PMTriggerContext> triggers,PMJobsContext pmJobsContext, long currentExecutionTime, Map<Long, Long> nextExecutionTimes) throws Exception {
 		for(PMTriggerContext trigger : triggers) {
 			if(trigger.getSchedule() != null && trigger.getSchedule().getFrequencyTypeEnum() != FrequencyType.DO_NOT_REPEAT) {
 				PMJobsContext pmJob = null;
@@ -113,9 +113,16 @@ public class ResetTriggersCommand implements Command {
 						}
 						break;
 					case ONLY_SCHEDULE_TRIGGER:
-						pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger.getId(), currentExecutionTime, true);
-						if (pmJob == null) {
-							pmJob = PreventiveMaintenanceAPI.createPMJobOnce(pm, trigger, currentExecutionTime);
+						if(pm.getPmCreationType() == PreventiveMaintenance.PMCreationType.MULTIPLE.getVal()) {
+							if(pmJobsContext.getPmTriggerId() == trigger.getId()) {
+								pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger.getId(), currentExecutionTime,pmJobsContext.getResourceId(), true);
+							}
+						}
+						else {
+							pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger.getId(), currentExecutionTime, true);
+							if (pmJob == null) {
+								pmJob = PreventiveMaintenanceAPI.createPMJobOnce(pm, trigger, currentExecutionTime);
+							}
 						}
 						if (pmJob != null) {
 							PreventiveMaintenanceAPI.schedulePMJob(pmJob);
