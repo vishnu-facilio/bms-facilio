@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.facilio.accounts.dto.User;
@@ -134,6 +135,10 @@ public class PreventiveMaintenance extends ResourceContext {
 	}
 	public void setTriggers(List<PMTriggerContext> triggers) {
 		this.triggers = triggers;
+	}
+	public void addTriggers(PMTriggerContext trigger) {
+		this.triggers = this.triggers == null ? new ArrayList<>() : this.triggers;
+		this.triggers.add(trigger);
 	}
 
 	private TriggerType triggerType;

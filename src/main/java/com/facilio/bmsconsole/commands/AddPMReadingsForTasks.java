@@ -43,7 +43,7 @@ public class AddPMReadingsForTasks implements Command {
 		PreventiveMaintenance pm = (PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 		if (tasks != null && !tasks.isEmpty()) {
 			Map<FieldType, List<FacilioField>> fieldMap = createAndSplitFields(tasks);
-			context.put(FacilioConstants.ContextNames.MODULE_LIST, createAndAddReadings(pm.getTitle(), fieldMap));
+			context.put(FacilioConstants.ContextNames.MODULE_LIST, createAndAddReadings(pm.getTitle(), fieldMap));	// db addition
 			context.put(FacilioConstants.ContextNames.READING_DATA_META_TYPE, ReadingDataMeta.ReadingInputType.TASK);
 			context.put(FacilioConstants.ContextNames.READING_RULES_LIST, getReadingRules(tasks));
 			context.put(FacilioConstants.ContextNames.ACTIONS_LIST, getActionsList(tasks));
@@ -178,7 +178,7 @@ public class AddPMReadingsForTasks implements Command {
 				}
 				
 				if (!fieldList.isEmpty()) {
-					modules.add(addReading(moduleName, fieldList));
+					modules.add(addReading(moduleName, fieldList));		// module addition done here
 					fieldList = new ArrayList<>();
 				}
 				else {

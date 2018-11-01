@@ -3467,11 +3467,15 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 	
 	public static JSONObject getCardParams(JSONObject jsonObject) {
 		try {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			if(jsonObject != null && jsonObject.containsKey("fieldId")) {
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioField field = modBean.getField((Long) jsonObject.get("fieldId"));
 				jsonObject.put("moduleName", field.getModule().getName());
 				jsonObject.put("fieldName", field.getName());
+			}
+			if(jsonObject != null && !jsonObject.containsKey("fieldId") && jsonObject.containsKey("moduleName") && jsonObject.containsKey("fieldName")) {
+				FacilioField field = modBean.getField((String)jsonObject.get("fieldName"), (String)jsonObject.get("moduleName"));
+				jsonObject.put("fieldId", field.getFieldId());
 			}
 		}
 		catch(Exception e) {

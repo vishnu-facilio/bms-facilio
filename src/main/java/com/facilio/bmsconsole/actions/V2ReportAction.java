@@ -296,6 +296,7 @@ public class V2ReportAction extends FacilioAction {
 			WidgetStaticContext widgetStaticContext = (WidgetStaticContext) dashboardWidgetContext;
 			params = widgetStaticContext.getParamsJson();
 		}
+		params = DashboardUtil.getCardParams(params);
 		
 		List<ReadingAnalysisContext> metrics = new ArrayList<>();
 		if(params != null) {
