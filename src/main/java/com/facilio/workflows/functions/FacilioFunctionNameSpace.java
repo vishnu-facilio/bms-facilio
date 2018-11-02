@@ -19,6 +19,7 @@ public enum FacilioFunctionNameSpace {
 	ENERGYMETER(11,"energyMeter"),
 	MODULE(12,"module"),
 	RESOURCE(13,"resource"),
+	SYSTEM(14, "system") //For internal purpose only. Should never be exposed for Users
 	;
 	
 	public Integer value;

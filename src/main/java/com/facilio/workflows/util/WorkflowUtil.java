@@ -14,7 +14,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -73,6 +72,7 @@ import com.facilio.workflows.functions.FacilioCostFunction;
 import com.facilio.workflows.functions.FacilioDateFunction;
 import com.facilio.workflows.functions.FacilioDefaultFunction;
 import com.facilio.workflows.functions.FacilioEnergyMeterFunction;
+import com.facilio.workflows.functions.FacilioFunctionNameSpace;
 import com.facilio.workflows.functions.FacilioFunctionsParamType;
 import com.facilio.workflows.functions.FacilioListFunction;
 import com.facilio.workflows.functions.FacilioMapFunction;
@@ -1460,47 +1460,51 @@ public class WorkflowUtil {
 	public static FacilioWorkflowFunctionInterface getFacilioFunction(String nameSpace,String functionName) {
 		
 		FacilioWorkflowFunctionInterface facilioWorkflowFunction = null;
-		
-		switch(nameSpace) {
-		case "default":
-			facilioWorkflowFunction = FacilioDefaultFunction.getFacilioDefaultFunction(functionName);
-			break;
-		case "math" :
-			facilioWorkflowFunction = FacilioMathFunction.getFacilioMathFunction(functionName);
-			break;
-		case "date" :
-			facilioWorkflowFunction = FacilioDateFunction.getFacilioDateFunction(functionName);
-			break;
-		case "thermoPhysical.R134a" :
-			facilioWorkflowFunction = ThermoPhysicalR134aFunctions.getThermoPhysicalR134aFunction(functionName);
-			break;
-		case "cost" :
-			facilioWorkflowFunction = FacilioCostFunction.getFacilioCostFunction(functionName);
-			break;
-		case "map" :
-			facilioWorkflowFunction = FacilioMapFunction.getFacilioMapFunction(functionName);
-			break;
-		case "list" :
-			facilioWorkflowFunction = FacilioListFunction.getFacilioListFunction(functionName);
-			break;
-		case "string" :
-			facilioWorkflowFunction = FacilioStringFunction.getFacilioStringFunction(functionName);
-			break;
-		case "readings" :
-			facilioWorkflowFunction = FacilioReadingFunctions.getFacilioReadingFunctions(functionName);
-			break;
-		case "psychrometrics" :
-			facilioWorkflowFunction = FacilioPsychrometricsFunction.getFacilioMathFunction(functionName);
-			break;
-		case "energyMeter" :
-			facilioWorkflowFunction = FacilioEnergyMeterFunction.getFacilioEnergyMeterFunction(functionName);
-			break;
-		case "module" :
-			facilioWorkflowFunction = FacilioModuleFunctions.getFacilioModuleFunctions(functionName);
-			break;
-		case "resource" :
-			facilioWorkflowFunction = FacilioResourceFunction.getFacilioResourceFunction(functionName);
-			break;
+		FacilioFunctionNameSpace nameSpaceEnum = FacilioFunctionNameSpace.getFacilioDefaultFunction(nameSpace);
+		if (nameSpaceEnum != null) {
+			switch(nameSpaceEnum) {
+				case DEFAULT:
+					facilioWorkflowFunction = FacilioDefaultFunction.getFacilioDefaultFunction(functionName);
+					break;
+				case MATH :
+					facilioWorkflowFunction = FacilioMathFunction.getFacilioMathFunction(functionName);
+					break;
+				case DATE :
+					facilioWorkflowFunction = FacilioDateFunction.getFacilioDateFunction(functionName);
+					break;
+				case THERMOPHYSICALR134A :
+					facilioWorkflowFunction = ThermoPhysicalR134aFunctions.getThermoPhysicalR134aFunction(functionName);
+					break;
+				case COST :
+					facilioWorkflowFunction = FacilioCostFunction.getFacilioCostFunction(functionName);
+					break;
+				case MAP :
+					facilioWorkflowFunction = FacilioMapFunction.getFacilioMapFunction(functionName);
+					break;
+				case LIST :
+					facilioWorkflowFunction = FacilioListFunction.getFacilioListFunction(functionName);
+					break;
+				case STRING :
+					facilioWorkflowFunction = FacilioStringFunction.getFacilioStringFunction(functionName);
+					break;
+				case READINGS :
+					facilioWorkflowFunction = FacilioReadingFunctions.getFacilioReadingFunctions(functionName);
+					break;
+				case PSYCHROMETRICS :
+					facilioWorkflowFunction = FacilioPsychrometricsFunction.getFacilioMathFunction(functionName);
+					break;
+				case ENERGYMETER :
+					facilioWorkflowFunction = FacilioEnergyMeterFunction.getFacilioEnergyMeterFunction(functionName);
+					break;
+				case MODULE :
+					facilioWorkflowFunction = FacilioModuleFunctions.getFacilioModuleFunctions(functionName);
+					break;
+				case RESOURCE :
+					facilioWorkflowFunction = FacilioResourceFunction.getFacilioResourceFunction(functionName);
+					break;
+				case SYSTEM:
+					break;
+			}
 		}
 		return facilioWorkflowFunction;
 	}
@@ -1508,47 +1512,51 @@ public class WorkflowUtil {
 	public static List<FacilioWorkflowFunctionInterface> getFacilioFunctions(String nameSpace) {
 		
 		List<FacilioWorkflowFunctionInterface> facilioWorkflowFunction = null;
-		
-		switch(nameSpace) {
-		case "default":
-			facilioWorkflowFunction = new ArrayList<>( FacilioDefaultFunction.getAllFunctions().values());
-			break;
-		case "math" :
-			facilioWorkflowFunction = new ArrayList<>( FacilioMathFunction.getAllFunctions().values());
-			break;
-		case "date" :
-			facilioWorkflowFunction = new ArrayList<>( FacilioDateFunction.getAllFunctions().values());
-			break;
-		case "thermoPhysical.R134a" :
-			facilioWorkflowFunction = new ArrayList<>( ThermoPhysicalR134aFunctions.getAllFunctions().values());
-			break;
-		case "cost" :
-			facilioWorkflowFunction = new ArrayList<>( FacilioCostFunction.getAllFunctions().values());
-			break;
-		case "map" :
-			facilioWorkflowFunction = new ArrayList<>( FacilioMapFunction.getAllFunctions().values());
-			break;
-		case "list" :
-			facilioWorkflowFunction = new ArrayList<>( FacilioListFunction.getAllFunctions().values());
-			break;
-		case "string" :
-			facilioWorkflowFunction = new ArrayList<>( FacilioStringFunction.getAllFunctions().values());
-			break;
-		case "readings" :
-			facilioWorkflowFunction = new ArrayList<>( FacilioReadingFunctions.getAllFunctions().values());
-			break;
-		case "psychrometrics" :
-			facilioWorkflowFunction = new ArrayList<>( FacilioPsychrometricsFunction.getAllFunctions().values());
-			break;
-		case "energyMeter" :
-			facilioWorkflowFunction = new ArrayList<>( FacilioEnergyMeterFunction.getAllFunctions().values());
-			break;
-		case "module" :
-			facilioWorkflowFunction = new ArrayList<>( FacilioModuleFunctions.getAllFunctions().values());
-			break;
-		case "resource" :
-			facilioWorkflowFunction = new ArrayList<>( FacilioResourceFunction.getAllFunctions().values());
-			break;
+		FacilioFunctionNameSpace nameSpaceEnum = FacilioFunctionNameSpace.getFacilioDefaultFunction(nameSpace);
+		if (nameSpaceEnum != null) {
+			switch(nameSpaceEnum) {
+				case DEFAULT:
+					facilioWorkflowFunction = new ArrayList<>( FacilioDefaultFunction.getAllFunctions().values());
+					break;
+				case MATH :
+					facilioWorkflowFunction = new ArrayList<>( FacilioMathFunction.getAllFunctions().values());
+					break;
+				case DATE :
+					facilioWorkflowFunction = new ArrayList<>( FacilioDateFunction.getAllFunctions().values());
+					break;
+				case THERMOPHYSICALR134A :
+					facilioWorkflowFunction = new ArrayList<>( ThermoPhysicalR134aFunctions.getAllFunctions().values());
+					break;
+				case COST :
+					facilioWorkflowFunction = new ArrayList<>( FacilioCostFunction.getAllFunctions().values());
+					break;
+				case MAP :
+					facilioWorkflowFunction = new ArrayList<>( FacilioMapFunction.getAllFunctions().values());
+					break;
+				case LIST :
+					facilioWorkflowFunction = new ArrayList<>( FacilioListFunction.getAllFunctions().values());
+					break;
+				case STRING :
+					facilioWorkflowFunction = new ArrayList<>( FacilioStringFunction.getAllFunctions().values());
+					break;
+				case READINGS :
+					facilioWorkflowFunction = new ArrayList<>( FacilioReadingFunctions.getAllFunctions().values());
+					break;
+				case PSYCHROMETRICS :
+					facilioWorkflowFunction = new ArrayList<>( FacilioPsychrometricsFunction.getAllFunctions().values());
+					break;
+				case ENERGYMETER :
+					facilioWorkflowFunction = new ArrayList<>( FacilioEnergyMeterFunction.getAllFunctions().values());
+					break;
+				case MODULE :
+					facilioWorkflowFunction = new ArrayList<>( FacilioModuleFunctions.getAllFunctions().values());
+					break;
+				case RESOURCE :
+					facilioWorkflowFunction = new ArrayList<>( FacilioResourceFunction.getAllFunctions().values());
+					break;
+				case SYSTEM:
+					break;
+			}
 		}
 		
 		return facilioWorkflowFunction;
