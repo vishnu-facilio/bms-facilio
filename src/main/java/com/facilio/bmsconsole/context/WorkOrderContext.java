@@ -174,7 +174,7 @@ public class WorkOrderContext extends TicketContext {
 	public void setCanCurrentUserApprove(Boolean canCurrentUserApprove) {
 		this.canCurrentUserApprove = canCurrentUserApprove;
 	}
-	public boolean canCurrentUserApprove() {
+	public boolean isCurrentUserAuthorizedToApprove() {
 		if(canCurrentUserApprove != null) {
 			return canCurrentUserApprove.booleanValue();
 		}
