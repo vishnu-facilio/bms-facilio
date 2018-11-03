@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.PickListOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.license.LicenseContext.FacilioLicense;
 
 public class User implements Serializable {
@@ -314,7 +315,7 @@ public class User implements Serializable {
 	public void setGroups(List<Long> groups) {
 		this.groups = groups;
 	}
-	public Criteria scopeCriteria(String moduleName)
+	public Criteria scopeCriteria(String moduleName, FacilioField...fields)
 	{
 		Criteria criteria = null;
 		if(getAccessibleSpace() == null) {
@@ -388,6 +389,10 @@ public class User implements Serializable {
 
 			criteria = new Criteria();
 			criteria.addAndCondition(condition);
+		}
+		if (fields != null && fields.length > 0) {
+			criteria = new Criteria();
+			criteria.addAndCondition(CriteriaAPI.getCondition(fields[0], accessibleSpace, BuildingOperator.BUILDING_IS));
 		}
 		return criteria;
 	}
