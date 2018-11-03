@@ -156,6 +156,68 @@ public enum CardType {
 			"		<field name=\"automanualstatus\" aggregate = \"lastValue\"/> 	\n" + 
 			"	</expression> \n" + 
 			"</workflow>",false),
+	
+	READING_GAUGE_CARD(7,"readingGaugeCard","<workflow>\n" + 
+			"	<parameter name=\"dateOperator\" type=\"String\"/> \n" + 
+			"	<parameter name=\"moduleName\" type=\"String\"/>   \n" + 
+			"	<parameter name=\"parentId\" type=\"Number\"/>     \n" + 
+			"	<parameter name=\"fieldName\" type=\"String\"/>   \n" + 
+			"	<parameter name=\"aggregateOpperator\" type=\"String\"/>   \n" + 
+			"	<parameter name=\"moduleName1\" type=\"String\"/>   \n" + 
+			"	<parameter name=\"parentId1\" type=\"Number\"/>     \n" + 
+			"	<parameter name=\"fieldName1\" type=\"String\"/>   \n" + 
+			"	<parameter name=\"aggregateOpperator1\" type=\"String\"/>\n" + 
+			"	<parameter name=\"constant\" type=\"Number\"/>\n" + 
+			"   <expression name=\"val1\">\n" + 
+			"      <module name=\"${moduleName}\" /> \n" + 
+			"      <criteria pattern=\"1 and 2\"> \n" + 
+			"         <condition sequence=\"1\">parentId`=`${parentId}</condition> \n" + 
+			"         <condition sequence=\"2\">TTIME`${dateOperator}`</condition>  \n" + 
+			"      </criteria>  \n" + 
+			"      <field name=\"${fieldName}\" aggregate=\"${aggregateOpperator}\" /> \n" + 
+			"   </expression>\n" + 
+			"   <conditions>\n" + 
+			"		<if criteria=\"constant<0\">\n" + 
+			"			<expression name=\"constant\">\n" + 
+			"      			<module name=\"${moduleName1}\" /> \n" + 
+			"      			<criteria pattern=\"1 and 2\"> \n" + 
+			"         			<condition sequence=\"1\">parentId`=`${parentId1}</condition> \n" + 
+			"         			<condition sequence=\"2\">TTIME`${dateOperator}`</condition>  \n" + 
+			"     			 </criteria>  \n" + 
+			"     			 <field name=\"${fieldName1}\" aggregate=\"${aggregateOpperator1}\" /> \n" + 
+			"   			</expression>\n" + 
+			"		</if>\n" + 
+			"   </conditions>\n" + 
+			"   <conditions>\n" + 
+			"		<if criteria=\"constant IS NOT NULL\">\n" + 
+			"			<conditions>\n" + 
+			"				<if criteria=\"val1 IS NOT NULL\">\n" + 
+			"					<conditions>\n" + 
+			"						<if criteria=\"constant > 0\">\n" + 
+			"							<expression name=\"percent\">\n" + 
+			"    							<expr>(val1/constant)*100</expr>\n" + 
+			"    						</expression>\n" + 
+			"						</if>\n" + 
+			"					</conditions>\n" + 
+			"				</if>\n" + 
+			"			</conditions>\n" + 
+			"		</if>\n" + 
+			"	</conditions>\n" + 
+			"     <conditions>\n" + 
+			"    	<if criteria=\"percent IS NOT NULL\">\n" + 
+			"    		<conditions>\n" + 
+			"    			<if criteria=\"percent>100\">\n" + 
+			"    				<expression name=\"percent\">\n" + 
+			"    					<expr>percent-100</expr>\n" + 
+			"    				</expression>\n" + 
+			"    				<expression name=\"isPlus\">\n" + 
+			"    					<constant>true</constant>\n" + 
+			"    				</expression>\n" + 
+			"    			</if>\n" + 
+			"    		</conditions>\n" + 
+			"    	</if>\n" + 
+			"    </conditions>\n" + 
+			"</workflow>",false),
 	;
 	
 	private Integer value;

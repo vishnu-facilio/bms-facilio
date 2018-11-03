@@ -240,6 +240,8 @@ public class WorkflowUtil {
 	static final String PATTERN_STRING =  "pattern";
 	static final String SEQUENCE_STRING =  "sequence";
 	static final String RESULT_STRING =  "result";
+	static final String IS_NULL_STRING =  "IS NULL";
+	static final String IS_NOT_NULL_STRING =  "IS NOT NULL";
 	
 	public static String getCacheKey (String moduleName, long resourceId) {
 		return getCacheKey(moduleName, String.valueOf(resourceId));
@@ -1586,6 +1588,10 @@ public class WorkflowUtil {
 		if(exp.matches(ALPHA_NUMERIC_WITH_UNDERSCORE)) {
 			return variablesMap.get(exp);
 		}
+		Boolean customExRes = evalCustomEx(exp,variablesMap);
+		if(customExRes != null) {
+			return customExRes;
+		}
 		Expression expression = new Expression(exp);
 		List<String> keys = expression.getUsedVariables();
 		if(variablesMap.containsKey("e")) {
@@ -1619,6 +1625,34 @@ public class WorkflowUtil {
 		}
 	}
 	
+	private static Boolean evalCustomEx(String exp,Map<String,Object> variablesMap) {
+		
+		if(exp.contains(IS_NULL_STRING) || exp.contains(IS_NOT_NULL_STRING)) {
+			int index = exp.indexOf(IS_NULL_STRING);
+			if(index < 0) {
+				index = exp.indexOf(IS_NOT_NULL_STRING);
+			}
+			String var = exp.substring(0, index).trim();
+			Object value = variablesMap.get(var);
+			if(exp.contains(IS_NULL_STRING)) {
+				if(value == null) {
+					return Boolean.TRUE;
+				}
+				else {
+					return Boolean.FALSE;
+				}
+			}
+			else if(exp.contains(IS_NOT_NULL_STRING)) {
+				if(value != null) {
+					return Boolean.TRUE;
+				}
+				else {
+					return Boolean.FALSE;
+				}
+			}
+ 		}
+		return null;
+	}
 	public static ExpressionContext fillParamterAndParseExpressionContext(ExpressionContext expressionContext,Map<String,Object> variableResultMap) throws Exception {
 		
 		String expressionString = expressionContext.getExpressionString();
