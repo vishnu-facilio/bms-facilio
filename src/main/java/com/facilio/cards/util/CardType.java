@@ -178,7 +178,7 @@ public enum CardType {
 			"      <field name=\"${fieldName}\" aggregate=\"${aggregateOpperator}\" /> \n" + 
 			"   </expression>\n" + 
 			"   <conditions>\n" + 
-			"		<if criteria=\"constant<0\">\n" + 
+			"		<if criteria=\"constant &lt; 0\">\n" + 
 			"			<expression name=\"constant\">\n" + 
 			"      			<module name=\"${moduleName1}\" /> \n" + 
 			"      			<criteria pattern=\"1 and 2\"> \n" + 
@@ -194,7 +194,7 @@ public enum CardType {
 			"			<conditions>\n" + 
 			"				<if criteria=\"val1 IS NOT NULL\">\n" + 
 			"					<conditions>\n" + 
-			"						<if criteria=\"constant > 0\">\n" + 
+			"						<if criteria=\"constant &gt; 0\">\n" + 
 			"							<expression name=\"percent\">\n" + 
 			"    							<expr>(val1/constant)*100</expr>\n" + 
 			"    						</expression>\n" + 
@@ -205,7 +205,7 @@ public enum CardType {
 			"			<conditions>\n" + 
 			"				<if criteria=\"maxPercentage IS NOT NULL\">\n" + 
 			"					<conditions>\n" + 
-			"						<if criteria=\"maxPercentage > 0\">\n" + 
+			"						<if criteria=\"maxPercentage &gt; 0\">\n" + 
 			"							<expression name=\"maxConstant\">\n" + 
 			"    							<expr>constant+(constant*maxPercentage/100)</expr>\n" + 
 			"    						</expression>\n" + 
@@ -218,7 +218,7 @@ public enum CardType {
 			"     <conditions>\n" + 
 			"    	<if criteria=\"percent IS NOT NULL\">\n" + 
 			"    		<conditions>\n" + 
-			"    			<if criteria=\"percent>100\">\n" + 
+			"    			<if criteria=\"percent &gt; 100\">\n" + 
 			"    				<expression name=\"percent\">\n" + 
 			"    					<expr>percent-100</expr>\n" + 
 			"    				</expression>\n" + 
