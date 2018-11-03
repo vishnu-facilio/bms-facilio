@@ -168,7 +168,7 @@ public enum CardType {
 			"	<parameter name=\"fieldName1\" type=\"String\"/>   \n" + 
 			"	<parameter name=\"aggregateOpperator1\" type=\"String\"/>\n" + 
 			"	<parameter name=\"constant\" type=\"Number\"/>\n" + 
-			"    <parameter name=\"maxPrecent\" type=\"Number\"/>\n" + 
+			"    <parameter name=\"maxPercentage\" type=\"Number\"/>\n" + 
 			"   <expression name=\"val1\">\n" + 
 			"      <module name=\"${moduleName}\" /> \n" + 
 			"      <criteria pattern=\"1 and 2\"> \n" + 
@@ -203,11 +203,11 @@ public enum CardType {
 			"				</if>\n" + 
 			"			</conditions>\n" + 
 			"			<conditions>\n" + 
-			"				<if criteria=\"maxPrecent IS NOT NULL\">\n" + 
+			"				<if criteria=\"maxPercentage IS NOT NULL\">\n" + 
 			"					<conditions>\n" + 
-			"						<if criteria=\"maxPrecent > 0\">\n" + 
+			"						<if criteria=\"maxPercentage > 0\">\n" + 
 			"							<expression name=\"maxConstant\">\n" + 
-			"    							<expr>constant+(constant*maxPrecent/100)</expr>\n" + 
+			"    							<expr>constant+(constant*maxPercentage/100)</expr>\n" + 
 			"    						</expression>\n" + 
 			"						</if>\n" + 
 			"					</conditions>\n" + 
