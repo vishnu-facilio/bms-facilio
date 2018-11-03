@@ -4,6 +4,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
 
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -61,14 +62,16 @@ public class FacilioAction extends ActionSupport {
 		}
 		this.result.put(key, result);			
 	}
-	
+
 	private String stackTrace;
 	public String getStackTrace() {
 		return stackTrace;
 	}
 	public void setStackTrace(Exception e) {
 		if (e != null) {
-			this.stackTrace = ExceptionUtils.getStackTrace(e);
+			if(!"production".equals(AwsUtil.getConfig("environment"))) {
+				this.stackTrace = ExceptionUtils.getStackTrace(e);
+			}
 			LogManager.getLogger(this.getClass().getName()).error("Exception occured: - ", e);
 		}
 	}
@@ -122,6 +125,14 @@ public class FacilioAction extends ActionSupport {
 	
 	public int getPerPage() {
 		return this.perPage;
+	}
+	
+	private String contentType="application/octet-stream";
+	public String getContentType() {
+		return contentType;
+	}
+	protected void setContentType(String contentType) {
+		this.contentType = contentType;
 	}
 
 }

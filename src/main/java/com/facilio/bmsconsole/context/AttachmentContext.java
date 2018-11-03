@@ -1,5 +1,8 @@
 package com.facilio.bmsconsole.context;
 
+import org.apache.commons.lang.StringUtils;
+
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
@@ -92,6 +95,11 @@ public class AttachmentContext extends ModuleBaseWithCustomFields {
 	
 	public String getPreviewUrl() throws Exception {
 		if (this.fileId > 0) {
+			if (StringUtils.isNotEmpty(attachmentModule) && recordId > 0) {
+				StringBuilder builder = new StringBuilder(AwsUtil.getConfig("api.servername"))
+						.append("/api/v2/").append(attachmentModule).append("/attachment/").append(recordId).append("?fileId=").append(fileId);
+				return builder.toString();
+			}
 			FileStore fs = FileStoreFactory.getInstance().getFileStore();
 			return fs.getPrivateUrl(this.fileId);
 		}
@@ -103,6 +111,16 @@ public class AttachmentContext extends ModuleBaseWithCustomFields {
 			return fs.getDownloadUrl(this.fileId);
 		}
 		return null;
+	}
+	
+	private String attachmentModule;
+	public void setAttachmentModule(String attachmentModule) {
+		this.attachmentModule = attachmentModule;
+	}
+	
+	private long recordId = -1;
+	public void setRecordId(long recordId) {
+		this.recordId = recordId;
 	}
 	
 	public static enum AttachmentType {

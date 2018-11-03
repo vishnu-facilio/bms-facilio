@@ -121,12 +121,6 @@
 			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 		</action>
 		
-		
-		
-		
-		
-		
-		
 		<action name="sync" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="syncOfflineWorkOrders">
 			<param name="moduleName">workorder</param>
@@ -156,11 +150,12 @@
 	</package>
 	
 	<package name="approvalListApiV2" namespace="/api/v2/approval/view" extends="v2Api">
-		<action name="*" class="com.facilio.bmsconsole.actions.ApprovalAction"
-			method="v2approvalList">
+		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="v2workOrderList">
 			<param name="moduleName">workorder</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<param name="viewName">{1}</param>
+			<param name="approval">true</param>
 			<result name="success" type="json">
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">responseCode, ^result.*</param>
@@ -485,6 +480,25 @@
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
 			<param name="viewName">{1}</param>
+		</action>
+	</package>
+	
+	<package name="attachmentPreviewApi" extends="v2Api">
+		<global-results>
+			<result name="success" type="stream">
+				<param name="contentType">contentType</param>
+				<param name="inputName">downloadStream</param>
+				<param name="bufferSize">1024</param>
+			</result>
+		</global-results>
+	</package>
+	
+	<package name="assetAttachmentApiv2" namespace="/api/v2/assets/attachment" extends="attachmentPreviewApi">
+		<action name="*" class="com.facilio.bmsconsole.actions.AttachmentAction" method="previewAttachment">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+			<param name="recordId">{1}</param>
+			<param name="module">assetattachments</param>
 		</action>
 	</package>
 	
