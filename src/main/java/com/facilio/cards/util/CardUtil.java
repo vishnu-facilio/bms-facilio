@@ -47,11 +47,27 @@ public class CardUtil {
 		if(moduleName != null && fieldName != null) {
 			
 			FacilioField field = getField(moduleName, fieldName);
+			getMetric(field);
+		}
+		return -1;
+	}
+	
+	public static int getMetric(FacilioField field) {
+		if(field instanceof NumberField) {
+			NumberField numberField = (NumberField) field;
+			return numberField.getMetric();
+		}
+		return -1;
+	}
+	
+	public static int getMetic(Long fieldId) throws Exception {
+		
+		if(fieldId != null) {
 			
-			if(field instanceof NumberField) {
-				NumberField numberField = (NumberField) field;
-				return numberField.getMetric();
-			}
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			
+			FacilioField field = modBean.getField(fieldId);
+			getMetric(field);
 		}
 		return -1;
 	}

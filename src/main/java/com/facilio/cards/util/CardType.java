@@ -187,6 +187,9 @@ public enum CardType {
 			"     			 </criteria>  \n" + 
 			"     			 <field name=\"${fieldName1}\" aggregate=\"${aggregateOpperator1}\" /> \n" + 
 			"   			</expression>\n" + 
+			"   			<expression name=\"unit1\">\n" + 
+			"    			<function>default.getUnit(fieldName1,moduleName1)</function>\n" + 
+			"			</expression>\n" + 
 			"		</if>\n" + 
 			"   </conditions>\n" + 
 			"   <conditions>\n" + 
@@ -229,7 +232,11 @@ public enum CardType {
 			"    		</conditions>\n" + 
 			"    	</if>\n" + 
 			"    </conditions>\n" + 
-			"</workflow>",false),
+			"    <expression name=\"unit\">\n" + 
+			"    		<function>default.getUnit(fieldName,moduleName)</function>\n" + 
+			"	</expression>\n" + 
+			"</workflow>\n" + 
+			"",false),
 	;
 	
 	private Integer value;

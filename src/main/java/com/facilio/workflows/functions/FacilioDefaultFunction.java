@@ -22,6 +22,7 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.cards.util.CardUtil;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
@@ -157,7 +158,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 		}
 	},
 	
-	FATCH_DATA(6,"fetchData") {
+	FETCH_DATA(6,"fetchData") {
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			// TODO Auto-generated method stub
@@ -188,6 +189,39 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 				if(aggregateCondition != null) {
 					
 				}
+			}
+			return null;
+		}
+	},
+	
+	GET_UNIT(6,"getUnit") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			if (objects.length < 1) {
+				return false;
+			}
+			if(objects[0] == null) {
+				return null;
+			}
+			
+			String fieldRefObject = objects[0].toString();
+			String moduleRefObject = null;
+			
+			if(objects.length > 1 && objects[1] != null) {
+				moduleRefObject = objects[1].toString();
+			}
+			
+			int metric = -1;
+			if(FacilioUtil.isNumeric(fieldRefObject)) {
+				Long fieldId = Long.parseLong(fieldRefObject);
+				metric = CardUtil.getMetic(fieldId);
+			}
+			else if(moduleRefObject != null) {
+				metric = CardUtil.getMetic(moduleRefObject, fieldRefObject);
+			}
+			if(metric > 0) {
+				return UnitsUtil.getOrgDisplayUnit(AccountUtil.getCurrentOrg().getId(), metric);
 			}
 			return null;
 		}
