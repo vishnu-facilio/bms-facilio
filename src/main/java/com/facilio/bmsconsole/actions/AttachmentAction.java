@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.AttachmentContext.AttachmentType;
+import com.facilio.bmsconsole.util.AttachmentsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileStore;
@@ -115,6 +116,13 @@ public class AttachmentAction  extends FacilioAction {
 			
 			List<AttachmentContext> attachmentList = (List<AttachmentContext>) context.get(FacilioConstants.ContextNames.ATTACHMENT_LIST);
 			setAttachments(attachmentList);
+			
+			if (attachmentList != null && !attachmentList.isEmpty()) {
+				if (module.equals(FacilioConstants.ContextNames.ASSET_ATTACHMENTS)) {
+					attachmentList.get(0).setAttachmentModule(FacilioConstants.ContextNames.ASSET_LIST);
+					attachmentList.get(0).setRecordId(recordId);
+				}
+			}
 		} catch (Exception e) {
 			log.info("Exception occurred ", e);
 		}
@@ -139,6 +147,14 @@ public class AttachmentAction  extends FacilioAction {
 		getAttachmentsChain.execute(context);
 		
 		List<AttachmentContext> attachmentList = (List<AttachmentContext>) context.get(FacilioConstants.ContextNames.ATTACHMENT_LIST);
+		if (attachmentList != null && !attachmentList.isEmpty()) {
+			if (module.equals(FacilioConstants.ContextNames.ASSET_ATTACHMENTS)) {
+				attachmentList.forEach(attachment -> {
+					attachment.setAttachmentModule(FacilioConstants.ContextNames.ASSET_LIST);
+					attachment.setRecordId(recordId);
+				});
+			}
+		}
 		setAttachments(attachmentList);
 		return SUCCESS;
 	}
@@ -207,6 +223,26 @@ public class AttachmentAction  extends FacilioAction {
 		addAttachment();
 		setResult(FacilioConstants.ContextNames.ATTACHMENT, attachments);
 		return SUCCESS;
+	}
+	
+	public String previewAttachment() throws Exception {
+		AttachmentContext attachment = AttachmentsAPI.fetchAttachment(module, recordId, fileId);
+		if (attachment != null) {
+			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			downloadStream = fs.readFile(attachment.getFileId());
+			setContentType(attachment.getContentType());
+			
+			return SUCCESS;
+		}
+		throw new IllegalArgumentException("Cannot fetch file");
+	}
+	
+	private Long fileId;
+	public Long getFileId() {
+		return fileId;
+	}
+	public void setFileId(Long fileId) {
+		this.fileId = fileId;
 	}
 	
 }
