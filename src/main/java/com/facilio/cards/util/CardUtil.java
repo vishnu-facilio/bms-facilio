@@ -47,7 +47,7 @@ public class CardUtil {
 		if(moduleName != null && fieldName != null) {
 			
 			FacilioField field = getField(moduleName, fieldName);
-			getMetric(field);
+			return getMetric(field);
 		}
 		return -1;
 	}
