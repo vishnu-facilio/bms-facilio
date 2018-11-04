@@ -169,6 +169,7 @@ public enum CardType {
 			"	<parameter name=\"aggregateOpperator1\" type=\"String\"/>\n" + 
 			"	<parameter name=\"constant\" type=\"Number\"/>\n" + 
 			"    <parameter name=\"maxPercentage\" type=\"Number\"/>\n" + 
+			"    <parameter name=\"maxConstant\" type=\"Number\"/>\n" + 
 			"   <expression name=\"val1\">\n" + 
 			"      <module name=\"${moduleName}\" /> \n" + 
 			"      <criteria pattern=\"1 and 2\"> \n" + 
@@ -235,8 +236,7 @@ public enum CardType {
 			"    <expression name=\"unit\">\n" + 
 			"    		<function>default.getUnit(fieldName,moduleName)</function>\n" + 
 			"	</expression>\n" + 
-			"</workflow>\n" + 
-			"",false),
+			"</workflow>",false),
 	;
 	
 	private Integer value;
