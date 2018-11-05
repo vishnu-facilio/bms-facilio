@@ -54,7 +54,7 @@ public class ImportDataAction extends ActionSupport {
         FacilioModule facilioModule = modBean.getModule(getModuleName());
 		
         if(facilioModule.getName().equals(FacilioConstants.ContextNames.ASSET) && (assetCategory != -1)) {
-        	HashMap<String,String> moduleInfo = AssetsAPI.getAssetModuleName(this.assetCategory);
+        	Map<String,String> moduleInfo = AssetsAPI.getAssetModuleName(this.assetCategory);
         	String moduleName = moduleInfo.get(FacilioConstants.ContextNames.MODULE_NAME);
         	if(!moduleName.equals(FacilioConstants.ContextNames.ASSET)) {
         		facilioModule = modBean.getModule(moduleName);
