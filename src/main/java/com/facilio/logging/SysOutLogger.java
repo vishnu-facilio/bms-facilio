@@ -11,15 +11,11 @@ public class SysOutLogger extends PrintStream {
 
     private String loggerName;
     private Logger logger;
-    private boolean productionEnvironment = false;
 
     public SysOutLogger(String loggerName) throws FileNotFoundException {
         super(loggerName);
         this.loggerName = loggerName;
         this.logger = Logger.getLogger(loggerName);
-        if("production".equals(AwsUtil.getConfig("environment")) && "SysOut".equals(loggerName)) {
-            productionEnvironment = true;
-        }
     }
 
 
@@ -92,10 +88,9 @@ public class SysOutLogger extends PrintStream {
     }
 
     public void println(String x) {
-        if( productionEnvironment) {
-            return;
+        if(AwsUtil.isDevelopment()) {
+        		logger.log(Level.INFO, x);
         }
-        logger.log(Level.INFO, x);
     }
 
     public void println(Object x) {
