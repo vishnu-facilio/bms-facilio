@@ -208,12 +208,15 @@ public class TransactionChainFactory {
 		
 		public static Chain getUpdateAssetChain() {
 			Chain c = getDefaultChain();
+			c.addCommand(new AddCategoryOnAssetUpdateCommand());
 			c.addCommand(new SetModuleForSpecialAssetsCommand());
 //			c.addCommand(SetTableNamesCommand.getForAsset());
 			c.addCommand(new LoadAssetFields());
 //			c.addCommand(new LoadAllFieldsCommand());
 			c.addCommand(new GenericUpdateModuleDataCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
+			c.addCommand(FacilioChainFactory.getCategoryReadingsChain());
+			c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
 			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}

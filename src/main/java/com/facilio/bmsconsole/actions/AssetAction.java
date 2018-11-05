@@ -84,12 +84,6 @@ public class AssetAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
 		context.put(FacilioConstants.ContextNames.RECORD, asset);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(asset.getId()));
-		long categoryId=-1;
-		AssetCategoryContext assetCategory= asset.getCategory();
-		if(assetCategory!=null && assetCategory.getId() > 0) {
-			categoryId=assetCategory.getId();
-		}
-		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, categoryId);
 		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 		
 		Chain updateAssetChain = TransactionChainFactory.getUpdateAssetChain();

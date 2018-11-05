@@ -38,9 +38,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -585,8 +583,8 @@ public class AssetsAPI {
 		return data;
 	}
 	
-	public static HashMap<String,String> getAssetModuleName(Long categoryId) throws Exception{
-		HashMap<String,String> moduleInfo = new HashMap<String,String>();
+	public static Map<String,String> getAssetModuleName(Long categoryId) throws Exception{
+		Map<String,String> moduleInfo = new HashMap<String,String>();
 		if (categoryId == null || categoryId <= 0)
 		{	
 			moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, "asset");
@@ -600,6 +598,11 @@ public class AssetsAPI {
 			{
 				moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.ENERGY_METER);
 				moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Energy_Meter");
+			}
+			else if(assetCategoryName.trim().equalsIgnoreCase("Water Meter"))
+			{
+				moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WATER_METER);
+				moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Water_Meter");
 			}
 			else if(assetCategoryName.trim().equalsIgnoreCase("Chiller"))
 			{
@@ -652,8 +655,7 @@ public class AssetsAPI {
 				moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Assets");
 			}
 		}
-		
-	return moduleInfo;
+		return moduleInfo;
 	}
 	
 }
