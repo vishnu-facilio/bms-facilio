@@ -486,7 +486,7 @@
 	<package name="attachmentPreviewApi" extends="v2Api">
 		<global-results>
 			<result name="success" type="stream">
-				<param name="contentType">contentType</param>
+				<param name="contentType">${contentType}</param>
 				<param name="inputName">downloadStream</param>
 				<param name="bufferSize">1024</param>
 			</result>
