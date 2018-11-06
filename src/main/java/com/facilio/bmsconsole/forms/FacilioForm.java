@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.forms;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -7,7 +8,10 @@ import java.util.Map;
 
 import com.facilio.bmsconsole.modules.FacilioModule;
 
-public class FacilioForm {
+public class FacilioForm implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
+	
 	private long id = -1;
 	public long getId() {
 		return this.id;

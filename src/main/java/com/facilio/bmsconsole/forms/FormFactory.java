@@ -27,6 +27,7 @@ public class FormFactory {
 		Map<String, FacilioForm> forms = new HashMap<>();
 		forms.put("workOrderForm", getWorkOrderForm());
 		forms.put("serviceWorkRequest", getServiceWorkRequestForm());
+		forms.put("serviceWorkOrder", getServiceWorkOrderForm());
 		forms.put("loggedInServiceWorkRequest", getLoggedInServiceWorkRequest());
 		forms.put("approvalForm", getApprovalForm());
 		return forms;
@@ -71,6 +72,16 @@ public class FormFactory {
 		form.setDisplayName("SUBMIT A REQUEST");
 		form.setName("serviceWorkRequest");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER_REQUEST));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getServiceWorkRequestFormFields());
+		form.setFormType(FormType.PORTAL);
+		return form;
+	}
+	public static FacilioForm getServiceWorkOrderForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("SUBMIT A REQUEST");
+		form.setName("serviceWorkOrder");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getServiceWorkRequestFormFields());
 		form.setFormType(FormType.PORTAL);

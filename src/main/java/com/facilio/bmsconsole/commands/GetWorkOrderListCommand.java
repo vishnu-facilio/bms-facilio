@@ -104,9 +104,11 @@ public class GetWorkOrderListCommand implements Command {
 			selectBuilder.andCriteria(scopeCriteria);
 		}
 
-		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(moduleName,"read");
-		if(permissionCriteria != null) {
-			selectBuilder.andCriteria(permissionCriteria);
+		if (AccountUtil.getCurrentAccount().getUser().getUserType() != 2) {
+			Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(moduleName,"read");
+			if(permissionCriteria != null) {
+				selectBuilder.andCriteria(permissionCriteria);
+			}
 		}
 
 		if(context.get(FacilioConstants.ContextNames.WO_DUE_STARTTIME) != null && (Long) context.get(FacilioConstants.ContextNames.WO_DUE_STARTTIME) != -1)

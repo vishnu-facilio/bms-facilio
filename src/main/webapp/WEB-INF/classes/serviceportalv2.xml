@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+    "http://struts.apache.org/dtds/struts-2.5.dtd">
+
+<struts>
+
+	<package name="servicePortalApiV2" namespace="/api/v2/service" extends="v2Api">
+	
+		<interceptors>
+			<interceptor name="portalinterceptor"
+				class="com.facilio.serviceportal.actions.PortalAuthInterceptor" />
+			<interceptor-stack name="defaultInterceptor">
+				<interceptor-ref name="defaultStack" />
+				<interceptor-ref name="portalinterceptor" />
+				<interceptor-ref name="json">
+					<param name="enableSMD">true</param>
+				</interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+
+		<default-interceptor-ref name="defaultInterceptor" />
+		<global-results>
+			<result name="login">/service/login.jsp</result>
+			<result name="unauthorized" type="redirect">
+				<param name="location">/jsps/serviceportal/unauthorized.jsp</param>
+				<param name="parse">false</param>
+			</result>
+		</global-results>
+		
+		<action name="workorders" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="v2workOrderList">
+			<param name="viewName">myrequests</param>
+		</action>
+		
+	</package>
+	
+	<package name="serviceWorkOrderApiV2" namespace="/api/v2/service/workorders" extends="servicePortalApiV2">
+		<action name="add" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="addPortalOrders">
+		</action>
+		
+		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="v2viewWorkOrder">
+			<param name="workOrderId">{1}</param>
+		</action>
+	</package>
+</struts>

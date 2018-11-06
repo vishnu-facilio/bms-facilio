@@ -112,6 +112,7 @@ public class ViewFactory {
 		views.put("resolved", getAllResolvedWorkOrders().setOrder(order++));
 		views.put("closed", getAllClosedWorkOrders().setOrder(order++));
 		views.put("report", getReportView().setOrder(order++));
+		views.put("myrequests", getMyRequestWorkorders().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.WORK_ORDER, views);
 		
 		order = 1;
@@ -1630,6 +1631,31 @@ public class ViewFactory {
 		
 		return reportView;
 	}
+	
+	private static FacilioView getMyRequestWorkorders() {
+		
+		Criteria criteria = new Criteria();
+		FacilioModule workOrdersModule = ModuleFactory.getWorkOrdersModule();
+		criteria.addAndCondition(getMyRequestCondition(workOrdersModule));
+		
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(workOrdersModule);
+		
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		
+		FacilioView myAllWorkordersView = new FacilioView();
+		myAllWorkordersView.setName("myall");
+		myAllWorkordersView.setDisplayName("My Work Orders");
+		myAllWorkordersView.setCriteria(criteria);
+		myAllWorkordersView.setSortFields(sortFields);
+		myAllWorkordersView.setHidden(true);
+		
+		return myAllWorkordersView;
+	}
+	
 	
 	public static Criteria getCriteriaForView(String viewName, FacilioModule module) {
 		

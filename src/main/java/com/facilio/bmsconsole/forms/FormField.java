@@ -1,10 +1,10 @@
 package com.facilio.bmsconsole.forms;
 
-import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
-import com.facilio.bmsconsole.modules.FieldType;
+import java.io.Serializable;
+
 import com.facilio.bmsconsole.modules.FacilioField.FieldDisplayType;
 
-public class FormField {
+public class FormField implements Serializable {
 	private static final long serialVersionUID = 4252438995947509456L;
 	
 	private long id = -1;

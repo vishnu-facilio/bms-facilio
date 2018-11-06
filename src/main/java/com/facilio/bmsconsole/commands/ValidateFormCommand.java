@@ -10,6 +10,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.WorkOrderContext.WOUrgency;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext.WORUrgency;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
@@ -97,7 +98,7 @@ public class ValidateFormCommand implements Command {
 				}
 				break;
 			case URGENCY:
-				if (!(value instanceof Integer && (((Integer) value) == -1 || WORUrgency.getWORUrgency((Integer) value) != null))) {
+				if (!(value instanceof Integer && (((Integer) value) == -1 || WORUrgency.getWORUrgency((Integer) value) != null || WOUrgency.valueOf((Integer) value) != null))) {
 					throw new IllegalArgumentException(f.getDisplayName() + " is invalid.");
 				}
 			default:

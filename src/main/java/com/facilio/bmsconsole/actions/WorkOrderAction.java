@@ -19,13 +19,13 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ActionForm;
-import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.AttachmentContext.AttachmentType;
@@ -43,6 +43,7 @@ import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -64,7 +65,6 @@ import com.facilio.bmsconsole.workflow.rule.ActivityType;
 import com.facilio.bmsconsole.workflow.rule.TicketActivity;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.util.FacilioUtil;
 
 public class WorkOrderAction extends FacilioAction {
 
@@ -125,10 +125,16 @@ public class WorkOrderAction extends FacilioAction {
 	}
 
 	public String addWorkOrder(WorkOrderContext workorder) throws Exception {
-		workorder.setSourceType(TicketContext.SourceType.WEB_ORDER);
+		if (workorder.getSourceTypeEnum() == null) {
+			workorder.setSourceType(TicketContext.SourceType.WEB_ORDER);
+		}
 		FacilioContext context = new FacilioContext();
 		
 		context.put(FacilioConstants.ContextNames.REQUESTER, workorder.getRequester());
+		if (AccountUtil.getCurrentUser() == null && workorder.getRequester() != null && workorder.getRequester().getEmail() != null) {
+			context.put(FacilioConstants.ContextNames.IS_PUBLIC_REQUEST, true);
+		}
+		
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
 		
@@ -137,6 +143,11 @@ public class WorkOrderAction extends FacilioAction {
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.attachedFilesContentType);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_TYPE, this.attachmentType);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
+ 		
+ 		if (this.getFormName() != null && !this.getFormName().isEmpty()) {
+			context.put(FacilioConstants.ContextNames.FORM_NAMES, new String[]{this.getFormName()});
+			context.put(FacilioConstants.ContextNames.FORM_OBJECT, workorder);
+		}
 		
 		Command addWorkOrder = TransactionChainFactory.getAddWorkOrderChain();
 		addWorkOrder.execute(context);
@@ -1393,6 +1404,9 @@ public class WorkOrderAction extends FacilioAction {
 	public String workOrderList() throws Exception {
 		// TODO Auto-generated method stub
 		FacilioContext context = new FacilioContext();
+		if (isApproval()) {
+			setViewName("approval_" + getViewName());
+		}
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
 		context.put(FacilioConstants.ContextNames.WO_DUE_STARTTIME, getStartTime());
 		context.put(FacilioConstants.ContextNames.WO_DUE_ENDTIME, getEndTime());
@@ -1434,9 +1448,7 @@ public class WorkOrderAction extends FacilioAction {
 		pagination.put("page", getPage());
 		pagination.put("perPage", getPerPage());
 		context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
-		System.out.println("PAGINATION ####### " + pagination);
-
-		System.out.println("View Name : " + getViewName());
+		
 		Chain workOrderListChain = ReadOnlyChainFactory.getWorkOrderListChain();
 		workOrderListChain.execute(context);
 
@@ -1517,6 +1529,28 @@ public class WorkOrderAction extends FacilioAction {
 
 	public void setWorkOrders(List<WorkOrderContext> workOrders) {
 		this.workOrders = workOrders;
+	}
+	
+	private Boolean approval;
+	public Boolean getApproval() {
+		return approval;
+	}
+	public void setApproval(Boolean approval) {
+		this.approval = approval;
+	}
+	public boolean isApproval() {
+		if (approval != null) {
+			return approval.booleanValue();
+		}
+		return false;
+	}
+	
+	private String formName;
+	public void setFormName(String formName) {
+		this.formName = formName;
+	}
+	public String getFormName() {
+		return this.formName;
 	}
 
 	public String getModuleLinkName() {
@@ -1754,6 +1788,12 @@ public class WorkOrderAction extends FacilioAction {
 		}
 		setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
 		return SUCCESS;
+	}
+	
+	public String addPortalOrders() throws Exception {
+		workorder.setSourceType(SourceType.SERVICE_PORTAL_REQUEST);
+		workorder.setSendForApproval(true);
+		return v2addWorkOrder();
 	}
 	
 	public String syncOfflineWorkOrders() throws Exception {

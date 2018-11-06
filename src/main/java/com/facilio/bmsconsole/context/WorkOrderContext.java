@@ -180,4 +180,40 @@ public class WorkOrderContext extends TicketContext {
 		}
 		return false;
 	}
+	
+	private WOUrgency urgency;
+	public WOUrgency getUrgencyEnum() {
+		return urgency;
+	}
+	public int getUrgency() {
+		if (urgency != null) {
+			return urgency.getValue();
+		}
+		return -1;
+	}
+	
+	public void setUrgency(WOUrgency urgency) {
+		this.urgency = urgency;
+	}
+	public void setUrgency(int urgencyval) {
+		this.urgency = WOUrgency.valueOf(urgencyval);
+	}
+	
+	public static enum WOUrgency {
+		NOTURGENT,
+		URGENT,
+		EMERGENCY
+		;
+		
+		public int getValue() {
+			return ordinal() + 1;
+		}
+		
+		public static WOUrgency valueOf (int value) {
+			if (value > 0 && value <= values().length) {
+				return values() [value - 1];
+			}
+			return null;
+		}
+	}
 }

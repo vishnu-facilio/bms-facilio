@@ -20,6 +20,7 @@
 	<include file="api.xml" />
 	<include file="apiv2.xml" />
 	<include file="setupv2.xml" />
+	<include file="serviceportalv2.xml" />
 	<include file="eventconsole.xml" />
 	
 	
