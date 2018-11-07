@@ -152,6 +152,14 @@ public class WorkOrderContext extends TicketContext {
 	public void setWaitingApprovals(List<ApproverContext> waitingApprovals) {
 		this.waitingApprovals = waitingApprovals;
 	}
+	
+	private User requestedBy;
+	public User getRequestedBy() {
+		return requestedBy;
+	}
+	public void setRequestedBy(User requestedBy) {
+		this.requestedBy = requestedBy;
+	}
 
 	private Boolean sendForApproval;
 	public Boolean getSendForApproval() {

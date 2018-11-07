@@ -117,11 +117,12 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	}
 	
 	@Override
-	public long addWorkOrder(WorkOrderContext workOrder, List<File> attachedFiles, List<String> attachedFileNames,
+	public long addWorkOrderFromEmail(WorkOrderContext workOrder, List<File> attachedFiles, List<String> attachedFileNames,
 			List<String> attachedFilesContentType) throws Exception {
 		if (workOrder != null) {
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.REQUESTER, workOrder.getRequester());
+			context.put(FacilioConstants.ApprovalRule.APPROVAL_REQUESTER, workOrder.getRequester());
 			context.put(FacilioConstants.ContextNames.WORK_ORDER, workOrder);
 
 			if (attachedFiles != null && !attachedFiles.isEmpty() && attachedFileNames != null && !attachedFileNames.isEmpty() && attachedFilesContentType != null && !attachedFilesContentType.isEmpty()) {

@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.workflow.rule;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +9,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.SharingContext;
@@ -196,12 +196,12 @@ public class ApprovalRuleContext extends WorkflowRuleContext {
 	public void executeTrueActions(Object record, Context context, Map<String, Object> placeHolders)
 			throws Exception {
 		// TODO Auto-generated method stub
-		updateRecordApprovalState(record);
+		updateRecordApprovalState(record, (User) context.get(FacilioConstants.ApprovalRule.APPROVAL_REQUESTER));
 		deletePreviousApprovalSteps(((ModuleBaseWithCustomFields) record).getId());
 		super.executeTrueActions(record, context, placeHolders);
 	}
 	
-	private void updateRecordApprovalState(Object record) throws Exception {
+	private void updateRecordApprovalState(Object record, User approvalRequester) throws Exception {
 		if (getEvent() == null) {
 			setEvent(WorkflowRuleAPI.getWorkflowEvent(getEventId()));
 		}
@@ -210,6 +210,15 @@ public class ApprovalRuleContext extends WorkflowRuleContext {
 		Map<String, Object> prop = new HashMap<>();
 		prop.put(FacilioConstants.ApprovalRule.APPROVAL_STATE_FIELD_NAME, ApprovalState.REQUESTED.getValue());
 		prop.put(FacilioConstants.ApprovalRule.APPROVAL_RULE_ID_FIELD_NAME, getId());
+		
+		if (getRuleTypeEnum() == RuleType.APPROVAL_RULE) {
+			if (approvalRequester == null) {
+				prop.put(FacilioConstants.ApprovalRule.APPROVAL_REQUESTED_BY_FIELD_NAME, AccountUtil.getCurrentUser());
+			}
+			else {
+				prop.put(FacilioConstants.ApprovalRule.APPROVAL_REQUESTED_BY_FIELD_NAME, approvalRequester);
+			}
+		}
 		
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(modBean.getField(FacilioConstants.ApprovalRule.APPROVAL_STATE_FIELD_NAME, event.getModule().getName()));

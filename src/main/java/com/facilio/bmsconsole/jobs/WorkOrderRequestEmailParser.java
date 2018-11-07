@@ -161,7 +161,7 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 			long requestId;
 			if (ticketContext instanceof WorkOrderContext) {
 				((WorkOrderContext) ticketContext).setRequester(requester);
-				requestId = bean.addWorkOrder((WorkOrderContext) ticketContext, attachedFiles, attachedFilesFileName, attachedFilesContentType);
+				requestId = bean.addWorkOrderFromEmail((WorkOrderContext) ticketContext, attachedFiles, attachedFilesFileName, attachedFilesContentType);
 			}
 			else {
 				((WorkOrderRequestContext) ticketContext).setRequester(requester);

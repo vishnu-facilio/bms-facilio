@@ -660,6 +660,8 @@ public class FacilioConstants {
 	public static class ApprovalRule {
 		public static final String APPROVAL_RULE_ID_FIELD_NAME = "approvalRuleId";
 		public static final String APPROVAL_STATE_FIELD_NAME = "approvalState";
+		public static final String APPROVAL_REQUESTED_BY_FIELD_NAME = "requestedBy";
+		public static final String APPROVAL_REQUESTER = "approvalRequester";
 	}
 	
 	public static class Workflow {
