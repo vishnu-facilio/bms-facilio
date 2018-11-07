@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.context;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
@@ -12,6 +13,16 @@ public class PreventiveMaintenance extends ResourceContext {
 	/**
 	 * 
 	 */
+	public List<PMResourcePlannerContext> getResourcePlanners() {
+		return resourcePlanners;
+	}
+
+	public void setResourcePlanners(List<PMResourcePlannerContext> resourcePlanners) {
+		this.resourcePlanners = resourcePlanners;
+	}
+
+	List<PMResourcePlannerContext> resourcePlanners;
+	
 	private static final long serialVersionUID = 1L;
 	public String getTitle() {
 		return getName();
@@ -139,6 +150,22 @@ public class PreventiveMaintenance extends ResourceContext {
 	public void addTriggers(PMTriggerContext trigger) {
 		this.triggers = this.triggers == null ? new ArrayList<>() : this.triggers;
 		this.triggers.add(trigger);
+	}
+	
+	private Map<String,PMTriggerContext> triggerMap;
+	private Map<String,PMReminder> reminderMap;
+
+	public Map<String, PMReminder> getReminderMap() {
+		return reminderMap;
+	}
+	public void setReminderMap(Map<String, PMReminder> reminderMap) {
+		this.reminderMap = reminderMap;
+	}
+	public Map<String, PMTriggerContext> getTriggerMap() {
+		return triggerMap;
+	}
+	public void setTriggerMap(Map<String, PMTriggerContext> triggerMap) {
+		this.triggerMap = triggerMap;
 	}
 
 	private TriggerType triggerType;

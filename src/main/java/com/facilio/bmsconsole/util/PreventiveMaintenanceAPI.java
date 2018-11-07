@@ -24,7 +24,8 @@ import com.facilio.bmsconsole.context.PMJobsContext.PMJobsStatus;
 import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.PMReminder.ReminderType;
 import com.facilio.bmsconsole.context.PMTriggerContext;
-import com.facilio.bmsconsole.context.PMTriggerResourceContext;
+import com.facilio.bmsconsole.context.PMTriggerContext.TriggerType;
+import com.facilio.bmsconsole.context.PMResourcePlannerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMCreationType;
@@ -70,58 +71,34 @@ public class PreventiveMaintenanceAPI {
 	}
 	public static List<PMJobsContext> createPMJobsForMultipleResourceAndSchedule (PreventiveMaintenance pm , long endTime, boolean addToDb) throws Exception { //Both in seconds
 		
-		List<Long> addedResourceIds = new ArrayList<>();
 		List<PMJobsContext> pmJobs = new ArrayList<>();
 		List<PMJobsContext> pmJobsToBeScheduled = new ArrayList<>();
-		for(PMTriggerContext pmTrigger : pm.getTriggers()) {
-			
-			if(pmTrigger.getTriggerType() == PMTriggerContext.TriggerType.CUSTOM.getVal() && pmTrigger.getPmTriggerResourceContexts() != null) {
-				
-				long startTime = getStartTimeInSecond(pmTrigger.getStartTime());
-				long nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(startTime);
-				
-				boolean isFirst = true;
-				while(nextExecutionTime <= endTime && (pm.getEndTime() == -1 || nextExecutionTime <= pm.getEndTime())) {
-
-					for(PMTriggerResourceContext pmResourceContext : pmTrigger.getPmTriggerResourceContexts()) {
-						PMJobsContext pmJob = getpmJob(pm, pmTrigger, pmResourceContext.getResourceId(), nextExecutionTime, addToDb);
-						pmJobs.add(pmJob);
-						addedResourceIds.add(pmResourceContext.getResourceId());
-						if(isFirst) {
-							pmJobsToBeScheduled.add(pmJob);
-						}
-					}
-					nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(nextExecutionTime);
-					isFirst = false;
-				}
-			}
-		}
 		
-		for(PMTriggerContext pmTrigger : pm.getTriggers()) {
+		List<Long> resourceIds = getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(pm.getPmCreationType()),pm.getBaseSpaceId(),pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
+		
+		Map<Long, PMResourcePlannerContext> pmResourcePlanner = getPMResourcesPlanner(pm.getId());
+		for(Long resourceId :resourceIds) {
+			PMTriggerContext trigger = null;
+			if(pmResourcePlanner.get(resourceId) != null) {
+				PMResourcePlannerContext currentResourcePlanner = pmResourcePlanner.get(resourceId);
+				
+				trigger = getTrigger(pm.getTriggers(),currentResourcePlanner.getTriggerId());
+			}
+			if(trigger == null) {
+				trigger = getDefaultTrigger(pm.getTriggers());
+			}
+			long startTime = getStartTimeInSecond(trigger.getStartTime());
+			long nextExecutionTime = trigger.getSchedule().nextExecutionTime(startTime);
 			
-			if(pmTrigger.getTriggerType() == PMTriggerContext.TriggerType.DEFAULT.getVal()) {
-				
-				List<Long> resourceIds = getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(pm.getPmCreationType()),pm.getBaseSpaceId(),pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
-				resourceIds.removeAll(addedResourceIds);
-				
-				long startTime = getStartTimeInSecond(pmTrigger.getStartTime());
-				long nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(startTime);
-				
-				boolean isFirst = true;
-				while(nextExecutionTime <= endTime && (pm.getEndTime() == -1 || nextExecutionTime <= pm.getEndTime())) {
-
-					for(Long resourceId :resourceIds) {
-						PMJobsContext pmJob = getpmJob(pm, pmTrigger, resourceId, nextExecutionTime, addToDb);
-						pmJobs.add(pmJob);
-						if(isFirst) {
-							pmJobsToBeScheduled.add(pmJob);
-						}
-					}
-					
-					nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(nextExecutionTime);
-					isFirst = false;
+			boolean isFirst = true;
+			while(nextExecutionTime <= endTime && (pm.getEndTime() == -1 || nextExecutionTime <= pm.getEndTime())) {
+				PMJobsContext pmJob = getpmJob(pm, trigger, resourceId, nextExecutionTime, addToDb);
+				pmJobs.add(pmJob);
+				if(isFirst) {
+					pmJobsToBeScheduled.add(pmJob);
 				}
-				break;
+				nextExecutionTime = trigger.getSchedule().nextExecutionTime(nextExecutionTime);
+				isFirst = false;
 			}
 		}
 		
@@ -131,6 +108,28 @@ public class PreventiveMaintenanceAPI {
 		PreventiveMaintenanceAPI.schedulePMJob(pmJobsToBeScheduled);
 		return pmJobs;
 	}
+	
+	public static PMTriggerContext getDefaultTrigger(List<PMTriggerContext> triggers) {
+		
+		for(PMTriggerContext trigger :triggers) {
+			if(trigger.getTriggerType() == TriggerType.DEFAULT.getVal()) {
+				return trigger;
+			}
+		}
+		return null;
+	}
+	
+public static PMTriggerContext getTrigger(List<PMTriggerContext> triggers,Long triggerId) {
+		if(triggerId != null) {
+			for(PMTriggerContext trigger :triggers) {
+				if(trigger.getId() == triggerId) {
+					return trigger;
+				}
+			}
+		}
+		return null;
+	}
+	
 	public static long getStartTimeInSecond(long startTime) {
 		
 		long startTimeInSecond = startTime / 1000;
@@ -240,7 +239,9 @@ public class PreventiveMaintenanceAPI {
 			pmJob.setNextExecutionTime(nextExecutionTime);
 			pmJob.setProjected(!addToDb);
 			pmJob.setStatus(PMJobsStatus.ACTIVE);
-			pmJob.setResourceId(resourceId);
+			if(resourceId != null) {
+				pmJob.setResourceId(resourceId);
+			}
 			pmJobs.add(pmJob);
 			nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(nextExecutionTime);
 			currentCount++;
@@ -848,7 +849,6 @@ public class PreventiveMaintenanceAPI {
 		for(Map<String, Object> triggerProp : triggerProps) {
 			PMTriggerContext trigger = FieldUtil.getAsBeanFromMap(triggerProp, PMTriggerContext.class);
 			
-			trigger.setPmTriggerResourceContexts(getPMTriggerResources(trigger.getId()));
 			List<PMTriggerContext> triggerList = pmTriggers.get(trigger.getPmId());
 			if(triggerList == null) {
 				triggerList = new ArrayList<>();
@@ -860,23 +860,23 @@ public class PreventiveMaintenanceAPI {
 		return pmTriggers;
 	}
 	
-	public static List<PMTriggerResourceContext> getPMTriggerResources(Long triggerId) throws Exception {
+	public static List<PMResourcePlannerContext> getPMTriggerResources(Long triggerId) throws Exception {
 		
-		FacilioModule module = ModuleFactory.getPMTriggersResourceModule();
+		FacilioModule module = ModuleFactory.getPMResourcePlannerModule();
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getPMTriggersResourceFields())
+				.select(FieldFactory.getPMResourcePlannerFields())
 				.table(module.getTableName())
 				.andCustomWhere("TRIGGER_ID = ?",triggerId);
 				;
 				
 		List<Map<String, Object>> props = selectBuilder.get();
 		
-		List<PMTriggerResourceContext> res = new ArrayList<>();
+		List<PMResourcePlannerContext> res = new ArrayList<>();
 		if(props != null && !props.isEmpty()) {
 			for(Map<String, Object> prop :props) {
 				
-				PMTriggerResourceContext pmTriggerResourceContext = FieldUtil.getAsBeanFromMap(prop, PMTriggerResourceContext.class);
+				PMResourcePlannerContext pmTriggerResourceContext = FieldUtil.getAsBeanFromMap(prop, PMResourcePlannerContext.class);
 				
 				if(pmTriggerResourceContext.getResourceId() != null && pmTriggerResourceContext.getResourceId() > 0) {
 					pmTriggerResourceContext.setResource(ResourceAPI.getResource(pmTriggerResourceContext.getResourceId()));
@@ -885,6 +885,35 @@ public class PreventiveMaintenanceAPI {
 			}
 		}
 		return res;
+	}
+	
+	public static Map<Long,PMResourcePlannerContext> getPMResourcesPlanner(Long pmId) throws Exception {
+		
+		FacilioModule module = ModuleFactory.getPMResourcePlannerModule();
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getPMResourcePlannerFields())
+				.table(module.getTableName())
+				.andCustomWhere("PM_ID = ?",pmId);
+				;
+				
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		Map<Long,PMResourcePlannerContext> result = new HashMap<>();
+		List<PMResourcePlannerContext> res = new ArrayList<>();
+		if(props != null && !props.isEmpty()) {
+			for(Map<String, Object> prop :props) {
+				
+				PMResourcePlannerContext pmTriggerResourceContext = FieldUtil.getAsBeanFromMap(prop, PMResourcePlannerContext.class);
+				
+				if(pmTriggerResourceContext.getResourceId() != null && pmTriggerResourceContext.getResourceId() > 0) {
+					pmTriggerResourceContext.setResource(ResourceAPI.getResource(pmTriggerResourceContext.getResourceId()));
+				}
+				result.put(pmTriggerResourceContext.getResourceId(), pmTriggerResourceContext);
+				res.add(pmTriggerResourceContext);
+			}
+		}
+		return result;
 	}
 	
 	public static List<PMTriggerContext> getPMTriggers(PreventiveMaintenance pm) throws Exception {
@@ -1096,24 +1125,23 @@ public class PreventiveMaintenanceAPI {
 		return (long) props.get("id");
 	}
 	
-	public static PMTriggerResourceContext getPMTriggerResource(long pmId , long triggerId, long resourceId) throws Exception {
+	public static PMResourcePlannerContext getPMResourcePlanner(long pmId , long resourceId) throws Exception {
 		
-		if(pmId > 0 && triggerId > 0  && resourceId > 0) {
+		if(pmId > 0 && resourceId > 0) {
 			
-			FacilioModule module = ModuleFactory.getPMTriggersResourceModule();
-			List<FacilioField> fields = FieldFactory.getPMTriggersResourceFields();
+			FacilioModule module = ModuleFactory.getPMResourcePlannerModule();
+			List<FacilioField> fields = FieldFactory.getPMResourcePlannerFields();
 			
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 					.select(fields)
 					.table(module.getTableName())
 					.andCustomWhere(module.getTableName()+".PM_ID = ?", pmId)
-					.andCustomWhere(module.getTableName()+".TRIGGER_ID = ?", triggerId)
 					.andCustomWhere(module.getTableName()+".RESOURCE_ID = ?", resourceId);
 			
 			List<Map<String, Object>> props = builder.get();
 			
 			if(props != null && !props.isEmpty()) {
-				PMTriggerResourceContext pmTriggerResourceContext = FieldUtil.getAsBeanFromMap(props.get(0), PMTriggerResourceContext.class);
+				PMResourcePlannerContext pmTriggerResourceContext = FieldUtil.getAsBeanFromMap(props.get(0), PMResourcePlannerContext.class);
 				return pmTriggerResourceContext;
 			}
 		}

@@ -166,15 +166,6 @@ public class PMTriggerContext {
 		this.assignedTo = assignedTo;
 	}
 	
-	List<PMTriggerResourceContext> pmTriggerResourceContexts;
-
-	public List<PMTriggerResourceContext> getPmTriggerResourceContexts() {
-		return pmTriggerResourceContexts;
-	}
-	public void setPmTriggerResourceContexts(List<PMTriggerResourceContext> pmTriggerResourceContexts) {
-		this.pmTriggerResourceContexts = pmTriggerResourceContexts;
-	}
-
 	public enum TriggerType {
 		
 		DEFAULT,

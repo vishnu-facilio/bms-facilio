@@ -10,6 +10,13 @@ public class PMReminder {
 	public void setId(long id) {
 		this.id = id;
 	}
+	String name;
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
 	
 	private long orgId = -1;
 	public long getOrgId() {

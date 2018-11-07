@@ -1390,8 +1390,10 @@ public class FacilioChainFactory {
 		c.addCommand(new AddPreventiveMaintenanceCommand());  // PM addition
 		c.addCommand(new AddResourceReadingRelCommand());
 		c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
-		c.addCommand(new AddAndSchedulePMTriggerCommand());
 		c.addCommand(new AddPMReminderCommand());
+		c.addCommand(new AddPMTriggerCommand());
+		c.addCommand(new SchedulePMCommand());
+		c.addCommand(new scheduleBeforePMRemindersCommand());
 		c.addCommand(new UpdateReadingDataMetaCommand());
 		c.addCommand(new AddValidationRulesCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
@@ -1438,7 +1440,7 @@ public class FacilioChainFactory {
 		c.addCommand(new AddResourceReadingRelCommand());
 		c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
 		c.addCommand(new DeletePMAndDependenciesCommand(false));
-		c.addCommand(new AddAndSchedulePMTriggerCommand());
+		c.addCommand(new AddPMTriggerCommand());
 //		c.addCommand(new DeletePMRemindersCommand());
 		c.addCommand(new AddPMReminderCommand());
 		c.addCommand(new UpdateReadingDataMetaCommand());
@@ -1475,7 +1477,7 @@ public class FacilioChainFactory {
 		Chain c = getTransactionChain();
 		c.addCommand(new ChangePreventiveMaintenanceStatusCommand());
 		c.addCommand(new DeletePMAndDependenciesCommand(false, true));
-		c.addCommand(new AddAndSchedulePMTriggerCommand(true));
+		c.addCommand(new AddPMTriggerCommand(true));
 		c.addCommand(new AddPMReminderCommand(true));
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;

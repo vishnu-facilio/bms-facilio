@@ -866,11 +866,19 @@ public class ModuleFactory {
 		return pmTriggers;
 	}
 	
-	public static FacilioModule getPMTriggersResourceModule() {
+	public static FacilioModule getPMResourcePlannerModule() {
 		FacilioModule pmTriggers = new FacilioModule();
-		pmTriggers.setName("PMTriggersResource");
-		pmTriggers.setDisplayName("PM Triggers Resource");
-		pmTriggers.setTableName("PM_Triggers_Resource");
+		pmTriggers.setName("PMResourcePlanner");
+		pmTriggers.setDisplayName("PM Resource Planner");
+		pmTriggers.setTableName("PM_Resource_Planner");
+		return pmTriggers;
+	}
+	
+	public static FacilioModule getPMResourcePlannerReminderModule() {
+		FacilioModule pmTriggers = new FacilioModule();
+		pmTriggers.setName("PMResourcePlannerReminder");
+		pmTriggers.setDisplayName("PM Resource Planner Reminder");
+		pmTriggers.setTableName("PM_Resource_Planner_Reminder");
 		return pmTriggers;
 	}
 

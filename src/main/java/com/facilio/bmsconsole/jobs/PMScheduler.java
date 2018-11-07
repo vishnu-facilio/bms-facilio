@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
-import com.facilio.bmsconsole.context.PMTriggerResourceContext;
+import com.facilio.bmsconsole.context.PMResourcePlannerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.TriggerType;
@@ -59,6 +59,8 @@ public class PMScheduler extends FacilioJob {
 																;
 			
 			List<Map<String, Object>> triggerProps = pmTriggerBuilder.get();
+			Map<Long,PMTriggerContext> triggerMap = new HashMap<>();
+			
 			if(triggerProps != null && !triggerProps.isEmpty()) {
 				List<PMTriggerContext> triggers = new ArrayList<>();
 				Map<Long, PreventiveMaintenance> pms = new HashMap<>();
@@ -66,6 +68,7 @@ public class PMScheduler extends FacilioJob {
 				triggerProps.forEach(triggerProp -> {
 					PMTriggerContext trigger = FieldUtil.getAsBeanFromMap(triggerProp, PMTriggerContext.class);
 					triggers.add(trigger);
+					triggerMap.put(trigger.getId(), trigger);
 					ids.append(", ")
 						.append(trigger.getId());
 					
@@ -84,38 +87,23 @@ public class PMScheduler extends FacilioJob {
 				for(PreventiveMaintenance pm : pmList) {
 					if(pm.getPmCreationType() == PreventiveMaintenance.PMCreationType.MULTIPLE.getVal()) {
 						
-						List<Long> addedResourceIds = new ArrayList<>();
-						for(PMTriggerContext pmTrigger : pm.getTriggers()) {
-							
-							if(pmTrigger.getSchedule().getFrequencyTypeEnum() != FrequencyType.DO_NOT_REPEAT && pmTrigger.getTriggerType() == PMTriggerContext.TriggerType.CUSTOM.getVal() && pmTrigger.getPmTriggerResourceContexts() != null) {
-								
-								Long maxTime = maxNextExecutionTimesMap.get(pmTrigger.getId());
-								
-								for(PMTriggerResourceContext pmResourceContext : pmTrigger.getPmTriggerResourceContexts()) {
-									
-									if(maxTime < endTime) {
-										PreventiveMaintenanceAPI.createPMJobs(pm, pmTrigger,pmResourceContext.getResourceId(), maxTime, endTime,true);
-									}
-									addedResourceIds.add(pmResourceContext.getResourceId());
-								}
+						List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(pm.getAssignmentType()),pm.getBaseSpaceId(),pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
+						Map<Long, PMResourcePlannerContext> pmResourcePlanner = PreventiveMaintenanceAPI.getPMResourcesPlanner(pm.getId());
+						for(Long resourceId :resourceIds) {
+							PMTriggerContext trigger = null;
+							if(pmResourcePlanner.get(resourceId) != null) {
+								PMResourcePlannerContext currentResourcePlanner = pmResourcePlanner.get(resourceId);
+								trigger = triggerMap.get(currentResourcePlanner.getTriggerId());
 							}
-						}
-						
-						for(PMTriggerContext pmTrigger : pm.getTriggers()) {
 							
-							if(pmTrigger.getSchedule().getFrequencyTypeEnum() != FrequencyType.DO_NOT_REPEAT && pmTrigger.getTriggerType() == PMTriggerContext.TriggerType.DEFAULT.getVal()) {
-								
-								List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(pm.getAssignmentType()),pm.getBaseSpaceId(),pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
-								resourceIds.removeAll(addedResourceIds);
-								
-								Long maxTime = maxNextExecutionTimesMap.get(pmTrigger.getId());
-								
-								for(Long resourceId :resourceIds) {
-									if(maxTime < endTime) {
-										PreventiveMaintenanceAPI.createPMJobs(pm, pmTrigger,resourceId, maxTime, endTime,true);
-									}
-								}
-								break;
+							if(trigger == null) {
+								trigger = PreventiveMaintenanceAPI.getDefaultTrigger(pm.getTriggers());
+							}
+							
+							Long maxTime = maxNextExecutionTimesMap.get(trigger.getId());
+							
+							if(maxTime < endTime) {
+								PreventiveMaintenanceAPI.createPMJobs(pm, trigger,resourceId, maxTime, endTime,true);
 							}
 						}
 					}
@@ -151,7 +139,6 @@ public class PMScheduler extends FacilioJob {
 				for(PMTriggerContext trigger :triggers) {
 					if(trigger.getPmId() == pm.getId()) {
 						pm.addTriggers(trigger); 
-						trigger.setPmTriggerResourceContexts(PreventiveMaintenanceAPI.getPMTriggerResources(trigger.getId()));
 					} 
 				}
 				

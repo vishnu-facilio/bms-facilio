@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -8,33 +9,30 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.PMJobsContext;
+import com.facilio.bmsconsole.context.PMReminder;
+import com.facilio.bmsconsole.context.PMResourcePlannerContext;
+import com.facilio.bmsconsole.context.PMResourcePlannerReminderContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
-import com.facilio.bmsconsole.context.PMTriggerResourceContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
-import com.facilio.bmsconsole.workflow.rule.ActionContext;
-import com.facilio.bmsconsole.workflow.rule.ActionType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericInsertRecordBuilder;
 
-public class AddAndSchedulePMTriggerCommand implements Command {
+public class SchedulePMCommand implements Command {
+
 	
-	private boolean isBulkUpdate = false;
+private boolean isBulkUpdate = false;
 	
-	public AddAndSchedulePMTriggerCommand() {}
+	public SchedulePMCommand() {}
 	
-	public AddAndSchedulePMTriggerCommand(boolean isBulkUpdate) {
+	public SchedulePMCommand(boolean isBulkUpdate) {
 		this.isBulkUpdate = isBulkUpdate;
 	}
-
 	@Override
 	public boolean execute(Context context) throws Exception {
 		List<PreventiveMaintenance> pms;
@@ -51,62 +49,45 @@ public class AddAndSchedulePMTriggerCommand implements Command {
 		
 		for(PreventiveMaintenance pm: pms) {
 			if (pm.getTriggers() != null && pm.isActive()) {
-				addTriggersAndReadings(pm);
+				if(pm.getPmCreationType() == PreventiveMaintenance.PMCreationType.MULTIPLE.getVal()) {
+					prepareAndAddResourcePlanner(pm);
+				}
 				schedulePM(pm, context);
 			}
 		}
 		return false;
 	}
-	
-	private void addTriggersAndReadings(PreventiveMaintenance pm) throws Exception {
-		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-				.table(ModuleFactory.getPMTriggersModule().getTableName()).fields(FieldFactory.getPMTriggerFields());
+	private void prepareAndAddResourcePlanner(PreventiveMaintenance pm) throws Exception {
 		
-		GenericInsertRecordBuilder insertBuilder1 = new GenericInsertRecordBuilder()
-				.table(ModuleFactory.getPMTriggersResourceModule().getTableName()).fields(FieldFactory.getPMTriggersResourceFields());
-
-		for (PMTriggerContext trigger : pm.getTriggers()) {
-			trigger.setPmId(pm.getId());
-			trigger.setOrgId(AccountUtil.getCurrentOrg().getId());
-			if (trigger.getReadingRule() != null) {
-				
-				trigger.getReadingRule().setName("PM_" + pm.getId());
-				long ruleId = WorkflowRuleAPI.addWorkflowRule(trigger.getReadingRule());
-				trigger.setReadingRuleId(ruleId);
-				
-				ActionContext action = new ActionContext();
-				action.setActionType(ActionType.EXECUTE_PM);
-				action.setStatus(true);
-				
-				List<ActionContext> actions = Collections.singletonList(action);
-				ActionAPI.addActions(actions);
-				ActionAPI.addWorkflowRuleActionRel(ruleId, actions);
-			}
-			else if (trigger.getStartTime() < System.currentTimeMillis()) {
-				trigger.setStartTime(System.currentTimeMillis());
-			}
-			insertBuilder.addRecord(FieldUtil.getAsProperties(trigger));
-		}
-		insertBuilder.save();
-
-		List<Map<String, Object>> triggerProps = insertBuilder.getRecords();
-		for (int i = 0; i < triggerProps.size(); i++) {
-			Map<String, Object> triggerProp = triggerProps.get(i);
-			pm.getTriggers().get(i).setId((long) triggerProp.get("id"));
+		GenericInsertRecordBuilder insert = new GenericInsertRecordBuilder();
+		insert.table(ModuleFactory.getPMResourcePlannerModule().getTableName());
+		insert.fields(FieldFactory.getPMResourcePlannerFields());
+		if(pm.getResourcePlanners() != null) {
 			
-			List<PMTriggerResourceContext> pmTriggerResources = pm.getTriggers().get(i).getPmTriggerResourceContexts();
-			
-			if(pmTriggerResources != null) {
-				for(PMTriggerResourceContext pmTriggerResource :pmTriggerResources) {
-					pmTriggerResource.setPmId(pm.getId());
-					pmTriggerResource.setTriggerId((long) triggerProp.get("id"));
-					insertBuilder1.addRecord(FieldUtil.getAsProperties(pmTriggerResource));
+			for(PMResourcePlannerContext resourcePlanner :pm.getResourcePlanners()) {
+				if(resourcePlanner.getTriggerName() != null) {
+					PMTriggerContext trigger = pm.getTriggerMap().get(resourcePlanner.getTriggerName());
+					resourcePlanner.setTriggerId(trigger.getId());
+					resourcePlanner.setPmId(pm.getId());
+				}
+				Map<String, Object> prop = FieldUtil.getAsProperties(resourcePlanner);
+				insert.insert(prop);
+				resourcePlanner.setId((Long)prop.get("id"));
+				
+				
+				if(resourcePlanner.getPmResourcePlannerReminderContexts() != null) {
+					for(PMResourcePlannerReminderContext pmResourcePlannerReminderContext : resourcePlanner.getPmResourcePlannerReminderContexts()) {
+						
+						if(pmResourcePlannerReminderContext.getReminderName() != null) {
+							PMReminder reminder = pm.getReminderMap().get(pmResourcePlannerReminderContext.getReminderName());
+							pmResourcePlannerReminderContext.setReminderId(reminder.getId());
+						}
+					}
 				}
 			}
 		}
-		insertBuilder1.save();
 	}
-	
+
 	private static void schedulePM(PreventiveMaintenance pm, Context context) throws Exception {
 		Map<Long, Long> nextExecutionTimes = new HashMap<>();
 		
@@ -155,6 +136,4 @@ public class AddAndSchedulePMTriggerCommand implements Command {
 		}
 		context.put(FacilioConstants.ContextNames.NEXT_EXECUTION_TIMES, nextExecutionTimes);
 	}
-	
-
 }

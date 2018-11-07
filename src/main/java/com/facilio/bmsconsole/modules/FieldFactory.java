@@ -3641,6 +3641,8 @@ public class FieldFactory {
 		pmId.setColumnName("PM_ID");
 		pmId.setModule(module);
 		fields.add(pmId);
+		
+		fields.add(getField("name", "NAME", FieldType.STRING));
 
 		FacilioField type = new FacilioField();
 		type.setName("type");
@@ -3780,8 +3782,8 @@ public class FieldFactory {
 		return fields;
 	}
 	
-	public static List<FacilioField> getPMTriggersResourceFields() {
-		FacilioModule module = ModuleFactory.getPMTriggersResourceModule();
+	public static List<FacilioField> getPMResourcePlannerFields() {
+		FacilioModule module = ModuleFactory.getPMResourcePlannerModule();
 		List<FacilioField> fields = new ArrayList<>();
 
 		fields.add(getIdField(module));
@@ -3789,6 +3791,18 @@ public class FieldFactory {
 		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.LOOKUP));
 		fields.add(getField("triggerId", "TRIGGER_ID", module, FieldType.LOOKUP));
 		fields.add(getField("assignedToId", "ASSIGNED_TO", module, FieldType.LOOKUP));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getPMResourcePlannerReminderFields() {
+		FacilioModule module = ModuleFactory.getPMResourcePlannerReminderModule();
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getIdField(module));
+		fields.add(getField("pmId", "PM_ID", module, FieldType.LOOKUP));
+		fields.add(getField("resourcePlannerId", "PM_RESOURCE_PLANNER_ID", module, FieldType.LOOKUP));
+		fields.add(getField("reminderId", "PM_REMAINDER_ID", module, FieldType.LOOKUP));
 		
 		return fields;
 	}

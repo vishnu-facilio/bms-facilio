@@ -86,30 +86,10 @@ public class AddPMReminderCommand implements Command {
 					}
 					insertBuilder.save();
 					
-					Map<Long, Long> nextExecutionTimes = (Map<Long, Long>) context.get(FacilioConstants.ContextNames.NEXT_EXECUTION_TIMES);
-					scheduleBeforePMReminders(pm, reminders, reminderProps, nextExecutionTimes);
 				}
 			}
 		}
 		return false;
 	}
 	
-	private void scheduleBeforePMReminders(PreventiveMaintenance pm, List<PMReminder> reminders, List<Map<String, Object>> reminderProps, Map<Long, Long> nextExecutionTimes) throws Exception {
-		if (pm.getTriggers() != null && !pm.getTriggers().isEmpty()) {
-			for(int i=0; i<reminders.size(); i++) {
-				long schedulerId = (long) reminderProps.get(i).get("id");
-				PMReminder reminder = reminders.get(i);
-				reminder.setId(schedulerId);
-				
-				if(reminder.getTypeEnum() == ReminderType.BEFORE_EXECUTION) {
-					for(PMTriggerContext trigger : pm.getTriggers()) {
-						Long nextExecutionTime = nextExecutionTimes.get(trigger.getId());
-						if(nextExecutionTime != null) {
-							PreventiveMaintenanceAPI.schedulePrePMReminder(reminder, nextExecutionTime, trigger.getId());
-						}
-					}
-				}
-			}
-		}
-	}
 }

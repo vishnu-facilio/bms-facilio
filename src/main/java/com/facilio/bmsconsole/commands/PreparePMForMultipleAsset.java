@@ -12,7 +12,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
-import com.facilio.bmsconsole.context.PMTriggerResourceContext;
+import com.facilio.bmsconsole.context.PMResourcePlannerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -51,12 +51,11 @@ public class PreparePMForMultipleAsset implements Command {
 			
 			woTemplate.setResourceId(pmJob.getResourceId());
 			
-			PMTriggerResourceContext pmTriggerResource = PreventiveMaintenanceAPI.getPMTriggerResource(pmId, pmTrigger.getId(), pmJob.getResourceId());
-			if(pmTriggerResource != null) {
-				woTemplate.setAssignedToId(pmTriggerResource.getAssignedToId());
-			}
-			else {
-				woTemplate.setAssignedToId(pmTrigger.getAssignedTo() != null ? pmTrigger.getAssignedTo() : -1);
+			PMResourcePlannerContext pmResource = PreventiveMaintenanceAPI.getPMResourcePlanner(pmId, pmJob.getResourceId());
+			if(pmResource != null) {
+				if(pmResource.getAssignedToId() != null) {
+					woTemplate.setAssignedToId(pmResource.getAssignedToId());
+				}
 			}
 			
 			List<TaskSectionTemplate> sectiontemplates = woTemplate.getSectionTemplates();

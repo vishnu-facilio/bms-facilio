@@ -1,11 +1,14 @@
 package com.facilio.bmsconsole.context;
 
-public class PMTriggerResourceContext {
+import java.util.List;
+
+public class PMResourcePlannerContext {
 
 	Long id;
 	Long pmId;
 	Long resourceId;
 	ResourceContext resource;
+	String triggerName;
 	public ResourceContext getResource() {
 		return resource;
 	}
@@ -45,6 +48,19 @@ public class PMTriggerResourceContext {
 	public void setAssignedToId(Long assignedToId) {
 		this.assignedToId = assignedToId;
 	}
-	
+	List<PMResourcePlannerReminderContext> pmResourcePlannerReminderContexts;
+	public String getTriggerName() {
+		return triggerName;
+	}
+	public void setTriggerName(String triggerName) {
+		this.triggerName = triggerName;
+	}
+	public List<PMResourcePlannerReminderContext> getPmResourcePlannerReminderContexts() {
+		return pmResourcePlannerReminderContexts;
+	}
+	public void setPmResourcePlannerReminderContexts(
+			List<PMResourcePlannerReminderContext> pmResourcePlannerReminderContexts) {
+		this.pmResourcePlannerReminderContexts = pmResourcePlannerReminderContexts;
+	}
 	
 }
