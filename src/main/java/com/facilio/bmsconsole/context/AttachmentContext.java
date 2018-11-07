@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.context;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.fs.FileStore;
@@ -95,7 +96,7 @@ public class AttachmentContext extends ModuleBaseWithCustomFields {
 	
 	public String getPreviewUrl() throws Exception {
 		if (this.fileId > 0) {
-			if (StringUtils.isNotEmpty(attachmentModule) && recordId > 0) {
+			if (!AccountUtil.getCurrentAccount().isFromMobile() && StringUtils.isNotEmpty(attachmentModule) && recordId > 0) {
 				StringBuilder builder = new StringBuilder(AwsUtil.getConfig("clientapp.url"))
 						.append("/api/v2/").append(attachmentModule).append("/attachment/").append(recordId).append("?fileId=").append(fileId);
 				return builder.toString();
