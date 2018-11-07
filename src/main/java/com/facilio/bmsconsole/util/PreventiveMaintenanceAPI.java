@@ -904,13 +904,13 @@ public static PMTriggerContext getTrigger(List<PMTriggerContext> triggers,Long t
 		if(props != null && !props.isEmpty()) {
 			for(Map<String, Object> prop :props) {
 				
-				PMResourcePlannerContext pmTriggerResourceContext = FieldUtil.getAsBeanFromMap(prop, PMResourcePlannerContext.class);
+				PMResourcePlannerContext pmResourcePlannerContext = FieldUtil.getAsBeanFromMap(prop, PMResourcePlannerContext.class);
 				
-				if(pmTriggerResourceContext.getResourceId() != null && pmTriggerResourceContext.getResourceId() > 0) {
-					pmTriggerResourceContext.setResource(ResourceAPI.getResource(pmTriggerResourceContext.getResourceId()));
+				if(pmResourcePlannerContext.getResourceId() != null && pmResourcePlannerContext.getResourceId() > 0) {
+					pmResourcePlannerContext.setResource(ResourceAPI.getResource(pmResourcePlannerContext.getResourceId()));
 				}
-				result.put(pmTriggerResourceContext.getResourceId(), pmTriggerResourceContext);
-				res.add(pmTriggerResourceContext);
+				result.put(pmResourcePlannerContext.getResourceId(), pmResourcePlannerContext);
+				res.add(pmResourcePlannerContext);
 			}
 		}
 		return result;

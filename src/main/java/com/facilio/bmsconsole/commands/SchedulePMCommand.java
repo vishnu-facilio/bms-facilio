@@ -62,6 +62,11 @@ private boolean isBulkUpdate = false;
 		GenericInsertRecordBuilder insert = new GenericInsertRecordBuilder();
 		insert.table(ModuleFactory.getPMResourcePlannerModule().getTableName());
 		insert.fields(FieldFactory.getPMResourcePlannerFields());
+		
+		GenericInsertRecordBuilder insert1 = new GenericInsertRecordBuilder();
+		insert1.table(ModuleFactory.getPMResourcePlannerReminderModule().getTableName());
+		insert1.fields(FieldFactory.getPMResourcePlannerReminderFields());
+		
 		if(pm.getResourcePlanners() != null) {
 			
 			for(PMResourcePlannerContext resourcePlanner :pm.getResourcePlanners()) {
@@ -81,6 +86,12 @@ private boolean isBulkUpdate = false;
 						if(pmResourcePlannerReminderContext.getReminderName() != null) {
 							PMReminder reminder = pm.getReminderMap().get(pmResourcePlannerReminderContext.getReminderName());
 							pmResourcePlannerReminderContext.setReminderId(reminder.getId());
+							pmResourcePlannerReminderContext.setPmId(pm.getId());
+							pmResourcePlannerReminderContext.setResourcePlannerId(resourcePlanner.getId());
+							Map<String, Object> prop1 = FieldUtil.getAsProperties(pmResourcePlannerReminderContext);
+							insert1.insert(prop1);
+							
+							pmResourcePlannerReminderContext.setId((Long)prop1.get("id"));
 						}
 					}
 				}
