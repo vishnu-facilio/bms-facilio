@@ -43,7 +43,7 @@ public enum FacilioResourceFunction implements FacilioWorkflowFunctionInterface 
 			}
 		};
 		
-		public void checkParam(Object... objects) throws Exception {
+		private void checkParam(Object... objects) throws Exception {
 			if(objects.length <= 0) {
 				throw new FunctionParamException("Required Object is null");
 			}
@@ -102,8 +102,8 @@ public enum FacilioResourceFunction implements FacilioWorkflowFunctionInterface 
 	public static FacilioResourceFunction getFacilioResourceFunction(String functionName) {
 		return RESOURCE_FUNCTIONS.get(functionName);
 	}
-	static final Map<String, FacilioResourceFunction> RESOURCE_FUNCTIONS = Collections.unmodifiableMap(initTypeMap());
-	static Map<String, FacilioResourceFunction> initTypeMap() {
+	private static final Map<String, FacilioResourceFunction> RESOURCE_FUNCTIONS = Collections.unmodifiableMap(initTypeMap());
+	private static Map<String, FacilioResourceFunction> initTypeMap() {
 		Map<String, FacilioResourceFunction> typeMap = new HashMap<>();
 		for(FacilioResourceFunction type : FacilioResourceFunction.values()) {
 			typeMap.put(type.getFunctionName(), type);

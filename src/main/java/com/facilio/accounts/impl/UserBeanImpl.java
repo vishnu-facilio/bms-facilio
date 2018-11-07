@@ -8,8 +8,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
@@ -1129,7 +1131,7 @@ public class UserBeanImpl implements UserBean {
 	}
 	
 	@Override
-	public Map<Long, List<User>> getUsersWithRole(Collection<Long> roleIds) throws Exception {
+	public Map<Long, List<User>> getUsersWithRoleAsMap(Collection<Long> roleIds) throws Exception {
 		
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getConditionFromList ("ROLE_ID", "roleId", roleIds, PickListOperators.IS));
@@ -1149,6 +1151,74 @@ public class UserBeanImpl implements UserBean {
 			return userMap;
 		}
 		return null;
+	}
+	
+	@Override
+	public List<User> getUsersWithRole(long roleId) throws Exception {
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition("ROLE_ID", "roleId", String.valueOf(roleId), PickListOperators.IS));
+		List<Map<String, Object>> props = fetchUserProps(criteria);
+		if (props != null && !props.isEmpty()) {
+			List<User> users = new ArrayList<>();
+			for(Map<String, Object> prop : props) {
+				User user = createUserFromProps(prop, false, false);
+				users.add(user);
+			}
+			return users;
+		}
+		return null;
+	}
+	
+	@Override
+	public List<User> getUsersWithRoleAndAccessibleSpace (long roleId, long spaceId) throws Exception {
+		
+		BaseSpaceContext space = SpaceAPI.getBaseSpace(spaceId);
+		if (space != null) {
+			Set<Long> parentIds = getSpaceParentIds(space);
+			
+			Criteria criteria = new Criteria();
+			criteria.addAndCondition(CriteriaAPI.getCondition("ROLE_ID", "roleId", String.valueOf(roleId), PickListOperators.IS));
+			List<Map<String, Object>> props = fetchUserProps(criteria);
+			if (props != null && !props.isEmpty()) {
+				List<User> users = new ArrayList<>();
+				for(Map<String, Object> prop : props) {
+					User user = createUserFromProps(prop, false, true);
+					if (user.getAccessibleSpace() == null || user.getAccessibleSpace().isEmpty() || !Collections.disjoint(parentIds, user.getAccessibleSpace())) { 
+						users.add(user);
+					}
+				}
+				return users;
+			}
+		}
+		return null;
+	}
+	
+	private Set<Long> getSpaceParentIds (BaseSpaceContext space) {
+		Set<Long> parentIds = new HashSet<>();
+		if (space.getSiteId() != -1) {
+			parentIds.add(space.getSiteId());
+		}
+		if (space.getBuildingId() != -1) {
+			parentIds.add(space.getBuildingId());
+		}
+		if (space.getFloorId() != -1) {
+			parentIds.add(space.getFloorId());
+		}
+		if (space.getSpaceId1() != -1) {
+			parentIds.add(space.getSpaceId1());
+		}
+		if (space.getSpaceId2() != -1) {
+			parentIds.add(space.getSpaceId2());
+		}
+		if (space.getSpaceId3() != -1) {
+			parentIds.add(space.getSpaceId3());
+		}
+		if (space.getSpaceId4() != -1) {
+			parentIds.add(space.getSpaceId4());
+		}
+		parentIds.add(space.getId());
+		return parentIds;
 	}
 	
 	@Override

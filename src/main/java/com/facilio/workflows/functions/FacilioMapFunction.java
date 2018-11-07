@@ -180,8 +180,8 @@ public enum FacilioMapFunction implements FacilioWorkflowFunctionInterface {
 	public static FacilioMapFunction getFacilioMapFunction(String functionName) {
 		return DEFAULT_FUNCTIONS.get(functionName);
 	}
-	static final Map<String, FacilioMapFunction> DEFAULT_FUNCTIONS = Collections.unmodifiableMap(initTypeMap());
-	static Map<String, FacilioMapFunction> initTypeMap() {
+	private static final Map<String, FacilioMapFunction> DEFAULT_FUNCTIONS = Collections.unmodifiableMap(initTypeMap());
+	private static Map<String, FacilioMapFunction> initTypeMap() {
 		Map<String, FacilioMapFunction> typeMap = new HashMap<>();
 		for(FacilioMapFunction type : FacilioMapFunction.values()) {
 			typeMap.put(type.getFunctionName(), type);

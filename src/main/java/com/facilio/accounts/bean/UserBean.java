@@ -55,7 +55,11 @@ public interface UserBean {
 	
 	public List<User> getUsers(Criteria criteria, List<Long>... ouids) throws Exception;
 	
-	public Map<Long, List<User>> getUsersWithRole(Collection<Long> roleIds) throws Exception;
+	public Map<Long, List<User>> getUsersWithRoleAsMap(Collection<Long> roleIds) throws Exception;
+	
+	public List<User> getUsersWithRole(long roleId) throws Exception;
+	
+	public List<User> getUsersWithRoleAndAccessibleSpace (long roleId, long spaceId) throws Exception;
 	
 	public Map<Long, User> getUsersAsMap(Criteria criteria, List<Long>... ouids) throws Exception;
 

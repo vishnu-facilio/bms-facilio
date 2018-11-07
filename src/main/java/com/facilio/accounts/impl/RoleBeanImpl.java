@@ -8,8 +8,6 @@ import java.util.StringJoiner;
 import java.util.logging.Logger;
 
 import com.facilio.accounts.bean.RoleBean;
-import com.facilio.accounts.dto.Group;
-import com.facilio.accounts.dto.GroupMember;
 import com.facilio.accounts.dto.Permissions;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
@@ -185,7 +183,7 @@ public class RoleBeanImpl implements RoleBean {
 			}
 			
 			if (fetchMembers) {
-				Map<Long, List<User>> roleUsers = AccountUtil.getUserBean().getUsersWithRole(roleIds);
+				Map<Long, List<User>> roleUsers = AccountUtil.getUserBean().getUsersWithRoleAsMap(roleIds);
 				if (roleUsers != null && !roleUsers.isEmpty()) {
 					for (Role role : roles) {
 						populateEmailAndPhone(role, roleUsers.get(role.getId()));
@@ -199,7 +197,7 @@ public class RoleBeanImpl implements RoleBean {
 	
 	@Override
 	public Role getRole(long roleId) throws Exception {
-		return getRole(roleId, true);
+		return getRole(roleId, false);
 	}
 
 	@Override
@@ -219,7 +217,7 @@ public class RoleBeanImpl implements RoleBean {
 	
 	@Override
 	public Role getRole(long orgId, String roleName) throws Exception {
-		return getRole(orgId, roleName, true);
+		return getRole(orgId, roleName, false);
 	}
 
 	@Override
@@ -244,7 +242,7 @@ public class RoleBeanImpl implements RoleBean {
 				.table(AccountConstants.getRoleModule().getTableName())
 				.andCustomWhere("ORGID = ?", orgId);
 		
-		return getRolesFromProps(selectBuilder.get(), true);
+		return getRolesFromProps(selectBuilder.get(), false);
 	}
 	
 	@Override
@@ -256,7 +254,7 @@ public class RoleBeanImpl implements RoleBean {
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCriteria(criteria);
 		
-		return getRolesFromProps(selectBuilder.get(), true);
+		return getRolesFromProps(selectBuilder.get(), false);
 	}
 	
 	public Map<String, Role> getRoleMap() throws Exception {

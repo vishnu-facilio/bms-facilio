@@ -50,10 +50,8 @@ public enum FacilioFunctionsParamType {
 	public static FacilioFunctionsParamType getFacilioDefaultFunction(int value) {
 		return DEFAULT_FUNCTIONS.get(value);
 	}
-	
-	static final Map<Integer, FacilioFunctionsParamType> DEFAULT_FUNCTIONS = Collections.unmodifiableMap(initTypeMap());
-	
-	static Map<Integer, FacilioFunctionsParamType> initTypeMap() {
+	private static final Map<Integer, FacilioFunctionsParamType> DEFAULT_FUNCTIONS = Collections.unmodifiableMap(initTypeMap());
+	private static Map<Integer, FacilioFunctionsParamType> initTypeMap() {
 		Map<Integer, FacilioFunctionsParamType> typeMap = new HashMap<>();
 		for(FacilioFunctionsParamType type : FacilioFunctionsParamType.values()) {
 			typeMap.put(type.getValue(), type);

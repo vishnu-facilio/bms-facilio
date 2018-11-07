@@ -82,6 +82,7 @@ import com.facilio.workflows.functions.FacilioPsychrometricsFunction;
 import com.facilio.workflows.functions.FacilioReadingFunctions;
 import com.facilio.workflows.functions.FacilioResourceFunction;
 import com.facilio.workflows.functions.FacilioStringFunction;
+import com.facilio.workflows.functions.FacilioSystemFunctions;
 import com.facilio.workflows.functions.FacilioWorkflowFunctionInterface;
 import com.facilio.workflows.functions.ThermoPhysicalR134aFunctions;
 import com.google.common.collect.ArrayListMultimap;
@@ -1505,6 +1506,7 @@ public class WorkflowUtil {
 					facilioWorkflowFunction = FacilioResourceFunction.getFacilioResourceFunction(functionName);
 					break;
 				case SYSTEM:
+					facilioWorkflowFunction = FacilioSystemFunctions.getFacilioSystemFunction(functionName);
 					break;
 			}
 		}
@@ -1557,6 +1559,7 @@ public class WorkflowUtil {
 					facilioWorkflowFunction = new ArrayList<>( FacilioResourceFunction.getAllFunctions().values());
 					break;
 				case SYSTEM:
+					facilioWorkflowFunction = new ArrayList<>( FacilioSystemFunctions.getAllFunctions().values());
 					break;
 			}
 		}

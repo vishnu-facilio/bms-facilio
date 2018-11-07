@@ -35,7 +35,12 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 public class ResourceAPI {
 	
 	private static final Logger LOGGER = LogManager.getLogger(ReadingsAPI.class.getName());
+	
 	public static ResourceContext getResource(long id) throws Exception {
+		return getResource(id, false);
+	}
+	
+	public static ResourceContext getResource(long id, boolean fetchDeleted) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
 		SelectRecordsBuilder<ResourceContext> resourceBuilder = new SelectRecordsBuilder<ResourceContext>()
