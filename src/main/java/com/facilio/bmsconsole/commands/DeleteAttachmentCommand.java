@@ -1,13 +1,20 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AttachmentContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
+import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericDeleteRecordBuilder;
 
 public class DeleteAttachmentCommand implements Command {
 
@@ -16,10 +23,33 @@ public class DeleteAttachmentCommand implements Command {
 		// TODO Auto-generated method stub
 		
 		List<Long> attachmentIdList = (List<Long>) context.get(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST);
+		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module =  modBean.getModule(moduleName);
 		
 		if (attachmentIdList != null && !attachmentIdList.isEmpty()) {
-			FileStore fs = FileStoreFactory.getInstance().getFileStore();
-			fs.deleteFiles(attachmentIdList);
+			
+			// TODO mark file as deleted if no reference for that file is available for all modules
+			if (moduleName.equals(FacilioConstants.ContextNames.ASSET_ATTACHMENTS)) {
+				SelectRecordsBuilder<AttachmentContext> attachmentBuilder = new SelectRecordsBuilder<AttachmentContext>()
+						.select(modBean.getAllFields(moduleName))
+						.module(module)
+						.beanClass(AttachmentContext.class)
+						.andCondition(CriteriaAPI.getIdCondition(attachmentIdList, module))
+						;
+				List<AttachmentContext> attachments = attachmentBuilder.get();
+				if (attachments != null && !attachments.isEmpty()) {
+					List<Long> fileIds = attachments.stream().map(AttachmentContext::getFileId).collect(Collectors.toList());
+					FileStoreFactory.getInstance().getFileStore().deleteFiles(fileIds);
+				}
+			}
+			
+			GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+					.table(module.getTableName())
+					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+					.andCondition(CriteriaAPI.getIdCondition(attachmentIdList, module));
+
+			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, builder.delete());
 		}
 		
 		return false;

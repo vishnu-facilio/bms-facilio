@@ -149,7 +149,7 @@
 		</action>
 	</package>
 	
-	<package name="approvalListApiV2" namespace="/api/v2/approval/view" extends="v2Api">
+	<package name="approvalListApiV2" namespace="/api/v2/approvals/view" extends="v2Api">
 		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="v2workOrderList">
 			<param name="moduleName">workorder</param>

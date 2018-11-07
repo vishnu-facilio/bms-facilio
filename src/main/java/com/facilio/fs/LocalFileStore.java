@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -134,23 +135,20 @@ select * from Virtual_Energy_Meter_Rel where VIRTUAL_METER_ID=ENERGYMETER_ID
 			return false;
 		}
 		
-		boolean status = new File(fileInfo.getFilePath()).delete();
+		return deleteFiles(Collections.singletonList(fileId));
+		/*boolean status = new File(fileInfo.getFilePath()).delete();
 		if (status) {
 			// deleting db entry
 			return deleteFileEntry(fileId);
 		}
 		else {
 			return status;
-		}
+		}*/
 	}
 
 	@Override
 	public boolean deleteFiles(List<Long> fileId) throws Exception {
-		
-		for (long id : fileId) {
-			deleteFile(id);
-		}
-		return true;
+		return markAsDeleted(fileId) > 0;
 	}
 
 	@Override

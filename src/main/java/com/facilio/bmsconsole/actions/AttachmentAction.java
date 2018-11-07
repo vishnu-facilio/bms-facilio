@@ -99,32 +99,28 @@ public class AttachmentAction  extends FacilioAction {
 		this.attachmentType = AttachmentType.getType(attachmentType);
 	}
 
-	public String addAttachment() {
+	public String addAttachment() throws Exception {
 		
-		try {
-			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.MODULE_NAME, this.module);
-			context.put(FacilioConstants.ContextNames.RECORD_ID, this.recordId);
-			
-	 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, this.attachment);
-	 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, this.attachmentFileName);
-	 		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.attachmentContentType);
-	 		context.put(FacilioConstants.ContextNames.ATTACHMENT_TYPE, this.attachmentType);
-	 		
-			Chain addAttachmentChain = FacilioChainFactory.getAddAttachmentChain();
-			addAttachmentChain.execute(context);
-			
-			List<AttachmentContext> attachmentList = (List<AttachmentContext>) context.get(FacilioConstants.ContextNames.ATTACHMENT_LIST);
-			setAttachments(attachmentList);
-			
-			if (attachmentList != null && !attachmentList.isEmpty()) {
-				if (module.equals(FacilioConstants.ContextNames.ASSET_ATTACHMENTS)) {
-					attachmentList.get(0).setAttachmentModule(FacilioConstants.ContextNames.ASSET_LIST);
-					attachmentList.get(0).setRecordId(recordId);
-				}
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, this.module);
+		context.put(FacilioConstants.ContextNames.RECORD_ID, this.recordId);
+		
+ 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, this.attachment);
+ 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, this.attachmentFileName);
+ 		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.attachmentContentType);
+ 		context.put(FacilioConstants.ContextNames.ATTACHMENT_TYPE, this.attachmentType);
+ 		
+		Chain addAttachmentChain = FacilioChainFactory.getAddAttachmentChain();
+		addAttachmentChain.execute(context);
+		
+		List<AttachmentContext> attachmentList = (List<AttachmentContext>) context.get(FacilioConstants.ContextNames.ATTACHMENT_LIST);
+		setAttachments(attachmentList);
+		
+		if (attachmentList != null && !attachmentList.isEmpty()) {
+			if (module.equals(FacilioConstants.ContextNames.ASSET_ATTACHMENTS)) {
+				attachmentList.get(0).setAttachmentModule(FacilioConstants.ContextNames.ASSET_LIST);
+				attachmentList.get(0).setRecordId(recordId);
 			}
-		} catch (Exception e) {
-			log.info("Exception occurred ", e);
 		}
 		return SUCCESS;
 	}
@@ -159,16 +155,13 @@ public class AttachmentAction  extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	public String deleteAttachment() {
-		try {
-			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST, getAttachmentId());
-	 		
-			Chain deleteAttachmentChain = FacilioChainFactory.getDeleteAttachmentChain();
-			deleteAttachmentChain.execute(context);
-		} catch (Exception e) {
-			log.info("Exception occurred ", e);
-		}
+	public String deleteAttachment() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST, getAttachmentId());
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, this.module);
+ 		
+		Chain deleteAttachmentChain = FacilioChainFactory.getDeleteAttachmentChain();
+		deleteAttachmentChain.execute(context);
 		return SUCCESS;
 	}
 	

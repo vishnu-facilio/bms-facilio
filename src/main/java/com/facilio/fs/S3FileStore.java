@@ -11,6 +11,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.security.Security;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -25,7 +26,6 @@ import com.amazonaws.services.cloudfront.CloudFrontUrlSigner;
 import com.amazonaws.services.cloudfront.util.SignerUtils;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.DeleteObjectsRequest;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
@@ -163,14 +163,14 @@ public class S3FileStore extends FileStore {
 			return false;
 		}
 		
-		AwsUtil.getAmazonS3Client().deleteObject(getBucketName(), fileInfo.getFilePath());
-		return deleteFileEntry(fileId);
+//		AwsUtil.getAmazonS3Client().deleteObject(getBucketName(), fileInfo.getFilePath());
+		return  deleteFiles(Collections.singletonList(fileId));
 	}
 
 	@Override
 	public boolean deleteFiles(List<Long> fileId) throws Exception {
 		
-		List<String> filePathList = getFilePathList(fileId);
+		/*List<String> filePathList = getFilePathList(fileId);
 		
 		try {
 			DeleteObjectsRequest dor = new DeleteObjectsRequest(getBucketName())
@@ -178,8 +178,8 @@ public class S3FileStore extends FileStore {
 			AwsUtil.getAmazonS3Client().deleteObjects(dor);
 		} catch (Exception e) {
 			log.info("Exception occurred ", e);
-		}
-		return deleteFileEntries(fileId);
+		}*/
+		return markAsDeleted(fileId) > 0;
 	}
 
 	@Override
