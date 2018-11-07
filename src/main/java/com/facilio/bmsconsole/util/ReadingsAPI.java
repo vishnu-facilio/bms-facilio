@@ -323,7 +323,12 @@ public class ReadingsAPI {
 	}
 	
 	public static Map<String, Object> getInstanceMapping(String deviceName, String instanceName) throws Exception {
+		return getInstanceMapping(deviceName, instanceName,null);
+	}
+	
+	public static Map<String, Object> getInstanceMapping(String deviceName, String instanceName,Long controllerId) throws Exception {
 
+		
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getInstanceMappingFields())
@@ -331,6 +336,9 @@ public class ReadingsAPI {
 				.andCustomWhere("ORGID=?",orgId)
 				.andCustomWhere("DEVICE_NAME= ?",deviceName)
 				.andCustomWhere("INSTANCE_NAME=?",instanceName);
+		if(controllerId!=null) {
+			builder=builder.andCustomWhere("CONTROLLER_ID=?", controllerId);
+		}
 
 		List<Map<String, Object>> stats = builder.get();	
 		if(stats!=null && !stats.isEmpty()) {

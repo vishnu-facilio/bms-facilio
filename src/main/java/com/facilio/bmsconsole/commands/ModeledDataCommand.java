@@ -33,6 +33,7 @@ public class ModeledDataCommand implements Command {
 		
 		Map<String,List<ReadingContext>> moduleVsReading = new HashMap<String,List<ReadingContext>> ();
 		Map<String,ReadingContext> iModuleVsReading = new HashMap<String,ReadingContext> ();
+		Long controllerId=(Long) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
 		
 		LOGGER.debug("Inside ModeledDataCommand####### deviceData: "+deviceData);
 		for(Map.Entry<String, Map<String,String>> data:deviceData.entrySet()) {
@@ -44,7 +45,8 @@ public class ModeledDataCommand implements Command {
 			while(instanceList.hasNext()) {
 				String instanceName=instanceList.next();
 				String instanceVal=instanceMap.get(instanceName);
-				Map<String, Object> stat = ReadingsAPI.getInstanceMapping(deviceName, instanceName);
+				//for now sending as null till migration..
+				Map<String, Object> stat = ReadingsAPI.getInstanceMapping(deviceName, instanceName,null);
 				if(stat==null)  {
 					continue;
 				}

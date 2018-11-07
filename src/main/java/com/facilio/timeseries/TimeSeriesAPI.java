@@ -17,6 +17,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -27,6 +28,7 @@ import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.ControllerAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -49,6 +51,11 @@ public class TimeSeriesAPI {
 		if (record != null) {
 			context.put(FacilioConstants.ContextNames.KINESIS_RECORD, record);
 			context.put(FacilioConstants.ContextNames.KINESIS_CHECK_POINTER, checkpointer);
+			//even if the above two lines are removed.. please do not remove the below partitionKey..
+			ControllerContext controller=  ControllerAPI.getController(record.getPartitionKey());
+			if(controller!=null) {
+				context.put(FacilioConstants.ContextNames.CONTROLLER_ID, controller.getId());
+			}
 		}
 		//Temp code. To be removed later *END*
 		Chain processDataChain = FacilioChainFactory.getProcessDataChain();

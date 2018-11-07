@@ -4165,6 +4165,7 @@ public class FieldFactory {
 		fields.add(getField("instance", "INSTANCE_NAME", FieldType.STRING));
 		fields.add(getField("assetId", "ASSET_ID", FieldType.NUMBER));
 		fields.add(getField("fieldId", "FIELD_ID", FieldType.NUMBER));
+        fields.add(getField("controllerId", "CONTROLLER_ID", FieldType.NUMBER));
 		return fields;
 	}
 
@@ -4181,6 +4182,7 @@ public class FieldFactory {
 		fields.add(getField("orgId", "ORGID", FieldType.NUMBER));
 		fields.add(getField("device", "DEVICE_NAME", FieldType.STRING));
 		fields.add(getField("instance", "INSTANCE_NAME", FieldType.STRING));
+        fields.add(getField("controllerId", "CONTROLLER_ID", FieldType.NUMBER));
 		return fields;
 	}
 
