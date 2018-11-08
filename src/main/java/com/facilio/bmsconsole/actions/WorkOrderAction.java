@@ -217,7 +217,9 @@ public class WorkOrderAction extends FacilioAction {
 	public String addPreventiveMaintenance(FacilioContext context) throws Exception {
 
 		workorder.setRequester(null);
-		preventivemaintenance.setReminders(reminders);
+		if(reminders != null) {
+			preventivemaintenance.setReminders(reminders);
+		}
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, preventivemaintenance);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
