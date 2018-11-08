@@ -59,9 +59,6 @@ private boolean isBulkUpdate = false;
 	}
 	private void prepareAndAddResourcePlanner(PreventiveMaintenance pm) throws Exception {
 		
-		GenericInsertRecordBuilder insert = new GenericInsertRecordBuilder();
-		insert.table(ModuleFactory.getPMResourcePlannerModule().getTableName());
-		insert.fields(FieldFactory.getPMResourcePlannerFields());
 		
 		GenericInsertRecordBuilder insert1 = new GenericInsertRecordBuilder();
 		insert1.table(ModuleFactory.getPMResourcePlannerReminderModule().getTableName());
@@ -76,6 +73,9 @@ private boolean isBulkUpdate = false;
 					resourcePlanner.setPmId(pm.getId());
 				}
 				Map<String, Object> prop = FieldUtil.getAsProperties(resourcePlanner);
+				GenericInsertRecordBuilder insert = new GenericInsertRecordBuilder();
+				insert.table(ModuleFactory.getPMResourcePlannerModule().getTableName());
+				insert.fields(FieldFactory.getPMResourcePlannerFields());
 				insert.insert(prop);
 				resourcePlanner.setId((Long)prop.get("id"));
 				

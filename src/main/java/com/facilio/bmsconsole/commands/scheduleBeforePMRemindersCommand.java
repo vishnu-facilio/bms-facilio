@@ -55,7 +55,7 @@ public class scheduleBeforePMRemindersCommand implements Command {
 	}
 	
 	private void scheduleBeforePMReminders(PreventiveMaintenance pm, Map<Long, Long> nextExecutionTimes) throws Exception {
-		if (pm.getTriggers() != null && !pm.getTriggers().isEmpty()) {
+		if (pm.getTriggers() != null && !pm.getTriggers().isEmpty() && pm.getReminders() != null && !pm.getReminders().isEmpty()) {
 			for(int i=0; i<pm.getReminders().size(); i++) {
 				PMReminder reminder = pm.getReminders().get(i);
 				long schedulerId = reminder.getId();
