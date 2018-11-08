@@ -39,19 +39,23 @@ public class ImportDataAction extends ActionSupport {
 	
 	private static org.apache.log4j.Logger log = LogManager.getLogger(ImportDataAction.class.getName());
 	public String upload() throws Exception {
-		
+		LOGGER.severe("UPLOAD_STARTED");
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
 		
 		long fileId = fs.addFile(fileUploadFileName, fileUpload, fileUploadContentType);
-		
+		LOGGER.severe("FILE_UPLOADED -- "+fileId);
 		JSONArray columnheadings = ImportAPI.getColumnHeadings(fileUpload);
 		
 		JSONObject firstRow = ImportAPI.getFirstRow(fileUpload);	
+		
+		LOGGER.severe("SECOND POINT-- ");
 		importProcessContext.setfirstRow(firstRow);
 		importProcessContext.setColumnHeadingString(columnheadings.toJSONString().replaceAll("\"", "\\\""));
 		importProcessContext.setImportMode(getImportMode());
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule facilioModule = modBean.getModule(getModuleName());
+        
+        LOGGER.severe("THIRD POINT-- ");
 		
         if(facilioModule.getName().equals(FacilioConstants.ContextNames.ASSET) && (assetCategory != -1)) {
         	Map<String,String> moduleInfo = AssetsAPI.getAssetModuleName(this.assetCategory);
@@ -83,6 +87,8 @@ public class ImportDataAction extends ActionSupport {
         ImportAPI.addImportProcess(importProcessContext);
 		
         ImportAPI.getFieldMapping(importProcessContext);
+        
+        LOGGER.severe("LAST POINT-- ");
 		return SUCCESS;
 	}
 	public String displayColumnFieldMapping()

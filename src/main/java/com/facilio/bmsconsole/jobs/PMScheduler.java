@@ -118,7 +118,6 @@ public class PMScheduler extends FacilioJob {
 						}
 					}
 				}
-				
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
