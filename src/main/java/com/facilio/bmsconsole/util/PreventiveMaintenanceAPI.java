@@ -74,7 +74,7 @@ public class PreventiveMaintenanceAPI {
 		List<PMJobsContext> pmJobs = new ArrayList<>();
 		List<PMJobsContext> pmJobsToBeScheduled = new ArrayList<>();
 		
-		List<Long> resourceIds = getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(pm.getPmCreationType()),pm.getBaseSpaceId(),pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
+		List<Long> resourceIds = getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(pm.getAssignmentType()),pm.getBaseSpaceId(),pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
 		
 		Map<Long, PMResourcePlannerContext> pmResourcePlanner = getPMResourcesPlanner(pm.getId());
 		for(Long resourceId :resourceIds) {
