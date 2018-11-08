@@ -23,7 +23,10 @@ public enum FacilioSystemFunctions implements FacilioWorkflowFunctionInterface {
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			// TODO Auto-generated method stub
-			ROLE_EMAILS.checkParams(objects);
+			if ( !ROLE_EMAILS.checkParams(objects) ) {
+				return "";
+			}
+			
 			List<User> users = getUsersFromRoleAndResource(objects);
 			
 			if (users != null && !users.isEmpty()) {
@@ -46,7 +49,10 @@ public enum FacilioSystemFunctions implements FacilioWorkflowFunctionInterface {
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			// TODO Auto-generated method stub
-			ROLE_PHONE.checkParams(objects);
+			
+			if ( !ROLE_PHONE.checkParams(objects) ) {
+				return "";
+			}
 			List<User> users = getUsersFromRoleAndResource(objects);
 			
 			if (users != null && !users.isEmpty()) {
@@ -75,7 +81,9 @@ public enum FacilioSystemFunctions implements FacilioWorkflowFunctionInterface {
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			// TODO Auto-generated method stub
-			ROLE_OUID.checkParams(objects);
+			if ( !ROLE_OUID.checkParams(objects) ) {
+				return "";
+			}
 			List<User> users = getUsersFromRoleAndResource(objects);
 			
 			if (users != null && !users.isEmpty()) {
@@ -100,16 +108,19 @@ public enum FacilioSystemFunctions implements FacilioWorkflowFunctionInterface {
 		this.requiredParams = requiredParams;
 	}
 	
-	private void checkParams (Object... objects) {
+	private boolean checkParams (Object... objects) {
 		if (requiredParams > 0 && (objects == null || objects.length < requiredParams)) {
-			throw new IllegalArgumentException("Required objects are null for function : "+namespace+"."+functionName);
+//			throw new IllegalArgumentException("Required objects are null for function : "+namespace+"."+functionName);
+			return false;
 		}
 		
 		for (int i = 0; i < requiredParams; i++) {
 			if (objects[i] == null) {
-				throw new IllegalArgumentException("Required objects are null for function : "+namespace+"."+functionName);
+//				throw new IllegalArgumentException("Required objects are null for function : "+namespace+"."+functionName);
+				return false;
 			}
 		}
+		return true;
 	}
 
 	@Override
