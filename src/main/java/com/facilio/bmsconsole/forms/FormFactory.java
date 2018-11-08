@@ -41,7 +41,8 @@ public class FormFactory {
 	private static Map<FormType, Multimap<String, FacilioForm>> initAllForms() {
 		return ImmutableMap.<FormType, Multimap<String, FacilioForm>>builder()
 				.put(FormType.MOBILE, ImmutableMultimap.<String, FacilioForm>builder()
-						.put(FacilioConstants.ContextNames.WORK_ORDER, getMobileWorkOrderForm()).build())
+						.put(FacilioConstants.ContextNames.WORK_ORDER, getMobileWorkOrderForm())
+						.put(FacilioConstants.ContextNames.APPROVAL, getMobileApprovalForm()).build())
 				.put(FormType.WEB, ImmutableMultimap.<String, FacilioForm>builder()
 						.put(FacilioConstants.ContextNames.WORK_ORDER, getWebWorkOrderForm())
 						.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, getWebWorkRequestForm()).build())
@@ -108,6 +109,17 @@ public class FormFactory {
 		return form;
 	}
 	
+	public static FacilioForm getMobileApprovalForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Approval");
+		form.setName("mobile_approval");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getMobileApprovalFormFields());
+		form.setFormType(FormType.MOBILE);
+		return form;
+	}
+	
 	public static FacilioForm getMobileWorkOrderForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("SUBMIT WORKORDER");
@@ -117,6 +129,17 @@ public class FormFactory {
 		form.setFields(getMobileWorkOrderFormFields());
 		form.setFormType(FormType.MOBILE);
 		return form;
+	}
+	
+	private static List<FormField> getMobileApprovalFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.REQUIRED, 2, 1));
+		fields.add(new FormField("resource", FieldDisplayType.WOASSETSPACECHOOSER, "Space/Asset", Required.REQUIRED, 3, 1));
+		fields.add(new FormField("assignment", FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", Required.REQUIRED, 4, 1));
+		fields.add(new FormField("priority", FieldDisplayType.LOOKUP_SIMPLE, "Priority", Required.OPTIONAL, "ticketpriority", 5, 1));
+		fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachment", Required.OPTIONAL, 6, 1));
+		return fields;
 	}
 	
 	private static List<FormField> getMobileWorkOrderFormFields() {
