@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -86,6 +87,13 @@ public class AddPMReminderCommand implements Command {
 					}
 					insertBuilder.save();
 					
+					Map<String,PMReminder> reminderMap = new HashMap<>();
+					for(int i=0 ;i<reminderProps.size() ;i++) {
+						Long id = (Long) reminderProps.get(i).get("id");
+						reminders.get(i).setId(id);
+						reminderMap.put(reminders.get(i).getName(), reminders.get(i));
+					}
+					pm.setReminderMap(reminderMap);
 				}
 			}
 		}

@@ -60,10 +60,6 @@ private boolean isBulkUpdate = false;
 	private void prepareAndAddResourcePlanner(PreventiveMaintenance pm) throws Exception {
 		
 		
-		GenericInsertRecordBuilder insert1 = new GenericInsertRecordBuilder();
-		insert1.table(ModuleFactory.getPMResourcePlannerReminderModule().getTableName());
-		insert1.fields(FieldFactory.getPMResourcePlannerReminderFields());
-		
 		if(pm.getResourcePlanners() != null) {
 			
 			for(PMResourcePlannerContext resourcePlanner :pm.getResourcePlanners()) {
@@ -89,6 +85,10 @@ private boolean isBulkUpdate = false;
 							pmResourcePlannerReminderContext.setPmId(pm.getId());
 							pmResourcePlannerReminderContext.setResourcePlannerId(resourcePlanner.getId());
 							Map<String, Object> prop1 = FieldUtil.getAsProperties(pmResourcePlannerReminderContext);
+							
+							GenericInsertRecordBuilder insert1 = new GenericInsertRecordBuilder();
+							insert1.table(ModuleFactory.getPMResourcePlannerReminderModule().getTableName());
+							insert1.fields(FieldFactory.getPMResourcePlannerReminderFields());
 							insert1.insert(prop1);
 							
 							pmResourcePlannerReminderContext.setId((Long)prop1.get("id"));
