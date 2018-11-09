@@ -59,7 +59,6 @@ public abstract class FileStore {
 				rs = pstmt.getGeneratedKeys();
 				rs.next();
 				long fileId = rs.getLong(1);
-				System.out.println("Added file with id : "+fileId);
 				return fileId;
 			}
 		}

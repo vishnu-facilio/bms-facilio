@@ -31,7 +31,6 @@ public class GetViewListsCommand implements Command {
 		if (groupStatus == true) {
 			 viewMap2 = ViewFactory.getGroupViews(moduleName);
 		}
-		System.out.println(viewMap2);
 		
 		List<FacilioView> dbViews;
 		if (LookupSpecialTypeUtil.isSpecialType(moduleName)) {

@@ -46,11 +46,9 @@ public class GetNotesCommand implements Command {
 																		.beanClass(NoteContext.class)
 																		.andCondition(idCondition)
 																		.maxLevel(0);
-			System.out.println("getPortalId" + AccountUtil.getCurrentUser().getPortalId());
 			long portalID =  AccountUtil.getCurrentUser().getPortalId();
 			if (portalID > 0)
 			{
-				System.out.println("AccountUtil	 + " + portalID);
 				Condition createdByCond = new Condition();
 				createdByCond.setField(modBean.getField("createdBy", moduleName));
 				createdByCond.setOperator(NumberOperators.EQUALS);
