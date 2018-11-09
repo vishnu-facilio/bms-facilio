@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PMJobsContext;
@@ -79,6 +80,7 @@ public class DeletePMAndDependenciesCommand implements Command{
 			WorkflowRuleAPI.deleteWorkFlowRules(ruleIds);
 		}
 		
+		deletePmResourcePlanner(pmIds);
 		deleteTriggers(triggerPMIds);
 		
 		if(isPMDelete || deleteOnStatusUpdate || (newPm != null && newPm.getId() != -1 && newPm.getReminders() != null)) {
@@ -110,6 +112,18 @@ public class DeletePMAndDependenciesCommand implements Command{
 			GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 					.table(triggerModule.getTableName())
 					.andCondition(CriteriaAPI.getCondition(pmIdField, triggerPMIds, NumberOperators.EQUALS));
+			deleteBuilder.delete();
+		}
+	}
+	
+	private void deletePmResourcePlanner(List<Long> pmids) throws Exception {
+		if (pmids !=  null && !pmids.isEmpty()) {
+			FacilioModule module = ModuleFactory.getPMResourcePlannerModule();
+			List<FacilioField> fields = FieldFactory.getPMResourcePlannerFields();
+			FacilioField pmIdField = FieldFactory.getAsMap(fields).get("pmId");
+			GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+					.table(module.getTableName())
+					.andCondition(CriteriaAPI.getCondition(pmIdField,StringUtils.join(pmids, ","), NumberOperators.EQUALS));
 			deleteBuilder.delete();
 		}
 	}

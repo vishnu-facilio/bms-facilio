@@ -1443,6 +1443,8 @@ public class FacilioChainFactory {
 		c.addCommand(new AddPMTriggerCommand());
 //		c.addCommand(new DeletePMRemindersCommand());
 		c.addCommand(new AddPMReminderCommand());
+		c.addCommand(new SchedulePMCommand());
+		c.addCommand(new scheduleBeforePMRemindersCommand());
 		c.addCommand(new UpdateReadingDataMetaCommand());
 		c.addCommand(new AddValidationRulesCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
