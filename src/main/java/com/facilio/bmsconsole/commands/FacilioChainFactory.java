@@ -325,6 +325,34 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain sendReadingReportMailChain() {
+		Chain c = new ChainBase();
+		c.addCommand(getExportReadingReportFileChain());
+		c.addCommand(new SendReadingReportMailCommand());
+		return c;
+	}
+	
+	public static Chain sendReportMailChain() {
+		Chain c = new ChainBase();
+		c.addCommand(getExportReportFileChain());
+		c.addCommand(new SendReadingReportMailCommand());
+		return c;
+	}
+	
+	public static Chain getExportReadingReportFileChain() {
+		Chain c = new ChainBase();
+		c.addCommand(ReadOnlyChainFactory.fetchReadingReportChain());
+		c.addCommand(new GetExportReportDataCommand());
+		return c;
+	}
+	
+	public static Chain getExportReportFileChain() {
+		Chain c = new ChainBase();
+		c.addCommand(ReadOnlyChainFactory.fetchReportDataChain());
+		c.addCommand(new GetExportReportDataCommand());
+		return c;
+	}
+	
 	public static Chain getWorkOrderRequestDetailsChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForWorkOrderRequest());
