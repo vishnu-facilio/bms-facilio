@@ -9,6 +9,19 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 
 public class TransactionChainFactory {
+	
+		public static Chain getOrgSignupChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new CreateOrgCommand());
+			c.addCommand(new AddDefaultModulesCommand());
+			c.addCommand(new AddDefaultReportCommand());
+			c.addCommand(new AddDefaultUnitsCommand());
+			c.addCommand(new AddEventModuleCommand());
+			c.addCommand(new AddOrgInfoCommand());
+			c.addCommand(new CreateSuperAdminCommand());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
 
 		public static Chain getAddNotesChain() {
 			Chain c = getDefaultChain();

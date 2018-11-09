@@ -40,19 +40,6 @@ public class FacilioChainFactory {
     	    return new FacilioChain(false);
     }
     
-    public static Chain getOrgSignupChain() {
-		Chain c = getTransactionChain();
-		c.addCommand(new CreateOrgCommand());
-		c.addCommand(new AddDefaultModulesCommand());
-		c.addCommand(new AddDefaultReportCommand());
-		c.addCommand(new AddDefaultUnitsCommand());
-		c.addCommand(new AddEventModuleCommand());
-		c.addCommand(new AddOrgInfoCommand());
-		c.addCommand(new CreateSuperAdminCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
 	public static Chain addDefaultReportChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new AddDefaultReportCommand());
@@ -335,34 +322,6 @@ public class FacilioChainFactory {
 		c.addCommand(SetTableNamesCommand.getForTicketAttachment());
 		c.addCommand(getAddAttachmentChain());
 		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
-	public static Chain sendReadingReportMailChain() {
-		Chain c = new ChainBase();
-		c.addCommand(getExportReadingReportFileChain());
-		c.addCommand(new SendReadingReportMailCommand());
-		return c;
-	}
-	
-	public static Chain sendReportMailChain() {
-		Chain c = new ChainBase();
-		c.addCommand(getExportReportFileChain());
-		c.addCommand(new SendReadingReportMailCommand());
-		return c;
-	}
-	
-	public static Chain getExportReadingReportFileChain() {
-		Chain c = new ChainBase();
-		c.addCommand(ReadOnlyChainFactory.fetchReadingReportChain());
-		c.addCommand(new GetExportReportDataCommand());
-		return c;
-	}
-	
-	public static Chain getExportReportFileChain() {
-		Chain c = new ChainBase();
-		c.addCommand(ReadOnlyChainFactory.fetchReportDataChain());
-		c.addCommand(new GetExportReportDataCommand());
 		return c;
 	}
 	

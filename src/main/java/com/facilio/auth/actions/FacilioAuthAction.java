@@ -31,8 +31,8 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.actions.PortalInfoAction;
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.auth.CognitoUtil;
@@ -230,7 +230,7 @@ public class FacilioAuthAction extends ActionSupport {
         FacilioContext signupContext = new FacilioContext();
         signupContext.put(FacilioConstants.ContextNames.SIGNUP_INFO, signupInfo);
 
-        Chain c = FacilioChainFactory.getOrgSignupChain();
+        Chain c = TransactionChainFactory.getOrgSignupChain();
         c.execute(signupContext);
         setJsonresponse("message", "success");
         return SUCCESS;

@@ -26,75 +26,67 @@ public class AddDefaultReportCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		
-		
 		long orgId = (long) context.get("orgId");
 		
 		Map<String, String> paramValues = new HashMap<>(); 
 		paramValues.put("orgId", String.valueOf(orgId));
 		
-		try {
-			
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean",orgId);
-			FacilioModule module = modBean.getModule(ContextNames.WORK_ORDER);
-			
-			paramValues.put("workOrderModuleId", String.valueOf(module.getModuleId()));
-			
-			List<FacilioField> fields = modBean.getAllFields(module.getName());
-			if(fields != null) {
-				for(FacilioField field:fields) {
-					paramValues.put(module.getName()+"_"+field.getName(), String.valueOf(field.getId()));
-				}
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean",orgId);
+		FacilioModule module = modBean.getModule(ContextNames.WORK_ORDER);
+		
+		paramValues.put("workOrderModuleId", String.valueOf(module.getModuleId()));
+		
+		List<FacilioField> fields = modBean.getAllFields(module.getName());
+		if(fields != null) {
+			for(FacilioField field:fields) {
+				paramValues.put(module.getName()+"_"+field.getName(), String.valueOf(field.getId()));
 			}
-			
-			module = modBean.getModule(ContextNames.ALARM);
-			
-			paramValues.put("alarmModuleId", String.valueOf(module.getModuleId()));
-			
-			fields = modBean.getAllFields(module.getName());
-			if(fields != null) {
-				for(FacilioField field:fields) {
-					paramValues.put(module.getName()+"_"+field.getName(), String.valueOf(field.getId()));
-				}
-			}
-			
-			module = modBean.getModule(ContextNames.ENERGY_DATA_READING);
-			paramValues.put("energyDataModuleId", String.valueOf(module.getModuleId()));
-			
-			fields = modBean.getAllFields(module.getName());
-			if(fields != null) {
-				for(FacilioField field:fields) {
-					paramValues.put(module.getName()+"_"+field.getName(), String.valueOf(field.getId()));
-				}
-			}
-			
-			module = modBean.getModule(ContextNames.ENERGY_METER);
-			paramValues.put("energyMeterModuleId", String.valueOf(module.getModuleId()));
-			
-			fields = modBean.getAllFields(module.getName());
-			if(fields != null) {
-				for(FacilioField field:fields) {
-					paramValues.put(module.getName()+"_"+field.getName(), String.valueOf(field.getId()));
-				}
-			}
-			
-			List<BaseLineContext> baselines = BaseLineAPI.getAllBaseLines();
-			
-			for(BaseLineContext baseline : baselines) {
-				
-				String name = baseline.getName();
-				name = name.replaceAll("\\s","");
-				paramValues.put("baseline_"+name, String.valueOf(baseline.getId()));
-			}
-			
-			System.out.println(paramValues);
-			SQLScriptRunner scriptRunner = new SQLScriptRunner(INSERT_REPORTS_SQL, true, paramValues);
-			scriptRunner.runScript();
-			
-//			CommonCommandUtil.insertOrgInfo(orgId, "newdashboard", "wo,fa");
 		}
-		catch (Exception e) {
-			log.info("Exception occurred ", e);
+		
+		module = modBean.getModule(ContextNames.ALARM);
+		
+		paramValues.put("alarmModuleId", String.valueOf(module.getModuleId()));
+		
+		fields = modBean.getAllFields(module.getName());
+		if(fields != null) {
+			for(FacilioField field:fields) {
+				paramValues.put(module.getName()+"_"+field.getName(), String.valueOf(field.getId()));
+			}
 		}
+		
+		module = modBean.getModule(ContextNames.ENERGY_DATA_READING);
+		paramValues.put("energyDataModuleId", String.valueOf(module.getModuleId()));
+		
+		fields = modBean.getAllFields(module.getName());
+		if(fields != null) {
+			for(FacilioField field:fields) {
+				paramValues.put(module.getName()+"_"+field.getName(), String.valueOf(field.getId()));
+			}
+		}
+		
+		module = modBean.getModule(ContextNames.ENERGY_METER);
+		paramValues.put("energyMeterModuleId", String.valueOf(module.getModuleId()));
+		
+		fields = modBean.getAllFields(module.getName());
+		if(fields != null) {
+			for(FacilioField field:fields) {
+				paramValues.put(module.getName()+"_"+field.getName(), String.valueOf(field.getId()));
+			}
+		}
+		
+		List<BaseLineContext> baselines = BaseLineAPI.getAllBaseLines();
+		
+		for(BaseLineContext baseline : baselines) {
+			
+			String name = baseline.getName();
+			name = name.replaceAll("\\s","");
+			paramValues.put("baseline_"+name, String.valueOf(baseline.getId()));
+		}
+		
+		System.out.println(paramValues);
+		SQLScriptRunner scriptRunner = new SQLScriptRunner(INSERT_REPORTS_SQL, true, paramValues);
+		scriptRunner.runScript();
+		
 		return false;
 	}
 

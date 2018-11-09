@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.commands;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.chain.Command;
@@ -27,14 +26,8 @@ public class AddDefaultModulesCommand implements Command {
 		Map<String, String> paramValues = new HashMap<>(); 
 		paramValues.put("orgId", String.valueOf(orgId));
 	
-		try {
-			SQLScriptRunner scriptRunner = new SQLScriptRunner(INSERT_MODULES_SQL, true, paramValues);
-			scriptRunner.runScript();
-		}
-		catch (Exception e) {
-			log.info("Exception occurred ", e);
-			logger.log(Level.SEVERE,"Error",e);
-		}
+		SQLScriptRunner scriptRunner = new SQLScriptRunner(INSERT_MODULES_SQL, true, paramValues);
+		scriptRunner.runScript();
 		
 		return false;
 	}
