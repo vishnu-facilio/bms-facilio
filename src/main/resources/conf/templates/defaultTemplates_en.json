@@ -752,7 +752,7 @@
 			"click_action": "APPROVAL_SUMMARY",
 			"title": "Approval Approved"
 		},
-		"id": ""
+		"id": "${workorder.requestedBy.id:-}"
 	},
 	"79": {
 		"name": "REJECT_ACTION_MOBILE",
@@ -776,19 +776,19 @@
 			"click_action": "APPROVAL_SUMMARY",
 			"title": "Approval Rejected"
 		},
-		"id": ""
+		"id": "${workorder.requestedBy.id:-}"
 	},
 	"80": {
 		"name": "APPROVAL_EMAIL",
 		"sender": "noreply@${org.domain}.facilio.com",
 		"subject": "Requesting Approval",
-		"to": "${workorder.requestedBy.email:-}",
+		"to": "",
 		"message": "Approval has been requested : ${workorder.subject}\nDescription : \n${workorder.description:-}\nDue by : ${workorder.dueDateString:-}\nPlease view the new approval here - ${workorder.url}\n\nRegards,\nTeam Facilio."
 	
 	},
 	"81": {
 		"name": "APPROVAL_SMS",
-		"to": "${workorder.requestedBy.phone:-}",
+		"to": "",
 		"message": "Approval has been requested : ${workorder.subject}\nDescription : \n${workorder.description:-}\nDue by : ${workorder.dueDateString:-}\nPlease view the new approval here - ${workorder.url}\n\nRegards,\nTeam Facilio."
 	},
 	"82": {

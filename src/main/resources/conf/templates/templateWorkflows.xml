@@ -1660,14 +1660,14 @@
 	<template id="74">
 		<workflow>
 			<parameter name="workorder.id" type="Number" />
-			<parameter name="workorder.requestedBy.id" type="Number" />
+			<parameter name="workorder.requestedBy.email" type="Number" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.url" type="String" />
 			<expression name="workorder.id">
 				<constant>${workorder.id}</constant>
 			</expression>
-			<expression name="workorder.requestedBy.id">
-				<constant>${workorder.assignedTo.id}</constant>
+			<expression name="workorder.requestedBy.email">
+				<constant>${workorder.requestedBy.email}</constant>
 			</expression>
 			<expression name="workorder.subject">
 				<constant>${workorder.subject}</constant>
@@ -1680,14 +1680,14 @@
 	<template id="75">
 		<workflow>
 			<parameter name="workorder.id" type="Number" />
-			<parameter name="workorder.requestedBy.id" type="Number" />
+			<parameter name="workorder.requestedBy.email" type="Number" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.url" type="String" />
 			<expression name="workorder.id">
 				<constant>${workorder.id}</constant>
 			</expression>
-			<expression name="workorder.requestedBy.id">
-				<constant>${workorder.assignedTo.id}</constant>
+			<expression name="workorder.requestedBy.email">
+				<constant>${workorder.requestedBy.email}</constant>
 			</expression>
 			<expression name="workorder.subject">
 				<constant>${workorder.subject}</constant>
@@ -1701,14 +1701,14 @@
 		<workflow>
 		   <parameter name="org.superAdmin.phone" type="String" />
 			<parameter name="workorder.id" type="Number" />
-			<parameter name="workorder.requestedBy.id" type="Number" />
+			<parameter name="workorder.requestedBy.phone" type="Number" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.url" type="String" />
 			<expression name="workorder.id">
 				<constant>${workorder.id}</constant>
 			</expression>
-			<expression name="workorder.requestedBy.id">
-				<constant>${workorder.requestedBy.id}</constant>
+			<expression name="workorder.requestedBy.phone">
+				<constant>${workorder.requestedBy.phone}</constant>
 			</expression>
 			<expression name="workorder.subject">
 				<constant>${workorder.subject}</constant>
@@ -1722,14 +1722,14 @@
 		<workflow>
 			<parameter name="org.superAdmin.phone" type="String" />
 			<parameter name="workorder.id" type="Number" />
-			<parameter name="workorder.requestedBy.id" type="Number" />
+			<parameter name="workorder.requestedBy.phone" type="Number" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.url" type="String" />
 			<expression name="workorder.id">
 				<constant>${workorder.id}</constant>
 			</expression>
-			<expression name="workorder.requestedBy.id">
-				<constant>${workorder.requestedBy.id}</constant>
+			<expression name="workorder.requestedBy.phone">
+				<constant>${workorder.requestedBy.phone}</constant>
 			</expression>
 			<expression name="workorder.subject">
 				<constant>${workorder.subject}</constant>
@@ -1784,14 +1784,10 @@
 	<template id="80">
 		<workflow>
 			<parameter name="workorder.id" type="Number" />
-			<parameter name="workorder.requestedBy.id" type="Number" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.url" type="String" />
 			<expression name="workorder.id">
 				<constant>${workorder.id}</constant>
-			</expression>
-			<expression name="workorder.requestedBy.id">
-				<constant>${workorder.assignedTo.id}</constant>
 			</expression>
 			<expression name="workorder.subject">
 				<constant>${workorder.subject}</constant>
@@ -1805,14 +1801,10 @@
 		<workflow>
 		   <parameter name="org.superAdmin.phone" type="String" />
 			<parameter name="workorder.id" type="Number" />
-			<parameter name="workorder.requestedBy.id" type="Number" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.url" type="String" />
 			<expression name="workorder.id">
 				<constant>${workorder.id}</constant>
-			</expression>
-			<expression name="workorder.requestedBy.id">
-				<constant>${workorder.requestedBy.id}</constant>
 			</expression>
 			<expression name="workorder.subject">
 				<constant>${workorder.subject}</constant>
@@ -1826,14 +1818,10 @@
 		<workflow>
 			<parameter name="org.superAdmin.phone" type="String" />
 			<parameter name="workorder.id" type="Number" />
-			<parameter name="workorder.requestedBy.id" type="Number" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.url" type="String" />
 			<expression name="workorder.id">
 				<constant>${workorder.id}</constant>
-			</expression>
-			<expression name="workorder.requestedBy.id">
-				<constant>${workorder.requestedBy.id}</constant>
 			</expression>
 			<expression name="workorder.subject">
 				<constant>${workorder.subject}</constant>
