@@ -772,9 +772,46 @@
 			"sound": "default",
 			"module_name": "workorder",
 			"priority": "high",
-			"text": "This is to notify you that your approval has be reject \n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description:-}\nDue by : ${workorder.dueDateString:-}\nPlease view the new workorder here - ${workorder.url}\n\nRegards,\nTeam Facilio.",
-			"click_action": "WORKORDERREQUEST_SUMMARY",
+			"text": "This is to notify you that your approval has be reject \n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description:-}\nDue by : ${workorder.dueDateString:-}\nPlease view the new approval here - ${workorder.url}\n\nRegards,\nTeam Facilio.",
+			"click_action": "APPROVAL_SUMMARY",
 			"title": "Approval Rejected"
+		},
+		"id": ""
+	},
+	"80": {
+		"name": "APPROVAL_EMAIL",
+		"sender": "noreply@${org.domain}.facilio.com",
+		"subject": "Requesting Approval",
+		"to": "${workorder.requestedBy.email:-}",
+		"message": "Approval has been requested : ${workorder.subject}\nDescription : \n${workorder.description:-}\nDue by : ${workorder.dueDateString:-}\nPlease view the new approval here - ${workorder.url}\n\nRegards,\nTeam Facilio."
+	
+	},
+	"81": {
+		"name": "APPROVAL_SMS",
+		"to": "${workorder.requestedBy.phone:-}",
+		"message": "Approval has been requested : ${workorder.subject}\nDescription : \n${workorder.description:-}\nDue by : ${workorder.dueDateString:-}\nPlease view the new approval here - ${workorder.url}\n\nRegards,\nTeam Facilio."
+	},
+	"82": {
+		"name": "APPROVAL_MOBILE",
+		"notification": {
+			"content_available": true,                                                                              
+			"summary_id": "${workorder.id}",
+			"sound": "default",
+			"module_name": "workorder",
+			"priority": "high",
+			"text": "Approval has been requested : ${workorder.subject}\nDescription : \n${workorder.description:-}\nDue by : ${workorder.dueDateString:-}\nPlease view the new approval here - ${workorder.url}\n\nRegards,\nTeam Facilio.",
+			"click_action": "APPROVAL_SUMMARY",
+			"title": "Requesting Approval"
+		},
+		"data": {
+			"content_available": true,                                                                              
+			"summary_id": "${workorder.id}",
+			"sound": "default",
+			"module_name": "workorder",
+			"priority": "high",
+			"text": "Approval has been requested : ${workorder.subject}\nDescription : \n${workorder.description:-}\nDue by : ${workorder.dueDateString:-}\nPlease view the new approval here - ${workorder.url}\n\nRegards,\nTeam Facilio.",
+			"click_action": "APPROVAL_SUMMARY",
+			"title": "Requesting Approval"
 		},
 		"id": ""
 	}
