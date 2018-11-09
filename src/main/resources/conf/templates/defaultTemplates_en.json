@@ -708,7 +708,7 @@
 		"name": "APPROVAL_ACTION_EMAIL",
 		"sender": "noreply@${org.domain}.facilio.com",
 		"subject": "Approval Approved",
-		"to": "${workorder.assignedTo.email:-}",
+		"to": "${workorder.requestedBy.email:-}",
 		"message": "Approver has approved your request : ${workorder.subject}\nDescription : \n${workorder.description:-}\nDue by : ${workorder.dueDateString:-}\nPlease view the new workorder here - ${workorder.url}\n\nRegards,\nTeam Facilio."
 	
 	},
@@ -716,18 +716,66 @@
 		"name": "REJECT_ACTION_EMAIL",
 		"sender": "noreply@${org.domain}.facilio.com",
 		"subject": "Approval Rejected",
-		"to": "${workorder.assignedTo.email:-}",
+		"to": "${workorder.requestedBy.email:-}",
 		"message": "Approver has rejected your request \n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description:-}\nDue by : ${workorder.dueDateString:-}\nPlease view the new workorder here - ${workorder.url}\n\nRegards,\nTeam Facilio."
 	
 	},
 	"76": {
 		"name": "APPROVAL_ACTION_SMS",
-		"to": "${org.superAdmin.phone:-}",
+		"to": "${workorder.requestedBy.phone:-}",
 		"message": "This is to notify you that your approval has be approved \n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description:-}\nDue by : ${workorder.dueDateString:-}\nPlease view the new workorder here - ${workorder.url}\n\nRegards,\nTeam Facilio."
 	},
 	"77": {
 		"name": "REJECT_ACTION_SMS",
-		"to": "${org.superAdmin.phone:-}",
+		"to": "${workorder.requestedBy.phone:-}",
 		"message": "This is to notify you that your approval has be reject \n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description:-}\nDue by : ${workorder.dueDateString:-}\nPlease view the new workorder here - ${workorder.url}\n\nRegards,\nTeam Facilio."
+	},
+	"78": {
+		"name": "APPROVAL_ACTION_MOBILE",
+		"notification": {
+			"content_available": true,                                                                              
+			"summary_id": "${workorder.id}",
+			"sound": "default",
+			"module_name": "workorder",
+			"priority": "high",
+			"text": "This is to notify you that your approval has be approved \n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description:-}\nDue by : ${workorder.dueDateString:-}\nPlease view the new workorder here - ${workorder.url}\n\nRegards,\nTeam Facilio.",
+			"click_action": "APPROVAL_SUMMARY",
+			"title": "Approval Approved"
+		},
+		"data": {
+			"content_available": true,                                                                              
+			"summary_id": "${workorder.id}",
+			"sound": "default",
+			"module_name": "workorder",
+			"priority": "high",
+			"text": "This is to notify you that your approval has be approved \n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description:-}\nDue by : ${workorder.dueDateString:-}\nPlease view the new workorder here - ${workorder.url}\n\nRegards,\nTeam Facilio.",
+			"click_action": "APPROVAL_SUMMARY",
+			"title": "Approval Approved"
+		},
+		"id": ""
+	},
+	"79": {
+		"name": "REJECT_ACTION_MOBILE",
+		"notification": {
+			"content_available": true,                                                                              
+			"summary_id": "${workorder.id}",
+			"sound": "default",
+			"module_name": "workorder",
+			"priority": "high",
+			"text": "This is to notify you that your approval has be reject \n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description:-}\nDue by : ${workorder.dueDateString:-}\nPlease view the new workorder here - ${workorder.url}\n\nRegards,\nTeam Facilio.",
+			"click_action": "APPROVAL_SUMMARY",
+			"title": "Approval Rejected"
+		},
+		"data": {
+			"content_available": true,                                                                              
+			"summary_id": "${workorder.id}",
+			"sound": "default",
+			"module_name": "workorder",
+			"priority": "high",
+			"text": "This is to notify you that your approval has be reject \n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description:-}\nDue by : ${workorder.dueDateString:-}\nPlease view the new workorder here - ${workorder.url}\n\nRegards,\nTeam Facilio.",
+			"click_action": "WORKORDERREQUEST_SUMMARY",
+			"title": "Approval Rejected"
+		},
+		"id": ""
 	}
 }
