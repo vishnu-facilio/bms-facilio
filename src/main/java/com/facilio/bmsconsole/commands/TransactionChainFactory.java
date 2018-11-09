@@ -185,10 +185,18 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain updateVersionedWorkflowRuleChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateWorkflowRuleCommand());
+			c.addCommand(addWorkflowRuleChain());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
 		public static Chain updateApprovalRuleChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new ConstructApprovalRuleCommand());
-			c.addCommand(updateWorkflowRuleChain());
+			c.addCommand(updateVersionedWorkflowRuleChain());
 			c.addCommand(new AddApproverActionRelCommand());
 			CommonCommandUtil.addCleanUpCommand(c);
 			return c;

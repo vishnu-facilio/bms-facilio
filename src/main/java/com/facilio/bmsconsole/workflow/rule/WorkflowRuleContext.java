@@ -181,6 +181,28 @@ public class WorkflowRuleContext implements Serializable {
 		return ruleType;
 	}
 	
+	private long versionGroupId = -1;
+	public long getVersionGroupId() {
+		return versionGroupId;
+	}
+	public void setVersionGroupId(long versionGroupId) {
+		this.versionGroupId = versionGroupId;
+	}
+	
+	private Boolean latestVersion;
+	public Boolean getLatestVersion() {
+		return latestVersion;
+	}
+	public void setLatestVersion(Boolean latestVersion) {
+		this.latestVersion = latestVersion;
+	}
+	public boolean isLatestVersion() {
+		if (latestVersion != null) {
+			return latestVersion.booleanValue();
+		}
+		return false;
+	}
+	
 	public boolean evaluateMisc (String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
 		if (record instanceof ModuleBaseWithCustomFields && siteId != -1) {
 			return ((ModuleBaseWithCustomFields) record).getSiteId() == siteId;
@@ -261,7 +283,7 @@ public class WorkflowRuleContext implements Serializable {
 		CUSTOM_WORKORDER_NOTIFICATION_RULE,
 		SCHEDULED_RULE,
 		
-		APPROVAL_RULE(true),
+		APPROVAL_RULE(true, true),
 		REQUEST_APPROVAL_RULE(true),
 		REQUEST_REJECT_RULE(true),
 		
@@ -270,7 +292,7 @@ public class WorkflowRuleContext implements Serializable {
 		//Always add at the end
 		
 		
-		private boolean stopFurtherExecution = false;
+		private boolean stopFurtherExecution = false, versionSupported = false;
 		private RuleType() {
 			// TODO Auto-generated constructor stub
 		}
@@ -280,12 +302,21 @@ public class WorkflowRuleContext implements Serializable {
 			this.stopFurtherExecution = stopFurtherExecution;
 		}
 		
+		private RuleType(boolean stopFurtherExecution, boolean versionSupported) {
+			// TODO Auto-generated constructor stub
+			this.stopFurtherExecution = stopFurtherExecution;
+			this.versionSupported = versionSupported;
+		}
+		
 		public int getIntVal() {
 			return ordinal()+1;
 		}
 		
 		public boolean stopFurtherRuleExecution() {
 			return stopFurtherExecution;
+		}
+		public boolean versionSupported() {
+			return versionSupported;
 		}
 		
 		public static RuleType valueOf(int val) {

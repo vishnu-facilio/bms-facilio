@@ -828,6 +828,8 @@ public class FieldFactory {
 
 		fields.add(getField("parentRuleId", "PARENT_RULE_ID", module, FieldType.NUMBER));
 		fields.add(getField("onSuccess", "ON_SUCCESS", module, FieldType.BOOLEAN));
+		fields.add(getField("versionGroupId", "VERSION_GROUP_ID", module, FieldType.NUMBER));
+		fields.add(getField("latestVersion", "IS_LATEST_VERSION", module, FieldType.BOOLEAN));
 
 		return fields;
 	}
