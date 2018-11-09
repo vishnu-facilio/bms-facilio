@@ -710,7 +710,7 @@ public class AwsUtil
     	CreateKeysAndCertificateResult certificateResult = createCertificate(iotClient);
     	attachPolicy(iotClient, certificateResult, name);
     	createKinesisStream(getKinesisClient(), name);
-    	createKinesisStream(getKinesisClient(), name+"-error");
+    	// createKinesisStream(getKinesisClient(), name+"-error");
     	createIotTopicRule(iotClient, name);
     	return certificateResult;
 	}
