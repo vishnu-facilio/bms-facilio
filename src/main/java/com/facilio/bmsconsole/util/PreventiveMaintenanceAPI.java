@@ -26,6 +26,7 @@ import com.facilio.bmsconsole.context.PMReminder.ReminderType;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PMTriggerContext.TriggerType;
 import com.facilio.bmsconsole.context.PMResourcePlannerContext;
+import com.facilio.bmsconsole.context.PMResourcePlannerReminderContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMCreationType;
@@ -860,32 +861,6 @@ public static PMTriggerContext getTrigger(List<PMTriggerContext> triggers,Long t
 		return pmTriggers;
 	}
 	
-	public static List<PMResourcePlannerContext> getPMTriggerResources(Long triggerId) throws Exception {
-		
-		FacilioModule module = ModuleFactory.getPMResourcePlannerModule();
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getPMResourcePlannerFields())
-				.table(module.getTableName())
-				.andCustomWhere("TRIGGER_ID = ?",triggerId);
-				;
-				
-		List<Map<String, Object>> props = selectBuilder.get();
-		
-		List<PMResourcePlannerContext> res = new ArrayList<>();
-		if(props != null && !props.isEmpty()) {
-			for(Map<String, Object> prop :props) {
-				
-				PMResourcePlannerContext pmTriggerResourceContext = FieldUtil.getAsBeanFromMap(prop, PMResourcePlannerContext.class);
-				
-				if(pmTriggerResourceContext.getResourceId() != null && pmTriggerResourceContext.getResourceId() > 0) {
-					pmTriggerResourceContext.setResource(ResourceAPI.getResource(pmTriggerResourceContext.getResourceId()));
-				}
-				res.add(pmTriggerResourceContext);
-			}
-		}
-		return res;
-	}
 	
 	public static Map<Long,PMResourcePlannerContext> getPMResourcesPlanner(Long pmId) throws Exception {
 		
@@ -910,6 +885,7 @@ public static PMTriggerContext getTrigger(List<PMTriggerContext> triggers,Long t
 					pmResourcePlannerContext.setResource(ResourceAPI.getResource(pmResourcePlannerContext.getResourceId()));
 				}
 				result.put(pmResourcePlannerContext.getResourceId(), pmResourcePlannerContext);
+				pmResourcePlannerContext.setPmResourcePlannerReminderContexts(getPmResourcePlannerReminderContext(pmResourcePlannerContext.getId()));
 				res.add(pmResourcePlannerContext);
 			}
 		}
@@ -1141,8 +1117,37 @@ public static PMTriggerContext getTrigger(List<PMTriggerContext> triggers,Long t
 			List<Map<String, Object>> props = builder.get();
 			
 			if(props != null && !props.isEmpty()) {
-				PMResourcePlannerContext pmTriggerResourceContext = FieldUtil.getAsBeanFromMap(props.get(0), PMResourcePlannerContext.class);
-				return pmTriggerResourceContext;
+				PMResourcePlannerContext pmResourceContext = FieldUtil.getAsBeanFromMap(props.get(0), PMResourcePlannerContext.class);
+				pmResourceContext.setPmResourcePlannerReminderContexts(getPmResourcePlannerReminderContext(pmResourceContext.getId()));
+				return pmResourceContext;
+			}
+		}
+		
+		return null;
+	}
+	
+	public static List<PMResourcePlannerReminderContext> getPmResourcePlannerReminderContext(long pmTriggerResourceId) throws Exception {
+		
+		if(pmTriggerResourceId > 0) {
+			
+			FacilioModule module = ModuleFactory.getPMResourcePlannerReminderModule();
+			List<FacilioField> fields = FieldFactory.getPMResourcePlannerReminderFields();
+			
+			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+					.select(fields)
+					.table(module.getTableName())
+					.andCustomWhere(module.getTableName()+".PM_RESOURCE_PLANNER_ID = ?", pmTriggerResourceId);
+			
+			List<Map<String, Object>> props = builder.get();
+			
+			List<PMResourcePlannerReminderContext> pmResourcePlannerReminderContexts = new ArrayList<>();
+			if(props != null && !props.isEmpty()) {
+				for(Map<String, Object> prop :props) {
+					
+					PMResourcePlannerReminderContext pmTriggerResourceRemContext = FieldUtil.getAsBeanFromMap(prop, PMResourcePlannerReminderContext.class);
+					pmResourcePlannerReminderContexts.add(pmTriggerResourceRemContext);
+				}
+				return pmResourcePlannerReminderContexts;
 			}
 		}
 		

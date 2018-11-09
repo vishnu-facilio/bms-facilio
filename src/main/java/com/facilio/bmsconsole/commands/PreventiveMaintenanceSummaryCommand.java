@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMReminder;
+import com.facilio.bmsconsole.context.PMResourcePlannerContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.TriggerType;
@@ -87,6 +88,13 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 					trigger.setStartReading(rule.getStartValue());
 					trigger.setReadingRule(rule);
 				}
+			}
+		}
+		
+		if(pm.getPmCreationType() == PreventiveMaintenance.PMCreationType.MULTIPLE.getVal()) {
+			Map<Long, PMResourcePlannerContext> resourcePlanners = PreventiveMaintenanceAPI.getPMResourcesPlanner(pm.getId());
+			if(resourcePlanners != null) {
+				pm.setResourcePlanners(new ArrayList<>(resourcePlanners.values()));
 			}
 		}
 		
