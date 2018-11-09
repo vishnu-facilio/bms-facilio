@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -9,6 +10,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.templates.DefaultTemplate;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.templates.PushNotificationTemplate;
 import com.facilio.bmsconsole.templates.SMSTemplate;
@@ -16,10 +18,11 @@ import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.templates.WebNotificationTemplate;
+import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
 
-public class TemplateAction extends ActionSupport {
+public class TemplateAction  extends FacilioAction {
 	
 	/**
 	 * 
@@ -34,7 +37,7 @@ public class TemplateAction extends ActionSupport {
 	}
 	
 	private String result;
-	public String getResult() {
+	public String getRes() {
 		return result;
 	}
 	public void setResult(String result) {
@@ -91,7 +94,21 @@ public class TemplateAction extends ActionSupport {
 		
 		return SUCCESS;
 	}
-	
+	private List<Long> ids;
+	public List<Long> getIds() {
+		return ids;
+	}
+	public void setIds(List<Long> ids) {
+		this.ids = ids;
+	}
+	public String getDefaultTemplate() {
+		HashMap<Long, DefaultTemplate> templateMap = new HashMap<Long, DefaultTemplate>();
+		for (long id : ids) {
+			templateMap.put(id, TemplateAPI.getDefaultTemplate((int) id));
+		}
+		setResult(FacilioConstants.ContextNames.DEFAULT_TEMPLATE, templateMap);
+		return SUCCESS;
+	}
 	private TaskSectionTemplate taskGroup;
 	public TaskSectionTemplate getTaskGroup() {
 		return taskGroup;

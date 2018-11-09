@@ -335,8 +335,12 @@
 		</action>
 		
 	</package>
-	
-	
+	<package name="templateApiv2" namespace="/api/v2/template" extends="v2Api">
+		<action name="defaultTemplate" class="com.facilio.bmsconsole.actions.TemplateAction" method="getDefaultTemplate">
+			<param name="moduleName">{1}</param>
+		</action>
+		
+	</package>
 	<package name="readingRuleHistoricalRunApiV2" namespace="/api/v2/reading/rule/historicalrun" extends="v2Api">
 		<action name="*" class="com.facilio.bmsconsole.actions.ReadingAction" method="runThroughRule">
 			<param name="moduleName">setup</param>

@@ -662,7 +662,7 @@ public class ViewFactory {
 		
 		FacilioView rejectedApproval = new FacilioView();
 		rejectedApproval.setName("rejected");
-		rejectedApproval.setDisplayName("Rejected Approval");
+		rejectedApproval.setDisplayName("Rejected");
 		rejectedApproval.setCriteria(criteria);
 		rejectedApproval.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 		return rejectedApproval;
@@ -680,7 +680,7 @@ public class ViewFactory {
 		
 		FacilioView rejectedApproval = new FacilioView();
 		rejectedApproval.setName("approved");
-		rejectedApproval.setDisplayName("Approved Approval");
+		rejectedApproval.setDisplayName("Approved");
 		rejectedApproval.setCriteria(criteria);
 		rejectedApproval.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 		return rejectedApproval;
@@ -698,7 +698,7 @@ public class ViewFactory {
 	
 		FacilioView rejectedApproval = new FacilioView();
 		rejectedApproval.setName("requested");
-		rejectedApproval.setDisplayName("Requested Approval");
+		rejectedApproval.setDisplayName("Pending Approval");
 		rejectedApproval.setCriteria(criteria);
 		rejectedApproval.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 		return rejectedApproval;

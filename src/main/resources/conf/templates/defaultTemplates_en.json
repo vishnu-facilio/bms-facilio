@@ -703,5 +703,31 @@
 		"name": "ASSET_TOBEEXPIRED_SMS",
 		"to": "${org.superAdmin.phone:-}",
 		"message": "This is to notify you that your facility ${site.name}'s ${asset.names} will expire on ${expired.date}. We hope you take the neccessary action and update the latest warrenty date for the asset here ${asset.url} \n\nRegards,\nTeam Facilio."
+	},
+	"74": {
+		"name": "APPROVAL_ACTION_EMAIL",
+		"sender": "noreply@${org.domain}.facilio.com",
+		"subject": "Approval Approved",
+		"to": "${workorder.assignedTo.email:-}",
+		"message": "Approver has approved your request : ${workorder.subject}\nDescription : \n${workorder.description:-}\nDue by : ${workorder.dueDateString:-}\nPlease view the new workorder here - ${workorder.url}\n\nRegards,\nTeam Facilio."
+	
+	},
+	"75": {
+		"name": "REJECT_ACTION_EMAIL",
+		"sender": "noreply@${org.domain}.facilio.com",
+		"subject": "Approval Rejected",
+		"to": "${workorder.assignedTo.email:-}",
+		"message": "Approver has rejected your request \n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description:-}\nDue by : ${workorder.dueDateString:-}\nPlease view the new workorder here - ${workorder.url}\n\nRegards,\nTeam Facilio."
+	
+	},
+	"76": {
+		"name": "APPROVAL_ACTION_SMS",
+		"to": "${org.superAdmin.phone:-}",
+		"message": "This is to notify you that your approval has be approved \n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description:-}\nDue by : ${workorder.dueDateString:-}\nPlease view the new workorder here - ${workorder.url}\n\nRegards,\nTeam Facilio."
+	},
+	"77": {
+		"name": "REJECT_ACTION_SMS",
+		"to": "${org.superAdmin.phone:-}",
+		"message": "This is to notify you that your approval has be reject \n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description:-}\nDue by : ${workorder.dueDateString:-}\nPlease view the new workorder here - ${workorder.url}\n\nRegards,\nTeam Facilio."
 	}
 }
