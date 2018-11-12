@@ -76,8 +76,10 @@ public abstract class Template implements Serializable {
 		return null;
 	}
 	public void setPlaceholderStr(String placeholderStr) throws ParseException {
-		JSONParser parser = new JSONParser();
-		placeholder = (JSONArray) parser.parse(placeholderStr);
+		if(placeholderStr != null) {
+			JSONParser parser = new JSONParser();
+			placeholder = (JSONArray) parser.parse(placeholderStr);
+		}
 	}
 
 	private Type type;

@@ -945,6 +945,7 @@ public class TemplateAPI {
 			for(TaskTemplate taskTeplate : sectionTemplate.getTaskTemplates()) {
 				fillDefaultPropsTaskTemplate(taskTeplate, sectionTemplate.getId(), woTemplateId, taskType);
 				Map<String, Object> props = FieldUtil.getAsProperties(taskTeplate);
+				props.remove("id");
 				insertTemplateWithExtendedProps(ModuleFactory.getTaskTemplateModule(), FieldFactory.getTaskTemplateFields(),props); //add tasks
 				
 				taskTeplate.setId((Long)props.get("id"));

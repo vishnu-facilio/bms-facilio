@@ -202,12 +202,8 @@ public class TaskTemplate extends Template {
 		JSONParser parser = new JSONParser();
 		additionInfo = (JSONObject) parser.parse(jsonStr);
 	}
-	public void addAdditionalInfoJsonStr(String key,Object value) {
-		additionInfo = additionInfo == null ? new JSONObject() : additionInfo;
-		additionInfo.put(key, value);
-	}
 	public void setOptions(List<String> options) {
-		addAdditionalInfoJsonStr("options",options);
+		addAdditionInfo("options",options);
 	}
 	
 	public TaskContext getTask() {
