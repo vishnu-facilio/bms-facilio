@@ -209,4 +209,16 @@ public class FormsAPI {
 														;
 		return deleteBuilder.delete();
 	}
+	
+	public static List<FormField> getFacilioFieldsFromFormFields (List<FacilioField> fields) throws SQLException {
+		List<FormField> formFields = new ArrayList<FormField>();
+		for(FacilioField field: fields) {
+			FormField forms = new FormField();
+			forms.setDisplayName(field.getDisplayName());
+			forms.setName(field.getName());
+			forms.setDisplayType(field.getDisplayType());
+			formFields.add(forms);
+		}
+		return formFields;
+	}
 }

@@ -7,12 +7,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.forms.FacilioForm.LabelPosition;
 import com.facilio.bmsconsole.forms.FormField.Required;
 import com.facilio.bmsconsole.modules.FacilioField.FieldDisplayType;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
@@ -142,6 +148,26 @@ public class FormFactory {
 		return fields;
 	}
 	
+	public static List<FormField> getMetaFormFieldApprovals(List<FacilioField> allFields) throws Exception {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("resource", FieldDisplayType.WOASSETSPACECHOOSER, "Space/Asset", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("assignment", FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", Required.REQUIRED, 2, 1));
+		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "ticketcategory", 3, 1));
+		fields.add(new FormField("priority", FieldDisplayType.LOOKUP_SIMPLE, "Priority", Required.OPTIONAL, "ticketpriority", 4, 1));
+		fields.add(new FormField("dueDate", FieldDisplayType.DATETIME, "Due Date", Required.OPTIONAL, 5, 1));
+		fields.add(new FormField("comment", FieldDisplayType.TEXTAREA, "Comment", Required.OPTIONAL, "ticketnotes",6, 1));
+		List<FacilioField> facilioFields = new ArrayList(); 
+		for(FacilioField fieldObject: allFields) {
+			if(!fieldObject.isDefault()) {
+				facilioFields.add(fieldObject);
+			}
+		}
+		if (facilioFields.size() > 0) {
+			fields.addAll(FormsAPI.getFacilioFieldsFromFormFields(facilioFields));
+		}
+		return fields;
+	}
+	
 	private static List<FormField> getMobileWorkOrderFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.REQUIRED, 1, 1));
@@ -195,8 +221,9 @@ public class FormFactory {
 		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "ticketcategory", 4, 2));
 		fields.add(new FormField("priority", FieldDisplayType.LOOKUP_SIMPLE, "Priority", Required.OPTIONAL, "ticketpriority", 4, 3));
 		fields.add(new FormField("type",FieldDisplayType.LOOKUP_SIMPLE,"Maintenance Type", Required.OPTIONAL, "tickettype", 5, 1));
-		fields.add(new FormField("groups",FieldDisplayType.LOOKUP_SIMPLE,"Team", Required.OPTIONAL, "groups", 6, 1));
-		fields.add(new FormField("attachments", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, "attachment", 7, 1));
+		fields.add(new FormField("urgency", FieldDisplayType.URGENCY, "Urgency", Required.OPTIONAL, 6, 1));
+		fields.add(new FormField("groups",FieldDisplayType.LOOKUP_SIMPLE,"Team", Required.OPTIONAL, "groups", 7, 1));
+		fields.add(new FormField("attachments", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, "attachment", 8, 1));
 		return fields;
 	}
 

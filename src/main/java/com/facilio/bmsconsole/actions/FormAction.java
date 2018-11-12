@@ -10,12 +10,14 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormFactory;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioField.FieldDisplayType;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -109,7 +111,7 @@ public class FormAction extends FacilioAction {
 		this.res = result;
 	}
 	
-	public String loadFormFields() throws Exception {
+	public String loadApprovalFormFields() throws Exception {
 		List<FacilioField> allFields = new ArrayList();
 		List<FacilioField> fields = new ArrayList();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");		
@@ -122,7 +124,8 @@ public class FormAction extends FacilioAction {
 		FacilioField comments = FieldFactory.getField("comment", "Comment" ,null , modBean.getModule("workorder"), FieldType.STRING);
 		comments.setDisplayType(FieldDisplayType.TICKETNOTES);
 		fields.add(comments);
-		setResult(FacilioConstants.ContextNames.FORM_FIELDS, fields);
+		setResult(FacilioConstants.ContextNames.FORM_FIELDS, FormFactory.getMetaFormFieldApprovals(allFields));
+		setResult(FacilioConstants.ContextNames.FIELD_NAME_LIST, fields);
 		return SUCCESS;
 	}
 	

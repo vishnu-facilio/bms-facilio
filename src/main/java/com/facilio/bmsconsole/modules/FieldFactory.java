@@ -91,7 +91,6 @@ public class FieldFactory {
 			approvalFormFields.add("assignmentGroup");
 			approvalFormFields.add("category");
 			approvalFormFields.add("priority");
-			approvalFormFields.add("requester");
 			approvalFormFields.add("resource");
 			approvalFormFields.add("comment");
 			approvalFormFields.add("dueDate");

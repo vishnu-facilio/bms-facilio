@@ -330,7 +330,7 @@
 		
 	</package>
 	<package name="formsApiv2" namespace="/api/v2/form" extends="v2Api">
-		<action name="fields" class="com.facilio.bmsconsole.actions.FormAction" method="loadFormFields">
+		<action name="fields" class="com.facilio.bmsconsole.actions.FormAction" method="loadApprovalFormFields">
 			<param name="moduleName">{1}</param>
 		</action>
 		
