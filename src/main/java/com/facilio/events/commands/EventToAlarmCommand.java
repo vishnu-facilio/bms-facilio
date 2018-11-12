@@ -147,10 +147,10 @@ public class EventToAlarmCommand implements Command {
 					msgKey = event.getResourceId()+"_"+event.getAdditionInfo().get("ruleId");
 					break;
 				case ANOMALY_ALARM:
-					msgKey = event.getResourceId()+"_"+Strings.nullToEmpty(event.getEntity());
+					msgKey = event.getResourceId()+"_"+Strings.nullToEmpty(event.getCondition());
 					break;
 				default:
-					msgKey = Strings.nullToEmpty(event.getSource())+"_"+Strings.nullToEmpty(event.getEntity());
+					msgKey = Strings.nullToEmpty(event.getSource())+"_"+Strings.nullToEmpty(event.getCondition());
 					break;
 			}
 			event.setMessageKey(msgKey);
@@ -205,7 +205,7 @@ public class EventToAlarmCommand implements Command {
 	private void addAlarm(long entityId, EventContext event) throws Exception {
 		JSONObject json = new JSONObject();
 		json.put("orgId", event.getOrgId());
-		json.put("entity", event.getEntity());
+		json.put("condition", event.getCondition());
 		json.put("source", event.getSource());
 		json.put("subject", event.getEventMessage());
 		json.put("description", event.getDescription());

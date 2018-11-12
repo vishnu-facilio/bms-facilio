@@ -87,9 +87,9 @@ public class EventAPI {
 	    	String key = iterator.next();
 	    	if (key != null && !key.isEmpty() && payload.get(key) != null) {
 		    	String value = payload.get(key).toString();
-		    	if(key.equalsIgnoreCase("entity"))
+		    	if(key.equalsIgnoreCase("entity") || key.equalsIgnoreCase("condition"))
 		    	{
-		    		event.setEntity(value);
+		    		event.setCondition(value);
 		    	}
 		    	else if(key.equalsIgnoreCase("source"))
 		    	{

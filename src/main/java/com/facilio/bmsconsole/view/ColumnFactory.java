@@ -136,7 +136,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("subject", "Message"));
 		columns.add(new ViewField("alarmType", "Category"));
 		columns.add(new ViewField("source", "Source"));
-		columns.add(new ViewField("entity", "Entity"));
+		columns.add(new ViewField("condition", "Condition"));
 		columns.add(new ViewField("resource", "Asset"));
 		columns.add(new ViewField("modifiedTime", "Last Reported"));
 		columns.add(new ViewField("acknowledgedBy", "Acknowledged"));
@@ -183,7 +183,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("subject", "Message"));
 		columns.add(new ViewField("severity", "Severity"));
 		columns.add(new ViewField("source", "Source"));
-		columns.add(new ViewField("entity", "Entity"));
+		columns.add(new ViewField("condition", "Condition"));
 		columns.add(new ViewField("acknowledgedBy", "Acknowledged By"));
 		
 		return columns;

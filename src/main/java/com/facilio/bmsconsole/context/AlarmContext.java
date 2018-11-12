@@ -140,12 +140,12 @@ public class AlarmContext extends TicketContext {
 		this.clearedBy = clearedBy;
 	}
 
-	private String entity;
-	public String getEntity() {
-		return entity;
+	private String condition;
+	public String getCondition() {
+		return condition;
 	}
-	public void setEntity(String entity) {
-		this.entity = entity;
+	public void setCondition(String condition) {
+		this.condition = condition;
 	}
 
 	private String source;

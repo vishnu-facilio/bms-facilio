@@ -27,15 +27,15 @@ public class EventContext {
 		this.orgId = orgId;
 	}
 	
-	private String entity;
-	public String getEntity() {
-		if (entity == null && eventMessage != null) {
-			entity = eventMessage;
+	private String condition;
+	public String getCondition() {
+		if (condition == null && eventMessage != null) {
+			condition = eventMessage;
 		}
-		return entity;
+		return condition;
 	}
-	public void setEntity(String entity) {
-		this.entity = entity;
+	public void setCondition(String condition) {
+		this.condition = condition;
 	}
 
 	private String source;
@@ -83,8 +83,8 @@ public class EventContext {
 
 	private String eventMessage;
 	public String getEventMessage() {
-		if (eventMessage == null && entity != null) {
-			eventMessage = entity;
+		if (eventMessage == null && condition != null) {
+			eventMessage = condition;
 		}
 		return eventMessage;
 	}
@@ -100,8 +100,8 @@ public class EventContext {
 			if (source != null) {
 				joiner.add(source);
 			}
-			if (entity != null) {
-				joiner.add(entity);
+			if (condition != null) {
+				joiner.add(condition);
 			}
 			this.messageKey = joiner.toString();
 		}

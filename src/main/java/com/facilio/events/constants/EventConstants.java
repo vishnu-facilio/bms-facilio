@@ -227,11 +227,11 @@ public class EventConstants {
 			fields.add(FieldFactory.getSiteIdField(module));
 			
 			FacilioField source = new FacilioField();
-			source.setName("entity");
+			source.setName("condition");
 			source.setDataType(FieldType.STRING);
-			source.setDisplayName("Entity");
+			source.setDisplayName("Condition");
 			source.setDisplayType(FacilioField.FieldDisplayType.TEXTBOX);
-			source.setColumnName("ENTITY");
+			source.setColumnName("CONDITION");
 			source.setModule(module);
 			fields.add(source);
 			

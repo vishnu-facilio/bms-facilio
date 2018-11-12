@@ -55,7 +55,7 @@ public class FieldFactory {
 			alarmsFieldsInclude.add("subject");
 			alarmsFieldsInclude.add("previousSeverity");
 			alarmsFieldsInclude.add("createdTime");
-			alarmsFieldsInclude.add("entity");
+			alarmsFieldsInclude.add("condition");
 			alarmsFieldsInclude.add("autoClear");
 //			alarmsFieldsInclude.add("noOfAttachments");
 		}
@@ -102,7 +102,7 @@ public class FieldFactory {
 		}
 		public static List<String> entityFieldsInclucde = new ArrayList<String>();
 		static {
-			entityFieldsInclucde.add("entity");
+			entityFieldsInclucde.add("condition");
 			entityFieldsInclucde.add("source");
 			entityFieldsInclucde.add("resourceId");
 			entityFieldsInclucde.add("eventMessage");

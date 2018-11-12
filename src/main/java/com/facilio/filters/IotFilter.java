@@ -65,7 +65,7 @@ public class IotFilter implements Filter {
 
 								JSONObject payload = new JSONObject();
 								payload.put("source", source.trim());
-								payload.put("entity", source.trim());
+								payload.put("condition", source.trim());
 								payload.put("message", message.trim());
 								payload.put("timestamp", DateTimeUtil.getTime(timeStamp.trim(), "HH:mm:ss dd/MM/yyyy"));
 
