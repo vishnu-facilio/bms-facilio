@@ -147,6 +147,14 @@ public class AlarmContext extends TicketContext {
 	public void setCondition(String condition) {
 		this.condition = condition;
 	}
+	
+	//Temporarily adding for mobile
+	public String getEntity() {
+		return condition;
+	}
+	public void setEntity(String entity) {
+		this.condition = entity;
+	}
 
 	private String source;
 	public String getSource() {
