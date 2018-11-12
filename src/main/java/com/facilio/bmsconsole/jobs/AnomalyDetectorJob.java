@@ -390,7 +390,7 @@ public class AnomalyDetectorJob extends FacilioJob {
 			JSONObject obj = new JSONObject();
 			obj.put("message", message);
 			obj.put("source", assetName);
-			obj.put("condition", assetName);
+			obj.put("condition", "Anomaly Detected in Energy Consumption");
 			obj.put("resourceId", meterId);
 			obj.put("severity", "Minor");
 			obj.put("timestamp", context.getTtime());
