@@ -88,7 +88,7 @@ public class EventProcessor implements IRecordProcessor {
                             processRecordsInput.getCheckpointer().checkpoint(record);
                         }
                     } else if ("device_all_points".equals(dataType)) {
-                        String fileName = orgDomainName+"/devices/"+object.get("device");
+                        String fileName = orgDomainName+"/devices/"+object.get("device")+".json";
                         FileStoreFactory.getInstance().getFileStore().addFile(fileName, object.toJSONString(), "application/json");
                         processRecordsInput.getCheckpointer().checkpoint(record);
                     }
