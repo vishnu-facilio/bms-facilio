@@ -37,6 +37,14 @@ public class EventContext {
 	public void setCondition(String condition) {
 		this.condition = condition;
 	}
+	
+	// Temporarily adding getter/ setter to handle transform template
+	public String getEntity() {
+		return condition;
+	}
+	public void setEntity(String entity) {
+		this.condition = entity;
+	}
 
 	private String source;
 	public String getSource() {

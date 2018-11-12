@@ -410,6 +410,7 @@ public class AlarmAPI {
 		obj.put("readingFieldId", rule.getReadingFieldId());
 		obj.put("readingDataId", reading.getId());
 		obj.put("readingVal", reading.getReading(rule.getReadingField().getName()));
+		obj.put("condition", rule.getName());
 		obj.put("ruleId", rule.getId());
 		if (rule.getBaselineId() != -1) {
 			obj.put("baselineId", rule.getBaselineId());
