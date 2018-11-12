@@ -231,7 +231,7 @@ public class EventConstants {
 			source.setDataType(FieldType.STRING);
 			source.setDisplayName("Condition");
 			source.setDisplayType(FacilioField.FieldDisplayType.TEXTBOX);
-			source.setColumnName("CONDITION");
+			source.setColumnName("EVENT_CONDITION");
 			source.setModule(module);
 			fields.add(source);
 			
