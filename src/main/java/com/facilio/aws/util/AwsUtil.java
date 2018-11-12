@@ -574,7 +574,7 @@ public class AwsUtil
 
 	public static void publishIotMessage(String client, JSONObject message) {
 		AWSCredentials awsCredentials = getAWSCredentialsProvider().getCredentials();
-		AWSIotMqttClient mqttClient = new AWSIotMqttClient(AwsUtil.getConfig("iot.endpoint"), client, awsCredentials.getAWSAccessKeyId(), awsCredentials.getAWSSecretKey(), null);
+		AWSIotMqttClient mqttClient = new AWSIotMqttClient(AwsUtil.getConfig("iot.endpoint"), client+"-facilio", awsCredentials.getAWSAccessKeyId(), awsCredentials.getAWSSecretKey(), null);
 		try {
 			mqttClient.connect();
 			mqttClient.publish(new AWSIotMessage(client+"/msgs", AWSIotQos.QOS0, message.toJSONString()));
