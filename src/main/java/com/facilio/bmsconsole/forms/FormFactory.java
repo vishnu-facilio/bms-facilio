@@ -150,18 +150,23 @@ public class FormFactory {
 	
 	public static List<FormField> getMetaFormFieldApprovals(List<FacilioField> allFields) throws Exception {
 		List<FormField> fields = new ArrayList<>();
-		fields.add(new FormField("resource", FieldDisplayType.WOASSETSPACECHOOSER, "Space/Asset", Required.REQUIRED, 1, 1));
-		fields.add(new FormField("assignment", FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", Required.REQUIRED, 2, 1));
-		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "ticketcategory", 3, 1));
-		fields.add(new FormField("priority", FieldDisplayType.LOOKUP_SIMPLE, "Priority", Required.OPTIONAL, "ticketpriority", 4, 1));
-		fields.add(new FormField("dueDate", FieldDisplayType.DATETIME, "Due Date", Required.OPTIONAL, 5, 1));
-		fields.add(new FormField("comment", FieldDisplayType.TEXTAREA, "Comment", Required.OPTIONAL, "ticketnotes",6, 1));
+
 		List<FacilioField> facilioFields = new ArrayList(); 
+		int i = 0;
 		for(FacilioField fieldObject: allFields) {
-			if(!fieldObject.isDefault()) {
+		if(FieldFactory.Fields.approvalFormFields.contains(fieldObject.getName()) || !fieldObject.isDefault()) {
+			if (fieldObject.getName().equals("resource")) {
+				fields.add(new FormField(fieldObject.getFieldId(),fieldObject.getName(), FieldDisplayType.WOASSETSPACECHOOSER, "Space/Asset", Required.OPTIONAL, i++, 1));
+			} else if (fieldObject.getName().equals("assignmentGroup")) {
+				fields.add(new FormField(fieldObject.getFieldId(), fieldObject.getName(), FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", Required.REQUIRED, ++i, 1));
+			} else if (fieldObject.getName().equals("urgency")) {
+				fields.add(new FormField(fieldObject.getFieldId(), fieldObject.getName(), FieldDisplayType.URGENCY, fieldObject.getDisplayName(), Required.OPTIONAL, ++i, 1));
+			} else {
 				facilioFields.add(fieldObject);
 			}
+		 }
 		}
+		fields.add(new FormField("comment", FieldDisplayType.TEXTAREA, "Comment", Required.OPTIONAL, "ticketnotes",6, 1));
 		if (facilioFields.size() > 0) {
 			fields.addAll(FormsAPI.getFacilioFieldsFromFormFields(facilioFields));
 		}

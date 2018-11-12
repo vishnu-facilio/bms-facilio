@@ -216,6 +216,7 @@ public class FormsAPI {
 			FormField forms = new FormField();
 			forms.setDisplayName(field.getDisplayName());
 			forms.setName(field.getName());
+			forms.setFieldId(field.getFieldId());
 			forms.setDisplayType(field.getDisplayType());
 			formFields.add(forms);
 		}

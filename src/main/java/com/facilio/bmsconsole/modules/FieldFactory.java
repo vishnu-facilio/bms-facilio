@@ -87,12 +87,12 @@ public class FieldFactory {
 		}
 		public static List<String> approvalFormFields = new ArrayList<String>();
 		static {
-			approvalFormFields.add("assignedTo");
 			approvalFormFields.add("assignmentGroup");
 			approvalFormFields.add("category");
 			approvalFormFields.add("priority");
 			approvalFormFields.add("resource");
 			approvalFormFields.add("comment");
+			approvalFormFields.add("urgency");
 			approvalFormFields.add("dueDate");
 		}
 		public static List<String> energyFieldsInclude = new ArrayList<String>();
