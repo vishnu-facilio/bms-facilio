@@ -2,11 +2,13 @@ package com.facilio.events.tasker.tasks;
 
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.facilio.fs.FileStore;
+import com.facilio.fs.FileStoreFactory;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -35,6 +37,7 @@ public class EventProcessor implements IRecordProcessor {
     private String shardId;
     private String orgDomainName;
     private String errorStream;
+    private Producer<String, String> producer;
 
     private final CharsetDecoder decoder = Charset.forName("UTF-8").newDecoder();
 
@@ -44,6 +47,12 @@ public class EventProcessor implements IRecordProcessor {
         this.orgId = orgId;
         this.orgDomainName = orgDomainName;
         this.errorStream = orgDomainName + "-error";
+        try {
+            producer = new KafkaProducer<>(getKafkaProducerProperties());
+            log.info("Initialized kafka producer for stream " + errorStream);
+        } catch (Exception e) {
+            log.info("Exception while constructing kafka producer for stream "+ errorStream +" ", e);
+        }
     }
 
     @Override
@@ -78,6 +87,10 @@ public class EventProcessor implements IRecordProcessor {
                         if (alarmCreated) {
                             processRecordsInput.getCheckpointer().checkpoint(record);
                         }
+                    } else if ("device_all_points".equals(dataType)) {
+                        String fileName = orgDomainName+"/devices/"+object.get("device");
+                        FileStoreFactory.getInstance().getFileStore().addFile(fileName, object.toJSONString(), "application/json");
+                        processRecordsInput.getCheckpointer().checkpoint(record);
                     }
                 } else {
                     boolean alarmCreated = processEvents(record.getApproximateArrivalTimestamp().getTime(), object, record.getPartitionKey());
@@ -88,11 +101,12 @@ public class EventProcessor implements IRecordProcessor {
             } catch (Exception e) {
                 try {
                     if(AwsUtil.isProduction()) {
-                        PutRecordResult recordResult = AwsUtil.getKinesisClient().putRecord(errorStream, record.getData(), record.getPartitionKey());
+                        sendToKafka(record, data);
+                        /*PutRecordResult recordResult = AwsUtil.getKinesisClient().putRecord(errorStream, record.getData(), record.getPartitionKey());
                         int status = recordResult.getSdkHttpMetadata().getHttpStatusCode();
                         if (status != 200) {
                             log.info("Couldn't add data to " + errorStream + " " + record.getSequenceNumber());
-                        }
+                        }*/
                     }
                 } catch (Exception e1) {
                     log.info("Exception while sending data to " + errorStream, e1);
@@ -101,6 +115,33 @@ public class EventProcessor implements IRecordProcessor {
             			+record.getSequenceNumber()+ " in EventProcessor ", e,  data);
             		log.info("Exception occurred ", e);
             }
+        }
+    }
+
+    private Properties getKafkaProducerProperties() {
+        Properties props = new Properties();
+        props.put("bootstrap.servers", AwsUtil.getConfig("kafka.producer"));
+        props.put("acks", "all");
+        props.put("retries", 0);
+        props.put("batch.size", 16384);
+        props.put("linger.ms", 1);
+        props.put("buffer.memory", 33554432);
+        props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        return  props;
+    }
+
+    private void sendToKafka(Record record, String data) {
+        JSONObject dataMap = new JSONObject();
+        try {
+            dataMap.put("timestamp", ""+record.getApproximateArrivalTimestamp().getTime());
+            dataMap.put("key", record.getPartitionKey());
+            dataMap.put("data", data);
+            dataMap.put("sequenceNumber", record.getSequenceNumber());
+            producer.send(new ProducerRecord<>(errorStream, record.getPartitionKey(), dataMap.toString()));
+        } catch (Exception e) {
+            log.info(errorStream + " : " + dataMap);
+            log.info("Exception while producing to kafka ", e);
         }
     }
 

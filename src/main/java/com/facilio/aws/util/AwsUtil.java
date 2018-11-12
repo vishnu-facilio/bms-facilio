@@ -35,6 +35,8 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 
+import com.amazonaws.services.iot.client.AWSIotMessage;
+import com.amazonaws.services.iot.client.AWSIotQos;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -568,6 +570,23 @@ public class AwsUtil
 		}
 		return user.getUserId();*/
     	return USER_ID;
+	}
+
+	public static void publishIotMessage(String client, JSONObject message) {
+		AWSCredentials awsCredentials = getAWSCredentialsProvider().getCredentials();
+		AWSIotMqttClient mqttClient = new AWSIotMqttClient(AwsUtil.getConfig("iot.endpoint"), client, awsCredentials.getAWSAccessKeyId(), awsCredentials.getAWSSecretKey(), null);
+		try {
+			mqttClient.connect();
+			mqttClient.publish(new AWSIotMessage(client+"/msgs", AWSIotQos.QOS0, message.toJSONString()));
+		} catch (AWSIotException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				mqttClient.disconnect();
+			} catch (AWSIotException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public static void addIotClient(String policyName, String clientId) {
