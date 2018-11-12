@@ -21,6 +21,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
@@ -200,7 +201,7 @@ public class AlarmAction extends FacilioAction {
  		context.put(FacilioConstants.ContextNames.ALARM_ENTITY_ID, entityId);
  		
  		System.out.println("View Name : "+getViewName());
- 		Chain alarmListChain = FacilioChainFactory.getAlarmListChain();
+ 		Chain alarmListChain = ReadOnlyChainFactory.getAlarmListChain();
 		alarmListChain.execute(context);
  		
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
@@ -237,7 +238,7 @@ public class AlarmAction extends FacilioAction {
 		}
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, getId());
  		
- 		Chain alarmChain = FacilioChainFactory.getAlarmDetailsChain();
+ 		Chain alarmChain = ReadOnlyChainFactory.getAlarmDetailsChain();
  		alarmChain.execute(context);
  		
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));

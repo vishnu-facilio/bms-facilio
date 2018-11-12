@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -335,6 +337,23 @@ public class WorkflowRuleAPI {
 				.andCondition(CriteriaAPI.getIdCondition(ids, module))
 				;
 		return getWorkFlowsFromMapList(ruleBuilder.get(), false, true, true);
+	}
+	
+	public static Map<Long, WorkflowRuleContext> getWorkflowRulesAsMap (List<Long> ids, boolean fetchEvent, boolean fetchChildren, boolean fetchExtended) throws Exception {
+		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
+		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
+				.table("Workflow_Rule")
+				.select(FieldFactory.getWorkflowRuleFields())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getIdCondition(ids, module))
+				;
+		List<WorkflowRuleContext> rules = getWorkFlowsFromMapList(ruleBuilder.get(), fetchEvent, fetchChildren, fetchExtended);
+		if (rules != null && !rules.isEmpty()) {
+			return rules.stream()
+						.collect(Collectors.toMap(WorkflowRuleContext::getId, Function.identity()))
+						;
+		}
+		return null;
 	}
 	
 	public static List<WorkflowEventContext> getWorkflowEvents(long orgId, long moduleId) throws Exception {

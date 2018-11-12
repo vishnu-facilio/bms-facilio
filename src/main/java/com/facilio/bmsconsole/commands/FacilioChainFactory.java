@@ -418,30 +418,6 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getAlarmListChain() {
-		Chain c = new ChainBase();
-		c.addCommand(SetTableNamesCommand.getForAlarm());
-		c.addCommand(new LoadModuleNameCommand());
-		c.addCommand(new LoadViewCommand());
-		c.addCommand(new LoadAllFieldsCommand());
-		c.addCommand(new GenerateCriteriaFromFilterCommand());
-		c.addCommand(new GenerateSearchConditionCommand());
-		c.addCommand(new GetAlarmListCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
-	public static Chain getAlarmDetailsChain() {
-		Chain c = new ChainBase();
-		c.addCommand(SetTableNamesCommand.getForAlarm());
-		c.addCommand(new LoadModuleNameCommand());
-		c.addCommand(new LoadViewCommand());
-		c.addCommand(new LoadAllFieldsCommand());
-		c.addCommand(new GetAlarmCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
 	public static Chain getUpdateAlarmResourceChain() {
 		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForAlarm());

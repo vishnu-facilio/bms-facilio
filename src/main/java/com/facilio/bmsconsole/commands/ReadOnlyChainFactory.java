@@ -150,6 +150,32 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain getAlarmListChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForAlarm());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GetAlarmListCommand());
+		c.addCommand(new GetReadingRuleNameCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAlarmDetailsChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForAlarm());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GetAlarmCommand());
+		c.addCommand(new GetReadingRuleNameCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
 	private static Chain getDefaultChain() {
 		return new FacilioChain(false);
     }
