@@ -96,6 +96,13 @@ public class ImportDataAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String deleteFile() throws Exception{
+		FileStore fs  = FileStoreFactory.getInstance().getFileStore();
+		if(fs.deleteFile(fileId)) {
+			System.out.println("File " + fileId + " has been deleted");
+		}
+		return SUCCESS;
+	}
 	public String getAssets() throws Exception
 	{
 		if(moduleName != null) {
@@ -353,8 +360,15 @@ public class ImportDataAction extends ActionSupport {
 	}
 	private long assetId;
 	private String moduleName;
+	private Long fileId;
 	
-	
+	public Long getFileId() {
+		return fileId;
+	}
+	public void setFileId(Long fileId) {
+		this.fileId = fileId;
+	}
+
 	private List<AssetContext> chillerAssets;
 	public List<AssetContext> getChillerAssets() {
 		return chillerAssets;

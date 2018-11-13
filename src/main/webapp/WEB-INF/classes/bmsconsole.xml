@@ -2922,6 +2922,11 @@
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
 			</result>
 		</action>
+		<action name="deleteFile" class="com.facilio.bmsconsole.actions.ImportDataAction" method="deleteFile">
+			<result name="success" type="json">
+				<param name="statusCode">200</param>
+			</result>
+		</action>
 		<action name="checkImport" class="com.facilio.bmsconsole.actions.ImportDataAction" method="checkImportStatus">
 			<result name="success" type="json">
 				<param name="properties">im.*</param>
