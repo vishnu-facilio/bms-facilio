@@ -27,6 +27,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.FacilioField.FieldDisplayType;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -119,6 +120,9 @@ public class FormsAPI {
 						}
 					}
 					f.setName(field.getName());
+				}
+				else if (f.getDisplayTypeEnum() == FieldDisplayType.TICKETNOTES){
+					f.setName("comment");
 				}
 				fields.add(f);
 			}

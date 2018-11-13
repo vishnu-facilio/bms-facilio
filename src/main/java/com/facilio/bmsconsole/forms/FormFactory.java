@@ -166,7 +166,7 @@ public class FormFactory {
 			}
 		 }
 		}
-		fields.add(new FormField("comment", FieldDisplayType.TEXTAREA, "Comment", Required.OPTIONAL, "ticketnotes",6, 1));
+		fields.add(new FormField("comment", FieldDisplayType.TICKETNOTES, "Comment", Required.OPTIONAL, "ticketnotes",6, 1));
 		if (facilioFields.size() > 0) {
 			fields.addAll(FormsAPI.getFacilioFieldsFromFormFields(facilioFields));
 		}
