@@ -564,7 +564,7 @@ public class ViewAPI {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		for(ViewField viewField: fields) {
 			FacilioField field;
-			if(viewField.getFieldId() == -1) {
+			if(viewField.getName() != null && moduleName != null) {
 				field = modBean.getField(viewField.getName(), moduleName);
 			}
 			else {
