@@ -87,8 +87,7 @@ public class EventProcessor implements IRecordProcessor {
                         if (alarmCreated) {
                             processRecordsInput.getCheckpointer().checkpoint(record);
                         }
-                    } else {
-                        log.info("data type : " + dataType);
+                    } else if ("devicepoints".equals(dataType)) {
                         String fileName = orgDomainName+"-devices-"+object.get("device")+".json";
                         long status = FileStoreFactory.getInstance().getFileStore().addFile(fileName, object.toJSONString(), "application/json");
                         log.info("File uploaded with status : " + status);
