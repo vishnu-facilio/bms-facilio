@@ -2734,7 +2734,7 @@ public class FieldFactory {
 		fields.add(displayOrder);
 		
 		FacilioField showHideMobile = new FacilioField();
-		showHideMobile.setName("showHideMobile");
+		showHideMobile.setName("mobileEnabled");
 		showHideMobile.setDataType(FieldType.BOOLEAN);
 		showHideMobile.setColumnName("SHOW_HIDE_MOBILE");
 		showHideMobile.setModule(module);

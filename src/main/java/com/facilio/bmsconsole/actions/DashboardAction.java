@@ -7026,8 +7026,8 @@ public class DashboardAction extends ActionSupport {
 		else {
 			this.dashboard.setDashboardFolderId(null);
 		}
-		if(dashboardMeta.get("showHideMobile") != null) {
-			this.dashboard.setShowHideMobile((boolean)dashboardMeta.get("showHideMobile"));
+		if(dashboardMeta.get("mobileEnabled") != null) {
+			this.dashboard.setMobileEnabled((boolean)dashboardMeta.get("mobileEnabled"));
 		}
 		this.dashboard.setDashboardName((String) dashboardMeta.get("dashboardName"));
 		
@@ -7263,18 +7263,22 @@ public class DashboardAction extends ActionSupport {
 		}
 		dashboard = DashboardUtil.getDashboardWithWidgets(linkName, moduleName);
 		
-		Boolean mobileEnabled = !dashboard.getShowHideMobile();
+		Boolean mobileEnabled = !dashboard.getMobileEnabled();
 		
-		dashboard = new DashboardContext();
-		dashboard.setShowHideMobile(mobileEnabled);
+		if(dashboard == null) {
+			dashboard = new DashboardContext();
+		}
+		dashboard.setMobileEnabled(mobileEnabled);
 		dashboard.setId(dashboard.getId());
 		DashboardUtil.updateDashboardPublishStatus(dashboard);
 		
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
-		
-		Chain enableMobileDashboardChain = FacilioChainFactory.getEnableMobileDashboardChain();
-		enableMobileDashboardChain.execute(context);
+		if(mobileEnabled) {
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
+			
+			Chain enableMobileDashboardChain = FacilioChainFactory.getEnableMobileDashboardChain();
+			enableMobileDashboardChain.execute(context);
+		}
 		
 		return SUCCESS;
 	}

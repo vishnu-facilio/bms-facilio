@@ -8,6 +8,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
+import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
@@ -22,7 +23,7 @@ public class EnableMobileDashboardCommand  implements Command {
 		
 		DashboardContext dashboard = (DashboardContext) context.get(FacilioConstants.ContextNames.DASHBOARD);
 		
-		if (dashboard != null && dashboard.getShowHideMobile()) {
+		if (dashboard != null && dashboard.getMobileEnabled()) {
 			// generate mobile layout only when mobile mode enabled for dashboard
 			
 			Long dashboardId = dashboard.getId();
@@ -74,7 +75,8 @@ public class EnableMobileDashboardCommand  implements Command {
 			return true;
 		}
 		else if (DashboardWidgetContext.WidgetType.CHART == widget.getWidgetType()) {
-			if (widget.widgetJsonObject() != null && widget.widgetJsonObject().get("newReportId") != null) {
+			WidgetChartContext chart = (WidgetChartContext) widget;
+			if (chart != null && chart.getNewReportId() != null && chart.getNewReportId() > 0) {
 				return true;
 			}
 		}

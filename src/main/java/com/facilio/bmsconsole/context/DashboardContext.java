@@ -83,15 +83,14 @@ public class DashboardContext extends ModuleBaseWithCustomFields {
 	
 	private Integer displayOrder;
 	
-	private boolean showHideMobile;
+	public boolean mobileEnabled;
 	
-	public boolean getShowHideMobile() {
-		return showHideMobile;
+	public boolean getMobileEnabled() {
+		return mobileEnabled;
 	}
-	public void setShowHideMobile(boolean showHideMobile) {
-		this.showHideMobile = showHideMobile;
+	public void setMobileEnabled(boolean mobileEnabled) {
+		this.mobileEnabled = mobileEnabled;
 	}
-	
 	public Integer getDisplayOrder() {
 		return displayOrder;
 	}

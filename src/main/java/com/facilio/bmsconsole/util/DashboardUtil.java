@@ -931,6 +931,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 				.andCustomWhere("ID = ?", dashboard.getId());
 
 		Map<String, Object> props = FieldUtil.getAsProperties(dashboard);
+		props.put("mobileEnabled", dashboard.getMobileEnabled());
 		int updatedRows = updateBuilder.update(props);
 		if (updatedRows > 0) {
 			return true;
@@ -980,7 +981,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 			dashboardJson.put("dashboardFolderId", dashboard.getDashboardFolderId());
 			dashboardJson.put("linkName", dashboard.getLinkName());
 			dashboardJson.put("children", childrenArray);
-			dashboardJson.put("mobileEnabled", dashboard.getShowHideMobile());
+			dashboardJson.put("mobileEnabled", dashboard.getMobileEnabled());
 			result.add(dashboardJson);
 		 }
 		return result;
@@ -1144,7 +1145,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 				.andCustomWhere("MODULEID = ?", module.getModuleId());
 		
 		if(getOnlyMobileDashboard) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition("SHOW_HIDE_MOBILE", "showHideMobile", "true", BooleanOperators.IS));
+			selectBuilder.andCondition(CriteriaAPI.getCondition("SHOW_HIDE_MOBILE", "mobileEnabled", "true", BooleanOperators.IS));
 		}
 		
 		List<Map<String, Object>> props = selectBuilder.get();
