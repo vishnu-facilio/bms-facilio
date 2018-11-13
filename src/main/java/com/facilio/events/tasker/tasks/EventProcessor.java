@@ -87,7 +87,8 @@ public class EventProcessor implements IRecordProcessor {
                         if (alarmCreated) {
                             processRecordsInput.getCheckpointer().checkpoint(record);
                         }
-                    } else if ("device_all_points".equals(dataType)) {
+                    } else {
+                        log.info("data type : " + dataType);
                         String fileName = orgDomainName+"-devices-"+object.get("device")+".json";
                         long status = FileStoreFactory.getInstance().getFileStore().addFile(fileName, object.toJSONString(), "application/json");
                         log.info("File uploaded with status : " + status);
@@ -112,9 +113,9 @@ public class EventProcessor implements IRecordProcessor {
                 } catch (Exception e1) {
                     log.info("Exception while sending data to " + errorStream, e1);
                 }
-            		CommonCommandUtil.emailException("EventProcessor", "Error in processing records : "
-            			+record.getSequenceNumber()+ " in EventProcessor ", e,  data);
-            		log.info("Exception occurred ", e);
+                CommonCommandUtil.emailException("EventProcessor", "Error in processing records : "
+                    +record.getSequenceNumber()+ " in EventProcessor ", e,  data);
+                log.info("Exception occurred ", e);
             }
         }
     }
