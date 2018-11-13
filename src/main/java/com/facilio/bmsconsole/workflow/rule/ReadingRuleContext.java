@@ -627,6 +627,9 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		if (getMetric(reading) != null) {
 			if (clearAlarm()) {
 				ReadingRuleAlarmMeta alarmMeta = alarmMetaMap != null ? alarmMetaMap.get(reading.getParentId()) : null;
+				if (AccountUtil.getCurrentOrg().getId() == 135 || AccountUtil.getCurrentOrg().getId() == 75 || AccountUtil.getCurrentOrg().getId() == 88) {
+					LOGGER.info("Alarm meta for rule : "+getId()+" for resource : "+reading.getParentId()+"::"+alarmMeta);
+				}
 				if (alarmMeta != null && !alarmMeta.isClear()) {
 					AlarmContext alarm = AlarmAPI.getAlarm(alarmMeta.getAlarmId());
 					
@@ -634,7 +637,7 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 					json.put("readingDataId", reading.getId());
 					json.put("readingVal", reading.getReading(getReadingField().getName()));
 					
-					if (AccountUtil.getCurrentOrg().getId() == 135) {
+					if (AccountUtil.getCurrentOrg().getId() == 135 || AccountUtil.getCurrentOrg().getId() == 75 || AccountUtil.getCurrentOrg().getId() == 88) {
 						LOGGER.info("Clearing alarm for rule : "+getId()+" for resource : "+reading.getParentId());
 					}
 					
