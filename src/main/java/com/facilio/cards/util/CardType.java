@@ -237,6 +237,45 @@ public enum CardType {
 			"    		<function>default.getUnit(fieldName,moduleName)</function>\n" + 
 			"	</expression>\n" + 
 			"</workflow>",false),
+	
+	FAHU_STATUS_CARD_3(8,"fahuStatusCard3","<workflow> 	\n" + 
+			"	<parameter name=\"parentId\" type = \"Number\"/> \n" + 
+			"	<expression name=\"name\"> 		\n" + 
+			"		<module name=\"resource\"/> 		\n" + 
+			"		<criteria pattern=\"1\"> 			\n" + 
+			"			<condition sequence=\"1\">id`=`${parentId}</condition> 		\n" + 
+			"		</criteria> 		\n" + 
+			"		<field name=\"name\" aggregate = \"[0]\"/> 	\n" + 
+			"	</expression> \n" + 
+			"	<expression name=\"runStatus\"> 		\n" + 
+			"		<module name=\"automanualstatus\"/> 		\n" + 
+			"		<criteria pattern=\"1\"> 			\n" + 
+			"			<condition sequence=\"1\">parentId`=`${parentId}</condition> 		\n" + 
+			"		</criteria> 		\n" + 
+			"		<field name=\"runstatus\" aggregate = \"lastValue\"/> 	\n" + 
+			"	</expression> \n" + 
+			"	<expression name=\"valveFeedback\"> 		\n" + 
+			"		<module name=\"returntemperature\"/> 		\n" + 
+			"		<criteria pattern=\"1\"> 			\n" + 
+			"			<condition sequence=\"1\">parentId`=`${parentId}</condition> 		\n" + 
+			"		</criteria> 		\n" + 
+			"		<field name=\"valvecommand\" aggregate = \"lastValue\"/> 	\n" + 
+			"	</expression> \n" + 
+			"	<expression name=\"tripStatus\"> 		\n" + 
+			"		<module name=\"returntemperature\"/> 		\n" + 
+			"		<criteria pattern=\"1\"> 			\n" + 
+			"			<condition sequence=\"1\">parentId`=`${parentId}</condition> 		\n" + 
+			"		</criteria> 		\n" + 
+			"		<field name=\"tripstatus\" aggregate = \"lastValue\"/> 	\n" + 
+			"	</expression> \n" + 
+			"	<expression name=\"autoStatus\"> 		\n" + 
+			"		<module name=\"automanualstatus\"/> 		\n" + 
+			"		<criteria pattern=\"1\"> 			\n" + 
+			"			<condition sequence=\"1\">parentId`=`${parentId}</condition> 		\n" + 
+			"		</criteria> 		\n" + 
+			"		<field name=\"automanualstatus\" aggregate = \"lastValue\"/> 	\n" + 
+			"	</expression> \n" + 
+			"</workflow>",false),
 	;
 	
 	private Integer value;
