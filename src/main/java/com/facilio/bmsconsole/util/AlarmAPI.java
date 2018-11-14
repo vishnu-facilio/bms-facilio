@@ -61,6 +61,7 @@ public class AlarmAPI {
 	public static JSONObject constructClearEvent(AlarmContext alarm, String msg, long timestamp) throws Exception {
 		JSONObject event = new JSONObject();
 		
+		event.put("message", alarm.getSubject());
 		event.put("condition", alarm.getCondition());
 		event.put("source", alarm.getSource());
 		if (alarm.getResource() != null && alarm.getResource().getId() > 0) {
