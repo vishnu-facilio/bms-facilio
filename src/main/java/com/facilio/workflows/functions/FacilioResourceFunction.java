@@ -38,7 +38,10 @@ public enum FacilioResourceFunction implements FacilioWorkflowFunctionInterface 
 				}
 				else {
 					ResourceContext space = ResourceAPI.getResource(resource.getSpaceId());
-					return resource.getName() +", "+space.getName();
+					if (space != null) { //For marked as deleted resources
+						return resource.getName() +", "+space.getName();
+					}
+					return null;
 				}
 			}
 		};
