@@ -167,6 +167,7 @@ public class FormulaContext {
 				NumberField numberField =  (NumberField)field;
 				NumberField selectFieldNumber = new NumberField();
 				selectFieldNumber.setMetric(numberField.getMetric());
+				selectFieldNumber.setUnitId(numberField.getUnitId());
 				selectField = selectFieldNumber;
 			}
 			else {
@@ -210,6 +211,7 @@ public class FormulaContext {
 				NumberField numberField =  (NumberField)field;
 				NumberField selectFieldNumber = new NumberField();
 				selectFieldNumber.setMetric(numberField.getMetric());
+				selectFieldNumber.setUnitId(numberField.getUnitId());
 				selectField = selectFieldNumber;
 			}
 			else {

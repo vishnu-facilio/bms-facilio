@@ -23,6 +23,8 @@ import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.transaction.FacilioConnectionPool;
+import com.facilio.unitconversion.Metric;
+import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 
 public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, Object>> {
@@ -234,6 +236,14 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 							NumberField numberField =  (NumberField)field;
 							if(numberField.getMetric() > 0) {
 								val = UnitsUtil.convertToOrgDisplayUnitFromSi(val, numberField.getMetric());
+								
+								if(numberField.getUnitId() > 0) {
+									Unit siUnit = Unit.valueOf(Metric.valueOf(numberField.getMetric()).getSiUnitId());
+									val = UnitsUtil.convert(val, siUnit.getUnitId(), numberField.getUnitId());
+								}
+								else {
+									val = UnitsUtil.convertToOrgDisplayUnitFromSi(val, numberField.getMetric());
+								}
 							}
 						}
 						else if (field.getDataTypeEnum() == FieldType.FILE && val != null ) {

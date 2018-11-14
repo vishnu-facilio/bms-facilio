@@ -17,6 +17,8 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.unitconversion.Metric;
+import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 
 public class GetLatestReadingValuesCommand implements Command {
@@ -43,8 +45,22 @@ public class GetLatestReadingValuesCommand implements Command {
 						reading.setParentId(rdm.getResourceId());
 						reading.setTtime(rdm.getTtime());
 						
-						if (rdm.getField() instanceof NumberField && ((NumberField) rdm.getField()).getUnitId() != -1 ) {
-							reading.addReading(rdm.getField().getName(), UnitsUtil.convertToOrgDisplayUnitFromSi(rdm.getValue(), ((NumberField) rdm.getField()).getUnitId()));
+						if (rdm.getField() instanceof NumberField) {
+							Object value = rdm.getValue();
+							
+							NumberField numberField =  (NumberField)rdm.getField();
+							if(numberField.getMetric() > 0) {
+								
+								if(numberField.getUnitId() > 0) {
+									Unit siUnit = Unit.valueOf(Metric.valueOf(numberField.getMetric()).getSiUnitId());
+									value = UnitsUtil.convert(rdm.getValue(), siUnit.getUnitId(), numberField.getUnitId());
+								}
+								else {
+									value = UnitsUtil.convertToOrgDisplayUnitFromSi(rdm.getValue(), numberField.getMetric());
+								}
+							}
+							rdm.setValue(value);
+							reading.addReading(rdm.getField().getName(), value);
 						}
 						else {
 							reading.addReading(rdm.getField().getName(), rdm.getValue());

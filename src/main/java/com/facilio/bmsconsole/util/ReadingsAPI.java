@@ -45,6 +45,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -53,6 +54,9 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.time.SecondsChronoUnit;
 import com.facilio.transaction.FacilioConnectionPool;
+import com.facilio.unitconversion.Metric;
+import com.facilio.unitconversion.Unit;
+import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowFieldContext;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -283,6 +287,26 @@ public class ReadingsAPI {
 		}
 		meta.setValue(FieldUtil.castOrParseValueAsPerType(field, value));
 		meta.setField(field);
+		
+		if (meta.getField() instanceof NumberField) {
+			value = meta.getValue();
+			
+			NumberField numberField =  (NumberField)meta.getField();
+			if(numberField.getMetric() > 0) {
+				
+				if(numberField.getUnitId() > 0) {
+					Unit siUnit = Unit.valueOf(Metric.valueOf(numberField.getMetric()).getSiUnitId());
+					value = UnitsUtil.convert(meta.getValue(), siUnit.getUnitId(), numberField.getUnitId());
+				}
+				else {
+					value = UnitsUtil.convertToOrgDisplayUnitFromSi(meta.getValue(), numberField.getMetric());
+				}
+			}
+			if(value != null) {
+				meta.setValue(value);
+			}
+		}
+		
 		return meta;
 	}
 	

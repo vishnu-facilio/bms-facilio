@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.udojava.evalex.Expression;
@@ -45,6 +46,13 @@ public class UnitsUtil {
 			value = expression.eval();
 		}
 		return Double.valueOf(value.toString());
+	}
+	
+	public static Double convert(Object value,int from,int to) {
+		if(value == null ) {
+			return null;
+		}
+		return convert(value,Unit.valueOf(from),Unit.valueOf(to));
 	}
 	
 	public static Double convertToSiUnit(Object value,Unit from) {
