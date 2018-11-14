@@ -647,9 +647,11 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 				Map<Long, TicketStatusContext> statuses = selectBuilder.getAsMap();
 				
 				for(TicketContext ticket : tickets) {
-					TicketStatusContext status = ticket.getStatus();
-					if(status != null) {
-						ticket.setStatus(statuses.get(status.getId()));
+					if (ticket != null) {
+						TicketStatusContext status = ticket.getStatus();
+						if(status != null) {
+							ticket.setStatus(statuses.get(status.getId()));
+						}
 					}
 				}
 			}
@@ -674,9 +676,11 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 				Map<Long, TicketPriorityContext> priorities = selectBuilder.getAsMap();
 				
 				for(TicketContext ticket : tickets) {
-					TicketPriorityContext priority = ticket.getPriority();
-					if(priority != null) {
-						ticket.setPriority(priorities.get(priority.getId()));
+					if (ticket != null) {
+						TicketPriorityContext priority = ticket.getPriority();
+						if(priority != null) {
+							ticket.setPriority(priorities.get(priority.getId()));
+						}
 					}
 				}
 			}
@@ -701,9 +705,11 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 				Map<Long, TicketCategoryContext> categories = selectBuilder.getAsMap();
 				
 				for(TicketContext ticket : tickets) {
-					TicketCategoryContext category = ticket.getCategory();
-					if(category != null) {
-						ticket.setCategory(categories.get(category.getId()));
+					if (ticket != null) {
+						TicketCategoryContext category = ticket.getCategory();
+						if(category != null) {
+							ticket.setCategory(categories.get(category.getId()));
+						}
 					}
 				}
 			}
@@ -724,9 +730,11 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 			}
 			
 			for(TicketContext ticket : tickets) {
-				User assignTo = ticket.getAssignedTo();
-				if(assignTo != null) {
-					ticket.setAssignedTo(userMap.get(assignTo.getId()));
+				if (ticket != null) {
+					User assignTo = ticket.getAssignedTo();
+					if(assignTo != null) {
+						ticket.setAssignedTo(userMap.get(assignTo.getId()));
+					}
 				}
 			}
 		}
@@ -742,9 +750,11 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 			}
 			
 			for(TicketContext ticket : tickets) {
-				Group assignGroup = ticket.getAssignmentGroup();
-				if(assignGroup != null) {
-					ticket.setAssignmentGroup(groupMap.get(assignGroup.getId()));
+				if (ticket != null) {
+					Group assignGroup = ticket.getAssignmentGroup();
+					if(assignGroup != null) {
+						ticket.setAssignmentGroup(groupMap.get(assignGroup.getId()));
+					}
 				}
 			}
 		}
@@ -753,16 +763,18 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 	private static void loadTicketResources(Collection<? extends TicketContext> tickets) throws Exception {
 		if(tickets != null && !tickets.isEmpty()) {
 			List<Long> resourceIds = tickets.stream()
-											.filter(ticket -> ticket.getResource() != null)
+											.filter(ticket -> ticket != null && ticket.getResource() != null)
 											.map(ticket -> ticket.getResource().getId())
 											.collect(Collectors.toList());
 			Map<Long, ResourceContext> resources = ResourceAPI.getExtendedResourcesAsMapFromIds(resourceIds, true);
 			if(resources != null && !resources.isEmpty()) {
 				for(TicketContext ticket : tickets) {
-					ResourceContext resource = ticket.getResource();
-					if(resource != null) {
-						ResourceContext resourceDetail = resources.get(resource.getId());
-						ticket.setResource(resourceDetail);
+					if (ticket != null) {
+						ResourceContext resource = ticket.getResource();
+						if(resource != null) {
+							ResourceContext resourceDetail = resources.get(resource.getId());
+							ticket.setResource(resourceDetail);
+						}
 					}
 				}
 			}
