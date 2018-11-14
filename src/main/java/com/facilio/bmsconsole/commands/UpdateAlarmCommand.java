@@ -133,13 +133,10 @@ public class UpdateAlarmCommand implements Command {
 				
 				List<User> users = AccountUtil.getOrgBean().getActiveOrgUsers(AccountUtil.getCurrentOrg().getId());
 				List<Long> recipients = new ArrayList<>();
-				for (User user : users) {
-					if (user.getOuid() == 914477) {	// Temp done Al Seef CEO
-						if (alarm.getSeverity() == null || alarm.getSeverity().getId() != AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.CRITICAL_SEVERITY).getId()) {
-							continue;						
-						}
+				if (AccountUtil.getCurrentOrg().getOrgId() != 88 || alarm.getSeverity().getId() == AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.CRITICAL_SEVERITY).getId()) {
+					for (User user : users) {
+						recipients.add(user.getId());
 					}
-					recipients.add(user.getId());
 				}
 				WmsApi.sendEvent(recipients, event);
 			}
