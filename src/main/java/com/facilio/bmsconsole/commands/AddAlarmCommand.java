@@ -1,7 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -67,22 +67,19 @@ public class AddAlarmCommand implements Command {
 			JSONObject record = new JSONObject();
 			record.put("id", alarmId);
 			
-			WmsEvent event = new WmsEvent();
-			event.setNamespace("alarm");
-			event.setAction("newAlarm");
-			event.setEventType(WmsEvent.WmsEventType.RECORD_UPDATE);
-			event.addData("record", record);
-			event.addData("sound", true);
-			
-			List<User> users = AccountUtil.getOrgBean().getActiveOrgUsers(AccountUtil.getCurrentOrg().getId());
-			List<Long> recipients = new ArrayList<>();
 			if (AccountUtil.getCurrentOrg().getOrgId() != 88 || (alarm.getSeverity() != null && alarm.getSeverity().getId() == AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.CRITICAL_SEVERITY).getId())) {
-				for (User user : users) {
-					recipients.add(user.getId());
-				}
+				WmsEvent event = new WmsEvent();
+				event.setNamespace("alarm");
+				event.setAction("newAlarm");
+				event.setEventType(WmsEvent.WmsEventType.RECORD_UPDATE);
+				event.addData("record", record);
+				event.addData("sound", true);
+				
+				List<User> users = AccountUtil.getOrgBean().getActiveOrgUsers(AccountUtil.getCurrentOrg().getId());
+				List<Long> recipients = users.stream().map(user -> user.getId()).collect(Collectors.toList());
+				
+				WmsApi.sendEvent(recipients, event);
 			}
-			
-			WmsApi.sendEvent(recipients, event);
 		}
 		else {
 			throw new IllegalArgumentException("WorkOrder Object cannot be null");

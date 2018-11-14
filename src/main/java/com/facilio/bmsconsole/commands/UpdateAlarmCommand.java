@@ -1,7 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -123,7 +123,8 @@ public class UpdateAlarmCommand implements Command {
 			JSONObject record = new JSONObject();
 			record.put("id", recordIds.get(0));
 			
-			if(ActivityType.UPDATED_ALARM_SEVERITY.equals(context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE))) {
+			if(ActivityType.UPDATED_ALARM_SEVERITY.equals(context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE)) && 
+					(AccountUtil.getCurrentOrg().getOrgId() != 88 || alarm.getSeverity().getId() == AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.CRITICAL_SEVERITY).getId())) {
 				WmsEvent event = new WmsEvent();
 				event.setNamespace("alarm");
 				event.setAction("newAlarm");
@@ -132,12 +133,7 @@ public class UpdateAlarmCommand implements Command {
 				event.addData("sound", true);
 				
 				List<User> users = AccountUtil.getOrgBean().getActiveOrgUsers(AccountUtil.getCurrentOrg().getId());
-				List<Long> recipients = new ArrayList<>();
-				if (AccountUtil.getCurrentOrg().getOrgId() != 88 || alarm.getSeverity().getId() == AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.CRITICAL_SEVERITY).getId()) {
-					for (User user : users) {
-						recipients.add(user.getId());
-					}
-				}
+				List<Long> recipients = users.stream().map(user -> user.getId()).collect(Collectors.toList());
 				WmsApi.sendEvent(recipients, event);
 			}
 		}
