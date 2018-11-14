@@ -55,6 +55,10 @@ import com.facilio.workflows.context.WorkflowContext;
 public class AlarmAPI {
 	
 	public static JSONObject constructClearEvent(AlarmContext alarm, String msg) throws Exception {
+		return constructClearEvent(alarm, msg, -1);
+	}
+	
+	public static JSONObject constructClearEvent(AlarmContext alarm, String msg, long timestamp) throws Exception {
 		JSONObject event = new JSONObject();
 		
 		event.put("condition", alarm.getCondition());
@@ -66,6 +70,9 @@ public class AlarmAPI {
 		event.put("siteId", alarm.getSiteId());
 		event.put("severity", FacilioConstants.Alarm.CLEAR_SEVERITY);
 		event.put("comment", msg);
+		if (timestamp != -1) {
+			event.put("timestamp", timestamp);
+		}
 		
 		if (isReadingAlarm(alarm.getSourceTypeEnum())) {
 			ReadingAlarmContext readingAlarm = getReadingAlarmContext(alarm.getId());
