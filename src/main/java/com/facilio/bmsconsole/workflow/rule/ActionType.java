@@ -22,7 +22,6 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -509,29 +508,25 @@ public enum ActionType {
 				Object currentRecord) {
 			// TODO Auto-generated method stub
 			try {
-				WorkOrderContext wo = getWorkOrder((AlarmContext) currentRecord);
 				AlarmContext alarm = (AlarmContext) currentRecord;
+				WorkOrderContext wo = getWorkOrder((AlarmContext) currentRecord);
 				if (wo == null) {
-					wo = AlarmAPI.getNewWOForAlarm(alarm);
 					FacilioContext woContext = new FacilioContext();
-					woContext.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
-					woContext.put(FacilioConstants.ContextNames.INSERT_LEVEL, 2);
+					woContext.put(FacilioConstants.ContextNames.ALARM, alarm);
+					woContext.put(FacilioConstants.ContextNames.RECORD, obj);
 
-					Chain addWorkOrder = TransactionChainFactory.getAddWorkOrderChain();
+					Chain addWorkOrder = TransactionChainFactory.getAddWoFromAlarmChain();
 					addWorkOrder.execute(woContext);
 					
-					obj.remove("subject");
-					AlarmContext updatedAlarm = FieldUtil.getAsBeanFromJson(obj, AlarmContext.class);
-					updateAlarm(updatedAlarm, alarm.getId(), alarm.getId());
 				} else {
 					fetchSeverities(alarm);
 					NoteContext note = new NoteContext();
 					
 					if (alarm.getPreviousSeverity() == null) {
-						note.setBody("Alarm associated with this automated work order, previously Cleared, has been raised to "+alarm.getSeverity().getSeverity()+" at "+alarm.getModifiedTimeString());
+						note.setBody("Alarm associated with this work order, previously Cleared, has been raised to "+alarm.getSeverity().getSeverity()+" at "+alarm.getModifiedTimeString());
 					}
 					else {
-						note.setBody("Alarm associated with this automated work order updated from "+alarm.getPreviousSeverity().getSeverity()+" to "+alarm.getSeverity().getSeverity()+" at "+alarm.getModifiedTimeString());
+						note.setBody("Alarm associated with this work order updated from "+alarm.getPreviousSeverity().getSeverity()+" to "+alarm.getSeverity().getSeverity()+" at "+alarm.getModifiedTimeString());
 					}
 					note.setParentId(wo.getId());
 					
@@ -543,10 +538,11 @@ public enum ActionType {
 					Chain addNote = TransactionChainFactory.getAddNotesChain();
 					addNote.execute(noteContext);
 					
-					updateAlarm(new AlarmContext(), alarm.getId(), wo.getId());
+					AlarmAPI.updateWoIdInAlarm(wo.getId(), alarm.getId());
 				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
+				System.out.println(e);
 				LOGGER.error("Exception occurred during creating Workorder from Alarm", e);
 			}
 		}
@@ -555,6 +551,7 @@ public enum ActionType {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
 			FacilioField entityIdField = modBean.getField("entityId", FacilioConstants.ContextNames.ALARM);
+			FacilioField woIdField = modBean.getField("woId", FacilioConstants.ContextNames.ALARM);
 			FacilioField statusField = modBean.getField("status", FacilioConstants.ContextNames.WORK_ORDER);
 			TicketStatusContext closeStatus = TicketAPI.getStatus("Closed");
 			
@@ -563,8 +560,8 @@ public enum ActionType {
 																	.module(module)
 																	.select(modBean.getAllFields(module.getName()))
 																	.beanClass(WorkOrderContext.class)
-																	.andCustomWhere(module.getTableName()+".ID IN (SELECT ID FROM Alarms WHERE ORGID = ? AND "+entityIdField.getCompleteColumnName()+" = ?)", AccountUtil.getCurrentOrg().getId(), alarm.getEntityId())
-																	.andCondition(CriteriaAPI.getCondition(statusField, String.valueOf(closeStatus.getId()), PickListOperators.ISN_T))
+																	.andCustomWhere(module.getTableName()+".ID IN (SELECT " + woIdField.getColumnName()  +" FROM Alarms WHERE ORGID = ? AND "+entityIdField.getCompleteColumnName()+" = ?)", AccountUtil.getCurrentOrg().getId(), alarm.getEntityId())
+																	.andCondition(CriteriaAPI.getCondition(statusField, String.valueOf(closeStatus.getId()), PickListOperators.ISN_T));
 																	;
 			
 			List<WorkOrderContext> wos = woBuilder.get();
@@ -572,15 +569,6 @@ public enum ActionType {
 				return wos.get(0);
 			}
 			return null;
-		}
-		
-		@SuppressWarnings("unchecked")
-		private void updateAlarm(AlarmContext alarm, long id, long woId) throws Exception {
-			alarm.setIsWoCreated(true);
-			alarm.setWoId(woId);
-			
-			ModuleCRUDBean crudBean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD");
-			crudBean.updateAlarm(alarm, Collections.singletonList(id));
 		}
 		
 		private void fetchSeverities(AlarmContext alarm) throws Exception {

@@ -315,7 +315,6 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForAlarm());
 			c.addCommand(new UpdateAlarmCommand());
-			c.addCommand(new AddWOFromAlarmCommand());
 			c.addCommand(new ForkChainToInstantJobCommand()
 				.addCommand(new AddClearCommentInWoOnAlarmClearCommand())
 			);
@@ -323,6 +322,14 @@ public class TransactionChainFactory {
 			c.addCommand(new ConstructTicketNotesCommand());
 			c.addCommand(getAddNotesChain());
 			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
+		public static Chain getAddWoFromAlarmChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddWOFromAlarmCommand());
+			c.addCommand(getAddWorkOrderChain());
+			c.addCommand(new UpdateWoIdInAlarmCommand());
 			return c;
 		}
 		

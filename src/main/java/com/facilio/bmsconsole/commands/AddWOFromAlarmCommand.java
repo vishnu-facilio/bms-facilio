@@ -1,54 +1,41 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.AlarmAPI;
-import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
 
 public class AddWOFromAlarmCommand implements Command {
-
+	
 	@Override
 	public boolean execute(Context context) throws Exception {
-		AlarmContext oldalarm = (AlarmContext) context.get(FacilioConstants.ContextNames.ALARM);
-		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
-		if(oldalarm.isWoCreated() && recordIds != null && !recordIds.isEmpty()) {
-			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule module = modBean.getModule(moduleName);
-			
-			List<FacilioField> fields = modBean.getAllFields(moduleName);
-			
-			SelectRecordsBuilder<AlarmContext> builder = new SelectRecordsBuilder<AlarmContext>()
-																	.module(module)
-																	.beanClass(AlarmContext.class)
-																	.select(fields)
-																	.andCondition(CriteriaAPI.getIdCondition(recordIds, module))
-																	.orderBy("ID");
-			
-			List<AlarmContext> alarms = builder.get();
-			List<WorkOrderContext> workorders = new ArrayList<>();
-			if(alarms != null && !alarms.isEmpty()) {
-				for(AlarmContext alarm : alarms) {
-					WorkOrderContext wo = WorkOrderAPI.getWorkOrder(alarm.getId()); 
-					if( wo == null) {
-						workorders.add(AlarmAPI.getNewWOForAlarm(alarm));
-					}
-				}
-				context.put(FacilioConstants.ContextNames.WORK_ORDER_LIST, workorders);
+		AlarmContext oldAlarm = (AlarmContext) context.get(FacilioConstants.ContextNames.ALARM);
+		if (oldAlarm == null || oldAlarm.getId() == -1) {
+			Long alarmId = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+			oldAlarm = AlarmAPI.getAlarm(alarmId);
+		}
+		else {
+			context.put(FacilioConstants.ContextNames.RECORD_ID, oldAlarm.getId());
+		}
+		Object newObj = context.get(FacilioConstants.ContextNames.RECORD);
+		
+		if(oldAlarm != null && newObj != null) {
+			if (oldAlarm.getWoId() != -1) {
+				throw new IllegalArgumentException("Workorder is already created for the alarm");
 			}
+			
+			JSONObject woJson = FieldUtil.mergeBean(oldAlarm, newObj);
+			
+			WorkOrderContext wo = FieldUtil.getAsBeanFromJson(woJson, WorkOrderContext.class);
+			wo.setCreatedTime(System.currentTimeMillis());
+			wo.setId(-1);
+			
+			context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
 		}
 		return false;
 	}

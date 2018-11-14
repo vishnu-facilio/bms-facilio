@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.text.WordUtils;
 import org.json.simple.JSONObject;
 
@@ -28,7 +27,6 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
-import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -45,6 +43,7 @@ import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -74,6 +73,7 @@ public class AlarmAPI {
 		if (timestamp != -1) {
 			event.put("timestamp", timestamp);
 		}
+		event.put("alarmId", alarm.getId());
 		
 		if (isReadingAlarm(alarm.getSourceTypeEnum())) {
 			ReadingAlarmContext readingAlarm = getReadingAlarmContext(alarm.getId());
@@ -792,11 +792,19 @@ public class AlarmAPI {
 		return getAlarmSeverity("Clear");
 	}
 	
-	public static WorkOrderContext getNewWOForAlarm (AlarmContext alarm) throws Exception {
-		WorkOrderContext wo = new WorkOrderContext();
-		BeanUtils.copyProperties(wo, alarm);
-		wo.setCreatedTime(System.currentTimeMillis());
-		return wo;
+	public static int updateWoIdInAlarm(long woId, long alarmId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ALARM);
+		
+		AlarmContext alarmContext = new AlarmContext();
+		alarmContext.setWoId(woId);
+		
+		UpdateRecordBuilder<AlarmContext> updateBuilder = new UpdateRecordBuilder<AlarmContext>()
+				.module(module)
+				.fields(modBean.getAllFields(FacilioConstants.ContextNames.ALARM))
+				.andCondition(CriteriaAPI.getIdCondition(alarmId, module));
+		
+		return updateBuilder.update(alarmContext);
 	}
 	
 	public static String getAlarmModuleName(SourceType type) throws Exception {
