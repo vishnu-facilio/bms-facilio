@@ -189,6 +189,14 @@ public class WorkOrderContext extends TicketContext {
 		return false;
 	}
 	
+	private AlarmContext alarm;
+	public AlarmContext getAlarm() {
+		return alarm;
+	}
+	public void setAlarm(AlarmContext alarm) {
+		this.alarm = alarm;
+	}
+
 	private WOUrgency urgency;
 	public WOUrgency getUrgencyEnum() {
 		return urgency;

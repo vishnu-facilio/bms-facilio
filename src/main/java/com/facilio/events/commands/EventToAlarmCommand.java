@@ -37,6 +37,38 @@ import com.google.common.base.Strings;
 
 public class EventToAlarmCommand implements Command {
 
+	private long getAlarmId (EventContext event) throws Exception {
+		if (event.getAlarmId() == -1) {
+			FacilioModule module = EventConstants.EventModuleFactory.getEventModule();
+			List<FacilioField> fields = EventConstants.EventFieldFactory.getEventFields();
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+			FacilioField messageKeyField = fieldMap.get("messageKey");
+			FacilioField alarmIdField = fieldMap.get("alarmId");
+			
+			setMessageKey(event);
+			GenericSelectRecordBuilder eventSelectBuilder = new GenericSelectRecordBuilder()
+					.select(fields)
+					.table(module.getTableName())
+					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+					.andCondition(CriteriaAPI.getCondition(messageKeyField, event.getMessageKey(), StringOperators.IS))
+					.andCondition(CriteriaAPI.getCondition(alarmIdField, CommonOperators.IS_NOT_EMPTY))
+					.orderBy("CREATED_TIME DESC")
+					.limit(1)
+					;
+
+			List<Map<String, Object>> props = eventSelectBuilder.get();
+			if(props != null && !props.isEmpty())
+			{
+				long alarmId = (long) props.get(0).get("alarmId");
+				return alarmId;
+			}
+			else {
+				return -1; //Create new Alarm
+			}
+		}
+		return event.getAlarmId();
+	}
+	
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -47,30 +79,11 @@ public class EventToAlarmCommand implements Command {
 				event.setEventState(EventState.IGNORED);
 			}
 			else {
-				FacilioModule module = EventConstants.EventModuleFactory.getEventModule();
-				List<FacilioField> fields = EventConstants.EventFieldFactory.getEventFields();
-				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-				FacilioField messageKeyField = fieldMap.get("messageKey");
-				FacilioField alarmIdField = fieldMap.get("alarmId");
-				
-				setMessageKey(event);
-				GenericSelectRecordBuilder eventSelectBuilder = new GenericSelectRecordBuilder()
-						.select(fields)
-						.table(module.getTableName())
-						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-						.andCondition(CriteriaAPI.getCondition(messageKeyField, event.getMessageKey(), StringOperators.IS))
-						.andCondition(CriteriaAPI.getCondition(alarmIdField, CommonOperators.IS_NOT_EMPTY))
-						.orderBy("CREATED_TIME DESC")
-						.limit(1)
-						;
-
-				List<Map<String, Object>> props = eventSelectBuilder.get();
+				long alarmId = getAlarmId(event);
 				boolean createAlarm = true;
 				long entityId = -1;
-				if(props != null && !props.isEmpty())
-				{
+				if (alarmId != -1) {
 					createAlarm = false;
-					long alarmId = (long) props.get(0).get("alarmId");
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					List<FacilioField> alarmFields = modBean.getAllFields(FacilioConstants.ContextNames.ALARM);
 					
@@ -90,13 +103,9 @@ public class EventToAlarmCommand implements Command {
 						entityId = alarms.get(0).getEntityId();
 					}
 				}
-				else {
-					createAlarm = true;
-				}
 				
 				if(!createAlarm) {
 					//TODO update alarm
-					long alarmId = (long) props.get(0).get("alarmId");
 					updateAlarm(alarmId, event);
 				}
 				else {

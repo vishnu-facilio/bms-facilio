@@ -452,6 +452,14 @@ public class FieldUtil {
 		return mapper.convertValue(properties, classObj);
 	}
 	
+	@SuppressWarnings("unchecked")
+	public static JSONObject mergeBean(Object bean1, Object bean2) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		JSONObject obj1 = !(bean1 instanceof JSONObject) ? getAsJSON(bean1) : (JSONObject) bean1;
+		JSONObject obj2 = !(bean2 instanceof JSONObject) ? getAsJSON(bean2) : (JSONObject) bean2;
+		obj1.putAll(obj2);
+		return obj1;
+	}
+	
 	public static Object getBooleanResultString(Object value,String moduleName,String fieldName) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

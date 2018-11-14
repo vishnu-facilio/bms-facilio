@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -64,10 +63,18 @@ public class AlarmAction extends FacilioAction {
 	}
 
 	public String createWorkorder() throws Exception {
-		FacilioContext context = new FacilioContext();
-		//set Event
-		//context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.ASSIGN_TICKET);
-		return updateAlarm(context);
+		FacilioContext woContext = new FacilioContext();
+		woContext.put(FacilioConstants.ContextNames.RECORD_ID, id.get(0));
+		woContext.put(FacilioConstants.ContextNames.RECORD, alarm);
+
+		Chain addWorkOrder = TransactionChainFactory.getAddWoFromAlarmChain();
+		addWorkOrder.execute(woContext);
+		
+		rowsUpdated = (int) woContext.get(FacilioConstants.ContextNames.ROWS_UPDATED);
+		WorkOrderContext wo = (WorkOrderContext) woContext.get(FacilioConstants.ContextNames.WORK_ORDER);
+		setWoId(wo.getId());
+		
+		return SUCCESS;
 	}
 
 	public String updateStatus() throws Exception {
@@ -84,20 +91,6 @@ public class AlarmAction extends FacilioAction {
 		Chain updateAlarm = TransactionChainFactory.getUpdateAlarmChain();
 		updateAlarm.execute(context);
 		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
-		
-		List<WorkOrderContext> workorders = (List<WorkOrderContext>) context.get(FacilioConstants.ContextNames.WORK_ORDER_LIST);
-		if (workorders != null && !workorders.isEmpty()) {
-			for (WorkOrderContext wo : workorders) {
-				FacilioContext woContext = new FacilioContext();
-				woContext.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
-				woContext.put(FacilioConstants.ContextNames.INSERT_LEVEL, 2);
-				
-				Command addWorkOrder = TransactionChainFactory.getAddWorkOrderChain();
-				addWorkOrder.execute(woContext);
-				
-				setWoId(wo.getId());
-			}
-		}
 
 		return SUCCESS;
 	}

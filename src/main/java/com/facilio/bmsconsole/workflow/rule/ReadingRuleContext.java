@@ -633,7 +633,7 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 				if (alarmMeta != null && !alarmMeta.isClear()) {
 					AlarmContext alarm = AlarmAPI.getAlarm(alarmMeta.getAlarmId());
 					
-					JSONObject json = AlarmAPI.constructClearEvent(alarm, "System auto cleared Alarm because associated rule executed false for the associated resource");
+					JSONObject json = AlarmAPI.constructClearEvent(alarm, "System auto cleared Alarm because associated rule executed false for the associated resource", reading.getTtime());
 					json.put("readingDataId", reading.getId());
 					json.put("readingVal", reading.getReading(getReadingField().getName()));
 					
