@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -105,6 +106,13 @@ public class GetAlarmListCommand implements Command {
 		}
 
 		List<AlarmContext> alarms = builder.get();
+		if (alarms != null && !alarms.isEmpty()) {
+			alarms = alarms.stream()
+							.filter(alarm -> alarm != null)
+							.collect(Collectors.toList())
+							;
+		}
+		
 		AlarmAPI.loadExtendedAlarms(alarms);
 		TicketAPI.loadTicketLookups(alarms);
 		if (count != null) {
