@@ -142,22 +142,6 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
 
 	@Override
-	public int updateAlarm(AlarmContext alarm, List<Long> ids) throws Exception {
-		// TODO Auto-generated method stub
-		if (alarm != null) {
-			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.ALARM, alarm);
-			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
-
-			Chain updateAlarm = TransactionChainFactory.getUpdateAlarmChain();
-			updateAlarm.execute(context);
-
-			return (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
-		}
-		return -1;
-	}
-	
-	@Override
 	public int updateAlarmFromJson(JSONObject alarmInfo, List<Long> ids) throws Exception {
 		// TODO Auto-generated method stub
 		FacilioContext context = new FacilioContext();
@@ -170,45 +154,6 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		return (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 	}
 
-	@Override
-	public int updateAlarmPriority(String priority, List<Long> ids) throws Exception {
-		// TODO Auto-generated method stub
-		if (priority != null && !priority.isEmpty()) {
-			AlarmContext alarm = new AlarmContext();
-			alarm.setPriority(TicketAPI.getPriority(AccountUtil.getCurrentOrg().getOrgId(), priority));
-
-			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.ALARM, alarm);
-			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
-
-			Chain updateAlarm = TransactionChainFactory.getUpdateAlarmChain();
-			updateAlarm.execute(context);
-			return (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
-		}
-		return -1;
-	}
-
-	@Override
-	public int updateAlarmResource(long resourceId, String source) throws Exception {
-		// TODO Auto-generated method stub
-		if (source != null && !source.isEmpty() && resourceId != -1) {
-			AlarmContext alarm = new AlarmContext();
-			ResourceContext resource = new ResourceContext();
-			resource.setId(resourceId);
-			alarm.setResource(resource);
-
-			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.ALARM, alarm);
-			context.put(EventConstants.EventContextNames.SOURCE, source);
-
-			Chain updateAlarm = FacilioChainFactory.getUpdateAlarmResourceChain();
-			updateAlarm.execute(context);
-			return (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
-
-		}
-		return -1;
-	}
-	
 	@Override
 	public WorkOrderContext addWorkOrderFromPM(PreventiveMaintenance pm) throws Exception {
 		return addWorkOrderFromPM(pm, -1);

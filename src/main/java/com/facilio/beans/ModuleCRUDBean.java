@@ -33,13 +33,7 @@ public interface ModuleCRUDBean {
 	
 	public PreventiveMaintenance CopyWritePlannedMaintenance(List<Map<String, Object>> props) throws Exception;
 	
-	public int updateAlarm(AlarmContext alarm, List<Long> ids) throws Exception;
-	
 	public int updateAlarmFromJson(JSONObject alarmInfo, List<Long> ids) throws Exception;
-	
-	public int updateAlarmPriority(String priority, List<Long> ids) throws Exception;
-	
-	public int updateAlarmResource(long assetId, String source) throws Exception;
 	
 	public WorkOrderContext addWorkOrderFromPM(PreventiveMaintenance pm) throws Exception;
 	
