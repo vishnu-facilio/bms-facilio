@@ -110,7 +110,7 @@ public class TransactionChainFactory {
 		
 		public static Chain addOrUpdateReadingReportChain() {
 			Chain c = getDefaultChain();
-			c.addCommand(new CreateReadingAnalyticsReportCommand());
+			c.addCommand(new CreateReadingAnalyticsReportCommand(false));
 			c.addCommand(new AddOrUpdateReportCommand());
 			return c;
 		}

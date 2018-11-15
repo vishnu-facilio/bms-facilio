@@ -32,6 +32,13 @@ import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportDataPointContext.DataPointType;
 
 public class CreateReadingAnalyticsReportCommand implements Command {
+	
+	private boolean isNewFormat = false;
+	
+	public CreateReadingAnalyticsReportCommand(boolean isNewFormat) {
+		// TODO Auto-generated constructor stub
+		this.isNewFormat = isNewFormat;
+	}
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -101,6 +108,11 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 		ReportAxisContext yAxis = metric.getyAxis();
 		FacilioField yField = modBean.getField(metric.getyAxis().getFieldId());
 		yAxis.setField(yField);
+		
+		if (isNewFormat && yField.getDataTypeEnum() == FieldType.BOOLEAN) {
+			yAxis.setAggr(null);
+		}
+		
 		dataPoint.setyAxis(yAxis);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(yField.getModule().getName()));
 		setXAndDateFields(dataPoint, xAggr, mode, fieldMap);
@@ -126,6 +138,9 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 			case TIMESERIES:
 			case CONSOLIDATED:
 				xField = fieldMap.get("ttime");
+				if (isNewFormat && dataPoint.getyAxis().getField().getDataTypeEnum() == FieldType.BOOLEAN) {
+					xAggr = null;
+				}
 				break;
 		}
 		ReportAxisContext xAxis = new ReportAxisContext();

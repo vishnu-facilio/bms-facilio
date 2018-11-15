@@ -77,7 +77,7 @@ public class FetchReportDataCommand implements Command {
 			addedModules.add(dp.getxAxis().getField().getModule());
 			
 			joinYModuleIfRequred(dp, selectBuilder, addedModules);
-			applyOrderBy(dp, selectBuilder);
+			applyOrderByAndLimit(dp, selectBuilder);
 			List<FacilioField> fields = new ArrayList<>();
 			StringJoiner groupBy = new StringJoiner(",");
 			FacilioField xAggrField = applyXAggregation(dp, groupBy, selectBuilder, fields, addedModules);				// doubt
@@ -136,10 +136,12 @@ public class FetchReportDataCommand implements Command {
 	
 	private void setYFieldsAndGroupByFields(List<ReportDataPointContext> dataPointList, List<FacilioField> fields, FacilioField xAggrField, StringJoiner groupBy, ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, Set<FacilioModule> addedModules) throws Exception {
 		for (ReportDataPointContext dataPoint : dataPointList) {
-			boolean isAggr = applyYAggregation(dataPoint, fields);
-			if (isAggr && groupBy.length() == 0) {
-				groupBy.add(xAggrField.getColumnName());
-			}
+			applyYAggregation(dataPoint, fields);
+			
+//			Commenting out the following because we have already handled this while applying X aggregation
+//			if (isAggr && groupBy.length() == 0) { //If only Y Aggr exists and there's no X Aggr, data is grouped by x Field by default 
+//				groupBy.add(xAggrField.getColumnName());
+//			}
 		}
 		
 		if (dp.getGroupByFields() != null && !dp.getGroupByFields().isEmpty()) {
@@ -270,7 +272,7 @@ public class FetchReportDataCommand implements Command {
 		FacilioField xAggrField = null;
 		if (dp.getyAxis().getAggrEnum() != null && dp.getyAxis().getAggr() != 0) {
 			if (dp.getxAxis().getAggrEnum() != null && dp.getxAxis().getAggr() != 0 ) {
-				if (dp.getxAxis().getAggrEnum() == SpaceAggregateOperator.SITE || dp.getxAxis().getAggrEnum() == SpaceAggregateOperator.BUILDING || dp.getxAxis().getAggrEnum() == SpaceAggregateOperator.FLOOR) {
+				if (dp.getxAxis().getAggrEnum() instanceof SpaceAggregateOperator) {
 					xAggrField = applySpaceAggregation(dp, selectBuilder, addedModules);
 				}
 				else {
@@ -281,15 +283,20 @@ public class FetchReportDataCommand implements Command {
 				xAggrField = dp.getxAxis().getField();
 			}
 			groupBy.add(xAggrField.getCompleteColumnName());
+			
 			if (dp.getxAxis().getAggrEnum() instanceof DateAggregateOperator) {
 				fields.add(((DateAggregateOperator)dp.getxAxis().getAggrEnum()).getTimestampField(dp.getxAxis().getField()));
+			}
+			else if (dp.getxAxis().getAggrEnum() instanceof SpaceAggregateOperator) {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				fields.add(modBean.getField("name", FacilioConstants.ContextNames.BASE_SPACE));
 			}
 			else {
 				fields.add(xAggrField);
 			}
 		}
 		else {
-			if (dp.getyAxis().getAggrEnum() == null || dp.getxAxis().getAggr() == 0) {
+			if (dp.getyAxis().getAggrEnum() == null || dp.getxAxis().getAggr() == 0) { //Return x field as aggr field as there's no X aggregation
 				xAggrField = dp.getxAxis().getField();
 				fields.add(xAggrField);
 			}
@@ -311,7 +318,7 @@ public class FetchReportDataCommand implements Command {
 		}
 	}
 
-	private void applyOrderBy (ReportDataPointContext dataPoint, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder) {
+	private void applyOrderByAndLimit (ReportDataPointContext dataPoint, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder) {
 		if (dataPoint.getOrderBy() != null && dataPoint.getOrderBy().isEmpty()) {
 			StringBuilder orderBy = new StringBuilder(dataPoint.getOrderBy());
 			if (dataPoint.getOrderByFuncEnum() != null) {
@@ -319,6 +326,10 @@ public class FetchReportDataCommand implements Command {
 						.append(dataPoint.getOrderByFuncEnum().getStringValue());
 			}
 			selectBuilder.orderBy(orderBy.toString());
+			
+			if (dataPoint.getLimit() != -1) {
+				selectBuilder.limit(dataPoint.getLimit());
+			}
 		}
 	}
 	

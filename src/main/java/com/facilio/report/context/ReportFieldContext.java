@@ -64,7 +64,7 @@ public class ReportFieldContext {
 	private FacilioField field;
 	
 	@JsonIgnore
-	public FacilioField getField() throws Exception {
+	public FacilioField getField() {
 		return field;
 	}
 	public void setField(FacilioField field) {
