@@ -228,7 +228,7 @@ public class DataParseForReadingsCommand implements Command {
 						try {
 							if(facilioField.getDataTypeEnum().equals(FieldType.DATE_TIME) || facilioField.getDataTypeEnum().equals(FieldType.DATE)) {
 								if(!(cellValue instanceof Long)) {
-									long millis = 0;
+									long millis;
 									if(dateFormats.get(fieldMapping.get(key)).equals(ImportAPI.ImportProcessConstants.TIME_STAMP_STRING)) {
 										millis = Long.parseLong(cellValue.toString());
 									}
@@ -244,6 +244,7 @@ public class DataParseForReadingsCommand implements Command {
 							}
 						} catch (Exception e) {
 							LOGGER.severe("exception ---" + e);
+							throw e;
 						}
 						}
 					}
