@@ -90,7 +90,6 @@ public class FetchReportDataCommand implements Command {
 			Map<String, List<Map<String, Object>>> props = new HashMap<>();
 			props.put(FacilioConstants.Reports.ACTUAL_DATA, fetchReportData(report, dp, selectBuilder, null));
 			
-			LOGGER.fine("SELECT BUILDER --- "+ selectBuilder);
 			if (report.getBaseLines() != null && !report.getBaseLines().isEmpty()) {
 				for (ReportBaseLineContext reportBaseLine : report.getBaseLines()) {
 					props.put(reportBaseLine.getBaseLine().getName(), fetchReportData(report, dp, selectBuilder, reportBaseLine));
@@ -129,7 +128,10 @@ public class FetchReportDataCommand implements Command {
 	private List<Map<String, Object>> fetchReportData(ReportContext report, ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, ReportBaseLineContext reportBaseLine) throws Exception {
 		SelectRecordsBuilder<ModuleBaseWithCustomFields> newSelectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>(selectBuilder);
 		applyDateCondition(report, dp, newSelectBuilder, reportBaseLine);
-		return newSelectBuilder.getAsProps();
+		List<Map<String, Object>> props = newSelectBuilder.getAsProps();
+		
+		LOGGER.severe("SELECT BUILDER --- "+ newSelectBuilder);
+		return props;
 	}
 	
 	private void setYFieldsAndGroupByFields(List<ReportDataPointContext> dataPointList, List<FacilioField> fields, FacilioField xAggrField, StringJoiner groupBy, ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, Set<FacilioModule> addedModules) throws Exception {

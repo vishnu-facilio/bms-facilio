@@ -114,7 +114,7 @@ public class WidgetStaticContext extends DashboardWidgetContext {
 		JSONObject widgetJson = new JSONObject();
 		widgetJson.put("widget", resultJson);
 		widgetJson.put("label", getWidgetName());
-		System.out.println("resultJson -- "+widgetJson);
+//		System.out.println("resultJson -- "+widgetJson);
 		return widgetJson;
 	}
 }

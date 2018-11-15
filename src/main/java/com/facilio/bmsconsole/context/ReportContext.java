@@ -740,7 +740,7 @@ public class ReportContext extends ModuleBaseWithCustomFields {
 		JSONObject widgetJson = new JSONObject();
 		widgetJson.put("widget", resultJson);
 		widgetJson.put("label", getName());
-		System.out.println("resultJson -- "+widgetJson);
+//		System.out.println("resultJson -- "+widgetJson);
 		return widgetJson;
 	}
 	
