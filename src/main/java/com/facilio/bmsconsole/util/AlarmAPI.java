@@ -75,6 +75,10 @@ public class AlarmAPI {
 		}
 		event.put("alarmId", alarm.getId());
 		
+		if (alarm.getControllerId() != -1) {
+			event.put("controllerId", alarm.getControllerId());
+		}
+		
 		if (isReadingAlarm(alarm.getSourceTypeEnum())) {
 			ReadingAlarmContext readingAlarm = getReadingAlarmContext(alarm.getId());
 			event.put("sourceType", readingAlarm.getSourceTypeEnum().getIntVal());

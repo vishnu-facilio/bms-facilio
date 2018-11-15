@@ -159,7 +159,7 @@ public class EventToAlarmCommand implements Command {
 					msgKey = event.getResourceId()+"_"+Strings.nullToEmpty(event.getCondition());
 					break;
 				default:
-					msgKey = Strings.nullToEmpty(event.getSource())+"_"+Strings.nullToEmpty(event.getCondition());
+					msgKey = Strings.nullToEmpty(event.getSource())+"_"+Strings.nullToEmpty(event.getCondition())+"_"+(event.getControllerId() == -1 ? "" : event.getControllerId());
 					break;
 			}
 			event.setMessageKey(msgKey);
