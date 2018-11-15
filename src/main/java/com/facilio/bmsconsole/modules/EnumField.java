@@ -12,6 +12,23 @@ public class EnumField extends FacilioField {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	public EnumField() {
+		// TODO Auto-generated constructor stub
+		super();
+	}
+	
+	protected EnumField(EnumField field) { // Do not forget to Handle here if new property is added
+		super(field);
+		this.values = field.values;
+	}
+	
+	@Override
+	public EnumField clone() {
+		// TODO Auto-generated method stub
+		return new EnumField(this);
+	}
+
 	private List<String> values;
 	public List<String> getValues() {
 		return values;

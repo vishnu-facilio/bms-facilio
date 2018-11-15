@@ -9,8 +9,29 @@ public class NumberField extends FacilioField {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private int unitId = -1;
 	
+	public NumberField() {
+		// TODO Auto-generated constructor stub
+		super();
+	}
+	
+	
+	
+	protected NumberField(NumberField field) { // Do not forget to Handle here if new property is added
+		super(field);
+		this.unitId = field.unitId;
+		this.unit = field.unit;
+		this.metric = field.metric;
+		this.counterField = field.counterField;
+	}
+
+	@Override
+	public NumberField clone() {
+		// TODO Auto-generated method stub
+		return new NumberField(this);
+	}
+
+	private int unitId = -1;
 	public int getUnitId() {
 		return unitId;
 	}

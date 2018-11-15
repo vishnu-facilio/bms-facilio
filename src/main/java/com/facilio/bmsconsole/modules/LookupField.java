@@ -8,6 +8,26 @@ public class LookupField extends FacilioField {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	public LookupField() {
+		// TODO Auto-generated constructor stub
+		super();
+	}
+	
+	
+	protected LookupField(LookupField field) { // Do not forget to Handle here if new property is added
+		super(field);
+		this.lookupModule = field.lookupModule;
+		this.specialType = field.specialType;
+	}
+	
+	@Override
+	public LookupField clone() {
+		// TODO Auto-generated method stub
+		return new LookupField(this);
+	}
+
+
 	private FacilioModule lookupModule;
 	public FacilioModule getLookupModule() {
 		return lookupModule;

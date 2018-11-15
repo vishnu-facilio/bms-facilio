@@ -16,8 +16,38 @@ public class FacilioField implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private long fieldId = -1;
 	
+	public FacilioField() {
+		// TODO Auto-generated constructor stub
+	}
+	
+	protected FacilioField(FacilioField field) { // Do not forget to Handle here if new property is added
+		this.fieldId = field.fieldId;
+		this.orgId = field.orgId;
+		this.module = field.module;
+		this.extendedModule = field.extendedModule;
+		this.name = field.name;
+		this.columnName = field.columnName;
+		this.sequenceNumber = field.sequenceNumber;
+		this.dataType = field.dataType;
+		this.isDefault = field.isDefault;
+		this.isMainField = field.isMainField;
+		this.required = field.required;
+		this.disabled = field.disabled;
+		this.displayName = field.displayName;
+		this.styleClass = field.styleClass;
+		this.icon = field.icon;
+		this.placeHolder = field.placeHolder;
+		this.displayType = field.displayType;
+		this.readingRules = field.readingRules;
+		this.actionsList = field.actionsList;
+	}
+	
+	public FacilioField clone() {
+		return new FacilioField(this);
+	}
+	
+	private long fieldId = -1;
 	public long getFieldId() {
 		return fieldId;
 	}
