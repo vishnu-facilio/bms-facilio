@@ -138,7 +138,11 @@ public class DateTimeUtil
 	public static Instant getTimeInstant(String datePattern, String dateString) {
 		DateTimeFormatter FMT = new DateTimeFormatterBuilder()
 			    .appendPattern(datePattern)
-			    .parseDefaulting(ChronoField.NANO_OF_DAY, 0)
+			    .parseDefaulting(ChronoField.DAY_OF_MONTH, 1)
+			    .parseDefaulting(ChronoField.MONTH_OF_YEAR,1)
+			    .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
+			    .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
+			    .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
 			    .toFormatter()
 			    .withZone(DateTimeUtil.getZoneId())
 			    .withLocale(DateTimeUtil.getLocale());
