@@ -95,6 +95,8 @@ public class UpdateBaseAndResourceCommand implements Command,Serializable {
 				}
 		}
 		LOGGER.severe("UPDATED BASE and RESOURCE");	
+		con.commit();
+		con.close();
 		return false;
 	}
 

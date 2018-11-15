@@ -63,7 +63,13 @@ public class PopulateImportProcessCommand implements Command {
 						recordsList.put(importProcessContext.getModule().getName(), id);
 					}
 				}
-				meta.put("Inserted", groupedReadingContext.size());
+				if(!importProcessContext.getImportJobMetaJson().isEmpty()) {
+					meta = importProcessContext.getFieldMappingJSON();
+					meta.put("Inserted", groupedReadingContext.size());
+				}
+				else {
+					meta.put("Inserted", groupedReadingContext.size());
+				}
 				importProcessContext.setImportJobMeta(meta.toJSONString());
 				emailMessage.append(",Inserted:" + groupedReadingContext.size() +"Updated:"+ 0 +",Skipped:" +0);
 				c.put(FacilioConstants.ContextNames.RECORD_LIST, recordsList);
@@ -71,9 +77,6 @@ public class PopulateImportProcessCommand implements Command {
 		
 		else if (Setting == ImportProcessContext.ImportSetting.INSERT_SKIP.getValue()) {
 			List<ReadingContext> readingsList = groupedReadingContext.get(importProcessContext.getModule().getName());
-			fs.readFile(importProcessContext.getFileId());
-			new AssetsAPI();
-			new ImportAPI();
 			List<ReadingContext> newItems = new ArrayList<ReadingContext>();
 			
 			meta = importProcessContext.getImportJobMetaJson();
@@ -90,22 +93,37 @@ public class PopulateImportProcessCommand implements Command {
 			}
 			
 			listOfIds = populateData(newItems,importProcessContext.getModule().getName());
-			for(Long id: listOfIds) {
-				recordsList.put(importProcessContext.getModule().getName(), id);
+			if(!listOfIds.isEmpty()) {
+				for(Long id: listOfIds) {
+					recordsList.put(importProcessContext.getModule().getName(), id);
+				}
 			}
-			c.put(FacilioConstants.ContextNames.RECORD_LIST, listOfIds);
-			
+			c.put(FacilioConstants.ContextNames.RECORD_LIST, recordsList);
 			Integer Skipped = readingsList.size()-newItems.size();
-			meta.put("Inserted", newItems.size());
-			meta.put("Skipped", Skipped);
+			
+			if(!importProcessContext.getImportJobMetaJson().isEmpty()) {
+				meta = importProcessContext.getFieldMappingJSON();
+				meta.put("Inserted", newItems.size());
+				meta.put("Skipped", Skipped);
+			}
+			else {
+				meta.put("Inserted", newItems.size());
+				meta.put("Skipped", Skipped);
+			}
 			importProcessContext.setImportJobMeta(meta.toJSONString());
-			emailMessage.append(",Inserted:" + Skipped +"Updated:"+ 0 +",Skipped:" +0);
+			emailMessage.append(",Inserted:" + newItems.size() +"Updated:"+ 0 +",Skipped:" + Skipped);
 		}
 		
 		else if(Setting == ImportProcessContext.ImportSetting.UPDATE.getValue()) {
 			List<ReadingContext> readingsList = groupedReadingContext.get(importProcessContext.getModule().getName());
 			updateData(importProcessContext, readingsList);
-			meta.put("Updated", readingsList.size());
+			if(!importProcessContext.getImportJobMetaJson().isEmpty()) {
+				meta = importProcessContext.getImportJobMetaJson();
+				meta.put("Updated", readingsList.size());
+			}
+			else {
+				meta.put("Updated", readingsList.size());
+			}
 			importProcessContext.setImportJobMeta(meta.toJSONString());
 			emailMessage.append(",Inserted:" + 0 +"Updated:"+ readingsList.size()+",Skipped:" +0);
 			
@@ -113,7 +131,13 @@ public class PopulateImportProcessCommand implements Command {
 		else if(Setting  == ImportProcessContext.ImportSetting.UPDATE_NOT_NULL.getValue()) {
 			List<ReadingContext> readingsList = groupedReadingContext.get(importProcessContext.getModule().getName());
 			updateNotNull(importProcessContext, readingsList);
-			meta.put("Updated",readingsList.size());
+			if(!importProcessContext.getImportJobMetaJson().isEmpty()) {
+				meta = importProcessContext.getImportJobMetaJson();
+				meta.put("Updated", readingsList.size());
+			}
+			else {
+				meta.put("Updated", readingsList.size());
+			}
 			importProcessContext.setImportJobMeta(meta.toJSONString());
 			emailMessage.append(",Inserted:" + 0 +"Updated:"+ readingsList.size()+",Skipped:" +0);
 			
@@ -137,14 +161,23 @@ public class PopulateImportProcessCommand implements Command {
 			}
 			
 			listOfIds = populateData(insertItems,importProcessContext.getModule().getName());
-			for(Long id: listOfIds) {
-				recordsList.put(importProcessContext.getModule().getName(), id);
+			if(!listOfIds.isEmpty()) {
+				for(Long id: listOfIds) {
+					recordsList.put(importProcessContext.getModule().getName(), id);
+				}
 			}
-			c.put(FacilioConstants.ContextNames.RECORD_LIST, listOfIds);
+			c.put(FacilioConstants.ContextNames.RECORD_LIST, recordsList);
 			
 			updateData(importProcessContext,updateItems);
-			meta.put("Inserted", insertItems.size());
-			meta.put("Updated", updateItems.size());
+			if(!importProcessContext.getImportJobMetaJson().isEmpty()) {
+				meta = importProcessContext.getImportJobMetaJson();
+				meta.put("Inserted", insertItems.size());
+				meta.put("Updated", updateItems.size());
+			}
+			else {
+				meta.put("Inserted", insertItems.size());
+				meta.put("Updated", updateItems.size());
+			}
 			importProcessContext.setImportJobMeta(meta.toJSONString());
 			emailMessage.append(",Inserted:" + insertItems.size() +"Updated:"+ updateItems.size() +",Skipped:" +0);
 		}
@@ -168,19 +201,27 @@ public class PopulateImportProcessCommand implements Command {
 			}
 			
 			listOfIds = populateData(insertItems,importProcessContext.getModule().getName());
-			for(Long id: listOfIds) {
-				recordsList.put(importProcessContext.getModule().getName(), id);
+			if(!listOfIds.isEmpty()) {
+				for(Long id: listOfIds) {
+					recordsList.put(importProcessContext.getModule().getName(), id);
+				}
 			}
-			c.put(FacilioConstants.ContextNames.RECORD_LIST, listOfIds);
-			
+			c.put(FacilioConstants.ContextNames.RECORD_LIST, recordsList);
 			updateNotNull(importProcessContext,updateItems);
-			meta.put("Inserted", insertItems.size());
-			meta.put("Updated", updateItems.size());
+			if(!importProcessContext.getImportJobMetaJson().isEmpty()) {
+				meta = importProcessContext.getImportJobMetaJson();
+				meta.put("Inserted", insertItems.size());
+				meta.put("Updated", updateItems.size());
+			}
+			else {
+				meta.put("Inserted", insertItems.size());
+				meta.put("Updated", updateItems.size());
+			}
 			importProcessContext.setImportJobMeta(meta.toJSONString());
 			emailMessage.append(",Inserted:" + insertItems.size() +"Updated:"+ updateItems.size() +",Skipped:" +0);
 		
 		}
-		c.put(FacilioConstants.ContextNames.SPACE_TYPE, importProcessContext.getModule().getName()+"s");
+		// c.put(FacilioConstants.ContextNames.SPACE_TYPE, importProcessContext.getModule().getName()+"s");
 		c.put(ImportAPI.ImportProcessConstants.EMAIL_MESSAGE, emailMessage);
 //		ImportAPI.updateImportProcess(importProcessContext);
 		

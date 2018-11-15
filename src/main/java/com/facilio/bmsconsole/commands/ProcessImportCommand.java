@@ -320,7 +320,15 @@ public class ProcessImportCommand implements Command {
 										if (facilioField.getDataTypeEnum().equals(FieldType.DATE_TIME)
 												|| facilioField.getDataTypeEnum().equals(FieldType.DATE)) {
 											if (!(cellValue instanceof Long)) {
-												long millis = DateTimeUtil.getTime(cellValue.toString(),"dd/MM/yyyy HH:mm:ss");
+												long millis;
+												if(dateFormats.get(fieldMapping.get(key)).equals(ImportAPI.ImportProcessConstants.TIME_STAMP_STRING)) {
+													millis = Long.parseLong(cellValue.toString());
+												}
+												else {
+													Instant dateInstant = DateTimeUtil.getTimeInstant(dateFormats.get(fieldMapping.get(key)).toString(),cellValue.toString());
+													millis = dateInstant.toEpochMilli();
+												}
+//												long millis = DateTimeUtil.getTime(cellValue.toString(),"dd/MM/yyyy HH:mm:ss");
 												if (!props.containsKey(field)) {
 													props.put(field, millis);
 												}
@@ -330,6 +338,7 @@ public class ProcessImportCommand implements Command {
 									} catch (Exception e) {
 										// TODO Auto-generated catch block
 										e.printStackTrace();
+										throw e;
 									}
 								}
 							}

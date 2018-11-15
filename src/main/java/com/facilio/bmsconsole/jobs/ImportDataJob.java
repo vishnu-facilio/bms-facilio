@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.ImportAPI;
+import com.facilio.bmsconsole.util.ImportAPI.ImportProcessConstants;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
@@ -24,8 +25,6 @@ public class ImportDataJob extends FacilioJob {
 	@Override
 	public void execute(JobContext jc) throws Exception {
 		ImportProcessContext importProcessContext = null;
-		
-		
 		try {
 			long jobId = jc.getJobId();
 			
@@ -48,10 +47,19 @@ public class ImportDataJob extends FacilioJob {
 				importChain.execute(context);
 			}
 			else {
-				FacilioContext context = new FacilioContext();
-				context.put(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT, importProcessContext);
-				Chain bulkAssetImportChain = TransactionChainFactory.getBulkAssertImportChain();
-				bulkAssetImportChain.execute(context);
+				if(importProcessContext.getImportSetting() == ImportProcessContext.ImportSetting.UPDATE.getValue() || importProcessContext.getImportSetting() == ImportProcessContext.ImportSetting.UPDATE_NOT_NULL.getValue()
+						|| importProcessContext.getImportSetting() == ImportProcessContext.ImportSetting.BOTH.getValue() || importProcessContext.getImportSetting() == ImportProcessContext.ImportSetting.BOTH_NOT_NULL.getValue() ) {
+					FacilioContext context = new FacilioContext();
+					context.put(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT, importProcessContext);
+					Chain importChain = TransactionChainFactory.getImportChain();
+					importChain.execute(context);
+				}
+				else {
+					FacilioContext context = new FacilioContext();
+					context.put(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT, importProcessContext);
+					Chain bulkAssetImportChain = TransactionChainFactory.getBulkAssertImportChain();
+					bulkAssetImportChain.execute(context);
+				}
 			}
 			
 //			if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) || (importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
@@ -65,10 +73,11 @@ public class ImportDataJob extends FacilioJob {
 		catch(Exception e) {
 			try {
 				if(importProcessContext != null) {
-					ImportAPI.updateImportProcess(importProcessContext,ImportProcessContext.ImportStatus.FAILED);
+					importProcessContext.setStatus(ImportProcessContext.ImportStatus.FAILED.getValue());
+					ImportAPI.updateImportProcess(importProcessContext);
+					LOGGER.severe("Import failed");
 					}
-			}
-			catch(Exception a) {
+			} catch(Exception a) {
 				System.out.println(a);
 			}
 			CommonCommandUtil.emailException("Import Failed", "Import failed - orgid -- "+AccountUtil.getCurrentOrg().getId(), e);
