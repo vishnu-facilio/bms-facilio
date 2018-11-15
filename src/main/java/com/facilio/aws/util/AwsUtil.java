@@ -427,7 +427,7 @@ public class AwsUtil
 			Message message = new Message().withSubject(subjectContent).withBody(body);
 
 			try {
-				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 104) {
+				if (AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getId() == 104 || AccountUtil.getCurrentOrg().getId() == 155)) {
 					LOGGER.info("Sending email : "+mailJson.toJSONString());
 				}
 				SendEmailRequest request = new SendEmailRequest().withSource((String) mailJson.get("sender"))
