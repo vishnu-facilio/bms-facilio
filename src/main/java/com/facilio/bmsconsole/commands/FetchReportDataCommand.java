@@ -80,8 +80,8 @@ public class FetchReportDataCommand implements Command {
 			applyOrderByAndLimit(dp, selectBuilder);
 			List<FacilioField> fields = new ArrayList<>();
 			StringJoiner groupBy = new StringJoiner(",");
-			FacilioField xAggrField = applyXAggregation(dp, groupBy, selectBuilder, fields, addedModules);				// doubt
-			dp.getxAxis().setField(xAggrField);
+			FacilioField xAggrField = applyXAggregation(dp, groupBy, selectBuilder, fields, addedModules);
+//			dp.getxAxis().setField(xAggrField);
 			setYFieldsAndGroupByFields(dataPointList, fields, xAggrField, groupBy, dp, selectBuilder, addedModules);
 			selectBuilder.select(fields);
 			if (report.getxCriteria() != null) {
@@ -256,7 +256,6 @@ public class FetchReportDataCommand implements Command {
 					.on(resourceModule.getTableName()+".SPACE_ID = "+baseSpaceModule.getTableName()+".ID");
 		addedModules.add(resourceModule);
 		addedModules.add(baseSpaceModule);
-		
 		switch ((SpaceAggregateOperator)dp.getxAxis().getAggrEnum()) {
 			case SITE:
 				return fieldMap.get("siteId");
