@@ -81,7 +81,6 @@ public class FetchReportDataCommand implements Command {
 			List<FacilioField> fields = new ArrayList<>();
 			StringJoiner groupBy = new StringJoiner(",");
 			FacilioField xAggrField = applyXAggregation(dp, groupBy, selectBuilder, fields, addedModules);
-//			dp.getxAxis().setField(xAggrField);
 			setYFieldsAndGroupByFields(dataPointList, fields, xAggrField, groupBy, dp, selectBuilder, addedModules);
 			selectBuilder.select(fields);
 			if (report.getxCriteria() != null) {
@@ -256,16 +255,23 @@ public class FetchReportDataCommand implements Command {
 					.on(resourceModule.getTableName()+".SPACE_ID = "+baseSpaceModule.getTableName()+".ID");
 		addedModules.add(resourceModule);
 		addedModules.add(baseSpaceModule);
+		
+		FacilioField spaceField = null;
 		switch ((SpaceAggregateOperator)dp.getxAxis().getAggrEnum()) {
 			case SITE:
-				return fieldMap.get("siteId");
+				spaceField = fieldMap.get("siteId").clone();
+				break;
 			case BUILDING:
-				return fieldMap.get("buildingId");
+				spaceField = fieldMap.get("buildingId").clone();
+				break;
 			case FLOOR:
-				return fieldMap.get("floorId");
+				spaceField = fieldMap.get("floorId").clone();
+				break;
 			default:
 				throw new RuntimeException("Cannot be here!!");
 		}
+		spaceField.setName(dp.getxAxis().getFieldName());
+		return spaceField;
 	}
 	
 	private FacilioField applyXAggregation(ReportDataPointContext dp, StringJoiner groupBy, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, List<FacilioField> fields, Set<FacilioModule> addedModules) throws Exception {
