@@ -13,7 +13,10 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
+import com.facilio.bmsconsole.context.FormulaContext.SpaceAggregateOperator;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.report.context.ReportAxisContext;
 import com.facilio.report.context.ReportBaseLineContext;
@@ -140,14 +143,21 @@ public class TransformReportDataCommand implements Command {
 	}
 	
 	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
-	private Object formatVal(FacilioField field, AggregateOperator aggr, Object val) {
+	private Object formatVal(FacilioField field, AggregateOperator aggr, Object val) throws NumberFormatException, Exception {
 		if (val == null) {
 			return "";
 		}
 		
-		if (aggr != null && aggr instanceof DateAggregateOperator) {
-			val = ((DateAggregateOperator)aggr).getAdjustedTimestamp((long) val);
+		if (aggr != null) {
+			if (aggr instanceof DateAggregateOperator) {
+				val = ((DateAggregateOperator)aggr).getAdjustedTimestamp((long) val);
+			}
+			else if (aggr instanceof SpaceAggregateOperator) {
+				ResourceContext resource = ResourceAPI.getResource(Long.parseLong(val.toString()));
+				val = resource.getName();
+			}
 		}
+		
 		
 		switch (field.getDataTypeEnum()) {
 			case DECIMAL:

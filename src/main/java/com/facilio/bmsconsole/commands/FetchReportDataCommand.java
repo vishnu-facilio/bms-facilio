@@ -287,10 +287,6 @@ public class FetchReportDataCommand implements Command {
 			if (dp.getxAxis().getAggrEnum() instanceof DateAggregateOperator) {
 				fields.add(((DateAggregateOperator)dp.getxAxis().getAggrEnum()).getTimestampField(dp.getxAxis().getField()));
 			}
-			else if (dp.getxAxis().getAggrEnum() instanceof SpaceAggregateOperator) {
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				fields.add(modBean.getField("name", FacilioConstants.ContextNames.BASE_SPACE));
-			}
 			else {
 				fields.add(xAggrField);
 			}
