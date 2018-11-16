@@ -338,6 +338,20 @@ public class ReadingAction extends FacilioAction {
 		this.field = field;
 	}
 	
+	public NumberField numberField;
+	
+	
+	public NumberField getNumberField() {
+		return numberField;
+	}
+
+	public void setNumberField(NumberField numberField) {
+		this.numberField = numberField;
+		if(field == null) {
+			field = numberField;
+		}
+	}
+
 	private List<FacilioField> fields;
 	public List<FacilioField> getFields() {
 		return fields;

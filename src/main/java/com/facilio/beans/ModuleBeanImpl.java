@@ -1,5 +1,6 @@
 package com.facilio.beans;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -655,6 +656,20 @@ public class ModuleBeanImpl implements ModuleBean {
 		insertBuilder.save();
 	}
 	
+	private void updateExtendedProps(FacilioModule module, List<FacilioField> fields, FacilioField field) throws Exception {
+		
+		long fieldId = field.getFieldId();
+		field.setFieldId(-1);
+		Map<String, Object> props = FieldUtil.getAsProperties(field);
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(module.getTableName())
+				.fields(fields)
+				.andCustomWhere("ORGID = ? AND FIELDID = ?", getOrgId(), fieldId);
+		
+		updateBuilder.update(props);
+		field.setFieldId(fieldId);
+	}
+	
 	private void addEnumField(EnumField field) throws Exception {
 		if (field.getValues() == null || field.getValues().isEmpty()) {
 			throw new IllegalArgumentException("Enum Values cannot be null during addition of Enum Field");
@@ -687,6 +702,16 @@ public class ModuleBeanImpl implements ModuleBean {
 			
 			int count = updateBuilder.update(FieldUtil.getAsProperties(field));
 			field.setFieldId(fieldId);
+			
+			switch(field.getDataTypeEnum()) {
+			case NUMBER:
+			case DECIMAL:
+				updateExtendedProps(ModuleFactory.getNumberFieldModule(), FieldFactory.getNumberFieldFields(), field);
+				break;
+			default:
+				break;
+		}
+			
 			return count;
 		}
 		else {
