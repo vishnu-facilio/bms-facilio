@@ -26,6 +26,7 @@ import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
@@ -49,6 +50,7 @@ public class ReadingAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PARENT_MODULE, getParentModule());
 		context.put(FacilioConstants.ContextNames.READING_NAME, getReadingName());
+		addNumberFieldsToFields();
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
 		
 		Chain addReadingChain = FacilioChainFactory.getAddReadingChain();
@@ -59,6 +61,16 @@ public class ReadingAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	private void addNumberFieldsToFields() {
+		if(numberFields != null && !numberFields.isEmpty()) {
+			fields = getFields() != null ? getFields() : new ArrayList<>();
+			for(NumberField numberField :numberFields) {
+				fields.add(numberField);
+			}
+		}
+		
+	}
+
 	String resourceType;
 	
 	
@@ -91,6 +103,7 @@ public class ReadingAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.READING_NAME, getReadingName());
 		context.put(FacilioConstants.ContextNames.PARENT_ID, getParentCategoryId());
+		addNumberFieldsToFields();
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
 		Chain addReadingChain = FacilioChainFactory.addResourceReadingChain();
 		addReadingChain.execute(context);
@@ -110,6 +123,7 @@ public class ReadingAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PARENT_MODULE, parentModule);
 		context.put(FacilioConstants.ContextNames.READING_NAME, getReadingName());
+		addNumberFieldsToFields();
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
 		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, categoryReadingModule);
 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, getParentCategoryId());
@@ -146,6 +160,7 @@ public class ReadingAction extends FacilioAction {
 	public String addSpaceReading () throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.READING_NAME, getReadingName());
+		addNumberFieldsToFields();
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
 		context.put(FacilioConstants.ContextNames.PARENT_ID, getParentId());
 		
@@ -331,6 +346,16 @@ public class ReadingAction extends FacilioAction {
 		this.fields = fields;
 	}
 	
+	private List<NumberField> numberFields;
+	
+	public List<NumberField> getNumberFields() {
+		return numberFields;
+	}
+
+	public void setNumberFields(List<NumberField> numberFields) {
+		this.numberFields = numberFields;
+	}
+
 	private long readingId = -1;
 	public long getReadingId() {
 		return readingId;
