@@ -65,6 +65,7 @@ import com.facilio.bmsconsole.workflow.rule.ActivityType;
 import com.facilio.bmsconsole.workflow.rule.TicketActivity;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.google.common.collect.Multimap;
 
 public class WorkOrderAction extends FacilioAction {
 
@@ -891,15 +892,11 @@ public class WorkOrderAction extends FacilioAction {
 		Chain getPmchain = FacilioChainFactory.getGetPMJobListChain();
 		getPmchain.execute(context);
 
-		setPmMap((Map<Long, PreventiveMaintenance>) context
-				.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST));
-		setPmJobList((List<Map<String, Object>>) context
-				.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_JOBS_LIST));
-		setPmTriggerMap((Map<Long, PMTriggerContext>) context
-				.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_TRIGGERS_LIST));
-		setPmResourcesMap((Map<Long, ResourceContext>) context
-				.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_RESOURCES));
-
+		setPmMap((Map<Long, PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST));
+		setPmJobList((List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_JOBS_LIST));
+		setPmTriggerMap((Map<Long, PMTriggerContext>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_TRIGGERS_LIST));
+		setPmResourcesMap((Map<Long, ResourceContext>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_RESOURCES));
+		setPmTriggerGroupedMap((Map<Long,List<Map<String, Object>>>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_TRIGGER_VS_PMJOB_MAP));
 		return SUCCESS;
 	}
 
@@ -1007,6 +1004,16 @@ public class WorkOrderAction extends FacilioAction {
 		this.pmResourcesMap = pmResourcesMap;
 	}
 	
+	Map<Long,List<Map<String, Object>>> pmTriggerGroupedMap;
+	
+	public Map<Long,List<Map<String, Object>>> getPmTriggerGroupedMap() {
+		return pmTriggerGroupedMap;
+	}
+
+	public void setPmTriggerGroupedMap(Map<Long,List<Map<String, Object>>> pmTriggerGroupedMap) {
+		this.pmTriggerGroupedMap = pmTriggerGroupedMap;
+	}
+
 	private List<List<Long>> actualTimings;
 	
 	public List<List<Long>> getActualTimings() {

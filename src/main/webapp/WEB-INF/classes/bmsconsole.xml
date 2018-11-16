@@ -1693,7 +1693,7 @@
 			<param name="moduleName">planned</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
-				<param name="includeProperties">pmJobList,pmJobList\[\d+\],pmJobList\[\d+\].*,^pmTriggerMap.*,^pmResourcesMap.*, ^pmMap.*</param>
+				<param name="includeProperties">pmJobList,pmJobList\[\d+\],pmJobList\[\d+\].*,^pmTriggerMap.*,^pmResourcesMap.*, ^pmMap.*,^pmTriggerGroupedMap.*</param>
 			</result>
 		</action>
 

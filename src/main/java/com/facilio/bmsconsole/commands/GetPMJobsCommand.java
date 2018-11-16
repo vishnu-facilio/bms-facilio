@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.TriggerType;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -29,6 +30,8 @@ import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.ScheduleInfo;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 
 public class GetPMJobsCommand implements Command {
 
@@ -66,6 +69,8 @@ public class GetPMJobsCommand implements Command {
 			Map<Long, List<Map<String, Object>>> pmJobsMap = PreventiveMaintenanceAPI.getPMJobsFromPMIds(new ArrayList<>(pmTriggersMap.keySet()), startTime, endTime);
 			
 			Map<Long, PMTriggerContext> pmTriggerMap = new HashMap<>();
+			
+			Map<Long,List<Map<String, Object>>> pmTriggerGroupedMap = new HashMap<>();
 			List<Long> resourceIds = new ArrayList<>();
 			List<Map<String, Object>> pmJobList = new ArrayList<>();
 			for(PreventiveMaintenance pm : pms) 
@@ -91,19 +96,33 @@ public class GetPMJobsCommand implements Command {
 								long virtualJobsStartTime = -1;
 								switch(pm.getTriggerTypeEnum()) {
 									case ONLY_SCHEDULE_TRIGGER: 
-										// List<PMJobsContext> pmJobs = PreventiveMaintenanceAPI.getNextPMJobs(trigger, startTime, endTime);
 										List<Map<String, Object>> pmJobs = pmJobsMap.get(trigger.getId());
 										if(pmJobs != null && !pmJobs.isEmpty()) {
 											for(Map<String, Object> pmJob : pmJobs) {
+												
 												if(pmJob.get("templateId") != null && (long) pmJob.get("templateId") != -1)
 												{
 													WorkorderTemplate template = (WorkorderTemplate) TemplateAPI.getTemplate((long) pmJob.get("templateId"));
 													pmJob.put("template", template);
 												}
-												pmJobList.add(pmJob);
+												if(pmJob.get("resourceId") != null) {
+													ResourceContext resource = ResourceAPI.getResource((long) pmJob.get("resourceId"));
+													pmJob.put("resource", resource);
+												}
+												if(pm.getPmCreationType() == PreventiveMaintenance.PMCreationType.MULTIPLE.getVal()) {
+													List<Map<String, Object>> jobList = pmTriggerGroupedMap.get(trigger.getId());
+													if(jobList == null) {
+														jobList = new ArrayList<>();
+													}
+													jobList.add(pmJob);
+													pmTriggerGroupedMap.put(trigger.getId(), jobList);
+												}
+												else {
+													pmJobList.add(pmJob);
+												}
 											}
-											// virtualJobsStartTime = pmJobs.get(pmJobs.size() - 1).getNextExecutionTime();
 										}
+										
 										long plannedEndTime = DateTimeUtil.getDayStartTime(PreventiveMaintenanceAPI.PM_CALCULATION_DAYS+1, true) - 1;
 										if(startTime > plannedEndTime) {
 											virtualJobsStartTime = startTime;
@@ -111,6 +130,7 @@ public class GetPMJobsCommand implements Command {
 										else if(endTime > plannedEndTime) {
 											virtualJobsStartTime = plannedEndTime+1;
 										}
+										
 										break;
 									case FIXED:
 									case FLOATING:
@@ -139,6 +159,7 @@ public class GetPMJobsCommand implements Command {
 			}
 //			sortPMs(pmJobList);
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST, pmMap);
+			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_TRIGGER_VS_PMJOB_MAP, pmTriggerGroupedMap);
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_JOBS_LIST, pmJobList);
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_TRIGGERS_LIST, pmTriggerMap);
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_RESOURCES, ResourceAPI.getResourceAsMapFromIds(resourceIds));
