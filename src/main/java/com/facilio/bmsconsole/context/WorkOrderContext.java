@@ -96,7 +96,13 @@ public class WorkOrderContext extends TicketContext {
 	public String getUrl() {
 //		return "http://"+OrgInfo.getCurrentOrgInfo().getOrgDomain()+".fazilio.com/app/workorders/open/summary/"+getId(); Removing subdomain temp
 		if(super.getId() != -1) {
-			return AwsUtil.getConfig("clientapp.url")+"/app/wo/orders/summary/"+getId();
+			if (approvalState == ApprovalState.REQUESTED) {
+				// /app/wo/approvals/requested/summary/
+				return AwsUtil.getConfig("clientapp.url")+"/app/wo/approvals/summary/"+getId();
+			}
+			else {
+				return AwsUtil.getConfig("clientapp.url")+"/app/wo/orders/summary/"+getId();
+			}
 		}
 		else {
 			return null;
@@ -105,7 +111,13 @@ public class WorkOrderContext extends TicketContext {
 	
 	public String getMobileUrl() {
 		if(super.getId() != -1) {
-			return   AwsUtil.getConfig("clientapp.url")+"/mobile/workorder/summary/"+getId();
+			if (approvalState == ApprovalState.REQUESTED) {
+				// /app/wo/approvals/requested/summary/
+				return AwsUtil.getConfig("clientapp.url")+"/mobile/approvals/summary/"+getId();
+			}
+			else {
+				return   AwsUtil.getConfig("clientapp.url")+"/mobile/workorder/summary/"+getId();
+			}
 		}
 		else {
 			return null;
