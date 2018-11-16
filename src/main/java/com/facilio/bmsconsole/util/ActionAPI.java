@@ -73,8 +73,9 @@ public class ActionAPI {
 		long orgId = AccountUtil.getCurrentOrg().getId();
 		for(ActionContext action:actions) {
 			action.setOrgId(orgId);
-			action.setStatus(true);
-			
+			if (action.getStatus() == null) {
+				action.setStatus(true);
+			}
 			if (action.getActionTypeEnum() == null) {
 				throw new IllegalArgumentException("Action Type cannot be null during addition of action");
 			}
