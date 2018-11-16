@@ -409,4 +409,10 @@ public class User implements Serializable {
 	public void setShiftId(Long shiftId) {
 		this.shiftId = shiftId;
 	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return new StringBuilder("User [").append(ouid).append(", ").append(email).append("]").toString();
+	}
 }

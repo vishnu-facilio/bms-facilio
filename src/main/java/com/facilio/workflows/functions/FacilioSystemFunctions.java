@@ -1,11 +1,15 @@
 package com.facilio.workflows.functions;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
@@ -23,17 +27,21 @@ public enum FacilioSystemFunctions implements FacilioWorkflowFunctionInterface {
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			// TODO Auto-generated method stub
+			
+			LOGGER.info("Role Mail params : "+Arrays.toString(objects));
 			if ( !ROLE_EMAILS.checkParams(objects) ) {
 				return "";
 			}
 			
 			List<User> users = getUsersFromRoleAndResource(objects);
-			
+			LOGGER.info("Role Mail users : "+users);
 			if (users != null && !users.isEmpty()) {
-				return users.stream()
-							.filter(u -> u.getEmail() != null && !u.getEmail().isEmpty())
-							.map(User::getEmail)
-							.collect(Collectors.joining(","));
+				String emails = users.stream()
+								.filter(u -> u.getEmail() != null && !u.getEmail().isEmpty())
+								.map(User::getEmail)
+								.collect(Collectors.joining(","));
+				LOGGER.info("Role Emails : "+emails);
+				return emails;
 			}
 			
 			return "";
@@ -101,6 +109,7 @@ public enum FacilioSystemFunctions implements FacilioWorkflowFunctionInterface {
 	private String functionName;
 	private String namespace = "system";
 	private FacilioFunctionNameSpace nameSpaceEnum = FacilioFunctionNameSpace.SYSTEM;
+	private static final Logger LOGGER = LogManager.getLogger(FacilioSystemFunctions.class.getName());
 	
 	FacilioSystemFunctions(int value,String functionName, int requiredParams) {
 		this.value = value;
