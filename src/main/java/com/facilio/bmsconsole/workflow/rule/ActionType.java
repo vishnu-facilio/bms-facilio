@@ -108,6 +108,7 @@ public enum ActionType {
 		}
 	},
 	BULK_EMAIL_NOTIFICATION(3) {
+		
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
 				Object currentRecord) {
@@ -120,8 +121,7 @@ public enum ActionType {
 					if (toAddr instanceof JSONArray) {
 						toEmails = (JSONArray) toAddr;
 					} else if (toAddr instanceof String) {
-						toEmails = new JSONArray();
-						toEmails.add(toAddr);
+						toEmails = getTo(toAddr.toString());
 					}
 
 					if (toEmails != null && !toEmails.isEmpty()) {
@@ -163,8 +163,7 @@ public enum ActionType {
 					if (toNums instanceof JSONArray) {
 						tos = (JSONArray) toNums;
 					} else if (toNums instanceof String) {
-						tos = new JSONArray();
-						tos.add(toNums);
+						tos = getTo(toNums.toString());
 					}
 					if (tos != null && !tos.isEmpty()) {
 						List<String> sms = new ArrayList<>();
@@ -731,5 +730,22 @@ public enum ActionType {
 		UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
 		User user = userBean.getUser(ouid);
 		return user != null && user.getUserStatus();
+	}
+	
+	private static JSONArray getTo(String to) {
+		if(to != null && !to.isEmpty()) {
+			JSONArray toList = new JSONArray();
+			if(to.contains(",")) {
+				String[] tos = to.trim().split("\\s*,\\s*");
+				for(String toAddr : tos) {
+					toList.add(toAddr);
+				}
+			}
+			else {
+				toList.add(to);
+			}
+			return toList;
+		}
+		return null;
 	}
 }
