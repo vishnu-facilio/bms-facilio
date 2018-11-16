@@ -4,8 +4,11 @@ import java.io.Serializable;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.util.TemplateAPI;
@@ -15,6 +18,8 @@ public class ActionContext implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private static final Logger LOGGER = LogManager.getLogger(ActionContext.class.getName());
+	
 	private long id = -1;
 	public long getId() {
 		return id;
@@ -103,6 +108,10 @@ public class ActionContext implements Serializable {
 			JSONObject actionObj = template.getTemplate(placeHolders);
 			String type = placeHolders.get("mailType") != null ? placeHolders.get("mailType").toString() : null;
 			actionObj.put("mailType", type);
+			
+			if (AccountUtil.getCurrentOrg().getId() == 155 && actionType == ActionType.BULK_EMAIL_NOTIFICATION) {
+				LOGGER.info("Email json : "+actionObj.toJSONString());
+			}
 			actionType.performAction(actionObj, context, currentRule, currentRecord);
 		}
 		else {

@@ -6,13 +6,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.text.StringSubstitutor;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.FreeMarkerAPI;
 import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.functions.FacilioSystemFunctions;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public abstract class Template implements Serializable {
@@ -21,6 +25,7 @@ public abstract class Template implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private static final Logger LOGGER = LogManager.getLogger(Template.class.getName());
 	private long id;
 	public long getId() {
 		return id;
@@ -139,6 +144,10 @@ public abstract class Template implements Serializable {
 			}
 			else {
 				String jsonStr = json.toJSONString();
+				if (AccountUtil.getCurrentOrg().getId() == 155) {
+					LOGGER.info("JSON : "+jsonStr);
+					LOGGER.info("Params : "+params);
+				}
 				jsonStr = StringSubstitutor.replace(jsonStr, params);// StrSubstitutor.replace(jsonStr, params);
 				JSONParser parser = new JSONParser();
 				parsedJson = (JSONObject) parser.parse(jsonStr);
