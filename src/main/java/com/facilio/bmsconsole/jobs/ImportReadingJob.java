@@ -4,6 +4,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.chain.Chain;
+import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
@@ -34,11 +35,21 @@ public class ImportReadingJob extends FacilioJob {
 			importProcessContext.setStatus(ImportProcessContext.ImportStatus.IMPORTED.getValue());
 			ImportAPI.updateImportProcess(importProcessContext);
 			LOGGER.severe("READING IMPORT COMPLETE -- "+jobId);
-		} 
-		catch (Exception e) {
+		} catch (Exception e) {
 			try {
 				if (importProcessContext != null) {
-					ImportAPI.updateImportProcess(importProcessContext, ImportProcessContext.ImportStatus.FAILED);
+					JSONObject meta = importProcessContext.getImportJobMetaJson();
+					if(meta != null && !meta.isEmpty()) {
+						meta.put("errorMessage", e.getMessage());
+					}
+					else {
+						meta = new JSONObject();
+						meta.put("errorMessage", e.getMessage());
+					}
+					importProcessContext.setImportJobMeta(meta.toJSONString());
+					importProcessContext.setStatus(ImportProcessContext.ImportStatus.FAILED.getValue());
+					ImportAPI.updateImportProcess(importProcessContext);
+					LOGGER.severe("Import failed");
 				}
 			} catch (Exception a) {
 				System.out.println(a);

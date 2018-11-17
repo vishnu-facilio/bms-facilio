@@ -341,14 +341,14 @@ public class ImportProcessContext implements Serializable
 			return ordinal()+1;
 		}
 		
-		public ImportStatus getImportStatus(int value) {
-			return IMPORT_PROCESS_STATUS_MAP.get(value);
+		public ImportSetting getImportSetting(int value) {
+			return IMPORT_SETTING.get(value);
 		}
 		
-		private static final Map<Integer, ImportStatus> IMPORT_PROCESS_STATUS_MAP = Collections.unmodifiableMap(initTypeMap());
-		private static Map<Integer, ImportStatus> initTypeMap() {
-			Map<Integer, ImportStatus> typeMap = new HashMap<>();
-			for(ImportStatus type : ImportStatus.values()) {
+		private static final Map<Integer, ImportSetting> IMPORT_SETTING = Collections.unmodifiableMap(initTypeMap());
+		private static Map<Integer, ImportSetting> initTypeMap() {
+			Map<Integer, ImportSetting> typeMap = new HashMap<>();
+			for(ImportSetting type : ImportSetting.values()) {
 				typeMap.put(type.getValue(), type);
 			}
 			return typeMap;
@@ -363,14 +363,14 @@ public class ImportProcessContext implements Serializable
 			return ordinal()+1;
 		}
 		
-		public ImportStatus getImportMode(int value) {
-			return IMPORT_PROCESS_STATUS_MAP.get(value);
+		public ImportMode getImportMode(int value) {
+			return IMPORT_MODE_MAP.get(value);
 		}
 		
-		private static final Map<Integer, ImportStatus> IMPORT_PROCESS_STATUS_MAP = Collections.unmodifiableMap(initTypeMap());
-		private static Map<Integer, ImportStatus> initTypeMap() {
-			Map<Integer, ImportStatus> typeMap = new HashMap<>();
-			for(ImportStatus type : ImportStatus.values()) {
+		private static final Map<Integer, ImportMode> IMPORT_MODE_MAP = Collections.unmodifiableMap(initTypeMap());
+		private static Map<Integer, ImportMode> initTypeMap() {
+			Map<Integer, ImportMode> typeMap = new HashMap<>();
+			for(ImportMode type : ImportMode.values()) {
 				typeMap.put(type.getValue(), type);
 			}
 			return typeMap;

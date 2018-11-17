@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
+import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
@@ -69,10 +70,18 @@ public class ImportDataJob extends FacilioJob {
 			importProcessContext.setStatus(ImportProcessContext.ImportStatus.IMPORTED.getValue());
 			ImportAPI.updateImportProcess(importProcessContext);
 			LOGGER.severe("IMPORT DATA JOB COMPLETED -- " +jobId);
-		}
-		catch(Exception e) {
+		} catch(Exception e) {
 			try {
 				if(importProcessContext != null) {
+					JSONObject meta = importProcessContext.getImportJobMetaJson();
+					if(meta != null && !meta.isEmpty()) {
+						meta.put("errorMessage", e.getMessage());
+					}
+					else {
+						meta = new JSONObject();
+						meta.put("errorMessage", e.getMessage());
+					}
+					importProcessContext.setImportJobMeta(meta.toJSONString());
 					importProcessContext.setStatus(ImportProcessContext.ImportStatus.FAILED.getValue());
 					ImportAPI.updateImportProcess(importProcessContext);
 					LOGGER.severe("Import failed");
@@ -83,7 +92,6 @@ public class ImportDataJob extends FacilioJob {
 			CommonCommandUtil.emailException("Import Failed", "Import failed - orgid -- "+AccountUtil.getCurrentOrg().getId(), e);
 			log.info("Exception occurred ", e);
 			LOGGER.log(Level.SEVERE, e.getMessage(), e);
-			throw e;
 		}
 	}
 
