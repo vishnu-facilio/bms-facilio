@@ -242,6 +242,17 @@ public class DataParseForReadingsCommand implements Command {
 									isfilled = true;
 								} 
 							}
+							else if(facilioField.getDataTypeEnum().equals(FieldType.NUMBER) || facilioField.getDataTypeEnum().equals(FieldType.DECIMAL)) {
+								String cellValueString = cellValue.toString();
+								if(cellValueString.contains(",")) {
+									cellValueString = cellValueString.replaceAll(",", "");
+								}
+								Double cellDoubleValue = Double.parseDouble(cellValueString);
+								if(!props.containsKey(field)) {
+									props.put(field, cellDoubleValue);
+								}
+								isfilled = true;
+							}
 						} catch (Exception e) {
 							LOGGER.severe("exception ---" + e);
 							throw e;

@@ -317,8 +317,7 @@ public class ProcessImportCommand implements Command {
 									}
 
 									try {
-										if (facilioField.getDataTypeEnum().equals(FieldType.DATE_TIME)
-												|| facilioField.getDataTypeEnum().equals(FieldType.DATE)) {
+										if (facilioField.getDataTypeEnum().equals(FieldType.DATE_TIME) || facilioField.getDataTypeEnum().equals(FieldType.DATE)) {
 											if (!(cellValue instanceof Long)) {
 												long millis;
 												if(dateFormats.get(fieldMapping.get(key)).equals(ImportAPI.ImportProcessConstants.TIME_STAMP_STRING)) {
@@ -334,6 +333,17 @@ public class ProcessImportCommand implements Command {
 												}
 												isfilledByLookup = true;
 											}
+										}
+										else if(facilioField.getDataTypeEnum().equals(FieldType.NUMBER) || facilioField.getDataTypeEnum().equals(FieldType.DECIMAL)) {
+											String cellValueString = cellValue.toString();
+											if(cellValueString.contains(",")) {
+												cellValueString = cellValueString.replaceAll(",", "");
+											}
+											Double cellDoubleValue = Double.parseDouble(cellValueString);
+											if(!props.containsKey(field)) {
+												props.put(field, cellDoubleValue);
+											}
+											isfilledByLookup = true;
 										}
 									} catch (Exception e) {
 										// TODO Auto-generated catch block
