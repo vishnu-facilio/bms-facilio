@@ -48,7 +48,7 @@ public class DataParseForReadingsCommand implements Command {
 
 	private static final Logger LOGGER = Logger.getLogger(DataParseForReadingsCommand.class.getName());
 	
-	private static ArrayListMultimap<String, String> groupedFields;
+	private ArrayListMultimap<String, String> groupedFields;
 	
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -213,7 +213,6 @@ public class DataParseForReadingsCommand implements Command {
 						}
 					}
 					
-					LOGGER.severe("fieldMapping --"+fieldMapping);
 					fieldMapping.forEach((key,value) -> {
 						
 					LOGGER.severe("key --"+key);
@@ -314,7 +313,7 @@ public class DataParseForReadingsCommand implements Command {
 //							}
 //						}
 //					}
-					LOGGER.severe("props ---" + props);
+					LOGGER.severe("props1 ---" + props);
 					ReadingContext NonDuplicateReadingContext = FieldUtil.getAsBeanFromMap(props, ReadingContext.class);
 					readingContexts.add(NonDuplicateReadingContext );
 					groupedContext.put(module, NonDuplicateReadingContext );
