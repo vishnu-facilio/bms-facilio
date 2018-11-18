@@ -215,20 +215,15 @@ public class DataParseForReadingsCommand implements Command {
 					
 					fieldMapping.forEach((key,value) -> {
 						
-					LOGGER.severe("key --"+key);
-					LOGGER.severe("value --"+value);
 					Boolean isfilled = false;
 					Object cellValue = colVal.get(value);
 					String moduleAndField [] = key.split("__");
 					
-					LOGGER.severe("moduleAndField --"+Arrays.toString(moduleAndField));
 					String field = moduleAndField[(moduleAndField.length)-1];
 					LOGGER.severe("field --"+field);
 					LOGGER.severe("cellValue --"+cellValue);
 					if(fields.contains(field)) {
-						LOGGER.severe("passed1 --");
 					if(cellValue != null && !cellValue.equals("")) {
-						LOGGER.severe("passed2 --");
 						FacilioField facilioField = null;
 						try {
 							ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -238,7 +233,6 @@ public class DataParseForReadingsCommand implements Command {
 						}
 						if(facilioField != null) {
 							try {
-								LOGGER.severe("passed3 --");
 								if(facilioField.getDataTypeEnum().equals(FieldType.DATE_TIME) || facilioField.getDataTypeEnum().equals(FieldType.DATE)) {
 									if(!(cellValue instanceof Long)) {
 										long millis;
@@ -272,10 +266,6 @@ public class DataParseForReadingsCommand implements Command {
 							}
 						}
 					}
-					LOGGER.severe("isfilled -- "+isfilled);
-					LOGGER.severe("props -- "+props);
-					LOGGER.severe("field -- "+field);
-					LOGGER.severe("cellValue -- "+cellValue);
 					if(!isfilled) {
 						if(!props.containsKey(field)) {
 							props.put(field, cellValue);
