@@ -190,10 +190,7 @@ public class DataParseForReadingsCommand implements Command {
 				
 				for(String module : moduleNames) {
 					
-					LOGGER.severe("module --"+module);
 					List<String> fields  = new ArrayList(groupedFields.get(module));
-					
-					LOGGER.severe("fields --"+fields);
 					
 					HashMap<String,Object> props = new HashMap<>();
 					JSONObject meta = importTemplateContext.getModuleJSON();
@@ -273,34 +270,6 @@ public class DataParseForReadingsCommand implements Command {
 					}
 					}
 				});
-//					if(uniqueMapping.isEmpty()) {
-//						for(ReadingContext readingContext: readingContexts) {
-//							if(readingContext.getData().get(ImportAPI.ImportProcessConstants.T_TIME) == props.get(ImportAPI.ImportProcessConstants.T_TIME)) {
-//								colVal.add()
-//								duplicateEntries.put(row_no, colVal);
-//								break;
-//							}
-//							else {
-//								LOGGER.severe("props ---" + props);
-//								ReadingContext NonDuplicateReadingContext = FieldUtil.getAsBeanFromMap(props, ReadingContext.class);
-//								readingContexts.add(NonDuplicateReadingContext );
-//								groupedContext.put(module, NonDuplicateReadingContext );
-//							}
-//						}
-//					}
-//					else {
-//						for(ReadingContext readingContext: readingContexts) {
-//							boolean value = true;
-//							for(String uniqueField: uniqueMapping.keySet()) {
-//								value = value & readingContext.getData().get(uniqueField).equals(props.get(uniqueField));
-//							}
-//							value = value & readingContext.getData().get(ImportAPI.ImportProcessConstants.T_TIME).equals(props.get(ImportAPI.ImportProcessConstants.T_TIME));
-//							if(value) {
-//								duplicateEntries.put(row_no,colVal);
-//								break;
-//							}
-//						}
-//					}
 					LOGGER.severe("props1 ---" + props);
 					ReadingContext NonDuplicateReadingContext = FieldUtil.getAsBeanFromMap(props, ReadingContext.class);
 					readingContexts.add(NonDuplicateReadingContext );
