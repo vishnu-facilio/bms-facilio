@@ -189,7 +189,11 @@ public class DataParseForReadingsCommand implements Command {
 				
 				
 				for(String module : moduleNames) {
+					
+					LOGGER.severe("module --"+module);
 					List<String> fields  = new ArrayList(groupedFields.get(module));
+					
+					LOGGER.severe("fields --"+fields);
 					
 					HashMap<String,Object> props = new HashMap<>();
 					JSONObject meta = importTemplateContext.getModuleJSON();
@@ -209,14 +213,23 @@ public class DataParseForReadingsCommand implements Command {
 						}
 					}
 					
+					LOGGER.severe("fieldMapping --"+fieldMapping);
 					fieldMapping.forEach((key,value) -> {
+						
+					LOGGER.severe("key --"+key);
+					LOGGER.severe("value --"+value);
 					Boolean isfilled = false;
 					Object cellValue = colVal.get(value);
 					String moduleAndField [] = key.split("__");
+					
+					LOGGER.severe("moduleAndField --"+Arrays.toString(moduleAndField));
 					String field = moduleAndField[(moduleAndField.length)-1];
+					LOGGER.severe("field --"+field);
+					LOGGER.severe("cellValue --"+cellValue);
 					if(fields.contains(field)) {
-						
+						LOGGER.severe("passed1 --");
 					if(cellValue != null && !cellValue.equals("")) {
+						LOGGER.severe("passed2 --");
 						FacilioField facilioField = null;
 						try {
 							ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -225,40 +238,45 @@ public class DataParseForReadingsCommand implements Command {
 							LOGGER.severe("FACILIO FIELD EXCEPTION" + e);
 						}
 						if(facilioField != null) {
-						try {
-							if(facilioField.getDataTypeEnum().equals(FieldType.DATE_TIME) || facilioField.getDataTypeEnum().equals(FieldType.DATE)) {
-								if(!(cellValue instanceof Long)) {
-									long millis;
-									if(dateFormats.get(fieldMapping.get(key)).equals(ImportAPI.ImportProcessConstants.TIME_STAMP_STRING)) {
-										millis = Long.parseLong(cellValue.toString());
+							try {
+								LOGGER.severe("passed3 --");
+								if(facilioField.getDataTypeEnum().equals(FieldType.DATE_TIME) || facilioField.getDataTypeEnum().equals(FieldType.DATE)) {
+									if(!(cellValue instanceof Long)) {
+										long millis;
+										if(dateFormats.get(fieldMapping.get(key)).equals(ImportAPI.ImportProcessConstants.TIME_STAMP_STRING)) {
+											millis = Long.parseLong(cellValue.toString());
+										}
+										else {
+											Instant dateInstant = DateTimeUtil.getTimeInstant(dateFormats.get(fieldMapping.get(key)).toString(),cellValue.toString());
+											millis = dateInstant.toEpochMilli();
+										}
+										if(!props.containsKey(field)) {
+											props.put(field, millis);
+										}
+										isfilled = true;
+									} 
+								}
+								else if(facilioField.getDataTypeEnum().equals(FieldType.NUMBER) || facilioField.getDataTypeEnum().equals(FieldType.DECIMAL)) {
+									String cellValueString = cellValue.toString();
+									if(cellValueString.contains(",")) {
+										cellValueString = cellValueString.replaceAll(",", "");
 									}
-									else {
-										Instant dateInstant = DateTimeUtil.getTimeInstant(dateFormats.get(fieldMapping.get(key)).toString(),cellValue.toString());
-										millis = dateInstant.toEpochMilli();
-									}
+									Double cellDoubleValue = Double.parseDouble(cellValueString);
 									if(!props.containsKey(field)) {
-										props.put(field, millis);
+										props.put(field, cellDoubleValue);
+										isfilled = true;
 									}
-									isfilled = true;
-								} 
-							}
-							else if(facilioField.getDataTypeEnum().equals(FieldType.NUMBER) || facilioField.getDataTypeEnum().equals(FieldType.DECIMAL)) {
-								String cellValueString = cellValue.toString();
-								if(cellValueString.contains(",")) {
-									cellValueString = cellValueString.replaceAll(",", "");
 								}
-								Double cellDoubleValue = Double.parseDouble(cellValueString);
-								if(!props.containsKey(field)) {
-									props.put(field, cellDoubleValue);
-								}
-								isfilled = true;
+							} catch (Exception e) {
+								LOGGER.severe("exception ---" + e);
+								throw e;
 							}
-						} catch (Exception e) {
-							LOGGER.severe("exception ---" + e);
-							throw e;
-						}
 						}
 					}
+					LOGGER.severe("isfilled -- "+isfilled);
+					LOGGER.severe("props -- "+props);
+					LOGGER.severe("field -- "+field);
+					LOGGER.severe("cellValue -- "+cellValue);
 					if(!isfilled) {
 						if(!props.containsKey(field)) {
 							props.put(field, cellValue);
