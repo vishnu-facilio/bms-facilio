@@ -220,8 +220,6 @@ public class DataParseForReadingsCommand implements Command {
 					String moduleAndField [] = key.split("__");
 					
 					String field = moduleAndField[(moduleAndField.length)-1];
-					LOGGER.severe("field --"+field);
-					LOGGER.severe("cellValue --"+cellValue);
 					if(fields.contains(field)) {
 					if(cellValue != null && !cellValue.equals("")) {
 						FacilioField facilioField = null;
