@@ -83,7 +83,8 @@ public class FileInfo {
 		XLS(2, "Excel", ".xls", "application/xls"),
 		PDF(3, "PDF", ".pdf", "application/pdf"),
 		IMAGE(4, "Image", ".jpeg", "image/jpeg"),
-		HTML(5, "Html", ".html", "text/html")
+		HTML(5, "Html", ".html", "text/html"),
+		SIGNATURE(6, "Signature", ".jpeg", "image/jpeg")
 		;
 		
 		private int intVal;

@@ -499,8 +499,8 @@ public class FieldUtil {
 					String fileName = null;
 					String fileType = null;
 					
-					if (fileObj instanceof File){
-						file = (File) fileObj;
+					if (fileObj instanceof File || fileObj instanceof String){
+						file = fileObj instanceof File ? (File) fileObj : new File((String)fileObj);
 						fileName = (String) value.get(field.getName()+"FileName");
 						fileType = (String) value.get(field.getName()+"ContentType");
 					}

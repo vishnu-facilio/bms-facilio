@@ -251,6 +251,8 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 								fileIds= new ArrayList<>();
 							}
 							fileIds.add((Long) val);
+							record.put(field.getName()+"Id", val);
+							val = null;
 						}
 					}
 					
@@ -376,8 +378,8 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		
 		for(Map<String, Object> record: records) {
 			for(FacilioField field : selectFields) {
-				if(field != null && field.getDataTypeEnum() == FieldType.FILE && record.get(field.getName()) != null) {
-					record.put(field.getName()+"Url", fileUrls.get(record.get(field.getName())));
+				if(field != null && field.getDataTypeEnum() == FieldType.FILE && record.get(field.getName()+"Id") != null) {
+					record.put(field.getName()+"Url", fileUrls.get(record.get(field.getName()+"Id")));
 				}
 			}
 		}

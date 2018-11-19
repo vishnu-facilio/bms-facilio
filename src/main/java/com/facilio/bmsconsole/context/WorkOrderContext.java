@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context;
 
+import java.io.File;
 import java.text.ParseException;
 import java.util.List;
 
@@ -207,6 +208,60 @@ public class WorkOrderContext extends TicketContext {
 	}
 	public void setAlarm(AlarmContext alarm) {
 		this.alarm = alarm;
+	}
+	
+	private Boolean isSignatureRequired;
+	public Boolean getIsSignatureRequired() {
+		return isSignatureRequired;
+	}
+	public void setIsSignatureRequired(Boolean isSignatureRequired) {
+		this.isSignatureRequired = isSignatureRequired;
+	}
+	public boolean isUserSignatureRequired() {
+		if (isSignatureRequired != null) {
+			return isSignatureRequired.booleanValue();
+		}
+		return false;
+	}
+	
+	private long signatureId;
+	public long getSignatureId() {
+		return signatureId;
+	}
+	public void setSignatureId(long signatureId) {
+		this.signatureId = signatureId;
+	}
+	
+	private String signatureUrl;
+	public String getSignatureUrl() {
+		return signatureUrl;
+	}
+	public void setSignatureUrl(String signatureUrl) {
+		this.signatureUrl = signatureUrl;
+	}
+
+	private File signature;
+	public File getSignature() {
+		return signature;
+	}
+	public void setSignature(File signature) {
+		this.signature = signature;
+	}
+	
+	private String signatureFileName;
+	public String getSignatureFileName() {
+		return signatureFileName;
+	}
+	public void setSignatureFileName(String signatureFileName) {
+		this.signatureFileName = signatureFileName;
+	}
+	
+	private  String signatureFileContentType;
+	public String getSignatureFileContentType() {
+		return signatureFileContentType;
+	}
+	public void setSignatureFileContentType(String signatureFileContentType) {
+		this.signatureFileContentType = signatureFileContentType;
 	}
 
 	private WOUrgency urgency;

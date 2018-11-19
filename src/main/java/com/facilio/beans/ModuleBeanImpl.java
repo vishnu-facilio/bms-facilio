@@ -1,6 +1,5 @@
 package com.facilio.beans;
 
-import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -35,6 +34,7 @@ import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.FileField;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.NumberField;
@@ -438,6 +438,10 @@ public class ModuleBeanImpl implements ModuleBean {
 						}
 						fields.add(FieldUtil.getAsBeanFromMap(prop, LookupField.class));
 						break;
+					case FILE:
+						prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
+						fields.add(FieldUtil.getAsBeanFromMap(prop, FileField.class));
+						break;
 					case ENUM:
 						prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
 						fields.add(FieldUtil.getAsBeanFromMap(prop, EnumField.class));
@@ -465,6 +469,9 @@ public class ModuleBeanImpl implements ModuleBean {
 					break;
 				case LOOKUP:
 					extendedProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getLookupFieldsModule(), FieldFactory.getLookupFieldFields(), entry.getValue()));
+					break;
+				case FILE:
+					extendedProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getFileFieldModule(), FieldFactory.getFileFieldFields(), entry.getValue()));
 					break;
 				case ENUM:
 					extendedProps.put(entry.getKey(), getEnumExtendedProps(entry.getValue()));
@@ -632,6 +639,9 @@ public class ModuleBeanImpl implements ModuleBean {
 					break;
 				case LOOKUP:
 					addExtendedProps(ModuleFactory.getLookupFieldsModule(), FieldFactory.getLookupFieldFields(), fieldProps);
+					break;
+				case FILE:
+					addExtendedProps(ModuleFactory.getFileFieldModule(), FieldFactory.getFileFieldFields(), fieldProps);
 					break;
 				case ENUM:
 					addEnumField((EnumField) field);

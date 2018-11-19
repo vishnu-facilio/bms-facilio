@@ -305,6 +305,17 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	public static List<FacilioField> getFileFieldFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getFileFieldModule();
+
+		fields.add(getField("fieldId", "FIELDID", module, FieldType.NUMBER));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("format", "FORMAT", module, FieldType.NUMBER));
+
+		return fields;
+	}
 
 	public static List<FacilioField> getEnumFieldValuesFields() {
 		List<FacilioField> fields = new ArrayList<>();

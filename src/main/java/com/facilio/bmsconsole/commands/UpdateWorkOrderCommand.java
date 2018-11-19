@@ -204,7 +204,10 @@ public class UpdateWorkOrderCommand implements Command {
 		for(WorkOrderContext oldWo: oldWos) {
 			
 			if (!validateWorkorderStatus(statusObj, oldWo)) {
-				throw new RuntimeException("Please close all tasks before closing/resolving the workorder");
+				throw new IllegalArgumentException("Please close all tasks before closing/resolving the workorder");
+			}
+			if (oldWo.isUserSignatureRequired() && "Closed".equalsIgnoreCase(statusObj.getStatus()) && workOrder.getSignature() == null) {
+				throw new IllegalArgumentException("Please enter the signature before closing the workorder");
 			}
 			
 			WorkOrderContext newWo = FieldUtil.cloneBean(workOrder, WorkOrderContext.class);

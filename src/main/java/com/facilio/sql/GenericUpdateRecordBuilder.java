@@ -276,7 +276,11 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 		if (!fileFields.stream().anyMatch(field -> value.containsKey(field.getName())) ) {
 			return;
 		}
-		
+
+		String tableName = this.tableName;
+		if (joinBuilder != null && joinBuilder.length() > 0) {
+			tableName += joinBuilder.toString();
+		}
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(tableName)

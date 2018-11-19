@@ -127,6 +127,14 @@ public class ModuleFactory {
 		enumFieldValues.setTableName("EnumFieldValues");
 		return enumFieldValues;
 	}
+	
+	public static FacilioModule getFileFieldModule() {
+		FacilioModule fileModule = new FacilioModule();
+		fileModule.setName("fileFields");
+		fileModule.setDisplayName("File Fields");
+		fileModule.setTableName("FileFields");
+		return fileModule;
+	}
 
 	public static FacilioModule getSpaceCategoryReadingRelModule() {
 		FacilioModule fieldModule = new FacilioModule();
