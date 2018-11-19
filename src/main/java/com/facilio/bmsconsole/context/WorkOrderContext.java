@@ -256,12 +256,12 @@ public class WorkOrderContext extends TicketContext {
 		this.signatureFileName = signatureFileName;
 	}
 	
-	private  String signatureFileContentType;
-	public String getSignatureFileContentType() {
-		return signatureFileContentType;
+	private  String signatureContentType;
+	public String getSignatureContentType() {
+		return signatureContentType;
 	}
-	public void setSignatureFileContentType(String signatureFileContentType) {
-		this.signatureFileContentType = signatureFileContentType;
+	public void setSignatureContentType(String signatureContentType) {
+		this.signatureContentType = signatureContentType;
 	}
 
 	private WOUrgency urgency;
