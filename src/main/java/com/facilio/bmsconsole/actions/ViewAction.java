@@ -11,8 +11,6 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.context.ViewSharingContext;
-import com.facilio.bmsconsole.util.TenantsAPI;
-import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
@@ -122,7 +120,7 @@ public class ViewAction extends FacilioAction {
 		
 		public String deleteView() throws Exception {
 			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.VIEW_ID, id);
+			context.put(FacilioConstants.ContextNames.VIEWID, id);
 			Chain deleteView = TransactionChainFactory.deleteViewChain();
 			deleteView.execute(context);
 			return SUCCESS;
