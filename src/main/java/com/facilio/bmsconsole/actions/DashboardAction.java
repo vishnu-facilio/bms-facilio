@@ -1185,6 +1185,10 @@ public class DashboardAction extends ActionSupport {
 				
 				CardType card = CardType.getCardType(widgetStaticContext.getStaticKey());
 				
+				if(widgetStaticContext.getStaticKey().equals(CardType.FAHU_STATUS_CARD_NEW.getName())) {
+					CardUtil.fillParamJsonForFahuCard(AccountUtil.getCurrentOrg().getId(),widgetStaticContext.getParamsJson());
+				}
+				
 				if(card.isSingleResultWorkFlow()) {
 					Object wfResult = WorkflowUtil.getWorkflowExpressionResult(card.getWorkflow(), widgetStaticContext.getParamsJson());
 					
@@ -1374,6 +1378,10 @@ public class DashboardAction extends ActionSupport {
 				result = new HashMap<>();
 				
 				CardType card = CardType.getCardType(staticKey);
+				
+				if(staticKey.equals(CardType.FAHU_STATUS_CARD_NEW.getName())) {
+					CardUtil.fillParamJsonForFahuCard(AccountUtil.getCurrentOrg().getId(),paramsJson);
+				}
 				
 				if(card.isSingleResultWorkFlow()) {
 					Object wfResult = WorkflowUtil.getWorkflowExpressionResult(card.getWorkflow(), paramsJson);
