@@ -276,6 +276,52 @@ public enum CardType {
 			"		<field name=\"automanualstatus\" aggregate = \"lastValue\"/> 	\n" + 
 			"	</expression> \n" + 
 			"</workflow>",false),
+	FAHU_STATUS_CARD_NEW(9,"fahuStatusCardNew","<workflow> 	\n" + 
+			"	<parameter name=\"parentId\" type = \"Number\"/> \n" + 
+			"	<parameter name=\"runStatusModule\" type = \"String\"/> \n" + 
+			"	<parameter name=\"runStatusField\" type = \"String\"/> \n" + 
+			"	<parameter name=\"valveFeedbackModule\" type = \"String\"/> \n" + 
+			"	<parameter name=\"valveFeedbackField\" type = \"String\"/> \n" + 
+			"	<parameter name=\"tripStatusModule\" type = \"String\"/> \n" + 
+			"	<parameter name=\"tripStatusField\" type = \"String\"/> \n" + 
+			"	<parameter name=\"autoStatusModule\" type = \"String\"/> \n" + 
+			"	<parameter name=\"autoStatusField\" type = \"String\"/> \n" + 
+			"	<expression name=\"name\"> 		\n" + 
+			"		<module name=\"resource\"/> 		\n" + 
+			"		<criteria pattern=\"1\"> 			\n" + 
+			"			<condition sequence=\"1\">id`=`${parentId}</condition> 		\n" + 
+			"		</criteria> 		\n" + 
+			"		<field name=\"name\" aggregate = \"[0]\"/> 	\n" + 
+			"	</expression> \n" + 
+			"	<expression name=\"runStatus\"> 		\n" + 
+			"		<module name=\"${runStatusModule}\"/> 		\n" + 
+			"		<criteria pattern=\"1\"> 			\n" + 
+			"			<condition sequence=\"1\">parentId`=`${parentId}</condition> 		\n" + 
+			"		</criteria> 		\n" + 
+			"		<field name=\"${runStatusField}\" aggregate = \"lastValue\"/> 	\n" + 
+			"	</expression> \n" + 
+			"	<expression name=\"valveFeedback\"> 		\n" + 
+			"		<module name=\"${valveFeedbackModule}\"/> 		\n" + 
+			"		<criteria pattern=\"1\"> 			\n" + 
+			"			<condition sequence=\"1\">parentId`=`${parentId}</condition> 		\n" + 
+			"		</criteria> 		\n" + 
+			"		<field name=\"${valveFeedbackField}\" aggregate = \"lastValue\"/> 	\n" + 
+			"	</expression> \n" + 
+			"	<expression name=\"tripStatus\"> 		\n" + 
+			"		<module name=\"${tripStatusModule}\"/> 		\n" + 
+			"		<criteria pattern=\"1\"> 			\n" + 
+			"			<condition sequence=\"1\">parentId`=`${parentId}</condition> 		\n" + 
+			"		</criteria> 		\n" + 
+			"		<field name=\"${tripStatusField}\" aggregate = \"lastValue\"/> 	\n" + 
+			"	</expression> \n" + 
+			"	<expression name=\"autoStatusModule\"> 		\n" + 
+			"		<module name=\"${autoStatusModule}\"/> 		\n" + 
+			"		<criteria pattern=\"1\"> 			\n" + 
+			"			<condition sequence=\"1\">parentId`=`${parentId}</condition> 		\n" + 
+			"		</criteria> 		\n" + 
+			"		<field name=\"${autoStatusField}\" aggregate = \"lastValue\"/> 	\n" + 
+			"	</expression> \n" + 
+			"</workflow>",false),
 	;
 	
 	private Integer value;

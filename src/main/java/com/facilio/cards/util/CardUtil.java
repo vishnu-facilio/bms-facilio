@@ -88,4 +88,21 @@ public class CardUtil {
 		FacilioField field = getField((String) paramsJson.get("moduleName"), (String) paramsJson.get("fieldName"));
 		return FieldUtil.getBooleanResultString(wfResult, field);
 	}
+
+	public static JSONObject fillParamJsonForFahuCard(long orgId, JSONObject paramsJson) {
+		
+		if(orgId == 146l) {
+			paramsJson = paramsJson != null ? paramsJson : new JSONObject();
+			
+			paramsJson.put("runStatusModule", "runstatus");
+			paramsJson.put("runStatusField", "runstatus");
+			paramsJson.put("valveFeedbackModule", "valvefeedback");
+			paramsJson.put("valveFeedbackField", "valvefeedback");
+			paramsJson.put("tripStatusModule", "tripstatus");
+			paramsJson.put("tripStatusField", "tripstatus");
+			paramsJson.put("autoStatusModule", "automanualstatus");
+			paramsJson.put("autoStatusField", "automanualstatus");
+		}
+		return paramsJson;
+	}
 }
