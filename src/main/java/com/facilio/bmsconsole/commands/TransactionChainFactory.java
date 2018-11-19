@@ -115,6 +115,8 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		
+
 		public static Chain addOrUpdateReportChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddOrUpdateReportCommand());
@@ -189,6 +191,21 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain editViewChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new LoadViewCommand());
+			c.addCommand(new GenerateCriteriaFromFilterCommand());
+			c.addCommand(new AddCVCommand());
+			c.addCommand(new CustomizeViewColumnCommand());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		public static Chain deleteViewChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new DeleteViewCommand());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
 		public static Chain updateWorkflowRuleChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new UpdateWorkflowRuleCommand());

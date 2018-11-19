@@ -116,6 +116,15 @@ public class FacilioView {
 	public void setFields(List<ViewField> fields) {
 		this.fields = fields;
 	}
+	
+	private long viewId;
+
+	public long getViewId() {
+		return viewId;
+	}
+	public void setViewId(long viewId) {
+		this.viewId = viewId;
+	}
 
 	private List<SortField> sortFields;
 	public List<SortField> getSortFields() {
@@ -165,6 +174,14 @@ public class FacilioView {
 		this.filters = (JSONObject) new JSONParser().parse(json);
 	}
 	
+	private String viewName;
+	public String getViewName() {
+		return viewName;
+	}
+	public void setViewName(String viewName) {
+		this.viewName = viewName;
+	}
+
 	private int sequenceNumber = -1;
 	public int getSequenceNumber() {
 		return sequenceNumber;

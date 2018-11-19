@@ -214,14 +214,13 @@ public class ViewFactory {
 	        
 	        ArrayList<String> all = new ArrayList<String>();
 	        all.add("all");
-	        
-	        
 	        groupViews.put("OpenWorkOrders", open);
 	        groupViews.put("MyopenWorkorders", myopen);
 	        groupViews.put("ResolvedWorkorders", resolved);
-	        groupViews.put("closeWorkorder", closed);
 	        groupViews.put("ReportWorkorders", report);
 	        groupViews.put("AllWorkorders", all);
+	        groupViews.put("closeWorkorder", closed);
+	        
 	        
 	        for (Entry<String, List<String>> entry : groupViews.entrySet()) {
 	            String key = entry.getKey();

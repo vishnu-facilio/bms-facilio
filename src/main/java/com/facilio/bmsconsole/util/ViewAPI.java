@@ -422,6 +422,14 @@ public class ViewAPI {
 
 	}
 	
+	public static int deleteView(long id) throws Exception {
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+				.table(ModuleFactory.getViewsModule().getTableName())
+				.andCustomWhere("Views.ID = ?", id);
+		return builder.delete();
+
+	}
+	
 	public static int deleteViewSortColumns(long viewId) throws Exception {
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 				.table(ModuleFactory.getViewSortColumnsModule().getTableName())

@@ -8,10 +8,14 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.context.ViewSharingContext;
+import com.facilio.bmsconsole.util.TenantsAPI;
+import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsole.workflow.rule.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -99,6 +103,32 @@ public class ViewAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+		public String editView() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.FILTERS, view.getFilters());
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
+		context.put(FacilioConstants.ContextNames.VIEWCOLUMNS, view.getFields());
+		context.put(FacilioConstants.ContextNames.NEW_CV, view);
+		context.put(FacilioConstants.ContextNames.VIEW_SHARING_LIST, viewSharing);
+		
+		Chain editView = TransactionChainFactory.editViewChain();
+		editView.execute(context);
+		this.viewId = view.getId();
+		
+		return SUCCESS;
+	}
+		
+		public String deleteView() throws Exception {
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.VIEW_ID, id);
+			Chain deleteView = TransactionChainFactory.deleteViewChain();
+			deleteView.execute(context);
+			return SUCCESS;
+			
+		}
+		
 	public String customizeView() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
@@ -180,7 +210,7 @@ public class ViewAction extends FacilioAction {
 		return groupViews;
 	}
 
-
+	
 
 
 	public void setGroupViews(LinkedHashMap groupViews) {
@@ -258,7 +288,15 @@ public class ViewAction extends FacilioAction {
 	public void setSortFields(List<SortField> sortFields) {
 		this.sortFields = sortFields;
 	}
-
+	
+	private long id = -1;
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
+	
 	private String orderBy;
 	
 	private String orderType;

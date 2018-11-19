@@ -1036,6 +1036,20 @@
 				<param name="root">view</param>
 			</result>
 		</action>
+		<action name="edit" class="com.facilio.bmsconsole.actions.ViewAction"
+			method="editView">
+			<!-- <param name="permission">WORKORDER_CREATE</param> -->
+			<result name="success" type="json">
+				<param name="root">view</param>
+			</result>
+		</action>
+		<action name="delete" class="com.facilio.bmsconsole.actions.ViewAction"
+			method="deleteView">
+			<!-- <param name="permission">WORKORDER_CREATE</param> -->
+			<result name="success" type="json">
+				<param name="root">view</param>
+			</result>
+		</action>
 		<action name="customize" class="com.facilio.bmsconsole.actions.ViewAction"
 			method="customizeView">
 			<result name="success" type="json">
