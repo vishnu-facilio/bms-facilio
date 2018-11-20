@@ -9,11 +9,11 @@ import java.util.StringJoiner;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
 import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.report.context.ReportAxisContext;
 import com.facilio.report.context.ReportBaseLineContext;
@@ -53,7 +53,10 @@ public class ConstructReportDataCommand implements Command {
 				}
 			}
 		}
-		context.put(FacilioConstants.ContextNames.REPORT_DATA, transformedData);
+		JSONObject data = new JSONObject();
+		data.put(FacilioConstants.ContextNames.DATA_KEY, transformedData);
+		context.put(FacilioConstants.ContextNames.REPORT_SORT_ALIAS, getxAlias(report));
+		context.put(FacilioConstants.ContextNames.REPORT_DATA, data);
 		return false;
 	}
 	

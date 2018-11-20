@@ -573,8 +573,7 @@ public class V2ReportAction extends FacilioAction {
 	private String setReportResult(FacilioContext context) {
 		if(context.get(FacilioConstants.ContextNames.REPORT) != null) {
 			
-			reportContext = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
-			
+			reportContext = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);			
 			if(alarmId  > 0) {
 				reportContext.setDateOperator(DateOperators.CURRENT_N_DAY.getOperatorId());
 			}

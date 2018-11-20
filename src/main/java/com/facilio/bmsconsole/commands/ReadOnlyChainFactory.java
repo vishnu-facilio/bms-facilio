@@ -28,8 +28,10 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new FilterXFieldCommand());
 		c.addCommand(new FetchReportDataCommand());
 		c.addCommand(new ConstructReportDataCommand());
-		c.addCommand(new NewTransformReportDataCommand());
+		c.addCommand(new CalculateAggregationCommand());
 //		c.addCommand(new CustomTransformReportDataCommand()); //Uncomment after changing interface to new format
+		c.addCommand(new NewTransformReportDataCommand());
+		c.addCommand(new CalculateAggregationCommand()); //For new ones created in Derivations
 		c.addCommand(new FetchReportExtraMeta());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;

@@ -1,11 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import com.facilio.constants.FacilioConstants;
 import com.facilio.report.context.ReportContext;
@@ -16,14 +16,24 @@ public class NewTransformReportDataCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		List<Map<String, Object>> reportData = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.REPORT_DATA);
+		JSONObject reportData = (JSONObject) context.get(FacilioConstants.ContextNames.REPORT_DATA);
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
 		if (report != null && report.getTransformWorkflow() != null && reportData != null && !reportData.isEmpty()) {
 			String wfXmlString = WorkflowUtil.getXmlStringFromWorkflow(report.getTransformWorkflow());
 			Map<String,Object> params = new HashMap<>();
-			params.put("data", reportData);
-			List<Map<String, Object>> transformedData = (List<Map<String, Object>>) WorkflowUtil.getWorkflowExpressionResult(wfXmlString, params,null,true,false);
-			context.put(FacilioConstants.ContextNames.REPORT_DATA, transformedData);
+			params.put(FacilioConstants.ContextNames.DATA_KEY, reportData.get(FacilioConstants.ContextNames.DATA_KEY));
+			params.put(FacilioConstants.ContextNames.AGGR_KEY, reportData.get(FacilioConstants.ContextNames.AGGR_KEY));
+			
+			Map<String, Object> transformedData =  WorkflowUtil.getExpressionResultMap(wfXmlString, params);
+			JSONObject data = new JSONObject();
+			if (transformedData != null) {
+				data.put(FacilioConstants.ContextNames.DATA_KEY, transformedData.get(FacilioConstants.ContextNames.DATA_KEY));
+				data.put(FacilioConstants.ContextNames.AGGR_KEY, transformedData.get(FacilioConstants.ContextNames.AGGR_KEY));
+			}
+			context.put(FacilioConstants.ContextNames.REPORT_DATA, data);
+		}
+		else {
+			context.put(FacilioConstants.ContextNames.CALCULATE_REPORT_AGGR_DATA, false);
 		}
 		return false;
 	}
