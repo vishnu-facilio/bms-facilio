@@ -235,7 +235,6 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 						if (field instanceof NumberField) {
 							NumberField numberField =  (NumberField)field;
 							if(numberField.getMetric() > 0) {
-								val = UnitsUtil.convertToOrgDisplayUnitFromSi(val, numberField.getMetric());
 								
 								if(numberField.getUnitId() > 0) {
 									Unit siUnit = Unit.valueOf(Metric.valueOf(numberField.getMetric()).getSiUnitId());
