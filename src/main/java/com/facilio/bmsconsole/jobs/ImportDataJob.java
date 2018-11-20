@@ -68,6 +68,7 @@ public class ImportDataJob extends FacilioJob {
 //			}
 			
 			importProcessContext.setStatus(ImportProcessContext.ImportStatus.IMPORTED.getValue());
+			LOGGER.severe("importProcessContext -- " +importProcessContext);
 			ImportAPI.updateImportProcess(importProcessContext);
 			LOGGER.severe("IMPORT DATA JOB COMPLETED -- " +jobId);
 		} catch(Exception e) {

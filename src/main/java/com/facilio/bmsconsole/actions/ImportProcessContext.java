@@ -48,6 +48,18 @@ public class ImportProcessContext implements Serializable
 	public Integer getImportMode() {
 		return this.importMode;
 	}
+	@Override
+	public String toString() {
+		return "ImportProcessContext [id=" + id + ", orgId=" + orgId + ", moduleId=" + moduleId + ", fileId=" + fileId
+				+ ", status=" + status + ", importType=" + importType + ", importTime=" + importTime
+				+ ", columnHeadingString=" + columnHeadingString + ", filePath=" + filePath + ", filePathFailed="
+				+ filePathFailed + ", fieldMappingString=" + fieldMappingString + ", importJobMeta=" + importJobMeta
+				+ ", newEntries=" + newEntries + ", updatedEntries=" + updatedEntries + ", skippedEntries="
+				+ skippedEntries + ", firstRow=" + firstRow + ", mailSetting=" + mailSetting + ", importSetting="
+				+ importSetting + ", importMode=" + importMode + ", templateId=" + templateId + ", assetId=" + assetId
+				+ ", facilioFieldMapping=" + facilioFieldMapping + ", fieldMapping=" + fieldMapping
+				+ ", fieldMappingJSON=" + fieldMappingJSON + "]";
+	}
 	public Long getTemplateId() {
 		return templateId;
 	}
