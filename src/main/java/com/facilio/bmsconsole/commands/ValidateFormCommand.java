@@ -74,6 +74,8 @@ public class ValidateFormCommand implements Command {
 				Map<Long, String> map = null;
 				if (LookupSpecialTypeUtil.isSpecialType(f.getName())) {
 					map = LookupSpecialTypeUtil.getPickList(f.getName());
+				} else if (f.getName() == "siteId") {
+					
 				} else {
 					Context c1 = new FacilioContext();
 					LookupField field = (LookupField) modBean.getField(f.getFieldId());
