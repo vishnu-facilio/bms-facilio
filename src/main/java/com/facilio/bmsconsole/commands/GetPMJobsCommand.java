@@ -70,7 +70,7 @@ public class GetPMJobsCommand implements Command {
 			
 			Map<Long, PMTriggerContext> pmTriggerMap = new HashMap<>();
 			
-			Map<Long,List<Map<String, Object>>> pmTriggerGroupedMap = new HashMap<>();
+			Map<Long,Map<Long,List<Map<String, Object>>>> pmTriggerTimeBasedGroupedMap = new HashMap<>();
 			List<Long> resourceIds = new ArrayList<>();
 			List<Map<String, Object>> pmJobList = new ArrayList<>();
 			for(PreventiveMaintenance pm : pms) 
@@ -81,13 +81,11 @@ public class GetPMJobsCommand implements Command {
 					{
 						resourceIds.add(pm.getWoTemplate().getResourceId());
 					}
-					//pm.setTriggers(pmTrigggers);
 					for (PMTriggerContext trigger : pmTrigggers) {
 						if(trigger.getSchedule() != null) {
 							pmTriggerMap.put(trigger.getId(), trigger);
 							if(trigger.getSchedule().getFrequencyTypeEnum() == ScheduleInfo.FrequencyType.DO_NOT_REPEAT) {
 								if(trigger.getStartTime() > startTime && trigger.getStartTime() <= endTime) {
-									// PMJobsContext pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger.getId(), startTime, false);
 									Map<String, Object> pmJob = pmJobsMap.get(trigger.getId()).get(0);
 									pmJobList.add(pmJob);
 								}
@@ -110,12 +108,18 @@ public class GetPMJobsCommand implements Command {
 													pmJob.put("resource", resource);
 												}
 												if(pm.getPmCreationType() == PreventiveMaintenance.PMCreationType.MULTIPLE.getVal()) {
-													List<Map<String, Object>> jobList = pmTriggerGroupedMap.get(trigger.getId());
+													Long executionTime = (Long) pmJob.get("nextExecutionTime");
+													 Map<Long, List<Map<String, Object>>> triggerMap = pmTriggerTimeBasedGroupedMap.get(executionTime);
+													if(triggerMap == null) {
+														triggerMap = new HashMap<>();
+													}
+													List<Map<String, Object>> jobList = triggerMap.get(trigger.getId());
 													if(jobList == null) {
 														jobList = new ArrayList<>();
 													}
 													jobList.add(pmJob);
-													pmTriggerGroupedMap.put(trigger.getId(), jobList);
+													triggerMap.put(trigger.getId(), jobList);
+													pmTriggerTimeBasedGroupedMap.put(executionTime, triggerMap);
 												}
 												else {
 													pmJobList.add(pmJob);
@@ -159,7 +163,7 @@ public class GetPMJobsCommand implements Command {
 			}
 //			sortPMs(pmJobList);
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST, pmMap);
-			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_TRIGGER_VS_PMJOB_MAP, pmTriggerGroupedMap);
+			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_TRIGGER_VS_PMJOB_MAP, pmTriggerTimeBasedGroupedMap);
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_JOBS_LIST, pmJobList);
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_TRIGGERS_LIST, pmTriggerMap);
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_RESOURCES, ResourceAPI.getResourceAsMapFromIds(resourceIds));

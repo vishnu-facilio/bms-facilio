@@ -878,8 +878,6 @@ public class WorkOrderAction extends FacilioAction {
 
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_STARTTIME, getStartTime());
-		// context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_ENDTIME,
-		// startTime + (7*24*60*60));
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_ENDTIME, getEndTime());
 
 		if (getFilters() != null) {
@@ -896,7 +894,7 @@ public class WorkOrderAction extends FacilioAction {
 		setPmJobList((List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_JOBS_LIST));
 		setPmTriggerMap((Map<Long, PMTriggerContext>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_TRIGGERS_LIST));
 		setPmResourcesMap((Map<Long, ResourceContext>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_RESOURCES));
-		setPmTriggerGroupedMap((Map<Long,List<Map<String, Object>>>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_TRIGGER_VS_PMJOB_MAP));
+		setPmTriggerTimeBasedGroupedMap((Map<Long,Map<Long,List<Map<String, Object>>>>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_TRIGGER_VS_PMJOB_MAP));
 		return SUCCESS;
 	}
 
@@ -1004,14 +1002,16 @@ public class WorkOrderAction extends FacilioAction {
 		this.pmResourcesMap = pmResourcesMap;
 	}
 	
-	Map<Long,List<Map<String, Object>>> pmTriggerGroupedMap;
+	Map<Long,Map<Long,List<Map<String, Object>>>> pmTriggerTimeBasedGroupedMap;
 	
-	public Map<Long,List<Map<String, Object>>> getPmTriggerGroupedMap() {
-		return pmTriggerGroupedMap;
+
+	public Map<Long, Map<Long, List<Map<String, Object>>>> getPmTriggerTimeBasedGroupedMap() {
+		return pmTriggerTimeBasedGroupedMap;
 	}
 
-	public void setPmTriggerGroupedMap(Map<Long,List<Map<String, Object>>> pmTriggerGroupedMap) {
-		this.pmTriggerGroupedMap = pmTriggerGroupedMap;
+	public void setPmTriggerTimeBasedGroupedMap(
+			Map<Long, Map<Long, List<Map<String, Object>>>> pmTriggerTimeBasedGroupedMap) {
+		this.pmTriggerTimeBasedGroupedMap = pmTriggerTimeBasedGroupedMap;
 	}
 
 	private List<List<Long>> actualTimings;
