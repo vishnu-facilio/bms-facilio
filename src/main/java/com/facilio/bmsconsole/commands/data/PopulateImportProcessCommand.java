@@ -65,10 +65,10 @@ public class PopulateImportProcessCommand implements Command {
 				}
 				if(!importProcessContext.getImportJobMetaJson().isEmpty()) {
 					meta = importProcessContext.getFieldMappingJSON();
-					meta.put("Inserted", groupedReadingContext.size());
+					meta.put("Inserted", groupedReadingContext.size()+"");
 				}
 				else {
-					meta.put("Inserted", groupedReadingContext.size());
+					meta.put("Inserted", groupedReadingContext.size()+"");
 				}
 				importProcessContext.setImportJobMeta(meta.toJSONString());
 				emailMessage.append(",Inserted:" + groupedReadingContext.size() +"Updated:"+ 0 +",Skipped:" +0);
@@ -103,12 +103,12 @@ public class PopulateImportProcessCommand implements Command {
 			
 			if(!importProcessContext.getImportJobMetaJson().isEmpty()) {
 				meta = importProcessContext.getFieldMappingJSON();
-				meta.put("Inserted", newItems.size());
-				meta.put("Skipped", Skipped);
+				meta.put("Inserted", newItems.size()+"");
+				meta.put("Skipped", Skipped+"");
 			}
 			else {
-				meta.put("Inserted", newItems.size());
-				meta.put("Skipped", Skipped);
+				meta.put("Inserted", newItems.size()+"");
+				meta.put("Skipped", Skipped+"");
 			}
 			importProcessContext.setImportJobMeta(meta.toJSONString());
 			emailMessage.append(",Inserted:" + newItems.size() +"Updated:"+ 0 +",Skipped:" + Skipped);
