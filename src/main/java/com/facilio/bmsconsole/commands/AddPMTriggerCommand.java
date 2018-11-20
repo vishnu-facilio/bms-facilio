@@ -9,16 +9,12 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
-import com.facilio.bmsconsole.context.PMResourcePlannerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.ActionAPI;
-import com.facilio.bmsconsole.util.DateTimeUtil;
-import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ActionType;
@@ -90,9 +86,10 @@ public class AddPMTriggerCommand implements Command {
 		for (int i = 0; i < triggerProps.size(); i++) {
 			Map<String, Object> triggerProp = triggerProps.get(i);
 			pm.getTriggers().get(i).setId((long) triggerProp.get("id"));
-			triggerMap.put(pm.getTriggers().get(i).getName(), pm.getTriggers().get(i));
+			if(pm.getTriggers().get(i).getName() != null) {
+				triggerMap.put(pm.getTriggers().get(i).getName(), pm.getTriggers().get(i));
+			}
 		}
 		pm.setTriggerMap(triggerMap);
 	}
-
 }
