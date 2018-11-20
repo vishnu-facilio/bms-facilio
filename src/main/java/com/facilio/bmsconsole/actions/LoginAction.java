@@ -276,6 +276,7 @@ public class LoginAction extends FacilioAction{
 		data.put("ticketStatus", getTicketStatus());
 		data.put("ticketCategory", TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId()));
 		data.put("assetCategory", AssetsAPI.getCategoryList());
+		data.put("sites", SpaceAPI.getAllSites());
 		int license = AccountUtil.getFeatureLicense();
 		account.put("License", license);
 		account.put("data", data);
