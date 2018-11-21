@@ -4237,6 +4237,7 @@ public class FieldFactory {
         fields.add(getField("objectInstanceNumber", "OBJECT_INSTANCE_NUMBER", FieldType.NUMBER));
         fields.add(getField("instanceDescription", "INSTANCE_DESCRIPTION", FieldType.STRING));
         fields.add(getField("instanceType", "INSTANCE_TYPE", FieldType.NUMBER));
+        fields.add(getField("inUse", "IN_USE", FieldType.BOOLEAN));
 		return fields;
 	}
 
