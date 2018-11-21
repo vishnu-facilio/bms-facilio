@@ -347,11 +347,9 @@ public class FacilioField implements Serializable {
 	public String toString()
 	{
 		StringBuilder builder = new StringBuilder();
-		if (module != null) {
-			builder.append("Module Name : ")
-					.append(module.getName())
-					.append("::");
-		}
+		builder.append("Module Name : ")
+				.append(getModuleName())
+				.append("::");
 		if (name != null) {
 			builder.append("Name : ")
 					.append(name)

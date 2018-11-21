@@ -9,6 +9,8 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -19,6 +21,7 @@ import com.facilio.constants.FacilioConstants;
 
 public class CreateReadingModulesCommand implements Command {
 	private static final int MAX_FIELDS_PER_TYPE_PER_MODULE = 5;
+	private static final Logger LOGGER = LogManager.getLogger(CreateReadingModulesCommand.class.getName());
 	
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -72,7 +75,10 @@ public class CreateReadingModulesCommand implements Command {
 				}
 				
 				if (!fieldList.isEmpty()) {
-					modules.add(copyModule(module, fieldList));		// module addition done here
+					FacilioModule clone = copyModule(module, fieldList);
+					LOGGER.info("Module : "+clone);
+					LOGGER.info("Fields : "+module.getFields());
+					modules.add(clone);		// module addition done here
 					fieldList = new ArrayList<>();
 				}
 				else {

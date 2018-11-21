@@ -156,6 +156,19 @@ public class FacilioModule implements Serializable {
 		return Objects.hashCode(this.name);
 	}
 	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return new StringBuilder()
+					.append("Module [")
+					.append("name : ").append(name).append(", ")
+					.append("id : ").append(moduleId)
+					.append("]")
+					.toString()
+					;
+					
+	}
+	
 	public static enum ModuleType {
 		BASE_ENTITY,
 		PICK_LIST,
