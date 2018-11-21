@@ -65,7 +65,6 @@ import com.facilio.bmsconsole.workflow.rule.ActivityType;
 import com.facilio.bmsconsole.workflow.rule.TicketActivity;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.google.common.collect.Multimap;
 
 public class WorkOrderAction extends FacilioAction {
 

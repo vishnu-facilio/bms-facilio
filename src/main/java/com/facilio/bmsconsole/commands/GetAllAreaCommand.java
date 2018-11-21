@@ -23,8 +23,9 @@ public class GetAllAreaCommand implements Command{
 
 		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
 		
+		Boolean withReadings = (Boolean) context.get(FacilioConstants.ContextNames.WITH_READINGS);
 		
-		context.put(FacilioConstants.ContextNames.BASE_SPACE_LIST, SpaceAPI.getAllBaseSpaces(filterCriteria, searchCriteria, orderBy, pagination));
+		context.put(FacilioConstants.ContextNames.BASE_SPACE_LIST, SpaceAPI.getAllBaseSpaces(filterCriteria, searchCriteria, orderBy, pagination, withReadings));
 		
 		return false;
 	}
