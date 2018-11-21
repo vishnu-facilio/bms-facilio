@@ -39,14 +39,14 @@ public class ReadOnlyChainFactory {
 	
 	public static Chain fetchReadingReportChain() {
 		Chain c = getDefaultChain();
-		c.addCommand(new CreateReadingAnalyticsReportCommand(false));
+		c.addCommand(new CreateReadingAnalyticsReportCommand());
 		c.addCommand(fetchReportDataChain());
 		return c;
 	}
 	
 	public static Chain newFetchReadingReportChain() {
 		Chain c = getDefaultChain();
-		c.addCommand(new CreateReadingAnalyticsReportCommand(true));
+		c.addCommand(new CreateReadingAnalyticsReportCommand());
 		c.addCommand(newFetchReportDataChain());
 		return c;
 	}
