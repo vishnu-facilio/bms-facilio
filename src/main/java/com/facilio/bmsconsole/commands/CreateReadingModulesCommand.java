@@ -76,8 +76,8 @@ public class CreateReadingModulesCommand implements Command {
 				
 				if (!fieldList.isEmpty()) {
 					FacilioModule clone = copyModule(module, fieldList);
-					LOGGER.info("Module : "+clone);
-					LOGGER.info("Fields : "+module.getFields());
+					LOGGER.debug("Module : "+clone);
+					LOGGER.debug("Fields : "+module.getFields());
 					modules.add(clone);		// module addition done here
 					fieldList = new ArrayList<>();
 				}

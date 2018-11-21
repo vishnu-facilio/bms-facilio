@@ -344,8 +344,8 @@ public class FacilioField implements Serializable {
 		this.actionsList = actionsList;
 	}
 	
-	public String toString()
-	{
+	public String toString() {
+		
 		StringBuilder builder = new StringBuilder();
 		builder.append("Module Name : ")
 				.append(getModuleName())
