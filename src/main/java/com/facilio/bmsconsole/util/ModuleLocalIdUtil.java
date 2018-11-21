@@ -35,7 +35,7 @@ public class ModuleLocalIdUtil {
 		return modulesWithLocalId;
 	}
 	
-	private static long getModuleLocalId(String moduleName) throws Exception {
+	public static long getModuleLocalId(String moduleName) throws Exception {
 		FacilioModule module = ModuleFactory.getModuleLocalIdModule();
 		
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
@@ -63,7 +63,7 @@ public class ModuleLocalIdUtil {
 		return localId;
 	}
 	
-	private static int updateModuleLocalId(String moduleName,long oldId,long lastLocalId) throws Exception {
+	public static int updateModuleLocalId(String moduleName,long oldId,long lastLocalId) throws Exception {
 		FacilioModule module = ModuleFactory.getModuleLocalIdModule();
 		List<FacilioField> fields = FieldFactory.getModuleLocalIdFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
