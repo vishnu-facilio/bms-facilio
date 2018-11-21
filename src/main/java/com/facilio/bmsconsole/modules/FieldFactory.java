@@ -2516,9 +2516,14 @@ public class FieldFactory {
 		fields.add(getField("dataInterval", "DATA_INTERVAL", module, FieldType.NUMBER));
 		fields.add(getField("batchesPerCycle", "BATCHES_PER_CYCLE", module, FieldType.NUMBER));
 		fields.add(getField("active", "ACTIVE", module, FieldType.BOOLEAN));
-
+		fields.add(getField("controllerType", "CONTROLLER_TYPE", module, FieldType.STRING));
+		fields.add(getField("destinationId", "DESTINATION_ID", module, FieldType.STRING));
+		fields.add(getField("broadcastIp", "BROADCAST_IP", module, FieldType.STRING));
+		fields.add(getField("instanceNumber", "INSTANCE_NUMBER", module, FieldType.NUMBER));
+		fields.add(getField("controllerProps", "CONTROLLER_PROPS", module, FieldType.STRING));
 		return fields;
 	}
+
 	
 	public static List<FacilioField> getControllerActivityFields() {
 		FacilioModule module = ModuleFactory.getControllerActivityModule();
@@ -4229,6 +4234,9 @@ public class FieldFactory {
 		fields.add(getField("device", "DEVICE_NAME", FieldType.STRING));
 		fields.add(getField("instance", "INSTANCE_NAME", FieldType.STRING));
         fields.add(getField("controllerId", "CONTROLLER_ID", FieldType.NUMBER));
+        fields.add(getField("objectInstanceNumber", "OBJECT_INSTANCE_NUMBER", FieldType.NUMBER));
+        fields.add(getField("instanceDescription", "INSTANCE_DESCRIPTION", FieldType.STRING));
+        fields.add(getField("instanceType", "INSTANCE_TYPE", FieldType.NUMBER));
 		return fields;
 	}
 

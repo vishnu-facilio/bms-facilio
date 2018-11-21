@@ -1,5 +1,6 @@
 package com.facilio.timeseries;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
@@ -252,4 +254,30 @@ public static Criteria getCriteria(List<Long> timeRange, List<Long> deviceList, 
 		return criteria;
 	}
 	
+	public static  void addUnmodeledInstances(JSONArray instanceArray, Long controllerId) throws Exception {
+		
+		/*jsonObject should consists
+		object.put("device",deviceName);
+		object.put("instance", instanceName);
+		object.put("objectInstanceNumber", objInstNumbr);
+		object.put("instanceDescription",description);
+		object.put("instanceType", instanceType);
+		 */
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
+	
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.fields(FieldFactory.getUnmodeledInstanceFields())
+				.table("Unmodeled_Instance");
+		for(Object instance:instanceArray) {
+	
+			JSONObject instanceObj = (JSONObject) instance;
+			instanceObj.put("orgId", orgId);
+			if(controllerId!=null) {
+				//this will ensure the new inserts after addition of controller gets proper controller id
+				instanceObj.put("controllerId", controllerId);
+			}
+			insertBuilder.addRecord(instanceObj);
+		}
+		insertBuilder.save();
+	}
 }
