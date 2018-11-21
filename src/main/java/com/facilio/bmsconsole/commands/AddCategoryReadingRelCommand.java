@@ -7,6 +7,7 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -21,18 +22,20 @@ public class AddCategoryReadingRelCommand implements Command {
 		FacilioModule categoryReadingRelModule = (FacilioModule) context.get(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE);
 		if (categoryReadingRelModule != null) {
 			List<FacilioField> fields = FieldFactory.getCategoryReadingsFields(categoryReadingRelModule);
-			FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
 			long parentCategoryId = (long) context.get(FacilioConstants.ContextNames.PARENT_CATEGORY_ID);
 			
 			if(parentCategoryId != -1) {
-				Map<String, Object> prop = new HashMap<>();
-				prop.put("parentCategoryId", parentCategoryId);
-				prop.put("readingModuleId", module.getModuleId());
-				
+				List<FacilioModule> modules = CommonCommandUtil.getModules(context);
 				GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-																	.table(categoryReadingRelModule.getTableName())
-																	.fields(fields)
-																	.addRecord(prop);
+															.table(categoryReadingRelModule.getTableName())
+															.fields(fields)
+															;
+				for (FacilioModule module : modules) {
+					Map<String, Object> prop = new HashMap<>();
+					prop.put("parentCategoryId", parentCategoryId);
+					prop.put("readingModuleId", module.getModuleId());
+					insertBuilder.addRecord(prop);
+				}
 				
 				insertBuilder.save();
 			}
@@ -42,5 +45,4 @@ public class AddCategoryReadingRelCommand implements Command {
 		}
 		return false;
 	}
-
 }

@@ -110,7 +110,7 @@ public class TransactionChainFactory {
 		
 		public static Chain addOrUpdateReadingReportChain() {
 			Chain c = getDefaultChain();
-			c.addCommand(new CreateReadingAnalyticsReportCommand(false));
+			c.addCommand(new CreateReadingAnalyticsReportCommand());
 			c.addCommand(new AddOrUpdateReportCommand());
 			return c;
 		}
@@ -347,6 +347,78 @@ public class TransactionChainFactory {
 			c.addCommand(new AddWOFromAlarmCommand());
 			c.addCommand(getAddWorkOrderChain());
 			c.addCommand(new UpdateWoIdInAlarmCommand());
+			return c;
+		}
+		
+		public static Chain getAddModuleChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new CreateCustomModuleCommand());
+			commonAddModuleChain(c);
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
+		public static Chain getAddReadingsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new CreateReadingModulesCommand());
+			commonAddModuleChain(c);
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
+		private static void commonAddModuleChain(Chain c) {
+			c.addCommand(new AddModulesCommand());
+			c.addCommand(new SetColumnNameForNewCFsCommand());
+			c.addCommand(new AddFieldsCommand());
+		}
+		
+		public static Chain getAddCategoryReadingChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(getAddReadingsChain());
+			c.addCommand(new AddCategoryReadingRelCommand());
+			c.addCommand(new GetCategoryResourcesCommand());
+			c.addCommand(new InsertReadingDataMetaForNewReadingCommand());
+			//c.addCommand(new SetValidationRulesContextCommand());
+			c.addCommand(new AddValidationRulesCommand());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
+		public static Chain addResourceReadingChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(getAddReadingsChain());
+			c.addCommand(new AddResourceReadingRelCommand());
+			c.addCommand(new InsertReadingDataMetaForNewReadingCommand());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
+		public static Chain getAddFieldsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new SetColumnNameForNewCFsCommand());
+			c.addCommand(new AddFieldsCommand());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
+		public static Chain addFormulaFieldChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new CreateFormulaFieldDependenciesCommand());
+			c.addCommand(getAddReadingsChain());
+			c.addCommand(new AddResourceReadingRelCommand());
+			c.addCommand(new AddCategoryReadingRelCommand());
+			c.addCommand(new GetCategoryResourcesCommand());
+			c.addCommand(new InsertReadingDataMetaForNewReadingCommand());
+			c.addCommand(new AddFormulaFieldCommand());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
+		public static Chain addDerivationFormulaChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(addFormulaFieldChain());
+			c.addCommand(new UpdateDerivationCommand());
+			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}
 		

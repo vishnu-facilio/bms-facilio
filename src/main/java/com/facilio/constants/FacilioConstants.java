@@ -221,6 +221,7 @@ public class FacilioConstants {
 		public static final String PARENT_MODULE = "parentModule";
 		public static final String READING_NAME = "readingName";
 		public static final String MODULE = "module";
+		public static final String IS_NEW_MODULES = "isNewModule";
 		public static final String MODULE_LIST = "modules";
 		public static final String MODULE_MAP = "modulemap";	
 		public static final String SPACES = "spaces";

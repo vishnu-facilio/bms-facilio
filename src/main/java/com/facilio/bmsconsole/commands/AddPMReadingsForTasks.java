@@ -197,7 +197,7 @@ public class AddPMReadingsForTasks implements Command {
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fields);
 		context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "PM_Readings");
 		
-		Chain addReadingChain = FacilioChainFactory.getAddReadingChain();
+		Chain addReadingChain = TransactionChainFactory.getAddReadingsChain();
 		addReadingChain.execute(context);
 		
 		FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);

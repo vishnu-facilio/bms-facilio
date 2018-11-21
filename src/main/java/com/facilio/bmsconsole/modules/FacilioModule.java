@@ -15,6 +15,23 @@ public class FacilioModule implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	public FacilioModule() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public FacilioModule(FacilioModule module) {
+		this.moduleId = module.moduleId;
+		this.orgId = module.orgId;
+		this.name = module.name;
+		this.displayName = module.displayName;
+		this.tableName = module.tableName;
+		this.extendModule = module.extendModule;
+		this.type = module.type;
+		this.trashEnabled = module.trashEnabled;
+		this.dataInterval = module.dataInterval;
+	}
+
 	private long moduleId = -1;
 	public long getModuleId() {
 		return moduleId;

@@ -11,8 +11,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
@@ -45,7 +45,7 @@ public class AddCFAction extends ActionSupport {
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 			context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fields);
 			
-			Command addCF = FacilioChainFactory.getAddFieldsChain();
+			Command addCF = TransactionChainFactory.getAddFieldsChain();
 			addCF.execute(context);
 			
 			setFieldsIds((List<Long>) context.get("FieldIds"));

@@ -25,8 +25,8 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.context.BaseLineContext.RangeType;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
@@ -102,7 +102,6 @@ import com.facilio.workflows.util.WorkflowUtil;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
-import com.google.gson.JsonObject;
 
 public class DashboardUtil {
 	
@@ -3011,7 +3010,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 			context.put(FacilioConstants.ContextNames.DERIVATION, derivation);
 			context.put(FacilioConstants.ContextNames.DATE_RANGE, derivation.getDateRange());
 			
-			Chain addFormulaFieldChain = FacilioChainFactory.addDerivationFormulaChain();
+			Chain addFormulaFieldChain = TransactionChainFactory.addDerivationFormulaChain();
 			addFormulaFieldChain.execute(context);
 			formulaField = (FormulaFieldContext) context.get(FacilioConstants.ContextNames.FORMULA_FIELD);
 		}

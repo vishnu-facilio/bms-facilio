@@ -14,6 +14,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
@@ -33,7 +34,7 @@ public class ModuleAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
 		
-		Chain addModulesChain = FacilioChainFactory.getAddModuleChain();
+		Chain addModulesChain = TransactionChainFactory.getAddModuleChain();
 		addModulesChain.execute(context);
 		
 		FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
@@ -46,7 +47,7 @@ public class ModuleAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
 		
-		Chain addFieldsChain = FacilioChainFactory.getAddFieldsChain();
+		Chain addFieldsChain = TransactionChainFactory.getAddFieldsChain();
 		addFieldsChain.execute(context);
 		
 		setFieldIds((List<Long>) context.get(FacilioConstants.ContextNames.MODULE_FIELD_IDS));

@@ -8,9 +8,13 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 
 public class SetColumnNameForNewCFsCommand implements Command {
 
@@ -18,33 +22,41 @@ public class SetColumnNameForNewCFsCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		List<FacilioField> newFields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.MODULE_FIELD_LIST);
-		List<FacilioField> existingFields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+		List<FacilioModule> modules = CommonCommandUtil.getModulesWithFields(context);
 		
-		if(newFields != null) {
-			Map<FieldType, List<String>> existingColumns = getColumnNamesGroupedByType(existingFields);
-			
-			//Have to be changed to get in minimum number of queries
-			for (FacilioField field : newFields) {
-				FieldType dataType = field.getDataTypeEnum();
-				
-				if(dataType != null) {
-					List<String> existingColumnNames = existingColumns.get(dataType);
-					if(existingColumnNames == null) {
-						existingColumnNames = new ArrayList<>();
-						existingColumns.put(dataType, existingColumnNames);
-					}
-					if(field.getColumnName() == null || field.getColumnName().isEmpty()) {
-						String newColumnName = getColumnNameForNewField(dataType, existingColumnNames);
-						if(newColumnName == null) {
-							throw new Exception("No more columns available.");
+		if(modules != null && !modules.isEmpty()) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			Boolean isNewModules = (Boolean) context.get(FacilioConstants.ContextNames.IS_NEW_MODULES);
+			if (isNewModules == null) {
+				isNewModules = false;
+			}
+			for (FacilioModule module : modules) {
+				if (module != null && module.getFields() != null && !module.getFields().isEmpty()) {
+					List<FacilioField> existingFields = isNewModules ? null : modBean.getAllFields(module.getName());
+					Map<FieldType, List<String>> existingColumns = getColumnNamesGroupedByType(existingFields);
+					
+					for (FacilioField field : module.getFields()) {
+						FieldType dataType = field.getDataTypeEnum();
+						
+						if(dataType != null) {
+							List<String> existingColumnNames = existingColumns.get(dataType);
+							if(existingColumnNames == null) {
+								existingColumnNames = new ArrayList<>();
+								existingColumns.put(dataType, existingColumnNames);
+							}
+							if(field.getColumnName() == null || field.getColumnName().isEmpty()) {
+								String newColumnName = getColumnNameForNewField(dataType, existingColumnNames);
+								if(newColumnName == null) {
+									throw new Exception("No more columns available.");
+								}
+								field.setColumnName(newColumnName);
+							}
+							existingColumnNames.add(field.getColumnName());
 						}
-						field.setColumnName(newColumnName);
+						else {
+							throw new IllegalArgumentException("Invalid Data Type Value");
+						}
 					}
-					existingColumnNames.add(field.getColumnName());
-				}
-				else {
-					throw new IllegalArgumentException("Invalid Data Type Value");
 				}
 			}
 		}

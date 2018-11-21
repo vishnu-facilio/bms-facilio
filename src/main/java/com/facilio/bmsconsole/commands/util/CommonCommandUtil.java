@@ -17,6 +17,7 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Level;
@@ -714,5 +715,31 @@ public class CommonCommandUtil {
 		return changeSetMap;
 	}
 	
+	public static List<FacilioModule> getModulesWithFields(Context context) throws Exception {
+		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.MODULE_FIELD_LIST);
+		if (fields != null) {
+			FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
+			if(module == null) {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+				module = modBean.getModule(moduleName);
+			}
+			module.setFields(fields);
+			return Collections.singletonList(module);
+		}
+		else {
+			return (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
+		}
+	}
 	
+	public static List<FacilioModule> getModules(Context context) {
+		List<FacilioModule> modules = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
+		if (modules == null) {
+			FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
+			if (module != null) {
+				modules = Collections.singletonList(module);
+			}
+		}
+		return modules;
+	}
 }

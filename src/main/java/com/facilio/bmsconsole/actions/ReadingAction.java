@@ -53,7 +53,7 @@ public class ReadingAction extends FacilioAction {
 		addNumberFieldsToFields();
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
 		
-		Chain addReadingChain = FacilioChainFactory.getAddReadingChain();
+		Chain addReadingChain = TransactionChainFactory.getAddReadingsChain();
 		addReadingChain.execute(context);
 		FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
 		setReadingId(module.getModuleId());
@@ -105,7 +105,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.PARENT_ID, getParentCategoryId());
 		addNumberFieldsToFields();
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
-		Chain addReadingChain = FacilioChainFactory.addResourceReadingChain();
+		Chain addReadingChain = TransactionChainFactory.addResourceReadingChain();
 		addReadingChain.execute(context);
 		
 		return SUCCESS;
@@ -128,7 +128,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, categoryReadingModule);
 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, getParentCategoryId());
 		
-		Chain addReadingChain = FacilioChainFactory.getAddCategoryReadingChain();
+		Chain addReadingChain = TransactionChainFactory.getAddCategoryReadingChain();
 		addReadingChain.execute(context);
 		FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
 		setReadingId(module.getModuleId());
@@ -164,7 +164,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
 		context.put(FacilioConstants.ContextNames.PARENT_ID, getParentId());
 		
-		Chain addSpaceReadingChain = FacilioChainFactory.addResourceReadingChain();
+		Chain addSpaceReadingChain = TransactionChainFactory.addResourceReadingChain();
 		addSpaceReadingChain.execute(context);
 		
 		FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
@@ -695,7 +695,7 @@ public class ReadingAction extends FacilioAction {
 			formula.setInterval(interval);
 		}
 		
-		Chain addEnpiChain = FacilioChainFactory.addFormulaFieldChain();
+		Chain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
 		addEnpiChain.execute(context);
 		
 		return SUCCESS;

@@ -1592,25 +1592,6 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getAddModuleChain() {
-		Chain c = getTransactionChain();
-		c.addCommand(new CreateCustomModuleCommand());
-		c.addCommand(new AddModuleCommand());
-		c.addCommand(new SetColumnNameForNewCFsCommand());
-		c.addCommand(new AddFieldsCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
-	public static Chain getAddFieldsChain() {
-		Chain c = getTransactionChain();
-		c.addCommand(new LoadAllFieldsCommand());
-		c.addCommand(new SetColumnNameForNewCFsCommand());
-		c.addCommand(new AddFieldsCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
 	public static Chain getUpdateFieldChain() {
 		Chain c = getTransactionChain();
 		c.addCommand(new UpdateFieldCommand());
@@ -1699,42 +1680,11 @@ public class FacilioChainFactory {
 //		return c;		
 	}
 	
-	public static Chain getAddReadingChain() {
-		Chain c = getTransactionChain();
-		c.addCommand(new CreateReadingModuleCommand());
-		c.addCommand(new AddModuleCommand());
-		c.addCommand(new SetColumnNameForNewCFsCommand());
-		c.addCommand(new AddFieldsCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
 	public static Chain getUpdateReadingChain() {
 		Chain c = getTransactionChain();
 		c.addCommand(new RestrictUneditablePropsInFieldCommand());
 		c.addCommand(getUpdateFieldChain());
 		c.addCommand(new AddValidationRulesCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
-	public static Chain getAddCategoryReadingChain() {
-		Chain c = getTransactionChain();
-		c.addCommand(getAddReadingChain());
-		c.addCommand(new AddCategoryReadingRelCommand());
-		c.addCommand(new GetCategoryResourcesCommand());
-		c.addCommand(new InsertReadingDataMetaForNewReadingCommand());
-		//c.addCommand(new SetValidationRulesContextCommand());
-		c.addCommand(new AddValidationRulesCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
-	public static Chain addResourceReadingChain() {
-		Chain c = getTransactionChain();
-		c.addCommand(getAddReadingChain());
-		c.addCommand(new AddResourceReadingRelCommand());
-		c.addCommand(new InsertReadingDataMetaForNewReadingCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
@@ -2012,19 +1962,6 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain addFormulaFieldChain() {
-		Chain c = getTransactionChain();
-		c.addCommand(new CreateFormulaFieldDependenciesCommand());
-		c.addCommand(getAddReadingChain());
-		c.addCommand(new AddResourceReadingRelCommand());
-		c.addCommand(new AddCategoryReadingRelCommand());
-		c.addCommand(new GetCategoryResourcesCommand());
-		c.addCommand(new InsertReadingDataMetaForNewReadingCommand());
-		c.addCommand(new AddFormulaFieldCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
 	public static Chain getAllFormulasOfTypeChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new GetAllFormulasOfTypeCommand());
@@ -2247,14 +2184,6 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenericAddModuleDataCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
-	public static Chain addDerivationFormulaChain() {
-		Chain c = getTransactionChain();
-		c.addCommand(addFormulaFieldChain());
-		c.addCommand(new UpdateDerivationCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}

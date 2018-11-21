@@ -9,6 +9,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -16,24 +17,27 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
-public class AddModuleCommand implements Command {
+public class AddModulesCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
-		if(module != null) {
-			setModuleName(module);
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			long moduleId = modBean.addModule(module);
-			module.setModuleId(moduleId);
-			
-			String parentModuleName = (String) context.get(FacilioConstants.ContextNames.PARENT_MODULE);
-			if(parentModuleName != null && !parentModuleName.isEmpty()) {
-				FacilioModule parentModule = modBean.getModule(parentModuleName);
-				modBean.addSubModule(parentModule.getModuleId(), moduleId);
+		List<FacilioModule> modules = CommonCommandUtil.getModules(context);
+		if(modules != null && !modules.isEmpty()) {
+			for (FacilioModule module : modules) {
+				setModuleName(module);
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				long moduleId = modBean.addModule(module);
+				module.setModuleId(moduleId);
+				
+				String parentModuleName = (String) context.get(FacilioConstants.ContextNames.PARENT_MODULE);
+				if(parentModuleName != null && !parentModuleName.isEmpty()) {
+					FacilioModule parentModule = modBean.getModule(parentModuleName);
+					modBean.addSubModule(parentModule.getModuleId(), moduleId);
+				}
 			}
 		}
+		context.put(FacilioConstants.ContextNames.IS_NEW_MODULES, true);
 		return false;
 	}
 	

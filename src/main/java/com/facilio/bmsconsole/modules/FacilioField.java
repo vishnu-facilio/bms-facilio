@@ -78,11 +78,15 @@ public class FacilioField implements Serializable {
 		this.module = module;
 	}
 	
+	private long moduleId = -1;
+	public void setModuleId(long moduleId) {
+		this.moduleId = moduleId;
+	}
 	public long getModuleId() {
 		if(module != null) {
 			return module.getModuleId();
 		}
-		return -1;
+		return moduleId;
 	}
 	
 	private FacilioModule extendedModule;
