@@ -497,6 +497,8 @@ public class FacilioConstants {
 		public static final String SUB_VIEW = "subView";
 		public static final String SUB_VIEW_COUNT = "subViewCount";
 		public static final String RESOURCE_ID = "RESOURCE_ID";
+		public static final String SHOW_RELATIONS_COUNT = "showRelationsCount";
+		public static final String RELATIONS_COUNT = "relationsCount";
 		
 		public static final String SPACECATEGORY = "SPACECATEGORY";
 		public static final String SPACECATEGORIESLIST = "SPACECATEGORIESLIST";

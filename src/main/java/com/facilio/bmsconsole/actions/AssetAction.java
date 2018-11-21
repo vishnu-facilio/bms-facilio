@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 import org.json.simple.JSONArray;
@@ -158,17 +159,40 @@ public class AssetAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.ID, getAssetId());
 		AssetContext asset= AssetsAPI.getAssetInfo(assetId, true);
 		AssetCategoryContext category= asset.getCategory();
+		
 		if (category != null && category.getId() != -1) {
 			context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, category.getId());
 		}
+		context.put(FacilioConstants.ContextNames.SHOW_RELATIONS_COUNT, showRelationsCount);
 		Chain assetDetailsChain = FacilioChainFactory.getAssetDetailsChain();
 		assetDetailsChain.execute(context);
 		
 		setAsset((AssetContext) context.get(FacilioConstants.ContextNames.ASSET));
+		setRelationsCount((Map<String, Long>) context.get(FacilioConstants.ContextNames.RELATIONS_COUNT));
 		setResult("asset", asset);
+		setResult("relationsCount", relationsCount);
 		return SUCCESS;
 	}
 	
+	private Boolean showRelationsCount;
+	public Boolean getShowRelationsCount() {
+		if (showRelationsCount == null) {
+			return false;
+		}
+		return showRelationsCount;
+	}
+	public void setShowRelationsCount(Boolean showRelationsCount) {
+		this.showRelationsCount = showRelationsCount;
+	}
+	
+	private Map<String, Long> relationsCount;
+	public Map<String, Long> getRelationsCount() {
+		return relationsCount;
+	}
+	public void setRelationsCount(Map<String, Long> relationsCount) {
+		this.relationsCount = relationsCount;
+	}
+
 	private long categoryId;
 	public long getCategoryId() {
 		return categoryId;

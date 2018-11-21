@@ -60,6 +60,7 @@ public class AttachmentsAPI {
 		return selectBuilder.get();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static AttachmentContext fetchAttachment(String moduleName, Long parentId, Long fileId, Boolean... fetchDeleted) throws Exception {
 		List<AttachmentContext> attachments = fetchAttachments(moduleName, parentId, fetchDeleted != null && fetchDeleted.length == 1 && fetchDeleted[0], Collections.singletonList(fileId));
 		if (attachments != null && !attachments.isEmpty()) {
@@ -68,7 +69,23 @@ public class AttachmentsAPI {
 		return null;
 	}
 	
+	public static long fetchAttachmentsCount(String moduleName, Long parentId, Boolean... fetchDeleted) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		SelectRecordsBuilder<AttachmentContext> builder = getListBuilder(moduleName, parentId, fetchDeleted != null && fetchDeleted.length == 1 && fetchDeleted[0], null);
+		builder.select(FieldFactory.getCountField(modBean.getModule(moduleName)));
+		List<Map<String, Object>> props = builder.getAsProps();
+		long count = 0;
+		if (props != null && !props.isEmpty()) {
+			count = (long) props.get(0).get("count");
+		}
+		return count;
+	}
+	
 	private static List<AttachmentContext> fetchAttachments(String moduleName, Long parentId, boolean fetchDeleted, List<Long>... attachmentIds) throws Exception {
+		return getListBuilder(moduleName, parentId, fetchDeleted, attachmentIds).get();
+	}
+	
+	private static SelectRecordsBuilder<AttachmentContext> getListBuilder(String moduleName, Long parentId, boolean fetchDeleted, List<Long>... attachmentIds) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
 		List<FacilioField> fields = FieldFactory.getFileFields();
@@ -83,7 +100,7 @@ public class AttachmentsAPI {
 				.on("File.FILE_ID = "+module.getTableName()+".FILE_ID");
 				
 		if (!fetchDeleted) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("isDeleted"), String.valueOf(fetchDeleted), BooleanOperators.IS));
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("isDeleted"), String.valueOf(false), BooleanOperators.IS));
 		}
 		
 		if (parentId != null && parentId > 0) {
@@ -98,7 +115,6 @@ public class AttachmentsAPI {
 		if(scopeCriteria != null){
 			selectBuilder.andCriteria(scopeCriteria);
 		}
-
-		return selectBuilder.get();
+		return selectBuilder;
 	}
 }

@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.NumberField;
+import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -250,7 +251,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 								fileIds= new ArrayList<>();
 							}
 							fileIds.add((Long) val);
-							record.put(field.getName()+"Id", val);
+							record.put(field.getName()+"Id", (Long) val);
 							val = null;
 						}
 					}
@@ -374,11 +375,15 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		for(Long fileId: fileIds) {
 			fileUrls.put(fileId, fs.getPrivateUrl(fileId));
 		}
+		Map<Long, FileInfo> files = fs.getFileInfoAsMap(fileIds);
 		
 		for(Map<String, Object> record: records) {
 			for(FacilioField field : selectFields) {
-				if(field != null && field.getDataTypeEnum() == FieldType.FILE && record.get(field.getName()+"Id") != null) {
-					record.put(field.getName()+"Url", fileUrls.get(record.get(field.getName()+"Id")));
+				if(field != null && field.getDataTypeEnum() == FieldType.FILE && record.containsKey(field.getName()+"Id")) {
+					Long id = (Long) record.get(field.getName()+"Id");
+					record.put(field.getName()+"Url", fileUrls.get(id));
+					record.put(field.getName()+"FileName", files.get(id).getFileName());
+					record.put(field.getName()+"ContentType", files.get(id).getContentType());
 				}
 			}
 		}

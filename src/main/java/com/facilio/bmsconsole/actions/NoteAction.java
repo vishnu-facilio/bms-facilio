@@ -115,18 +115,14 @@ public class NoteAction extends FacilioAction {
 	
 	private String getNotesList(String moduleName) throws Exception {
 		
-		try {
-			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-			context.put(FacilioConstants.ContextNames.PARENT_ID, this.parentId);
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.PARENT_ID, this.parentId);
 
-			Chain getRelatedNoteChain = FacilioChainFactory.getNotesChain();
-			getRelatedNoteChain.execute(context);
+		Chain getRelatedNoteChain = FacilioChainFactory.getNotesChain();
+		getRelatedNoteChain.execute(context);
 
-			setNotes((List<NoteContext>) context.get(FacilioConstants.ContextNames.NOTE_LIST));
-		} catch (Exception e) {
-			log.info("Exception occurred ", e);
-		}
+		setNotes((List<NoteContext>) context.get(FacilioConstants.ContextNames.NOTE_LIST));
 		return SUCCESS;
 	}
 	
