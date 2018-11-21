@@ -27,7 +27,7 @@ public class GetAssetDetailCommand extends GenericGetModuleDataDetailCommand {
 			}
 			context.put(FacilioConstants.ContextNames.ASSET, assetContext);
 		}
-		return true;
+		return false;
 	}
 	
 }

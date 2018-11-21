@@ -26,18 +26,19 @@ import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.ZoneContext;
 import com.facilio.bmsconsole.criteria.BuildingOperator;
+import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
+import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
@@ -914,7 +915,7 @@ public static long getSitesCount() throws Exception {
 	public static List<SpaceContext> getSpaceListOfCategory(long category) throws Exception
 	{
 		
-		return getSpaceListOfCategory(-1,category);
+		return getSpaceListOfCategory(null,category);
 	}
 	
 	public static List<SpaceContext> getSpaceListOfCategory(long baseSpaceId,long category) throws Exception {
@@ -943,7 +944,7 @@ public static long getSitesCount() throws Exception {
 		return spaces;
 	}
 	
-	public static List<BaseSpaceContext> getAllBaseSpaces(Criteria filterCriteria, Criteria searchCriteria, String orderBy, JSONObject pagination) throws Exception
+	public static List<BaseSpaceContext> getAllBaseSpaces(Criteria filterCriteria, Criteria searchCriteria, String orderBy, JSONObject pagination, Boolean withReadings) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
@@ -979,6 +980,18 @@ public static long getSitesCount() throws Exception {
 			
 			selectBuilder.offset(offset);
 			selectBuilder.limit(perPage);
+		}
+		
+		if (withReadings != null && withReadings) {
+			FacilioModule rdmModule = ModuleFactory.getReadingDataMetaModule();
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getReadingDataMetaFields());
+			
+			selectBuilder.innerJoin(rdmModule.getTableName()).on(rdmModule.getTableName()+".RESOURCE_ID="+module.getTableName()+".ID");
+			
+			Criteria criteria = new Criteria();
+			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("value"), CommonOperators.IS_NOT_EMPTY));
+			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("value"),"-1", StringOperators.ISN_T));
+			selectBuilder.andCriteria(criteria);
 		}
 		
 		List<BaseSpaceContext> spaces = selectBuilder.get();

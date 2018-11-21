@@ -640,6 +640,26 @@ public class FieldFactory {
 	public static FacilioField getIsDeletedField() {
 		return getField("deleted", "SYS_DELETED", FieldType.BOOLEAN);
 	}
+	
+	public static List<FacilioField> getCountField() {
+		return getCountField(null);
+	}
+	
+	public static List<FacilioField> getCountField(FacilioModule module, FacilioField... field) {
+		FacilioField countFld = new FacilioField();
+		countFld.setName("count");
+		if (field != null && field.length > 0) {
+			countFld.setColumnName("COUNT(" + field[0].getCompleteColumnName() + ")");
+		}
+		else if (module != null) {
+			countFld.setColumnName("COUNT(" + module.getTableName() + ".ID)");
+		}
+		else {
+			countFld.setColumnName("COUNT(*)");
+		}
+		countFld.setDataType(FieldType.NUMBER);
+		return Collections.singletonList(countFld);
+	}
 
 	public static List<FacilioField> getCategoryReadingsFields(FacilioModule module) {
 		List<FacilioField> fields = new ArrayList<>();

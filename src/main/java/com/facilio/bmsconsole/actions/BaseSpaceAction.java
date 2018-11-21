@@ -49,6 +49,7 @@ public class BaseSpaceAction extends FacilioAction {
  		}
  		context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.BASE_SPACE);
+		context.put(FacilioConstants.ContextNames.WITH_READINGS, withReadings);
 		Chain getAllSpace = FacilioChainFactory.getAllAreaChain();
 		getAllSpace.execute(context);
 		
@@ -179,6 +180,18 @@ public class BaseSpaceAction extends FacilioAction {
 	}
 	public String getSearch() {
 		return this.search;
+	}
+	
+	private Boolean withReadings;
+	public Boolean getWithReadings() {
+		if (withReadings == null) {
+			return false;
+		}
+		return withReadings;
+	}
+
+	public void setWithReadings(Boolean withReadings) {
+		this.withReadings = withReadings;
 	}
 	
 	

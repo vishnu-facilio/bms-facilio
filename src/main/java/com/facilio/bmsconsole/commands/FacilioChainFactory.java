@@ -1084,6 +1084,7 @@ public class FacilioChainFactory {
 		c.addCommand(new SetModuleForSpecialAssetsCommand());
 		c.addCommand(new LoadAssetFields());
 		c.addCommand(new GetAssetDetailCommand());
+		c.addCommand(new GetAssetRelationCountCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
@@ -1870,7 +1871,6 @@ public class FacilioChainFactory {
 	
 	public static Chain getNotesChain() {
 		Chain c = getTransactionChain();
-		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetNotesCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;

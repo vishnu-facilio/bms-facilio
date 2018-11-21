@@ -199,6 +199,14 @@ public class ReadingsAPI {
 		return getRDMMapFromProps(builder.get(), fieldIdMap);
 	}
 	
+	public static long getReadingDataMetaCount(Long resourceId, boolean excludeEmptyFields, ReadingInputType...readingTypes) throws Exception {
+		List<Map<String, Object>> props = getRDMProps(resourceId, null, excludeEmptyFields, true, readingTypes);
+		if (props != null && !props.isEmpty()) {
+			return (long) props.get(0).get("count");
+		}
+		return 0;
+	}
+	
 	public static List<ReadingDataMeta> getReadingDataMetaList(Long resourceId, Collection<FacilioField> fieldList) throws Exception {
 		return getReadingDataMetaList(resourceId, fieldList, false);
 	}
@@ -208,13 +216,24 @@ public class ReadingsAPI {
 		if (fieldList != null) {
 			fieldMap = FieldFactory.getAsIdMap(fieldList);
 		}
+		List<Map<String, Object>> stats = getRDMProps(resourceId, fieldMap, excludeEmptyFields, false, readingTypes);
+		return getReadingDataFromProps(stats, fieldMap);
+	}
+	
+	private static List<Map<String, Object>> getRDMProps (Long resourceId, Map<Long, FacilioField> fieldMap, boolean excludeEmptyFields, boolean fetchCount, ReadingInputType...readingTypes) throws Exception {
 		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
 		List<FacilioField> redingFields = FieldFactory.getReadingDataMetaFields();
 		Map<String, FacilioField> readingFieldsMap = FieldFactory.getAsMap(redingFields);
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getReadingDataMetaFields())
 				.table(module.getTableName())
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+		
+		if (fetchCount) {
+			builder.select(FieldFactory.getCountField(module, readingFieldsMap.get("resourceId")));
+		}
+		else {
+			builder.select(FieldFactory.getReadingDataMetaFields());
+		}
 				
 		if (fieldMap != null) {
 			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("fieldId"), StringUtils.join(fieldMap.keySet(), ","), NumberOperators.EQUALS));
@@ -235,9 +254,7 @@ public class ReadingsAPI {
 		else {
 			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("inputType"),String.valueOf(ReadingInputType.HIDDEN_FORMULA_FIELD.getValue()), PickListOperators.ISN_T));
 		}
-		
-		List<Map<String, Object>> stats = builder.get();	
-		return getReadingDataFromProps(stats, fieldMap);
+		return builder.get();
 	}
 	
 	private static List<ReadingDataMeta> getReadingDataFromProps(List<Map<String, Object>> props, Map<Long, FacilioField> fieldMap) throws Exception {
