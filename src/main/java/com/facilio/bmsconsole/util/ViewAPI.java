@@ -288,6 +288,9 @@ public class ViewAPI {
 			if(criteria != null) {
 				CriteriaAPI.deleteCriteria(oldView.getCriteriaId());
 			}
+			if (view.getFields() != null) {
+			customizeViewColumns(view.getId(), view.getFields());
+			}
 			
 			// TODO update sort fields and view columns
 			
