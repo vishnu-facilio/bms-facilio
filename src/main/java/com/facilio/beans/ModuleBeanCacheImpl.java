@@ -257,7 +257,7 @@ LRUCache modulecache = LRUCache.getModuleCache();
 		//	CacheUtil.delete(CacheUtil.PRIMARY_FIELD_KEY(getOrgId(), field.getModule().getName()), CacheUtil.FIELDS_KEY(getOrgId(), field.getModule().getName()));
 		
 			LRUCache cache = 	LRUCache.getModuleFieldsCache();
-			cache.remove(CacheUtil.FIELDS_KEY(getOrgId(), field.getModule().getName()));
+			cache.remove(CacheUtil.FIELDS_KEY(getOrgId(), field.getModuleName()));
 			//cache.remove(CacheUtil.FIELD_KEY(getOrgId(), field.getFieldId()));
 
 		}
@@ -280,7 +280,7 @@ LRUCache modulecache = LRUCache.getModuleCache();
 	private void dropFieldFromCache(FacilioField newField )
 	{
 		LRUCache cache = 	LRUCache.getModuleFieldsCache();
-		cache.remove(CacheUtil.FIELDS_KEY(getOrgId(), newField.getModule().getName()));
+		cache.remove(CacheUtil.FIELDS_KEY(getOrgId(), newField.getModuleName()));
 		
 		cache = LRUCache.getFieldsCache();
 		cache.remove(CacheUtil.FIELD_KEY(getOrgId(), newField.getFieldId()));

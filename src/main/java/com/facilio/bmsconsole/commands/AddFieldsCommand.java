@@ -33,6 +33,7 @@ public class AddFieldsCommand implements Command {
 				if(module != null && module.getFields() != null && !module.getFields().isEmpty()) {
 					for(FacilioField field : module.getFields()) {
 						field.setModuleId(module.getModuleId());
+						field.setModuleName(module.getName());
 						constructFieldName(field, module);
 						long fieldId = modBean.addField(field);
 						field.setFieldId(fieldId);

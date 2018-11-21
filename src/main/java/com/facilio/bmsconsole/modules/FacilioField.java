@@ -89,6 +89,17 @@ public class FacilioField implements Serializable {
 		return moduleId;
 	}
 	
+	private String moduleName;
+	public String getModuleName() {
+		if(module != null) {
+			return module.getName();
+		}
+		return moduleName;
+	}
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
+
 	private FacilioModule extendedModule;
 	public FacilioModule getExtendedModule() {
 		if(extendedModule != null) {
