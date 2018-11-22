@@ -130,8 +130,6 @@ public class ReadingAction extends FacilioAction {
 		
 		Chain addReadingChain = TransactionChainFactory.getAddCategoryReadingChain();
 		addReadingChain.execute(context);
-		FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
-		setReadingId(module.getModuleId());
 		
 		return SUCCESS;
 	}
