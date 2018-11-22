@@ -78,28 +78,13 @@ public class FacilioField implements Serializable {
 		this.module = module;
 	}
 	
-	private long moduleId = -1;
-	public void setModuleId(long moduleId) {
-		this.moduleId = moduleId;
-	}
 	public long getModuleId() {
 		if(module != null) {
 			return module.getModuleId();
 		}
-		return moduleId;
+		return -1;
 	}
 	
-	private String moduleName;
-	public String getModuleName() {
-		if(module != null) {
-			return module.getName();
-		}
-		return moduleName;
-	}
-	public void setModuleName(String moduleName) {
-		this.moduleName = moduleName;
-	}
-
 	private FacilioModule extendedModule;
 	public FacilioModule getExtendedModule() {
 		if(extendedModule != null) {
@@ -347,9 +332,12 @@ public class FacilioField implements Serializable {
 	public String toString() {
 		
 		StringBuilder builder = new StringBuilder();
-		builder.append("Module Name : ")
-				.append(getModuleName())
-				.append("::");
+		
+		if (module != null) {
+			builder.append("Module Name : ")
+					.append(module.getName())
+					.append("::");
+		}
 		if (name != null) {
 			builder.append("Name : ")
 					.append(name)

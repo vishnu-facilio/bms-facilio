@@ -30,10 +30,10 @@ public class AddFieldsCommand implements Command {
 			List<List<ReadingRuleContext>> readingRules = new ArrayList<>();
 			List<List<List<ActionContext>>> actionsList = new ArrayList<>();
 			for (FacilioModule module : modules) {
+				FacilioModule cloneMod = new FacilioModule(module);
 				if(module != null && module.getFields() != null && !module.getFields().isEmpty()) {
 					for(FacilioField field : module.getFields()) {
-						field.setModuleId(module.getModuleId());
-						field.setModuleName(module.getName());
+						field.setModule(cloneMod);
 						constructFieldName(field, module);
 						long fieldId = modBean.addField(field);
 						field.setFieldId(fieldId);

@@ -182,7 +182,7 @@ public class FormulaFieldAPI {
 		formula.setWorkflowId(workflowId);
 		formula.setWorkflow(null);
 		formula.setOrgId(AccountUtil.getCurrentOrg().getId());
-		formula.setModuleId(formula.getReadingField().getModuleId());
+		formula.setModuleId(formula.getReadingField().getModule().getModuleId());
 		formula.setReadingFieldId(formula.getReadingField().getId());
 		formula.setReadingField(null);
 		formula.setActive(true);
