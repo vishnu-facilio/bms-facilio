@@ -6,11 +6,13 @@ import java.nio.charset.CharsetDecoder;
 import java.util.*;
 import java.util.logging.Level;
 
+import org.apache.commons.chain.Chain;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -22,7 +24,10 @@ import com.amazonaws.services.kinesis.model.PutRecordResult;
 import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -32,6 +37,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.events.tasker.tasks.EventProcessor;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -136,13 +142,44 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 				JSONObject payLoad = (JSONObject) parser.parse(data);
 				String dataType = (String)payLoad.remove(EventProcessor.DATA_TYPE);
 
-				if(dataType!=null && "timeseries".equals(dataType)) {
-					long timeStamp=	record.getApproximateArrivalTimestamp().getTime();
-					long startTime = System.currentTimeMillis();
-		            LOGGER.info("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + " TIME::::" +timeStamp);
-					ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-					bean.processTimeSeries(timeStamp, payLoad, record, processRecordsInput.getCheckpointer());
-					LOGGER.info("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + "COMPLETED:::::::TIME TAKEN : "+(System.currentTimeMillis() - startTime));
+				if(dataType!=null ) {
+					if("timeseries".equals(dataType)) {
+				
+						long timeStamp=	record.getApproximateArrivalTimestamp().getTime();
+						long startTime = System.currentTimeMillis();
+			            LOGGER.info("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + " TIME::::" +timeStamp);
+						ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+						bean.processTimeSeries(timeStamp, payLoad, record, processRecordsInput.getCheckpointer());
+						LOGGER.info("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + "COMPLETED:::::::TIME TAKEN : "+(System.currentTimeMillis() - startTime));
+					} else if("devicepoints".equals(dataType)) {
+						int instanceNumber = (Integer)payLoad.get("instanceNumber");
+						String destinationAddress = (String) payLoad.get("macAddress");
+						int subnetPrefix = (Integer)payLoad.get("subnetPrefix");
+						int networkNumber = (Integer)payLoad.get("networkNumber");
+						String broadcastAddress = (String) payLoad.get("broadcastAddress");
+						
+						String deviceId = instanceNumber+"_"+destinationAddress+"_"+networkNumber;
+						if( ! deviceMap.containsKey(deviceId)) {
+							ControllerContext controller = new ControllerContext();
+							controller.setBroadcastIp(broadcastAddress);
+							controller.setDestinationId(destinationAddress);
+							controller.setInstanceNumber(instanceNumber);
+							controller.setNetworkNumber(networkNumber);
+							controller.setSubnetPrefix(subnetPrefix);
+							controller.setMacAddr(deviceId);
+							FacilioContext context = new FacilioContext();
+							context.put(FacilioConstants.ContextNames.CONTROLLER_SETTINGS, controller);
+							
+							Chain addcontrollerSettings = FacilioChainFactory.getAddControllerChain();
+							addcontrollerSettings.execute(context);
+							
+							long controllerSettingsId = controller.getId();
+							if(controllerSettingsId > -1) {
+								JSONArray points = (JSONArray)payLoad.get("points");
+								TimeSeriesAPI.addUnmodeledInstances(points, controllerSettingsId);
+							}
+						}
+					}
 //					Temp fix
 //					processRecordsInput.getCheckpointer().checkpoint(record);
 				}
