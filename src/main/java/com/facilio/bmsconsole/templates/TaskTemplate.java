@@ -199,8 +199,10 @@ public class TaskTemplate extends Template {
 		return null;
 	}
 	public void setAdditionalInfoJsonStr(String jsonStr) throws ParseException {
-		JSONParser parser = new JSONParser();
-		additionInfo = (JSONObject) parser.parse(jsonStr);
+		if(jsonStr != null) {
+			JSONParser parser = new JSONParser();
+			additionInfo = (JSONObject) parser.parse(jsonStr);
+		}
 	}
 	public void setOptions(List<String> options) {
 		if(options != null && !options.isEmpty()) {
