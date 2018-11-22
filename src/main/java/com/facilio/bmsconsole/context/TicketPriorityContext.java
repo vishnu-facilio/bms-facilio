@@ -7,6 +7,14 @@ public class TicketPriorityContext extends ModuleBaseWithCustomFields {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private String displayName;
+	public String getDisplayName() {
+		return displayName;
+	}
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
 	private String priority;
 	public String getPriority() {
 		return priority;
@@ -22,7 +30,19 @@ public class TicketPriorityContext extends ModuleBaseWithCustomFields {
 	public void setSequenceNumber(int sequenceNumber) {
 		this.sequenceNumber = sequenceNumber;
 	}
-	
+	private Boolean isDefault;
+	public Boolean getIsDefault() {
+		return isDefault;
+	}
+	public void setIsDefault(Boolean isDefault) {
+		this.isDefault = isDefault;
+	}
+	public boolean isDeleted() {
+		if (isDefault != null) {
+			return isDefault.booleanValue();
+		}
+		return false;
+	}
 	private String colour;
 	public String getColour() {
 		return colour;

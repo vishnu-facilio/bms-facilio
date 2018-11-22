@@ -110,6 +110,11 @@ public class PickListAction extends FacilioAction {
 	}
 
 	public String addTicketPriority() throws Exception {
+		if(ticketPriority.getPriority() == null || ticketPriority.getPriority().isEmpty()) {
+			if(ticketPriority.getDisplayName() != null && !ticketPriority.getDisplayName().isEmpty()) {
+				ticketPriority.setPriority(ticketPriority.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
+			}
+		}
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, getTicketPriority());
 		Chain addTicketPriorityChain = FacilioChainFactory.getAddTicketPriorityChain();
