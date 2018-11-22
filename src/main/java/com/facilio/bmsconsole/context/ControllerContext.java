@@ -142,13 +142,13 @@ public class ControllerContext implements Serializable {
 	
 	private JSONObject controllerProps;
 	
-	public JSONObject getAdditionInfo() {
+	public JSONObject getControllerProps() {
 		return controllerProps;
 	}
-	public void setAdditionInfo(JSONObject additionInfo) {
+	public void setControllerProps(JSONObject additionInfo) {
 		this.controllerProps = additionInfo;
 	}
-	public void addAdditionInfo(String key, Object value) {
+	public void addControllerProps(String key, Object value) {
 		if(this.controllerProps == null) {
 			this.controllerProps =  new JSONObject();
 		}
