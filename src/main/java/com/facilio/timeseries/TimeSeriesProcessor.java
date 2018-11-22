@@ -152,10 +152,10 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 						bean.processTimeSeries(timeStamp, payLoad, record, processRecordsInput.getCheckpointer());
 						LOGGER.info("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + "COMPLETED:::::::TIME TAKEN : "+(System.currentTimeMillis() - startTime));
 					} else if("devicepoints".equals(dataType)) {
-						int instanceNumber = (Integer)payLoad.get("instanceNumber");
+						long instanceNumber = (Long)payLoad.get("instanceNumber");
 						String destinationAddress = (String) payLoad.get("macAddress");
 						int subnetPrefix = (Integer)payLoad.get("subnetPrefix");
-						int networkNumber = (Integer)payLoad.get("networkNumber");
+						long networkNumber = (Long)payLoad.get("networkNumber");
 						String broadcastAddress = (String) payLoad.get("broadcastAddress");
 						
 						String deviceId = instanceNumber+"_"+destinationAddress+"_"+networkNumber;
