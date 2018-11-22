@@ -30,10 +30,10 @@ public class AddControllerCommand implements Command {
 			controllerSettings.setActive(true);
 			controllerSettings.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 			
-			if (controllerSettings.getSiteId() <= 0) {
+			/*if (controllerSettings.getSiteId() <= 0) {
 				throw new IllegalArgumentException("Site is mandatory.");
 			}
-			
+			*/
 			if (controllerSettings.getBuildingIds() != null && !controllerSettings.getBuildingIds().isEmpty()) {
 				
 				List<BuildingContext> buildings = SpaceAPI.getBuildingSpace(Strings.join(controllerSettings.getBuildingIds(), ','));
