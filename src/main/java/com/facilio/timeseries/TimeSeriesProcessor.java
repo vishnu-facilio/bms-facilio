@@ -157,10 +157,12 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 						long subnetPrefix = (Long)payLoad.get("subnetPrefix");
 						long networkNumber = (Long)payLoad.get("networkNumber");
 						String broadcastAddress = (String) payLoad.get("broadcastAddress");
+						String deviceName = (String) payLoad.get("deviceName");
 						
 						String deviceId = instanceNumber+"_"+destinationAddress+"_"+networkNumber;
 						if( ! deviceMap.containsKey(deviceId)) {
 							ControllerContext controller = new ControllerContext();
+							controller.setName(deviceName);
 							controller.setBroadcastIp(broadcastAddress);
 							controller.setDestinationId(destinationAddress);
 							controller.setInstanceNumber(instanceNumber);
