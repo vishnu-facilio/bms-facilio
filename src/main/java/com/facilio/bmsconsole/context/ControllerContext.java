@@ -139,7 +139,21 @@ public class ControllerContext implements Serializable {
 		return this.instanceNumber;
 	}
 	
+	private long networkNumber = -1;
+	public void setNetworkNumber(long networkNumber) {
+		this.networkNumber = networkNumber;
+	}
+	public long getNetworkNumber() {
+		return this.networkNumber;
+	}
 	
+	private int subnetPrefix = -1;
+	public int getSubnetPrefix() {
+		return subnetPrefix;
+	}
+	public void setSubnetPrefix(int subnetPrefix) {
+		this.subnetPrefix = subnetPrefix;
+	}
 	private JSONObject controllerProps;
 	
 	public JSONObject getControllerProps() {

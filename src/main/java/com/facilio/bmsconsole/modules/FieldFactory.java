@@ -2520,9 +2520,9 @@ public class FieldFactory {
 		fields.add(getField("destinationId", "DESTINATION_ID", module, FieldType.STRING));
 		fields.add(getField("broadcastIp", "BROADCAST_IP", module, FieldType.STRING));
 		fields.add(getField("instanceNumber", "INSTANCE_NUMBER", module, FieldType.NUMBER));
-		//fields.add(getField("controllerProps", "CONTROLLER_PROPS", module, FieldType.STRING));
+		fields.add(getField("networkNumber", "NETWORK_NUMBER", module, FieldType.NUMBER));
+		fields.add(getField("subnetPrefix", "SUBNET_PREFIX", module, FieldType.NUMBER));
 		fields.add(getField("controllerPropsJsonStr", "CONTROLLER_PROPS", module, FieldType.STRING));
-
 		return fields;
 	}
 
