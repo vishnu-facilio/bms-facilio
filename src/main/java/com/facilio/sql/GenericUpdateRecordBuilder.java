@@ -19,6 +19,8 @@ import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.FileField;
+import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -116,9 +118,23 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 		return this;
 	}
 	
+	private List<FileField> fileFields = new ArrayList<>();
+	private void handleFileFields() {
+		try {
+			fetchFilesAndMarkDeleted(value);
+			FieldUtil.addFiles(fileFields, Collections.singletonList(value));
+		} catch (Exception e) {
+			LOGGER.log(Level.ERROR, "Insertion failed while updating files", e);
+			throw new RuntimeException("Insertion failed while updating files");
+		}
+	}
+	
+	private List<NumberField> numberFields = new ArrayList<>();
+	
 	@Override
 	public int update(Map<String, Object> value) throws SQLException {
 		checkForNull();
+		splitFields();
 		if (value == null) {
 			return 0;
 		}
@@ -126,16 +142,9 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 		this.value = value;
 		if(!value.isEmpty()) {
 			
-			try {
-				fetchFilesAndMarkDeleted(value);
-				FieldUtil.addFiles(fields, Collections.singletonList(value));
-			} catch (Exception e) {
-				LOGGER.log(Level.ERROR, "Insertion failed while updating files", e);
-				throw new RuntimeException("Insertion failed while updating files");
-			}
+			handleFileFields();
 			
 			PreparedStatement pstmt = null;
-			
 			try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
 				fieldMap = convertFieldsToMap(fields);
 				String sql = constructUpdateStatement();
@@ -246,6 +255,23 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 		
 		if (where.isEmpty()) {
 			throw new IllegalArgumentException("Cannot update because there's no where condition.");
+		}
+	}
+	
+	private void splitFields() {
+		for (FacilioField field : fields) {
+			if (field instanceof FileField) {
+				if (fileFields == null) {
+					fileFields = new ArrayList<>();
+				}
+				fileFields.add((FileField) field);
+			}
+			else if (field instanceof NumberField) {
+				if (numberFields == null) {
+					numberFields = new ArrayList<>();
+				}
+				numberFields.add((NumberField) field);
+			}
 		}
 	}
 	

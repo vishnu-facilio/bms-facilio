@@ -484,9 +484,8 @@ public class FieldUtil {
 	}
 	
 	
-	public static void addFiles(List<FacilioField> fields, List<Map<String, Object>> values) throws Exception {
-		List<FacilioField> fileFields = fields.stream().filter(field -> field.getDataTypeEnum() == FieldType.FILE).collect(Collectors.toList());
-		if (fileFields.isEmpty()) {
+	public static void addFiles(List<FileField> fileFields, List<Map<String, Object>> values) throws Exception {
+		if (fileFields == null || fileFields.isEmpty()) {
 			return;
 		}
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();

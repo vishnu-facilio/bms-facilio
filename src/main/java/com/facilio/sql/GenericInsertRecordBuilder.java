@@ -16,6 +16,8 @@ import org.apache.log4j.Logger;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.FileField;
+import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, Object>> {
@@ -66,6 +68,18 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 		return values;
 	}
 
+	private List<FileField> fileFields = new ArrayList<>();
+	private void handleFieldFields() {
+		try {
+			FieldUtil.addFiles(fileFields, values);
+		} catch (Exception e) {
+			LOGGER.log(Level.ERROR, "Insertion failed while adding files", e);
+			throw new RuntimeException("Insertion failed while adding files");
+		}
+	}
+	
+	private List<NumberField> numberFields = new ArrayList<>();
+	
 	@Override
 	public void save() throws SQLException, RuntimeException {
 		
@@ -74,12 +88,9 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 		}
 		
 		checkForNull();
-		try {
-			FieldUtil.addFiles(fields, values);
-		} catch (Exception e) {
-			LOGGER.log(Level.ERROR, "Insertion failed while adding files", e);
-			throw new RuntimeException("Insertion failed while adding files");
-		}
+		splitFields();
+		
+		handleFieldFields();
 		
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -178,4 +189,20 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 		
 	}
 	
+	private void splitFields() {
+		for (FacilioField field : fields) {
+			if (field instanceof FileField) {
+				if (fileFields == null) {
+					fileFields = new ArrayList<>();
+				}
+				fileFields.add((FileField) field);
+			}
+			else if (field instanceof NumberField) {
+				if (numberFields == null) {
+					numberFields = new ArrayList<>();
+				}
+				numberFields.add((NumberField) field);
+			}
+		}
+	}
 }
