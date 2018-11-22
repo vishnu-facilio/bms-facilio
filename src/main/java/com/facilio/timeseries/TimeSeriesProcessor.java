@@ -154,7 +154,7 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 					} else if("devicepoints".equals(dataType)) {
 						long instanceNumber = (Long)payLoad.get("instanceNumber");
 						String destinationAddress = (String) payLoad.get("macAddress");
-						int subnetPrefix = (Integer)payLoad.get("subnetPrefix");
+						long subnetPrefix = (Long)payLoad.get("subnetPrefix");
 						long networkNumber = (Long)payLoad.get("networkNumber");
 						String broadcastAddress = (String) payLoad.get("broadcastAddress");
 						
@@ -165,7 +165,7 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 							controller.setDestinationId(destinationAddress);
 							controller.setInstanceNumber(instanceNumber);
 							controller.setNetworkNumber(networkNumber);
-							controller.setSubnetPrefix(subnetPrefix);
+							controller.setSubnetPrefix(Math.toIntExact(subnetPrefix));
 							controller.setMacAddr(deviceId);
 							FacilioContext context = new FacilioContext();
 							context.put(FacilioConstants.ContextNames.CONTROLLER_SETTINGS, controller);
