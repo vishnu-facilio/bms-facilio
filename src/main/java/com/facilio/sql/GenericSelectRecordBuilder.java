@@ -196,6 +196,10 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 	public List<Map<String, Object>> get() throws Exception {
 		long startTime = System.currentTimeMillis();
 		checkForNull(false);
+		
+		List<Long> fileIds = null;
+		List<Map<String, Object>> records = new ArrayList<>();
+		
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		Connection conn = FacilioConnectionPool.INSTANCE.getConnection();
@@ -226,8 +230,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 			this.sql = pstmt.toString();
 			
 			long mapStartTime = System.currentTimeMillis();
-			List<Map<String, Object>> records = new ArrayList<>();
-			List<Long> fileIds = null;
+			
 			while(rs.next()) {
 				Map<String, Object> record = new HashMap<>();
 				for(FacilioField field : selectFields) {
@@ -264,16 +267,13 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 					records.add(record);
 				}
 			}
-			if (fileIds != null && !records.isEmpty()) {
-				fetchFileUrl(records, fileIds);
-			}
 			
 			long mapTimeTaken = System.currentTimeMillis() - mapStartTime;
 			LOGGER.debug("Time taken to create map in GenericSelectBuilder : "+mapTimeTaken);
 			
 			long timeTaken = System.currentTimeMillis() - startTime;
 			LOGGER.debug("Time taken to get records in GenericSelectBuilder : "+timeTaken);
-			return records;
+			
 		}
 		catch(SQLException e) {
 			LOGGER.log(Level.ERROR, "Exception " ,e);
@@ -282,6 +282,11 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		finally {
 			DBUtil.closeAll(conn,pstmt, rs);
 		}
+		
+		if (fileIds != null && !records.isEmpty()) {
+			fetchFileUrl(records, fileIds);
+		}
+		return records;
 	}
 	
 	public String constructSelectStatement() {
