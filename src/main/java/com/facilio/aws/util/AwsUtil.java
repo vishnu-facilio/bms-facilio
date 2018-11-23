@@ -254,7 +254,7 @@ public class AwsUtil
     	{
     		return AWS_IOT_MQTT_CLIENTS.get(clientId);
     	}
-    	AWSIotMqttClient awsIotClient = new AWSIotMqttClient(AwsUtil.getConfig("clientEndpoint"), clientId, AwsUtil.getConfig(AwsUtil.AWS_ACCESS_KEY_ID), AwsUtil.getConfig(AwsUtil.AWS_SECRET_KEY_ID));
+    	AWSIotMqttClient awsIotClient = new AWSIotMqttClient(AwsUtil.getConfig("iot.endpoint"), clientId, AwsUtil.getConfig(AwsUtil.AWS_ACCESS_KEY_ID), AwsUtil.getConfig(AwsUtil.AWS_SECRET_KEY_ID));
     	awsIotClient.connect();
     	AWS_IOT_MQTT_CLIENTS.put(clientId, awsIotClient);
 		return awsIotClient;
