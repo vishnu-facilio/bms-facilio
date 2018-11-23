@@ -9,7 +9,12 @@ public class TicketPriorityContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
 	private String displayName;
 	public String getDisplayName() {
-		return displayName;
+		if(displayName != null && !displayName.isEmpty()) {
+			return displayName;
+		}
+		else {
+			return priority;
+		}
 	}
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;

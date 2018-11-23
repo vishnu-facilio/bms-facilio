@@ -75,6 +75,10 @@
 			method="parseFtl">
 		</action>
 		
+		<action name="dashboardWithFolder" class="com.facilio.bmsconsole.actions.DashboardAction"
+			method="v2getDashboardListWithFolder">
+		</action>
+		
 	</package>
 	
 	<package name="internalV2" namespace="/v2/internal" extends="v2Api">

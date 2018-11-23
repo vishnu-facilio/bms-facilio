@@ -163,7 +163,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.opensymphony.xwork2.ActionSupport;
 
-public class DashboardAction extends ActionSupport {
+public class DashboardAction extends FacilioAction {
 
 	/**
 	 * 
@@ -535,14 +535,6 @@ public class DashboardAction extends ActionSupport {
 		this.id = id;
 	}
 	
-	private String result;
-	public String getResult() {
-		return result;
-	}
-	public void setResult(String result) {
-		this.result = result;
-	}
-	
 	public String updateSequence() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.REPORT_COLUMN_LIST, reportColumns);
@@ -550,7 +542,7 @@ public class DashboardAction extends ActionSupport {
 		Chain updateSequence = FacilioChainFactory.updateReportColumnSequence();
 		updateSequence.execute(context);
 		
-		result = (String) context.get(FacilioConstants.ContextNames.RESULT);
+		setResult("result",(String) context.get(FacilioConstants.ContextNames.RESULT));
 		
 		return SUCCESS;
 	}
@@ -7635,4 +7627,12 @@ public class DashboardAction extends ActionSupport {
 	public void setUnits(List<BenchmarkUnit> units) {
 		this.units = units;
 	}
+	
+	/*********************** v2 *********************/
+	public String v2getDashboardListWithFolder() throws Exception {
+		getDashboardListWithFolder();
+		setResult(FacilioConstants.ContextNames.DASHBOARD_FOLDERS, dashboardFolders);
+		return SUCCESS;
+	}
+	
 }
