@@ -266,7 +266,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ProcessImportCommand());
 			c.addCommand(new PopulateImportProcessCommand());
 			c.addCommand(new UpdateBaseAndResourceCommand());
-			// c.addCommand(new InsertReadingDataMetaForImport());
+			c.addCommand(new InsertReadingDataMetaForImport());
 			c.addCommand(new SendEmailCommand());
 			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
@@ -280,7 +280,7 @@ public class TransactionChainFactory {
 			c.addCommand(new SetModuleForSpecialAssetsCommand());
 			c.addCommand(new BulkPushAssetCommands());
 			c.addCommand(new UpdateBaseAndResourceCommand());
-			// c.addCommand(new InsertReadingDataMetaForImport());
+			c.addCommand(new InsertReadingDataMetaForImport());
 			c.addCommand(new SendEmailCommand());
 			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
