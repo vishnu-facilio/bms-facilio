@@ -35,6 +35,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 
+import com.amazonaws.services.iot.client.*;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -57,10 +58,6 @@ import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.iot.AWSIot;
 import com.amazonaws.services.iot.AWSIotClientBuilder;
-import com.amazonaws.services.iot.client.AWSIotException;
-import com.amazonaws.services.iot.client.AWSIotMessage;
-import com.amazonaws.services.iot.client.AWSIotMqttClient;
-import com.amazonaws.services.iot.client.AWSIotQos;
 import com.amazonaws.services.iot.model.Action;
 import com.amazonaws.services.iot.model.AttachPolicyRequest;
 import com.amazonaws.services.iot.model.AttachPolicyResult;
@@ -574,18 +571,23 @@ public class AwsUtil
 
 	public static void publishIotMessage(String client, JSONObject message) throws Exception {
 		AWSCredentials awsCredentials = getAWSCredentialsProvider().getCredentials();
+		LOGGER.info(AwsUtil.getConfig("iot.endpoint") +" " + client+"-facilio" + " " + client+"/msgs" + " " + message);
 		AWSIotMqttClient mqttClient = new AWSIotMqttClient(AwsUtil.getConfig("iot.endpoint"), client+"-facilio", awsCredentials.getAWSAccessKeyId(), awsCredentials.getAWSSecretKey());
 		try {
 			mqttClient.connect();
-			mqttClient.publish(new AWSIotMessage(client+"/msgs", AWSIotQos.QOS0, message.toJSONString()));
+			if(mqttClient.getConnectionStatus() == AWSIotConnectionStatus.CONNECTED) {
+				mqttClient.publish(new AWSIotMessage(client + "/msgs", AWSIotQos.QOS0, message.toJSONString()));
+			}
 		} catch (AWSIotException e) {
 			LOGGER.info("exception while publishing message ", e);
 			throw e;
 		} finally {
 			try {
-				mqttClient.disconnect();
+				if(mqttClient.getConnectionStatus() == AWSIotConnectionStatus.CONNECTED) {
+					mqttClient.disconnect();
+				}
 			} catch (AWSIotException e) {
-				e.printStackTrace();
+				LOGGER.info("exception while disconnecting ", e);
 			}
 		}
 	}
