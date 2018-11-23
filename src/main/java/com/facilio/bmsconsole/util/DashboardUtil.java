@@ -1157,11 +1157,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 			Map<Long, DashboardContext> dashboardMap = new HashMap<Long, DashboardContext>();
 			for (Map<String, Object> prop : props) {
 				DashboardContext dashboard = FieldUtil.getAsBeanFromMap(prop, DashboardContext.class);
-				if(dashboard.getLinkName().equals("buildingdashboard") && dashboard.getOrgId() == 58l) {
-					List<Long> s = new ArrayList<>();
-					s.add(382l);
-					dashboard.setBuildingExcludeList(s);
-				}
+				dashboard.setSpaceFilteredDashboardSettings(getSpaceFilteredDashboardSettings(dashboard.getId()));
 				dashboard.setReportSpaceFilterContext(getDashboardSpaceFilter(dashboard.getId()));
 				dashboardMap.put(dashboard.getId(), dashboard);
 				dashboardIds.add(dashboard.getId());
@@ -1172,6 +1168,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		}
 		return null;
 	}
+	
 	
 	public static List<DashboardFolderContext> getDashboardTree(String moduleName) throws Exception {
 		
@@ -3501,6 +3498,26 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 			return spaceFilteredDashboardSettings;
 		}
 		return null;
+	}
+	public static List<SpaceFilteredDashboardSettings> getSpaceFilteredDashboardSettings(Long dashboardId) throws Exception {
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getSpaceFilteredDashboardSettingsFields())
+				.table(ModuleFactory.getSpaceFilteredDashboardSettingsModule().getTableName())
+				.orCustomWhere("DASHBOARD_ID = ?", dashboardId)
+				.andCondition(CriteriaAPI.getCondition("MOBILE_ENABLED", "mobileEnabled", "true", BooleanOperators.IS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		List<SpaceFilteredDashboardSettings> spaceFilteredDashboardSettings = new ArrayList<>();
+		if(props != null && !props.isEmpty()) {
+			
+			for(Map<String, Object> prop :props) {
+				SpaceFilteredDashboardSettings spaceFilteredDashboardSetting = FieldUtil.getAsBeanFromMap(prop, SpaceFilteredDashboardSettings.class);
+				spaceFilteredDashboardSettings.add(spaceFilteredDashboardSetting);
+			}
+		}
+		return spaceFilteredDashboardSettings;
 	}
 	
 	public static SpaceFilteredDashboardSettings addSpaceFilteredDashboardSettings(SpaceFilteredDashboardSettings spaceFilteredDashboardSettings) throws Exception {

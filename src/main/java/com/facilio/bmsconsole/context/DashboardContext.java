@@ -31,6 +31,20 @@ public class DashboardContext extends ModuleBaseWithCustomFields {
 		this.dashboardFolderId = dashboardFolderId;
 	}
 	
+	public List<SpaceFilteredDashboardSettings> spaceFilteredDashboardSettings;
+	
+	public List<SpaceFilteredDashboardSettings> getSpaceFilteredDashboardSettings() {
+		return spaceFilteredDashboardSettings;
+	}
+	public void setSpaceFilteredDashboardSettings(List<SpaceFilteredDashboardSettings> spaceFilteredDashboardSettings) {
+		this.spaceFilteredDashboardSettings = spaceFilteredDashboardSettings;
+	}
+	
+	public void addSpaceFilteredDashboardSettings(SpaceFilteredDashboardSettings spaceFilteredDashboardSetting) {
+		this.spaceFilteredDashboardSettings = spaceFilteredDashboardSettings != null ? spaceFilteredDashboardSettings : new ArrayList<>();
+		spaceFilteredDashboardSettings.add(spaceFilteredDashboardSetting);
+	}
+
 	int dateOperator;
 	String dateValue; 
 
