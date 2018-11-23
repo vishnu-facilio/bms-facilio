@@ -13,7 +13,6 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.ImportAPI;
-import com.facilio.bmsconsole.util.ImportAPI.ImportProcessConstants;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
