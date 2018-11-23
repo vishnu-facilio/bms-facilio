@@ -1,6 +1,5 @@
 package com.facilio.timeseries;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,18 +15,21 @@ import org.json.simple.JSONObject;
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
 import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bacnet.BACNetUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
+import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.ControllerAPI;
@@ -36,6 +38,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class TimeSeriesAPI {
 
@@ -279,5 +282,52 @@ public static Criteria getCriteria(List<Long> timeRange, List<Long> deviceList, 
 			insertBuilder.addRecord(instanceObj);
 		}
 		insertBuilder.save();
+	}
+	
+	public static List<Map<String, Object>> getInstancesForController (long controllerId, Boolean... configuredOnly) throws Exception {
+		FacilioModule module = ModuleFactory.getUnmodeledInstancesModule();
+		List<FacilioField> fields = FieldFactory.getUnmodeledInstanceFields();
+		fields.add(FieldFactory.getIdField(module));
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"), String.valueOf(controllerId), NumberOperators.EQUALS));
+		
+		if (configuredOnly != null && configuredOnly.length > 0) {
+			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("inUse"), String.valueOf(configuredOnly[0]), BooleanOperators.IS));
+		}
+
+		 List<Map<String, Object>> props =  builder.get();
+		 if (props != null && !props.isEmpty()) {
+			 return props.stream().map(prop -> {
+				 if (prop.get("instanceType") != null) {
+					 prop.put("instanceTypeVal", BACNetUtil.getObjectType((int) prop.get("instanceType")));
+				 }
+				 return prop;
+			}).collect(Collectors.toList());
+		 }
+		 return props;
+
+	}
+	
+	public static int markInstancesAsUsed(List<Long> ids) throws Exception {
+		Map<String, Object> prop = new HashMap<>();
+		prop.put("inUse", true);
+		return updateInstances(ids, prop);
+	}
+	
+	public static int updateInstances(List<Long> ids, Map<String, Object> instance) throws Exception{
+		FacilioModule module = ModuleFactory.getUnmodeledInstancesModule();
+		List<FacilioField> fields = FieldFactory.getUnmodeledInstanceFields();
+		fields.add(FieldFactory.getIdField(module));
+		
+		GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+											.fields(fields)
+											.table(module.getTableName())
+											.andCondition(CriteriaAPI.getIdCondition(ids, module));
+		
+		return builder.update(instance);
 	}
 }

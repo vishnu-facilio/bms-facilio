@@ -513,4 +513,14 @@
 		</action>
 	</package>
 	
+	<package name="timeseriesApiv2" namespace="/api/v2/timeseries" extends="v2Api">
+	</package>
+	
+	<package name="instancesApiv2" namespace="/api/v2/instances" extends="v2Api">
+		<action name="configure" class="com.facilio.bmsconsole.actions.TimeSeries" method="configureInstances">
+		</action>
+		<action name="*" class="com.facilio.bmsconsole.actions.TimeSeries" method="getInstancesForController">
+			<param name="controllerId">{1}</param>
+		</action>
+	</package>
 </struts>

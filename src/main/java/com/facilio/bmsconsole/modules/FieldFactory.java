@@ -4232,15 +4232,16 @@ public class FieldFactory {
 	}
 
 	public static List<FacilioField> getUnmodeledInstanceFields() {
+		FacilioModule module = ModuleFactory.getUnmodeledInstancesModule();
 		List<FacilioField> fields = new ArrayList<>();
-		fields.add(getField("orgId", "ORGID", FieldType.NUMBER));
-		fields.add(getField("device", "DEVICE_NAME", FieldType.STRING));
-		fields.add(getField("instance", "INSTANCE_NAME", FieldType.STRING));
-        fields.add(getField("controllerId", "CONTROLLER_ID", FieldType.NUMBER));
-        fields.add(getField("objectInstanceNumber", "OBJECT_INSTANCE_NUMBER", FieldType.NUMBER));
-        fields.add(getField("instanceDescription", "INSTANCE_DESCRIPTION", FieldType.STRING));
-        fields.add(getField("instanceType", "INSTANCE_TYPE", FieldType.NUMBER));
-        fields.add(getField("inUse", "IN_USE", FieldType.BOOLEAN));
+		fields.add(getField("orgId", "ORGID", module, FieldType.NUMBER));
+		fields.add(getField("device", "DEVICE_NAME", module, FieldType.STRING));
+		fields.add(getField("instance", "INSTANCE_NAME", module, FieldType.STRING));
+        fields.add(getField("controllerId", "CONTROLLER_ID", module, FieldType.NUMBER));
+        fields.add(getField("objectInstanceNumber", "OBJECT_INSTANCE_NUMBER", module, FieldType.NUMBER));
+        fields.add(getField("instanceDescription", "INSTANCE_DESCRIPTION", module, FieldType.STRING));
+        fields.add(getField("instanceType", "INSTANCE_TYPE", module, FieldType.NUMBER));
+        fields.add(getField("inUse", "IN_USE", module, FieldType.BOOLEAN));
 		return fields;
 	}
 

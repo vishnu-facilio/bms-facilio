@@ -9,11 +9,12 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.timeseries.TimeSeriesAPI;
-import com.opensymphony.xwork2.ActionSupport;
 
-public class TimeSeries extends ActionSupport {
+public class TimeSeries extends FacilioAction {
 	
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = LogManager.getLogger(TimeSeries.class.getName());
@@ -82,6 +83,51 @@ public class TimeSeries extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String getInstancesForController () throws Exception {
+		List<Map<String, Object>> instances = TimeSeriesAPI.getInstancesForController(controllerId, configured);
+		setResult("instances", instances);
+		return SUCCESS;
+	}
+	
+	public String configureInstances () throws Exception {
+		TimeSeriesAPI.markInstancesAsUsed(ids);
+		AwsUtil.publishIotMessage(AccountUtil.getCurrentOrg().getDomain(), clientMessage);
+		setResult("result", "success");
+		return SUCCESS;
+	}
+	
+	long controllerId;
+	public long getControllerId() {
+		return controllerId;
+	}
+	public void setControllerId(long controllerId) {
+		this.controllerId = controllerId;
+	}
+	
+	Boolean configured;
+	public Boolean getConfigured() {
+		return configured;
+	}
+	public void setConfigured(Boolean configured) {
+		this.configured = configured;
+	}
+	
+	JSONObject clientMessage;
+	public JSONObject getClientMessage() {
+		return clientMessage;
+	}
+	public void setClientMessage(JSONObject clientMessage) {
+		this.clientMessage = clientMessage;
+	}
+	
+	List<Long> ids; 
+	public List<Long> getIds() {
+		return ids;
+	}
+	public void setIds(List<Long> ids) {
+		this.ids = ids;
+	}
+
 	long timestamp;
 	public void setTimestamp(long ttime) {
 		this.timestamp=ttime;

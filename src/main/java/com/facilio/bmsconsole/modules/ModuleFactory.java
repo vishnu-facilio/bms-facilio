@@ -1439,4 +1439,12 @@ public class ModuleFactory {
 		syncModule.setTableName("TVPasscodes");
 		return syncModule;
 	}
+	
+	public static FacilioModule getUnmodeledInstancesModule() {
+		FacilioModule syncModule = new FacilioModule();
+		syncModule.setName("unmodeledInstances");
+		syncModule.setDisplayName("Unmodeled Instances");
+		syncModule.setTableName("Unmodeled_Instance");
+		return syncModule;
+	}
 }
