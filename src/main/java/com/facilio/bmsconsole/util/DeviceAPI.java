@@ -19,6 +19,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BuildingContext;
@@ -27,6 +28,7 @@ import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.MarkedReadingContext;
 import com.facilio.bmsconsole.context.MarkedReadingContext.MarkType;
+import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
@@ -587,6 +589,7 @@ public class DeviceAPI
 			context.put(FacilioConstants.ContextNames.READINGS, vmReadings);
 			context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS, updateReading || runThroughUpdate);
 			context.put(FacilioConstants.ContextNames.HISTORY_READINGS, isHistorical);
+			context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.FORMULA);
 			
 			//data Gap implementation starts here..
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -602,7 +605,7 @@ public class DeviceAPI
 				context.put(FacilioConstants.ContextNames.MARKED_READINGS, markedList);
 			}
 			//data Gap implementation ends..
-			Chain addReading = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
+			Chain addReading = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
 			addReading.execute(context);
 		}
 	}

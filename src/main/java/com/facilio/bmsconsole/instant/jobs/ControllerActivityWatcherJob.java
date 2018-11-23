@@ -15,6 +15,8 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ControllerActivityWatcherContext;
 import com.facilio.bmsconsole.context.ControllerContext;
@@ -152,7 +154,7 @@ public class ControllerActivityWatcherJob extends InstantJob {
 			formulaJC.put(FacilioConstants.ContextNames.CONTROLLER_LEVEL, watcher.getLevel() + 1);
 			formulaJC.put(FacilioConstants.ContextNames.CONTROLLER_TIME, watcher.getRecordTime());
 			
-			Chain formulaChain = FacilioChainFactory.calculateFormulaChain();
+			Chain formulaChain = ReadOnlyChainFactory.calculateFormulaChain();
 			formulaChain.execute(formulaJC);
 			
 			return (List<ControllerContext>) formulaJC.get(FacilioConstants.ContextNames.CONTROLLER_LIST);

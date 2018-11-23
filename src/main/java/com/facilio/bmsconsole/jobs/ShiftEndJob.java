@@ -8,9 +8,10 @@ import java.util.logging.Logger;
 
 import org.apache.commons.chain.Chain;
 
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.job.FacilioJob;
@@ -42,7 +43,9 @@ public class ShiftEndJob extends FacilioJob {
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.READINGS_MAP, readingMap);
 			context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
-			Chain c = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
+			context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.SHIFT_READING);
+			
+			Chain c = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
 			c.execute(context);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, e.getMessage(), e);

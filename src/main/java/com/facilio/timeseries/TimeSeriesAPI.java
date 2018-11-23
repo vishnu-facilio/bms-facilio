@@ -17,9 +17,10 @@ import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bacnet.BACNetUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ControllerContext;
+import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
@@ -63,7 +64,8 @@ public class TimeSeriesAPI {
 			}
 		}
 		//Temp code. To be removed later *END*
-		Chain processDataChain = FacilioChainFactory.getProcessDataChain();
+		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.KINESIS);
+		Chain processDataChain = TransactionChainFactory.getProcessDataChain();
 		processDataChain.execute(context);
 	}
 	
@@ -90,7 +92,8 @@ public class TimeSeriesAPI {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.DEVICE_LIST , deviceList);
-		Chain processDataChain = FacilioChainFactory.getProcessHistoricalDataChain();
+		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.KINESIS);
+		Chain processDataChain = TransactionChainFactory.getProcessHistoricalDataChain();
 		processDataChain.execute(context);
 	}
 	

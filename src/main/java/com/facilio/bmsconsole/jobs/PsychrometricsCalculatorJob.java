@@ -12,9 +12,10 @@ import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.PsychrometricUtil;
@@ -52,7 +53,8 @@ public class PsychrometricsCalculatorJob extends FacilioJob {
 	private void persistReading(Map<String, List<ReadingContext>> moduleVsReading) throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.READINGS_MAP,moduleVsReading);
-		Chain addDataChain = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
+		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.FORMULA);
+		Chain addDataChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
 		addDataChain.execute(context);
 	}
 

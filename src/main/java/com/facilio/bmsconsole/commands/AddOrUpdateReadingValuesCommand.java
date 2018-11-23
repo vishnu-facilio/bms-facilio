@@ -15,10 +15,12 @@ import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -59,6 +61,11 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 			adjustTime = true;
 		}
 		
+		SourceType sourceType = (SourceType) context.get(FacilioConstants.ContextNames.READINGS_SOURCE);
+		if (AccountUtil.getCurrentOrg().getId() == 134) {
+			LOGGER.info("Adding readings from source : "+sourceType);
+		}
+		
 		Map<String, ReadingDataMeta> lastReadingMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
 		if (readingMap != null && !readingMap.isEmpty()) {
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -70,7 +77,7 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 				List<ReadingContext> readings = entry.getValue();
 				List<FacilioField> fields= bean.getAllFields(moduleName);
 				FacilioModule module = bean.getModule(moduleName);
-				List<ReadingContext> readingsToBeAdded = addDefaultPropsAndGetReadingsToBeAdded(module, fields, readings, lastReadingMap, currentReadingMap, adjustTime, useControllerDataInterval, updateLastReading);
+				List<ReadingContext> readingsToBeAdded = addDefaultPropsAndGetReadingsToBeAdded(module, fields, readings, lastReadingMap, currentReadingMap, adjustTime, useControllerDataInterval, updateLastReading, sourceType);
 				addReadings(module, fields, readingsToBeAdded,lastReadingMap, currentReadingMap, updateLastReading);
 			}
 			context.put(FacilioConstants.ContextNames.CURRRENT_READING_DATA_META, currentReadingMap);
@@ -82,7 +89,7 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 		return false;
 	}
 	
-	private List<ReadingContext> addDefaultPropsAndGetReadingsToBeAdded(FacilioModule module, List<FacilioField> fields, List<ReadingContext> readings, Map<String, ReadingDataMeta> metaMap, Map<String, ReadingDataMeta> currentReadingMap, boolean adjustTime, boolean useControllerDataInterval, boolean updateLastReading) throws Exception {
+	private List<ReadingContext> addDefaultPropsAndGetReadingsToBeAdded(FacilioModule module, List<FacilioField> fields, List<ReadingContext> readings, Map<String, ReadingDataMeta> metaMap, Map<String, ReadingDataMeta> currentReadingMap, boolean adjustTime, boolean useControllerDataInterval, boolean updateLastReading, SourceType sourceType) throws Exception {
 		List<ReadingContext> readingsToBeAdded = new ArrayList<>();
 		Iterator<ReadingContext> itr = readings.iterator();
 		while (itr.hasNext()) {
@@ -108,6 +115,7 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 					reading.setNewReading(false);
 					updateReading(module, fields, reading, metaMap, currentReadingMap, updateLastReading);
 				}
+				reading.setSourceType(sourceType);
 			}
 			else {
 				itr.remove();

@@ -13,11 +13,13 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.DateRange;
@@ -53,18 +55,18 @@ public class PostFormulaCalculationJob extends InstantJob {
 			
 			ControllerContext controller = (ControllerContext) context.get(FacilioConstants.ContextNames.CONTROLLER);
 			if (formulaReadings != null && !formulaReadings.isEmpty()) {
-				FacilioContext formulContext = new FacilioContext();
-				formulContext.put(FacilioConstants.ContextNames.MODULE_NAME, formula.getReadingField().getModule().getName());
-				formulContext.put(FacilioConstants.ContextNames.READINGS, formulaReadings); 
+				FacilioContext formulaContext = new FacilioContext();
+				formulaContext.put(FacilioConstants.ContextNames.MODULE_NAME, formula.getReadingField().getModule().getName());
+				formulaContext.put(FacilioConstants.ContextNames.READINGS, formulaReadings); 
 				
 				if (controller != null) {
-					formulContext.put(FacilioConstants.ContextNames.CONTROLLER, controller);
-					formulContext.put(FacilioConstants.ContextNames.CONTROLLER_TIME, context.get(FacilioConstants.ContextNames.CONTROLLER_TIME));
-					formulContext.put(FacilioConstants.ContextNames.CONTROLLER_LEVEL, context.get(FacilioConstants.ContextNames.CONTROLLER_LEVEL));
+					formulaContext.put(FacilioConstants.ContextNames.CONTROLLER, controller);
+					formulaContext.put(FacilioConstants.ContextNames.CONTROLLER_TIME, context.get(FacilioConstants.ContextNames.CONTROLLER_TIME));
+					formulaContext.put(FacilioConstants.ContextNames.CONTROLLER_LEVEL, context.get(FacilioConstants.ContextNames.CONTROLLER_LEVEL));
 				}
-				
-				Chain addReading = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
-				addReading.execute(formulContext);
+				formulaContext.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.FORMULA);
+				Chain addReading = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
+				addReading.execute(formulaContext);
 			}
 			else if (controller != null) {
 				long controllerTime = (long) context.get(FacilioConstants.ContextNames.CONTROLLER_TIME);

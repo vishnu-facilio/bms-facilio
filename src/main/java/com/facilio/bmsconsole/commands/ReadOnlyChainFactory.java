@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory.FacilioChain;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 
 public class ReadOnlyChainFactory {
 	private static Logger LOGGER = LogManager.getLogger(ReadOnlyChainFactory.class.getName());
@@ -175,6 +176,27 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetAlarmCommand());
 		c.addCommand(new GetReadingRuleNameCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAddOrUpdateReadingValuesChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new AddOrUpdateReadingsCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain executeWorkflowsForReadingChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new ExecuteAllWorkflowsCommand(false, RuleType.READING_RULE, RuleType.PM_READING_RULE, RuleType.VALIDATION_RULE));
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain calculateFormulaChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new CalculatePostFormulaCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}

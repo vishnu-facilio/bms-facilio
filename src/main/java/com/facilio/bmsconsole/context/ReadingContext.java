@@ -125,6 +125,42 @@ public class ReadingContext extends ModuleBaseWithCustomFields {
 		this.newReading = newReading;
 	}
 	
+	private SourceType sourceType;
+	public SourceType getSourceTypeEnum() {
+		return sourceType;
+	}
+	public void setSourceType(SourceType sourceType) {
+		this.sourceType = sourceType;
+	}
+	public int getSourceType() {
+		if (sourceType != null) {
+			return sourceType.getValue();
+		}
+		return -1;
+	}
+	public void setSourceType(int sourceType) {
+		this.sourceType = SourceType.valueOf(sourceType);
+	}
+
+	public static enum SourceType {
+		WEB_ACTION,
+		IMPORT,
+		FORMULA,
+		SHIFT_READING,
+		KINESIS
+		;
+		
+		public int getValue() {
+			return ordinal() + 1;
+		}
+		public static SourceType valueOf (int value) {
+			if (value > 0 && value <= values().length) {
+				return values() [value - 1];
+			}
+			return null;
+		}
+	}
+	
 	@Override
 	public String toString() {
 

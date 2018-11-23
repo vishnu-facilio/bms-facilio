@@ -10,10 +10,11 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.PsychrometricUtil;
 import com.facilio.bmsconsole.util.SpaceAPI;
@@ -76,7 +77,8 @@ public class WeatherDataJob extends FacilioJob {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.READINGS, readings);
-		Chain addReading = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
+		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.FORMULA);
+		Chain addReading = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
 		addReading.execute(context);
 	}
 	

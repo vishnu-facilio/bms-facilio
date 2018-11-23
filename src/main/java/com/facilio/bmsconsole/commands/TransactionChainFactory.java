@@ -422,6 +422,55 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain onlyAddOrUpdateReadingsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new GetReadingDataMetaCommand());
+			c.addCommand(new ReadingUnitConversionCommand());
+			c.addCommand(new DeltaCalculationCommand());
+			c.addCommand(new CalculateDeltaCommand());
+			c.addCommand(new CalculatePreFormulaCommand());
+			c.addCommand(new ExecuteValidationRule());
+			c.addCommand(new AddOrUpdateReadingValuesCommand());
+			c.addCommand(new AddMarkedReadingValuesCommand());
+			c.addCommand(new SpaceBudIntegrationCommand());	//For RMZ-SpaceBud Integration
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
+		public static Chain getUpdateTaskChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ValidateAndCreateValuesForInputTaskCommand());
+			c.addCommand(ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain());
+			c.addCommand(SetTableNamesCommand.getForTask());
+			c.addCommand(new LoadAllFieldsCommand());
+			c.addCommand(new UpdateTaskCommand());
+			c.addCommand(new UpdateClosedTasksCounterCommand());
+			c.addCommand(new AddTaskTicketActivityCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
+//			c.addCommand(getAddOrUpdateReadingValuesChain());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
+		public static Chain getProcessDataChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ProcessDataCommand());
+			c.addCommand(new ModeledDataCommand());
+			c.addCommand(new UnModeledDataCommand());
+			c.addCommand(ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
+		public static Chain getProcessHistoricalDataChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new HistoricalReadingsCommand());
+			c.addCommand(new BulkModeledReadingCommand());
+			c.addCommand(ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
 	    private static Chain getDefaultChain() {
 	    	return new FacilioChain(true);
 	    }

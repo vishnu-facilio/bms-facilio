@@ -14,11 +14,13 @@ import org.apache.log4j.Logger;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.CostAssetsContext;
 import com.facilio.bmsconsole.context.CostContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -97,7 +99,8 @@ public class CostCalculatorJob extends FacilioJob {
 					FacilioContext context = new FacilioContext();
 					context.put(FacilioConstants.ContextNames.READINGS_MAP, costReadings);
 					context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
-					Chain addReading = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
+					context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.FORMULA);
+					Chain addReading = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
 					addReading.execute(context);
 					
 					LOGGER.info("Successfully added Cost Readings!!");

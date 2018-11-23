@@ -237,6 +237,7 @@ public class FacilioConstants {
 		public static final String READINGS_MAP = "readingsMap";
 		public static final String READINGS = "readings";
 		public static final String READING = "reading";
+		public static final String READINGS_SOURCE = "readingsSource";
 		public static final String READING_FIELDS = "readingFields";
 		public static final String READING_FIELD = "readingField";
 		public static final String PHOTOS = "photos";
@@ -274,6 +275,7 @@ public class FacilioConstants {
 		public static final String REPORT_X_AGGR = "xAggr";
 		public static final String REPORT_Y_AGGR = "yAggr";
 		public static final String REPORT_DATA = "reportData";
+		public static final String REPORT_HANDLE_BOOLEAN = "reportHandleBoolean";
 		public static final String CALCULATE_REPORT_AGGR_DATA = "calculateReportData";
 		public static final String REPORT_CARD_DATA = "reportCardData";
 		public static final String REPORT_VARIANCE_DATA = "reportVarianceData";

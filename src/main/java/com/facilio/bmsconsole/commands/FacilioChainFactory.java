@@ -467,21 +467,6 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getUpdateTaskChain() {
-		Chain c = getTransactionChain();
-		c.addCommand(new ValidateAndCreateValuesForInputTaskCommand());
-		c.addCommand(getAddOrUpdateReadingValuesChain());
-		c.addCommand(SetTableNamesCommand.getForTask());
-		c.addCommand(new LoadAllFieldsCommand());
-		c.addCommand(new UpdateTaskCommand());
-		c.addCommand(new UpdateClosedTasksCounterCommand());
-		c.addCommand(new AddTaskTicketActivityCommand());
-		c.addCommand(new ExecuteAllWorkflowsCommand());
-//		c.addCommand(getAddOrUpdateReadingValuesChain());
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
 	public static Command getDeleteTaskChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForTask());
@@ -1132,25 +1117,6 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getProcessDataChain() {
-		Chain c = new ChainBase();
-		c.addCommand(new ProcessDataCommand());
-		c.addCommand(new ModeledDataCommand());
-		c.addCommand(new UnModeledDataCommand());
-		c.addCommand(getAddOrUpdateReadingValuesChain());
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
-	public static Chain getProcessHistoricalDataChain() {
-		Chain c = getTransactionChain();
-		c.addCommand(new HistoricalReadingsCommand());
-		c.addCommand(new BulkModeledReadingCommand());
-		c.addCommand(getAddOrUpdateReadingValuesChain());
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-		
 	public static Chain getEnergyMeterListChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForEnergyMeter());
@@ -1766,42 +1732,6 @@ public class FacilioChainFactory {
 		Chain c = getTransactionChain();
 		c.addCommand(new GetReadingFieldsCommand());
 		c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
-	public static Chain getAddOrUpdateReadingValuesChain() {
-		Chain c = new ChainBase();
-		c.addCommand(new AddOrUpdateReadingsCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
-	public static Chain onlyAddOrUpdateReadingsChain() {
-		Chain c = getTransactionChain();
-		c.addCommand(new GetReadingDataMetaCommand());
-		c.addCommand(new ReadingUnitConversionCommand());
-		c.addCommand(new DeltaCalculationCommand());
-		c.addCommand(new CalculateDeltaCommand());
-		c.addCommand(new CalculatePreFormulaCommand());
-		c.addCommand(new ExecuteValidationRule());
-		c.addCommand(new AddOrUpdateReadingValuesCommand());
-		c.addCommand(new AddMarkedReadingValuesCommand());
-		c.addCommand(new SpaceBudIntegrationCommand());	//For RMZ-SpaceBud Integration
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
-	public static Chain executeWorkflowsForReadingChain() {
-		Chain c = new ChainBase();
-		c.addCommand(new ExecuteAllWorkflowsCommand(false, RuleType.READING_RULE, RuleType.PM_READING_RULE, RuleType.VALIDATION_RULE));
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
-	public static Chain calculateFormulaChain() {
-		Chain c = new ChainBase();
-		c.addCommand(new CalculatePostFormulaCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}

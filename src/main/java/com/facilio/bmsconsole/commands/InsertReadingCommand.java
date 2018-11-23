@@ -15,6 +15,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.constants.FacilioConstants;
 import com.google.common.collect.ArrayListMultimap;
@@ -71,12 +72,12 @@ public class InsertReadingCommand implements Command {
 		Map<String, List<ReadingContext>> readingMap= Collections.singletonMap(moduleName, readingsContext);
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.HISTORY_READINGS,true);
-		
+		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.IMPORT);
 		//TODO Have to check if this takes more time
 //		context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS,false);
 		
 		context.put(FacilioConstants.ContextNames.READINGS_MAP , readingMap);
-		Chain importDataChain = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
+		Chain importDataChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
 		importDataChain.execute(context);	
 	}
 }

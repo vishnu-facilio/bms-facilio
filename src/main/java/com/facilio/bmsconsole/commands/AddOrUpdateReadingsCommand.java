@@ -22,7 +22,7 @@ public class AddOrUpdateReadingsCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		Chain addOrUpdateChain = FacilioChainFactory.onlyAddOrUpdateReadingsChain();
+		Chain addOrUpdateChain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
 		addOrUpdateChain.execute(context);
 		
 		ControllerContext controller = updateCheckPointAndControllerActivity(context);
@@ -53,7 +53,7 @@ public class AddOrUpdateReadingsCommand implements Command {
 	
 	private void executeWorkflowsRules (Context context) {
 		try {
-			Chain executeWorkflowChain = FacilioChainFactory.executeWorkflowsForReadingChain();
+			Chain executeWorkflowChain = ReadOnlyChainFactory.executeWorkflowsForReadingChain();
 			executeWorkflowChain.execute(context);
 		}
 		catch (Exception e) {
@@ -65,7 +65,7 @@ public class AddOrUpdateReadingsCommand implements Command {
 	
 	private void execureFormulae (Context context) {
 		try {
-			Chain formulaChain = FacilioChainFactory.calculateFormulaChain();
+			Chain formulaChain = ReadOnlyChainFactory.calculateFormulaChain();
 			formulaChain.execute(context);
 		}
 		catch (Exception e) {

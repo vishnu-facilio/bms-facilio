@@ -14,11 +14,12 @@ import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -80,8 +81,9 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 									FacilioContext context = new FacilioContext();
 									context.put(FacilioConstants.ContextNames.MODULE_NAME, formula.getReadingField().getModule().getName());
 									context.put(FacilioConstants.ContextNames.READINGS, readings);
+									context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.FORMULA);
 									
-									Chain addReadingChain = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
+									Chain addReadingChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
 									addReadingChain.execute(context);
 									
 								}

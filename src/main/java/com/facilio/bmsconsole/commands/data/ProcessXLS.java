@@ -30,11 +30,12 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.context.TicketContext;
@@ -304,7 +305,8 @@ public class ProcessXLS implements Command {
 			context.put(FacilioConstants.ContextNames.HISTORY_READINGS,true);
 			context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS,false);
 			context.put(FacilioConstants.ContextNames.READINGS_MAP , readingMap);
-			Chain importDataChain = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
+			context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.IMPORT);
+			Chain importDataChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
 			importDataChain.execute(context);	
 		}
 		else {

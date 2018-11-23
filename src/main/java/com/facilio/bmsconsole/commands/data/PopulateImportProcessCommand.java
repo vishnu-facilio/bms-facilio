@@ -13,11 +13,12 @@ import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
@@ -25,7 +26,6 @@ import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
-import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsole.util.ModuleLocalIdUtil;
 import com.facilio.constants.FacilioConstants;
@@ -340,7 +340,8 @@ public class PopulateImportProcessCommand implements Command {
 			context.put(FacilioConstants.ContextNames.HISTORY_READINGS,true);
 			context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS,false);
 			context.put(FacilioConstants.ContextNames.READINGS_MAP , readingMap);
-			Chain importDataChain = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
+			context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.IMPORT);
+			Chain importDataChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
 			importDataChain.execute(context);	
 		}
 		else {

@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
@@ -187,7 +188,7 @@ public class TaskAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		context.put(FacilioConstants.ContextNames.SKIP_LAST_READING_CHECK, true);
 		Map<Long, Map<String, String>> errorMap = new HashMap<>();
-		Chain updateTask = FacilioChainFactory.getUpdateTaskChain();
+		Chain updateTask = TransactionChainFactory.getUpdateTaskChain();
 		try {
 			updateTask.execute(context);
 		} catch (ReadingValidationException ex) {
@@ -240,7 +241,7 @@ public class TaskAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, taskIdList);
 			context.put(FacilioConstants.ContextNames.IS_BULK_ACTION, true);
 			context.put(FacilioConstants.ContextNames.PARENT_ID, parentTicketId);
-			Chain updateTask = FacilioChainFactory.getUpdateTaskChain();
+			Chain updateTask = TransactionChainFactory.getUpdateTaskChain();
 			updateTask.execute(context);
 			rowsUpdated += (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 		}
@@ -259,7 +260,7 @@ public class TaskAction extends FacilioAction {
 				context.put(FacilioConstants.ContextNames.DO_VALIDTION, getDoValidation());
 			}
 			context.put(FacilioConstants.ContextNames.SKIP_LAST_READING_CHECK, true);
-			Chain updateTask = FacilioChainFactory.getUpdateTaskChain();
+			Chain updateTask = TransactionChainFactory.getUpdateTaskChain();
 			try {
 				updateTask.execute(context);
 			} catch (ReadingValidationException ex) {
