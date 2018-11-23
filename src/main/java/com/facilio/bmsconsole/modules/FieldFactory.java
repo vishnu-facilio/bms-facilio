@@ -2712,6 +2712,17 @@ public class FieldFactory {
 		return fields;
 	}
 
+	public static List<FacilioField> getSpaceFilteredDashboardSettingsFields() {
+		FacilioModule module = ModuleFactory.getSpaceFilteredDashboardSettingsModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getField("dashboardId", "DASHBOARD_ID", module, FieldType.LOOKUP));
+		fields.add(getField("baseSpaceId", "BASESPACE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("mobileEnabled", "MOBILE_ENABLED", module, FieldType.BOOLEAN));
+		
+		return fields;
+	}
 	public static List<FacilioField> getDashboardFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getDashboardModule();

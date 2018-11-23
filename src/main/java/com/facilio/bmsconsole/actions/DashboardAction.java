@@ -80,6 +80,7 @@ import com.facilio.bmsconsole.context.ReportThreshold;
 import com.facilio.bmsconsole.context.ReportUserFilterContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.context.SpaceFilteredDashboardSettings;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
@@ -7269,16 +7270,36 @@ public class DashboardAction extends ActionSupport {
 			dashboard = DashboardUtil.getDashboardForBaseSpace(buildingId, module.getModuleId());
 			linkName = (dashboard != null) ? dashboard.getLinkName() : linkName;
 		}
-		dashboard = DashboardUtil.getDashboardWithWidgets(linkName, moduleName);
-		
-		Boolean mobileEnabled = !dashboard.getMobileEnabled();
-		
 		if(dashboard == null) {
-			dashboard = new DashboardContext();
+			dashboard = DashboardUtil.getDashboardWithWidgets(linkName, moduleName);
 		}
-		dashboard.setMobileEnabled(mobileEnabled);
-		dashboard.setId(dashboard.getId());
-		DashboardUtil.updateDashboardPublishStatus(dashboard);
+		Boolean mobileEnabled = false;
+		if(dashboard.getLinkName().equals(DashboardUtil.BUILDING_DASHBOARD_KEY) && (dashboard.getBaseSpaceId() == null || dashboard.getBaseSpaceId() <= 0) && buildingId != null && buildingId > 0 ) {
+			
+			SpaceFilteredDashboardSettings spaceFilteredDashboardSettings = DashboardUtil.getSpaceFilteredDashboardSettings(dashboard.getId(), buildingId);
+			
+			if(spaceFilteredDashboardSettings != null) {
+				mobileEnabled = !spaceFilteredDashboardSettings.getMobileEnabled();
+				spaceFilteredDashboardSettings.setMobileEnabled(mobileEnabled);
+				DashboardUtil.updateSpaceFilteredDashboardSettings(spaceFilteredDashboardSettings);
+			}
+			else {
+				spaceFilteredDashboardSettings = new SpaceFilteredDashboardSettings();
+				spaceFilteredDashboardSettings.setDashboardId(dashboard.getId());
+				spaceFilteredDashboardSettings.setBaseSpaceId(buildingId);
+				spaceFilteredDashboardSettings.setMobileEnabled(true);
+				
+				DashboardUtil.addSpaceFilteredDashboardSettings(spaceFilteredDashboardSettings);
+			}
+		}
+		else {
+			
+			mobileEnabled = !dashboard.getMobileEnabled();
+			
+			dashboard.setMobileEnabled(mobileEnabled);
+			dashboard.setId(dashboard.getId());
+			DashboardUtil.updateDashboardPublishStatus(dashboard);
+		}
 		
 		if(mobileEnabled) {
 			FacilioContext context = new FacilioContext();

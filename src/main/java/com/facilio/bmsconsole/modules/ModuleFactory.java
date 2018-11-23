@@ -760,7 +760,11 @@ public class ModuleFactory {
 		dashboardWigetModule.setTableName("Dashboard");
 		return dashboardWigetModule;
 	}
-
+	public static FacilioModule getSpaceFilteredDashboardSettingsModule() {
+		FacilioModule dashboardWigetModule = new FacilioModule();
+		dashboardWigetModule.setTableName("Space_Filtered_Dashboard_Settings");
+		return dashboardWigetModule;
+	}
 	public static FacilioModule getWidgetModule() {
 		FacilioModule dashboardWigetModule = new FacilioModule();
 		dashboardWigetModule.setTableName("Widget");

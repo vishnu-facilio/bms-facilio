@@ -64,6 +64,7 @@ import com.facilio.bmsconsole.context.ReportThreshold;
 import com.facilio.bmsconsole.context.ReportUserFilterContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SiteContext.SiteType;
+import com.facilio.bmsconsole.context.SpaceFilteredDashboardSettings;
 import com.facilio.bmsconsole.context.UserWorkHourReading;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetVsWorkflowContext;
@@ -161,6 +162,8 @@ public class DashboardUtil {
 	public static List<String> energyDataGroupByOmitFields = new ArrayList<String>();
 	
 	public static List<String> assetOmitFields = new ArrayList<String>();
+	
+	public static String BUILDING_DASHBOARD_KEY = "buildingdashboard";
 	
 	static {
 		
@@ -3482,5 +3485,61 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 			LOGGER.log(Level.SEVERE, e.getMessage(),e);
 		}
 		return jsonObject;
+	}
+	
+	public static SpaceFilteredDashboardSettings getSpaceFilteredDashboardSettings(Long dashboardId,Long basespaceId) throws Exception {
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getSpaceFilteredDashboardSettingsFields())
+				.table(ModuleFactory.getSpaceFilteredDashboardSettingsModule().getTableName())
+				.orCustomWhere("DASHBOARD_ID = ? and BASESPACE_ID = ?", dashboardId,basespaceId);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		if(props != null && !props.isEmpty()) {
+			SpaceFilteredDashboardSettings spaceFilteredDashboardSettings = FieldUtil.getAsBeanFromMap(props.get(0), SpaceFilteredDashboardSettings.class);
+			return spaceFilteredDashboardSettings;
+		}
+		return null;
+	}
+	
+	public static SpaceFilteredDashboardSettings addSpaceFilteredDashboardSettings(SpaceFilteredDashboardSettings spaceFilteredDashboardSettings) throws Exception {
+		
+		GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getSpaceFilteredDashboardSettingsModule().getTableName())
+				.fields(FieldFactory.getSpaceFilteredDashboardSettingsFields())
+				.addRecord(FieldUtil.getAsProperties(spaceFilteredDashboardSettings));
+		
+		insertRecordBuilder.save();
+		
+		spaceFilteredDashboardSettings.setId((long)insertRecordBuilder.getRecords().get(0).get("id"));
+		
+		return spaceFilteredDashboardSettings;
+	}
+	
+	public static SpaceFilteredDashboardSettings updateSpaceFilteredDashboardSettings(SpaceFilteredDashboardSettings spaceFilteredDashboardSettings) throws Exception {
+		
+		GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
+				.table(ModuleFactory.getSpaceFilteredDashboardSettingsModule().getTableName())
+				.fields(FieldFactory.getSpaceFilteredDashboardSettingsFields())
+				.andCustomWhere("DASHBOARD_ID = ? and BASESPACE_ID = ?", spaceFilteredDashboardSettings.getDashboardId(),spaceFilteredDashboardSettings.getBaseSpaceId());
+		
+		Map<String, Object> fields = FieldUtil.getAsProperties(spaceFilteredDashboardSettings);
+		fields.put("mobileEnabled", spaceFilteredDashboardSettings.getMobileEnabled());
+		updateRecordBuilder.update(fields);
+		return spaceFilteredDashboardSettings;
+	}
+	
+	public static SpaceFilteredDashboardSettings addOrUpdateSpaceFilteredDashboardSettings(SpaceFilteredDashboardSettings spaceFilteredDashboardSettings) throws Exception {
+		
+		SpaceFilteredDashboardSettings spaceFilteredDashboardSettings1 = getSpaceFilteredDashboardSettings(spaceFilteredDashboardSettings.getDashboardId(),spaceFilteredDashboardSettings.getBaseSpaceId());
+		
+		if(spaceFilteredDashboardSettings1!= null) {
+			spaceFilteredDashboardSettings1.setMobileEnabled(spaceFilteredDashboardSettings.getMobileEnabled());
+			return updateSpaceFilteredDashboardSettings(spaceFilteredDashboardSettings1);
+		}
+		else {
+			return addSpaceFilteredDashboardSettings(spaceFilteredDashboardSettings);
+		}
 	}
 }
