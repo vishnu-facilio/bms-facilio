@@ -103,6 +103,23 @@ public class ReadingDataMeta implements Serializable {
 	public void setInputType(int inputType) {
 		this.inputType = ReadingInputType.valueOf(inputType);
 	}
+	
+	private ReadingType readingType;
+	public ReadingType getReadingTypeEnum() {
+		return readingType;
+	}
+	public void setReadingType(ReadingType readingType) {
+		this.readingType = readingType;
+	}
+	public int getReadingType() {
+		if (readingType != null) {
+			return readingType.getValue();
+		}
+		return -1;
+	}
+	public void setReadingType(int readingType) {
+		this.readingType = ReadingType.valueOf(readingType);
+	}
 
 	public static enum ReadingInputType {
 		WEB,
@@ -122,6 +139,22 @@ public class ReadingDataMeta implements Serializable {
 			return null;
 		}
 	}
+	
+	public static enum ReadingType {
+		READ,
+		WRITE
+		;
+		
+		public int getValue() {
+			return ordinal() + 1;
+		}
+		public static ReadingType valueOf (int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+ 	}
 	
 	@Override
 	public String toString() {

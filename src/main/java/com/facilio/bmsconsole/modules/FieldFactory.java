@@ -3996,6 +3996,7 @@ public class FieldFactory {
 		fields.add(getField("value", "VALUE", module, FieldType.STRING));
 		fields.add(getField("readingDataId", "READING_DATA_ID", module, FieldType.NUMBER));
 		fields.add(getField("inputType", "INPUT_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("readingType", "READING_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("unit", "UNIT", module, FieldType.NUMBER));
 		return fields;
 	}
