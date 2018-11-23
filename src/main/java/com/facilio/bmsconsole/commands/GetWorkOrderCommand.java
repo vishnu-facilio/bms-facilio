@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -49,6 +50,7 @@ public class GetWorkOrderCommand implements Command {
 				context.put(FacilioConstants.ContextNames.WORK_ORDER, workOrder);
 				
 				TicketAPI.loadRelatedModules(workOrder);
+				TicketAPI.loadTicketLookups(Collections.singleton(workOrder));
 				
 				Map<Long, List<TaskContext>> taskMap = workOrder.getTasks();
 				if (taskMap != null) {
