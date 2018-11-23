@@ -69,7 +69,7 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 	}
 
 	private List<FileField> fileFields = new ArrayList<>();
-	private void handleFieldFields() {
+	private void handleFileFields() {
 		try {
 			FieldUtil.addFiles(fileFields, values);
 		} catch (Exception e) {
@@ -90,7 +90,7 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 		checkForNull();
 		splitFields();
 		
-		handleFieldFields();
+		handleFileFields();
 		
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
