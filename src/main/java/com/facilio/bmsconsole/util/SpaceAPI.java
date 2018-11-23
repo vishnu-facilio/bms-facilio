@@ -1261,15 +1261,15 @@ public static long getSitesCount() throws Exception {
 					.select(selectFields);
 			
 			if(spacetype.equals(SpaceType.SITE)) {
-				newSelectBuilder.andCondition(CriteriaAPI.getCondition("SITE_ID", "SITE_ID", StringUtils.join(baseSpaceID, ","), NumberOperators.EQUALS));
+				newSelectBuilder.andCondition(CriteriaAPI.getCondition("SITE_ID", baseSpaceModule.getTableName()+".SITE_ID", StringUtils.join(baseSpaceID, ","), NumberOperators.EQUALS));
 				newSelectBuilder.andCustomWhere("BUILDING_ID IS NULL");
 			}
 			else if(spacetype.equals(SpaceType.BUILDING)) {
-				newSelectBuilder.andCondition(CriteriaAPI.getCondition("BUILDING_ID", "BUILDING_ID", StringUtils.join(baseSpaceID, ","), NumberOperators.EQUALS));
+				newSelectBuilder.andCondition(CriteriaAPI.getCondition("BUILDING_ID", baseSpaceModule.getTableName()+".BUILDING_ID", StringUtils.join(baseSpaceID, ","), NumberOperators.EQUALS));
 				newSelectBuilder.andCustomWhere("FLOOR_ID IS NULL");
 			}
 			else if(spacetype.equals(SpaceType.FLOOR)) {
-				newSelectBuilder.andCondition(CriteriaAPI.getCondition("FLOOR_ID", "FLOOR_ID", StringUtils.join(baseSpaceID, ","), NumberOperators.EQUALS));
+				newSelectBuilder.andCondition(CriteriaAPI.getCondition("FLOOR_ID", baseSpaceModule.getTableName()+".FLOOR_ID", StringUtils.join(baseSpaceID, ","), NumberOperators.EQUALS));
 				newSelectBuilder.andCustomWhere("SPACE_ID1 IS NULL");
 			}
 			else if(spacetype.equals(SpaceType.SPACE)) {
