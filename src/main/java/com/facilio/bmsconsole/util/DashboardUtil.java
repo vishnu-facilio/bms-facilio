@@ -62,6 +62,7 @@ import com.facilio.bmsconsole.context.ReportFormulaFieldContext;
 import com.facilio.bmsconsole.context.ReportSpaceFilterContext;
 import com.facilio.bmsconsole.context.ReportThreshold;
 import com.facilio.bmsconsole.context.ReportUserFilterContext;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SiteContext.SiteType;
 import com.facilio.bmsconsole.context.SpaceFilteredDashboardSettings;
@@ -1164,12 +1165,41 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 			}
 			List<DashboardContext> dashboards = getFilteredDashboards(dashboardMap, dashboardIds);
 			
+			if(getOnlyMobileDashboard) {
+				splitBuildingDashboardForMobile(dashboards);
+			}
+			
 			return sortDashboardByFolder(dashboards);
 		}
 		return null;
 	}
 	
 	
+	private static void splitBuildingDashboardForMobile(List<DashboardContext> dashboards) throws Exception {
+		
+		DashboardContext buildingDashboard = null;
+		for(DashboardContext dashboard :dashboards) {
+			if(dashboard.getLinkName().equals(BUILDING_DASHBOARD_KEY)) {
+				
+				buildingDashboard  = dashboard;
+				if(dashboard.getSpaceFilteredDashboardSettings() != null && !dashboard.getSpaceFilteredDashboardSettings().isEmpty()) {
+					
+					for(SpaceFilteredDashboardSettings spaceFilteredDashboardSetting : dashboard.getSpaceFilteredDashboardSettings()) {
+						if(spaceFilteredDashboardSetting.getMobileEnabled()) {
+							DashboardContext buildingDashbord1 = (DashboardContext) dashboard.clone();
+							ResourceContext resource = ResourceAPI.getResource(spaceFilteredDashboardSetting.getBaseSpaceId());
+							buildingDashbord1.setDashboardName(resource.getName());
+							buildingDashbord1.setLinkName(buildingDashbord1.getLinkName()+"/"+spaceFilteredDashboardSetting.getBaseSpaceId());
+							dashboards.add(buildingDashbord1);
+						}
+					}
+					break;
+				}
+			}
+		}
+		dashboards.remove(buildingDashboard);
+	}
+
 	public static List<DashboardFolderContext> getDashboardTree(String moduleName) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

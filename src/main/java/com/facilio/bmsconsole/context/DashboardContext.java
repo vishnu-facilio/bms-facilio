@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.util.DashboardUtil;
 
-public class DashboardContext extends ModuleBaseWithCustomFields {
+public class DashboardContext extends ModuleBaseWithCustomFields implements Cloneable {
 
 	/**
 	 * 
@@ -24,6 +24,11 @@ public class DashboardContext extends ModuleBaseWithCustomFields {
 	private String dashboardName;
 	
 	private Long dashboardFolderId = -1l;
+	
+	public Object clone() throws CloneNotSupportedException { 
+		return super.clone(); 
+	}
+	
 	public Long getDashboardFolderId() {
 		return dashboardFolderId;
 	}
