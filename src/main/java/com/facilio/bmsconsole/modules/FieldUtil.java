@@ -32,6 +32,8 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
+import com.facilio.unitconversion.Unit;
+import com.facilio.unitconversion.UnitsUtil;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonInclude.Value;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -43,6 +45,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 public class FieldUtil {
 	
 	private static final Logger LOGGER = LogManager.getLogger(FieldUtil.class.getName());
+	
+	public static final String NUMBER_FIELD_UNIT_SUFFIX = "Unit";
 	public static Map<String, Object> getLookedUpProp(long id) {
 		Map<String, Object> prop = new HashMap<>();
 		prop.put("id", id);
@@ -483,7 +487,28 @@ public class FieldUtil {
 		return value;
 	}
 	
-	
+	public static void handleNumberFieldUnitConversion(List<NumberField> numberFields, List<Map<String, Object>> values){
+		
+		try {
+			if (numberFields == null || numberFields.isEmpty() || values == null || values.isEmpty()) {
+				return;
+			}
+			for(Map<String, Object> value : values) {
+				for(NumberField field : numberFields) {
+					if (value.containsKey(field.getName()) && value.containsKey(field.getName()+NUMBER_FIELD_UNIT_SUFFIX)) {
+						Object numberField = value.get(field.getName());
+						int unit = Integer.parseInt(value.get(field.getName()+NUMBER_FIELD_UNIT_SUFFIX).toString());
+						numberField = UnitsUtil.convertToSiUnit(numberField, Unit.valueOf(unit));
+						value.put(field.getName(), numberField);
+					}
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.log(Level.ERROR, "Insertion failed During Unit Conversion", e);
+			//throw new RuntimeException("Insertion failed During Unit Conversion");
+		}
+		
+	}
 	public static void addFiles(List<FileField> fileFields, List<Map<String, Object>> values) throws Exception {
 		if (fileFields == null || fileFields.isEmpty()) {
 			return;

@@ -143,6 +143,7 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 		if(!value.isEmpty()) {
 			
 			handleFileFields();
+			FieldUtil.handleNumberFieldUnitConversion(numberFields, Collections.singletonList(value));
 			
 			PreparedStatement pstmt = null;
 			try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {

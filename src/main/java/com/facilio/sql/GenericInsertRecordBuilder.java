@@ -91,6 +91,7 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 		splitFields();
 		
 		handleFileFields();
+		FieldUtil.handleNumberFieldUnitConversion(numberFields, values);
 		
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
