@@ -7283,6 +7283,10 @@ public class DashboardAction extends FacilioAction {
 				
 				DashboardUtil.addSpaceFilteredDashboardSettings(spaceFilteredDashboardSettings);
 			}
+			if(!dashboard.getMobileEnabled()) {
+				dashboard.setMobileEnabled(true);
+				DashboardUtil.updateDashboardPublishStatus(dashboard);
+			}
 		}
 		else {
 			
