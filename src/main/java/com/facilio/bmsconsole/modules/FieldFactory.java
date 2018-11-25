@@ -2536,6 +2536,7 @@ public class FieldFactory {
 		fields.add(getSiteIdField(module));
 		fields.add(getField("controllerMacAddr", "CONTROLLER_MAC_ADDR", module, FieldType.STRING));
 		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.DATE_TIME));
+		fields.add(getField("actualTime", "ACTUAL_TIME", module, FieldType.DATE_TIME));
 		fields.add(getField("recordTime", "RECORD_TIME", module, FieldType.DATE_TIME));
 		
 		return fields;

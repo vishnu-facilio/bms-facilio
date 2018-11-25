@@ -189,7 +189,7 @@ public class ControllerAPI {
 		}
 	}
 	
-	private static long adjustTime (long time, int dataInterval) throws Exception {
+	public static long adjustTime (long time, int dataInterval) throws Exception {
 		ZonedDateTime zdt = DateTimeUtil.getDateTime(time);
 		return zdt.truncatedTo(new SecondsChronoUnit(dataInterval * 60)).toInstant().toEpochMilli();
 	}
@@ -200,6 +200,7 @@ public class ControllerAPI {
 		prop.put("siteId", controller.getSiteId());
 		prop.put("controllerMacAddr", controller.getMacAddr());
 		prop.put("createdTime", System.currentTimeMillis());
+		prop.put("actualTime", time);
 		
 		int dataInterval = getDataIntervalInMin(controller);
 		prop.put("recordTime", adjustTime(time, dataInterval));
