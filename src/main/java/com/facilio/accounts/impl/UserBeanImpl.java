@@ -628,10 +628,11 @@ public class UserBeanImpl implements UserBean {
 
 			int updatedRows = updateBuilder.update(props);
 			if (updatedRows > 0) {
+				String password = user.getPassword();
 				user = getInvitedUser(user.getOuid());
 				if(user != null) {
 					user.setUserVerified(true);
-					user.setPassword(user.getPassword());
+					user.setPassword(password);
 					updateUser(user);
 					// LicenseApi.updateUsedLicense(user.getLicenseEnum());
 					return true;
