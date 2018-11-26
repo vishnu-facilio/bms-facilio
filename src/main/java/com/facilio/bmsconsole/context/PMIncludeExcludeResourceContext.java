@@ -41,6 +41,9 @@ public class PMIncludeExcludeResourceContext {
 		this.resourceId = resourceId;
 	}
 	public boolean isInclude() {
+		if(isInclude == null) {
+			return false;
+		}
 		return isInclude;
 	}
 	public void setIsInclude(Boolean isInclude) {
