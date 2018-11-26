@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.context.PreventiveMaintenance.PMCreationType;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
@@ -43,6 +44,7 @@ public class ValidateTasksCommand implements Command {
 		List<TaskContext> tasks = null;
 		int maxUniqueId = 0;
 		Map<String, List<TaskContext>> taskMap = (Map<String, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
+		PreventiveMaintenance pm = (PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 		if(taskMap == null) {
 			tasks = (List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST);
 			if(tasks == null) {
@@ -89,27 +91,29 @@ public class ValidateTasksCommand implements Command {
 				else {
 					switch(task.getInputTypeEnum()) {
 						case READING:
-							if (task.getResource() == null || task.getResource().getId() == -1) {
+							if ((pm == null || pm.getPmCreationType() != PMCreationType.MULTIPLE.getVal()) && (task.getResource() == null || task.getResource().getId() == -1)) {
 								throw new IllegalArgumentException("Resource cannot be null when reading is enabled for task");
 							}
 							if(task.getReadingFieldId() == -1) {
 								throw new IllegalArgumentException("Reading ID cannot be null when reading is enabled for task");
 							}
 							FacilioField readingField = modBean.getField(task.getReadingFieldId());
-							ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(task.getResource().getId(), readingField);
-							switch (meta.getInputTypeEnum()) {
-								case CONTROLLER_MAPPED:
-									throw new IllegalArgumentException("Readings that are mapped with controller cannot be used.");
-								case FORMULA_FIELD:
-								case HIDDEN_FORMULA_FIELD:
-									throw new IllegalArgumentException("Readings that are mapped with formula field cannot be used.");
-								case TASK:
-									if (!pmExecution && !updatePM) {//Temp fix
-										throw new IllegalArgumentException(readingField.getName()+" cannot be used as it is already used in another task.");
-									}
-								default:
-									metaList.add(meta);
-									break;
+							if (pm == null || pm.getPmCreationType() != PMCreationType.MULTIPLE.getVal()) {
+								ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(task.getResource().getId(), readingField);
+								switch (meta.getInputTypeEnum()) {
+									case CONTROLLER_MAPPED:
+										throw new IllegalArgumentException("Readings that are mapped with controller cannot be used.");
+									case FORMULA_FIELD:
+									case HIDDEN_FORMULA_FIELD:
+										throw new IllegalArgumentException("Readings that are mapped with formula field cannot be used.");
+									case TASK:
+										if (!pmExecution && !updatePM) {//Temp fix
+											throw new IllegalArgumentException(readingField.getName()+" cannot be used as it is already used in another task.");
+										}
+									default:
+										metaList.add(meta);
+										break;
+								}
 							}
 							break;
 //						case CHECKBOX:

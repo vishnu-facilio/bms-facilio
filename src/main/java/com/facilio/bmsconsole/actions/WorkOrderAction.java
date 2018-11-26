@@ -722,16 +722,16 @@ public class WorkOrderAction extends FacilioAction {
 		Chain pmSummary = FacilioChainFactory.getPreventiveMaintenanceSummaryChain();
 		pmSummary.execute(context);
 
-		setPreventivemaintenance(
-				(PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE));
+		setPreventivemaintenance((PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE));
 		setWorkorder((WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER));
 		setTaskList((Map<Long, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP));
 		setListOfTasks((List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST));
 		setSectionTemplates((List<TaskSectionTemplate>) context.get(FacilioConstants.ContextNames.TASK_SECTIONS));
 		setReminders((List<PMReminder>) context.get(FacilioConstants.ContextNames.PM_REMINDERS));
-
 		return SUCCESS;
 	}
+	
+	
 	
 	public static List<Long> getAssetExcludeList(List<Long> assetList, Long categoryId) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
