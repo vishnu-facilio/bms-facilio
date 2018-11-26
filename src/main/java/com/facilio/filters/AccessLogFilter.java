@@ -31,6 +31,12 @@ public class AccessLogFilter implements Filter {
     private static final String REQUEST_METHOD = "req_method";
     private static final String REQUEST_URL = "req_uri";
     private static final String DEFAULT_QUERY_STRING = "-";
+    private static final String STRICT_TRANSPORT_SECURITY = "Strict-Transport-Security";
+    private static final String CONTENT_SECURITY_POLICY = "Content-Security-Policy";
+    private static final String X_FRAME_OPTIONS = "X-Frame-options";
+    private static final String X_XSS_PROTECTION = "X-XSS-Protecion";
+    private static final String X_CONTENT_TYPE_OPTIONS = "X-Content-Type-Options";
+    private static final String REFERRER_POLICY = "Referrer-Policy";
     private static final String QUERY = "query";
     private static final String RESPONSE_CODE = "responseCode";
     private static final String TIME_TAKEN = "timetaken";
@@ -52,6 +58,7 @@ public class AccessLogFilter implements Filter {
 
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
+
         Thread thread = Thread.currentThread();
         String threadName = thread.getName();
 
@@ -96,7 +103,7 @@ public class AccessLogFilter implements Filter {
         } else {
             event.setProperty("origin", DEFAULT_QUERY_STRING);
         }
-
+        
         String deviceType = request.getHeader(X_DEVICE_TYPE);
         if(deviceType != null) {
             event.setProperty("deviceType", deviceType);
@@ -115,6 +122,13 @@ public class AccessLogFilter implements Filter {
         }
         thread.setName(threadName);
         AccountUtil.cleanCurrentAccount();
+        
+        response.setHeader(CONTENT_SECURITY_POLICY , "default-src 'self'");
+        response.setHeader(STRICT_TRANSPORT_SECURITY , "max-age=31556926; includeSubDomains");
+        response.setHeader(X_FRAME_OPTIONS , "SAMEORIGIN");
+        response.setHeader(X_XSS_PROTECTION , "1; mode=block");
+        response.setHeader(X_CONTENT_TYPE_OPTIONS , "nosniff");
+        response.setHeader( REFERRER_POLICY, "strict-origin-when-cross-origin");
     }
 
     public void destroy() {
