@@ -42,7 +42,7 @@ public class FacilioCorsFilter implements Filter {
     private static final String STRICT_TRANSPORT_SECURITY = "Strict-Transport-Security";
     private static final String CONTENT_SECURITY_POLICY = "Content-Security-Policy-Report-Only";
     private static final String X_FRAME_OPTIONS = "X-Frame-options";
-    private static final String X_XSS_PROTECTION = "X-XSS-Protecion";
+    private static final String X_XSS_PROTECTION = "X-XSS-Protection";
     private static final String X_CONTENT_TYPE_OPTIONS = "X-Content-Type-Options";
     private static final String REFERRER_POLICY = "Referrer-Policy";
 
@@ -110,7 +110,7 @@ public class FacilioCorsFilter implements Filter {
         response.setHeader(X_XSS_PROTECTION , "1; mode=block");
         response.setHeader(X_CONTENT_TYPE_OPTIONS , "nosniff");
         response.setHeader( REFERRER_POLICY, "strict-origin-when-cross-origin");
-        response.setHeader(CONTENT_SECURITY_POLICY , "default-src https: data: self: 'unsafe-inline'; form-action https:; upgrade-insecure-requests");
+        response.setHeader(CONTENT_SECURITY_POLICY , "default-src https: data: self: 'unsafe-inline'; form-action https:; connect-src: wss:; upgrade-insecure-requests");
 
         String forwardedProtocol = request.getHeader("X-Forwarded-Proto");
         if(forwardedProtocol != null) {
