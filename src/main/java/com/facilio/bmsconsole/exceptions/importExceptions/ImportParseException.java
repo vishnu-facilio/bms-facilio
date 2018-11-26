@@ -1,8 +1,10 @@
 package com.facilio.bmsconsole.exceptions.importExceptions;
 
-import java.util.logging.Logger;
-
 public class ImportParseException extends Exception{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int row_no;
 	private String columnName;
 	private Exception e;

@@ -674,7 +674,8 @@ public class ModuleBeanImpl implements ModuleBean {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(module.getTableName())
 				.fields(fields)
-				.andCustomWhere("ORGID = ? AND FIELDID = ?", getOrgId(), fieldId);
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCustomWhere("FIELDID = ?", getOrgId(), fieldId);
 		
 		updateBuilder.update(props);
 		field.setFieldId(fieldId);
@@ -692,12 +693,30 @@ public class ModuleBeanImpl implements ModuleBean {
 		for (int i = 1; i <= field.getValues().size(); i++) {
 			Map<String, Object> prop = new HashMap<>();
 			prop.put("fieldId", field.getFieldId());
-			prop.put("orgId", field.getOrgId());
+			prop.put("orgId", getOrgId());
 			prop.put("index", i);
 			prop.put("value", field.getValue(i));
 			insertBuilder.addRecord(prop);
 		}
 		insertBuilder.save();
+	}
+	
+	private void updateEnumField(EnumField field) throws Exception {
+		if (field.getValues() == null || field.getValues().isEmpty()) {
+			return;
+		}
+		deleteEnumValues(field);
+		addEnumField(field);
+	}
+	
+	private void deleteEnumValues (EnumField field) throws Exception {
+		FacilioModule module = ModuleFactory.getEnumFieldValuesModule();
+		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCustomWhere("FIELDID = ?", field.getFieldId())
+														;
+		deleteBuilder.delete();
 	}
 	
 	@Override
@@ -713,17 +732,18 @@ public class ModuleBeanImpl implements ModuleBean {
 			int count = updateBuilder.update(FieldUtil.getAsProperties(field));
 			field.setFieldId(fieldId);
 			
-			if(field.getDataTypeEnum() != null) {
-				switch(field.getDataTypeEnum()) {
-				case NUMBER:
-				case DECIMAL:
-					updateExtendedProps(ModuleFactory.getNumberFieldModule(), FieldFactory.getNumberFieldFields(), field);
-					break;
-				default:
-					break;
-				}
+			if (field instanceof NumberField) {
+				updateExtendedProps(ModuleFactory.getNumberFieldModule(), FieldFactory.getNumberFieldFields(), field);
 			}
-			
+			else if (field instanceof BooleanField) {
+				updateExtendedProps(ModuleFactory.getBooleanFieldsModule(), FieldFactory.getBooleanFieldFields(), field);
+			}
+			else if (field instanceof FileField) {
+				updateExtendedProps(ModuleFactory.getFileFieldModule(), FieldFactory.getFileFieldFields(), field);
+			}
+			else if (field instanceof EnumField) {
+				updateEnumField((EnumField) field);
+			}
 			return count;
 		}
 		else {

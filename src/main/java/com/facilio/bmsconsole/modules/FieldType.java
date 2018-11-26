@@ -87,8 +87,7 @@ public enum FieldType {
 	}
 
 	
-	public String toString()
-	{
+	public String toString() {
 		return typeString;
 	}
 }
