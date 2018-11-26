@@ -73,10 +73,10 @@ public class TimeSeriesAPI {
 	private static long getTimeStamp(long ttime, JSONObject payLoad) {
 
 		long timeStamp=-1;
-		String timeString=(String)payLoad.remove("timestamp");
+		Object timeString=payLoad.remove("timestamp");
 		if(timeString!=null) {
 			try {
-				timeStamp=Long.parseLong(timeString);
+				timeStamp = Long.parseLong(timeString.toString());
 			}
 			catch(NumberFormatException nfe) {}
 		}

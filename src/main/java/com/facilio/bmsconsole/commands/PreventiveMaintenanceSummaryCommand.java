@@ -31,6 +31,8 @@ import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.templates.TaskSectionTemplate;
+import com.facilio.bmsconsole.templates.TaskTemplate;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
@@ -157,7 +159,9 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.TASK_MAP, taskMap);
 		context.put(FacilioConstants.ContextNames.TASK_LIST, listOfTasks);
-		context.put(FacilioConstants.ContextNames.TASK_SECTIONS, template.getSectionTemplates());
+		List<TaskSectionTemplate> sectionTemplate = template.getSectionTemplates();
+		sectionTemplate = fillSectionTemplate(template,sectionTemplate);
+		context.put(FacilioConstants.ContextNames.TASK_SECTIONS, sectionTemplate);
 		PreventiveMaintenanceAPI.updateResourceDetails(workorder, taskMap);
 		if (listOfTasks != null) {
 			CommonCommandUtil.loadTaskLookups(listOfTasks);
@@ -167,6 +171,28 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 		context.put(FacilioConstants.ContextNames.PM_REMINDERS, reminders);
 		
 		return false;
+	}
+	
+	private List<TaskSectionTemplate> fillSectionTemplate(WorkorderTemplate template,List<TaskSectionTemplate> sectionTemplate) {
+		
+		TaskSectionTemplate taskSectionTemplate = new TaskSectionTemplate();
+		taskSectionTemplate.setName("default");
+		taskSectionTemplate.setOrgId(AccountUtil.getCurrentOrg().getId());
+		taskSectionTemplate.setParentWOTemplateId(template.getId());
+		List<TaskTemplate> defaultTask = new ArrayList<>();
+		
+		for(TaskTemplate taskTemplates : template.getTaskTemplates()) {
+			if(taskTemplates.getSectionId() < 0) {
+				defaultTask.add(taskTemplates);
+			}
+		}
+		
+		if(!defaultTask.isEmpty()) {
+			taskSectionTemplate.setTaskTemplates(defaultTask);
+			sectionTemplate = sectionTemplate != null ? sectionTemplate : new ArrayList<>();
+			sectionTemplate.add(taskSectionTemplate);
+		}
+		return sectionTemplate;
 	}
 
 	private void fillReadingFields(List<TaskContext> listOfTasks) throws Exception {

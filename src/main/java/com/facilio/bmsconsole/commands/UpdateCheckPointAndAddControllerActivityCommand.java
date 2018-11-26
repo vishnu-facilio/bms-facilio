@@ -46,7 +46,7 @@ public class UpdateCheckPointAndAddControllerActivityCommand implements Command 
 				}
 				
 				context.put(FacilioConstants.ContextNames.CONTROLLER, controller);
-				context.put(FacilioConstants.ContextNames.CONTROLLER_TIME, record.getApproximateArrivalTimestamp().getTime());
+				context.put(FacilioConstants.ContextNames.CONTROLLER_TIME, context.get(FacilioConstants.ContextNames.TIMESTAMP));
 				
 				addControllerActivity((FacilioContext) context, controller, record.getApproximateArrivalTimestamp().getTime());
 			}
