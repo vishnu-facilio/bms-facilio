@@ -39,6 +39,13 @@ public class FacilioCorsFilter implements Filter {
     private static final String ACCESS_CONTROL_ALLOW_METHODS = "Access-Control-Allow-Methods";
     private static final String ACCESS_CONTROL_ALLOW_HEADERS = "Access-Control-Allow-Headers";
     private static final String ACCESS_CONTROL_ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials";
+    private static final String STRICT_TRANSPORT_SECURITY = "Strict-Transport-Security";
+    private static final String CONTENT_SECURITY_POLICY = "Content-Security-Policy-Report-Only";
+    private static final String X_FRAME_OPTIONS = "X-Frame-options";
+    private static final String X_XSS_PROTECTION = "X-XSS-Protecion";
+    private static final String X_CONTENT_TYPE_OPTIONS = "X-Content-Type-Options";
+    private static final String REFERRER_POLICY = "Referrer-Policy";
+
 
     private static final boolean SUPPORTS_CREDENTIALS = true;
     
@@ -93,11 +100,18 @@ public class FacilioCorsFilter implements Filter {
         if(customdomains==null) {
         	customdomains = (HashMap)(request.getServletContext()).getAttribute("customdomains");
         }
-        if(ip!=null)
-        {
-        response.addHeader("internal", ip);
+
+        if(ip != null) {
+            response.addHeader("internal", ip);
         }
-        
+
+        response.setHeader(STRICT_TRANSPORT_SECURITY , "max-age=31556926; includeSubDomains");
+        response.setHeader(X_FRAME_OPTIONS , "SAMEORIGIN");
+        response.setHeader(X_XSS_PROTECTION , "1; mode=block");
+        response.setHeader(X_CONTENT_TYPE_OPTIONS , "nosniff");
+        response.setHeader( REFERRER_POLICY, "strict-origin-when-cross-origin");
+        response.setHeader(CONTENT_SECURITY_POLICY , "default-src https: 'unsafe-inline'");
+
         String forwardedProtocol = request.getHeader("X-Forwarded-Proto");
         if(forwardedProtocol != null) {
             if ("http".equalsIgnoreCase(forwardedProtocol)){
