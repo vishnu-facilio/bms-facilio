@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 
 public class TaskTemplate extends Template {
 	
@@ -251,10 +252,18 @@ public class TaskTemplate extends Template {
 			if (additionInfo != null) {
 				taskProp.putAll(additionInfo);
 			}
+			taskProp.put("readingRules", readingRules);
 			
 			return FieldUtil.getAsBeanFromMap(taskProp, TaskContext.class);
 		}
 		return null;
+	}
+	private List<ReadingRuleContext> readingRules;
+	public List<ReadingRuleContext> getReadingRules() {
+		return readingRules;
+	}
+	public void setReadingRules(List<ReadingRuleContext> readingRules) {
+		this.readingRules = readingRules;
 	}
 	public void setTask(TaskContext task) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		if (task != null) {

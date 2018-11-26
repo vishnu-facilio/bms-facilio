@@ -713,14 +713,16 @@ public class ModuleBeanImpl implements ModuleBean {
 			int count = updateBuilder.update(FieldUtil.getAsProperties(field));
 			field.setFieldId(fieldId);
 			
-			switch(field.getDataTypeEnum()) {
-			case NUMBER:
-			case DECIMAL:
-				updateExtendedProps(ModuleFactory.getNumberFieldModule(), FieldFactory.getNumberFieldFields(), field);
-				break;
-			default:
-				break;
-		}
+			if(field.getDataTypeEnum() != null) {
+				switch(field.getDataTypeEnum()) {
+				case NUMBER:
+				case DECIMAL:
+					updateExtendedProps(ModuleFactory.getNumberFieldModule(), FieldFactory.getNumberFieldFields(), field);
+					break;
+				default:
+					break;
+				}
+			}
 			
 			return count;
 		}
