@@ -199,7 +199,7 @@ public class ImportDataAction extends ActionSupport {
 		
 		importProcessContext.setStatus(ImportProcessContext.ImportStatus.IN_PROGRESS.getValue());
 		ImportAPI.updateImportProcess(importProcessContext);
-		FacilioTimer.scheduleOneTimeJob(importProcessContext.getId(), "importData" , 5, "priority");
+		FacilioTimer.scheduleOneTimeJob(importProcessContext.getId(), "importData" , 5, "priority", 1);
 		
 		return SUCCESS;
 	}

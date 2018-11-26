@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.io.InputStream;
+import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -51,7 +52,7 @@ public class DataParseForReadingsCommand implements Command {
 	private ArrayListMultimap<String, String> groupedFields;
 	
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean execute(Context context) throws Exception,ImportParseException {
 		
 		ArrayListMultimap<String, ReadingContext> groupedContext = ArrayListMultimap.create();
 		ImportProcessContext importProcessContext = (ImportProcessContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
@@ -70,6 +71,7 @@ public class DataParseForReadingsCommand implements Command {
 		HashMap<Integer, HashMap<String, Object>> nullResources = new HashMap<>();
 		HashMap<Integer, HashMap<String, Object>> duplicateEntries = new HashMap<>();
 		JSONObject templateMeta = importTemplateContext.getTemplateMetaJSON();
+		ArrayList<String> ModulesPlusFields = new ArrayList(fieldMapping.keySet());
 		JSONObject dateFormats = (JSONObject) templateMeta.get(ImportAPI.ImportProcessConstants.DATE_FORMATS);
 		fieldMapParsing(fieldMapping);
 		
@@ -196,7 +198,7 @@ public class DataParseForReadingsCommand implements Command {
 					JSONObject meta = importTemplateContext.getModuleJSON();
 					if(!meta.isEmpty()) {
 						Long parentId =(Long) meta.get(ImportAPI.ImportProcessConstants.PARENT_ID_FIELD);
-						if(parentId == null) {
+						if(!importTemplateContext.getUniqueMappingJSON().isEmpty()) {
 							parentId = getAssetByUniqueness(colVal, importTemplateContext.getModuleMapping().get("subModule"), uniqueMapping);
 							// check for null in resources
 							if(parentId == null) {
@@ -210,10 +212,11 @@ public class DataParseForReadingsCommand implements Command {
 						}
 					}
 					
-					fieldMapping.forEach((key,value) -> {
-						
+	
+					for(int fieldIndex = 0; fieldIndex < ModulesPlusFields.size(); fieldIndex++){
 					Boolean isfilled = false;
-					Object cellValue = colVal.get(value);
+					String key = ModulesPlusFields.get(fieldIndex);
+					Object cellValue = colVal.get(fieldMapping.get(key));
 					String moduleAndField [] = key.split("__");
 					
 					String field = moduleAndField[(moduleAndField.length)-1];
@@ -255,10 +258,11 @@ public class DataParseForReadingsCommand implements Command {
 										isfilled = true;
 									}
 								}
-							} catch (Exception e) {
-								LOGGER.severe("exception ---" + e);
-								throw e;
-							}
+
+						} catch (Exception e) {
+							LOGGER.severe("exception ---" + e);
+							throw new ImportParseException(row_no, fieldMapping.get(key).toString(), e);
+						}
 						}
 					}
 					if(!isfilled) {
@@ -266,16 +270,17 @@ public class DataParseForReadingsCommand implements Command {
 							props.put(field, cellValue);
 						}
 					}else {
-						return;
+						continue;
 					}
 					}
-				});
-					LOGGER.severe("props1 ---" + props);
+					}
+					LOGGER.severe("props ---" + props);
 					ReadingContext NonDuplicateReadingContext = FieldUtil.getAsBeanFromMap(props, ReadingContext.class);
 					readingContexts.add(NonDuplicateReadingContext );
 					groupedContext.put(module, NonDuplicateReadingContext );
-				}
-			}
+					System.out.println(groupedContext);
+		}
+		}
 		}
 		context.put(ImportAPI.ImportProcessConstants.READINGS_LIST, readingContexts);
 		context.put(ImportAPI.ImportProcessConstants.IMPORT_TEMPLATE_CONTEXT, importTemplateContext);
@@ -283,9 +288,9 @@ public class DataParseForReadingsCommand implements Command {
 		context.put(ImportAPI.ImportProcessConstants.GROUPED_FIELDS, groupedFields);
 		context.put(ImportAPI.ImportProcessConstants.NULL_UNIQUE_FIELDS, nullUniqueFields);
 		context.put(ImportAPI.ImportProcessConstants.NULL_RESOURCES, nullResources);
-		
 		return false;
 	}
+		
 	
 	public static Long getAssetByUniqueness(HashMap<String,Object> colVal, String module, HashMap<String,String> uniqueMapping) throws Exception{
 		LOGGER.severe("colVal" + colVal.toString());

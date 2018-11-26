@@ -43,6 +43,7 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
@@ -51,6 +52,7 @@ import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.ImportAPI;
+import com.facilio.bmsconsole.util.ModuleLocalIdUtil;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
@@ -77,6 +79,7 @@ public class ProcessImportCommand implements Command {
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
 		List<ReadingContext> readingsList = new ArrayList<ReadingContext>();
 		InputStream ins = fs.readFile(importProcessContext.getFileId());
+		ArrayList<String> modulesPlusFields = new ArrayList(fieldMapping.keySet());
 		List<String> moduleNames = new ArrayList<>(groupedFields.keySet());
 		Map<String, Long> lookupHolder;
 		
@@ -260,11 +263,12 @@ public class ProcessImportCommand implements Command {
 
 					LOGGER.severe("\n\n colVal --- " + colVal);
 
-					fieldMapping.forEach((key, value) -> {
+						for(int fieldIndex = 0; fieldIndex < modulesPlusFields.size(); fieldIndex++) {
+						String key = modulesPlusFields.get(fieldIndex);
 						String[] fieldAndModule = key.split("__");
 						String field = fieldAndModule[(fieldAndModule.length) - 1];
 						if (fields.contains(field)) {
-							Object cellValue = colVal.get(value);
+							Object cellValue = colVal.get(fieldMapping.get(key));
 							boolean isfilledByLookup = false;
 
 							if (cellValue != null && !cellValue.toString().equals("")) {
@@ -348,7 +352,7 @@ public class ProcessImportCommand implements Command {
 									} catch (Exception e) {
 										// TODO Auto-generated catch block
 										e.printStackTrace();
-										throw e;
+										throw new ImportParseException(row_no, fieldMapping.get(key), e);
 									}
 								}
 							}
@@ -359,9 +363,9 @@ public class ProcessImportCommand implements Command {
 								}
 							}
 						} else {
-							return;
+							continue;
 						}
-					});
+					}
 
 					LOGGER.severe("props -- " + props);
 					ReadingContext reading = FieldUtil.getAsBeanFromMap(props, ReadingContext.class);

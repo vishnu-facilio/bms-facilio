@@ -14,6 +14,7 @@ import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.actions.ImportProcessContext;
+import com.facilio.bmsconsole.actions.ImportTemplateContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.util.ImportAPI;
@@ -27,6 +28,8 @@ public class InsertReadingCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		context.get(ImportAPI.ImportProcessConstants.READINGS_LIST);
 		ImportProcessContext importProcessContext =(ImportProcessContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
+		ImportTemplateContext importTemplateContext = (ImportTemplateContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_TEMPLATE_CONTEXT);
+		JSONObject modulesJSON = importTemplateContext.getModuleJSON();
 		ArrayListMultimap<String, ReadingContext> groupedContext = (ArrayListMultimap<String, ReadingContext>) context.get(ImportAPI.ImportProcessConstants.GROUPED_READING_CONTEXT);
 		ArrayListMultimap<String , String> groupedFields = (ArrayListMultimap<String, String>) context.get(ImportAPI.ImportProcessConstants.GROUPED_FIELDS);
 		List<String> keys = new ArrayList(groupedFields.keySet());
@@ -48,12 +51,22 @@ public class InsertReadingCommand implements Command {
 		JSONObject meta = importProcessContext.getImportJobMetaJson();
 		if(meta == null) {
 			JSONObject metainfo = new JSONObject();
-			metainfo.put("Inserted", groupedContext.size());
+			if(modulesJSON.get("baseModule").equals(FacilioConstants.ContextNames.SPACE)) {
+				metainfo.put("Inserted", (groupedContext.size()/ groupedFields.keySet().size()));
+			}
+			else {
+				metainfo.put("Inserted", groupedContext.size());
+			}
 			metainfo.put("Skipped", nullFields);
 			importProcessContext.setImportJobMeta(metainfo.toJSONString());
 		}
 		else {
-			meta.put("Inserted", groupedContext.size());
+			if(modulesJSON.get("baseModule").equals(FacilioConstants.ContextNames.SPACE)) {
+				meta.put("Inserted", (groupedContext.size()/ groupedFields.keySet().size()));
+			}
+			else {
+				meta.put("Inserted", groupedContext.size());
+			}
 			meta.put("Skipped", nullFields);
 			importProcessContext.setImportJobMeta(meta.toJSONString());
 		}

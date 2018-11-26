@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.job.FacilioJob;
@@ -71,15 +72,23 @@ public class ImportDataJob extends FacilioJob {
 			ImportAPI.updateImportProcess(importProcessContext);
 			LOGGER.severe("IMPORT DATA JOB COMPLETED -- " +jobId);
 		} catch(Exception e) {
+			String message;
+			if(e instanceof ImportParseException) {
+				ImportParseException importParseException = (ImportParseException) e;
+				message = importParseException.getClientMessage();
+			}
+			else {
+				message = e.getMessage();
+			}
 			try {
 				if(importProcessContext != null) {
 					JSONObject meta = importProcessContext.getImportJobMetaJson();
 					if(meta != null && !meta.isEmpty()) {
-						meta.put("errorMessage", e.getMessage());
+						meta.put("errorMessage", message);
 					}
 					else {
 						meta = new JSONObject();
-						meta.put("errorMessage", e.getMessage());
+						meta.put("errorMessage", message);
 					}
 					importProcessContext.setImportJobMeta(meta.toJSONString());
 					importProcessContext.setStatus(ImportProcessContext.ImportStatus.FAILED.getValue());
