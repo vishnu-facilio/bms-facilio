@@ -570,9 +570,10 @@ public class AwsUtil
 	}
 
 	public static void publishIotMessage(String client, JSONObject message) throws Exception {
-		AWSCredentials awsCredentials = getAWSCredentialsProvider().getCredentials();
+		// AWSCredentials awsCredentials = getAWSCredentialsProvider().getCredentials();
 		LOGGER.info(AwsUtil.getConfig("iot.endpoint") +" " + client+"-facilio" + " " + client+"/msgs" + " " + message);
-		AWSIotMqttClient mqttClient = new AWSIotMqttClient(AwsUtil.getConfig("iot.endpoint"), client+"-facilio", awsCredentials.getAWSAccessKeyId(), awsCredentials.getAWSSecretKey());
+		// AWSIotMqttClient mqttClient = new AWSIotMqttClient(AwsUtil.getConfig("iot.endpoint"), client+"-facilio", awsCredentials.getAWSAccessKeyId(), awsCredentials.getAWSSecretKey());
+		AWSIotMqttClient mqttClient = new AWSIotMqttClient(AwsUtil.getConfig("iot.endpoint"), client+"-facilio", "AKIAIVXNCI3T7TCHFGPA", "jK6uCU3HUhI06r6Udl0P2u6aMaNAvxfwhn+HR1Eg");
 		try {
 			mqttClient.connect();
 			if(mqttClient.getConnectionStatus() == AWSIotConnectionStatus.CONNECTED) {
