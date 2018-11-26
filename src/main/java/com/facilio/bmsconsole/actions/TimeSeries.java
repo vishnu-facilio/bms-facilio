@@ -108,11 +108,17 @@ public class TimeSeries extends FacilioAction {
 	}
 	
 	public String configureInstances () throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
+		context.put(FacilioConstants.ContextNames.DEVICE_DATA , changedDevices);
+		
+		Chain markChain = TransactionChainFactory.getMarkUnmodeledInstanceChain();
+		markChain.execute(context);
+		
 		List<Map<String, Object>> instances =  TimeSeriesAPI.getUnmodeledInstances(ids);
 		JSONObject clientMessage = TimeSeriesAPI.constructIotMessage(instances, "configure");
 		AwsUtil.publishIotMessage(AccountUtil.getCurrentOrg().getDomain(), clientMessage);
 		
-		TimeSeriesAPI.markUnmodeledInstancesAsUsed(ids);
 		
 		setResult("result", "success");
 		return SUCCESS;
@@ -140,6 +146,14 @@ public class TimeSeries extends FacilioAction {
 	}
 	public void setIds(List<Long> ids) {
 		this.ids = ids;
+	}
+	
+	private Map<Long, String> changedDevices;
+	public Map<Long, String> getChangedDevices() {
+		return changedDevices;
+	}
+	public void setChangedDevices(Map<Long, String> changedDevices) {
+		this.changedDevices = changedDevices;
 	}
 
 	long timestamp;

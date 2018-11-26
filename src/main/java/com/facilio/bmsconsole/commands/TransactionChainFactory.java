@@ -478,6 +478,13 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain getMarkUnmodeledInstanceChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new MarkUnmodeledInstanceCommand());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
 	    private static Chain getDefaultChain() {
 	    	return new FacilioChain(true);
 	    }
