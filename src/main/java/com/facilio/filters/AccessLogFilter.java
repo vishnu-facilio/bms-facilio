@@ -123,12 +123,12 @@ public class AccessLogFilter implements Filter {
         thread.setName(threadName);
         AccountUtil.cleanCurrentAccount();
         
-        response.setHeader(CONTENT_SECURITY_POLICY , "default-src https:");
         response.setHeader(STRICT_TRANSPORT_SECURITY , "max-age=31556926; includeSubDomains");
         response.setHeader(X_FRAME_OPTIONS , "SAMEORIGIN");
         response.setHeader(X_XSS_PROTECTION , "1; mode=block");
         response.setHeader(X_CONTENT_TYPE_OPTIONS , "nosniff");
         response.setHeader( REFERRER_POLICY, "strict-origin-when-cross-origin");
+        response.setHeader(CONTENT_SECURITY_POLICY , "default-src https: 'unsafe-inline'");
     }
 
     public void destroy() {
