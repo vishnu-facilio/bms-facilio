@@ -471,6 +471,13 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain getInstanceAssetMappingChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new InstanceAssetMappingCommand());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
 	    private static Chain getDefaultChain() {
 	    	return new FacilioChain(true);
 	    }

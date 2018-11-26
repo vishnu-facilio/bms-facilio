@@ -31,6 +31,7 @@ import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
+import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingType;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -106,7 +107,7 @@ public class ReadingsAPI {
 		return updateBuilder.update(prop);
 	}
 	
-	public static int updateReadingDataMetaInputType (List<ReadingDataMeta> metaList, ReadingDataMeta.ReadingInputType type) throws SQLException {
+	public static int updateReadingDataMetaInputType (List<ReadingDataMeta> metaList, ReadingDataMeta.ReadingInputType type, ReadingType readingType) throws SQLException {
 		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
 		List<FacilioField> fields = FieldFactory.getReadingDataMetaFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -121,7 +122,12 @@ public class ReadingsAPI {
 			pkCriteriaList.orCriteria(pkCriteria);
 		}
 		
-		Map<String, Object> prop = Collections.singletonMap("inputType", type.getValue());
+		Map<String, Object> prop = new HashMap<>();
+		prop.put("inputType", type.getValue());
+		
+		if (readingType != null) {
+			prop.put("readingType", readingType.getValue());
+		}
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 														.table(module.getTableName())
 														.fields(fields)

@@ -1446,9 +1446,17 @@ public class ModuleFactory {
 	
 	public static FacilioModule getUnmodeledInstancesModule() {
 		FacilioModule syncModule = new FacilioModule();
-		syncModule.setName("unmodeledInstances");
-		syncModule.setDisplayName("Unmodeled Instances");
+		syncModule.setName("unmodeledInstance");
+		syncModule.setDisplayName("Unmodeled Instance");
 		syncModule.setTableName("Unmodeled_Instance");
+		return syncModule;
+	}
+	
+	public static FacilioModule getInstanceMappingModule() {
+		FacilioModule syncModule = new FacilioModule();
+		syncModule.setName("instanceToAssetMapping");
+		syncModule.setDisplayName("Instance To Asset Mapping");
+		syncModule.setTableName("Instance_To_Asset_Mapping");
 		return syncModule;
 	}
 }

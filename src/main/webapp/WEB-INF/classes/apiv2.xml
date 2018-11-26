@@ -380,6 +380,8 @@
 	</package>
 	
 	<package name="readingFieldLatestValuesApiv2" namespace="/api/v2/reading" extends="v2Api">
+		<action name="set" class="com.facilio.bmsconsole.actions.ReadingAction" method="setReading">
+		</action>
 		<action name="occupantdata" class="com.facilio.bmsconsole.actions.ReadingAction" method="getResourcesOccupantLatestReadingData">
 		</action>
 	</package>

@@ -1,6 +1,8 @@
 package com.facilio.timeseries;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +17,7 @@ import org.json.simple.JSONObject;
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
 import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bacnet.BACNetUtil;
+import com.facilio.bacnet.BACNetUtil.InstanceType;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -23,15 +25,18 @@ import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
+import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingType;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.ControllerAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
@@ -86,17 +91,6 @@ public class TimeSeriesAPI {
 		}
 		return timeStamp;
 	}
-
-	
-	public static void processHistoricalData(List<String>deviceList) throws Exception {
-		
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.DEVICE_LIST , deviceList);
-		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.KINESIS);
-		Chain processDataChain = TransactionChainFactory.getProcessHistoricalDataChain();
-		processDataChain.execute(context);
-	}
-	
 	
 	public static Map<String, List<String>> getAllDevices() throws Exception {
 		
@@ -151,6 +145,13 @@ public class TimeSeriesAPI {
 		Map<String, ReadingDataMeta> metaMap = metaList.stream().collect(Collectors.toMap(meta -> meta.getResourceId()+"|"+meta.getFieldId(), Function.identity()));
 		List<Map<String, Object>> records = new ArrayList<>();
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
+		
+		List<Map<String, Object>> instanceDetails = getUnmodeledInstances(deviceName, instanceFieldMap.keySet(), null);
+		Map<String,Map<String, Object>> instanceMap = instanceDetails.stream().collect(Collectors.toMap(instance -> (String) instance.get("instance"), Function.identity()));
+		
+		List<ReadingDataMeta> writableReadingList = new ArrayList<>();
+		List<ReadingDataMeta> readableReadingList = new ArrayList<>();
+		
 		for (Map.Entry<String, Long> entry : instanceFieldMap.entrySet()) {
 			String instanceName = entry.getKey();
 			long fieldId = entry.getValue();
@@ -162,13 +163,30 @@ public class TimeSeriesAPI {
 			record.put("instance", instanceName);
 			record.put("fieldId", fieldId);
 			records.add(record);
+			
+			Map<String, Object> instance = instanceMap.get(instanceName);
+			InstanceType rType =  InstanceType.valueOf((int) instance.get("instanceType"));
+			
+			ReadingDataMeta meta = metaMap.get(assetId+"|"+fieldId);
+			if (rType.isWritable()) {
+				writableReadingList.add(meta);
+			}
+			else {
+				readableReadingList.add(meta);
+			}
 		};
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.fields(FieldFactory.getInstanceMappingFields())
 				.table("Instance_To_Asset_Mapping")
 				.addRecords(records);
 		insertBuilder.save();
-		ReadingsAPI.updateReadingDataMetaInputType(metaList, ReadingInputType.CONTROLLER_MAPPED);
+		
+		if (!writableReadingList.isEmpty()) {
+			ReadingsAPI.updateReadingDataMetaInputType(writableReadingList, ReadingInputType.CONTROLLER_MAPPED, ReadingType.WRITE);
+		}
+		if (!readableReadingList.isEmpty()){
+			ReadingsAPI.updateReadingDataMetaInputType(readableReadingList, ReadingInputType.CONTROLLER_MAPPED, ReadingType.READ);
+		}
 	}
 	
 	public static Map<String, Long> getDefaultInstanceFieldMap() throws Exception {
@@ -187,8 +205,24 @@ public class TimeSeriesAPI {
 		return fieldMap;
 	}
 	
+	public static Map<String, Object> getMappedInstance(long assetId, long fieldId) throws Exception {
+		FacilioModule module = ModuleFactory.getInstanceMappingModule();
+		List<FacilioField> fields = FieldFactory.getInstanceMappingFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("assetId"), String.valueOf(assetId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("fieldId"), String.valueOf(fieldId), NumberOperators.EQUALS))
+				;
+		List<Map<String, Object>> props = builder.get();
+		if(props!=null && !props.isEmpty()) {
+			return props.get(0);
+		}
+		return null;
+	}
 	
-
 	public static List<Map<String,Object>> getMarkedReadings(Criteria criteria) throws Exception {
 		
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
@@ -220,7 +254,7 @@ public class TimeSeriesAPI {
 		return builder.get();
 	}
 	
-public static Criteria getCriteria(List<Long> timeRange, List<Long> deviceList, List<Long> moduleList,List<Long> fieldList,List<Integer> markTypeList) {
+	public static Criteria getCriteria(List<Long> timeRange, List<Long> deviceList, List<Long> moduleList,List<Long> fieldList,List<Integer> markTypeList) {
 		
 		Criteria criteria = new Criteria(); 
 		if(timeRange!=null && !timeRange.isEmpty()) {
@@ -287,7 +321,7 @@ public static Criteria getCriteria(List<Long> timeRange, List<Long> deviceList, 
 		insertBuilder.save();
 	}
 	
-	public static List<Map<String, Object>> getInstancesForController (long controllerId, Boolean... configuredOnly) throws Exception {
+	public static List<Map<String, Object>> getUnmodeledInstancesForController (long controllerId, Boolean... configuredOnly) throws Exception {
 		FacilioModule module = ModuleFactory.getUnmodeledInstancesModule();
 		List<FacilioField> fields = FieldFactory.getUnmodeledInstanceFields();
 		fields.add(FieldFactory.getIdField(module));
@@ -306,7 +340,7 @@ public static Criteria getCriteria(List<Long> timeRange, List<Long> deviceList, 
 		 if (props != null && !props.isEmpty()) {
 			 return props.stream().map(prop -> {
 				 if (prop.get("instanceType") != null) {
-					 prop.put("instanceTypeVal", BACNetUtil.getObjectType((int) prop.get("instanceType")));
+					 prop.put("instanceTypeVal", InstanceType.valueOf((int) prop.get("instanceType")).name());
 				 }
 				 return prop;
 			}).collect(Collectors.toList());
@@ -315,13 +349,50 @@ public static Criteria getCriteria(List<Long> timeRange, List<Long> deviceList, 
 
 	}
 	
-	public static int markInstancesAsUsed(List<Long> ids) throws Exception {
-		Map<String, Object> prop = new HashMap<>();
-		prop.put("inUse", true);
-		return updateInstances(ids, prop);
+	public static List<Map<String, Object>> getUnmodeledInstances (List<Long> ids) throws Exception {
+		return getUnmodeledInstances(null, null, ids);
 	}
 	
-	public static int updateInstances(List<Long> ids, Map<String, Object> instance) throws Exception{
+	public static List<Map<String, Object>> getUnmodeledInstances (String device, Collection<String> instances, List<Long> ids) throws Exception {
+		FacilioModule module = ModuleFactory.getUnmodeledInstancesModule();
+		List<FacilioField> fields = FieldFactory.getUnmodeledInstanceFields();
+		fields.add(FieldFactory.getIdField(module));
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				;
+		
+		if (ids != null ) {
+			builder.andCondition(CriteriaAPI.getIdCondition(ids, module));
+		}
+		else if (instances != null) {
+			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("device"), device, StringOperators.IS))
+				   .andCondition(CriteriaAPI.getCondition(fieldMap.get("instance"), StringUtils.join(instances, ","), StringOperators.IS));
+		}
+		
+		return builder.get();
+	}
+	
+	public static Map<String, Object> getUnmodeledInstance (long assetId, long fieldId) throws Exception {
+		Map<String, Object> mappedInstance = getMappedInstance(assetId, fieldId);
+		if (mappedInstance != null) {
+			String instance = (String) mappedInstance.get("instance");
+			List<Map<String, Object>> unmodeledInstances = getUnmodeledInstances((String)mappedInstance.get("device"), Collections.singletonList(instance), null);
+			if (unmodeledInstances != null && !unmodeledInstances.isEmpty()) {
+				return unmodeledInstances.get(0);
+			}
+		}
+		return null;
+	}
+	
+	public static int markUnmodeledInstancesAsUsed(List<Long> ids) throws Exception {
+		return updateUnmodeledInstances(ids, Collections.singletonMap("inUse", true));
+	}
+	
+	public static int updateUnmodeledInstances(List<Long> ids, Map<String, Object> instance) throws Exception{
 		FacilioModule module = ModuleFactory.getUnmodeledInstancesModule();
 		List<FacilioField> fields = FieldFactory.getUnmodeledInstanceFields();
 		fields.add(FieldFactory.getIdField(module));
@@ -332,5 +403,58 @@ public static Criteria getCriteria(List<Long> timeRange, List<Long> deviceList, 
 											.andCondition(CriteriaAPI.getIdCondition(ids, module));
 		
 		return builder.update(instance);
+	}
+	
+	public static JSONObject constructIotMessage (List<Map<String, Object>> instances, String command) throws Exception {
+		
+		ControllerContext controller = ControllerAPI.getController((long) instances.get(0).get("controllerId"));
+		
+		JSONObject obj = new JSONObject();
+		obj.put("command", command);
+		
+		obj.put("deviceName", controller.getName());
+		obj.put("macAddress", controller.getMacAddr());
+		obj.put("subnetPrefix", controller.getSubnetPrefix());
+		obj.put("networkNumber", controller.getNetworkNumber());
+		obj.put("instanceNumber", controller.getInstanceNumber());
+		obj.put("broadcastAddress", controller.getBroadcastIp());
+		
+		JSONArray points = new JSONArray();
+		obj.put("points", points);
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		for(Map<String, Object> instance : instances) {
+			JSONObject point = new JSONObject();
+			point.put("instance", instance.get("instance"));
+			point.put("instanceType", instance.get("instanceType"));
+			point.put("device", instance.get("device"));
+			point.put("objectInstanceNumber", instance.get("objectInstanceNumber"));
+			point.put("instanceDescription", instance.get("instanceDescription"));
+			if (instance.get("value") != null) {
+				point.put("newValue", instance.get("value"));
+				point.put("valueType", getValueType(modBean.getField((long) instance.get("fieldId")).getDataTypeEnum()));
+			}
+			points.add(point);
+		}
+		
+		return obj;
+	}
+	
+	private static String getValueType(FieldType fieldType) {
+		String type = null;
+		switch(fieldType) {
+			case NUMBER:
+				type = "signed";
+				break;
+			case DECIMAL:
+				type = "double";
+				break;
+			case BOOLEAN:
+				type = "boolean";
+				break;
+			case STRING:
+				type = "string";
+		}
+		return type;
 	}
 }

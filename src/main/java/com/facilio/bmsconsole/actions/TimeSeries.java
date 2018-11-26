@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -11,7 +12,11 @@ import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.timeseries.TimeSeriesAPI;
 
 public class TimeSeries extends FacilioAction {
@@ -36,7 +41,12 @@ public class TimeSeries extends FacilioAction {
 	
 	public String migrateData() throws Exception{
 		
-		TimeSeriesAPI.processHistoricalData(deviceList);
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.DEVICE_LIST , deviceList);
+		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.KINESIS);
+		Chain processDataChain = TransactionChainFactory.getProcessHistoricalDataChain();
+		processDataChain.execute(context);
+		
 		return SUCCESS;
 	}
 	
@@ -68,11 +78,19 @@ public class TimeSeries extends FacilioAction {
 		String deviceName = (String) object.get("deviceName");
 		long assetId = (long) object.get("assetId");
 		Map<String,Long> instanceFieldMap = (Map<String, Long>) object.get("instanceFieldMap");
-		TimeSeriesAPI.insertInstanceAssetMapping(deviceName, assetId, instanceFieldMap);
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.DEVICE_DATA , deviceName);
+		context.put(FacilioConstants.ContextNames.ASSET_ID, assetId);
+		context.put(FacilioConstants.ContextNames.RECORD_MAP, instanceFieldMap);
+		Chain mappingChain = TransactionChainFactory.getInstanceAssetMappingChain();
+		mappingChain.execute(context);
+		
 		if (doMigration) {
 			setDeviceList(Collections.singletonList(deviceName));
 			migrateData();
 		}
+		
 		return SUCCESS;
 	}
 	
@@ -84,14 +102,18 @@ public class TimeSeries extends FacilioAction {
 	}
 	
 	public String getInstancesForController () throws Exception {
-		List<Map<String, Object>> instances = TimeSeriesAPI.getInstancesForController(controllerId, configured);
+		List<Map<String, Object>> instances = TimeSeriesAPI.getUnmodeledInstancesForController(controllerId, configured);
 		setResult("instances", instances);
 		return SUCCESS;
 	}
 	
 	public String configureInstances () throws Exception {
-		TimeSeriesAPI.markInstancesAsUsed(ids);
+		List<Map<String, Object>> instances =  TimeSeriesAPI.getUnmodeledInstances(ids);
+		JSONObject clientMessage = TimeSeriesAPI.constructIotMessage(instances, "configure");
 		AwsUtil.publishIotMessage(AccountUtil.getCurrentOrg().getDomain(), clientMessage);
+		
+		TimeSeriesAPI.markUnmodeledInstancesAsUsed(ids);
+		
 		setResult("result", "success");
 		return SUCCESS;
 	}
@@ -110,14 +132,6 @@ public class TimeSeries extends FacilioAction {
 	}
 	public void setConfigured(Boolean configured) {
 		this.configured = configured;
-	}
-	
-	JSONObject clientMessage;
-	public JSONObject getClientMessage() {
-		return clientMessage;
-	}
-	public void setClientMessage(JSONObject clientMessage) {
-		this.clientMessage = clientMessage;
 	}
 	
 	List<Long> ids; 

@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -9,6 +10,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -36,6 +39,7 @@ import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.timeseries.TimeSeriesAPI;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
@@ -912,5 +916,40 @@ public class ReadingAction extends FacilioAction {
 		setResult("readingValues", context.get(FacilioConstants.ContextNames.READING_DATA_META_LIST));
 		
 		return SUCCESS;
+	}
+	
+	public String setReading () throws Exception {
+		Map<String, Object> instance = TimeSeriesAPI.getUnmodeledInstance(assetId,fieldId);
+		if (instance != null) {
+			instance.put("value", value);
+			instance.put("fieldId", fieldId);
+			JSONObject clientMessage = TimeSeriesAPI.constructIotMessage(Collections.singletonList(instance), "set");
+			AwsUtil.publishIotMessage(AccountUtil.getCurrentOrg().getDomain(), clientMessage);
+		}
+		return SUCCESS;
+	}
+	
+	long assetId;
+	public long getAssetId() {
+		return assetId;
+	}
+	public void setAssetId(long assetId) {
+		this.assetId = assetId;
+	}
+	
+	long fieldId;
+	public long getFieldId() {
+		return fieldId;
+	}
+	public void setFieldId(long fieldId) {
+		this.fieldId = fieldId;
+	}
+	
+	String value;
+	public String getValue() {
+		return value;
+	}
+	public void setValue(String value) {
+		this.value = value;
 	}
  }

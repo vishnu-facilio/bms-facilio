@@ -27,7 +27,7 @@ public class UpdateReadingDataMetaCommand implements Command {
 				}
 			}
 			if (!toBeUpdatedList.isEmpty()) {
-				ReadingsAPI.updateReadingDataMetaInputType(toBeUpdatedList, type);
+				ReadingsAPI.updateReadingDataMetaInputType(toBeUpdatedList, type, null);
 			}
 		}
 		return false;
