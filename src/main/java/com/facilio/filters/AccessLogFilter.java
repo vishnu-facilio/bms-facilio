@@ -32,7 +32,7 @@ public class AccessLogFilter implements Filter {
     private static final String REQUEST_URL = "req_uri";
     private static final String DEFAULT_QUERY_STRING = "-";
     private static final String STRICT_TRANSPORT_SECURITY = "Strict-Transport-Security";
-    private static final String CONTENT_SECURITY_POLICY = "Content-Security-Policy";
+    private static final String CONTENT_SECURITY_POLICY = "Content-Security-Policy-Report-Only";
     private static final String X_FRAME_OPTIONS = "X-Frame-options";
     private static final String X_XSS_PROTECTION = "X-XSS-Protecion";
     private static final String X_CONTENT_TYPE_OPTIONS = "X-Content-Type-Options";
@@ -123,7 +123,7 @@ public class AccessLogFilter implements Filter {
         thread.setName(threadName);
         AccountUtil.cleanCurrentAccount();
         
-        response.setHeader(CONTENT_SECURITY_POLICY , "default-src 'self'");
+        response.setHeader(CONTENT_SECURITY_POLICY , "default-src https:");
         response.setHeader(STRICT_TRANSPORT_SECURITY , "max-age=31556926; includeSubDomains");
         response.setHeader(X_FRAME_OPTIONS , "SAMEORIGIN");
         response.setHeader(X_XSS_PROTECTION , "1; mode=block");
