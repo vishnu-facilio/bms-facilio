@@ -110,7 +110,7 @@ public class FacilioCorsFilter implements Filter {
         response.setHeader(X_XSS_PROTECTION , "1; mode=block");
         response.setHeader(X_CONTENT_TYPE_OPTIONS , "nosniff");
         response.setHeader( REFERRER_POLICY, "strict-origin-when-cross-origin");
-        response.setHeader(CONTENT_SECURITY_POLICY , "default-src https: 'unsafe-inline'");
+        response.setHeader(CONTENT_SECURITY_POLICY , "default-src https: data: self: 'unsafe-inline'; form-action https:; upgrade-insecure-requests");
 
         String forwardedProtocol = request.getHeader("X-Forwarded-Proto");
         if(forwardedProtocol != null) {
