@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.chain.Chain;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -16,6 +17,7 @@ import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.criteria.CommonOperators;
@@ -26,11 +28,14 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleAlarmMeta;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
@@ -113,7 +118,9 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 			CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeHolders);
 			CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeHolders);
 			
-			FacilioContext context = new FacilioContext(); 
+			FacilioContext context = new FacilioContext();
+			Map<Long, ReadingRuleAlarmMeta> alarmMetaMap = new HashMap<>();
+			context.put(FacilioConstants.ContextNames.READING_RULE_ALARM_META, alarmMetaMap);
 			ReadingDataMeta prevRDM = null;			
 			int itr = 0;
 			/*for (; itr < readings.size(); itr++) {
@@ -163,6 +170,22 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 					LOGGER.log(Level.ERROR, builder.toString(), e);
 					throw e;
 				}
+			}
+			clearLatestAlarms(alarmMetaMap, readingRule);
+		}
+	}
+	
+	private void clearLatestAlarms(Map<Long, ReadingRuleAlarmMeta> alarmMetaMap, ReadingRuleContext rule) throws Exception { //Clearing the alarm that is not cleared even with the last reading. It's assumed that it'll be cleared in the next interval
+		for (ReadingRuleAlarmMeta meta : alarmMetaMap.values()) {
+			if (!meta.isClear()) {
+				AlarmContext alarm = AlarmAPI.getAlarm(meta.getAlarmId());
+				int interval = ReadingsAPI.getDataInterval(alarm.getResource().getId(), rule.getReadingField().getModule());
+				JSONObject json = AlarmAPI.constructClearEvent(alarm, "System auto cleared Historical Alarm because associated rule executed false for the associated resource", alarm.getModifiedTime()+(interval * 60 * 1000));
+				
+				FacilioContext addEventContext = new FacilioContext();
+				addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, json);
+				Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
+				getAddEventChain.execute(addEventContext);
 			}
 		}
 	}

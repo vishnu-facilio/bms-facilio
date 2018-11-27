@@ -481,6 +481,7 @@ public class FacilioConstants {
 		public static final String APPROVER_ID_LIST = "approverIdList";
 		public static final String APPROVER_LIST = "approverList";
 		public static final String READING_RULE_LIST ="readingRules";
+		public static final String READING_RULE_ALARM_META ="readingRuleAlarmMeta";
 		public static final String WORKFLOW_RULE_TYPE = "workflowRuleType";
 		public static final String WORKFLOW_ACTION_LIST="workflowActions";
 		public static final String WORKFLOW_ACTION_ID="workflowActionId";

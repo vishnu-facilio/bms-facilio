@@ -243,42 +243,62 @@ public enum ActionType {
 					addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, obj);
 					Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
 					getAddEventChain.execute(addEventContext);
-					
+					EventContext event = (EventContext) addEventContext.get(EventConstants.EventContextNames.EVENT);
 					if (currentRule instanceof ReadingRuleContext) {
-						EventContext event = (EventContext) addEventContext.get(EventConstants.EventContextNames.EVENT);
-						if (event.getAlarmId() != -1) {
-							Map<Long, ReadingRuleAlarmMeta> metaMap = ((ReadingRuleContext) currentRule).getAlarmMetaMap();
-							long resourceId = ((ReadingContext) currentRecord).getParentId();
-							
-							if (AccountUtil.getCurrentOrg().getId() == 135) {
-								LOGGER.info("Meta map of rule : "+currentRule.getId()+" when creating alarm for resource "+((ReadingContext)currentRecord).getParentId()+" : "+metaMap);
-							}
-							
-							if (metaMap != null && !metaMap.isEmpty()) {
-								ReadingRuleAlarmMeta alarmMeta = metaMap.get(resourceId);
-								if (alarmMeta == null) {
-									ReadingRuleAPI.addAlarmMeta(event.getAlarmId(), resourceId, (ReadingRuleContext) currentRule);
-								}
-								else if (alarmMeta.isClear()) {
-									
-									if (AccountUtil.getCurrentOrg().getId() == 135) {
-										LOGGER.info("Updating meta with alarm id : "+event.getAlarmId()+" for rule : "+currentRule.getId()+" for resource : "+((ReadingContext)currentRecord).getParentId());
-									}
-									
-									ReadingRuleAPI.markAlarmMetaAsNotClear(alarmMeta.getId(), event.getAlarmId());
-								}
-							}
-							else {
-								ReadingRuleAPI.addAlarmMeta(event.getAlarmId(), resourceId, (ReadingRuleContext) currentRule);
-							}
-						}
+						processAlarmMeta((ReadingRuleContext) currentRule, (ReadingContext) currentRecord, event, context);
 					}
-					
 				} catch (Exception e) {
 					LOGGER.error("Exception occurred ", e);
 				}
 			}
 		}
+		
+		//Assuming readings will come in ascending order of time
+		private void processAlarmMeta (ReadingRuleContext rule, ReadingContext reading, EventContext event, Context context) throws Exception {
+			if (event.getAlarmId() != -1) {
+				boolean isHistorical = true;
+				Map<Long, ReadingRuleAlarmMeta> metaMap = (Map<Long, ReadingRuleAlarmMeta>) context.get(FacilioConstants.ContextNames.READING_RULE_ALARM_META);
+				if (metaMap == null) {
+					metaMap = rule.getAlarmMetaMap();
+					isHistorical = false;
+				}
+//				if (AccountUtil.getCurrentOrg().getId() == 135) {
+					LOGGER.debug("Meta map of rule : "+rule.getId()+" when creating alarm for resource "+reading.getParentId()+" : "+metaMap);
+//				}
+					
+				if (metaMap != null) {
+					ReadingRuleAlarmMeta alarmMeta = metaMap.get(reading.getParentId());
+					if (alarmMeta == null) {
+						metaMap.put(reading.getParentId(), addAlarmMeta(event.getAlarmId(), reading.getParentId(), rule, isHistorical));
+					}
+					else if (alarmMeta.isClear()) {
+//						if (AccountUtil.getCurrentOrg().getId() == 135) {
+							LOGGER.debug("Updating meta with alarm id : "+event.getAlarmId()+" for rule : "+rule.getId()+" for resource : "+reading.getParentId());
+//						}
+						alarmMeta.setClear(false);
+						if (!isHistorical) {
+							ReadingRuleAPI.markAlarmMetaAsNotClear(alarmMeta.getId(), event.getAlarmId());
+						}
+					}
+				}
+				else {
+					metaMap = new HashMap<>();
+					rule.setAlarmMetaMap(metaMap);
+					metaMap.put(reading.getParentId(), addAlarmMeta(event.getAlarmId(), reading.getParentId(), rule, isHistorical));
+				}
+			}
+		}
+		
+		private ReadingRuleAlarmMeta addAlarmMeta (long alarmId, long resourceId, ReadingRuleContext rule, boolean isHistorical) throws Exception {
+			if (isHistorical) {
+				return ReadingRuleAPI.constructAlarmMeta(alarmId, resourceId, rule);
+			}
+			else {
+				return ReadingRuleAPI.addAlarmMeta(alarmId, resourceId, rule);
+			}
+		}
+		
+		
 	},
 	PUSH_NOTIFICATION(7) {
 

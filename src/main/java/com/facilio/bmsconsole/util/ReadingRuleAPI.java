@@ -244,24 +244,32 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		return alarmMetaMap;
 	}
 	
-	public static long addAlarmMeta (long alarmId, long resourceId, ReadingRuleContext rule) throws Exception {
-		Map<String, Object> prop = new HashMap<>();
-		prop.put("orgId", AccountUtil.getCurrentOrg().getId());
-		prop.put("alarmId", alarmId);
-		prop.put("ruleId", rule.getId());
-		prop.put("resourceId", resourceId);
-		prop.put("readingFieldId", rule.getReadingFieldId());
-		prop.put("clear", false);
+	public static ReadingRuleAlarmMeta constructAlarmMeta (long alarmId, long resourceId, ReadingRuleContext rule) {
+		ReadingRuleAlarmMeta meta = new ReadingRuleAlarmMeta();
+		meta.setOrgId(AccountUtil.getCurrentOrg().getId());
+		meta.setAlarmId(alarmId);
+		meta.setRuleId(rule.getId());
+		meta.setResourceId(resourceId);
+		meta.setReadingFieldId(rule.getReadingFieldId());
+		meta.setClear(false);
 		
-		if (AccountUtil.getCurrentOrg().getId() == 135) {
-			LOGGER.info("Adding alarm meta "+prop);
-		}
+		return meta;
+	}
+	
+	public static ReadingRuleAlarmMeta addAlarmMeta (long alarmId, long resourceId, ReadingRuleContext rule) throws Exception {
+		ReadingRuleAlarmMeta meta = constructAlarmMeta(alarmId, resourceId, rule);
 		
-		return new GenericInsertRecordBuilder()
+//		if (AccountUtil.getCurrentOrg().getId() == 135) {
+			LOGGER.debug("Adding alarm meta "+meta);
+//		}
+		Map<String, Object> prop = FieldUtil.getAsProperties(meta);
+		new GenericInsertRecordBuilder()
 					.table(ModuleFactory.getReadingRuleAlarmMetaModule().getTableName())
 					.fields(FieldFactory.getReadingRuleAlarmMetaFields())
 					.insert(prop)
 					;
+		meta.setId((long) prop.get("id"));
+		return meta;
 	}
 	
 	public static void markAlarmMetaAsNotClear (long id, long alarmId) throws SQLException {
