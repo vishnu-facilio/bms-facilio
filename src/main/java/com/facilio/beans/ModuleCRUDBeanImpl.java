@@ -23,6 +23,7 @@ import com.facilio.bmsconsole.commands.PreparePMForMultipleAsset;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.ControllerContext;
+import com.facilio.bmsconsole.context.PMResourcePlannerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMCreationType;
@@ -171,6 +172,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			if(templateId == -1) {
 				templateId = pm.getTemplateId();
 			}
+			Map<Long, PMResourcePlannerContext> resourcePlanners = PreventiveMaintenanceAPI.getPMResourcesPlanner(pm.getId());
 			Template template = TemplateAPI.getTemplate(templateId);
 			WorkOrderContext wo = null;
 			List<Long> resourceIds = null;
@@ -229,6 +231,13 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				else {
 					WorkorderTemplate workorderTemplate = (WorkorderTemplate)template;
 					
+					if(resourcePlanners != null && resourcePlanners.containsKey(resourceId)) {
+						PMResourcePlannerContext resourcePlanner = resourcePlanners.get(resourceId);
+						if (resourcePlanner.getAssignedToId() != null && resourcePlanner.getAssignedToId() > 0 ) {
+							workorderTemplate.setAssignedToId(resourcePlanner.getAssignedToId());
+						}
+					}
+					
 					wo = workorderTemplate.getWorkorder();
 					wo.setResource(ResourceAPI.getResource(resourceId));
 					taskMap = workorderTemplate.getTasks();
@@ -256,6 +265,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 						taskMap = taskMapForNewPmExecution;
 					}
 				}
+				
 				
 				wo.setSourceType(TicketContext.SourceType.PREVENTIVE_MAINTENANCE);
 				wo.setPm(pm);
