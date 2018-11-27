@@ -178,7 +178,7 @@ public static PMTriggerContext getTrigger(List<PMTriggerContext> triggers,Long t
 				}
 				break;
 			case ASSET_CATEGORY:
-				List<AssetContext> assets = AssetsAPI.getAssetListOfCategory(assetCategoryID, resourceId);
+				List<AssetContext> assets = AssetsAPI.getAssetListOfCategoryInParticularSpace(assetCategoryID, resourceId);
 				
 				for(AssetContext asset :assets) {
 					resourceIds.add(asset.getId());

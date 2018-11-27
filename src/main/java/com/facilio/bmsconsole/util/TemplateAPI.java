@@ -28,10 +28,12 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.billing.context.ExcelTemplate;
+import com.facilio.bmsconsole.commands.PreparePMForMultipleAsset;
 import com.facilio.bmsconsole.context.PMIncludeExcludeResourceContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -745,7 +747,27 @@ public class TemplateAPI {
 				tasks.add(task);
 			}
 			woTemplate.setTaskTemplates(taskTemplates);
-			return taskMap;
+			
+			Map<String, List<TaskContext>> taskMapForNewPmExecution = null;
+			boolean isNewPmType = false;
+			
+			for(TaskSectionTemplate sectiontemplate : sectionMap.values()) {	// for new pm_Type section should be present and every section should have a AssignmentType
+				if(sectiontemplate.getAssignmentType() < 0) {
+					isNewPmType =  false;
+					break;
+				}
+				else {
+					isNewPmType = true; 
+				}
+			}
+			if(isNewPmType) {
+				Long woTemplateResourceId = woTemplate.getResourceId() > 0 ? woTemplate.getResourceId() : woTemplate.getResource().getId();
+				taskMapForNewPmExecution = PreparePMForMultipleAsset.getTaskMap(new ArrayList<>(sectionMap.values()), woTemplateResourceId);
+			}
+			if(taskMapForNewPmExecution == null) {
+				return taskMap;
+			}
+			return taskMapForNewPmExecution;
 		}
 		return null;
 	}

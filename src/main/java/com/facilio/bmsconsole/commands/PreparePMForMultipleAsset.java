@@ -66,37 +66,8 @@ public class PreparePMForMultipleAsset implements Command {
 			
 			woContext.setResource(ResourceAPI.getResource(pmJob.getResourceId()));
 			
-			Map<String, List<TaskContext>> taskMap = new HashMap<>();
-			for(TaskSectionTemplate sectiontemplate :sectiontemplates) {
-				
-				Template sectionTemplate = TemplateAPI.getTemplate(sectiontemplate.getId());
-				sectiontemplate = (TaskSectionTemplate)sectionTemplate;
-				
-				 List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(sectiontemplate.getAssignmentType()), woContext.getResource().getId(), sectiontemplate.getSpaceCategoryId(), sectiontemplate.getAssetCategoryId(),sectiontemplate.getResourceId(),sectiontemplate.getPmIncludeExcludeResourceContexts());
-				 
-				 for(Long resourceId :resourceIds) {
-					 ResourceContext sectionResource = ResourceAPI.getResource(resourceId);
-					 String sectionName = sectionResource.getName() + " - " +sectiontemplate.getName();
-					 
-					 List<TaskTemplate> taskTemplates = sectiontemplate.getTaskTemplates();
-					 
-					 List<TaskContext> tasks = new ArrayList<TaskContext>();
-					 for(TaskTemplate taskTemplate :taskTemplates) {
-						 
-						 List<Long> taskResourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(taskTemplate.getAssignmentType()), sectionResource.getId(), taskTemplate.getSpaceCategoryId(), taskTemplate.getAssetCategoryId(),taskTemplate.getResourceId(),taskTemplate.getPmIncludeExcludeResourceContexts());
-						 
-						 applySectionSettingsIfApplicable(sectiontemplate,taskTemplate);
-						 for(Long taskResourceId :taskResourceIds) {
-							 ResourceContext taskResource = ResourceAPI.getResource(taskResourceId);
-							 TaskContext task = taskTemplate.getTask();
-							 task.setResource(taskResource);
-							 
-							 tasks.add(task);
-						 }
-					 }
-					 taskMap.put(sectionName, tasks);
-				 }
-			}
+			Map<String, List<TaskContext>> taskMap = getTaskMap(sectiontemplates,woContext.getResource().getId());
+
 			woContext.setSourceType(TicketContext.SourceType.PREVENTIVE_MAINTENANCE);
 			woContext.setPm(pm);
 			FacilioContext addWocontext = new FacilioContext();
@@ -117,7 +88,7 @@ public class PreparePMForMultipleAsset implements Command {
 		return false;
 	}
 
-	private void applySectionSettingsIfApplicable(TaskSectionTemplate sectiontemplate, TaskTemplate taskTemplate) {
+	public static void applySectionSettingsIfApplicable(TaskSectionTemplate sectiontemplate, TaskTemplate taskTemplate) {
 		
 		if(!taskTemplate.isAttachmentRequired()) {
 			taskTemplate.setAttachmentRequired(sectiontemplate.isAttachmentRequired());
@@ -126,5 +97,38 @@ public class PreparePMForMultipleAsset implements Command {
 			taskTemplate.setInputType(sectiontemplate.getInputType());
 		}
 	}
-
+	public static Map<String, List<TaskContext>> getTaskMap(List<TaskSectionTemplate> sectiontemplates,Long woResourceId) throws Exception {
+		Map<String, List<TaskContext>> taskMap = new HashMap<>();
+		for(TaskSectionTemplate sectiontemplate :sectiontemplates) {
+			
+			Template sectionTemplate = TemplateAPI.getTemplate(sectiontemplate.getId());
+			sectiontemplate = (TaskSectionTemplate)sectionTemplate;
+			
+			 List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(sectiontemplate.getAssignmentType()), woResourceId, sectiontemplate.getSpaceCategoryId(), sectiontemplate.getAssetCategoryId(),sectiontemplate.getResourceId(),sectiontemplate.getPmIncludeExcludeResourceContexts());
+			 
+			 for(Long resourceId :resourceIds) {
+				 ResourceContext sectionResource = ResourceAPI.getResource(resourceId);
+				 String sectionName = sectionResource.getName() + " - " +sectiontemplate.getName();
+				 
+				 List<TaskTemplate> taskTemplates = sectiontemplate.getTaskTemplates();
+				 
+				 List<TaskContext> tasks = new ArrayList<TaskContext>();
+				 for(TaskTemplate taskTemplate :taskTemplates) {
+					 
+					 List<Long> taskResourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(taskTemplate.getAssignmentType()), sectionResource.getId(), taskTemplate.getSpaceCategoryId(), taskTemplate.getAssetCategoryId(),taskTemplate.getResourceId(),taskTemplate.getPmIncludeExcludeResourceContexts());
+					 
+					 applySectionSettingsIfApplicable(sectiontemplate,taskTemplate);
+					 for(Long taskResourceId :taskResourceIds) {
+						 ResourceContext taskResource = ResourceAPI.getResource(taskResourceId);
+						 TaskContext task = taskTemplate.getTask();
+						 task.setResource(taskResource);
+						 
+						 tasks.add(task);
+					 }
+				 }
+				 taskMap.put(sectionName, tasks);
+			 }
+		}
+		return taskMap;
+	}
 }

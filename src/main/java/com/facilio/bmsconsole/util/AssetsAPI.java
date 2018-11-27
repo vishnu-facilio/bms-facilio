@@ -360,6 +360,27 @@ public class AssetsAPI {
 		return assets;
 		
 	}
+	public static List<AssetContext> getAssetListOfCategoryInParticularSpace(long category,long baseSpaceID) throws Exception
+	{
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
+		FacilioField categoryField= FieldFactory.getAsMap(fields).get("category");
+		SelectRecordsBuilder<AssetContext> selectBuilder = new SelectRecordsBuilder<AssetContext>()
+				.select(fields)
+				.table(module.getTableName())
+				.moduleName(module.getName())
+				.beanClass(AssetContext.class)
+				.andCondition(CriteriaAPI.getCondition(categoryField, String.valueOf(category), PickListOperators.IS));
+		
+		if(baseSpaceID > 0) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("SPACE_ID", "space", ""+baseSpaceID, PickListOperators.IS));
+		}
+		List<AssetContext> assets = selectBuilder.get();
+		return assets;
+		
+	}
 	
 	public static AssetCategoryContext getCategoryForAsset(long categoryId) throws Exception {
 		
