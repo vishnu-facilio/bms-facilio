@@ -1976,6 +1976,16 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getUpdateTicketPrioritiesChain() {
+		Chain c = getTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForTicketPriority());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenericUpdateListModuleDataCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getDeleteTicketPriorityChain() {
 		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForTicketPriority());

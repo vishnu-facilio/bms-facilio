@@ -331,7 +331,8 @@
 		<action name="*" class="com.facilio.bmsconsole.actions.PickListAction" method="v2pickList">
 			<param name="moduleName">{1}</param>
 		</action>
-		
+	    <action name="updatePriorities" class="com.facilio.bmsconsole.actions.PickListAction" method="v2updateTicketPriorties">
+		</action>
 	</package>
 	<package name="formsApiv2" namespace="/api/v2/form" extends="v2Api">
 		<action name="fields" class="com.facilio.bmsconsole.actions.FormAction" method="loadApprovalFormFields">

@@ -230,7 +230,7 @@ public class TicketAPI {
 															.moduleName(FacilioConstants.ContextNames.TICKET_PRIORITY)
 															.beanClass(TicketPriorityContext.class)
 															.select(modBean.getAllFields(FacilioConstants.ContextNames.TICKET_PRIORITY))
-															.orderBy("ID");
+															.orderBy("TicketPriority.SEQUENCE_NUMBER");
 		return builder.get();
 	}
 	

@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.actions;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
@@ -108,6 +109,13 @@ public class PickListAction extends FacilioAction {
 	public void setTicketPriority(TicketPriorityContext ticketPriority) {
 		this.ticketPriority = ticketPriority;
 	}
+	List<TicketPriorityContext> ticketPriorties;
+	public List<TicketPriorityContext> getTicketPriorties() {
+		return ticketPriorties;
+	}
+	public void setTicketPriorties(List<TicketPriorityContext> ticketPriorties) {
+		this.ticketPriorties = ticketPriorties;
+	}
 
 	public String addTicketPriority() throws Exception {
 		if(ticketPriority.getPriority() == null || ticketPriority.getPriority().isEmpty()) {
@@ -131,6 +139,16 @@ public class PickListAction extends FacilioAction {
 		updateTicketPriorityChain.execute(context);
 		
 		return SUCCESS;
+	}
+	
+	public String v2updateTicketPriorties() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_LIST, getTicketPriorties());
+		Chain updateTicketPrioritiesChain = FacilioChainFactory.getUpdateTicketPrioritiesChain();
+		updateTicketPrioritiesChain.execute(context);
+		setResult(FacilioConstants.ContextNames.RECORD, context.get(FacilioConstants.ContextNames.RECORD_LIST));
+		return SUCCESS;
+		
 	}
 	
 	public String deleteTicketPriority() throws Exception {
