@@ -3829,6 +3829,7 @@ public class FieldFactory {
 		
 		fields.add(getField("assignedTo", "ASSIGNED_TO", module, FieldType.LOOKUP));
 		fields.add(getField("triggerType", "TRIGGER_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("triggerExecutionSource", "TRIGGER_EXECUTION_SOURCE", module, FieldType.NUMBER));
 		
 		return fields;
 	}

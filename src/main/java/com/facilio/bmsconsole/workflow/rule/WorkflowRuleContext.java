@@ -287,7 +287,8 @@ public class WorkflowRuleContext implements Serializable {
 		REQUEST_APPROVAL_RULE(true),
 		REQUEST_REJECT_RULE(true),
 		
-		CHILD_APPROVAL_RULE(true)
+		CHILD_APPROVAL_RULE(true),
+		PM_ALARM_RULE
 		;
 		//Always add at the end
 		

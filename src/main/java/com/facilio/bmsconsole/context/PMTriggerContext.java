@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.context;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -10,6 +9,7 @@ import org.json.simple.parser.ParseException;
 
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.tasker.ScheduleInfo;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -98,6 +98,15 @@ public class PMTriggerContext {
 		this.readingRule = readingRule;
 	}
 	
+	private WorkflowRuleContext workFlowRule;
+	public void setWorkFlowRule(WorkflowRuleContext workFlowRule) {
+		this.workFlowRule = workFlowRule;
+	}
+	
+	public WorkflowRuleContext getWorkFlowRule() {
+		return this.workFlowRule;
+	}
+	
 	private long readingRuleId = -1;
 	public long getReadingRuleId() {
 		return readingRuleId;
@@ -182,5 +191,32 @@ public class PMTriggerContext {
 			}
 			return null;
 		}
+	}
+	
+	public enum TriggerExectionSource {
+		SCHEDULE,
+		READING,
+		ALARMRULE;
+		
+		public int getVal() {
+			return ordinal() + 1;
+		}
+		
+		private static final TriggerExectionSource[] TRIGGER_EXECUTION_SOURCE = TriggerExectionSource.values();
+		public static TriggerExectionSource valueOf(int type) {
+			if (type > 0 && type <= TRIGGER_EXECUTION_SOURCE.length) {
+				return TRIGGER_EXECUTION_SOURCE[type - 1];
+			}
+			return null;
+		}
+	}
+	
+	private TriggerExectionSource triggerExecutionSource;
+	public void setTriggerExecutionSource(TriggerExectionSource triggerExecutionSource) {
+		this.triggerExecutionSource = triggerExecutionSource;
+	}
+	
+	public TriggerExectionSource getTriggerExecutionSource() {
+		return this.triggerExecutionSource;
 	}
 }
