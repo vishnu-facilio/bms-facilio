@@ -46,7 +46,7 @@ public class ModeledDataCommand implements Command {
 				String instanceName=instanceList.next();
 				String instanceVal=instanceMap.get(instanceName);
 				//for now sending as null till migration..
-				Map<String, Object> stat = ReadingsAPI.getInstanceMapping(deviceName, instanceName,null);
+				Map<String, Object> stat = ReadingsAPI.getInstanceMapping(deviceName, instanceName,controllerId);
 				if(stat==null)  {
 					continue;
 				}

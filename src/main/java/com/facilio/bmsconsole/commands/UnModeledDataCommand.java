@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,11 +11,15 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class UnModeledDataCommand implements Command {
 
@@ -36,8 +41,19 @@ public class UnModeledDataCommand implements Command {
 				if(instanceVal.equalsIgnoreCase("NaN")) {
 					continue;
 				}
-				//for now passing controllerid as null till DB migration
-				Long instanceId= getUnmodledInstance(deviceName,instanceName,null);
+				
+				Long instanceId= getUnmodledInstance(deviceName,instanceName,controllerId);
+				
+				if(instanceId==null && controllerId!=null) {
+					//TODO temporary code.. should be removed later
+					//for now passing controllerid as null to ensure updating of the unmodelled instance with proper controllerId.. 
+					instanceId= getUnmodledInstance(deviceName,instanceName,null);
+					//do the controllerId update here..
+					if(instanceId!=null) {
+						updateControllerForInstance(instanceId, controllerId);
+					}
+				}
+				
 				if(instanceId==null) {
 					instanceId=getUnmodeledInstanceAfterInsert(deviceName,instanceName,controllerId);
 				}
@@ -79,6 +95,32 @@ public class UnModeledDataCommand implements Command {
 		return id;
 	}
 
+	
+	private void updateControllerForInstance(long instanceId, long controllerId) {
+		
+		try {
+			FacilioModule module = ModuleFactory.getUnmodeledInstancesModule();
+			List<FacilioField> fields = FieldFactory.getUnmodeledInstanceFields();
+			
+			Map<String, Object> prop = Collections.singletonMap("controllerId", controllerId);
+			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+															.table(module.getTableName())
+															.fields(fields)
+															.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+															.andCustomWhere("ID=?", instanceId);
+															;
+			 updateBuilder.update(prop);
+			
+			
+		}
+		catch(Exception e) {
+			System.err.println("Exception while updating the controller Id: "+e.getMessage());
+			
+		}
+		
+		
+	}
+	
 	private  Long getUnmodeledInstanceAfterInsert(String deviceName, String instanceName, Long controllerId) throws SQLException {
 
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
