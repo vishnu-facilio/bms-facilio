@@ -201,9 +201,11 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 		taskSectionTemplate.setParentWOTemplateId(template.getId());
 		List<TaskTemplate> defaultTask = new ArrayList<>();
 		
-		for(TaskTemplate taskTemplates : template.getTaskTemplates()) {
-			if(taskTemplates.getSectionId() < 0) {
-				defaultTask.add(taskTemplates);
+		if(template.getTaskTemplates() != null) {
+			for(TaskTemplate taskTemplates : template.getTaskTemplates()) {
+				if(taskTemplates.getSectionId() < 0) {
+					defaultTask.add(taskTemplates);
+				}
 			}
 		}
 		

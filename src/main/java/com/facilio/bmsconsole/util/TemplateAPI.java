@@ -747,7 +747,9 @@ public class TemplateAPI {
 				tasks.add(task);
 			}
 			woTemplate.setTaskTemplates(taskTemplates);
-			woTemplate.setSectionTemplates(new ArrayList<>(sectionMap.values()));
+			if(sectionMap != null) {
+				woTemplate.setSectionTemplates(new ArrayList<>(sectionMap.values()));
+			}
 			
 			return taskMap;
 		}

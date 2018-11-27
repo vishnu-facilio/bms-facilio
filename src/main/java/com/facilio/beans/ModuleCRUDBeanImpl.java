@@ -246,15 +246,18 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 					
 					boolean isNewPmType = false;
 					
-					for(TaskSectionTemplate sectiontemplate : workorderTemplate.getSectionTemplates()) {	// for new pm_Type section should be present and every section should have a AssignmentType
-						if(sectiontemplate.getAssignmentType() < 0) {
-							isNewPmType =  false;
-							break;
-						}
-						else {
-							isNewPmType = true; 
+					if(workorderTemplate.getSectionTemplates() != null) {
+						for(TaskSectionTemplate sectiontemplate : workorderTemplate.getSectionTemplates()) {	// for new pm_Type section should be present and every section should have a AssignmentType
+							if(sectiontemplate.getAssignmentType() < 0) {
+								isNewPmType =  false;
+								break;
+							}
+							else {
+								isNewPmType = true; 
+							}
 						}
 					}
+					
 					if(isNewPmType) {
 						Long woTemplateResourceId = wo.getResource() != null ? wo.getResource().getId() : -1;
 						if(woTemplateResourceId > 0) {
