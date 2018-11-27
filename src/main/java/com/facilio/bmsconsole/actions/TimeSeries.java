@@ -77,12 +77,18 @@ public class TimeSeries extends FacilioAction {
 		Map<String,Object> object = getInstanceAssetMap();
 		String deviceName = (String) object.get("deviceName");
 		long assetId = (long) object.get("assetId");
+		Long controllerId=(Long)object.get(FacilioConstants.ContextNames.CONTROLLER_ID);
 		Map<String,Long> instanceFieldMap = (Map<String, Long>) object.get("instanceFieldMap");
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.DEVICE_DATA , deviceName);
 		context.put(FacilioConstants.ContextNames.ASSET_ID, assetId);
 		context.put(FacilioConstants.ContextNames.RECORD_MAP, instanceFieldMap);
+		
+		if(controllerId!=null) {
+			context.put(FacilioConstants.ContextNames.CONTROLLER_ID, controllerId);
+		}
+		
 		Chain mappingChain = TransactionChainFactory.getInstanceAssetMappingChain();
 		mappingChain.execute(context);
 		

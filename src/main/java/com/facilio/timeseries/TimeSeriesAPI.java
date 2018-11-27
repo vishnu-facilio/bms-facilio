@@ -140,7 +140,7 @@ public class TimeSeriesAPI {
 		}
 	}
 	
-	public static void insertInstanceAssetMapping(String deviceName, long assetId, Map<String,Long> instanceFieldMap) throws Exception {
+	public static void insertInstanceAssetMapping(String deviceName, long assetId,Long controllerId, Map<String,Long> instanceFieldMap) throws Exception {
 		List<ReadingDataMeta> metaList = getMetaList(assetId, instanceFieldMap);
 		Map<String, ReadingDataMeta> metaMap = metaList.stream().collect(Collectors.toMap(meta -> meta.getResourceId()+"|"+meta.getFieldId(), Function.identity()));
 		List<Map<String, Object>> records = new ArrayList<>();
@@ -162,6 +162,9 @@ public class TimeSeriesAPI {
 			record.put("assetId", assetId);
 			record.put("instance", instanceName);
 			record.put("fieldId", fieldId);
+			if(controllerId!=null) {
+				record.put("controllerId", controllerId);
+			}
 			records.add(record);
 			
 			Map<String, Object> instance = instanceMap.get(instanceName);
