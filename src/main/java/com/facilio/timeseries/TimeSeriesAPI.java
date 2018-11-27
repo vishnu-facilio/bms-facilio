@@ -165,10 +165,16 @@ public class TimeSeriesAPI {
 			records.add(record);
 			
 			Map<String, Object> instance = instanceMap.get(instanceName);
-			InstanceType rType =  InstanceType.valueOf((int) instance.get("instanceType"));
+			InstanceType rType=null;
+			if(instance!=null) {
+				Object typeObj= instance.get("instanceType");
+				if(typeObj!=null) {
+					rType =  InstanceType.valueOf((int)typeObj );
+				}
+			}
 			
 			ReadingDataMeta meta = metaMap.get(assetId+"|"+fieldId);
-			if (rType.isWritable()) {
+			if (rType!=null && rType.isWritable()) {
 				writableReadingList.add(meta);
 			}
 			else {
