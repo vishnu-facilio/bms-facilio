@@ -24,8 +24,7 @@ public class AddPreventiveMaintenanceCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		PreventiveMaintenance pm = (PreventiveMaintenance) context
-				.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
+		PreventiveMaintenance pm = (PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 		addDefaultProps(pm, context);
 		addResource(pm);
 		Map<String, Object> pmProps = FieldUtil.getAsProperties(pm);

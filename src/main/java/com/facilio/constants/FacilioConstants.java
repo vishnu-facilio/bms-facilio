@@ -106,6 +106,7 @@ public class FacilioConstants {
 		public static final String RECORD_MAP = "recordMap";
 		public static final String RECORD_ID = "recordId";
 		public static final String RECORD_ID_LIST = "recordIds";
+		public static final String PM_INCLUDE_EXCLUDE_LIST = "pmIcludeExcludeList";
 		public static final String RECORD_COUNT = "recordCount";
 		public static final String ROWS_UPDATED = "rowsUpdated";
 		public static final String ACTIVITY_TYPE = "activityType";

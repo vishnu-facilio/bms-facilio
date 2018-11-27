@@ -31,6 +31,7 @@ import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.AttachmentContext.AttachmentType;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.FormLayout;
+import com.facilio.bmsconsole.context.PMIncludeExcludeResourceContext;
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.PMTriggerContext;
@@ -402,6 +403,7 @@ public class WorkOrderAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		context.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, Instant.now().getEpochSecond());
+		context.put(FacilioConstants.ContextNames.PM_INCLUDE_EXCLUDE_LIST, pmIncludeExcludeResourceContexts);
 		context.put(FacilioConstants.ContextNames.ONLY_POST_REMINDER_TYPE, true);
 
 		Chain executePm = FacilioChainFactory.getExecutePMsChain();
@@ -412,6 +414,18 @@ public class WorkOrderAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	List<PMIncludeExcludeResourceContext> pmIncludeExcludeResourceContexts;
+	
+	
+	public List<PMIncludeExcludeResourceContext> getPmIncludeExcludeResourceContexts() {
+		return pmIncludeExcludeResourceContexts;
+	}
+
+	public void setPmIncludeExcludeResourceContexts(
+			List<PMIncludeExcludeResourceContext> pmIncludeExcludeResourceContexts) {
+		this.pmIncludeExcludeResourceContexts = pmIncludeExcludeResourceContexts;
+	}
+
 	public String updatePreventiveMaintenance() throws Exception {
 		FacilioContext context = new FacilioContext();
 		if(workOrderString != null) {

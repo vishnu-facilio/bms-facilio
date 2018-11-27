@@ -24,6 +24,8 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
+import com.facilio.bmsconsole.context.PreventiveMaintenance.PMCreationType;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
@@ -49,6 +51,7 @@ import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.ControllerAPI;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.ViewFactory;
@@ -170,75 +173,108 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			}
 			Template template = TemplateAPI.getTemplate(templateId);
 			WorkOrderContext wo = null;
-			Map<String, List<TaskContext>> taskMap = null;
+			List<Long> resourceIds = null;
 			
-			if (template instanceof JSONTemplate) {
-				JSONObject content = template.getTemplate(null);
-				JSONObject woJson = (JSONObject) content.get(FacilioConstants.ContextNames.WORK_ORDER);
-				
-				wo = FieldUtil.getAsBeanFromJson(woJson, WorkOrderContext.class);
-				new FacilioContext();
-				
-				JSONObject taskContent = (JSONObject) content.get(FacilioConstants.ContextNames.TASK_MAP);
-				
-				if(taskContent != null) {
-					taskMap = PreventiveMaintenanceAPI.getTaskMapFromJson(taskContent);
+			if(pm.getPmCreationType() == PMCreationType.MULTIPLE.getVal()) {
+				resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(pm.getAssignmentType()),pm.getBaseSpaceId(),pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
+			}
+			else {
+				resourceIds = new ArrayList<>();
+				if (template instanceof JSONTemplate) {						// try to eliminate this case					
+					JSONObject content = template.getTemplate(null);
+					JSONObject woJson = (JSONObject) content.get(FacilioConstants.ContextNames.WORK_ORDER);
+					wo = FieldUtil.getAsBeanFromJson(woJson, WorkOrderContext.class);
+					if(wo.getResource() != null) {
+						resourceIds.add(wo.getResource().getId());
+					}
+					else {
+						resourceIds.add(-1l);
+					}
 				}
 				else {
-					JSONArray taskJson = (JSONArray) content.get(FacilioConstants.ContextNames.TASK_LIST);
-					if (taskJson != null) {
-						List<TaskContext> tasks = FieldUtil.getAsBeanListFromJsonArray(taskJson, TaskContext.class);
-						if(tasks != null && !tasks.isEmpty()) {
-							taskMap = new HashMap<>();
-							taskMap.put(FacilioConstants.ContextNames.DEFAULT_TASK_SECTION, tasks);
+					WorkorderTemplate workorderTemplate = (WorkorderTemplate)template;
+					resourceIds.add(workorderTemplate.getResourceId());
+				}
+				if(resourceIds.isEmpty()) {
+					resourceIds.add(-1l);
+				}
+			}
+			for(Long resourceId :resourceIds) {
+				
+				Map<String, List<TaskContext>> taskMap = null;
+				
+				if (template instanceof JSONTemplate) {					// try to eliminate this case
+					JSONObject content = template.getTemplate(null);
+					JSONObject woJson = (JSONObject) content.get(FacilioConstants.ContextNames.WORK_ORDER);
+					
+					wo = FieldUtil.getAsBeanFromJson(woJson, WorkOrderContext.class);
+					wo.setResource(ResourceAPI.getResource(resourceId));
+					
+					JSONObject taskContent = (JSONObject) content.get(FacilioConstants.ContextNames.TASK_MAP);
+					
+					if(taskContent != null) {
+						taskMap = PreventiveMaintenanceAPI.getTaskMapFromJson(taskContent);
+					}
+					else {
+						JSONArray taskJson = (JSONArray) content.get(FacilioConstants.ContextNames.TASK_LIST);
+						if (taskJson != null) {
+							List<TaskContext> tasks = FieldUtil.getAsBeanListFromJsonArray(taskJson, TaskContext.class);
+							if(tasks != null && !tasks.isEmpty()) {
+								taskMap = new HashMap<>();
+								taskMap.put(FacilioConstants.ContextNames.DEFAULT_TASK_SECTION, tasks);
+							}
 						}
 					}
 				}
-			}
-			else {
-				WorkorderTemplate workorderTemplate = (WorkorderTemplate)template;
-				
-				wo = workorderTemplate.getWorkorder();
-				taskMap = workorderTemplate.getTasks();
+				else {
+					WorkorderTemplate workorderTemplate = (WorkorderTemplate)template;
+					
+					wo = workorderTemplate.getWorkorder();
+					wo.setResource(ResourceAPI.getResource(resourceId));
+					taskMap = workorderTemplate.getTasks();
 
-				Map<String, List<TaskContext>> taskMapForNewPmExecution = null;	// should be handled in above if too
-				boolean isNewPmType = false;
+					Map<String, List<TaskContext>> taskMapForNewPmExecution = null;	// should be handled in above if too
+					
+					boolean isNewPmType = false;
+					
+					for(TaskSectionTemplate sectiontemplate : workorderTemplate.getSectionTemplates()) {	// for new pm_Type section should be present and every section should have a AssignmentType
+						if(sectiontemplate.getAssignmentType() < 0) {
+							isNewPmType =  false;
+							break;
+						}
+						else {
+							isNewPmType = true; 
+						}
+					}
+					if(isNewPmType) {
+						Long woTemplateResourceId = wo.getResource() != null ? wo.getResource().getId() : -1;
+						if(woTemplateResourceId > 0) {
+							taskMapForNewPmExecution = PreparePMForMultipleAsset.getTaskMap(workorderTemplate.getSectionTemplates(), woTemplateResourceId);
+						}
+					}
+					if(taskMapForNewPmExecution != null) {
+						taskMap = taskMapForNewPmExecution;
+					}
+				}
 				
-				for(TaskSectionTemplate sectiontemplate : workorderTemplate.getSectionTemplates()) {	// for new pm_Type section should be present and every section should have a AssignmentType
-					if(sectiontemplate.getAssignmentType() < 0) {
-						isNewPmType =  false;
-						break;
-					}
-					else {
-						isNewPmType = true; 
-					}
-				}
-				if(isNewPmType) {
-					Long woTemplateResourceId = workorderTemplate.getResourceId() > 0 ? workorderTemplate.getResourceId() : (workorderTemplate.getResource() != null ? workorderTemplate.getResource().getId() : -1l);
-					taskMapForNewPmExecution = PreparePMForMultipleAsset.getTaskMap(workorderTemplate.getSectionTemplates(), woTemplateResourceId);
-				}
-				if(taskMapForNewPmExecution != null) {
-					taskMap = taskMapForNewPmExecution;
-				}
-			}
-			
-			wo.setSourceType(TicketContext.SourceType.PREVENTIVE_MAINTENANCE);
-			wo.setPm(pm);
-			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
-			context.put(FacilioConstants.ContextNames.REQUESTER, wo.getRequester());
-			context.put(FacilioConstants.ContextNames.TASK_MAP, taskMap);
-			context.put(FacilioConstants.ContextNames.IS_PM_EXECUTION, true);
-			context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
-			context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTEXT_LIST, wo.getAttachments());
-			
-			//Temp fix. Have to be removed eventually
-			PreventiveMaintenanceAPI.updateResourceDetails(wo, taskMap);
-			Chain addWOChain = TransactionChainFactory.getAddWorkOrderChain();
-			addWOChain.execute(context);
+				wo.setSourceType(TicketContext.SourceType.PREVENTIVE_MAINTENANCE);
+				wo.setPm(pm);
+				FacilioContext context = new FacilioContext();
+				context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
+				context.put(FacilioConstants.ContextNames.REQUESTER, wo.getRequester());
+				context.put(FacilioConstants.ContextNames.TASK_MAP, taskMap);
+				context.put(FacilioConstants.ContextNames.IS_PM_EXECUTION, true);
+				context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
+				context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTEXT_LIST, wo.getAttachments());
+				
+				//Temp fix. Have to be removed eventually
+				PreventiveMaintenanceAPI.updateResourceDetails(wo, taskMap);
+				Chain addWOChain = TransactionChainFactory.getAddWorkOrderChain();
+				addWOChain.execute(context);
 
-			incrementPMCount(pm);
-			return wo;
+				incrementPMCount(pm);
+			}
+		return wo;
 		}
 		return null;
 	}

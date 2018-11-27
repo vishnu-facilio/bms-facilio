@@ -11,6 +11,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.beans.ModuleCRUDBean;
+import com.facilio.bmsconsole.context.PMIncludeExcludeResourceContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
@@ -25,12 +26,16 @@ public class ExecutePMsCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<Long> pmIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
+		List<PMIncludeExcludeResourceContext> pmIncludeExcludeResourceContexts = (List<PMIncludeExcludeResourceContext>) context.get(FacilioConstants.ContextNames.PM_INCLUDE_EXCLUDE_LIST);
 		List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getActivePMs(pmIds, null);
 		if(pms != null && !pms.isEmpty()) {
 			Map<Long, WorkOrderContext> pmToWo = new HashMap<>();
 			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD");
 			List<Long> woIds = new ArrayList<>();
 			for(PreventiveMaintenance pm : pms) {
+				if(pmIncludeExcludeResourceContexts != null && !pmIncludeExcludeResourceContexts.isEmpty()) {
+					pm.setPmIncludeExcludeResourceContexts(pmIncludeExcludeResourceContexts);
+				}
 				WorkOrderContext wo = null;
 				try {
 					wo = bean.addWorkOrderFromPM(pm);

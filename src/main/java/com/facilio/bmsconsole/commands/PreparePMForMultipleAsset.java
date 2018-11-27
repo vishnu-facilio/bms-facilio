@@ -47,8 +47,6 @@ public class PreparePMForMultipleAsset implements Command {
 			Template template = TemplateAPI.getTemplate(pm.getTemplateId());
 			WorkorderTemplate woTemplate = (WorkorderTemplate)template;
 			
-			woTemplate.setName(woTemplate.getName()+" - "+resource);
-			
 			woTemplate.setResourceId(pmJob.getResourceId());
 			
 			PMResourcePlannerContext pmResource = PreventiveMaintenanceAPI.getPMResourcePlanner(pmId, pmJob.getResourceId());
@@ -107,6 +105,9 @@ public class PreparePMForMultipleAsset implements Command {
 			 List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(sectiontemplate.getAssignmentType()), woResourceId, sectiontemplate.getSpaceCategoryId(), sectiontemplate.getAssetCategoryId(),sectiontemplate.getResourceId(),sectiontemplate.getPmIncludeExcludeResourceContexts());
 			 
 			 for(Long resourceId :resourceIds) {
+				 if(resourceId == null || resourceId < 0) {
+					 continue;
+				 }
 				 ResourceContext sectionResource = ResourceAPI.getResource(resourceId);
 				 String sectionName = sectionResource.getName() + " - " +sectiontemplate.getName();
 				 
