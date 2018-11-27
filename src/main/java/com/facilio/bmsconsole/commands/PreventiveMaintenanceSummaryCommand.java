@@ -22,6 +22,7 @@ import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.PMResourcePlannerContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.TriggerType;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -36,6 +37,7 @@ import com.facilio.bmsconsole.templates.TaskTemplate;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
@@ -95,6 +97,24 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 		
 		if(pm.getPmCreationType() == PreventiveMaintenance.PMCreationType.MULTIPLE.getVal()) {
 			Map<Long, PMResourcePlannerContext> resourcePlanners = PreventiveMaintenanceAPI.getPMResourcesPlanner(pm.getId());
+			
+			List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(pm.getAssignmentType()),pm.getBaseSpaceId(),pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
+			for(Long resourceId :resourceIds) {					// construct resource planner for default cases
+				if(!resourcePlanners.containsKey(resourceId)) {
+					PMResourcePlannerContext pmResourcePlannerContext = new PMResourcePlannerContext();
+					pmResourcePlannerContext.setResourceId(resourceId);
+					if(pmResourcePlannerContext.getResourceId() != null && pmResourcePlannerContext.getResourceId() > 0) {
+						pmResourcePlannerContext.setResource(ResourceAPI.getResource(pmResourcePlannerContext.getResourceId()));
+					}
+					pmResourcePlannerContext.setPmId(pm.getId());
+					pmResourcePlannerContext.setAssignedToId(-1l);
+					pmResourcePlannerContext.setTriggerId(-1l);
+					pmResourcePlannerContext.setPmResourcePlannerReminderContexts(Collections.emptyList());
+					
+					resourcePlanners.put(resourceId, pmResourcePlannerContext);
+				}
+			}
+			
 			if(resourcePlanners != null) {
 				pm.setResourcePlanners(new ArrayList<>(resourcePlanners.values()));
 			}

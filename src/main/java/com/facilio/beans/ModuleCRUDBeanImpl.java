@@ -19,6 +19,7 @@ import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.PreparePMForMultipleAsset;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.ControllerContext;
@@ -43,6 +44,7 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.templates.JSONTemplate;
+import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.ControllerAPI;
@@ -178,6 +180,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				new FacilioContext();
 				
 				JSONObject taskContent = (JSONObject) content.get(FacilioConstants.ContextNames.TASK_MAP);
+				
 				if(taskContent != null) {
 					taskMap = PreventiveMaintenanceAPI.getTaskMapFromJson(taskContent);
 				}
@@ -193,8 +196,30 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				}
 			}
 			else {
-				wo = ((WorkorderTemplate)template).getWorkorder();
-				taskMap = ((WorkorderTemplate)template).getTasks();
+				WorkorderTemplate workorderTemplate = (WorkorderTemplate)template;
+				
+				wo = workorderTemplate.getWorkorder();
+				taskMap = workorderTemplate.getTasks();
+
+				Map<String, List<TaskContext>> taskMapForNewPmExecution = null;	// should be handled in above if too
+				boolean isNewPmType = false;
+				
+				for(TaskSectionTemplate sectiontemplate : workorderTemplate.getSectionTemplates()) {	// for new pm_Type section should be present and every section should have a AssignmentType
+					if(sectiontemplate.getAssignmentType() < 0) {
+						isNewPmType =  false;
+						break;
+					}
+					else {
+						isNewPmType = true; 
+					}
+				}
+				if(isNewPmType) {
+					Long woTemplateResourceId = workorderTemplate.getResourceId() > 0 ? workorderTemplate.getResourceId() : (workorderTemplate.getResource() != null ? workorderTemplate.getResource().getId() : -1l);
+					taskMapForNewPmExecution = PreparePMForMultipleAsset.getTaskMap(workorderTemplate.getSectionTemplates(), woTemplateResourceId);
+				}
+				if(taskMapForNewPmExecution != null) {
+					taskMap = taskMapForNewPmExecution;
+				}
 			}
 			
 			wo.setSourceType(TicketContext.SourceType.PREVENTIVE_MAINTENANCE);

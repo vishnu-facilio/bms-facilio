@@ -747,27 +747,9 @@ public class TemplateAPI {
 				tasks.add(task);
 			}
 			woTemplate.setTaskTemplates(taskTemplates);
+			woTemplate.setSectionTemplates(new ArrayList<>(sectionMap.values()));
 			
-			Map<String, List<TaskContext>> taskMapForNewPmExecution = null;
-			boolean isNewPmType = false;
-			
-			for(TaskSectionTemplate sectiontemplate : sectionMap.values()) {	// for new pm_Type section should be present and every section should have a AssignmentType
-				if(sectiontemplate.getAssignmentType() < 0) {
-					isNewPmType =  false;
-					break;
-				}
-				else {
-					isNewPmType = true; 
-				}
-			}
-			if(isNewPmType) {
-				Long woTemplateResourceId = woTemplate.getResourceId() > 0 ? woTemplate.getResourceId() : woTemplate.getResource().getId();
-				taskMapForNewPmExecution = PreparePMForMultipleAsset.getTaskMap(new ArrayList<>(sectionMap.values()), woTemplateResourceId);
-			}
-			if(taskMapForNewPmExecution == null) {
-				return taskMap;
-			}
-			return taskMapForNewPmExecution;
+			return taskMap;
 		}
 		return null;
 	}
