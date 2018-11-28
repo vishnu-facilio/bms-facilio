@@ -178,8 +178,12 @@ public class ControllerContext implements Serializable {
 		return null;
 	}
 	public void setControllerPropsJsonStr(String jsonStr) throws ParseException {
-		JSONParser parser = new JSONParser();
-		controllerProps = (JSONObject) parser.parse(jsonStr);
+		if(jsonStr != null) {
+			JSONParser parser = new JSONParser();
+			controllerProps = (JSONObject) parser.parse(jsonStr);
+		} else {
+			controllerProps = new JSONObject();
+		}
 	}
 	
 	@Override
