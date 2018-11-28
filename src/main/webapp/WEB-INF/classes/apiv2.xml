@@ -526,6 +526,10 @@
 	<package name="instancesApiv2" namespace="/api/v2/instances" extends="v2Api">
 		<action name="configure" class="com.facilio.bmsconsole.actions.TimeSeries" method="configureInstances">
 		</action>
+		<action name="map" class="com.facilio.bmsconsole.actions.TimeSeries" method="mapInstance">
+		</action>
+		<action name="mapped" class="com.facilio.bmsconsole.actions.TimeSeries" method="getMappedInstances">
+		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.TimeSeries" method="getInstancesForController">
 			<param name="controllerId">{1}</param>
 		</action>

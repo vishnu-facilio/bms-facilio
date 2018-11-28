@@ -113,7 +113,7 @@ public class TimeSeriesAPI {
 		return deviceInstanceMap;
 	}
 	
-	private static List<ReadingDataMeta> getMetaList(long assetId, Map<String,Long> instanceFieldMap) throws Exception {
+	private static Map<String, ReadingDataMeta> getMetaMap(long assetId, Map<String,Long> instanceFieldMap) throws Exception {
 		List<FacilioField> fields = new ArrayList<>();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		for (Map.Entry<String, Long> entry : instanceFieldMap.entrySet()) {
@@ -124,7 +124,8 @@ public class TimeSeriesAPI {
 			}
 			fields.add(field);
 		}
-		return ReadingsAPI.getReadingDataMetaList(assetId, fields);
+		List<ReadingDataMeta> metaList = ReadingsAPI.getReadingDataMetaList(assetId, fields);
+		return metaList.stream().collect(Collectors.toMap(meta -> meta.getResourceId()+"|"+meta.getFieldId(), Function.identity()));
 	}
 	
 	private static void checkForInputType(long assetId, long fieldId, String instanceName, Map<String, ReadingDataMeta> metaMap) throws Exception {
@@ -140,17 +141,28 @@ public class TimeSeriesAPI {
 		}
 	}
 	
+	public static void insertOrUpdateInstance(String deviceName, long assetId,Long controllerId, String instance, long fieldId) throws Exception {
+		Map<String, Object> modeledData = getMappedInstance(assetId, fieldId);
+		if (modeledData == null) {
+			insertInstanceAssetMapping(deviceName, assetId, controllerId, Collections.singletonMap(instance, fieldId));			
+		}
+		else {
+			updateInstanceAssetMapping(deviceName, assetId, instance, fieldId);
+		}
+	}
+	
+	
 	public static void insertInstanceAssetMapping(String deviceName, long assetId,Long controllerId, Map<String,Long> instanceFieldMap) throws Exception {
-		List<ReadingDataMeta> metaList = getMetaList(assetId, instanceFieldMap);
-		Map<String, ReadingDataMeta> metaMap = metaList.stream().collect(Collectors.toMap(meta -> meta.getResourceId()+"|"+meta.getFieldId(), Function.identity()));
-		List<Map<String, Object>> records = new ArrayList<>();
-		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		
 		List<Map<String, Object>> instanceDetails = getUnmodeledInstances(deviceName, instanceFieldMap.keySet(), null);
 		Map<String,Map<String, Object>> instanceMap = instanceDetails.stream().collect(Collectors.toMap(instance -> (String) instance.get("instance"), Function.identity()));
 		
 		List<ReadingDataMeta> writableReadingList = new ArrayList<>();
-		List<ReadingDataMeta> readableReadingList = new ArrayList<>();
+		List<ReadingDataMeta> remainingReadingList = new ArrayList<>();
+		
+		Map<String, ReadingDataMeta> metaMap = getMetaMap(assetId, instanceFieldMap);
+		List<Map<String, Object>> records = new ArrayList<>();
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		
 		for (Map.Entry<String, Long> entry : instanceFieldMap.entrySet()) {
 			String instanceName = entry.getKey();
@@ -181,7 +193,7 @@ public class TimeSeriesAPI {
 				writableReadingList.add(meta);
 			}
 			else {
-				readableReadingList.add(meta);
+				remainingReadingList.add(meta);
 			}
 		};
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
@@ -193,9 +205,33 @@ public class TimeSeriesAPI {
 		if (!writableReadingList.isEmpty()) {
 			ReadingsAPI.updateReadingDataMetaInputType(writableReadingList, ReadingInputType.CONTROLLER_MAPPED, ReadingType.WRITE);
 		}
-		if (!readableReadingList.isEmpty()){
-			ReadingsAPI.updateReadingDataMetaInputType(readableReadingList, ReadingInputType.CONTROLLER_MAPPED, ReadingType.READ);
+		if (!remainingReadingList.isEmpty()){
+			ReadingsAPI.updateReadingDataMetaInputType(remainingReadingList, ReadingInputType.CONTROLLER_MAPPED, null);
 		}
+	}
+	
+	public static int updateInstanceAssetMapping(String deviceName, long assetId, String instanceName, long fieldId) throws Exception {
+		
+		Map<String, ReadingDataMeta> metaMap = getMetaMap(assetId, Collections.singletonMap(instanceName, fieldId));
+		checkForInputType(assetId, fieldId, instanceName, metaMap);
+		
+		Map<String, Object> prop = new HashMap<>();
+		prop.put("assetId", assetId);
+		prop.put("fieldId", fieldId);
+		
+		FacilioModule module = ModuleFactory.getInstanceMappingModule();
+		List<FacilioField> fields = FieldFactory.getInstanceMappingFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
+		GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+				.fields(fields)
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("device"), deviceName, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("instance"), instanceName, StringOperators.IS))
+				;
+		
+		return builder.update(prop);
 	}
 	
 	public static Map<String, Long> getDefaultInstanceFieldMap() throws Exception {
@@ -214,7 +250,7 @@ public class TimeSeriesAPI {
 		return fieldMap;
 	}
 	
-	public static Map<String, Object> getMappedInstance(long assetId, long fieldId) throws Exception {
+	public static Map<String, Object> getMappedInstance(Long assetId, long fieldId) throws Exception {
 		FacilioModule module = ModuleFactory.getInstanceMappingModule();
 		List<FacilioField> fields = FieldFactory.getInstanceMappingFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -228,6 +264,40 @@ public class TimeSeriesAPI {
 		List<Map<String, Object>> props = builder.get();
 		if(props!=null && !props.isEmpty()) {
 			return props.get(0);
+		}
+		return null;
+	}
+	
+	public static Map<String, Object> getMappedInstances(long controllerId) throws Exception {
+		FacilioModule module = ModuleFactory.getInstanceMappingModule();
+		List<FacilioField> fields = FieldFactory.getInstanceMappingFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"), String.valueOf(controllerId), NumberOperators.EQUALS))
+				;
+		List<Map<String, Object>> props = builder.get();
+		Map<String, Object> deviceMap = new HashMap();
+		if(props!=null && !props.isEmpty()) {
+			for(Map<String, Object> prop: props) {
+				String device = (String) prop.get("device");
+				Map<String, Object> instanceMap = null;
+				if (!deviceMap.containsKey(device)) {
+					Map<String, Object> deviceDetails = (Map<String, Object>) deviceMap.get(device);
+					instanceMap = (Map<String, Object>) deviceDetails.get("instances");
+				}
+				else {
+					Map<String, Object> deviceDetails = new HashMap<>();
+					deviceDetails.put("assetId", prop.get("assetId"));
+					fieldMap = new HashMap<>();
+					deviceDetails.put("instances", instanceMap);
+				}
+				String instanceName = (String) prop.get("instance");
+				instanceMap.put(instanceName, (Long) prop.get("fieldId"));
+			}
+			return deviceMap;
 		}
 		return null;
 	}

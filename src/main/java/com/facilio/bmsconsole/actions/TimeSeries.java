@@ -100,10 +100,31 @@ public class TimeSeries extends FacilioAction {
 		return SUCCESS;
 	}
 	
-
+	public String mapInstance() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.INSTANCE_INFO, instanceAssetMap);
+		context.put(FacilioConstants.ContextNames.CONTROLLER_ID, controllerId);
+		
+		Chain mappingChain = TransactionChainFactory.getInstanceAssetMappingChain();
+		mappingChain.execute(context);
+		
+		if (doMigration) {
+			String deviceName = (String) instanceAssetMap.get("deviceName");
+			setDeviceList(Collections.singletonList(deviceName));
+			migrateData();
+		}
+		setResult("result", "success");
+		return SUCCESS;
+	}
 
 	public String getDefaultFieldMap() throws Exception {
 		setFieldMap(TimeSeriesAPI.getDefaultInstanceFieldMap());
+		return SUCCESS;
+	}
+	
+	public String getMappedInstances() throws Exception {
+		setResult("mappedValues", TimeSeriesAPI.getMappedInstances(controllerId));
 		return SUCCESS;
 	}
 	
