@@ -91,14 +91,14 @@ public class ValidateTasksCommand implements Command {
 				else {
 					switch(task.getInputTypeEnum()) {
 						case READING:
-							if ((pm == null || pm.getPmCreationType() != PMCreationType.MULTIPLE.getVal()) && (task.getResource() == null || task.getResource().getId() == -1)) {
-								throw new IllegalArgumentException("Resource cannot be null when reading is enabled for task");
-							}
+//							if ((pm == null || pm.getPmCreationType() != PMCreationType.MULTIPLE.getVal()) && (task.getResource() == null || task.getResource().getId() == -1)) {
+//								throw new IllegalArgumentException("Resource cannot be null when reading is enabled for task");
+//							}
 							if(task.getReadingFieldId() == -1) {
 								throw new IllegalArgumentException("Reading ID cannot be null when reading is enabled for task");
 							}
 							FacilioField readingField = modBean.getField(task.getReadingFieldId());
-							if (pm == null || pm.getPmCreationType() != PMCreationType.MULTIPLE.getVal()) {
+							if (task.getResource() != null) {
 								ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(task.getResource().getId(), readingField);
 								switch (meta.getInputTypeEnum()) {
 									case CONTROLLER_MAPPED:
