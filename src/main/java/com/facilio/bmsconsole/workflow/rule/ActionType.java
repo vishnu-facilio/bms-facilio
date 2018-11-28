@@ -25,6 +25,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AlarmSeverityContext;
 import com.facilio.bmsconsole.context.NoteContext;
@@ -386,39 +387,55 @@ public enum ActionType {
 				Object currentRecord) {
 			// TODO Auto-generated method stub
 			try {
-				long ruleId = (long) obj.get("rule.id");
-
-				FacilioModule module = ModuleFactory.getPMTriggersModule();
-				GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-						.select(FieldFactory.getPMTriggerFields()).table(module.getTableName())
-						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-						.andCustomWhere("RULE_ID = ?", ruleId);
-				List<Map<String, Object>> pmProps = selectRecordBuilder.get();
-				if (pmProps != null && !pmProps.isEmpty()) {
-					PMTriggerContext trigger = FieldUtil.getAsBeanFromMap(pmProps.get(0), PMTriggerContext.class);
-
-					FacilioContext pmContext = new FacilioContext();
-					pmContext.put(FacilioConstants.ContextNames.RECORD_ID, trigger.getPmId());
-					pmContext.put(FacilioConstants.ContextNames.PM_CURRENT_TRIGGER, trigger);
-					pmContext.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, Instant.now().getEpochSecond());
-					pmContext.put(FacilioConstants.ContextNames.PM_RESET_TRIGGERS, true);
-
-					Chain executePm = FacilioChainFactory.getExecutePreventiveMaintenanceChain();
-					executePm.execute(pmContext);
-					
-					WorkOrderContext wo = (WorkOrderContext) pmContext.get(FacilioConstants.ContextNames.WORK_ORDER);
-					if (context != null) {
-						context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
-					}
-					if (currentRecord instanceof AlarmContext && wo != null) {
-						AlarmAPI.updateWoIdInAlarm(wo.getId(), ((AlarmContext) currentRecord).getId());
-					}
-				}
+				executePM(currentRule, currentRecord, context);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				LOGGER.error("Exception occurred ", e);
+				StringBuilder builder = new StringBuilder("Error occurred duting PM execution for Rule ")
+										.append(currentRule.getId());
+				
+				if (currentRecord instanceof ModuleBaseWithCustomFields) {
+					builder.append(" for record : ")
+							.append(((ModuleBaseWithCustomFields) currentRecord).getId());
+					
+				}
+				CommonCommandUtil.emailException("ExecutePMAction", builder.toString(), e);
+				LOGGER.error(builder.toString(), e);
 			}
 
+		}
+		
+		private void executePM(WorkflowRuleContext currentRule, Object currentRecord, Context context) throws Exception {
+			FacilioModule module = ModuleFactory.getPMTriggersModule();
+			GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+					.select(FieldFactory.getPMTriggerFields()).table(module.getTableName())
+					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+					.andCustomWhere("RULE_ID = ?", currentRule.getId());
+			List<Map<String, Object>> pmProps = selectRecordBuilder.get();
+			if (pmProps != null && !pmProps.isEmpty()) {
+				
+				PMTriggerContext trigger = FieldUtil.getAsBeanFromMap(pmProps.get(0), PMTriggerContext.class);
+				FacilioContext pmContext = new FacilioContext();
+				pmContext.put(FacilioConstants.ContextNames.RECORD_ID, trigger.getPmId());
+				pmContext.put(FacilioConstants.ContextNames.PM_CURRENT_TRIGGER, trigger);
+				pmContext.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, Instant.now().getEpochSecond());
+				pmContext.put(FacilioConstants.ContextNames.PM_RESET_TRIGGERS, true);
+				
+				if (currentRecord instanceof AlarmContext) {
+					fetchSeverities((AlarmContext) currentRecord);
+					pmContext.put(FacilioConstants.ContextNames.PM_UNCLOSED_WO_COMMENT, getNewAlarmCommentForUnClosedWO((AlarmContext) currentRecord));
+				}
+
+				Chain executePm = FacilioChainFactory.getExecutePreventiveMaintenanceChain();
+				executePm.execute(pmContext);
+				
+				WorkOrderContext wo = (WorkOrderContext) pmContext.get(FacilioConstants.ContextNames.WORK_ORDER);
+				if (context != null) {
+					context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
+				}
+				if (currentRecord instanceof AlarmContext && wo != null) {
+					AlarmAPI.updateWoIdInAlarm(wo.getId(), ((AlarmContext) currentRecord).getId());
+				}
+			}
 		}
 		
 		@Override
@@ -544,13 +561,7 @@ public enum ActionType {
 				} else {
 					fetchSeverities(alarm);
 					NoteContext note = new NoteContext();
-					
-					if (alarm.getPreviousSeverity() == null) {
-						note.setBody("Alarm associated with this work order, previously Cleared, has been raised to "+alarm.getSeverity().getSeverity()+" at "+alarm.getModifiedTimeString());
-					}
-					else {
-						note.setBody("Alarm associated with this work order updated from "+alarm.getPreviousSeverity().getSeverity()+" to "+alarm.getSeverity().getSeverity()+" at "+alarm.getModifiedTimeString());
-					}
+					note.setBody(getNewAlarmCommentForUnClosedWO(alarm));
 					note.setParentId(wo.getId());
 					
 					FacilioContext noteContext = new FacilioContext();
@@ -569,23 +580,6 @@ public enum ActionType {
 				LOGGER.error("Exception occurred during creating Workorder from Alarm", e);
 			}
 		}
-		
-		private void fetchSeverities(AlarmContext alarm) throws Exception {
-			List<Long> ids = new ArrayList<>();
-			
-			if (alarm.getPreviousSeverity() != null) {
-				ids.add(alarm.getPreviousSeverity().getId());
-			}
-			
-			ids.add(alarm.getSeverity().getId());
-			Map<Long, AlarmSeverityContext> severityMap = AlarmAPI.getAlarmSeverityMap(ids);
-			
-			if (alarm.getPreviousSeverity() != null) {
-				alarm.setPreviousSeverity(severityMap.get(alarm.getPreviousSeverity().getId()));
-			}
-			alarm.setSeverity(severityMap.get(alarm.getSeverity().getId()));
-		}
-
 	},
 	CLOSE_WO_FROM_ALARM(12) {
 
@@ -771,5 +765,30 @@ public enum ActionType {
 			return wos.get(0);
 		}
 		return null;
+	}
+	
+	private static void fetchSeverities(AlarmContext alarm) throws Exception {
+		List<Long> ids = new ArrayList<>();
+		
+		if (alarm.getPreviousSeverity() != null) {
+			ids.add(alarm.getPreviousSeverity().getId());
+		}
+		
+		ids.add(alarm.getSeverity().getId());
+		Map<Long, AlarmSeverityContext> severityMap = AlarmAPI.getAlarmSeverityMap(ids);
+		
+		if (alarm.getPreviousSeverity() != null) {
+			alarm.setPreviousSeverity(severityMap.get(alarm.getPreviousSeverity().getId()));
+		}
+		alarm.setSeverity(severityMap.get(alarm.getSeverity().getId()));
+	}
+	
+	private static String getNewAlarmCommentForUnClosedWO (AlarmContext alarm) {
+		if (alarm.getPreviousSeverity() == null) {
+			return "Alarm associated with this work order, previously Cleared, has been raised to "+alarm.getSeverity().getSeverity()+" at "+alarm.getModifiedTimeString();
+		}
+		else {
+			return "Alarm associated with this work order updated from "+alarm.getPreviousSeverity().getSeverity()+" to "+alarm.getSeverity().getSeverity()+" at "+alarm.getModifiedTimeString();
+		}
 	}
 }

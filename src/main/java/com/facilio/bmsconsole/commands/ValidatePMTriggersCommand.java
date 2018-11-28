@@ -7,7 +7,6 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PMTriggerContext;
-import com.facilio.bmsconsole.context.PMTriggerContext.TriggerExectionSource;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.TriggerType;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -42,15 +41,12 @@ public class ValidatePMTriggersCommand implements Command {
 		
 		if(pmTriggers != null && !pmTriggers.isEmpty()) {
 			boolean isScheduleOnly = true;
+			boolean isAlarmRule = false;
 			for (PMTriggerContext trigger : pmTriggers) {
 				switch(trigger.getTriggerExecutionSourceEnum()) {
 				case READING:
 					createReadingForTrigger(trigger, workorder);
-					if (trigger.getSchedule() == null) {
-						isScheduleOnly = false;
-					} else {
-						throw new IllegalArgumentException("Both schedule and Reading cannot be set for a trigger");
-					}
+					isScheduleOnly = false;
 					break;
 				case SCHEDULE:
 					if(trigger.getStartTime() == -1) {
@@ -61,18 +57,23 @@ public class ValidatePMTriggersCommand implements Command {
 					}
 					
 					if (trigger.getSchedule() == null) {
-						throw new IllegalArgumentException("Both schedule and Reading cannot be null for a trigger");
-					} else if(trigger.getReadingRule() != null) {
-						throw new IllegalArgumentException("Both schedule and Reading cannot be set for a trigger");
+						throw new IllegalArgumentException("Schedule cannot be empty for SCHEDULE type trigger");
 					}
 					break;
 				case ALARMRULE:
-					isScheduleOnly = true;
+					if (trigger.getWorkFlowRule() == null) {
+						throw new IllegalArgumentException("Rule cannot be empty for ALARMRULE type trigger");
+					}
+					isAlarmRule = true;
+					isScheduleOnly = false;
 					break;
 				}
 			}
 			if (isScheduleOnly) {
 				pm.setTriggerType(TriggerType.ONLY_SCHEDULE_TRIGGER);
+			}
+			else if (isAlarmRule) {
+				pm.setTriggerType(TriggerType.FLOATING);
 			}
 			else if(pm.getTriggerTypeEnum() == null) {
 				pm.setTriggerType(TriggerType.FIXED);
@@ -92,15 +93,15 @@ public class ValidatePMTriggersCommand implements Command {
 	
 	private void createReadingForTrigger(PMTriggerContext trigger, WorkOrderContext workorder) throws Exception {
 		if(trigger.getReadingFieldId() == -1) {
-			throw new IllegalArgumentException("Reading field cannot be empty for reading triggers");
+			throw new IllegalArgumentException("Reading field cannot be empty for READING type triggers");
 		}
 		
 		if(trigger.getStartReading() == -1) {
-			throw new IllegalArgumentException("Start reading cannot be empty for reading triggers");
+			throw new IllegalArgumentException("Start reading cannot be empty for READING type triggers");
 		}
 		
 		if(trigger.getReadingInterval() == -1) {
-			throw new IllegalArgumentException("Reading interval cannot be empty for reading triggers");
+			throw new IllegalArgumentException("Reading interval cannot be empty for READING type triggers");
 		}
 		
 		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
