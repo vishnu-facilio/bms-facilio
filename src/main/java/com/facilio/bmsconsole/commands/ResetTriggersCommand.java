@@ -130,7 +130,9 @@ public class ResetTriggersCommand implements Command {
 					default:
 						break;
 				}
-				nextExecutionTimes.put(trigger.getId(), pmJob.getNextExecutionTime()); 
+				if(pmJob != null) {
+					nextExecutionTimes.put(trigger.getId(), pmJob.getNextExecutionTime());
+				}
 			}
 			else if(trigger.getRuleId() != -1) {
 				switch(pm.getTriggerTypeEnum()) {
