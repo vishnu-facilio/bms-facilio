@@ -262,9 +262,9 @@ public enum ActionType {
 					metaMap = rule.getAlarmMetaMap();
 					isHistorical = false;
 				}
-//				if (AccountUtil.getCurrentOrg().getId() == 135) {
-					LOGGER.debug("Meta map of rule : "+rule.getId()+" when creating alarm for resource "+reading.getParentId()+" : "+metaMap);
-//				}
+				if (isHistorical) {/*if (AccountUtil.getCurrentOrg().getId() == 135) {*/
+					LOGGER.info("Meta map of rule : "+rule.getId()+" when creating alarm for resource "+reading.getParentId()+" : "+metaMap);
+				}
 					
 				if (metaMap != null) {
 					ReadingRuleAlarmMeta alarmMeta = metaMap.get(reading.getParentId());
@@ -272,9 +272,9 @@ public enum ActionType {
 						metaMap.put(reading.getParentId(), addAlarmMeta(event.getAlarmId(), reading.getParentId(), rule, isHistorical));
 					}
 					else if (alarmMeta.isClear()) {
-//						if (AccountUtil.getCurrentOrg().getId() == 135) {
-							LOGGER.debug("Updating meta with alarm id : "+event.getAlarmId()+" for rule : "+rule.getId()+" for resource : "+reading.getParentId());
-//						}
+						if (isHistorical) {/*if (AccountUtil.getCurrentOrg().getId() == 135) {*/
+							LOGGER.info("Updating meta with alarm id : "+event.getAlarmId()+" for rule : "+rule.getId()+" for resource : "+reading.getParentId());
+						}
 						alarmMeta.setClear(false);
 						if (!isHistorical) {
 							ReadingRuleAPI.markAlarmMetaAsNotClear(alarmMeta.getId(), event.getAlarmId());
