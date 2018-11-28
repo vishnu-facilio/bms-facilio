@@ -61,8 +61,8 @@ public class DeletePMAndDependenciesCommand implements Command{
 				if(oldPm.hasTriggers() && oldPm.getTriggers() != null && (isPMDelete || newPm.getTriggers() != null || deleteOnStatusUpdate)) {
 					List<Long> triggerIds = new ArrayList<>();
 					oldPm.getTriggers().forEach(trigger -> {
-						if(trigger.getReadingRuleId() != -1) {
-							ruleIds.add(trigger.getReadingRuleId());
+						if(trigger.getRuleId() != -1) {
+							ruleIds.add(trigger.getRuleId());
 						}
 						triggerIds.add(trigger.getId());
 					});

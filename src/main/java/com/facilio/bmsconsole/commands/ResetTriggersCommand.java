@@ -132,14 +132,14 @@ public class ResetTriggersCommand implements Command {
 				}
 				nextExecutionTimes.put(trigger.getId(), pmJob.getNextExecutionTime()); 
 			}
-			else if(trigger.getReadingRuleId() != -1) {
+			else if(trigger.getRuleId() != -1) {
 				switch(pm.getTriggerTypeEnum()) {
 					case FIXED:
 					case FLOATING:
 						if(trigger.getId() != currentTrigger.getId()) { //Resetting latest value of other metered triggers
-							long latestValue = getLatestReading(trigger.getReadingRuleId());
+							long latestValue = getLatestReading(trigger.getRuleId());
 							if(latestValue != -1) {
-								ReadingRuleAPI.updateLastValueInReadingRule(trigger.getReadingRuleId(), latestValue);
+								ReadingRuleAPI.updateLastValueInReadingRule(trigger.getRuleId(), latestValue);
 							}
 						}
 						break;

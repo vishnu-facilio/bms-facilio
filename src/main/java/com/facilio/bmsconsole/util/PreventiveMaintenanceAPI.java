@@ -24,6 +24,7 @@ import com.facilio.bmsconsole.context.PMJobsContext.PMJobsStatus;
 import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.PMReminder.ReminderType;
 import com.facilio.bmsconsole.context.PMTriggerContext;
+import com.facilio.bmsconsole.context.PMTriggerContext.TriggerExectionSource;
 import com.facilio.bmsconsole.context.PMTriggerContext.TriggerType;
 import com.facilio.bmsconsole.context.PMResourcePlannerContext;
 import com.facilio.bmsconsole.context.PMResourcePlannerReminderContext;
@@ -50,6 +51,7 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
@@ -782,12 +784,18 @@ public static PMTriggerContext getTrigger(List<PMTriggerContext> triggers,Long t
 						continue;
 					}
 					for (PMTriggerContext trigger : pm.getTriggers()) {
-						if (trigger.getReadingRuleId() != -1) {
-							ReadingRuleContext rule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(trigger.getReadingRuleId());
-							trigger.setReadingFieldId(rule.getReadingFieldId());
-							trigger.setReadingInterval(rule.getInterval());
-							trigger.setStartReading(rule.getStartValue());
-							trigger.setReadingRule(rule);
+						if (trigger.getRuleId() != -1) {
+							if (trigger.getTriggerExecutionSourceEnum() == TriggerExectionSource.ALARMRULE) {
+								WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(trigger.getRuleId());
+								trigger.setWorkFlowRule(rule);
+							}
+							else if (trigger.getTriggerExecutionSourceEnum() == TriggerExectionSource.READING) {
+								ReadingRuleContext rule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(trigger.getRuleId());
+								trigger.setReadingFieldId(rule.getReadingFieldId());
+								trigger.setReadingInterval(rule.getInterval());
+								trigger.setStartReading(rule.getStartValue());
+								trigger.setReadingRule(rule);
+							}
 						}
 					}
 				}

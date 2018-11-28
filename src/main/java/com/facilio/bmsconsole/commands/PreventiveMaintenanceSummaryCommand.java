@@ -21,6 +21,7 @@ import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.PMResourcePlannerContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
+import com.facilio.bmsconsole.context.PMTriggerContext.TriggerExectionSource;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.TriggerType;
@@ -42,6 +43,7 @@ import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo;
@@ -85,12 +87,16 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 				if(pmJob != null && (pm.getNextExecutionTime() == -1 || pmJob.getNextExecutionTime() <= pm.getNextExecutionTime())) {
 					pm.setNextExecutionTime(pmJob.getNextExecutionTime()*1000);
 				}
-				if (trigger.getReadingRuleId() != -1) {
-					ReadingRuleContext rule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(trigger.getReadingRuleId());
+				if (trigger.getTriggerExecutionSourceEnum() == TriggerExectionSource.READING) {
+					ReadingRuleContext rule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(trigger.getRuleId());
 					trigger.setReadingFieldId(rule.getReadingFieldId());
 					trigger.setReadingInterval(rule.getInterval());
 					trigger.setStartReading(rule.getStartValue());
 					trigger.setReadingRule(rule);
+				}
+				else if (trigger.getTriggerExecutionSourceEnum() == TriggerExectionSource.ALARMRULE) {
+					WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(trigger.getRuleId());
+					trigger.setWorkFlowRule(rule);
 				}
 			}
 		}
