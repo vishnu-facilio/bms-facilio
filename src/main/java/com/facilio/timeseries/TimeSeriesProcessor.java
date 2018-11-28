@@ -179,10 +179,7 @@ public class TimeSeriesProcessor implements IRecordProcessor {
                                 controller.setNetworkNumber(networkNumber);
                                 controller.setSubnetPrefix(Math.toIntExact(subnetPrefix));
                                 controller.setMacAddr(deviceId);
-                                FacilioContext context = new FacilioContext();
-                                context.put(FacilioConstants.ContextNames.CONTROLLER_SETTINGS, controller);
-                                Chain addcontrollerSettings = FacilioChainFactory.getAddControllerChain();
-                                addcontrollerSettings.execute(context);
+                                controller = bean.addController(controller);
                             }
 							long controllerSettingsId = controller.getId();
 							if(controllerSettingsId > -1) {
