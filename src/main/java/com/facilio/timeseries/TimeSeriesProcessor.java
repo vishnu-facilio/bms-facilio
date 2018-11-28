@@ -6,6 +6,7 @@ import java.nio.charset.CharsetDecoder;
 import java.util.*;
 import java.util.logging.Level;
 
+import com.facilio.bmsconsole.util.ControllerAPI;
 import org.apache.commons.chain.Chain;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
@@ -167,20 +168,21 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 						
 						String deviceId = instanceNumber+"_"+destinationAddress+"_"+networkNumber;
 						if( ! deviceMap.containsKey(deviceId)) {
-							ControllerContext controller = new ControllerContext();
-							controller.setName(deviceName);
-							controller.setBroadcastIp(broadcastAddress);
-							controller.setDestinationId(destinationAddress);
-							controller.setInstanceNumber(instanceNumber);
-							controller.setNetworkNumber(networkNumber);
-							controller.setSubnetPrefix(Math.toIntExact(subnetPrefix));
-							controller.setMacAddr(deviceId);
-							FacilioContext context = new FacilioContext();
-							context.put(FacilioConstants.ContextNames.CONTROLLER_SETTINGS, controller);
-							
-							Chain addcontrollerSettings = FacilioChainFactory.getAddControllerChain();
-							addcontrollerSettings.execute(context);
-							
+                            ControllerContext controller = ControllerAPI.getController(deviceId);
+                            if(controller == null) {
+                                controller = new ControllerContext();
+                                controller.setName(deviceName);
+                                controller.setBroadcastIp(broadcastAddress);
+                                controller.setDestinationId(destinationAddress);
+                                controller.setInstanceNumber(instanceNumber);
+                                controller.setNetworkNumber(networkNumber);
+                                controller.setSubnetPrefix(Math.toIntExact(subnetPrefix));
+                                controller.setMacAddr(deviceId);
+                                FacilioContext context = new FacilioContext();
+                                context.put(FacilioConstants.ContextNames.CONTROLLER_SETTINGS, controller);
+                                Chain addcontrollerSettings = FacilioChainFactory.getAddControllerChain();
+                                addcontrollerSettings.execute(context);
+                            }
 							long controllerSettingsId = controller.getId();
 							if(controllerSettingsId > -1) {
 								JSONArray points = (JSONArray)payLoad.get("points");
