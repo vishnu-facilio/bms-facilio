@@ -14,7 +14,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -635,7 +634,7 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 				
 				ReadingRuleAlarmMeta alarmMeta = alarmMetaMap != null ? alarmMetaMap.get(reading.getParentId()) : null;
 				if (isHistorical) {/*if (AccountUtil.getCurrentOrg().getId() == 135 || AccountUtil.getCurrentOrg().getId() == 75 || AccountUtil.getCurrentOrg().getId() == 88) {*/
-					LOGGER.info("Alarm meta for rule : "+getId()+" for resource : "+reading.getParentId()+"::"+alarmMeta);
+					LOGGER.info("Alarm meta for rule : "+getId()+" for resource : "+reading.getParentId()+" at time : "+reading.getTtime()+"::"+alarmMeta);
 				}
 				if (alarmMeta != null && !alarmMeta.isClear()) {
 					alarmMeta.setClear(true);

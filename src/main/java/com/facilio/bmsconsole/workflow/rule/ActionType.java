@@ -263,7 +263,7 @@ public enum ActionType {
 					isHistorical = false;
 				}
 				if (isHistorical) {/*if (AccountUtil.getCurrentOrg().getId() == 135) {*/
-					LOGGER.info("Meta map of rule : "+rule.getId()+" when creating alarm for resource "+reading.getParentId()+" : "+metaMap);
+					LOGGER.info("Meta map of rule : "+rule.getId()+" when creating alarm for resource "+reading.getParentId()+" at time : "+reading.getTtime()+" : "+metaMap);
 				}
 					
 				if (metaMap != null) {
@@ -275,6 +275,7 @@ public enum ActionType {
 						if (isHistorical) {/*if (AccountUtil.getCurrentOrg().getId() == 135) {*/
 							LOGGER.info("Updating meta with alarm id : "+event.getAlarmId()+" for rule : "+rule.getId()+" for resource : "+reading.getParentId());
 						}
+						alarmMeta.setAlarmId(event.getAlarmId());
 						alarmMeta.setClear(false);
 						if (!isHistorical) {
 							ReadingRuleAPI.markAlarmMetaAsNotClear(alarmMeta.getId(), event.getAlarmId());
@@ -404,10 +405,13 @@ public enum ActionType {
 
 					Chain executePm = FacilioChainFactory.getExecutePreventiveMaintenanceChain();
 					executePm.execute(pmContext);
-
+					
+					WorkOrderContext wo = (WorkOrderContext) pmContext.get(FacilioConstants.ContextNames.WORK_ORDER);
 					if (context != null) {
-						context.put(FacilioConstants.ContextNames.WORK_ORDER,
-								pmContext.get(FacilioConstants.ContextNames.WORK_ORDER));
+						context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
+					}
+					if (currentRecord instanceof AlarmContext && wo != null) {
+						AlarmAPI.updateWoIdInAlarm(wo.getId(), ((AlarmContext) currentRecord).getId());
 					}
 				}
 			} catch (Exception e) {
@@ -564,30 +568,6 @@ public enum ActionType {
 				System.out.println(e);
 				LOGGER.error("Exception occurred during creating Workorder from Alarm", e);
 			}
-		}
-		
-		private WorkOrderContext getWorkOrder(AlarmContext alarm) throws Exception {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
-			FacilioField entityIdField = modBean.getField("entityId", FacilioConstants.ContextNames.ALARM);
-			FacilioField woIdField = modBean.getField("woId", FacilioConstants.ContextNames.ALARM);
-			FacilioField statusField = modBean.getField("status", FacilioConstants.ContextNames.WORK_ORDER);
-			TicketStatusContext closeStatus = TicketAPI.getStatus("Closed");
-			
-			
-			SelectRecordsBuilder<WorkOrderContext> woBuilder = new SelectRecordsBuilder<WorkOrderContext>()
-																	.module(module)
-																	.select(modBean.getAllFields(module.getName()))
-																	.beanClass(WorkOrderContext.class)
-																	.andCustomWhere(module.getTableName()+".ID IN (SELECT " + woIdField.getColumnName()  +" FROM Alarms WHERE ORGID = ? AND "+entityIdField.getCompleteColumnName()+" = ?)", AccountUtil.getCurrentOrg().getId(), alarm.getEntityId())
-																	.andCondition(CriteriaAPI.getCondition(statusField, String.valueOf(closeStatus.getId()), PickListOperators.ISN_T));
-																	;
-			
-			List<WorkOrderContext> wos = woBuilder.get();
-			if (wos != null && !wos.isEmpty()) {
-				return wos.get(0);
-			}
-			return null;
 		}
 		
 		private void fetchSeverities(AlarmContext alarm) throws Exception {
@@ -765,6 +745,30 @@ public enum ActionType {
 				toList.add(to);
 			}
 			return toList;
+		}
+		return null;
+	}
+	
+	private static WorkOrderContext getWorkOrder(AlarmContext alarm) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+		FacilioField entityIdField = modBean.getField("entityId", FacilioConstants.ContextNames.ALARM);
+		FacilioField woIdField = modBean.getField("woId", FacilioConstants.ContextNames.ALARM);
+		FacilioField statusField = modBean.getField("status", FacilioConstants.ContextNames.WORK_ORDER);
+		TicketStatusContext closeStatus = TicketAPI.getStatus("Closed");
+		
+		
+		SelectRecordsBuilder<WorkOrderContext> woBuilder = new SelectRecordsBuilder<WorkOrderContext>()
+																.module(module)
+																.select(modBean.getAllFields(module.getName()))
+																.beanClass(WorkOrderContext.class)
+																.andCustomWhere(module.getTableName()+".ID IN (SELECT " + woIdField.getColumnName()  +" FROM Alarms WHERE ORGID = ? AND "+entityIdField.getCompleteColumnName()+" = ?)", AccountUtil.getCurrentOrg().getId(), alarm.getEntityId())
+																.andCondition(CriteriaAPI.getCondition(statusField, String.valueOf(closeStatus.getId()), PickListOperators.ISN_T));
+																;
+		
+		List<WorkOrderContext> wos = woBuilder.get();
+		if (wos != null && !wos.isEmpty()) {
+			return wos.get(0);
 		}
 		return null;
 	}

@@ -74,7 +74,7 @@ public class UpdateAlarmCommand implements Command {
 				}
 			}
 			if(isCleared || (alarm.getSeverity() != null && alarm.getSeverity().getId() == AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.CLEAR_SEVERITY).getId())) {
-				alarm.setClearedTime(System.currentTimeMillis());
+				alarm.setClearedTime(alarm.getModifiedTime());
 				alarm.setClearedBy(AccountUtil.getCurrentUser());
 				isCleared = true;
 			}

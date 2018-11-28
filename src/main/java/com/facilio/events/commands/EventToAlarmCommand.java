@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -37,7 +39,7 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.google.common.base.Strings;
 
 public class EventToAlarmCommand implements Command {
-
+	private static final Logger LOGGER = LogManager.getLogger(EventToAlarmCommand.class.getName());
 	private long getAlarmId (EventContext event) throws Exception {
 		if (event.getAlarmId() == -1) {
 			FacilioModule module = EventConstants.EventModuleFactory.getEventModule();
@@ -83,6 +85,7 @@ public class EventToAlarmCommand implements Command {
 			}
 			else {
 				long alarmId = getAlarmId(event);
+				LOGGER.debug("Alarm ID for event : "+event.getId()+" : "+alarmId);
 				boolean createAlarm = true;
 				long entityId = -1;
 				if (alarmId != -1) {
