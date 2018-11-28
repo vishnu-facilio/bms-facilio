@@ -216,7 +216,18 @@ public class PMTriggerContext {
 		this.triggerExecutionSource = triggerExecutionSource;
 	}
 	
-	public TriggerExectionSource getTriggerExecutionSource() {
+	public TriggerExectionSource getTriggerExecutionSourceEnum() {
 		return this.triggerExecutionSource;
+	}
+	
+	public void setTriggerExecutionSource(int triggerType) {
+		this.triggerExecutionSource = TriggerExectionSource.valueOf(triggerType);
+	}
+	
+	public int getTriggerExecutionSource() {
+		if(triggerExecutionSource != null) {
+			return triggerExecutionSource.getVal();
+		}
+		return -1;
 	}
 }

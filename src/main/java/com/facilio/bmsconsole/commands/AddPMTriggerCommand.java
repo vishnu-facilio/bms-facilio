@@ -64,7 +64,7 @@ public class AddPMTriggerCommand implements Command {
 			trigger.setPmId(pm.getId());
 			trigger.setOrgId(AccountUtil.getCurrentOrg().getId());
 			long ruleId;
-			switch (trigger.getTriggerExecutionSource()) {
+			switch (trigger.getTriggerExecutionSourceEnum()) {
 			case ALARMRULE: {
 					trigger.getWorkFlowRule().setName("PM_" + pm.getId());
 					trigger.getWorkFlowRule().setRuleType(RuleType.PM_ALARM_RULE);
