@@ -7,6 +7,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PMTriggerContext;
+import com.facilio.bmsconsole.context.PMTriggerContext.TriggerExectionSource;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.TriggerType;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -42,24 +43,32 @@ public class ValidatePMTriggersCommand implements Command {
 		if(pmTriggers != null && !pmTriggers.isEmpty()) {
 			boolean isScheduleOnly = true;
 			for (PMTriggerContext trigger : pmTriggers) {
-				if(trigger.getSchedule() == null) {
+				switch(trigger.getTriggerExecutionSourceEnum()) {
+				case READING:
 					createReadingForTrigger(trigger, workorder);
-				}
-				else if(trigger.getStartTime() == -1) {
-					throw new IllegalArgumentException("Starttime cannot be empty for schedule triggers");
-				}
-				else if (trigger.getStartTime() < System.currentTimeMillis()) {
-					trigger.setStartTime(System.currentTimeMillis());
-				}
-				
-				if (trigger.getReadingRule() != null) {
 					if (trigger.getSchedule() == null) {
 						isScheduleOnly = false;
 					} else {
 						throw new IllegalArgumentException("Both schedule and Reading cannot be set for a trigger");
 					}
-				} else if (trigger.getSchedule() == null) {
-					throw new IllegalArgumentException("Both schedule and Reading cannot be null for a trigger");
+					break;
+				case SCHEDULE:
+					if(trigger.getStartTime() == -1) {
+						throw new IllegalArgumentException("Starttime cannot be empty for schedule triggers");
+					}
+					else if (trigger.getStartTime() < System.currentTimeMillis()) {
+						trigger.setStartTime(System.currentTimeMillis());
+					}
+					
+					if (trigger.getSchedule() == null) {
+						throw new IllegalArgumentException("Both schedule and Reading cannot be null for a trigger");
+					} else if(trigger.getReadingRule() != null) {
+						throw new IllegalArgumentException("Both schedule and Reading cannot be set for a trigger");
+					}
+					break;
+				case ALARMRULE:
+					isScheduleOnly = true;
+					break;
 				}
 			}
 			if (isScheduleOnly) {

@@ -391,7 +391,7 @@ public enum ActionType {
 				GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 						.select(FieldFactory.getPMTriggerFields()).table(module.getTableName())
 						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-						.andCustomWhere("READING_RULE_ID = ?", ruleId);
+						.andCustomWhere("RULE_ID = ?", ruleId);
 				List<Map<String, Object>> pmProps = selectRecordBuilder.get();
 				if (pmProps != null && !pmProps.isEmpty()) {
 					PMTriggerContext trigger = FieldUtil.getAsBeanFromMap(pmProps.get(0), PMTriggerContext.class);

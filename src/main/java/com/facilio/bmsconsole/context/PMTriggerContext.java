@@ -107,12 +107,12 @@ public class PMTriggerContext {
 		return this.workFlowRule;
 	}
 	
-	private long readingRuleId = -1;
-	public long getReadingRuleId() {
-		return readingRuleId;
+	private long ruleId = -1;
+	public long getRuleId() {
+		return ruleId;
 	}
-	public void setReadingRuleId(long readingRuleId) {
-		this.readingRuleId = readingRuleId;
+	public void setRuleId(long readingRuleId) {
+		this.ruleId = readingRuleId;
 	}
 	
 	private long templateId = -1;

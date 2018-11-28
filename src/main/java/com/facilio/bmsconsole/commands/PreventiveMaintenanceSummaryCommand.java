@@ -88,22 +88,15 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 					pm.setNextExecutionTime(pmJob.getNextExecutionTime()*1000);
 				}
 				if (trigger.getTriggerExecutionSourceEnum() == TriggerExectionSource.READING) {
-					ReadingRuleContext rule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(trigger.getReadingRuleId());
+					ReadingRuleContext rule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(trigger.getRuleId());
 					trigger.setReadingFieldId(rule.getReadingFieldId());
 					trigger.setReadingInterval(rule.getInterval());
 					trigger.setStartReading(rule.getStartValue());
 					trigger.setReadingRule(rule);
 				}
 				else if (trigger.getTriggerExecutionSourceEnum() == TriggerExectionSource.ALARMRULE) {
-					WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(trigger.getReadingRuleId());
+					WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(trigger.getRuleId());
 					trigger.setWorkFlowRule(rule);
-				}
-				if (trigger.getReadingRuleId() != -1) {
-					ReadingRuleContext rule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(trigger.getReadingRuleId());
-					trigger.setReadingFieldId(rule.getReadingFieldId());
-					trigger.setReadingInterval(rule.getInterval());
-					trigger.setStartReading(rule.getStartValue());
-					trigger.setReadingRule(rule);
 				}
 			}
 		}

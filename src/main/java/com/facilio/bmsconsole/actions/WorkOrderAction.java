@@ -321,7 +321,7 @@ public class WorkOrderAction extends FacilioAction {
 				while (iterator.hasNext()) {
 					PMTriggerContext pmTContext = iterator.next();
 					pmTContext.setId(-1);
-					if (pmTContext.getReadingRuleId() != -1) {
+					if (pmTContext.getRuleId() != -1) {
 						iterator.remove();
 					}
 				}

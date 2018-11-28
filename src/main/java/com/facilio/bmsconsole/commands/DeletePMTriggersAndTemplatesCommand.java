@@ -37,8 +37,8 @@ public class DeletePMTriggersAndTemplatesCommand implements Command{
 			List<Long> ruleIds = new ArrayList<>();
 			List<Long> triggerIds = new ArrayList<>();
 			oldPm.getTriggers().forEach(trigger -> {
-				if(trigger.getReadingRuleId() != -1) {
-					ruleIds.add(trigger.getReadingRuleId());
+				if(trigger.getRuleId() != -1) {
+					ruleIds.add(trigger.getRuleId());
 				}
 				triggerIds.add(trigger.getId());
 			});

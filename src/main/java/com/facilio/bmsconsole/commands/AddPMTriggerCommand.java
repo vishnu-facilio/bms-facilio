@@ -73,7 +73,7 @@ public class AddPMTriggerCommand implements Command {
 					event.setModuleName("alarm");
 					trigger.getWorkFlowRule().setEvent(event);
 					ruleId = WorkflowRuleAPI.addWorkflowRule(trigger.getWorkFlowRule());
-					trigger.setReadingRuleId(ruleId);
+					trigger.setRuleId(ruleId);
 					
 					ActionContext action = new ActionContext();
 					action.setActionType(ActionType.EXECUTE_PM);
@@ -88,7 +88,7 @@ public class AddPMTriggerCommand implements Command {
 					trigger.getReadingRule().setName("PM_" + pm.getId());
 					trigger.getReadingRule();
 					ruleId = WorkflowRuleAPI.addWorkflowRule(trigger.getReadingRule());
-					trigger.setReadingRuleId(ruleId);
+					trigger.setRuleId(ruleId);
 					
 					ActionContext action = new ActionContext();
 					action.setActionType(ActionType.EXECUTE_PM);
