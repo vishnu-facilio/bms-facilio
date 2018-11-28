@@ -415,7 +415,8 @@ public class TimeSeriesAPI {
 				.select(fields)
 				.table(module.getTableName())
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"), String.valueOf(controllerId), NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"), String.valueOf(controllerId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("instanceType"), String.valueOf(60), NumberOperators.LESS_THAN));
 		
 		if (configuredOnly != null && configuredOnly.length > 0 && configuredOnly[0] != null) {
 			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("inUse"), String.valueOf(configuredOnly[0]), BooleanOperators.IS));
