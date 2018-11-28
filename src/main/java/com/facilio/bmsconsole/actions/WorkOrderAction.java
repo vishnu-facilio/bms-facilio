@@ -386,15 +386,17 @@ public class WorkOrderAction extends FacilioAction {
 	public String executePM() throws Exception {
 
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD_ID, pmId);
+
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(pmId));
 		context.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, Instant.now().getEpochSecond());
+		context.put(FacilioConstants.ContextNames.PM_INCLUDE_EXCLUDE_LIST, pmIncludeExcludeResourceContexts);
 		context.put(FacilioConstants.ContextNames.ONLY_POST_REMINDER_TYPE, true);
 
-		Chain executePm = FacilioChainFactory.getExecutePreventiveMaintenanceChain();
+		Chain executePm = FacilioChainFactory.getExecutePMsChain();
 		executePm.execute(context);
 
 		workorder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
-
+		
 		return SUCCESS;
 	}
 
@@ -403,7 +405,6 @@ public class WorkOrderAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		context.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, Instant.now().getEpochSecond());
-		context.put(FacilioConstants.ContextNames.PM_INCLUDE_EXCLUDE_LIST, pmIncludeExcludeResourceContexts);
 		context.put(FacilioConstants.ContextNames.ONLY_POST_REMINDER_TYPE, true);
 
 		Chain executePm = FacilioChainFactory.getExecutePMsChain();

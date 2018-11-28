@@ -751,8 +751,6 @@ public static PMTriggerContext getTrigger(List<PMTriggerContext> triggers,Long t
 		
 		List<Map<String, Object>> pmProps = selectBuilder.get();
 		
-		LOGGER.log(Level.SEVERE,"selectBuilder ---- "+selectBuilder);
-		
 		List<Long> resourceIds = new ArrayList<>();
 		if(pmProps != null && !pmProps.isEmpty()) {
 			List<PreventiveMaintenance> pms = new ArrayList<>();

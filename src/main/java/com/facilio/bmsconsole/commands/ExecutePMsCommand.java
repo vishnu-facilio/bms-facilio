@@ -32,17 +32,14 @@ public class ExecutePMsCommand implements Command {
 			Map<Long, WorkOrderContext> pmToWo = new HashMap<>();
 			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD");
 			List<Long> woIds = new ArrayList<>();
+			WorkOrderContext wo = null;
 			for(PreventiveMaintenance pm : pms) {
 				if(pmIncludeExcludeResourceContexts != null && !pmIncludeExcludeResourceContexts.isEmpty()) {
 					pm.setPmIncludeExcludeResourceContexts(pmIncludeExcludeResourceContexts);
 				}
-				WorkOrderContext wo = null;
-				try {
-					wo = bean.addWorkOrderFromPM(pm);
-				}
-				catch (Exception e) {
-					log.info("Exception occurred ", e);
-				}
+					
+				wo = bean.addWorkOrderFromPM(pm);
+				
 				if(wo != null) {
 					woIds.add(wo.getId());
 					pmToWo.put(pm.getId(), wo);
@@ -50,6 +47,7 @@ public class ExecutePMsCommand implements Command {
 			}
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST, pms);
 			context.put(FacilioConstants.ContextNames.WORK_ORDER_LIST, woIds);
+			context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
 			context.put(FacilioConstants.ContextNames.PM_TO_WO, pmToWo);
 		}
 		return false;
