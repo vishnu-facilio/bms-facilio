@@ -22,4 +22,37 @@ public class AlarmSeverityContext extends ModuleBaseWithCustomFields {
 	public void setCardinality(int cardinality) {
 		this.cardinality = cardinality;
 	}
+	private String displayName;
+	public String getDisplayName() {
+		if(displayName != null && !displayName.isEmpty()) {
+			return displayName;
+		}
+		else {
+			return severity;
+		}
+	}
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+	
+	private Boolean isDefault;
+	public Boolean getIsDefault() {
+		return isDefault;
+	}
+	public void setIsDefault(Boolean isDefault) {
+		this.isDefault = isDefault;
+	}
+	public boolean isDeleted() {
+		if (isDefault != null) {
+			return isDefault.booleanValue();
+		}
+		return false;
+	}
+	private String color;
+	public String getColor() {
+		return color;
+	}
+	public void setColor(String color) {
+		this.color = color;
+	}
 }
