@@ -153,9 +153,15 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 						LOGGER.info("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + "COMPLETED:::::::TIME TAKEN : "+(System.currentTimeMillis() - startTime));
 					} else if("devicepoints".equals(dataType)) {
 						long instanceNumber = (Long)payLoad.get("instanceNumber");
-						String destinationAddress = (String) payLoad.get("macAddress");
+						String destinationAddress = "";
+						if(payLoad.containsKey("macAddress")) {
+							destinationAddress = (String) payLoad.get("macAddress");
+						}
 						long subnetPrefix = (Long)payLoad.get("subnetPrefix");
-						long networkNumber = (Long)payLoad.get("networkNumber");
+						long networkNumber = -1;
+						if(payLoad.containsKey("networkNumber")) {
+							networkNumber = (Long) payLoad.get("networkNumber");
+						}
 						String broadcastAddress = (String) payLoad.get("broadcastAddress");
 						String deviceName = (String) payLoad.get("deviceName");
 						
