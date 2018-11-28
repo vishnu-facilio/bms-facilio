@@ -627,14 +627,16 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		if (getMetric(reading) != null) {
 			if (clearAlarm()) {
 				Map<Long, ReadingRuleAlarmMeta> alarmMetaMap = (Map<Long, ReadingRuleAlarmMeta>) context.get(FacilioConstants.ContextNames.READING_RULE_ALARM_META);
+				boolean isHistorical = true;
 				if (alarmMetaMap == null) {
 					alarmMetaMap = this.alarmMetaMap;
+					isHistorical = false;
 				}
 				
 				ReadingRuleAlarmMeta alarmMeta = alarmMetaMap != null ? alarmMetaMap.get(reading.getParentId()) : null;
-//				if (AccountUtil.getCurrentOrg().getId() == 135 || AccountUtil.getCurrentOrg().getId() == 75 || AccountUtil.getCurrentOrg().getId() == 88) {
-					LOGGER.debug("Alarm meta for rule : "+getId()+" for resource : "+reading.getParentId()+"::"+alarmMeta);
-//				}
+				if (isHistorical) {/*if (AccountUtil.getCurrentOrg().getId() == 135 || AccountUtil.getCurrentOrg().getId() == 75 || AccountUtil.getCurrentOrg().getId() == 88) {*/
+					LOGGER.info("Alarm meta for rule : "+getId()+" for resource : "+reading.getParentId()+"::"+alarmMeta);
+				}
 				if (alarmMeta != null && !alarmMeta.isClear()) {
 					alarmMeta.setClear(true);
 					AlarmContext alarm = AlarmAPI.getAlarm(alarmMeta.getAlarmId());
@@ -643,9 +645,9 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 					json.put("readingDataId", reading.getId());
 					json.put("readingVal", reading.getReading(getReadingField().getName()));
 					
-//					if (AccountUtil.getCurrentOrg().getId() == 135 || AccountUtil.getCurrentOrg().getId() == 75 || AccountUtil.getCurrentOrg().getId() == 88) {
-						LOGGER.debug("Clearing alarm for rule : "+getId()+" for resource : "+reading.getParentId());
-//					}
+					if (isHistorical) {/*if (AccountUtil.getCurrentOrg().getId() == 135 || AccountUtil.getCurrentOrg().getId() == 75 || AccountUtil.getCurrentOrg().getId() == 88) {*/
+						LOGGER.info("Clearing alarm for rule : "+getId()+" for resource : "+reading.getParentId());
+					}
 					
 					FacilioContext addEventContext = new FacilioContext();
 					addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, json);

@@ -137,17 +137,17 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 			
 			for (int i = itr; i < readings.size(); i++) {
 				ReadingContext reading = readings.get(i);
-				LOGGER.debug("Executing rule for reading : "+reading);
+				LOGGER.info("Executing rule for reading : "+reading);
 				try {
 					ReadingDataMeta currentRDM = getRDM(reading, readingRule.getReadingField());
-					LOGGER.debug("Current RDM : "+currentRDM);
+					LOGGER.info("Current RDM : "+currentRDM);
 					if (currentRDM != null) {
 						context.put(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META, Collections.singletonMap(ReadingsAPI.getRDMKey(reading.getParentId(), readingRule.getReadingField()), prevRDM));
 						
 						Map<String, ReadingDataMeta> rdmCache = getCurrentRDMs(reading, fieldMap);
-						LOGGER.debug("Current RDMs : "+rdmCache);
+						LOGGER.info("Current RDMs : "+rdmCache);
 						getOtherRDMs(reading.getParentId(), reading.getTtime(), supportFieldsRDM, rdmCache, lastItr, fields);
-						LOGGER.debug("After other RDM : "+rdmCache);
+						LOGGER.info("After other RDM : "+rdmCache);
 //						LOGGER.info("Current RDM : "+rdmCache.keySet());
 //						LOGGER.info("Current RDM Size : "+rdmCache.size());
 						
