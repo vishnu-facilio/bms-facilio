@@ -21,14 +21,15 @@ public class InstanceAssetMappingCommand implements Command {
 			long assetId = (long) instanceMap.get("assetId");
 			String instanceName = (String) instanceMap.get("instanceName");
 			long fieldId = (long) instanceMap.get("fieldId");
-			TimeSeriesAPI.insertOrUpdateInstance(deviceName, assetId, controllerId, instanceName, fieldId);
+			long categoryId = (long) instanceMap.get("categoryId");
+			TimeSeriesAPI.insertOrUpdateInstance(deviceName, assetId, categoryId, controllerId, instanceName, fieldId);
 		}
 		else {
 			// For older UI...remove once new ui is completed
 			String deviceName = (String)context.get(FacilioConstants.ContextNames.DEVICE_DATA);
 			long assetId = (long) context.get(FacilioConstants.ContextNames.ASSET_ID);
 			Map<String,Long> instanceFieldMap = (Map<String, Long>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
-			TimeSeriesAPI.insertInstanceAssetMapping(deviceName, assetId,controllerId, instanceFieldMap);
+			TimeSeriesAPI.insertInstanceAssetMapping(deviceName, assetId, -1, controllerId, instanceFieldMap);
 		}
 		
 		return false;

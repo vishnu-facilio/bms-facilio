@@ -4232,6 +4232,7 @@ public class FieldFactory {
 		fields.add(getField("device", "DEVICE_NAME", module, FieldType.STRING));
 		fields.add(getField("instance", "INSTANCE_NAME", module, FieldType.STRING));
 		fields.add(getField("assetId", "ASSET_ID", module, FieldType.NUMBER));
+		fields.add(getField("categoryId", "ASSET_CATEGORY_ID", module, FieldType.NUMBER));
 		fields.add(getField("fieldId", "FIELD_ID", module, FieldType.NUMBER));
         fields.add(getField("controllerId", "CONTROLLER_ID", module, FieldType.NUMBER));
 		return fields;
