@@ -13,6 +13,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ReportAlarmContext;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -121,13 +122,13 @@ public class FetchReportExtraMeta implements Command {
 		return false;
 	}
 
-	private List<ReadingAlarmContext> filterAlarmAndGetList(List<ReadingAlarmContext> alarms, long alarmId) {
+	private List<ReadingAlarmContext> filterAlarmAndGetList(List<ReadingAlarmContext> alarms, long alarmId) throws Exception {
 		
 		List<ReadingAlarmContext> newAlarmList = new ArrayList<>();
-		
 		if(alarmId > 0) {
+			AlarmContext currentAlarm = AlarmAPI.getAlarm(alarmId);
 			for(ReadingAlarmContext alarm : alarms) {
-				if(alarm.getId() == alarmId) {
+				if(alarm.getEntityId() == currentAlarm.getEntityId()) {
 					newAlarmList.add(alarm);
 				}
 			}
