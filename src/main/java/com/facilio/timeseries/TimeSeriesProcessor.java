@@ -168,7 +168,8 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 						
 						String deviceId = instanceNumber+"_"+destinationAddress+"_"+networkNumber;
 						if( ! deviceMap.containsKey(deviceId)) {
-                            ControllerContext controller = ControllerAPI.getController(deviceId);
+							ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+                            ControllerContext controller = bean.getController(deviceId);
                             if(controller == null) {
                                 controller = new ControllerContext();
                                 controller.setName(deviceName);

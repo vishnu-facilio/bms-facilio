@@ -100,6 +100,14 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		return 0;
 	}
 
+	public ControllerContext getController(String deviceId) throws Exception{
+		if(deviceId != null) {
+			return ControllerAPI.getController(deviceId);
+		}
+		return null;
+	}
+
+
 	@Override
 	public long addWorkOrderRequest(WorkOrderRequestContext workOrderRequest, List<File> attachedFiles, List<String> attachedFileNames, List<String> attachedFilesContentType) throws Exception {
 		// TODO Auto-generated method stub
