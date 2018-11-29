@@ -8,6 +8,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.tasker.ScheduleInfo;
@@ -230,4 +231,22 @@ public class PMTriggerContext {
 		}
 		return -1;
 	}
+	
+	private FacilioFrequency frequency;
+	public int getFrequency() {
+		if (frequency != null) {
+			return frequency.getValue();
+		}
+		return -1;
+	}
+	public void setFrequency(int frequency) {
+		this.frequency = FacilioFrequency.valueOf(frequency);
+	}
+	public void setFrequency(FacilioFrequency frequency) {
+		this.frequency = frequency;
+	}
+	public FacilioFrequency getFrequencyEnum() {
+		return frequency;
+	}
+	
 }

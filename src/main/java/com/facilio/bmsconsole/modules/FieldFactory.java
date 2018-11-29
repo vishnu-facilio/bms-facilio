@@ -3826,7 +3826,7 @@ public class FieldFactory {
 		fields.add(getField("scheduleJson", "SCHEDULE_INFO", module, FieldType.STRING));
 		fields.add(getField("startTime", "START_TIME", module, FieldType.DATE_TIME));
 		fields.add(getField("ruleId", "RULE_ID", module, FieldType.NUMBER));
-		
+		fields.add(getField("frequency", "FREQUENCY", module, FieldType.NUMBER));
 		fields.add(getField("assignedTo", "ASSIGNED_TO", module, FieldType.LOOKUP));
 		fields.add(getField("triggerType", "TRIGGER_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("triggerExecutionSource", "TRIGGER_EXECUTION_SOURCE", module, FieldType.NUMBER));
