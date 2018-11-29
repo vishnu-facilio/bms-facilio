@@ -66,6 +66,7 @@ public class ReadingsAPI {
 	private static final Logger LOGGER = LogManager.getLogger(ReadingsAPI.class.getName());
 	public static final int DEFAULT_DATA_INTERVAL = 15; //In Minutes
 	public static final SecondsChronoUnit DEFAULT_DATA_INTERVAL_UNIT = new SecondsChronoUnit(DEFAULT_DATA_INTERVAL * 60); 
+	private static final int BATCH_SIZE =2000;
 	
 	public static int getOrgDefaultDataIntervalInMin() throws Exception {
 		Map<String, String> orgInfo = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.DEFAULT_DATA_INTERVAL);
@@ -516,51 +517,62 @@ public class ReadingsAPI {
 			if (uniqueRDMs.size() == 0) {
 				return null;
 			}
-			
 			StringBuilder timeBuilder= new StringBuilder();
 			StringBuilder valueBuilder= new StringBuilder();
 			StringBuilder idBuilder= new StringBuilder();
 			StringJoiner whereClause = new StringJoiner(" OR ");
+			int cycle = 0;
 			long orgId=AccountUtil.getCurrentOrg().getOrgId();
 
 			for (ReadingDataMeta rdm : uniqueRDMs.values()) {
+				
 				timeBuilder.append(getCase(rdm.getResourceId(),rdm.getFieldId(),rdm.getTtime(),false));
 				valueBuilder.append(getCase(rdm.getResourceId(),rdm.getFieldId(),rdm.getValue(),true));
 				idBuilder.append(getCase(rdm.getResourceId(),rdm.getFieldId(),rdm.getReadingDataId(),false));
 				
-				StringBuilder builder = new StringBuilder()
-											.append("(RESOURCE_ID = ")
-											.append(rdm.getResourceId())
-											.append(" AND FIELD_ID = ")
-											.append(rdm.getFieldId())
-											.append(")")
-											;
+				StringBuilder builder = new StringBuilder();
+				builder.append("(RESOURCE_ID = ")
+						.append(rdm.getResourceId())
+						.append(" AND FIELD_ID = ")
+						.append(rdm.getFieldId())
+						.append(")")
+						;
 				whereClause.add(builder.toString());
-			}
-			
-			if(timeBuilder.length() <= 0 || valueBuilder.length() <= 0) {
-				return null;
-			}
-			sql = "UPDATE "+ModuleFactory.getReadingDataMetaModule().getTableName()+" SET TTIME = CASE "+timeBuilder.toString()+ " END, "
-					+ "VALUE = CASE "+valueBuilder.toString() + " END, "
-					+ "READING_DATA_ID = CASE "+idBuilder.toString() + " END "
-					+ "WHERE ORGID = "+orgId+" AND ("+whereClause.toString()+")";
-			if(sql != null && !sql.isEmpty()) {
-				LOGGER.debug("################ Update RDM sql : "+sql);
-				try(PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
-					pstmt.executeUpdate();
-					return uniqueRDMs;
+				cycle++;
+				if(cycle == BATCH_SIZE) {
+					updateRDM(timeBuilder, valueBuilder,idBuilder, whereClause, orgId,conn);
+					timeBuilder = new StringBuilder();
+					idBuilder = new StringBuilder();
+					valueBuilder = new StringBuilder();
+					whereClause = new StringJoiner("OR");
+					cycle = 0;
 				}
 			}
+			if(cycle > 0) {
+				updateRDM(timeBuilder, valueBuilder,idBuilder, whereClause, orgId,conn);
+			}
+			return uniqueRDMs;
 		}
-		catch(SQLException e) {
-			LOGGER.info("Exception occurred ", e);
-			throw new SQLException("Query failed : "+sql, e);
-		}
-
-		return null;
+		
 	}
 	
+	private static void updateRDM(StringBuilder timeBuilder, StringBuilder valueBuilder, 
+			StringBuilder idBuilder, StringJoiner whereClause, long orgId, Connection conn) throws SQLException{
+		String sql = "UPDATE "+ModuleFactory.getReadingDataMetaModule().getTableName()+" SET TTIME = CASE "+timeBuilder.toString()+ " END, "
+				+ "VALUE = CASE "+valueBuilder.toString() + " END, "
+				+ "READING_DATA_ID = CASE "+idBuilder.toString() + " END "
+				+ "WHERE ORGID = "+orgId+" AND ("+whereClause.toString()+")";
+		
+		if(sql != null && !sql.isEmpty()) {
+			LOGGER.debug("################ Update RDM sql : "+sql);
+			try(PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
+				pstmt.executeUpdate();
+			} catch(SQLException e) {
+				LOGGER.info("Exception occurred ", e);
+				throw new SQLException("Query failed : "+sql, e);
+			}
+			}
+	}
 	private static String getCase(long resource,long field, Object value, boolean insertQuote) {
 
 		String caseString= " WHEN RESOURCE_ID = "+resource+" AND FIELD_ID = "+field+" THEN ";
