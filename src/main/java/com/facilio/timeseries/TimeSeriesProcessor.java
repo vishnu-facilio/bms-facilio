@@ -168,7 +168,8 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 						
 						String deviceId = instanceNumber+"_"+destinationAddress+"_"+networkNumber;
 						if( ! deviceMap.containsKey(deviceId)) {
-                            ControllerContext controller = ControllerAPI.getController(deviceId);
+							ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+                            ControllerContext controller = bean.getController(deviceId);
                             if(controller == null) {
                                 controller = new ControllerContext();
                                 controller.setName(deviceName);
@@ -178,10 +179,7 @@ public class TimeSeriesProcessor implements IRecordProcessor {
                                 controller.setNetworkNumber(networkNumber);
                                 controller.setSubnetPrefix(Math.toIntExact(subnetPrefix));
                                 controller.setMacAddr(deviceId);
-                                FacilioContext context = new FacilioContext();
-                                context.put(FacilioConstants.ContextNames.CONTROLLER_SETTINGS, controller);
-                                Chain addcontrollerSettings = FacilioChainFactory.getAddControllerChain();
-                                addcontrollerSettings.execute(context);
+                                controller = bean.addController(controller);
                             }
 							long controllerSettingsId = controller.getId();
 							if(controllerSettingsId > -1) {

@@ -100,6 +100,24 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		return 0;
 	}
 
+	public ControllerContext getController(String deviceId) throws Exception{
+		if(deviceId != null) {
+			return ControllerAPI.getController(deviceId);
+		}
+		return null;
+	}
+
+    public ControllerContext addController(ControllerContext controller) throws Exception{
+        if(controller != null) {
+            FacilioContext context = new FacilioContext();
+            context.put(FacilioConstants.ContextNames.CONTROLLER_SETTINGS, controller);
+            Chain addcontrollerSettings = FacilioChainFactory.getAddControllerChain();
+            addcontrollerSettings.execute(context);
+        }
+        return controller;
+    }
+
+
 	@Override
 	public long addWorkOrderRequest(WorkOrderRequestContext workOrderRequest, List<File> attachedFiles, List<String> attachedFileNames, List<String> attachedFilesContentType) throws Exception {
 		// TODO Auto-generated method stub

@@ -37,31 +37,33 @@ public class ExecutePMCommand implements Command {
 		if(pmId != null && pmId != -1) {
 			
 			PreventiveMaintenance pm = PreventiveMaintenanceAPI.getActivePM(pmId);
-			Boolean stopExecution = (Boolean) context.get(FacilioConstants.ContextNames.STOP_PM_EXECUTION);
-			if (stopExecution == null || !stopExecution) {
-				WorkOrderContext wo = null;
-				try {
-					if (pm.getTriggerTypeEnum() != TriggerType.FLOATING) {
-						wo = getPreviousUnclosed(pm);
-						if (wo == null) {
-							wo = executePM(pm, (Long) context.get(FacilioConstants.ContextNames.TEMPLATE_ID));
+			if (pm != null) {
+				Boolean stopExecution = (Boolean) context.get(FacilioConstants.ContextNames.STOP_PM_EXECUTION);
+				if (stopExecution == null || !stopExecution) {
+					WorkOrderContext wo = null;
+					try {
+						if (pm.getTriggerTypeEnum() == TriggerType.FLOATING) {
+							wo = getPreviousUnclosed(pm);
+							if (wo == null) {
+								wo = executePM(pm, (Long) context.get(FacilioConstants.ContextNames.TEMPLATE_ID));
+							}
+							else {
+								addComment(wo, pm, (String) context.get(FacilioConstants.ContextNames.PM_UNCLOSED_WO_COMMENT));
+							}
 						}
 						else {
-							addComment(wo, pm, (String) context.get(FacilioConstants.ContextNames.PM_UNCLOSED_WO_COMMENT));
+							wo = executePM(pm, (Long) context.get(FacilioConstants.ContextNames.TEMPLATE_ID));
 						}
 					}
-					else {
-						wo = executePM(pm, (Long) context.get(FacilioConstants.ContextNames.TEMPLATE_ID));
+					catch (Exception e) {
+						log.info("Exception occurred ", e);
+						CommonCommandUtil.emailException("ExecutePMCommand", "PM Execution failed for PM : "+pmId, e, "You have to manually add Job entry for next PM Job because exception is thrown to rollback transaction");
+						throw e;
 					}
+					context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
 				}
-				catch (Exception e) {
-					log.info("Exception occurred ", e);
-					CommonCommandUtil.emailException("ExecutePMCommand", "PM Execution failed for PM : "+pmId, e, "You have to manually add Job entry for next PM Job because exception is thrown to rollback transaction");
-					throw e;
-				}
-				context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
+				context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 			}
-			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 		}
 		return false;
 	}
@@ -95,14 +97,15 @@ public class ExecutePMCommand implements Command {
 															.moduleName(FacilioConstants.ContextNames.WORK_ORDER)
 															.andCondition(CriteriaAPI.getCondition(pmField, String.valueOf(pm.getId()), PickListOperators.IS))
 															.orderBy("CREATED_TIME desc")
+															.beanClass(WorkOrderContext.class)
 															.limit(1)
 															;
 		
 		List<WorkOrderContext> wos = builder.get();
 		if (wos != null && !wos.isEmpty()) {
 			TicketStatusContext closedStatus = TicketAPI.getStatus("Closed");
-			WorkOrderContext wo = wos.get(1);
-			if (wo.getStatus().getId() != closedStatus.getId()) {
+			WorkOrderContext wo = wos.get(0);
+			if (wo.getStatus() != null && wo.getStatus().getId() != closedStatus.getId()) {
 				return wo;
 			}
 		}

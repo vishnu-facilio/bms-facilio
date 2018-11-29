@@ -777,7 +777,9 @@ public static PMTriggerContext getTrigger(List<PMTriggerContext> triggers,Long t
 			}
 			
 			for(PreventiveMaintenance pm : pms) {
-				resourceIds.add(pm.getWoTemplate().getResourceId());
+				if (pm.getWoTemplate().getResourceId() != -1) {
+					resourceIds.add(pm.getWoTemplate().getResourceId());
+				}
 				if (pmTriggers != null) {
 					pm.setTriggers(pmTriggers.get(pm.getId()));
 					if (pm.getTriggers() == null) {
@@ -800,9 +802,11 @@ public static PMTriggerContext getTrigger(List<PMTriggerContext> triggers,Long t
 					}
 				}
 			}
-			Map<Long, ResourceContext> resourceMap = ResourceAPI.getExtendedResourcesAsMapFromIds(resourceIds, false);
+			Map<Long, ResourceContext> resourceMap = ResourceAPI.getExtendedResourcesAsMapFromIds(resourceIds, true);
 			for(PreventiveMaintenance pm : pms) {
-				pm.getWoTemplate().setResource(resourceMap.get(pm.getWoTemplate().getResourceId()));
+				if (pm.getWoTemplate().getResourceId() != -1) {
+					pm.getWoTemplate().setResource(resourceMap.get(pm.getWoTemplate().getResourceId()));
+				}
 			}
 			if (fetchDependency) {
 				Map<Long, List<PMReminder>> reminders = PreventiveMaintenanceAPI.getPMRemindersAsMap(ids);

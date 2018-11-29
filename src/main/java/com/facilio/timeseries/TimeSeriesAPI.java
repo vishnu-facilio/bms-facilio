@@ -27,6 +27,7 @@ import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingType;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
+import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -415,18 +416,31 @@ public class TimeSeriesAPI {
 				.select(fields)
 				.table(module.getTableName())
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"), String.valueOf(controllerId), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("instanceType"), String.valueOf(60), NumberOperators.LESS_THAN));
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"), String.valueOf(controllerId), NumberOperators.EQUALS));
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("instanceType"), CommonOperators.IS_EMPTY));
+		criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("instanceType"), String.valueOf(60), NumberOperators.LESS_THAN));
+		
+		builder.andCriteria(criteria);
 		
 		if (configuredOnly != null && configuredOnly.length > 0 && configuredOnly[0] != null) {
-			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("inUse"), String.valueOf(configuredOnly[0]), BooleanOperators.IS));
+			Criteria inUseCriteria = new Criteria();
+			inUseCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("inUse"), String.valueOf(configuredOnly[0]), BooleanOperators.IS));
+			if (configuredOnly[0]) {
+				inUseCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("objectInstanceNumber"), CommonOperators.IS_EMPTY));				
+			}
+			builder.andCriteria(inUseCriteria);
 		}
 
 		 List<Map<String, Object>> props =  builder.get();
 		 if (props != null && !props.isEmpty()) {
 			 return props.stream().map(prop -> {
 				 if (prop.get("instanceType") != null) {
-					 prop.put("instanceTypeVal", InstanceType.valueOf((int) prop.get("instanceType")).name());
+					 InstanceType type = InstanceType.valueOf((int) prop.get("instanceType"));
+					 if (type != null) {
+						 prop.put("instanceTypeVal", type.name());
+					 }
 				 }
 				 return prop;
 			}).collect(Collectors.toList());

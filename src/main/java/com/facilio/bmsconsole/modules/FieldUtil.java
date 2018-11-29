@@ -174,11 +174,17 @@ public class FieldUtil {
 	
 	public static Object getObjectFromRS (FacilioField field, ResultSet rs) throws SQLException {
 		if (field.getDataTypeEnum() != null) { //Temp Fix
+			Object val = rs.getObject(field.getName());
 			switch (field.getDataTypeEnum()) {
 				case BOOLEAN:
-					return rs.getBoolean(field.getName());
+					if (val != null) {
+						return rs.getBoolean(field.getName());
+					}
+					else {
+						return val;
+					}
 				default:
-					return rs.getObject(field.getName());
+					return val;
 			}
 		}
 		else {

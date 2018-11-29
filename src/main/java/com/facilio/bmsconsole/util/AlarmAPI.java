@@ -802,6 +802,7 @@ public class AlarmAPI {
 		
 		AlarmContext alarmContext = new AlarmContext();
 		alarmContext.setWoId(woId);
+		alarmContext.setIsWoCreated(true);
 		
 		UpdateRecordBuilder<AlarmContext> updateBuilder = new UpdateRecordBuilder<AlarmContext>()
 				.module(module)

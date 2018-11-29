@@ -10,7 +10,10 @@ import java.util.TreeSet;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.SpaceAggregateOperator;
@@ -25,6 +28,8 @@ import com.facilio.report.context.ReportDataPointContext;
 
 public class TransformReportDataCommand implements Command {
 
+	private static final Logger LOGGER = LogManager.getLogger(TransformReportDataCommand.class.getName());
+	
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -108,30 +113,38 @@ public class TransformReportDataCommand implements Command {
 					xVal = formatVal(dataPoint.getxAxis().getField(), dataPoint.getxAxis().getAggrEnum(), xVal);
 					xValues.add(xVal);
 					Object yVal = prop.get(dataPoint.getyAxis().getField().getName());
-					yVal = formatVal(dataPoint.getyAxis().getField(), dataPoint.getyAxis().getAggrEnum(), yVal);
-					if (dataPoint.getGroupByFields() == null || dataPoint.getGroupByFields().isEmpty()) {
-						dataPoints.put(xVal, yVal.toString());
-					}
-					else {
-						Map<String, Object> currentMap = (Map<String, Object>) dataPoints.get(xVal);
-						if (currentMap == null) {
-							currentMap = new HashMap<>();
-							dataPoints.put(xVal, currentMap);
+					if (yVal != null) { //Ignoring null values
+//						if (AccountUtil.getCurrentOrg().getId() == 134) {
+							LOGGER.debug("Before transform : (x, y)=>("+xVal+", "+yVal+")");
+//						}
+						yVal = formatVal(dataPoint.getyAxis().getField(), dataPoint.getyAxis().getAggrEnum(), yVal);
+						if (dataPoint.getGroupByFields() == null || dataPoint.getGroupByFields().isEmpty()) {
+//							if (AccountUtil.getCurrentOrg().getId() == 134) {
+								LOGGER.debug("After transform : (x, y)=>("+xVal+", "+yVal+")");
+//							}
+							dataPoints.put(xVal, yVal.toString());
 						}
-						for (int i = 0; i < dataPoint.getGroupByFields().size(); i++) {
-							FacilioField field = dataPoint.getGroupByFields().get(i).getField();
-							Object groupByVal = prop.get(field.getName());
-							groupByVal = formatVal(field, null, groupByVal);
-							if (i == dataPoint.getGroupByFields().size() - 1) {
-								currentMap.put(groupByVal.toString(), yVal);
+						else {
+							Map<String, Object> currentMap = (Map<String, Object>) dataPoints.get(xVal);
+							if (currentMap == null) {
+								currentMap = new HashMap<>();
+								dataPoints.put(xVal, currentMap);
 							}
-							else {
-								Map<String, Object> currentGroupMap = (Map<String, Object>) currentMap.get(groupByVal.toString());
-								if (currentGroupMap == null) {
-									currentGroupMap = new HashMap<>();
-									currentMap.put(groupByVal.toString(), currentGroupMap);
+							for (int i = 0; i < dataPoint.getGroupByFields().size(); i++) {
+								FacilioField field = dataPoint.getGroupByFields().get(i).getField();
+								Object groupByVal = prop.get(field.getName());
+								groupByVal = formatVal(field, null, groupByVal);
+								if (i == dataPoint.getGroupByFields().size() - 1) {
+									currentMap.put(groupByVal.toString(), yVal);
 								}
-								currentMap = currentGroupMap;
+								else {
+									Map<String, Object> currentGroupMap = (Map<String, Object>) currentMap.get(groupByVal.toString());
+									if (currentGroupMap == null) {
+										currentGroupMap = new HashMap<>();
+										currentMap.put(groupByVal.toString(), currentGroupMap);
+									}
+									currentMap = currentGroupMap;
+								}
 							}
 						}
 					}
