@@ -114,14 +114,14 @@ public class TransformReportDataCommand implements Command {
 					xValues.add(xVal);
 					Object yVal = prop.get(dataPoint.getyAxis().getField().getName());
 					if (yVal != null) { //Ignoring null values
-						if (AccountUtil.getCurrentOrg().getId() == 134) {
-							LOGGER.info("Before transform : (x, y)=>("+xVal+", "+yVal+")");
-						}
+//						if (AccountUtil.getCurrentOrg().getId() == 134) {
+							LOGGER.debug("Before transform : (x, y)=>("+xVal+", "+yVal+")");
+//						}
 						yVal = formatVal(dataPoint.getyAxis().getField(), dataPoint.getyAxis().getAggrEnum(), yVal);
 						if (dataPoint.getGroupByFields() == null || dataPoint.getGroupByFields().isEmpty()) {
-							if (AccountUtil.getCurrentOrg().getId() == 134) {
-								LOGGER.info("After transform : (x, y)=>("+xVal+", "+yVal+")");
-							}
+//							if (AccountUtil.getCurrentOrg().getId() == 134) {
+								LOGGER.debug("After transform : (x, y)=>("+xVal+", "+yVal+")");
+//							}
 							dataPoints.put(xVal, yVal.toString());
 						}
 						else {
@@ -176,9 +176,6 @@ public class TransformReportDataCommand implements Command {
 			case DECIMAL:
 				return DECIMAL_FORMAT.format(val);
 			case BOOLEAN:
-				if (AccountUtil.getCurrentOrg().getId() == 134) {
-					LOGGER.info("Boolean val : "+val.toString());
-				}
 				if (val.toString().equals("true")) {
 					return 1;
 				}
