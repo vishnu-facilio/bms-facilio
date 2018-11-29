@@ -82,7 +82,13 @@ public class WorkflowRuleAPI {
 			case READING_RULE:
 			case PM_READING_RULE:
 			case VALIDATION_RULE:
-				addExtendedProps(ModuleFactory.getReadingRuleModule(), FieldFactory.getReadingRuleFields(), ruleProps);
+				if (((ReadingRuleContext) rule).getClearAlarm() == null) {
+					((ReadingRuleContext) rule).setClearAlarm(true);
+					addExtendedProps(ModuleFactory.getReadingRuleModule(), FieldFactory.getReadingRuleFields(), ruleProps);
+				}
+				else {
+					addExtendedProps(ModuleFactory.getReadingRuleModule(), FieldFactory.getReadingRuleFields(), ruleProps);
+				}
 				ReadingRuleAPI.addReadingRuleInclusionsExlusions((ReadingRuleContext) rule);
 				break;
 			case SLA_RULE:
