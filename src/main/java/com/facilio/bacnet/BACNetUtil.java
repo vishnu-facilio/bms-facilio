@@ -5,10 +5,10 @@ public class BACNetUtil {
     public static enum InstanceType {
 	    	ANALOG_INPUT,
 	    	ANALOG_OUTPUT(true),
-	    	ANALOG_VALUE,
+	    	ANALOG_VALUE(true),
 	    	BINARY_INPUT,
 	    	BINARY_OUTPUT(true),
-	    	BINARY_VALUE,
+	    	BINARY_VALUE(true),
 	    	CALENDAR,
 	    	COMMAND,
 	    	DEVICE,
