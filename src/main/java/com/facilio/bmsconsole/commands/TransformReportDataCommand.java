@@ -113,8 +113,14 @@ public class TransformReportDataCommand implements Command {
 					xVal = formatVal(dataPoint.getxAxis().getField(), dataPoint.getxAxis().getAggrEnum(), xVal);
 					xValues.add(xVal);
 					Object yVal = prop.get(dataPoint.getyAxis().getField().getName());
+					if (AccountUtil.getCurrentOrg().getId() == 134) {
+						LOGGER.info("Before transform : (x, y)=>("+xVal+", "+yVal+")");
+					}
 					yVal = formatVal(dataPoint.getyAxis().getField(), dataPoint.getyAxis().getAggrEnum(), yVal);
 					if (dataPoint.getGroupByFields() == null || dataPoint.getGroupByFields().isEmpty()) {
+						if (AccountUtil.getCurrentOrg().getId() == 134) {
+							LOGGER.info("After transform : (x, y)=>("+xVal+", "+yVal+")");
+						}
 						dataPoints.put(xVal, yVal.toString());
 					}
 					else {
