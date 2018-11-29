@@ -113,36 +113,38 @@ public class TransformReportDataCommand implements Command {
 					xVal = formatVal(dataPoint.getxAxis().getField(), dataPoint.getxAxis().getAggrEnum(), xVal);
 					xValues.add(xVal);
 					Object yVal = prop.get(dataPoint.getyAxis().getField().getName());
-					if (AccountUtil.getCurrentOrg().getId() == 134) {
-						LOGGER.info("Before transform : (x, y)=>("+xVal+", "+yVal+")");
-					}
-					yVal = formatVal(dataPoint.getyAxis().getField(), dataPoint.getyAxis().getAggrEnum(), yVal);
-					if (dataPoint.getGroupByFields() == null || dataPoint.getGroupByFields().isEmpty()) {
+					if (yVal != null) { //Ignoring null values
 						if (AccountUtil.getCurrentOrg().getId() == 134) {
-							LOGGER.info("After transform : (x, y)=>("+xVal+", "+yVal+")");
+							LOGGER.info("Before transform : (x, y)=>("+xVal+", "+yVal+")");
 						}
-						dataPoints.put(xVal, yVal.toString());
-					}
-					else {
-						Map<String, Object> currentMap = (Map<String, Object>) dataPoints.get(xVal);
-						if (currentMap == null) {
-							currentMap = new HashMap<>();
-							dataPoints.put(xVal, currentMap);
-						}
-						for (int i = 0; i < dataPoint.getGroupByFields().size(); i++) {
-							FacilioField field = dataPoint.getGroupByFields().get(i).getField();
-							Object groupByVal = prop.get(field.getName());
-							groupByVal = formatVal(field, null, groupByVal);
-							if (i == dataPoint.getGroupByFields().size() - 1) {
-								currentMap.put(groupByVal.toString(), yVal);
+						yVal = formatVal(dataPoint.getyAxis().getField(), dataPoint.getyAxis().getAggrEnum(), yVal);
+						if (dataPoint.getGroupByFields() == null || dataPoint.getGroupByFields().isEmpty()) {
+							if (AccountUtil.getCurrentOrg().getId() == 134) {
+								LOGGER.info("After transform : (x, y)=>("+xVal+", "+yVal+")");
 							}
-							else {
-								Map<String, Object> currentGroupMap = (Map<String, Object>) currentMap.get(groupByVal.toString());
-								if (currentGroupMap == null) {
-									currentGroupMap = new HashMap<>();
-									currentMap.put(groupByVal.toString(), currentGroupMap);
+							dataPoints.put(xVal, yVal.toString());
+						}
+						else {
+							Map<String, Object> currentMap = (Map<String, Object>) dataPoints.get(xVal);
+							if (currentMap == null) {
+								currentMap = new HashMap<>();
+								dataPoints.put(xVal, currentMap);
+							}
+							for (int i = 0; i < dataPoint.getGroupByFields().size(); i++) {
+								FacilioField field = dataPoint.getGroupByFields().get(i).getField();
+								Object groupByVal = prop.get(field.getName());
+								groupByVal = formatVal(field, null, groupByVal);
+								if (i == dataPoint.getGroupByFields().size() - 1) {
+									currentMap.put(groupByVal.toString(), yVal);
 								}
-								currentMap = currentGroupMap;
+								else {
+									Map<String, Object> currentGroupMap = (Map<String, Object>) currentMap.get(groupByVal.toString());
+									if (currentGroupMap == null) {
+										currentGroupMap = new HashMap<>();
+										currentMap.put(groupByVal.toString(), currentGroupMap);
+									}
+									currentMap = currentGroupMap;
+								}
 							}
 						}
 					}
