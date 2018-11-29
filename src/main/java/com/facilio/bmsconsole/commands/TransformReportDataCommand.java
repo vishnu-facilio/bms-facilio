@@ -10,7 +10,10 @@ import java.util.TreeSet;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.SpaceAggregateOperator;
@@ -25,6 +28,8 @@ import com.facilio.report.context.ReportDataPointContext;
 
 public class TransformReportDataCommand implements Command {
 
+	private static final Logger LOGGER = LogManager.getLogger(TransformReportDataCommand.class.getName());
+	
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -163,6 +168,9 @@ public class TransformReportDataCommand implements Command {
 			case DECIMAL:
 				return DECIMAL_FORMAT.format(val);
 			case BOOLEAN:
+				if (AccountUtil.getCurrentOrg().getId() == 134) {
+					LOGGER.info("Boolean val : "+val.toString());
+				}
 				if (val.toString().equals("true")) {
 					return 1;
 				}
