@@ -1,11 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
 import java.io.Serializable;
+import java.util.logging.*;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
 import org.json.simple.JSONObject;
 
@@ -25,7 +25,7 @@ public class SendEmailCommand implements Command,Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static final Logger LOGGER = LogManager.getLogger(SendEmailCommand.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(SendEmailCommand.class.getName());
 	
 	@Override
 	public boolean execute(Context c) throws Exception{
@@ -40,6 +40,7 @@ public class SendEmailCommand implements Command,Serializable{
 				User user = AccountUtil.getCurrentUser();
 				FileInfo fileInfo = fs.getFileInfo(importProcessContext.getFileId());
 				EMailTemplate template = new EMailTemplate();
+				template.setFrom("alert@facilio.com");
 				template.setTo(user.getEmail());
 				template.setMessage(emailMessage.toString());
 				template.setSubject("Import of" + fileInfo.getFileName());
@@ -50,9 +51,11 @@ public class SendEmailCommand implements Command,Serializable{
 			else {
 				emailMessage.delete(0, emailMessage.length());
 			}
+			LOGGER.info("Import email sent for importJob:" + importProcessContext.getId());
 		}
 		catch(Exception e) {
-			LOGGER.log(Priority.ERROR, e);
+			LOGGER.log(Level.SEVERE, e.getMessage(), e);
+			// LOGGER.log(Priority.ERROR, e);
 		}
 		
 		return false;

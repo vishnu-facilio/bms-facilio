@@ -25,7 +25,12 @@ public class ProcessDataCommand implements Command {
 		while(keyList.hasNext())
 		{
 			String actualKey = keyList.next();
-			JSONObject record = (JSONObject)payLoad.get(actualKey);
+			
+			Object recordObj= payLoad.get(actualKey);
+			if(!(recordObj instanceof JSONObject)) {
+				continue;
+			}
+			JSONObject record =(JSONObject)recordObj;
 			String keyName=actualKey;
 			
 			if(actualKey.startsWith("DEVICE_") || actualKey.startsWith("POINT_")) {
