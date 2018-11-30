@@ -36,6 +36,8 @@ import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 
 import com.amazonaws.services.iot.client.*;
+import com.amazonaws.services.iot.client.AWSIotException;
+import com.amazonaws.services.iot.model.*;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.modules.FieldType;
@@ -63,23 +65,6 @@ import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.iot.AWSIot;
 import com.amazonaws.services.iot.AWSIotClientBuilder;
-import com.amazonaws.services.iot.model.Action;
-import com.amazonaws.services.iot.model.AttachPolicyRequest;
-import com.amazonaws.services.iot.model.AttachPolicyResult;
-import com.amazonaws.services.iot.model.AttachPrincipalPolicyRequest;
-import com.amazonaws.services.iot.model.CreateKeysAndCertificateRequest;
-import com.amazonaws.services.iot.model.CreateKeysAndCertificateResult;
-import com.amazonaws.services.iot.model.CreatePolicyRequest;
-import com.amazonaws.services.iot.model.CreatePolicyResult;
-import com.amazonaws.services.iot.model.CreatePolicyVersionRequest;
-import com.amazonaws.services.iot.model.CreatePolicyVersionResult;
-import com.amazonaws.services.iot.model.CreateTopicRuleRequest;
-import com.amazonaws.services.iot.model.CreateTopicRuleResult;
-import com.amazonaws.services.iot.model.GetPolicyRequest;
-import com.amazonaws.services.iot.model.GetPolicyResult;
-import com.amazonaws.services.iot.model.KinesisAction;
-import com.amazonaws.services.iot.model.ResourceAlreadyExistsException;
-import com.amazonaws.services.iot.model.TopicRulePayload;
 import com.amazonaws.services.kinesis.AmazonKinesis;
 import com.amazonaws.services.kinesis.AmazonKinesisClientBuilder;
 import com.amazonaws.services.kinesis.model.CreateStreamResult;
@@ -763,6 +748,10 @@ public class AwsUtil
     	return getIotArn() +":topic/"+ topic;
 	}
 
+	private static String getIotArnTopicFilter(String topic) {
+		return getIotArn() +":topicfilter/"+ topic;
+	}
+
 	private static JSONObject getPolicyInJson(String action, String[] resource){
 		JSONObject object = new JSONObject();
 		object.put("Effect", "Allow");
@@ -779,6 +768,8 @@ public class AwsUtil
 		JSONArray statements = new JSONArray();
 		statements.add(getPolicyInJson("iot:Connect", clientIds));
 		statements.add(getPolicyInJson("iot:Publish", new String[] {getIotArnTopic(name)}));
+		statements.add(getPolicyInJson("iot:Subscribe", new String[]{getIotArnTopicFilter(name)+"/msgs"}));
+		statements.add(getPolicyInJson("iot:Receive", new String[]{getIotArnTopic(name)+"/msgs"}));
 		JSONObject policyDocument = new JSONObject();
 		policyDocument.put("Version", "2012-10-17"); //Refer the versions available in AWS policy document before changing.
 		policyDocument.put("Statement", statements);
