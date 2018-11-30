@@ -253,7 +253,20 @@ public class ReadingAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String updateRDM() throws Exception{
+		ReadingsAPI.updateReadingDataMeta(readingDataMeta);
+		setResult(FacilioConstants.ContextNames.MESSAGE, "success");
+		return SUCCESS;
+	}
 	
+	private ReadingDataMeta readingDataMeta;
+	public ReadingDataMeta getReadingDataMeta() {
+		return readingDataMeta;
+	}
+	public void setReadingDataMeta(ReadingDataMeta readingDataMeta) {
+		this.readingDataMeta = readingDataMeta;
+	}
+
 	public List getFormlayout()
 	{
 		return FormLayout.getNewAssetLayout(fields);

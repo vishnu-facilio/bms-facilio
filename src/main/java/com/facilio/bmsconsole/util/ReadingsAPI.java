@@ -90,22 +90,22 @@ public class ReadingsAPI {
 		}
 	}
 	
-	public static int updateReadingDataMetaInputType (long resourceId, long fieldId, ReadingDataMeta.ReadingInputType type) throws SQLException {
+	public static int updateReadingDataMeta (ReadingDataMeta rdm) throws Exception {
 		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
 		List<FacilioField> fields = FieldFactory.getReadingDataMetaFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		FacilioField resourceIdField = fieldMap.get("resourceId");
 		FacilioField fieldIdField = fieldMap.get("fieldId");
 		
-		Map<String, Object> prop = Collections.singletonMap("inputType", type.getValue());
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 														.table(module.getTableName())
 														.fields(fields)
 														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-														.andCondition(CriteriaAPI.getCondition(resourceIdField, String.valueOf(resourceId), PickListOperators.IS))
-														.andCondition(CriteriaAPI.getCondition(fieldIdField, String.valueOf(fieldId), PickListOperators.IS))
+														.andCondition(CriteriaAPI.getCondition(resourceIdField, String.valueOf(rdm.getResourceId()), PickListOperators.IS))
+														.andCondition(CriteriaAPI.getCondition(fieldIdField, String.valueOf(rdm.getFieldId()), PickListOperators.IS))
 														;
-		return updateBuilder.update(prop);
+		
+		return updateBuilder.update(FieldUtil.getAsProperties(rdm));
 	}
 	
 	public static int updateReadingDataMetaInputType (List<ReadingDataMeta> metaList, ReadingDataMeta.ReadingInputType type, ReadingType readingType) throws SQLException {
