@@ -803,7 +803,7 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, preventivemaintenance);
 
-		Chain addTemplate = FacilioChainFactory.getChangePreventiveMaintenanceStatusChain();
+		Chain addTemplate = TransactionChainFactory.getChangePreventiveMaintenanceStatusChain();
 		addTemplate.execute(context);
 
 		return SUCCESS;

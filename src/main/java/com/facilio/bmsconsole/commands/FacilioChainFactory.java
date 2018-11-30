@@ -1404,16 +1404,6 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getChangePreventiveMaintenanceStatusChain() {
-		Chain c = getTransactionChain();
-		c.addCommand(new ChangePreventiveMaintenanceStatusCommand());
-		c.addCommand(new DeletePMAndDependenciesCommand(false, true));
-		c.addCommand(new AddPMTriggerCommand(true));
-		c.addCommand(new AddPMReminderCommand(true));
-		CommonCommandUtil.addCleanUpCommand(c);
-		return c;
-	}
-	
 	public static Chain getGetUpcomingPreventiveMaintenanceListChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new GenerateCriteriaFromFilterCommand());

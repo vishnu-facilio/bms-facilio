@@ -485,6 +485,17 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain getChangePreventiveMaintenanceStatusChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ChangePreventiveMaintenanceStatusCommand());
+			c.addCommand(new DeletePMAndDependenciesCommand(false, true));
+			c.addCommand(new AddPMTriggerCommand(true));
+			c.addCommand(new SchedulePMCommand(true));
+			c.addCommand(new AddPMReminderCommand(true));
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
 	    private static Chain getDefaultChain() {
 	    	return new FacilioChain(true);
 	    }
