@@ -126,9 +126,21 @@ public class AssetsAPI {
 		return null;
 	}
 	
-	public static List<Long> getAssetCategoryIds(Long baseSpaceID) throws Exception {
-		
-		return getAssetCategoryIds(Collections.singletonList(baseSpaceID));
+	public static List<Long> getAssetCategoryIds(long baseSpaceID) throws Exception {
+		return getAssetCategoryIds(baseSpaceID, false);
+	}
+	
+	public static List<Long> getAssetCategoryIds(long baseSpaceID, boolean fetchChildSpaces) throws Exception {
+		if (fetchChildSpaces) {
+			List<BaseSpaceContext> allSpaces = SpaceAPI.getBaseSpaceWithChildren(baseSpaceID);
+			if (allSpaces != null && !allSpaces.isEmpty()) {
+				return getAssetCategoryIds(allSpaces.stream().map(BaseSpaceContext::getId).collect(Collectors.toList()));
+			}
+			return null;
+		}
+		else {
+			return getAssetCategoryIds(Collections.singletonList(baseSpaceID));
+		}
 	}
 	
 	public static List<Long> getAssetCategoryIds(List<Long> baseSpaceIds) throws Exception {

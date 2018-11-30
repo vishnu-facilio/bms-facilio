@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -39,6 +40,7 @@ import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
@@ -1208,10 +1210,9 @@ public static long getSitesCount() throws Exception {
 
 		AccountUtil.getCurrentOrg().getOrgId();
 		
-		SelectRecordsBuilder selectBuilder = new SelectRecordsBuilder()
+		SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<>()
 				.select(fields)
 				.module(assetModule)
-				.beanClass(AssetContext.class)
 				.andCondition(spaceCond);
 		
 		List<Map<String, Object>> rs = selectBuilder.getAsProps();
@@ -1223,8 +1224,21 @@ public static long getSitesCount() throws Exception {
 		}
 	}
 	
-	public static List<Long> getSpaceCategoryIds(Long baseSpaceID) throws Exception {
-		return getSpaceCategoryIds(Collections.singletonList(baseSpaceID));
+	public static List<Long> getSpaceCategoryIds(long baseSpaceID) throws Exception {
+		return getSpaceCategoryIds(baseSpaceID);
+	}
+	
+	public static List<Long> getSpaceCategoryIds(long baseSpaceID, boolean fetchChildSpaces) throws Exception {
+		if (fetchChildSpaces) {
+			List<BaseSpaceContext> allSpaces = SpaceAPI.getBaseSpaceWithChildren(baseSpaceID);
+			if (allSpaces != null && !allSpaces.isEmpty()) {
+				return getSpaceCategoryIds(allSpaces.stream().map(BaseSpaceContext::getId).collect(Collectors.toList()));
+			}
+			return null;
+		}
+		else {
+			return getSpaceCategoryIds(Collections.singletonList(baseSpaceID));
+		}
 	}
 	
 	

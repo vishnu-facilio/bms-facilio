@@ -631,13 +631,13 @@ public class WorkOrderAction extends FacilioAction {
 				assetCategoryIds = AssetsAPI.getSubCategoryIds(assetCategoryId);
 			}
 		}
-		else if(buildingId > 0) {															// only building selected case
+		else if(buildingId > 0) {		// only building selected case
 			List<BaseSpaceContext> floors = SpaceAPI.getBuildingFloors(buildingId);
 			if(floors != null && !floors.isEmpty()) {
 				hasFloor = true;
 			}
-			assetCategoryIds = AssetsAPI.getAssetCategoryIds(buildingId);
-			spaceCategoryIds = SpaceAPI.getSpaceCategoryIds(buildingId);
+			assetCategoryIds = AssetsAPI.getAssetCategoryIds(buildingId, true);
+			spaceCategoryIds = SpaceAPI.getSpaceCategoryIds(buildingId, true);
 		}
 		return SUCCESS;
 	}
