@@ -48,7 +48,7 @@ private boolean isBulkUpdate = false;
 		
 		for(PreventiveMaintenance pm: pms) {
 			if (pm.getTriggers() != null && pm.isActive()) {
-				if(pm.getPmCreationType() == PreventiveMaintenance.PMCreationType.MULTIPLE.getVal()) {
+				if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE) {
 					prepareAndAddResourcePlanner(pm);
 				}
 				schedulePM(pm, context);
@@ -101,16 +101,18 @@ private boolean isBulkUpdate = false;
 	private static void schedulePM(PreventiveMaintenance pm, Context context) throws Exception {
 		Map<Long, Long> nextExecutionTimes = new HashMap<>();
 		
-		if(pm.getPmCreationType() == PreventiveMaintenance.PMCreationType.MULTIPLE.getVal()) {
+		if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE) {
 			List<PMJobsContext> pmJobs = null;
 			switch (pm.getTriggerTypeEnum()) {
-			case ONLY_SCHEDULE_TRIGGER:
-				long endTime = DateTimeUtil.getDayStartTime(PreventiveMaintenanceAPI.PM_CALCULATION_DAYS + 1, true) - 1;
-				pmJobs = PreventiveMaintenanceAPI.createPMJobsForMultipleResourceAndSchedule(pm, endTime,true);
-				break;
-			case FIXED:
-			case FLOATING:
-				throw new IllegalArgumentException("PM Of type Multiple cannot have this type of trigger");
+				case ONLY_SCHEDULE_TRIGGER:
+					long endTime = DateTimeUtil.getDayStartTime(PreventiveMaintenanceAPI.PM_CALCULATION_DAYS + 1, true) - 1;
+					pmJobs = PreventiveMaintenanceAPI.createPMJobsForMultipleResourceAndSchedule(pm, endTime,true);
+					break;
+				case FIXED:
+				case FLOATING:
+					throw new IllegalArgumentException("PM Of type Multiple cannot have this type of trigger");
+				default:
+					break;
 			}
 			if (pmJobs != null) {
 				//nextExecutionTimes.put(trigger.getId(), pmJob.getNextExecutionTime());

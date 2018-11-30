@@ -68,12 +68,10 @@ public class PMToWorkOrder extends FacilioJob {
 				PreventiveMaintenance pm = PreventiveMaintenanceAPI.getPm(pmTrigger.getPmId());
 				
 				context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
-				boolean isMultiple = false; 
-				if(pm != null && pm.getPmCreationType() == PreventiveMaintenance.PMCreationType.MULTIPLE.getVal()) {
-					isMultiple = true;
+				if(pm != null) {
+					Chain executePm = FacilioChainFactory.getExecutePreventiveMaintenanceChain(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE);
+					executePm.execute(context);
 				}
-				Chain executePm = FacilioChainFactory.getExecutePreventiveMaintenanceChain(isMultiple);
-				executePm.execute(context);
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

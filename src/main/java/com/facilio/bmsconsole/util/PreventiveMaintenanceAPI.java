@@ -77,7 +77,7 @@ public class PreventiveMaintenanceAPI {
 		List<PMJobsContext> pmJobs = new ArrayList<>();
 		List<PMJobsContext> pmJobsToBeScheduled = new ArrayList<>();
 		
-		List<Long> resourceIds = getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(pm.getAssignmentType()),pm.getBaseSpaceId(),pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
+		List<Long> resourceIds = getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),pm.getBaseSpaceId(),pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
 		
 		Map<Long, PMResourcePlannerContext> pmResourcePlanner = getPMResourcesPlanner(pm.getId());
 		for(Long resourceId :resourceIds) {
@@ -539,14 +539,10 @@ public static PMTriggerContext getTrigger(List<PMTriggerContext> triggers,Long t
 														.andCondition(CriteriaAPI.getIdCondition(ids, pmJobsModule))
 														;
 		List<Map<String, Object>> jobProps = selectBuilder.get();
-		List<PMJobsContext> pmJobs = new ArrayList<>();
 		if(jobProps != null && !jobProps.isEmpty()) {
-			for (Map<String, Object> prop : jobProps) {
-				PMJobsContext pmJob = FieldUtil.getAsBeanFromMap(prop, PMJobsContext.class);
-				pmJobs.add(pmJob);
-			}
+			return FieldUtil.getAsBeanListFromMapList(jobProps, PMJobsContext.class);
 		}
-		return pmJobs;
+		return null;
 	}
 	
 	private static void addPMJob(PMJobsContext pmJob) throws SQLException, RuntimeException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {

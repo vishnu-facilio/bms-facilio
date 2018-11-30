@@ -10,9 +10,9 @@ import java.util.stream.Collectors;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.bmsconsole.context.PMJobsContext;
-import com.facilio.bmsconsole.context.PMTriggerContext;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PMResourcePlannerContext;
+import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.TriggerType;
@@ -35,7 +35,7 @@ import com.facilio.tasker.job.JobContext;
 
 public class PMScheduler extends FacilioJob {
 
-	private Logger log = LogManager.getLogger(PMScheduler.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(PMScheduler.class.getName());
 
 	@Override
 	public void execute(JobContext jc) {
@@ -81,53 +81,60 @@ public class PMScheduler extends FacilioJob {
 				
 				List<PreventiveMaintenance> pmList = groupPmAndTriggers(pms,triggers);
 				Map<Long, Long> maxNextExecutionTimesMap = getMaxExecutionTimes(ids.substring(", ".length()));		// gives max scheduled date 
-				
 				long endTime = DateTimeUtil.getDayStartTime(PreventiveMaintenanceAPI.PM_CALCULATION_DAYS+1, true) - 1;
-				
 				for(PreventiveMaintenance pm : pmList) {
-					if(pm.getPmCreationType() == PreventiveMaintenance.PMCreationType.MULTIPLE.getVal()) {
-						
-						List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(pm.getAssignmentType()),pm.getBaseSpaceId(),pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
-						Map<Long, PMResourcePlannerContext> pmResourcePlanner = PreventiveMaintenanceAPI.getPMResourcesPlanner(pm.getId());
-						for(Long resourceId :resourceIds) {
-							PMTriggerContext trigger = null;
-							if(pmResourcePlanner.get(resourceId) != null) {
-								PMResourcePlannerContext currentResourcePlanner = pmResourcePlanner.get(resourceId);
-								trigger = triggerMap.get(currentResourcePlanner.getTriggerId());
-							}
-							
-							if(trigger == null) {
-								trigger = PreventiveMaintenanceAPI.getDefaultTrigger(pm.getTriggers());
-							}
-							
-							Long maxTime = maxNextExecutionTimesMap.get(trigger.getId());
-							
-							if(maxTime < endTime) {
-								PreventiveMaintenanceAPI.createPMJobs(pm, trigger,resourceId, maxTime, endTime,true);
-							}
-						}
-					}
-					else {
-						for(PMTriggerContext trigger : pm.getTriggers()) {
-							if(trigger.getSchedule().getFrequencyTypeEnum() != FrequencyType.DO_NOT_REPEAT) {
-								Long maxTime = maxNextExecutionTimesMap.get(trigger.getId());
-								if(maxTime < endTime) {
-									PreventiveMaintenanceAPI.createPMJobs(pm, trigger, maxTime, endTime);
-								}
-							}
-						}
-					}
+					createPMJobs(pm, triggerMap, maxNextExecutionTimesMap, endTime);
 				}
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			log.info("Exception occurred ", e);
+			LOGGER.error("Exception occurred in PM Scheduler Job", e);
+			CommonCommandUtil.emailException("PMScheduler", "Exception occurred in PM Scheduler Job", e);
 		}
-														
+	}
+		
+	private void createPMJobs(PreventiveMaintenance pm, Map<Long,PMTriggerContext> triggerMap, Map<Long, Long> maxNextExecutionTimesMap, long endTime) {
+		try {
+			if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE) {
+				
+				List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),pm.getBaseSpaceId(),pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
+				Map<Long, PMResourcePlannerContext> pmResourcePlanner = PreventiveMaintenanceAPI.getPMResourcesPlanner(pm.getId());
+				for(Long resourceId :resourceIds) {
+					PMTriggerContext trigger = null;
+					if(pmResourcePlanner.get(resourceId) != null) {
+						PMResourcePlannerContext currentResourcePlanner = pmResourcePlanner.get(resourceId);
+						trigger = triggerMap.get(currentResourcePlanner.getTriggerId());
+					}
+					
+					if(trigger == null) {
+						trigger = PreventiveMaintenanceAPI.getDefaultTrigger(pm.getTriggers());
+					}
+					
+					Long maxTime = maxNextExecutionTimesMap.get(trigger.getId());
+					
+					if(maxTime < endTime) {
+						PreventiveMaintenanceAPI.createPMJobs(pm, trigger,resourceId, maxTime, endTime,true);
+					}
+				}
+			}
+			else {
+				for(PMTriggerContext trigger : pm.getTriggers()) {
+					if(trigger.getSchedule().getFrequencyTypeEnum() != FrequencyType.DO_NOT_REPEAT) {
+						Long maxTime = maxNextExecutionTimesMap.get(trigger.getId());
+						if(maxTime < endTime) {
+							PreventiveMaintenanceAPI.createPMJobs(pm, trigger, maxTime, endTime);
+						}
+					}
+				}
+			}
+		}
+		catch (Exception e) {
+			LOGGER.error("Error occurred during PM Job creation of PM : "+pm.getId());
+			CommonCommandUtil.emailException("PMScheduler", "Error occurred during PM Job creation of PM : "+pm.getId(), e);
+		}
 	}
 	
 	private List<PreventiveMaintenance> groupPmAndTriggers(Map<Long, PreventiveMaintenance> pms, List<PMTriggerContext> triggers) throws Exception {
-		
 		List<PreventiveMaintenance> pmList = new ArrayList<>();
 		if(pms != null) {
 			for( Entry<Long, PreventiveMaintenance> map : pms.entrySet()) {
@@ -144,9 +151,7 @@ public class PMScheduler extends FacilioJob {
 				pmList.add(pm);
 			}
 		}
-		
 		return pmList;
-		
 	}
 
 	private Map<Long, Long> getMaxExecutionTimes(String triggerIds) throws Exception {

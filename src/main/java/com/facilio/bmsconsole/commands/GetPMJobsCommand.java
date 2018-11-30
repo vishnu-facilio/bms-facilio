@@ -107,7 +107,7 @@ public class GetPMJobsCommand implements Command {
 													ResourceContext resource = ResourceAPI.getResource((long) pmJob.get("resourceId"));
 													pmJob.put("resource", resource);
 												}
-												if(pm.getPmCreationType() == PreventiveMaintenance.PMCreationType.MULTIPLE.getVal()) {
+												if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE) {
 													Long executionTime = (Long) pmJob.get("nextExecutionTime");
 													 Map<Long, List<Map<String, Object>>> triggerMap = pmTriggerTimeBasedGroupedMap.get(executionTime);
 													if(triggerMap == null) {

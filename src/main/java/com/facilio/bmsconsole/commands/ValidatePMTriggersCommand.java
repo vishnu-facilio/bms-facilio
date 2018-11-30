@@ -81,7 +81,7 @@ public class ValidatePMTriggersCommand implements Command {
 		}
 		else {
 			if (oldPm != null && pmTriggers == null) {
-				pm.setTriggerType(oldPm.getTriggerType());
+				pm.setTriggerType(oldPm.getTriggerTypeEnum());
 			}
 			else {
 				pm.setTriggerType(TriggerType.NONE);

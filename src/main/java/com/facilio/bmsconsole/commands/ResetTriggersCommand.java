@@ -113,7 +113,7 @@ public class ResetTriggersCommand implements Command {
 						}
 						break;
 					case ONLY_SCHEDULE_TRIGGER:
-						if(pm.getPmCreationType() == PreventiveMaintenance.PMCreationType.MULTIPLE.getVal()) {
+						if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE) {
 							if(pmJobsContext.getPmTriggerId() == trigger.getId()) {
 								pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger.getId(), currentExecutionTime,pmJobsContext.getResourceId(), true);
 							}

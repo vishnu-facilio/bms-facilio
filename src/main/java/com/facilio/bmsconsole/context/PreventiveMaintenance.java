@@ -322,8 +322,8 @@ public class PreventiveMaintenance extends ResourceContext {
 		this.baseSpaceId = baseSpaceId;
 	}
 	
-	Long assetCategoryId;
-	Long spaceCategoryId;
+	private Long assetCategoryId;
+	private Long spaceCategoryId;
 	
 	public Long getAssetCategoryId() {
 		return assetCategoryId;
@@ -338,8 +338,7 @@ public class PreventiveMaintenance extends ResourceContext {
 		this.spaceCategoryId = spaceCategoryId;
 	}
 
-	PMCreationType pmCreationType;
-	
+	private PMCreationType pmCreationType;
 	public int getPmCreationType() {
 		if(pmCreationType != null) {
 			return pmCreationType.getVal();
@@ -349,9 +348,14 @@ public class PreventiveMaintenance extends ResourceContext {
 	public void setPmCreationType(int pmCreationType) {
 		this.pmCreationType = PMCreationType.valueOf(pmCreationType);
 	}
+	public PMCreationType getPmCreationTypeEnum() {
+		return pmCreationType;
+	}
+	public void PMCreationType(PMCreationType pmCreationType) {
+		this.pmCreationType = pmCreationType;
+	}
 	
-	PMAssignmentType assignmentType;
-	
+	private PMAssignmentType assignmentType;
 	public int getAssignmentType() {
 		if(assignmentType != null) {
 			return assignmentType.getVal();
@@ -360,6 +364,12 @@ public class PreventiveMaintenance extends ResourceContext {
 	}
 	public void setAssignmentType(int assignmentType) {
 		this.assignmentType = PMAssignmentType.valueOf(assignmentType);
+	}
+	public PMAssignmentType getAssignmentTypeEnum() {
+		return assignmentType;
+	}
+	public void setAssignmentType(PMAssignmentType assignmentType) {
+		this.assignmentType = assignmentType;
 	}
 
 	public static enum PMCreationType {
@@ -379,8 +389,7 @@ public class PreventiveMaintenance extends ResourceContext {
 		}
 	}
 	
-	List<PMIncludeExcludeResourceContext> pmIncludeExcludeResourceContexts;
-	
+	private List<PMIncludeExcludeResourceContext> pmIncludeExcludeResourceContexts;
 	public List<PMIncludeExcludeResourceContext> getPmIncludeExcludeResourceContexts() {
 		return pmIncludeExcludeResourceContexts;
 	}
