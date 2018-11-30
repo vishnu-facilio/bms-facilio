@@ -420,7 +420,7 @@ public class TimeSeriesAPI {
 		
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("instanceType"), CommonOperators.IS_EMPTY));
-		criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("instanceType"), String.valueOf(60), NumberOperators.LESS_THAN));
+		criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("instanceType"), String.valueOf(6), NumberOperators.LESS_THAN));
 		
 		builder.andCriteria(criteria);
 		
@@ -503,58 +503,5 @@ public class TimeSeriesAPI {
 											.andCondition(CriteriaAPI.getIdCondition(ids, module));
 		
 		return builder.update(instance);
-	}
-	
-	public static JSONObject constructIotMessage (List<Map<String, Object>> instances, String command) throws Exception {
-		
-		ControllerContext controller = ControllerAPI.getController((long) instances.get(0).get("controllerId"));
-		
-		JSONObject obj = new JSONObject();
-		obj.put("command", command);
-		
-		obj.put("deviceName", controller.getName());
-		obj.put("macAddress", controller.getMacAddr());
-		obj.put("subnetPrefix", controller.getSubnetPrefix());
-		obj.put("networkNumber", controller.getNetworkNumber());
-		obj.put("instanceNumber", controller.getInstanceNumber());
-		obj.put("broadcastAddress", controller.getBroadcastIp());
-		
-		JSONArray points = new JSONArray();
-		obj.put("points", points);
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		for(Map<String, Object> instance : instances) {
-			JSONObject point = new JSONObject();
-			point.put("instance", instance.get("instance"));
-			point.put("instanceType", instance.get("instanceType"));
-			point.put("device", instance.get("device"));
-			point.put("objectInstanceNumber", instance.get("objectInstanceNumber"));
-			point.put("instanceDescription", instance.get("instanceDescription"));
-			if (instance.get("value") != null) {
-				point.put("newValue", instance.get("value"));
-				point.put("valueType", getValueType(modBean.getField((long) instance.get("fieldId")).getDataTypeEnum()));
-			}
-			points.add(point);
-		}
-		
-		return obj;
-	}
-	
-	private static String getValueType(FieldType fieldType) {
-		String type = null;
-		switch(fieldType) {
-			case NUMBER:
-				type = "signed";
-				break;
-			case DECIMAL:
-				type = "double";
-				break;
-			case BOOLEAN:
-				type = "boolean";
-				break;
-			case STRING:
-				type = "string";
-		}
-		return type;
 	}
 }

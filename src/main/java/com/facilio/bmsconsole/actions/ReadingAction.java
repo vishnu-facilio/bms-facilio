@@ -933,11 +933,10 @@ public class ReadingAction extends FacilioAction {
 	
 	public String setReading () throws Exception {
 		Map<String, Object> instance = TimeSeriesAPI.getUnmodeledInstance(assetId,fieldId);
-		if (instance != null) {
+		if (instance != null && AccountUtil.getCurrentOrg()!= null) {
 			instance.put("value", value);
 			instance.put("fieldId", fieldId);
-			JSONObject clientMessage = TimeSeriesAPI.constructIotMessage(Collections.singletonList(instance), "set");
-			AwsUtil.publishIotMessage(AccountUtil.getCurrentOrg().getDomain(), clientMessage);
+			AwsUtil.publishIotMessage(Collections.singletonList(instance), "set");
 		}
 		return SUCCESS;
 	}

@@ -143,10 +143,8 @@ public class TimeSeries extends FacilioAction {
 		markChain.execute(context);
 		
 		List<Map<String, Object>> instances =  TimeSeriesAPI.getUnmodeledInstances(ids);
-		JSONObject clientMessage = TimeSeriesAPI.constructIotMessage(instances, "configure");
-		AwsUtil.publishIotMessage(AccountUtil.getCurrentOrg().getDomain(), clientMessage);
-		
-		
+		AwsUtil.publishIotMessage(instances, "configure");
+
 		setResult("result", "success");
 		return SUCCESS;
 	}
