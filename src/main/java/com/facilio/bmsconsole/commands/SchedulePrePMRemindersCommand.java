@@ -48,7 +48,7 @@ public class SchedulePrePMRemindersCommand implements Command, Serializable {
 																	.select(FieldFactory.getPMReminderFields())
 																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																	.andCustomWhere("PM_ID = ?", pm.getId())
-																	.andCustomWhere("REMINDER_TYPE == ?", ReminderType.BEFORE_EXECUTION.getValue())
+																	.andCustomWhere("REMINDER_TYPE = ?", ReminderType.BEFORE_EXECUTION.getValue())
 																	;
 					List<Map<String, Object>> reminderProps = selectBuilder.get();
 					if(reminderProps != null && !reminderProps.isEmpty()) {
