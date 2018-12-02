@@ -625,6 +625,7 @@ public static PMTriggerContext getTrigger(List<PMTriggerContext> triggers,Long t
 			if (fetchChildren) {
 				pm.setPmIncludeExcludeResourceContexts(TemplateAPI.getPMIncludeExcludeList(pm.getId(), null, null));
 			}
+			return pm;
 		}
 		return null;
 	}
