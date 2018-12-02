@@ -273,7 +273,7 @@ public class TimeSeriesAPI {
 		return null;
 	}
 	
-	public static Map<String, Object> getMappedInstances(long controllerId) throws Exception {
+	public static List<Map<String, Object>> getMappedInstances(long controllerId) throws Exception {
 		FacilioModule module = ModuleFactory.getInstanceMappingModule();
 		List<FacilioField> fields = FieldFactory.getInstanceMappingFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -283,30 +283,7 @@ public class TimeSeriesAPI {
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"), String.valueOf(controllerId), NumberOperators.EQUALS))
 				;
-		List<Map<String, Object>> props = builder.get();
-		Map<String, Object> deviceMap = new HashMap();
-		if(props!=null && !props.isEmpty()) {
-			for(Map<String, Object> prop: props) {
-				String device = (String) prop.get("device");
-				Map<String, Object> instanceMap = null;
-				if (deviceMap.containsKey(device)) {
-					Map<String, Object> deviceDetails = (Map<String, Object>) deviceMap.get(device);
-					instanceMap = (Map<String, Object>) deviceDetails.get("instances");
-				}
-				else {
-					Map<String, Object> deviceDetails = new HashMap<>();
-					deviceDetails.put("assetId", prop.get("assetId"));
-					deviceDetails.put("categoryId", prop.get("categoryId"));
-					instanceMap = new HashMap<>();
-					deviceDetails.put("instances", instanceMap);
-					deviceMap.put(device, deviceDetails);
-				}
-				String instanceName = (String) prop.get("instance");
-				instanceMap.put(instanceName, (Long) prop.get("fieldId"));
-			}
-			return deviceMap;
-		}
-		return null;
+		return builder.get();
 	}
 	
 	public static List<Map<String,Object>> getMarkedReadings(Criteria criteria) throws Exception {
@@ -407,7 +384,7 @@ public class TimeSeriesAPI {
 		insertBuilder.save();
 	}
 	
-	public static List<Map<String, Object>> getUnmodeledInstancesForController (long controllerId, Boolean... configuredOnly) throws Exception {
+	public static List<Map<String, Object>> getUnmodeledInstancesForController (long controllerId, Boolean configuredOnly, boolean fetchMapped) throws Exception {
 		FacilioModule module = ModuleFactory.getUnmodeledInstancesModule();
 		List<FacilioField> fields = FieldFactory.getUnmodeledInstanceFields();
 		fields.add(FieldFactory.getIdField(module));
@@ -424,13 +401,29 @@ public class TimeSeriesAPI {
 		
 		builder.andCriteria(criteria);
 		
-		if (configuredOnly != null && configuredOnly.length > 0 && configuredOnly[0] != null) {
+		if (configuredOnly != null) {
 			Criteria inUseCriteria = new Criteria();
-			inUseCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("inUse"), String.valueOf(configuredOnly[0]), BooleanOperators.IS));
-			if (configuredOnly[0]) {
+			inUseCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("inUse"), String.valueOf(configuredOnly), BooleanOperators.IS));
+			if (configuredOnly) {
 				inUseCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("objectInstanceNumber"), CommonOperators.IS_EMPTY));				
 			}
 			builder.andCriteria(inUseCriteria);
+		}
+		
+		if (fetchMapped) {
+			FacilioModule mappedModule = ModuleFactory.getInstanceMappingModule();
+			List<FacilioField> mappedFields = FieldFactory.getInstanceMappingFields();
+			Map<String, FacilioField> mappedFieldMap = FieldFactory.getAsMap(fields);
+			
+			fields.addAll(mappedFields);
+			
+			FacilioField device = fieldMap.get("device");
+			FacilioField instance = fieldMap.get("instance");
+			FacilioField mappedDevice = fieldMap.get("device");
+			FacilioField mappedInstance = fieldMap.get("instance");
+			builder.leftJoin(mappedModule.getTableName())
+				.on(module.getTableName() + "." + device.getColumnName()+"="+mappedModule.getTableName()+"."+mappedDevice.getColumnName()
+				+ " AND " + module.getTableName() +"." + instance.getColumnName() + "=" + mappedModule.getTableName()+"."+mappedInstance.getColumnName());
 		}
 
 		 List<Map<String, Object>> props =  builder.get();

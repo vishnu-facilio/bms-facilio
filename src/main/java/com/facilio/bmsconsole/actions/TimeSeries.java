@@ -129,7 +129,7 @@ public class TimeSeries extends FacilioAction {
 	}
 	
 	public String getInstancesForController () throws Exception {
-		List<Map<String, Object>> instances = TimeSeriesAPI.getUnmodeledInstancesForController(controllerId, configured);
+		List<Map<String, Object>> instances = TimeSeriesAPI.getUnmodeledInstancesForController(controllerId, configured, getFetchMapped());
 		setResult("instances", instances);
 		return SUCCESS;
 	}
@@ -138,6 +138,7 @@ public class TimeSeries extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
 		context.put(FacilioConstants.ContextNames.DEVICE_DATA , changedDevices);
+		context.put(FacilioConstants.ContextNames.CONFIGURE , configured);
 		
 		Chain markChain = TransactionChainFactory.getMarkUnmodeledInstanceChain();
 		markChain.execute(context);
@@ -163,6 +164,17 @@ public class TimeSeries extends FacilioAction {
 	}
 	public void setConfigured(Boolean configured) {
 		this.configured = configured;
+	}
+	
+	Boolean fetchMapped;
+	public Boolean getFetchMapped() {
+		if (fetchMapped == null) {
+			return false;
+		}
+		return fetchMapped;
+	}
+	public void setFetchMapped(Boolean fetchMapped) {
+		this.fetchMapped = fetchMapped;
 	}
 	
 	List<Long> ids; 

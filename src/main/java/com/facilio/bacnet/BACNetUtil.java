@@ -3,7 +3,7 @@ package com.facilio.bacnet;
 public class BACNetUtil {
 	
     public static enum InstanceType {
-	    	ANALOG_INPUT,
+	    	ANALOG_INPUT,	// 0
 	    	ANALOG_OUTPUT(true),
 	    	ANALOG_VALUE(true),
 	    	BINARY_INPUT,
@@ -62,7 +62,7 @@ public class BACNetUtil {
 	    	NETWORK_PORT,
 	    	ELEVATOR_GROUP,
 	    	ESCALATOR,
-	    	LIFT
+	    	LIFT		// 59
 		;
     	
     		private boolean writable;
