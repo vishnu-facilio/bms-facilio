@@ -1,5 +1,6 @@
 package com.facilio.tasker;
 
+import java.io.Serializable;
 import java.time.DateTimeException;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -17,8 +18,13 @@ import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
-public class ScheduleInfo {
+public class ScheduleInfo implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static final int LAST_WEEK = 5;
 	
 	private List<LocalTime> times = null;

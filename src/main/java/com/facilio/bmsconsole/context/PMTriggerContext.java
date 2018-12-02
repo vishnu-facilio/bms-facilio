@@ -162,9 +162,8 @@ public class PMTriggerContext implements Serializable {
 		this.endReading = endReading;
 	}
 	
-	TriggerType triggerType;
-	
-	Long assignedTo;
+	private TriggerType triggerType;
+	private Long assignedTo;
 	
 	public int getTriggerType() {
 		if(triggerType != null) {

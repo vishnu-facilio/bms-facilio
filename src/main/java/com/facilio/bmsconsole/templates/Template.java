@@ -16,7 +16,6 @@ import org.json.simple.parser.ParseException;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.FreeMarkerAPI;
 import com.facilio.workflows.context.WorkflowContext;
-import com.facilio.workflows.functions.FacilioSystemFunctions;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public abstract class Template implements Serializable {
