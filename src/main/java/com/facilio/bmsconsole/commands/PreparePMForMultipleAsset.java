@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.context.PMJobsContext.PMJobsStatus;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.TaskTemplate;
@@ -74,6 +76,9 @@ public class PreparePMForMultipleAsset implements Command {
 			PreventiveMaintenanceAPI.updateResourceDetails(woContext, taskMap);
 			Chain addWOChain = TransactionChainFactory.getAddWorkOrderChain();
 			addWOChain.execute(addWocontext);
+			
+			context.put(FacilioConstants.ContextNames.PM_TO_WO, Collections.singletonMap(pm.getId(), woContext));
+			PreventiveMaintenanceAPI.updatePMJobStatus(pmJob.getId(), PMJobsStatus.COMPLETED);
 
 			//incrementPMCount(pm);
 		}

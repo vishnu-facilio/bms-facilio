@@ -34,6 +34,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainExceptionHandler;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
@@ -587,6 +588,17 @@ public class CommonCommandUtil {
 			}
     	}
     	return readingMap;
+    }
+    
+    public static <T> List<T> getList (FacilioContext context, String singularKey, String pluralKey) {
+    	List<T> list = (List<T>) context.get(pluralKey);
+		if(list == null) {
+			T singleTObj = (T) context.get(singularKey);
+			if (singleTObj != null) {
+				list = Collections.singletonList(singleTObj);
+			}
+		}
+		return list;
     }
     
     public static String getStackTraceString(StackTraceElement[] traces) {

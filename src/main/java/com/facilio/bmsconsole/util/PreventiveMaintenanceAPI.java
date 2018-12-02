@@ -23,14 +23,13 @@ import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMJobsContext.PMJobsStatus;
 import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.PMReminder.ReminderType;
+import com.facilio.bmsconsole.context.PMResourcePlannerContext;
+import com.facilio.bmsconsole.context.PMResourcePlannerReminderContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PMTriggerContext.TriggerExectionSource;
 import com.facilio.bmsconsole.context.PMTriggerContext.TriggerType;
-import com.facilio.bmsconsole.context.PMResourcePlannerContext;
-import com.facilio.bmsconsole.context.PMResourcePlannerReminderContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
-import com.facilio.bmsconsole.context.PreventiveMaintenance.PMCreationType;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.TaskContext;
@@ -357,6 +356,7 @@ public static PMTriggerContext getTrigger(List<PMTriggerContext> triggers,Long t
 														.table(pmJobsModule.getTableName())
 														.andCondition(CriteriaAPI.getCondition(pmTriggerField, String.valueOf(pmTriggerId), NumberOperators.EQUALS))
 														.andCondition(CriteriaAPI.getCondition(nextExecutionField, String.valueOf(currentTime), NumberOperators.GREATER_THAN))
+														.orderBy(nextExecutionField.getColumnName())
 														.limit(1)
 														;
 		

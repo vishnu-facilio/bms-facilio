@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
@@ -12,15 +13,18 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.NoteContext;
+import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.TriggerType;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.context.PMJobsContext.PMJobsStatus;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -56,7 +60,12 @@ public class ExecutePMCommand implements Command {
 					CommonCommandUtil.emailException("ExecutePMCommand", "PM Execution failed for PM : "+pm.getId(), e, "You have to manually add Job entry for next PM Job because exception is thrown to rollback transaction");
 					throw e;
 				}
-				context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
+				context.put(FacilioConstants.ContextNames.PM_TO_WO, Collections.singletonMap(pm.getId(), wo));
+				
+				PMJobsContext currentJob = (PMJobsContext) context.get(FacilioConstants.ContextNames.PM_CURRENT_JOB);
+				if (currentJob != null) {
+					PreventiveMaintenanceAPI.updatePMJobStatus(currentJob.getId(), PMJobsStatus.COMPLETED);
+				}
 			}
 		}
 		return false;

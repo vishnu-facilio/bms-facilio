@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.context;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 
 import org.json.simple.JSONObject;
@@ -15,8 +16,13 @@ import com.facilio.tasker.ScheduleInfo;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
-public class PMTriggerContext {
+public class PMTriggerContext implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	String name;
 	public String getName() {
 		return name;

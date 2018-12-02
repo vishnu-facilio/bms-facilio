@@ -1,9 +1,15 @@
 package com.facilio.bmsconsole.context;
 
+import java.io.Serializable;
+
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 
-public class PMJobsContext {
+public class PMJobsContext implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	long resourceId = -1;
 	
 	public long getResourceId() {

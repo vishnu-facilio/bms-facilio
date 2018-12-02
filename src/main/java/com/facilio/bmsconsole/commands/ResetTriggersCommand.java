@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
+import java.io.Serializable;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +11,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMJobsContext.PMJobsStatus;
 import com.facilio.bmsconsole.context.PMTriggerContext;
@@ -32,19 +33,17 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.tasker.ScheduleInfo.FrequencyType;
 
-public class ResetTriggersCommand implements Command {
+public class ResetTriggersCommand implements Command, Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		List<PreventiveMaintenance> pms = (List<PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST);
-		if(pms == null) {
-			PreventiveMaintenance pm = (PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
-			if (pm != null) {
-				pms = Collections.singletonList(pm);
-			}
-		}
-		
+		List<PreventiveMaintenance> pms = CommonCommandUtil.getList((FacilioContext) context, FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST);
 		if(pms != null && !pms.isEmpty()) {
 			Map<Long, List<PMTriggerContext>> pmTriggersMap = PreventiveMaintenanceAPI.getPMTriggers(pms);
 			
@@ -55,21 +54,14 @@ public class ResetTriggersCommand implements Command {
 			if (reset == null) {
 				reset = false;
 			}
-			Map<Long, Long> nextExecutionTimes = new HashMap<>();
-			for(PreventiveMaintenance pm : pms) {
-				if (pm.getCurrentExecutionCount() == pm.getMaxCount()) {
-					PreventiveMaintenanceAPI.setPMInActive(pm.getId());
-				}
-				else if(reset) {
+			if(reset) {
+				Map<Long, Long> nextExecutionTimes = new HashMap<>();
+				for(PreventiveMaintenance pm : pms) {
 					resetPMTriggers(pm, currentTrigger, pmTriggersMap.get(pm.getId()),currentJob, currentExecutionTime, nextExecutionTimes);
 				}
+				context.put(FacilioConstants.ContextNames.NEXT_EXECUTION_TIMES, nextExecutionTimes);
+				context.put(FacilioConstants.ContextNames.PM_TRIGGERS, pmTriggersMap);
 			}
-			if (currentJob != null) {
-				PreventiveMaintenanceAPI.updatePMJobStatus(currentJob.getId(), PMJobsStatus.COMPLETED);
-			}
-			
-			context.put(FacilioConstants.ContextNames.NEXT_EXECUTION_TIMES, nextExecutionTimes);
-			context.put(FacilioConstants.ContextNames.PM_TRIGGERS, pmTriggersMap);
 		}
 		return false;
 	}

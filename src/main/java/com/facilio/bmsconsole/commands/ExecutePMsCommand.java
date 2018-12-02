@@ -44,7 +44,6 @@ public class ExecutePMsCommand implements Command {
 				}
 			}
 			context.put(FacilioConstants.ContextNames.WORK_ORDER_LIST, woIds);
-			context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
 			context.put(FacilioConstants.ContextNames.PM_TO_WO, pmToWo);
 		}
 		return false;
