@@ -118,7 +118,7 @@ public class LookupSpecialTypeUtil {
 			return BusinessHoursAPI.getBusinessHours(id);
 		}
 		else if(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE.equals(specialType)) {
-			return PreventiveMaintenanceAPI.getPM(id);
+			return PreventiveMaintenanceAPI.getPM(id, false);
 		}
 		else if(EventConstants.EventContextNames.EVENT.equals(specialType)) {
 			return EventAPI.getEvent(id);
@@ -227,7 +227,7 @@ public class LookupSpecialTypeUtil {
 			}
 		}
 		else if(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE.equals(specialType)) {
-			PreventiveMaintenance pm = PreventiveMaintenanceAPI.getPM(id);
+			PreventiveMaintenance pm = PreventiveMaintenanceAPI.getPM(id, false);
 			if (pm != null) {
 				return pm.getTitle();
 			}

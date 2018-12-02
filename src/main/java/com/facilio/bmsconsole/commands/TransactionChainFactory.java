@@ -496,6 +496,32 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain getExecutePreventiveMaintenanceChain() {
+			return getExecutePreventiveMaintenanceChain(false);
+		}
+		public static Chain getExecutePreventiveMaintenanceChain(boolean isMultipleWo) {
+			Chain c = getDefaultChain();
+			if(isMultipleWo) {
+				c.addCommand(new PreparePMForMultipleAsset());
+			}
+			else {
+				c.addCommand(new ExecutePMCommand());
+			}
+			c.addCommand(new ResetTriggersCommand());
+			c.addCommand(new SchedulePMRemindersCommand());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
+		public static Chain getExecutePMsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ExecutePMsCommand());
+			c.addCommand(new ResetTriggersCommand());
+			c.addCommand(new SchedulePMRemindersCommand());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
 	    private static Chain getDefaultChain() {
 	    	return new FacilioChain(true);
 	    }

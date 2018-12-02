@@ -22,7 +22,6 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -31,6 +30,7 @@ import com.facilio.bmsconsole.context.AlarmSeverityContext;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.NotificationContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.TicketStatusContext;
@@ -49,6 +49,7 @@ import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.NotificationAPI;
+import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.SMSUtil;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -414,26 +415,29 @@ public enum ActionType {
 			if (pmProps != null && !pmProps.isEmpty()) {
 				
 				PMTriggerContext trigger = FieldUtil.getAsBeanFromMap(pmProps.get(0), PMTriggerContext.class);
-				FacilioContext pmContext = new FacilioContext();
-				pmContext.put(FacilioConstants.ContextNames.RECORD_ID, trigger.getPmId());
-				pmContext.put(FacilioConstants.ContextNames.PM_CURRENT_TRIGGER, trigger);
-				pmContext.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, Instant.now().getEpochSecond());
-				pmContext.put(FacilioConstants.ContextNames.PM_RESET_TRIGGERS, true);
-				
-				if (currentRecord instanceof AlarmContext) {
-					fetchSeverities((AlarmContext) currentRecord);
-					pmContext.put(FacilioConstants.ContextNames.PM_UNCLOSED_WO_COMMENT, getNewAlarmCommentForUnClosedWO((AlarmContext) currentRecord));
-				}
-
-				Chain executePm = FacilioChainFactory.getExecutePreventiveMaintenanceChain();
-				executePm.execute(pmContext);
-				
-				WorkOrderContext wo = (WorkOrderContext) pmContext.get(FacilioConstants.ContextNames.WORK_ORDER);
-				if (context != null) {
-					context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
-				}
-				if (currentRecord instanceof AlarmContext && wo != null) {
-					AlarmAPI.updateWoIdInAlarm(wo.getId(), ((AlarmContext) currentRecord).getId());
+				PreventiveMaintenance pm = PreventiveMaintenanceAPI.getActivePM(trigger.getPmId(), true);
+				if(pm != null) {
+					FacilioContext pmContext = new FacilioContext();
+					pmContext.put(FacilioConstants.ContextNames.PM_CURRENT_TRIGGER, trigger);
+					pmContext.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, Instant.now().getEpochSecond());
+					pmContext.put(FacilioConstants.ContextNames.PM_RESET_TRIGGERS, true);
+					
+					if (currentRecord instanceof AlarmContext) {
+						fetchSeverities((AlarmContext) currentRecord);
+						pmContext.put(FacilioConstants.ContextNames.PM_UNCLOSED_WO_COMMENT, getNewAlarmCommentForUnClosedWO((AlarmContext) currentRecord));
+					}
+					
+					pmContext.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
+					Chain executePm = TransactionChainFactory.getExecutePreventiveMaintenanceChain();
+					executePm.execute(pmContext);
+					
+					WorkOrderContext wo = (WorkOrderContext) pmContext.get(FacilioConstants.ContextNames.WORK_ORDER);
+					if (context != null) {
+						context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
+					}
+					if (currentRecord instanceof AlarmContext && wo != null) {
+						AlarmAPI.updateWoIdInAlarm(wo.getId(), ((AlarmContext) currentRecord).getId());
+					}
 				}
 			}
 		}

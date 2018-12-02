@@ -52,10 +52,7 @@ public class ResetTriggersCommand implements Command {
 			PMTriggerContext currentTrigger = (PMTriggerContext) context.get(FacilioConstants.ContextNames.PM_CURRENT_TRIGGER); 
 			Boolean reset = (Boolean) context.get(FacilioConstants.ContextNames.PM_RESET_TRIGGERS);
 			PMJobsContext currentJob = (PMJobsContext) context.get(FacilioConstants.ContextNames.PM_CURRENT_JOB);
-			if(reset != null && reset) {
-				reset = true;
-			}
-			else {
+			if (reset == null) {
 				reset = false;
 			}
 			Map<Long, Long> nextExecutionTimes = new HashMap<>();

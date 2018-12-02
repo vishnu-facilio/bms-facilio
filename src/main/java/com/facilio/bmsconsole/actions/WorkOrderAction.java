@@ -355,73 +355,66 @@ public class WorkOrderAction extends FacilioAction {
 	}
 
 	private List<PMReminder> reminders;
-
 	public List<PMReminder> getReminders() {
 		return reminders;
 	}
-
 	public void setReminders(List<PMReminder> reminders) {
 		this.reminders = reminders;
 	}
 
 	private long pmId = -1;
-
 	public long getPmId() {
 		return pmId;
 	}
-
 	public void setPmId(long pmId) {
 		this.pmId = pmId;
 	}
+	
 	private String type = null;
-
 	public String getType() {
 		return type;
 	}
-
 	public void setType(String type) {
 		this.type = type;
 	}
 
 	public String executePM() throws Exception {
-
-		FacilioContext context = new FacilioContext();
-
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(pmId));
-		context.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, Instant.now().getEpochSecond());
-		context.put(FacilioConstants.ContextNames.PM_INCLUDE_EXCLUDE_LIST, pmIncludeExcludeResourceContexts);
-		context.put(FacilioConstants.ContextNames.ONLY_POST_REMINDER_TYPE, true);
-
-		Chain executePm = FacilioChainFactory.getExecutePMsChain();
-		executePm.execute(context);
-
-		workorder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
-		
+		FacilioContext context = executePMs(Collections.singletonList(pmId));
+		if (context != null) {
+			workorder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
+		}
 		return SUCCESS;
 	}
 
 	public String executePMs() throws Exception {
-
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
-		context.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, Instant.now().getEpochSecond());
-		context.put(FacilioConstants.ContextNames.ONLY_POST_REMINDER_TYPE, true);
-
-		Chain executePm = FacilioChainFactory.getExecutePMsChain();
-		executePm.execute(context);
-
-		id = (List<Long>) context.get(FacilioConstants.ContextNames.WORK_ORDER_LIST);
-
+		FacilioContext context = executePMs(id);
+		if (context != null) {
+			id = (List<Long>) context.get(FacilioConstants.ContextNames.WORK_ORDER_LIST);
+		}
 		return SUCCESS;
 	}
 	
-	List<PMIncludeExcludeResourceContext> pmIncludeExcludeResourceContexts;
+	private FacilioContext executePMs (List<Long> ids) throws Exception {
+		List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getActivePMs(ids, null);
+		if (pms != null && !pms.isEmpty()) {
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST, pms);
+			context.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, Instant.now().getEpochSecond());
+			context.put(FacilioConstants.ContextNames.PM_INCLUDE_EXCLUDE_LIST, pmIncludeExcludeResourceContexts);
+			context.put(FacilioConstants.ContextNames.ONLY_POST_REMINDER_TYPE, true);
+			
+			Chain executePm = TransactionChainFactory.getExecutePMsChain();
+			executePm.execute(context);
+			
+			return context;
+		}
+		return null;
+	}
 	
-	
+	private List<PMIncludeExcludeResourceContext> pmIncludeExcludeResourceContexts;
 	public List<PMIncludeExcludeResourceContext> getPmIncludeExcludeResourceContexts() {
 		return pmIncludeExcludeResourceContexts;
 	}
-
 	public void setPmIncludeExcludeResourceContexts(
 			List<PMIncludeExcludeResourceContext> pmIncludeExcludeResourceContexts) {
 		this.pmIncludeExcludeResourceContexts = pmIncludeExcludeResourceContexts;

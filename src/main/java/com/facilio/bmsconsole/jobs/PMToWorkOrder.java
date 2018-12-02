@@ -7,8 +7,8 @@ import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMJobsContext.PMJobsStatus;
@@ -56,20 +56,19 @@ public class PMToWorkOrder extends FacilioJob {
 				PMJobsContext pmJob = FieldUtil.getAsBeanFromMap(prop, PMJobsContext.class);
 				PMTriggerContext pmTrigger = FieldUtil.getAsBeanFromMap(prop, PMTriggerContext.class);
 				pmTrigger.setId(pmJob.getPmTriggerId());
-				FacilioContext context = new FacilioContext();
-				context.put(FacilioConstants.ContextNames.STOP_PM_EXECUTION, !(pmJob.getStatusEnum() == PMJobsStatus.SCHEDULED));
-				context.put(FacilioConstants.ContextNames.RECORD_ID, pmTrigger.getPmId());
-				context.put(FacilioConstants.ContextNames.TEMPLATE_ID, pmJob.getTemplateId());
-				context.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, jc.getExecutionTime());
-				context.put(FacilioConstants.ContextNames.PM_RESET_TRIGGERS, true);
-				context.put(FacilioConstants.ContextNames.PM_CURRENT_TRIGGER, pmTrigger);
-				context.put(FacilioConstants.ContextNames.PM_CURRENT_JOB, pmJob);
 				
-				PreventiveMaintenance pm = PreventiveMaintenanceAPI.getPm(pmTrigger.getPmId());
-				
-				context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
+				PreventiveMaintenance pm = PreventiveMaintenanceAPI.getActivePM(pmTrigger.getPmId(), true);
 				if(pm != null) {
-					Chain executePm = FacilioChainFactory.getExecutePreventiveMaintenanceChain(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE);
+					FacilioContext context = new FacilioContext();
+					context.put(FacilioConstants.ContextNames.STOP_PM_EXECUTION, !(pmJob.getStatusEnum() == PMJobsStatus.SCHEDULED));
+					context.put(FacilioConstants.ContextNames.RECORD_ID, pmTrigger.getPmId());
+					context.put(FacilioConstants.ContextNames.TEMPLATE_ID, pmJob.getTemplateId());
+					context.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, jc.getExecutionTime());
+					context.put(FacilioConstants.ContextNames.PM_RESET_TRIGGERS, true);
+					context.put(FacilioConstants.ContextNames.PM_CURRENT_TRIGGER, pmTrigger);
+					context.put(FacilioConstants.ContextNames.PM_CURRENT_JOB, pmJob);
+					context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
+					Chain executePm = TransactionChainFactory.getExecutePreventiveMaintenanceChain(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE);
 					executePm.execute(context);
 				}
 			}

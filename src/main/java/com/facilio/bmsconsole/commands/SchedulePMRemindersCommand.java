@@ -71,6 +71,7 @@ public class SchedulePMRemindersCommand implements Command {
 				
 				if(onlyPost != null && onlyPost) {
 					selectBuilder.andCustomWhere("REMINDER_TYPE != ?", ReminderType.BEFORE_EXECUTION.getValue());
+					selectBuilder.andCustomWhere("REMINDER_TYPE != ?", ReminderType.BEFORE_DUE.getValue());
 				}
 				
 				List<Map<String, Object>> reminderProps = selectBuilder.get();

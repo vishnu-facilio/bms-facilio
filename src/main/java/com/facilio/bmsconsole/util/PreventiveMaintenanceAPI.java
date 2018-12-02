@@ -201,23 +201,6 @@ public static PMTriggerContext getTrigger(List<PMTriggerContext> triggers,Long t
 		return resourceIds;
  	}
 	
-	public static PreventiveMaintenance getPm(Long pmID) throws Exception {
-		
-		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder();
-		select.select(FieldFactory.getPreventiveMaintenanceFields());
-		select.table(ModuleFactory.getPreventiveMaintenancetModule().getTableName());
-		select.andCondition(CriteriaAPI.getIdCondition(pmID, ModuleFactory.getPreventiveMaintenancetModule()));
-		
-		List<Map<String, Object>> props = select.get();
-		
-		if(props != null && !props.isEmpty()) {
-			PreventiveMaintenance pm = FieldUtil.getAsBeanFromMap(props.get(0), PreventiveMaintenance.class);
-			pm.setPmIncludeExcludeResourceContexts(TemplateAPI.getPMIncludeExcludeList(pm.getId(), null, null));
-			return pm;
-		}
-		return null;
-	}
-	
 	public static PMJobsContext getpmJob(PreventiveMaintenance pm,PMTriggerContext pmTrigger ,Long resourceId,Long nextExecutionTime, boolean addToDb) {
 		PMJobsContext pmJob = new PMJobsContext();
 		pmJob.setPmId(pm.getId());
@@ -613,15 +596,15 @@ public static PMTriggerContext getTrigger(List<PMTriggerContext> triggers,Long t
 		return pmJob;
 	}
 	
-	public static PreventiveMaintenance getActivePM(long id) throws Exception {
-		return getPM(id, true);
+	public static PreventiveMaintenance getActivePM(long id, boolean fetchChildren) throws Exception {
+		return getPM(id, true, fetchChildren);
 	}
 	
-	public static PreventiveMaintenance getPM(long id) throws Exception {
-		return getPM(id, false);
+	public static PreventiveMaintenance getPM(long id, boolean fetchChildren) throws Exception {
+		return getPM(id, false, fetchChildren);
 	}
 	
-	private static PreventiveMaintenance getPM(long id, boolean onlyActive) throws Exception {
+	private static PreventiveMaintenance getPM(long id, boolean onlyActive, boolean fetchChildren) throws Exception {
 		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
 		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
 		Map<String, FacilioField> pmFieldsMap = FieldFactory.getAsMap(fields);
@@ -637,9 +620,11 @@ public static PMTriggerContext getTrigger(List<PMTriggerContext> triggers,Long t
 		}
 		
 		List<Map<String, Object>> props = selectBuilder.get();
-		
 		if(props != null && !props.isEmpty()) {
-			return FieldUtil.getAsBeanFromMap(props.get(0), PreventiveMaintenance.class);
+			PreventiveMaintenance pm = FieldUtil.getAsBeanFromMap(props.get(0), PreventiveMaintenance.class);
+			if (fetchChildren) {
+				pm.setPmIncludeExcludeResourceContexts(TemplateAPI.getPMIncludeExcludeList(pm.getId(), null, null));
+			}
 		}
 		return null;
 	}

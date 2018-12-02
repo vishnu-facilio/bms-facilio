@@ -21,7 +21,6 @@ import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -33,36 +32,31 @@ public class ExecutePMCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		Long pmId = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID);
-		if(pmId != null && pmId != -1) {
-			
-			PreventiveMaintenance pm = PreventiveMaintenanceAPI.getActivePM(pmId);
-			if (pm != null) {
-				Boolean stopExecution = (Boolean) context.get(FacilioConstants.ContextNames.STOP_PM_EXECUTION);
-				if (stopExecution == null || !stopExecution) {
-					WorkOrderContext wo = null;
-					try {
-						if (pm.getTriggerTypeEnum() == TriggerType.FLOATING) {
-							wo = getPreviousUnclosed(pm);
-							if (wo == null) {
-								wo = executePM(pm, (Long) context.get(FacilioConstants.ContextNames.TEMPLATE_ID));
-							}
-							else {
-								addComment(wo, pm, (String) context.get(FacilioConstants.ContextNames.PM_UNCLOSED_WO_COMMENT));
-							}
-						}
-						else {
+		PreventiveMaintenance pm = (PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
+		if(pm != null) {
+			Boolean stopExecution = (Boolean) context.get(FacilioConstants.ContextNames.STOP_PM_EXECUTION);
+			if (stopExecution == null || !stopExecution) {
+				WorkOrderContext wo = null;
+				try {
+					if (pm.getTriggerTypeEnum() == TriggerType.FLOATING) {
+						wo = getPreviousUnclosed(pm);
+						if (wo == null) {
 							wo = executePM(pm, (Long) context.get(FacilioConstants.ContextNames.TEMPLATE_ID));
 						}
+						else {
+							addComment(wo, pm, (String) context.get(FacilioConstants.ContextNames.PM_UNCLOSED_WO_COMMENT));
+						}
 					}
-					catch (Exception e) {
-						log.info("Exception occurred ", e);
-						CommonCommandUtil.emailException("ExecutePMCommand", "PM Execution failed for PM : "+pmId, e, "You have to manually add Job entry for next PM Job because exception is thrown to rollback transaction");
-						throw e;
+					else {
+						wo = executePM(pm, (Long) context.get(FacilioConstants.ContextNames.TEMPLATE_ID));
 					}
-					context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
 				}
-				context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
+				catch (Exception e) {
+					log.info("Exception occurred ", e);
+					CommonCommandUtil.emailException("ExecutePMCommand", "PM Execution failed for PM : "+pm.getId(), e, "You have to manually add Job entry for next PM Job because exception is thrown to rollback transaction");
+					throw e;
+				}
+				context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
 			}
 		}
 		return false;

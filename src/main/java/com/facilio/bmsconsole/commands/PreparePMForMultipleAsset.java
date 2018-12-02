@@ -11,16 +11,15 @@ import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.PMJobsContext;
-import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PMResourcePlannerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
-import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.TaskTemplate;
 import com.facilio.bmsconsole.templates.Template;
@@ -34,22 +33,17 @@ public class PreparePMForMultipleAsset implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		PMTriggerContext pmTrigger = (PMTriggerContext) context.get(FacilioConstants.ContextNames.PM_CURRENT_TRIGGER);
 		PMJobsContext pmJob = (PMJobsContext) context.get(FacilioConstants.ContextNames.PM_CURRENT_JOB);
-		Long pmId = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+		PreventiveMaintenance pm = (PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 
-		if(pmId != null && pmId != -1 && pmJob.getResourceId() > 0) {
-			
-			PreventiveMaintenance pm = PreventiveMaintenanceAPI.getActivePM(pmId);
-			
-			ResourceContext resource = ResourceAPI.getResource(pmJob.getResourceId());
+		if(pm != null && pmJob.getResourceId() > 0) {
 			
 			Template template = TemplateAPI.getTemplate(pm.getTemplateId());
 			WorkorderTemplate woTemplate = (WorkorderTemplate)template;
 			
 			woTemplate.setResourceId(pmJob.getResourceId());
 			
-			PMResourcePlannerContext pmResource = PreventiveMaintenanceAPI.getPMResourcePlanner(pmId, pmJob.getResourceId());
+			PMResourcePlannerContext pmResource = PreventiveMaintenanceAPI.getPMResourcePlanner(pm.getId(), pmJob.getResourceId());
 			if(pmResource != null) {
 				if(pmResource.getAssignedToId() != null) {
 					woTemplate.setAssignedToId(pmResource.getAssignedToId());
