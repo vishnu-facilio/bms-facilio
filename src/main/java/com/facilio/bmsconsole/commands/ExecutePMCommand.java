@@ -38,7 +38,7 @@ public class ExecutePMCommand implements Command {
 		// TODO Auto-generated method stub
 		PreventiveMaintenance pm = (PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 		if(pm != null) {
-			LOGGER.info("Executing pm : "+pm.getId());
+			LOGGER.debug("Executing pm : "+pm.getId());
 			Boolean stopExecution = (Boolean) context.get(FacilioConstants.ContextNames.STOP_PM_EXECUTION);
 			if (stopExecution == null || !stopExecution) {
 				WorkOrderContext wo = null;

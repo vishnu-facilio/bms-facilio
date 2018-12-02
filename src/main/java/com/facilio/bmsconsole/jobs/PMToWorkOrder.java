@@ -57,12 +57,12 @@ public class PMToWorkOrder extends FacilioJob {
 				PMTriggerContext pmTrigger = FieldUtil.getAsBeanFromMap(prop, PMTriggerContext.class);
 				pmTrigger.setId(pmJob.getPmTriggerId());
 				
-				LOGGER.info("Executing pm job : "+pmJob.getId());
-				LOGGER.info("Executing pm job with pm id : "+pmJob.getPmId());
-				LOGGER.info("Executing pm trigger : "+pmTrigger.getId());
-				LOGGER.info("Executing pm trigger with pm id : "+pmTrigger.getPmId());
+				LOGGER.debug("Executing pm job : "+pmJob.getId());
+				LOGGER.debug("Executing pm job with pm id : "+pmJob.getPmId());
+				LOGGER.debug("Executing pm trigger : "+pmTrigger.getId());
+				LOGGER.debug("Executing pm trigger with pm id : "+pmTrigger.getPmId());
 				PreventiveMaintenance pm = PreventiveMaintenanceAPI.getActivePM(pmTrigger.getPmId(), true);
-				LOGGER.info("Executing pm : "+pm);
+				LOGGER.debug("Executing pm : "+pm);
 				if(pm != null) {
 					FacilioContext context = new FacilioContext();
 					context.put(FacilioConstants.ContextNames.STOP_PM_EXECUTION, !(pmJob.getStatusEnum() == PMJobsStatus.SCHEDULED));
