@@ -28,7 +28,7 @@ import com.facilio.tasker.job.JobContext;
 
 public class PMToWorkOrder extends FacilioJob {
 
-	private Logger log = LogManager.getLogger(PMToWorkOrder.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(PMToWorkOrder.class.getName());
 
 	@Override
 	public void execute(JobContext jc) throws Exception {
@@ -57,7 +57,12 @@ public class PMToWorkOrder extends FacilioJob {
 				PMTriggerContext pmTrigger = FieldUtil.getAsBeanFromMap(prop, PMTriggerContext.class);
 				pmTrigger.setId(pmJob.getPmTriggerId());
 				
+				LOGGER.info("Executing pm job : "+pmJob.getId());
+				LOGGER.info("Executing pm job with pm id : "+pmJob.getPmId());
+				LOGGER.info("Executing pm trigger : "+pmTrigger.getId());
+				LOGGER.info("Executing pm trigger with pm id : "+pmTrigger.getPmId());
 				PreventiveMaintenance pm = PreventiveMaintenanceAPI.getActivePM(pmTrigger.getPmId(), true);
+				LOGGER.info("Executing pm : "+pm);
 				if(pm != null) {
 					FacilioContext context = new FacilioContext();
 					context.put(FacilioConstants.ContextNames.STOP_PM_EXECUTION, !(pmJob.getStatusEnum() == PMJobsStatus.SCHEDULED));
@@ -75,7 +80,7 @@ public class PMToWorkOrder extends FacilioJob {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			CommonCommandUtil.emailException("PMToWorkOrder", "PM Execution failed for pm job : "+jc.getJobId(), e);
-			log.info("Exception occurred ", e);
+			LOGGER.error("PM Execution failed for pm job : ", e);
 			throw e;
 		}
 	}

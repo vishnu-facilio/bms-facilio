@@ -417,4 +417,14 @@ public class PreventiveMaintenance extends ResourceContext {
 			return null;
 		}
 	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return new StringBuilder("PM [id : ").append(getId())
+											.append(", title : ")
+											.append(getName())
+											.append("]")
+											.toString();
+	}
 }

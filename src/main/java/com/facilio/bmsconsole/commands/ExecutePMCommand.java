@@ -14,11 +14,11 @@ import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.PMJobsContext;
+import com.facilio.bmsconsole.context.PMJobsContext.PMJobsStatus;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.TriggerType;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.context.PMJobsContext.PMJobsStatus;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -31,13 +31,14 @@ import com.facilio.fw.BeanFactory;
 
 public class ExecutePMCommand implements Command {
 
-	private static Logger log = LogManager.getLogger(ExecutePMCommand.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(ExecutePMCommand.class.getName());
 
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		PreventiveMaintenance pm = (PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 		if(pm != null) {
+			LOGGER.info("Executing pm : "+pm.getId());
 			Boolean stopExecution = (Boolean) context.get(FacilioConstants.ContextNames.STOP_PM_EXECUTION);
 			if (stopExecution == null || !stopExecution) {
 				WorkOrderContext wo = null;
@@ -56,7 +57,7 @@ public class ExecutePMCommand implements Command {
 					}
 				}
 				catch (Exception e) {
-					log.info("Exception occurred ", e);
+					LOGGER.error("PM Execution failed for PM : "+pm.getId(), e);
 					CommonCommandUtil.emailException("ExecutePMCommand", "PM Execution failed for PM : "+pm.getId(), e, "You have to manually add Job entry for next PM Job because exception is thrown to rollback transaction");
 					throw e;
 				}
