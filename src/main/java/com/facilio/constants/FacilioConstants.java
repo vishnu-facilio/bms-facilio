@@ -449,6 +449,8 @@ public class FacilioConstants {
 		public static final String PM_TO_WO = "pmtowo";
 		public static final String IS_PM_EXECUTION = "isPMExecution";
 		public static final String IS_UPDATE_PM = "isUpdatePM";
+		public static final String SCHEDULED_PM_JOBS = "schdeduledPMJobs";
+		public static final String SCHEDULED_PM_JOBS_MAP = "schdeduledPMJobsMap";
 		
 		public static final String PREVENTIVE_MAINTENANCE_STARTTIME = "preventivemaintenanceStarttime";
 		public static final String PREVENTIVE_MAINTENANCE_ENDTIME = "preventivemaintenanceEndtime";
@@ -490,6 +492,7 @@ public class FacilioConstants {
 		public static final String PAGINATION = "pagination";
 		public static final String CURRENT_EXECUTION_TIME = "currentexecutiontime";
 		public static final String NEXT_EXECUTION_TIMES = "nextexecutiontimes";
+		public static final String PM_JOBS = "pmjobs";
 		public static final String GROUP_STATUS = "groupStatus";
 
 		

@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.context;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +16,16 @@ public class PreventiveMaintenance extends ResourceContext {
 	 */
 	public List<PMResourcePlannerContext> getResourcePlanners() {
 		return resourcePlanners;
+	}
+	
+	public Map<Long,PMResourcePlannerContext> getResourcePlannersMap() {
+		Map<Long,PMResourcePlannerContext> pmPlannerMap = new HashMap<>();
+		if(resourcePlanners != null) {
+			for(PMResourcePlannerContext resourcePlanner :resourcePlanners) {
+				pmPlannerMap.put(resourcePlanner.getResourceId(), resourcePlanner);
+			}
+		}
+		return pmPlannerMap;
 	}
 
 	public void setResourcePlanners(List<PMResourcePlannerContext> resourcePlanners) {
@@ -396,7 +407,7 @@ public class PreventiveMaintenance extends ResourceContext {
 	public void setPmIncludeExcludeResourceContexts(List<PMIncludeExcludeResourceContext> pmIncludeExcludeResourceContexts) {
 		this.pmIncludeExcludeResourceContexts = pmIncludeExcludeResourceContexts;
 	}
-
+	
 	public static enum PMAssignmentType {
 		
 		ALL_FLOORS,

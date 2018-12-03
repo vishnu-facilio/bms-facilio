@@ -204,7 +204,8 @@ public class ControllerAPI {
 		prop.put("actualTime", time);
 		
 		int dataInterval = getDataIntervalInMin(controller);
-		prop.put("recordTime", adjustTime(time, dataInterval));
+		long recordTime = adjustTime(time, dataInterval);
+		prop.put("recordTime", recordTime);
 		
 		long id = new GenericInsertRecordBuilder()
 						.fields(FieldFactory.getControllerActivityFields())
@@ -220,7 +221,7 @@ public class ControllerAPI {
 				.insert(prop);
 		}
 		
-		updateController(Collections.singletonMap("lastDataReceivedTime", time), Collections.singletonList(controller.getId()));
+		updateController(Collections.singletonMap("lastDataReceivedTime", recordTime), Collections.singletonList(controller.getId()));
 		
 		return id;
 	}
