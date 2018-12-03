@@ -1,13 +1,13 @@
 package com.facilio.timeseries;
 
-import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
-import java.util.*;
-import java.util.logging.Level;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
-import com.facilio.bmsconsole.util.ControllerAPI;
-import org.apache.commons.chain.Chain;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -21,12 +21,9 @@ import com.amazonaws.services.kinesis.clientlibrary.interfaces.v2.IRecordProcess
 import com.amazonaws.services.kinesis.clientlibrary.types.InitializationInput;
 import com.amazonaws.services.kinesis.clientlibrary.types.ProcessRecordsInput;
 import com.amazonaws.services.kinesis.clientlibrary.types.ShutdownInput;
-import com.amazonaws.services.kinesis.model.PutRecordResult;
 import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -38,7 +35,6 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.events.tasker.tasks.EventProcessor;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -144,49 +140,16 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 				String dataType = (String)payLoad.remove(EventProcessor.DATA_TYPE);
 
 				if(dataType!=null ) {
-					if("timeseries".equals(dataType)) {
-				
-						long timeStamp=	record.getApproximateArrivalTimestamp().getTime();
-						long startTime = System.currentTimeMillis();
-			            LOGGER.info("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + " TIME::::" +timeStamp);
-						ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-						bean.processTimeSeries(timeStamp, payLoad, record, processRecordsInput.getCheckpointer());
-						LOGGER.info("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + "COMPLETED:::::::TIME TAKEN : "+(System.currentTimeMillis() - startTime));
-					} else if("devicepoints".equals(dataType)) {
-						long instanceNumber = (Long)payLoad.get("instanceNumber");
-						String destinationAddress = "";
-						if(payLoad.containsKey("macAddress")) {
-							destinationAddress = (String) payLoad.get("macAddress");
-						}
-						long subnetPrefix = (Long)payLoad.get("subnetPrefix");
-						long networkNumber = -1;
-						if(payLoad.containsKey("networkNumber")) {
-							networkNumber = (Long) payLoad.get("networkNumber");
-						}
-						String broadcastAddress = (String) payLoad.get("broadcastAddress");
-						String deviceName = (String) payLoad.get("deviceName");
-						
-						String deviceId = instanceNumber+"_"+destinationAddress+"_"+networkNumber;
-						if( ! deviceMap.containsKey(deviceId)) {
-							ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-                            ControllerContext controller = bean.getController(deviceId);
-                            if(controller == null) {
-                                controller = new ControllerContext();
-                                controller.setName(deviceName);
-                                controller.setBroadcastIp(broadcastAddress);
-                                controller.setDestinationId(destinationAddress);
-                                controller.setInstanceNumber(instanceNumber);
-                                controller.setNetworkNumber(networkNumber);
-                                controller.setSubnetPrefix(Math.toIntExact(subnetPrefix));
-                                controller.setMacAddr(deviceId);
-                                controller = bean.addController(controller);
-                            }
-							long controllerSettingsId = controller.getId();
-							if(controllerSettingsId > -1) {
-								JSONArray points = (JSONArray)payLoad.get("points");
-								TimeSeriesAPI.addUnmodeledInstances(points, controllerSettingsId);
-							}
-						}
+					switch (dataType) {
+						case "timeseries":
+							processTimeSeries(record, payLoad, processRecordsInput);
+							break;
+						case "devicepoints":
+							processDevicePoints(payLoad);
+							break;
+						case "ack":
+							processAck(payLoad);
+							break;
 					}
 //					Temp fix
 //					processRecordsInput.getCheckpointer().checkpoint(record);
@@ -213,6 +176,59 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 			}
 		}
 		LOGGER.info("TOTAL TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + "COMPLETED::TIME TAKEN : "+(System.currentTimeMillis() - processStartTime));
+	}
+	
+	private void processAck(JSONObject payLoad) throws Exception {
+		// TODO Auto-generated method stub
+		long msgId = (long) payLoad.get("msgid");
+		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+		bean.acknowledgePublishedMessage(msgId);
+	}
+
+	private void processTimeSeries(Record record, JSONObject payLoad, ProcessRecordsInput processRecordsInput) throws Exception {
+		long timeStamp=	record.getApproximateArrivalTimestamp().getTime();
+		long startTime = System.currentTimeMillis();
+        LOGGER.info("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + " TIME::::" +timeStamp);
+		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+		bean.processTimeSeries(timeStamp, payLoad, record, processRecordsInput.getCheckpointer());
+		LOGGER.info("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + "COMPLETED:::::::TIME TAKEN : "+(System.currentTimeMillis() - startTime));
+	}
+	
+	private void processDevicePoints (JSONObject payLoad) throws Exception {
+		long instanceNumber = (Long)payLoad.get("instanceNumber");
+		String destinationAddress = "";
+		if(payLoad.containsKey("macAddress")) {
+			destinationAddress = (String) payLoad.get("macAddress");
+		}
+		long subnetPrefix = (Long)payLoad.get("subnetPrefix");
+		long networkNumber = -1;
+		if(payLoad.containsKey("networkNumber")) {
+			networkNumber = (Long) payLoad.get("networkNumber");
+		}
+		String broadcastAddress = (String) payLoad.get("broadcastAddress");
+		String deviceName = (String) payLoad.get("deviceName");
+		
+		String deviceId = instanceNumber+"_"+destinationAddress+"_"+networkNumber;
+		if( ! deviceMap.containsKey(deviceId)) {
+			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+            ControllerContext controller = bean.getController(deviceId);
+            if(controller == null) {
+                controller = new ControllerContext();
+                controller.setName(deviceName);
+                controller.setBroadcastIp(broadcastAddress);
+                controller.setDestinationId(destinationAddress);
+                controller.setInstanceNumber(instanceNumber);
+                controller.setNetworkNumber(networkNumber);
+                controller.setSubnetPrefix(Math.toIntExact(subnetPrefix));
+                controller.setMacAddr(deviceId);
+                controller = bean.addController(controller);
+            }
+			long controllerSettingsId = controller.getId();
+			if(controllerSettingsId > -1) {
+				JSONArray points = (JSONArray)payLoad.get("points");
+				TimeSeriesAPI.addUnmodeledInstances(points, controllerSettingsId);
+			}
+		}
 	}
 
 	private void updateDeviceTable(String deviceId) {

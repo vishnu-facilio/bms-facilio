@@ -10,7 +10,6 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -142,15 +141,12 @@ public class TimeSeries extends FacilioAction {
 		
 		Chain markChain = TransactionChainFactory.getMarkUnmodeledInstanceChain();
 		markChain.execute(context);
-		
-		List<Map<String, Object>> instances =  TimeSeriesAPI.getUnmodeledInstances(ids);
-		AwsUtil.publishIotMessage(instances, "configure");
 
 		setResult("result", "success");
 		return SUCCESS;
 	}
 	
-	long controllerId;
+	private long controllerId;
 	public long getControllerId() {
 		return controllerId;
 	}
@@ -158,7 +154,7 @@ public class TimeSeries extends FacilioAction {
 		this.controllerId = controllerId;
 	}
 	
-	Boolean configured;
+	private Boolean configured;
 	public Boolean getConfigured() {
 		return configured;
 	}
@@ -166,7 +162,7 @@ public class TimeSeries extends FacilioAction {
 		this.configured = configured;
 	}
 	
-	Boolean fetchMapped;
+	private Boolean fetchMapped;
 	public Boolean getFetchMapped() {
 		if (fetchMapped == null) {
 			return false;
@@ -177,7 +173,7 @@ public class TimeSeries extends FacilioAction {
 		this.fetchMapped = fetchMapped;
 	}
 	
-	List<Long> ids; 
+	private List<Long> ids; 
 	public List<Long> getIds() {
 		return ids;
 	}
@@ -193,34 +189,27 @@ public class TimeSeries extends FacilioAction {
 		this.changedDevices = changedDevices;
 	}
 
-	long timestamp;
+	private long timestamp;
 	public void setTimestamp(long ttime) {
 		this.timestamp=ttime;
 	}
-
 	public long getTimestamp() {
 		return timestamp;
 	}
 	
 	private String deviceData = null;
-	public void setDeviceData(String deviceData) 
-	{
+	public void setDeviceData(String deviceData) {
 		this.deviceData = deviceData;
 	}
-	
 	public String getDeviceData() {
-		
 		return deviceData;
 	}
 	
 	private List<String> deviceList = null;
-	public void setDeviceList(List<String> deviceList) 
-	{
+	public void setDeviceList(List<String> deviceList) {
 		this.deviceList = deviceList;
 	}
-	
 	public List<String> getDeviceList() {
-		
 		return deviceList;
 	}
 	

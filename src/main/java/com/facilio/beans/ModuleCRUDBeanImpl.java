@@ -12,7 +12,6 @@ import java.util.StringJoiner;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
@@ -44,11 +43,10 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
-import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
-import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.ControllerAPI;
+import com.facilio.bmsconsole.util.IoTMessageAPI;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
@@ -576,6 +574,12 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	@Override
 	public Boolean isFeatureEnabled(int license) throws Exception {
 		return AccountUtil.isFeatureEnabled(license);
+	}
+
+	@Override
+	public int acknowledgePublishedMessage(long id) throws Exception {
+		// TODO Auto-generated method stub
+		return IoTMessageAPI.acknowdledgeMessage(id);
 	}
 
 }

@@ -598,6 +598,10 @@ public class FacilioConstants {
 		
 		public static final String QR_VALUE = "qrValue";
 		
+		public static final String PUBLISH_DATA = "publishData";
+		public static final String PUBLISH_SUCCESS = "publishSucsess";
+		public static final String PUBLISH_FAILURE = "publishFailure";
+		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();

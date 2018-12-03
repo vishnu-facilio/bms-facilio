@@ -481,6 +481,7 @@ public class TransactionChainFactory {
 		public static Chain getMarkUnmodeledInstanceChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new MarkUnmodeledInstanceCommand());
+			c.addCommand(new PublishConfigMsgToIoTCommand());
 			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}

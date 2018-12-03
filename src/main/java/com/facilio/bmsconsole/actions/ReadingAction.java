@@ -11,7 +11,6 @@ import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -34,6 +33,7 @@ import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
+import com.facilio.bmsconsole.util.IoTMessageAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
@@ -936,7 +936,7 @@ public class ReadingAction extends FacilioAction {
 		if (instance != null && AccountUtil.getCurrentOrg()!= null) {
 			instance.put("value", value);
 			instance.put("fieldId", fieldId);
-			AwsUtil.publishIotMessage(Collections.singletonList(instance), "set");
+			IoTMessageAPI.publishIotMessage(Collections.singletonList(instance), "set");
 		}
 		return SUCCESS;
 	}

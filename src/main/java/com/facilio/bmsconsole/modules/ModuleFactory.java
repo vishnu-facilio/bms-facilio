@@ -722,6 +722,14 @@ public class ModuleFactory {
 		
 		return module;
 	}
+	
+	public static FacilioModule getPublishDataModule() {
+		return constructModule("publishData", "Publish Data", "Publish_Data");
+	}
+	
+	public static FacilioModule getPublishMessageModule() {
+		return constructModule("publishMessage", "Publish Message", "Publish_Message");
+	}
 
 	public static FacilioModule getNotificationModule() {
 		FacilioModule notificationModule = new FacilioModule();

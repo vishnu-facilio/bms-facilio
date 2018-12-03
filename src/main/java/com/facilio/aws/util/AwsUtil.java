@@ -35,14 +35,6 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 
-import com.amazonaws.services.iot.client.*;
-import com.amazonaws.services.iot.client.AWSIotException;
-import com.amazonaws.services.iot.model.*;
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ControllerContext;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.util.ControllerAPI;
-import com.facilio.fw.BeanFactory;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -65,6 +57,25 @@ import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.iot.AWSIot;
 import com.amazonaws.services.iot.AWSIotClientBuilder;
+import com.amazonaws.services.iot.client.AWSIotException;
+import com.amazonaws.services.iot.client.AWSIotMqttClient;
+import com.amazonaws.services.iot.model.Action;
+import com.amazonaws.services.iot.model.AttachPolicyRequest;
+import com.amazonaws.services.iot.model.AttachPolicyResult;
+import com.amazonaws.services.iot.model.AttachPrincipalPolicyRequest;
+import com.amazonaws.services.iot.model.CreateKeysAndCertificateRequest;
+import com.amazonaws.services.iot.model.CreateKeysAndCertificateResult;
+import com.amazonaws.services.iot.model.CreatePolicyRequest;
+import com.amazonaws.services.iot.model.CreatePolicyResult;
+import com.amazonaws.services.iot.model.CreatePolicyVersionRequest;
+import com.amazonaws.services.iot.model.CreatePolicyVersionResult;
+import com.amazonaws.services.iot.model.CreateTopicRuleRequest;
+import com.amazonaws.services.iot.model.CreateTopicRuleResult;
+import com.amazonaws.services.iot.model.GetPolicyRequest;
+import com.amazonaws.services.iot.model.GetPolicyResult;
+import com.amazonaws.services.iot.model.KinesisAction;
+import com.amazonaws.services.iot.model.ResourceAlreadyExistsException;
+import com.amazonaws.services.iot.model.TopicRulePayload;
 import com.amazonaws.services.kinesis.AmazonKinesis;
 import com.amazonaws.services.kinesis.AmazonKinesisClientBuilder;
 import com.amazonaws.services.kinesis.model.CreateStreamResult;
@@ -557,155 +568,6 @@ public class AwsUtil
 		}
 		return user.getUserId();*/
     	return USER_ID;
-	}
-
-
-	private static JSONObject constructIotMessage (List<Map<String, Object>> instances, String command) throws Exception {
-
-		ControllerContext controller = ControllerAPI.getController((long) instances.get(0).get("controllerId"));
-
-		JSONObject object = new JSONObject();
-		object.put("command", command);
-
-		object.put("deviceName", controller.getName());
-		object.put("macAddress", controller.getMacAddr());
-		object.put("subnetPrefix", controller.getSubnetPrefix());
-		object.put("networkNumber", controller.getNetworkNumber());
-		object.put("instanceNumber", controller.getInstanceNumber());
-		object.put("broadcastAddress", controller.getBroadcastIp());
-
-		JSONArray points = new JSONArray();
-
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		for(Map<String, Object> instance : instances) {
-			JSONObject point = new JSONObject();
-			point.put("instance", instance.get("instance"));
-			point.put("instanceType", instance.get("instanceType"));
-			point.put("device", instance.get("device"));
-			point.put("objectInstanceNumber", instance.get("objectInstanceNumber"));
-			point.put("instanceDescription", instance.get("instanceDescription"));
-			if (instance.containsKey("value")) {
-				point.put("newValue", instance.get("value"));
-				point.put("valueType", getValueType(modBean.getField((long) instance.get("fieldId")).getDataTypeEnum()));
-			}
-			points.add(point);
-		}
-		object.put("points", points);
-
-		String objString = object.toJSONString();
-		List<JSONObject> objectList = new ArrayList<>();
-
-		if (objString.length() > 2000000) {
-			JSONArray array = (JSONArray) object.get("points");
-			int pointsSize = 0;
-			JSONArray pointsArray = new JSONArray();
-			for (int i = 0; i < array.size(); i++) {
-				JSONObject point = (JSONObject) array.get(i);
-				pointsSize = pointsSize + point.toJSONString().length();
-				if (pointsSize < 2000000) {
-					pointsArray.add(point);
-				} else {
-					object.put("points", pointsArray);
-					// object.put("msgid", getIotMessageId());
-					objectList.add(getMessageObject(object));
-					pointsArray.clear();
-					pointsSize = point.toJSONString().length();
-					pointsArray.add(point);
-				}
-			}
-
-			if (pointsArray.size() > 0) {
-				object.put("points", pointsArray);
-				// object.put("msgid", getIotMessageId());
-				objectList.add(getMessageObject(object));
-			}
-		} else {
-			// object.put("msgid", getIotMessageId());
-			objectList.add(getMessageObject(object));
-		}
-
-		return object;
-	}
-
-	private static JSONObject getMessageObject(JSONObject object) {
-		JSONObject message = new JSONObject();
-		message.putAll(object);
-		return message;
-	}
-
-	private static String getValueType(FieldType fieldType) {
-		String type = null;
-		switch(fieldType) {
-			case NUMBER:
-				type = "signed";
-				break;
-			case DECIMAL:
-				type = "double";
-				break;
-			case BOOLEAN:
-				type = "boolean";
-				break;
-			case STRING:
-				type = "string";
-		}
-		return type;
-	}
-
-	public static void publishIotMessage(List<Map<String, Object>> instances, String command) throws Exception {
-		JSONObject object = constructIotMessage(instances, command);
-		publishIotMessage(AccountUtil.getCurrentOrg().getDomain(), object);
-	}
-
- 	public static void publishIotMessage(String client, JSONObject object) throws Exception {
-	    String topic = client+"/msgs";
-		// AWSCredentials awsCredentials = getAWSCredentialsProvider().getCredentials();
-		LOGGER.info(AwsUtil.getConfig("iot.endpoint") +" " + client+"-facilio" + " " + topic + " " + object);
-		// AWSIotMqttClient mqttClient = new AWSIotMqttClient(AwsUtil.getConfig("iot.endpoint"), client+"-facilio", awsCredentials.getAWSAccessKeyId(), awsCredentials.getAWSSecretKey());
-		AWSIotMqttClient mqttClient = new AWSIotMqttClient(AwsUtil.getConfig("iot.endpoint"), client+"-facilio", "AKIAIVXNCI3T7TCHFGPA", "jK6uCU3HUhI06r6Udl0P2u6aMaNAvxfwhn+HR1Eg");
-		try {
-			mqttClient.connect();
-			if(mqttClient.getConnectionStatus() == AWSIotConnectionStatus.CONNECTED) {
-			    String objString = object.toJSONString();
-                if(object.containsKey("points")) {
-                    if (objString.length() > 2000000) {
-                        JSONArray array = (JSONArray) object.get("points");
-                        int pointsSize = 0;
-                        JSONArray pointsArray = new JSONArray();
-                        for (int i = 0; i < array.size(); i++) {
-                            JSONObject point = (JSONObject) array.get(i);
-                            pointsSize = pointsSize + point.toJSONString().length();
-                            if (pointsSize < 2000000) {
-                                pointsArray.add(point);
-                            } else {
-                                object.put("points", pointsArray);
-                                mqttClient.publish(new AWSIotMessage(topic, AWSIotQos.QOS0, object.toJSONString()));
-                                pointsArray.clear();
-                                pointsSize = point.toJSONString().length();
-                                pointsArray.add(point);
-                            }
-                        }
-
-                        if (pointsArray.size() > 0) {
-                            object.put("points", pointsArray);
-                            mqttClient.publish(new AWSIotMessage(topic, AWSIotQos.QOS0, object.toJSONString()));
-                        }
-                    } else {
-                        mqttClient.publish(new AWSIotMessage(topic, AWSIotQos.QOS0, object.toJSONString()));
-                    }
-                }
-			}
-		} catch (AWSIotException e) {
-			LOGGER.info("exception while publishing message ", e);
-			throw e;
-		} finally {
-			try {
-				if(mqttClient.getConnectionStatus() == AWSIotConnectionStatus.CONNECTED) {
-					mqttClient.disconnect();
-				}
-			} catch (AWSIotException e) {
-				LOGGER.info("exception while disconnecting ", e);
-			}
-		}
 	}
 
 	public static void addIotClient(String policyName, String clientId) {

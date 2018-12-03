@@ -2585,6 +2585,31 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	public static List<FacilioField> getPublishDataFields() {
+		FacilioModule module = ModuleFactory.getPublishDataModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getControllerIdField(module));
+		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.DATE_TIME));
+		fields.add(getField("acknowledgeTime", "ACKNOWLEDGE_TIME", module, FieldType.DATE_TIME));
+		return fields;
+	}
+	
+	public static List<FacilioField> getPublishMessageFields() {
+		FacilioModule module = ModuleFactory.getPublishMessageModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("parentId", "PARENT_ID", module, FieldType.LOOKUP));
+		fields.add(getField("sentTime", "SENT_TIME", module, FieldType.DATE_TIME));
+		fields.add(getField("acknowledgeTime", "ACKNOWLEDGE_TIME", module, FieldType.DATE_TIME));
+		fields.add(getField("dataStr", "MSG_DATA", module, FieldType.STRING));
+		return fields;
+	}
+	
 	public static FacilioField getControllerIdField(FacilioModule module) {
 		FacilioField controllerId = new FacilioField();
 		controllerId.setName("controllerId");

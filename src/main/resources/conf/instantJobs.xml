@@ -4,4 +4,5 @@
     <job name='PostFormulaCalculationJob' classname= 'com.facilio.bmsconsole.instant.jobs.PostFormulaCalculationJob' transactionTimeout='300'/>
     <job name='ForkedChain' classname= 'com.facilio.bmsconsole.instant.jobs.ForkedChainJob' transactionTimeout='300'/>
     <job name='ControllerActivityWatcher' classname= 'com.facilio.bmsconsole.instant.jobs.ControllerActivityWatcherJob' transactionTimeout='900'/>
+    <job name='PublishedDataChecker' classname= 'com.facilio.bmsconsole.instant.jobs.PublishedDataCheckerJob' transactionTimeout='300'/>
 </instantjob>
