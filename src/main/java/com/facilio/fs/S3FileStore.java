@@ -291,7 +291,7 @@ public class S3FileStore extends FileStore {
 				if(isDownloadable) {
 					s3ObjectKey = s3ObjectKey +"&response-content-disposition="+URLEncoder.encode("attachment; filename="+fileInfo.getFileName(),"UTF-8");
 				}
-				String keyPairId = "APKAJUH5UCWNSYC4DOSQ";
+				String keyPairId = AwsUtil.getConfig("key.pair.id");
 				return CloudFrontUrlSigner.getSignedURLWithCannedPolicy(SignerUtils.Protocol.https, AwsUtil.getConfig("files.url"), new File(PRIVATE_KEY_FILE_PATH), s3ObjectKey, keyPairId, new Date(System.currentTimeMillis()+getExpiration()));
 			} catch (IOException | InvalidKeySpecException e) {
 				log.info("Exception while creating signed Url", e);
