@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -8,8 +10,11 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.PMReminder.ReminderType;
+import com.facilio.bmsconsole.context.PMResourcePlannerContext;
+import com.facilio.bmsconsole.context.PMResourcePlannerReminderContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -32,6 +37,7 @@ public class SchedulePrePMRemindersCommand implements Command, Serializable {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<PreventiveMaintenance> pms = CommonCommandUtil.getList((FacilioContext) context, FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST);
+		PMJobsContext currentJob = (PMJobsContext) context.get(FacilioConstants.ContextNames.PM_CURRENT_JOB);
 		Boolean onlyPost = (Boolean) context.get(FacilioConstants.ContextNames.ONLY_POST_REMINDER_TYPE);
 		if (onlyPost == null) {
 			onlyPost = false;
@@ -52,27 +58,56 @@ public class SchedulePrePMRemindersCommand implements Command, Serializable {
 																	;
 					List<Map<String, Object>> reminderProps = selectBuilder.get();
 					if(reminderProps != null && !reminderProps.isEmpty()) {
-						for(Map<String, Object> reminderProp : reminderProps) {
-							PMReminder reminder = FieldUtil.getAsBeanFromMap(reminderProp, PMReminder.class);
+						List<PMReminder> reminders = FieldUtil.getAsBeanListFromMapList(reminderProps, PMReminder.class);
+
+						List<PMReminder> remindersToBeExecuted = new ArrayList<>();
+						if(pm.getPmCreationTypeEnum().equals(PreventiveMaintenance.PMCreationType.MULTIPLE)) {
+							
+							Map<Long, PMReminder> pmReminderMap = PreventiveMaintenanceAPI.getReminderMap(reminders);
+							
+							PMResourcePlannerContext planner = PreventiveMaintenanceAPI.getPMResourcePlanner(pm.getId(), currentJob.getResourceId());
+							if(planner != null && planner.getPmResourcePlannerReminderContexts() != null && !planner.getPmResourcePlannerReminderContexts().isEmpty()) {
+								for(PMResourcePlannerReminderContext pmResPlannerRem :planner.getPmResourcePlannerReminderContexts()) {
+									PMReminder rem = pmReminderMap.get(pmResPlannerRem.getReminderId());
+									remindersToBeExecuted.add(rem);
+								}
+							}
+							else {
+								remindersToBeExecuted.add(reminders.get(0));
+							}
+						}
+						else {
+							
+							remindersToBeExecuted.addAll(reminders);
+						}
+						for(PMReminder reminder :remindersToBeExecuted) {
+							
 							switch(reminder.getTypeEnum()) {
-								case BEFORE_EXECUTION:
-									for(PMTriggerContext trigger : pmTriggersMap.get(pm.getId())) {
+							case BEFORE_EXECUTION:
+								for(PMTriggerContext trigger : pmTriggersMap.get(pm.getId())) {				// doubt why using pmTriggersMap (What is the need of iteration)? 
+									if(pm.getPmCreationTypeEnum().equals(PreventiveMaintenance.PMCreationType.MULTIPLE) && currentJob.getPmTriggerId() == trigger.getId()) {	// handling separately to avoid singlePM flow breakage - merge after checking
 										Long nextExecutionTime = nextExecutionTimes.get(trigger.getId());
 										if(nextExecutionTime != null) {
-											PreventiveMaintenanceAPI.schedulePrePMReminder(reminder, nextExecutionTime, trigger.getId());
+											PreventiveMaintenanceAPI.schedulePrePMReminder(reminder, nextExecutionTime, trigger.getId(),currentJob.getResourceId());
 										}
 									}
-									break;
-								default:
-									throw new RuntimeException("This is not supposed to happen");
+									else {
+										Long nextExecutionTime = nextExecutionTimes.get(trigger.getId());
+										if(nextExecutionTime != null) {
+											PreventiveMaintenanceAPI.schedulePrePMReminder(reminder, nextExecutionTime, trigger.getId(),-1l);
+										}
+									}
+								}
+								break;
+							default:
+								throw new RuntimeException("This is not supposed to happen");
 							}
 						}
 					}
 				}
 			}
 		}
-		
 		return false;
 	}
-
+	
 }

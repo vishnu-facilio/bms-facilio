@@ -71,45 +71,6 @@ public class PreventiveMaintenanceAPI {
 	public static List<PMJobsContext> createPMJobs (PreventiveMaintenance pm, PMTriggerContext pmTrigger, long startTime, long endTime) throws Exception { //Both in seconds
 		return createPMJobs(pm, pmTrigger, startTime, endTime, true);
 	}
-	public static List<PMJobsContext> createPMJobsForMultipleResourceAndSchedule (PreventiveMaintenance pm , long endTime, boolean addToDb) throws Exception { //Both in seconds
-		
-		List<PMJobsContext> pmJobs = new ArrayList<>();
-		List<PMJobsContext> pmJobsToBeScheduled = new ArrayList<>();
-		
-		List<Long> resourceIds = getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),pm.getBaseSpaceId(),pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
-		
-		Map<Long, PMResourcePlannerContext> pmResourcePlanner = getPMResourcesPlanner(pm.getId());
-		for(Long resourceId :resourceIds) {
-			PMTriggerContext trigger = null;
-			if(pmResourcePlanner.get(resourceId) != null) {
-				PMResourcePlannerContext currentResourcePlanner = pmResourcePlanner.get(resourceId);
-				
-				trigger = getTrigger(pm.getTriggers(),currentResourcePlanner.getTriggerId());
-			}
-			if(trigger == null) {
-				trigger = getDefaultTrigger(pm.getTriggers());
-			}
-			long startTime = getStartTimeInSecond(trigger.getStartTime());
-			long nextExecutionTime = trigger.getSchedule().nextExecutionTime(startTime);
-			
-			boolean isFirst = true;
-			while(nextExecutionTime <= endTime && (pm.getEndTime() == -1 || nextExecutionTime <= pm.getEndTime())) {
-				PMJobsContext pmJob = getpmJob(pm, trigger, resourceId, nextExecutionTime, addToDb);
-				pmJobs.add(pmJob);
-				if(isFirst) {
-					pmJobsToBeScheduled.add(pmJob);
-				}
-				nextExecutionTime = trigger.getSchedule().nextExecutionTime(nextExecutionTime);
-				isFirst = false;
-			}
-		}
-		
-		if(addToDb) {
-			addPMJobs(pmJobs);
-		}
-		PreventiveMaintenanceAPI.schedulePMJob(pmJobsToBeScheduled);
-		return pmJobs;
-	}
 	
 	public static PMTriggerContext getDefaultTrigger(List<PMTriggerContext> triggers) {
 		
@@ -131,6 +92,16 @@ public static PMTriggerContext getTrigger(List<PMTriggerContext> triggers,Long t
 		}
 		return null;
 	}
+
+public static Map<Long, PMReminder> getReminderMap(List<PMReminder> reminders) {
+	Map<Long, PMReminder> pmReminderMap = new HashMap<>();
+	if(reminders != null) {
+		for(PMReminder reminder :reminders) {
+			pmReminderMap.put(reminder.getId(), reminder);
+		}
+	}
+	return pmReminderMap;
+}
 	
 	public static long getStartTimeInSecond(long startTime) {
 		
@@ -540,7 +511,7 @@ public static PMTriggerContext getTrigger(List<PMTriggerContext> triggers,Long t
 		pmJob.setId((long) props.get("id"));
 	}
 	
-	private static void addPMJobs(List<PMJobsContext> pmJobs) throws SQLException, RuntimeException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+	public static void addPMJobs(List<PMJobsContext> pmJobs) throws SQLException, RuntimeException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		FacilioModule module = ModuleFactory.getPMJobsModule();
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 														.table(module.getTableName())
@@ -1027,9 +998,9 @@ public static PMTriggerContext getTrigger(List<PMTriggerContext> triggers,Long t
 		return selectBuilder.get();
 	}
 	
-	public static void schedulePrePMReminder(PMReminder reminder, long nextExecutionTime, long triggerId) throws Exception {
+	public static void schedulePrePMReminder(PMReminder reminder, long nextExecutionTime, long triggerId,long resourceId) throws Exception {
 		if(reminder.getTypeEnum() == ReminderType.BEFORE_EXECUTION && nextExecutionTime != -1 && triggerId != -1) {
-			long id = deleteOrAddPreviousBeforeRemindersRel(reminder.getId(), triggerId);
+			long id = deleteOrAddPreviousBeforeRemindersRel(reminder.getId(), triggerId,resourceId);
 			FacilioTimer.scheduleOneTimeJob(id, "PrePMReminder", nextExecutionTime-reminder.getDuration(), "facilio");
 		}
 		else {
@@ -1037,7 +1008,7 @@ public static PMTriggerContext getTrigger(List<PMTriggerContext> triggers,Long t
 		}
 	}
 	
-	private static long deleteOrAddPreviousBeforeRemindersRel(long pmReminderId, long triggerId) throws Exception {
+	private static long deleteOrAddPreviousBeforeRemindersRel(long pmReminderId, long triggerId,long resourceId) throws Exception {
 		List<FacilioField> fields = FieldFactory.getBeforePMRemindersTriggerRelFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		FacilioModule module = ModuleFactory.getBeforePMRemindersTriggerRelModule();
@@ -1048,6 +1019,9 @@ public static PMTriggerContext getTrigger(List<PMTriggerContext> triggers,Long t
 														.andCondition(CriteriaAPI.getCondition(fieldMap.get("pmReminderId"), String.valueOf(pmReminderId), NumberOperators.EQUALS))
 														.andCondition(CriteriaAPI.getCondition(fieldMap.get("pmTriggerId"), String.valueOf(triggerId), NumberOperators.EQUALS))
 														;
+		if(resourceId > 0) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceId"), String.valueOf(resourceId), NumberOperators.EQUALS));
+		}
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if(props != null && !props.isEmpty()) {
@@ -1060,6 +1034,9 @@ public static PMTriggerContext getTrigger(List<PMTriggerContext> triggers,Long t
 			Map<String, Object> relProp = new HashMap<>();
 			relProp.put("pmReminderId", pmReminderId);
 			relProp.put("pmTriggerId", triggerId);
+			if(resourceId > 0) {
+				relProp.put("resourceId", resourceId);
+			}
 			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 															.table(module.getTableName())
 															.fields(fields)

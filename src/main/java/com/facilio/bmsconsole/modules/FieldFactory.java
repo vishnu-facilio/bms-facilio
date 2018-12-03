@@ -3906,6 +3906,7 @@ public class FieldFactory {
 		fields.add(getIdField(module));
 		fields.add(getField("pmReminderId", "PM_REMINDER_ID", module, FieldType.NUMBER));
 		fields.add(getField("pmTriggerId", "PM_TRIGGER_ID", module, FieldType.NUMBER));
+		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.NUMBER));
 
 		return fields;
 	}

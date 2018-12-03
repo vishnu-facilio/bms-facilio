@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -7,7 +8,10 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMReminder;
+import com.facilio.bmsconsole.context.PMResourcePlannerContext;
+import com.facilio.bmsconsole.context.PMResourcePlannerReminderContext;
 import com.facilio.bmsconsole.context.PMReminder.ReminderType;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
@@ -27,6 +31,7 @@ public class SchedulePostPMRemindersCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<PreventiveMaintenance> pms = CommonCommandUtil.getList((FacilioContext) context, FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST);
+		PMJobsContext currentJob = (PMJobsContext) context.get(FacilioConstants.ContextNames.PM_CURRENT_JOB);
 		if(pms != null && !pms.isEmpty()) {
 			Map<Long, List<PMTriggerContext>> pmTriggersMap = PreventiveMaintenanceAPI.getPMTriggers(pms);
 			Map<Long, WorkOrderContext> pmToWo = (Map<Long, WorkOrderContext>) context.get(FacilioConstants.ContextNames.PM_TO_WO);
@@ -48,8 +53,31 @@ public class SchedulePostPMRemindersCommand implements Command {
 				
 				List<Map<String, Object>> reminderProps = selectBuilder.get();
 				if(reminderProps != null && !reminderProps.isEmpty()) {
-					for(Map<String, Object> reminderProp : reminderProps) {
-						PMReminder reminder = FieldUtil.getAsBeanFromMap(reminderProp, PMReminder.class);
+					
+					List<PMReminder> reminders = FieldUtil.getAsBeanListFromMapList(reminderProps, PMReminder.class);
+					
+					List<PMReminder> remindersToBeExecuted = new ArrayList<>();
+					if(pm.getPmCreationTypeEnum().equals(PreventiveMaintenance.PMCreationType.MULTIPLE)) {
+						
+						Map<Long, PMReminder> pmReminderMap = PreventiveMaintenanceAPI.getReminderMap(reminders);
+						
+						PMResourcePlannerContext planner = PreventiveMaintenanceAPI.getPMResourcePlanner(pm.getId(), currentJob.getResourceId());
+						if(planner != null && planner.getPmResourcePlannerReminderContexts() != null && !planner.getPmResourcePlannerReminderContexts().isEmpty()) {
+							for(PMResourcePlannerReminderContext pmResPlannerRem :planner.getPmResourcePlannerReminderContexts()) {
+								PMReminder rem = pmReminderMap.get(pmResPlannerRem.getReminderId());
+								remindersToBeExecuted.add(rem);
+							}
+						}
+						else {
+							remindersToBeExecuted.add(reminders.get(0));
+						}
+					}
+					else {
+						
+						remindersToBeExecuted.addAll(reminders);
+					}
+					
+					for(PMReminder reminder : remindersToBeExecuted) {
 						switch(reminder.getTypeEnum()) {
 							case BEFORE_EXECUTION:
 								throw new RuntimeException("This is not supposed to happen");

@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +27,7 @@ public class SchedulePMCommand implements Command {
 
 	
 private boolean isBulkUpdate = false;
+private List<PMJobsContext> pmJobsToBeScheduled;
 	
 	public SchedulePMCommand() {}
 	
@@ -54,6 +56,7 @@ private boolean isBulkUpdate = false;
 				schedulePM(pm, context);
 			}
 		}
+		context.put(FacilioConstants.ContextNames.SCHEDULED_PM_JOBS_MAP, getSchdueledPMJobMap(pmJobsToBeScheduled));
 		return false;
 	}
 	private void prepareAndAddResourcePlanner(PreventiveMaintenance pm) throws Exception {
@@ -98,7 +101,7 @@ private boolean isBulkUpdate = false;
 		}
 	}
 
-	private static void schedulePM(PreventiveMaintenance pm, Context context) throws Exception {
+	private void schedulePM(PreventiveMaintenance pm, Context context) throws Exception {
 		Map<Long, Long> nextExecutionTimes = new HashMap<>();
 		
 		if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE) {
@@ -106,7 +109,7 @@ private boolean isBulkUpdate = false;
 			switch (pm.getTriggerTypeEnum()) {
 				case ONLY_SCHEDULE_TRIGGER:
 					long endTime = DateTimeUtil.getDayStartTime(PreventiveMaintenanceAPI.PM_CALCULATION_DAYS + 1, true) - 1;
-					pmJobs = PreventiveMaintenanceAPI.createPMJobsForMultipleResourceAndSchedule(pm, endTime,true);
+					pmJobs = createPMJobsForMultipleResourceAndSchedule(pm, endTime,true);
 					break;
 				case FIXED:
 				case FLOATING:
@@ -115,7 +118,7 @@ private boolean isBulkUpdate = false;
 					break;
 			}
 			if (pmJobs != null) {
-				//nextExecutionTimes.put(trigger.getId(), pmJob.getNextExecutionTime());
+				context.put(FacilioConstants.ContextNames.PM_JOBS, pmJobs);
 			}
 		}
 		else {
@@ -147,5 +150,56 @@ private boolean isBulkUpdate = false;
 			}
 		}
 		context.put(FacilioConstants.ContextNames.NEXT_EXECUTION_TIMES, nextExecutionTimes);
+	}
+	
+	public List<PMJobsContext> createPMJobsForMultipleResourceAndSchedule (PreventiveMaintenance pm , long endTime, boolean addToDb) throws Exception { //Both in seconds
+		
+		List<PMJobsContext> pmJobs = new ArrayList<>();
+		pmJobsToBeScheduled = new ArrayList<>();
+		
+		List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),pm.getBaseSpaceId(),pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
+		
+		Map<Long, PMResourcePlannerContext> pmResourcePlanner = PreventiveMaintenanceAPI.getPMResourcesPlanner(pm.getId());
+		for(Long resourceId :resourceIds) {
+			PMTriggerContext trigger = null;
+			if(pmResourcePlanner.get(resourceId) != null) {
+				PMResourcePlannerContext currentResourcePlanner = pmResourcePlanner.get(resourceId);
+				
+				trigger = PreventiveMaintenanceAPI.getTrigger(pm.getTriggers(),currentResourcePlanner.getTriggerId());
+			}
+			if(trigger == null) {
+				trigger = PreventiveMaintenanceAPI.getDefaultTrigger(pm.getTriggers());
+			}
+			long startTime = PreventiveMaintenanceAPI.getStartTimeInSecond(trigger.getStartTime());
+			long nextExecutionTime = trigger.getSchedule().nextExecutionTime(startTime);
+			
+			boolean isFirst = true;
+			while(nextExecutionTime <= endTime && (pm.getEndTime() == -1 || nextExecutionTime <= pm.getEndTime())) {
+				PMJobsContext pmJob = PreventiveMaintenanceAPI.getpmJob(pm, trigger, resourceId, nextExecutionTime, addToDb);
+				pmJobs.add(pmJob);
+				if(isFirst) {
+					pmJobsToBeScheduled.add(pmJob);
+				}
+				nextExecutionTime = trigger.getSchedule().nextExecutionTime(nextExecutionTime);
+				isFirst = false;
+			}
+		}
+		
+		if(addToDb) {
+			PreventiveMaintenanceAPI.addPMJobs(pmJobs);
+		}
+		PreventiveMaintenanceAPI.schedulePMJob(pmJobsToBeScheduled);
+		return pmJobs;
+	}
+	
+	public Map<String,PMJobsContext> getSchdueledPMJobMap(List<PMJobsContext> pmJobsToBeScheduledList) {
+		
+		Map<String,PMJobsContext> scheduledPmJobs = new HashMap<>();
+		if(pmJobsToBeScheduledList != null) {
+			for(PMJobsContext pmJob :pmJobsToBeScheduledList) {
+				scheduledPmJobs.put(pmJob.getResourceId()+"-"+pmJob.getPmTriggerId(), pmJob);
+			}
+		}
+		return scheduledPmJobs;
 	}
 }
