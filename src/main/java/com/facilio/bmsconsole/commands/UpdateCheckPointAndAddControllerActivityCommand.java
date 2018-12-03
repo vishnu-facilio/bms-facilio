@@ -45,10 +45,11 @@ public class UpdateCheckPointAndAddControllerActivityCommand implements Command 
 					ControllerAPI.makeControllerActive(Collections.singletonList(controller.getId()));
 				}
 				
+				long recordTime = (long) context.get(FacilioConstants.ContextNames.TIMESTAMP);
 				context.put(FacilioConstants.ContextNames.CONTROLLER, controller);
-				context.put(FacilioConstants.ContextNames.CONTROLLER_TIME, context.get(FacilioConstants.ContextNames.TIMESTAMP));
+				context.put(FacilioConstants.ContextNames.CONTROLLER_TIME, recordTime);
 				
-				addControllerActivity((FacilioContext) context, controller, record.getApproximateArrivalTimestamp().getTime());
+				addControllerActivity((FacilioContext) context, controller, recordTime);
 			}
 			else {
 				CommonCommandUtil.emailAlert("No controller with client id - "+record.getPartitionKey(), "No controller with client id - "+record.getPartitionKey()+"\nKindly add proper controller for this");

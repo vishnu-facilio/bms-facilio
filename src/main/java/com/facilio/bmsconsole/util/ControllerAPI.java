@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -218,6 +219,8 @@ public class ControllerAPI {
 				.table(ModuleFactory.getControllerActivityRecordsModule().getTableName())
 				.insert(prop);
 		}
+		
+		updateController(Collections.singletonMap("lastDataReceivedTime", time), Collections.singletonList(controller.getId()));
 		
 		return id;
 	}

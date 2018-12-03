@@ -24,41 +24,44 @@ public class AddControllerCommand implements Command {
 	@SuppressWarnings("unchecked")
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		ControllerContext controllerSettings = (ControllerContext) context.get(FacilioConstants.ContextNames.CONTROLLER_SETTINGS);
+		ControllerContext controller = (ControllerContext) context.get(FacilioConstants.ContextNames.CONTROLLER_SETTINGS);
 		
-		if(controllerSettings != null) {
-			controllerSettings.setActive(true);
-			controllerSettings.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+		if(controller != null) {
+			controller.setActive(true);
+			controller.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 			
 			/*if (controllerSettings.getSiteId() <= 0) {
 				throw new IllegalArgumentException("Site is mandatory.");
 			}
 			*/
-			if (controllerSettings.getBuildingIds() != null && !controllerSettings.getBuildingIds().isEmpty()) {
+			if (controller.getBuildingIds() != null && !controller.getBuildingIds().isEmpty()) {
 				
-				List<BuildingContext> buildings = SpaceAPI.getBuildingSpace(Strings.join(controllerSettings.getBuildingIds(), ','));
+				List<BuildingContext> buildings = SpaceAPI.getBuildingSpace(Strings.join(controller.getBuildingIds(), ','));
 				if (buildings == null || buildings.isEmpty()) {
 					throw new IllegalArgumentException("Building does not belong to site.");
 				}
 				
 				for (BuildingContext building: buildings) {
-					if (building.getSiteId() != controllerSettings.getSiteId()) {
+					if (building.getSiteId() != controller.getSiteId()) {
 						throw new IllegalArgumentException("Building does not belong to site.");
 					}
 				}
 			}
 			
-			Map<String, Object> controllerSettingsprops = FieldUtil.getAsProperties(controllerSettings);
+			controller.setCreatedTime(System.currentTimeMillis());
+			controller.setLastModifiedTime(controller.getCreatedTime());
+			
+			Map<String, Object> controllerProps = FieldUtil.getAsProperties(controller);
 			
 			List<FacilioField> fields = FieldFactory.getControllerFields();
 			GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
 													.table("Controller")
 													.fields(fields)
-													.addRecord(controllerSettingsprops);
+													.addRecord(controllerProps);
 			builder.save();
-			controllerSettings.setId((long) controllerSettingsprops.get("id"));
+			controller.setId((long) controllerProps.get("id"));
 			
-			ControllerAPI.addControllerBuildingRel(controllerSettings);
+			ControllerAPI.addControllerBuildingRel(controller);
 		}
 		return false;
 	}

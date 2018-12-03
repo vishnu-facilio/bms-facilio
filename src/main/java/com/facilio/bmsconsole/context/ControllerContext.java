@@ -186,6 +186,30 @@ public class ControllerContext implements Serializable {
 		}
 	}
 	
+	private long createdTime = -1;
+	public long getCreatedTime() {
+		return createdTime;
+	}
+	public void setCreatedTime(long createdTime) {
+		this.createdTime = createdTime;
+	}
+	
+	private long lastModifiedTime = -1;
+	public long getLastModifiedTime() {
+		return lastModifiedTime;
+	}
+	public void setLastModifiedTime(long lastModifiedTime) {
+		this.lastModifiedTime = lastModifiedTime;
+	}
+	
+	private long lastDataReceivedTime = -1;
+	public long getLastDataReceivedTime() {
+		return lastDataReceivedTime;
+	}
+	public void setLastDataReceivedTime(long lastDataReceivedTime) {
+		this.lastDataReceivedTime = lastDataReceivedTime;
+	}
+	
 	@Override
 	 public String toString() {
 		return "Controllers [id=" + id + ", orgId=" + orgId + ", name=" + name + ","

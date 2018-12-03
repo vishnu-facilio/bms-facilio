@@ -18,7 +18,6 @@ public class LoadControllerSettingsCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		FieldFactory.getControllerFields();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table("Controller")
 				.select(FieldFactory.getControllerFields())

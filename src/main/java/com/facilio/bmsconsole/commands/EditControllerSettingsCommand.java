@@ -27,42 +27,42 @@ public class EditControllerSettingsCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		ControllerContext controllerSettings = (ControllerContext) context.get(FacilioConstants.ContextNames.CONTROLLER_SETTINGS);
+		ControllerContext controller = (ControllerContext) context.get(FacilioConstants.ContextNames.CONTROLLER_SETTINGS);
 		
-		if (controllerSettings == null) {
+		if (controller == null) {
 			return false;
 		}
 		
-		if (controllerSettings.getSiteId() <= 0) {
+		if (controller.getSiteId() <= 0) {
 			throw new IllegalArgumentException("Site is mandatory.");
 		}
 		
-		if (controllerSettings.getBuildingIds() != null && !controllerSettings.getBuildingIds().isEmpty()) {
+		if (controller.getBuildingIds() != null && !controller.getBuildingIds().isEmpty()) {
 			
-			List<BuildingContext> buildings = SpaceAPI.getBuildingSpace(Strings.join(controllerSettings.getBuildingIds(), ','));
+			List<BuildingContext> buildings = SpaceAPI.getBuildingSpace(Strings.join(controller.getBuildingIds(), ','));
 			if (buildings == null || buildings.isEmpty()) {
 				throw new IllegalArgumentException("Building does not belong to site.");
 			}
 			
 			for (BuildingContext building: buildings) {
-				if (building.getSiteId() != controllerSettings.getSiteId()) {
+				if (building.getSiteId() != controller.getSiteId()) {
 					throw new IllegalArgumentException("Building does not belong to site.");
 				}
 			}
 		}
 		
-		Map<String, Object> controllerSettingsprops = FieldUtil.getAsProperties(controllerSettings);
+		controller.setLastModifiedTime(System.currentTimeMillis());
+		
+		Map<String, Object> controllerProps = FieldUtil.getAsProperties(controller);
 		
 		List<FacilioField> fields = FieldFactory.getControllerFields();
-		
 		FacilioModule module = ModuleFactory.getControllerModule();
-		
 		int count = new GenericUpdateRecordBuilder()
 				.table(module.getTableName())
 				.fields(fields)
-				.andCondition(CriteriaAPI.getIdCondition(controllerSettings.getId(), module))
+				.andCondition(CriteriaAPI.getIdCondition(controller.getId(), module))
 				.andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getId(), module))
-				.update(controllerSettingsprops);
+				.update(controllerProps);
 		
 		if (count == 0) {
 			return false;
@@ -72,10 +72,10 @@ public class EditControllerSettingsCommand implements Command {
 		new GenericDeleteRecordBuilder()
 				.table(relModule.getTableName())
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(relModule))
-				.andCondition(CriteriaAPI.getCondition("CONTROLLER_ID","controllerId", String.valueOf(controllerSettings.getId()),NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("CONTROLLER_ID","controllerId", String.valueOf(controller.getId()),NumberOperators.EQUALS))
 				.delete();
 		
-		ControllerAPI.addControllerBuildingRel(controllerSettings);
+		ControllerAPI.addControllerBuildingRel(controller);
 		
 		return false;
 	}

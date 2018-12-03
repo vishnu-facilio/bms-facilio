@@ -2523,6 +2523,10 @@ public class FieldFactory {
 		fields.add(getField("networkNumber", "NETWORK_NUMBER", module, FieldType.NUMBER));
 		fields.add(getField("subnetPrefix", "SUBNET_PREFIX", module, FieldType.NUMBER));
 		fields.add(getField("controllerPropsJsonStr", "CONTROLLER_PROPS", module, FieldType.STRING));
+		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.DATE_TIME));
+		fields.add(getField("lastModifiedTime", "LAST_MODIFIED_TIME", module, FieldType.DATE_TIME));
+		fields.add(getField("lastDataReceivedTime", "LAST_DATA_RECEIVED_TIME", module, FieldType.DATE_TIME));
+		
 		return fields;
 	}
 
