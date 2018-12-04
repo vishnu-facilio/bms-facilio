@@ -1,13 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
-import java.io.Serializable;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -31,9 +29,10 @@ import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.serializable.SerializableCommand;
 import com.facilio.tasker.ScheduleInfo.FrequencyType;
 
-public class ResetTriggersCommand implements Command, Serializable {
+public class ResetTriggersCommand implements SerializableCommand {
 
 	/**
 	 * 

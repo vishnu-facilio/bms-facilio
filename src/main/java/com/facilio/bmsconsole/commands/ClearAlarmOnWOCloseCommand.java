@@ -1,11 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -19,8 +17,9 @@ import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
+import com.facilio.serializable.SerializableCommand;
 
-public class ClearAlarmOnWOCloseCommand implements Command, Serializable {
+public class ClearAlarmOnWOCloseCommand implements SerializableCommand {
 
 	/**
 	 * 

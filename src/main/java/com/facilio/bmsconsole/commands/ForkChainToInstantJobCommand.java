@@ -7,13 +7,14 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.constants.FacilioConstants;
+import com.facilio.serializable.SerializableCommand;
 import com.facilio.tasker.FacilioTimer;
 
 public class ForkChainToInstantJobCommand implements Command {
 	
 	private List<Command> commands = new ArrayList<>();
 	
-	public ForkChainToInstantJobCommand addCommand(Command command) {
+	public ForkChainToInstantJobCommand addCommand(SerializableCommand command) {
 		commands.add(command);
 		return this;
 	}

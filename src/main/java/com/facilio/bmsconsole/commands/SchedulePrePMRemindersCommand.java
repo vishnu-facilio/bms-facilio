@@ -1,12 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -24,9 +21,10 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.serializable.SerializableCommand;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
-public class SchedulePrePMRemindersCommand implements Command, Serializable {
+public class SchedulePrePMRemindersCommand implements SerializableCommand {
 
 	/**
 	 * 
@@ -77,7 +75,6 @@ public class SchedulePrePMRemindersCommand implements Command, Serializable {
 							}
 						}
 						else {
-							
 							remindersToBeExecuted.addAll(reminders);
 						}
 						for(PMReminder reminder :remindersToBeExecuted) {

@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -10,7 +9,6 @@ import java.util.Map;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -35,9 +33,10 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.serializable.SerializableCommand;
 import com.google.common.collect.Lists;
 
-public class ExecuteAllWorkflowsCommand implements Command, Serializable
+public class ExecuteAllWorkflowsCommand implements SerializableCommand
 {
 	/**
 	 * 

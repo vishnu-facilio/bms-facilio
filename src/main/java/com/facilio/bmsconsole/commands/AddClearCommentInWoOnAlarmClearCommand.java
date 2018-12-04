@@ -1,17 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
-import java.io.Serializable;
-
 import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.serializable.SerializableCommand;
 
-public class AddClearCommentInWoOnAlarmClearCommand implements Command, Serializable {
+public class AddClearCommentInWoOnAlarmClearCommand implements SerializableCommand {
 
 	/**
 	 * 
