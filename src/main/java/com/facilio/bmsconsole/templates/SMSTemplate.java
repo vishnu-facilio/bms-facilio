@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.templates;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.fasterxml.jackson.annotation.JsonInclude;

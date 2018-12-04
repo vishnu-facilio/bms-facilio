@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -9,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;

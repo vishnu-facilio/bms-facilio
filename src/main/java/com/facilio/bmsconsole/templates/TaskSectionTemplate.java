@@ -5,11 +5,10 @@ import java.util.List;
 
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
-import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.PMIncludeExcludeResourceContext;
+import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
 import com.facilio.bmsconsole.context.TaskContext;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.facilio.bmsconsole.context.TaskContext.InputType;
 
 public class TaskSectionTemplate extends Template {
 	

@@ -20,7 +20,6 @@ import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.templates.WebNotificationTemplate;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.constants.FacilioConstants;
-import com.opensymphony.xwork2.ActionSupport;
 
 public class TemplateAction  extends FacilioAction {
 	

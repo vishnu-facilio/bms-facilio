@@ -1,12 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
 import java.io.Serializable;
-import java.util.logging.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Priority;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.User;

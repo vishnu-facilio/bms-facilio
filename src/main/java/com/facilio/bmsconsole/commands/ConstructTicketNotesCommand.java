@@ -7,7 +7,6 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.chargebee.models.Invoice.Note;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.constants.FacilioConstants;
 

@@ -30,8 +30,6 @@ import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.ScheduleInfo;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 
 public class GetPMJobsCommand implements Command {
 

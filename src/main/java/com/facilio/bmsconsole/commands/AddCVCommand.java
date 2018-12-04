@@ -14,8 +14,8 @@ import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.FacilioView.ViewType;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
 import com.facilio.bmsconsole.view.ViewFactory;
+import com.facilio.bmsconsole.workflow.rule.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 

@@ -2,10 +2,12 @@ package com.facilio.events.tasker.tasks;
 
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -18,12 +20,12 @@ import com.amazonaws.services.kinesis.clientlibrary.interfaces.v2.IRecordProcess
 import com.amazonaws.services.kinesis.clientlibrary.types.InitializationInput;
 import com.amazonaws.services.kinesis.clientlibrary.types.ProcessRecordsInput;
 import com.amazonaws.services.kinesis.clientlibrary.types.ShutdownInput;
-import com.amazonaws.services.kinesis.model.PutRecordResult;
 import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.events.context.EventRuleContext;
+import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
 
 public class EventProcessor implements IRecordProcessor {

@@ -8,7 +8,6 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ScheduledRuleContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
 

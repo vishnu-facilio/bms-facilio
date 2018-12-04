@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,7 +51,6 @@ import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.ImportAPI;
-import com.facilio.bmsconsole.util.ModuleLocalIdUtil;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;

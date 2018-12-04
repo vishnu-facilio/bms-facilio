@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 
 import org.json.simple.JSONArray;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldUtil;

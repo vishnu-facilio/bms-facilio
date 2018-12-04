@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.commands;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,10 +22,8 @@ import org.json.simple.JSONObject;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.actions.ImportTemplateContext;
 import com.facilio.bmsconsole.util.ImportAPI;
-import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
-import com.google.common.collect.ArrayListMultimap;
 
 public class WriteSkippedToFileCommand implements Command {
 

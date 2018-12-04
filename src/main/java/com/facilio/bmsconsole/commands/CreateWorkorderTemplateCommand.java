@@ -8,7 +8,6 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
-import com.facilio.bmsconsole.context.PreventiveMaintenance.PMCreationType;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;

@@ -23,7 +23,6 @@ import com.facilio.bmsconsole.context.PMResourcePlannerContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PMTriggerContext.TriggerExectionSource;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
-import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.TriggerType;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
