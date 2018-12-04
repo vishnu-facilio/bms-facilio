@@ -190,9 +190,9 @@ public class ReportContext {
 		
 		if (xAggr == null) { //Temp code until all reports are migrated to new format
 			JSONObject firstXAxisObj = (JSONObject) ((JSONObject) jsonarray.get(0)).get("xAxis");
-			Integer xAggrOpr = (Integer) firstXAxisObj.get("aggr");
+			Long xAggrOpr = (Long) firstXAxisObj.get("aggr");
 			if (xAggrOpr != null) {
-				xAggr = AggregateOperator.getAggregateOperator(xAggrOpr);
+				xAggr = AggregateOperator.getAggregateOperator(xAggrOpr.intValue());
 			}
 		}
 	}
