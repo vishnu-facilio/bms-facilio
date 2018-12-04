@@ -4773,6 +4773,7 @@ public class FieldFactory {
 		fields.add(getField("benchmarkJson", "BENCHMARK_JSON", module, FieldType.STRING));
 		fields.add(getField("dataPointJson", "DATA_POINT_JSON", module, FieldType.STRING));
 		fields.add(getField("xCriteriaJson", "X_CRITERIA_JSON", module, FieldType.STRING));
+		fields.add(getField("xAggr", "X_AGGR", module, FieldType.NUMBER));
 		fields.add(getField("baselineJson", "BASELINE_JSON", module, FieldType.STRING));
 		fields.add(getField("analyticsType", "ANALYTICS_TYPE", module, FieldType.NUMBER));
 		

@@ -8,6 +8,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -186,6 +187,14 @@ public class ReportContext {
 			
 			addDataPoint(dataPoint);
 		}
+		
+		if (xAggr == null) { //Temp code until all reports are migrated to new format
+			JSONObject firstXAxisObj = (JSONObject) ((JSONObject) jsonarray.get(0)).get("xAxis");
+			Integer xAggrOpr = (Integer) firstXAxisObj.get("aggr");
+			if (xAggrOpr != null) {
+				xAggr = AggregateOperator.getAggregateOperator(xAggrOpr);
+			}
+		}
 	}
 	
 	@JSON(serialize=false)
@@ -246,6 +255,23 @@ public class ReportContext {
 	}
 	public void setxAlias(String xAlias) {
 		this.xAlias = xAlias;
+	}
+	
+	private AggregateOperator xAggr;
+	public int getxAggr() {
+		if (xAggr != null) {
+			return xAggr.getValue();
+		}
+		return -1;
+	}
+	public void setxAggr(int xAggr) {
+		this.xAggr = AggregateOperator.getAggregateOperator(xAggr);
+	}
+	public AggregateOperator getxAggrEnum() {
+		return xAggr;
+	}
+	public void setxAggr(AggregateOperator xAggr) {
+		this.xAggr = xAggr;
 	}
 	
 	@JSON(serialize=false)

@@ -9,8 +9,12 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.CommonReportUtil;
+import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.WidgetChartContext;
+import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -18,8 +22,10 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.report.context.ReportAxisContext;
+import com.facilio.report.context.ReportYAxisContext;
+import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportFieldContext;
@@ -31,6 +37,37 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class ReportUtil {
+	
+	public static ReportContext constructReport(FacilioContext context, List<ReportDataPointContext> dataPoints, long startTime, long endTime) throws Exception {
+		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
+		if(report == null) {
+			report = new ReportContext();
+		}
+		report.setDataPoints(dataPoints);
+		report.setDateOperator(DateOperators.BETWEEN);
+		report.setDateValue(startTime+", "+endTime);
+		CommonReportUtil.fetchBaseLines(report, (List<ReportBaseLineContext>) context.get(FacilioConstants.ContextNames.BASE_LINE_LIST));
+		
+		report.setChartState((String)context.get(FacilioConstants.ContextNames.CHART_STATE));
+		report.setTabularState((String)context.get(FacilioConstants.ContextNames.TABULAR_STATE));
+		
+		Integer dateOperator = (Integer) context.get(FacilioConstants.ContextNames.DATE_OPERATOR);
+		if(dateOperator != null) {
+			report.setDateOperator(dateOperator);
+		}
+		
+		String dateVal = (String) context.get(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE);
+		if(dateVal != null) {
+			report.setDateValue((String)context.get(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE));
+		}
+		
+		AggregateOperator xAggr = (AggregateOperator) context.get(FacilioConstants.ContextNames.REPORT_X_AGGR);
+		if (xAggr != null) {
+			report.setxAggr(xAggr);
+		}
+		
+		return report;
+	}
 	
 	public static List<ReportFolderContext> getAllReportFolder(String moduleName,boolean isWithReports) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -124,15 +161,14 @@ public class ReportUtil {
 				}
 				
 				for (ReportDataPointContext dataPoint : report.getDataPoints()) {
-					ReportAxisContext xAxis = dataPoint.getxAxis();
+					ReportFieldContext xAxis = dataPoint.getxAxis();
 					xAxis.setField(getField(xAxis.getFieldId(), xAxis.getModuleName(), xAxis.getFieldName(), modBean));
 					
-					ReportAxisContext yAxis = dataPoint.getyAxis();
+					ReportYAxisContext yAxis = dataPoint.getyAxis();
 					yAxis.setField(getField(yAxis.getFieldId(), yAxis.getModuleName(), yAxis.getFieldName(), modBean));
 					
 					dataPoint.setDateField(getField(dataPoint.getDateFieldId(), dataPoint.getDateFieldModuleName(), dataPoint.getDateFieldName(), modBean));
 				}
-				
 				reports.add(report);
 			}
 			return reports;

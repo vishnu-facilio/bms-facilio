@@ -240,7 +240,7 @@ public class GetExportReportDataCommand implements Command {
 			String format = "EEEE, MMMM dd, yyyy hh:mm a";
 			
 			new ArrayList<>();
-			AggregateOperator aggr = report.getDataPoints().get(0).getxAxis().getAggrEnum();
+			AggregateOperator aggr = report.getxAggrEnum();
 			if (aggr != null && aggr instanceof DateAggregateOperator) {
 				String dateFormat = ((DateAggregateOperator)aggr).getFormat();
 				format = dateFormat != null ? dateFormat : format;

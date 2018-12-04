@@ -45,7 +45,7 @@ import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.ReadingAnalysisContext;
 import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
-import com.facilio.report.context.ReportAxisContext;
+import com.facilio.report.context.ReportYAxisContext;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportFolderContext;
@@ -303,7 +303,7 @@ public class V2ReportAction extends FacilioAction {
 			
 			DateOperators dateOperator = (DateOperators) Operator.OPERATOR_MAP.get(Integer.parseInt(params.get("dateOperator").toString()));
 			
-			ReportAxisContext reportaxisContext = new ReportAxisContext();
+			ReportYAxisContext reportaxisContext = new ReportYAxisContext();
 			reportaxisContext.setFieldId((Long)params.get("fieldId"));
 			reportaxisContext.setAggr(Integer.parseInt(params.get("aggregateFunc").toString()));
 			
@@ -382,6 +382,7 @@ public class V2ReportAction extends FacilioAction {
 		}
 		FacilioContext context = new FacilioContext();
 		setReadingsDataContext(context);
+		context.put(FacilioConstants.ContextNames.REPORT_HANDLE_BOOLEAN, newFormat);
 		
 		Chain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReadingReportChain() : ReadOnlyChainFactory.fetchReadingReportChain();
 		fetchReadingDataChain.execute(context);
@@ -560,6 +561,7 @@ public class V2ReportAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.START_TIME, startTime);
 		context.put(FacilioConstants.ContextNames.END_TIME, endTime);
+		context.put(FacilioConstants.ContextNames.REPORT_X_AGGR, xAggr);
 		context.put(FacilioConstants.ContextNames.REPORT_FIELDS, FieldUtil.getAsBeanListFromJsonArray(fieldArray, WorkorderAnalysisContext.class));
 		context.put(FacilioConstants.ContextNames.BASE_LINE_LIST, FieldUtil.getAsBeanListFromJsonArray(baseLineList, ReportBaseLineContext.class));
 		

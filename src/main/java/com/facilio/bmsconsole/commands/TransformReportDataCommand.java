@@ -20,10 +20,12 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.report.context.ReportAxisContext;
+import com.facilio.report.context.ReportYAxisContext;
 import com.facilio.report.context.ReportBaseLineContext;
+import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataContext;
 import com.facilio.report.context.ReportDataPointContext;
+import com.facilio.report.context.ReportFieldContext;
 
 public class TransformReportDataCommand implements Command {
 
@@ -34,6 +36,7 @@ public class TransformReportDataCommand implements Command {
 		// TODO Auto-generated method stub
 		List<ReportDataContext> reportData = (List<ReportDataContext>) context.get(FacilioConstants.ContextNames.REPORT_DATA);
 		String reportCallingFrom = (String) context.get(FacilioConstants.ContextNames.REPORT_CALLING_FROM);
+		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
 		
 		if(reportCallingFrom != null && reportCallingFrom.equals("card") && reportData != null) {
 			
@@ -69,10 +72,10 @@ public class TransformReportDataCommand implements Command {
 							List<Map<String, Object>> props = entry.getValue();
 							Map<Object, Object> dataPoints = null;
 							if (FacilioConstants.Reports.ACTUAL_DATA.equals(entry.getKey())) {
-								dataPoints = transformData(dataPoint, xValues, props, null);
+								dataPoints = transformData(dataPoint, report.getxAggrEnum(), xValues, props, null);
 							}
 							else {
-								dataPoints = transformData(dataPoint, xValues, props, data.getBaseLineMap().get(entry.getKey()));  
+								dataPoints = transformData(dataPoint, report.getxAggrEnum(), xValues, props, data.getBaseLineMap().get(entry.getKey()));  
 							}
 							
 							if (dataPoints != null) {
@@ -89,7 +92,7 @@ public class TransformReportDataCommand implements Command {
 		return false;
 	}
 	
-	private Object getBaseLineAdjustedXVal(Object xVal, ReportAxisContext xAxis, ReportBaseLineContext baseLine) throws Exception {
+	private Object getBaseLineAdjustedXVal(Object xVal, ReportFieldContext xAxis, ReportBaseLineContext baseLine) throws Exception {
 		if (baseLine != null) {
 			switch (xAxis.getField().getDataTypeEnum()) {
 				case DATE:
@@ -102,14 +105,14 @@ public class TransformReportDataCommand implements Command {
 		return xVal;
 	}
 
-	private Map<Object, Object> transformData(ReportDataPointContext dataPoint, Set<Object> xValues, List<Map<String, Object>> props, ReportBaseLineContext baseLine) throws Exception {
+	private Map<Object, Object> transformData(ReportDataPointContext dataPoint, AggregateOperator xAggr, Set<Object> xValues, List<Map<String, Object>> props, ReportBaseLineContext baseLine) throws Exception {
 		if (props != null && !props.isEmpty()) {
 			Map<Object, Object> dataPoints = new LinkedHashMap<>();
 			for (Map<String, Object> prop : props) {
 				Object xVal = prop.get(dataPoint.getxAxis().getField().getName());
 				if (xVal != null) {
 					xVal = getBaseLineAdjustedXVal(xVal, dataPoint.getxAxis(), baseLine);
-					xVal = formatVal(dataPoint.getxAxis().getField(), dataPoint.getxAxis().getAggrEnum(), xVal);
+					xVal = formatVal(dataPoint.getxAxis().getField(), xAggr, xVal);
 					xValues.add(xVal);
 					Object yVal = prop.get(dataPoint.getyAxis().getField().getName());
 					if (yVal != null) { //Ignoring null values

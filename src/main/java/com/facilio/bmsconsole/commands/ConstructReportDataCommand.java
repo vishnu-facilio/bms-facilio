@@ -15,11 +15,11 @@ import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.report.context.ReportAxisContext;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataContext;
 import com.facilio.report.context.ReportDataPointContext;
+import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportGroupByField;
 
 public class ConstructReportDataCommand implements Command {
@@ -66,24 +66,26 @@ public class ConstructReportDataCommand implements Command {
 				Object xVal = prop.get(dataPoint.getxAxis().getField().getName());
 				if (xVal != null) {
 					xVal = getBaseLineAdjustedXVal(xVal, dataPoint.getxAxis(), baseLine);
-					xVal = formatVal(dataPoint.getxAxis().getField(), dataPoint.getxAxis().getAggrEnum(), xVal);
+					xVal = formatVal(dataPoint.getxAxis().getField(), report.getxAggrEnum(), xVal);
 					Object yVal = prop.get(dataPoint.getyAxis().getField().getName());
-					yVal = formatVal(dataPoint.getyAxis().getField(), dataPoint.getyAxis().getAggrEnum(), yVal);
-					
-					StringJoiner key = new StringJoiner("|");
-					key.add(xVal.toString());
-					Map<String, Object> data = null;
-					if (dataPoint.getGroupByFields() != null && !dataPoint.getGroupByFields().isEmpty()) {
-						data = new HashMap<>();
-						for (ReportGroupByField groupBy : dataPoint.getGroupByFields()) {
-							FacilioField field = groupBy.getField();
-							Object groupByVal = prop.get(field.getName());
-							groupByVal = formatVal(field, null, groupByVal);
-							data.put(groupBy.getAlias(), groupByVal);
-							key.add(groupBy.getAlias()+"_"+groupByVal.toString());
+					if (yVal != null) {
+						yVal = formatVal(dataPoint.getyAxis().getField(), dataPoint.getyAxis().getAggrEnum(), yVal);
+						
+						StringJoiner key = new StringJoiner("|");
+						key.add(xVal.toString());
+						Map<String, Object> data = null;
+						if (dataPoint.getGroupByFields() != null && !dataPoint.getGroupByFields().isEmpty()) {
+							data = new HashMap<>();
+							for (ReportGroupByField groupBy : dataPoint.getGroupByFields()) {
+								FacilioField field = groupBy.getField();
+								Object groupByVal = prop.get(field.getName());
+								groupByVal = formatVal(field, null, groupByVal);
+								data.put(groupBy.getAlias(), groupByVal);
+								key.add(groupBy.getAlias()+"_"+groupByVal.toString());
+							}
 						}
+						constructAndAddData(key.toString(), data, xVal, yVal, getyAlias(dataPoint, baseLine), report, transformedData, directHelperData);
 					}
-					constructAndAddData(key.toString(), data, xVal, yVal, getyAlias(dataPoint, baseLine), report, transformedData, directHelperData);
 				}
 			}
 		}
@@ -108,7 +110,7 @@ public class ConstructReportDataCommand implements Command {
 		return report.getxAlias() == null ? DEFAULT_X_ALIAS : report.getxAlias();
 	}
 	
-	private Object getBaseLineAdjustedXVal(Object xVal, ReportAxisContext xAxis, ReportBaseLineContext baseLine) throws Exception {
+	private Object getBaseLineAdjustedXVal(Object xVal, ReportFieldContext xAxis, ReportBaseLineContext baseLine) throws Exception {
 		if (baseLine != null) {
 			switch (xAxis.getField().getDataTypeEnum()) {
 				case DATE:

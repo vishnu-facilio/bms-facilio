@@ -14,17 +14,6 @@ public class WorkorderAnalysisContext {
 		this.xFieldId = xFieldId;
 	}
 	
-	private AggregateOperator xAggr;
-	public int getxAggr() {
-		if (xAggr != null) {
-			return xAggr.getValue();
-		}
-		return -1;
-	}
-	public void setxAggr(int xAggr) {
-		this.xAggr = AggregateOperator.getAggregateOperator(xAggr);
-	}
-	
 	private long yFieldId = -1;
 	public long getyFieldId() {
 		return yFieldId;

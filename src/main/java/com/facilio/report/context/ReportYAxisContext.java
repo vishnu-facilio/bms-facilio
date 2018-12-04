@@ -2,7 +2,7 @@ package com.facilio.report.context;
 
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 
-public class ReportAxisContext extends ReportFieldContext {
+public class ReportYAxisContext extends ReportFieldContext {
 	private AggregateOperator aggr;
 	public AggregateOperator getAggrEnum() {
 		return aggr;

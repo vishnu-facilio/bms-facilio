@@ -65,11 +65,11 @@ public class ReadingAnalysisContext {
 		this.aliases = aliases;
 	}
 
-	private ReportAxisContext yAxis;
-	public ReportAxisContext getyAxis() {
+	private ReportYAxisContext yAxis;
+	public ReportYAxisContext getyAxis() {
 		return yAxis;
 	}
-	public void setyAxis(ReportAxisContext yAxis) {
+	public void setyAxis(ReportYAxisContext yAxis) {
 		this.yAxis = yAxis;
 	}
 

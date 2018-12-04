@@ -50,19 +50,19 @@ public class ReportDataPointContext {
 		this.reportId = reportId;
 	}
 	
-	private ReportAxisContext xAxis;
-	public ReportAxisContext getxAxis() {
+	private ReportFieldContext xAxis;
+	public ReportFieldContext getxAxis() {
 		return xAxis;
 	}
-	public void setxAxis(ReportAxisContext xAxis) {
+	public void setxAxis(ReportFieldContext xAxis) {
 		this.xAxis = xAxis;
 	}
 
-	private ReportAxisContext yAxis;
-	public ReportAxisContext getyAxis() {
+	private ReportYAxisContext yAxis;
+	public ReportYAxisContext getyAxis() {
 		return yAxis;
 	}
-	public void setyAxis(ReportAxisContext yAxis) {
+	public void setyAxis(ReportYAxisContext yAxis) {
 		this.yAxis = yAxis;
 	}
 
@@ -215,6 +215,16 @@ public class ReportDataPointContext {
 	}
 	public void setType(int type) {
 		this.type = DataPointType.valueOf(type);
+	}
+	
+	private boolean handleBoolean;
+	
+	@JsonIgnore
+	public boolean isHandleBoolean() {
+		return handleBoolean;
+	}
+	public void setHandleBoolean(boolean handleBoolean) {
+		this.handleBoolean = handleBoolean;
 	}
 
 	public static enum OrderByFunction {

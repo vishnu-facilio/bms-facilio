@@ -11,11 +11,9 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -25,11 +23,12 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.ReadingAnalysisContext;
 import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
-import com.facilio.report.context.ReportAxisContext;
-import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportDataPointContext.DataPointType;
+import com.facilio.report.context.ReportFieldContext;
+import com.facilio.report.context.ReportYAxisContext;
+import com.facilio.report.util.ReportUtil;
 
 public class CreateReadingAnalyticsReportCommand implements Command {
 	
@@ -43,13 +42,12 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 		if (metrics != null && !metrics.isEmpty() && startTime != -1 && endTime != -1) {
 			Map<Long, ResourceContext> resourceMap = getResourceMap(metrics);
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			AggregateOperator xAggr = (AggregateOperator) context.get(FacilioConstants.ContextNames.REPORT_X_AGGR);
 			List<ReportDataPointContext> dataPoints = new ArrayList<>();
 			for (ReadingAnalysisContext metric : metrics) {
 				ReportDataPointContext dataPoint = null;
 				switch (metric.getTypeEnum()) {
 					case MODULE:
-						dataPoint = getModuleDataPoint(metric, xAggr, mode, modBean);
+						dataPoint = getModuleDataPoint(metric, mode, modBean);
 						break;
 					case DERIVATION:
 						dataPoint = getDerivedDataPoint(metric);
@@ -63,7 +61,7 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 				dataPoint.setTransformWorkflowId(metric.getTransformWorkflowId());
 				dataPoints.add(dataPoint);
 			}
-			ReportContext report = constructReport((FacilioContext) context, dataPoints, startTime, endTime);
+			ReportContext report = ReportUtil.constructReport((FacilioContext) context, dataPoints, startTime, endTime);
 			context.put(FacilioConstants.ContextNames.REPORT, report);
 		}
 		else {
@@ -73,51 +71,28 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 		return false;
 	}
 	
-	private ReportContext constructReport(FacilioContext context, List<ReportDataPointContext> dataPoints, long startTime, long endTime) throws Exception {
-		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
-		if(report == null) {
-			report = new ReportContext();
-		}
-		report.setDataPoints(dataPoints);
-		report.setDateOperator(DateOperators.BETWEEN);
-		report.setDateValue(startTime+", "+endTime);
-		CommonReportUtil.fetchBaseLines(report, (List<ReportBaseLineContext>) context.get(FacilioConstants.ContextNames.BASE_LINE_LIST));
-		
-		report.setChartState((String)context.get(FacilioConstants.ContextNames.CHART_STATE));
-		report.setTabularState((String)context.get(FacilioConstants.ContextNames.TABULAR_STATE));
-		
-		if(context.get(FacilioConstants.ContextNames.DATE_OPERATOR) != null) {
-			report.setDateOperator((Integer) context.get(FacilioConstants.ContextNames.DATE_OPERATOR));
-		}
-		
-		if(context.get(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE) != null) {
-			report.setDateValue((String)context.get(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE));
-		}
-		return report;
-	}
-	
-	private ReportDataPointContext getModuleDataPoint(ReadingAnalysisContext metric, AggregateOperator xAggr, ReportMode mode, ModuleBean modBean) throws Exception {
+	private ReportDataPointContext getModuleDataPoint(ReadingAnalysisContext metric, ReportMode mode, ModuleBean modBean) throws Exception {
 		ReportDataPointContext dataPoint = new ReportDataPointContext();
-		ReportAxisContext yAxis = metric.getyAxis();
+		ReportYAxisContext yAxis = metric.getyAxis();
 		FacilioField yField = modBean.getField(metric.getyAxis().getFieldId());
 		yAxis.setField(yField);
 		dataPoint.setyAxis(yAxis);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(yField.getModule().getName()));
-		setXAndDateFields(dataPoint, xAggr, mode, fieldMap);
+		setXAndDateFields(dataPoint, mode, fieldMap);
 		setCriteria(dataPoint, fieldMap, metric);
 		return dataPoint;
 	}
 	
 	private ReportDataPointContext getDerivedDataPoint(ReadingAnalysisContext metric) {
 		ReportDataPointContext dataPoint = new ReportDataPointContext();
-		ReportAxisContext xAxis = new ReportAxisContext();
+		ReportYAxisContext xAxis = new ReportYAxisContext();
 		xAxis.setField(FieldFactory.getField("ttime", "Timestamp", "TTIME", null, FieldType.DATE_TIME));
 		dataPoint.setxAxis(xAxis);
 		dataPoint.setyAxis(metric.getyAxis());
 		return dataPoint;
 	}
 	
-	private void setXAndDateFields (ReportDataPointContext dataPoint, AggregateOperator xAggr, ReportMode mode, Map<String, FacilioField> fieldMap) {
+	private void setXAndDateFields (ReportDataPointContext dataPoint, ReportMode mode, Map<String, FacilioField> fieldMap) {
 		FacilioField xField = null;
 		switch (mode) {
 			case SERIES:
@@ -128,9 +103,8 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 				xField = fieldMap.get("ttime");
 				break;
 		}
-		ReportAxisContext xAxis = new ReportAxisContext();
+		ReportFieldContext xAxis = new ReportFieldContext();
 		xAxis.setField(xField);
-		xAxis.setAggr(xAggr);
 		dataPoint.setxAxis(xAxis);
 		dataPoint.setDateField(fieldMap.get("ttime"));
 	}

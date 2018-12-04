@@ -17,12 +17,14 @@ import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.report.context.ReportAxisContext;
+import com.facilio.report.context.ReportYAxisContext;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
+import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportGroupByField;
 import com.facilio.report.context.WorkorderAnalysisContext;
+import com.facilio.report.util.ReportUtil;
 
 public class CreateWorkOrderAnalyticsReportCommand implements Command {
 
@@ -45,12 +47,11 @@ public class CreateWorkOrderAnalyticsReportCommand implements Command {
 				ReportDataPointContext dataPoint = new ReportDataPointContext();
 				
 				FacilioField xField = modBean.getField(metric.getxFieldId());
-				ReportAxisContext xAxis = new ReportAxisContext();
+				ReportFieldContext xAxis = new ReportFieldContext();
 				xAxis.setField(xField);
 				List<FacilioField> fields = modBean.getAllFields(xField.getModule().getName());
 				Map<Long, FacilioField> xfieldIdMap = FieldFactory.getAsIdMap(fields);
 				Map<String, LookupField> xlookupFields = getLookupFields(fields);
-				xAxis.setAggr(metric.getxAggr());
 				dataPoint.setxAxis(xAxis);
 				
 				setYAxis(modBean, metric, dataPoint, xfieldIdMap, xlookupFields);
@@ -59,26 +60,7 @@ public class CreateWorkOrderAnalyticsReportCommand implements Command {
 				
 				dataPoints.add(dataPoint);
 			}
-			ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
-			if(report == null) {
-				report = new ReportContext();
-			}
-			report.setDataPoints(dataPoints);
-			report.setDateOperator(DateOperators.BETWEEN);
-			report.setDateValue(startTime+", "+endTime);
-			CommonReportUtil.fetchBaseLines(report, (List<ReportBaseLineContext>) context.get(FacilioConstants.ContextNames.BASE_LINE_LIST));
-			
-			report.setChartState((String)context.get(FacilioConstants.ContextNames.CHART_STATE));
-			report.setTabularState((String)context.get(FacilioConstants.ContextNames.TABULAR_STATE));
-			
-			if(context.get(FacilioConstants.ContextNames.DATE_OPERATOR) != null) {
-				report.setDateOperator((Integer) context.get(FacilioConstants.ContextNames.DATE_OPERATOR));
-			}
-			
-			if(context.get(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE) != null) {
-				report.setDateValue((String)context.get(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE));
-			}
-			
+			ReportContext report = ReportUtil.constructReport((FacilioContext) context, dataPoints, startTime, endTime); 
 			context.put(FacilioConstants.ContextNames.REPORT, report);
 		}
 		else {
@@ -133,7 +115,7 @@ public class CreateWorkOrderAnalyticsReportCommand implements Command {
 	}
 	
 	private void setYAxis(ModuleBean modBean, WorkorderAnalysisContext metric, ReportDataPointContext dataPoint, Map<Long, FacilioField> xFieldIdMap, Map<String, LookupField> xLookupFields) throws Exception {
-		ReportAxisContext yAxis = new ReportAxisContext();
+		ReportYAxisContext yAxis = new ReportYAxisContext();
 		FacilioField yField = xFieldIdMap.get(metric.getyFieldId());
 		if (yField == null) {
 			yField = modBean.getField(metric.getyFieldId());
