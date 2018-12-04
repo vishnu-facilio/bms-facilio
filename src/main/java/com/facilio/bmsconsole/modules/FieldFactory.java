@@ -2516,7 +2516,7 @@ public class FieldFactory {
 		fields.add(getField("dataInterval", "DATA_INTERVAL", module, FieldType.NUMBER));
 		fields.add(getField("batchesPerCycle", "BATCHES_PER_CYCLE", module, FieldType.NUMBER));
 		fields.add(getField("active", "ACTIVE", module, FieldType.BOOLEAN));
-		fields.add(getField("controllerType", "CONTROLLER_TYPE", module, FieldType.STRING));
+		fields.add(getField("controllerType", "CONTROLLER_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("destinationId", "DESTINATION_ID", module, FieldType.STRING));
 		fields.add(getField("broadcastIp", "BROADCAST_IP", module, FieldType.STRING));
 		fields.add(getField("instanceNumber", "INSTANCE_NUMBER", module, FieldType.NUMBER));

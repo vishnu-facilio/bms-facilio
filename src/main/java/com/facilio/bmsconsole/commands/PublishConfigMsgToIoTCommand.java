@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.IoTMessageAPI;
+import com.facilio.bmsconsole.util.IoTMessageAPI.IotCommandType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.timeseries.TimeSeriesAPI;
 
@@ -25,7 +26,7 @@ public class PublishConfigMsgToIoTCommand implements Command {
 		boolean inUse = (boolean)context.get(FacilioConstants.ContextNames.CONFIGURE);
 		if (inUse) {
 			List<Map<String, Object>> instances =  TimeSeriesAPI.getUnmodeledInstances(ids);
-			IoTMessageAPI.publishIotMessage(instances, "configure", null, data -> markInstancesAsNotInUse(ids));
+			IoTMessageAPI.publishIotMessage(instances, IotCommandType.CONFIGURE, null, data -> markInstancesAsNotInUse(ids));
 		}
 		
 		return false;

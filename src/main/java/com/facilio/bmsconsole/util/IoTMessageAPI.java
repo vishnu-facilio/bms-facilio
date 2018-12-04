@@ -41,15 +41,23 @@ public class IoTMessageAPI {
 	private static final Logger LOGGER = LogManager.getLogger(IoTMessageAPI.class.getName());
 	
 	private static final int MAX_BUFFER = 2000000;
-	private static PublishData constructIotMessage (List<Map<String, Object>> instances, String command) throws Exception {
-
-		ControllerContext controller = ControllerAPI.getController((long) instances.get(0).get("controllerId"));
-
+	
+	private static PublishData constructIotMessage (List<Map<String, Object>> instances, IotCommandType command) throws Exception {
+		return constructIotMessage((long) instances.get(0).get("controllerId"), command, instances, null);
+	}
+	
+	private static PublishData constructIotMessage (long controllerId, JSONObject property) throws Exception {
+		return constructIotMessage(controllerId, IotCommandType.PROPERTY, null, property);
+	}
+	
+	private static PublishData constructIotMessage (long controllerId, IotCommandType command, List<Map<String, Object>> instances, JSONObject property) throws Exception {
+		ControllerContext controller = ControllerAPI.getController(controllerId);
+		
 		PublishData data = new PublishData();
 		data.setControllerId(controller.getId());
 		
 		JSONObject object = new JSONObject();
-		object.put("command", command);
+		object.put("command", command.name().toLowerCase());
 		object.put("deviceName", controller.getName());
 		object.put("macAddress", controller.getMacAddr());
 		object.put("subnetPrefix", controller.getSubnetPrefix());
@@ -57,23 +65,30 @@ public class IoTMessageAPI {
 		object.put("instanceNumber", controller.getInstanceNumber());
 		object.put("broadcastAddress", controller.getBroadcastIp());
 		object.put("clientId", controller.getId());
-
-		JSONArray points = new JSONArray();
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		for(Map<String, Object> instance : instances) {
-			JSONObject point = new JSONObject();
-			point.put("instance", instance.get("instance"));
-			point.put("instanceType", instance.get("instanceType"));
-			point.put("device", instance.get("device"));
-			point.put("objectInstanceNumber", instance.get("objectInstanceNumber"));
-			point.put("instanceDescription", instance.get("instanceDescription"));
-			if (instance.containsKey("value")) {
-				point.put("newValue", instance.get("value"));
-				point.put("valueType", getValueType(modBean.getField((long) instance.get("fieldId")).getDataTypeEnum()));
-			}
-			points.add(point);
+		
+		if (command == IotCommandType.PROPERTY) {
+			object.putAll(property);
 		}
-		object.put("points", points);
+		else {
+			
+			JSONArray points = new JSONArray();
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			for(Map<String, Object> instance : instances) {
+				JSONObject point = new JSONObject();
+				point.put("instance", instance.get("instance"));
+				point.put("instanceType", instance.get("instanceType"));
+				point.put("device", instance.get("device"));
+				point.put("objectInstanceNumber", instance.get("objectInstanceNumber"));
+				point.put("instanceDescription", instance.get("instanceDescription"));
+				if (command == IotCommandType.SET && instance.containsKey("value")) {
+					point.put("newValue", instance.get("value"));
+					point.put("valueType", getValueType(modBean.getField((long) instance.get("fieldId")).getDataTypeEnum()));
+				}
+				points.add(point);
+			}
+			object.put("points", points);
+			
+		}
 
 		String objString = object.toJSONString();
 		if (objString.length() > MAX_BUFFER) {
@@ -192,12 +207,21 @@ public class IoTMessageAPI {
 		}
 	}
 	
-	public static PublishData publishIotMessage(List<Map<String, Object>> instances, String command) throws Exception {
+	public static PublishData publishIotMessage(List<Map<String, Object>> instances, IotCommandType command) throws Exception {
 		return publishIotMessage(instances, command, null, null);
 	}
 	
-	public static PublishData publishIotMessage(List<Map<String, Object>> instances, String command, SerializableConsumer<PublishData> success, SerializableConsumer<PublishData> failure) throws Exception {
+	public static PublishData publishIotMessage(List<Map<String, Object>> instances, IotCommandType command, SerializableConsumer<PublishData> success, SerializableConsumer<PublishData> failure) throws Exception {
 		PublishData data = constructIotMessage(instances, command);
+		return publishIotMessage(data, success, failure);
+	}
+	
+	public static PublishData publishIotMessage(long controllerId, JSONObject property, SerializableConsumer<PublishData> success, SerializableConsumer<PublishData> failure) throws Exception {
+		PublishData data = constructIotMessage(controllerId, property);
+		return publishIotMessage(data, success, failure);
+	}
+	
+	private static PublishData publishIotMessage(PublishData data, SerializableConsumer<PublishData> success, SerializableConsumer<PublishData> failure) throws Exception {
 		addPublishData(data);
 		addAndPublishMessage(data.getId(), data.getMessages());
 		
@@ -244,4 +268,23 @@ public class IoTMessageAPI {
 			}
 		}
 	}
+ 	
+ 	public enum IotCommandType {
+ 		CONFIGURE,
+ 		SET,
+ 		PROPERTY
+ 		;
+ 		
+ 		public int getValue() {
+			return ordinal() + 1;
+		}
+		
+		public static IotCommandType valueOf (int value) {
+			if (value > 0 && value <= values().length) {
+				return values() [value - 1];
+			}
+			return null;
+		}
+ 		
+ 	}
 }

@@ -138,7 +138,9 @@ public class TransactionChainFactory {
 		}
 		public static Chain getEditControllerChain() {
 			Chain c = getDefaultChain();
+			c.addCommand(new FetchControllerSettingCommand());
 			c.addCommand(new EditControllerSettingsCommand());
+			c.addCommand(new PublishControllerPropertyToIoTCommand());
 			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}

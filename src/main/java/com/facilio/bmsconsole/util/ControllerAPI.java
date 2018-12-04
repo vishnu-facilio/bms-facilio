@@ -395,7 +395,7 @@ public class ControllerAPI {
 		return updateController(prop, ids);
 	}
 	
-	private static int updateController (Map<String,Object> prop, List<Long> ids) throws SQLException {
+	public static int updateController (Map<String,Object> prop, List<Long> ids) throws SQLException {
 		FacilioModule module = ModuleFactory.getControllerModule();
 		List<FacilioField> fields = FieldFactory.getControllerFields();
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()

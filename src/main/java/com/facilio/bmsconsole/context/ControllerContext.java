@@ -107,12 +107,22 @@ public class ControllerContext implements Serializable {
 	}
 	
 	
-	private String controllerType;
-	public String getControllerType() {
+	private ControllerType controllerType;
+	public ControllerType getControllerTypeEnum() {
 		return controllerType;
 	}
-	public void setControllerType(String controllerType) {
+	public int getControllerType() {
+		if (controllerType != null) {
+			return controllerType.getValue();
+		}
+		return -1;
+	}
+	
+	public void setControllerType(ControllerType controllerType) {
 		this.controllerType = controllerType;
+	}
+	public void setControllerType(int controllerTypeVal) {
+		this.controllerType = ControllerType.valueOf(controllerTypeVal);
 	}
 	
 	private String destinationId;
@@ -219,5 +229,23 @@ public class ControllerContext implements Serializable {
 		// TODO Auto-generated method stub
 		return false;
 	}
+	
+	public enum ControllerType {
+ 		BACNET,
+ 		JACE
+ 		;
+ 		
+ 		public int getValue() {
+			return ordinal() + 1;
+		}
+		
+		public static ControllerType valueOf (int value) {
+			if (value > 0 && value <= values().length) {
+				return values() [value - 1];
+			}
+			return null;
+		}
+ 		
+ 	}
 	
 }

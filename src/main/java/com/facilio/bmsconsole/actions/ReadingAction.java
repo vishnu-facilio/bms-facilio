@@ -34,6 +34,7 @@ import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.IoTMessageAPI;
+import com.facilio.bmsconsole.util.IoTMessageAPI.IotCommandType;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
@@ -936,7 +937,7 @@ public class ReadingAction extends FacilioAction {
 		if (instance != null && AccountUtil.getCurrentOrg()!= null) {
 			instance.put("value", value);
 			instance.put("fieldId", fieldId);
-			IoTMessageAPI.publishIotMessage(Collections.singletonList(instance), "set");
+			IoTMessageAPI.publishIotMessage(Collections.singletonList(instance), IotCommandType.SET);
 		}
 		return SUCCESS;
 	}
