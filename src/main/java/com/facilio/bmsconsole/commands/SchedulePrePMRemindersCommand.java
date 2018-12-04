@@ -79,25 +79,27 @@ public class SchedulePrePMRemindersCommand implements SerializableCommand {
 						}
 						for(PMReminder reminder :remindersToBeExecuted) {
 							
-							switch(reminder.getTypeEnum()) {
-							case BEFORE_EXECUTION:
-								for(PMTriggerContext trigger : pmTriggersMap.get(pm.getId())) {				// doubt why using pmTriggersMap (What is the need of iteration)? 
-									if(pm.getPmCreationTypeEnum().equals(PreventiveMaintenance.PMCreationType.MULTIPLE) && currentJob.getPmTriggerId() == trigger.getId()) {	// handling separately to avoid singlePM flow breakage - merge after checking
-										Long nextExecutionTime = nextExecutionTimes.get(trigger.getId());
-										if(nextExecutionTime != null) {
-											PreventiveMaintenanceAPI.schedulePrePMReminder(reminder, nextExecutionTime, trigger.getId(),currentJob.getResourceId());
+							if(reminder != null && reminder.getTypeEnum() != null) {
+								switch(reminder.getTypeEnum()) {
+								case BEFORE_EXECUTION:
+									for(PMTriggerContext trigger : pmTriggersMap.get(pm.getId())) {				// doubt why using pmTriggersMap (What is the need of iteration)? 
+										if(pm.getPmCreationTypeEnum().equals(PreventiveMaintenance.PMCreationType.MULTIPLE) && currentJob.getPmTriggerId() == trigger.getId()) {	// handling separately to avoid singlePM flow breakage - merge after checking
+											Long nextExecutionTime = nextExecutionTimes.get(trigger.getId());
+											if(nextExecutionTime != null) {
+												PreventiveMaintenanceAPI.schedulePrePMReminder(reminder, nextExecutionTime, trigger.getId(),currentJob.getResourceId());
+											}
+										}
+										else {
+											Long nextExecutionTime = nextExecutionTimes.get(trigger.getId());
+											if(nextExecutionTime != null) {
+												PreventiveMaintenanceAPI.schedulePrePMReminder(reminder, nextExecutionTime, trigger.getId(),-1l);
+											}
 										}
 									}
-									else {
-										Long nextExecutionTime = nextExecutionTimes.get(trigger.getId());
-										if(nextExecutionTime != null) {
-											PreventiveMaintenanceAPI.schedulePrePMReminder(reminder, nextExecutionTime, trigger.getId(),-1l);
-										}
-									}
+									break;
+								default:
+									throw new RuntimeException("This is not supposed to happen");
 								}
-								break;
-							default:
-								throw new RuntimeException("This is not supposed to happen");
 							}
 						}
 					}
