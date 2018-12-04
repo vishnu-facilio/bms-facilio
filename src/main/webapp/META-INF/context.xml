@@ -1,48 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context>
-
-	<!--https://tomcat.apache.org/tomcat-8.0-doc/jdbc-pool.html-->
-<!-- 
-	<Resource 
-    	name="jdbc/BmsXA"
-		auth="Container"
-		type="com.mysql.jdbc.jdbc2.optional.MysqlXADataSource"
-		factory="com.mysql.jdbc.jdbc2.optional.MysqlDataSourceFactory"
-		user="root" 
-		explicitUrl="true"
-        url="jdbc:mysql://localhost:3306/bms"
-		/>
-    
-    
-    <Resource
-    	  name="jdbc/pcmDB"
-    	  auth="Container"
-    	  type="javax.sql.XADataSource"
-		  factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
-    	  initialSize="10"
-    	  maxActive="100"
-    	  maxIdle="10"
-    	  minIdle="5"
-    	  timeBetweenEvictionRunsMillis="34000"
-    	  minEvictableIdleTimeMillis="55000"
-    	  validationQuery="SELECT 1"
-    	  validationInterval="34000"
-    	  testOnBorrow="true"
-    	  removeAbandoned="true"
-    	  removeAbandonedTimeout="550"
-    	  logAbandoned="true"
-    	  username="root"
-    	  user="root"
-    	  password=""
-    	  databaseName="bms"
-    	  driverClassName="com.mysql.jdbc.Driver"
-		  dataSourceJNDI="BmsXA"
-		  jdbcInterceptors="org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;
-			org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer"
-		  defaultTransactionIsolation="READ_COMMITTED" 
-     />
-      -->
-    
   <Resource auth="Container"
              closeMethod="close"
              driverClassName="com.mysql.jdbc.Driver"
@@ -60,15 +17,5 @@
              type="javax.sql.DataSource"
              transactionIsolation="TRANSACTION_READ_COMMITTED"
              />  
-    
-    <!-- Transaction Configuration 
-	<Transaction factory="org.jboss.narayana.tomcat.jta.UserTransactionFactory"/>
-	<Resource 
-		name="TransactionManager" 
-		type="javax.transaction.TransactionManager"
-		factory="org.jboss.narayana.tomcat.jta.TransactionManagerFactory"/>
-    <Resource 
-    	name="TransactionSynchronizationRegistry" 
-		type="javax.transaction.TransactionSynchronizationRegistry"
-		factory="org.jboss.narayana.tomcat.jta.TransactionSynchronizationRegistryFactory"/>  -->
+
 </Context>
