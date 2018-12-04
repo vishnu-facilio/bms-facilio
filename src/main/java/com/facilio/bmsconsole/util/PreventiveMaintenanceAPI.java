@@ -686,7 +686,6 @@ public static Map<Long, PMReminder> getReminderMap(List<PMReminder> reminders) {
 		if(criteria != null && !criteria.isEmpty()) {
 			selectBuilder.andCriteria(criteria);
 		}
-		LOGGER.log(Level.SEVERE,"searchQuery ---- "+searchQuery);
 		if (searchQuery!= null) {
 			 selectBuilder.andCondition(CriteriaAPI.getCondition(pmSubjectField, searchQuery, StringOperators.CONTAINS));
 		}
