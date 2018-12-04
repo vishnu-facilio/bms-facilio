@@ -27,7 +27,7 @@ import com.facilio.tasker.job.InstantJob;
 
 public class PublishedDataCheckerJob extends InstantJob {
 	
-	private static final long THREAD_SLEEP_BUFFER = 10000;
+	private static final long THREAD_SLEEP_BUFFER = 20000; //In Millis
 	private static final int MAX_RETRIES = 5;
 	private static final Logger LOGGER = LogManager.getLogger(PublishedDataCheckerJob.class.getName());
 	
