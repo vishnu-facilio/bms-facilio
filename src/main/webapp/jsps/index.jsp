@@ -3,6 +3,8 @@
 	String clientVersion = com.facilio.aws.util.AwsUtil.getClientVersion();
 	if (clientVersion != null && !clientVersion.startsWith("/")) {
 		clientVersion = "/" + clientVersion;
+	} else {
+	    clientVersion = "";
 	}
 	
 	String staticUrl = com.facilio.aws.util.AwsUtil.getConfig("static.url") + clientVersion;
