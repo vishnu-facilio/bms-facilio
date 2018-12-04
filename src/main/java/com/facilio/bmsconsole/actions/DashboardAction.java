@@ -1581,9 +1581,10 @@ public class DashboardAction extends FacilioAction {
 			}
 			//LOGGER.info(column.getReportId()+"  ----  "+column.getData());
 		}
-		Multimap<Integer, Object> resultMap = ArrayListMultimap.create();
+		Multimap<String, Object> resultMap = ArrayListMultimap.create();
 		Multimap<String, Object> resultMap1 = ArrayListMultimap.create();
-		Map<Integer,Long> dateMap = new HashMap<>();
+		Map<String,Long> dateMap = new HashMap<>();
+		Map<Long,String> dateKeyMap = new HashMap<>();
 		
 		JSONArray dataJsonArray = new JSONArray();
 		
@@ -1604,9 +1605,10 @@ public class DashboardAction extends FacilioAction {
 					
 					Long time = (Long) data.get("label");
 					
-					int timeValue = DashboardUtil.getDataFromValue(time, column.getReport().getXAxisAggregateOpperator());
+					String timeValue = DashboardUtil.getDataFromValue(time, column.getReport().getXAxisAggregateOpperator());
 					if(column.getSequence() == 1) {
 						dateMap.put(timeValue, time);
+						dateKeyMap.put(time, timeValue);
 					}
 					else {
 						resultMap.put(timeValue, data.get("value"));
@@ -1633,11 +1635,12 @@ public class DashboardAction extends FacilioAction {
 		}
 		else {
 			
-			List<Integer> keys = new ArrayList<>(dateMap.keySet());
+			List<Long> keys = new ArrayList<>(dateKeyMap.keySet());
 			Collections.sort(keys);
 			//LOGGER.info("keys --- "+ keys);
-			 for(Integer key:keys){
-				Collection<Object> d = resultMap.get(key);
+			 for(Long key : keys){
+				String timeKey = dateKeyMap.get(key);
+				Collection<Object> d = resultMap.get(timeKey);
 				JSONArray data = new JSONArray();
 				data.add(dateMap.get(key));
 				for(Object s:d) {

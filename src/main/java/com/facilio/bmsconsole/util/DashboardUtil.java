@@ -447,33 +447,35 @@ public class DashboardUtil {
 		}
 		return false;
 	}
-	public static Integer getDataFromValue(Long timeValue,AggregateOperator aggregateOperator) {
+	public static String getDataFromValue(Long timeValue,AggregateOperator aggregateOperator) {
+		
+		String timeKey = null;
 		
 		if(aggregateOperator.getValue() == 10) {
 			ZonedDateTime dateTime = DateTimeUtil.getDateTime(timeValue);
-			return dateTime.getMonth().getValue();
+			timeKey = dateTime.getMonth().getValue() + "-" + dateTime.getYear();
 		}
 		else if (aggregateOperator.getValue() == 12) {
 			ZonedDateTime dateTime = DateTimeUtil.getDateTime(timeValue);
-			return Integer.parseInt(dateTime.getMonth().getValue() + "" + dateTime.getDayOfMonth());
+			timeKey = dateTime.getMonth().getValue() + "-" + dateTime.getDayOfMonth();
 		}
 		else if(aggregateOperator.getValue() == 18) {
 			ZonedDateTime dateTime = DateTimeUtil.getDateTime(timeValue);
-			return dateTime.getDayOfMonth();
+			timeKey = dateTime.getDayOfMonth() + "";
 		}
 		else if(aggregateOperator.getValue() == 19) {
 			ZonedDateTime dateTime = DateTimeUtil.getDateTime(timeValue);
-			return dateTime.getHour();
+			timeKey = dateTime.getHour() + "";
 		}
 		else if(aggregateOperator.getValue() == 20) {
 			ZonedDateTime dateTime = DateTimeUtil.getDateTime(timeValue);
-			return Integer.parseInt(dateTime.getHour() + "" + Integer.parseInt(dateTime.getMonth().getValue() + "" + dateTime.getDayOfMonth()) + "" + dateTime.getYear()); 
+			timeKey = dateTime.getHour() + "-" + Integer.parseInt(dateTime.getMonth().getValue() + "-" + dateTime.getDayOfMonth()) + "-" + dateTime.getYear(); 
 		}
 		else if(aggregateOperator.getValue() == 8) {
 			ZonedDateTime dateTime = DateTimeUtil.getDateTime(timeValue);
-			return dateTime.getYear();
+			timeKey = dateTime.getYear() + "";
 		}
-		return null;
+		return timeKey;
 	}
 	
 	public static String getStringFromDateAggregator(DateAggregateOperator dateaggr) {
