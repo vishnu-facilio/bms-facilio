@@ -469,7 +469,7 @@ public class DashboardUtil {
 		}
 		else if(aggregateOperator.getValue() == 20) {
 			ZonedDateTime dateTime = DateTimeUtil.getDateTime(timeValue);
-			timeKey = dateTime.getHour() + "-" + Integer.parseInt(dateTime.getMonth().getValue() + "-" + dateTime.getDayOfMonth()) + "-" + dateTime.getYear(); 
+			timeKey = dateTime.getHour() + "-" + dateTime.getMonth().getValue() + "-" + dateTime.getDayOfMonth() + "-" + dateTime.getYear(); 
 		}
 		else if(aggregateOperator.getValue() == 8) {
 			ZonedDateTime dateTime = DateTimeUtil.getDateTime(timeValue);
