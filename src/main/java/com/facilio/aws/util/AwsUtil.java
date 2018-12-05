@@ -465,7 +465,7 @@ public class AwsUtil
 			return;
 		}
 		if("smtp".equals(AwsUtil.getConfig("email.type"))) {
-
+			EmailUtil.sendEmail(mailJson, files);
 		} else {
 			sendEmailViaAws(mailJson, files);
 		}
@@ -777,7 +777,7 @@ public class AwsUtil
         MimeBodyPart wrap = new MimeBodyPart();
         wrap.setContent(messageBody);
 	    
-	    	MimeMultipart messageContent = new MimeMultipart("mixed");
+		MimeMultipart messageContent = new MimeMultipart("mixed");
 	    messageContent.addBodyPart(wrap);
 	    
 	    for (Map.Entry<String, String> file : files.entrySet()) {
@@ -815,5 +815,9 @@ public class AwsUtil
 
 	public static boolean disableCSP() {
 		return disableCSP;
+	}
+
+	public static String getServerName() {
+		return SERVERNAME;
 	}
 }

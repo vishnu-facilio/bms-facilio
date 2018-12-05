@@ -30,6 +30,7 @@ public class FacilioUtil {
         if (resource != null) {
             try (InputStream stream = resource.openStream()) {
                 PROPERTIES.load(stream);
+				PROPERTIES.forEach((k,v) -> PROPERTIES.put(k, v.toString().trim()));
             } catch (IOException e) {
                 log.info("Exception occurred ", e);
             }
@@ -37,12 +38,7 @@ public class FacilioUtil {
     }
 
     public static String getProperty(String name) {
-        String value = PROPERTIES.getProperty(name);
-        if (value == null || value.trim().length() == 0) {
-            return null;
-        } else {
-            return value;
-        }
+        return PROPERTIES.getProperty(name);
     }
     
     public static boolean isNumeric(String str) {
