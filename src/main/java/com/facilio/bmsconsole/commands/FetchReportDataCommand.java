@@ -15,6 +15,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
+import com.facilio.bmsconsole.context.FormulaContext.CommonAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.SpaceAggregateOperator;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
@@ -240,7 +241,9 @@ public class FetchReportDataCommand implements Command {
 			ReportDataPointContext rdp = dataPointList.get(0);
 			if (rdp.getxAxis().getField().equals(dataPoint.getxAxis().getField()) &&									// xaxis should be same
 					rdp.getyAxis().getField().getModule().equals(dataPoint.getyAxis().getField().getModule()) &&		// yaxis Module should be same
-					Objects.equals(rdp.getOrderBy(), dataPoint.getOrderBy())) {											// Order BY should be same
+					Objects.equals(rdp.getOrderBy(), dataPoint.getOrderBy()) &&										// Order BY should be same
+					rdp.isHandleBoolean() == dataPoint.isHandleBoolean()											// Both should be of same type
+				) {											
 				OrderByFunction rdpFunc = rdp.getOrderByFuncEnum() == null ? OrderByFunction.ACCENDING : rdp.getOrderByFuncEnum();
 				OrderByFunction dataPointFunc = dataPoint.getOrderByFuncEnum() == null ? OrderByFunction.ACCENDING : dataPoint.getOrderByFuncEnum();
 //				int rdpAggr = rdp.getxAxis().getAggrEnum() == null && rdp.getyAxis().getAggrEnum() == null ? 0 : 1;
@@ -315,7 +318,7 @@ public class FetchReportDataCommand implements Command {
 			}
 		}
 		else {
-			if (xAggr == null) { //Return x field as aggr field as there's no X aggregation
+			if (xAggr == null || xAggr == CommonAggregateOperator.ACTUAL) { //Return x field as aggr field as there's no X aggregation
 				xAggrField = dp.getxAxis().getField();
 				fields.add(xAggrField);
 			}
