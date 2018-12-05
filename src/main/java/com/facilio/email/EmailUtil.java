@@ -10,11 +10,15 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.util.FacilioUtil;
 
 public class EmailUtil {
+
+    private static final Logger LOGGER = LogManager.getLogger(EmailUtil.class.getName());
 
     public static void sendEmail(JSONObject mailJson) throws Exception {
         String sender = FacilioUtil.getProperty("mail.username");
@@ -45,9 +49,9 @@ public class EmailUtil {
 
                 Transport.send(message);
 
-                System.out.println("Sent email to " + mailJson.get("to") + " subject " + mailJson.get("subject"));
+                LOGGER.info("Sent email to " + mailJson.get("to") + " subject " + mailJson.get("subject"));
             } else {
-                System.out.println("mail.user is not configured, please configure in facilio.properties");
+                LOGGER.info("mail.user is not configured, please configure in facilio.properties");
             }
 
         } catch (MessagingException e) {
