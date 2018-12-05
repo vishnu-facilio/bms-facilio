@@ -334,10 +334,10 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForAlarm());
 			c.addCommand(new UpdateAlarmCommand());
-			c.addCommand(new ForkChainToInstantJobCommand()
-				.addCommand(new AddClearCommentInWoOnAlarmClearCommand())
-			);
 			c.addCommand(new ExecuteAllWorkflowsCommand());
+			c.addCommand(new ForkChainToInstantJobCommand()
+					.addCommand(new AddClearCommentInWoOnAlarmClearCommand())
+				);
 			c.addCommand(new ConstructTicketNotesCommand());
 			c.addCommand(getAddNotesChain());
 			CommonCommandUtil.addCleanUpCommand(c);
