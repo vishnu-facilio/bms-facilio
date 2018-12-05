@@ -1641,7 +1641,7 @@ public class DashboardAction extends FacilioAction {
 				String timeKey = dateKeyMap.get(key);
 				Collection<Object> d = resultMap.get(timeKey);
 				JSONArray data = new JSONArray();
-				data.add(dateMap.get(key));
+				data.add(dateMap.get(timeKey));
 				for(Object s:d) {
 					if(s == null) {
 						data.add("null");
