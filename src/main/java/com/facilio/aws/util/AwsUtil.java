@@ -137,6 +137,7 @@ public class AwsUtil
 
 	private static boolean productionEnvironment = false;
 	private static boolean developmentEnvironment = true;
+	private static boolean disableCSP = false;
 
 	static {
 		loadProperties();
@@ -150,6 +151,7 @@ public class AwsUtil
 				String environment = PROPERTIES.getProperty("environment");
 				productionEnvironment = "production".equalsIgnoreCase(environment);
 				developmentEnvironment = "development".equalsIgnoreCase(environment);
+				disableCSP = "true".equals(PROPERTIES.getProperty("disable.csp", "false").trim());
 			} catch (IOException e) {
 				LOGGER.info("Exception while trying to load property file " + AWS_PROPERTY_FILE);
 			}
@@ -786,5 +788,9 @@ public class AwsUtil
 
 	public static boolean isDevelopment() {
 		return developmentEnvironment;
+	}
+
+	public static boolean disableCSP() {
+		return disableCSP;
 	}
 }

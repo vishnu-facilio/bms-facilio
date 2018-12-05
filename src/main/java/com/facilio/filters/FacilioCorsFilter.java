@@ -113,7 +113,7 @@ public class FacilioCorsFilter implements Filter {
         response.setHeader(X_CONTENT_TYPE_OPTIONS , "nosniff");
         response.setHeader( REFERRER_POLICY, "strict-origin-when-cross-origin");
         
-        if (!AwsUtil.isDevelopment()) {
+        if (! (AwsUtil.isDevelopment() || AwsUtil.disableCSP())) {
         	response.setHeader(CONTENT_SECURITY_POLICY , "default-src https: data: self: 'unsafe-inline'; form-action https:; connect-src wss: https:; upgrade-insecure-requests");
         }
         response.setHeader(FEATURE_POLICY, "geolocation 'none'; autoplay 'none'");

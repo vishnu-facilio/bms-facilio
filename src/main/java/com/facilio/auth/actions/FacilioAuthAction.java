@@ -291,7 +291,7 @@ public class FacilioAuthAction extends ActionSupport {
                 cookie.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
                 cookie.setPath("/");
                 cookie.setHttpOnly(true);
-                if( ! AwsUtil.isDevelopment()) {
+                if( ! (AwsUtil.isDevelopment() || AwsUtil.disableCSP())) {
                     cookie.setSecure(true);
                 }
                 cookie.setDomain(parentdomain);
@@ -301,7 +301,9 @@ public class FacilioAuthAction extends ActionSupport {
                 authmodel.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
                 authmodel.setPath("/");
                 authmodel.setHttpOnly(false);
-                authmodel.setSecure(true);
+                if( ! (AwsUtil.isDevelopment() || AwsUtil.disableCSP())) {
+                    authmodel.setSecure(true);
+                }
 
                 authmodel.setDomain(parentdomain);
                 LOGGER.info("#################### facilio.in::: " + request.getServerName());
@@ -338,7 +340,7 @@ public class FacilioAuthAction extends ActionSupport {
         cookie.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
         cookie.setPath("/");
         cookie.setHttpOnly(true);
-        if( ! AwsUtil.isDevelopment()) {
+        if( ! (AwsUtil.isDevelopment() || AwsUtil.disableCSP())) {
             cookie.setSecure(true);
         }
         cookie.setDomain(parentdomain);
@@ -348,7 +350,9 @@ public class FacilioAuthAction extends ActionSupport {
         authmodel.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
         authmodel.setPath("/");
         authmodel.setHttpOnly(false);
-        authmodel.setSecure(true);
+        if( ! (AwsUtil.isDevelopment() || AwsUtil.disableCSP())) {
+            authmodel.setSecure(true);
+        }
         authmodel.setDomain(parentdomain);
         LOGGER.info("#################### facilio.in::: " + request.getServerName());
         response.addCookie(authmodel);
@@ -357,7 +361,9 @@ public class FacilioAuthAction extends ActionSupport {
         token.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
         token.setPath("/");
         token.setHttpOnly(false);
-        token.setSecure(true);
+        if( ! (AwsUtil.isDevelopment() || AwsUtil.disableCSP())) {
+            token.setSecure(true);
+        }
         token.setDomain(request.getServerName());
         response.addCookie(token);
         
