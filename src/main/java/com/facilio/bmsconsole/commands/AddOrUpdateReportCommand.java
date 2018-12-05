@@ -1,12 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
@@ -30,38 +31,44 @@ public class AddOrUpdateReportCommand implements Command {
 			ReportUtil.deleteReportFields(report.getId());
 		}
 		
-		List <ReportFieldContext> reportFields = new ArrayList<>();
-		
-		List<Long> fieldids = new ArrayList<>();
+		Set<ReportFieldContext> reportFields = new HashSet<>();
 		for(ReportDataPointContext dataPoint : report.getDataPoints()) {
 			
-			if(dataPoint.getxAxis() != null && dataPoint.getxAxis().getFieldId() > 0 && !fieldids.contains(dataPoint.getxAxis().getFieldId())) {
-				fieldids.add(dataPoint.getxAxis().getFieldId());
+			if(dataPoint.getxAxis() != null)  {
+				reportFields.add(constructReportField(dataPoint.getxAxis().getField(), report.getId()));
 			}
 			
-			if(dataPoint.getyAxis() != null && dataPoint.getyAxis().getFieldId() > 0 && !fieldids.contains(dataPoint.getyAxis().getFieldId())) {
-				
-				fieldids.add(dataPoint.getyAxis().getFieldId());
+			if(dataPoint.getyAxis() != null) {
+				reportFields.add(constructReportField(dataPoint.getyAxis().getField(), report.getId()));
 			}
 			
-			if(dataPoint.getDateFieldId() > 0 && !fieldids.contains(dataPoint.getDateFieldId()) ) {
-				fieldids.add(dataPoint.getyAxis().getFieldId());
+			if(dataPoint.getDateField() != null) {
+				reportFields.add(constructReportField(dataPoint.getDateField(), report.getId()));
 			}
+		}
+		if (report.getxCriteria() != null) {
+			reportFields.add(constructReportField(report.getxCriteria().getxField(), report.getId()));
 		}
 		
-		for(Long fieldid :fieldids) {
-			
-			ReportFieldContext reportFieldContext = new ReportFieldContext();
-			reportFieldContext.setReportId(report.getId());
-			reportFieldContext.setFieldId(fieldid);
-			reportFields.add(reportFieldContext);
-		}
 		ReportUtil.addReportFields(reportFields);
-		
-//		if(oldReportId != null) {
-//			ReportUtil.deleteOldReportWithWidgetUpdate(oldReportId,report.getId());
-//		}
 		return false;
+	}
+	
+	private ReportFieldContext constructReportField (FacilioField field, long reportId) {
+		ReportFieldContext reportFieldContext = new ReportFieldContext();
+		reportFieldContext.setReportId(reportId);
+		
+		if (field.getFieldId() > 0) {
+			reportFieldContext.setFieldId(field.getFieldId());
+		}
+		else if (field.getModule() != null && field.getModule().getName() != null && !field.getModule().getName().isEmpty() && field.getName() != null && !field.getName().isEmpty()){
+			reportFieldContext.setModuleName(field.getModule().getName());
+			reportFieldContext.setFieldName(field.getName());
+		}
+		else {
+			throw new IllegalArgumentException("Invalid field object for ReportFields addition");
+		}
+		return reportFieldContext;
 	}
 
 }

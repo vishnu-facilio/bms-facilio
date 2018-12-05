@@ -45,6 +45,7 @@ import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.ReadingAnalysisContext;
 import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
+import com.facilio.report.context.ReadingAnalysisContext.XCriteriaMode;
 import com.facilio.report.context.ReportYAxisContext;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
@@ -111,7 +112,7 @@ public class V2ReportAction extends FacilioAction {
 	public String fetchReportWithData() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
-		setReportWithDataContext(context);
+		setReportWithDataContext(context); //This could be moved to a command
 		
 		Chain fetchReadingDataChain = ReadOnlyChainFactory.fetchReportDataChain();
 		fetchReadingDataChain.execute(context);
@@ -389,6 +390,25 @@ public class V2ReportAction extends FacilioAction {
 		
 		return setReportResult(context);
 	}
+	
+	private XCriteriaMode xCriteriaMode;
+	public int getxCriteriaMode() {
+		if (xCriteriaMode != null) {
+			return xCriteriaMode.getValue();
+		}
+		return -1;
+	}
+	public void setxCriteriaMode(int xCriteriaMode) {
+		this.xCriteriaMode = XCriteriaMode.valueOf(xCriteriaMode);
+	}
+	
+	private long assetCategory = -1;
+	public long getAssetCategory() {
+		return assetCategory;
+	}
+	public void setAssetCategory(long assetCategory) {
+		this.assetCategory = assetCategory;
+	}
 
 	public boolean deleteWithWidget;
 	
@@ -431,6 +451,8 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.REPORT_Y_FIELDS, FieldUtil.getAsBeanListFromJsonArray(fieldArray, ReadingAnalysisContext.class));
 		context.put(FacilioConstants.ContextNames.REPORT_MODE, mode);
 		context.put(FacilioConstants.ContextNames.BASE_LINE_LIST, FieldUtil.getAsBeanListFromJsonArray(baseLineList, ReportBaseLineContext.class));
+		context.put(FacilioConstants.ContextNames.REPORT_X_CRITERIA_MODE, xCriteriaMode);
+		context.put(FacilioConstants.ContextNames.ASSET_CATEGORY, assetCategory);
 		
 		context.put(FacilioConstants.ContextNames.ALARM_ID, alarmId);
 	}

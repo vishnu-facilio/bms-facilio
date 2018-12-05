@@ -42,11 +42,11 @@ public class FilterXFieldCommand implements Command {
 				context.put(FacilioConstants.ContextNames.REPORT_X_VALUES, joiner.toString());
 			}
 			
-			if(report.getxCriteria().getTransformWorkflowId() > 0) {
+			if(report.getxCriteria().getTransformWorkflow() != null) {
 				
 				Map<String,Object> paramMap = new HashMap<>();
 				paramMap.put("value", xValues);
-				Object result = WorkflowUtil.getResult(report.getxCriteria().getTransformWorkflowId(), paramMap);
+				Object result = WorkflowUtil.getWorkflowExpressionResult(report.getxCriteria().getTransformWorkflow().getWorkflowString(), paramMap);
 				
 				context.put(FacilioConstants.ContextNames.REPORT_X_VALUES, result);
 			}

@@ -144,4 +144,21 @@ public class ReadingAnalysisContext {
 		}
 		
 	}
+	
+	public static enum XCriteriaMode {
+		NONE,
+		ALL_ASSET_CATEGORY,
+		;
+		
+		public int getValue() {
+			return ordinal() + 1;
+		}
+		
+		public static XCriteriaMode valueOf (int value) {
+			if (value > 0 && value <= values().length) {
+				return values() [value - 1];
+			}
+			return null;
+		}
+	}
 }

@@ -2,49 +2,10 @@ package com.facilio.report.context;
 
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.workflows.context.WorkflowContext;
 
 public class ReportXCriteriaContext {
 
-	private long id = -1;
-	public long getId() {
-		return id;
-	}
-	public void setId(long id) {
-		this.id = id;
-	}
-	
-	private long orgId = -1;
-	public long getOrgId() {
-		return orgId;
-	}
-	public void setOrgId(long orgId) {
-		this.orgId = orgId;
-	}
-	
-	private long siteId = -1;
-	public long getSiteId() {
-		return siteId;
-	}
-	public void setSiteId(long siteId) {
-		this.siteId = siteId;
-	}
-	
-	private long reportId = -1;
-	public long getReportId() {
-		return reportId;
-	}
-	public void setReportId(long reportId) {
-		this.reportId = reportId;
-	}
-	
-	private long moduleId = -1;
-	public long getModuleId() {
-		return moduleId;
-	}
-	public void setModuleId(long moduleId) {
-		this.moduleId = moduleId;
-	}
-	
 	private String moduleName;
 	public String getModuleName() {
 		return moduleName;
@@ -75,6 +36,13 @@ public class ReportXCriteriaContext {
 	}
 	public void setxField(FacilioField xField) {
 		this.xField = xField;
+		
+		this.xFieldId = xField.getId();
+		this.xFieldName = xField.getName();
+		
+		if (xField.getModule() != null) {
+			this.moduleName = xField.getModule().getName();
+		}
 	}
 
 	private long criteriaId = -1;
@@ -93,11 +61,11 @@ public class ReportXCriteriaContext {
 		this.criteria = criteria;
 	}
 
-	private long transformWorkflowId = -1;
-	public long getTransformWorkflowId() {
-		return transformWorkflowId;
+	private WorkflowContext transformWorkflow;
+	public WorkflowContext getTransformWorkflow() {
+		return transformWorkflow;
 	}
-	public void setTransformWorkflowId(long transformWorkflowId) {
-		this.transformWorkflowId = transformWorkflowId;
+	public void setTransformWorkflow(WorkflowContext transformWorkflow) {
+		this.transformWorkflow = transformWorkflow;
 	}
 }

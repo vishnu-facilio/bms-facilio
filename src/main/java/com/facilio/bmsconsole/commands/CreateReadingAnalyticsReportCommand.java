@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
@@ -23,11 +24,13 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.ReadingAnalysisContext;
 import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
+import com.facilio.report.context.ReadingAnalysisContext.XCriteriaMode;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportDataPointContext.DataPointType;
 import com.facilio.report.context.ReportDataPointContext.OrderByFunction;
 import com.facilio.report.context.ReportFieldContext;
+import com.facilio.report.context.ReportXCriteriaContext;
 import com.facilio.report.context.ReportYAxisContext;
 import com.facilio.report.util.ReportUtil;
 
@@ -72,6 +75,11 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 				dataPoints.add(dataPoint);
 			}
 			ReportContext report = ReportUtil.constructReport((FacilioContext) context, dataPoints, startTime, endTime);
+			ReportXCriteriaContext xCriteria = constructXCriteria((FacilioContext) context);
+			if (xCriteria != null) {
+				report.setxCriteria(xCriteria);
+			}
+			
 			context.put(FacilioConstants.ContextNames.REPORT, report);
 		}
 		else {
@@ -158,5 +166,28 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 			}
 		}
 		return ResourceAPI.getResourceAsMapFromIds(resourceIds);
+	}
+	
+	private ReportXCriteriaContext constructXCriteria (FacilioContext context) throws Exception {
+		XCriteriaMode mode = (XCriteriaMode) context.get(FacilioConstants.ContextNames.REPORT_X_CRITERIA_MODE);
+		if (mode != null) {
+			switch (mode) {
+				case NONE:
+					return null;
+				case ALL_ASSET_CATEGORY:
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					long categoryId = (long) context.get(FacilioConstants.ContextNames.ASSET_CATEGORY);
+					ReportXCriteriaContext xCriteria = new ReportXCriteriaContext();
+					xCriteria.setxField(modBean.getField("id", FacilioConstants.ContextNames.ASSET));
+					FacilioField categoryField = modBean.getField("category", FacilioConstants.ContextNames.ASSET);
+					
+					Criteria criteria = new Criteria();
+					criteria.addAndCondition(CriteriaAPI.getCondition(categoryField, String.valueOf(categoryId), PickListOperators.IS));
+					
+					xCriteria.setCriteria(criteria);
+					return xCriteria;
+			}
+		}
+		return null;
 	}
 }

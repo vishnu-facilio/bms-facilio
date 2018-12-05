@@ -2,6 +2,7 @@ package com.facilio.report.context;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import com.facilio.bmsconsole.modules.BooleanField;
 import com.facilio.bmsconsole.modules.EnumField;
@@ -69,7 +70,6 @@ public class ReportFieldContext {
 	}
 	public void setField(FacilioField field) {
 		if (field != null) {
-
 			
 			this.fieldId = field.getId();
 			this.fieldName = field.getName();
@@ -171,5 +171,33 @@ public class ReportFieldContext {
 	}
 	public void setEnumMap(Map<Integer, Object> enumMap) {
 		this.enumMap = enumMap;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		// TODO Auto-generated method stub
+		if (!(obj instanceof ReportFieldContext)) {
+			return false;
+		}
+		else if (this == obj) {
+			return true;
+		}
+		else if (this.fieldId > 0) {
+			return this.fieldId == ((ReportFieldContext) obj).fieldId; 
+		}
+		else {
+			return Objects.equals(this.fieldName, ((ReportFieldContext) obj).fieldName) && Objects.equals(this.moduleName, ((ReportFieldContext) obj).moduleName);
+		}
+	}
+	
+	@Override
+	public int hashCode() {
+		// TODO Auto-generated method stub
+		if (this.fieldId > 0) {
+			return Long.hashCode(fieldId);
+		}
+		else {
+			return Objects.hashCode(fieldName) + Objects.hashCode(moduleName); 
+		}
 	}
 }

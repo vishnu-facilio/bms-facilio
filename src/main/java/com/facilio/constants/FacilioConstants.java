@@ -274,6 +274,7 @@ public class FacilioConstants {
 		public static final String REPORT_ORDER_BY = "orderBy";
 		public static final String REPORT_CUSTOM_WHERE_LIST = "customWhereList";
 		public static final String REPORT_CRITERIA_LIST = "reportCriteriaList";
+		public static final String REPORT_X_CRITERIA_MODE = "reportXCriteria";
 		public static final String REPORT_X_AGGR = "xAggr";
 		public static final String REPORT_Y_AGGR = "yAggr";
 		public static final String REPORT_DATA = "reportData";

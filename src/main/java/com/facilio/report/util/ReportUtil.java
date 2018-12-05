@@ -1,6 +1,7 @@
 package com.facilio.report.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -279,7 +280,7 @@ public class ReportUtil {
 		return updateBuilder.update(props) > 0 ? true :false ;
 	}
 	
-	public static void addReportFields(List<ReportFieldContext> reportFieldContexts) throws Exception {
+	public static void addReportFields(Collection<ReportFieldContext> reportFieldContexts) throws Exception {
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getReportFieldsModule().getTableName())
