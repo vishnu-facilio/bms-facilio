@@ -140,23 +140,13 @@ public class PickListAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	public String v2updateTicketPriorties() throws Exception {
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD_LIST, getTicketPriorties());
-		Chain updateTicketPrioritiesChain = FacilioChainFactory.getUpdateTicketPrioritiesChain();
-		updateTicketPrioritiesChain.execute(context);
-		setResult(FacilioConstants.ContextNames.RECORD, context.get(FacilioConstants.ContextNames.RECORD_LIST));
-		return SUCCESS;
-		
-	}
-	
 	public String deleteTicketPriority() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, getTicketPriority());
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(getTicketPriority().getId()));
 		Chain deleteTicketPriorityChain = FacilioChainFactory.getDeleteTicketPriorityChain();
 		deleteTicketPriorityChain.execute(context);
-		
+		setResult(FacilioConstants.ContextNames.RECORD, context.get(FacilioConstants.ContextNames.RECORD_LIST));
 		return SUCCESS;
 	}
 	
@@ -361,6 +351,11 @@ public class PickListAction extends FacilioAction {
 	}
 
 	public String addAlarmSeverity() throws Exception {
+		if(assetSeverity.getSeverity() == null || assetSeverity.getSeverity().isEmpty()) {
+			if(assetSeverity.getDisplayName() != null && !assetSeverity.getDisplayName().isEmpty()) {
+				assetSeverity.setSeverity(assetSeverity.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
+			}
+		}
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, getAssetSeverity());
 		Chain addAlarmSeverityChain = FacilioChainFactory.getAddAlarmSeverityChain();
@@ -368,6 +363,15 @@ public class PickListAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
+	List<AlarmSeverityContext> alarmSeverities;
+	public List<AlarmSeverityContext> getAlarmSeverities() {
+		return alarmSeverities;
+	}
+	public void setAlarmSeverities(List<AlarmSeverityContext> alarmSeverities) {
+		this.alarmSeverities = alarmSeverities;
+	}
+	
+	
 	
 /******************      V2 Api    
  * @throws Exception ******************/
@@ -375,6 +379,43 @@ public class PickListAction extends FacilioAction {
 	public String v2pickList() throws Exception {
 		execute();
 		setResult(FacilioConstants.ContextNames.PICKLIST, pickList);
+		return SUCCESS;
+	}
+	public String v2updateTicketPriorties() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_LIST, getTicketPriorties());
+		Chain updateTicketPrioritiesChain = FacilioChainFactory.getUpdateTicketPrioritiesChain();
+		updateTicketPrioritiesChain.execute(context);
+		setResult(FacilioConstants.ContextNames.RECORD, context.get(FacilioConstants.ContextNames.RECORD_LIST));
+		return SUCCESS;
+		
+	}
+	
+	public String v2updateAlarmSeverities() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_LIST, getAlarmSeverities()	);
+		Chain updateAlarmSeveritiesChain = FacilioChainFactory.getUpdateAlarmSeveritiesChain();
+		updateAlarmSeveritiesChain.execute(context);
+		setResult(FacilioConstants.ContextNames.RECORD, context.get(FacilioConstants.ContextNames.RECORD_LIST));
+		return SUCCESS;
+		
+	}
+	public String v2deleteAlarmSeverity () throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, getAssetSeverity());
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(getAssetSeverity().getId()));
+		Chain deleteAlarmSeverityChain = FacilioChainFactory.getDeleteAlarmSeverityChain();
+		deleteAlarmSeverityChain.execute(context);
+		return SUCCESS;
+	}
+	public String updateAlarmSeverity() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, getAssetSeverity());
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(getAssetSeverity().getId()));
+		Chain updateAlarmSeverityChain = FacilioChainFactory.getUpdateAlarmSeverityChain();
+		updateAlarmSeverityChain.execute(context);
+		setResult(FacilioConstants.ContextNames.ALARM_SEVERITY, assetSeverity);
+		
 		return SUCCESS;
 	}
 	

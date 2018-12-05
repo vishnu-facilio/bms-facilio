@@ -61,7 +61,7 @@ public class SetTableNamesCommand implements Command {
 	}
 	
 	public static SetTableNamesCommand getForAlarmSeverity() {
-		return new SetTableNamesCommand("assetseverity", "AlarmSeverity");
+		return new SetTableNamesCommand("alarmseverity", "AlarmSeverity");
 	}
 	
 	public static SetTableNamesCommand getForTicket() {

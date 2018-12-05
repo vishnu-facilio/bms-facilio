@@ -331,7 +331,15 @@
 		<action name="*" class="com.facilio.bmsconsole.actions.PickListAction" method="v2pickList">
 			<param name="moduleName">{1}</param>
 		</action>
+		<action name="updateSeverity" class="com.facilio.bmsconsole.actions.PickListAction" method="updateAlarmSeverity">
+		</action>
+		<action name="updateAlarmSeverities" class="com.facilio.bmsconsole.actions.PickListAction" method="v2updateAlarmSeverities">
+		</action>
+		<action name="deleteAlarmSeverity" class="com.facilio.bmsconsole.actions.PickListAction" method="v2deleteAlarmSeverity">
+		</action>
 	    <action name="updatePriorities" class="com.facilio.bmsconsole.actions.PickListAction" method="v2updateTicketPriorties">
+		</action>
+		<action name="deleteTicketPriority" class="com.facilio.bmsconsole.actions.PickListAction" method="deleteTicketPriority">
 		</action>
 	</package>
 	<package name="formsApiv2" namespace="/api/v2/form" extends="v2Api">

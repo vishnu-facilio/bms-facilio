@@ -1940,6 +1940,27 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getUpdateAlarmSeverityChain() {
+		Chain c = getTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForAlarmSeverity());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenericUpdateModuleDataCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getUpdateAlarmSeveritiesChain() {
+		Chain c = getTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForAlarmSeverity());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenericUpdateListModuleDataCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	
 	public static Chain getUpdateTicketPrioritiesChain() {
 		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForTicketPriority());
@@ -1953,6 +1974,15 @@ public class FacilioChainFactory {
 	public static Chain getDeleteTicketPriorityChain() {
 		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForTicketPriority());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenericDeleteModuleDataCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	public static Chain getDeleteAlarmSeverityChain() {
+		Chain c = getTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForAlarmSeverity());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenericDeleteModuleDataCommand());
