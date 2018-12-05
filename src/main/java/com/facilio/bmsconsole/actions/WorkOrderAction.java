@@ -581,7 +581,7 @@ public class WorkOrderAction extends FacilioAction {
 					}
 				}
 				
-				assetCategoryIds = AssetsAPI.getAssetCategoryIds(floorsIds);
+				assetCategoryIds = AssetsAPI.getAssetCategoryIds(floorsIds,true);
 				spaceCategoryIds = SpaceAPI.getSpaceCategoryIds(floorsIds);
 			}
 			else if(assignmentType.equals(PMAssignmentType.SPACE_CATEGORY)) {
@@ -599,7 +599,7 @@ public class WorkOrderAction extends FacilioAction {
 						}
 					}
 					
-					assetCategoryIds = AssetsAPI.getAssetCategoryIds(spaceIds);
+					assetCategoryIds = AssetsAPI.getAssetCategoryIds(spaceIds,true);
 					spaceCategoryIds = SpaceAPI.getSpaceCategoryIds(spaceIds);
 				}
 				else {
@@ -615,7 +615,7 @@ public class WorkOrderAction extends FacilioAction {
 						}
 					}
 					
-					assetCategoryIds = AssetsAPI.getAssetCategoryIds(spaceIds);
+					assetCategoryIds = AssetsAPI.getAssetCategoryIds(spaceIds,true);
 					spaceCategoryIds = SpaceAPI.getSpaceCategoryIds(spaceIds);
 				}
 			}

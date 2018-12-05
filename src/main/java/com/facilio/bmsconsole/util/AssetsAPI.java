@@ -131,15 +131,20 @@ public class AssetsAPI {
 	}
 	
 	public static List<Long> getAssetCategoryIds(long baseSpaceID, boolean fetchChildSpaces) throws Exception {
+		
+		return getAssetCategoryIds(Collections.singletonList(baseSpaceID),fetchChildSpaces);
+	}
+	
+	public static List<Long> getAssetCategoryIds(List<Long> baseSpaceIDs, boolean fetchChildSpaces) throws Exception {
 		if (fetchChildSpaces) {
-			List<BaseSpaceContext> allSpaces = SpaceAPI.getBaseSpaceWithChildren(baseSpaceID);
+			List<BaseSpaceContext> allSpaces = SpaceAPI.getBaseSpaceWithChildren(baseSpaceIDs);
 			if (allSpaces != null && !allSpaces.isEmpty()) {
 				return getAssetCategoryIds(allSpaces.stream().map(BaseSpaceContext::getId).collect(Collectors.toList()));
 			}
 			return null;
 		}
 		else {
-			return getAssetCategoryIds(Collections.singletonList(baseSpaceID));
+			return getAssetCategoryIds(baseSpaceIDs);
 		}
 	}
 	
