@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
@@ -26,12 +27,16 @@ public class CreateFormulaFieldDependenciesCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		FormulaFieldContext formulaField = (FormulaFieldContext) context.get(FacilioConstants.ContextNames.FORMULA_FIELD);
+		String formulaUnit = (String) context.get(FacilioConstants.ContextNames.FORMULA_UNIT_STRING);
 		if (formulaField != null) { 
 			
 			FormulaFieldAPI.validateFormula(formulaField, false);
 			
 			FacilioField field = FieldFactory.getField(null, formulaField.getName(), null, null, formulaField.getResultDataTypeEnum() == null? FieldType.DECIMAL : formulaField.getResultDataTypeEnum());
 			field.setDisplayType(FacilioField.FieldDisplayType.ENPI);
+			if(formulaUnit != null && field instanceof NumberField) {
+				((NumberField) field).setUnit(formulaUnit);
+			}
 			formulaField.setReadingField(field);
 			
 			if (formulaField.getTriggerTypeEnum() == TriggerType.PRE_LIVE_READING) {

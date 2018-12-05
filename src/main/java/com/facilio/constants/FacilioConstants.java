@@ -551,6 +551,7 @@ public class FacilioConstants {
 		public static final String READING_DATA_META_LIST = "readingDataMetaList";
 		public static final String READING_DATA_META_TYPE = "readingDataMetaType";
 		public static final String FORMULA_FIELD = "formulaField";
+		public static final String FORMULA_UNIT_STRING = "formulaUnit";
 		public static final String FORMULA_FIELD_TYPE = "formulaFieldType";
 		public static final String FORMULA_LIST = "formulaList";
 		public static final String HISTORY_READINGS = "historyReadings";

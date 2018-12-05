@@ -704,10 +704,21 @@ public class ReadingAction extends FacilioAction {
 	public void setFormula(FormulaFieldContext formula) {
 		this.formula = formula;
 	}
+	
+	private String formulaFieldUnit;
+
+	public String getFormulaFieldUnit() {
+		return formulaFieldUnit;
+	}
+
+	public void setFormulaFieldUnit(String formulaFieldUnit) {
+		this.formulaFieldUnit = formulaFieldUnit;
+	}
 
 	public String addFormulaField() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.FORMULA_FIELD, formula);
+		context.put(FacilioConstants.ContextNames.FORMULA_UNIT_STRING, formulaFieldUnit);
 		if (formula.getInterval() == -1) {
 			int interval = ReadingsAPI.getDataInterval(formula.getWorkflow());
 			formula.setInterval(interval);
