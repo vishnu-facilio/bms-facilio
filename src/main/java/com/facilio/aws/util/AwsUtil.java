@@ -35,6 +35,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 
+import com.facilio.email.EmailUtil;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -384,8 +385,20 @@ public class AwsUtil
         return result.toString();
     }
 	
-	public static void sendEmail(JSONObject mailJson) throws Exception 
-	{
+	public static void sendEmail(JSONObject mailJson) throws Exception  {
+		String appUrl = AwsUtil.getConfig("app.url");
+		if(appUrl == null || appUrl.contains("localhost")) {
+//			mailJson.put("subject", "Local - "+mailJson.get("subject"));
+			return;
+		}
+		if("smtp".equals(AwsUtil.getConfig("email.type"))) {
+			EmailUtil.sendEmail(mailJson);
+		} else {
+			sendEmailViaAws(mailJson);
+		}
+	}
+
+	private static void sendEmailViaAws(JSONObject mailJson) throws Exception  {
 		String appUrl = AwsUtil.getConfig("app.url");
 		if(appUrl == null || appUrl.contains("localhost")) {
 //			mailJson.put("subject", "Local - "+mailJson.get("subject"));
@@ -398,9 +411,9 @@ public class AwsUtil
 			if(toAddress != null) {
 				String to = "";
 				for(String address : toAddress.split(",")) {
-					 if(address.contains("facilio.com")) {
-						 to = address + ",";
-					 }
+					if(address.contains("facilio.com")) {
+						to = address + ",";
+					}
 				}
 				if(to.length() == 0 ) {
 					sendEmail = false;
@@ -415,7 +428,7 @@ public class AwsUtil
 			Destination destination = new Destination().withToAddresses(toAddress.split("\\s*,\\s*"));
 			Content subjectContent = new Content().withData((String) mailJson.get("subject"));
 			Content bodyContent = new Content().withData((String) mailJson.get("message"));
-			
+
 			Body body = null;
 			if(mailJson.get("mailType") != null && mailJson.get("mailType").equals("html")) {
 				body = new Body().withHtml(bodyContent);
@@ -446,8 +459,19 @@ public class AwsUtil
 		}
 	}
 	
-	public static void sendEmail(JSONObject mailJson, Map<String,String> files) throws Exception 
-	{
+	public static void sendEmail(JSONObject mailJson, Map<String,String> files) throws Exception  {
+		if(files == null || files.isEmpty()) {
+			sendEmail(mailJson);
+			return;
+		}
+		if("smtp".equals(AwsUtil.getConfig("email.type"))) {
+
+		} else {
+			sendEmailViaAws(mailJson, files);
+		}
+	}
+
+	private static void sendEmailViaAws(JSONObject mailJson, Map<String,String> files) throws Exception  {
 		if(files == null || files.isEmpty()) {
 			sendEmail(mailJson);
 			return;
@@ -775,8 +799,7 @@ public class AwsUtil
 	    }
 	    
 	    message.setContent(messageContent);
-	    if(SERVERNAME!=null)
-	    {
+	    if(SERVERNAME!=null) {
 	       message.addHeader("host", SERVERNAME);
 	    }
 	    return message;
