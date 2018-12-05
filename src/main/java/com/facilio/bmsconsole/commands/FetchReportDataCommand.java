@@ -318,7 +318,7 @@ public class FetchReportDataCommand implements Command {
 			}
 		}
 		else {
-			if (xAggr == null || xAggr == CommonAggregateOperator.ACTUAL) { //Return x field as aggr field as there's no X aggregation
+			if (xAggr == null || xAggr == CommonAggregateOperator.ACTUAL || dp.isHandleBoolean()) { //Return x field as aggr field as there's no X aggregation
 				xAggrField = dp.getxAxis().getField();
 				fields.add(xAggrField);
 			}
@@ -342,11 +342,15 @@ public class FetchReportDataCommand implements Command {
 
 	private void applyOrderByAndLimit (ReportDataPointContext dataPoint, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder) {
 		if (dataPoint.getOrderBy() != null && dataPoint.getOrderBy().isEmpty()) {
-			StringBuilder orderBy = new StringBuilder(dataPoint.getOrderBy());
-			if (dataPoint.getOrderByFuncEnum() != null) {
-				orderBy.append(" ")
-						.append(dataPoint.getOrderByFuncEnum().getStringValue());
+			
+			if (dataPoint.getOrderByFuncEnum() == null || dataPoint.getOrderByFuncEnum() == OrderByFunction.NONE) {
+				throw new IllegalArgumentException("Order By function cannot be empty when order by is not empty");
 			}
+			
+			StringBuilder orderBy = new StringBuilder(dataPoint.getOrderBy())
+										.append(" ")
+										.append(dataPoint.getOrderByFuncEnum().getStringValue())
+										;
 			selectBuilder.orderBy(orderBy.toString());
 			
 			if (dataPoint.getLimit() != -1) {

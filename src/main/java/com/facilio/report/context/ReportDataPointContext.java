@@ -228,6 +228,7 @@ public class ReportDataPointContext {
 	}
 
 	public static enum OrderByFunction {
+		NONE (null),
 		ACCENDING ("ASC"),
 		DESCENDING ("DESC");
 		

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.report.context.ReportDataPointContext.DataPointType;
+import com.facilio.report.context.ReportDataPointContext.OrderByFunction;
 import com.facilio.workflows.context.WorkflowContext;
 
 public class ReadingAnalysisContext {
@@ -71,6 +72,28 @@ public class ReadingAnalysisContext {
 	}
 	public void setyAxis(ReportYAxisContext yAxis) {
 		this.yAxis = yAxis;
+	}
+	
+	private OrderByFunction orderByFunc;
+	public OrderByFunction getOrderByFunc() {
+		return orderByFunc;
+	}
+	public void setOrderByFunc(OrderByFunction orderByFunc) {
+		this.orderByFunc = orderByFunc;
+	}
+	public OrderByFunction getOrderByFuncEnum() {
+		return orderByFunc;
+	}
+	public void setOrderByFunc(int orderByFunc) {
+		this.orderByFunc = OrderByFunction.valueOf(orderByFunc);
+	}
+
+	private int limit = -1;
+	public int getLimit() {
+		return limit;
+	}
+	public void setLimit(int limit) {
+		this.limit = limit;
 	}
 
 	public static enum ReportMode {

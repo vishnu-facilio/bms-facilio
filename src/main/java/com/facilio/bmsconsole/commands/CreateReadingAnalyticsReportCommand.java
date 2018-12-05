@@ -26,6 +26,7 @@ import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportDataPointContext.DataPointType;
+import com.facilio.report.context.ReportDataPointContext.OrderByFunction;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportYAxisContext;
 import com.facilio.report.util.ReportUtil;
@@ -59,6 +60,15 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 				dataPoint.setAliases(metric.getAliases());
 				dataPoint.setTransformWorkflow(metric.getTransformWorkflow());
 				dataPoint.setTransformWorkflowId(metric.getTransformWorkflowId());
+				
+				if (metric.getOrderByFuncEnum() != null && metric.getOrderByFuncEnum() != OrderByFunction.NONE) {
+					dataPoint.setOrderByFunc(metric.getOrderByFuncEnum());
+					dataPoint.setOrderBy(dataPoint.getyAxis().getField().getCompleteColumnName()+", "+dataPoint.getxAxis().getField().getCompleteColumnName());
+				}
+				if (metric.getLimit() != -1) {
+					dataPoint.setLimit(metric.getLimit());
+				}
+				
 				dataPoints.add(dataPoint);
 			}
 			ReportContext report = ReportUtil.constructReport((FacilioContext) context, dataPoints, startTime, endTime);
