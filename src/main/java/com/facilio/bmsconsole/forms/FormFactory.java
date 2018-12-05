@@ -35,7 +35,7 @@ public class FormFactory {
 		forms.put("serviceWorkRequest", getServiceWorkRequestForm());
 		forms.put("serviceWorkOrder", getServiceWorkOrderForm());
 		forms.put("loggedInServiceWorkRequest", getLoggedInServiceWorkRequest());
-		forms.put("pmForm", getPMForm());
+		forms.put("web_pm", getPMForm());
 		forms.put("approvalForm", getApprovalForm());
 		return forms;
 	}
@@ -215,7 +215,7 @@ public class FormFactory {
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFormType(FormType.WEB);
 		form.setFields(getWebPMFormFields());
-		return null;
+		return form;
 	}
 	
 	private static List<FormField> getWebWorkOrderFormFields() {
