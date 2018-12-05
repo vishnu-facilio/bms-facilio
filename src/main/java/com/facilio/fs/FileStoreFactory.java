@@ -34,13 +34,25 @@ public class FileStoreFactory {
 	
 	public FileStore getFileStoreFromOrg(long orgId, long ouid) {
 		String environment = AwsUtil.getConfig("environment"); 
+		
+		String filestoretype = AwsUtil.getConfig("files.store.type");  
 		FileStore fs = null;
-		if ("development".equalsIgnoreCase(environment)) {
+		if ("local_filestore".equalsIgnoreCase(filestoretype)) {
 			// local store
 			fs = new LocalFileStore(orgId, ouid);
 		} else {
-			// S3 store
-			fs = new S3FileStore(orgId, ouid);
+			// external file store..
+			
+			if(filestoretype==null || filestoretype.equals("aws_filestore"))
+			{
+				fs = new S3FileStore(orgId, ouid);
+			}
+			else
+			{
+				// for machinestalk and other private installation
+				fs = new FacilioFileStore(orgId, ouid);
+			}
+
 		}
 		return fs;
 	}
