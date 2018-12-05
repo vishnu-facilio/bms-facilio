@@ -126,7 +126,7 @@ public class FacilioContextListener implements ServletContextListener {
 				log.info("Custom domains loaded " + customDomains);
 			}
 			
-			if(AwsUtil.isDevelopment()) {
+			if(AwsUtil.isDevelopment() || AwsUtil.disableCSP()) {
 				initializeDB();
 			}
 
