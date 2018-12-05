@@ -25,7 +25,7 @@ public class PublishControllerPropertyToIoTCommand implements Command {
 		if (controller.getDataInterval() != -1 && controller.getDataInterval() != oldController.getDataInterval()) {
 			JSONObject prop = new JSONObject();
 			prop.put("key", "interval");
-			prop.put("value", controller.getDataInterval() * 60 * 60);
+			prop.put("value", controller.getDataInterval() * 60 * 1000);
 			IoTMessageAPI.publishIotMessage(controller.getId(), prop, null, data -> rollBackIntervalTime(controller.getId(), oldController.getDataInterval()));
 		}
 
