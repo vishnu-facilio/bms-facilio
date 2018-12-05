@@ -63,7 +63,7 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 				
 				if (metric.getOrderByFuncEnum() != null && metric.getOrderByFuncEnum() != OrderByFunction.NONE) {
 					dataPoint.setOrderByFunc(metric.getOrderByFuncEnum());
-					dataPoint.setOrderBy(dataPoint.getyAxis().getField().getCompleteColumnName()+", "+dataPoint.getxAxis().getField().getCompleteColumnName());
+					dataPoint.setOrderBy(dataPoint.getyAxis().getField().getName()+", "+dataPoint.getxAxis().getField().getName());
 				}
 				if (metric.getLimit() != -1) {
 					dataPoint.setLimit(metric.getLimit());
