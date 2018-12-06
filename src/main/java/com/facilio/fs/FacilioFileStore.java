@@ -82,7 +82,7 @@ public class FacilioFileStore extends FileStore {
 			data.append(getOrgId());
 			data.append("&fileName");
 			data.append(URLEncoder.encode(fileName));
-			data.append("&content=");
+			data.append("&fileContent=");
 			data.append(URLEncoder.encode(content));
 			byte[] postData = data.toString().getBytes(StandardCharsets.UTF_8);
 
@@ -105,7 +105,7 @@ public class FacilioFileStore extends FileStore {
 	@Override
 	public InputStream readFile(long fileId) throws Exception {
 		FileInfo fileInfo = getFileInfo(fileId);
-		String url = AwsUtil.getConfig("files.url")+File.separator+fileInfo.getFilePath();
+		String url = AwsUtil.getConfig("files.url")+File.separator +"/api/file/get?orgId="+getOrgId()+"&fileName="+fileInfo.getFileName();
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
@@ -155,7 +155,7 @@ public class FacilioFileStore extends FileStore {
 	@Override
 	public String getDownloadUrl(long fileId) throws Exception {
 		FileInfo fileInfo = getFileInfo(fileId);
-		return AwsUtil.getConfig("files.url")+File.separator + fileInfo.getFilePath();
+		return AwsUtil.getConfig("files.url")+File.separator +"/api/file/get?orgId="+getOrgId()+"&fileName="+fileInfo.getFileName();
 	}
 
 }
