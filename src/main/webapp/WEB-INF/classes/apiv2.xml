@@ -546,6 +546,8 @@
 		</action>
 		<action name="mapped" class="com.facilio.bmsconsole.actions.TimeSeries" method="getMappedInstances">
 		</action>
+		<action name="discover" class="com.facilio.bmsconsole.actions.TimeSeries" method="discoverInstances">
+		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.TimeSeries" method="getInstancesForController">
 			<param name="controllerId">{1}</param>
 		</action>

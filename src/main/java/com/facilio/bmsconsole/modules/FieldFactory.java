@@ -4266,6 +4266,7 @@ public class FieldFactory {
 		fields.add(getField("categoryId", "ASSET_CATEGORY_ID", module, FieldType.NUMBER));
 		fields.add(getField("fieldId", "FIELD_ID", module, FieldType.NUMBER));
         fields.add(getField("controllerId", "CONTROLLER_ID", module, FieldType.NUMBER));
+        fields.add(getField("mappedTime", "MAPPED_TIME", module, FieldType.NUMBER));
 		return fields;
 	}
 
@@ -4288,6 +4289,7 @@ public class FieldFactory {
         fields.add(getField("instanceDescription", "INSTANCE_DESCRIPTION", module, FieldType.STRING));
         fields.add(getField("instanceType", "INSTANCE_TYPE", module, FieldType.NUMBER));
         fields.add(getField("inUse", "IN_USE", module, FieldType.BOOLEAN));
+        fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
 		return fields;
 	}
 

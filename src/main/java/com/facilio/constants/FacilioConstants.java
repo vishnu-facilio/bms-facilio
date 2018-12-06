@@ -551,6 +551,7 @@ public class FacilioConstants {
 		public static final String PREVIOUS_READING_DATA_META = "previousReadingDataMeta";
 		public static final String CURRRENT_READING_DATA_META = "currentReadingDataMeta";
 		public static final String READING_DATA_META_LIST = "readingDataMetaList";
+		public static final String READING_DATA_META_MAP = "readingDataMetaMap";
 		public static final String READING_DATA_META_TYPE = "readingDataMetaType";
 		public static final String FORMULA_FIELD = "formulaField";
 		public static final String FORMULA_UNIT_STRING = "formulaUnit";
@@ -560,6 +561,7 @@ public class FacilioConstants {
 		public static final String HISTORY_ALARM = "historyAlarm";
 		public static final String ANALYTICS_ANAMOLY = "analyticsAnamoly";
 		public static final String DERIVATION = "derivation";
+		public static final String FETCH_MAPPED="fetchMapped";
 		
 		public static final String PORTALINFO = "portalInfo";
 		public static final String PUBLICKEYFILE = "publicKeyFile";

@@ -128,6 +128,7 @@ public class UnModeledDataCommand implements Command {
 		value.put("orgId", orgId);
 		value.put("device",deviceName);
 		value.put("instance", instanceName);
+		value.put("createdTime", System.currentTimeMillis());
 		if(controllerId!=null) {
 			//this will ensure the new inserts after addition of controller gets proper controller id
 			value.put("controllerId", controllerId);

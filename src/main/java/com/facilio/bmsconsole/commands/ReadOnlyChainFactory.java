@@ -201,6 +201,14 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain getUnmodelledInstancesForController() {
+		Chain c = new ChainBase();
+		c.addCommand(new GetUnmodelledInstancesForControllerCommand());
+		c.addCommand(new GetLatestReadingDataCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
 	private static Chain getDefaultChain() {
 		return new FacilioChain(false);
     }

@@ -11,9 +11,12 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.util.IoTMessageAPI;
+import com.facilio.bmsconsole.util.IoTMessageAPI.IotCommandType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.timeseries.TimeSeriesAPI;
 
@@ -127,8 +130,18 @@ public class TimeSeries extends FacilioAction {
 	}
 	
 	public String getInstancesForController () throws Exception {
-		List<Map<String, Object>> instances = TimeSeriesAPI.getUnmodeledInstancesForController(controllerId, configured, getFetchMapped());
-		setResult("instances", instances);
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.CONTROLLER_ID, controllerId);
+		context.put(FacilioConstants.ContextNames.CONFIGURE, configured);
+		context.put(FacilioConstants.ContextNames.FETCH_MAPPED, fetchMapped);
+		
+		Chain chain = ReadOnlyChainFactory.getUnmodelledInstancesForController();
+		chain.execute(context);
+		
+		setResult("instances", context.get(FacilioConstants.ContextNames.INSTANCE_INFO));
+		setResult("readings", context.get(FacilioConstants.ContextNames.READING_DATA_META_LIST));
+		
 		return SUCCESS;
 	}
 	
@@ -140,6 +153,14 @@ public class TimeSeries extends FacilioAction {
 		
 		Chain markChain = TransactionChainFactory.getMarkUnmodeledInstanceChain();
 		markChain.execute(context);
+
+		setResult("result", "success");
+		return SUCCESS;
+	}
+	
+	public String discoverInstances () throws Exception {
+		
+		IoTMessageAPI.publishIotMessage(controllerId, IotCommandType.DISCOVER);
 
 		setResult("result", "success");
 		return SUCCESS;
@@ -163,9 +184,6 @@ public class TimeSeries extends FacilioAction {
 	
 	private Boolean fetchMapped;
 	public Boolean getFetchMapped() {
-		if (fetchMapped == null) {
-			return false;
-		}
 		return fetchMapped;
 	}
 	public void setFetchMapped(Boolean fetchMapped) {

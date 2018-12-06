@@ -50,6 +50,7 @@ public class IoTMessageAPI {
 		return constructIotMessage(controllerId, IotCommandType.PROPERTY, null, property);
 	}
 	
+	@SuppressWarnings("unchecked")
 	private static PublishData constructIotMessage (long controllerId, IotCommandType command, List<Map<String, Object>> instances, JSONObject property) throws Exception {
 		ControllerContext controller = ControllerAPI.getController(controllerId);
 		
@@ -57,7 +58,7 @@ public class IoTMessageAPI {
 		data.setControllerId(controller.getId());
 		
 		JSONObject object = new JSONObject();
-		object.put("command", command.name().toLowerCase());
+		object.put("command", command.getName());
 		object.put("deviceName", controller.getName());
 		object.put("macAddress", controller.getMacAddr());
 		object.put("subnetPrefix", controller.getSubnetPrefix());
@@ -69,7 +70,7 @@ public class IoTMessageAPI {
 		if (command == IotCommandType.PROPERTY) {
 			object.putAll(property);
 		}
-		else {
+		else if (command != IotCommandType.DISCOVER) {
 			
 			JSONArray points = new JSONArray();
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -216,6 +217,11 @@ public class IoTMessageAPI {
 		return publishIotMessage(data, success, failure);
 	}
 	
+	public static PublishData publishIotMessage(long controllerId, IotCommandType command) throws Exception {
+		PublishData data = constructIotMessage(controllerId, command, null, null);
+		return publishIotMessage(data, null, null);
+	}
+	
 	public static PublishData publishIotMessage(long controllerId, JSONObject property, SerializableConsumer<PublishData> success, SerializableConsumer<PublishData> failure) throws Exception {
 		PublishData data = constructIotMessage(controllerId, property);
 		return publishIotMessage(data, success, failure);
@@ -270,10 +276,20 @@ public class IoTMessageAPI {
 	}
  	
  	public enum IotCommandType {
- 		CONFIGURE,
- 		SET,
- 		PROPERTY
+ 		CONFIGURE("configure"),
+ 		SET("set"),
+ 		PROPERTY("property"),
+ 		DISCOVER("discoverPoints"),
  		;
+ 		
+ 		private String name;
+ 		IotCommandType(String name) {
+ 			this.name = name;
+ 		}
+ 		
+ 		public String getName() {
+			return name;
+		}
  		
  		public int getValue() {
 			return ordinal() + 1;

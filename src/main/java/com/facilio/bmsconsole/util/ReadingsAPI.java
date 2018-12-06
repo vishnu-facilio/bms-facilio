@@ -219,15 +219,23 @@ public class ReadingsAPI {
 	}
 	
 	public static List<ReadingDataMeta> getReadingDataMetaList(Long resourceId, Collection<FacilioField> fieldList, boolean excludeEmptyFields, ReadingInputType...readingTypes) throws Exception {
+		return getReadingDataMetaList(Collections.singletonList(resourceId), fieldList, excludeEmptyFields, readingTypes);
+	}
+	
+	public static List<ReadingDataMeta> getReadingDataMetaList(Collection<Long> resourceIds, Collection<FacilioField> fieldList, boolean excludeEmptyFields, ReadingInputType...readingTypes) throws Exception {
 		Map<Long, FacilioField> fieldMap = null;
 		if (fieldList != null) {
 			fieldMap = FieldFactory.getAsIdMap(fieldList);
 		}
-		List<Map<String, Object>> stats = getRDMProps(resourceId, fieldMap, excludeEmptyFields, false, readingTypes);
+		List<Map<String, Object>> stats = getRDMProps(resourceIds, fieldMap, excludeEmptyFields, false, readingTypes);
 		return getReadingDataFromProps(stats, fieldMap);
 	}
 	
 	private static List<Map<String, Object>> getRDMProps (Long resourceId, Map<Long, FacilioField> fieldMap, boolean excludeEmptyFields, boolean fetchCount, ReadingInputType...readingTypes) throws Exception {
+		return getRDMProps(Collections.singletonList(resourceId), fieldMap, excludeEmptyFields, fetchCount, readingTypes);
+	}
+	
+	private static List<Map<String, Object>> getRDMProps (Collection<Long> resourceIds, Map<Long, FacilioField> fieldMap, boolean excludeEmptyFields, boolean fetchCount, ReadingInputType...readingTypes) throws Exception {
 		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
 		List<FacilioField> redingFields = FieldFactory.getReadingDataMetaFields();
 		Map<String, FacilioField> readingFieldsMap = FieldFactory.getAsMap(redingFields);
@@ -246,8 +254,8 @@ public class ReadingsAPI {
 			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("fieldId"), StringUtils.join(fieldMap.keySet(), ","), NumberOperators.EQUALS));
 		}
 		
-		if(resourceId != null) {
-			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("resourceId"), String.valueOf(resourceId), NumberOperators.EQUALS));
+		if(resourceIds != null) {
+			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("resourceId"), resourceIds, NumberOperators.EQUALS));
 		}
 		
 		if (excludeEmptyFields) {

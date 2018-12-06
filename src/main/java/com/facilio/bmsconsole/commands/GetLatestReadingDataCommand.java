@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
@@ -17,9 +19,18 @@ public class GetLatestReadingDataCommand implements Command {
 		if (excludeEmptyFields == null) {
 			excludeEmptyFields = false;
 		}
-		Long parentId = (Long) context.get(FacilioConstants.ContextNames.PARENT_ID);
-		List<ReadingDataMeta> rdmList = ReadingsAPI.getReadingDataMetaList(parentId, null, excludeEmptyFields);
-		context.put(FacilioConstants.ContextNames.READING_DATA_META_LIST, rdmList);
+		Collection<Long> parentIds = (Collection<Long>) context.get(FacilioConstants.ContextNames.PARENT_ID_LIST);
+		if (parentIds == null || parentIds.isEmpty()) {
+			Long parentId = (Long) context.get(FacilioConstants.ContextNames.PARENT_ID);
+			if (parentId != null) {
+				parentIds = Collections.singletonList(parentId);
+			}
+		}
+		if (parentIds != null && !parentIds.isEmpty()) {
+			List<ReadingDataMeta> rdmList = ReadingsAPI.getReadingDataMetaList(parentIds, null, excludeEmptyFields);
+			context.put(FacilioConstants.ContextNames.READING_DATA_META_LIST, rdmList);
+		}
+		
 		return false;
 	}
 
