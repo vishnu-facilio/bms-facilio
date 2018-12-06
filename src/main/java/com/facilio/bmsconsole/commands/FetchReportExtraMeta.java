@@ -28,6 +28,13 @@ import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.context.ReportDataPointContext;
 
 public class FetchReportExtraMeta implements Command {
+	
+	private List<Long> getLongList (List list) {
+		if (list != null) {
+			return (List<Long>) list.stream().map(x -> (Long.parseLong(x.toString()))).collect(Collectors.toList());
+		}
+		return null;
+	}
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -37,7 +44,7 @@ public class FetchReportExtraMeta implements Command {
 			List<Object> xValues = (List<Object>) context.get(FacilioConstants.ContextNames.REPORT_X_VALUE_LIST);
 			List<Long> globalParentIds = null;
 			if (xValues != null && !xValues.isEmpty()) {
-				globalParentIds = xValues.stream().map(x -> (Long)x).collect(Collectors.toList());
+				globalParentIds = getLongList(xValues);
 				
 			}
 			
@@ -64,7 +71,7 @@ public class FetchReportExtraMeta implements Command {
 						parentIds = globalParentIds;
 					}
 					else {
-						parentIds = (List<Long>) dataPoint.getMeta(FacilioConstants.ContextNames.PARENT_ID_LIST);
+						parentIds = getLongList((List) dataPoint.getMeta(FacilioConstants.ContextNames.PARENT_ID_LIST));
 						
 						//The following is for backward compatibility
 						if(parentIds == null && dataPoint.getCriteria() != null && !dataPoint.getCriteria().getConditions().isEmpty()) {
