@@ -6,13 +6,11 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class FacilioFileStore extends FileStore {
 
@@ -35,7 +33,6 @@ public class FacilioFileStore extends FileStore {
 	public long addFile(String fileName, File file, String contentType) throws Exception {
 
 		long fileId = addDummyFileEntry(fileName);
-		fileName = fileId + "-" + fileName;
 		byte[] contentInBytes = Files.readAllBytes(file.toPath());
 		try {
 			return addFile(fileId, fileName, contentInBytes, contentType);
@@ -52,7 +49,6 @@ public class FacilioFileStore extends FileStore {
 	@Override
 	public long addFile(String fileName, String content, String contentType) throws Exception {
 		long fileId = addDummyFileEntry(fileName);
-		fileName = fileId + "-" + fileName;
 		try {
 			return addFile(fileId, fileName, content.getBytes(), contentType);
 		} catch (Exception e){
@@ -62,38 +58,35 @@ public class FacilioFileStore extends FileStore {
 
 	private long addFile(long fileId, String fileName, byte[] content, String contentType) throws Exception {
 
-		String filePath = getOrgId() + File.separator + "files" + File.separator;
-		String request = AwsUtil.getConfig("files.url")+"/api/file/put?orgId="+getOrgId()+"&fileName="+fileName;
-		if(request != null) {
-			URL url = new URL(request);
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			conn.setDoOutput(true);
-			conn.setInstanceFollowRedirects(false);
-			conn.setRequestMethod("POST");
-			conn.setRequestProperty("Content-Type", contentType);
-			conn.setRequestProperty("charset", StandardCharsets.UTF_8.displayName());
-			byte[] postData = content;
-
-			conn.setRequestProperty("Content-Length", Integer.toString(postData.length));
-			conn.setUseCaches(false);
-
-			try (DataOutputStream wr = new DataOutputStream(conn.getOutputStream())) {
-				wr.write(postData);
-			}
-			if(conn.getResponseCode() == 200 ) {
-				updateFileEntry(fileId, fileName, filePath, postData.length, contentType);
-			} else {
-				deleteFileEntry(fileId);
-				return -1;
-			}
+		String request = AwsUtil.getConfig("files.url") + "/api/file/put";
+		
+		HttpUtil httpConn = new HttpUtil(request);
+		httpConn.addFormField("orgId", getOrgId() + "");
+		httpConn.addFormField("fileId", fileId + "");
+		httpConn.addFormField("fileName", fileName);
+		httpConn.addFormField("contentType", contentType);
+		
+		httpConn.addFilePart("fileContent", fileName, content);
+		
+		Map<String, Object> response = httpConn.finish();
+		
+		Integer statusCode = (Integer) response.get("status");
+		
+		if (statusCode == 200) {
+			String filePath = getOrgId() + File.separator + "files" + File.separator + fileName;
+			updateFileEntry(fileId, fileName, filePath, content.length, contentType);
+			return fileId;
+			
+		} else {
+			deleteFileEntry(fileId);
+			return -1;
 		}
-		return -1;
 	}
 
 	@Override
 	public InputStream readFile(long fileId) throws Exception {
 		FileInfo fileInfo = getFileInfo(fileId);
-		String url = AwsUtil.getConfig("files.url")+"/api/file/get?orgId="+getOrgId()+"&fileName="+fileInfo.getFileName();
+		String url = AwsUtil.getConfig("files.url")+"/api/file/get?orgId="+getOrgId()+"&fileName="+URLEncoder.encode(fileInfo.getFileName(), "UTF-8")+"&fileId="+fileId+"&contentType="+fileInfo.getContentType();
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
@@ -131,19 +124,119 @@ public class FacilioFileStore extends FileStore {
 
 	@Override
 	public String getPrivateUrl(long fileId) throws Exception {
-		return getDownloadUrl(fileId);
+		return getFileUrl(fileId, "preview");
 	}
 
 	@Override
 	public String getPrivateUrl(long fileId, int width) throws Exception {
-
-		return getDownloadUrl(fileId);
+		return getFileUrl(fileId, "preview");
 	}
 
 	@Override
 	public String getDownloadUrl(long fileId) throws Exception {
+		return getFileUrl(fileId, "download");
+	}
+	
+	private String getFileUrl(long fileId, String mode) throws Exception {
 		FileInfo fileInfo = getFileInfo(fileId);
-		return AwsUtil.getConfig("files.url")+"/api/file/get?orgId="+getOrgId()+"&fileName="+fileInfo.getFileName();
+		return AwsUtil.getConfig("files.url") + "/api/file/get?orgId=" + getOrgId() + "&fileName=" + URLEncoder.encode(fileInfo.getFileName(), "UTF-8") + "&mode=" + mode + "&fileId=" + fileId + "&contentType=" + fileInfo.getContentType();
 	}
 
+	public static class HttpUtil {
+		
+		private HttpURLConnection httpConn;
+		private DataOutputStream request;
+		private final String boundary =  "*****";
+		private final String crlf = "\r\n";
+		private final String twoHyphens = "--";
+
+		public HttpUtil(String requestURL) throws IOException {
+
+			URL url = new URL(requestURL);
+			httpConn = (HttpURLConnection) url.openConnection();
+			httpConn.setUseCaches(false);
+			httpConn.setDoOutput(true);
+			httpConn.setDoInput(true);
+
+			httpConn.setRequestMethod("POST");
+			httpConn.setRequestProperty("Connection", "Keep-Alive");
+			httpConn.setRequestProperty("Cache-Control", "no-cache");
+			httpConn.setRequestProperty(
+					"Content-Type", "multipart/form-data;boundary=" + this.boundary);
+
+			request =  new DataOutputStream(httpConn.getOutputStream());
+		}
+
+		public void addFormField(String name, String value)throws IOException  {
+			request.writeBytes(this.twoHyphens + this.boundary + this.crlf);
+			request.writeBytes("Content-Disposition: form-data; name=\"" + name + "\""+ this.crlf);
+			request.writeBytes("Content-Type: text/plain; charset=UTF-8" + this.crlf);
+			request.writeBytes(this.crlf);
+			request.writeBytes(value+ this.crlf);
+			request.flush();
+		}
+
+		public void addFilePart(String fieldName, File uploadFile)
+				throws IOException {
+			String fileName = uploadFile.getName();
+			request.writeBytes(this.twoHyphens + this.boundary + this.crlf);
+			request.writeBytes("Content-Disposition: form-data; name=\"" +
+					fieldName + "\";filename=\"" +
+					fileName + "\"" + this.crlf);
+			request.writeBytes(this.crlf);
+
+			byte[] bytes = Files.readAllBytes(uploadFile.toPath());
+			request.write(bytes);
+		}
+		
+		public void addFilePart(String fieldName, String fileName, byte[] fileContent)
+				throws IOException {
+			request.writeBytes(this.twoHyphens + this.boundary + this.crlf);
+			request.writeBytes("Content-Disposition: form-data; name=\"" +
+					fieldName + "\";filename=\"" +
+					fileName + "\"" + this.crlf);
+			request.writeBytes(this.crlf);
+
+			request.write(fileContent);
+		}
+
+		public Map<String, Object> finish() throws IOException {
+			String response ="";
+
+			request.writeBytes(this.crlf);
+			request.writeBytes(this.twoHyphens + this.boundary +
+					this.twoHyphens + this.crlf);
+
+			request.flush();
+			request.close();
+
+			int status = httpConn.getResponseCode();
+			if (status == HttpURLConnection.HTTP_OK) {
+				InputStream responseStream = new
+						BufferedInputStream(httpConn.getInputStream());
+
+				BufferedReader responseStreamReader =
+						new BufferedReader(new InputStreamReader(responseStream));
+
+				String line = "";
+				StringBuilder stringBuilder = new StringBuilder();
+
+				while ((line = responseStreamReader.readLine()) != null) {
+					stringBuilder.append(line).append("\n");
+				}
+				responseStreamReader.close();
+
+				response = stringBuilder.toString();
+				httpConn.disconnect();
+			} else {
+				throw new IOException("Server returned non-OK status: " + status);
+			}
+
+			Map<String, Object> resp = new HashMap<>();
+			resp.put("status", status);
+			resp.put("response", response);
+			
+			return resp;
+		}
+	}
 }
