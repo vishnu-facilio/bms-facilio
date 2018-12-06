@@ -615,10 +615,6 @@ public class V2ReportAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.REPORT_ALARM_CONTEXT, context.get(FacilioConstants.ContextNames.REPORT_ALARM_CONTEXT));
 		resultContext = context;
 		
-		if (AccountUtil.getCurrentOrg().getId() == 88) {
-			LOGGER.info("Fetch report result : "+getResult());
-		}
-		
 		return SUCCESS;
 	}
 	
