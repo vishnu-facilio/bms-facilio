@@ -18,7 +18,7 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 
 public class AddVirtualMeterRelCommand implements Command {
 	
-	public static final Pattern NUMBERS = Pattern.compile("-?\\d+");
+	public static final Pattern NUMBERS = Pattern.compile("\\d+");
 
 	@Override
 	public boolean execute(Context context) throws Exception {
