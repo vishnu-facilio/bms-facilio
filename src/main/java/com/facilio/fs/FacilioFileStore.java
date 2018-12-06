@@ -6,8 +6,10 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,16 +36,9 @@ public class FacilioFileStore extends FileStore {
 
 		long fileId = addDummyFileEntry(fileName);
 		fileName = fileId + "-" + fileName;
-		List<String> lines = Files.readAllLines(file.toPath());
-		int penultimateLineNumber = lines.size()-2;
-		StringBuilder content = new StringBuilder();
-		for(int i = 0; i < penultimateLineNumber; i++) {
-			content.append(lines.get(i));
-			content.append(System.lineSeparator());
-		}
-		content.append(penultimateLineNumber+1);
+		byte[] contentInBytes = Files.readAllBytes(file.toPath());
 		try {
-			return addFile(fileId, fileName, content.toString(), contentType);
+			return addFile(fileId, fileName, contentInBytes, contentType);
 		} catch (Exception e){
 			return -1;
 		}
@@ -59,16 +54,16 @@ public class FacilioFileStore extends FileStore {
 		long fileId = addDummyFileEntry(fileName);
 		fileName = fileId + "-" + fileName;
 		try {
-			return addFile(fileId, fileName, content, contentType);
+			return addFile(fileId, fileName, content.getBytes(), contentType);
 		} catch (Exception e){
 			return -1;
 		}
 	}
 
-	private long addFile(long fileId, String fileName, String content, String contentType) throws Exception {
+	private long addFile(long fileId, String fileName, byte[] content, String contentType) throws Exception {
 
 		String filePath = getOrgId() + File.separator + "files" + File.separator;
-		String request        = AwsUtil.getConfig("files.url");
+		String request = AwsUtil.getConfig("files.url")+"/api/file/put?orgId="+getOrgId()+"&fileName="+fileName;
 		if(request != null) {
 			URL url = new URL(request);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -77,14 +72,7 @@ public class FacilioFileStore extends FileStore {
 			conn.setRequestMethod("POST");
 			conn.setRequestProperty("Content-Type", contentType);
 			conn.setRequestProperty("charset", StandardCharsets.UTF_8.displayName());
-			StringBuilder data = new StringBuilder(2000);
-			data.append("orgId=");
-			data.append(getOrgId());
-			data.append("&fileName");
-			data.append(URLEncoder.encode(fileName));
-			data.append("&fileContent=");
-			data.append(URLEncoder.encode(content));
-			byte[] postData = data.toString().getBytes(StandardCharsets.UTF_8);
+			byte[] postData = content;
 
 			conn.setRequestProperty("Content-Length", Integer.toString(postData.length));
 			conn.setUseCaches(false);
@@ -105,7 +93,7 @@ public class FacilioFileStore extends FileStore {
 	@Override
 	public InputStream readFile(long fileId) throws Exception {
 		FileInfo fileInfo = getFileInfo(fileId);
-		String url = AwsUtil.getConfig("files.url")+File.separator +"/api/file/get?orgId="+getOrgId()+"&fileName="+fileInfo.getFileName();
+		String url = AwsUtil.getConfig("files.url")+ "/api/file/get?orgId="+getOrgId()+"&fileName="+fileInfo.getFileName();
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
