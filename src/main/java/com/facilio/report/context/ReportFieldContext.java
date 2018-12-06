@@ -200,4 +200,10 @@ public class ReportFieldContext {
 			return Objects.hashCode(fieldName) + Objects.hashCode(moduleName); 
 		}
 	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return field+"";
+	}
 }

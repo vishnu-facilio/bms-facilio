@@ -298,7 +298,9 @@ public class ReportDataPointContext {
 		return new StringBuilder()
 					.append("DataPoint [")
 					.append("name : ").append(name).append(", ")
-					.append("alias : ").append(name)
+					.append("alias : ").append(name).append(", ")
+					.append("xField : (").append(xAxis).append("), ")
+					.append("yField : (").append(yAxis).append("), ")
 					.append("]")
 					.toString();
 	}

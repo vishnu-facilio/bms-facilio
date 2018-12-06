@@ -19,4 +19,10 @@ public class ReportYAxisContext extends ReportFieldContext {
 	public void setAggr(int aggr) {
 		this.aggr = AggregateOperator.getAggregateOperator(aggr);
 	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return getField()+"";
+	}
 }

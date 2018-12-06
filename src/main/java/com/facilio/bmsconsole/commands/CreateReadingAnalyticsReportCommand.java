@@ -78,6 +78,7 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 					List<String> orderBy = new ArrayList<>();
 					orderBy.add(dataPoint.getyAxis().getField().getName());
 					orderBy.add(dataPoint.getxAxis().getField().getName());
+					dataPoint.setOrderBy(orderBy);
 				}
 				if (metric.getLimit() != -1) {
 					dataPoint.setLimit(metric.getLimit());
