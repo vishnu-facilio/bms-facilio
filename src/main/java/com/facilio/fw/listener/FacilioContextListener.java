@@ -107,7 +107,9 @@ public class FacilioContextListener implements ServletContextListener {
 
 
 			//handle if server is both user and scheduler.
-			if( "stage".equalsIgnoreCase(environment) || (AwsUtil.isProduction() && ( ! scheduler))) {
+			if( "stage".equalsIgnoreCase(environment)){
+				new Thread(new com.facilio.kafka.notification.NotificationProcessor()).start();
+			} else if((AwsUtil.isProduction() && ( ! scheduler))) {
 				new Thread(() -> NotificationProcessor.run(new NotificationProcessorFactory())).start();
 			}
 
