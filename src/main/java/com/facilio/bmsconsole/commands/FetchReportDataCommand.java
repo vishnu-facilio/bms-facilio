@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.CommonAggregateOperator;
@@ -76,7 +77,6 @@ public class FetchReportDataCommand implements Command {
 			SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 																					.module(dp.getxAxis().getField().getModule()) //Assuming X to be the base module
 																					;
-			
 			if (dp.getCriteria() != null) {
 				selectBuilder.andCriteria(dp.getCriteria());
 			}
@@ -108,6 +108,11 @@ public class FetchReportDataCommand implements Command {
 			data.setProps(props);
 			reportData.add(data);
 		}
+		
+		if (AccountUtil.getCurrentOrg().getId() == 88) {
+			LOGGER.info("Report Data : "+reportData);
+		}
+		
 		context.put(FacilioConstants.ContextNames.REPORT_DATA, reportData);
 		return false;
 	}
@@ -341,16 +346,16 @@ public class FetchReportDataCommand implements Command {
 	}
 
 	private void applyOrderByAndLimit (ReportDataPointContext dataPoint, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder) {
-		if (dataPoint.getOrderBy() != null && dataPoint.getOrderBy().isEmpty()) {
+		if (dataPoint.getOrderBy() != null && !dataPoint.getOrderBy().isEmpty()) {
 			
 			if (dataPoint.getOrderByFuncEnum() == null || dataPoint.getOrderByFuncEnum() == OrderByFunction.NONE) {
 				throw new IllegalArgumentException("Order By function cannot be empty when order by is not empty");
 			}
 			
-			StringBuilder orderBy = new StringBuilder(dataPoint.getOrderBy())
-										.append(" ")
-										.append(dataPoint.getOrderByFuncEnum().getStringValue())
-										;
+			StringJoiner orderBy = new StringJoiner(",");
+			for (String order : dataPoint.getOrderBy()) { //MySQL requires direction be specified for each column
+				orderBy.add(order+" "+dataPoint.getOrderByFuncEnum().getStringValue());
+			}
 			selectBuilder.orderBy(orderBy.toString());
 			
 			if (dataPoint.getLimit() != -1) {

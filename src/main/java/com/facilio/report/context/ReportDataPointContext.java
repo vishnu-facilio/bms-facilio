@@ -123,14 +123,14 @@ public class ReportDataPointContext {
 		this.limit = limit;
 	}
 	
-	private String orderBy;
-	public String getOrderBy() {
+	private List<String> orderBy;
+	public List<String> getOrderBy() {
 		return orderBy;
 	}
-	public void setOrderBy(String orderBy) {
+	public void setOrderBy(List<String> orderBy) {
 		this.orderBy = orderBy;
 	}
-	
+
 	private OrderByFunction orderByFunc;
 	public OrderByFunction getOrderByFuncEnum() {
 		return orderByFunc;
@@ -290,5 +290,16 @@ public class ReportDataPointContext {
 			}
 			return null;
 		}
+	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return new StringBuilder()
+					.append("DataPoint [")
+					.append("name : ").append(name).append(", ")
+					.append("alias : ").append(name)
+					.append("]")
+					.toString();
 	}
 }

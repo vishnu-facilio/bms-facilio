@@ -33,17 +33,11 @@ public class CalculateDerivationCommand implements Command {
 		Map<String,Object> wfParams = new HashMap<>();
 		wfParams.put("xValues", xValues);
 		for( ReportDataPointContext rdp : report.getDataPoints()) {
-			
 			if(rdp.getTypeEnum().equals(DataPointType.MODULE)) {
-				
 				Map<String, Map<Object, Object>> repData = transformedData.get(rdp.getName());
-				
 				if(rdp.getAliases() != null && repData != null) {
-					
 					for(String aliasKey : rdp.getAliases().keySet()) {
-						
 						Map<Object, Object> aliasedData = repData.get(aliasKey);
-						
 						wfParams.put(rdp.getAliases().get(aliasKey), aliasedData);
 					}
 				}

@@ -34,4 +34,15 @@ public class ReportDataContext {
 		}
 		baseLineMap.put(name, baseLine);
 	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return new StringBuilder()
+					.append("ReportData [")
+					.append("dataPoints : (").append(dataPoints).append("), ")
+					.append("props : (").append(props).append("), ")
+					.append("baseLineMap : (").append(baseLineMap).append(")")
+					.toString();
+	}
 }
