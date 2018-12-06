@@ -331,13 +331,19 @@
 		<action name="*" class="com.facilio.bmsconsole.actions.PickListAction" method="v2pickList">
 			<param name="moduleName">{1}</param>
 		</action>
-		<action name="updateSeverity" class="com.facilio.bmsconsole.actions.PickListAction" method="updateAlarmSeverity">
+		<action name="addAlarmSeverity" class="com.facilio.bmsconsole.actions.PickListAction" method="v2addAlarmSeverity">
+		</action>
+		<action name="updateAlarmSeverity" class="com.facilio.bmsconsole.actions.PickListAction" method="v2updateAlarmSeverity">
 		</action>
 		<action name="updateAlarmSeverities" class="com.facilio.bmsconsole.actions.PickListAction" method="v2updateAlarmSeverities">
 		</action>
 		<action name="deleteAlarmSeverity" class="com.facilio.bmsconsole.actions.PickListAction" method="v2deleteAlarmSeverity">
 		</action>
-	    <action name="updatePriorities" class="com.facilio.bmsconsole.actions.PickListAction" method="v2updateTicketPriorties">
+		<action name="addTicketPriority" class="com.facilio.bmsconsole.actions.PickListAction" method="v2addTicketPriority">
+		</action>
+	    <action name="updateTicketPriorities" class="com.facilio.bmsconsole.actions.PickListAction" method="v2updateTicketPriorties">
+		</action>
+		<action name="updateTicketPriority" class="com.facilio.bmsconsole.actions.PickListAction" method="updateTicketPriority">
 		</action>
 		<action name="deleteTicketPriority" class="com.facilio.bmsconsole.actions.PickListAction" method="deleteTicketPriority">
 		</action>

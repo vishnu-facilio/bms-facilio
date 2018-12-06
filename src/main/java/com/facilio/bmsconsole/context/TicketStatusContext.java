@@ -18,7 +18,20 @@ public class TicketStatusContext extends ModuleBaseWithCustomFields {
 	public void setStatus(String status) {
 		this.status = status;
 	}
+	private String displayName;
 	
+	public String getDisplayName() {
+		// return displayName;
+		if(displayName != null && !displayName.isEmpty()) {
+			return displayName;
+		}
+		else {
+			return status;
+		}
+	}
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
 	private StatusType type;
 	public StatusType getType() {
 		return type;

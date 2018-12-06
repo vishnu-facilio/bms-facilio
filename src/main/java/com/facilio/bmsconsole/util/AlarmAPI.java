@@ -353,7 +353,8 @@ public class AlarmAPI {
 		SelectRecordsBuilder<AlarmSeverityContext> selectBuilder = new SelectRecordsBuilder<AlarmSeverityContext>()
 																		.select(modBean.getAllFields(FacilioConstants.ContextNames.ALARM_SEVERITY))
 																		.moduleName(FacilioConstants.ContextNames.ALARM_SEVERITY)
-																		.beanClass(AlarmSeverityContext.class);
+																		.beanClass(AlarmSeverityContext.class)
+																		.orderBy("Alarm_Severity.CARDINALITY");
 		
 		return selectBuilder.get();
 	}
