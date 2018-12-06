@@ -109,9 +109,9 @@ public class FetchReportDataCommand implements Command {
 			reportData.add(data);
 		}
 		
-		if (AccountUtil.getCurrentOrg().getId() == 88) {
-			LOGGER.info("Report Data : "+reportData);
-		}
+//		if (AccountUtil.getCurrentOrg().getId() == 88) {
+//			LOGGER.info("Report Data : "+reportData);
+//		}
 		
 		context.put(FacilioConstants.ContextNames.REPORT_DATA, reportData);
 		return false;
@@ -144,7 +144,7 @@ public class FetchReportDataCommand implements Command {
 		List<Map<String, Object>> props = newSelectBuilder.getAsProps();
 		
 		LOGGER.severe("SELECT BUILDER --- "+ newSelectBuilder);
-		LOGGER.info("DATE FROM QUERY : "+props);
+//		LOGGER.info("DATE FROM QUERY : "+props);
 		return props;
 	}
 	
