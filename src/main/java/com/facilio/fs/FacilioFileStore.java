@@ -93,7 +93,7 @@ public class FacilioFileStore extends FileStore {
 	@Override
 	public InputStream readFile(long fileId) throws Exception {
 		FileInfo fileInfo = getFileInfo(fileId);
-		String url = AwsUtil.getConfig("files.url")+ "/api/file/get?orgId="+getOrgId()+"&fileName="+fileInfo.getFileName();
+		String url = AwsUtil.getConfig("files.url")+"/api/file/get?orgId="+getOrgId()+"&fileName="+fileInfo.getFileName();
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
@@ -143,7 +143,7 @@ public class FacilioFileStore extends FileStore {
 	@Override
 	public String getDownloadUrl(long fileId) throws Exception {
 		FileInfo fileInfo = getFileInfo(fileId);
-		return AwsUtil.getConfig("files.url")+File.separator +"/api/file/get?orgId="+getOrgId()+"&fileName="+fileInfo.getFileName();
+		return AwsUtil.getConfig("files.url")+"/api/file/get?orgId="+getOrgId()+"&fileName="+fileInfo.getFileName();
 	}
 
 }
