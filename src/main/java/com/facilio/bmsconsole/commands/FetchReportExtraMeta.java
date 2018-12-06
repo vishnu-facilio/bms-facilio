@@ -15,7 +15,6 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
@@ -216,11 +215,8 @@ public class FetchReportExtraMeta implements Command {
 		}
 		
 		for(ReportAlarmContext reportAlarmContext :reportAlarmContextList) {
-			
 			for(ReadingAlarmContext alarm :allAlarms) {
-				
 				if(alarm.getCreatedTime() > 0) {
-					
 					Long clearedTime = null;
 					if(alarm.getClearedTime() > 0) {
 						clearedTime = alarm.getClearedTime() < dateRange.getEndTime() ? alarm.getClearedTime() : dateRange.getEndTime();  

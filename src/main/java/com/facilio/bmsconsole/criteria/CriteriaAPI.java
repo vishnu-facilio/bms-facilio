@@ -260,8 +260,11 @@ public class CriteriaAPI {
 	}
 	
 	public static Condition getCondition( FacilioField field,Collection<Long> values,Operator operator) {
-		String val = StringUtils.join(values, ",");
-		return getCondition(field, val, operator);
+		if (values != null && !values.isEmpty()) {
+			String val = StringUtils.join(values, ",");
+			return getCondition(field, val, operator);
+		}
+		return null;
 	}
 	
 	@SuppressWarnings("rawtypes")
