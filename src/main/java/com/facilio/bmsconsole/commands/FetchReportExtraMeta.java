@@ -128,6 +128,9 @@ public class FetchReportExtraMeta implements Command {
 									}
 								}
 							}
+							if (AccountUtil.getCurrentOrg().getId() == 88) {
+								LOGGER.info("Fetching extra meta - alarmProps : "+alarmProps);
+							}
 						}
 						alarmsMap.put(dataPoint.getName(), alarmProps);
 					}
