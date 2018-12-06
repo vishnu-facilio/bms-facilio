@@ -402,11 +402,12 @@ public class AssetsAPI {
 	public static AssetCategoryContext getCategoryForAsset(long categoryId) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET_CATEGORY);
 		SelectRecordsBuilder<AssetCategoryContext> selectBuilder = new SelectRecordsBuilder<AssetCategoryContext>()
 																		.select(modBean.getAllFields(FacilioConstants.ContextNames.ASSET_CATEGORY))
-																		.moduleName(FacilioConstants.ContextNames.ASSET_CATEGORY)
+																		.module(module)
 																		.beanClass(AssetCategoryContext.class)
-																		.andCondition(CriteriaAPI.getIdCondition(categoryId, modBean.getModule(FacilioConstants.ContextNames.ASSET_CATEGORY)));
+																		.andCondition(CriteriaAPI.getIdCondition(categoryId, module));
 		List<AssetCategoryContext> assetList = selectBuilder.get();
 		if (assetList != null && !assetList.isEmpty()) {
 			return assetList.get(0);

@@ -11,6 +11,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -19,6 +20,7 @@ import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -43,8 +45,12 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 		long startTime = (long) context.get(FacilioConstants.ContextNames.START_TIME);
 		long endTime = (long) context.get(FacilioConstants.ContextNames.END_TIME);
 		ReportMode mode = (ReportMode) context.get(FacilioConstants.ContextNames.REPORT_MODE);
+		XCriteriaMode xCriteriaMode = (XCriteriaMode) context.get(FacilioConstants.ContextNames.REPORT_X_CRITERIA_MODE);
 		if (metrics != null && !metrics.isEmpty() && startTime != -1 && endTime != -1) {
-			Map<Long, ResourceContext> resourceMap = getResourceMap(metrics);
+			Map<Long, ResourceContext> resourceMap = null;
+			if (xCriteriaMode == null || xCriteriaMode == XCriteriaMode.NONE) { //Resource map is needed only when there is not x criteria
+				resourceMap = getResourceMap(metrics);
+			}
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			List<ReportDataPointContext> dataPoints = new ArrayList<>();
 			for (ReadingAnalysisContext metric : metrics) {
@@ -58,7 +64,8 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 						break;
 				}
 				
-				setName(dataPoint, dataPoint.getyAxis().getField(), mode, resourceMap, metric);
+				String name = getName(dataPoint.getyAxis().getField(), mode, xCriteriaMode, resourceMap, metric, (FacilioContext) context);
+				dataPoint.setName(name);
 				dataPoint.setType(metric.getTypeEnum());
 				dataPoint.setAliases(metric.getAliases());
 				dataPoint.setTransformWorkflow(metric.getTransformWorkflow());
@@ -75,7 +82,7 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 				dataPoints.add(dataPoint);
 			}
 			ReportContext report = ReportUtil.constructReport((FacilioContext) context, dataPoints, startTime, endTime);
-			ReportXCriteriaContext xCriteria = constructXCriteria((FacilioContext) context);
+			ReportXCriteriaContext xCriteria = constructXCriteria(xCriteriaMode, (FacilioContext) context);
 			if (xCriteria != null) {
 				report.setxCriteria(xCriteria);
 			}
@@ -127,24 +134,40 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 		dataPoint.setDateField(fieldMap.get("ttime"));
 	}
 	
-	private void setName(ReportDataPointContext dataPoint, FacilioField yField, ReportMode mode, Map<Long, ResourceContext> resourceMap, ReadingAnalysisContext metric) {
+	private String getName(FacilioField yField, ReportMode mode, XCriteriaMode xCriteriaMode, Map<Long, ResourceContext> resourceMap, ReadingAnalysisContext metric, FacilioContext context) throws Exception {
 		
-		if(metric.getName() != null && !metric.getName().isEmpty()) {
-			dataPoint.setName(metric.getName());
-		}
-		else {
-			if (mode == ReportMode.CONSOLIDATED) {
-				dataPoint.setName(yField.getDisplayName());
+		if (xCriteriaMode == null || xCriteriaMode == XCriteriaMode.NONE) {
+			if(metric.getName() != null && !metric.getName().isEmpty()) {
+				return metric.getName();
 			}
 			else {
-				StringJoiner joiner = new StringJoiner(", ");
-				for (Long parentId : metric.getParentId()) {
-					ResourceContext resource = resourceMap.get(parentId);
-					joiner.add(resource.getName());
+				if (mode == ReportMode.CONSOLIDATED) {
+					return yField.getDisplayName();
 				}
-				dataPoint.setName(joiner.toString()+" ("+yField.getDisplayName()+")");
+				else {
+					StringJoiner joiner = new StringJoiner(", ");
+					for (Long parentId : metric.getParentId()) {
+						ResourceContext resource = resourceMap.get(parentId);
+						joiner.add(resource.getName());
+					}
+					return joiner.toString()+" ("+yField.getDisplayName()+")";
+				}
 			}
 		}
+		
+		switch (xCriteriaMode) {
+			case NONE:
+				throw new RuntimeException("This is not supposed to happen!!");
+			case ALL_ASSET_CATEGORY: //Assuming there'll be only one datapoint
+				long categoryId = (long) context.get(FacilioConstants.ContextNames.ASSET_CATEGORY);
+				AssetCategoryContext category = AssetsAPI.getCategoryForAsset(categoryId);
+				if (category == null) {
+					throw new IllegalArgumentException("Invalid asset category");
+				}
+				return category.getName();
+		}
+		
+		return null;
 	}
 	
 	private void setCriteria(ReportDataPointContext dataPoint, Map<String, FacilioField> fieldMap, ReadingAnalysisContext metric) {
@@ -168,8 +191,8 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 		return ResourceAPI.getResourceAsMapFromIds(resourceIds);
 	}
 	
-	private ReportXCriteriaContext constructXCriteria (FacilioContext context) throws Exception {
-		XCriteriaMode mode = (XCriteriaMode) context.get(FacilioConstants.ContextNames.REPORT_X_CRITERIA_MODE);
+	private ReportXCriteriaContext constructXCriteria (XCriteriaMode mode, FacilioContext context) throws Exception {
+		
 		if (mode != null) {
 			switch (mode) {
 				case NONE:
