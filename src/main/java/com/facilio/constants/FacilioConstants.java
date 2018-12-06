@@ -283,6 +283,7 @@ public class FacilioConstants {
 		public static final String REPORT_CARD_DATA = "reportCardData";
 		public static final String REPORT_VARIANCE_DATA = "reportVarianceData";
 		public static final String REPORT_X_VALUES = "reportXValues";
+		public static final String REPORT_X_VALUE_LIST = "reportXValueList";
 		public static final String REPORT_X_FIELD = "reportXField";
 		public static final String REPORT_Y_FIELDS = "reportYFields";
 		public static final String REPORT_FIELDS = "reportFields";

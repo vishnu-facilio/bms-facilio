@@ -300,6 +300,23 @@ public class ReportContext {
 		this.analyticsType = analyticsType;
 	}
 	
+	private ReportType type;
+	public ReportType getTypeEnum() {
+		return type;
+	}
+	public void setType(ReportType type) {
+		this.type = type;
+	}
+	public int getType() {
+		if (type != null) {
+			return type.getValue();
+		}
+		return -1;
+	}
+	public void setType(int type) {
+		this.type = ReportType.valueOf(type);
+	}
+
 	private Class<? extends TransformReportDataIfc> transformClass;
 	public Class<? extends TransformReportDataIfc> getTransformClassObject() {
 		return transformClass;
@@ -343,5 +360,21 @@ public class ReportContext {
 			return null;
 		}
 
+	}
+	
+	public enum ReportType {
+		READING_REPORT,
+		WORKORDER_REPORT
+		;
+		
+		public int getValue() {
+			return ordinal() + 1;
+		}
+		public static ReportType valueOf (int value) {
+			if (value > 0 && value <= values().length) {
+				return values() [value - 1];
+			}
+			return null;
+		}
 	}
 }

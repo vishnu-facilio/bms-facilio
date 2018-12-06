@@ -27,6 +27,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.ReadingAnalysisContext;
 import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
 import com.facilio.report.context.ReadingAnalysisContext.XCriteriaMode;
+import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportDataPointContext.DataPointType;
@@ -82,6 +83,7 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 				dataPoints.add(dataPoint);
 			}
 			ReportContext report = ReportUtil.constructReport((FacilioContext) context, dataPoints, startTime, endTime);
+			report.setType(ReportType.READING_REPORT);
 			ReportXCriteriaContext xCriteria = constructXCriteria(xCriteriaMode, (FacilioContext) context);
 			if (xCriteria != null) {
 				report.setxCriteria(xCriteria);
@@ -174,6 +176,7 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), metric.getParentId(), NumberOperators.EQUALS));
 		dataPoint.setCriteria(criteria);
+		dataPoint.addMeta(FacilioConstants.ContextNames.PARENT_ID_LIST, metric.getParentId());
 	}
 	
 	private Map<Long, ResourceContext> getResourceMap(List<ReadingAnalysisContext> metrics) throws Exception {

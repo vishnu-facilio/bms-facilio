@@ -24,6 +24,7 @@ import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportGroupByField;
 import com.facilio.report.context.WorkorderAnalysisContext;
+import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.util.ReportUtil;
 
 public class CreateWorkOrderAnalyticsReportCommand implements Command {
@@ -62,6 +63,7 @@ public class CreateWorkOrderAnalyticsReportCommand implements Command {
 			}
 			ReportContext report = ReportUtil.constructReport((FacilioContext) context, dataPoints, startTime, endTime); 
 			context.put(FacilioConstants.ContextNames.REPORT, report);
+			report.setType(ReportType.WORKORDER_REPORT);
 		}
 		else {
 			throw new IllegalArgumentException("In sufficient params for WorkOrder Analysis");

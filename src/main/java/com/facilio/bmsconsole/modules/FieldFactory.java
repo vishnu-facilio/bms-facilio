@@ -4776,6 +4776,7 @@ public class FieldFactory {
 		fields.add(getField("xAggr", "X_AGGR", module, FieldType.NUMBER));
 		fields.add(getField("baselineJson", "BASELINE_JSON", module, FieldType.STRING));
 		fields.add(getField("analyticsType", "ANALYTICS_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("type", "REPORT_TYPE", module, FieldType.NUMBER));
 		
 		fields.add(getField("booleanSetting", "BOOLEAN_SETTINGS", module, FieldType.NUMBER));
 		fields.add(getField("transformClass", "TRANSFORM_CLASS", module, FieldType.STRING));

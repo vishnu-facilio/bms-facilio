@@ -50,6 +50,7 @@ public class FilterXFieldCommand implements Command {
 				
 				context.put(FacilioConstants.ContextNames.REPORT_X_VALUES, result);
 			}
+			context.put(FacilioConstants.ContextNames.REPORT_X_VALUE_LIST, xValues);
 		}
 		return false;
 	}

@@ -1,5 +1,6 @@
 package com.facilio.report.context;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -225,6 +226,26 @@ public class ReportDataPointContext {
 	}
 	public void setHandleBoolean(boolean handleBoolean) {
 		this.handleBoolean = handleBoolean;
+	}
+	
+	private Map<String, Object> metaData;
+	public Map<String, Object> getMetaData() {
+		return metaData;
+	}
+	public void setMetaData(Map<String, Object> metaData) {
+		this.metaData = metaData;
+	}
+	public void addMeta (String key, Object value) {
+		if (metaData == null) {
+			metaData = new HashMap<>();
+		}
+		metaData.put(key, value);
+	}
+	public Object getMeta (String key) {
+		if (metaData == null) {
+			return null;
+		}
+		return metaData.get(key);
 	}
 
 	public static enum OrderByFunction {
