@@ -23,11 +23,6 @@ public class CalculateVarianceCommand implements Command {
 	
 	@Override
 	public boolean execute(Context context) throws Exception {
-		
-		if (AccountUtil.getCurrentOrg().getId() == 88) {
-			LOGGER.info("Calculating variance ");
-		}
-		
 		Map<String, Map<String, Map<Object, Object>>> reportData = (Map<String, Map<String, Map<Object, Object>>>) context.get(FacilioConstants.ContextNames.REPORT_DATA);
 		
 		Map<String, Map<String, JSONObject>> varianceData = new HashMap<>();

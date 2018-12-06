@@ -50,9 +50,9 @@ public class FetchReportExtraMeta implements Command {
 				globalParentIds = getLongList(xValues);
 				
 			}
-			if (AccountUtil.getCurrentOrg().getId() == 88) {
-				LOGGER.info("Fetching extra meta : "+globalParentIds);
-			}
+//			if (AccountUtil.getCurrentOrg().getId() == 88) {
+				LOGGER.debug("Fetching extra meta : "+globalParentIds);
+//			}
 			
 			if (report.getDataPoints() == null || report.getDataPoints().isEmpty()) {
 				return false;
@@ -91,6 +91,11 @@ public class FetchReportExtraMeta implements Command {
 							}
 						}
 					}
+					
+//					if (AccountUtil.getCurrentOrg().getId() == 88) {
+						LOGGER.debug("Fetching extra meta - parentIds : "+parentIds);
+//					}
+					
 					if(report.getDateRange() != null && parentIds != null && !parentIds.isEmpty()) {
 						
 						long alarmId = -1;
@@ -123,6 +128,9 @@ public class FetchReportExtraMeta implements Command {
 									}
 								}
 							}
+//							if (AccountUtil.getCurrentOrg().getId() == 88) {
+								LOGGER.debug("Fetching extra meta - alarmProps : "+alarmProps);
+//							}
 						}
 						alarmsMap.put(dataPoint.getName(), alarmProps);
 					}
@@ -130,6 +138,10 @@ public class FetchReportExtraMeta implements Command {
 			}
 			
 			List<ReportAlarmContext> reportAlarmContextList = getReportAlarms(allAlarms,report.getDateRange());
+			
+//			if (AccountUtil.getCurrentOrg().getId() == 88) {
+				LOGGER.debug("Fetching extra meta - alapmsMap : "+alarmsMap);
+//			}
 			
 			context.put(FacilioConstants.ContextNames.REPORT_SAFE_LIMIT, safeLimit);
 			context.put(FacilioConstants.ContextNames.REPORT_ALARMS, alarmsMap);
