@@ -10,9 +10,12 @@ import java.util.stream.Collectors;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
@@ -28,7 +31,7 @@ import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.context.ReportDataPointContext;
 
 public class FetchReportExtraMeta implements Command {
-	
+	private static final Logger LOGGER = LogManager.getLogger(FetchReportExtraMeta.class.getName());
 	private List<Long> getLongList (List list) {
 		if (list != null) {
 			return (List<Long>) list.stream().map(x -> (Long.parseLong(x.toString()))).collect(Collectors.toList());
@@ -46,6 +49,9 @@ public class FetchReportExtraMeta implements Command {
 			if (xValues != null && !xValues.isEmpty()) {
 				globalParentIds = getLongList(xValues);
 				
+			}
+			if (AccountUtil.getCurrentOrg().getId() == 88) {
+				LOGGER.info("Fetching extra meta : "+globalParentIds);
 			}
 			
 			if (report.getDataPoints() == null || report.getDataPoints().isEmpty()) {
