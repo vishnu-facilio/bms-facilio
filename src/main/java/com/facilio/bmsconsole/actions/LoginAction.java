@@ -319,7 +319,6 @@ public class LoginAction extends FacilioAction{
 		
 		data.put("serviceList", ReportsUtil.getPurposeMapping());
 		data.put("buildingList", ReportsUtil.getBuildingMap());
-		data.put("ticketStatus", TicketAPI.getAllStatus());
 		data.put("energyMeters", DeviceAPI.getAllMainEnergyMeters());
 		data.put("calendarColor", TicketAPI.getCalendarColor());
 		data.put(FacilioConstants.ContextNames.TICKET_TYPE, CommonCommandUtil.getPickList(FacilioConstants.ContextNames.TICKET_TYPE));
@@ -329,10 +328,12 @@ public class LoginAction extends FacilioAction{
 		if (AccountUtil.getCurrentAccount().isFromMobile()) {
 			Map<String, Set<FacilioForm>> forms = FormsAPI.getAllForms(FormType.MOBILE);
 			data.put("forms", forms);
+			data.put("ticketStatus", getTicketStatus());
 		}
 		else {
 			Map<String, Set<FacilioForm>> forms = FormsAPI.getAllForms(FormType.WEB);
 			data.put("forms", forms);
+			data.put("ticketStatus", TicketAPI.getAllStatus());
 		}
 		data.put("mysites", CommonCommandUtil.getMySites());
 		data.put("buildings", SpaceAPI.getAllBuildings());
