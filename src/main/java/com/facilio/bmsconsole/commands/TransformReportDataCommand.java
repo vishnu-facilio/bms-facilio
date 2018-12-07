@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,7 +21,6 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.report.context.ReportYAxisContext;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataContext;
@@ -62,7 +62,7 @@ public class TransformReportDataCommand implements Command {
 		
 		if (reportData != null) {
 			Map<String, Map<String, Map<Object, Object>>> transformedData = new HashMap<>();
-			Set<Object> xValues = new TreeSet<>();
+			Set<Object> xValues = report.getxCriteria() == null ? new TreeSet<>() : new LinkedHashSet<>();
 			for (ReportDataContext data : reportData ) {
 				Map<String, List<Map<String, Object>>> reportProps = data.getProps();
 				if (reportProps != null && !reportProps.isEmpty()) {
@@ -112,14 +112,14 @@ public class TransformReportDataCommand implements Command {
 				Object xVal = prop.get(dataPoint.getxAxis().getField().getName());
 				if (xVal != null) {
 					xVal = getBaseLineAdjustedXVal(xVal, dataPoint.getxAxis(), baseLine);
-					xVal = formatVal(dataPoint.getxAxis().getField(), xAggr, xVal);
+					xVal = formatVal(dataPoint.getxAxis().getField(), xAggr, xVal, (xValues instanceof LinkedHashSet));
 					xValues.add(xVal);
 					Object yVal = prop.get(dataPoint.getyAxis().getField().getName());
 					if (yVal != null) { //Ignoring null values
 //						if (AccountUtil.getCurrentOrg().getId() == 134) {
 							LOGGER.debug("Before transform : (x, y)=>("+xVal+", "+yVal+")");
 //						}
-						yVal = formatVal(dataPoint.getyAxis().getField(), dataPoint.getyAxis().getAggrEnum(), yVal);
+						yVal = formatVal(dataPoint.getyAxis().getField(), dataPoint.getyAxis().getAggrEnum(), yVal, false);
 						if (dataPoint.getGroupByFields() == null || dataPoint.getGroupByFields().isEmpty()) {
 //							if (AccountUtil.getCurrentOrg().getId() == 134) {
 								LOGGER.debug("After transform : (x, y)=>("+xVal+", "+yVal+")");
@@ -135,7 +135,7 @@ public class TransformReportDataCommand implements Command {
 							for (int i = 0; i < dataPoint.getGroupByFields().size(); i++) {
 								FacilioField field = dataPoint.getGroupByFields().get(i).getField();
 								Object groupByVal = prop.get(field.getName());
-								groupByVal = formatVal(field, null, groupByVal);
+								groupByVal = formatVal(field, null, groupByVal, false);
 								if (i == dataPoint.getGroupByFields().size() - 1) {
 									currentMap.put(groupByVal.toString(), yVal);
 								}
@@ -158,7 +158,7 @@ public class TransformReportDataCommand implements Command {
 	}
 	
 	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
-	private Object formatVal(FacilioField field, AggregateOperator aggr, Object val) throws NumberFormatException, Exception {
+	private Object formatVal(FacilioField field, AggregateOperator aggr, Object val, boolean fetchResource) throws NumberFormatException, Exception {
 		if (val == null) {
 			return "";
 		}
@@ -171,6 +171,11 @@ public class TransformReportDataCommand implements Command {
 				ResourceContext resource = ResourceAPI.getResource(Long.parseLong(val.toString()));
 				val = resource.getName();
 			}
+		}
+		
+		if (fetchResource) {
+			ResourceContext resource = ResourceAPI.getResource(Long.parseLong(val.toString()));
+			val = resource.getName();
 		}
 		
 		
