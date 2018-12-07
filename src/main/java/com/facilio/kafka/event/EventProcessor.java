@@ -83,7 +83,7 @@ public class EventProcessor extends FacilioProcessor {
 
     private void initialize() {
         Thread thread = Thread.currentThread();
-        String threadName = orgDomainName +"-event";
+        String threadName = orgDomainName +"-event-kafka";
         thread.setName(threadName);
     }
 

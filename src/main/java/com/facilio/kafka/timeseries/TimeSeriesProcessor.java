@@ -92,7 +92,7 @@ public class TimeSeriesProcessor extends FacilioProcessor {
 
     private void initialize() {
         Thread thread = Thread.currentThread();
-        String threadName = orgDomainName +"-timeseries";
+        String threadName = orgDomainName +"-timeseries-kafka";
         thread.setName(threadName);
 
         deviceDetailsModule = ModuleFactory.getDeviceDetailsModule();
