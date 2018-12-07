@@ -127,7 +127,7 @@ public class TimeSeriesProcessor extends FacilioProcessor {
                             JSONParser parser = new JSONParser();
                             JSONObject data = (JSONObject) parser.parse(record.value());
                             String kinesisData = (String) data.get("data");
-                            LOGGER.info(" timeseries data " + kinesisData);
+                            LOGGER.debug(" timeseries data " + kinesisData);
                             // processRecords(kinesisData);
                         } catch (ParseException e) {
                             LOGGER.log(Priority.INFO, "Exception while parsing data to JSON " + record.value(), e);

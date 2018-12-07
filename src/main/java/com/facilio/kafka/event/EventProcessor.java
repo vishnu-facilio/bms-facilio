@@ -157,7 +157,7 @@ public class EventProcessor extends FacilioProcessor {
                             JSONParser parser = new JSONParser();
                             JSONObject data = (JSONObject) parser.parse(record.value());
                             String kinesisData = (String) data.get("data");
-                            LOGGER.info(" timeseries data " + kinesisData);
+                            LOGGER.debug(" event data " + kinesisData);
                             // commit = processRecords(kinesisData);
                             commit = true;
                         } catch (ParseException e) {
