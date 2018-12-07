@@ -22,6 +22,7 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "pre_production" ]; then
     sed -i'' "s%chargebee.site=.*%chargebee.site=payfacilio-test%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%chargebee.api=.*%chargebee.api=test_AcdMBlnceZzwYhGeAX6dkxzocvglIkJjL%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%kinesisServer=.*%kinesisServer=true%g" $CONF_DIR/awsprops.properties
+    sed -i'' "s%disable.csp=.*%disable.csp=true%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%schedulerServer=.*%schedulerServer=true%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%enable.transaction=.*%enable.transaction=true%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%enable.kinesis=.*%enable.kinesis=true%g" $CONF_DIR/awsprops.properties
