@@ -7,12 +7,9 @@ import com.facilio.kafka.FacilioProcessor;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
-
-import java.util.Properties;
 
 public class TimeSeriesProcessor extends FacilioProcessor {
 

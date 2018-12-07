@@ -5,15 +5,17 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.websocket.EncodeException;
 
+import com.amazonaws.services.kinesis.model.Record;
+import com.facilio.server.ServerInfo;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.json.simple.JSONObject;
 
 import com.amazonaws.services.kinesis.model.PutRecordResult;
@@ -34,6 +36,7 @@ public class WmsApi
 	
 	public static String WEBSOCKET_URL = "ws://localhost:8080/bms/websocket";
 	private static Map<String, FacilioClientEndpoint> FACILIO_CLIENT_ENDPOINTS = new HashMap<>();
+	private static Producer<String, String> producer;
 	
 	static {
 		String socketUrl = AwsUtil.getConfig("websocket.url");
@@ -44,8 +47,37 @@ public class WmsApi
 		if(environment != null &&  !("development".equalsIgnoreCase(environment))) {
 			kinesisNotificationTopic = environment + "-" + kinesisNotificationTopic;
 		}
+		if(!(AwsUtil.isDevelopment() || AwsUtil.isProduction())) {
+			producer = new KafkaProducer<>(getKafkaProducerProperties());
+		}
 	}
-	
+
+	private static void sendToKafka(String data) {
+		JSONObject dataMap = new JSONObject();
+		try {
+			dataMap.put("timestamp", System.currentTimeMillis());
+			dataMap.put("key", ServerInfo.getHostname());
+			dataMap.put("data", data);
+			dataMap.put("sequenceNumber", 1234);
+			producer.send(new ProducerRecord<>(kinesisNotificationTopic, ServerInfo.getHostname(), dataMap.toString()));
+		} catch (Exception e) {
+			LOGGER.info(kinesisNotificationTopic + " : " + dataMap);
+			LOGGER.log(Level.INFO, "Exception while producing to kafka ", e);
+		}
+	}
+
+	private static Properties getKafkaProducerProperties() {
+		Properties props = new Properties();
+		props.put("bootstrap.servers", AwsUtil.getConfig("kafka.brokers"));
+		props.put("acks", "all");
+		props.put("retries", 0);
+		props.put("batch.size", 16384);
+		props.put("linger.ms", 1);
+		props.put("buffer.memory", 33554432);
+		props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+		props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+		return  props;
+	}
 	
 	
 	public static String getWebsocketEndpoint(long uid) {
@@ -117,11 +149,15 @@ public class WmsApi
 			}
 			if (AwsUtil.isDevelopment()) {
 				SessionManager.getInstance().sendMessage(message);
-			} else {
+			} else if (AwsUtil.isProduction()){
 				sendToKinesis(message.toJson());
+			} else {
+				sendToKafka(message.toJson().toJSONString());
 			}
 		}
 	}
+
+
 
 	private static void sendToKinesis(JSONObject object) {
 		try {

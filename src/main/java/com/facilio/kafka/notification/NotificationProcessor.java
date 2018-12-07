@@ -28,11 +28,6 @@ public class NotificationProcessor implements Runnable {
     private TopicPartition topicPartition;
 
     public NotificationProcessor() {
-
-        Thread thread = Thread.currentThread();
-        String threadName = "facilio-notifications";
-        thread.setName(threadName);
-
         String streamName =  WmsApi.getKinesisNotificationTopic();
         String environment = AwsUtil.getConfig("environment");
         String applicationName = environment+"-"+ ServerInfo.getHostname();
@@ -42,8 +37,8 @@ public class NotificationProcessor implements Runnable {
         List<TopicPartition> topicPartitionList = new ArrayList<>();
         topicPartitionList.add(topicPartition);
         consumer.assign(topicPartitionList);
-        consumer.seekToEnd(topicPartitionList);
-
+        // consumer.seekToEnd(topicPartitionList);
+        LOGGER.info("Notification processor has been initialized");
     }
 
     private Properties getProperties(String groupId) {
@@ -58,7 +53,9 @@ public class NotificationProcessor implements Runnable {
     }
 
     public void run() {
-
+        Thread thread = Thread.currentThread();
+        String threadName = "facilio-notifications";
+        thread.setName(threadName);
         try {
             while (true) {
                 ConsumerRecords<String, String> records = consumer.poll(500L);
