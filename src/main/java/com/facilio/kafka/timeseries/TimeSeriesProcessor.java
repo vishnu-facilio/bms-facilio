@@ -133,6 +133,7 @@ public class TimeSeriesProcessor extends FacilioProcessor {
                         }
                     }
                 } catch (Exception e) {
+                    LOGGER.info("exception while polling consumer ", e);
                     try {
                         Thread.sleep(5000L);
                     } catch (InterruptedException in) {
