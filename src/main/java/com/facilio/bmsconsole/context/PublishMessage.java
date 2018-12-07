@@ -75,4 +75,18 @@ public class PublishMessage implements Serializable {
 			this.data = (JSONObject) parser.parse(dataStr);
 		}
 	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return new StringBuilder()
+					.append("PublishMessage [")
+					.append("id : ").append(id).append(", ")
+					.append("parentId : ").append(parentId).append(", ")
+					.append("sentTime : ").append(sentTime).append(", ")
+					.append("acknowledgeTime : ").append(acknowledgeTime).append(", ")
+					.append("data : (").append(getDataStr()).append(")")
+					.append("]")
+					.toString();
+	}
 }

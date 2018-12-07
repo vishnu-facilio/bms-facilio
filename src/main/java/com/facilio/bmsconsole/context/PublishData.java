@@ -59,4 +59,16 @@ public class PublishData implements Serializable {
 	public void setMessages(List<PublishMessage> messages) {
 		this.messages = messages;
 	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return new StringBuilder()
+					.append("PublishData [")
+					.append("id : ").append(id).append(", ")
+					.append("controllerId : ").append(controllerId).append(", ")
+					.append("createdTime : ").append(createdTime).append(", ")
+					.append("acknowledgeTime : ").append(acknowledgeTime).append(", ")
+					.toString();
+	}
 }

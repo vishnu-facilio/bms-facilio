@@ -38,6 +38,7 @@ public class PublishedDataCheckerJob extends InstantJob {
 		Thread.sleep(THREAD_SLEEP_BUFFER); //Wait at first for ack
 		
 		PublishData data = (PublishData) context.get(FacilioConstants.ContextNames.PUBLISH_DATA);
+		LOGGER.info(data);
 		Map<Long, PublishMessage> msgMap = data.getMessages().stream().collect(Collectors.toMap(PublishMessage::getId, Function.identity()));
 		checkPublishedMsg(data, msgMap);
 		handleSuccessFailure(data, msgMap, context);
@@ -61,6 +62,8 @@ public class PublishedDataCheckerJob extends InstantJob {
 		
 		int retries = 0;
 		while (!msgMap.isEmpty()) {
+			LOGGER.info("Msg Map for retry "+retries+" : "+msgMap);
+			
 			List<Map<String, Object>> props = new GenericSelectRecordBuilder(selectBuilder)
 													.andCondition(CriteriaAPI.getIdCondition(msgMap.keySet(), module))
 													.get();
@@ -94,6 +97,7 @@ public class PublishedDataCheckerJob extends InstantJob {
 	
 	public void handleSuccessFailure (PublishData data, Map<Long, PublishMessage> msgMap, FacilioContext context) throws SQLException {
 		String key = null;
+		LOGGER.info("Msg Map : "+msgMap);
 		if (msgMap.isEmpty()) {
 			IoTMessageAPI.acknowdledgeData(data.getId());
 			key = FacilioConstants.ContextNames.PUBLISH_SUCCESS;
