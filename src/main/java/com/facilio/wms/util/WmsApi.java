@@ -63,9 +63,7 @@ public class WmsApi
 				partitionKey = kinesisNotificationTopic;
 			}
 			dataMap.put("timestamp", System.currentTimeMillis());
-			dataMap.put("key", partitionKey);
 			dataMap.put("data", data);
-			dataMap.put("sequenceNumber", 1234);
 			Future<RecordMetadata> future = producer.send(new ProducerRecord<>(kinesisNotificationTopic,0, partitionKey, dataMap.toString()));
 			RecordMetadata metadata = future.get();
 		} catch (Exception e) {

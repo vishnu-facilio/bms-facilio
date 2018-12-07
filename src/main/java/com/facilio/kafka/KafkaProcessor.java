@@ -105,7 +105,7 @@ public class KafkaProcessor {
 
     private static void initiateProcessFactory(long orgId, String orgDomainName, String type) {
         try {
-            new Thread(() -> getProcessor(orgId,orgDomainName,type)).start();
+            new Thread(getProcessor(orgId,orgDomainName,type)).start();
         }
         catch (Exception e){
             log.info("Exception occurred ", e);

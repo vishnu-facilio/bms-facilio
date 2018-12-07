@@ -22,6 +22,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import com.facilio.kafka.KafkaProcessor;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.flywaydb.core.Flyway;
@@ -135,6 +136,9 @@ public class FacilioContextListener implements ServletContextListener {
 			try {
 				if(("true".equalsIgnoreCase(AwsUtil.getConfig("enable.kinesis"))) && "true".equalsIgnoreCase(AwsUtil.getConfig("kinesisServer"))) {
 					new Thread(KinesisProcessor::startKinesis).start();
+				}
+				if( ! (AwsUtil.isProduction() || AwsUtil.isDevelopment())) {
+					new Thread(KafkaProcessor::start).start();
 				}
 			} catch (Exception e){
 				log.info("Exception occurred ", e);

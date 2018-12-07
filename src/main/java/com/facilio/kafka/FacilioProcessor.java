@@ -7,14 +7,18 @@ import java.util.Properties;
 
 public abstract class FacilioProcessor implements Runnable {
 
-    protected Properties getConsumerProperties(String consumerGroup) {
+    protected Properties getConsumerProperties(String client, String consumerGroup) {
         Properties props = new Properties();
         props.put("bootstrap.servers", AwsUtil.getConfig("kafka.brokers"));
         props.put("group.id", consumerGroup);
         props.put("enable.auto.commit", "false");
-        props.put("auto.offset.reset", "earliest");
         props.put("key.deserializer", StringDeserializer.class.getName());
         props.put("value.deserializer", StringDeserializer.class.getName());
+        props.put("max.partition.fetch.bytes", 3145728);
+        props.put("auto.offset.reset", "earliest");
+        props.put("max.poll.interval.ms", 2000);
+        props.put("clientid", client);
+
         return props;
     }
 
