@@ -62,18 +62,12 @@ public class WmsApi
 			if (partitionKey == null) {
 				partitionKey = kinesisNotificationTopic;
 			}
-			LOGGER.info("Sent data to Kafka");
 			dataMap.put("timestamp", System.currentTimeMillis());
 			dataMap.put("key", partitionKey);
 			dataMap.put("data", data);
 			dataMap.put("sequenceNumber", 1234);
 			Future<RecordMetadata> future = producer.send(new ProducerRecord<>(kinesisNotificationTopic,0, partitionKey, dataMap.toString()));
 			RecordMetadata metadata = future.get();
-			if(metadata.hasOffset()) {
-				LOGGER.info("offset is " + metadata.offset());
-			} else {
-				LOGGER.info("no offset " + data);
-			}
 		} catch (Exception e) {
 			LOGGER.info(kinesisNotificationTopic + " : " + dataMap);
 			LOGGER.log(Level.INFO, "Exception while producing to kafka ", e);
@@ -166,7 +160,6 @@ public class WmsApi
 			} else if (AwsUtil.isProduction()){
 				sendToKinesis(message.toJson());
 			} else {
-				LOGGER.info("sending to kafka");
 				sendToKafka(message.toJson());
 			}
 		}
