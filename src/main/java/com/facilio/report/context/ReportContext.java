@@ -1,5 +1,7 @@
 package com.facilio.report.context;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +16,8 @@ import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.report.context.ReadingAnalysisContext.AnalyticsType;
 import com.facilio.workflows.context.WorkflowContext;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 public class ReportContext {
 
@@ -243,8 +247,14 @@ public class ReportContext {
 		this.xCriteria = xCriteria;
 	}
 
-	public void setXCriteriaJson(String xCriteriaJson) throws Exception {
-		
+	@JSON(serialize=false)
+	public String getxCriteriaJson() throws Exception {
+		if (xCriteria != null) {
+			return FieldUtil.getAsJSON(xCriteria).toJSONString();
+		}
+		return null;
+	}
+	public void setxCriteriaJson(String xCriteriaJson) throws Exception {
 		JSONObject json = (JSONObject) parser.parse(xCriteriaJson);
 		this.xCriteria = FieldUtil.getAsBeanFromJson(json, ReportXCriteriaContext.class);
 	}
@@ -272,15 +282,6 @@ public class ReportContext {
 	}
 	public void setxAggr(AggregateOperator xAggr) {
 		this.xAggr = xAggr;
-	}
-	
-	@JSON(serialize=false)
-	public String getXCriteriaJson() throws Exception {
-		
-		if (xCriteria != null) {
-			return FieldUtil.getAsJSON(xCriteria).toJSONString();
-		}
-		return null;
 	}
 	
 	private AnalyticsType analyticsType;
