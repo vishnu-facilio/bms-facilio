@@ -413,6 +413,14 @@ public class V2ReportAction extends FacilioAction {
 	public void setAssetCategory(long assetCategory) {
 		this.assetCategory = assetCategory;
 	}
+	
+	private List<Long> parentId;
+	public List<Long> getParentId() {
+		return parentId;
+	}
+	public void setParentId(List<Long> parentId) {
+		this.parentId = parentId;
+	}
 
 	public boolean deleteWithWidget;
 	
@@ -457,6 +465,7 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.BASE_LINE_LIST, FieldUtil.getAsBeanListFromJsonArray(baseLineList, ReportBaseLineContext.class));
 		context.put(FacilioConstants.ContextNames.REPORT_X_CRITERIA_MODE, xCriteriaMode);
 		context.put(FacilioConstants.ContextNames.ASSET_CATEGORY, assetCategory);
+		context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, parentId);
 		
 		context.put(FacilioConstants.ContextNames.ALARM_ID, alarmId);
 	}

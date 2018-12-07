@@ -11,7 +11,6 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -20,15 +19,14 @@ import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.ReadingAnalysisContext;
 import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
 import com.facilio.report.context.ReadingAnalysisContext.XCriteriaMode;
-import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.context.ReportContext;
+import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportDataPointContext.DataPointType;
 import com.facilio.report.context.ReportDataPointContext.OrderByFunction;
@@ -165,14 +163,9 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 			case NONE:
 				throw new RuntimeException("This is not supposed to happen!!");
 			case ALL_ASSET_CATEGORY: //Assuming there'll be only one datapoint
-				long categoryId = (long) context.get(FacilioConstants.ContextNames.ASSET_CATEGORY);
-				AssetCategoryContext category = AssetsAPI.getCategoryForAsset(categoryId);
-				if (category == null) {
-					throw new IllegalArgumentException("Invalid asset category");
-				}
-				return category.getName();
+			case SPECIFIC_ASSETS_OF_CATEGORY:
+				return yField.getDisplayName();
 		}
-		
 		return null;
 	}
 	
@@ -203,18 +196,35 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 	private ReportXCriteriaContext constructXCriteria (XCriteriaMode mode, FacilioContext context) throws Exception {
 		
 		if (mode != null) {
+			Criteria criteria = null;
+			ReportXCriteriaContext xCriteria = null;
 			switch (mode) {
 				case NONE:
 					return null;
 				case ALL_ASSET_CATEGORY:
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					long categoryId = (long) context.get(FacilioConstants.ContextNames.ASSET_CATEGORY);
-					ReportXCriteriaContext xCriteria = new ReportXCriteriaContext();
+					xCriteria = new ReportXCriteriaContext();
 					xCriteria.setxField(modBean.getField("id", FacilioConstants.ContextNames.ASSET));
 					FacilioField categoryField = modBean.getField("category", FacilioConstants.ContextNames.ASSET);
 					
-					Criteria criteria = new Criteria();
+					criteria = new Criteria();
 					criteria.addAndCondition(CriteriaAPI.getCondition(categoryField, String.valueOf(categoryId), PickListOperators.IS));
+					
+					xCriteria.setCriteria(criteria);
+					return xCriteria;
+				case SPECIFIC_ASSETS_OF_CATEGORY:
+					List<Long> parentIds = (List<Long>) context.get(FacilioConstants.ContextNames.PARENT_ID_LIST);
+					if (parentIds == null || parentIds.isEmpty()) {
+						throw new IllegalArgumentException("Atleast one asset has to be mentioned for this xCriteri mode");
+					}
+					
+					modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					xCriteria = new ReportXCriteriaContext();
+					xCriteria.setxField(modBean.getField("id", FacilioConstants.ContextNames.ASSET));
+					
+					criteria = new Criteria();
+					criteria.addAndCondition(CriteriaAPI.getIdCondition(parentIds, modBean.getModule(FacilioConstants.ContextNames.ASSET)));
 					
 					xCriteria.setCriteria(criteria);
 					return xCriteria;
