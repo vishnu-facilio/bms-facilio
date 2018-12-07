@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
+import com.facilio.report.context.ReportDataPointContext.DataPointType;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.util.ReportUtil;
 
@@ -33,6 +34,9 @@ public class AddOrUpdateReportCommand implements Command {
 		
 		Set<ReportFieldContext> reportFields = new HashSet<>();
 		for(ReportDataPointContext dataPoint : report.getDataPoints()) {
+			if (dataPoint.getTypeEnum() == DataPointType.DERIVATION) {
+				continue;
+			}
 			
 			if(dataPoint.getxAxis() != null)  {
 				reportFields.add(constructReportField(dataPoint.getxAxis().getField(), report.getId()));
