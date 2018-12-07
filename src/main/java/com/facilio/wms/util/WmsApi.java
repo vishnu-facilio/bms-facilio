@@ -6,6 +6,7 @@ import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.*;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,6 +17,7 @@ import com.facilio.server.ServerInfo;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.json.simple.JSONObject;
 
 import com.amazonaws.services.kinesis.model.PutRecordResult;
@@ -48,18 +50,30 @@ public class WmsApi
 			kinesisNotificationTopic = environment + "-" + kinesisNotificationTopic;
 		}
 		if(!(AwsUtil.isDevelopment() || AwsUtil.isProduction())) {
+			LOGGER.info("Initialized Kafka Producer");
 			producer = new KafkaProducer<>(getKafkaProducerProperties());
 		}
 	}
 
-	private static void sendToKafka(String data) {
+	private static void sendToKafka(JSONObject data) {
 		JSONObject dataMap = new JSONObject();
 		try {
+			String partitionKey = (String) data.get("namespace");
+			if (partitionKey == null) {
+				partitionKey = kinesisNotificationTopic;
+			}
+			LOGGER.info("Sent data to Kafka");
 			dataMap.put("timestamp", System.currentTimeMillis());
-			dataMap.put("key", ServerInfo.getHostname());
+			dataMap.put("key", partitionKey);
 			dataMap.put("data", data);
 			dataMap.put("sequenceNumber", 1234);
-			producer.send(new ProducerRecord<>(kinesisNotificationTopic, ServerInfo.getHostname(), dataMap.toString()));
+			Future<RecordMetadata> future = producer.send(new ProducerRecord<>(kinesisNotificationTopic,0, partitionKey, dataMap.toString()));
+			RecordMetadata metadata = future.get();
+			if(metadata.hasOffset()) {
+				LOGGER.info("offset is " + metadata.offset());
+			} else {
+				LOGGER.info("no offset " + data);
+			}
 		} catch (Exception e) {
 			LOGGER.info(kinesisNotificationTopic + " : " + dataMap);
 			LOGGER.log(Level.INFO, "Exception while producing to kafka ", e);
@@ -152,7 +166,8 @@ public class WmsApi
 			} else if (AwsUtil.isProduction()){
 				sendToKinesis(message.toJson());
 			} else {
-				sendToKafka(message.toJson().toJSONString());
+				LOGGER.info("sending to kafka");
+				sendToKafka(message.toJson());
 			}
 		}
 	}

@@ -57,6 +57,7 @@ public class NotificationProcessor implements Runnable {
         String threadName = "facilio-notifications";
         thread.setName(threadName);
         try {
+            LOGGER.info("Running notification processor");
             while (true) {
                 ConsumerRecords<String, String> records = consumer.poll(500L);
                 long startTime = System.currentTimeMillis();
@@ -65,15 +66,10 @@ public class NotificationProcessor implements Runnable {
                     try {
                         JSONParser parser = new JSONParser();
                         JSONObject data = (JSONObject) parser.parse(record.value());
-                        String messageData = (String) data.get("data");
-                        try {
-                            JSONObject payLoad = (JSONObject) parser.parse(messageData);
-                            Message message = Message.getMessage(payLoad);
-                            LOGGER.debug("Going to send message to " + message.getTo() + " from " + message.getFrom());
-                            timeToSendMessage = timeToSendMessage + SessionManager.getInstance().sendMessage(message);
-                        } catch (ParseException e) {
-                            LOGGER.info("Exception while parsing data "+ messageData +" ", e);
-                        }
+                        JSONObject messageData = (JSONObject) data.get("data");
+                        Message message = Message.getMessage(messageData);
+                        LOGGER.debug("Going to send message to " + message.getTo() + " from " + message.getFrom());
+                        timeToSendMessage = timeToSendMessage + SessionManager.getInstance().sendMessage(message);
                         consumer.commitSync(Collections.singletonMap(topicPartition, new OffsetAndMetadata(record.offset() + 1)));
                     } catch (ParseException e) {
                         LOGGER.log(Priority.INFO, "Exception while parsing data to JSON ", e);
