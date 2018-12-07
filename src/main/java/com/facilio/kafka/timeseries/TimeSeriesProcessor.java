@@ -71,6 +71,9 @@ public class TimeSeriesProcessor extends FacilioProcessor {
 
         consumer = new KafkaConsumer(getConsumerProperties(ServerInfo.getHostname(), consumerGroup));
         producer = new KafkaProducer(getProducerProperties());
+        List<TopicPartition> topicPartitionList = new ArrayList<>();
+        topicPartitionList.add(topicPartition);
+        consumer.assign(topicPartitionList);
     }
 
     private void sendToKafka(JSONObject data) {
