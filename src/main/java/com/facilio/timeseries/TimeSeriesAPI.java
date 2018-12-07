@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -47,6 +49,8 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class TimeSeriesAPI {
+	
+	private static final Logger LOGGER = LogManager.getLogger(TimeSeriesAPI.class.getName());
 
 	public static void processPayLoad(long ttime, JSONObject payLoad) throws Exception {
 		processPayLoad(ttime, payLoad, null, null);
@@ -409,6 +413,7 @@ public class TimeSeriesAPI {
 			insertBuilder.addRecord(instanceObj);
 		}
 		insertBuilder.save();
+		LOGGER.info("Device Points size : "+insertBuilder.getRecords());
 	}
 	
 	public static List<Map<String, Object>> getUnmodeledInstancesForController (long controllerId, Boolean configuredOnly, Boolean fetchMapped) throws Exception {

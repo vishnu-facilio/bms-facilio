@@ -226,6 +226,7 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 			long controllerSettingsId = controller.getId();
 			if(controllerSettingsId > -1) {
 				JSONArray points = (JSONArray)payLoad.get("points");
+				LOGGER.info("Device Points : "+points);
 				TimeSeriesAPI.addUnmodeledInstances(points, controllerSettingsId);
 			}
 		}
