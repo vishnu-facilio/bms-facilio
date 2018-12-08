@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.chain.Context;
 
@@ -30,6 +32,8 @@ public class SchedulePrePMRemindersCommand implements SerializableCommand {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	private static final Logger LOGGER = Logger.getLogger(SchedulePrePMRemindersCommand.class.getName());
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -100,6 +104,9 @@ public class SchedulePrePMRemindersCommand implements SerializableCommand {
 								default:
 									throw new RuntimeException("This is not supposed to happen");
 								}
+							}
+							else {
+								LOGGER.log(Level.SEVERE, "REMINDER ISSUE FOR PM_ID ---"+pm.getId());
 							}
 						}
 					}
