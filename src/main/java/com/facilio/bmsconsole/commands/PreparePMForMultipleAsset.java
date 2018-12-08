@@ -87,9 +87,9 @@ public class PreparePMForMultipleAsset implements Command {
 
 	public static void applySectionSettingsIfApplicable(TaskSectionTemplate sectiontemplate, TaskTemplate taskTemplate) {
 		
-		if(!taskTemplate.isAttachmentRequired()) {
-			taskTemplate.setAttachmentRequired(sectiontemplate.isAttachmentRequired());
-		}
+//		if(!taskTemplate.isAttachmentRequired()) {
+//			taskTemplate.setAttachmentRequired(sectiontemplate.isAttachmentRequired());
+//		}
 		if(taskTemplate.getInputType() <= InputType.NONE.getVal() && sectiontemplate.getInputType() > InputType.NONE.getVal()) {
 			taskTemplate.setInputType(sectiontemplate.getInputType());
 		}
