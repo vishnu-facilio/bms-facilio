@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
@@ -66,32 +67,32 @@ public class ConstructReportDataCommand implements Command {
 				Object xVal = prop.get(dataPoint.getxAxis().getField().getName());
 				if (xVal != null) {
 					xVal = getBaseLineAdjustedXVal(xVal, dataPoint.getxAxis(), baseLine);
-					xVal = formatVal(dataPoint.getxAxis().getField(), report.getxAggrEnum(), xVal);
+					Object formattedxVal = formatVal(dataPoint.getxAxis().getField(), report.getxAggrEnum(), xVal, null, dataPoint.isHandleBoolean());
 					Object yVal = prop.get(dataPoint.getyAxis().getField().getName());
 					if (yVal != null) {
-						yVal = formatVal(dataPoint.getyAxis().getField(), dataPoint.getyAxis().getAggrEnum(), yVal);
+						yVal = formatVal(dataPoint.getyAxis().getField(), dataPoint.getyAxis().getAggrEnum(), yVal, xVal, dataPoint.isHandleBoolean());
 						
 						StringJoiner key = new StringJoiner("|");
-						key.add(xVal.toString());
+						key.add(formattedxVal.toString());
 						Map<String, Object> data = null;
 						if (dataPoint.getGroupByFields() != null && !dataPoint.getGroupByFields().isEmpty()) {
 							data = new HashMap<>();
 							for (ReportGroupByField groupBy : dataPoint.getGroupByFields()) {
 								FacilioField field = groupBy.getField();
 								Object groupByVal = prop.get(field.getName());
-								groupByVal = formatVal(field, null, groupByVal);
+								groupByVal = formatVal(field, null, groupByVal, xVal, dataPoint.isHandleBoolean());
 								data.put(groupBy.getAlias(), groupByVal);
 								key.add(groupBy.getAlias()+"_"+groupByVal.toString());
 							}
 						}
-						constructAndAddData(key.toString(), data, xVal, yVal, getyAlias(dataPoint, baseLine), report, transformedData, directHelperData);
+						constructAndAddData(key.toString(), data, formattedxVal, yVal, getyAlias(dataPoint, baseLine), report, dataPoint, transformedData, directHelperData);
 					}
 				}
 			}
 		}
 	}
 	
-	private void constructAndAddData(String key, Map<String, Object> existingData, Object xVal, Object yVal, String yAlias, ReportContext report, List<Map<String, Object>> transformedData, Map<String, Object> intermediateData) {
+	private void constructAndAddData(String key, Map<String, Object> existingData, Object xVal, Object yVal, String yAlias, ReportContext report, ReportDataPointContext dataPoint, List<Map<String, Object>> transformedData, Map<String, Object> intermediateData) {
 		Map<String, Object> data = (Map<String, Object>) intermediateData.get(key);
 		if (data == null) {
 			data = existingData == null ? new HashMap<>() : existingData;
@@ -99,7 +100,19 @@ public class ConstructReportDataCommand implements Command {
 			intermediateData.put(key, data);
 			transformedData.add(data);
 		}
-		data.put(yAlias, yVal);
+		
+		if (dataPoint.isHandleBoolean()) {
+			Map<Long, Integer> value = (Map<Long, Integer>) data.get(yAlias);
+			if (value != null) {
+				value.putAll((Map<? extends Long, ? extends Integer>) yVal);
+			}
+			else {
+				data.put(yAlias, yVal);
+			}
+		}
+		else {
+			data.put(yAlias, yVal);
+		}
 	}
 	
 	private String getyAlias(ReportDataPointContext dataPoint, ReportBaseLineContext baseLine) {
@@ -124,7 +137,7 @@ public class ConstructReportDataCommand implements Command {
 	}
 	
 	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
-	private Object formatVal(FacilioField field, AggregateOperator aggr, Object val) {
+	private Object formatVal(FacilioField field, AggregateOperator aggr, Object val, Object actualxVal, boolean handleBoolean) {
 		if (val == null) {
 			return "";
 		}
@@ -135,14 +148,20 @@ public class ConstructReportDataCommand implements Command {
 		
 		switch (field.getDataTypeEnum()) {
 			case DECIMAL:
-				return DECIMAL_FORMAT.format(val);
+				val = DECIMAL_FORMAT.format(val);
 			case BOOLEAN:
 				if (val.toString().equals("true")) {
-					return 1;
+					val = 1;
 				}
 				else if (val.toString().equals("false")) {
-					return 0;
+					val = 0;
 				}
+				if (handleBoolean && actualxVal != null) {
+					Map<Long, Integer> value = new LinkedHashMap<>();
+					value.put((Long)actualxVal, (Integer) val);
+					val = value;
+				}
+				
 				break;
 			default:
 				break;
