@@ -10,7 +10,6 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
@@ -38,8 +37,6 @@ public class FilterFieldCommand implements Command {
 						for (Map<String, Object> prop : props) {
 							joiner.add(prop.get(filter.getField().getName()).toString());
 						}
-						
-						filter.setFilterOperator(StringOperators.IS); //This is a hack for now
 						filter.setFilterValue(joiner.toString());
 					}
 				}
