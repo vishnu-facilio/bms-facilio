@@ -10,6 +10,7 @@ import java.util.StringJoiner;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
@@ -28,8 +29,8 @@ import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.ReadingAnalysisContext;
-import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
 import com.facilio.report.context.ReadingAnalysisContext.ReportFilterMode;
+import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.context.ReportDataPointContext;
@@ -151,10 +152,13 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 		FacilioField xField = null;
 		switch (mode) {
 			case SERIES:
+				xField = fieldMap.get("parentId");
+				break;
 			case SITE:
 			case BUILDING:
 			case RESOURCE:
 				xField = fieldMap.get("parentId");
+				dataPoint.setFetchResource(true);
 				break;
 			case TIMESERIES:
 			case CONSOLIDATED:
@@ -258,12 +262,10 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 					}
 					
 					modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-					filter = filter = getBasicReadingReportFilter(modBean);
-					
-					criteria = new Criteria();
-					criteria.addAndCondition(CriteriaAPI.getIdCondition(parentIds, modBean.getModule(FacilioConstants.ContextNames.ASSET)));
-					
-					filter.setCriteria(criteria);
+					filter = getBasicReadingReportFilter(modBean);
+					filter.setDataFilter(true);
+					filter.setFilterOperator(PickListOperators.IS);
+					filter.setFilterValue(StringUtils.join(parentIds));
 					return Collections.singletonList(filter);
 				case SPACE:
 					modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

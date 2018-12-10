@@ -228,6 +228,14 @@ public class ReportDataPointContext {
 		this.handleBoolean = handleBoolean;
 	}
 	
+	private boolean fetchResource;
+	public boolean isFetchResource() {
+		return fetchResource;
+	}
+	public void setFetchResource(boolean fetchResource) {
+		this.fetchResource = fetchResource;
+	}
+
 	private Map<String, Object> metaData;
 	public Map<String, Object> getMetaData() {
 		return metaData;

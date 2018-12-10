@@ -112,7 +112,7 @@ public class TransformReportDataCommand implements Command {
 				Object xVal = prop.get(dataPoint.getxAxis().getField().getName());
 				if (xVal != null) {
 					xVal = getBaseLineAdjustedXVal(xVal, dataPoint.getxAxis(), baseLine);
-					xVal = formatVal(dataPoint.getxAxis().getField(), xAggr, xVal, (xValues instanceof LinkedHashSet));
+					xVal = formatVal(dataPoint.getxAxis().getField(), xAggr, xVal, dataPoint.isFetchResource());
 					xValues.add(xVal);
 					Object yVal = prop.get(dataPoint.getyAxis().getField().getName());
 					if (yVal != null) { //Ignoring null values

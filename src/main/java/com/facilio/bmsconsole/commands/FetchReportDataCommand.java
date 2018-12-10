@@ -119,7 +119,7 @@ public class FetchReportDataCommand implements Command {
 				if (!filter.isDataFilter() && (filter.getFilterValue() == null || filter.getFilterValue().isEmpty())) {
 					return true;
 				}
-				FacilioField filterField = modBean.getField(filter.getFieldName(), dataPoint.getxAxis().getModuleName());
+				FacilioField filterField = modBean.getField(filter.getFilterFieldName(), dataPoint.getxAxis().getModuleName());
 				if (filter.isDataFilter()) {
 					selectBuilder.andCondition(CriteriaAPI.getCondition(filterField, filter.getFilterValue(), filter.getFilterOperatorEnum()));
 				}
