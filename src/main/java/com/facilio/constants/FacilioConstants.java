@@ -43,6 +43,7 @@ import com.facilio.bmsconsole.context.TicketPriorityContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.TicketTypeContext;
 import com.facilio.bmsconsole.context.UtilityMeterContext;
+import com.facilio.bmsconsole.context.WaterMeterContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.context.ZoneContext;
@@ -659,6 +660,7 @@ public class FacilioConstants {
 			classMap.put(CDD_READING, ReadingContext.class);
 			classMap.put(HDD_READING, ReadingContext.class);
 			classMap.put(UTILITY_BILL_READING, ReadingContext.class);
+			classMap.put(WATER_METER, WaterMeterContext.class);
 			classMap.put(CHILLER_SECONDARY_PUMP, ChillerSecondaryPumpContext.class);			
 			return classMap;
 		}
