@@ -155,7 +155,8 @@ public class ReadingAnalysisContext {
 	public static enum XCriteriaMode {
 		NONE,
 		ALL_ASSET_CATEGORY,
-		SPECIFIC_ASSETS_OF_CATEGORY
+		SPECIFIC_ASSETS_OF_CATEGORY,
+		SPACE
 		;
 		
 		public int getValue() {

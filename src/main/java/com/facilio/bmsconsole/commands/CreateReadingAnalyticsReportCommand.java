@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.CommonAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.SpaceAggregateOperator;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.criteria.BuildingOperator;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -232,7 +233,7 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 					return null;
 				case ALL_ASSET_CATEGORY:
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-					long categoryId = (long) context.get(FacilioConstants.ContextNames.ASSET_CATEGORY);
+					List<Long> categoryId = (List<Long>) context.get(FacilioConstants.ContextNames.ASSET_CATEGORY);
 					xCriteria = new ReportXCriteriaContext();
 					xCriteria.setxField(modBean.getField("id", FacilioConstants.ContextNames.ASSET));
 					FacilioField categoryField = modBean.getField("category", FacilioConstants.ContextNames.ASSET);
@@ -254,6 +255,21 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 					
 					criteria = new Criteria();
 					criteria.addAndCondition(CriteriaAPI.getIdCondition(parentIds, modBean.getModule(FacilioConstants.ContextNames.ASSET)));
+					
+					xCriteria.setCriteria(criteria);
+					return xCriteria;
+				case SPACE:
+					modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					categoryId = (List<Long>) context.get(FacilioConstants.ContextNames.ASSET_CATEGORY);
+					List<Long> spaceId = (List<Long>) context.get(FacilioConstants.ContextNames.BASE_SPACE_LIST);
+					xCriteria = new ReportXCriteriaContext();
+					xCriteria.setxField(modBean.getField("id", FacilioConstants.ContextNames.ASSET));
+					categoryField = modBean.getField("category", FacilioConstants.ContextNames.ASSET);
+					FacilioField spaceField = modBean.getField("space", FacilioConstants.ContextNames.ASSET);
+					
+					criteria = new Criteria();
+					criteria.addAndCondition(CriteriaAPI.getCondition(categoryField, categoryId, PickListOperators.IS));
+					criteria.addAndCondition(CriteriaAPI.getCondition(spaceField, spaceId, BuildingOperator.BUILDING_IS));
 					
 					xCriteria.setCriteria(criteria);
 					return xCriteria;
