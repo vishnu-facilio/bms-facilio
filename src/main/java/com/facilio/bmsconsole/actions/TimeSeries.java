@@ -110,11 +110,6 @@ public class TimeSeries extends FacilioAction {
 		Chain mappingChain = TransactionChainFactory.getInstanceAssetMappingChain();
 		mappingChain.execute(context);
 		
-		if (doMigration) {
-			String deviceName = (String) instanceAssetMap.get("deviceName");
-			setDeviceList(Collections.singletonList(deviceName));
-			migrateData();
-		}
 		setResult("result", "success");
 		return SUCCESS;
 	}
@@ -135,6 +130,7 @@ public class TimeSeries extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.CONTROLLER_ID, controllerId);
 		context.put(FacilioConstants.ContextNames.CONFIGURE, configured);
 		context.put(FacilioConstants.ContextNames.FETCH_MAPPED, fetchMapped);
+		context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
 		
 		Chain chain = ReadOnlyChainFactory.getUnmodelledInstancesForController();
 		chain.execute(context);

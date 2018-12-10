@@ -127,6 +127,17 @@ public class FacilioAction extends ActionSupport {
 		return this.perPage;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public JSONObject getPagination () {
+		if (getPage() != 0) {
+			JSONObject pagination = new JSONObject();
+			pagination.put("page", getPage());
+			pagination.put("perPage", getPerPage());
+			return pagination;
+		}
+		return null;
+	}
+	
 	private String contentType="application/octet-stream";
 	public String getContentType() {
 		return contentType;

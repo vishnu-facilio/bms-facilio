@@ -11,8 +11,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -47,10 +45,9 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.facilio.tasker.FacilioTimer;
 
 public class TimeSeriesAPI {
-	
-	private static final Logger LOGGER = LogManager.getLogger(TimeSeriesAPI.class.getName());
 
 	public static void processPayLoad(long ttime, JSONObject payLoad) throws Exception {
 		processPayLoad(ttime, payLoad, null, null);
@@ -146,9 +143,19 @@ public class TimeSeriesAPI {
 	}
 	
 	public static void insertOrUpdateInstance(String deviceName, long assetId, long categoryId, Long controllerId, String instance, long fieldId) throws Exception {
-		Map<String, Object> modeledData = getMappedInstance(deviceName, instance);
+		Map<String, Object> modeledData = getMappedInstance(deviceName, instance, controllerId);
 		if (modeledData == null) {
-			insertInstanceAssetMapping(deviceName, assetId, categoryId, controllerId, Collections.singletonMap(instance, fieldId));			
+			insertInstanceAssetMapping(deviceName, assetId, categoryId, controllerId, Collections.singletonMap(instance, fieldId));	
+			
+			// TODO move to insertInstanceAssetMapping
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.DEVICE_DATA, deviceName);
+			context.put(FacilioConstants.ContextNames.INSTANCE_INFO, instance);
+			context.put(FacilioConstants.ContextNames.ASSET_ID, assetId);
+			context.put(FacilioConstants.ContextNames.FIELD_ID, fieldId);
+			context.put(FacilioConstants.ContextNames.CONTROLLER_ID, controllerId);
+			
+			FacilioTimer.scheduleInstantJob("ProcessUnmodelledHistoricalData", context);
 		}
 		else {
 			updateInstanceAssetMapping(deviceName, assetId, categoryId, instance, fieldId, modeledData);
@@ -158,7 +165,7 @@ public class TimeSeriesAPI {
 	
 	public static void insertInstanceAssetMapping(String deviceName, long assetId, long categoryId, Long controllerId, Map<String,Long> instanceFieldMap) throws Exception {
 		
-		List<Map<String, Object>> instanceDetails = getUnmodeledInstances(deviceName, instanceFieldMap.keySet(), null);
+		List<Map<String, Object>> instanceDetails = getUnmodeledInstances(deviceName, instanceFieldMap.keySet(), controllerId, null);
 		Map<String,Map<String, Object>> instanceMap = instanceDetails.stream().collect(Collectors.toMap(instance -> (String) instance.get("instance"), Function.identity()));
 		
 		List<ReadingDataMeta> writableReadingList = new ArrayList<>();
@@ -217,18 +224,20 @@ public class TimeSeriesAPI {
 	}
 	
 	public static int updateInstanceAssetMapping(String deviceName, long assetId, long categoryId, String instanceName, long fieldId, Map<String, Object> oldData) throws Exception {
+		long oldFieldId = (long) oldData.get("fieldId");
 		
-		Map<String, ReadingDataMeta> metaMap = getMetaMap(assetId, Collections.singletonMap(instanceName, fieldId));
+		Map<String,Long> instanceFieldMap = new HashMap<>();
+		instanceFieldMap.put(instanceName, fieldId);
+		instanceFieldMap.put(instanceName + "_temp", oldFieldId);
+		Map<String, ReadingDataMeta> metaMap = getMetaMap(assetId, instanceFieldMap);
 		checkForInputType(assetId, fieldId, instanceName, metaMap);
 		
-		ReadingDataMeta meta = metaMap.get(assetId+"|"+fieldId);
+		ReadingDataMeta meta = metaMap.get(assetId+"|"+oldFieldId);
 		long lastMappedTime = (long) oldData.get("mappedTime");
 		// Checking if the data is coming for more than a month
-		if (meta.getActualValue() != null && !meta.getActualValue().equals("-1") && ((meta.getTtime()-lastMappedTime) > (30 * 24 * 60 * 60000) ) ) {
+		if (meta.getActualValue() != null && !meta.getActualValue().equals("-1") && ((meta.getTtime()-lastMappedTime) > (30 * 24 * 60 * 60000L) ) ) {
 			throw new IllegalArgumentException("Field cannot be changed. Please contact the support");
 		}
-		
-		// TODO migrate
 		
 		Map<String, Object> prop = new HashMap<>();
 		prop.put("assetId", assetId);
@@ -248,7 +257,16 @@ public class TimeSeriesAPI {
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("instance"), instanceName, StringOperators.IS))
 				;
 		
-		return builder.update(prop);
+		int count = builder.update(prop);
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.OLD_FIELD_ID, oldFieldId);
+		context.put(FacilioConstants.ContextNames.FIELD_ID, fieldId);
+		context.put(FacilioConstants.ContextNames.PARENT_ID, assetId);
+		
+		FacilioTimer.scheduleInstantJob("MigrateReadingData", context);
+		
+		return count;
 	}
 	
 	public static Map<String, Long> getDefaultInstanceFieldMap() throws Exception {
@@ -285,7 +303,7 @@ public class TimeSeriesAPI {
 		return null;
 	}
 	
-	public static Map<String, Object> getMappedInstance(String device, String instance) throws Exception {
+	public static Map<String, Object> getMappedInstance(String device, String instance, long controllerId) throws Exception {
 		FacilioModule module = ModuleFactory.getInstanceMappingModule();
 		List<FacilioField> fields = FieldFactory.getInstanceMappingFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -295,6 +313,7 @@ public class TimeSeriesAPI {
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("device"), device, StringOperators.IS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("instance"), instance, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"), String.valueOf(controllerId), StringOperators.IS))
 				;
 		List<Map<String, Object>> props = builder.get();
 		if(props!=null && !props.isEmpty()) {
@@ -413,10 +432,9 @@ public class TimeSeriesAPI {
 			insertBuilder.addRecord(instanceObj);
 		}
 		insertBuilder.save();
-		LOGGER.info("Device Points size : "+insertBuilder.getRecords());
 	}
 	
-	public static List<Map<String, Object>> getUnmodeledInstancesForController (long controllerId, Boolean configuredOnly, Boolean fetchMapped) throws Exception {
+	public static List<Map<String, Object>> getUnmodeledInstancesForController (long controllerId, Boolean configuredOnly, Boolean fetchMapped, JSONObject pagination) throws Exception {
 		FacilioModule module = ModuleFactory.getUnmodeledInstancesModule();
 		List<FacilioField> fields = FieldFactory.getUnmodeledInstanceFields();
 		fields.add(FieldFactory.getIdField(module));
@@ -425,7 +443,8 @@ public class TimeSeriesAPI {
 				.select(fields)
 				.table(module.getTableName())
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"), String.valueOf(controllerId), NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"), String.valueOf(controllerId), NumberOperators.EQUALS))
+				.orderBy(fieldMap.get("createdTime").getColumnName() + " DESC");
 		
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("instanceType"), CommonOperators.IS_EMPTY));
@@ -463,9 +482,22 @@ public class TimeSeriesAPI {
 				.andCondition(CriteriaAPI.getCondition(mappedInstance, CommonOperators.IS_EMPTY));
 			}
 			else {
-				builder.innerJoin(mappedModule.getTableName()).on(joinOn);
-				
+				builder.innerJoin(mappedModule.getTableName()).on(joinOn)
+				.orderBy(mappedFieldMap.get("mappedTime").getColumnName() + " DESC");
 			}
+		}
+		
+		if (pagination != null) {
+			int page = (int) pagination.get("page");
+			int perPage = (int) pagination.get("perPage");
+
+			int offset = ((page-1) * perPage);
+			if (offset < 0) {
+				offset = 0;
+			}
+
+			builder.offset(offset);
+			builder.limit(perPage);
 		}
 
 		 List<Map<String, Object>> props =  builder.get();
@@ -485,10 +517,18 @@ public class TimeSeriesAPI {
 	}
 	
 	public static List<Map<String, Object>> getUnmodeledInstances (List<Long> ids) throws Exception {
-		return getUnmodeledInstances(null, null, ids);
+		return getUnmodeledInstances(null, null, null, ids);
 	}
 	
-	public static List<Map<String, Object>> getUnmodeledInstances (String device, Collection<String> instances, List<Long> ids) throws Exception {
+	public static Map<String, Object> getUnmodeledInstance (String device, String instance, long controllerId) throws Exception {
+		List<Map<String, Object>> instances = getUnmodeledInstances(device, Collections.singletonList(instance), controllerId, null);
+		if (instances != null && !instances.isEmpty()) {
+			return instances.get(0);
+		}
+		return null;
+	}
+	
+	public static List<Map<String, Object>> getUnmodeledInstances (String device, Collection<String> instances, Long controllerId, List<Long> ids) throws Exception {
 		FacilioModule module = ModuleFactory.getUnmodeledInstancesModule();
 		List<FacilioField> fields = FieldFactory.getUnmodeledInstanceFields();
 		fields.add(FieldFactory.getIdField(module));
@@ -505,7 +545,8 @@ public class TimeSeriesAPI {
 		}
 		else if (instances != null) {
 			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("device"), device, StringOperators.IS))
-				   .andCondition(CriteriaAPI.getCondition(fieldMap.get("instance"), StringUtils.join(instances, ","), StringOperators.IS));
+				   .andCondition(CriteriaAPI.getCondition(fieldMap.get("instance"), StringUtils.join(instances, ","), StringOperators.IS))
+				   .andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"), String.valueOf(controllerId), StringOperators.IS));
 		}
 		
 		return builder.get();
@@ -515,10 +556,7 @@ public class TimeSeriesAPI {
 		Map<String, Object> mappedInstance = getMappedInstance(assetId, fieldId);
 		if (mappedInstance != null) {
 			String instance = (String) mappedInstance.get("instance");
-			List<Map<String, Object>> unmodeledInstances = getUnmodeledInstances((String)mappedInstance.get("device"), Collections.singletonList(instance), null);
-			if (unmodeledInstances != null && !unmodeledInstances.isEmpty()) {
-				return unmodeledInstances.get(0);
-			}
+			return getUnmodeledInstance((String)mappedInstance.get("device"), instance, (long) mappedInstance.get("controllerId"));
 		}
 		return null;
 	}
@@ -538,5 +576,27 @@ public class TimeSeriesAPI {
 											.andCondition(CriteriaAPI.getIdCondition(ids, module));
 		
 		return builder.update(instance);
+	}
+	
+	public static List<Map<String, Object>> getUnmodeledData(String device, String instance, long controllerId) throws Exception {
+
+		List<FacilioField> fields= FieldFactory.getUnmodeledDataFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
+		FacilioModule module = ModuleFactory.getUnmodeledDataModule();
+		
+		Map<String, Object> unmodeledInstance = getUnmodeledInstance(device, instance, controllerId);
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("instanceId"), String.valueOf(unmodeledInstance.get("id")), NumberOperators.EQUALS))
+				.orderBy(fieldMap.get("ttime").getColumnName());
+
+		List<Map<String, Object>> stats = builder.get();	
+		if(stats!=null && !stats.isEmpty()) {
+			return stats; 
+		}
+		return null;
 	}
 }

@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import com.facilio.constants.FacilioConstants;
 import com.facilio.timeseries.TimeSeriesAPI;
@@ -18,7 +19,8 @@ public class GetUnmodelledInstancesForControllerCommand implements Command {
 		long controllerId = (long) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
 		Boolean configured = (Boolean) context.get(FacilioConstants.ContextNames.CONFIGURE);
 		Boolean fetchMapped = (Boolean) context.get(FacilioConstants.ContextNames.FETCH_MAPPED);
-		List<Map<String, Object>> instances = TimeSeriesAPI.getUnmodeledInstancesForController(controllerId, configured, fetchMapped);
+		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
+		List<Map<String, Object>> instances = TimeSeriesAPI.getUnmodeledInstancesForController(controllerId, configured, fetchMapped, pagination);
 		if (fetchMapped != null && fetchMapped && instances != null) {
 			Set<Long> assetIds = instances.stream().map(inst -> (Long) inst.get("assetId")).collect(Collectors.toSet());
 			context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, assetIds);

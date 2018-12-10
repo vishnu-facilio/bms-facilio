@@ -4271,10 +4271,12 @@ public class FieldFactory {
 	}
 
 	public static List<FacilioField> getUnmodeledDataFields() {
+		FacilioModule module = ModuleFactory.getUnmodeledDataModule();
+		
 		List<FacilioField> fields = new ArrayList<>();
-		fields.add(getField("instanceId", "INSTANCE_ID", FieldType.NUMBER));
-		fields.add(getField("ttime", "TTIME", FieldType.NUMBER));
-		fields.add(getField("value", "VALUE", FieldType.STRING));
+		fields.add(getField("instanceId", "INSTANCE_ID", module, FieldType.NUMBER));
+		fields.add(getField("ttime", "TTIME", module, FieldType.NUMBER));
+		fields.add(getField("value", "VALUE", module, FieldType.STRING));
 		return fields;
 	}
 

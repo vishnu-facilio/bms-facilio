@@ -308,6 +308,8 @@ public class FacilioConstants {
 		public static final String FIELD_NAME_LIST = "fieldList";
 		public static final String DEFAULT_FIELD = "defaultField";
 		public static final String MODULE_FIELD_IDS = "moduleFieldIds";
+		public static final String OLD_FIELD_ID = "oldFieldId";
+		public static final String FIELD_ID = "fieldId";
 		
 		public static final String SITE = "site";
 		public static final String SITE_LIST = "sites";

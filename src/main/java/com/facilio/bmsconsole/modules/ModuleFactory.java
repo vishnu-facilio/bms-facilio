@@ -1460,6 +1460,14 @@ public class ModuleFactory {
 		return syncModule;
 	}
 	
+	public static FacilioModule getUnmodeledDataModule() {
+		FacilioModule syncModule = new FacilioModule();
+		syncModule.setName("unmodeledData");
+		syncModule.setDisplayName("Unmodeled Data");
+		syncModule.setTableName("Unmodeled_Data");
+		return syncModule;
+	}
+	
 	public static FacilioModule getInstanceMappingModule() {
 		FacilioModule syncModule = new FacilioModule();
 		syncModule.setName("instanceToAssetMapping");

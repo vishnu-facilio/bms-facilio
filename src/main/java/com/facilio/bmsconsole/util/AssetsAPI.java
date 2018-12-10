@@ -688,6 +688,7 @@ public class AssetsAPI {
 				moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.UTILITY_METER);
 				moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Utility_Meters");
 			}
+			// Add the class for new category in classMap in FacilioConstants 
 			else
 			{
 				moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, "asset");
