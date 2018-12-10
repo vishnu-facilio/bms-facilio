@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.CommonAggregateOperator;
@@ -58,6 +59,10 @@ public class FetchReportDataCommand implements Command {
 		String xValues = (String) context.get(FacilioConstants.ContextNames.REPORT_X_VALUES);
 		if (report.getxCriteria() != null && xValues == null) {
 			return false;
+		}
+		
+		if (AccountUtil.getCurrentOrg().getId() == 75 || AccountUtil.getCurrentOrg().getId() == 168) {
+			LOGGER.info("X Values : "+xValues);
 		}
 		
 		Boolean handleBooleanFields = (Boolean) context.get(FacilioConstants.ContextNames.REPORT_HANDLE_BOOLEAN);
@@ -108,9 +113,9 @@ public class FetchReportDataCommand implements Command {
 			reportData.add(data);
 		}
 		
-//		if (AccountUtil.getCurrentOrg().getId() == 88) {
-//			LOGGER.info("Report Data : "+reportData);
-//		}
+		if (AccountUtil.getCurrentOrg().getId() == 75 || AccountUtil.getCurrentOrg().getId() == 168) {
+			LOGGER.info("Report Data : "+reportData);
+		}
 		
 		context.put(FacilioConstants.ContextNames.REPORT_DATA, reportData);
 		return false;

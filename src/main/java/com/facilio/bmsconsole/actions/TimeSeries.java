@@ -146,6 +146,7 @@ public class TimeSeries extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
 		context.put(FacilioConstants.ContextNames.DEVICE_DATA , changedDevices);
 		context.put(FacilioConstants.ContextNames.CONFIGURE , configured);
+		context.put(FacilioConstants.ContextNames.CONTROLLER_ID , controllerId);
 		
 		Chain markChain = TransactionChainFactory.getMarkUnmodeledInstanceChain();
 		markChain.execute(context);

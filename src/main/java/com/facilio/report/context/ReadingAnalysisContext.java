@@ -99,7 +99,14 @@ public class ReadingAnalysisContext {
 	public static enum ReportMode {
 		TIMESERIES,
 		SERIES,
-		CONSOLIDATED
+		CONSOLIDATED,
+		
+		//New modes for portfolio. Long run only these will be used
+		TIME_CONSOLIDATED,
+		TIME_SPLIT,
+		SITE,
+		BUILDING,
+		RESOURCE
 		;
 		
 		public int getValue() {
@@ -148,7 +155,8 @@ public class ReadingAnalysisContext {
 	public static enum XCriteriaMode {
 		NONE,
 		ALL_ASSET_CATEGORY,
-		SPECIFIC_ASSETS_OF_CATEGORY
+		SPECIFIC_ASSETS_OF_CATEGORY,
+		SPACE
 		;
 		
 		public int getValue() {

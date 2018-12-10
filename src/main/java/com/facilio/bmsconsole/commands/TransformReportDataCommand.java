@@ -163,6 +163,7 @@ public class TransformReportDataCommand implements Command {
 			return "";
 		}
 		
+		boolean alreadyFetchedResource = false;
 		if (aggr != null) {
 			if (aggr instanceof DateAggregateOperator) {
 				val = ((DateAggregateOperator)aggr).getAdjustedTimestamp((long) val);
@@ -170,10 +171,11 @@ public class TransformReportDataCommand implements Command {
 			else if (aggr instanceof SpaceAggregateOperator) {
 				ResourceContext resource = ResourceAPI.getResource(Long.parseLong(val.toString()));
 				val = resource.getName();
+				alreadyFetchedResource = true;
 			}
 		}
 		
-		if (fetchResource) {
+		if (!alreadyFetchedResource && fetchResource) {
 			ResourceContext resource = ResourceAPI.getResource(Long.parseLong(val.toString()));
 			val = resource.getName();
 		}

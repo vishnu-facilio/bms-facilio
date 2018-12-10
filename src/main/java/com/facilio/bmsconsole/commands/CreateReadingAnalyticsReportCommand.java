@@ -11,7 +11,11 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
+import com.facilio.bmsconsole.context.FormulaContext.CommonAggregateOperator;
+import com.facilio.bmsconsole.context.FormulaContext.SpaceAggregateOperator;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.criteria.BuildingOperator;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -86,6 +90,7 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 			}
 			ReportContext report = ReportUtil.constructReport((FacilioContext) context, dataPoints, startTime, endTime);
 			report.setType(ReportType.READING_REPORT);
+			setModeWiseXAggr(report, mode);
 			ReportXCriteriaContext xCriteria = constructXCriteria(xCriteriaMode, (FacilioContext) context);
 			if (xCriteria != null) {
 				report.setxCriteria(xCriteria);
@@ -98,6 +103,26 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 		}
 		
 		return false;
+	}
+	
+	private void setModeWiseXAggr (ReportContext report, ReportMode mode) {
+		AggregateOperator aggr = null;
+		switch (mode) {
+			case SITE:
+				aggr = SpaceAggregateOperator.SITE;
+				break;
+			case BUILDING:
+				aggr = SpaceAggregateOperator.BUILDING;
+				break;
+			default: 
+				break;
+		}
+		if (aggr != null) {
+			if (report.getxAggrEnum() != null && report.getxAggrEnum() != CommonAggregateOperator.ACTUAL) {
+				throw new IllegalArgumentException("Report X Aggr cannot be specified explicitly for these modes");
+			}
+			report.setxAggr(aggr);
+		}
 	}
 	
 	private ReportDataPointContext getModuleDataPoint(ReadingAnalysisContext metric, ReportMode mode, ModuleBean modBean) throws Exception {
@@ -125,10 +150,15 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 		FacilioField xField = null;
 		switch (mode) {
 			case SERIES:
+			case SITE:
+			case BUILDING:
+			case RESOURCE:
 				xField = fieldMap.get("parentId");
 				break;
 			case TIMESERIES:
 			case CONSOLIDATED:
+			case TIME_CONSOLIDATED:
+			case TIME_SPLIT:
 				xField = fieldMap.get("ttime");
 				break;
 		}
@@ -203,13 +233,13 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 					return null;
 				case ALL_ASSET_CATEGORY:
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-					long categoryId = (long) context.get(FacilioConstants.ContextNames.ASSET_CATEGORY);
+					List<Long> categoryId = (List<Long>) context.get(FacilioConstants.ContextNames.ASSET_CATEGORY);
 					xCriteria = new ReportXCriteriaContext();
 					xCriteria.setxField(modBean.getField("id", FacilioConstants.ContextNames.ASSET));
 					FacilioField categoryField = modBean.getField("category", FacilioConstants.ContextNames.ASSET);
 					
 					criteria = new Criteria();
-					criteria.addAndCondition(CriteriaAPI.getCondition(categoryField, String.valueOf(categoryId), PickListOperators.IS));
+					criteria.addAndCondition(CriteriaAPI.getCondition(categoryField, categoryId, PickListOperators.IS));
 					
 					xCriteria.setCriteria(criteria);
 					return xCriteria;
@@ -225,6 +255,21 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 					
 					criteria = new Criteria();
 					criteria.addAndCondition(CriteriaAPI.getIdCondition(parentIds, modBean.getModule(FacilioConstants.ContextNames.ASSET)));
+					
+					xCriteria.setCriteria(criteria);
+					return xCriteria;
+				case SPACE:
+					modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					categoryId = (List<Long>) context.get(FacilioConstants.ContextNames.ASSET_CATEGORY);
+					List<Long> spaceId = (List<Long>) context.get(FacilioConstants.ContextNames.BASE_SPACE_LIST);
+					xCriteria = new ReportXCriteriaContext();
+					xCriteria.setxField(modBean.getField("id", FacilioConstants.ContextNames.ASSET));
+					categoryField = modBean.getField("category", FacilioConstants.ContextNames.ASSET);
+					FacilioField spaceField = modBean.getField("space", FacilioConstants.ContextNames.ASSET);
+					
+					criteria = new Criteria();
+					criteria.addAndCondition(CriteriaAPI.getCondition(categoryField, categoryId, PickListOperators.IS));
+					criteria.addAndCondition(CriteriaAPI.getCondition(spaceField, spaceId, BuildingOperator.BUILDING_IS));
 					
 					xCriteria.setCriteria(criteria);
 					return xCriteria;

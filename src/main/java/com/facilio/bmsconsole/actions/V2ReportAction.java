@@ -198,29 +198,40 @@ public class V2ReportAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	public String addOrUpdateReadingReport() throws Exception {
+	private void setReadingsDataContext(FacilioContext context) throws Exception {
 		JSONParser parser = new JSONParser();
 		JSONArray fieldArray = (JSONArray) parser.parse(fields);
 		JSONArray baseLineList = null;
 		if (baseLines != null && !baseLines.isEmpty()) {
 			baseLineList = (JSONArray) parser.parse(baseLines);
 		}
+		if(mode.equals(ReportMode.SERIES)) {
+			setxAggr(0);
+		}
 		
-		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.START_TIME, startTime);
 		context.put(FacilioConstants.ContextNames.END_TIME, endTime);
-		context.put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
-		context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateOperatorValue);
 		context.put(FacilioConstants.ContextNames.REPORT_X_AGGR, xAggr);
 		context.put(FacilioConstants.ContextNames.REPORT_Y_FIELDS, FieldUtil.getAsBeanListFromJsonArray(fieldArray, ReadingAnalysisContext.class));
 		context.put(FacilioConstants.ContextNames.REPORT_MODE, mode);
 		context.put(FacilioConstants.ContextNames.BASE_LINE_LIST, FieldUtil.getAsBeanListFromJsonArray(baseLineList, ReportBaseLineContext.class));
+		context.put(FacilioConstants.ContextNames.REPORT_X_CRITERIA_MODE, xCriteriaMode);
+		context.put(FacilioConstants.ContextNames.ASSET_CATEGORY, assetCategory);
+		context.put(FacilioConstants.ContextNames.BASE_SPACE_LIST, spaceId);
+		context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, parentId);
+		
+		context.put(FacilioConstants.ContextNames.ALARM_ID, alarmId);
+	}
+	
+	public String addOrUpdateReadingReport() throws Exception {
+		FacilioContext context = new FacilioContext();
+		setReadingsDataContext(context);
+		
+		context.put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
+		context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateOperatorValue);
 		context.put(FacilioConstants.ContextNames.CHART_STATE, chartState);
 		context.put(FacilioConstants.ContextNames.TABULAR_STATE, tabularState);
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
-		context.put(FacilioConstants.ContextNames.REPORT_X_CRITERIA_MODE, xCriteriaMode);
-		context.put(FacilioConstants.ContextNames.ASSET_CATEGORY, assetCategory);
-		context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, parentId);
 		
 		Chain addReadingReport = TransactionChainFactory.addOrUpdateReadingReportChain();
 		addReadingReport.execute(context);
@@ -409,14 +420,22 @@ public class V2ReportAction extends FacilioAction {
 		this.xCriteriaMode = XCriteriaMode.valueOf(xCriteriaMode);
 	}
 	
-	private long assetCategory = -1;
-	public long getAssetCategory() {
+	private List<Long> assetCategory;
+	public List<Long> getAssetCategory() {
 		return assetCategory;
 	}
-	public void setAssetCategory(long assetCategory) {
+	public void setAssetCategory(List<Long> assetCategory) {
 		this.assetCategory = assetCategory;
 	}
 	
+	private List<Long> spaceId;
+	public List<Long> getSpaceId() {
+		return spaceId;
+	}
+	public void setSpaceId(List<Long> spaceId) {
+		this.spaceId = spaceId;
+	}
+
 	private List<Long> parentId;
 	public List<Long> getParentId() {
 		return parentId;
@@ -448,31 +467,6 @@ public class V2ReportAction extends FacilioAction {
 		}
 		return SUCCESS;
 	}
-	
-	private void setReadingsDataContext(FacilioContext context) throws Exception {
-		JSONParser parser = new JSONParser();
-		JSONArray fieldArray = (JSONArray) parser.parse(fields);
-		JSONArray baseLineList = null;
-		if (baseLines != null && !baseLines.isEmpty()) {
-			baseLineList = (JSONArray) parser.parse(baseLines);
-		}
-		if(mode.equals(ReportMode.SERIES)) {
-			setxAggr(0);
-		}
-		
-		context.put(FacilioConstants.ContextNames.START_TIME, startTime);
-		context.put(FacilioConstants.ContextNames.END_TIME, endTime);
-		context.put(FacilioConstants.ContextNames.REPORT_X_AGGR, xAggr);
-		context.put(FacilioConstants.ContextNames.REPORT_Y_FIELDS, FieldUtil.getAsBeanListFromJsonArray(fieldArray, ReadingAnalysisContext.class));
-		context.put(FacilioConstants.ContextNames.REPORT_MODE, mode);
-		context.put(FacilioConstants.ContextNames.BASE_LINE_LIST, FieldUtil.getAsBeanListFromJsonArray(baseLineList, ReportBaseLineContext.class));
-		context.put(FacilioConstants.ContextNames.REPORT_X_CRITERIA_MODE, xCriteriaMode);
-		context.put(FacilioConstants.ContextNames.ASSET_CATEGORY, assetCategory);
-		context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, parentId);
-		
-		context.put(FacilioConstants.ContextNames.ALARM_ID, alarmId);
-	}
-	
 	
 	private void getDataPointFromAlarm() throws Exception {
 
