@@ -142,7 +142,7 @@ public class TimeSeriesAPI {
 		}
 	}
 	
-	public static void insertOrUpdateInstance(String deviceName, long assetId, long categoryId, Long controllerId, String instance, long fieldId) throws Exception {
+	public static void insertOrUpdateInstance(String deviceName, long assetId, long categoryId, long controllerId, String instance, long fieldId) throws Exception {
 		Map<String, Object> modeledData = getMappedInstance(deviceName, instance, controllerId);
 		if (modeledData == null) {
 			insertInstanceAssetMapping(deviceName, assetId, categoryId, controllerId, Collections.singletonMap(instance, fieldId));	
@@ -160,6 +160,7 @@ public class TimeSeriesAPI {
 		else {
 			updateInstanceAssetMapping(deviceName, assetId, categoryId, instance, fieldId, modeledData);
 		}
+		ControllerAPI.updateControllerModifiedTime(controllerId);
 	}
 	
 	

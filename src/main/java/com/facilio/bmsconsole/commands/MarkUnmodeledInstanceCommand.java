@@ -8,6 +8,7 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.util.ControllerAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.timeseries.TimeSeriesAPI;
 
@@ -30,6 +31,9 @@ public class MarkUnmodeledInstanceCommand implements Command {
 		else {
 			TimeSeriesAPI.updateUnmodeledInstances(ids, instance);
 		}
+		
+		long controllerId = (long) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
+		ControllerAPI.updateControllerModifiedTime(controllerId);
 		
 		return false;
 	}
