@@ -61,7 +61,7 @@ public class FetchReportDataCommand implements Command {
 			return false;
 		}
 		
-		if (AccountUtil.getCurrentOrg().getId() == 75) {
+		if (AccountUtil.getCurrentOrg().getId() == 75 || AccountUtil.getCurrentOrg().getId() == 168) {
 			LOGGER.info("X Values : "+xValues);
 		}
 		
@@ -113,7 +113,7 @@ public class FetchReportDataCommand implements Command {
 			reportData.add(data);
 		}
 		
-		if (AccountUtil.getCurrentOrg().getId() == 75) {
+		if (AccountUtil.getCurrentOrg().getId() == 75 || AccountUtil.getCurrentOrg().getId() == 168) {
 			LOGGER.info("Report Data : "+reportData);
 		}
 		
