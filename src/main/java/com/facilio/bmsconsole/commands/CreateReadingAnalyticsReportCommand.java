@@ -239,7 +239,7 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 					FacilioField categoryField = modBean.getField("category", FacilioConstants.ContextNames.ASSET);
 					
 					criteria = new Criteria();
-					criteria.addAndCondition(CriteriaAPI.getCondition(categoryField, String.valueOf(categoryId), PickListOperators.IS));
+					criteria.addAndCondition(CriteriaAPI.getCondition(categoryField, categoryId, PickListOperators.IS));
 					
 					xCriteria.setCriteria(criteria);
 					return xCriteria;
