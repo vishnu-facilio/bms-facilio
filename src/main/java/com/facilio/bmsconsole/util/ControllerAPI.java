@@ -395,6 +395,14 @@ public class ControllerAPI {
 		return updateController(prop, ids);
 	}
 	
+	public static int updateControllerModifiedTime (long id) throws Exception {
+		return updateController(Collections.singletonMap("lastModifiedTime", System.currentTimeMillis()), id);
+	}
+	
+	public static int updateController (Map<String,Object> prop, long id) throws Exception {
+		return updateController(prop, Collections.singletonList(id));
+	}
+	
 	public static int updateController (Map<String,Object> prop, List<Long> ids) throws SQLException {
 		FacilioModule module = ModuleFactory.getControllerModule();
 		List<FacilioField> fields = FieldFactory.getControllerFields();
