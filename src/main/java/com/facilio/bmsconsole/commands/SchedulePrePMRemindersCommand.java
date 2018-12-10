@@ -71,7 +71,9 @@ public class SchedulePrePMRemindersCommand implements SerializableCommand {
 							if(planner != null && planner.getPmResourcePlannerReminderContexts() != null && !planner.getPmResourcePlannerReminderContexts().isEmpty()) {
 								for(PMResourcePlannerReminderContext pmResPlannerRem :planner.getPmResourcePlannerReminderContexts()) {
 									PMReminder rem = pmReminderMap.get(pmResPlannerRem.getReminderId());
-									remindersToBeExecuted.add(rem);
+									if(rem != null) {													// reminder might also have type other than before execution type.
+										remindersToBeExecuted.add(rem);
+									}
 								}
 							}
 							else {
@@ -83,30 +85,25 @@ public class SchedulePrePMRemindersCommand implements SerializableCommand {
 						}
 						for(PMReminder reminder :remindersToBeExecuted) {
 							
-							if(reminder != null && reminder.getTypeEnum() != null) {
-								switch(reminder.getTypeEnum()) {
-								case BEFORE_EXECUTION:
-									for(PMTriggerContext trigger : pmTriggersMap.get(pm.getId())) {				// doubt why using pmTriggersMap (What is the need of iteration)? 
-										if(pm.getPmCreationTypeEnum().equals(PreventiveMaintenance.PMCreationType.MULTIPLE) && currentJob.getPmTriggerId() == trigger.getId()) {	// handling separately to avoid singlePM flow breakage - merge after checking
-											Long nextExecutionTime = nextExecutionTimes.get(trigger.getId());
-											if(nextExecutionTime != null) {
-												PreventiveMaintenanceAPI.schedulePrePMReminder(reminder, nextExecutionTime, trigger.getId(),currentJob.getResourceId());
-											}
-										}
-										else {
-											Long nextExecutionTime = nextExecutionTimes.get(trigger.getId());
-											if(nextExecutionTime != null) {
-												PreventiveMaintenanceAPI.schedulePrePMReminder(reminder, nextExecutionTime, trigger.getId(),-1l);
-											}
+							switch(reminder.getTypeEnum()) {
+							case BEFORE_EXECUTION:
+								for(PMTriggerContext trigger : pmTriggersMap.get(pm.getId())) {				// doubt why using pmTriggersMap (What is the need of iteration)? 
+									if(pm.getPmCreationTypeEnum().equals(PreventiveMaintenance.PMCreationType.MULTIPLE) && currentJob.getPmTriggerId() == trigger.getId()) {	// handling separately to avoid singlePM flow breakage - merge after checking
+										Long nextExecutionTime = nextExecutionTimes.get(trigger.getId());
+										if(nextExecutionTime != null) {
+											PreventiveMaintenanceAPI.schedulePrePMReminder(reminder, nextExecutionTime, trigger.getId(),currentJob.getResourceId());
 										}
 									}
-									break;
-								default:
-									throw new RuntimeException("This is not supposed to happen");
+									else {
+										Long nextExecutionTime = nextExecutionTimes.get(trigger.getId());
+										if(nextExecutionTime != null) {
+											PreventiveMaintenanceAPI.schedulePrePMReminder(reminder, nextExecutionTime, trigger.getId(),-1l);
+										}
+									}
 								}
-							}
-							else {
-								LOGGER.log(Level.SEVERE, "REMINDER ISSUE FOR PM_ID ---"+pm.getId());
+								break;
+							default:
+								throw new RuntimeException("This is not supposed to happen");
 							}
 						}
 					}

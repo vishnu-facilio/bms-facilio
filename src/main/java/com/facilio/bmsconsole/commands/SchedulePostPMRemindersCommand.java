@@ -64,8 +64,10 @@ public class SchedulePostPMRemindersCommand implements Command {
 						PMResourcePlannerContext planner = PreventiveMaintenanceAPI.getPMResourcePlanner(pm.getId(), currentJob.getResourceId());
 						if(planner != null && planner.getPmResourcePlannerReminderContexts() != null && !planner.getPmResourcePlannerReminderContexts().isEmpty()) {
 							for(PMResourcePlannerReminderContext pmResPlannerRem :planner.getPmResourcePlannerReminderContexts()) {
-								PMReminder rem = pmReminderMap.get(pmResPlannerRem.getReminderId());
-								remindersToBeExecuted.add(rem);
+								PMReminder rem = pmReminderMap.get(pmResPlannerRem.getReminderId());		// reminder might also have before execution type.
+								if(rem != null) {
+									remindersToBeExecuted.add(rem);
+								}
 							}
 						}
 						else {
