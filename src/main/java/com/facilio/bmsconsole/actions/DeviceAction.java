@@ -65,7 +65,7 @@ public class DeviceAction extends ActionSupport
 	
 				addToZip(out,directoryName + "facilio.crt", certificateResult.getCertificatePem());
 				addToZip(out,directoryName + "facilio-private.key", certificateResult.getKeyPair().getPrivateKey());
-				addToZip(out,directoryName + "facilio-public.key", certificateResult.getKeyPair().getPublicKey());
+				addToZip(out,directoryName + "facilio.config", getFacilioConfig(orgName));
 				out.finish();
 				out.flush();
 				FileStore fs = FileStoreFactory.getInstance().getFileStore();
@@ -92,6 +92,15 @@ public class DeviceAction extends ActionSupport
 		} catch (IOException e){
 			logger.log(Level.INFO, "Exception while creating zip", e);
 		}
+	}
+	
+	private String getFacilioConfig(String domainName) {
+		StringBuilder builder = new StringBuilder("clientId=").append(domainName).append("\n")
+				.append("privateKeyFile=facilio-private.key").append("\n")
+				.append("certificateFile=facilio.crt").append("\n")
+				.append("endpoint=avzdxo3ow2ja2.iot.us-west-2.amazonaws.com").append("\n")
+				.append("topic=").append(domainName);
+		return builder.toString();
 	}
 	
 //	public String show()
