@@ -46,14 +46,16 @@ public class ExecutePMCommand implements Command {
 					if (pm.getTriggerTypeEnum() == TriggerType.FLOATING) {
 						wo = getPreviousUnclosed(pm);
 						if (wo == null) {
-							wo = executePM(pm, (Long) context.get(FacilioConstants.ContextNames.TEMPLATE_ID));
+							List<WorkOrderContext> wos = executePM(pm, (Long) context.get(FacilioConstants.ContextNames.TEMPLATE_ID));
+							wo = wos.get(0);
 						}
 						else {
 							addComment(wo, pm, (String) context.get(FacilioConstants.ContextNames.PM_UNCLOSED_WO_COMMENT));
 						}
 					}
 					else {
-						wo = executePM(pm, (Long) context.get(FacilioConstants.ContextNames.TEMPLATE_ID));
+						List<WorkOrderContext> wos = executePM(pm, (Long) context.get(FacilioConstants.ContextNames.TEMPLATE_ID));
+						wo = wos.get(0);
 					}
 				}
 				catch (Exception e) {
@@ -61,7 +63,9 @@ public class ExecutePMCommand implements Command {
 					CommonCommandUtil.emailException("ExecutePMCommand", "PM Execution failed for PM : "+pm.getId(), e, "You have to manually add Job entry for next PM Job because exception is thrown to rollback transaction");
 					throw e;
 				}
-				context.put(FacilioConstants.ContextNames.PM_TO_WO, Collections.singletonMap(pm.getId(), wo));
+				if(wo != null) {
+					context.put(FacilioConstants.ContextNames.PM_TO_WO, Collections.singletonMap(pm.getId(), wo));
+				}
 				
 				PMJobsContext currentJob = (PMJobsContext) context.get(FacilioConstants.ContextNames.PM_CURRENT_JOB);
 				if (currentJob != null) {
@@ -116,7 +120,7 @@ public class ExecutePMCommand implements Command {
 		return null;													
 	}
 	
-	private WorkOrderContext executePM (PreventiveMaintenance pm, Long templateId) throws Exception {
+	private List<WorkOrderContext> executePM (PreventiveMaintenance pm, Long templateId) throws Exception {
 		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD");
 		if (templateId == null) {
 			return bean.addWorkOrderFromPM(pm);

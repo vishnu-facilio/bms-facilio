@@ -27,24 +27,33 @@ public class ExecutePMsCommand implements Command {
 		List<PMIncludeExcludeResourceContext> pmIncludeExcludeResourceContexts = (List<PMIncludeExcludeResourceContext>) context.get(FacilioConstants.ContextNames.PM_INCLUDE_EXCLUDE_LIST);
 		List<PreventiveMaintenance> pms = (List<PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST);
 		if(pms != null && !pms.isEmpty()) {
-			Map<Long, WorkOrderContext> pmToWo = new HashMap<>();
+			
+			Map<Long,Map<Long,WorkOrderContext>> pmResourceToWoMap = new HashMap<>();
+			
 			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD");
 			List<Long> woIds = new ArrayList<>();
-			WorkOrderContext wo = null;
 			for(PreventiveMaintenance pm : pms) {
 				if(pmIncludeExcludeResourceContexts != null && !pmIncludeExcludeResourceContexts.isEmpty()) {
 					pm.setPmIncludeExcludeResourceContexts(pmIncludeExcludeResourceContexts);
 				}
 					
-				wo = bean.addWorkOrderFromPM(pm);
+				List<WorkOrderContext> wos = bean.addWorkOrderFromPM(pm);
 				
-				if(wo != null) {
-					woIds.add(wo.getId());
-					pmToWo.put(pm.getId(), wo);
+				for(WorkOrderContext wo :wos) {
+					if(wo != null) {
+						woIds.add(wo.getId());
+						
+						Map<Long,WorkOrderContext> map = pmResourceToWoMap.get(pm.getId()) != null ? pmResourceToWoMap.get(pm.getId()) : new HashMap<>();
+						Long resourceId = wo.getResource() != null ? wo.getResource().getId() : -1l;
+						map.put(resourceId, wo);
+						pmResourceToWoMap.put(pm.getId(), map);
+						
+					}
 				}
+				
 			}
 			context.put(FacilioConstants.ContextNames.WORK_ORDER_LIST, woIds);
-			context.put(FacilioConstants.ContextNames.PM_TO_WO, pmToWo);
+			context.put(FacilioConstants.ContextNames.PM_TO_ASSET_TO_WO, pmResourceToWoMap);
 		}
 		return false;
 	}

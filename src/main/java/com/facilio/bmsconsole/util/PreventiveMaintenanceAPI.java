@@ -29,6 +29,7 @@ import com.facilio.bmsconsole.context.PMTriggerContext.TriggerExectionSource;
 import com.facilio.bmsconsole.context.PMTriggerContext.TriggerType;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
+import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.TaskContext;
@@ -47,6 +48,9 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.templates.TaskSectionTemplate;
+import com.facilio.bmsconsole.templates.TaskTemplate;
+import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
@@ -81,7 +85,7 @@ public class PreventiveMaintenanceAPI {
 		return null;
 	}
 	
-public static PMTriggerContext getTrigger(List<PMTriggerContext> triggers,Long triggerId) {
+	public static PMTriggerContext getTrigger(List<PMTriggerContext> triggers,Long triggerId) {
 		if(triggerId != null) {
 			for(PMTriggerContext trigger :triggers) {
 				if(trigger.getId() == triggerId) {
@@ -92,15 +96,58 @@ public static PMTriggerContext getTrigger(List<PMTriggerContext> triggers,Long t
 		return null;
 	}
 
-public static Map<Long, PMReminder> getReminderMap(List<PMReminder> reminders) {
-	Map<Long, PMReminder> pmReminderMap = new HashMap<>();
-	if(reminders != null) {
-		for(PMReminder reminder :reminders) {
-			pmReminderMap.put(reminder.getId(), reminder);
+	public static Map<Long, PMReminder> getReminderMap(List<PMReminder> reminders) {
+		Map<Long, PMReminder> pmReminderMap = new HashMap<>();
+		if(reminders != null) {
+			for(PMReminder reminder :reminders) {
+				pmReminderMap.put(reminder.getId(), reminder);
+			}
+		}
+		return pmReminderMap;
+	}
+	public static void applySectionSettingsIfApplicable(TaskSectionTemplate sectiontemplate, TaskTemplate taskTemplate) {
+		
+		if(taskTemplate.getInputType() <= InputType.NONE.getVal() && sectiontemplate.getInputType() > InputType.NONE.getVal()) {
+			taskTemplate.setInputType(sectiontemplate.getInputType());
 		}
 	}
-	return pmReminderMap;
-}
+	public static Map<String, List<TaskContext>> getTaskMapForNewPMExecution(List<TaskSectionTemplate> sectiontemplates,Long woResourceId) throws Exception {
+		Map<String, List<TaskContext>> taskMap = new HashMap<>();
+		for(TaskSectionTemplate sectiontemplate :sectiontemplates) {
+			
+			Template sectionTemplate = TemplateAPI.getTemplate(sectiontemplate.getId());
+			sectiontemplate = (TaskSectionTemplate)sectionTemplate;
+			
+			 List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(sectiontemplate.getAssignmentType()), woResourceId, sectiontemplate.getSpaceCategoryId(), sectiontemplate.getAssetCategoryId(),sectiontemplate.getResourceId(),sectiontemplate.getPmIncludeExcludeResourceContexts());
+			 
+			 for(Long resourceId :resourceIds) {
+				 if(resourceId == null || resourceId < 0) {
+					 continue;
+				 }
+				 ResourceContext sectionResource = ResourceAPI.getResource(resourceId);
+				 String sectionName = sectionResource.getName() + " - " +sectiontemplate.getName();
+				 
+				 List<TaskTemplate> taskTemplates = sectiontemplate.getTaskTemplates();
+				 
+				 List<TaskContext> tasks = new ArrayList<TaskContext>();
+				 for(TaskTemplate taskTemplate :taskTemplates) {
+					 
+					 List<Long> taskResourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(taskTemplate.getAssignmentType()), sectionResource.getId(), taskTemplate.getSpaceCategoryId(), taskTemplate.getAssetCategoryId(),taskTemplate.getResourceId(),taskTemplate.getPmIncludeExcludeResourceContexts());
+					 
+					 applySectionSettingsIfApplicable(sectiontemplate,taskTemplate);
+					 for(Long taskResourceId :taskResourceIds) {
+						 ResourceContext taskResource = ResourceAPI.getResource(taskResourceId);
+						 TaskContext task = taskTemplate.getTask();
+						 task.setResource(taskResource);
+						 
+						 tasks.add(task);
+					 }
+				 }
+				 taskMap.put(sectionName, tasks);
+			 }
+		}
+		return taskMap;
+	}
 	
 	public static long getStartTimeInSecond(long startTime) {
 		

@@ -500,31 +500,25 @@ public class TransactionChainFactory {
 		}
 		
 		public static Chain getExecutePreventiveMaintenanceChain() {
-			return getExecutePreventiveMaintenanceChain(false);
-		}
-		public static Chain getExecutePreventiveMaintenanceChain(boolean isMultipleWo) {
 			Chain c = getDefaultChain();
+			
 			c.addCommand(new ForkChainToInstantJobCommand()
 				.addCommand(new ResetTriggersCommand())
 				.addCommand(new SchedulePrePMRemindersCommand())
 			);
 			
-			if(isMultipleWo) {
-				c.addCommand(new PreparePMForMultipleAsset());
-			}
-			else {
-				c.addCommand(new ExecutePMCommand());
-			}
+			c.addCommand(new PreparePMForMultipleAsset());
+			c.addCommand(new ExecutePMCommand());
 			c.addCommand(new SchedulePostPMRemindersCommand());
+			
 			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}
 		
-		public static Chain getExecutePMsChain() {
+		public static Chain getExecutePMsChain() {		// from Bulk Execute
 			Chain c = getDefaultChain();
 			c.addCommand(new ExecutePMsCommand());
-//			c.addCommand(new ResetTriggersCommand()); No need to reset when done via UI
-			c.addCommand(new SchedulePostPMRemindersCommand());
+			c.addCommand(new SchedulePostPMRemindersCommandForBulkExecutePm());
 			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}

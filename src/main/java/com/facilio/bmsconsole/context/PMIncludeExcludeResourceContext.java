@@ -1,7 +1,11 @@
 package com.facilio.bmsconsole.context;
 
-public class PMIncludeExcludeResourceContext {
+import java.io.Serializable;
 
+public class PMIncludeExcludeResourceContext implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+	
 	Long id;
 	Long pmId;
 	Long taskSectionTemplateId;

@@ -36,9 +36,9 @@ public interface ModuleCRUDBean {
 	
 	public int updateAlarmFromJson(JSONObject alarmInfo, List<Long> ids) throws Exception;
 	
-	public WorkOrderContext addWorkOrderFromPM(PreventiveMaintenance pm) throws Exception;
+	public List<WorkOrderContext> addWorkOrderFromPM(PreventiveMaintenance pm) throws Exception;
 	
-	public WorkOrderContext addWorkOrderFromPM(PreventiveMaintenance pm, long templateId) throws Exception;
+	public List<WorkOrderContext> addWorkOrderFromPM(PreventiveMaintenance pm, long templateId) throws Exception;
 	
 	public void deleteAllData (String moduleName) throws Exception;
 	

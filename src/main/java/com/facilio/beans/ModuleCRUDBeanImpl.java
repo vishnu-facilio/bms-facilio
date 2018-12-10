@@ -174,14 +174,17 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	}
 
 	@Override
-	public WorkOrderContext addWorkOrderFromPM(PreventiveMaintenance pm) throws Exception {
+	public List<WorkOrderContext> addWorkOrderFromPM(PreventiveMaintenance pm) throws Exception {
 		return addWorkOrderFromPM(pm, -1);
 	}
 
 	@Override
-	public WorkOrderContext addWorkOrderFromPM(PreventiveMaintenance pm, long templateId) throws Exception {
+	public List<WorkOrderContext> addWorkOrderFromPM(PreventiveMaintenance pm, long templateId) throws Exception {
 		// TODO Auto-generated method stub
 		if (pm != null) {
+			
+			List<WorkOrderContext> workOrderContexts = new ArrayList<>();
+			
 			if(templateId == -1) {
 				templateId = pm.getTemplateId();
 			}
@@ -231,7 +234,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				if(isNewPmType) {
 					Long woTemplateResourceId = wo.getResource() != null ? wo.getResource().getId() : -1;
 					if(woTemplateResourceId > 0) {
-						taskMapForNewPmExecution = PreparePMForMultipleAsset.getTaskMap(workorderTemplate.getSectionTemplates(), woTemplateResourceId);
+						taskMapForNewPmExecution = PreventiveMaintenanceAPI.getTaskMapForNewPMExecution(workorderTemplate.getSectionTemplates(), woTemplateResourceId);
 					}
 				}
 				if(taskMapForNewPmExecution != null) {
@@ -254,8 +257,9 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				addWOChain.execute(context);
 
 				incrementPMCount(pm); //Need to be handled for multiple resources
+				workOrderContexts.add(wo);
 			}
-		return wo;
+			return workOrderContexts;
 		}
 		return null;
 	}

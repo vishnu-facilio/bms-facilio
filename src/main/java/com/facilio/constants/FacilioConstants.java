@@ -108,6 +108,7 @@ public class FacilioConstants {
 		public static final String RECORD_ID = "recordId";
 		public static final String RECORD_ID_LIST = "recordIds";
 		public static final String PM_INCLUDE_EXCLUDE_LIST = "pmIcludeExcludeList";
+		public static final String IS_BULK_EXECUTE_COMMAND = "isbulkExecuteCommand";
 		public static final String RECORD_COUNT = "recordCount";
 		public static final String ROWS_UPDATED = "rowsUpdated";
 		public static final String ACTIVITY_TYPE = "activityType";
@@ -452,6 +453,7 @@ public class FacilioConstants {
 		public static final String PM_CURRENT_JOB = "pmCurrentJob";
 		public static final String PM_UNCLOSED_WO_COMMENT = "pmUnclosedWOComment";
 		public static final String PM_TO_WO = "pmtowo";
+		public static final String PM_TO_ASSET_TO_WO = "pmtoassettowo";
 		public static final String IS_PM_EXECUTION = "isPMExecution";
 		public static final String IS_UPDATE_PM = "isUpdatePM";
 		public static final String SCHEDULED_PM_JOBS = "schdeduledPMJobs";

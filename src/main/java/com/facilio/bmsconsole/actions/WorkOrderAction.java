@@ -415,8 +415,7 @@ public class WorkOrderAction extends FacilioAction {
 	public List<PMIncludeExcludeResourceContext> getPmIncludeExcludeResourceContexts() {
 		return pmIncludeExcludeResourceContexts;
 	}
-	public void setPmIncludeExcludeResourceContexts(
-			List<PMIncludeExcludeResourceContext> pmIncludeExcludeResourceContexts) {
+	public void setPmIncludeExcludeResourceContexts(List<PMIncludeExcludeResourceContext> pmIncludeExcludeResourceContexts) {
 		this.pmIncludeExcludeResourceContexts = pmIncludeExcludeResourceContexts;
 	}
 
@@ -1332,21 +1331,11 @@ public class WorkOrderAction extends FacilioAction {
 		this.preventiveMaintenanceString = preventiveMaintenanceString;
 	}
 	
-	public void setPreventiveMaintenancecontex(String preventiveMaintenanceString) {
-		this.preventivemaintenance = convertPM(preventiveMaintenanceString);
-	}
-	public PreventiveMaintenance convertPM(String preventiveMaintenanceString)
-	{
-		PreventiveMaintenance pm = null;
+	public void setPreventiveMaintenancecontex(String preventiveMaintenanceString) throws Exception {
+		
 		JSONParser parser = new JSONParser();
-		try {
-			JSONObject obj = (JSONObject) parser.parse(preventiveMaintenanceString);
-			pm = FieldUtil.getAsBeanFromJson(obj, PreventiveMaintenance.class);
-
-		} catch (Exception e) {
-			log.info("Exception occurred ", e);
-		}
-		return pm;
+		JSONObject obj = (JSONObject) parser.parse(preventiveMaintenanceString);
+		this.preventivemaintenance = FieldUtil.getAsBeanFromJson(obj, PreventiveMaintenance.class);
 	}
 	
 	private String deleteReadingRulesListString;	
@@ -1379,20 +1368,14 @@ public class WorkOrderAction extends FacilioAction {
 	}
 	
 	public void setRemindercontex(String reminder_string) {
-		this.reminders = convertReminder(reminder_string);
-	}
-	public List<PMReminder> convertReminder(String reminder_string)
-	{
-		List<PMReminder> re = null;
 		JSONParser parser = new JSONParser();
 		try {
 			JSONArray obj = (JSONArray) parser.parse(reminder_string);
-			re = FieldUtil.getAsBeanListFromJsonArray(obj, PMReminder.class);
+			this.reminders = FieldUtil.getAsBeanListFromJsonArray(obj, PMReminder.class);
 
 		} catch (Exception e) {
 			log.info("Exception occurred ", e);
 		}
-		return re;
 	}
 	
 	private String workOrderString;
@@ -1404,17 +1387,11 @@ public class WorkOrderAction extends FacilioAction {
 	}
 	
 	public void setWorkordercontex(String workorder_string) throws Exception {
-		this.workorder = convert(workorder_string);
-	}
-	public WorkOrderContext convert(String workOrderStr) throws Exception
-	{
-		WorkOrderContext wo = null;
+
 		JSONParser parser = new JSONParser();
-		JSONObject obj = (JSONObject) parser.parse(workOrderStr);
-		wo = FieldUtil.getAsBeanFromJson(obj, WorkOrderContext.class);
-		return wo;
+		JSONObject obj = (JSONObject) parser.parse(workorder_string);
+		this.workorder = FieldUtil.getAsBeanFromJson(obj, WorkOrderContext.class);
 	}
-	
 
 	@SuppressWarnings("unchecked")
 	public String workOrderList() throws Exception {
