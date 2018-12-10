@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
+import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
@@ -136,8 +137,8 @@ public class GetAssetReportCards implements Command {
 				.table("Alarms")
 				.innerJoin("Tickets")
 				.on("Alarms.ID = Tickets.ID")
-				.andCustomWhere("Alarms.ORGID=? AND Tickets.ORGID = ? AND Alarms.SEVERITY!=?", orgId, orgId, FacilioConstants.Alarm.CLEAR_SEVERITY)
-				.andCondition(assetCond);
+				.andCondition(ViewFactory.getAlarmSeverityCondition(FacilioConstants.Alarm.CLEAR_SEVERITY, false))
+				.andCondition(assetCond);  
 		
 		List<Map<String, Object>> rs = builder.get();
 		if (rs == null || rs.isEmpty()) {
