@@ -13,6 +13,7 @@ import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportDataPointContext.DataPointType;
 import com.facilio.report.context.ReportFieldContext;
+import com.facilio.report.context.ReportFilterContext;
 import com.facilio.report.util.ReportUtil;
 
 public class AddOrUpdateReportCommand implements Command {
@@ -50,8 +51,10 @@ public class AddOrUpdateReportCommand implements Command {
 				reportFields.add(constructReportField(dataPoint.getDateField(), report.getId()));
 			}
 		}
-		if (report.getxCriteria() != null) {
-			reportFields.add(constructReportField(report.getxCriteria().getxField(), report.getId()));
+		if (report.getFilters() != null && !report.getFilters().isEmpty()) {
+			for (ReportFilterContext filter : report.getFilters()) {
+				reportFields.add(constructReportField(filter.getField(), report.getId()));
+			}
 		}
 		
 		ReportUtil.addReportFields(reportFields);

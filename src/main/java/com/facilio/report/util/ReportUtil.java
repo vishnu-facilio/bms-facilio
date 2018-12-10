@@ -31,7 +31,7 @@ import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportFolderContext;
-import com.facilio.report.context.ReportXCriteriaContext;
+import com.facilio.report.context.ReportFilterContext;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -156,9 +156,10 @@ public class ReportUtil {
 			for (Map<String, Object> prop : props) {
 				ReportContext report = FieldUtil.getAsBeanFromMap(prop, ReportContext.class);
 				
-				if (report.getxCriteria() != null) {
-					ReportXCriteriaContext xCriteria = report.getxCriteria();
-					xCriteria.setxField(getField(xCriteria.getxFieldId(), xCriteria.getModuleName(), xCriteria.getxFieldName(), modBean));
+				if (report.getFilters() != null && !report.getFilters().isEmpty()) {
+					for (ReportFilterContext filter : report.getFilters()) {
+						filter.setField(getField(filter.getFieldId(), filter.getModuleName(), filter.getFieldName(), modBean));
+					}
 				}
 				
 				for (ReportDataPointContext dataPoint : report.getDataPoints()) {

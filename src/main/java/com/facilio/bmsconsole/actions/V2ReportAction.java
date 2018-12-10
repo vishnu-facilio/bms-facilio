@@ -47,7 +47,7 @@ import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.ReadingAnalysisContext;
 import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
-import com.facilio.report.context.ReadingAnalysisContext.XCriteriaMode;
+import com.facilio.report.context.ReadingAnalysisContext.ReportFilterMode;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportFolderContext;
@@ -150,8 +150,7 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 	}
 	
-	ReportFolderContext reportFolder;
-	
+	private ReportFolderContext reportFolder;
 	public ReportFolderContext getReportFolder() {
 		return reportFolder;
 	}
@@ -215,7 +214,7 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.REPORT_Y_FIELDS, FieldUtil.getAsBeanListFromJsonArray(fieldArray, ReadingAnalysisContext.class));
 		context.put(FacilioConstants.ContextNames.REPORT_MODE, mode);
 		context.put(FacilioConstants.ContextNames.BASE_LINE_LIST, FieldUtil.getAsBeanListFromJsonArray(baseLineList, ReportBaseLineContext.class));
-		context.put(FacilioConstants.ContextNames.REPORT_X_CRITERIA_MODE, xCriteriaMode);
+		context.put(FacilioConstants.ContextNames.REPORT_FILTER_MODE, filterMode);
 		context.put(FacilioConstants.ContextNames.ASSET_CATEGORY, assetCategory);
 		context.put(FacilioConstants.ContextNames.BASE_SPACE_LIST, spaceId);
 		context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, parentId);
@@ -409,7 +408,7 @@ public class V2ReportAction extends FacilioAction {
 		return setReportResult(context);
 	}
 	
-	private XCriteriaMode xCriteriaMode;
+	private ReportFilterMode xCriteriaMode;
 	public int getxCriteriaMode() {
 		if (xCriteriaMode != null) {
 			return xCriteriaMode.getValue();
@@ -417,9 +416,22 @@ public class V2ReportAction extends FacilioAction {
 		return -1;
 	}
 	public void setxCriteriaMode(int xCriteriaMode) {
-		this.xCriteriaMode = XCriteriaMode.valueOf(xCriteriaMode);
+		this.xCriteriaMode = ReportFilterMode.valueOf(xCriteriaMode);
+		this.filterMode = this.xCriteriaMode;
 	}
 	
+	private ReportFilterMode filterMode;
+	public int getFilterMode() {
+		if (filterMode != null) {
+			return filterMode.getValue();
+		}
+		return -1;
+	}
+	public void setFilterMode(int filterMode) {
+		this.filterMode = ReportFilterMode.valueOf(filterMode);
+		this.xCriteriaMode = this.filterMode;
+	}
+
 	private List<Long> assetCategory;
 	public List<Long> getAssetCategory() {
 		return assetCategory;

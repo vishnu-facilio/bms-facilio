@@ -13,7 +13,7 @@ public class ReadOnlyChainFactory {
 	private static Logger LOGGER = LogManager.getLogger(ReadOnlyChainFactory.class.getName());
 	public static Chain fetchReportDataChain() {
 		Chain c = getDefaultChain();
-		c.addCommand(new FilterXFieldCommand());
+		c.addCommand(new FilterFieldCommand());
 		c.addCommand(new FetchReportDataCommand());
 		c.addCommand(new TransformReportDataCommand());
 		c.addCommand(new CustomTransformReportDataCommand());
@@ -26,7 +26,7 @@ public class ReadOnlyChainFactory {
 	
 	public static Chain newFetchReportDataChain() {
 		Chain c = getDefaultChain();
-		c.addCommand(new FilterXFieldCommand());
+		c.addCommand(new FilterFieldCommand());
 		c.addCommand(new FetchReportDataCommand());
 		c.addCommand(new ConstructReportDataCommand());
 		c.addCommand(new CalculateAggregationCommand());

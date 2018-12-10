@@ -239,24 +239,24 @@ public class ReportContext {
 		return null;
 	}
 	
-	private ReportXCriteriaContext xCriteria;
-	public ReportXCriteriaContext getxCriteria() {
-		return xCriteria;
+	private List<ReportFilterContext> filters;
+	public List<ReportFilterContext> getFilters() {
+		return filters;
 	}
-	public void setxCriteria(ReportXCriteriaContext xCriteria) {
-		this.xCriteria = xCriteria;
+	public void setFilters(List<ReportFilterContext> filters) {
+		this.filters = filters;
 	}
-
+	
 	@JSON(serialize=false)
-	public String getxCriteriaJson() throws Exception {
-		if (xCriteria != null) {
-			return FieldUtil.getAsJSON(xCriteria).toJSONString();
+	public String getFiltersJson() throws Exception {
+		if (filters != null) {
+			return FieldUtil.getAsJSONArray(filters, ReportFilterContext.class).toJSONString();
 		}
 		return null;
 	}
-	public void setxCriteriaJson(String xCriteriaJson) throws Exception {
-		JSONObject json = (JSONObject) parser.parse(xCriteriaJson);
-		this.xCriteria = FieldUtil.getAsBeanFromJson(json, ReportXCriteriaContext.class);
+	public void setFiltersJson(String filtersJson) throws Exception {
+		JSONArray json = (JSONArray) parser.parse(filtersJson);
+		this.filters = FieldUtil.getAsBeanListFromJsonArray(json, ReportFilterContext.class);
 	}
 	
 	private String xAlias;

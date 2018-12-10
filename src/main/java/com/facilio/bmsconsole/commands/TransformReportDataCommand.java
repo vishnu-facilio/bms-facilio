@@ -62,7 +62,7 @@ public class TransformReportDataCommand implements Command {
 		
 		if (reportData != null) {
 			Map<String, Map<String, Map<Object, Object>>> transformedData = new HashMap<>();
-			Set<Object> xValues = report.getxCriteria() == null ? new TreeSet<>() : new LinkedHashSet<>();
+			Set<Object> xValues = report.getFilters() == null ? new TreeSet<>() : new LinkedHashSet<>();
 			for (ReportDataContext data : reportData ) {
 				Map<String, List<Map<String, Object>>> reportProps = data.getProps();
 				if (reportProps != null && !reportProps.isEmpty()) {

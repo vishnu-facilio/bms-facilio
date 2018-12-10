@@ -46,7 +46,7 @@ public class CalculateDerivationCommand implements Command {
 		LOGGER.log(Level.SEVERE, "wfParams -- "+wfParams);
 		for(ReportDataPointContext rdp : report.getDataPoints()) {
 			
-			if(rdp.getTypeEnum().equals(DataPointType.DERIVATION)) {
+			if(rdp.getTypeEnum() == DataPointType.DERIVATION) {
 				Map<Object,Object> derivationResult = null; 
 				if(rdp.getTransformWorkflowId() > 0) {
 					derivationResult = (Map<Object,Object>) WorkflowUtil.getResult(rdp.getTransformWorkflowId(), wfParams);

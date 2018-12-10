@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -42,6 +43,7 @@ import com.facilio.report.context.ReportDataContext;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportDataPointContext.DataPointType;
 import com.facilio.report.context.ReportDataPointContext.OrderByFunction;
+import com.facilio.report.context.ReportFilterContext;
 import com.facilio.report.context.ReportGroupByField;
 
 public class FetchReportDataCommand implements Command {
@@ -54,15 +56,6 @@ public class FetchReportDataCommand implements Command {
 		
 		if (report.getDataPoints() == null || report.getDataPoints().isEmpty()) {
 			return false;
-		}
-		
-		String xValues = (String) context.get(FacilioConstants.ContextNames.REPORT_X_VALUES);
-		if (report.getxCriteria() != null && xValues == null) {
-			return false;
-		}
-		
-		if (AccountUtil.getCurrentOrg().getId() == 75 || AccountUtil.getCurrentOrg().getId() == 168) {
-			LOGGER.info("X Values : "+xValues);
 		}
 		
 		Boolean handleBooleanFields = (Boolean) context.get(FacilioConstants.ContextNames.REPORT_HANDLE_BOOLEAN);
@@ -95,16 +88,14 @@ public class FetchReportDataCommand implements Command {
 			FacilioField xAggrField = applyXAggregation(dp, report.getxAggrEnum(), groupBy, selectBuilder, fields, addedModules);
 			setYFieldsAndGroupByFields(dataPointList, fields, xAggrField, groupBy, dp, selectBuilder, addedModules);
 			selectBuilder.select(fields);
-			if (report.getxCriteria() != null) {
-				selectBuilder.andCondition(getEqualsCondition(dp.getxAxis().getField(), xValues));
-			}
+			boolean noMatch = applyFilters(report, dp, selectBuilder);
 			
 			Map<String, List<Map<String, Object>>> props = new HashMap<>();
-			props.put(FacilioConstants.Reports.ACTUAL_DATA, fetchReportData(report, dp, selectBuilder, null));
+			props.put(FacilioConstants.Reports.ACTUAL_DATA, noMatch ? Collections.EMPTY_LIST : fetchReportData(report, dp, selectBuilder, null));
 			
 			if (report.getBaseLines() != null && !report.getBaseLines().isEmpty()) {
 				for (ReportBaseLineContext reportBaseLine : report.getBaseLines()) {
-					props.put(reportBaseLine.getBaseLine().getName(), fetchReportData(report, dp, selectBuilder, reportBaseLine));
+					props.put(reportBaseLine.getBaseLine().getName(), noMatch ? Collections.EMPTY_LIST : fetchReportData(report, dp, selectBuilder, reportBaseLine));
 					data.addBaseLine(reportBaseLine.getBaseLine().getName(), reportBaseLine);
 				}
 			}
@@ -118,6 +109,20 @@ public class FetchReportDataCommand implements Command {
 		}
 		
 		context.put(FacilioConstants.ContextNames.REPORT_DATA, reportData);
+		return false;
+	}
+	
+	private boolean applyFilters (ReportContext report, ReportDataPointContext dataPoint, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder) throws Exception {
+		if (report.getFilters() != null && !report.getFilters().isEmpty()) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			for (ReportFilterContext filter : report.getFilters()) {
+				if (filter.getFilterOperatorEnum() == null) {
+					return true;
+				}
+				FacilioField filterField = modBean.getField(filter.getFieldName(), dataPoint.getxAxis().getModuleName());
+				selectBuilder.andCondition(CriteriaAPI.getCondition(filterField, filter.getFilterValue(), filter.getFilterOperatorEnum()));
+			}
+		}
 		return false;
 	}
 	

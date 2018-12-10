@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -28,14 +29,14 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.ReadingAnalysisContext;
 import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
-import com.facilio.report.context.ReadingAnalysisContext.XCriteriaMode;
+import com.facilio.report.context.ReadingAnalysisContext.ReportFilterMode;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportDataPointContext.DataPointType;
 import com.facilio.report.context.ReportDataPointContext.OrderByFunction;
 import com.facilio.report.context.ReportFieldContext;
-import com.facilio.report.context.ReportXCriteriaContext;
+import com.facilio.report.context.ReportFilterContext;
 import com.facilio.report.context.ReportYAxisContext;
 import com.facilio.report.util.ReportUtil;
 
@@ -48,10 +49,10 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 		long startTime = (long) context.get(FacilioConstants.ContextNames.START_TIME);
 		long endTime = (long) context.get(FacilioConstants.ContextNames.END_TIME);
 		ReportMode mode = (ReportMode) context.get(FacilioConstants.ContextNames.REPORT_MODE);
-		XCriteriaMode xCriteriaMode = (XCriteriaMode) context.get(FacilioConstants.ContextNames.REPORT_X_CRITERIA_MODE);
+		ReportFilterMode filterMode = (ReportFilterMode) context.get(FacilioConstants.ContextNames.REPORT_FILTER_MODE);
 		if (metrics != null && !metrics.isEmpty() && startTime != -1 && endTime != -1) {
 			Map<Long, ResourceContext> resourceMap = null;
-			if (xCriteriaMode == null || xCriteriaMode == XCriteriaMode.NONE) { //Resource map is needed only when there is not x criteria
+			if (filterMode == null || filterMode == ReportFilterMode.NONE) { //Resource map is needed only when there is no filters. For now
 				resourceMap = getResourceMap(metrics);
 			}
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -67,7 +68,7 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 						break;
 				}
 				
-				String name = getName(dataPoint.getyAxis().getField(), mode, xCriteriaMode, resourceMap, metric, (FacilioContext) context);
+				String name = getName(dataPoint.getyAxis().getField(), mode, filterMode, resourceMap, metric, (FacilioContext) context);
 				dataPoint.setName(name);
 				dataPoint.setType(metric.getTypeEnum());
 				dataPoint.setAliases(metric.getAliases());
@@ -91,9 +92,9 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 			ReportContext report = ReportUtil.constructReport((FacilioContext) context, dataPoints, startTime, endTime);
 			report.setType(ReportType.READING_REPORT);
 			setModeWiseXAggr(report, mode);
-			ReportXCriteriaContext xCriteria = constructXCriteria(xCriteriaMode, (FacilioContext) context);
-			if (xCriteria != null) {
-				report.setxCriteria(xCriteria);
+			List<ReportFilterContext> filters = constructFilters(filterMode, (FacilioContext) context);
+			if (filters != null) {
+				report.setFilters(filters);
 			}
 			
 			context.put(FacilioConstants.ContextNames.REPORT, report);
@@ -168,9 +169,9 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 		dataPoint.setDateField(fieldMap.get("ttime"));
 	}
 	
-	private String getName(FacilioField yField, ReportMode mode, XCriteriaMode xCriteriaMode, Map<Long, ResourceContext> resourceMap, ReadingAnalysisContext metric, FacilioContext context) throws Exception {
+	private String getName(FacilioField yField, ReportMode mode, ReportFilterMode filterMode, Map<Long, ResourceContext> resourceMap, ReadingAnalysisContext metric, FacilioContext context) throws Exception {
 		
-		if (xCriteriaMode == null || xCriteriaMode == XCriteriaMode.NONE) {
+		if (filterMode == null || filterMode == ReportFilterMode.NONE) {
 			if(metric.getName() != null && !metric.getName().isEmpty()) {
 				return metric.getName();
 			}
@@ -189,11 +190,12 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 			}
 		}
 		
-		switch (xCriteriaMode) {
+		switch (filterMode) {
 			case NONE:
 				throw new RuntimeException("This is not supposed to happen!!");
 			case ALL_ASSET_CATEGORY: //Assuming there'll be only one datapoint
 			case SPECIFIC_ASSETS_OF_CATEGORY:
+			case SPACE:
 				return yField.getDisplayName();
 		}
 		return null;
@@ -223,26 +225,32 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 		return ResourceAPI.getResourceAsMapFromIds(resourceIds);
 	}
 	
-	private ReportXCriteriaContext constructXCriteria (XCriteriaMode mode, FacilioContext context) throws Exception {
+	private ReportFilterContext getBasicReadingReportFilter(ModuleBean modBean) throws Exception {
+		ReportFilterContext filter = new ReportFilterContext();
+		filter.setFilterFieldName("parentId");
+		filter.setField(modBean.getField("id", FacilioConstants.ContextNames.ASSET));
+		return filter;
+	}
+	
+	private List<ReportFilterContext> constructFilters (ReportFilterMode mode, FacilioContext context) throws Exception {
 		
 		if (mode != null) {
 			Criteria criteria = null;
-			ReportXCriteriaContext xCriteria = null;
+			ReportFilterContext filter = null;
 			switch (mode) {
 				case NONE:
 					return null;
 				case ALL_ASSET_CATEGORY:
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					List<Long> categoryId = (List<Long>) context.get(FacilioConstants.ContextNames.ASSET_CATEGORY);
-					xCriteria = new ReportXCriteriaContext();
-					xCriteria.setxField(modBean.getField("id", FacilioConstants.ContextNames.ASSET));
+					filter = getBasicReadingReportFilter(modBean);
 					FacilioField categoryField = modBean.getField("category", FacilioConstants.ContextNames.ASSET);
 					
 					criteria = new Criteria();
 					criteria.addAndCondition(CriteriaAPI.getCondition(categoryField, categoryId, PickListOperators.IS));
 					
-					xCriteria.setCriteria(criteria);
-					return xCriteria;
+					filter.setCriteria(criteria);
+					return Collections.singletonList(filter);
 				case SPECIFIC_ASSETS_OF_CATEGORY:
 					List<Long> parentIds = (List<Long>) context.get(FacilioConstants.ContextNames.PARENT_ID_LIST);
 					if (parentIds == null || parentIds.isEmpty()) {
@@ -250,20 +258,18 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 					}
 					
 					modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-					xCriteria = new ReportXCriteriaContext();
-					xCriteria.setxField(modBean.getField("id", FacilioConstants.ContextNames.ASSET));
+					filter = filter = getBasicReadingReportFilter(modBean);
 					
 					criteria = new Criteria();
 					criteria.addAndCondition(CriteriaAPI.getIdCondition(parentIds, modBean.getModule(FacilioConstants.ContextNames.ASSET)));
 					
-					xCriteria.setCriteria(criteria);
-					return xCriteria;
+					filter.setCriteria(criteria);
+					return Collections.singletonList(filter);
 				case SPACE:
 					modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					categoryId = (List<Long>) context.get(FacilioConstants.ContextNames.ASSET_CATEGORY);
 					List<Long> spaceId = (List<Long>) context.get(FacilioConstants.ContextNames.BASE_SPACE_LIST);
-					xCriteria = new ReportXCriteriaContext();
-					xCriteria.setxField(modBean.getField("id", FacilioConstants.ContextNames.ASSET));
+					filter = getBasicReadingReportFilter(modBean);
 					categoryField = modBean.getField("category", FacilioConstants.ContextNames.ASSET);
 					FacilioField spaceField = modBean.getField("space", FacilioConstants.ContextNames.ASSET);
 					
@@ -271,8 +277,8 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 					criteria.addAndCondition(CriteriaAPI.getCondition(categoryField, categoryId, PickListOperators.IS));
 					criteria.addAndCondition(CriteriaAPI.getCondition(spaceField, spaceId, BuildingOperator.BUILDING_IS));
 					
-					xCriteria.setCriteria(criteria);
-					return xCriteria;
+					filter.setCriteria(criteria);
+					return Collections.singletonList(filter);
 			}
 		}
 		return null;
