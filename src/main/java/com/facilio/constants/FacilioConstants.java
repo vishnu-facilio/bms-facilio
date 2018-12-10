@@ -391,6 +391,7 @@ public class FacilioConstants {
 		public static final String TICKET_ATTACHMENTS = "ticketattachments";
 		public static final String BASE_SPACE_ATTACHMENTS = "basespaceattachments";
 		public static final String ASSET_ATTACHMENTS = "assetattachments";
+		public static final String TASK_ATTACHMENTS = "taskattachments";
 		
 		public static final String PICKLIST = "pickList";
 		

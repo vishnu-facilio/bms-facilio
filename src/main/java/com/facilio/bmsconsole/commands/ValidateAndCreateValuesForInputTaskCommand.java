@@ -22,6 +22,7 @@ import com.facilio.bmsconsole.modules.EnumField;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.AttachmentsAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
@@ -52,7 +53,7 @@ public class ValidateAndCreateValuesForInputTaskCommand implements Command {
 								}
 								
 								if(completeRecord.isAttachmentRequired()) {
-									List<AttachmentContext> attachments = TicketAPI.getRelatedAttachments(recordIds.get(i));
+									List<AttachmentContext> attachments = AttachmentsAPI.getAttachments(FacilioConstants.ContextNames.TASK_ATTACHMENTS, recordIds.get(i));
 									if (attachments == null || attachments.isEmpty() ) {
 										throw new UnsupportedOperationException("Atleast one file has to be attached since attachment is required to close the task");
 									}
