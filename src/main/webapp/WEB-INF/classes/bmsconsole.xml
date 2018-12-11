@@ -995,9 +995,14 @@
 		<action name="buildInfo" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/buildinfo.jsp</result>
 			</action>
-			<action name="usermanagement" class="com.facilio.bmsconsole.actions.AdminAction">
+			
+		<action name="usermanagement" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/usermanagement.jsp</result>
-			</action>
+		</action>
+		
+		<action name="clearsession" class="com.facilio.bmsconsole.actions.AdminAction" method = "clearSession">
+		<result name="success" type="tiles">adminpage/usermanagement.jsp</result>
+		 </action>
 			<action name="orginfo" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/orginfo.jsp</result>
 			</action>

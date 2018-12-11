@@ -3,22 +3,28 @@ package com.facilio.bmsconsole.actions;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.websocket.EncodeException;
 
+import org.apache.log4j.LogManager;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.User;
+import com.facilio.accounts.impl.UserBeanImpl;
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.actions.FacilioAuthAction;
 import com.facilio.bmsconsole.util.AdminAPI;
 import com.facilio.fw.LRUCache;
 import com.facilio.license.FreshsalesUtil;
+import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.wms.message.Message;
 import com.facilio.wms.message.MessageType;
@@ -129,6 +135,9 @@ public class AdminAction extends ActionSupport
 		this.freshsales = freshsales;
 	}
 	private JSONObject freshsales = new JSONObject();
+	private String email;
+	private long userid;
+	
 	
 	public void addJob()
 	{
@@ -150,6 +159,7 @@ public class AdminAction extends ActionSupport
 	{
 		HttpServletRequest request = ServletActionContext.getRequest();
 		Long jobId = Long.parseLong(request.getParameter("jobId"));
+		
 		try 
 		{
 			AdminAPI.deleteSystemJob(jobId);
@@ -198,5 +208,37 @@ public class AdminAction extends ActionSupport
 		
 		return SUCCESS;
 	}
+	
+	public String getEmail() {
+		return this.email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	
+	public long getUserId() {
+		return this.userid;
+	}
+
+	public void setUserId(long userId) {
+		this.userid = userId;
+	}
+	
+	
+	public String clearSession() throws Exception 
+	{
+		
+		String email =getEmail();
+		
+		long uid = getUserId();
+		 //System.out.println("session id :"+email+" "+uid);
+		 AccountUtil.getUserBean().clearAllUserSessions(uid, email);
+		
+		 return SUCCESS;
+		
 }
+	
+}	
+
 

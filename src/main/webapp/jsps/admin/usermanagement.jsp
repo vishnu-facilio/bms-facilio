@@ -1,4 +1,9 @@
-<%@page import="com.facilio.accounts.util.AccountUtil, java.util.List, java.sql.Timestamp, java.util.Date, java.util.Map, com.facilio.accounts.dto.User"%>
+<%@page import="com.facilio.accounts.util.AccountUtil, 
+java.util.List, 
+java.sql.Timestamp,
+ java.util.Date, 
+ java.util.Map,
+  com.facilio.accounts.dto.User"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
   
@@ -6,9 +11,11 @@
  	String email = request.getParameter("email");
  List<User> userList = null;
  List<Map<String, Object>> sessions = null;
+ User usr = null;
  if (email != null) {
-	 User usr = AccountUtil.getUserBean().getFacilioUser(email);
+	 usr = AccountUtil.getUserBean().getFacilioUser(email);
 	 sessions = AccountUtil.getUserBean().getUserSessions(usr.getUid(), null);
+	
 	 long orgId = usr.getOrgId();
 	 long roleId = usr.getRoleId();
 	 if (AccountUtil.getRoleBean().getRole(roleId).getName().equalsIgnoreCase("Super Administrator")) {
@@ -25,24 +32,41 @@
 
 </head>
 <body onload="init()">
+
+
  <form action="" method="GET">
  <h2><i class=" fa fa-user fa-fw "></i>User Management</h2>
- <div class=" col-lg-8 col-md-8">
+  <div class=" col-lg-8 col-md-8">
  
     <div style="margin-top:40px;" class="input-group col-lg-8 col-md-8 col-sm-8	">
       <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
       <input id="email" type="text" value="<%= email == null ? "" : email %>" class="form-control" name="email" placeholder="superadmin_id@example.com" required/>
     </div>
+   
     <div style="margin-top:30px;">
+    
 <button  id="show" type="submit"  >Submit</button>
+
 </div>
+
+
 <div >
-<%
-if (sessions != null) { %>
+<% 
+if (sessions != null) 
+{ %>
+
+
+<div style="margin-top:30px;">
+<a href="clearsession?email=<%=email%>&userId=<%=usr.getUid()%>">
+<button type="button">Clearsession</button>
+</a>
+</div>
+
+
 <br>
 <br>
 <b>Sessions:</b>
-<table style=" margin-top:10px;" class="table table-bordered" >
+<table style="margin-top:10px;" class="table table-bordered" >
 <tr>
 <th>ID</th>	
 <th>START_TIME</th>
@@ -67,10 +91,13 @@ if (sessions != null) { %>
 }%>
 
 </table>
-<% }
+ <% }
 %>
 <%
 if (userList != null) { %>
+
+
+
 <table style=" margin-top:40px;" class="table table-bordered" >
 <tr> <th>Id</th>
 <th>Name</th>	
@@ -104,8 +131,11 @@ if (userList != null) { %>
 </table>
 <% }
 %>
+
 </div>
-    </div>
+</div>
+
+    
     </form>
 </body>
 </html>
