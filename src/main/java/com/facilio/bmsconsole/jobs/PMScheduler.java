@@ -87,8 +87,8 @@ public class PMScheduler extends FacilioJob {
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			LOGGER.error("Exception occurred in PM Scheduler Job", e);
-			CommonCommandUtil.emailException("PMScheduler", "Exception occurred in PM Scheduler Job", e);
+			LOGGER.error("Exception occurred in PM Scheduler Job ID - "+jc.getJobId(), e);
+			CommonCommandUtil.emailException("PMScheduler", "Exception occurred in PM Scheduler Job - "+jc.getJobId(), e);
 		}
 	}
 		
