@@ -95,6 +95,14 @@ public class ReadingAnalysisContext {
 	public void setLimit(int limit) {
 		this.limit = limit;
 	}
+	
+	private Map<String, Object> metaData;
+	public Map<String, Object> getMetaData() {
+		return metaData;
+	}
+	public void setMetaData(Map<String, Object> metaData) {
+		this.metaData = metaData;
+	}
 
 	public static enum ReportMode {
 		TIMESERIES,
