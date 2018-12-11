@@ -76,7 +76,7 @@ public class FetchReportDataCommand implements Command {
 		List<List<ReportDataPointContext>> groupedDataPoints = groupDataPoints(dataPoints, handleBooleanFields);
 		if (groupedDataPoints != null && !groupedDataPoints.isEmpty()) {
 			for (List<ReportDataPointContext> dataPointList : groupedDataPoints) {
-				ReportDataContext data = fetchDataForGroupedDPList(dataPointList, report, sortPoint == null, sortPoint == null ? null : sortedData.getxValues());
+				ReportDataContext data = fetchDataForGroupedDPList(dataPointList, report, sortPoint != null, sortPoint == null ? null : sortedData.getxValues());
 				reportData.add(data);
 			}
 		}
