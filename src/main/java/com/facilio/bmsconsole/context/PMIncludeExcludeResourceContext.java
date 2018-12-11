@@ -14,6 +14,12 @@ public class PMIncludeExcludeResourceContext implements Serializable {
 	Boolean isInclude;
 	int parentType;
 	
+	public int getParentType() {
+		return parentType;
+	}
+	public void setParentType(int parentType) {
+		this.parentType = parentType;
+	}
 	public Long getId() {
 		return id;
 	}
