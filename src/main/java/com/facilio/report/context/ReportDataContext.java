@@ -21,6 +21,14 @@ public class ReportDataContext {
 		this.props = props;
 	}
 	
+	private String xValues;
+	public String getxValues() {
+		return xValues;
+	}
+	public void setxValues(String xValues) {
+		this.xValues = xValues;
+	}
+
 	private Map<String, ReportBaseLineContext> baseLineMap;
 	public Map<String, ReportBaseLineContext> getBaseLineMap() {
 		return baseLineMap;

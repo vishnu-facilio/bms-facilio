@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -64,11 +65,20 @@ public class FetchReportDataCommand implements Command {
 		}
 		
 		calculateBaseLineRange(report);
-		List<List<ReportDataPointContext>> groupedDataPoints = groupDataPoints(report.getDataPoints(), handleBooleanFields);
 		List<ReportDataContext> reportData = new ArrayList<>();
-		for (List<ReportDataPointContext> dataPointList : groupedDataPoints) {
-			ReportDataContext data = fetchDataForGroupedDPList(dataPointList, report);
-			reportData.add(data);
+		List<ReportDataPointContext> dataPoints = new ArrayList<>(report.getDataPoints());
+		ReportDataPointContext sortPoint = getSortPoint(dataPoints);
+		ReportDataContext sortedData = null;
+		if (sortPoint != null) {
+			sortedData = fetchDataForGroupedDPList(Collections.singletonList(sortPoint), report, false, null);
+			reportData.add(sortedData);
+		}
+		List<List<ReportDataPointContext>> groupedDataPoints = groupDataPoints(dataPoints, handleBooleanFields);
+		if (groupedDataPoints != null && !groupedDataPoints.isEmpty()) {
+			for (List<ReportDataPointContext> dataPointList : groupedDataPoints) {
+				ReportDataContext data = fetchDataForGroupedDPList(dataPointList, report, sortPoint == null, sortPoint == null ? null : sortedData.getxValues());
+				reportData.add(data);
+			}
 		}
 		
 		if (AccountUtil.getCurrentOrg().getId() == 75 || AccountUtil.getCurrentOrg().getId() == 168) {
@@ -79,7 +89,24 @@ public class FetchReportDataCommand implements Command {
 		return false;
 	}
 	
-	private ReportDataContext fetchDataForGroupedDPList (List<ReportDataPointContext> dataPointList, ReportContext report) throws Exception {
+	private ReportDataPointContext getSortPoint (List<ReportDataPointContext> dataPoints) {
+		Iterator<ReportDataPointContext> itr = dataPoints.iterator();
+		while (itr.hasNext()) {
+			ReportDataPointContext dp = itr.next();
+			if (dp.isDefaultSortPoint()) {
+				
+				if (dp.getLimit() == -1 || dp.getOrderByFuncEnum() == OrderByFunction.NONE) {
+					throw new IllegalArgumentException("Default sort datapoint should have order by and limit");
+				}
+				
+				itr.remove();
+				return dp;
+			}
+		}
+		return null;
+	}
+	
+	private ReportDataContext fetchDataForGroupedDPList (List<ReportDataPointContext> dataPointList, ReportContext report, boolean hasSortedDp, String xValues) throws Exception {
 		ReportDataContext data = new ReportDataContext();
 		data.setDataPoints(dataPointList);
 		
@@ -87,10 +114,6 @@ public class FetchReportDataCommand implements Command {
 		SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 																				.module(dp.getxAxis().getField().getModule()) //Assuming X to be the base module
 																				;
-		if (dp.getCriteria() != null) {
-			selectBuilder.andCriteria(dp.getCriteria());
-		}
-		
 		Set<FacilioModule> addedModules = new HashSet<>();
 		addedModules.add(dp.getxAxis().getField().getModule());
 		
@@ -101,20 +124,38 @@ public class FetchReportDataCommand implements Command {
 		FacilioField xAggrField = applyXAggregation(dp, report.getxAggrEnum(), groupBy, selectBuilder, fields, addedModules);
 		setYFieldsAndGroupByFields(dataPointList, fields, xAggrField, groupBy, dp, selectBuilder, addedModules);
 		selectBuilder.select(fields);
-		boolean noMatch = applyFilters(report, dp, selectBuilder);
 		
+		boolean noMatch = hasSortedDp && (xValues == null || xValues.isEmpty());
 		Map<String, List<Map<String, Object>>> props = new HashMap<>();
-		props.put(FacilioConstants.Reports.ACTUAL_DATA, noMatch ? Collections.EMPTY_LIST : fetchReportData(report, dp, selectBuilder, null));
+		List<Map<String, Object>> dataProps = noMatch ? Collections.EMPTY_LIST : fetchReportData(report, dp, selectBuilder, null, xValues);
+		props.put(FacilioConstants.Reports.ACTUAL_DATA, dataProps);
+		if (!hasSortedDp && dp.getLimit() != -1 && xValues == null) {
+			data.setxValues(getXValues(dataProps, dp.getxAxis().getFieldName()));
+			if (data.getxValues() == null || data.getxValues().isEmpty()) {
+				noMatch = true;
+			}
+		}
 		
 		if (report.getBaseLines() != null && !report.getBaseLines().isEmpty()) {
 			for (ReportBaseLineContext reportBaseLine : report.getBaseLines()) {
-				props.put(reportBaseLine.getBaseLine().getName(), noMatch ? Collections.EMPTY_LIST : fetchReportData(report, dp, selectBuilder, reportBaseLine));
+				props.put(reportBaseLine.getBaseLine().getName(), noMatch ? Collections.EMPTY_LIST : fetchReportData(report, dp, selectBuilder, reportBaseLine, data.getxValues() == null ? xValues : data.getxValues()));
 				data.addBaseLine(reportBaseLine.getBaseLine().getName(), reportBaseLine);
 			}
 		}
 		
 		data.setProps(props);
 		return data;
+	}
+	
+	private String getXValues (List<Map<String, Object>> props, String key) {
+		if (props != null && !props.isEmpty()) {
+			StringJoiner xValues = new StringJoiner(",");
+			for (Map<String, Object> prop : props) {
+				xValues.add(prop.get(key).toString());
+			}
+			return xValues.toString();
+		}
+		return null;
 	}
 	
 	private boolean applyFilters (ReportContext report, ReportDataPointContext dataPoint, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder) throws Exception {
@@ -157,9 +198,24 @@ public class FetchReportDataCommand implements Command {
 		}
 	}
  	
-	private List<Map<String, Object>> fetchReportData(ReportContext report, ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, ReportBaseLineContext reportBaseLine) throws Exception {
+	private List<Map<String, Object>> fetchReportData(ReportContext report, ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, ReportBaseLineContext reportBaseLine, String xValues) throws Exception {
 		SelectRecordsBuilder<ModuleBaseWithCustomFields> newSelectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>(selectBuilder);
 		applyDateCondition(report, dp, newSelectBuilder, reportBaseLine);
+		
+		if (xValues == null) {
+			if (dp.getCriteria() != null) {
+				selectBuilder.andCriteria(dp.getCriteria());
+			}
+			
+			boolean noMatch = applyFilters(report, dp, selectBuilder);
+			if (noMatch) {
+				return Collections.EMPTY_LIST;
+			}
+		}
+		else {
+			selectBuilder.andCondition(getEqualsCondition(dp.getxAxis().getField(), xValues));
+		}
+		
 		List<Map<String, Object>> props = newSelectBuilder.getAsProps();
 		
 		LOGGER.severe("SELECT BUILDER --- "+ newSelectBuilder);
@@ -235,23 +291,26 @@ public class FetchReportDataCommand implements Command {
 	}
 	
 	private List<List<ReportDataPointContext>> groupDataPoints(List<ReportDataPointContext> dataPoints, boolean handleBooleanField) throws Exception {
-		List<List<ReportDataPointContext>> groupedList = new ArrayList<>();
-		for (ReportDataPointContext dataPoint : dataPoints) {
-			if(dataPoint.getTypeEnum() == null) {
-				dataPoint.setType(DataPointType.MODULE.getValue());
+		if (dataPoints != null && !dataPoints.isEmpty()) {
+			List<List<ReportDataPointContext>> groupedList = new ArrayList<>();
+			for (ReportDataPointContext dataPoint : dataPoints) {
+				if(dataPoint.getTypeEnum() == null) {
+					dataPoint.setType(DataPointType.MODULE.getValue());
+				}
+				switch (dataPoint.getTypeEnum()) {
+					case MODULE:
+						if (handleBooleanField) {
+							handleBooleanField(dataPoint);
+						}
+						addToMatchedList(dataPoint, groupedList);
+						break;
+					case DERIVATION:
+						break;
+				}
 			}
-			switch (dataPoint.getTypeEnum()) {
-				case MODULE:
-					if (handleBooleanField) {
-						handleBooleanField(dataPoint);
-					}
-					addToMatchedList(dataPoint, groupedList);
-					break;
-				case DERIVATION:
-					break;
-			}
+			return groupedList;
 		}
-		return groupedList;
+		return null;
 	}
 	
 	private void handleBooleanField(ReportDataPointContext dataPoint) {
