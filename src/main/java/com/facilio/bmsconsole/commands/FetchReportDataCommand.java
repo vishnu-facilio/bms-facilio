@@ -136,6 +136,11 @@ public class FetchReportDataCommand implements Command {
 			}
 		}
 		
+		if (AccountUtil.getCurrentOrg().getId() == 75 || AccountUtil.getCurrentOrg().getId() == 168) {
+			LOGGER.info("X Values : "+xValues);
+			LOGGER.info("Data X Values : "+data.getxValues());
+		}
+		
 		if (report.getBaseLines() != null && !report.getBaseLines().isEmpty()) {
 			for (ReportBaseLineContext reportBaseLine : report.getBaseLines()) {
 				props.put(reportBaseLine.getBaseLine().getName(), noMatch ? Collections.EMPTY_LIST : fetchReportData(report, dp, selectBuilder, reportBaseLine, data.getxValues() == null ? xValues : data.getxValues()));
@@ -202,9 +207,14 @@ public class FetchReportDataCommand implements Command {
 		SelectRecordsBuilder<ModuleBaseWithCustomFields> newSelectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>(selectBuilder);
 		applyDateCondition(report, dp, newSelectBuilder, reportBaseLine);
 		
+		
+		if (AccountUtil.getCurrentOrg().getId() == 75 || AccountUtil.getCurrentOrg().getId() == 168) {
+			LOGGER.info("Fetch Data X Values : "+xValues);
+		}
+		
 		if (xValues == null) {
 			if (dp.getCriteria() != null) {
-				selectBuilder.andCriteria(dp.getCriteria());
+				newSelectBuilder.andCriteria(dp.getCriteria());
 			}
 			
 			boolean noMatch = applyFilters(report, dp, selectBuilder);
@@ -213,7 +223,7 @@ public class FetchReportDataCommand implements Command {
 			}
 		}
 		else {
-			selectBuilder.andCondition(getEqualsCondition(dp.getxAxis().getField(), xValues));
+			newSelectBuilder.andCondition(getEqualsCondition(dp.getxAxis().getField(), xValues));
 		}
 		
 		List<Map<String, Object>> props = newSelectBuilder.getAsProps();
