@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMReminder;
+import com.facilio.bmsconsole.context.PMReminderAction;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -88,7 +89,11 @@ public class DeletePMAndDependenciesCommand implements Command{
 			List<PMReminder> reminders = PreventiveMaintenanceAPI.getPMReminders(pmIds);
 			if (reminders != null) {
 				List<Long> actionIds = new ArrayList<>();
-				actionIds.addAll(reminders.stream().map(PMReminder::getActionId).collect(Collectors.toList()));
+				for(PMReminder reminder :reminders) {
+					for( PMReminderAction reminderAction : reminder.getReminderActions()) {
+						actionIds.add(reminderAction.getActionId());
+					}
+				}
 				ActionAPI.deleteActions(actionIds);
 			}
 		}

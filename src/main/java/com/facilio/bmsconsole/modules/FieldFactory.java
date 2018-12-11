@@ -3740,13 +3740,17 @@ public class FieldFactory {
 		duration.setModule(module);
 		fields.add(duration);
 
-		FacilioField actionId = new FacilioField();
-		actionId.setName("actionId");
-		actionId.setDataType(FieldType.NUMBER);
-		actionId.setColumnName("ACTION_ID");
-		actionId.setModule(module);
-		fields.add(actionId);
+		return fields;
+	}
+	
+	public static List<FacilioField> getPMReminderActionFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getPMReminderActionModule();
 
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("reminderId", "PM_REMINDER_ID", module, FieldType.LOOKUP));
+		fields.add(getField("actionId", "ACTION_ID", module, FieldType.LOOKUP));
 		return fields;
 	}
 

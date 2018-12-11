@@ -22,6 +22,7 @@ import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMJobsContext.PMJobsStatus;
 import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.PMReminder.ReminderType;
+import com.facilio.bmsconsole.context.PMReminderAction;
 import com.facilio.bmsconsole.context.PMResourcePlannerContext;
 import com.facilio.bmsconsole.context.PMResourcePlannerReminderContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
@@ -65,6 +66,8 @@ import com.facilio.tasker.ScheduleInfo.FrequencyType;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 
 public class PreventiveMaintenanceAPI {
 	
@@ -1002,27 +1005,57 @@ public class PreventiveMaintenanceAPI {
 		List<Map<String, Object>> reminderProps = fetchPMReminders(pmIds);
 		if(reminderProps != null && !reminderProps.isEmpty()) {
 			List<PMReminder> reminders = new ArrayList<>();
+			List<Long> reminderIds = new ArrayList<>();
 			for(Map<String, Object> prop : reminderProps) {
 				PMReminder reminder = FieldUtil.getAsBeanFromMap(prop, PMReminder.class);
 				reminders.add(reminder);
+				reminderIds.add(reminder.getId());
+			}
+			Multimap<Long, PMReminderAction> pmReminderActionMap =  getPMReminderActions(reminderIds);
+			for(PMReminder reminder : reminders) {
+				reminder.setReminderActions(new ArrayList<>(pmReminderActionMap.get(reminder.getId())));
 			}
 			return reminders;
 		}
 		return null;
 	}
 	
+	public static Multimap<Long, PMReminderAction> getPMReminderActions(List<Long> reminderIds) throws Exception {
+		
+		FacilioModule module = ModuleFactory.getPMReminderActionModule();
+		List<FacilioField> fields = FieldFactory.getPMReminderActionFields();
+		Map<String, FacilioField> fieldProps = FieldFactory.getAsMap(fields);
+		FacilioField reminderIdField = fieldProps.get("reminderId");
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCondition(reminderIdField, reminderIds, NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		Multimap<Long, PMReminderAction> pmReminderActionMap = ArrayListMultimap.create();
+		for(Map<String, Object> prop :props) {
+			PMReminderAction reminderAction = FieldUtil.getAsBeanFromMap(prop, PMReminderAction.class);
+			pmReminderActionMap.put(reminderAction.getReminderId(), reminderAction);
+		}
+		return pmReminderActionMap;
+	}
+	
 	public static Map<Long,List<PMReminder>> getPMRemindersAsMap(List<Long> pmIds) throws Exception {
-		List<Map<String, Object>> reminderProps = fetchPMReminders(pmIds);
-		if(reminderProps != null && !reminderProps.isEmpty()) {
+		
+		List<PMReminder> pmReminders = getPMReminders(pmIds);
+		
+		if(pmReminders != null && !pmReminders.isEmpty()) {
 			Map<Long,List<PMReminder>> reminderMap = new HashMap<>();
-			for(Map<String, Object> prop : reminderProps) {
-				PMReminder reminder = FieldUtil.getAsBeanFromMap(prop, PMReminder.class);
-				Long pmId = reminder.getPmId();
+			for(PMReminder pmReminder : pmReminders) {
+				Long pmId = pmReminder.getPmId();
 				if (!reminderMap.containsKey(pmId)) {
 					reminderMap.put(pmId, new ArrayList<>());
 				}
 				List<PMReminder> reminders = reminderMap.get(pmId);
-				reminders.add(reminder);
+				reminders.add(pmReminder);
 			}
 			return reminderMap;
 		}

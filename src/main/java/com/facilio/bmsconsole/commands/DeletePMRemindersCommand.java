@@ -9,6 +9,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.PMReminder;
+import com.facilio.bmsconsole.context.PMReminderAction;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
@@ -26,7 +27,11 @@ public class DeletePMRemindersCommand implements Command {
 			List<PMReminder> reminders = PreventiveMaintenanceAPI.getPMReminders(Collections.singletonList(pm.getId()));
 			
 			List<Long> actionIds = new ArrayList<>();
-			actionIds.addAll(reminders.stream().map(PMReminder::getActionId).collect(Collectors.toList()));
+			for(PMReminder reminder :reminders) {
+				for( PMReminderAction reminderAction : reminder.getReminderActions()) {
+					actionIds.add(reminderAction.getActionId());
+				}
+			}
 			ActionAPI.deleteActions(actionIds);
 			
 			/*FacilioModule module = ModuleFactory.getPMReminderModule();

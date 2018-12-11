@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -7,6 +9,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.PMReminder;
+import com.facilio.bmsconsole.context.PMReminderAction;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -14,6 +17,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -61,6 +65,7 @@ public class GetPMAndPMReminderCommand implements Command {
 		if(reminderProps != null && !reminderProps.isEmpty()) {
 			Map<String, Object> prop = reminderProps.get(0);
 			PMReminder reminder = FieldUtil.getAsBeanFromMap(prop, PMReminder.class);
+			reminder.setReminderActions(new ArrayList<PMReminderAction>(PreventiveMaintenanceAPI.getPMReminderActions(Collections.singletonList(reminder.getId())).get(reminder.getId())));
 			PreventiveMaintenance pm = FieldUtil.getAsBeanFromMap(prop, PreventiveMaintenance.class);
 			pm.setId(reminder.getPmId());
 			

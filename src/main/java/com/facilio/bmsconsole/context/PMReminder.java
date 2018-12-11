@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.List;
+
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 
 public class PMReminder {
@@ -58,22 +60,16 @@ public class PMReminder {
 	public void setDuration(long duration) {
 		this.duration = duration;
 	}
-	
-	private long actionId = -1;
-	public long getActionId() {
-		return actionId;
+		
+	private List<PMReminderAction> reminderActions;
+
+	public List<PMReminderAction> getReminderActions() {
+		return reminderActions;
 	}
-	public void setActionId(long actionId) {
-		this.actionId = actionId;
+	public void setReminderActions(List<PMReminderAction> reminderActions) {
+		this.reminderActions = reminderActions;
 	}
-	
-	private ActionContext action;
-	public ActionContext getAction() {
-		return action;
-	}
-	public void setAction(ActionContext action) {
-		this.action = action;
-	}
+
 
 	public static enum ReminderType {
 		BEFORE_EXECUTION,

@@ -877,6 +877,14 @@ public class ModuleFactory {
 
 		return reminderModule;
 	}
+	public static FacilioModule getPMReminderActionModule() {
+		FacilioModule reminderModule = new FacilioModule();
+		reminderModule.setName("pmreminderaction ");
+		reminderModule.setDisplayName("Preventive Maintenance Reminder Action");
+		reminderModule.setTableName("PM_Reminder_Action");
+
+		return reminderModule;
+	}
 
 	public static FacilioModule getPMTriggersModule() {
 		FacilioModule pmTriggers = new FacilioModule();

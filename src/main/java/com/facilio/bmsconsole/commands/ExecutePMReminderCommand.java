@@ -9,6 +9,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PMReminder;
+import com.facilio.bmsconsole.context.PMReminderAction;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -28,14 +29,16 @@ public class ExecutePMReminderCommand implements Command {
 		PreventiveMaintenance pm = (PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 		
 		if(wo != null && (pmReminder.getTypeEnum() == PMReminder.ReminderType.BEFORE_EXECUTION || !isClosed(wo))) {
-			ActionContext action = ActionAPI.getAction(pmReminder.getActionId());
-			if(action != null) {
-				Map<String, Object> placeHolders = new HashMap<>();
-				CommonCommandUtil.appendModuleNameInKey(FacilioConstants.ContextNames.WORK_ORDER, FacilioConstants.ContextNames.WORK_ORDER, FieldUtil.getAsProperties(wo), placeHolders);
-				CommonCommandUtil.appendModuleNameInKey(null, "pm", FieldUtil.getAsProperties(pm), placeHolders);
-				CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeHolders);
-				CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeHolders);
-				action.executeAction(placeHolders, null, null, null);
+			for(PMReminderAction reminderAction : pmReminder.getReminderActions())  {
+				ActionContext action = ActionAPI.getAction(reminderAction.getActionId());
+				if(action != null) {
+					Map<String, Object> placeHolders = new HashMap<>();
+					CommonCommandUtil.appendModuleNameInKey(FacilioConstants.ContextNames.WORK_ORDER, FacilioConstants.ContextNames.WORK_ORDER, FieldUtil.getAsProperties(wo), placeHolders);
+					CommonCommandUtil.appendModuleNameInKey(null, "pm", FieldUtil.getAsProperties(pm), placeHolders);
+					CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeHolders);
+					CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeHolders);
+					action.executeAction(placeHolders, null, null, null);
+				}
 			}
 		}
 		
