@@ -164,21 +164,28 @@ public class FormulaContext {
 		
 		public FacilioField getSelectField(FacilioField field) throws Exception {
 			String selectFieldString = expr.replace("{$place_holder$}", field.getColumnName());
-			FacilioField selectField = null;
-			if(field instanceof NumberField) {
-				NumberField numberField =  (NumberField)field;
-				NumberField selectFieldNumber = new NumberField();
-				selectFieldNumber.setMetric(numberField.getMetric());
-				selectFieldNumber.setUnitId(numberField.getUnitId());
-				selectField = selectFieldNumber;
-			}
-			else {
-				selectField = new FacilioField();
-			}
-			selectField.setName(field.getName());
-			selectField.setDisplayName(field.getDisplayName());
+			FacilioField selectField = field.clone();
 			selectField.setColumnName(selectFieldString);
-			selectField.setFieldId(field.getFieldId());
+			
+			if (this == CommonAggregateOperator.COUNT) { //Temp Fix. Have to look into this
+				selectField.setModule(null);
+				selectField.setExtendedModule(null);
+			}
+			
+//			if(field instanceof NumberField) {
+//				NumberField numberField =  (NumberField)field;
+//				NumberField selectFieldNumber = new NumberField();
+//				selectFieldNumber.setMetric(numberField.getMetric());
+//				selectFieldNumber.setUnitId(numberField.getUnitId());
+//				selectField = selectFieldNumber;
+//			}
+//			else {
+//				selectField = new FacilioField();
+//			}
+//			selectField.setName(field.getName());
+//			selectField.setDisplayName(field.getDisplayName());
+//			selectField.setColumnName(selectFieldString);
+//			selectField.setFieldId(field.getFieldId());
 			return selectField;
 		}
 	}

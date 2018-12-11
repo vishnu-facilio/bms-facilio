@@ -127,7 +127,7 @@ public class FetchReportDataCommand implements Command {
 		
 		boolean noMatch = hasSortedDp && (xValues == null || xValues.isEmpty());
 		Map<String, List<Map<String, Object>>> props = new HashMap<>();
-		List<Map<String, Object>> dataProps = noMatch ? Collections.EMPTY_LIST : fetchReportData(report, dp, selectBuilder, null, xValues);
+		List<Map<String, Object>> dataProps = noMatch ? Collections.EMPTY_LIST : fetchReportData(report, dp, selectBuilder, null, xAggrField, xValues);
 		props.put(FacilioConstants.Reports.ACTUAL_DATA, dataProps);
 		if (dp.getLimit() != -1 && xValues == null) {
 			data.setxValues(getXValues(dataProps, dp.getxAxis().getFieldName()));
@@ -143,7 +143,7 @@ public class FetchReportDataCommand implements Command {
 		
 		if (report.getBaseLines() != null && !report.getBaseLines().isEmpty()) {
 			for (ReportBaseLineContext reportBaseLine : report.getBaseLines()) {
-				props.put(reportBaseLine.getBaseLine().getName(), noMatch ? Collections.EMPTY_LIST : fetchReportData(report, dp, selectBuilder, reportBaseLine, data.getxValues() == null ? xValues : data.getxValues()));
+				props.put(reportBaseLine.getBaseLine().getName(), noMatch ? Collections.EMPTY_LIST : fetchReportData(report, dp, selectBuilder, reportBaseLine, xAggrField, data.getxValues() == null ? xValues : data.getxValues()));
 				data.addBaseLine(reportBaseLine.getBaseLine().getName(), reportBaseLine);
 			}
 		}
@@ -156,7 +156,10 @@ public class FetchReportDataCommand implements Command {
 		if (props != null && !props.isEmpty()) {
 			StringJoiner xValues = new StringJoiner(",");
 			for (Map<String, Object> prop : props) {
-				xValues.add(prop.get(key).toString());
+				Object val = prop.get(key);
+				if (val != null) {
+					xValues.add(val.toString());
+				}
 			}
 			return xValues.toString();
 		}
@@ -203,7 +206,7 @@ public class FetchReportDataCommand implements Command {
 		}
 	}
  	
-	private List<Map<String, Object>> fetchReportData(ReportContext report, ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, ReportBaseLineContext reportBaseLine, String xValues) throws Exception {
+	private List<Map<String, Object>> fetchReportData(ReportContext report, ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, ReportBaseLineContext reportBaseLine, FacilioField xAggrField, String xValues) throws Exception {
 		SelectRecordsBuilder<ModuleBaseWithCustomFields> newSelectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>(selectBuilder);
 		applyDateCondition(report, dp, newSelectBuilder, reportBaseLine);
 		
@@ -217,13 +220,13 @@ public class FetchReportDataCommand implements Command {
 				newSelectBuilder.andCriteria(dp.getCriteria());
 			}
 			
-			boolean noMatch = applyFilters(report, dp, selectBuilder);
+			boolean noMatch = applyFilters(report, dp, newSelectBuilder);
 			if (noMatch) {
 				return Collections.EMPTY_LIST;
 			}
 		}
 		else {
-			newSelectBuilder.andCondition(getEqualsCondition(dp.getxAxis().getField(), xValues));
+			newSelectBuilder.andCondition(getEqualsCondition(xAggrField, xValues));
 		}
 		
 		List<Map<String, Object>> props = newSelectBuilder.getAsProps();
