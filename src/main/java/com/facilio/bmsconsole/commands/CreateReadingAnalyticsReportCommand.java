@@ -265,7 +265,7 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 					filter = getBasicReadingReportFilter(modBean);
 					filter.setDataFilter(true);
 					filter.setFilterOperator(PickListOperators.IS);
-					filter.setFilterValue(StringUtils.join(parentIds));
+					filter.setFilterValue(StringUtils.join(parentIds, ","));
 					return Collections.singletonList(filter);
 				case SPACE:
 					modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
