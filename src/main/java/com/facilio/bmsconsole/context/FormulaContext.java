@@ -109,6 +109,8 @@ public class FormulaContext {
 	
 	public interface AggregateOperator {
 		
+		// Max Operator Code : 25 - Kindly change here if you add new operator
+		
 		public static AggregateOperator getAggregateOperator(int value) {
 			return AGGREGATE_OPERATOR_MAP.get(value);
 		}
@@ -267,7 +269,8 @@ public class FormulaContext {
 		WEEKDAY(17,"Weekly","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%w')",true), //Daily aggregation
 		DAYSOFMONTH(18,"Daily","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%d')", "EEEE, MMMM dd, yyyy",false), //Daily
 		HOURSOFDAY(19,"hoursOfDay","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%H')", "EEE, MMM dd, yyyy hh a",false), //Hourly
-		HOURSOFDAYONLY(20,"Hourly","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %m %d %H')", "EEE, MMM dd, yyyy hh a",true) //Hourly
+		HOURSOFDAYONLY(20,"Hourly","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %m %d %H')", "EEE, MMM dd, yyyy hh a",true), //Hourly
+		QUARTERLY(25,"Quarterly","YEAR(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}')), QUARTER(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}')),", "EEEE, MMMM dd, yyyy",false), //Quarterly
 		;
 		
 		private int value;
@@ -340,6 +343,8 @@ public class FormulaContext {
 				case DATEANDTIME:
 				case HOURSOFDAYONLY:
 					return DateTimeUtil.getHourStartTimeOf(time);
+				case QUARTERLY:
+					return DateTimeUtil.getQuarterStartTimeOf(time);
 			}
 			return -1;
 		}
