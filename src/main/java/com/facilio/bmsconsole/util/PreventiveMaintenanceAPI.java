@@ -778,6 +778,7 @@ public class PreventiveMaintenanceAPI {
 				if (pm.getWoTemplate().getResourceId() != -1) {
 					resourceIds.add(pm.getWoTemplate().getResourceId());
 				}
+				pm.setPmIncludeExcludeResourceContexts(TemplateAPI.getPMIncludeExcludeList(pm.getId(), null, null));
 				if (pmTriggers != null) {
 					pm.setTriggers(pmTriggers.get(pm.getId()));
 					if (pm.getTriggers() == null) {

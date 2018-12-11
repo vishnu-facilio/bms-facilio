@@ -821,8 +821,9 @@ public class TemplateAPI {
 		}
 		List<Map<String, Object>> props = builder.get();
 		
-		List<PMIncludeExcludeResourceContext> pmIncludeExcludeResourceContexts = new ArrayList<>();
+		List<PMIncludeExcludeResourceContext> pmIncludeExcludeResourceContexts = null;
 		if(props != null && !props.isEmpty()) {
+			pmIncludeExcludeResourceContexts = new ArrayList<>();
 			for(Map<String, Object> prop :props) {
 				PMIncludeExcludeResourceContext pmIncludeExcludeResourceContext = FieldUtil.getAsBeanFromMap(prop, PMIncludeExcludeResourceContext.class);
 				pmIncludeExcludeResourceContexts.add(pmIncludeExcludeResourceContext);
