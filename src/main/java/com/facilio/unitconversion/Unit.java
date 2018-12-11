@@ -22,12 +22,12 @@ public enum Unit {
 	KELWIN(6,"Kelwin","K",Metric.TEMPERATURE,"si+273.15","this-273.15"),
 	
 	METER(7,"Meter","m",Metric.LENGTH),
-	DECIMETER(8,"Decimetre","dm",Metric.LENGTH,"si*10","this/10"),
-	CENTIMETER(9,"Centimetre","cm",Metric.LENGTH,"si*100","this/100"),
+	DECIMETER(8,"Decimeter","dm",Metric.LENGTH,"si*10","this/10"),
+	CENTIMETER(9,"Centimeter","cm",Metric.LENGTH,"si*100","this/100"),
 	MILLIMETER(10,"Millimeter","mm",Metric.LENGTH,"si*1000","this/1000"),
 	DECAMETER(11,"Decameter","dkm",Metric.LENGTH,"si/10","this*10"),
 	HECTOMETER(12,"Hectometer","hm",Metric.LENGTH,"si/100","this*100"),
-	KILOMETER(13,"kilometer","km",Metric.LENGTH,"si/1000","this*1000"),
+	KILOMETER(13,"Kilometer","km",Metric.LENGTH,"si/1000","this*1000"),
 	MILE(14,"Mile","mi",Metric.LENGTH,"si/1609.34","this*1609.34"),
 	YARD(15,"Yard","yd",Metric.LENGTH,"si*1.0936132983","this*0.9144"),
 	FEET(16,"Feet","ft",Metric.LENGTH,"si*3.280839895","this*0.3048"),
@@ -41,13 +41,13 @@ public enum Unit {
 	YEAR(24,"Year","Y",Metric.DURATION,"si/(24*365)","this*(24*365)"),
 	MILLIS(80,"Milli Second","ms",Metric.DURATION,"si*3600000","this/3600000"),
 	
-	KILOGRAM(25,"Kilo Gram","kg",Metric.MASS),
-	HECTOGRAM(26,"Minute","hg",Metric.MASS,"si*10","this/10"),
-	DEKAGRAM(27,"dekagram","dag",Metric.MASS,"si*100","this/100"),
-	GRAM(28,"gram","g",Metric.MASS,"si*1000","this/1000"),
-	DECIGRAM(29,"decigram","dg",Metric.MASS,"si*10000","this/10000"),
-	CENTIGRAM(30,"centigram","cg",Metric.MASS,"si*100000","this/100000"),
-	MILLIGRAM(31,"milligram","mg",Metric.MASS,"si*1000000","this/1000000"),
+	KILOGRAM(25,"Kilogram","kg",Metric.MASS),
+	HECTOGRAM(26,"Minute","hg", Metric.MASS,"si*10","this/10"),
+	DEKAGRAM(27,"Dekagram","dag",Metric.MASS,"si*100","this/100"),
+	GRAM(28,"Gram","g",Metric.MASS,"si*1000","this/1000"),
+	DECIGRAM(29,"Decigram","dg",Metric.MASS,"si*10000","this/10000"),
+	CENTIGRAM(30,"Centigram","cg",Metric.MASS,"si*100000","this/100000"),
+	MILLIGRAM(31,"Milligram","mg",Metric.MASS,"si*1000000","this/1000000"),
 	TON(32,"Ton","t",Metric.MASS,"si/1000","this*1000"),
 	STONE(33,"Stone","st",Metric.MASS,"si*0.157473","this/0.157473"),
 	POUND(34,"Pound","lb",Metric.MASS,"si*2.20462","this/2.20462"),
@@ -79,8 +79,8 @@ public enum Unit {
 	GIGAHERTZ(56,"Giga Hertz","GHz",Metric.FREQUENCY,"si/1000000000","this*1000000000"),
 	TERAHERTZ(57,"Tera Hertz","THz",Metric.FREQUENCY,"si/1000000000000","this*1000000000000"),
 	
-	VAR(58,"var","var",Metric.REACTIVEPOWER),
-	KILOVAR(59,"Kilo var","kvar",Metric.REACTIVEPOWER,"si/1000","this*1000"),
+	VAR(58,"Var","var",Metric.REACTIVEPOWER),
+	KILOVAR(59,"Kilo Var","kvar",Metric.REACTIVEPOWER,"si/1000","this*1000"),
 	MEGAVAR(60,"Mega","Mvar",Metric.REACTIVEPOWER,"si/1000000","this*1000000"),
 	
 	PASCAL(61,"Pascal","pa",Metric.PRESSURE),
@@ -107,11 +107,11 @@ public enum Unit {
 	IMPERIALGALLON(75,"Imperial Gallon","IG",Metric.VOLUME,"si/4.54609","this*4.54609"),
 	
 	AED(83,"AED","AED",Metric.CURRENCY),
-	DOLLER(84,"Doller","$",Metric.CURRENCY),
-	INR(85,"inr","₹",Metric.CURRENCY),
-	EURO(86,"euro","£",Metric.CURRENCY),
+	DOLLER(84,"USD","$",Metric.CURRENCY),
+	INR(85,"INR","₹",Metric.CURRENCY),
+	EURO(86,"Euro","£",Metric.CURRENCY),
 	
-	PERCENTAGE(87,"percentage","%",Metric.PERCENTAGE),
+	PERCENTAGE(87,"Percentage","%",Metric.PERCENTAGE),
 	PERCENTAGE_DIV_100(88,"percentage","%",Metric.PERCENTAGE,"si/100","this*100"),	// do not use this in ORG_UNITS
 	;
 	

@@ -119,9 +119,6 @@ public class FormAction extends FacilioAction {
 				fields.add(fieldObject);
 			}
 		}
-		FacilioField comments = FieldFactory.getField("comment", "Comment" ,null , modBean.getModule("workorder"), FieldType.STRING);
-		comments.setDisplayType(FieldDisplayType.TICKETNOTES);
-		fields.add(comments);
 		setResult(FacilioConstants.ContextNames.FORM_FIELDS, FormFactory.getMetaFormFieldApprovals(allFields));
 		setResult(FacilioConstants.ContextNames.FIELD_NAME_LIST, fields);
 		return SUCCESS;
