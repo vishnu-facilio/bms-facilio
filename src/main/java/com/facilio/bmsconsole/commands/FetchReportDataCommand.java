@@ -76,7 +76,7 @@ public class FetchReportDataCommand implements Command {
 		List<List<ReportDataPointContext>> groupedDataPoints = groupDataPoints(dataPoints, handleBooleanFields);
 		if (groupedDataPoints != null && !groupedDataPoints.isEmpty()) {
 			for (List<ReportDataPointContext> dataPointList : groupedDataPoints) {
-				ReportDataContext data = fetchDataForGroupedDPList(dataPointList, report, sortPoint == null, sortPoint == null ? null : sortedData.getxValues());
+				ReportDataContext data = fetchDataForGroupedDPList(dataPointList, report, sortPoint != null, sortPoint == null ? null : sortedData.getxValues());
 				reportData.add(data);
 			}
 		}
@@ -129,7 +129,7 @@ public class FetchReportDataCommand implements Command {
 		Map<String, List<Map<String, Object>>> props = new HashMap<>();
 		List<Map<String, Object>> dataProps = noMatch ? Collections.EMPTY_LIST : fetchReportData(report, dp, selectBuilder, null, xValues);
 		props.put(FacilioConstants.Reports.ACTUAL_DATA, dataProps);
-		if (!hasSortedDp && dp.getLimit() != -1 && xValues == null) {
+		if (dp.getLimit() != -1 && xValues == null) {
 			data.setxValues(getXValues(dataProps, dp.getxAxis().getFieldName()));
 			if (data.getxValues() == null || data.getxValues().isEmpty()) {
 				noMatch = true;
