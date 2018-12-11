@@ -235,6 +235,14 @@ public class ReportDataPointContext {
 	public void setFetchResource(boolean fetchResource) {
 		this.fetchResource = fetchResource;
 	}
+	
+	private boolean defaultSortPoint;
+	public boolean isDefaultSortPoint() {
+		return defaultSortPoint;
+	}
+	public void setDefaultSortPoint(boolean defaultSortPoint) {
+		this.defaultSortPoint = defaultSortPoint;
+	}
 
 	private Map<String, Object> metaData;
 	public Map<String, Object> getMetaData() {

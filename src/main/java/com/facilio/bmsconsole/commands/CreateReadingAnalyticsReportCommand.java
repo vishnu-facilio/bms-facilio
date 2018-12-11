@@ -130,6 +130,7 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 	private ReportDataPointContext getModuleDataPoint(ReadingAnalysisContext metric, ReportMode mode, ModuleBean modBean) throws Exception {
 		ReportDataPointContext dataPoint = new ReportDataPointContext();
 		dataPoint.setMetaData(metric.getMetaData());
+		dataPoint.setDefaultSortPoint(metric.isDefaultSortPoint());
 		ReportYAxisContext yAxis = metric.getyAxis();
 		FacilioField yField = modBean.getField(metric.getyAxis().getFieldId());
 		yAxis.setField(yField);

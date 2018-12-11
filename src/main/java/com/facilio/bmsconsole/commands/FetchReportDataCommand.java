@@ -67,40 +67,7 @@ public class FetchReportDataCommand implements Command {
 		List<List<ReportDataPointContext>> groupedDataPoints = groupDataPoints(report.getDataPoints(), handleBooleanFields);
 		List<ReportDataContext> reportData = new ArrayList<>();
 		for (List<ReportDataPointContext> dataPointList : groupedDataPoints) {
-			ReportDataContext data = new ReportDataContext();
-			data.setDataPoints(dataPointList);
-			
-			ReportDataPointContext dp = dataPointList.get(0); //Since order by, criteria are same for all dataPoints in a group, we can consider only one for the builder
-			SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
-																					.module(dp.getxAxis().getField().getModule()) //Assuming X to be the base module
-																					;
-			if (dp.getCriteria() != null) {
-				selectBuilder.andCriteria(dp.getCriteria());
-			}
-			
-			Set<FacilioModule> addedModules = new HashSet<>();
-			addedModules.add(dp.getxAxis().getField().getModule());
-			
-			joinYModuleIfRequred(dp, selectBuilder, addedModules);
-			applyOrderByAndLimit(dp, selectBuilder);
-			List<FacilioField> fields = new ArrayList<>();
-			StringJoiner groupBy = new StringJoiner(",");
-			FacilioField xAggrField = applyXAggregation(dp, report.getxAggrEnum(), groupBy, selectBuilder, fields, addedModules);
-			setYFieldsAndGroupByFields(dataPointList, fields, xAggrField, groupBy, dp, selectBuilder, addedModules);
-			selectBuilder.select(fields);
-			boolean noMatch = applyFilters(report, dp, selectBuilder);
-			
-			Map<String, List<Map<String, Object>>> props = new HashMap<>();
-			props.put(FacilioConstants.Reports.ACTUAL_DATA, noMatch ? Collections.EMPTY_LIST : fetchReportData(report, dp, selectBuilder, null));
-			
-			if (report.getBaseLines() != null && !report.getBaseLines().isEmpty()) {
-				for (ReportBaseLineContext reportBaseLine : report.getBaseLines()) {
-					props.put(reportBaseLine.getBaseLine().getName(), noMatch ? Collections.EMPTY_LIST : fetchReportData(report, dp, selectBuilder, reportBaseLine));
-					data.addBaseLine(reportBaseLine.getBaseLine().getName(), reportBaseLine);
-				}
-			}
-			
-			data.setProps(props);
+			ReportDataContext data = fetchDataForGroupedDPList(dataPointList, report);
 			reportData.add(data);
 		}
 		
@@ -110,6 +77,44 @@ public class FetchReportDataCommand implements Command {
 		
 		context.put(FacilioConstants.ContextNames.REPORT_DATA, reportData);
 		return false;
+	}
+	
+	private ReportDataContext fetchDataForGroupedDPList (List<ReportDataPointContext> dataPointList, ReportContext report) throws Exception {
+		ReportDataContext data = new ReportDataContext();
+		data.setDataPoints(dataPointList);
+		
+		ReportDataPointContext dp = dataPointList.get(0); //Since order by, criteria are same for all dataPoints in a group, we can consider only one for the builder
+		SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
+																				.module(dp.getxAxis().getField().getModule()) //Assuming X to be the base module
+																				;
+		if (dp.getCriteria() != null) {
+			selectBuilder.andCriteria(dp.getCriteria());
+		}
+		
+		Set<FacilioModule> addedModules = new HashSet<>();
+		addedModules.add(dp.getxAxis().getField().getModule());
+		
+		joinYModuleIfRequred(dp, selectBuilder, addedModules);
+		applyOrderByAndLimit(dp, selectBuilder);
+		List<FacilioField> fields = new ArrayList<>();
+		StringJoiner groupBy = new StringJoiner(",");
+		FacilioField xAggrField = applyXAggregation(dp, report.getxAggrEnum(), groupBy, selectBuilder, fields, addedModules);
+		setYFieldsAndGroupByFields(dataPointList, fields, xAggrField, groupBy, dp, selectBuilder, addedModules);
+		selectBuilder.select(fields);
+		boolean noMatch = applyFilters(report, dp, selectBuilder);
+		
+		Map<String, List<Map<String, Object>>> props = new HashMap<>();
+		props.put(FacilioConstants.Reports.ACTUAL_DATA, noMatch ? Collections.EMPTY_LIST : fetchReportData(report, dp, selectBuilder, null));
+		
+		if (report.getBaseLines() != null && !report.getBaseLines().isEmpty()) {
+			for (ReportBaseLineContext reportBaseLine : report.getBaseLines()) {
+				props.put(reportBaseLine.getBaseLine().getName(), noMatch ? Collections.EMPTY_LIST : fetchReportData(report, dp, selectBuilder, reportBaseLine));
+				data.addBaseLine(reportBaseLine.getBaseLine().getName(), reportBaseLine);
+			}
+		}
+		
+		data.setProps(props);
+		return data;
 	}
 	
 	private boolean applyFilters (ReportContext report, ReportDataPointContext dataPoint, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder) throws Exception {

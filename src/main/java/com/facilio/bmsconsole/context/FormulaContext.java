@@ -270,7 +270,7 @@ public class FormulaContext {
 		DAYSOFMONTH(18,"Daily","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%d')", "EEEE, MMMM dd, yyyy",false), //Daily
 		HOURSOFDAY(19,"hoursOfDay","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%H')", "EEE, MMM dd, yyyy hh a",false), //Hourly
 		HOURSOFDAYONLY(20,"Hourly","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %m %d %H')", "EEE, MMM dd, yyyy hh a",true), //Hourly
-		QUARTERLY(25,"Quarterly","YEAR(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}')), QUARTER(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}')),", "EEEE, MMMM dd, yyyy",false), //Quarterly
+		QUARTERLY(25,"Quarterly","YEAR(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}')), QUARTER(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'))", "MMMM yyyy",false), //Quarterly
 		;
 		
 		private int value;

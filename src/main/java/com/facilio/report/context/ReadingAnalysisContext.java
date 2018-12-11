@@ -96,6 +96,14 @@ public class ReadingAnalysisContext {
 		this.limit = limit;
 	}
 	
+	private boolean defaultSortPoint;
+	public boolean isDefaultSortPoint() {
+		return defaultSortPoint;
+	}
+	public void setDefaultSortPoint(boolean defaultSortPoint) {
+		this.defaultSortPoint = defaultSortPoint;
+	}
+	
 	private Map<String, Object> metaData;
 	public Map<String, Object> getMetaData() {
 		return metaData;
