@@ -2590,6 +2590,65 @@ public enum DateOperators implements Operator<String> {
 		
 		
 	},
+	LAST_N_QUARTERS(70, "LAST N Quarters"){
+		@Override
+		public String getWhereClause(String columnName, String value) {
+			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
+				StringBuilder builder = new StringBuilder();
+				builder.append(DateTimeUtil.getQuarterStartTime(-(Integer.parseInt(value) - 1)))
+						.append("<=")
+						.append(columnName)
+						.append(" AND ")
+						.append(columnName)
+						.append("<=")
+						.append(DateTimeUtil.getQuarterEndTime(0));
+				return builder.toString();
+			}
+			return null;
+		}
+		
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						if(object != null && object instanceof Long) {
+							long currentVal = (long) object;
+							return DateTimeUtil.getQuarterStartTime(-(Integer.parseInt(value) - 1)) <= currentVal &&currentVal <= DateTimeUtil.getQuarterEndTime(0);
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
+
+	
+		@Override 
+		public DateRange getRange(String value) {
+			return new DateRange(DateTimeUtil.getQuarterStartTime(-(Integer.parseInt(value) - 1)), DateTimeUtil.getQuarterEndTime(0));
+		}
+		@Override
+		public boolean isDynamicOperator() {
+			return true;
+		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+		
+		
+	},
 	THIS_QUARTER(68, "This Quarter"){
 		@Override
 		public String getWhereClause(String columnName, String value) {
