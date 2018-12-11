@@ -162,7 +162,7 @@ public class PreventiveMaintenanceAPI {
 		List<Long> excludedIds = null;
 		if(includeExcludeRess != null && !includeExcludeRess.isEmpty()) {
 			for(PMIncludeExcludeResourceContext includeExcludeRes :includeExcludeRess) {
-				if(includeExcludeRes.isInclude()) {
+				if(includeExcludeRes.getIsInclude()) {
 					includedIds = includedIds == null ? new ArrayList<>() : includedIds; 
 					includedIds.add(includeExcludeRes.getResourceId());
 				}

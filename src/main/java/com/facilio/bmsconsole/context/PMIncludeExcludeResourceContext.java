@@ -44,7 +44,7 @@ public class PMIncludeExcludeResourceContext implements Serializable {
 	public void setResourceId(Long resourceId) {
 		this.resourceId = resourceId;
 	}
-	public boolean isInclude() {
+	public boolean getIsInclude() {
 		if(isInclude == null) {
 			return false;
 		}
