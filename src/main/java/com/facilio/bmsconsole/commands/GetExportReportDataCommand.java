@@ -67,7 +67,21 @@ public class GetExportReportDataCommand implements Command {
 	    	  currentHeaderKeys.addAll(reportData.values().stream().filter(val -> val != null && !val.isEmpty()).findFirst().get().keySet());
 	    }
 	    else {
-	    		currentHeaderKeys.add(report.getDataPoints().get(0).getxAxis().getField().getName());
+	    		String header;
+	    		switch(mode) {
+	    			case SITE:
+	    				header = "Site";
+	    				break;
+	    			case BUILDING:
+	    				header = "Building";
+	    				break;
+	    			case RESOURCE:
+	    				header = "Asset";
+	    				break;
+	    			default:
+	    				header = report.getDataPoints().get(0).getxAxis().getField().getName();
+	    		}
+	    		currentHeaderKeys.add(header);
 	    		if (report.getBaseLines() != null && !report.getBaseLines().isEmpty()) {
 	    			baseLineMap = report.getBaseLines().stream().collect(Collectors.toMap(ReportBaseLineContext::getBaseLineId, Function.identity()));
 	    		}
@@ -119,7 +133,8 @@ public class GetExportReportDataCommand implements Command {
 			fileUrl = ExportUtil.exportData(fileFormat, "Report Data", table);
 		}
 		else {
-			StringBuilder url = getClientUrl(report.getDataPoints().get(0).getxAxis().getField().getModule().getName(), report.getId(), fileFormat).append("?print=true");
+			StringBuilder url = getClientUrl(report.getDataPoints().get(0).getxAxis().getField().getModule().getName(), report.getId(), fileFormat)
+					.append("?print=true");
 			if(report.getDateRange() != null) {
 				JSONObject dateRange = new JSONObject();
 				dateRange.put("startTime", report.getDateRange().getStartTime());
@@ -171,7 +186,17 @@ public class GetExportReportDataCommand implements Command {
 			for(int i = 0, size = columns.size(); i < size; i++) {
 				Map<String, Object> col = columns.get(i);
 				if (i == 0) {
-					String name = report.getDataPoints().get(0).getxAxis().getField().getDisplayName();
+					String name;
+					switch(mode) {
+						case SITE:
+						case BUILDING:
+						case RESOURCE:
+							name = ((String) col.get("name"));
+							break;
+						default:
+							name = report.getDataPoints().get(0).getxAxis().getField().getDisplayName();
+								
+					}
 					headers.add(name);
 					col.put("header", name);
 					continue;
@@ -239,7 +264,6 @@ public class GetExportReportDataCommand implements Command {
 			
 			String format = "EEEE, MMMM dd, yyyy hh:mm a";
 			
-			new ArrayList<>();
 			AggregateOperator aggr = report.getxAggrEnum();
 			if (aggr != null && aggr instanceof DateAggregateOperator) {
 				String dateFormat = ((DateAggregateOperator)aggr).getFormat();
@@ -247,10 +271,19 @@ public class GetExportReportDataCommand implements Command {
 			}
 			
 			for(Object xValue: xValues) {
-				long x = (long)xValue;
-				String date = DateTimeUtil.getFormattedTime(x, format);
+				String firstCol;
+				switch (mode) {
+				case TIMESERIES:
+				case TIME_CONSOLIDATED:
+				case TIME_SPLIT:
+					firstCol =  DateTimeUtil.getFormattedTime((long)xValue, format);
+					break;
+				default:
+					firstCol = (String) xValue;
+					break;
+				}
 				Map<String, Object> newRow = new HashMap<>();
-				newRow.put((String) columns.get(0).get("header"), date);
+				newRow.put((String) columns.get(0).get("header"), firstCol);
 				for(Map<String, Object> column : columns) {
 					String name, bl;
 					if (column.containsKey("baseLine") && ((boolean)column.get("baseLine"))) {
@@ -262,8 +295,13 @@ public class GetExportReportDataCommand implements Command {
 						name = (String) column.get("name");
 						bl = ACTUAL_HEADER.toLowerCase();
 					}
-					if (reportData.get(name) != null && reportData.get(name).containsKey(bl) && reportData.get(name).get(bl).containsKey(x) && reportData.get(name).get(bl).get(x) != null) {
-						newRow.put((String) column.get("header"), reportData.get(name).get(bl).get(x));
+					if (reportData.get(name) != null && reportData.get(name).containsKey(bl) && reportData.get(name).get(bl).containsKey(xValue) && reportData.get(name).get(bl).get(xValue) != null) {
+						Object value = reportData.get(name).get(bl).get(xValue);
+						ReportDataPointContext dataPoint = dataMap.get(name);
+						if (dataPoint.getyAxis().getEnumMap() != null && dataPoint.getyAxis().getEnumMap().containsKey(value)) {
+							value =dataPoint.getyAxis().getEnumMap().get(value);
+						}
+						newRow.put((String) column.get("header"), value);
 					}
 				}
 				records.add(newRow);
