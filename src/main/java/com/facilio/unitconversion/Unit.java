@@ -10,12 +10,12 @@ public enum Unit {
 	
 	// last id -- 88
 	
-	KWH(1,"Kilo Watt Hour","kWh",Metric.ENERGY),
-	HECTOWH(76,"Hecto Watt Hour","hWh",Metric.ENERGY,"si*10","this/10"),
-	DECAWH(79,"Deca Watt Hour","dWh",Metric.ENERGY,"si/100","this*100"),
+	KWH(1,"Kilowatt Hour","kWh",Metric.ENERGY),
+	HECTOWH(76,"Hectowatt Hour","hWh",Metric.ENERGY,"si*10","this/10"),
+	DECAWH(79,"Decawatt Hour","dWh",Metric.ENERGY,"si/100","this*100"),
 	WH(2,"Watt Hour","Wh",Metric.ENERGY,"si*1000","this/1000"),
-	DECIWH(82,"Deci Watt Hour","DWh",Metric.ENERGY,"si*100","this/100"),
-	MWH(3,"Mega Watt Hour","mWh",Metric.ENERGY,"si/1000","this*1000"),
+	DECIWH(82,"Deciwatt Hour","DWh",Metric.ENERGY,"si*100","this/100"),
+	MWH(3,"Megawatt Hour","mWh",Metric.ENERGY,"si/1000","this*1000"),
 	
 	CELSIUS(4,"Celsius","&deg;C",Metric.TEMPERATURE),
 	FAHRENHEIT(5,"Fahrenheit","&deg;F",Metric.TEMPERATURE,"(si*1.8)+32","(this-32)/1.8"),
@@ -54,30 +54,30 @@ public enum Unit {
 	OUNCE(35,"Ounce","oz",Metric.MASS,"si*35.2739199982575","this/35.2739199982575"),
 	
 	VOLT(36,"Volt","V",Metric.VOLTAGE),
-	MILLIVOLT(37,"Milli Volt","mV",Metric.VOLTAGE,"si*1000","this/1000"),
-	MICROVOLT(38,"Micro Volt","&#x3BC;V",Metric.VOLTAGE,"si*1000000","this/1000000"),
-	KILOVOLT(39,"Kilo Volt","kV",Metric.VOLTAGE,"si/1000","this*1000"),
-	MEGAVOLT(40,"Mega Volt","MV",Metric.VOLTAGE,"si/1000000","this*1000000"),
+	MILLIVOLT(37,"Millivolt","mV",Metric.VOLTAGE,"si*1000","this/1000"),
+	MICROVOLT(38,"Microvolt","&#x3BC;V",Metric.VOLTAGE,"si*1000000","this/1000000"),
+	KILOVOLT(39,"Kilovolt","kV",Metric.VOLTAGE,"si/1000","this*1000"),
+	MEGAVOLT(40,"Megavolt","MV",Metric.VOLTAGE,"si/1000000","this*1000000"),
 	
 	AMPERE(41,"Ampere","A",Metric.CURRENT),
-	MILLIAMPERE(42,"Milli Ampere","mA",Metric.CURRENT,"si*1000","this/1000"),
-	MICROAMPERE(43,"Micro Ampere","&#x3BC;A",Metric.CURRENT,"si*1000000","this/1000000"),
-	KILOAMPERE(44,"Kilo Ampere","kA",Metric.CURRENT,"si/1000","this*1000"),
-	MEGAAMPERE(45,"Mega Ampere","MA",Metric.CURRENT,"si/1000000","this*1000000"),
+	MILLIAMPERE(42,"Milliampere","mA",Metric.CURRENT,"si*1000","this/1000"),
+	MICROAMPERE(43,"Microampere","&#x3BC;A",Metric.CURRENT,"si*1000000","this/1000000"),
+	KILOAMPERE(44,"Kiloampere","kA",Metric.CURRENT,"si/1000","this*1000"),
+	MEGAAMPERE(45,"Megaampere","MA",Metric.CURRENT,"si/1000000","this*1000000"),
 	
-	KILOWATT(46,"Kilo Watt","kW",Metric.POWER),
-	MILLIWATT(47,"Milli Watt","mW",Metric.POWER,"si*1000000","this/1000000"),
-	MICROWATT(48,"Micro Watt","&#x3BC;W",Metric.POWER,"si*1000000000","this/1000000000"),
+	KILOWATT(46,"Kilowatt","kW",Metric.POWER),
+	MILLIWATT(47,"Milliwatt","mW",Metric.POWER,"si*1000000","this/1000000"),
+	MICROWATT(48,"Microwatt","&#x3BC;W",Metric.POWER,"si*1000000000","this/1000000000"),
 	WATT(49,"Watt","W",Metric.POWER,"si*1000","this/1000"),
-	MEGAWATT(50,"Mega Watt","MW",Metric.POWER,"si/1000","this*1000"),
+	MEGAWATT(50,"Megawatt","MW",Metric.POWER,"si/1000","this*1000"),
 	
 	HERTZ(51,"Hertz","Hz",Metric.FREQUENCY),
-	MILLIHERTZ(52,"Milli Hertz","mHz",Metric.FREQUENCY,"si*1000","this/1000"),
-	MICROHERTZ(53,"Micro Hertz","&#x3BC;Hz",Metric.FREQUENCY,"si*1000000","this/1000000"),
-	KILOHERTZ(54,"Kilo Hertz","kHz",Metric.FREQUENCY,"si/1000","this*1000"),
-	MEGAHERTZ(55,"Mega Hertz","MHz",Metric.FREQUENCY,"si/1000000","this*1000000"),
-	GIGAHERTZ(56,"Giga Hertz","GHz",Metric.FREQUENCY,"si/1000000000","this*1000000000"),
-	TERAHERTZ(57,"Tera Hertz","THz",Metric.FREQUENCY,"si/1000000000000","this*1000000000000"),
+	MILLIHERTZ(52,"Millihertz","mHz",Metric.FREQUENCY,"si*1000","this/1000"),
+	MICROHERTZ(53,"Microhertz","&#x3BC;Hz",Metric.FREQUENCY,"si*1000000","this/1000000"),
+	KILOHERTZ(54,"Kilohertz","kHz",Metric.FREQUENCY,"si/1000","this*1000"),
+	MEGAHERTZ(55,"Megahertz","MHz",Metric.FREQUENCY,"si/1000000","this*1000000"),
+	GIGAHERTZ(56,"Gigahertz","GHz",Metric.FREQUENCY,"si/1000000000","this*1000000000"),
+	TERAHERTZ(57,"Terahertz","THz",Metric.FREQUENCY,"si/1000000000000","this*1000000000000"),
 	
 	VAR(58,"Var","var",Metric.REACTIVEPOWER),
 	KILOVAR(59,"Kilo Var","kvar",Metric.REACTIVEPOWER,"si/1000","this*1000"),
@@ -97,19 +97,19 @@ public enum Unit {
 	NEWTON_METER(69,"Newton Meter","N m",Metric.TORQUE),
 	
 	LITRE(70,"Litre","l",Metric.VOLUME),
-	MILILITRE(71,"Mili Litre","ml",Metric.VOLUME,"si*1000","this/1000"),
-	DECALITRE(77,"Deca Litre","dl",Metric.VOLUME,"si/10","this*10"),
-	KILOLITRE(78,"Kilo Litre","kl",Metric.VOLUME,"si/1000","this*1000"),
-	CUBICMETER(81,"Cubic Meter","m<sup>3</sup>",Metric.VOLUME,"si/1000","this*1000"),
-	CUBICFOOT(72,"Cubic Foot","ft<sup>3</sup>",Metric.VOLUME,"si/28.3168","this*28.3168"),
-	CUBICINCH(73,"Cubic Inch","in<sup>3</sup>",Metric.VOLUME,"si*61.0237","this/61.0237"),
+	MILILITRE(71,"Mililitre","ml",Metric.VOLUME,"si*1000","this/1000"),
+	DECALITRE(77,"Decalitre","dl",Metric.VOLUME,"si/10","this*10"),
+	KILOLITRE(78,"Kilolitre","kl",Metric.VOLUME,"si/1000","this*1000"),
+	CUBICMETER(81,"Cubic meter","m<sup>3</sup>",Metric.VOLUME,"si/1000","this*1000"),
+	CUBICFOOT(72,"CubicFoot","ft<sup>3</sup>",Metric.VOLUME,"si/28.3168","this*28.3168"),
+	CUBICINCH(73,"CubicInch","in<sup>3</sup>",Metric.VOLUME,"si*61.0237","this/61.0237"),
 	USGALLON(74,"US Gallon","G",Metric.VOLUME,"si/3.78541","this*3.78541"),
 	IMPERIALGALLON(75,"Imperial Gallon","IG",Metric.VOLUME,"si/4.54609","this*4.54609"),
 	
-	AED(83,"AED","AED",Metric.CURRENCY),
-	DOLLER(84,"USD","$",Metric.CURRENCY),
-	INR(85,"INR","₹",Metric.CURRENCY),
-	EURO(86,"Euro","£",Metric.CURRENCY),
+	AED(83,"AED","AED", Metric.CURRENCY),
+	DOLLER(84,"USD","$", Metric.CURRENCY, true),
+	INR(85,"INR","₹", Metric.CURRENCY, true),
+	EURO(86,"Euro","£", Metric.CURRENCY, true),
 	
 	PERCENTAGE(87,"Percentage","%",Metric.PERCENTAGE),
 	PERCENTAGE_DIV_100(88,"percentage","%",Metric.PERCENTAGE,"si/100","this*100"),	// do not use this in ORG_UNITS
@@ -120,6 +120,7 @@ public enum Unit {
 	String symbol;
 	Metric metric;
 	boolean isSiUnit;
+	boolean isLeft;
 	String fromSiUnit;
 	String toSiUnit;
 	
@@ -167,6 +168,14 @@ public enum Unit {
 		this.displayName = displayName;
 		this.symbol = symbol;
 	}
+	Unit(int unitId,String displayName,String symbol,Metric metric, boolean isLeft) {
+		this.unitId = unitId;
+		this.metric = metric;
+		this.isSiUnit = true;
+		this.displayName = displayName;
+		this.symbol = symbol;
+		this.isLeft = isLeft;
+	}
 	
 	Unit(int unitId,String displayName,String symbol,Metric metric,String fromSiUnit,String toSiUnit) {
 		this.unitId = unitId;
@@ -176,6 +185,16 @@ public enum Unit {
 		this.toSiUnit = toSiUnit;
 		this.displayName = displayName;
 		this.symbol = symbol;
+	}
+	Unit(int unitId,String displayName,String symbol,Metric metric,String fromSiUnit,String toSiUnit, boolean isLeft) {
+		this.unitId = unitId;
+		this.metric = metric;
+		this.isSiUnit = false;
+		this.fromSiUnit = fromSiUnit;
+		this.toSiUnit = toSiUnit;
+		this.displayName = displayName;
+		this.symbol = symbol;
+		this.isLeft = isLeft;
 	}
 	
 	public String getDisplayName() {
