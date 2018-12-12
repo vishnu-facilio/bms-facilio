@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.collections.UniqueMap;
@@ -163,15 +164,19 @@ public class FormulaContext {
 		}
 		
 		public FacilioField getSelectField(FacilioField field) throws Exception {
-			String selectFieldString = expr.replace("{$place_holder$}", field.getColumnName());
-			FacilioField selectField = field.clone();
-			selectField.setColumnName(selectFieldString);
-			
-			if (this == CommonAggregateOperator.COUNT) { //Temp Fix. Have to look into this
-				selectField.setModule(null);
-				selectField.setExtendedModule(null);
+			switch (this) {
+				case ACTUAL: 
+					return field.clone();
+				case COUNT:
+					String selectFieldString = expr.replace("{$place_holder$}", field.getColumnName());
+					field = new NumberField();
+					field.setDataType(FieldType.NUMBER);
+					field.setName(field.getName());
+					field.setDisplayName(field.getDisplayName());
+					field.setColumnName(selectFieldString);
+					return field;
 			}
-			
+			return field;
 //			if(field instanceof NumberField) {
 //				NumberField numberField =  (NumberField)field;
 //				NumberField selectFieldNumber = new NumberField();
@@ -186,7 +191,7 @@ public class FormulaContext {
 //			selectField.setDisplayName(field.getDisplayName());
 //			selectField.setColumnName(selectFieldString);
 //			selectField.setFieldId(field.getFieldId());
-			return selectField;
+//			return selectField;
 		}
 	}
 	
