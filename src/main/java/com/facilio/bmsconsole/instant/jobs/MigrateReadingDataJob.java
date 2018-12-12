@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -15,16 +16,13 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
-import com.facilio.bmsconsole.context.ReadingDataMeta;
-import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
+import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -55,31 +53,16 @@ public class MigrateReadingDataJob extends InstantJob {
 					.module(oldModule)
 					.beanClass(ReadingContext.class)
 					.select(oldModulefields)
-					.andCondition(CriteriaAPI.getCondition(oldModulefieldMap.get("parentId"), Collections.singletonList(parentId), NumberOperators.EQUALS));
+					.andCondition(CriteriaAPI.getCondition(oldModulefieldMap.get("parentId"), Collections.singletonList(parentId), NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(oldField, CommonOperators.IS_NOT_EMPTY));
 			
 			List<ReadingContext> readingsList = builder.get();
 			if (readingsList != null && !readingsList.isEmpty()) {
 				
 				addReading(parentId, fieldId, oldField.getName(), readingsList);
 				
-				ReadingContext reading = new ReadingContext();
-				Object value;
-				if (oldField.getDataTypeEnum() == FieldType.NUMBER || oldField.getDataTypeEnum() == FieldType.DECIMAL) {
-					value = -99;
-				}
-				else {
-					value = null;
-				}
-				reading.addReading(oldField.getName(), value);
-				
-				UpdateRecordBuilder<ReadingContext> updateBuilder = new UpdateRecordBuilder<ReadingContext>()
-						.module(oldModule)
-						.fields(oldModulefields)
-						.andCondition(CriteriaAPI.getCondition(oldModulefieldMap.get("parentId"), Collections.singletonList(parentId), NumberOperators.EQUALS));
-				
-				updateBuilder.update(reading);
-				
-				updateRdm(parentId, oldFieldId);
+				Pair<Long, FacilioField> fieldAssetPair = Pair.of(parentId, oldField);
+				ReadingsAPI.deleteAssetReading(Collections.singletonList(fieldAssetPair), oldModule, oldModulefields, oldModulefieldMap);
 			}
 			
 		} catch (Exception e) {
@@ -114,17 +97,6 @@ public class MigrateReadingDataJob extends InstantJob {
 		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.KINESIS);
 		Chain chain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
 		chain.execute(context);
-	}
-	
-	private void updateRdm(long parentId, long fieldId) throws Exception {
-		ReadingDataMeta rdm = new ReadingDataMeta();
-		rdm.setValue("-1");
-		rdm.setResourceId(parentId);
-		rdm.setFieldId(fieldId);
-		rdm.setReadingDataId(-99);
-		rdm.setInputType(ReadingInputType.WEB);
-		
-		ReadingsAPI.updateReadingDataMeta(rdm);
 	}
 
 }

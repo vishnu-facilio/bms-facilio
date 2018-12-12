@@ -48,6 +48,7 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -136,6 +137,30 @@ public class ReadingsAPI {
 														.andCriteria(pkCriteriaList);
 														
 		return updateBuilder.update(prop);
+	}
+	
+	public static int updateReadingDataMeta (List<Pair<Long, FacilioField>> resourceFieldPair, ReadingDataMeta rdm) throws Exception {
+		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
+		List<FacilioField> fields = FieldFactory.getReadingDataMetaFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioField resourceIdField = fieldMap.get("resourceId");
+		FacilioField fieldIdField = fieldMap.get("fieldId");
+		
+		Criteria pkCriteriaList = new Criteria();
+		for (Pair<Long, FacilioField> pair : resourceFieldPair) {
+			Criteria pkCriteria = new Criteria();
+			pkCriteria.addAndCondition(CriteriaAPI.getCondition(resourceIdField, String.valueOf(pair.getLeft()), PickListOperators.IS));
+			pkCriteria.addAndCondition(CriteriaAPI.getCondition(fieldIdField, String.valueOf(pair.getRight().getFieldId()), PickListOperators.IS));
+			pkCriteriaList.orCriteria(pkCriteria);
+		}
+		
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(module.getTableName())
+				.fields(fields)
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCriteria(pkCriteriaList);
+				
+		return updateBuilder.update(FieldUtil.getAsProperties(rdm));
 	}
 	
 	public static ReadingDataMeta getReadingDataMeta(long resourceId,FacilioField field) throws Exception {
@@ -779,4 +804,43 @@ public class ReadingsAPI {
 		}
 	}
 	
+	public static void deleteAssetReading(List<Pair<Long, FacilioField>> assetFieldPairs, FacilioModule module, List<FacilioField> fields, Map<String, FacilioField> fieldMap) throws Exception {
+		ReadingContext reading = new ReadingContext();
+		List<Long> assetIds = new ArrayList<>();
+		assetFieldPairs.forEach(pair -> {
+			FacilioField field = pair.getRight();
+			Object value;
+			if (field.getDataTypeEnum() == FieldType.NUMBER || field.getDataTypeEnum() == FieldType.DECIMAL) {
+				value = -99;
+			}
+			else {
+				value = null;
+			}
+			reading.addReading(field.getName(), value);
+			
+			long assetId = pair.getLeft();
+			assetIds.add(assetId);
+			
+		});
+		
+		if (fields == null) {
+			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			fields = bean.getAllFields(module.getName());
+			fieldMap = FieldFactory.getAsMap(fields);
+		}
+		
+		UpdateRecordBuilder<ReadingContext> updateBuilder = new UpdateRecordBuilder<ReadingContext>()
+				.module(module)
+				.fields(fields)
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), assetIds, NumberOperators.EQUALS));
+		
+		updateBuilder.update(reading);
+		
+		ReadingDataMeta rdm = new ReadingDataMeta();
+		rdm.setValue("-1");
+		rdm.setReadingDataId(-99);
+		rdm.setInputType(ReadingInputType.WEB);
+		
+		ReadingsAPI.updateReadingDataMeta(assetFieldPairs, rdm);
+	}
 }

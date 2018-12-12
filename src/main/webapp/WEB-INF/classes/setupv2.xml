@@ -148,6 +148,13 @@
             <param name="ruleId">{1}</param>
 		</action>
 	</package>
+	
+	<package name="controllerSetupApiV2" namespace="/api/v2/setup/controllers" extends="setupApiV2">
+		<action name="delete"  class="com.facilio.bmsconsole.actions.ControllerAction" method="deleteController">
+			<param name="moduleName">setup</param>
+			<param name="permission">CONTROLLER</param>
+		</action>
+	</package>
 
 	<package name="costSetupApiV2" namespace="/api/v2/setup/cost" extends="setupApiV2">
 	</package>

@@ -145,6 +145,13 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain getDeleteControllerChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new DeleteControllerCommand());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
 		public static Chain scheduleReportChain() {
 			Chain c = new ChainBase();
 			c.addCommand(new AddTemplateCommand());
