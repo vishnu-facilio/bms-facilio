@@ -99,7 +99,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 			long timeTaken = (System.currentTimeMillis() - jobStartTime);
 			LOGGER.info("Total Time taken for Historical Run for Reading Rule : "+jc.getJobId()+" between "+startTime+" and "+endTime+" is "+timeTaken);
 			
-			if (AccountUtil.getCurrentOrg().getId() == 135 || AccountUtil.getCurrentOrg().getId() == 134) {
+//			if (AccountUtil.getCurrentOrg().getId() == 135 || AccountUtil.getCurrentOrg().getId() == 134) {
 				JSONObject json = new JSONObject();
 				json.put("to", "praveen@facilio.com, manthosh@facilio.com, shivaraj@facilio.com");
 				json.put("sender", "noreply@facilio.com");
@@ -107,7 +107,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 				json.put("message", "Total Time taken for Historical Run for Reading Rule : "+jc.getJobId()+" between "+startTime+" and "+endTime+" is "+timeTaken);
 				
 				AwsUtil.sendEmail(json);
-			}
+//			}
 		}
 		catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
