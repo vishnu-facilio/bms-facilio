@@ -160,7 +160,9 @@ public class LoadViewCommand implements Command {
 			}
 				
 			String idString = String.join(",", Lists.transform(ids, Functions.toStringFunction()));
-			return "FIELD("+columnName + "," + idString+")";
+			if (idString.length() > 0) {
+				return "FIELD("+columnName + "," + idString+")";
+			}
 		} 
 		return field.getSortField().getColumnName() + " " + (field.getIsAscending()? "asc" : "desc");
 	}
