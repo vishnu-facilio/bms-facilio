@@ -1006,6 +1006,10 @@
 			<action name="orginfo" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/orginfo.jsp</result>
 			</action>
+			<action name="updateUser" class="com.facilio.bmsconsole.actions.AdminAction" method = "updateUser">
+		<result name="success" type="tiles">adminpage/orginfo.jsp</result>
+		 </action>
+		 
 			<action name="anomalyconsole" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/anomalyconsole.jsp</result>
 			</action>
@@ -1025,12 +1029,9 @@
 			<action name="updateCRM" class="com.facilio.bmsconsole.actions.AdminAction" method="updateCRM">
 			<result type="tiles">adminpage/orginfo.jsp</result>
 			</action>
-			<action name="inviteuser" class="com.facilio.bmsconsole.actions.AdminAction">
-			<result type="tiles">adminpage/inviteuser.jsp</result>
-			</action>
-			<action name="updateUser" class="com.facilio.bmsconsole.actions.AdminAction" method="updateUser">
-			<result type="tiles">adminpage/inviteuser.jsp</result>
-			</action>
+			
+			
+			
 			</package>
 
 	<package name="viewApi" namespace="/api/view" extends="homeApi">

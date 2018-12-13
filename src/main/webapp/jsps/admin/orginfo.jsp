@@ -1,16 +1,19 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-    <%@page import="com.facilio.accounts.util.AccountUtil, com.facilio.accounts.dto.User, java.util.*, java.util.Iterator ,org.json.simple.JSONObject,org.json.simple.JSONArray,java.util.List, com.facilio.accounts.dto.Organization ,org.json.simple.JSONObject,com.facilio.accounts.impl.OrgBeanImpl, com.facilio.bmsconsole.commands.util.CommonCommandUtil"%>
+    <%@page import="com.facilio.accounts.util.AccountUtil, com.facilio.accounts.dto.User,com.facilio.accounts.dto.Role, java.util.*, java.util.Iterator ,org.json.simple.JSONObject,org.json.simple.JSONArray,java.util.List, com.facilio.accounts.dto.Organization ,org.json.simple.JSONObject,com.facilio.accounts.impl.OrgBeanImpl, com.facilio.bmsconsole.commands.util.CommonCommandUtil"%>
   <%
   	
   String orgid = request.getParameter("orgid");
     Organization org = null;
+    boolean user=false;
     JSONObject result = null;
     List<User> users = null;
+    List<Role> roles = null;
     if (orgid != null) {
   	  org = AccountUtil.getOrgBean().getOrg(Long.parseLong(orgid));
   	  result = CommonCommandUtil.getOrgInfo(Long.parseLong(orgid));
   	  users = AccountUtil.getOrgBean().getAllOrgUsers(Long.parseLong(orgid));
+  	  roles =AccountUtil.getRoleBean().getRoles(Long.parseLong(orgid));
   	}
   %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -22,6 +25,7 @@
 <script>			
 function view(userId){
 	console.log(userId)
+	
 	FacilioApp.ajax({
 		method : "get",
 		url : contextPath + "/api/verifyusers?userid="+userId,
@@ -31,6 +35,17 @@ function view(userId){
 	})
 }
 </script>
+<script>
+function myFunction() {
+  var x = document.getElementById("new");
+  if (x.style.display === "block") {
+    x.style.display = "none";
+  } else {
+    x.style.display = "block";
+  }
+}
+</script>
+
 <body>
  <form action="" method="GET">
  <h2><i class=" fa fa-building-o  fa-fw"></i>Org Info</h2>
@@ -130,6 +145,9 @@ function view(userId){
 }
 }%>
 </table>
+<br>
+
+
 
 </div>
 </div>
@@ -148,11 +166,57 @@ function view(userId){
 
 
 <input type="submit" name="update CRM" value="update FreshSales">
+<br>
+<br>
+
+
 
 </form>
 
 <% } %>
 <%} %>
+<div class=" col-lg-12 col-md-12">
+
+<%if(orgid!=null) {%>
+<button onclick="myFunction()">INVITE USER</button>
+<%} %>
+<br>
+<br>
+<br>
+
+<div id="new" style="display:none">
+<%if(orgid!=null ){ %>
+<form action = "updateUser">
+</br></br><h4>Invite User:</h4>
+	<div >
+			<input type = "hidden" name = "orgid" value="<%= orgid %>" />
+			<label>Enter the Name:</label><input type = "text" name = "name" id="name" /></br></br>
+			<label>Enter the Email:</label><input type = "text" name = "email" id="email" /></br></br>
+			<label>Enter Password:</label><input type = "password" name = "password" id="password" /></br></br>
+			<label>Enter Role:</label><select name="roleId"  id ="roleId">
+			<% for(Role role : roles) {
+			if (!AccountUtil.getRoleBean().getRole(role.getRoleId()).getName().equalsIgnoreCase("Super Administrator")) {
+			%>
+			<option value="<%= role.getId() %>"><%=role.getName()%></option>
+			<% }
+			}%>
+			</select></br></br>
+			<input type = "submit" style="margin-left: 10px" name="updateUser"  value = "Submit"/> 
+			<input type="reset" value="Reset"/>
+			<button onclick="myFunction()">cancel</button>
+			
+			<br>
+			<br>
+			<br>
+		</div> 
+
+</form>
+<%} %>
+</div>
+</div>
+<br>
+<br>
+<br>
 
 <style>
 .org-th{

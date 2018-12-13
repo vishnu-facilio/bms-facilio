@@ -3,28 +3,22 @@ package com.facilio.bmsconsole.actions;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.websocket.EncodeException;
 
-import org.apache.log4j.LogManager;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.User;
-import com.facilio.accounts.impl.UserBeanImpl;
-import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.actions.FacilioAuthAction;
 import com.facilio.bmsconsole.util.AdminAPI;
 import com.facilio.fw.LRUCache;
 import com.facilio.license.FreshsalesUtil;
-import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.wms.message.Message;
 import com.facilio.wms.message.MessageType;
@@ -67,6 +61,7 @@ public class AdminAction extends ActionSupport
 	
 	public String updateUser()
 	{
+		System.out.println("did not work");
 		HttpServletRequest request = ServletActionContext.getRequest();
 		long orgId =  Long.parseLong(request.getParameter("orgid"));
 		String name = request.getParameter("name");
@@ -97,9 +92,11 @@ public class AdminAction extends ActionSupport
 	
 	public String updateCRM()
 	{
+		//System.out.println("it works");
 		HttpServletRequest request = ServletActionContext.getRequest();
 		String orgid = request.getParameter("orgid");
 		String domainame = ((String[])getFreshsales().get("faciliodomainname"))[0];
+		//System.out.println(doma);
 		String amount = ((String[])getFreshsales().get("amount"))[0];
 
 		JSONObject data = new JSONObject();
