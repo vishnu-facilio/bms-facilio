@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
 public class AttachmentsAPI {
@@ -111,9 +112,12 @@ public class AttachmentsAPI {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("fileId"), attachmentIds[0], NumberOperators.EQUALS));
 		}
 		
-		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(moduleName, fieldMap.get("parentId"));
-		if(scopeCriteria != null){
-			selectBuilder.andCriteria(scopeCriteria);
+		// TODO handle other attachments
+		if (moduleName.equals(FacilioConstants.ContextNames.ASSET_ATTACHMENTS) || moduleName.equals(FacilioConstants.ContextNames.BASE_SPACE_ATTACHMENTS)) {
+			Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(moduleName, fieldMap.get("parentId"));
+			if(scopeCriteria != null){
+				selectBuilder.andCriteria(scopeCriteria);
+			}
 		}
 		return selectBuilder;
 	}
