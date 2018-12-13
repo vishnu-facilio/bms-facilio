@@ -488,6 +488,8 @@ public class FacilioConstants {
 		public static final String WORKFLOW_FETCH_CHILDREN = "workflowFetchChildren";
 		public static final String WORKFLOW_UPDATE = "workflowUpdate";
 		public static final String WORKFLOW_RULE = "workflowRule";
+		public static final String WORKFLOW_ALARM_TRIGGER_RULES = "workflowAlarmTriggerRules";
+		public static final String WORKFLOW_ALRM_CLEAR_RULE = "workflowAlarmClearRule";
 		public static final String WORKFLOW_RULE_LIST="workflowRuleList";
 		public static final String APPROVAL_RULE = "approvalRule";
 		public static final String APPROVER_ID_LIST = "approverIdList";

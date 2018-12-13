@@ -113,9 +113,31 @@ public class WorkflowRuleAction extends FacilioAction {
 
 	public String addReadingRule() throws Exception {
 		readingRule.setRuleType(WorkflowRuleContext.RuleType.READING_RULE);
+		if(alarmClearRule != null) {
+			
+			ActionContext action = new ActionContext();
+			action.setActionType(ActionType.CLEAR_ALARM);
+			alarmClearRule.addAction(action);
+		}
 		commonAddReadingRule();
 		setResult("rule", readingRule);
 		return SUCCESS;
+	}
+	
+	List<ReadingRuleContext> alarmTriggerRules;
+	ReadingRuleContext alarmClearRule;
+	
+	public List<ReadingRuleContext> getAlarmTriggerRules() {
+		return alarmTriggerRules;
+	}
+	public void setAlarmTriggerRules(List<ReadingRuleContext> alarmTriggerRules) {
+		this.alarmTriggerRules = alarmTriggerRules;
+	}
+	public ReadingRuleContext getAlarmClearRule() {
+		return alarmClearRule;
+	}
+	public void setAlarmClearRule(ReadingRuleContext alarmClearRule) {
+		this.alarmClearRule = alarmClearRule;
 	}
 	
 	public String addPMReadingRule() throws Exception {
@@ -125,9 +147,11 @@ public class WorkflowRuleAction extends FacilioAction {
 	
 	private String commonAddReadingRule() throws Exception {
 		FacilioContext facilioContext = new FacilioContext();
-		//readingRule.setResourceId(getAssetId());
+
+		readingRule.setActions(actions);
 		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, readingRule);
-		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, actions);
+		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_ALARM_TRIGGER_RULES, alarmTriggerRules);
+		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_ALRM_CLEAR_RULE, alarmClearRule);
 		Chain addRule = TransactionChainFactory.addWorkflowRuleChain();
 		addRule.execute(facilioContext);
 		
@@ -137,7 +161,6 @@ public class WorkflowRuleAction extends FacilioAction {
 	public String updateReadingRule() throws Exception {
 		readingRule.setActions(actions);
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, actions);
 		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, readingRule);
 		
 		Chain updateRule = TransactionChainFactory.updateWorkflowRuleChain();

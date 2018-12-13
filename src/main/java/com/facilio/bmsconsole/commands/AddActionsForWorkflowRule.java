@@ -32,8 +32,43 @@ public class AddActionsForWorkflowRule implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
+		
 		List<ActionContext> actions = (List<ActionContext>) context.get(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST);
-		WorkflowRuleContext rule = (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
+		WorkflowRuleContext wfRule = (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
+		List<WorkflowRuleContext> alarmTriggerRules = (List<WorkflowRuleContext>) context.get(FacilioConstants.ContextNames.WORKFLOW_ALARM_TRIGGER_RULES);
+		WorkflowRuleContext alarmClear = (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_ALRM_CLEAR_RULE);
+		
+		if (actions != null && !actions.isEmpty()) {
+			actions = addActions(actions, null);
+			context.put(FacilioConstants.ContextNames.ACTIONS_LIST, actions);
+		}
+		else {
+			
+			List<WorkflowRuleContext> rules = new ArrayList<>();
+			rules.add(wfRule);
+			if(alarmTriggerRules != null) {
+				rules.addAll(alarmTriggerRules);
+				if(alarmClear != null) {
+					rules.add(alarmClear);
+				}
+			}
+			for( WorkflowRuleContext rule :rules) {
+				
+				actions = rule.getActions();
+				
+				if (actions != null && !actions.isEmpty()) {
+					actions = addActions(actions, rule);
+					
+					ActionAPI.addWorkflowRuleActionRel(rule.getId(), actions);
+					rule.setActions(actions);
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	private List<ActionContext> addActions(List<ActionContext> actions,WorkflowRuleContext rule) throws Exception {
 		
 		if (actions != null && !actions.isEmpty()) {
 			List<ActionContext> actionsToBeAdded = new ArrayList<>();
@@ -74,16 +109,8 @@ public class AddActionsForWorkflowRule implements Command {
 				}
 			}
 			ActionAPI.addActions(actionsToBeAdded);
-			
-			if(rule != null) {
-				ActionAPI.addWorkflowRuleActionRel(rule.getId(), actions);
-				rule.setActions(actions);
-			}
-			else {
-				context.put(FacilioConstants.ContextNames.ACTIONS_LIST, actions);
-			}
 		}
-		return false;
+		return actions;
 	}
 	
 	private void setEmailTemplate(ActionContext action) {

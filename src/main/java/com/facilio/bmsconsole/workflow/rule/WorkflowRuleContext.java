@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.workflow.rule;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -142,12 +143,25 @@ public class WorkflowRuleContext implements Serializable {
 	public void setActions(List<ActionContext> actions) {
 		this.actions = actions;
 	}
+	public void addAction(ActionContext action) {
+		this.actions = this.actions == null ? new ArrayList<ActionContext>() : this.actions;
+		this.actions.add(action);
+	}
 	private long parentRuleId = -1;
 	public long getParentRuleId() {
 		return parentRuleId;
 	}
 	public void setParentRuleId(long parentRuleId) {
 		this.parentRuleId = parentRuleId;
+	}
+	
+	private WorkflowRuleContext parentRule;
+
+	public WorkflowRuleContext getParentRule() {
+		return parentRule;
+	}
+	public void setParentRule(WorkflowRuleContext parentRule) {
+		this.parentRule = parentRule;
 	}
 
 	private Boolean onSuccess;

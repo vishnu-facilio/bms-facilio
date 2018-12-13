@@ -667,7 +667,14 @@ public enum ActionType {
 			
 		}
 		
-	}
+	},
+	CLEAR_ALARM(15) {
+
+		@Override
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
+			
+		}
+	},
 	;
 
 	private int val;

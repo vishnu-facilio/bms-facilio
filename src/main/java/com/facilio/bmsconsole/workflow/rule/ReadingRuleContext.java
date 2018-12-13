@@ -276,6 +276,15 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		}
 		return false;
 	}
+	
+	Long alarmSeverityId;
+
+	public Long getAlarmSeverityId() {
+		return alarmSeverityId;
+	}
+	public void setAlarmSeverityId(Long alarmSeverityId) {
+		this.alarmSeverityId = alarmSeverityId;
+	}
 
 	public enum ThresholdType {
 		SIMPLE,
