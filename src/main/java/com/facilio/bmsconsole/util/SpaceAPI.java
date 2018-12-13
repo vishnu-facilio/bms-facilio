@@ -1224,20 +1224,7 @@ public static long getSitesCount() throws Exception {
 	}
 	
 	public static List<Long> getSpaceCategoryIds(long baseSpaceID) throws Exception {
-		return getSpaceCategoryIds(baseSpaceID);
-	}
-	
-	public static List<Long> getSpaceCategoryIds(long baseSpaceID, boolean fetchChildSpaces) throws Exception {
-		if (fetchChildSpaces) {
-			List<BaseSpaceContext> allSpaces = SpaceAPI.getBaseSpaceWithChildren(baseSpaceID);
-			if (allSpaces != null && !allSpaces.isEmpty()) {
-				return getSpaceCategoryIds(allSpaces.stream().map(BaseSpaceContext::getId).collect(Collectors.toList()));
-			}
-			return null;
-		}
-		else {
-			return getSpaceCategoryIds(Collections.singletonList(baseSpaceID));
-		}
+		return getSpaceCategoryIds(Collections.singletonList(baseSpaceID));
 	}
 	
 	
@@ -1275,15 +1262,12 @@ public static long getSitesCount() throws Exception {
 			
 			if(spacetype.equals(SpaceType.SITE)) {
 				newSelectBuilder.andCondition(CriteriaAPI.getCondition(baseSpaceModule.getTableName()+".SITE_ID", "SITE_ID", StringUtils.join(baseSpaceID, ","), NumberOperators.EQUALS));
-				newSelectBuilder.andCustomWhere("BUILDING_ID IS NULL");
 			}
 			else if(spacetype.equals(SpaceType.BUILDING)) {
 				newSelectBuilder.andCondition(CriteriaAPI.getCondition(baseSpaceModule.getTableName()+".BUILDING_ID", "BUILDING_ID", StringUtils.join(baseSpaceID, ","), NumberOperators.EQUALS));
-				newSelectBuilder.andCustomWhere("FLOOR_ID IS NULL");
 			}
 			else if(spacetype.equals(SpaceType.FLOOR)) {
 				newSelectBuilder.andCondition(CriteriaAPI.getCondition(baseSpaceModule.getTableName()+".FLOOR_ID", "FLOOR_ID", StringUtils.join(baseSpaceID, ","), NumberOperators.EQUALS));
-				newSelectBuilder.andCustomWhere("SPACE_ID1 IS NULL");
 			}
 			else if(spacetype.equals(SpaceType.SPACE)) {
 				List<Condition> conditions = new ArrayList<>();
