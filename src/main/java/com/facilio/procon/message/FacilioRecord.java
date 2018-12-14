@@ -1,4 +1,4 @@
-package com.facilio.procon;
+package com.facilio.procon.message;
 
 import org.json.simple.JSONObject;
 
