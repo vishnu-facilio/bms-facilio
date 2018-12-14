@@ -2693,6 +2693,7 @@ INSERT INTO BaseLines (ORGID, NAME, RANGE_TYPE) VALUES (${orgId}, 'Previous Hour
 INSERT INTO BaseLines (ORGID, NAME, RANGE_TYPE) VALUES (${orgId}, 'Previous Day', 3);
 INSERT INTO BaseLines (ORGID, NAME, RANGE_TYPE) VALUES (${orgId}, 'Previous Week', 4);
 INSERT INTO BaseLines (ORGID, NAME, RANGE_TYPE) VALUES (${orgId}, 'Previous Month', 5);
+INSERT INTO BaseLines (ORGID, NAME, RANGE_TYPE) VALUES (${orgId}, 'Previous Quarter', 13);
 INSERT INTO BaseLines (ORGID, NAME, RANGE_TYPE) VALUES (${orgId}, 'Previous Year', 6);
 
 

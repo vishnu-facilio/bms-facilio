@@ -138,6 +138,9 @@ public class BaseLineContext {
 		else if (DateTimeUtil.isSameMonth(dataStartZdt, dataEndZdt)) {
 			return RangeType.PREVIOUS_MONTH;
 		}
+		else if (DateTimeUtil.isSameQuarter(dataStartZdt, dataEndZdt)) {
+			return RangeType.PREVIOUS_QUARTER;
+		}
 		else if (DateTimeUtil.isSameYear(dataStartZdt, dataEndZdt)) {
 			return RangeType.PREVIOUS_YEAR;
 		}
@@ -166,6 +169,10 @@ public class BaseLineContext {
 			case PREVIOUS_MONTH:
 				blStartZdt = DateTimeUtil.getMonthStartTimeOf(dataStartZdt.minusMonths(1));
 				blEndZdt = DateTimeUtil.getMonthEndTimeOf(blStartZdt);
+				break;
+			case PREVIOUS_QUARTER:
+				blStartZdt = DateTimeUtil.getQuarterStartTimeOf(dataStartZdt).minusMonths(3);
+				blEndZdt = DateTimeUtil.getQuarterEndTimeOf(blStartZdt);
 				break;
 			case PREVIOUS_YEAR:
 				blStartZdt = DateTimeUtil.getYearStartTimeOf(dataStartZdt.minusYears(1));
@@ -212,7 +219,7 @@ public class BaseLineContext {
 					case MONTH_AND_DATE:
 						baseLineRange = monthAndDateAdjustment(type, blStartZdt, blEndZdt, dataStartZdt, dataEndZdt, dataDuration);
 						break;
-					case FULL_MONTH:
+					case FULL_MONTH_DATE:
 						baseLineRange = dateAdjustment(type, blStartZdt, blEndZdt, dataStartZdt, dataEndZdt, dataDuration, true);
 						break;
 					default:
@@ -286,6 +293,23 @@ public class BaseLineContext {
 				}
 				blEndZdt = adjustEndTime(dataEndZdt, blEndZdt);
 				break;
+			case PREVIOUS_QUARTER:
+				blStartZdt = blStartZdt.plusMonths(dataStartZdt.getMonthValue() - DateTimeUtil.getQuarterStartTimeOf(dataStartZdt).getMonthValue());
+				blStartZdt = withDate(blStartZdt, dataStartZdt,false);
+				blStartZdt = adjustStartTime(dataStartZdt, blStartZdt);
+				blEndZdt = blStartZdt.plusMonths(dataEndZdt.getMonthValue() - dataStartZdt.getMonthValue()).with(blEndZdt.toLocalTime());
+				blEndZdt = withDate(blEndZdt, dataEndZdt,lastDayCheck && blStartZdt.equals(DateTimeUtil.getQuarterStartTimeOf(blStartZdt).with(blStartZdt.toLocalTime())));
+				blEndZdt = adjustEndTime(dataEndZdt, blEndZdt);
+				break;
+			case ANY_QUARTER:
+				blStartZdt = blStartZdt.plusMonths(dataStartZdt.getMonthValue() - DateTimeUtil.getQuarterStartTimeOf(dataStartZdt).getMonthValue());
+				blStartZdt = withDate(blStartZdt, dataStartZdt,false);
+				blStartZdt = adjustStartTime(dataStartZdt, blStartZdt);
+				if (DateTimeUtil.isSameQuarter(dataStartZdt, dataEndZdt)) {
+					blEndZdt = withDate(blEndZdt, dataEndZdt,lastDayCheck && blStartZdt.equals(DateTimeUtil.getQuarterStartTimeOf(blStartZdt).with(blStartZdt.toLocalTime())));
+				}
+				blEndZdt = adjustEndTime(dataEndZdt, blEndZdt);
+				break;
 			default:
 				throw new IllegalArgumentException("Unsupported adjust type for base line : "+id);
 		}
@@ -339,6 +363,18 @@ public class BaseLineContext {
 					blEndZdt = adjustEndOfMonth(weekFields, dataEndZdt, blEndZdt);
 				}
 			}break;
+			case PREVIOUS_QUARTER:
+			{
+				blStartZdt = adjustStartOfQuarter(weekFields, dataStartZdt, blStartZdt);
+				blEndZdt = blStartZdt.plus(dataDuration);
+			}break;
+			case ANY_QUARTER:
+			{
+				blStartZdt = adjustStartOfQuarter(weekFields, dataStartZdt, blStartZdt);
+				if(DateTimeUtil.isSameQuarter(dataStartZdt, dataEndZdt)) {
+					blEndZdt = adjustEndOfQuarter(weekFields, dataEndZdt, blEndZdt);
+				}
+			}break;
 			case PREVIOUS_YEAR:
 			{
 				blStartZdt = adjustStartOfYear(weekFields, dataStartZdt, blStartZdt);
@@ -375,7 +411,18 @@ public class BaseLineContext {
 		blEndZdt = blEndZdt.with(weekFields.weekOfYear(), endWeekOfYear);
 		return adjustEndOfWeek(weekFields, dataEndZdt, blEndZdt);
 	}
-	
+	private ZonedDateTime adjustStartOfQuarter(WeekFields weekFields, ZonedDateTime dataStartZdt, ZonedDateTime blStartZdt) {
+		ZonedDateTime quarterStartTime = DateTimeUtil.getQuarterStartTimeOf(dataStartZdt);
+		long numberOfWeeksFromQuarterStart = dataStartZdt.get(weekFields.weekOfYear()) - quarterStartTime.get(weekFields.weekOfYear());
+		blStartZdt = blStartZdt.plusWeeks(numberOfWeeksFromQuarterStart);
+		return adjustStartOfWeek(weekFields, dataStartZdt, blStartZdt);
+	}
+	private ZonedDateTime adjustEndOfQuarter(WeekFields weekFields, ZonedDateTime dataEndZdt, ZonedDateTime blEndZdt) {
+		ZonedDateTime quarterEndTime = DateTimeUtil.getQuarterEndTimeOf(dataEndZdt);
+		long numberOfWeeksToQuarterEnd = quarterEndTime.get(weekFields.weekOfYear()) - dataEndZdt.get(weekFields.weekOfYear());
+		blEndZdt = blEndZdt.minusWeeks(numberOfWeeksToQuarterEnd);
+		return adjustEndOfWeek(weekFields, dataEndZdt, blEndZdt);
+	}
 	private ZonedDateTime adjustStartOfMonth(WeekFields weekFields, ZonedDateTime dataStartZdt, ZonedDateTime blStartZdt) {
 		int startWeekOfMonth = dataStartZdt.get(weekFields.weekOfMonth());
 		blStartZdt = blStartZdt.with(weekFields.weekOfMonth(), startWeekOfMonth);
@@ -443,15 +490,21 @@ public class BaseLineContext {
 		PREVIOUS,
 		PREVIOUS_HOUR,
 		PREVIOUS_DAY,
+		
 		PREVIOUS_WEEK,
 		PREVIOUS_MONTH,
 		PREVIOUS_YEAR,
+		
 		ANY_HOUR,
 		ANY_DAY,
 		ANY_WEEK,
+		
 		ANY_MONTH,
 		ANY_YEAR,
-		CUSTOM
+		CUSTOM,
+		
+		PREVIOUS_QUARTER,
+		ANY_QUARTER
 		;
 		
 		public int getVal() {
@@ -471,7 +524,7 @@ public class BaseLineContext {
 		WEEK,
 		DATE, //Monthly
 		MONTH_AND_DATE, //Yearly
-		FULL_MONTH //Monthly
+		FULL_MONTH_DATE //Monthly & Quarterly
 		;
 		
 		public int getValue() {

@@ -14,6 +14,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.IsoFields;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
@@ -303,6 +304,9 @@ public class DateTimeUtil
 	public static ZonedDateTime getDayStartZDT(ZonedDateTime zdt) {
 		return zdt.toLocalDate().atStartOfDay().atZone(zdt.getZone()).withLaterOffsetAtOverlap();
 	}
+	public static ZonedDateTime getDayEndZDT(ZonedDateTime zdt) {
+		return zdt.toLocalDate().atStartOfDay().plusHours(24).minusNanos(1).atZone(zdt.getZone()).withLaterOffsetAtOverlap();
+	}
 
 	public static long getMonthStartTime(Boolean... seconds)
 	{
@@ -333,6 +337,13 @@ public class DateTimeUtil
 		}
 		return getMillis(zdt,true);
 		
+	}
+	
+	public static ZonedDateTime getQuarterStartTimeOf (ZonedDateTime zdt) {
+		return getDayStartZDT(zdt.with(zdt.getMonth().firstMonthOfQuarter()).with(TemporalAdjusters.firstDayOfMonth()));
+	}
+	public static ZonedDateTime getQuarterEndTimeOf (ZonedDateTime zdt) {
+		return getDayEndZDT(zdt.with(zdt.getMonth().firstMonthOfQuarter()).plusMonths(2).with(TemporalAdjusters.lastDayOfMonth()));
 	}
 	
 	public static long getQuarterStartTimeOf(long milliseconds) {
@@ -617,6 +628,15 @@ public class DateTimeUtil
 	}
 	public static boolean isSameMonth (ZonedDateTime start, ZonedDateTime end) {
 		return isSameYear(start, end) && Month.from(start) == Month.from(end);
+	}
+	
+	public static boolean isSameQuarter (long startTime, long endTime) {
+		ZonedDateTime start = getDateTime(startTime);
+		ZonedDateTime end = getDateTime(endTime);
+		return isSameQuarter(start, end);
+	}
+	public static boolean isSameQuarter (ZonedDateTime start, ZonedDateTime end) {
+		return isSameYear(start, end) && start.get(IsoFields.QUARTER_OF_YEAR) == end.get(IsoFields.QUARTER_OF_YEAR);
 	}
 	
 	public static boolean isSameYear (long startTime, long endTime) {
