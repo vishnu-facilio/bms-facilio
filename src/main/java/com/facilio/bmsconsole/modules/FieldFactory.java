@@ -929,7 +929,9 @@ public class FieldFactory {
 		fields.add(getField("minFlapValue", "MIN_FLAP_VAL", module, FieldType.NUMBER));
 		fields.add(getField("maxFlapValue", "MAX_FLAP_VAL", module, FieldType.NUMBER));
 		fields.add(getField("flapFrequency", "FLAP_FREQUENCY", module, FieldType.NUMBER));
-
+		fields.add(getField("ruleGroupId", "RULE_GROUP_ID", module, FieldType.LOOKUP));
+		fields.add(getField("alarmSeverityId", "ALARM_SEVERITY_ID", module, FieldType.LOOKUP));
+		
 		return fields;
 	}
 

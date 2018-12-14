@@ -22,6 +22,7 @@ import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ActionType;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.SLARuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
@@ -113,33 +114,30 @@ public class WorkflowRuleAction extends FacilioAction {
 
 	public String addReadingRule() throws Exception {
 		readingRule.setRuleType(WorkflowRuleContext.RuleType.READING_RULE);
-		if(alarmClearRule != null) {
-			
-			ActionContext action = new ActionContext();
-			action.setActionType(ActionType.CLEAR_ALARM);
-			alarmClearRule.addAction(action);
-		}
 		commonAddReadingRule();
 		setResult("rule", readingRule);
 		return SUCCESS;
 	}
 	
-	List<ReadingRuleContext> alarmTriggerRules;
-	ReadingRuleContext alarmClearRule;
-	
-	public List<ReadingRuleContext> getAlarmTriggerRules() {
-		return alarmTriggerRules;
-	}
-	public void setAlarmTriggerRules(List<ReadingRuleContext> alarmTriggerRules) {
-		this.alarmTriggerRules = alarmTriggerRules;
-	}
-	public ReadingRuleContext getAlarmClearRule() {
-		return alarmClearRule;
-	}
-	public void setAlarmClearRule(ReadingRuleContext alarmClearRule) {
-		this.alarmClearRule = alarmClearRule;
+	public String addNewReadingRule() throws Exception {
+		FacilioContext facilioContext = new FacilioContext();
+
+		facilioContext.put(FacilioConstants.ContextNames.ALARM_RULE, alarmRule);
+		Chain addRule = TransactionChainFactory.addAlarmRuleChain();
+		addRule.execute(facilioContext);
+		
+		setResult("rule", alarmRule);
+		return SUCCESS;
 	}
 	
+	AlarmRuleContext alarmRule;
+	
+	public AlarmRuleContext getAlarmRule() {
+		return alarmRule;
+	}
+	public void setAlarmRule(AlarmRuleContext alarmRule) {
+		this.alarmRule = alarmRule;
+	}
 	public String addPMReadingRule() throws Exception {
 		readingRule.setRuleType(WorkflowRuleContext.RuleType.PM_READING_RULE);
 		return commonAddReadingRule();
@@ -150,8 +148,6 @@ public class WorkflowRuleAction extends FacilioAction {
 
 		readingRule.setActions(actions);
 		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, readingRule);
-		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_ALARM_TRIGGER_RULES, alarmTriggerRules);
-		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_ALRM_CLEAR_RULE, alarmClearRule);
 		Chain addRule = TransactionChainFactory.addWorkflowRuleChain();
 		addRule.execute(facilioContext);
 		

@@ -183,6 +183,14 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain addAlarmRuleChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddAlarmRuleCommand());
+			c.addCommand(new AddActionForAlarmRuleCommand());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
 		public static Chain addApprovalRuleChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new ConstructApprovalRuleCommand());

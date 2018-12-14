@@ -285,6 +285,15 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 	public void setAlarmSeverityId(Long alarmSeverityId) {
 		this.alarmSeverityId = alarmSeverityId;
 	}
+	
+	long ruleGroupId;
+
+	public long getRuleGroupId() {
+		return ruleGroupId;
+	}
+	public void setRuleGroupId(long ruleGroupId) {
+		this.ruleGroupId = ruleGroupId;
+	}
 
 	public enum ThresholdType {
 		SIMPLE,

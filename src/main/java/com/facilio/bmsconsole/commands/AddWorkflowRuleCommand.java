@@ -19,29 +19,6 @@ public class AddWorkflowRuleCommand implements Command {
 		rule.setStatus(true);
 		rule.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		long ruleId = WorkflowRuleAPI.addWorkflowRule(rule);
-		rule.setId(ruleId);
-		
-		List<ReadingRuleContext> alarmTriggerRules = (List<ReadingRuleContext>) context.get(FacilioConstants.ContextNames.WORKFLOW_ALARM_TRIGGER_RULES);
-		ReadingRuleContext alarmClear = (ReadingRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_ALRM_CLEAR_RULE);
-		
-		if(alarmTriggerRules != null) {
-			
-			WorkflowRuleContext temp = rule;
-			if(alarmClear != null) {
-				alarmTriggerRules.add(alarmClear);
-			}
-			for(ReadingRuleContext alarmTriggerRule :alarmTriggerRules) {
-				
-				alarmTriggerRule.setParentRuleId(temp.getId());
-				alarmTriggerRule.setStatus(true);
-				alarmTriggerRule.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-				ruleId = WorkflowRuleAPI.addWorkflowRule(alarmTriggerRule);
-				alarmTriggerRule.setId(ruleId);
-				
-				temp = alarmTriggerRule;
-			}
-			
-		}
 		
 		return false;
 	}
