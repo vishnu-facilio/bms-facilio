@@ -67,8 +67,8 @@ if (buildinfo == null) {
               <i class=" sidebar-icon fa fa-info-circle fa-fw "></i> </span>
                <span class="nav-title">Invite User</span>
                </a>
-           </li>
-           <li> --%>
+           </li>--%>
+           <li> 
                <a href="anomalyconsole">
                <span class="nav-icon">
               <i class=" sidebar-icon fa fa-info-circle fa-fw "></i> </span>
@@ -101,7 +101,7 @@ if (buildinfo == null) {
 	                Build Date:
 	            </td>
 	            <td>
-	                <%= buildinfo.get("build.date") --%>
+	                <%= buildinfo.get("build.date")%>
 	            </td>
 	        </tr>
 	        <tr>
