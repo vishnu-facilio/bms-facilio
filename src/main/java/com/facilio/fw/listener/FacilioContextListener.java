@@ -64,6 +64,7 @@ public class FacilioContextListener implements ServletContextListener {
 		}
 		FacilioScheduler.stopSchedulers();
 		InstantJobExecutor.INSTANCE.stopExecutor();
+		timer.cancel();
 	}
 
 	public void contextInitialized(ServletContextEvent event) {
