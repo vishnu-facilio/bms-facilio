@@ -18,7 +18,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 
 public class BaseLineContext {
-	private static final Logger logger = LogManager.getLogger(BaseLineContext.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(BaseLineContext.class.getName());
 	private long id = -1;
 	public long getId() {
 		return id;
@@ -191,11 +191,11 @@ public class BaseLineContext {
 		ZonedDateTime dataStartZdt = DateTimeUtil.getDateTime(dataStartTime);
 		ZonedDateTime dataEndZdt = DateTimeUtil.getDateTime(dataEndTime);
 		
-		logger.debug("Data Range : ");;
-		logger.debug(dataStartZdt+" - "+dataStartZdt.getDayOfWeek());
-		logger.debug(dataEndZdt+" - "+dataEndZdt.getDayOfWeek());
-		logger.debug("Range Type : "+rangeType);
-		logger.debug("Adjust Type : "+adjustType);
+		LOGGER.debug("Data Range : ");;
+		LOGGER.debug(dataStartZdt+" - "+dataStartZdt.getDayOfWeek());
+		LOGGER.debug(dataEndZdt+" - "+dataEndZdt.getDayOfWeek());
+		LOGGER.debug("Range Type : "+rangeType);
+		LOGGER.debug("Adjust Type : "+adjustType);
 		
 		Duration dataDuration = Duration.between(dataStartZdt, dataEndZdt);
 		RangeType type = rangeType;
@@ -238,9 +238,9 @@ public class BaseLineContext {
 					blEndZdt = blStartZdt.plus(dataDuration);
 				}
 			}
-			logger.debug("Base Line Range : ");
-			logger.debug(blStartZdt+" - "+blStartZdt.getDayOfWeek());
-			logger.debug(blEndZdt+" - "+blEndZdt.getDayOfWeek());
+			LOGGER.debug("Base Line Range : ");
+			LOGGER.debug(blStartZdt+" - "+blStartZdt.getDayOfWeek());
+			LOGGER.debug(blEndZdt+" - "+blEndZdt.getDayOfWeek());
 			return new DateRange(blStartZdt.toInstant().toEpochMilli(), blEndZdt.toInstant().toEpochMilli());
 		}
 		return null;

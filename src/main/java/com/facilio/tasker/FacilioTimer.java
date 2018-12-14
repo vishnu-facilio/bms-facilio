@@ -3,11 +3,15 @@ package com.facilio.tasker;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.StringJoiner;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.parser.ParseException;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.instrumentation.SizeOf;
 import com.facilio.queue.ObjectQueue;
 import com.facilio.tasker.ScheduleInfo.FrequencyType;
 import com.facilio.tasker.config.InstantJobConf;
@@ -17,6 +21,8 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 public class FacilioTimer {
+	
+	private static final Logger LOGGER = LogManager.getLogger(FacilioTimer.class.getName());
 	
 	private FacilioTimer() {
 		// TODO Auto-generated constructor stub
@@ -87,6 +93,11 @@ public class FacilioTimer {
 		context.put(InstantJobConf.getJobNameKey(), jobName);
 		context.put(InstantJobConf.getAccountKey(), AccountUtil.getCurrentAccount());
 		
+		StringJoiner size = new StringJoiner(",\n");
+		for (Object key : context.keySet()) {
+			size.add(new StringBuilder().append(key.toString()).append(" : ").append(SizeOf.sizeOf(context.get(key))).toString());
+		}
+		LOGGER.info(new StringBuilder().append("Adding instant job : ").append(jobName).append("\n Size : \n").append(size.toString()));
 		if (!ObjectQueue.sendMessage(InstantJobConf.getInstantJobQueue(), context)) {
 			throw new IllegalArgumentException("Unable to add instant job to queue");
 		}
