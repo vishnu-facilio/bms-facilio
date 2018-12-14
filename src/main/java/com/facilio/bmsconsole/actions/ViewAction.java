@@ -92,7 +92,9 @@ public class ViewAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.VIEWCOLUMNS, view.getFields());
 		context.put(FacilioConstants.ContextNames.NEW_CV, view);
 		context.put(FacilioConstants.ContextNames.VIEW_SHARING_LIST, viewSharing);
-		
+		if (view.getIncludeParentCriteria()) {
+			context.put(FacilioConstants.ContextNames.CV_NAME, parentView);
+		}
 		Chain addView = FacilioChainFactory.getAddViewChain();
 		addView.execute(context);
 		
@@ -230,7 +232,8 @@ public class ViewAction extends FacilioAction {
 	public void setParentView(String parentView) {
 		this.parentView = parentView;
 	}
-	
+
+
 	private String moduleName;
 	public String getModuleName() {
 		return moduleName;

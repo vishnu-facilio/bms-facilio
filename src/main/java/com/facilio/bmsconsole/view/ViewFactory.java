@@ -209,15 +209,15 @@ public class ViewFactory {
 	        closed.add("closed");
 	        
 	        
-	        ArrayList<String> report = new ArrayList<String>();
-	        report.add("report");
+//	        ArrayList<String> report = new ArrayList<String>();
+//	        report.add("report");
 	        
 	        ArrayList<String> all = new ArrayList<String>();
 	        all.add("all");
 	        groupViews.put("OpenWorkOrders", open);
 	        groupViews.put("MyopenWorkorders", myopen);
 	        groupViews.put("ResolvedWorkorders", resolved);
-	        groupViews.put("ReportWorkorders", report);
+//	        groupViews.put("ReportWorkorders", report);
 	        groupViews.put("AllWorkorders", all);
 	        groupViews.put("closeWorkorder", closed);
 	        
