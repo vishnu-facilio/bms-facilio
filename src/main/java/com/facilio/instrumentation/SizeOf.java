@@ -10,6 +10,12 @@ final public class SizeOf {
     }
 
     public static long sizeOf(Object o) {
-        return instrumentation.getObjectSize(o);
+    	if (instrumentation == null) {
+    		return -1;
+    	}
+    	if (o != null) {
+    		return instrumentation.getObjectSize(o);
+    	}
+    	return 0;
     }
 }
