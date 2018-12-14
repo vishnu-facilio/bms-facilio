@@ -93,11 +93,11 @@ public class FacilioTimer {
 		context.put(InstantJobConf.getJobNameKey(), jobName);
 		context.put(InstantJobConf.getAccountKey(), AccountUtil.getCurrentAccount());
 		
-		StringJoiner size = new StringJoiner(",\n");
-		for (Object key : context.keySet()) {
-			size.add(new StringBuilder().append(key).append(" : ").append(SizeOf.sizeOf(context.get(key))).toString());
-		}
-		LOGGER.info(new StringBuilder().append("Adding instant job : ").append(jobName).append("\n Size : \n").append(size.toString()));
+//		StringJoiner size = new StringJoiner(",\n");
+//		for (Object key : context.keySet()) {
+//			size.add(new StringBuilder().append(key).append(" : ").append(SizeOf.sizeOf(context.get(key))).toString());
+//		}
+//		LOGGER.info(new StringBuilder().append("Adding instant job : ").append(jobName).append("\n Size : \n").append(size.toString()));
 		if (!ObjectQueue.sendMessage(InstantJobConf.getInstantJobQueue(), context)) {
 			throw new IllegalArgumentException("Unable to add instant job to queue");
 		}
