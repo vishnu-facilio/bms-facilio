@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
@@ -213,16 +214,17 @@ public class ApprovalRuleContext extends WorkflowRuleContext {
 		
 		if (getRuleTypeEnum() == RuleType.APPROVAL_RULE) {
 			if (approvalRequester == null) {
-				prop.put(FacilioConstants.ApprovalRule.APPROVAL_REQUESTED_BY_FIELD_NAME, AccountUtil.getCurrentUser());
+				prop.put(FacilioConstants.ApprovalRule.APPROVAL_REQUESTED_BY_FIELD_NAME, FieldUtil.getAsProperties(AccountUtil.getCurrentUser()));
 			}
 			else {
-				prop.put(FacilioConstants.ApprovalRule.APPROVAL_REQUESTED_BY_FIELD_NAME, approvalRequester);
+				prop.put(FacilioConstants.ApprovalRule.APPROVAL_REQUESTED_BY_FIELD_NAME, FieldUtil.getAsProperties(approvalRequester));
 			}
 		}
 		
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(modBean.getField(FacilioConstants.ApprovalRule.APPROVAL_STATE_FIELD_NAME, event.getModule().getName()));
 		fields.add(modBean.getField(FacilioConstants.ApprovalRule.APPROVAL_RULE_ID_FIELD_NAME, event.getModule().getName()));
+		fields.add(modBean.getField(FacilioConstants.ApprovalRule.APPROVAL_REQUESTED_BY_FIELD_NAME, event.getModule().getName()));
 		
 		UpdateRecordBuilder<ModuleBaseWithCustomFields> updateBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
 																			.fields(fields)
