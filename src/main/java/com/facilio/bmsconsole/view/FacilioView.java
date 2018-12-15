@@ -28,6 +28,18 @@ public class FacilioView {
 	public void setId(long id) {
 		this.id = id;
 	}
+	
+	private Boolean includeParentCriteria;
+	
+	public Boolean getIncludeParentCriteria() {
+		if (includeParentCriteria == null) {
+			return false;
+		}
+		return includeParentCriteria;
+	}
+	public void setIncludeParentCriteria(Boolean includeParentCriteria) {
+		this.includeParentCriteria = includeParentCriteria;
+	}
 
 	private String name;
 	public String getName() {

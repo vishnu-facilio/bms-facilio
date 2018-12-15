@@ -1,6 +1,6 @@
 package com.facilio.procon.producer;
 
-import com.facilio.procon.FacilioRecord;
+import com.facilio.procon.message.FacilioRecord;
 
 public interface FacilioProducer {
 

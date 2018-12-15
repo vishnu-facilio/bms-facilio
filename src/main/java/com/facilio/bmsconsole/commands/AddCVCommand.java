@@ -25,17 +25,27 @@ public class AddCVCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.NEW_CV);
+		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 //		String name = (String) context.get(FacilioConstants.ContextNames.VIEW_NAME);
 		if(view != null) {
 			long viewId = view.getId();
 			Criteria viewCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
+			if(view.getIncludeParentCriteria()) {
+				FacilioView parentView = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
+				if (viewCriteria == null) {
+					viewCriteria = parentView.getCriteria();
+				}
+				else if (parentView != null && parentView.getCriteria() != null) {
+					viewCriteria.andCriteria(parentView.getCriteria());
+				}				
+			}
 			view.setCriteria(viewCriteria);
 			if(viewId == -1) {
 				if(view.getTypeEnum() == null)
 				{
 					view.setType(ViewType.TABLE_LIST);
 				}
-				String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+				
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioModule moduleObj = modBean.getModule(moduleName);
 				if (LookupSpecialTypeUtil.isSpecialType(moduleName)) {
@@ -56,12 +66,7 @@ public class AddCVCommand implements Command {
 				}
 				
 				else {
-					if(viewCriteria == null) {
-						FacilioView view1 = ViewFactory.getView(moduleName, view.getName());
-						Criteria viewCriteria2 = view1.getCriteria();
-						view.setCriteria(viewCriteria2);
-					}
-					view.setDefault(true);
+					view.setDefault(true);          
 				}
 				
 				viewId = ViewAPI.addView(view, AccountUtil.getCurrentOrg().getOrgId());

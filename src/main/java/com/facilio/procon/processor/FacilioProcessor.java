@@ -1,7 +1,7 @@
 package com.facilio.procon.processor;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.procon.FacilioRecord;
+import com.facilio.procon.message.FacilioRecord;
 import com.facilio.procon.consumer.FacilioConsumer;
 import com.facilio.procon.producer.FacilioProducer;
 import org.apache.log4j.LogManager;
