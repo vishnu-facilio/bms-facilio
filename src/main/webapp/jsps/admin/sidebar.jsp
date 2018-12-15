@@ -61,13 +61,7 @@ if (buildinfo == null) {
                <span class="nav-title">Copy PM</span>
                </a>
            </li> --%>
-        <%--      <li>
-               <a href="inviteuser">
-               <span class="nav-icon">
-              <i class=" sidebar-icon fa fa-info-circle fa-fw "></i> </span>
-               <span class="nav-title">Invite User</span>
-               </a>
-           </li>--%>
+        
            <li> 
                <a href="anomalyconsole">
                <span class="nav-icon">
@@ -109,7 +103,7 @@ if (buildinfo == null) {
 	                Server Ver:
 	            </td>
 	            <td>
-	                <%= buildinfo.get("version") %>
+	                <%= buildinfo.get("version")%>
 	            </td>
 	        </tr>
 	        <tr>
@@ -117,7 +111,7 @@ if (buildinfo == null) {
 	                Client Ver:
 	            </td>
 	            <td>
-	                <%= com.facilio.aws.util.AwsUtil.getClientVersion() %>
+	                <%= com.facilio.aws.util.AwsUtil.getClientVersion()%>
 	            </td>
 	        </tr>
 	        <tr>
@@ -125,7 +119,7 @@ if (buildinfo == null) {
 	                Serving IP:
 	            </td>
 	            <td>
-	                <%= Inet4Address.getLocalHost().getHostAddress() %>
+	                <%= Inet4Address.getLocalHost().getHostAddress()%>
 	            </td>
 	        </tr></tbody></table>
 	      </div>
