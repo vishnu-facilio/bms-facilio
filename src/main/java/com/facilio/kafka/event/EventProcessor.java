@@ -23,7 +23,6 @@ public class EventProcessor extends FacilioProcessor {
     private Map<String, Integer> eventCountMap = new HashMap<>();
     private long lastEventTime = System.currentTimeMillis();
 
-    private TopicPartition topicPartition;
     private FacilioKafkaConsumer consumer;
     private FacilioKafkaProducer producer;
 
@@ -52,10 +51,10 @@ public class EventProcessor extends FacilioProcessor {
                 if (object.containsKey(DATA_TYPE)) {
                     String dataType = (String) object.get(DATA_TYPE);
                     if ("event".equalsIgnoreCase(dataType)) {
-                        // alarmCreated = processEvents(object);
+                        // alarmCreated = processEvents(record);
                     }
                 } else {
-                    // alarmCreated = processEvents(object);
+                    // alarmCreated = processEvents(record);
                 }
             } catch (Exception e) {
                 CommonCommandUtil.emailException("KEventProcessor", "Error in processing records in EventProcessor ", e,  object.toJSONString());
@@ -64,13 +63,14 @@ public class EventProcessor extends FacilioProcessor {
         }
     }
 
-    private boolean processEvents(JSONObject object) throws Exception {
+    private boolean processEvents(FacilioRecord record) throws Exception {
 
-        long timeStamp = System.currentTimeMillis();
+        long timeStamp = record.getTimeStamp();
+        JSONObject object = record.getData();
         if (object.containsKey("timestamp")) {
             timeStamp = Long.parseLong(String.valueOf(object.get("timestamp")));
         }
-        String partitionKey = (String) object.get("key");
+        String partitionKey = record.getPartitionKey();
 
         ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", getOrgId());
         long currentExecutionTime = bean.processEvents(timeStamp, object, eventRules, eventCountMap, lastEventTime, partitionKey);
