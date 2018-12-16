@@ -1,7 +1,5 @@
 package com.facilio.kafka.timeseries;
 
-
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -22,20 +20,10 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.timeseries.TimeSeriesAPI;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.consumer.OffsetAndMetadata;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.TopicPartition;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.log4j.Priority;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import java.util.*;
 
@@ -101,7 +89,7 @@ public class TimeSeriesProcessor extends FacilioProcessor {
             if(dataType!=null ) {
                 switch (dataType) {
                     case "timeseries":
-                        processTimeSeries(payLoad);
+                        processTimeSeries(record);
                         break;
                     case "devicepoints":
                         processDevicePoints(payLoad);
@@ -120,8 +108,9 @@ public class TimeSeriesProcessor extends FacilioProcessor {
     }
 
 
-    private void processTimeSeries(JSONObject payLoad) throws Exception {
-        long timeStamp = System.currentTimeMillis();
+    private void processTimeSeries(FacilioRecord record) throws Exception {
+        long timeStamp = record.getTimeStamp();
+        JSONObject payLoad = record.getData();
         if (payLoad.containsKey("timestamp")) {
             timeStamp = Long.parseLong(String.valueOf(payLoad.get("timestamp")));
         }
