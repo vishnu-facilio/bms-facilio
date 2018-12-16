@@ -1607,6 +1607,15 @@
 			</result>
 		</action>
 		
+		<action name="getMultiplePMResources" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="getMultiplePMResources">
+			<param name="moduleName">planned</param>
+			<param name="permission">CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">multiPmResourceIds,multiPmResourceIds\[\d+\],multiPmResourceIds\[\d+\].*,multiPmResources,multiPmResources\[\d+\],multiPmResources\[\d+\].*,^preventivemaintenance.*</param>
+			</result>
+		</action>
+		
 		<action name="getScopeFilteredValuesForPM" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="getScopeFilteredValuesForPM">
 			<param name="moduleName">planned</param>

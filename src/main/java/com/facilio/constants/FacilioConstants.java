@@ -433,6 +433,7 @@ public class FacilioConstants {
 		
 		public static final String STOP_PM_EXECUTION = "stopPMExecution";
 		public static final String PREVENTIVE_MAINTENANCE = "preventivemaintenance";
+		public static final String PREVENTIVE_MAINTENANCE_ID = "preventivemaintenanceID";
 		public static final String PM_REMINDERS = "pmreminders";
 		public static final String PM_REMINDER = "pmreminder";
 		public static final String ONLY_POST_REMINDER_TYPE = "onlyPostReminder";
@@ -440,6 +441,8 @@ public class FacilioConstants {
 		public static final String PM_TRIGGERS = "pmtriggers";
 		public static final String PM_JOB = "pmjob";
 		public static final String PM_RESOURCE_ID = "pmresourceid";
+		public static final String MULTI_PM_RESOURCE_IDS = "multipmresourceIds";
+		public static final String MULTI_PM_RESOURCES = "multipmresources";
 		public static final String PM_ID = "pmid";
 		public static final String PREVENTIVE_MAINTENANCE_STATUS = "preventivemaintenanceStatus";
 		public static final String PREVENTIVE_MAINTENANCE_LIST = "preventivemaintenances";

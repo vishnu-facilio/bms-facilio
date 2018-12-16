@@ -58,6 +58,7 @@ import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -1321,6 +1322,43 @@ public class WorkOrderAction extends FacilioAction {
 			taskObj.put(key, taskContextList);
 		}
 		return taskObj;
+	}
+	
+	public String getMultiplePMResources() throws Exception {
+		
+		
+		FacilioContext context = new FacilioContext();
+		
+		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_ID, pmId);
+
+		Chain getResourcesListForMultiplePM = ReadOnlyChainFactory.getResourcesListForMultiplePM();
+		getResourcesListForMultiplePM.execute(context);
+		
+		setMultiPmResourceIds((List<Long>)context.get(FacilioConstants.ContextNames.MULTI_PM_RESOURCE_IDS));
+		setMultiPmResources((List<ResourceContext>)context.get(FacilioConstants.ContextNames.MULTI_PM_RESOURCES));
+		setPreventivemaintenance((PreventiveMaintenance)context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE));
+		
+		return SUCCESS;
+	}
+
+	List<Long> multiPmResourceIds;
+	List<ResourceContext> multiPmResources;
+	
+	
+	public List<Long> getMultiPmResourceIds() {
+		return multiPmResourceIds;
+	}
+
+	public void setMultiPmResourceIds(List<Long> multiPmResourceIds) {
+		this.multiPmResourceIds = multiPmResourceIds;
+	}
+
+	public List<ResourceContext> getMultiPmResources() {
+		return multiPmResources;
+	}
+
+	public void setMultiPmResources(List<ResourceContext> multiPmResources) {
+		this.multiPmResources = multiPmResources;
 	}
 
 	private String preventiveMaintenanceString;
