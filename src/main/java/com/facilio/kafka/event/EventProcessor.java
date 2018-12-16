@@ -52,10 +52,10 @@ public class EventProcessor extends FacilioProcessor {
                 if (object.containsKey(DATA_TYPE)) {
                     String dataType = (String) object.get(DATA_TYPE);
                     if ("event".equalsIgnoreCase(dataType)) {
-                        alarmCreated = processEvents(object);
+                        // alarmCreated = processEvents(object);
                     }
                 } else {
-                    alarmCreated = processEvents(object);
+                    // alarmCreated = processEvents(object);
                 }
             } catch (Exception e) {
                 CommonCommandUtil.emailException("KEventProcessor", "Error in processing records in EventProcessor ", e,  object.toJSONString());
