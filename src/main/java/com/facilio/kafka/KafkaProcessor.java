@@ -13,6 +13,7 @@ import org.apache.kafka.clients.admin.KafkaAdminClient;
 import org.apache.kafka.clients.admin.ListTopicsResult;
 import org.apache.kafka.common.KafkaFuture;
 import org.apache.log4j.LogManager;
+import com.facilio.procon.processor.FacilioProcessor;
 
 import java.util.*;
 
@@ -74,12 +75,12 @@ public class KafkaProcessor {
                         startProcessor(orgId, orgDomainName);
                     } catch (Exception e) {
                         try {
-                            CommonCommandUtil.emailException("KinesisProcessor", "Exception while starting stream " + orgDomainName, new Exception("Exception while starting stream will retry after 10 sec"));
+                            CommonCommandUtil.emailException("KafkaProcessor", "Exception while starting stream " + orgDomainName, new Exception("Exception while starting stream will retry after 10 sec"));
                             Thread.sleep(10000L);
                             startProcessor(orgId, orgDomainName);
                         } catch (InterruptedException interrupted) {
                             log.info("Exception occurred ", interrupted);
-                            CommonCommandUtil.emailException("KinesisProcessor", "Exception while starting stream " + orgDomainName, interrupted);
+                            CommonCommandUtil.emailException("KafkaProcessor", "Exception while starting stream " + orgDomainName, interrupted);
                         }
                     }
                 }
@@ -92,7 +93,7 @@ public class KafkaProcessor {
     private static void startProcessor(long orgId, String orgDomainName) {
         try {
             if(orgDomainName != null && STREAMS.contains(orgDomainName)) {
-                System.out.println("Starting kinesis processor for org : " + orgDomainName + " id " + orgId);
+                System.out.println("Starting kafka processor for org : " + orgDomainName + " id " + orgId);
                 initiateProcessFactory(orgId, orgDomainName, "event");
                 initiateProcessFactory(orgId, orgDomainName, "timeSeries");
                 EXISTING_ORGS.add(orgDomainName);
@@ -105,7 +106,7 @@ public class KafkaProcessor {
 
     private static void initiateProcessFactory(long orgId, String orgDomainName, String type) {
         try {
-            new Thread(getProcessor(orgId,orgDomainName,type)).start();
+            new Thread(getProcessor(orgId, orgDomainName, type)).start();
         }
         catch (Exception e){
             log.info("Exception occurred ", e);

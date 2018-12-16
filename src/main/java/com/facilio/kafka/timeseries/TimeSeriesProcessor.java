@@ -13,7 +13,10 @@ import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.events.tasker.tasks.EventProcessor;
 import com.facilio.fw.BeanFactory;
-import com.facilio.kafka.FacilioProcessor;
+import com.facilio.kafka.FacilioKafkaConsumer;
+import com.facilio.kafka.FacilioKafkaProducer;
+import com.facilio.procon.message.FacilioRecord;
+import com.facilio.procon.processor.FacilioProcessor;
 import com.facilio.server.ServerInfo;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -38,17 +41,6 @@ import java.util.*;
 
 public class TimeSeriesProcessor extends FacilioProcessor {
 
-
-    private long orgId;
-    private String orgDomainName;
-    private String topic;
-    private String consumerGroup;
-    private String errorStream;
-
-    private TopicPartition topicPartition;
-    private KafkaConsumer consumer;
-    private KafkaProducer producer;
-
     private final List<FacilioField> fields = new ArrayList<>();
     private final Condition orgIdCondition = new Condition();
     private final FacilioField deviceIdField = new FacilioField();
@@ -60,50 +52,27 @@ public class TimeSeriesProcessor extends FacilioProcessor {
     private static final Logger LOGGER = LogManager.getLogger(TimeSeriesProcessor.class.getName());
 
     public TimeSeriesProcessor(long orgId, String orgDomainName) {
-        this.orgId = orgId;
-        this.orgDomainName = orgDomainName;
-        topic = AwsUtil.getIotKinesisTopic(orgDomainName);
-        errorStream = topic +"-error";
+        super(orgId, orgDomainName);
         String clientName = orgDomainName +"-timeseries-";
         String environment = AwsUtil.getConfig("environment");
-        consumerGroup = clientName + environment;
-        topicPartition = new TopicPartition(topic, 0);
+        String consumerGroup = clientName + environment;
 
-        consumer = new KafkaConsumer(getConsumerProperties(ServerInfo.getHostname(), consumerGroup));
-        producer = new KafkaProducer(getProducerProperties());
-        List<TopicPartition> topicPartitionList = new ArrayList<>();
-        topicPartitionList.add(topicPartition);
-        consumer.assign(topicPartitionList);
+        FacilioKafkaConsumer consumer = new FacilioKafkaConsumer(ServerInfo.getHostname(), consumerGroup);
+        FacilioKafkaProducer producer = new FacilioKafkaProducer(getTopic());
+        consumer.subscribe(getTopic());
+        initializeModules();
     }
 
-    private void sendToKafka(JSONObject data) {
-        JSONObject dataMap = new JSONObject();
-        try {
-            if(data.containsKey("timestamp")) {
-                dataMap.put("timestamp", data.get("timestamp"));
-            } else {
-                dataMap.put("timestamp", System.currentTimeMillis());
-            }
-            dataMap.put("key", data.get("key"));
-            dataMap.put("data", data);
-            producer.send(new ProducerRecord<>(errorStream, data.get("key"), dataMap.toString()));
-        } catch (Exception e) {
-            LOGGER.info(errorStream + " : " + dataMap);
-            LOGGER.info("Exception while producing to kafka ", e);
-        }
-    }
 
-    private void initialize() {
-        Thread thread = Thread.currentThread();
-        String threadName = orgDomainName +"-timeseries-kafka";
-        thread.setName(threadName);
+
+    private void initializeModules() {
 
         deviceDetailsModule = ModuleFactory.getDeviceDetailsModule();
         orgIdField.setModule(deviceDetailsModule);
 
         orgIdCondition.setField(orgIdField);
         orgIdCondition.setOperator(NumberOperators.EQUALS);
-        orgIdCondition.setValue(String.valueOf(orgId));
+        orgIdCondition.setValue(String.valueOf(getOrgId()));
 
         deviceIdField.setName("deviceId");
         deviceIdField.setDataType(FieldType.STRING);
@@ -115,48 +84,19 @@ public class TimeSeriesProcessor extends FacilioProcessor {
         deviceMap.putAll(getDeviceMap());
     }
 
-    public void run() {
-        try {
-            AccountUtil.setCurrentAccount(orgId);
-            initialize();
-            while (true) {
-                try {
-                    ConsumerRecords<String, String> records = consumer.poll(5000);
-                    for (ConsumerRecord<String, String> record : records) {
-                        try {
-                            JSONParser parser = new JSONParser();
-                            JSONObject data = (JSONObject) parser.parse(record.value());
-                            String kinesisData = (String) data.get("data");
-                            LOGGER.debug(" timeseries data " + kinesisData);
-                            // processRecords(kinesisData);
-                        } catch (ParseException e) {
-                            LOGGER.log(Priority.INFO, "Exception while parsing data to JSON " + record.value(), e);
-                        } finally {
-                            consumer.commitSync(Collections.singletonMap(topicPartition, new OffsetAndMetadata(record.offset() + 1)));
-                        }
-                    }
-                } catch (Exception e) {
-                    LOGGER.info("exception while polling consumer ", e);
-                    try {
-                        Thread.sleep(5000L);
-                    } catch (InterruptedException in) {
-                        LOGGER.info("Interrupted exception ", in);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            LOGGER.warn("Exception while starting timeseries processor ", e);
+    public void processRecords(List<FacilioRecord> records) {
+        for(FacilioRecord record : records) {
+            processRecord(record);
         }
     }
 
 
-    private void processRecords(String data) {
-        JSONObject payLoad = new JSONObject();
+
+    private void processRecord (FacilioRecord record) {
         String partitionKey = "";
+        JSONObject payLoad = record.getData();
         try {
-            JSONParser parser = new JSONParser();
-            payLoad = (JSONObject) parser.parse(data);
-            partitionKey = (String) payLoad.get("key");
+            partitionKey = record.getPartitionKey();
             String dataType = (String)payLoad.remove(EventProcessor.DATA_TYPE);
             if(dataType!=null ) {
                 switch (dataType) {
@@ -172,15 +112,7 @@ public class TimeSeriesProcessor extends FacilioProcessor {
                 }
             }
         } catch (Exception e) {
-            try {
-                if(AwsUtil.isProduction() && (payLoad.size() > 0)) {
-                    LOGGER.info("Sending data to " + errorStream);
-                    sendToKafka(payLoad);
-                }
-            } catch (Exception e1) {
-                LOGGER.info("Exception while sending data to " + errorStream, e1);
-            }
-            CommonCommandUtil.emailException("KTimeSeriesProcessor", "Error in processing records in TimeSeries ", e, data);
+            CommonCommandUtil.emailException("KTimeSeriesProcessor", "Error in processing records in TimeSeries ", e, payLoad.toJSONString());
             LOGGER.info("Exception occurred ", e);
         } finally {
             updateDeviceTable(partitionKey);
@@ -201,7 +133,7 @@ public class TimeSeriesProcessor extends FacilioProcessor {
 
     private void processAck(JSONObject payLoad) throws Exception {
         Long msgId = (Long) payLoad.get("msgid");
-        ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+        ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", getOrgId());
         bean.acknowledgePublishedMessage(msgId);
     }
 
@@ -221,7 +153,7 @@ public class TimeSeriesProcessor extends FacilioProcessor {
 
         String deviceId = instanceNumber+"_"+destinationAddress+"_"+networkNumber;
         if( ! deviceMap.containsKey(deviceId)) {
-            ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+            ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", getOrgId());
             ControllerContext controller = bean.getController(deviceId);
             if(controller == null) {
                 controller = new ControllerContext();
@@ -283,7 +215,7 @@ public class TimeSeriesProcessor extends FacilioProcessor {
     private void addDeviceId(String deviceId) throws Exception {
         GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder().table(deviceDetailsModule.getTableName()).fields(fields);
         HashMap<String, Object> device = new HashMap<>();
-        device.put("orgId", orgId);
+        device.put("orgId", getOrgId());
         device.put("deviceId", deviceId);
         device.put("inUse", true);
         device.put("lastUpdatedTime", System.currentTimeMillis());

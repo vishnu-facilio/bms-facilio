@@ -32,6 +32,18 @@ public abstract class FacilioProcessor implements  Runnable {
         thread.setName(threadName);
     }
 
+    public long getOrgId() {
+        return orgId;
+    }
+
+    public String getOrgDomainName() {
+        return orgDomainName;
+    }
+
+    public String getTopic() {
+        return topic;
+    }
+
     public FacilioProducer getProducer() {
         return producer;
     }
@@ -61,7 +73,7 @@ public abstract class FacilioProcessor implements  Runnable {
     }
 
     public List<FacilioRecord> get() {
-        return consumer.getRecords(topic);
+        return consumer.getRecords();
     }
 
     public List<FacilioRecord> get(long timeout) {

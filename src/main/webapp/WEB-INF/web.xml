@@ -149,7 +149,7 @@
         <url-pattern>/sandbox/*</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
-        <welcome-file>/jsps/index.jsp</welcome-file>
+        <welcome-file>home.jsp</welcome-file>
     </welcome-file-list>
  
  	<!--  JDBC -->
