@@ -632,6 +632,14 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 		loadTicketGroups(tickets);
 		loadTicketResources(tickets);
 	}
+	public static void loadWorkOrderLookups(Collection<? extends WorkOrderContext> workOrders) throws Exception {
+		loadTicketStatus(workOrders);
+		loadTicketPriority(workOrders);
+		loadTicketCategory(workOrders);
+		loadWorkOrdersUsers(workOrders);
+		loadTicketGroups(workOrders);
+		loadTicketResources(workOrders);
+	}
 	
 	private static void loadTicketStatus(Collection<? extends TicketContext> tickets) throws Exception {
 		if(tickets != null && !tickets.isEmpty()) {
@@ -734,6 +742,30 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 					User assignTo = ticket.getAssignedTo();
 					if(assignTo != null) {
 						ticket.setAssignedTo(userMap.get(assignTo.getId()));
+					}
+				}
+			}
+		}
+	}
+	
+	private static void loadWorkOrdersUsers(Collection<? extends WorkOrderContext> workOrders) throws Exception {
+		if(workOrders != null && !workOrders.isEmpty()) {
+			List<User> users = AccountUtil.getOrgBean().getOrgUsers(AccountUtil.getCurrentOrg().getOrgId(), true);
+			
+			Map<Long, User> userMap = new HashMap<>();
+			for(User user : users) {
+				userMap.put(user.getId(), user);
+			}
+			
+			for(WorkOrderContext workOrder : workOrders) {
+				if (workOrder != null) {
+					User assignTo = workOrder.getAssignedTo();
+					if(assignTo != null) {
+						workOrder.setAssignedTo(userMap.get(assignTo.getId()));
+					}
+					User requesterBy = workOrder.getRequestedBy();
+					if(requesterBy != null) {
+						workOrder.setRequestedBy(userMap.get(requesterBy.getId()));
 					}
 				}
 			}

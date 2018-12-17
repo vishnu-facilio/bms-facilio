@@ -146,7 +146,7 @@ public class GetWorkOrderListCommand implements Command {
 			}
 		}
 		else {
-			TicketAPI.loadTicketLookups(workOrders);
+			TicketAPI.loadWorkOrderLookups(workOrders);
 			context.put(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
 		}		
 		return false;
