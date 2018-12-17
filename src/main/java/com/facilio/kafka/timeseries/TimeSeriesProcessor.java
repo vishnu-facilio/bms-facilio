@@ -47,7 +47,7 @@ public class TimeSeriesProcessor extends FacilioProcessor {
 
     private static final Logger LOGGER = LogManager.getLogger(TimeSeriesProcessor.class.getName());
 
-    public TimeSeriesProcessor(long orgId, String orgDomainName) {
+    public TimeSeriesProcessor(long orgId, String orgDomainName, String type) {
         super(orgId, orgDomainName);
         String clientName = orgDomainName +"-timeseries-";
         String environment = AwsUtil.getConfig("environment");
@@ -55,6 +55,8 @@ public class TimeSeriesProcessor extends FacilioProcessor {
         setConsumer(new FacilioKafkaConsumer(ServerInfo.getHostname(), consumerGroup, getTopic()));
         setProducer(new FacilioKafkaProducer(getTopic()));
         initializeModules();
+        setEventType(type);
+        LOGGER.info("Initializing timeseries processor");
     }
 
 

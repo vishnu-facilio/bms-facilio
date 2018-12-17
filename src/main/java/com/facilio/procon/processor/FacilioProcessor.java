@@ -30,7 +30,7 @@ public abstract class FacilioProcessor implements  Runnable {
 
     private void initialize() {
         Thread thread = Thread.currentThread();
-        String threadName = orgDomainName + "-" + eventType;
+        String threadName = "kafka-"+orgDomainName + "-" + eventType;
         thread.setName(threadName);
     }
 

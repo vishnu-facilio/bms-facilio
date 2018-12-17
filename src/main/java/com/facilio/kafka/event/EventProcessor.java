@@ -26,13 +26,15 @@ public class EventProcessor extends FacilioProcessor {
     private static final Logger LOGGER = LogManager.getLogger(EventProcessor.class.getName());
 
 
-    public EventProcessor(long orgId, String orgDomainName) {
+    public EventProcessor(long orgId, String orgDomainName, String type) {
         super(orgId, orgDomainName);
         String clientName = orgDomainName +"-event-";
         String environment = AwsUtil.getConfig("environment");
         String consumerGroup = clientName + environment;
         setConsumer(new FacilioKafkaConsumer(ServerInfo.getHostname(), consumerGroup, getTopic()));
         setProducer(new FacilioKafkaProducer(getTopic()));
+        setEventType(type);
+        LOGGER.info("Initializing event processor");
     }
 
 
