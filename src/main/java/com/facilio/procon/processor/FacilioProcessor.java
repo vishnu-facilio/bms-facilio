@@ -30,7 +30,7 @@ public abstract class FacilioProcessor implements  Runnable {
 
     private void initialize() {
         Thread thread = Thread.currentThread();
-        String threadName = orgDomainName + "-" + eventType;
+        String threadName = "kafka-"+orgDomainName + "-" + eventType;
         thread.setName(threadName);
     }
 
@@ -46,7 +46,7 @@ public abstract class FacilioProcessor implements  Runnable {
         return topic;
     }
 
-    public FacilioProducer getProducer() {
+    protected FacilioProducer getProducer() {
         return producer;
     }
 
@@ -54,7 +54,7 @@ public abstract class FacilioProcessor implements  Runnable {
         this.producer = producer;
     }
 
-    private FacilioConsumer getConsumer() {
+    protected FacilioConsumer getConsumer() {
         return consumer;
     }
 

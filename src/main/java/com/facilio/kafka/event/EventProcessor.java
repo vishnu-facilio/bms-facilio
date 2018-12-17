@@ -26,13 +26,15 @@ public class EventProcessor extends FacilioProcessor {
     private static final Logger LOGGER = LogManager.getLogger(EventProcessor.class.getName());
 
 
-    public EventProcessor(long orgId, String orgDomainName) {
+    public EventProcessor(long orgId, String orgDomainName, String type) {
         super(orgId, orgDomainName);
         String clientName = orgDomainName +"-event-";
         String environment = AwsUtil.getConfig("environment");
         String consumerGroup = clientName + environment;
         setConsumer(new FacilioKafkaConsumer(ServerInfo.getHostname(), consumerGroup, getTopic()));
         setProducer(new FacilioKafkaProducer(getTopic()));
+        setEventType(type);
+        LOGGER.info("Initializing event processor");
     }
 
 
@@ -44,14 +46,19 @@ public class EventProcessor extends FacilioProcessor {
                 if (object.containsKey(DATA_TYPE)) {
                     String dataType = (String) object.get(DATA_TYPE);
                     if ("event".equalsIgnoreCase(dataType)) {
-                        // alarmCreated = processEvents(record);
+                         alarmCreated = processEvents(record);
                     }
                 } else {
-                    // alarmCreated = processEvents(record);
+                     alarmCreated = processEvents(record);
                 }
             } catch (Exception e) {
                 CommonCommandUtil.emailException("KEventProcessor", "Error in processing records in EventProcessor ", e,  object.toJSONString());
-                LOGGER.info("Exception occurred ", e);
+                LOGGER.error("Exception occurred ", e);
+            }
+            finally {
+            	if (alarmCreated) {
+            		getConsumer().commit(record);
+            	}
             }
         }
     }

@@ -14,6 +14,8 @@ import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.events.context.EventRuleContext;
+import com.facilio.procon.consumer.FacilioConsumer;
+import com.facilio.procon.message.FacilioRecord;
 
 public interface ModuleCRUDBean {
 	
@@ -47,6 +49,8 @@ public interface ModuleCRUDBean {
 	
 	public void processTimeSeries(long timeStamp, JSONObject payLoad, Record record, 
 			IRecordProcessorCheckpointer checkpointer) throws Exception;
+	
+	public void processTimeSeries(FacilioConsumer consumer, FacilioRecord record) throws Exception;
 	
 	public List<EventRuleContext> getActiveEventRules() throws Exception;
 

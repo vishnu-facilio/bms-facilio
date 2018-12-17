@@ -12,6 +12,8 @@ import java.util.StringJoiner;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
@@ -19,7 +21,6 @@ import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
-import com.facilio.bmsconsole.commands.PreparePMForMultipleAsset;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.ControllerContext;
@@ -58,6 +59,8 @@ import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.util.EventAPI;
 import com.facilio.events.util.EventRulesAPI;
 import com.facilio.fw.BeanFactory;
+import com.facilio.procon.consumer.FacilioConsumer;
+import com.facilio.procon.message.FacilioRecord;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -66,6 +69,8 @@ import com.facilio.timeseries.TimeSeriesAPI;
 
 public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
+	private static final Logger LOGGER = LogManager.getLogger(ModuleCRUDBeanImpl.class.getName());
+	
 	@Override
 	public AlarmContext processAlarm(JSONObject alarmInfo) throws Exception {
 		// TODO Auto-generated method stub
@@ -549,6 +554,11 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	public void processTimeSeries(long timeStamp, JSONObject payLoad, Record record,
 			IRecordProcessorCheckpointer checkPointer) throws Exception {
 			TimeSeriesAPI.processPayLoad(timeStamp, payLoad, record, checkPointer);
+	}
+	
+	@Override
+	public void processTimeSeries(FacilioConsumer consumer, FacilioRecord record) throws Exception {
+        TimeSeriesAPI.processFacilioRecord(consumer, record);
 	}
 
 	@Override

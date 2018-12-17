@@ -118,10 +118,10 @@ public class KafkaProcessor {
 
         switch(type){
             case "event" :{
-                return new EventProcessor(orgId, orgDomainName);
+                return new EventProcessor(orgId, orgDomainName, type);
             }
             case "timeSeries" :{
-                return new TimeSeriesProcessor(orgId, orgDomainName);
+                return new TimeSeriesProcessor(orgId, orgDomainName, type);
             }
         }
         return null;
