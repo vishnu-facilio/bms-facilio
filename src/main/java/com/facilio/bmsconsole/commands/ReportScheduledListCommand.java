@@ -69,33 +69,35 @@ public class ReportScheduledListCommand implements Command {
 			}
 		}
 		
-		FacilioModule jobsModule = ModuleFactory.getJobsModule();
-		List<FacilioField> jobsField = FieldFactory.getJobFields();
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(jobsField);
-		
-		selectBuilder = new GenericSelectRecordBuilder()
-				.select(jobsField)
-				.table(jobsModule.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(jobsModule))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("jobId"), reportIds, NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("jobName"), "ReportScheduler", StringOperators.IS));
-		
-		List<Map<String, Object>> jobProps = selectBuilder.get();
-		if(jobProps != null && !jobProps.isEmpty()) {
-			for(Map<String, Object> prop : jobProps) {
-				JobContext job = FieldUtil.getAsBeanFromMap(prop, JobContext.class);
-				if (job.isActive()) {
-					reportsMap.get(job.getJobId()).setJob(job);
-				}
-				else {
-					reportsMap.remove(job.getJobId());
+		if (!reportIds.isEmpty()) {
+			FacilioModule jobsModule = ModuleFactory.getJobsModule();
+			List<FacilioField> jobsField = FieldFactory.getJobFields();
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(jobsField);
+			
+			selectBuilder = new GenericSelectRecordBuilder()
+					.select(jobsField)
+					.table(jobsModule.getTableName())
+					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(jobsModule))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("jobId"), reportIds, NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("jobName"), "ReportScheduler", StringOperators.IS));
+			
+			List<Map<String, Object>> jobProps = selectBuilder.get();
+			if(jobProps != null && !jobProps.isEmpty()) {
+				for(Map<String, Object> prop : jobProps) {
+					JobContext job = FieldUtil.getAsBeanFromMap(prop, JobContext.class);
+					if (job.isActive()) {
+						reportsMap.get(job.getJobId()).setJob(job);
+					}
+					else {
+						reportsMap.remove(job.getJobId());
+					}
 				}
 			}
+			
+			List<ReportInfo> reports = reportsMap.values().stream().collect(Collectors.toList());
+			context.put(FacilioConstants.ContextNames.REPORT_LIST, reports);
 		}
 		
-		List<ReportInfo> reports = reportsMap.values().stream().collect(Collectors.toList());
-		context.put(FacilioConstants.ContextNames.REPORT_LIST, reports);
-				
 		return false;
 	}
 

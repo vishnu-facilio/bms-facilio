@@ -69,14 +69,24 @@ public class FacilioAction extends ActionSupport {
 	}
 	public void setStackTrace(Exception e) {
 		if (e != null) {
-			if(!"production".equals(AwsUtil.getConfig("environment"))) {
+			if(!"production".equals(AwsUtil.getConfig("environment")) || fetchStackTrace) {
 				this.stackTrace = ExceptionUtils.getStackTrace(e);
 			}
 			LogManager.getLogger(this.getClass().getName()).error("Exception occured: - ", e);
 		}
 	}
 	
-	
+	private Boolean fetchStackTrace;
+	public Boolean getFetchStackTrace() {
+		if (fetchStackTrace == null) {
+			return false;
+		}
+		return fetchStackTrace;
+	}
+	public void setFetchStackTrace(Boolean fetchStackTrace) {
+		this.fetchStackTrace = fetchStackTrace;
+	}
+
 	private String viewName;
 	public String getViewName() {
 		return viewName;
