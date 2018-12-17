@@ -17,6 +17,7 @@ public abstract class FacilioProcessor implements  Runnable {
     private FacilioConsumer consumer;
     private String topic;
     private String eventType;
+    private boolean isRunning;
 
     private static final Logger LOGGER = LogManager.getLogger(FacilioProcessor.class.getName());
 
@@ -24,6 +25,7 @@ public abstract class FacilioProcessor implements  Runnable {
         this.orgId = orgId;
         this.orgDomainName = orgDomainName;
         this.topic = orgDomainName;
+        isRunning = true;
     }
 
     private void initialize() {
@@ -40,7 +42,7 @@ public abstract class FacilioProcessor implements  Runnable {
         return orgDomainName;
     }
 
-    public String getTopic() {
+    protected String getTopic() {
         return topic;
     }
 
@@ -48,15 +50,15 @@ public abstract class FacilioProcessor implements  Runnable {
         return producer;
     }
 
-    public void setProducer(FacilioProducer producer) {
+    protected void setProducer(FacilioProducer producer) {
         this.producer = producer;
     }
 
-    public FacilioConsumer getConsumer() {
+    private FacilioConsumer getConsumer() {
         return consumer;
     }
 
-    public void setConsumer(FacilioConsumer consumer) {
+    protected void setConsumer(FacilioConsumer consumer) {
         this.consumer = consumer;
     }
 
@@ -86,7 +88,7 @@ public abstract class FacilioProcessor implements  Runnable {
         try {
             AccountUtil.setCurrentAccount(orgId);
             initialize();
-            while (true) {
+            while (isRunning) {
                 try {
                     List<FacilioRecord> records = get(5000);
                     processRecords(records);
@@ -100,6 +102,8 @@ public abstract class FacilioProcessor implements  Runnable {
             }
         } catch (Exception e) {
             LOGGER.warn("Exception while starting facilio processor ", e);
+        } finally {
+            getConsumer().close();
         }
     }
 }

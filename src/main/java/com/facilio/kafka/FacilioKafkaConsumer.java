@@ -72,4 +72,8 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
             consumer.assign(Collections.singletonList(topicPartition));
         }
     }
+
+    public void close() {
+        consumer.close();
+    }
 }

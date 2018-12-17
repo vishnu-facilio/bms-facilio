@@ -5,4 +5,6 @@ import com.facilio.procon.message.FacilioRecord;
 public interface FacilioProducer {
 
     Object putRecord(FacilioRecord record);
+
+    void close();
 }

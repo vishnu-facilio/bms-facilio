@@ -35,4 +35,8 @@ public class FacilioKafkaProducer implements FacilioProducer {
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         return  props;
     }
+
+    public void close() {
+        producer.close();
+    }
 }
