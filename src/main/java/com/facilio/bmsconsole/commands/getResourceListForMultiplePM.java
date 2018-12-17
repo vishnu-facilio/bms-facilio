@@ -19,16 +19,19 @@ public class getResourceListForMultiplePM implements Command {
 		
 		if(preventivemaintenance == null) {
 
-			Long pmId = (Long) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_ID);
+			Long pmId = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 			preventivemaintenance = PreventiveMaintenanceAPI.getActivePM(pmId, true);
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, preventivemaintenance);
 		}
-		
-		List<Long> resIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(preventivemaintenance.getAssignmentTypeEnum(), preventivemaintenance.getBaseSpaceId(), preventivemaintenance.getSpaceCategoryId(), preventivemaintenance.getAssetCategoryId(), null, preventivemaintenance.getPmIncludeExcludeResourceContexts());
-		
-		
-		context.put(FacilioConstants.ContextNames.MULTI_PM_RESOURCE_IDS, resIds);
-		context.put(FacilioConstants.ContextNames.MULTI_PM_RESOURCES, ResourceAPI.getResources(resIds, false));
+		if(preventivemaintenance == null) {
+			throw new IllegalArgumentException("PreventiveMaintenance Context cannot be null here");
+		}
+		if(preventivemaintenance.getPmCreationType() == PreventiveMaintenance.PMCreationType.MULTIPLE.getVal()) {
+			List<Long> resIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(preventivemaintenance.getAssignmentTypeEnum(), preventivemaintenance.getBaseSpaceId(), preventivemaintenance.getSpaceCategoryId(), preventivemaintenance.getAssetCategoryId(), null, preventivemaintenance.getPmIncludeExcludeResourceContexts());
+			
+			context.put(FacilioConstants.ContextNames.MULTI_PM_RESOURCE_IDS, resIds);
+			context.put(FacilioConstants.ContextNames.MULTI_PM_RESOURCES, ResourceAPI.getResources(resIds, false));
+		}
 		return false;
 	}
 

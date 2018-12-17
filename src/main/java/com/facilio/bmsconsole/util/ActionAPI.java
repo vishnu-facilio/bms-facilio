@@ -81,6 +81,25 @@ public class ActionAPI {
 		return null;
 	}
 	
+	public static Map<Long,ActionContext> getActionsAsMap(List<Long> ids) throws Exception {
+		FacilioModule module = ModuleFactory.getActionModule();
+		GenericSelectRecordBuilder actionBuilder = new GenericSelectRecordBuilder()
+														.select(FieldFactory.getActionFields())
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getIdCondition(ids, module));
+		
+		List<ActionContext> actions = getActionsFromPropList(actionBuilder.get());
+		if(actions != null && !actions.isEmpty()) {
+			Map<Long,ActionContext> actionMap = new HashMap<>();
+			for(ActionContext action :actions) {
+				actionMap.put(action.getId(), action);
+			}
+			return actionMap;
+		}
+		return null;
+	}
+	
 	public static List<Long> addActions(List<ActionContext> actions) throws Exception {
 		List<Long> actionIds = new ArrayList<>();
 		List<Map<String, Object>> actionProps = new ArrayList<>();

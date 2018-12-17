@@ -1329,7 +1329,7 @@ public class WorkOrderAction extends FacilioAction {
 		
 		FacilioContext context = new FacilioContext();
 		
-		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_ID, pmId);
+		context.put(FacilioConstants.ContextNames.RECORD_ID, pmId);
 
 		Chain getResourcesListForMultiplePM = ReadOnlyChainFactory.getResourcesListForMultiplePM();
 		getResourcesListForMultiplePM.execute(context);
