@@ -1,5 +1,15 @@
 package com.facilio.kafka.timeseries;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -8,7 +18,11 @@ import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.StringOperators;
-import com.facilio.bmsconsole.modules.*;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.events.tasker.tasks.EventProcessor;
 import com.facilio.fw.BeanFactory;
 import com.facilio.kafka.FacilioKafkaConsumer;
@@ -20,12 +34,6 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.timeseries.TimeSeriesAPI;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import java.util.*;
 
 public class TimeSeriesProcessor extends FacilioProcessor {
 
@@ -107,14 +115,8 @@ public class TimeSeriesProcessor extends FacilioProcessor {
 
 
     private void processTimeSeries(FacilioRecord record) throws Exception {
-        long timeStamp = record.getTimeStamp();
-        JSONObject payLoad = record.getData();
-        if (payLoad.containsKey("timestamp")) {
-            timeStamp = Long.parseLong(String.valueOf(payLoad.get("timestamp")));
-        }
-        LOGGER.info(" timeseries data " + payLoad);
-        // ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-        // bean.processTimeSeries(timeStamp, payLoad, record, processRecordsInput.getCheckpointer());
+         ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", getOrgId());
+         bean.processTimeSeries(getConsumer(), record);
     }
 
 

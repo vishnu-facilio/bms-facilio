@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -42,6 +44,8 @@ import com.facilio.bmsconsole.util.ControllerAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.procon.consumer.FacilioConsumer;
+import com.facilio.procon.message.FacilioRecord;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
@@ -49,6 +53,8 @@ import com.facilio.tasker.FacilioTimer;
 
 public class TimeSeriesAPI {
 
+	private static final Logger LOGGER = LogManager.getLogger(TimeSeriesAPI.class.getName());
+	
 	public static void processPayLoad(long ttime, JSONObject payLoad) throws Exception {
 		processPayLoad(ttime, payLoad, null, null);
 	}
@@ -75,22 +81,45 @@ public class TimeSeriesAPI {
 		processDataChain.execute(context);
 	}
 	
+	public static void processFacilioRecord(FacilioConsumer consumer, FacilioRecord record) throws Exception {
+		LOGGER.info(" timeseries data " + record.getData());
+		long timeStamp = getTimeStamp(record.getTimeStamp(), record.getData());
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.TIMESTAMP , timeStamp);
+		context.put(FacilioConstants.ContextNames.PAY_LOAD , record.getData());
+		if (record != null) {
+			context.put(FacilioConstants.ContextNames.FACILIO_RECORD, record);
+			context.put(FacilioConstants.ContextNames.FACILIO_CONSUMER, consumer);
+			//even if the above two lines are removed.. please do not remove the below partitionKey..
+			ControllerContext controller=  ControllerAPI.getController(record.getPartitionKey());
+			if(controller!=null) {
+				context.put(FacilioConstants.ContextNames.CONTROLLER_ID, controller.getId());
+			}
+		}
+		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.KINESIS);
+		Chain processDataChain = TransactionChainFactory.getProcessDataChain();
+		processDataChain.execute(context);
+	}
+	
 
 	private static long getTimeStamp(long ttime, JSONObject payLoad) {
 
-		long timeStamp=-1;
-		Object timeString=payLoad.remove("timestamp");
-		if(timeString!=null) {
+		long timeStamp = -1;
+		Object timeString = payLoad.remove("timestamp");
+		if(timeString != null) {
 			try {
 				timeStamp = Long.parseLong(timeString.toString());
 			}
 			catch(NumberFormatException nfe) {}
 		}
-		if(timeStamp==-1)
+		
+		if(timeStamp == -1)
 		{
-			timeStamp=	ttime;
+			return ttime;
 		}
-		return timeStamp;
+		else {
+			return timeStamp;
+		}
 	}
 	
 	public static Map<String, List<String>> getAllDevices() throws Exception {

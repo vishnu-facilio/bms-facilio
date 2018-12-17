@@ -95,6 +95,10 @@ public class FacilioConstants {
 	}
 	
 	public static class ContextNames {
+		public static final String FACILIO_RECORD = "facilioRecord";
+		public static final String FACILIO_CONSUMER = "facilioConsumer";
+		public static final String FACILIO_PRODUCER = "facilioProducer";
+		
 		public static final String KINESIS_RECORD = "kinesisRecord";
 		public static final String KINESIS_CHECK_POINTER = "kinesisCheckPointer";
 		

@@ -17,6 +17,8 @@ import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.util.ControllerAPI;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.procon.consumer.FacilioConsumer;
+import com.facilio.procon.message.FacilioRecord;
 
 public class UpdateCheckPointAndAddControllerActivityCommand implements Command {
 
@@ -26,11 +28,10 @@ public class UpdateCheckPointAndAddControllerActivityCommand implements Command 
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		Record record = (Record) context.get(FacilioConstants.ContextNames.KINESIS_RECORD);
-		if (record != null) {
-			LOGGER.debug("Updating check point for controller : "+record.getPartitionKey()+" at "+record.getApproximateArrivalTimestamp().getTime());
-			IRecordProcessorCheckpointer checkPointer = (IRecordProcessorCheckpointer) context.get(FacilioConstants.ContextNames.KINESIS_CHECK_POINTER);
-			checkPointer.checkpoint(record);
-			ControllerContext controller = ControllerAPI.getController(record.getPartitionKey());
+		FacilioRecord fRecord = (FacilioRecord) context.get(FacilioConstants.ContextNames.FACILIO_RECORD);
+		if (record != null || fRecord != null) {
+			String partitionKey = updateCheckPointAndGetPartitionKey((FacilioContext) context, fRecord, record);
+			ControllerContext controller = ControllerAPI.getController(partitionKey);
 			if (controller != null) {
 				
 				if (!controller.isActive()) {
@@ -72,6 +73,21 @@ public class UpdateCheckPointAndAddControllerActivityCommand implements Command 
 			}
 		}
 		return false;
+	}
+	
+	private String updateCheckPointAndGetPartitionKey(FacilioContext context, FacilioRecord fRecord, Record record) throws Exception {
+		if (record != null) {
+			LOGGER.debug("Updating kinesis check point for controller : "+record.getPartitionKey()+" at "+record.getApproximateArrivalTimestamp().getTime());
+			IRecordProcessorCheckpointer checkPointer = (IRecordProcessorCheckpointer) context.get(FacilioConstants.ContextNames.KINESIS_CHECK_POINTER);
+			checkPointer.checkpoint(record);
+			return record.getPartitionKey();
+		}
+		else {
+			LOGGER.debug("Updating Facilio consumer check point for controller : "+fRecord.getPartitionKey()+" at "+fRecord.getTimeStamp());
+			FacilioConsumer consumer = (FacilioConsumer) context.get(FacilioConstants.ContextNames.FACILIO_CONSUMER);
+			consumer.commit(fRecord);
+			return fRecord.getPartitionKey();
+		}
 	}
 	
 	private void addControllerActivity(FacilioContext context, ControllerContext controller, long recordTime) throws Exception {
