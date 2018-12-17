@@ -218,16 +218,26 @@ public class ReportDataPointContext {
 		this.type = DataPointType.valueOf(type);
 	}
 	
-	private boolean handleBoolean;
+	private boolean handleEnum;
 	
 	@JsonIgnore
-	public boolean isHandleBoolean() {
-		return handleBoolean;
+	public boolean isHandleEnum() {
+		return handleEnum;
 	}
-	public void setHandleBoolean(boolean handleBoolean) {
-		this.handleBoolean = handleBoolean;
+	public void setHandleEnum(boolean handleEnum) {
+		this.handleEnum = handleEnum;
 	}
 	
+	private boolean aggrCalculated;
+
+	@JsonIgnore
+	public boolean isAggrCalculated() {
+		return aggrCalculated;
+	}
+	public void setAggrCalculated(boolean aggrCalculated) {
+		this.aggrCalculated = aggrCalculated;
+	}
+
 	private boolean fetchResource;
 	public boolean isFetchResource() {
 		return fetchResource;
@@ -288,7 +298,6 @@ public class ReportDataPointContext {
 			}
 			return null;
 		}
-		
 	}
 	
 	public static enum DataPointType {

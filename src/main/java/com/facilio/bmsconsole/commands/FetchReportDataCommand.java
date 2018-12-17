@@ -329,7 +329,7 @@ public class FetchReportDataCommand implements Command {
 	private void handleBooleanField(ReportDataPointContext dataPoint) {
 		if ((dataPoint.getxAxis().getDataTypeEnum() == FieldType.DATE_TIME || dataPoint.getxAxis().getDataTypeEnum() == FieldType.DATE) && dataPoint.getyAxis().getDataTypeEnum() == FieldType.BOOLEAN) {
 			dataPoint.getyAxis().setAggr(null);
-			dataPoint.setHandleBoolean(true);
+			dataPoint.setHandleEnum(true);
 		}
 	}
 	
@@ -339,7 +339,7 @@ public class FetchReportDataCommand implements Command {
 			if (rdp.getxAxis().getField().equals(dataPoint.getxAxis().getField()) &&									// xaxis should be same
 					rdp.getyAxis().getField().getModule().equals(dataPoint.getyAxis().getField().getModule()) &&		// yaxis Module should be same
 					Objects.equals(rdp.getOrderBy(), dataPoint.getOrderBy()) &&										// Order BY should be same
-					rdp.isHandleBoolean() == dataPoint.isHandleBoolean()											// Both should be of same type
+					rdp.isHandleEnum() == dataPoint.isHandleEnum()											// Both should be of same type
 				) {											
 				OrderByFunction rdpFunc = rdp.getOrderByFuncEnum() == null ? OrderByFunction.NONE : rdp.getOrderByFuncEnum();
 				OrderByFunction dataPointFunc = dataPoint.getOrderByFuncEnum() == null ? OrderByFunction.NONE : dataPoint.getOrderByFuncEnum();
@@ -415,7 +415,7 @@ public class FetchReportDataCommand implements Command {
 			}
 		}
 		else {
-			if (xAggr == null || xAggr == CommonAggregateOperator.ACTUAL || dp.isHandleBoolean()) { //Return x field as aggr field as there's no X aggregation
+			if (xAggr == null || xAggr == CommonAggregateOperator.ACTUAL || dp.isHandleEnum()) { //Return x field as aggr field as there's no X aggregation
 				xAggrField = dp.getxAxis().getField();
 				fields.add(xAggrField);
 			}
@@ -453,6 +453,9 @@ public class FetchReportDataCommand implements Command {
 			if (dataPoint.getLimit() != -1) {
 				selectBuilder.limit(dataPoint.getLimit());
 			}
+		}
+		else if (dataPoint.getxAxis().getDataTypeEnum() == FieldType.DATE_TIME || dataPoint.getxAxis().getDataTypeEnum() == FieldType.DATE) {
+			selectBuilder.orderBy(dataPoint.getxAxis().getField().getCompleteColumnName());
 		}
 	}
 	

@@ -39,12 +39,11 @@ import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class ReportUtil {
 	
-	public static ReportContext constructReport(FacilioContext context, List<ReportDataPointContext> dataPoints, long startTime, long endTime) throws Exception {
+	public static ReportContext constructReport(FacilioContext context, long startTime, long endTime) throws Exception {
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
 		if(report == null) {
 			report = new ReportContext();
 		}
-		report.setDataPoints(dataPoints);
 		report.setDateOperator(DateOperators.BETWEEN);
 		report.setDateValue(startTime+", "+endTime);
 		CommonReportUtil.fetchBaseLines(report, (List<ReportBaseLineContext>) context.get(FacilioConstants.ContextNames.BASE_LINE_LIST));

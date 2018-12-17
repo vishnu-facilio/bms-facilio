@@ -38,6 +38,8 @@ public class CreateWorkOrderAnalyticsReportCommand implements Command {
 		if (metrics != null && !metrics.isEmpty()) {
 			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			ReportContext report = ReportUtil.constructReport((FacilioContext) context, startTime, endTime);
+			
 			List<ReportDataPointContext> dataPoints = new ArrayList<>();
 			for (WorkorderAnalysisContext metric : metrics) {
 				
@@ -61,7 +63,8 @@ public class CreateWorkOrderAnalyticsReportCommand implements Command {
 				
 				dataPoints.add(dataPoint);
 			}
-			ReportContext report = ReportUtil.constructReport((FacilioContext) context, dataPoints, startTime, endTime); 
+			report.setDataPoints(dataPoints);
+			
 			context.put(FacilioConstants.ContextNames.REPORT, report);
 			report.setType(ReportType.WORKORDER_REPORT);
 		}

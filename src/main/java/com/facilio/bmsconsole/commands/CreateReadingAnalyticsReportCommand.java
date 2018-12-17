@@ -57,6 +57,15 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 				resourceMap = getResourceMap(metrics);
 			}
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			
+			ReportContext report = ReportUtil.constructReport((FacilioContext) context, startTime, endTime);
+			report.setType(ReportType.READING_REPORT);
+			setModeWiseXAggr(report, mode);
+			List<ReportFilterContext> filters = constructFilters(filterMode, (FacilioContext) context);
+			if (filters != null) {
+				report.setFilters(filters);
+			}
+			
 			List<ReportDataPointContext> dataPoints = new ArrayList<>();
 			for (ReadingAnalysisContext metric : metrics) {
 				ReportDataPointContext dataPoint = null;
@@ -65,7 +74,7 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 						dataPoint = getModuleDataPoint(metric, mode, modBean);
 						break;
 					case DERIVATION:
-						dataPoint = getDerivedDataPoint(metric);
+						dataPoint = getDerivedDataPoint(metric, mode);
 						break;
 				}
 				
@@ -75,6 +84,7 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 				dataPoint.setAliases(metric.getAliases());
 				dataPoint.setTransformWorkflow(metric.getTransformWorkflow());
 				dataPoint.setTransformWorkflowId(metric.getTransformWorkflowId());
+//				dataPoint.setFetchResource(report.getxAggrEnum() instanceof SpaceAggregateOperator);
 				
 				if (metric.getOrderByFuncEnum() != null && metric.getOrderByFuncEnum() != OrderByFunction.NONE) {
 					dataPoint.setOrderByFunc(metric.getOrderByFuncEnum());
@@ -90,13 +100,7 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 				
 				dataPoints.add(dataPoint);
 			}
-			ReportContext report = ReportUtil.constructReport((FacilioContext) context, dataPoints, startTime, endTime);
-			report.setType(ReportType.READING_REPORT);
-			setModeWiseXAggr(report, mode);
-			List<ReportFilterContext> filters = constructFilters(filterMode, (FacilioContext) context);
-			if (filters != null) {
-				report.setFilters(filters);
-			}
+			report.setDataPoints(dataPoints);
 			
 			context.put(FacilioConstants.ContextNames.REPORT, report);
 		}
@@ -141,14 +145,31 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 		return dataPoint;
 	}
 	
-	private ReportDataPointContext getDerivedDataPoint(ReadingAnalysisContext metric) {
+	private ReportDataPointContext getDerivedDataPoint(ReadingAnalysisContext metric, ReportMode mode) {
 		ReportDataPointContext dataPoint = new ReportDataPointContext();
 		dataPoint.setMetaData(metric.getMetaData());
-		ReportYAxisContext xAxis = new ReportYAxisContext();
-		xAxis.setField(FieldFactory.getField("ttime", "Timestamp", "TTIME", null, FieldType.DATE_TIME));
-		dataPoint.setxAxis(xAxis);
+		ReportFieldContext xAxis = new ReportFieldContext();
+		xAxis.setField(getDerivedDPXField(dataPoint, mode));
 		dataPoint.setyAxis(metric.getyAxis());
 		return dataPoint;
+	}
+	
+	private FacilioField getDerivedDPXField (ReportDataPointContext dp, ReportMode mode) {
+		switch (mode) {
+			case SERIES:
+				return FieldFactory.getField("parentId", "Parent ID", "PARENT_ID", null, FieldType.NUMBER);
+			case SITE:
+			case BUILDING:
+			case RESOURCE:
+				dp.setFetchResource(true);
+				return FieldFactory.getField("parentId", "Parent ID", "PARENT_ID", null, FieldType.NUMBER);
+			case TIMESERIES:
+			case CONSOLIDATED:
+			case TIME_CONSOLIDATED:
+			case TIME_SPLIT:
+				return FieldFactory.getField("ttime", "Timestamp", "TTIME", null, FieldType.DATE_TIME);
+		}
+		return null;
 	}
 	
 	private void setXAndDateFields (ReportDataPointContext dataPoint, ReportMode mode, Map<String, FacilioField> fieldMap) {

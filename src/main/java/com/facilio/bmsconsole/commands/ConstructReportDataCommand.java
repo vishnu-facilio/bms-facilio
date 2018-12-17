@@ -67,10 +67,10 @@ public class ConstructReportDataCommand implements Command {
 				Object xVal = prop.get(dataPoint.getxAxis().getField().getName());
 				if (xVal != null) {
 					xVal = getBaseLineAdjustedXVal(xVal, dataPoint.getxAxis(), baseLine);
-					Object formattedxVal = formatVal(dataPoint.getxAxis().getField(), report.getxAggrEnum(), xVal, null, dataPoint.isHandleBoolean());
+					Object formattedxVal = formatVal(dataPoint.getxAxis().getField(), report.getxAggrEnum(), xVal, null, dataPoint.isHandleEnum());
 					Object yVal = prop.get(dataPoint.getyAxis().getField().getName());
 					if (yVal != null) {
-						yVal = formatVal(dataPoint.getyAxis().getField(), dataPoint.getyAxis().getAggrEnum(), yVal, xVal, dataPoint.isHandleBoolean());
+						yVal = formatVal(dataPoint.getyAxis().getField(), dataPoint.getyAxis().getAggrEnum(), yVal, xVal, dataPoint.isHandleEnum());
 						
 						StringJoiner key = new StringJoiner("|");
 						key.add(formattedxVal.toString());
@@ -80,7 +80,7 @@ public class ConstructReportDataCommand implements Command {
 							for (ReportGroupByField groupBy : dataPoint.getGroupByFields()) {
 								FacilioField field = groupBy.getField();
 								Object groupByVal = prop.get(field.getName());
-								groupByVal = formatVal(field, null, groupByVal, xVal, dataPoint.isHandleBoolean());
+								groupByVal = formatVal(field, null, groupByVal, xVal, dataPoint.isHandleEnum());
 								data.put(groupBy.getAlias(), groupByVal);
 								key.add(groupBy.getAlias()+"_"+groupByVal.toString());
 							}
@@ -101,7 +101,7 @@ public class ConstructReportDataCommand implements Command {
 			transformedData.add(data);
 		}
 		
-		if (dataPoint.isHandleBoolean()) {
+		if (dataPoint.isHandleEnum()) {
 			Map<Long, Integer> value = (Map<Long, Integer>) data.get(yAlias);
 			if (value != null) {
 				value.putAll((Map<? extends Long, ? extends Integer>) yVal);
