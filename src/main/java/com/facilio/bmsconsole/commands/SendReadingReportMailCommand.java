@@ -27,9 +27,15 @@ public class SendReadingReportMailCommand implements Command {
 		String fileUrl = (String) context.get(FacilioConstants.ContextNames.FILE_URL);
 		FileFormat fileFormat = (FileFormat) context.get(FacilioConstants.ContextNames.FILE_FORMAT);
 		files.put("Report Data" + fileFormat.getExtention(), fileUrl);
-		
+		String emailFrom;
+		String viewName = (String) context.get(FacilioConstants.ContextNames.SUB_VIEW);
+		if (viewName != null) {
+			emailFrom = "noreply@${org.domain}.facilio.com";
+		} else {
+			emailFrom = "report@${org.domain}.facilio.com";
+		}
 		EMailTemplate eMailTemplate = (EMailTemplate) context.get(FacilioConstants.Workflow.TEMPLATE);
-		eMailTemplate.setFrom("report@${org.domain}.facilio.com");
+		eMailTemplate.setFrom(emailFrom);
 		if(eMailTemplate.getWorkflow() != null && eMailTemplate.getWorkflow().getWorkflowString() == null) {
 			eMailTemplate.getWorkflow().setWorkflowString(WorkflowUtil.getXmlStringFromWorkflow(eMailTemplate.getWorkflow()));
 		}

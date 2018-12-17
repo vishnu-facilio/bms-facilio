@@ -1544,7 +1544,19 @@ public class FacilioChainFactory {
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
+	public static Chain fetchExportModuleChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new GetExportModuleCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
 	
+	public static Chain sendModuleMailChain () {
+		Chain c = new ChainBase();
+		c.addCommand(FacilioChainFactory.fetchExportModuleChain());
+		c.addCommand(new SendReadingReportMailCommand());
+		return c;
+	}
 	public static Chain getAllSpaceCategoriesChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForSpaceCategory());

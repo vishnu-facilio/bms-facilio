@@ -3,9 +3,15 @@ package com.facilio.bmsconsole.actions;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.chain.Chain;
+
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.util.ExportUtil;
 import com.facilio.bmsconsole.util.FreeMarkerAPI;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -31,7 +37,16 @@ public class CommonAction extends FacilioAction {
 		setResult("workflowResult", WorkflowUtil.getWorkflowExpressionResult(workflow.getWorkflowString(), null));
 		return SUCCESS;
 	}
-	
+	public String mailExportModule () throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.FILE_FORMAT, FileFormat.getFileFormat(type));
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.SUB_VIEW, viewName);
+		Chain mailModuleChain = FacilioChainFactory.sendModuleMailChain();
+		mailModuleChain.execute(context);
+		setResult(FacilioConstants.ContextNames.WORK_ORDER, moduleName);
+		return SUCCESS;
+	}
 	public String exportModule() throws Exception {
 		fileUrl = ExportUtil.exportModule(FileFormat.getFileFormat(type), moduleName, viewName);
 		return SUCCESS;
