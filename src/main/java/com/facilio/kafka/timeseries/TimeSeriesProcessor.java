@@ -44,10 +44,8 @@ public class TimeSeriesProcessor extends FacilioProcessor {
         String clientName = orgDomainName +"-timeseries-";
         String environment = AwsUtil.getConfig("environment");
         String consumerGroup = clientName + environment;
-
-        FacilioKafkaConsumer consumer = new FacilioKafkaConsumer(ServerInfo.getHostname(), consumerGroup);
-        FacilioKafkaProducer producer = new FacilioKafkaProducer(getTopic());
-        consumer.subscribe(getTopic());
+        setConsumer(new FacilioKafkaConsumer(ServerInfo.getHostname(), consumerGroup, getTopic()));
+        setProducer(new FacilioKafkaProducer(getTopic()));
         initializeModules();
     }
 

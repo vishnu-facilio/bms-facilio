@@ -3,26 +3,27 @@ package com.facilio.kafka;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.procon.consumer.FacilioConsumer;
 import com.facilio.procon.message.FacilioRecord;
-import com.facilio.server.ServerInfo;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 public class FacilioKafkaConsumer implements FacilioConsumer {
 
     private KafkaConsumer<String, org.json.simple.JSONObject> consumer;
+    private TopicPartition topicPartition = null;
+    private static final Logger LOGGER = LogManager.getLogger(FacilioKafkaConsumer.class.getName());
 
-    public FacilioKafkaConsumer(String client, String consumerGroup) {
+    public FacilioKafkaConsumer(String client, String consumerGroup, String topic) {
         consumer = new KafkaConsumer<>(getConsumerProperties(client, consumerGroup));
+        subscribe(topic);
     }
 
     private Properties getConsumerProperties(String client, String consumerGroup) {
@@ -57,13 +58,18 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
     }
 
     public void commit(FacilioRecord record) {
-        consumer.commitSync();
+        try {
+            long offset = Long.parseLong(record.getId().trim());
+            consumer.commitSync(Collections.singletonMap(topicPartition, new OffsetAndMetadata(offset+1)));
+        } catch (NumberFormatException e) {
+            LOGGER.info("Exception while parsing offset " + record.getId());
+        }
     }
 
     public void subscribe(String topic) {
-        TopicPartition topicPartition = new TopicPartition(topic, 0);
-        List<TopicPartition> topicPartitionList = new ArrayList<>();
-        topicPartitionList.add(topicPartition);
-        consumer.assign(topicPartitionList);
+        if(topicPartition == null) {
+            topicPartition = new TopicPartition(topic, 0);
+            consumer.assign(Collections.singletonList(topicPartition));
+        }
     }
 }

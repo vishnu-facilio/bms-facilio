@@ -10,7 +10,6 @@ import com.facilio.kafka.FacilioKafkaProducer;
 import com.facilio.procon.message.FacilioRecord;
 import com.facilio.procon.processor.FacilioProcessor;
 import com.facilio.server.ServerInfo;
-import org.apache.kafka.common.TopicPartition;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -23,23 +22,17 @@ public class EventProcessor extends FacilioProcessor {
     private Map<String, Integer> eventCountMap = new HashMap<>();
     private long lastEventTime = System.currentTimeMillis();
 
-    private FacilioKafkaConsumer consumer;
-    private FacilioKafkaProducer producer;
-
     private static final String DATA_TYPE = "PUBLISH_TYPE";
     private static final Logger LOGGER = LogManager.getLogger(EventProcessor.class.getName());
 
 
     public EventProcessor(long orgId, String orgDomainName) {
-
         super(orgId, orgDomainName);
         String clientName = orgDomainName +"-event-";
         String environment = AwsUtil.getConfig("environment");
         String consumerGroup = clientName + environment;
-        consumer = new FacilioKafkaConsumer(ServerInfo.getHostname(), consumerGroup);
-        consumer.subscribe(getTopic());
-        setConsumer(consumer);
-        producer = new FacilioKafkaProducer(getTopic());
+        setConsumer(new FacilioKafkaConsumer(ServerInfo.getHostname(), consumerGroup, getTopic()));
+        setProducer(new FacilioKafkaProducer(getTopic()));
     }
 
 
