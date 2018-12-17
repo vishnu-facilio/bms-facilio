@@ -675,7 +675,7 @@ public class ModuleBeanImpl implements ModuleBean {
 				.table(module.getTableName())
 				.fields(fields)
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCustomWhere("FIELDID = ?", getOrgId(), fieldId);
+				.andCustomWhere("FIELDID = ?", fieldId);
 		
 		updateBuilder.update(props);
 		field.setFieldId(fieldId);
