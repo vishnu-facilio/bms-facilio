@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import com.facilio.bmsconsole.context.PMIncludeExcludeResourceContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
@@ -54,14 +56,6 @@ public class TaskSectionTemplate extends Template {
 	}
 	public InputType getInputTypeEnum() {
 		return inputType;
-	}
-	
-	private long readingFieldId = -1;
-	public long getReadingFieldId() {
-		return readingFieldId;
-	}
-	public void setReadingFieldId(long readingId) {
-		this.readingFieldId = readingId;
 	}
 	
 	private Boolean attachmentRequired;
@@ -164,5 +158,38 @@ public class TaskSectionTemplate extends Template {
 	}
 	public void setResourceId(Long resourceId) {
 		this.resourceId = resourceId;
+	}
+	
+	private JSONObject additionInfo;
+	public JSONObject getAdditionInfo() {
+		return additionInfo;
+	}
+	public void setAdditionInfo(JSONObject additionInfo) {
+		this.additionInfo = additionInfo;
+	}
+	
+	public void addAdditionInfo(String key, Object value) {
+		if(this.additionInfo == null) {
+			this.additionInfo =  new JSONObject();
+		}
+		this.additionInfo.put(key,value);
+	}
+	
+	public String getAdditionalInfoJsonStr() {
+		if(additionInfo != null) {
+			return additionInfo.toJSONString();
+		}
+		return null;
+	}
+	public void setAdditionalInfoJsonStr(String jsonStr) throws ParseException {
+		if(jsonStr != null) {
+			JSONParser parser = new JSONParser();
+			additionInfo = (JSONObject) parser.parse(jsonStr);
+		}
+	}
+	public void setOptions(List<String> options) {
+		if(options != null && !options.isEmpty()) {
+			addAdditionInfo("options",options);
+		}
 	}
 }
