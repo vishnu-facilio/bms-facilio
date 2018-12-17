@@ -1,8 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -48,7 +51,7 @@ public class CalculateAggregationCommand implements Command {
 						case BOOLEAN:
 						case ENUM:
 							if (dp.isHandleEnum()) {
-								doEnumAggr(dp, csvData, aggrData);
+								doEnumAggr(dp, csvData, aggrData, sortAlias);
 							}
 							break;
 						default:
@@ -69,18 +72,97 @@ public class CalculateAggregationCommand implements Command {
 		return false;
 	}
 	
-	private void doEnumAggr (ReportDataPointContext dp, List<Map<String, Object>> csvData, Map<String, Object> aggrData) {
-		for (Map<String, Object> data : csvData) {
+	private void doEnumAggr (ReportDataPointContext dp, List<Map<String, Object>> csvData, Map<String, Object> aggrData, String sortAlias) {
+		Map<String, SimpleEntry<Long, Integer>> previousRecords = new HashMap<>();
+		for (int i = 0; i < csvData.size(); i++) {
+			Map<String, Object> data = csvData.get(i);
+			long startTime = -1, endTime = -1;
+			
+			if (i != 0) {
+				startTime = (long) data.get(sortAlias);
+			}
+			else if (i != csvData.size() - 1) {
+				endTime = (long) csvData.get(i + 1).get(sortAlias) - 1;
+			}
+			
 			for (String alias : dp.getAliases().values()) {
-				calculateEnumAggr(data.get(alias), alias, aggrData);
+				EnumVal enumValue = calculateEnumAggr(dp.getyAxis().getEnumMap().keySet(), data.get(alias), alias, startTime, endTime, previousRecords, aggrData);
+				if (enumValue != null) {
+					data.put(alias, enumValue);
+				}
 			}
 		}
 	}
 	
-	private void calculateEnumAggr (Object value, String alias, Map<String, Object> aggrData) {
+	private EnumVal calculateEnumAggr (Set<Integer> enumValues, Object value, String alias, long startTime, long endTime, Map<String, SimpleEntry<Long, Integer>> previousRecords, Map<String, Object> aggrData) {
 		if (value != null) {
+			List<SimpleEntry<Long, Integer>> enumVal = (List<SimpleEntry<Long, Integer>>) value;
+			EnumVal enumValue = combineEnumVal(enumValues, enumVal, startTime, endTime, previousRecords.get(alias));
+			previousRecords.put(alias, enumValue.timeline.get(enumVal.size() - 1));
+			
+			//Aggr
 			String timelineKey = alias+".timeline";
+			String duraionKey = alias+".duration";
+			List<SimpleEntry<Long, Integer>> fullTimeline = (List<SimpleEntry<Long, Integer>>) aggrData.get(timelineKey);
+			if (fullTimeline == null) {
+				aggrData.put(timelineKey, enumValue.timeline);
+				aggrData.put(duraionKey, enumValue.duration);
+			}
+			else {
+				int i = 0;
+				if (fullTimeline.get(fullTimeline.size() - 1).getValue() == enumValue.timeline.get(0).getValue()) {
+					i = 1;
+				}
+				for (; i < enumValue.timeline.size(); i++) {
+					fullTimeline.add(enumValue.timeline.get(i));
+				}
+				
+				Map<Integer, Long> completeDuration = (Map<Integer, Long>) aggrData.get(duraionKey);
+				completeDuration.replaceAll((val, duration) -> duration + enumValue.duration.get(val));
+			}
+			return enumValue;
 		}
+		return null;
+	}
+	
+	private EnumVal combineEnumVal (Set<Integer> enumValues, List<SimpleEntry<Long, Integer>> highResVal, long startTime, long endTime, SimpleEntry<Long, Integer> previousRecord) {
+		List<SimpleEntry<Long, Integer>> timeline = new ArrayList<>();
+		Map<Integer, Long> durations = initDuration(enumValues);
+		
+		if (startTime != -1 && previousRecord != null) {
+			SimpleEntry<Long, Integer> val = new SimpleEntry<Long, Integer>(startTime, previousRecord.getValue());
+			timeline.add(val);
+			previousRecord = val;
+		}
+		
+		for (SimpleEntry<Long, Integer> val : highResVal) {
+			if (previousRecord == null) {
+				timeline.add(val);
+			}
+			else if (previousRecord.getValue() != val.getValue()) {
+				timeline.add(val);
+				long duration = durations.get(val.getValue());
+				durations.put(val.getValue(), duration + (val.getKey() - previousRecord.getKey()));
+			}
+			previousRecord = val;
+		}
+		if (endTime != -1) {
+			SimpleEntry<Long, Integer> lastRecord = timeline.get(timeline.size() - 1);
+			long duration = durations.get(lastRecord.getValue());
+			durations.put(lastRecord.getValue(), duration + (endTime - lastRecord.getKey()));
+			
+//			timeline.add(new SimpleEntry<Long, Integer>(endTime, lastRecord.getValue())); Have to check
+		}
+		
+		return new EnumVal(highResVal, timeline, durations);
+	}
+	
+	private Map<Integer, Long> initDuration(Set<Integer> enumValues) {
+		Map<Integer, Long> duration = new HashMap<>();
+		for (Integer enumVal : enumValues) {
+			duration.put(enumVal, 0l);
+		}
+		return duration;
 	}
 	
 	private void doDecimalAggr (ReportDataPointContext dp, List<Map<String, Object>> csvData, String sortAlias, Map<String, Object> aggrData) {
@@ -152,5 +234,42 @@ public class CalculateAggregationCommand implements Command {
 		}
 		return null;
 	}
+	
+	public static class EnumVal {
+		
+		public EnumVal() {
+			// TODO Auto-generated constructor stub
+		}
+		
+		public EnumVal(List<SimpleEntry<Long, Integer>> actualTimeline, List<SimpleEntry<Long, Integer>> timeline, Map<Integer, Long> duration) {
+			// TODO Auto-generated constructor stub
+			this.actualTimeline = actualTimeline;
+			this.timeline = timeline;
+			this.duration = duration;
+		}
+		
+		private List<SimpleEntry<Long, Integer>> actualTimeline;
+		public List<SimpleEntry<Long, Integer>> getActualTimeline() {
+			return actualTimeline;
+		}
+		public void setActualTimeline(List<SimpleEntry<Long, Integer>> actualTimeline) {
+			this.actualTimeline = actualTimeline;
+		}
 
+		private List<SimpleEntry<Long, Integer>> timeline;
+		public List<SimpleEntry<Long, Integer>> getTimeline() {
+			return timeline;
+		}
+		public void setTimeline(List<SimpleEntry<Long, Integer>> timeline) {
+			this.timeline = timeline;
+		}
+
+		private Map<Integer, Long> duration;
+		public Map<Integer, Long> getDuration() {
+			return duration;
+		}
+		public void setDuration(Map<Integer, Long> duration) {
+			this.duration = duration;
+		}
+	}
 }

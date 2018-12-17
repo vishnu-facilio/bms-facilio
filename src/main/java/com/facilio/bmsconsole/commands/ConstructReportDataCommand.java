@@ -1,9 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
 import java.text.DecimalFormat;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
@@ -67,7 +67,7 @@ public class ConstructReportDataCommand implements Command {
 				Object xVal = prop.get(dataPoint.getxAxis().getField().getName());
 				if (xVal != null) {
 					xVal = getBaseLineAdjustedXVal(xVal, dataPoint.getxAxis(), baseLine);
-					Object formattedxVal = formatVal(dataPoint.getxAxis().getField(), report.getxAggrEnum(), xVal, null, dataPoint.isHandleEnum());
+					Object formattedxVal = formatVal(dataPoint.getxAxis().getField(), report.getxAggrEnum(), xVal, null, false);
 					Object yVal = prop.get(dataPoint.getyAxis().getField().getName());
 					if (yVal != null) {
 						yVal = formatVal(dataPoint.getyAxis().getField(), dataPoint.getyAxis().getAggrEnum(), yVal, xVal, dataPoint.isHandleEnum());
@@ -102,13 +102,12 @@ public class ConstructReportDataCommand implements Command {
 		}
 		
 		if (dataPoint.isHandleEnum()) {
-			Map<Long, Integer> value = (Map<Long, Integer>) data.get(yAlias);
-			if (value != null) {
-				value.putAll((Map<? extends Long, ? extends Integer>) yVal);
-			}
-			else {
+			List<SimpleEntry<Long, Integer>> value = (List<SimpleEntry<Long, Integer>>) data.get(yAlias);
+			if (value == null) {
+				value = new ArrayList<>();
 				data.put(yAlias, yVal);
 			}
+			value.add((SimpleEntry<Long, Integer>) yVal);
 		}
 		else {
 			data.put(yAlias, yVal);
@@ -137,7 +136,7 @@ public class ConstructReportDataCommand implements Command {
 	}
 	
 	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
-	private Object formatVal(FacilioField field, AggregateOperator aggr, Object val, Object actualxVal, boolean handleBoolean) {
+	private Object formatVal(FacilioField field, AggregateOperator aggr, Object val, Object actualxVal, boolean handleEnum) {
 		if (val == null) {
 			return "";
 		}
@@ -149,6 +148,7 @@ public class ConstructReportDataCommand implements Command {
 		switch (field.getDataTypeEnum()) {
 			case DECIMAL:
 				val = DECIMAL_FORMAT.format(val);
+				break;
 			case BOOLEAN:
 				if (val.toString().equals("true")) {
 					val = 1;
@@ -156,12 +156,14 @@ public class ConstructReportDataCommand implements Command {
 				else if (val.toString().equals("false")) {
 					val = 0;
 				}
-				if (handleBoolean && actualxVal != null) {
-					Map<Long, Integer> value = new LinkedHashMap<>();
-					value.put((Long)actualxVal, (Integer) val);
-					val = value;
+				if (handleEnum && actualxVal != null) {
+					val = new SimpleEntry<Long, Integer>((Long)actualxVal, (Integer) val);
 				}
-				
+				break;
+			case ENUM:
+				if (handleEnum && actualxVal != null) {
+					val = new SimpleEntry<Long, Integer>((Long)actualxVal, (Integer) val);
+				}
 				break;
 			default:
 				break;

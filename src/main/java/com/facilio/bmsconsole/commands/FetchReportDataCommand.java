@@ -327,7 +327,7 @@ public class FetchReportDataCommand implements Command {
 	}
 	
 	private void handleBooleanField(ReportDataPointContext dataPoint) {
-		if ((dataPoint.getxAxis().getDataTypeEnum() == FieldType.DATE_TIME || dataPoint.getxAxis().getDataTypeEnum() == FieldType.DATE) && dataPoint.getyAxis().getDataTypeEnum() == FieldType.BOOLEAN) {
+		if ((dataPoint.getxAxis().getDataTypeEnum() == FieldType.DATE_TIME || dataPoint.getxAxis().getDataTypeEnum() == FieldType.DATE) && (dataPoint.getyAxis().getDataTypeEnum() == FieldType.BOOLEAN || dataPoint.getyAxis().getDataTypeEnum() == FieldType.ENUM)) {
 			dataPoint.getyAxis().setAggr(null);
 			dataPoint.setHandleEnum(true);
 		}
