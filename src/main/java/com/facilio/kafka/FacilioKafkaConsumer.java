@@ -46,13 +46,17 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
     }
 
     public List<FacilioRecord> getRecords(long timeout) {
-        ConsumerRecords<String, JSONObject> records = consumer.poll(timeout);
         List<FacilioRecord> facilioRecords = new ArrayList<>();
-        for (ConsumerRecord<String, JSONObject> record : records) {
-            FacilioRecord facilioRecord = new FacilioRecord(record.key(), record.value());
-            facilioRecord.setId(String.valueOf(record.offset()));
-            facilioRecord.setTimeStamp(record.timestamp());
-            facilioRecords.add(facilioRecord);
+        try {
+            ConsumerRecords<String, JSONObject> records = consumer.poll(timeout);
+            for (ConsumerRecord<String, JSONObject> record : records) {
+                FacilioRecord facilioRecord = new FacilioRecord(record.key(), record.value());
+                facilioRecord.setId(String.valueOf(record.offset()));
+                facilioRecord.setTimeStamp(record.timestamp());
+                facilioRecords.add(facilioRecord);
+            }
+        } catch (Exception e) {
+            LOGGER.info("Exception while getting messages ", e);
         }
         return facilioRecords;
     }

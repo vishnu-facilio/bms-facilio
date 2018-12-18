@@ -56,7 +56,7 @@ public class TimeSeriesProcessor extends FacilioProcessor {
         setProducer(new FacilioKafkaProducer(getTopic()));
         initializeModules();
         setEventType(type);
-        LOGGER.info("Initializing timeseries processor");
+        LOGGER.info("Initializing timeseries processor " + orgDomainName);
     }
 
 

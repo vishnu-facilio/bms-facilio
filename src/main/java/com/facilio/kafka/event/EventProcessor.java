@@ -34,7 +34,7 @@ public class EventProcessor extends FacilioProcessor {
         setConsumer(new FacilioKafkaConsumer(ServerInfo.getHostname(), consumerGroup, getTopic()));
         setProducer(new FacilioKafkaProducer(getTopic()));
         setEventType(type);
-        LOGGER.info("Initializing event processor");
+        LOGGER.info("Initializing event processor " + orgDomainName);
     }
 
 
