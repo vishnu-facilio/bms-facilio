@@ -12,12 +12,13 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.util.*;
 
 public class FacilioKafkaConsumer implements FacilioConsumer {
 
-    private KafkaConsumer<String, org.json.simple.JSONObject> consumer;
+    private KafkaConsumer<String, String> consumer;
     private TopicPartition topicPartition = null;
     private static final Logger LOGGER = LogManager.getLogger(FacilioKafkaConsumer.class.getName());
 
@@ -48,9 +49,11 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
     public List<FacilioRecord> getRecords(long timeout) {
         List<FacilioRecord> facilioRecords = new ArrayList<>();
         try {
-            ConsumerRecords<String, JSONObject> records = consumer.poll(timeout);
-            for (ConsumerRecord<String, JSONObject> record : records) {
-                FacilioRecord facilioRecord = new FacilioRecord(record.key(), record.value());
+            ConsumerRecords<String, String> records = consumer.poll(timeout);
+            for (ConsumerRecord<String, String> record : records) {
+                JSONParser parser = new JSONParser();
+                JSONObject object = (JSONObject) parser.parse(record.value());
+                FacilioRecord facilioRecord = new FacilioRecord(record.key(), object);
                 facilioRecord.setId(String.valueOf(record.offset()));
                 facilioRecord.setTimeStamp(record.timestamp());
                 facilioRecords.add(facilioRecord);
