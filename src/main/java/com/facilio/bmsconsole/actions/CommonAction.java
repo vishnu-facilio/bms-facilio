@@ -9,6 +9,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.util.ExportUtil;
 import com.facilio.bmsconsole.util.FreeMarkerAPI;
 import com.facilio.constants.FacilioConstants;
@@ -42,6 +43,7 @@ public class CommonAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.FILE_FORMAT, FileFormat.getFileFormat(type));
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.SUB_VIEW, viewName);
+		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
 		Chain mailModuleChain = FacilioChainFactory.sendModuleMailChain();
 		mailModuleChain.execute(context);
 		setResult(FacilioConstants.ContextNames.WORK_ORDER, moduleName);
@@ -114,5 +116,13 @@ public class CommonAction extends FacilioAction {
 	}
 	public void setViewName(String viewName) {
 		this.viewName = viewName;
+	}
+	
+	private EMailTemplate emailTemplate;
+	public EMailTemplate getEmailTemplate() {
+		return emailTemplate;
+	}
+	public void setEmailTemplate(EMailTemplate emailTemplate) {
+		this.emailTemplate = emailTemplate;
 	}
 }
