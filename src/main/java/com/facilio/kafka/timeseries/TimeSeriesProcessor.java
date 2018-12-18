@@ -93,6 +93,7 @@ public class TimeSeriesProcessor extends FacilioProcessor {
 
     private void processRecord (FacilioRecord record) {
         String partitionKey = "";
+        LOGGER.info(" timeseries data " + record.getData());
         JSONObject payLoad = record.getData();
         try {
             partitionKey = record.getPartitionKey();
