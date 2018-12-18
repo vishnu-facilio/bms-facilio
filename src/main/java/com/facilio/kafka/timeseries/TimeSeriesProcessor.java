@@ -94,7 +94,7 @@ public class TimeSeriesProcessor extends FacilioProcessor {
         try {
             partitionKey = record.getPartitionKey();
             String dataType = (String)payLoad.remove(EventProcessor.DATA_TYPE);
-            if(dataType!=null ) {
+            if(dataType != null ) {
                 switch (dataType) {
                     case "timeseries":
                         processTimeSeries(record);

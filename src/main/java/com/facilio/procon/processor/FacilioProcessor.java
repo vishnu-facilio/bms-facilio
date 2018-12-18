@@ -92,6 +92,7 @@ public abstract class FacilioProcessor implements  Runnable {
             while (isRunning) {
                 try {
                     List<FacilioRecord> records = get(5000);
+                    LOGGER.info("record size : " + records.size());
                     processRecords(records);
                 } catch (Exception e) {
                     try {
