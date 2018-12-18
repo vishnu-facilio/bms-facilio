@@ -163,24 +163,21 @@ public class TaskTemplate extends Template {
 	}
 	
 	private AttachmentRequiredEnum attachmentRequiredEnum;
-	
 	public AttachmentRequiredEnum getAttachmentRequiredEnum() {
 		return attachmentRequiredEnum;
 	}
 	
 	public void setAttachmentRequiredInt(int attachmentRequired) {
-		
 		attachmentRequiredEnum = AttachmentRequiredEnum.valueOf(attachmentRequired);
 	}
 	public int getAttachmentRequiredInt() {
-		
 		if(attachmentRequiredEnum != null) {
 			return attachmentRequiredEnum.getVal();
 		}
 		return -1;
 	}
+	
 	public void setAttachmentRequired(boolean attachmentRequired) {
-		
 		if(attachmentRequired) {
 			attachmentRequiredEnum = AttachmentRequiredEnum.TRUE;
 		}
@@ -188,6 +185,7 @@ public class TaskTemplate extends Template {
 			attachmentRequiredEnum = AttachmentRequiredEnum.FALSE;
 		}
 	}
+	
 	public Boolean getAttachmentRequired() {
 		if(attachmentRequiredEnum != null) {
 			if(attachmentRequiredEnum.equals(AttachmentRequiredEnum.TRUE)) {

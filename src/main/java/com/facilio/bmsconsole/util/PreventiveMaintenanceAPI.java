@@ -51,6 +51,7 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.TaskTemplate;
+import com.facilio.bmsconsole.templates.TaskTemplate.AttachmentRequiredEnum;
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
@@ -111,6 +112,9 @@ public class PreventiveMaintenanceAPI {
 	}
 	public static void applySectionSettingsIfApplicable(TaskSectionTemplate sectiontemplate, TaskTemplate taskTemplate) throws Exception {
 		
+		if(taskTemplate.getAttachmentRequiredEnum() != null && taskTemplate.getAttachmentRequiredEnum().equals(AttachmentRequiredEnum.USE_PARENT)) {
+			taskTemplate.setAttachmentRequired(sectiontemplate.getAttachmentRequired());
+		}
 		if(taskTemplate.getInputType() <= InputType.NONE.getVal() && sectiontemplate.getInputType() > InputType.NONE.getVal()) {
 			taskTemplate.setInputType(sectiontemplate.getInputType());
 			taskTemplate.setAdditionalInfoJsonStr(sectiontemplate.getAdditionalInfoJsonStr());
