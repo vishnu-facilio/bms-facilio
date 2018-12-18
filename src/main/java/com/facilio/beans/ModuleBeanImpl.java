@@ -100,7 +100,16 @@ public class ModuleBeanImpl implements ModuleBean {
 		ResultSet rs = null;
 		try {
 			 conn = getConnection();
-			pstmt = conn.prepareStatement("SELECT m.MODULEID, m.ORGID, m.NAME, m.DISPLAY_NAME, m.TABLE_NAME, m.MODULE_TYPE, m.IS_TRASH_ENABLED, m.DATA_INTERVAL, @em:=m.EXTENDS_ID AS EXTENDS_ID FROM (SELECT * FROM Modules ORDER BY MODULEID DESC) m JOIN (SELECT @em:=MODULEID FROM Modules WHERE ORGID = ? AND MODULEID = ?) tmp WHERE m.MODULEID=@em;");
+			pstmt = conn.prepareStatement(""
+					+ "WITH RecursiveCte AS\n" + 
+					"( \n" + 
+					"    SELECT m.moduleid, m.orgid, m.name, m.display_name, m.table_name, m.module_type, m.is_trash_enabled, m.data_interval, m.extends_id FROM modules m \n" + 
+					"    WHERE orgid = ? and moduleid = ? \n" + 
+					"    UNION ALL \n" + 
+					"    SELECT m1.moduleid, m1.orgid, m1.name, m1.display_name, m1.table_name, m1.module_type, m1.is_trash_enabled, m1.data_interval, m1.extends_id FROM modules m1 \n" + 
+					"    INNER JOIN RecursiveCte RCTE ON m1.moduleid = RCTE.extends_id \n" + 
+					") \n" + 
+					"SELECT moduleid, orgid, name, display_name, table_name, module_type, is_trash_enabled, data_interval, extends_id FROM RecursiveCte");
 			pstmt.setLong(1, getOrgId());
 			pstmt.setLong(2, moduleId);
 			
@@ -130,7 +139,21 @@ public class ModuleBeanImpl implements ModuleBean {
 		try {
 			 conn = getConnection();
 			 
-			pstmt = conn.prepareStatement("SELECT m.MODULEID, m.ORGID, m.NAME, m.DISPLAY_NAME, m.TABLE_NAME, m.MODULE_TYPE, m.IS_TRASH_ENABLED, m.DATA_INTERVAL, @em:=m.EXTENDS_ID AS EXTENDS_ID FROM (SELECT * FROM Modules ORDER BY MODULEID DESC) m JOIN (SELECT @em:=MODULEID FROM Modules WHERE ORGID = ? AND NAME = ?) tmp WHERE m.MODULEID=@em");
+			 // mysql
+//			pstmt = conn.prepareStatement("SELECT m.MODULEID, m.ORGID, m.NAME, m.DISPLAY_NAME, m.TABLE_NAME, m.MODULE_TYPE, m.IS_TRASH_ENABLED, m.DATA_INTERVAL, @em:=m.EXTENDS_ID AS EXTENDS_ID FROM (SELECT * FROM Modules ORDER BY MODULEID DESC) m JOIN (SELECT @em:=MODULEID FROM Modules WHERE ORGID = ? AND NAME = ?) tmp WHERE m.MODULEID=@em");
+			 
+			 // mssql
+			 pstmt = conn.prepareStatement(""
+			 		+ "\n" + 
+			 		"WITH RecursiveCte AS\n" + 
+			 		"(\n" + 
+			 		"    SELECT m.moduleid, m.orgid, m.name, m.display_name, m.table_name, m.module_type, m.is_trash_enabled, m.data_interval, m.extends_id FROM modules m\n" + 
+			 		"    WHERE orgid = ? and name = ?\n" + 
+			 		"    UNION ALL\n" + 
+			 		"    SELECT m1.moduleid, m1.orgid, m1.name, m1.display_name, m1.table_name, m1.module_type, m1.is_trash_enabled, m1.data_interval, m1.extends_id FROM modules m1\n" + 
+			 		"    INNER JOIN RecursiveCte RCTE ON m1.moduleid = RCTE.extends_id\n" + 
+			 		")\n" + 
+			 		"SELECT moduleid, orgid, name, display_name, table_name, module_type, is_trash_enabled, data_interval, extends_id FROM RecursiveCte");
 
 			pstmt.setLong(1, getOrgId());
 			pstmt.setString(2, moduleName);
@@ -260,7 +283,15 @@ public class ModuleBeanImpl implements ModuleBean {
 			return LookupSpecialTypeUtil.getSubModules(moduleName, types);
 		}
 		
-		String sql = "SELECT CHILD_MODULE_ID FROM SubModulesRel INNER JOIN Modules childmod ON SubModulesRel.CHILD_MODULE_ID = childmod.MODULEID INNER JOIN (SELECT m.MODULEID, @em:=m.EXTENDS_ID AS EXTENDS_ID FROM (SELECT * FROM Modules ORDER BY MODULEID DESC) m JOIN (SELECT @em:=MODULEID FROM Modules WHERE ORGID = ? AND NAME = ?) tmp WHERE m.MODULEID=@em) parentmod ON SubModulesRel.PARENT_MODULE_ID = parentmod.MODULEID WHERE childmod.MODULE_TYPE IN ("+getTypes(types)+")";
+		String sql = "WITH RecursiveCte AS\n" + 
+				"( \n" + 
+				"    SELECT m.moduleid, m.orgid, m.name, m.display_name, m.table_name, m.module_type, m.is_trash_enabled, m.data_interval, m.extends_id FROM modules m \n" + 
+				"    WHERE orgid = ? and name = ? \n" + 
+				"    UNION ALL \n" + 
+				"    SELECT m1.moduleid, m1.orgid, m1.name, m1.display_name, m1.table_name, m1.module_type, m1.is_trash_enabled, m1.data_interval, m1.extends_id FROM modules m1 \n" + 
+				"    INNER JOIN RecursiveCte RCTE ON m1.moduleid = RCTE.extends_id \n" + 
+				") \n" + 
+				"SELECT child_module_id from submodulesrel where parent_module_id in (select moduleid FROM RecursiveCte where module_type in ("+getTypes(types)+"))";
 		ResultSet rs = null;
 		try(Connection conn = getConnection();PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setLong(1, getOrgId());

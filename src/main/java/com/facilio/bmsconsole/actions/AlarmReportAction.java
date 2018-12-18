@@ -165,7 +165,7 @@ public class AlarmReportAction extends ActionSupport {
 			return 0L;
 		}
 		
-		return (Long)rs.get(0).get("active");
+		return ((Number) rs.get(0).get("active")).longValue();
 		
 	}
 	

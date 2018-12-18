@@ -13,6 +13,7 @@ import java.util.Map;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -43,7 +44,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 	private int offset = -1;
 	private boolean forUpdate = false;
 	private Connection conn = null;
-	
+
 	public GenericSelectRecordBuilder() {
 		
 	}
@@ -78,13 +79,13 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		this.tableName = tableName;
 		return this;
 	}
-	
+
 	@Override
 	public GenericSelectRecordBuilder useExternalConnection (Connection conn) {
 		this.conn = conn;
 		return this;
 	}
-	
+
 	@Override
 	public GenericJoinBuilder innerJoin(String tableName) {
 		joinBuilder.append(" INNER JOIN ")
@@ -214,14 +215,14 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		
+
 		boolean isExternalConnection = true;
 		try {
 			if (conn == null) {
 				conn = FacilioConnectionPool.INSTANCE.getConnection();
 				isExternalConnection = false;
 			}
-			
+
 			String sql = constructSelectStatement();
 //			System.out.println("########### sql : "+ sql);
 			pstmt = conn.prepareStatement(sql);
@@ -325,9 +326,9 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 				sql.append(", ");
 			}
 			sql.append(field.getCompleteColumnName())
-				.append(" AS `")
-				.append(field.getName())
-				.append("`");
+				.append(" AS ")
+				.append("\"" + field.getName() + "\"")
+				.append("");
 		}
 		
 		sql.append(" FROM ")
@@ -336,8 +337,11 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		sql.append(joinBuilder.toString());
 		
 		if(where.getWhereClause() != null && !where.getWhereClause().isEmpty()) {
+			String whereString = where.getWhereClause();
+			whereString = whereString.replaceAll("true", "1");
+			whereString = whereString.replaceAll("false", "0");
 			sql.append(" WHERE ")
-				.append(where.getWhereClause());
+				.append(whereString);
 		}
 		
 		if(groupBy != null && !groupBy.isEmpty()) {
@@ -355,20 +359,21 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 				.append(orderBy);
 		}
 		
-		if(limit != -1) {
-			sql.append(" LIMIT ")
-				.append(limit);
-			
-			if(offset != -1) {
-				sql.append(" OFFSET ")
-					.append(offset);
+		if(orderBy != null && limit != -1) {
+			if(offset < 0) {
+				offset = 0;
 			}
+			sql.append(" OFFSET ")
+			.append(offset + " ROWS ");
+
+			sql.append(" FETCH NEXT ")
+				.append(limit + " ROWS ONLY ");
 		}
 		
 		if (forUpdate) {
 			sql.append(" FOR UPDATE ");
 		}
-		
+
 		return sql.toString();
 	}
 	

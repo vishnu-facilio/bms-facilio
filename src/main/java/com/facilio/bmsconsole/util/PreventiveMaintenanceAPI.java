@@ -1342,7 +1342,7 @@ public class PreventiveMaintenanceAPI {
 			return 0;
 		}
 		else {
-			return (Long) rs.get(0).get("count");
+			return ((Number) rs.get(0).get("count")).longValue();
 		}
 	}
 	

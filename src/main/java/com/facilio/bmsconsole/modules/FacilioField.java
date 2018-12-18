@@ -283,6 +283,17 @@ public class FacilioField implements Serializable {
 		return false;
 	}
 	
+	@Override
+	public int hashCode() {
+		FacilioModule module = getModule();
+		int hashcode = 0;
+		if (module != null) {
+			hashcode += module.getName().hashCode();
+		}
+		hashcode += this.name.hashCode();
+		return hashcode;
+	}
+	
 	private FieldDisplayType displayType;
 	
 	@JsonIgnore

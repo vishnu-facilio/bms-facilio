@@ -69,6 +69,9 @@ public class SQLScriptRunner {
 			LineNumberReader lineReader = new LineNumberReader(reader);
 			String line;
 			String delimiter = DELIMITER;
+			
+			StringBuilder overallStringBuffer = new StringBuilder();
+			
 			while ((line = lineReader.readLine()) != null) {
 				if (command == null) {
 					command = new StringBuilder();
@@ -92,7 +95,8 @@ public class SQLScriptRunner {
 						if(trimmedLine.endsWith(delimiter)) {
 							command.append(trimmedLine.substring(0, trimmedLine.lastIndexOf(delimiter)));
 							command.append(" ");
-							execCommand(conn, command, lineReader.getLineNumber());
+							overallStringBuffer.append(command + "\n");
+//							execCommand(conn, command, lineReader.getLineNumber());
 							command = null;
 						}
 						else {
@@ -103,8 +107,11 @@ public class SQLScriptRunner {
 				}
 			}
 			if (command != null && command.length() != 0) {
-				execCommand(conn, command, lineReader.getLineNumber());
+				overallStringBuffer.append(command);
+				overallStringBuffer.append("\n");
+//				execCommand(conn, command, lineReader.getLineNumber());
 			}
+			execCommand(conn, overallStringBuffer, -1);
 		}
 		catch (SQLException e) {
 			throw e;

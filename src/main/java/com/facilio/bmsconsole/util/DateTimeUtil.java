@@ -49,7 +49,7 @@ public class DateTimeUtil
 		if(org != null) {
 			String zone = org.getTimezone();
 			if(zone != null && !zone.isEmpty()) {
-				return ZoneId.of(zone);
+				return ZoneId.of(zone.trim());
 			}
 		}
 		return AwsUtil.isDevelopment() ? ZoneId.systemDefault() : ZoneId.of("Z");

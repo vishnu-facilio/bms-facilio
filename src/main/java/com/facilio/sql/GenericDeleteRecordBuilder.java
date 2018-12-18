@@ -151,12 +151,15 @@ public class GenericDeleteRecordBuilder implements DeleteBuilderIfc<Map<String, 
 	
 	private String constructDeleteStatement() {
 		StringBuilder sql = new StringBuilder("DELETE ");
+		String whereString = where.getWhereClause();
+		whereString = whereString.replaceAll("true", "1");
+		whereString = whereString.replaceAll("false", "0");
 		sql.append(tablesToBeDeleted.toString())
 			.append(" FROM ")
 			.append(tableName)
 			.append(joinBuilder.toString())
 			.append(" WHERE ")
-			.append(where.getWhereClause());
+			.append(whereString);
 		
 		return sql.toString();
 	}

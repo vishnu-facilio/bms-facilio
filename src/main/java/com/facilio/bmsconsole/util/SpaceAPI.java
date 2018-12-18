@@ -781,7 +781,7 @@ public static long getSitesCount() throws Exception {
 			return 0;
 		}
 		else {
-			return (long) result.get(0).get("count");
+			return ((Number) result.get(0).get("count")).longValue();
 		}
 	}
 	
@@ -1022,7 +1022,7 @@ public static long getSitesCount() throws Exception {
 			return 0;
 		}
 		else {
-			return (Long) rs.get(0).get("count");
+			return ((Number) rs.get(0).get("count")).longValue();
 		}
 	}
 	
@@ -1049,7 +1049,7 @@ public static long getSitesCount() throws Exception {
 			return 0;
 		}
 		else {
-			return (Long) rs.get(0).get("count");
+			return ((Number) rs.get(0).get("count")).longValue();
 		}
 	}
 	
@@ -1103,7 +1103,7 @@ public static long getSitesCount() throws Exception {
 			return 0;
 		}
 		else {
-			return (Long) rs.get(0).get("count");
+			return ((Number) rs.get(0).get("count")).longValue();
 		}
 	}
 
@@ -1144,7 +1144,7 @@ public static long getSitesCount() throws Exception {
 			return 0;
 		}
 		else {
-			return (Long) rs.get(0).get("count");
+			return ((Number) rs.get(0).get("count")).longValue();
 		}
 	}
 	
@@ -1183,7 +1183,7 @@ public static long getSitesCount() throws Exception {
 			return 0;
 		}
 		else {
-			return (Long) rs.get(0).get("count");
+			return ((Number) rs.get(0).get("count")).longValue();
 		}
 	}
 	
@@ -1209,17 +1209,31 @@ public static long getSitesCount() throws Exception {
 
 		AccountUtil.getCurrentOrg().getOrgId();
 		
+		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
+				.table(assetModule.getTableName())
+				.select(fields)
+				.andCondition(spaceCond);
+		
+		FacilioModule prevModule = assetModule;
+		FacilioModule extendedModule = assetModule.getExtendModule();
+		while(extendedModule != null) {
+			select.innerJoin(extendedModule.getTableName())
+					.on(prevModule.getTableName()+".ID = "+extendedModule.getTableName()+".ID");
+			prevModule = extendedModule;
+			extendedModule = extendedModule.getExtendModule();
+		}
+		
 		SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<>()
 				.select(fields)
 				.module(assetModule)
 				.andCondition(spaceCond);
 		
-		List<Map<String, Object>> rs = selectBuilder.getAsProps();
+		List<Map<String, Object>> rs = select.get();
 		if (rs == null || rs.isEmpty()) {
 			return 0;
 		}
 		else {
-			return (Long) rs.get(0).get("count");
+			return ((Number) rs.get(0).get("count")).longValue();
 		}
 	}
 	

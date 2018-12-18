@@ -66,10 +66,13 @@ public class WhereBuilder implements WhereBuilderIfc<WhereBuilder>{
 	
 	private WhereBuilder condition(boolean isAND, Condition condition) {
 		if(condition != null) {
-			checkIfFirstAndAdd(isAND);
-			this.condition.append(condition.computeAndGetWhereClause());
-			if(condition.getComputedValues() != null) {
-				values.addAll(condition.getComputedValues());
+			String computeAndGetWhereClause = condition.computeAndGetWhereClause();
+			if (computeAndGetWhereClause != null) {
+				checkIfFirstAndAdd(isAND);
+				this.condition.append(computeAndGetWhereClause);
+				if(condition.getComputedValues() != null) {
+					values.addAll(condition.getComputedValues());
+				}
 			}
 		}
 		return this;
@@ -86,7 +89,7 @@ public class WhereBuilder implements WhereBuilderIfc<WhereBuilder>{
 	}
 	
 	private WhereBuilder criteria(boolean isAND, Criteria criteria) {
-		if(criteria != null) {
+		if(criteria != null && !criteria.isEmpty()) {
 			checkIfFirstAndAdd(isAND);
 			this.condition.append("(")
 						.append(criteria.computeWhereClause())

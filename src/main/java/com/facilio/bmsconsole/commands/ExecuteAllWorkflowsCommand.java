@@ -155,13 +155,6 @@ public class ExecuteAllWorkflowsCommand implements SerializableCommand
 				try {
 					long workflowStartTime = System.currentTimeMillis();
 					boolean result = WorkflowRuleAPI.evaluateWorkflow(workflowRule, moduleName, record, changeSet, recordPlaceHolders, context);
-					if (result) {
-						if(workflowRule.getRuleTypeEnum().stopFurtherRuleExecution()) {
-							itr.remove();
-							break;
-						}
-					}
-					
 					if (AccountUtil.getCurrentOrg().getId() == 133 && FacilioConstants.ContextNames.ALARM.equals(moduleName)) {
 						LOGGER.info("Result of rule : "+workflowRule.getId()+" for record : "+record+" is "+result);
 					}
@@ -171,6 +164,13 @@ public class ExecuteAllWorkflowsCommand implements SerializableCommand
 					currentCriteria.addAndCondition(CriteriaAPI.getCondition(onSuccess, String.valueOf(result), BooleanOperators.IS));
 					criteria.orCriteria(currentCriteria);
 					LOGGER.debug("Time taken to execute rule : "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for module : "+moduleName+" is "+(System.currentTimeMillis() - workflowStartTime));
+					
+					if (result) {
+						if(workflowRule.getRuleTypeEnum().stopFurtherRuleExecution()) {
+							itr.remove();
+							break;
+						}
+					}
 				}
 				catch (Exception e) {
 					StringBuilder builder = new StringBuilder("Error during execution of rule : ");
