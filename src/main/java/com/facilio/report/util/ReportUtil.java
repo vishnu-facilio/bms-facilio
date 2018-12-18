@@ -65,6 +65,7 @@ public class ReportUtil {
 		if (xAggr != null) {
 			report.setxAggr(xAggr);
 		}
+		report.setxAlias(FacilioConstants.ContextNames.REPORT_DEFAULT_X_ALIAS);
 		
 		return report;
 	}

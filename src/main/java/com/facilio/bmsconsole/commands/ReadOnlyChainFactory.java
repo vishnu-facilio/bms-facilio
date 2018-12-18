@@ -34,6 +34,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new NewTransformReportDataCommand());
 		c.addCommand(new CalculateAggregationCommand()); //For new ones created in Derivations
 		c.addCommand(new FetchReportExtraMeta());
+		c.addCommand(new FetchResourcesCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}

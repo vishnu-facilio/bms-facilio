@@ -67,14 +67,15 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 			}
 			
 			List<ReportDataPointContext> dataPoints = new ArrayList<>();
+			Set<String> resourceAlias = new HashSet<>();
 			for (ReadingAnalysisContext metric : metrics) {
 				ReportDataPointContext dataPoint = null;
 				switch (metric.getTypeEnum()) {
 					case MODULE:
-						dataPoint = getModuleDataPoint(metric, mode, modBean);
+						dataPoint = getModuleDataPoint(report, metric, mode, modBean, resourceAlias);
 						break;
 					case DERIVATION:
-						dataPoint = getDerivedDataPoint(metric, mode);
+						dataPoint = getDerivedDataPoint(report, metric, mode, resourceAlias);
 						break;
 				}
 				
@@ -102,6 +103,10 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 			}
 			report.setDataPoints(dataPoints);
 			
+			if (!resourceAlias.isEmpty()) {
+				report.addToReportState(FacilioConstants.ContextNames.REPORT_RESOURCE_ALIASES, resourceAlias);
+			}
+
 			context.put(FacilioConstants.ContextNames.REPORT, report);
 		}
 		else {
@@ -131,7 +136,7 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 		}
 	}
 	
-	private ReportDataPointContext getModuleDataPoint(ReadingAnalysisContext metric, ReportMode mode, ModuleBean modBean) throws Exception {
+	private ReportDataPointContext getModuleDataPoint(ReportContext report, ReadingAnalysisContext metric, ReportMode mode, ModuleBean modBean, Set<String> resourceAlias) throws Exception {
 		ReportDataPointContext dataPoint = new ReportDataPointContext();
 		dataPoint.setMetaData(metric.getMetaData());
 		dataPoint.setDefaultSortPoint(metric.isDefaultSortPoint());
@@ -142,16 +147,23 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(yField.getModule().getName()));
 		setXAndDateFields(dataPoint, mode, fieldMap);
 		setCriteria(dataPoint, fieldMap, metric);
+		if (dataPoint.isFetchResource()) {
+			resourceAlias.add(report.getxAlias());
+		}
+		
 		return dataPoint;
 	}
 	
-	private ReportDataPointContext getDerivedDataPoint(ReadingAnalysisContext metric, ReportMode mode) {
+	private ReportDataPointContext getDerivedDataPoint(ReportContext report, ReadingAnalysisContext metric, ReportMode mode, Set<String> resourceAlias) {
 		ReportDataPointContext dataPoint = new ReportDataPointContext();
 		dataPoint.setMetaData(metric.getMetaData());
 		ReportFieldContext xAxis = new ReportFieldContext();
 		xAxis.setField(getDerivedDPXField(dataPoint, mode));
 		dataPoint.setxAxis(xAxis);
 		dataPoint.setyAxis(metric.getyAxis());
+		if (dataPoint.isFetchResource()) {
+			resourceAlias.add(report.getxAlias());
+		}
 		return dataPoint;
 	}
 	
