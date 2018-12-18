@@ -197,6 +197,13 @@ public enum Unit {
 		this.isLeft = isLeft;
 	}
 	
+	public boolean getIsLeft() {
+		return isLeft;
+	}
+	public void setIsLeft(boolean isLeft) {
+		this.isLeft = isLeft;
+	}
+	
 	public String getDisplayName() {
 		return displayName;
 	}

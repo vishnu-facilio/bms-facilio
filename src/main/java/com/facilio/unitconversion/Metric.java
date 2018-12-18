@@ -7,20 +7,20 @@ import java.util.Map;
 
 public enum Metric {
 
-	ENERGY(1,"Energy",1),
-	TEMPERATURE(2,"Temperature",4),
+	ENERGY(1,"Energy",1, 2),
+	TEMPERATURE(2,"Temperature",4, 1),
 	LENGTH(3,"Length",7),
 	MASS(4,"Mass",25),
 	DURATION(5,"Duration",18),
-	CURRENT(6,"Current",41),
-	VOLTAGE(7,"Voltage",36),
-	POWER(8,"Power",46),
+	CURRENT(6,"Current",41, 2),
+	VOLTAGE(7,"Voltage",36, 0),
+	POWER(8,"Power",46, 2),
 	FREQUENCY(9,"Frequency",51),
 	REACTIVEPOWER(10,"Reactive Power",58),
 	PRESSURE(11,"Pressure",61),
 	DEGREE(12,"Degree",62),
 	AREA(12,"Area",63),
-	TORQUE(13,"Torque",69),
+	TORQUE(13,"Torque",69, 2),
 	VOLUME(14,"Liquid",70),
 	CURRENCY(15,"Currency"),
 	PERCENTAGE(16,"Percentage",87),
@@ -33,7 +33,16 @@ public enum Metric {
 	int metricId;
 	String name;
 	int siUnitId = -1;
+	int decimalPoints;
 	
+	public int getDecimalPoints() {
+		return decimalPoints;
+	}
+
+	public void setDecimalPoints(int decimalPoints) {
+		this.decimalPoints = decimalPoints;
+	}
+
 	public int getSiUnitId() {
 		return siUnitId;
 	}
@@ -46,6 +55,12 @@ public enum Metric {
 		return name;
 	}
 	
+	Metric(int metricId, String name,int siUnitid, int decimalPoints) {
+		this.metricId = metricId;
+		this.name = name;
+		this.siUnitId = siUnitid;
+		this.decimalPoints = decimalPoints;
+	}
 	Metric(int metricId, String name,int siUnitid) {
 		this.metricId = metricId;
 		this.name = name;

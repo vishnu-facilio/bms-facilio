@@ -6,6 +6,18 @@ public class TicketCategoryContext extends ModuleBaseWithCustomFields {
 	/**
 	 * 
 	 */
+	private String displayName;
+	public String getDisplayName() {
+		if(displayName != null && !displayName.isEmpty()) {
+			return displayName;
+		}
+		else {
+			return name;
+		}
+	}
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
 	private static final long serialVersionUID = 1L;
 	private String name;
 	public String getName() {
