@@ -24,6 +24,7 @@ import com.facilio.bmsconsole.util.IoTMessageAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.tasker.job.InstantJob;
+import com.facilio.wms.message.WmsPublishResponse;
 
 public class PublishedDataCheckerJob extends InstantJob {
 	
@@ -108,6 +109,18 @@ public class PublishedDataCheckerJob extends InstantJob {
 		Consumer<PublishData> consumer = (Consumer<PublishData>) context.get(key);
 		if (consumer != null) {
 			consumer.accept(data);
+		}
+		sendNotification(data);
+	}
+	
+	private void sendNotification(PublishData publishData) {
+		
+		try {
+			WmsPublishResponse data = new WmsPublishResponse();
+			data.publish(publishData);
+		}
+		catch (Exception e) {
+			LOGGER.error("Error occurred while sending publish response notification", e);
 		}
 	}
 }

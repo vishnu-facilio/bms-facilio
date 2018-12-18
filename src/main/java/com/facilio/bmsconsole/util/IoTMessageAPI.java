@@ -222,6 +222,11 @@ public class IoTMessageAPI {
 		return publishIotMessage(data, null, null);
 	}
 	
+	public static PublishData publishIotMessage(long controllerId, IotCommandType command, SerializableConsumer<PublishData> success, SerializableConsumer<PublishData> failure) throws Exception {
+		PublishData data = constructIotMessage(controllerId, command, null, null);
+		return publishIotMessage(data, success, failure);
+	}
+	
 	public static PublishData publishIotMessage(long controllerId, JSONObject property, SerializableConsumer<PublishData> success, SerializableConsumer<PublishData> failure) throws Exception {
 		PublishData data = constructIotMessage(controllerId, property);
 		return publishIotMessage(data, success, failure);

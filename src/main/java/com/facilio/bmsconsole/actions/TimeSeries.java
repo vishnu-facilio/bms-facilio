@@ -13,6 +13,7 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.PublishData;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.util.IoTMessageAPI;
@@ -157,9 +158,9 @@ public class TimeSeries extends FacilioAction {
 	
 	public String discoverInstances () throws Exception {
 		
-		IoTMessageAPI.publishIotMessage(controllerId, IotCommandType.DISCOVER);
+		PublishData data = IoTMessageAPI.publishIotMessage(controllerId, IotCommandType.DISCOVER);
 
-		setResult("result", "success");
+		setResult("data", data);
 		return SUCCESS;
 	}
 	

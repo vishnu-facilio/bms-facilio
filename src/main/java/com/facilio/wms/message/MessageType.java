@@ -6,5 +6,6 @@ public enum MessageType {
 	CHAT,
 	SYSTEM,
 	REMOTE_SCREEN,
+	PUBLISH,
 	BROADCAST;
 }

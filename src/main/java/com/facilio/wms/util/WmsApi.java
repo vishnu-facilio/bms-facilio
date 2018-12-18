@@ -5,15 +5,17 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.websocket.EncodeException;
 
-import com.amazonaws.services.kinesis.model.Record;
-import com.facilio.server.ServerInfo;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -29,6 +31,7 @@ import com.facilio.wms.message.Message;
 import com.facilio.wms.message.WmsChatMessage;
 import com.facilio.wms.message.WmsEvent;
 import com.facilio.wms.message.WmsNotification;
+import com.facilio.wms.message.WmsPublishResponse;
 import com.facilio.wms.message.WmsRemoteScreenMessage;
 
 public class WmsApi
@@ -144,6 +147,11 @@ public class WmsApi
 	public static void sendChatMessage(List<Long> recipients, WmsChatMessage message) throws IOException, EncodeException
 	{
 		sendMessage(recipients, message);
+	}
+	
+	public static void sendPublishResponse(List<Long> recipients, WmsPublishResponse data) throws IOException, EncodeException
+	{
+		sendMessage(recipients, data);
 	}
 	
 	private static void sendMessage(List<Long> recipients, Message message) throws IOException, EncodeException

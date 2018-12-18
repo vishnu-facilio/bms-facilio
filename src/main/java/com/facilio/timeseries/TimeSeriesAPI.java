@@ -445,14 +445,29 @@ public class TimeSeriesAPI {
 		object.put("instanceDescription",description);
 		object.put("instanceType", instanceType);
 		 */
+		
+		List<String> instanceNames = null;
+		if (controllerId != null) {
+			List<Map<String, Object>> instances = getUnmodeledInstancesForController(controllerId, null, null, null);
+			if (instances != null && !instances.isEmpty()) {
+				instanceNames = instances.stream().map(instance -> instance.get("device") + "|" + instance.get("instance")).collect(Collectors.toList());
+			}
+		}
+		
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 	
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.fields(FieldFactory.getUnmodeledInstanceFields())
 				.table("Unmodeled_Instance");
 		for(Object instance:instanceArray) {
-	
 			JSONObject instanceObj = (JSONObject) instance;
+			if (instanceNames != null) {
+				// Checking if the instance already exists. No need to add again on re-discovering of points
+				String name = instanceObj.get("device") + "|" + instanceObj.get("instance");
+				if (instanceNames.contains(name)) {
+					continue;
+				}
+			}
 			instanceObj.put("orgId", orgId);
 			instanceObj.put("createdTime", System.currentTimeMillis());
 			if(controllerId!=null) {

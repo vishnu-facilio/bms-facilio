@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -61,8 +60,7 @@ public class MigrateReadingDataJob extends InstantJob {
 				
 				addReading(parentId, fieldId, oldField.getName(), readingsList);
 				
-				Pair<Long, FacilioField> fieldAssetPair = Pair.of(parentId, oldField);
-				ReadingsAPI.deleteAssetReading(Collections.singletonList(fieldAssetPair), oldModule, oldModulefields, oldModulefieldMap);
+				ReadingsAPI.deleteReadings(parentId, Collections.singletonList(oldField), oldModule, oldModulefields, oldModulefieldMap);
 			}
 			
 		} catch (Exception e) {

@@ -163,6 +163,23 @@ public class ReadingsAPI {
 		return updateBuilder.update(FieldUtil.getAsProperties(rdm));
 	}
 	
+	public static int updateReadingDataMeta (long parentId, List<Long> fieldIds, ReadingDataMeta rdm) throws Exception {
+		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
+		List<FacilioField> fields = FieldFactory.getReadingDataMetaFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioField resourceIdField = fieldMap.get("resourceId");
+		FacilioField fieldIdField = fieldMap.get("fieldId");
+		
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(module.getTableName())
+				.fields(fields)
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCondition(resourceIdField, String.valueOf(parentId), PickListOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(fieldIdField, fieldIds, PickListOperators.IS));
+				
+		return updateBuilder.update(FieldUtil.getAsProperties(rdm));
+	}
+	
 	public static ReadingDataMeta getReadingDataMeta(long resourceId,FacilioField field) throws Exception {
 		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
 		
@@ -804,11 +821,11 @@ public class ReadingsAPI {
 		}
 	}
 	
-	public static void deleteAssetReading(List<Pair<Long, FacilioField>> assetFieldPairs, FacilioModule module, List<FacilioField> fields, Map<String, FacilioField> fieldMap) throws Exception {
+	public static void deleteReadings(long parentId, List<FacilioField> assetFields, FacilioModule module, List<FacilioField> fields, Map<String, FacilioField> fieldMap, Boolean... deleteReadings) throws Exception {
+		ReadingDataMeta rdm = new ReadingDataMeta();
+		List<Long> fieldIds = new ArrayList<>();
 		ReadingContext reading = new ReadingContext();
-		List<Long> assetIds = new ArrayList<>();
-		assetFieldPairs.forEach(pair -> {
-			FacilioField field = pair.getRight();
+		assetFields.forEach(field -> {
 			Object value;
 			if (field.getDataTypeEnum() == FieldType.NUMBER || field.getDataTypeEnum() == FieldType.DECIMAL) {
 				value = -99;
@@ -817,30 +834,30 @@ public class ReadingsAPI {
 				value = null;
 			}
 			reading.addReading(field.getName(), value);
-			
-			long assetId = pair.getLeft();
-			assetIds.add(assetId);
-			
+			fieldIds.add(field.getFieldId());
 		});
 		
-		if (fields == null) {
-			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			fields = bean.getAllFields(module.getName());
-			fieldMap = FieldFactory.getAsMap(fields);
+		if (deleteReadings == null || deleteReadings.length == 0 || deleteReadings[0]) {
+			
+			if (fields == null) {
+				ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				fields = bean.getAllFields(module.getName());
+				fieldMap = FieldFactory.getAsMap(fields);
+			}
+			
+			UpdateRecordBuilder<ReadingContext> updateBuilder = new UpdateRecordBuilder<ReadingContext>()
+					.module(module)
+					.fields(fields)
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(parentId), NumberOperators.EQUALS));
+			
+			updateBuilder.update(reading);
+			
+			rdm.setValue("-1");
+			rdm.setReadingDataId(-99);
 		}
 		
-		UpdateRecordBuilder<ReadingContext> updateBuilder = new UpdateRecordBuilder<ReadingContext>()
-				.module(module)
-				.fields(fields)
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), assetIds, NumberOperators.EQUALS));
-		
-		updateBuilder.update(reading);
-		
-		ReadingDataMeta rdm = new ReadingDataMeta();
-		rdm.setValue("-1");
-		rdm.setReadingDataId(-99);
 		rdm.setInputType(ReadingInputType.WEB);
 		
-		ReadingsAPI.updateReadingDataMeta(assetFieldPairs, rdm);
+		ReadingsAPI.updateReadingDataMeta(parentId, fieldIds, rdm);
 	}
 }
