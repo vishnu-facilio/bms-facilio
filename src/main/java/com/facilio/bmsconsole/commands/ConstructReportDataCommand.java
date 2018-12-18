@@ -105,7 +105,7 @@ public class ConstructReportDataCommand implements Command {
 			List<SimpleEntry<Long, Integer>> value = (List<SimpleEntry<Long, Integer>>) data.get(yAlias);
 			if (value == null) {
 				value = new ArrayList<>();
-				data.put(yAlias, yVal);
+				data.put(yAlias, value);
 			}
 			value.add((SimpleEntry<Long, Integer>) yVal);
 		}
