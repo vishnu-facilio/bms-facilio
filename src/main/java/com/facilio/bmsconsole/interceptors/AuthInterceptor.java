@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.facilio.aws.util.AwsUtil;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
 
@@ -144,7 +145,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 				if (request.getRequestURL().indexOf("/admin") != -1) {
 					if (currentAccount != null) {
 						String useremail = currentAccount.getUser().getEmail();
-						if (! useremail.endsWith("@facilio.com")) {
+						if (! useremail.endsWith(AwsUtil.getConfig("admin.domain"))) {
 							LOGGER.log(Level.SEVERE, "you are not allowed to access this page from");
 							return Action.LOGIN;
 						}

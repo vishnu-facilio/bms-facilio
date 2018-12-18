@@ -491,7 +491,7 @@ public class UserBeanImpl implements UserBean {
 		Map<String, Object> placeholders = new HashMap<>();
 		CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(user), placeholders);
 		placeholders.put("invitelink", inviteLink);
-		if (user.getEmail().contains("@facilio.com") || "true".equals(AwsUtil.getConfig("disable.csp"))) {
+		if (user.getEmail().contains("@facilio.com") || AwsUtil.disableCSP()) {
 			 AccountEmailTemplate.EMAIL_VERIFICATION.send(placeholders);
 		}
 		else {

@@ -39,7 +39,7 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "pre_production" ]; then
     sed -i'' "s%static.url=.*%static.url=https://static.facilio.in%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%files.url=.*%files.url=files.facilio.in%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%portal.domain=.*%portal.domain=facilstack.com%g" $CONF_DIR/awsprops.properties
-    sed -i'' "s%cors.allowed.origins=.*%cors.allowed.origins=http://localhost:8080,http://localhost:9090,https://facilio.in,https://facilstack.com,https://facilstack.com:9090%g" $CONF_DIR/awsprops.properties
+    sed -i'' "s%cors.allowed.origins=.*%cors.allowed.origins=http://localhost:8080,http://localhost:9090,localhost:8080,localhost:9090,https://facilio.in,https://facilstack.com,https://facilstack.com:9090%g" $CONF_DIR/awsprops.properties
     sed -i -e 's/localhost:7444/172.31.38.25:7444/g' $CONF_DIR/awsprops.properties
     sed -i -e 's/tmp/home\/ubuntu\/analytics\/temp/g' $CONF_DIR/awsprops.properties
     sed -i -e 's/anomalyRefreshWaitTimeInSeconds=10/anomalyRefreshWaitTimeInSeconds=1/g' $CONF_DIR/awsprops.properties
@@ -71,7 +71,7 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "production_deployment" ]; then
     sed -i'' "s%websocket.url=.*%websocket.url=wss://app.facilio.com/websocket%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%log4j.appender.graylog2.facility=.*%log4j.appender.graylog2.facility=production-user%g" $CLASSES_DIR/log4j.properties
     sed -i'' "s%log4j.appender.graylog2.graylogHost=.*%log4j.appender.graylog2.graylogHost=172.31.35.38%g" $CLASSES_DIR/log4j.properties
-    sed -i'' "s%cors.allowed.origins=.*%cors.allowed.origins=https://facilio.ae,https://fazilio.com,https://facilio.com,https://facilio.in,https://facilstack.com,https://facilioportal.com,https://wiproenergy.com%g" $CONF_DIR/awsprops.properties
+    sed -i'' "s%cors.allowed.origins=.*%cors.allowed.origins=https://facilio.ae,https://fazilio.com,localhost:8080,localhost:9090,https://facilio.com,https://facilio.in,https://facilstack.com,https://facilioportal.com,https://wiproenergy.com%g" $CONF_DIR/awsprops.properties
     sed -i -e 's/localhost:7444/172.31.38.25:7445/g' $CONF_DIR/awsprops.properties
     sed -i -e 's/tmp/home\/ubuntu\/analytics\/temp/g' $CONF_DIR/awsprops.properties
     echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/ubuntu/deployment.log
@@ -95,7 +95,7 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "production-scheduler" ]; then
     sed -i'' "s%files.url=.*%files.url=files.facilio.com%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%portal.domain=.*%portal.domain=facilioportal.com%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%websocket.url=.*%websocket.url=wss://app.facilio.com/websocket%g" $CONF_DIR/awsprops.properties
-    sed -i'' "s%cors.allowed.origins=.*%cors.allowed.origins=https://facilio.ae,https://fazilio.com,https://facilio.com,https://facilio.in,https://facilstack.com,https://facilioportal.com%g" $CONF_DIR/awsprops.properties
+    sed -i'' "s%cors.allowed.origins=.*%cors.allowed.origins=https://facilio.ae,https://fazilio.com,https://facilio.com,localhost:8080,localhost:9090,https://facilio.in,https://facilstack.com,https://facilioportal.com%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%s3.bucket.name=.*%s3.bucket.name=facilio-ae-data%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%log4j.appender.graylog2.facility=.*%log4j.appender.graylog2.facility=production-scheduler%g" $CLASSES_DIR/log4j.properties
     sed -i'' "s%log4j.appender.graylog2.graylogHost=.*%log4j.appender.graylog2.graylogHost=172.31.35.38%g" $CLASSES_DIR/log4j.properties
