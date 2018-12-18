@@ -81,6 +81,9 @@ public class TimeSeriesProcessor extends FacilioProcessor {
     }
 
     public void processRecords(List<FacilioRecord> records) {
+        if(records.size() > 0) {
+            LOGGER.info("record size : " + records.size());
+        }
         for(FacilioRecord record : records) {
             processRecord(record);
         }
