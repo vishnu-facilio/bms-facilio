@@ -94,15 +94,16 @@ public abstract class FacilioProcessor implements  Runnable {
                     List<FacilioRecord> records = get(5000);
                     processRecords(records);
                 } catch (Exception e) {
+                	LOGGER.error("Error occurred during processing of records", e);
                     try {
                         Thread.sleep(5000L);
                     } catch (InterruptedException in) {
-                        LOGGER.info("Interrupted exception ", in);
+                        LOGGER.error("Interrupted exception ", in);
                     }
                 }
             }
         } catch (Exception e) {
-            LOGGER.warn("Exception while starting facilio processor ", e);
+            LOGGER.error("Exception while starting facilio processor ", e);
         } finally {
             getConsumer().close();
         }
