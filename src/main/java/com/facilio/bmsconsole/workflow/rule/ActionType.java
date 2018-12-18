@@ -513,7 +513,7 @@ public enum ActionType {
 			Iterator iter = slaPolicyJson.iterator();
 			while (iter.hasNext()) {
 				JSONObject slaPolicy = (JSONObject) iter.next();
-				long priorityId = Long.parseLong((String) slaPolicy.get("priority"));
+				long priorityId = Long.parseLong(slaPolicy.get("priority").toString());
 				if (priorityId == workorderpriority && slaPolicy.get("duration") != null) {
 						duration = Long.parseLong(slaPolicy.get("duration").toString()) * 1000;
 				}
