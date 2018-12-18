@@ -81,12 +81,13 @@ public class CalculateAggregationCommand implements Command {
 			if (i != 0) {
 				startTime = (long) data.get(sortAlias);
 			}
-			else if (i != csvData.size() - 1) {
-				endTime = (long) csvData.get(i + 1).get(sortAlias) - 1;
+			
+			if (i != csvData.size() - 1) {
+				endTime = (long) csvData.get(i + 1).get(sortAlias);
 			}
 			
 			for (String alias : dp.getAliases().values()) {
-				EnumVal enumValue = calculateEnumAggr(dp.getyAxis().getEnumMap().keySet(), data.get(alias), alias, startTime, endTime, previousRecords, aggrData);
+				EnumVal enumValue = calculateEnumAggr(dp.getyAxis().getEnumMap().keySet(), data.get(alias), alias, startTime, endTime, previousRecords, aggrData); //Starttime is included and endtime is excluded
 				if (enumValue != null) {
 					data.put(alias, enumValue);
 				}
@@ -94,19 +95,19 @@ public class CalculateAggregationCommand implements Command {
 		}
 	}
 	
-	private EnumVal calculateEnumAggr (Set<Integer> enumValues, Object value, String alias, long startTime, long endTime, Map<String, SimpleEntry<Long, Integer>> previousRecords, Map<String, Object> aggrData) {
+	private EnumVal calculateEnumAggr (Set<Integer> enumValueKeys, Object value, String alias, long startTime, long endTime, Map<String, SimpleEntry<Long, Integer>> previousRecords, Map<String, Object> aggrData) {
 		if (value != null) {
 			List<SimpleEntry<Long, Integer>> enumVal = (List<SimpleEntry<Long, Integer>>) value;
-			EnumVal enumValue = combineEnumVal(enumValues, enumVal, startTime, endTime, previousRecords.get(alias));
-			previousRecords.put(alias, enumValue.timeline.get(enumVal.size() - 1));
+			EnumVal enumValue = combineEnumVal(enumValueKeys, enumVal, startTime, endTime, previousRecords.get(alias));
+			previousRecords.put(alias, enumValue.timeline.get(enumValue.timeline.size() - 1));
 			
 			//Aggr
 			String timelineKey = alias+".timeline";
 			String duraionKey = alias+".duration";
 			List<SimpleEntry<Long, Integer>> fullTimeline = (List<SimpleEntry<Long, Integer>>) aggrData.get(timelineKey);
 			if (fullTimeline == null) {
-				aggrData.put(timelineKey, enumValue.timeline);
-				aggrData.put(duraionKey, enumValue.duration);
+				aggrData.put(timelineKey, new ArrayList<>(enumValue.timeline));
+				aggrData.put(duraionKey, new HashMap<>(enumValue.duration));
 			}
 			else {
 				int i = 0;
@@ -129,6 +130,13 @@ public class CalculateAggregationCommand implements Command {
 		List<SimpleEntry<Long, Integer>> timeline = new ArrayList<>();
 		Map<Integer, Long> durations = initDuration(enumValues);
 		
+		LOGGER.info(new StringBuilder()
+						.append("High Res Val : ").append(highResVal).append("\n")
+						.append("Enum : ").append(enumValues).append("\n")
+						.append("StartTime : ").append(startTime).append("\n")
+						.append("endTime : ").append(endTime).append("\n")
+						.append("Prev record : ").append(previousRecord).append("\n"));
+		
 		if (startTime != -1 && previousRecord != null) {
 			SimpleEntry<Long, Integer> val = new SimpleEntry<Long, Integer>(startTime, previousRecord.getValue());
 			timeline.add(val);
@@ -138,23 +146,24 @@ public class CalculateAggregationCommand implements Command {
 		for (SimpleEntry<Long, Integer> val : highResVal) {
 			if (previousRecord == null) {
 				timeline.add(val);
+				previousRecord = val;
 			}
 			else if (previousRecord.getValue() != val.getValue()) {
 				timeline.add(val);
-				long duration = durations.get(val.getValue());
-				durations.put(val.getValue(), duration + (val.getKey() - previousRecord.getKey()));
+				long duration = durations.get(previousRecord.getValue());
+				durations.put(previousRecord.getValue(), duration + (val.getKey() - previousRecord.getKey()));
+				previousRecord = val;
 			}
-			previousRecord = val;
 		}
 		if (endTime != -1) {
-			SimpleEntry<Long, Integer> lastRecord = timeline.get(timeline.size() - 1);
-			long duration = durations.get(lastRecord.getValue());
-			durations.put(lastRecord.getValue(), duration + (endTime - lastRecord.getKey()));
+			long duration = durations.get(previousRecord.getValue());
+			durations.put(previousRecord.getValue(), duration + (endTime - previousRecord.getKey())); //End time is start time of next cycle. It's excluded
 			
 //			timeline.add(new SimpleEntry<Long, Integer>(endTime, lastRecord.getValue())); Have to check
 		}
-		
-		return new EnumVal(highResVal, timeline, durations);
+		EnumVal val = new EnumVal(highResVal, timeline, durations);
+		LOGGER.info(val);
+		return val;
 	}
 	
 	private Map<Integer, Long> initDuration(Set<Integer> enumValues) {
@@ -270,6 +279,16 @@ public class CalculateAggregationCommand implements Command {
 		}
 		public void setDuration(Map<Integer, Long> duration) {
 			this.duration = duration;
+		}
+		
+		@Override
+		public String toString() {
+			// TODO Auto-generated method stub
+			return new StringBuilder("EnumVal [\n")
+						.append("Actual : ").append(actualTimeline).append("\n")
+						.append("Time : ").append(timeline).append("\n")
+						.append("Duration : ").append(duration).append("\n]")
+						.toString();
 		}
 	}
 }

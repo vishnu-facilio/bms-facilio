@@ -93,10 +93,14 @@ public class ReportFieldContext {
 			}
 			else if (field instanceof BooleanField) {
 				BooleanField boolField = (BooleanField) field;
+				enumMap = new HashMap<>();
 				if (boolField.getTrueVal() != null && !boolField.getTrueVal().isEmpty()) {
-					enumMap = new HashMap<>();
 					enumMap.put(1, boolField.getTrueVal());
 					enumMap.put(0, boolField.getFalseVal());
+				}
+				else {
+					enumMap.put(1, 1);
+					enumMap.put(0, 0);
 				}
 			}
 			else if (field instanceof EnumField) {
