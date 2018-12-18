@@ -52,9 +52,7 @@ public class AddAlarmCommand implements Command {
 																.moduleName(moduleName)
 																.fields(fields);
 			
-			if (AccountUtil.getCurrentOrg().getId() != 78) {
-				builder.withLocalId();
-			}
+			builder.withLocalId();
 			
 			AlarmAPI.updateAlarmDetailsInTicket(alarm, alarm);
 			TicketAPI.updateTicketStatus(alarm);
