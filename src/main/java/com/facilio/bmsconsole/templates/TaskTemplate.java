@@ -162,18 +162,47 @@ public class TaskTemplate extends Template {
 		this.sequence = sequence;
 	}
 	
-	private Boolean attachmentRequired;
-	public Boolean getAttachmentRequired() {
-		return attachmentRequired;
+	private AttachmentRequiredEnum attachmentRequiredEnum;
+	
+	public AttachmentRequiredEnum getAttachmentRequiredEnum() {
+		return attachmentRequiredEnum;
+	}
+	
+	public void setAttachmentRequiredInt(int attachmentRequired) {
+		
+		attachmentRequiredEnum = AttachmentRequiredEnum.valueOf(attachmentRequired);
+	}
+	public int getAttachmentRequiredInt() {
+		
+		if(attachmentRequiredEnum != null) {
+			return attachmentRequiredEnum.getVal();
+		}
+		return -1;
 	}
 	public void setAttachmentRequired(boolean attachmentRequired) {
-		this.attachmentRequired = attachmentRequired;
+		
+		if(attachmentRequired) {
+			attachmentRequiredEnum = AttachmentRequiredEnum.TRUE;
+		}
+		else {
+			attachmentRequiredEnum = AttachmentRequiredEnum.FALSE;
+		}
+	}
+	public Boolean getAttachmentRequired() {
+		if(attachmentRequiredEnum != null) {
+			if(attachmentRequiredEnum.equals(AttachmentRequiredEnum.TRUE)) {
+				return Boolean.TRUE;
+			}
+		}
+		return Boolean.FALSE;
 	}
 	public boolean isAttachmentRequired() {
-		if(attachmentRequired != null) {
-			return attachmentRequired.booleanValue();
+		if(attachmentRequiredEnum != null) {
+			if(attachmentRequiredEnum.equals(AttachmentRequiredEnum.TRUE)) {
+				return Boolean.TRUE;
+			}
 		}
-		return false;
+		return Boolean.FALSE;
 	}
 	
 	private JSONObject additionInfo;
@@ -273,7 +302,7 @@ public class TaskTemplate extends Template {
 			readingFieldId = task.getReadingFieldId();
 			sectionId = task.getSectionId();
 			sequence = task.getSequence();
-			attachmentRequired = task.isAttachmentRequired();
+			setAttachmentRequired(task.isAttachmentRequired());
 			status = task.getStatusNewEnum();
 			if (task.getResource() != null) {
 				resourceId = task.getResource().getId();
@@ -345,4 +374,23 @@ public class TaskTemplate extends Template {
 	public void setAssignmentType(int assignmentType) {
 		this.assignmentType = PMAssignmentType.valueOf(assignmentType);
 	}
+	
+	public enum AttachmentRequiredEnum {
+		FALSE,
+		TRUE,
+		USE_PARENT,
+		;
+		
+		public int getVal() {
+			return ordinal();
+		}
+		
+		public static AttachmentRequiredEnum valueOf(int val) {
+			if(val > 0 && val <= values().length) {
+				return values()[val];
+			}
+			return null;
+		}
+	}
+	
 }
