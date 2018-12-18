@@ -12,8 +12,8 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.CommonReportUtil;
 import com.facilio.bmsconsole.commands.FacilioContext;
-import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
+import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.StringOperators;
@@ -25,13 +25,13 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.report.context.ReportYAxisContext;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportFieldContext;
-import com.facilio.report.context.ReportFolderContext;
 import com.facilio.report.context.ReportFilterContext;
+import com.facilio.report.context.ReportFolderContext;
+import com.facilio.report.context.ReportYAxisContext;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -208,6 +208,7 @@ public class ReportUtil {
 				.fields(FieldFactory.getReport1FolderFields());
 
 		reportFolderContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+		reportFolderContext.setModifiedTime(System.currentTimeMillis());
 		Map<String, Object> props = FieldUtil.getAsProperties(reportFolderContext);
 		long id = insertBuilder.insert(props);
 		reportFolderContext.setId(id);
@@ -224,6 +225,7 @@ public class ReportUtil {
 				.andCustomWhere("ID = ?", reportFolderContext.getId());
 		
 		reportFolderContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+		reportFolderContext.setModifiedTime(System.currentTimeMillis());
 		
 		Map<String, Object> props = FieldUtil.getAsProperties(reportFolderContext);
 		update.update(props);

@@ -99,12 +99,31 @@ public class V2ReportAction extends FacilioAction {
 	public void setModuleName(String moduleName) {
 		this.moduleName = moduleName;
 	}
+	
 	public String fetchReportFolders() throws Exception {
 		
-		List<ReportFolderContext> reportFolders = ReportUtil.getAllReportFolder(moduleName, true);
+		List<ReportFolderContext> reportFolders = ReportUtil.getAllReportFolder(moduleName, getIsWithReport());
 		setResult("reportFolders", reportFolders);
 		setResult("moduleName", moduleName);
 		return SUCCESS;
+	}
+	
+	public String fetchReportsOfFolder() throws Exception {
+		
+		List<ReportContext> reports = ReportUtil.getReportsFromFolderId(folderId);
+		setResult("reports", reports);
+		return SUCCESS;
+	}
+	
+	private Boolean isWithReport;
+	public Boolean getIsWithReport() {
+		if (isWithReport == null) {
+			return true;
+		}
+		return isWithReport;
+	}
+	public void setIsWithReport(Boolean isWithReport) {
+		this.isWithReport = isWithReport;
 	}
 	
 	public String fetchReport() throws Exception {

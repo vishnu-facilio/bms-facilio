@@ -66,4 +66,12 @@ public class ReportFolderContext extends ModuleBaseWithCustomFields {
 	public void setReports(List<ReportContext> reports) {
 		this.reports = reports;
 	}
+	
+	private long modifiedTime = -1;
+	public long getModifiedTime() {
+		return modifiedTime;
+	}
+	public void setModifiedTime(long modifiedTime) {
+		this.modifiedTime = modifiedTime;
+	}
 }
