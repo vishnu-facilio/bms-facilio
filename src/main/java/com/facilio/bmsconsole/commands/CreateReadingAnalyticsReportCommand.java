@@ -150,6 +150,7 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 		dataPoint.setMetaData(metric.getMetaData());
 		ReportFieldContext xAxis = new ReportFieldContext();
 		xAxis.setField(getDerivedDPXField(dataPoint, mode));
+		dataPoint.setxAxis(xAxis);
 		dataPoint.setyAxis(metric.getyAxis());
 		return dataPoint;
 	}
