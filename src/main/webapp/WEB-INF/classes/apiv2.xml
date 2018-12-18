@@ -444,7 +444,7 @@
 		</action>
 	</package>
 	
-	<package name="reportApiv2" namespace="/api/v2/report/folders" extends="v2Api">
+	<package name="reportFoldersApiv2" namespace="/api/v2/report/folders" extends="v2Api">
 		<action name="*" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReportsOfFolder">
 			<param name="folderId">{1}</param>
 		</action>
