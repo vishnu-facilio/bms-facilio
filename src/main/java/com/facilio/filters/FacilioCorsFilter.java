@@ -210,6 +210,7 @@ public class FacilioCorsFilter implements Filter {
     }
 
     private void handleInvalid(HttpServletRequest request, HttpServletResponse response) {
+        LOGGER.info("send 403 for " + request.getRequestURI());
         response.setContentType("text/plain");
         response.setStatus(403);
         response.resetBuffer();
@@ -280,21 +281,37 @@ public class FacilioCorsFilter implements Filter {
         if(ORIGINS.isEmpty()){
             return true;
         }
-        
-        if (customdomains != null) {
 
-			String[] originHeaderdomain = originHeader.split("://");
+        String[] originHeaderdomain = originHeader.split("://");
+        if (customdomains != null) {
 			if (customdomains.containsKey(originHeaderdomain[1])) {
 				return true;
-
 			}
-
 		}
 
+        originHeader = originHeaderdomain[1];
         String[] domains = originHeader.split("\\.");
         String domain = originHeader;
         int domainLength = domains.length;
-        if(domainLength > 2) {
+        if(domainLength == 4 && domain.contains(":")) {
+            boolean ip = true;
+            for(String octet : domains) {
+                try {
+                    if (octet.contains(":")) {
+                        octet = octet.split(":")[0];
+                    }
+                    int i = Integer.parseInt(octet);
+                    if ((i < 0) || (i > 255)) {
+                        ip = false;
+                    }
+                } catch (Exception e) {
+                    LOGGER.info("Exception in cors ", e);
+                }
+            }
+            if(ip ) {
+               domain = "https://" + domain;
+            }
+        } else if(domainLength > 2) {
             domain = "https://"+domains[domainLength-2]+"."+ domains[domainLength-1];
         }
         return ifDomainExists(domain);

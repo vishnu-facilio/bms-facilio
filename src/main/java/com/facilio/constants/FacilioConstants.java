@@ -295,6 +295,8 @@ public class FacilioConstants {
 		public static final String REPORT_FIELDS = "reportFields";
 		public static final String REPORT_MODE = "reportMode";
 		public static final String REPORT_SORT_ALIAS = "reportSortAlias";
+		public static final String REPORT_DEFAULT_X_ALIAS = "X";
+		public static final String REPORT_RESOURCE_ALIASES = "reportResourceAliases";
 		
 		public static final String AGGR_KEY = "aggr";
 		public static final String DATA_KEY = "data";

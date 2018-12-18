@@ -25,8 +25,6 @@ import com.facilio.report.context.ReportGroupByField;
 
 public class ConstructReportDataCommand implements Command {
 
-	private static final String DEFAULT_X_ALIAS = "X";
-	
 	private List<Map<String, Object>> initList() { //In case we wanna implement a sorted list
 		return new ArrayList<>();
 	}
@@ -119,7 +117,7 @@ public class ConstructReportDataCommand implements Command {
 	}
 	
 	private String getxAlias(ReportContext report) {
-		return report.getxAlias() == null ? DEFAULT_X_ALIAS : report.getxAlias();
+		return report.getxAlias() == null ? FacilioConstants.ContextNames.REPORT_DEFAULT_X_ALIAS : report.getxAlias();
 	}
 	
 	private Object getBaseLineAdjustedXVal(Object xVal, ReportFieldContext xAxis, ReportBaseLineContext baseLine) throws Exception {
@@ -141,10 +139,6 @@ public class ConstructReportDataCommand implements Command {
 			return "";
 		}
 		
-		if (aggr != null && aggr instanceof DateAggregateOperator) {
-			val = ((DateAggregateOperator)aggr).getAdjustedTimestamp((long) val);
-		}
-		
 		switch (field.getDataTypeEnum()) {
 			case DECIMAL:
 				val = DECIMAL_FORMAT.format(val);
@@ -163,6 +157,12 @@ public class ConstructReportDataCommand implements Command {
 			case ENUM:
 				if (handleEnum && actualxVal != null) {
 					val = new SimpleEntry<Long, Integer>((Long)actualxVal, (Integer) val);
+				}
+				break;
+			case DATE:
+			case DATE_TIME:
+				if (aggr != null && aggr instanceof DateAggregateOperator) {
+					val = ((DateAggregateOperator)aggr).getAdjustedTimestamp((long) val);
 				}
 				break;
 			default:

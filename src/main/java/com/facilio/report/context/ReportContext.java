@@ -1,14 +1,14 @@
 package com.facilio.report.context;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.criteria.DateRange;
@@ -16,8 +16,6 @@ import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.report.context.ReadingAnalysisContext.AnalyticsType;
 import com.facilio.workflows.context.WorkflowContext;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 
 public class ReportContext {
 
@@ -118,6 +116,39 @@ public class ReportContext {
 		this.chartState = chartState;
 	}
 	
+	private JSONObject reportState;
+	public JSONObject getReportState() {
+		return reportState;
+	}
+	public void setReportState(JSONObject reportState) {
+		this.reportState = reportState;
+	}
+	public void addToReportState (String key, Object value) {
+		if (reportState == null) {
+			reportState = new JSONObject();
+		}
+		reportState.put(key, value);
+	}
+	public Object getFromReportState (String key) {
+		if (reportState != null) {
+			return reportState.get(key);
+		}
+		return null;
+	}
+	
+	public String getReportStateJson() {
+		if (reportState != null) {
+			return reportState.toJSONString();
+		}
+		return null;
+	}
+	public void setReportStateJson(String reportStateJson) throws Exception {
+		if (reportStateJson != null) {
+			JSONParser parser = new JSONParser();
+			this.reportState = (JSONObject) parser.parse(reportStateJson);
+		}
+	}
+
 	private Operator dateOperator;
 	public Operator getDateOperatorEnum() {
 		return dateOperator;
@@ -334,7 +365,7 @@ public class ReportContext {
 	public void setTransformClass(String transformClass) throws ClassNotFoundException {
 		this.transformClass = (Class<? extends TransformReportDataIfc>) Class.forName(transformClass);
 	}
-
+	
 	public static enum BooleanSettings {
 		SHOW_HIDE_ALARM("Alarm",1),
 		SHOW_HIDE_SAFELIMIT("Safe Limit",2),
