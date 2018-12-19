@@ -23,13 +23,8 @@ public class ProcessEventCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		JSONObject payload = (JSONObject) context.get(EventConstants.EventContextNames.EVENT_PAYLOAD);
 		if(payload != null) {
-			try {
-				List<EventRuleContext> ruleList = EventRulesAPI.getActiveEventRules();
-				EventAPI.populateProcessEventParams((FacilioContext) context, System.currentTimeMillis(), payload, ruleList, new HashMap<>(), -1);
-			} catch (Exception e) {
-				System.out.println(e.getLocalizedMessage() + " Exception while adding event: " + payload.toString());
-				log.info("Exception occurred ", e);
-			}
+			List<EventRuleContext> ruleList = EventRulesAPI.getActiveEventRules();
+			EventAPI.populateProcessEventParams((FacilioContext) context, System.currentTimeMillis(), payload, ruleList, new HashMap<>(), -1);
 		}
 		return false;
 	}
