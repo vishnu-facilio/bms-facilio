@@ -11,6 +11,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
+import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -149,11 +150,11 @@ public class ReportContext {
 		}
 	}
 
-	private Operator dateOperator;
-	public Operator getDateOperatorEnum() {
+	private DateOperators dateOperator;
+	public DateOperators getDateOperatorEnum() {
 		return dateOperator;
 	}
-	public void setDateOperator(Operator dateOperator) {
+	public void setDateOperator(DateOperators dateOperator) {
 		this.dateOperator = dateOperator;
 	}
 	public int getDateOperator() {
@@ -164,7 +165,13 @@ public class ReportContext {
 	}
 	public void setDateOperator(int dateOperator) {
 		if(dateOperator > 0) {
-			this.dateOperator = Operator.OPERATOR_MAP.get(dateOperator);
+			Operator operator = Operator.OPERATOR_MAP.get(dateOperator);
+			if (operator instanceof DateOperators) {
+				this.dateOperator = (DateOperators) operator;
+			}
+			else {
+				throw new IllegalArgumentException("Invalid Date Operator for report");
+			}
 		}
 	}
 	

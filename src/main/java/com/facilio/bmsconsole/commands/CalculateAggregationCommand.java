@@ -51,7 +51,7 @@ public class CalculateAggregationCommand implements Command {
 						case BOOLEAN:
 						case ENUM:
 							if (dp.isHandleEnum()) {
-								doEnumAggr(dp, csvData, aggrData, sortAlias);
+								doEnumAggr(report, dp, csvData, aggrData, sortAlias);
 							}
 							break;
 						default:
@@ -72,7 +72,7 @@ public class CalculateAggregationCommand implements Command {
 		return false;
 	}
 	
-	private void doEnumAggr (ReportDataPointContext dp, List<Map<String, Object>> csvData, Map<String, Object> aggrData, String sortAlias) {
+	private void doEnumAggr (ReportContext report, ReportDataPointContext dp, List<Map<String, Object>> csvData, Map<String, Object> aggrData, String sortAlias) {
 		Map<String, SimpleEntry<Long, Integer>> previousRecords = new HashMap<>();
 		for (int i = 0; i < csvData.size(); i++) {
 			Map<String, Object> data = csvData.get(i);
@@ -87,7 +87,7 @@ public class CalculateAggregationCommand implements Command {
 			}
 			
 			for (String alias : dp.getAliases().values()) {
-				EnumVal enumValue = calculateEnumAggr(dp.getyAxis().getEnumMap().keySet(), data.get(alias), alias, startTime, endTime, previousRecords, aggrData); //Starttime is included and endtime is excluded
+				EnumVal enumValue = calculateEnumAggr(report, dp.getyAxis().getEnumMap().keySet(), data.get(alias), alias, startTime, endTime, previousRecords, aggrData); //Starttime is included and endtime is excluded
 				if (enumValue != null) {
 					data.put(alias, enumValue);
 				}
@@ -95,10 +95,10 @@ public class CalculateAggregationCommand implements Command {
 		}
 	}
 	
-	private EnumVal calculateEnumAggr (Set<Integer> enumValueKeys, Object value, String alias, long startTime, long endTime, Map<String, SimpleEntry<Long, Integer>> previousRecords, Map<String, Object> aggrData) {
+	private EnumVal calculateEnumAggr (ReportContext report, Set<Integer> enumValueKeys, Object value, String alias, long startTime, long endTime, Map<String, SimpleEntry<Long, Integer>> previousRecords, Map<String, Object> aggrData) {
 		if (value != null) {
 			List<SimpleEntry<Long, Integer>> enumVal = (List<SimpleEntry<Long, Integer>>) value;
-			EnumVal enumValue = combineEnumVal(enumValueKeys, enumVal, startTime, endTime, previousRecords.get(alias));
+			EnumVal enumValue = combineEnumVal(report, enumValueKeys, enumVal, startTime, endTime, previousRecords.get(alias));
 			previousRecords.put(alias, enumValue.timeline.get(enumValue.timeline.size() - 1));
 			
 			//Aggr
@@ -126,7 +126,7 @@ public class CalculateAggregationCommand implements Command {
 		return null;
 	}
 	
-	private EnumVal combineEnumVal (Set<Integer> enumValues, List<SimpleEntry<Long, Integer>> highResVal, long startTime, long endTime, SimpleEntry<Long, Integer> previousRecord) {
+	private EnumVal combineEnumVal (ReportContext report, Set<Integer> enumValues, List<SimpleEntry<Long, Integer>> highResVal, long startTime, long endTime, SimpleEntry<Long, Integer> previousRecord) {
 		List<SimpleEntry<Long, Integer>> timeline = new ArrayList<>();
 		Map<Integer, Long> durations = initDuration(enumValues);
 		
@@ -155,12 +155,21 @@ public class CalculateAggregationCommand implements Command {
 				previousRecord = val;
 			}
 		}
-		if (endTime != -1) {
-			long duration = durations.get(previousRecord.getValue());
-			durations.put(previousRecord.getValue(), duration + (endTime - previousRecord.getKey())); //End time is start time of next cycle. It's excluded
-			
-//			timeline.add(new SimpleEntry<Long, Integer>(endTime, lastRecord.getValue())); Have to check
+		
+		if (endTime == -1) {
+			if (report.getDateOperatorEnum().isCurrentOperator()) {
+				endTime = System.currentTimeMillis();
+			}
+			else {
+				endTime = report.getDateOperatorEnum().getRange(report.getDateValue()).getEndTime();
+			}
+			timeline.add(new SimpleEntry<Long, Integer>(endTime, previousRecord.getValue())); 
+			endTime++; //Because this endttime is inclusive
 		}
+		
+		long duration = durations.get(previousRecord.getValue());
+		durations.put(previousRecord.getValue(), duration + (endTime - previousRecord.getKey())); //End time is start time of next cycle. It's excluded
+		
 		EnumVal val = new EnumVal(highResVal, timeline, durations);
 		LOGGER.info(val);
 		return val;
