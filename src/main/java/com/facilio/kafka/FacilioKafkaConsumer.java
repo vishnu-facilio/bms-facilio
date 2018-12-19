@@ -53,9 +53,17 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
             for (ConsumerRecord<String, String> record : records) {
                 JSONParser parser = new JSONParser();
                 JSONObject object = (JSONObject) parser.parse(record.value());
-                FacilioRecord facilioRecord = new FacilioRecord(record.key(), object);
+                JSONObject data = (JSONObject) parser.parse((String)object.get("data"));
+                FacilioRecord facilioRecord = new FacilioRecord(record.key(), data);
                 facilioRecord.setId(String.valueOf(record.offset()));
-                facilioRecord.setTimeStamp(record.timestamp());
+                try {
+                    if(object.containsKey("timestamp")) {
+                        Long timestamp = Long.parseLong(object.get("timestamp").toString());
+                        facilioRecord.setTimeStamp(timestamp);
+                    }
+                } catch (NumberFormatException e) {
+                    LOGGER.info("Exception while getting timestamp " + e.getLocalizedMessage());
+                }
                 facilioRecords.add(facilioRecord);
             }
         } catch (Exception e) {
