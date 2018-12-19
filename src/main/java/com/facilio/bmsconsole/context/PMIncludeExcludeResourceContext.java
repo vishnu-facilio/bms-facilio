@@ -12,6 +12,7 @@ public class PMIncludeExcludeResourceContext implements Serializable {
 	Long taskTemplateId;
 	Long resourceId;
 	Boolean isInclude;
+
 	int parentType;
 	
 	public int getParentType() {
@@ -59,6 +60,11 @@ public class PMIncludeExcludeResourceContext implements Serializable {
 	public void setIsInclude(Boolean isInclude) {
 		this.isInclude = isInclude;
 	}
+	
+	public void setIsInclude(boolean isInclude) {
+		this.isInclude = isInclude;
+	}
+	
 	
 	public static enum ParentType {
 		
