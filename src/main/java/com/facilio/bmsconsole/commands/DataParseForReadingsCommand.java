@@ -179,14 +179,6 @@ public class DataParseForReadingsCommand implements Command {
 				}
 				LOGGER.severe("row -- "+row_no+" colVal --- "+colVal);
 				
-//				for(String key: colVal.keySet()) {
-//					String field = fieldMapping.get(key);
-//					ModuleBean bean = (ModuleBean) BeanFactory.lookup("moduleBean");
-//					bean.getF
-//					
-//				}
-				
-				
 				for(String module : moduleNames) {
 					
 					List<String> fields  = new ArrayList(groupedFields.get(module));
@@ -256,10 +248,10 @@ public class DataParseForReadingsCommand implements Command {
 									}
 								}
 
-						} catch (Exception e) {
-							LOGGER.severe("exception ---" + e);
-							throw new ImportParseException(row_no, fieldMapping.get(key).toString(), e);
-						}
+							} catch (Exception e) {
+								LOGGER.severe("exception ---" + e);
+								throw new ImportParseException(row_no, fieldMapping.get(key).toString(), e);
+							}
 						}
 					}
 					if(!isfilled) {
