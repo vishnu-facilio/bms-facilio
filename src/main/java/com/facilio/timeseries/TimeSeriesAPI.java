@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -155,11 +156,11 @@ public class TimeSeriesAPI {
 			fields.add(field);
 		}
 		List<ReadingDataMeta> metaList = ReadingsAPI.getReadingDataMetaList(assetId, fields);
-		return metaList.stream().collect(Collectors.toMap(meta -> meta.getResourceId()+"|"+meta.getFieldId(), Function.identity()));
+		return metaList.stream().collect(Collectors.toMap(meta -> getRDMKey(meta.getResourceId(), meta.getFieldId()), Function.identity()));
 	}
 	
 	private static void checkForInputType(long assetId, long fieldId, String instanceName, Map<String, ReadingDataMeta> metaMap) throws Exception {
-		ReadingDataMeta meta = metaMap.get(assetId+"|"+fieldId);
+		ReadingDataMeta meta = metaMap.get(getRDMKey(assetId, fieldId));
 		switch (meta.getInputTypeEnum()) {
 			case CONTROLLER_MAPPED:
 				throw new IllegalArgumentException("Field with ID "+fieldId+" for instance "+instanceName+" is already mapped");
@@ -231,7 +232,7 @@ public class TimeSeriesAPI {
 				}
 			}
 			
-			ReadingDataMeta meta = metaMap.get(assetId+"|"+fieldId);
+			ReadingDataMeta meta = metaMap.get(getRDMKey(assetId, fieldId));
 			if (rType!=null && rType.isWritable()) {
 				writableReadingList.add(meta);
 			}
@@ -255,14 +256,17 @@ public class TimeSeriesAPI {
 	
 	public static int updateInstanceAssetMapping(String deviceName, long assetId, long categoryId, String instanceName, long fieldId, Map<String, Object> oldData) throws Exception {
 		long oldFieldId = (long) oldData.get("fieldId");
+		long oldAssetId = (long) oldData.get("assetId");
 		
-		Map<String,Long> instanceFieldMap = new HashMap<>();
-		instanceFieldMap.put(instanceName, fieldId);
-		instanceFieldMap.put(instanceName + "_temp", oldFieldId);
-		Map<String, ReadingDataMeta> metaMap = getMetaMap(assetId, instanceFieldMap);
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<Pair<Long, FacilioField>> pairs = new ArrayList<>();
+		pairs.add(Pair.of(oldAssetId, modBean.getField(oldFieldId)));
+		pairs.add(Pair.of(assetId, modBean.getField(fieldId)));
+		
+		Map<String, ReadingDataMeta> metaMap = ReadingsAPI.getReadingDataMetaMap(pairs);
 		checkForInputType(assetId, fieldId, instanceName, metaMap);
 		
-		ReadingDataMeta meta = metaMap.get(assetId+"|"+oldFieldId);
+		ReadingDataMeta meta = metaMap.get(getRDMKey(oldAssetId, oldFieldId));
 		long lastMappedTime = (long) oldData.get("mappedTime");
 		// Checking if the data is coming for more than a month
 		if (meta.getActualValue() != null && !meta.getActualValue().equals("-1") && ((meta.getTtime()-lastMappedTime) > (30 * 24 * 60 * 60000L) ) ) {
@@ -290,13 +294,17 @@ public class TimeSeriesAPI {
 		int count = builder.update(prop);
 		
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.OLD_FIELD_ID, oldFieldId);
+		context.put(FacilioConstants.ContextNames.RECORD, oldData);
 		context.put(FacilioConstants.ContextNames.FIELD_ID, fieldId);
 		context.put(FacilioConstants.ContextNames.PARENT_ID, assetId);
 		
 		FacilioTimer.scheduleInstantJob("MigrateReadingData", context);
 		
 		return count;
+	}
+	
+	private static String getRDMKey(long resourceId, long fieldId) {
+		return resourceId+"_"+fieldId;
 	}
 	
 	public static Map<String, Long> getDefaultInstanceFieldMap() throws Exception {
