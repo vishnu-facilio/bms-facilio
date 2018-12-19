@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,6 +34,7 @@ import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
+import com.facilio.util.FacilioUtil;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonInclude.Value;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -566,5 +568,46 @@ public class FieldUtil {
 	
 	public static boolean isSiteIdFieldPresent(FacilioModule module) {
 		return ALLOWED_MODULES.contains(module.getName()) || (module.getExtendModule() != null && module.getExtendModule().getName().equals("asset"));
+	}
+
+	public static FacilioField parseFieldJson(JSONObject fieldJson) throws Exception {
+		JSONArray fieldJsons = FacilioUtil.getSingleTonJsonArray(fieldJson);
+		return parseFieldJson(fieldJsons).get(0);
+	}
+	
+	public static List<FacilioField> parseFieldJson(JSONArray fieldJsons) throws Exception {
+		if(fieldJsons != null) {
+			List<FacilioField> fields = new ArrayList<>();
+			Iterator iterator = fieldJsons.iterator();
+			while(iterator.hasNext()) {
+				JSONObject fieldJson = (JSONObject) iterator.next();
+				FieldType fieldType = FieldType.getCFType((int)fieldJson.get("dataType"));
+				FacilioField facilioField;
+				switch(fieldType) {
+				case NUMBER:
+				case DECIMAL:
+					facilioField = (NumberField) FieldUtil.getAsBeanFromJson(fieldJson, NumberField.class);
+					break;
+				case BOOLEAN:
+					facilioField = (BooleanField) FieldUtil.getAsBeanFromJson(fieldJson, BooleanField.class);
+					break;
+				case ENUM:
+					facilioField = (EnumField) FieldUtil.getAsBeanFromJson(fieldJson, EnumField.class);
+					break;
+				case LOOKUP:
+					facilioField = (LookupField) FieldUtil.getAsBeanFromJson(fieldJson, LookupField.class);
+					break;
+				case FILE:
+					facilioField = (FileField) FieldUtil.getAsBeanFromJson(fieldJson, FileField.class);
+					break;
+				default:
+					facilioField = (FacilioField) FieldUtil.getAsBeanFromJson(fieldJson, FacilioField.class);
+					break;
+				}
+				fields.add(facilioField);
+			}
+			return fields;
+		}
+		return null;
 	}
 }

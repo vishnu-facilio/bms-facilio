@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Chain;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -28,8 +29,8 @@ import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
@@ -56,7 +57,6 @@ public class ReadingAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PARENT_MODULE, getParentModule());
 		context.put(FacilioConstants.ContextNames.READING_NAME, getReadingName());
-		addNumberFieldsToFields();
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
 		
 		Chain addReadingChain = TransactionChainFactory.getAddReadingsChain();
@@ -67,15 +67,6 @@ public class ReadingAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	private void addNumberFieldsToFields() {
-		if(numberFields != null && !numberFields.isEmpty()) {
-			fields = getFields() != null ? getFields() : new ArrayList<>();
-			for(NumberField numberField :numberFields) {
-				fields.add(numberField);
-			}
-		}
-		
-	}
 
 	String resourceType;
 	
@@ -109,7 +100,6 @@ public class ReadingAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.READING_NAME, getReadingName());
 		context.put(FacilioConstants.ContextNames.PARENT_ID, getParentCategoryId());
-		addNumberFieldsToFields();
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
 		Chain addReadingChain = TransactionChainFactory.addResourceReadingChain();
 		addReadingChain.execute(context);
@@ -129,7 +119,6 @@ public class ReadingAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PARENT_MODULE, parentModule);
 		context.put(FacilioConstants.ContextNames.READING_NAME, getReadingName());
-		addNumberFieldsToFields();
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
 		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, categoryReadingModule);
 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, getParentCategoryId());
@@ -164,7 +153,6 @@ public class ReadingAction extends FacilioAction {
 	public String addSpaceReading () throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.READING_NAME, getReadingName());
-		addNumberFieldsToFields();
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
 		context.put(FacilioConstants.ContextNames.PARENT_ID, getParentId());
 		
@@ -355,20 +343,6 @@ public class ReadingAction extends FacilioAction {
 		this.field = field;
 	}
 	
-	public NumberField numberField;
-	
-	
-	public NumberField getNumberField() {
-		return numberField;
-	}
-
-	public void setNumberField(NumberField numberField) {
-		this.numberField = numberField;
-		if(field == null) {
-			field = numberField;
-		}
-	}
-
 	private List<FacilioField> fields;
 	public List<FacilioField> getFields() {
 		return fields;
@@ -377,14 +351,26 @@ public class ReadingAction extends FacilioAction {
 		this.fields = fields;
 	}
 	
-	private List<NumberField> numberFields;
+	private JSONObject fieldJson;
 	
-	public List<NumberField> getNumberFields() {
-		return numberFields;
+	public JSONObject getFieldJson() {
+		return fieldJson;
 	}
 
-	public void setNumberFields(List<NumberField> numberFields) {
-		this.numberFields = numberFields;
+	public void setFieldJson(JSONObject fieldJson) throws Exception {
+		this.fieldJson = fieldJson;
+		setField(FieldUtil.parseFieldJson(this.fieldJson));
+	}
+	
+	private JSONArray fieldJsons;
+
+	public JSONArray getFieldJsons() {
+		return fieldJsons;
+	}
+
+	public void setFieldJsons(JSONArray fieldJsons) throws Exception {
+		this.fieldJsons = fieldJsons;
+		setFields(FieldUtil.parseFieldJson(this.fieldJsons));
 	}
 
 	private long readingId = -1;
