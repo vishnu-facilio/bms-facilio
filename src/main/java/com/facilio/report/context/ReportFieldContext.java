@@ -87,7 +87,7 @@ public class ReportFieldContext {
 			
 			if (field instanceof NumberField) {
 				if (this.unitStr == null) {
-					this.unitStr = ((NumberField) field).getUnit();
+					this.unitStr = ((NumberField) field).getUnitEnum() != null ? ((NumberField) field).getUnitEnum().getSymbol() : ((NumberField) field).getUnit();
 				}
 				this.metric = ((NumberField) field).getMetricEnum();
 			}
