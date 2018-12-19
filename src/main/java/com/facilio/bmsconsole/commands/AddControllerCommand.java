@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.aws.util.AwsUtil;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.logging.log4j.util.Strings;
@@ -60,6 +61,7 @@ public class AddControllerCommand implements Command {
 													.addRecord(controllerProps);
 			builder.save();
 			controller.setId((long) controllerProps.get("id"));
+			AwsUtil.addIotClient(AccountUtil.getCurrentOrg().getDomain(), controller.getMacAddr());
 			
 			ControllerAPI.addControllerBuildingRel(controller);
 		}
