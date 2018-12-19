@@ -8,7 +8,7 @@ import java.util.Map;
 
 public enum Unit {
 	
-	// last id -- 88
+	// last id -- 89
 	
 	KWH(1,"Kilowatt Hour","kWh",Metric.ENERGY),
 	HECTOWH(76,"Hectowatt Hour","hWh",Metric.ENERGY,"si*10","this/10"),
@@ -113,6 +113,8 @@ public enum Unit {
 	
 	PERCENTAGE(87,"Percentage","%",Metric.PERCENTAGE),
 	PERCENTAGE_DIV_100(88,"percentage","%",Metric.PERCENTAGE,"si/100","this*100"),	// do not use this in ORG_UNITS
+	
+	MILLIPERHOUR(89,"Millimeters/hour","mm/hr",Metric.PRECIPITATION_INTENSITY),
 	;
 	
 	int unitId;
