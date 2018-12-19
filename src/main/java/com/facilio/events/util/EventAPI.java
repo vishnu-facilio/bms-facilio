@@ -172,9 +172,12 @@ public class EventAPI {
 																.table(module.getTableName())
 																.select(EventConstants.EventFieldFactory.getSourceToResourceMappingFields())
 																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-																.andCondition(CriteriaAPI.getCondition("SOURCE",EventConstants.EventContextNames.SOURCE, source, StringOperators.IS))
-																.andCondition(getControllerIdCondition(controllerId, module));
+																.andCondition(CriteriaAPI.getCondition("SOURCE",EventConstants.EventContextNames.SOURCE, source, StringOperators.IS));
 																//.andCustomWhere("ORGID = ? AND SOURCE = ? AND CONTROLLER_ID = ?", orgId, source,controllerId);
+		
+		if (controllerId != -1) {
+			selectRecordBuilder.andCondition(getControllerIdCondition(controllerId, module));
+		}
 		
 		List<Map<String, Object>> props = selectRecordBuilder.get();
 		if(props != null && !props.isEmpty()) {
