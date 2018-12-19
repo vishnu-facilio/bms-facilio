@@ -751,7 +751,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 	private static void loadWorkOrdersUsers(Collection<? extends WorkOrderContext> workOrders) throws Exception {
 		if(workOrders != null && !workOrders.isEmpty()) {
 			List<User> users = AccountUtil.getOrgBean().getOrgUsers(AccountUtil.getCurrentOrg().getOrgId(), true);
-			users.addAll(AccountUtil.getOrgBean().getOrgPortalUsers(AccountUtil.getCurrentOrg().getOrgId()));
+//			users.addAll(AccountUtil.getOrgBean().getOrgPortalUsers(AccountUtil.getCurrentOrg().getOrgId()));
 			
 			Map<Long, User> userMap = new HashMap<>();
 			for(User user : users) {
