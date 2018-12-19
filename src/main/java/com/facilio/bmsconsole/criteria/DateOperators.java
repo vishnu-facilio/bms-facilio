@@ -63,6 +63,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return true;
 		}
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 	},
 	
 	ISN_T(17, "isn't") {
@@ -121,6 +127,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return true;
 		}
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 	},
 	
 	IS_BEFORE(18, "is before") {
@@ -167,6 +179,12 @@ public enum DateOperators implements Operator<String> {
 		public boolean isValueNeeded() {
 			// TODO Auto-generated method stub
 			return true;
+		}
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return false;
 		}
 	},
 	
@@ -215,6 +233,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return true;
 		}
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 	},
 	
 	BETWEEN(20, "between") {
@@ -254,6 +278,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return true;
 		}
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 	},
 	
 	NOT_BETWEEN(21, "not between") {
@@ -291,6 +321,12 @@ public enum DateOperators implements Operator<String> {
 		public boolean isValueNeeded() {
 			// TODO Auto-generated method stub
 			return true;
+		}
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return false;
 		}
 	},
 	
@@ -354,6 +390,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return false;
 		}
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return true;
+		}
 	},
 	TODAY_UPTO_NOW(43, "today upto now") {
 		@Override
@@ -414,6 +456,12 @@ public enum DateOperators implements Operator<String> {
 		public boolean isValueNeeded() {
 			// TODO Auto-generated method stub
 			return false;
+		}
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return true;
 		}
 	},
 	
@@ -477,6 +525,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return false;
 		}
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 	},
 	
 	STARTING_TOMORROW(24, "Starting Tomorrow") {
@@ -532,6 +586,12 @@ public enum DateOperators implements Operator<String> {
 	 	
 		@Override
 		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public boolean isCurrentOperator() {
 			// TODO Auto-generated method stub
 			return false;
 		}
@@ -597,6 +657,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return false;
 		}
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 	},
 	
 	TILL_YESTERDAY(26, "Till Yesterday") {
@@ -652,6 +718,12 @@ public enum DateOperators implements Operator<String> {
 		
 		@Override
 		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public boolean isCurrentOperator() {
 			// TODO Auto-generated method stub
 			return false;
 		}
@@ -717,6 +789,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return false;
 		}
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 	},
 	
 	CURRENT_MONTH(28, "Current Month") {
@@ -779,6 +857,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return false;
 		}
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return true;
+		}
 	},
 	CURRENT_MONTH_UPTO_NOW(48, "Current Month upto now") {
 		@Override
@@ -839,6 +923,12 @@ public enum DateOperators implements Operator<String> {
 		public boolean isValueNeeded() {
 			// TODO Auto-generated method stub
 			return false;
+		}
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return true;
 		}
 	},
 	
@@ -902,6 +992,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return false;
 		}
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 	},
 	
 	NEXT_N_MONTHS(59, "Next N Months") {
@@ -960,6 +1056,12 @@ public enum DateOperators implements Operator<String> {
 		public boolean isValueNeeded() {
 			// TODO Auto-generated method stub
 			return true;
+		}
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return false;
 		}
 		
 	},
@@ -1023,6 +1125,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return false;
 		}
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return true;
+		}
 	},
 	LAST_YEAR(45, "Last Year") {
 		@Override
@@ -1080,6 +1188,12 @@ public enum DateOperators implements Operator<String> {
 		
 		@Override
 		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public boolean isCurrentOperator() {
 			// TODO Auto-generated method stub
 			return false;
 		}
@@ -1143,6 +1257,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return false;
 		}
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return true;
+		}
 	},
 	
 	LAST_WEEK(30, "Last Week") {
@@ -1202,6 +1322,12 @@ public enum DateOperators implements Operator<String> {
 		
 		@Override
 		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public boolean isCurrentOperator() {
 			// TODO Auto-generated method stub
 			return false;
 		}
@@ -1267,6 +1393,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return false;
 		}
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return true;
+		}
 	},
 	
 	CURRENT_WEEK_UPTO_NOW(47, "Current Week upto now") {
@@ -1328,6 +1460,12 @@ public enum DateOperators implements Operator<String> {
 		public boolean isValueNeeded() {
 			// TODO Auto-generated method stub
 			return false;
+		}
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return true;
 		}
 	},
 	
@@ -1391,6 +1529,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return false;
 		}
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 	},
 	
 	NEXT_N_WEEKS(60, "Next N Weeks") {
@@ -1450,6 +1594,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return true;
 		}
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 		
 	},
 	
@@ -1506,6 +1656,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return true;
 		}
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 	},
 	
 	DUE_IN_DAYS(34, "Due in Days") {
@@ -1560,6 +1716,12 @@ public enum DateOperators implements Operator<String> {
 		public boolean isValueNeeded() {
 			// TODO Auto-generated method stub
 			return true;
+		}
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return false;
 		}
 	},
 	
@@ -1620,7 +1782,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return true;
 		}
-		
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 	},
 	
 	LAST_MONTHS(39, "Last Months") {
@@ -1679,6 +1846,12 @@ public enum DateOperators implements Operator<String> {
 		public boolean isValueNeeded() {
 			// TODO Auto-generated method stub
 			return true;
+		}
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return false;
 		}
 	},
 	
@@ -1739,6 +1912,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return true;
 		}
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 	},
 	
 	NEXT_HOURS(41, "Next N Hours") {
@@ -1797,6 +1976,12 @@ public enum DateOperators implements Operator<String> {
 		public boolean isValueNeeded() {
 			// TODO Auto-generated method stub
 			return true;
+		}
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return false;
 		}
 	},
 	LAST_N_MINUTES(56, "Last N Minutes") {
@@ -1896,6 +2081,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return true;
 		}
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return true;
+		}
 	},
 	LAST_N_HOURS(42, "Last N Hours") {
 		@Override
@@ -1991,6 +2182,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return true;
 		}
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return true;
+		}
 	},
 	
 	LAST_N_DAYS(49, "Last N Days") {
@@ -2051,8 +2248,14 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return true;
 		}
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return true;
+		}
 	},
-	PAST_N_DAY(57, "Past N day") {
+	PAST_N_DAY(57, "Past Nth day") {
 		@Override
 		public String getWhereClause(String columnName, String value) {
 			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
@@ -2108,6 +2311,12 @@ public enum DateOperators implements Operator<String> {
 		public boolean isValueNeeded() {
 			// TODO Auto-generated method stub
 			return true;
+		}
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return false;
 		}
 	},
 	IN_N_DAY(58, "In N Day") {
@@ -2166,6 +2375,12 @@ public enum DateOperators implements Operator<String> {
 		public boolean isValueNeeded() {
 			// TODO Auto-generated method stub
 			return true;
+		}
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return false;
 		}
 	},
 	LAST_N_WEEKS(50, "Last N Weeks") {
@@ -2226,6 +2441,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return true;
 		}
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return true;
+		}
 	},
 	CURRENT_N_DAY(62, "Current N Day"){
 		@Override
@@ -2283,7 +2504,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return true;
 		}
-		
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 		
 	},
 	CURRENT_N_WEEK(63, "Current N Week"){
@@ -2343,7 +2569,11 @@ public enum DateOperators implements Operator<String> {
 			return true;
 		}
 		
-		
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 	},
 	CURRENT_N_MONTH(64, "Current N Month"){
 		@Override
@@ -2400,6 +2630,12 @@ public enum DateOperators implements Operator<String> {
 		public boolean isValueNeeded() {
 			// TODO Auto-generated method stub
 			return true;
+		}
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return false;
 		}
 	},
 	CURRENT_N_YEAR(65, "Current N Year"){
@@ -2458,8 +2694,15 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return true;
 		}
+
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 	},
-	THIS_MONTH_TILL_YESTERDAY(66, "Current N Year"){
+	THIS_MONTH_TILL_YESTERDAY(66, "This Month Till Yesterday"){
 		@Override
 		public String getWhereClause(String columnName, String value) {
 			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
@@ -2530,6 +2773,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return false;
 		}
+		
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 	},
 	CURRENT_N_QUARTER(67, "Current N Quarter"){
 		@Override
@@ -2587,7 +2836,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return true;
 		}
-		
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 		
 	},
 	LAST_N_QUARTERS(70, "LAST N Quarters"){
@@ -2646,7 +2900,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return true;
 		}
-		
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return true;
+		}
 		
 	},
 	THIS_QUARTER(68, "This Quarter"){
@@ -2705,7 +2964,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return false;
 		}
-		
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return true;
+		}
 		
 	},
 	LAST_QUARTER(69, "This Quarter"){
@@ -2764,7 +3028,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return false;
 		}
-		
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 		
 	},
 	LAST_N_MONTHS(51, "Last N Months") {
@@ -2793,7 +3062,7 @@ public enum DateOperators implements Operator<String> {
 					public boolean evaluate(Object object) {
 						if(object != null && object instanceof Long) {
 							long currentVal = (long) object;
-							return DateTimeUtil.getMonthStartTime(-(Integer.valueOf(value)-1)) < currentVal && currentVal <= DateTimeUtil.getMonthStartTime(1);
+							return DateTimeUtil.getMonthStartTime(-(Integer.valueOf(value)-1)) < currentVal && currentVal < DateTimeUtil.getMonthStartTime(1);
 						}
 						return false;
 					}
@@ -2821,6 +3090,12 @@ public enum DateOperators implements Operator<String> {
 		
 		@Override
 		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+
+		@Override
+		public boolean isCurrentOperator() {
 			// TODO Auto-generated method stub
 			return true;
 		}
@@ -2895,6 +3170,7 @@ public enum DateOperators implements Operator<String> {
 	
 	public abstract DateRange getRange(String value);
 	public abstract boolean isBaseLineSupported();
+	public abstract boolean isCurrentOperator(); //Like today/ last n hours
 	
 	private static final Map<String, Operator> operatorMap = Collections.unmodifiableMap(initOperatorMap());
 	private static Map<String, Operator> initOperatorMap() {
