@@ -4,14 +4,6 @@ import com.facilio.aws.util.AwsUtil;
 
 public class QueueFactory {
 
-    private static boolean productionEnvironment = false;
-
-    static {
-        if("production".equals(AwsUtil.getConfig("environment"))) {
-            productionEnvironment = true;
-        }
-    }
-
     private static FacilioQueue getInMemoryQueue(){
         return InMemoryQueueService.getInstance();
     }
@@ -21,7 +13,7 @@ public class QueueFactory {
     }
 
     public static FacilioQueue getQueue() {
-        if(productionEnvironment) {
+        if(AwsUtil.isProduction() && ! AwsUtil.disableCSP()) {
             return getSqsQueue();
         } else {
             return getInMemoryQueue();
