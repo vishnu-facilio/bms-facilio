@@ -46,6 +46,9 @@ public class NumberField extends FacilioField {
 	}
 	private String unit;
 	public String getUnit() {
+		if (getUnitEnum() != null) {
+			return getUnitEnum().getSymbol();
+		}
 		return unit;
 	}
 	public void setUnit(String unit) {
