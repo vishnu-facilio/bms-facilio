@@ -82,6 +82,7 @@ public class DeletePMAndDependenciesCommand implements Command{
 		}
 		
 		deletePmResourcePlanner(pmIds);
+		deletePmIncludeExclude(pmIds);
 		deleteTriggers(triggerPMIds);
 		
 		if(isPMDelete || deleteOnStatusUpdate || (newPm != null && newPm.getId() != -1 && newPm.getReminders() != null)) {
@@ -125,6 +126,18 @@ public class DeletePMAndDependenciesCommand implements Command{
 		if (pmids !=  null && !pmids.isEmpty()) {
 			FacilioModule module = ModuleFactory.getPMResourcePlannerModule();
 			List<FacilioField> fields = FieldFactory.getPMResourcePlannerFields();
+			FacilioField pmIdField = FieldFactory.getAsMap(fields).get("pmId");
+			GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+					.table(module.getTableName())
+					.andCondition(CriteriaAPI.getCondition(pmIdField,StringUtils.join(pmids, ","), NumberOperators.EQUALS));
+			deleteBuilder.delete();
+		}
+	}
+	
+	private void deletePmIncludeExclude(List<Long> pmids) throws Exception {
+		if (pmids !=  null && !pmids.isEmpty()) {
+			FacilioModule module = ModuleFactory.getPMIncludeExcludeResourceModule();
+			List<FacilioField> fields = FieldFactory.getPMIncludeExcludeResourceFields();
 			FacilioField pmIdField = FieldFactory.getAsMap(fields).get("pmId");
 			GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 					.table(module.getTableName())

@@ -701,6 +701,7 @@ public class TemplateAPI {
 			List<TaskSectionTemplate> sectionTemplates = new ArrayList<>();
 			for (Map<String, Object> prop : sectionProps) {
 				TaskSectionTemplate sectionTemplate = FieldUtil.getAsBeanFromMap(prop, TaskSectionTemplate.class);
+				sectionTemplate.setPmIncludeExcludeResourceContexts(TemplateAPI.getPMIncludeExcludeList(null, sectionTemplate.getId(), null));
 				sections.put(sectionTemplate.getId(), sectionTemplate);
 				sectionTemplates.add(sectionTemplate);
 			}
@@ -722,7 +723,7 @@ public class TemplateAPI {
 			for (Map<String, Object> prop : taskProps) {
 				TaskTemplate template = FieldUtil.getAsBeanFromMap(prop, TaskTemplate.class);
 				taskTemplates.add(template);
-				
+				template.setPmIncludeExcludeResourceContexts(getPMIncludeExcludeList(null, null, template.getId()));
 				TaskContext task = template.getTask();
 				
 				String sectionName = null;

@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
@@ -33,10 +35,13 @@ import com.facilio.tasker.ScheduleInfo;
 
 public class GetPMJobsCommand implements Command {
 
+	private static final Logger LOGGER = Logger.getLogger(GetPMJobsCommand.class.getName());
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
+		
+		LOGGER.log(Level.SEVERE, "startTime -- "+System.currentTimeMillis());
 		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
 		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
 		FacilioField triggerField = FieldFactory.getAsMap(fields).get("triggerType");
@@ -71,6 +76,7 @@ public class GetPMJobsCommand implements Command {
 			Map<Long,Map<Long,List<Map<String, Object>>>> pmTriggerTimeBasedGroupedMap = new HashMap<>();
 			List<Long> resourceIds = new ArrayList<>();
 			List<Map<String, Object>> pmJobList = new ArrayList<>();
+			Map<Long,WorkorderTemplate> workorderTemplateMap = new HashMap<>();
 			for(PreventiveMaintenance pm : pms) 
 			{
 				List<PMTriggerContext> pmTrigggers = pmTriggersMap.get(pm.getId());
@@ -94,11 +100,20 @@ public class GetPMJobsCommand implements Command {
 									case ONLY_SCHEDULE_TRIGGER: 
 										List<Map<String, Object>> pmJobs = pmJobsMap.get(trigger.getId());
 										if(pmJobs != null && !pmJobs.isEmpty()) {
+											LOGGER.log(Level.SEVERE, "pmJobs -- "+pmJobs.size() +"startTime -- "+System.currentTimeMillis());
 											for(Map<String, Object> pmJob : pmJobs) {
 												
 												if(pmJob.get("templateId") != null && (long) pmJob.get("templateId") != -1)
 												{
-													WorkorderTemplate template = (WorkorderTemplate) TemplateAPI.getTemplate((long) pmJob.get("templateId"));
+													long templateId = (long) pmJob.get("templateId");
+													WorkorderTemplate template = null;
+													if(workorderTemplateMap.containsKey(templateId)) {
+														template = workorderTemplateMap.get(templateId);
+													}
+													else {
+														template = (WorkorderTemplate) TemplateAPI.getTemplate(templateId);
+														workorderTemplateMap.put(templateId, template);
+													}
 													pmJob.put("template", template);
 												}
 												if(pmJob.get("resourceId") != null) {
@@ -123,7 +138,9 @@ public class GetPMJobsCommand implements Command {
 													pmJobList.add(pmJob);
 												}
 											}
+											LOGGER.log(Level.SEVERE, "pmJobs -- "+pmJobs.size() +"endTime -- "+System.currentTimeMillis());
 										}
+
 										
 										long plannedEndTime = DateTimeUtil.getDayStartTime(PreventiveMaintenanceAPI.PM_CALCULATION_DAYS+1, true) - 1;
 										if(startTime > plannedEndTime) {

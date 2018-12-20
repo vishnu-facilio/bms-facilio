@@ -1018,6 +1018,7 @@ public class PreventiveMaintenanceAPI {
 				reminderIds.add(reminder.getId());
 			}
 			Multimap<Long, PMReminderAction> pmReminderActionMap =  getPMReminderActions(reminderIds);
+			
 			for(PMReminder reminder : reminders) {
 				reminder.setReminderActions(new ArrayList<>(pmReminderActionMap.get(reminder.getId())));
 			}
@@ -1042,10 +1043,21 @@ public class PreventiveMaintenanceAPI {
 		List<Map<String, Object>> props = selectBuilder.get();
 		
 		Multimap<Long, PMReminderAction> pmReminderActionMap = ArrayListMultimap.create();
+		List<Long> actionIds = new ArrayList<>();
 		for(Map<String, Object> prop :props) {
 			PMReminderAction reminderAction = FieldUtil.getAsBeanFromMap(prop, PMReminderAction.class);
+			if(reminderAction.getActionId() > 0) {
+				actionIds.add(reminderAction.getActionId());
+			}
 			pmReminderActionMap.put(reminderAction.getReminderId(), reminderAction);
 		}
+		Map<Long, ActionContext> actionMap = ActionAPI.getActionsAsMap(actionIds);
+		for(PMReminderAction pmReminderAction : pmReminderActionMap.values()) {
+			if(pmReminderAction.getActionId() > 0) {
+				pmReminderAction.setAction(actionMap.get(pmReminderAction.getActionId()));
+			}
+		}
+		
 		return pmReminderActionMap;
 	}
 	

@@ -4,6 +4,8 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.modules.BooleanField;
+import com.facilio.bmsconsole.modules.EnumField;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.constants.FacilioConstants;
@@ -17,12 +19,25 @@ public class RestrictUneditablePropsInFieldCommand implements Command {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioField oldField = modBean.getField(field.getFieldId());
 		oldField.setDisplayName(field.getDisplayName());
+		
+		
+		// set Fieldwise editable properties.
 		if(oldField instanceof NumberField) {
 			NumberField numberField =(NumberField) field;
 			((NumberField) oldField).setUnit(numberField.getUnit());
 			((NumberField) oldField).setUnitId(numberField.getUnitId());
 			((NumberField) oldField).setMetric(numberField.getMetric());
 		}
+		else if(oldField instanceof BooleanField) {
+			BooleanField booleanField =(BooleanField) field;
+			((BooleanField) oldField).setFalseVal(booleanField.getFalseVal());
+			((BooleanField) oldField).setTrueVal(booleanField.getTrueVal());
+		}
+//		else if(oldField instanceof EnumField) {
+//			EnumField enumField =(EnumField) field;
+//			((EnumField) oldField).setValues(enumField.getValues());
+//		}
+		
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD, oldField);
 		return false;
 	}

@@ -130,7 +130,7 @@ public class ValidateTasksCommand implements Command {
 							}
 							break;
 						case BOOLEAN:
-							if (task.getOptions() == null || task.getOptions().size() < 2) {
+							if (task.getOptions() == null || task.getOptions().size() != 2) {
 								throw new IllegalArgumentException("Both true and false valuse has to be set for BOOLEAN task");
 							}
 						default:

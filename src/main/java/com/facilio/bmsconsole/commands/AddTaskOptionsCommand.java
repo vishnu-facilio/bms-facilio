@@ -49,6 +49,16 @@ public class AddTaskOptionsCommand implements Command {
 							}
 						}
 						break;
+					case BOOLEAN:
+						if (task.getOptions() != null && !task.getOptions().isEmpty()) {
+							for (String option : task.getOptions()) {
+								Map<String, Object> optionMap = new HashMap<>();
+								optionMap.put("taskId", task.getId());
+								optionMap.put("option", option);
+								insertBuilder.addRecord(optionMap);
+							}
+						}
+						break;
 					default:
 						break;
 				}
