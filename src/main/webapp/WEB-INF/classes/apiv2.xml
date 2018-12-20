@@ -273,10 +273,12 @@
 		</action>
 		
 		<action name="closeAllTask" class="com.facilio.bmsconsole.actions.TaskAction" method="v2closeAllTask">
+			<param name="moduleName">workorder</param>
 			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
 		</action>
 		
 		<action name="updateAllTask" class="com.facilio.bmsconsole.actions.TaskAction" method="v2updateAllTask">
+			<param name="moduleName">workorder</param>
 			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
 		</action>
 		
@@ -309,7 +311,8 @@
 			<param name="recordId">{1}</param>
 		</action>
 		<action name="closeAllTask" class="com.facilio.bmsconsole.actions.TaskAction" method="v2closeAllTask">
-			<param name="permission">TASK_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
 		</action>
 	</package>
 	
