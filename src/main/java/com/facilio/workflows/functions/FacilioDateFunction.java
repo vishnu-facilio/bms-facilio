@@ -237,6 +237,111 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 
 		}
 	},
+	ADD_YEAR(11,"addYears") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			Long time = Long.parseLong( objects[0].toString());
+			int yearCount = Integer.parseInt(objects[1].toString());
+			
+			return DateTimeUtil.addYears(time, yearCount);
+		};
+		public void checkParam(Object... objects) throws Exception {
+			
+		}
+	},
+	ADD_MONTHS(12,"addMonths") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			Long time = Long.parseLong( objects[0].toString());
+			int yearCount = Integer.parseInt(objects[1].toString());
+			
+			return DateTimeUtil.addMonths(time, yearCount);
+		};
+		public void checkParam(Object... objects) throws Exception {
+			
+		}
+	},
+	ADD_DAYS(13,"addDays") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			Long time = Long.parseLong( objects[0].toString());
+			int yearCount = Integer.parseInt(objects[1].toString());
+			
+			return DateTimeUtil.addDays(time, yearCount);
+		};
+		public void checkParam(Object... objects) throws Exception {
+			
+		}
+	},
+	ADD_HOURS(14,"addHours") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			Long time = Long.parseLong( objects[0].toString());
+			int yearCount = Integer.parseInt(objects[1].toString());
+			
+			return DateTimeUtil.addHours(time, yearCount);
+		};
+		public void checkParam(Object... objects) throws Exception {
+			
+		}
+	},
+	ADD_MINUTES(15,"addMinutes") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			Long time = Long.parseLong( objects[0].toString());
+			int yearCount = Integer.parseInt(objects[1].toString());
+			
+			return DateTimeUtil.addMinutes(time, yearCount);
+		};
+		public void checkParam(Object... objects) throws Exception {
+			
+		}
+	},
+	ADD_SECONDS(16,"addSeconds") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			Long time = Long.parseLong( objects[0].toString());
+			int yearCount = Integer.parseInt(objects[1].toString());
+			
+			return DateTimeUtil.addSeconds(time, yearCount);
+		};
+		public void checkParam(Object... objects) throws Exception {
+			
+		}
+	},
+	ADD_WEEKS(17,"addWeeks") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			Long time = Long.parseLong( objects[0].toString());
+			int yearCount = Integer.parseInt(objects[1].toString());
+			
+			return DateTimeUtil.addWeeks(time, yearCount);
+		};
+		public void checkParam(Object... objects) throws Exception {
+			
+		}
+	},
 	;
 	private Integer value;
 	private String functionName;

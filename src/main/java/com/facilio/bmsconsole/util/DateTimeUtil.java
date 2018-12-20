@@ -188,6 +188,28 @@ public class DateTimeUtil
 	{
 		return getDateTime(getZoneId(),addedTime,seconds);
 	}
+	
+	public static long addYears(long time,int yearCount) {
+		return getLong(getZonedDateTime(time).plusYears((long)yearCount),true);
+	}
+	public static long addMonths(long time,int monthCount) {
+		return getLong(getZonedDateTime(time).plusMonths((long)monthCount),true);
+	}
+	public static long addWeeks(long time,int weekCount) {
+		return getLong(getZonedDateTime(time).plusWeeks((long)weekCount),true);
+	}
+	public static long addDays(long time,int dayCount) {
+		return getLong(getZonedDateTime(time).plusDays((long)dayCount),true);
+	}
+	public static long addHours(long time,int hourCount) {
+		return getLong(getZonedDateTime(time).plusHours((long)hourCount),true);
+	}
+	public static long addMinutes(long time,int minCount) {
+		return getLong(getZonedDateTime(time).plusMinutes((long)minCount),true);
+	}
+	public static long addSeconds(long time,int hourCount) {
+		return getLong(getZonedDateTime(time).plusSeconds((long)hourCount),true);
+	}
 	public static long utcTimeToOrgTime(long utcTime) {
 		
 		String orgTimeZone = getDateTime().getOffset().toString().equalsIgnoreCase("Z") ? "+00:00":DateTimeUtil.getDateTime().getOffset().toString();
