@@ -42,6 +42,7 @@ import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.BooleanField;
 import com.facilio.bmsconsole.modules.DeleteRecordBuilder;
 import com.facilio.bmsconsole.modules.EnumField;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -936,10 +937,18 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 					}
 				}
 				task.setReadingRules(readingRules);
+				break;
 			case TEXT:
 			case READING:
-			case BOOLEAN:
 				task.setReadingField(modBean.getField(task.getReadingFieldId()));
+				break;
+			case BOOLEAN:
+				BooleanField field = (BooleanField) modBean.getField(task.getReadingFieldId());
+				task.setReadingField(field);
+				List<String> options = new ArrayList<>();
+				options.add(field.getTrueVal());
+				options.add(field.getFalseVal());
+				task.setOptions(options);
 				break;
 			case RADIO:
 				if (task.getReadingFieldId() != -1) {

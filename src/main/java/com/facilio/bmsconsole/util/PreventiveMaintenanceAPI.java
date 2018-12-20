@@ -1236,4 +1236,12 @@ public class PreventiveMaintenanceAPI {
 			return (Long) rs.get(0).get("count");
 		}
 	}
+	
+	public static void updateTaskTemplateFromTaskContext(Map<TaskContext, TaskTemplate> taskvsTemplateMap) throws Exception {
+		if(taskvsTemplateMap != null && !taskvsTemplateMap.isEmpty()) {
+			for(TaskContext task :taskvsTemplateMap.keySet()) {
+				taskvsTemplateMap.get(task).setTask(task);
+			}
+		}
+	}
 }
