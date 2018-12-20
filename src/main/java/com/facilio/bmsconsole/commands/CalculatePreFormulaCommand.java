@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -48,8 +49,12 @@ public class CalculatePreFormulaCommand implements Command {
 							List<ReadingContext> readings = entry.getValue();
 							Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(moduleName));
 							if (readings != null && !readings.isEmpty()) {
-								for (ReadingContext reading : readings) {
-									calculateFormulas(reading, fieldMap, formulas, rdm, newRdmPairs);
+								for (int i = 0; i < readings.size(); i++) {
+									ReadingContext reading = readings.get(i);
+									ReadingContext transformedReading = calculateFormulas(reading, fieldMap, formulas, rdm, newRdmPairs);
+									if (transformedReading != null) {
+										readings.set(i, transformedReading);
+									}
 								}
 							}
 						}
@@ -69,29 +74,34 @@ public class CalculatePreFormulaCommand implements Command {
 		return false;
 	}
 	
-	private static void calculateFormulas (ReadingContext reading, Map<String, FacilioField> fieldMap, List<FormulaFieldContext> formulas, Map<String, ReadingDataMeta> rdmMap, List<Pair<Long, FacilioField>> newRdmPairs) throws Exception {
+	private static ReadingContext calculateFormulas (ReadingContext reading, Map<String, FacilioField> fieldMap, List<FormulaFieldContext> formulas, Map<String, ReadingDataMeta> rdmMap, List<Pair<Long, FacilioField>> newRdmPairs) throws Exception {
 		Map<String, Object> data = reading.getReadings();
 		if (formulas != null && !formulas.isEmpty() && data != null && !data.isEmpty()) {
-			for (FormulaFieldContext formula : formulas) {
-				if (formula.getMatchedResourcesIds().contains(reading.getParentId())) {
-					formula.getWorkflow().setIgnoreNullParams(true);
-					Map<String, Object> params = FieldUtil.getAsProperties(reading);
-					params.put("resourceId", reading.getParentId());
-					
-					for (Map.Entry<String, Object> entry : data.entrySet()) {
-						FacilioField field = fieldMap.get(entry.getKey());
-						if (field != null) {
-							ReadingDataMeta rdm = rdmMap.get(ReadingsAPI.getRDMKey(reading.getParentId(), field));
-							if (rdm != null) {
-								params.put(entry.getKey()+".previousValue", rdm.getValue());
-							}
-						}
+			Map<String, Object> readingProps = FieldUtil.getAsProperties(reading);
+			Map<String, Object> params = new HashMap<>(readingProps);
+			params.put("resourceId", reading.getParentId());
+			
+			for (Map.Entry<String, Object> entry : data.entrySet()) {
+				FacilioField field = fieldMap.get(entry.getKey());
+				if (field != null) {
+					ReadingDataMeta rdm = rdmMap.get(ReadingsAPI.getRDMKey(reading.getParentId(), field));
+					if (rdm != null) {
+						params.put(entry.getKey()+".previousValue", rdm.getValue());
 					}
-					
+				}
+			}
+			
+			boolean isChanged = false;
+			for (FormulaFieldContext formula : formulas) {
+				formula.getWorkflow().setIgnoreNullParams(true);
+				if (formula.getMatchedResourcesIds().contains(reading.getParentId())) {
 					try {
 						Double resultVal = (Double) WorkflowUtil.getWorkflowExpressionResult(formula.getWorkflow().getWorkflowString(), params, null, false, false);
 						if (resultVal != null) {
-							reading.addReading(formula.getReadingField().getName(), resultVal);
+							isChanged = true;
+							readingProps.put(formula.getReadingField().getName(), resultVal);
+							params.put(formula.getReadingField().getName(), resultVal);
+							
 							newRdmPairs.add(Pair.of(reading.getParentId(), formula.getReadingField()));
 						}
 					}
@@ -100,7 +110,11 @@ public class CalculatePreFormulaCommand implements Command {
 					}
 				}
 			}
+			if (isChanged) {
+				return FieldUtil.getAsBeanFromMap(readingProps, ReadingContext.class);
+			}
 		}
+		return null;
 	}
 
 }
