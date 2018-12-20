@@ -60,7 +60,18 @@ public class FacilioTransaction implements Transaction {
 	@Override
 	public void commit() throws RollbackException, HeuristicMixedException, HeuristicRollbackException,
 			SecurityException, SystemException {
+		if(this.status == Status.STATUS_MARKED_ROLLBACK)
+		{
+			rollback();
+			return;
+		}
+		
 		this.status = Status.STATUS_COMMITTING;
+		
+		if(this.status==Status.STATUS_ROLLEDBACK)
+		{
+			// do ...
+		}
 		for(int i=0;i< connections.size();i++) {
 			FacilioConnection fc = (FacilioConnection)connections.get(i);
 			try {
