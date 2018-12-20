@@ -50,57 +50,12 @@ private List<PMJobsContext> pmJobsToBeScheduled;
 		
 		for(PreventiveMaintenance pm: pms) {
 			if (pm.getTriggers() != null && pm.isActive()) {
-				if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE) {
-					prepareAndAddResourcePlanner(pm);
-				}
 				schedulePM(pm, context);
 			}
 		}
 		context.put(FacilioConstants.ContextNames.SCHEDULED_PM_JOBS_MAP, getSchdueledPMJobMap(pmJobsToBeScheduled));
 		return false;
 	}
-	private void prepareAndAddResourcePlanner(PreventiveMaintenance pm) throws Exception {
-		
-		
-		if(pm.getResourcePlanners() != null) {
-			
-			for(PMResourcePlannerContext resourcePlanner :pm.getResourcePlanners()) {
-				if(resourcePlanner.getTriggerName() != null) {
-					PMTriggerContext trigger = pm.getTriggerMap().get(resourcePlanner.getTriggerName());
-					resourcePlanner.setTriggerId(trigger.getId());
-					resourcePlanner.setPmId(pm.getId());
-				}
-				Map<String, Object> prop = FieldUtil.getAsProperties(resourcePlanner);
-				GenericInsertRecordBuilder insert = new GenericInsertRecordBuilder();
-				insert.table(ModuleFactory.getPMResourcePlannerModule().getTableName());
-				insert.fields(FieldFactory.getPMResourcePlannerFields());
-				insert.insert(prop);
-				resourcePlanner.setId((Long)prop.get("id"));
-				
-				
-				if(resourcePlanner.getPmResourcePlannerReminderContexts() != null) {
-					for(PMResourcePlannerReminderContext pmResourcePlannerReminderContext : resourcePlanner.getPmResourcePlannerReminderContexts()) {
-						
-						if(pmResourcePlannerReminderContext.getReminderName() != null) {
-							PMReminder reminder = pm.getReminderMap().get(pmResourcePlannerReminderContext.getReminderName());
-							pmResourcePlannerReminderContext.setReminderId(reminder.getId());
-							pmResourcePlannerReminderContext.setPmId(pm.getId());
-							pmResourcePlannerReminderContext.setResourcePlannerId(resourcePlanner.getId());
-							Map<String, Object> prop1 = FieldUtil.getAsProperties(pmResourcePlannerReminderContext);
-							
-							GenericInsertRecordBuilder insert1 = new GenericInsertRecordBuilder();
-							insert1.table(ModuleFactory.getPMResourcePlannerReminderModule().getTableName());
-							insert1.fields(FieldFactory.getPMResourcePlannerReminderFields());
-							insert1.insert(prop1);
-							
-							pmResourcePlannerReminderContext.setId((Long)prop1.get("id"));
-						}
-					}
-				}
-			}
-		}
-	}
-
 	private void schedulePM(PreventiveMaintenance pm, Context context) throws Exception {
 		Map<Long, Long> nextExecutionTimes = new HashMap<>();
 		

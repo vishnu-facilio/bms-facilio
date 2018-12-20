@@ -1321,6 +1321,7 @@ public class FacilioChainFactory {
 		c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
 		c.addCommand(new AddPMReminderCommand());
 		c.addCommand(new AddPMTriggerCommand());
+		c.addCommand(new AddPMRelFieldsCommand());
 		c.addCommand(new SchedulePMCommand());
 		c.addCommand(new scheduleBeforePMRemindersCommand());
 		c.addCommand(new UpdateReadingDataMetaCommand());
@@ -1346,6 +1347,7 @@ public class FacilioChainFactory {
 		c.addCommand(new AddPMTriggerCommand());
 //		c.addCommand(new DeletePMRemindersCommand());
 		c.addCommand(new AddPMReminderCommand());
+		c.addCommand(new AddPMRelFieldsCommand());
 		c.addCommand(new SchedulePMCommand());
 		c.addCommand(new scheduleBeforePMRemindersCommand());
 		c.addCommand(new UpdateReadingDataMetaCommand());
