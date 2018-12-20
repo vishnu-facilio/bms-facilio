@@ -291,11 +291,14 @@ public class LoginAction extends FacilioAction {
 		HashMap<String, Object> appProps = new HashMap<>();
 		appProps.put("permissions", AccountConstants.ModulePermission.toMap());
 		appProps.put("permissions_groups", AccountConstants.PermissionGroup.toMap());
+		appProps.put("operators", CommonCommandUtil.getOperators());
+		appProps.put(FacilioConstants.ContextNames.ALL_METRICS, CommonCommandUtil.getAllMetrics());
+		appProps.put(FacilioConstants.ContextNames.ORGUNITS_LIST, CommonCommandUtil.orgUnitsList());
+		appProps.put(FacilioConstants.ContextNames.METRICS_WITH_UNITS, CommonCommandUtil.metricWithUnits());
 		
 		account = new HashMap<>();
 		account.put("org", AccountUtil.getCurrentOrg());
 		account.put("user", AccountUtil.getCurrentUser());
-		account.put("operators", CommonCommandUtil.getOperators());
 		//log.info(AccountUtil.getCurrentUser().getEmail()+"))(()()()(((((())))))");
 		//log.info(AccountUtil.getCurrentAccount().getOrg().getDomain()+"$$$$$$$$$$$$$$$$$$$$$");
 		List<User> users = AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId());
@@ -329,9 +332,7 @@ public class LoginAction extends FacilioAction {
 		data.put(FacilioConstants.ContextNames.SPACE_CATEGORY, CommonCommandUtil.getPickList(FacilioConstants.ContextNames.SPACE_CATEGORY));
 		data.put(FacilioConstants.ContextNames.ASSET_CATEGORY, CommonCommandUtil.getPickList(FacilioConstants.ContextNames.ASSET_CATEGORY));
 		data.put(FacilioConstants.ContextNames.SHIFTS, ShiftAPI.getAllShifts());
-		data.put(FacilioConstants.ContextNames.ALL_METRICS, CommonCommandUtil.getAllMetrics());
-		data.put(FacilioConstants.ContextNames.ORGUNITS_LIST, CommonCommandUtil.orgUnitsList());
-		data.put(FacilioConstants.ContextNames.METRICS_WITH_UNITS, CommonCommandUtil.metricWithUnits());
+		
 		
 		
 		if (AccountUtil.getCurrentAccount().isFromMobile()) {
