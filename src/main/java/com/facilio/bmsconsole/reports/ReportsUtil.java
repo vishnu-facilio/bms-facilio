@@ -436,7 +436,7 @@ public class ReportsUtil
 		{
 			FacilioField meterFld = ReportsUtil.getField("Meter_ID","PARENT_METER_ID",FieldType.NUMBER);
 			fields.add(meterFld);
-			groupBy.append(meterFld.getName());
+			groupBy.append(meterFld.getCompleteColumnName());
 			if(rollUp)
 			{
 				groupBy.append(" WITH ROLLUP");

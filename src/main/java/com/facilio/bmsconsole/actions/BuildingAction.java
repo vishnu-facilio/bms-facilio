@@ -235,7 +235,7 @@ public class BuildingAction extends ActionSupport {
 				.on("BaseSpace.ID = Space.ID")
 				.leftJoin("Space_Category")
 				.on("Space.SPACE_CATEGORY_ID = Space_Category.ID")
-				.groupBy("Space_Category.ID")
+				.groupBy("Space_Category.ID, Space_Category.NAME, Space_Category.DESCRIPTION")
 				.andCustomWhere("BaseSpace.ORGID=? AND Space.ORGID = ? AND BaseSpace.BUILDING_ID = ?", orgId, orgId, getBuildingId());
 
 		List<Map<String, Object>> rs = builder.get();

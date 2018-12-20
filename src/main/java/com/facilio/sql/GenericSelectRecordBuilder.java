@@ -231,6 +231,9 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 			if(whereValues != null) {
 				for(int i=0; i<whereValues.length; i++) {
 					Object value = whereValues[i];
+					if (value instanceof Enum) {
+						value = ((Enum) value).ordinal();
+					}
 					pstmt.setObject(i+1, value);
 				}
 			}

@@ -271,17 +271,23 @@ public class FormulaContext {
 	
 	public enum DateAggregateOperator implements AggregateOperator {
 		
-		YEAR(8,"Yearly","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y')",true), //Yearly aggregation
-		MONTHANDYEAR(10,"monthAndYear","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %m')", "MMMM yyyy",false), //Monthly aggregation
-		WEEKANDYEAR(11,"weekAndYear","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %V')",false), //Weekly aggregation 
-		FULLDATE(12,"daily","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %m %d')", "EEEE, MMMM dd, yyyy",true), //Daily Aggregation
+//		YEAR(8,"Yearly","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y')",true), //Yearly aggregation
+		YEAR(8,"Yearly","format(dateadd(s, {$place_holder1$}, (DATEADD(s, {$place_holder$}/1000, '1970-01-01 00:00:00'))),'yyyy')",true), //Yearly aggregation
+//		MONTHANDYEAR(10,"monthAndYear","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %m')", "MMMM yyyy",false), //Monthly aggregation
+		MONTHANDYEAR(10,"monthAndYear","format(dateadd(s, {$place_holder1$}, (DATEADD(s, {$place_holder$}/1000, '1970-01-01 00:00:00'))),'yyyy MM')", "MMMM yyyy",false), //Monthly aggregation
+//		WEEKANDYEAR(11,"weekAndYear","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %V')",false), //Weekly aggregation
+		WEEKANDYEAR(11,"weekAndYear","convert(varchar, datepart(year, dateadd(s, {$place_holder1$}, (DATEADD(s, {$place_holder$}/1000, '1970-01-01 00:00:00'))))) + ' ' + convert(varchar, datepart(week, dateadd(s, {$place_holder1$}, (DATEADD(s, {$place_holder$}/1000, '1970-01-01 00:00:00')))))",false), //Weekly aggregation
+//		FULLDATE(12,"daily","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %m %d')", "EEEE, MMMM dd, yyyy",true), //Daily Aggregation
+		FULLDATE(12,"daily","format(dateadd(s, {$place_holder1$}, (DATEADD(s, {$place_holder$}/1000, '1970-01-01 00:00:00'))),'yyyy MM dd')", "EEEE, MMMM dd, yyyy",true), //Hourly
 		DATEANDTIME(13,"dateAndTime","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %m %d %H:%i')",false), //Hourly aggregation
-		MONTH(15,"Monthly","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%m')",true), //Monthly aggregation
+//		MONTH(15,"Monthly","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%m')",true), //Monthly aggregation
+		MONTH(15,"Monthly","format(dateadd(s, {$place_holder1$}, (DATEADD(s, {$place_holder$}/1000, '1970-01-01 00:00:00'))),'MM')",true), //Monthly aggregation
 		WEEK(16,"Week","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%V')",false), //Weekly aggregation
 		WEEKDAY(17,"Weekly","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%w')",true), //Daily aggregation
 		DAYSOFMONTH(18,"Daily","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%d')", "EEEE, MMMM dd, yyyy",false), //Daily
 		HOURSOFDAY(19,"hoursOfDay","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%H')", "EEE, MMM dd, yyyy hh a",false), //Hourly
-		HOURSOFDAYONLY(20,"Hourly","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %m %d %H')", "EEE, MMM dd, yyyy hh a",true), //Hourly
+//		HOURSOFDAYONLY(20,"Hourly","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %m %d %H')", "EEE, MMM dd, yyyy hh a",true), //Hourly
+		HOURSOFDAYONLY(20,"Hourly","format(dateadd(s, {$place_holder1$}, (DATEADD(s, {$place_holder$}/1000, '1970-01-01 00:00:00'))),'yyyy MM dd HH')", "EEE, MMM dd, yyyy hh a",true), //Hourly
 		QUARTERLY(25,"Quarterly","YEAR(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}')), QUARTER(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'))", "MMMM yyyy",false), //Quarterly
 		;
 		
@@ -317,10 +323,11 @@ public class FormulaContext {
 		}
 		public FacilioField getSelectField(FacilioField field) throws Exception {
 			String selectFieldString =expr.replace("{$place_holder$}", field.getColumnName());
-			String timeZone = AccountUtil.getCurrentOrg().getTimezone();
-			if(timeZone == null) {
-				timeZone = "UTC";
-			}
+//			String timeZone = AccountUtil.getCurrentOrg().getTimezone();
+//			if(timeZone == null) {
+//				timeZone = "UTC";
+//			}
+			String timeZone = DateTimeUtil.getDateTime().getOffset().toString().equalsIgnoreCase("Z") ? "0": String.valueOf(DateTimeUtil.getDateTime().getOffset().getTotalSeconds());
 			selectFieldString = selectFieldString.replace("{$place_holder1$}",timeZone);
 			
 			FacilioField selectField =  new FacilioField();

@@ -119,7 +119,7 @@ public class FetchReportDataCommand implements Command {
 		addedModules.add(dp.getxAxis().getField().getModule());
 		
 		joinYModuleIfRequred(dp, selectBuilder, addedModules);
-		applyOrderByAndLimit(dp, selectBuilder);
+//		applyOrderByAndLimit(dp, selectBuilder); // TODO handle orderBy and Limit
 		List<FacilioField> fields = new ArrayList<>();
 		StringJoiner groupBy = new StringJoiner(",");
 		FacilioField xAggrField = applyXAggregation(dp, report.getxAggrEnum(), groupBy, selectBuilder, fields, addedModules);

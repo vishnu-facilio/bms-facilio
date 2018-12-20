@@ -171,8 +171,8 @@ public class FacilioContextListener implements ServletContextListener {
 	}
 
 	private void initializeDB() {
-		createTables("conf/leedconsole.sql");
-		createTables("conf/eventconsole.sql");
+//		createTables("conf/leedconsole.sql");
+//		createTables("conf/eventconsole.sql");
 	}
 
 	private void createTables(String fileName) {
