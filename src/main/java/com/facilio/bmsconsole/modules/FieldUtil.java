@@ -580,28 +580,28 @@ public class FieldUtil {
 			List<FacilioField> fields = new ArrayList<>();
 			Iterator iterator = fieldJsons.iterator();
 			while(iterator.hasNext()) {
-				JSONObject fieldJson = (JSONObject) iterator.next();
-				FieldType fieldType = FieldType.getCFType((int)fieldJson.get("dataType"));
+				Map fieldJson = (Map) iterator.next();
+				FieldType fieldType = FieldType.getCFType(Integer.parseInt(fieldJson.get("dataType").toString()));
 				FacilioField facilioField;
 				switch(fieldType) {
 				case NUMBER:
 				case DECIMAL:
-					facilioField = (NumberField) FieldUtil.getAsBeanFromJson(fieldJson, NumberField.class);
+					facilioField = (NumberField) FieldUtil.getAsBeanFromMap(fieldJson, NumberField.class);
 					break;
 				case BOOLEAN:
-					facilioField = (BooleanField) FieldUtil.getAsBeanFromJson(fieldJson, BooleanField.class);
+					facilioField = (BooleanField) FieldUtil.getAsBeanFromMap(fieldJson, BooleanField.class);
 					break;
 				case ENUM:
-					facilioField = (EnumField) FieldUtil.getAsBeanFromJson(fieldJson, EnumField.class);
+					facilioField = (EnumField) FieldUtil.getAsBeanFromMap(fieldJson, EnumField.class);
 					break;
 				case LOOKUP:
-					facilioField = (LookupField) FieldUtil.getAsBeanFromJson(fieldJson, LookupField.class);
+					facilioField = (LookupField) FieldUtil.getAsBeanFromMap(fieldJson, LookupField.class);
 					break;
 				case FILE:
-					facilioField = (FileField) FieldUtil.getAsBeanFromJson(fieldJson, FileField.class);
+					facilioField = (FileField) FieldUtil.getAsBeanFromMap(fieldJson, FileField.class);
 					break;
 				default:
-					facilioField = (FacilioField) FieldUtil.getAsBeanFromJson(fieldJson, FacilioField.class);
+					facilioField = (FacilioField) FieldUtil.getAsBeanFromMap(fieldJson, FacilioField.class);
 					break;
 				}
 				fields.add(facilioField);
