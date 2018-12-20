@@ -750,30 +750,45 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 	
 	private static void loadWorkOrdersUsers(Collection<? extends WorkOrderContext> workOrders) throws Exception {
 		if(workOrders != null && !workOrders.isEmpty()) {
-			List<User> users = AccountUtil.getOrgBean().getOrgUsers(AccountUtil.getCurrentOrg().getOrgId(), true);
-//			users.addAll(AccountUtil.getOrgBean().getOrgPortalUsers(AccountUtil.getCurrentOrg().getOrgId()));
-			
-			Map<Long, User> userMap = new HashMap<>();
-			for(User user : users) {
-				userMap.put(user.getId(), user);
-			}
-			
+			Set<Long> userId = new HashSet<>();
 			for(WorkOrderContext workOrder : workOrders) {
 				if (workOrder != null) {
-					User assignTo = workOrder.getAssignedTo();
-					if(assignTo != null) {
-						workOrder.setAssignedTo(userMap.get(assignTo.getId()));
+					if (workOrder.getAssignedTo() != null) {
+						userId.add(workOrder.getAssignedTo().getId());
 					}
-					User requesterBy = workOrder.getRequestedBy();
-					if(requesterBy != null) {
-						workOrder.setRequestedBy(userMap.get(requesterBy.getId()));
+					if (workOrder.getRequestedBy() != null) {
+						userId.add(workOrder.getRequestedBy().getId());
 					}
-					User requester = workOrder.getRequester();
-					if(requester != null) {
-						workOrder.setRequester(userMap.get(requester.getId()));
+					if (workOrder.getRequester() != null) {
+						userId.add(workOrder.getRequester().getId());
 					}
+					
 				}
 			}
+			if (!userId.isEmpty()) {
+				List<Long> userIdList = new ArrayList<Long>();
+				userIdList.addAll(userId);
+
+				Map<Long, User> userMap = AccountUtil.getUserBean().getUsersAsMap(null, userIdList);
+
+				for(WorkOrderContext workOrder : workOrders) {
+					if (workOrder != null) {
+						User assignTo = workOrder.getAssignedTo();
+						if(assignTo != null) {
+							workOrder.setAssignedTo(userMap.get(assignTo.getId()));
+						}
+						User requesterBy = workOrder.getRequestedBy();
+						if(requesterBy != null) {
+							workOrder.setRequestedBy(userMap.get(requesterBy.getId()));
+						}
+						User requester = workOrder.getRequester();
+						if(requester != null) {
+							workOrder.setRequester(userMap.get(requester.getId()));
+						}
+					}	
+				}
+			}
+			
 		}
 	}
 	

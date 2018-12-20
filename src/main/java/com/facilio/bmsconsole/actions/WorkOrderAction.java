@@ -1823,9 +1823,14 @@ public class WorkOrderAction extends FacilioAction {
 	}
 	
 	public String addPortalOrders() throws Exception {
+		if(workOrderString != null) {
+			setWorkordercontex(workOrderString);
+		}
 		workorder.setSourceType(SourceType.SERVICE_PORTAL_REQUEST);
 		workorder.setSendForApproval(true);
-		return v2addWorkOrder();
+		addWorkOrder(workorder);
+		setResult(FacilioConstants.ContextNames.WORK_ORDER, workorder);
+		return SUCCESS;
 	}
 	
 	public String syncOfflineWorkOrders() throws Exception {
