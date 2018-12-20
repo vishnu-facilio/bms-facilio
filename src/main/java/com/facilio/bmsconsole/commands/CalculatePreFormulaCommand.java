@@ -64,8 +64,10 @@ public class CalculatePreFormulaCommand implements Command {
 				if (!newRdmPairs.isEmpty()) {
 					List<ReadingDataMeta> metaList = ReadingsAPI.getReadingDataMetaList(newRdmPairs) ;
 					
-					for(ReadingDataMeta meta : metaList) {
-						rdm.put(ReadingsAPI.getRDMKey(meta.getResourceId(), meta.getField()), meta);
+					if (metaList != null) { //To handle pre formula updation of system fields
+						for(ReadingDataMeta meta : metaList) {
+							rdm.put(ReadingsAPI.getRDMKey(meta.getResourceId(), meta.getField()), meta);
+						}
 					}
 				}
 			}
