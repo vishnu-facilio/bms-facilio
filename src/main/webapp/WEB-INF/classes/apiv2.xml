@@ -160,7 +160,7 @@
 		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="v2workOrderList">
 			<param name="moduleName">workorder</param>
-			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<param name="permission">VIEW_APPROVAL</param>
 			<param name="viewName">{1}</param>
 			<param name="approval">true</param>
 			<result name="success" type="json">
@@ -273,11 +273,11 @@
 		</action>
 		
 		<action name="closeAllTask" class="com.facilio.bmsconsole.actions.TaskAction" method="v2closeAllTask">
-			<param name="permission">TASK_CREATE</param>
+			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
 		</action>
 		
 		<action name="updateAllTask" class="com.facilio.bmsconsole.actions.TaskAction" method="v2updateAllTask">
-			<param name="permission">TASK_CREATE</param>
+			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
 		</action>
 		
 		<action name="update" class="com.facilio.bmsconsole.actions.TaskAction" method="v2updateTask">
@@ -297,7 +297,7 @@
 	
 		<action name="*" class="com.facilio.bmsconsole.actions.TaskAction" method="v2viewTask">
 			<param name="moduleName">workorder</param>
-			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<param name="taskId">{1}</param>
 		</action>
 	
