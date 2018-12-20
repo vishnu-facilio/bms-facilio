@@ -627,6 +627,9 @@ public class FacilioConstants {
 		public static final String PUBLISH_DATA = "publishData";
 		public static final String PUBLISH_SUCCESS = "publishSucsess";
 		public static final String PUBLISH_FAILURE = "publishFailure";
+		public static final String ORGUNITS_LIST = "orgUnitsList";
+		public static final String ALL_METRICS = "allMetrics";
+		public static final String METRICS_WITH_UNITS = "MetricsWithUnits";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {

@@ -1,11 +1,13 @@
 package com.facilio.bmsconsole.commands.util;
 
 import java.sql.Connection;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,6 +25,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.Organization;
@@ -34,6 +37,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainExceptionHandler;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.OrgUnitsContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
@@ -71,10 +75,14 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
+import com.facilio.unitconversion.Metric;
+import com.facilio.unitconversion.Unit;
+import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.workflows.util.WorkflowUtil;
+import com.facilio.bmsconsole.modules.FieldType;
 
 public class CommonCommandUtil {
 	private static final Logger LOGGER = LogManager.getLogger(CommonCommandUtil.class.getName());
@@ -752,5 +760,35 @@ public class CommonCommandUtil {
 			}
 		}
 		return modules;
+	}
+	
+	public static List<OrgUnitsContext> orgUnitsList() throws Exception{
+		return UnitsUtil.getOrgUnitsList();
+	}
+	public static JSONObject metricWithUnits() {
+		JSONObject metricswithUnits = new JSONObject();
+		
+		Map<Metric, Collection<Unit>> metricWithUnit = Unit.getMetricUnitMap();
+		for( Metric metric :metricWithUnit.keySet()) {
+			
+			Collection<Unit> units = metricWithUnit.get(metric);
+			
+			JSONArray unitsJson = new JSONArray();
+			for(Unit unit :units) {
+				unitsJson.add(unit);
+			}
+			metricswithUnits.put(metric, unitsJson);
+		}
+		return metricswithUnits;
+	}
+	public static Collection<Metric> getAllMetrics(){
+		return Metric.getAllMetrics();
+	}
+	public static JSONObject getOperators() {
+		JSONObject operators = new JSONObject();
+		for(FieldType ftype: FieldType.values()) {
+			operators.put(ftype.name(), ftype.getOperators());
+		}
+		return operators;
 	}
 }
