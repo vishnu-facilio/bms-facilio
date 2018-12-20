@@ -32,12 +32,12 @@ public class CognitoUtil {
 	
 	public static void main(String args[]) {
 		String s = createJWT("id", "auth0", "yoge@facilio.com", System.currentTimeMillis(),true);
-//		System.out.println("Encoded JWT \n"+s);
+		System.out.println("Encoded JWT \n"+s);
 		
 		//DecodedJWT jwt = validateJWT(s,"auth0");
 		
 		CognitoUser user = verifiyFacilioToken(s);
-//		System.out.println("Cognito User "+user);
+		System.out.println("Cognito User "+user);
 	}
 
 	public static String createJWT(String id, String issuer, String subject, long ttlMillis,boolean isPortalUser) {
@@ -66,8 +66,8 @@ public class CognitoUtil {
 		        .build(); //Reusable verifier instance
 
 		    DecodedJWT jwt = verifier.verify(token);
-//		    System.out.println("\ndecoded "+jwt.getSubject());
-//		    System.out.println("\ndecoded "+jwt.getClaims());
+		    System.out.println("\ndecoded "+jwt.getSubject());
+		    System.out.println("\ndecoded "+jwt.getClaims());
 		    
 		    return jwt;
 		} catch (UnsupportedEncodingException | JWTVerificationException exception){
@@ -84,7 +84,7 @@ public class CognitoUtil {
 	}
 	
 	public static CognitoUser verifiyFacilioToken(String idToken, boolean isPortalUser, boolean overrideSessionCheck) {
-//		System.out.println("verifiyFacilioToken() :idToken :"+idToken);
+		System.out.println("verifiyFacilioToken() :idToken :"+idToken);
 		try {
 			DecodedJWT decodedjwt = validateJWT(idToken, "auth0");
 			CognitoUser faciliouser = new CognitoUser();

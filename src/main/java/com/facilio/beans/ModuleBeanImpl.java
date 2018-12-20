@@ -422,26 +422,14 @@ public class ModuleBeanImpl implements ModuleBean {
 				switch(type) {
 					case NUMBER:
 					case DECIMAL:
-						try {
 							prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
 							fields.add(FieldUtil.getAsBeanFromMap(prop, NumberField.class));
-						}
-						catch(Exception e) {
-							
-						}
 						break;
 					case BOOLEAN:
-						try {
 							prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
 							fields.add(FieldUtil.getAsBeanFromMap(prop, BooleanField.class));
-						}
-						catch(Exception e) {
-							
-						}
-						
 						break;
 					case LOOKUP:
-						try {
 							prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
 							Long lookupModuleId = (Long) prop.get("lookupModuleId");
 							if(lookupModuleId != null) {
@@ -449,32 +437,14 @@ public class ModuleBeanImpl implements ModuleBean {
 								prop.put("lookupModule", lookupModule);
 							}
 							fields.add(FieldUtil.getAsBeanFromMap(prop, LookupField.class));
-						}
-						catch(Exception e) {
-							
-						}
-						
-						
 						break;
 					case FILE:
-						try {
 							prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
 							fields.add(FieldUtil.getAsBeanFromMap(prop, FileField.class));
-						}
-						catch(Exception e) {
-							
-						}
-						
 						break;
 					case ENUM:
-						try {
 							prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
 							fields.add(FieldUtil.getAsBeanFromMap(prop, EnumField.class));
-						}
-						catch(Exception e) {
-							
-						}
-						
 						break;
 					default:
 						fields.add(FieldUtil.getAsBeanFromMap(prop, FacilioField.class));
