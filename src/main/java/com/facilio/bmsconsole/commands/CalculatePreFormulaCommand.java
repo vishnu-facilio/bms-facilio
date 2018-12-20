@@ -96,9 +96,10 @@ public class CalculatePreFormulaCommand implements Command {
 				formula.getWorkflow().setIgnoreNullParams(true);
 				if (formula.getMatchedResourcesIds().contains(reading.getParentId())) {
 					try {
-						Double resultVal = (Double) WorkflowUtil.getWorkflowExpressionResult(formula.getWorkflow().getWorkflowString(), params, null, false, false);
+						Object resultVal = WorkflowUtil.getWorkflowExpressionResult(formula.getWorkflow().getWorkflowString(), params, null, false, false);
 						if (resultVal != null) {
 							isChanged = true;
+							resultVal = FieldUtil.castOrParseValueAsPerType(formula.getReadingField(), resultVal);
 							readingProps.put(formula.getReadingField().getName(), resultVal);
 							params.put(formula.getReadingField().getName(), resultVal);
 							
@@ -106,7 +107,7 @@ public class CalculatePreFormulaCommand implements Command {
 						}
 					}
 					catch (Exception e) {
-						LOGGER.error("Error occurred during pre formula calculation of "+formula.getName()+" for resource : "+reading.getParentId()+". Msg : "+e.getMessage());
+						LOGGER.error("Error occurred during pre formula calculation of "+formula.getName()+" for resource : "+reading.getParentId(), e);
 					}
 				}
 			}
