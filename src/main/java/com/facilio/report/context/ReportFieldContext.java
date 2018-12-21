@@ -185,6 +185,10 @@ public class ReportFieldContext {
 	public void setMetric(Metric metric) {
 		this.metric = metric;
 	}
+	
+	public Map<String, Object> getMetricObj() throws Exception {
+		return FieldUtil.getAsProperties(metric);
+	}
 
 	// Only for Y Field
 	private String joinOn;
