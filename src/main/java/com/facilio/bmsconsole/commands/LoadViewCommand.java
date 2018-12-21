@@ -189,7 +189,7 @@ public class LoadViewCommand implements Command {
 			fieldNames = new HashMap<> ();
 			for(FacilioField field : fields) {
 				String displayName;
-				if (fieldMap != null && fieldMap.get(field.getName()) != null) {
+				if (fieldMap != null && fieldMap.get(field.getName()) != null && fieldMap.get(field.getName()).getColumnDisplayName() != null) {
 					displayName = fieldMap.get(field.getName()).getColumnDisplayName();
 				}
 				else if (view.getDefaultModuleFields() != null && view.getDefaultModuleFields().get(field.getName()) != null && view.getDefaultModuleFields().get(field.getName()).getColumnDisplayName() != null) {
