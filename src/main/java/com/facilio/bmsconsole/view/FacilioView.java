@@ -219,6 +219,14 @@ public class FacilioView {
 		}
 		return false;
 	}
+	
+	private Map<String, String> fieldDisplayNames;
+	public Map<String, String> getFieldDisplayNames() {
+		return fieldDisplayNames;
+	}
+	public void setFieldDisplayNames(Map<String, String> fieldDisplayNames) {
+		this.fieldDisplayNames = fieldDisplayNames;
+	}
 
 	public static enum ViewType {
 		TABLE_LIST(1);

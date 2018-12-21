@@ -67,6 +67,7 @@ public class ViewAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
 		context.put(FacilioConstants.ContextNames.PARENT_VIEW, parentView);
+		context.put(FacilioConstants.ContextNames.FETCH_FIELD_DISPLAY_NAMES, true);
 		
 		Chain getViewChain = FacilioChainFactory.getViewDetailsChain();
 		getViewChain.execute(context);
@@ -201,21 +202,10 @@ public class ViewAction extends FacilioAction {
 		this.views = views;
 	}
 	
-	
-	
 	private LinkedHashMap groupViews;
-	
-		
-	
-	
-
 	public LinkedHashMap getGroupViews() {
 		return groupViews;
 	}
-
-	
-
-
 	public void setGroupViews(LinkedHashMap groupViews) {
 		this.groupViews = groupViews;
 	}

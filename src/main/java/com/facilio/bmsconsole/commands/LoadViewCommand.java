@@ -2,9 +2,12 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -14,6 +17,7 @@ import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -88,6 +92,12 @@ public class LoadViewCommand implements Command {
 						view.setSortFields(defaultSortFields);
 					}
 				}
+				
+				Boolean fetchDisplayNames = (Boolean) context.get(FacilioConstants.ContextNames.FETCH_FIELD_DISPLAY_NAMES);
+				if (fetchDisplayNames != null && fetchDisplayNames) {
+					setFieldDisplayNames(moduleName, view);
+				}
+				
 				context.put(FacilioConstants.ContextNames.CUSTOM_VIEW, view);
 			}
 		}
@@ -165,6 +175,33 @@ public class LoadViewCommand implements Command {
 			}
 		} 
 		return field.getSortField().getColumnName() + " " + (field.getIsAscending()? "asc" : "desc");
+	}
+	
+	private void setFieldDisplayNames(String moduleName, FacilioView view) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioField> fields = modBean.getAllFields(moduleName);
+		Map<String, ViewField> fieldMap = null;
+		if (view.getFields() != null) {
+			fieldMap = view.getFields().stream().collect(Collectors.toMap(vf -> vf.getField().getName(), Function.identity()));
+		}
+		Map<String, String> fieldNames = null;
+		if (fields != null) {
+			fieldNames = new HashMap<> ();
+			for(FacilioField field : fields) {
+				String displayName;
+				if (fieldMap != null && fieldMap.get(field.getName()) != null) {
+					displayName = fieldMap.get(field.getName()).getColumnDisplayName();
+				}
+				else if (view.getDefaultModuleFields() != null && view.getDefaultModuleFields().get(field.getName()) != null && view.getDefaultModuleFields().get(field.getName()).getColumnDisplayName() != null) {
+					displayName = view.getDefaultModuleFields().get(field.getName()).getColumnDisplayName();
+				}
+				else {
+					displayName = field.getDisplayName();
+				}
+				fieldNames.put(field.getName(), displayName);
+			}
+		}
+		view.setFieldDisplayNames(fieldNames);
 	}
 
 }
