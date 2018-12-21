@@ -8,6 +8,5 @@ cd /home/ubuntu
 sudo killall -9 java
 sudo sh $APP_HOME/bin/catalina.sh start
 sudo chmod 644 $APP_HOME/logs/*
-sudo sh $UBUNTU_HOME/start_xvfb.sh
 
 echo "server started..."
