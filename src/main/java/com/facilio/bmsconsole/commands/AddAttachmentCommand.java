@@ -23,7 +23,7 @@ public class AddAttachmentCommand implements Command {
 
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
 
-		List<Long> attachmentId = new ArrayList<Long>();
+		List<Long> attachmentIds = new ArrayList<Long>();
 
 		if (attachmentList != null && !attachmentList.isEmpty()) {
 			for (int i=0; i< attachmentList.size(); i++) {
@@ -32,10 +32,10 @@ public class AddAttachmentCommand implements Command {
 				String contentType = attachmentContentType.get(i);
 
 				long fileId = fs.addFile(fileName, file, contentType);
-				attachmentId.add(fileId);
+				attachmentIds.add(fileId);
 			}
 
-			context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST, attachmentId);
+			context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST, attachmentIds);
 		}
 		return false;
 	}
