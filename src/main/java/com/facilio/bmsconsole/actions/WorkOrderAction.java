@@ -54,6 +54,7 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
+import com.facilio.bmsconsole.templates.TaskTemplate;
 import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.AssetsAPI;
@@ -224,7 +225,7 @@ public class WorkOrderAction extends FacilioAction {
 		}
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, preventivemaintenance);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
-		context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
+//		context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
 		context.put(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES, sectionTemplates);
 		context.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
 		
@@ -667,7 +668,7 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, preventivemaintenance);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
-		context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
+//		context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
 		context.put(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES, sectionTemplates);
 		context.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
 		context.put(FacilioConstants.ContextNames.IS_UPDATE_PM, true);
@@ -1301,11 +1302,10 @@ public class WorkOrderAction extends FacilioAction {
 		List<TaskSectionTemplate> taskSectionContextList = FieldUtil.getAsBeanListFromJsonArray(obj, TaskSectionTemplate.class);
 		setSectionTemplates(taskSectionContextList);
 		
-		tasks = new HashMap<>();
-		for(TaskSectionTemplate taskSectionContext :taskSectionContextList) {
-			tasks.put(taskSectionContext.getName(), taskSectionContext.getTasks());
-		}
-		sectionTemplates = taskSectionContextList;
+//		tasks = new HashMap<>();
+//		for(TaskSectionTemplate taskSectionContext :taskSectionContextList) {
+//			tasks.put(taskSectionContext.getName(), taskSectionContext.getTasks());
+//		}
 		return taskSectionContextList;
 	}
 	
@@ -1544,7 +1544,7 @@ public class WorkOrderAction extends FacilioAction {
 	}
 
 	private Map<String, List<TaskContext>> tasks;
-
+	
 	public Map<String, List<TaskContext>> getTasks() {
 		return tasks;
 	}
