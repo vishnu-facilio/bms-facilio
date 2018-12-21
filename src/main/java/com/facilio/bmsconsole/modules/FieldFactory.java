@@ -4782,7 +4782,7 @@ public class FieldFactory {
 		fields.add(getField("chartState", "CHART_STATE_JSON", module, FieldType.STRING));
 		fields.add(getField("tabularState", "TABULAR_STATE_JSON", module, FieldType.STRING));
 		fields.add(getField("commonState", "COMMON_STATE_JSON", module, FieldType.STRING));
-		fields.add(getField("reportState", "REPORT_STATE_JSON", module, FieldType.STRING));
+		fields.add(getField("reportStateJson", "REPORT_STATE_JSON", module, FieldType.STRING));
 		
 		fields.add(getField("benchmarkJson", "BENCHMARK_JSON", module, FieldType.STRING));
 		fields.add(getField("dataPointJson", "DATA_POINT_JSON", module, FieldType.STRING));
