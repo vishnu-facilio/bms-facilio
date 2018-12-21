@@ -454,7 +454,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getAddTaskChain() {
-		Chain c = getTransactionChain();
+		FacilioChain c = (FacilioChain) getTransactionChain();
 		//c.addCommand(getAddTicketChain());
 		c.addCommand(SetTableNamesCommand.getForTask());
 		c.addCommand(new ValidateTasksCommand());
@@ -464,6 +464,10 @@ public class FacilioChainFactory {
 		c.addCommand(new UpdateReadingDataMetaCommand());
 		c.addCommand(new AddTaskTicketActivityCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
+		c.setPostTransaction(context -> {
+			Chain updateCountChain = TransactionChainFactory.getTaskCountUpdateChain();
+			updateCountChain.execute(context);
+		});
 		return c;
 	}
 	
@@ -2336,6 +2340,11 @@ public class FacilioChainFactory {
 	
 	public static class FacilioChain extends ChainBase {
 		
+		public interface PostTransaction {
+			void onPostTrainsaction(Context context) throws Exception;
+		}
+		
+		private PostTransaction postTransaction;
 		private boolean enableTransaction = false;
 		public FacilioChain(boolean isTransactionChain) {
 			// TODO Auto-generated constructor stub
@@ -2343,6 +2352,14 @@ public class FacilioChainFactory {
 		}
 		
 	    private static Logger log = LogManager.getLogger(FacilioChain.class.getName());
+
+		public PostTransaction getPostTransaction() {
+			return postTransaction;
+		}
+
+		public void setPostTransaction(PostTransaction postTransaction) {
+			this.postTransaction = postTransaction;
+		}
 
 		public boolean execute(Context context) throws Exception {
 			boolean istransaction = false;
@@ -2363,6 +2380,10 @@ public class FacilioChainFactory {
 					//	LOGGER.info("commit transaction for " + method.getName());
 						FacilioTransactionManager.INSTANCE.getTransactionManager().commit();
 					}
+				}
+				
+				if (postTransaction != null) {
+					postTransaction.onPostTrainsaction(context);
 				}
 					
 				return status;

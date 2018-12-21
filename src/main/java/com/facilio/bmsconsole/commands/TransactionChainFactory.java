@@ -24,12 +24,29 @@ public class TransactionChainFactory {
 		}
 
 		public static Chain getAddNotesChain() {
-			Chain c = getDefaultChain();
+			FacilioChain c = (FacilioChain) getDefaultChain();
 			c.addCommand(new LoadAllFieldsCommand());
 			c.addCommand(new AddNotesCommand());
 			c.addCommand(new ExecuteNoteWorkflowCommand());
 			c.addCommand(new AddNoteTicketActivityCommand());
 			CommonCommandUtil.addCleanUpCommand(c);
+			c.setPostTransaction(context -> {
+				Chain c1 = getUpdateTicketNotesChain();
+				c1.execute(context);
+			});
+			return c;
+		}
+		
+		public static Chain getUpdateTicketNotesChain() {
+			Chain c1 = getDefaultChain();
+			c1.addCommand(new UpdateNotesCountCommand());
+			CommonCommandUtil.addCleanUpCommand(c1);
+			return c1;
+		}
+		
+		public static Chain getTaskCountUpdateChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateTaskCountCommand());
 			return c;
 		}
 	

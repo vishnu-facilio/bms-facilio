@@ -1,7 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -59,15 +61,19 @@ public class AddNotesCommand implements Command {
 					.fields(fields)
 					;
 			
+			Set<Long> parentIds = new HashSet<>();
 			for (NoteContext note : notes) {
 				note.setCreatedTime(System.currentTimeMillis());
 				note.setCreatedBy(AccountUtil.getCurrentUser());
+				
+				parentIds.add(note.getParentId());
 				
 				noteBuilder.addRecord(note);
 				if(moduleName.equals(FacilioConstants.ContextNames.TICKET_NOTES)) {
 					sendEmail(moduleName, ticketModule, note);
 				}
 			}
+			context.put("counts_to_update", parentIds);
 			noteBuilder.save();
 		}
 		return false;
