@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
@@ -30,7 +31,7 @@ public class UpdateNotesCountCommand implements Command {
 		
 		String ticketModule = (String) context.get("ticketmodule");
 		String moduleString = (String) context.get("moduleName");
-		Set<Long> parentIds = (Set<Long>) context.get("counts_to_update");
+		Set<Long> parentIds = (Set<Long>) context.get(FacilioConstants.ContextNames.PARENT_ID_LIST);
 		
 		if (StringUtils.isNoneEmpty(ticketModule) && CollectionUtils.isNotEmpty(parentIds)) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

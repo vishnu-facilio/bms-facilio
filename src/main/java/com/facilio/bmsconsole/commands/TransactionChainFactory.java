@@ -30,10 +30,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteNoteWorkflowCommand());
 			c.addCommand(new AddNoteTicketActivityCommand());
 			CommonCommandUtil.addCleanUpCommand(c);
-			c.setPostTransaction(context -> {
-				Chain c1 = getUpdateTicketNotesChain();
-				c1.execute(context);
-			});
+			c.setPostTransactionChain(getUpdateTicketNotesChain());
 			return c;
 		}
 		

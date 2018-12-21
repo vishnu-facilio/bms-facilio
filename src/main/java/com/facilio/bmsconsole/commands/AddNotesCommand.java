@@ -73,7 +73,7 @@ public class AddNotesCommand implements Command {
 					sendEmail(moduleName, ticketModule, note);
 				}
 			}
-			context.put("counts_to_update", parentIds);
+			context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, parentIds);
 			noteBuilder.save();
 		}
 		return false;

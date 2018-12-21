@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
@@ -35,6 +36,7 @@ public class AddTaskCommand implements Command {
 			long taskId = builder.insert(task);
 			task.setId(taskId);
 			context.put(FacilioConstants.ContextNames.RECORD_ID, taskId);
+			context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, Collections.singleton(task.getParentTicketId()));
 		}
 		else {
 			throw new IllegalArgumentException("Task Object cannot be null");

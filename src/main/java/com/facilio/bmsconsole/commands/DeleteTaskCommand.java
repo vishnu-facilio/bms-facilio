@@ -1,13 +1,26 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
+import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class DeleteTaskCommand implements Command {
 
@@ -20,6 +33,21 @@ public class DeleteTaskCommand implements Command {
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 
 		if (recordIds != null && !recordIds.isEmpty()) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule("task");
+			FacilioField parentTicketId = modBean.getField("parentTicketId", "task");
+			
+			List<FacilioField> fields = new ArrayList<>();
+			fields.add(parentTicketId);
+			GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+					.table(dataTableName)
+					.select(fields)
+					.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(module), recordIds, NumberOperators.EQUALS));
+			List<Map<String, Object>> list = selectRecordBuilder.get();
+			Set<Long> parentIds = new HashSet<>();
+			for (Map<String, Object> map : list) {
+				parentIds.add((Long) map.get("parentTicketId"));
+			}
 			
 			String sql = "ID IN (";
 			for (int i=0; i < recordIds.size(); i++) {
@@ -35,6 +63,7 @@ public class DeleteTaskCommand implements Command {
 			
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, builder.delete());
 			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.DELETE);
+			context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, parentIds);
 		}
 		return false;
 	}

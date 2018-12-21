@@ -464,17 +464,16 @@ public class FacilioChainFactory {
 		c.addCommand(new UpdateReadingDataMetaCommand());
 		c.addCommand(new AddTaskTicketActivityCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
-		c.setPostTransaction(context -> {
-			Chain updateCountChain = TransactionChainFactory.getTaskCountUpdateChain();
-			updateCountChain.execute(context);
-		});
+		c.setPostTransactionChain(TransactionChainFactory.getTaskCountUpdateChain());
 		return c;
 	}
 	
 	public static Command getDeleteTaskChain() {
-		Chain c = new ChainBase();
+		FacilioChain c = (FacilioChain) getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForTask());
 		c.addCommand(new DeleteTaskCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		c.setPostTransactionChain(TransactionChainFactory.getTaskCountUpdateChain());
 		return c;
 	}
 	
@@ -2340,11 +2339,7 @@ public class FacilioChainFactory {
 	
 	public static class FacilioChain extends ChainBase {
 		
-		public interface PostTransaction {
-			void onPostTrainsaction(Context context) throws Exception;
-		}
-		
-		private PostTransaction postTransaction;
+		private Chain postTransactionChain;
 		private boolean enableTransaction = false;
 		public FacilioChain(boolean isTransactionChain) {
 			// TODO Auto-generated constructor stub
@@ -2353,12 +2348,12 @@ public class FacilioChainFactory {
 		
 	    private static Logger log = LogManager.getLogger(FacilioChain.class.getName());
 
-		public PostTransaction getPostTransaction() {
-			return postTransaction;
+		public Chain getPostTransactionChain() {
+			return postTransactionChain;
 		}
 
-		public void setPostTransaction(PostTransaction postTransaction) {
-			this.postTransaction = postTransaction;
+		public void setPostTransactionChain(Chain postTransaction) {
+			this.postTransactionChain = postTransaction;
 		}
 
 		public boolean execute(Context context) throws Exception {
@@ -2382,8 +2377,8 @@ public class FacilioChainFactory {
 					}
 				}
 				
-				if (postTransaction != null) {
-					postTransaction.onPostTrainsaction(context);
+				if (postTransactionChain != null) {
+					postTransactionChain.execute(context);
 				}
 					
 				return status;
