@@ -108,7 +108,6 @@
 		<action name="account" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="currentAccount">
 			<result name="success" type="json">
-				<param name="enumAsBean">true</param>
 				<param name="includeProperties">^account.*</param>
 			</result>
 		</action>
