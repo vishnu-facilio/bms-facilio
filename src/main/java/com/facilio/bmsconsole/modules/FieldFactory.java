@@ -4040,6 +4040,7 @@ public class FieldFactory {
 	public static List<FacilioField> getReadingDataMetaFields() {
 		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
 		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getIdField(module));
 		fields.add(getOrgIdField(module));
 		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.NUMBER));
 		fields.add(getField("fieldId", "FIELD_ID", module, FieldType.NUMBER));
@@ -4049,6 +4050,18 @@ public class FieldFactory {
 		fields.add(getField("inputType", "INPUT_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("readingType", "READING_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("unit", "UNIT", module, FieldType.NUMBER));
+		return fields;
+	}
+	
+	public static List<FacilioField> getReadingInputValuesFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getReadingInputValuesModule();
+
+		fields.add(getField("rdmId", "RDMID", module, FieldType.NUMBER));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("idx", "IDX", module, FieldType.NUMBER));
+		fields.add(getField("inputValue", "INPUT_VALUE", module, FieldType.STRING));
+
 		return fields;
 	}
 

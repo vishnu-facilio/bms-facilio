@@ -407,6 +407,8 @@
 		</action>
 		<action name="occupantdata" class="com.facilio.bmsconsole.actions.ReadingAction" method="getResourcesOccupantLatestReadingData">
 		</action>
+		<action name="setinputvalue" class="com.facilio.bmsconsole.actions.ReadingAction" method="setReadingInputValues">
+		</action>
 	</package>
 	<package name="reportApiv2" namespace="/api/v2/report" extends="v2Api">
 	

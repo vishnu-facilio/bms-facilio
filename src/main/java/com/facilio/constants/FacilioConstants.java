@@ -567,6 +567,7 @@ public class FacilioConstants {
 		public static final String SKIP_LAST_READING_CHECK = "skipLastReadingCheck";
 		public static final String PREVIOUS_READING_DATA_META = "previousReadingDataMeta";
 		public static final String CURRRENT_READING_DATA_META = "currentReadingDataMeta";
+		public static final String READING_DATA_META_ID = "readingDataMetaId";
 		public static final String READING_DATA_META_LIST = "readingDataMetaList";
 		public static final String READING_DATA_META_MAP = "readingDataMetaMap";
 		public static final String READING_DATA_META_TYPE = "readingDataMetaType";
@@ -579,6 +580,7 @@ public class FacilioConstants {
 		public static final String ANALYTICS_ANAMOLY = "analyticsAnamoly";
 		public static final String DERIVATION = "derivation";
 		public static final String FETCH_MAPPED="fetchMapped";
+		public static final String FETCH_READING_INPUT_VALUES="fetchReadingInputValues";
 		
 		public static final String PORTALINFO = "portalInfo";
 		public static final String PUBLICKEYFILE = "publicKeyFile";
