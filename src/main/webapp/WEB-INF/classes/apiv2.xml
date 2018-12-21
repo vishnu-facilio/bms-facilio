@@ -409,12 +409,6 @@
 		</action>
 	</package>
 	<package name="reportApiv2" namespace="/api/v2/report" extends="v2Api">
-		<global-results>
-        <!--This result is global **to the actions in my-package** -->
-	        <result name="success" type="json">
-	            <param name="enumAsBean">true</param>
-	        </result>
-    	</global-results>
 	
 		<action name="readingReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReadingsData">
 		</action>

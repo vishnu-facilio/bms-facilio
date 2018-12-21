@@ -1,5 +1,6 @@
 package com.facilio.report.context;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -8,6 +9,7 @@ import com.facilio.bmsconsole.modules.BooleanField;
 import com.facilio.bmsconsole.modules.EnumField;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.unitconversion.Metric;
 import com.facilio.unitconversion.Unit;
@@ -161,6 +163,10 @@ public class ReportFieldContext {
 	}
 	public void setUnit(Unit unit) {
 		this.unit = unit;
+	}
+	
+	public Map<String, Object> getUnitObj() throws Exception {
+		return FieldUtil.getAsProperties(unit);
 	}
 
 	private Metric metric;
