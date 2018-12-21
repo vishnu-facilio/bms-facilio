@@ -411,7 +411,7 @@
 	<package name="reportApiv2" namespace="/api/v2/report" extends="v2Api">
 		<global-results>
         <!--This result is global **to the actions in my-package** -->
-	        <result name="sucess" type="json">
+	        <result name="success" type="json">
 	            <param name="enumAsBean">true</param>
 	        </result>
     	</global-results>
