@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.unitconversion.Metric;
+import com.facilio.unitconversion.Unit;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ReportFieldContext {
@@ -90,6 +91,7 @@ public class ReportFieldContext {
 					this.unitStr = ((NumberField) field).getUnitEnum() != null ? ((NumberField) field).getUnitEnum().getSymbol() : ((NumberField) field).getUnit();
 				}
 				this.metric = ((NumberField) field).getMetricEnum();
+				this.unit = ((NumberField) field).getUnitEnum();
 			}
 			else if (field instanceof BooleanField) {
 				BooleanField boolField = (BooleanField) field;
@@ -141,6 +143,24 @@ public class ReportFieldContext {
 	}
 	public void setUnitStr(String unitStr) {
 		this.unitStr = unitStr;
+	}
+	
+	private Unit unit;
+	public int getUnit() {
+		if (unit != null) {
+			return unit.getUnitId();
+		}
+		return -1;
+	}
+	public void setUnit(int unit) {
+		this.unit = Unit.valueOf(unit);
+	}
+	
+	public Unit getUnitEnum() {
+		return unit;
+	}
+	public void setUnit(Unit unit) {
+		this.unit = unit;
 	}
 
 	private Metric metric;
