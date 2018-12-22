@@ -15,7 +15,6 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
 
 public class ViewAction extends FacilioAction {
 	
@@ -55,7 +54,7 @@ public class ViewAction extends FacilioAction {
 
 	public String getViewDetail() throws Exception
 	{
-		BeanFactory.lookup("ModuleBean");
+		String moduleName = getModuleName();
 		if (moduleName == null || moduleName.equals("approval")) {
 			if (moduleName.equals("approval")) {
 				viewName = "approval_" + viewName;
@@ -104,7 +103,7 @@ public class ViewAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-		public String editView() throws Exception {
+	public String v2editView() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
@@ -119,19 +118,22 @@ public class ViewAction extends FacilioAction {
 		
 		Chain editView = TransactionChainFactory.editViewChain();
 		editView.execute(context);
-		this.viewId = view.getId();
 		
+		setViewName(view.getName());
+		getViewDetail();
+		
+		setResult("view", view);
 		return SUCCESS;
 	}
 		
-		public String deleteView() throws Exception {
-			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.VIEWID, id);
-			Chain deleteView = TransactionChainFactory.deleteViewChain();
-			deleteView.execute(context);
-			return SUCCESS;
-			
-		}
+	public String deleteView() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.VIEWID, id);
+		Chain deleteView = TransactionChainFactory.deleteViewChain();
+		deleteView.execute(context);
+		return SUCCESS;
+		
+	}
 		
 	public String customizeView() throws Exception {
 		

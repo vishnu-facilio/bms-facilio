@@ -102,9 +102,10 @@
 	
 	
 		<package name="viewApiV2" namespace="/api/v2/views" extends="v2Api">
-		<action name="viewList" class="com.facilio.bmsconsole.actions.ViewAction"
-			method="v2viewlist">
-		</action>
+			<action name="viewList" class="com.facilio.bmsconsole.actions.ViewAction" method="v2viewlist">
+			</action>
+			<action name="edit" class="com.facilio.bmsconsole.actions.ViewAction" method="v2editView">
+			</action>
 		</package>
 	
 
