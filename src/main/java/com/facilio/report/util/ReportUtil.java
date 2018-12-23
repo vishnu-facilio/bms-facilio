@@ -67,6 +67,18 @@ public class ReportUtil {
 		}
 		report.setxAlias(FacilioConstants.ContextNames.REPORT_DEFAULT_X_ALIAS);
 		
+		Boolean showAlarms = (Boolean) context.get(FacilioConstants.ContextNames.REPORT_SHOW_ALARMS);
+		if (showAlarms == null) {
+			showAlarms = false;
+		}
+		report.addToReportState(FacilioConstants.ContextNames.REPORT_SHOW_ALARMS, showAlarms);
+		
+		Boolean showSafeLimit = (Boolean) context.get(FacilioConstants.ContextNames.REPORT_SHOW_ALARMS);
+		if (showSafeLimit == null) {
+			showSafeLimit = false;
+		}
+		report.addToReportState(FacilioConstants.ContextNames.REPORT_SHOW_SAFE_LIMIT, showSafeLimit);
+		
 		return report;
 	}
 	

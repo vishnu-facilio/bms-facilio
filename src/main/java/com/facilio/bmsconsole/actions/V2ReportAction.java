@@ -237,6 +237,8 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.ASSET_CATEGORY, assetCategory);
 		context.put(FacilioConstants.ContextNames.BASE_SPACE_LIST, spaceId);
 		context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, parentId);
+		context.put(FacilioConstants.ContextNames.REPORT_SHOW_ALARMS, showAlarms);
+		context.put(FacilioConstants.ContextNames.REPORT_SHOW_SAFE_LIMIT, showSafeLimit);
 		
 		context.put(FacilioConstants.ContextNames.ALARM_ID, alarmId);
 	}
@@ -449,6 +451,22 @@ public class V2ReportAction extends FacilioAction {
 	public void setFilterMode(int filterMode) {
 		this.filterMode = ReportFilterMode.valueOf(filterMode);
 		this.xCriteriaMode = this.filterMode;
+	}
+	
+	private boolean showSafeLimit;
+	public boolean isShowSafeLimit() {
+		return showSafeLimit;
+	}
+	public void setShowSafeLimit(boolean showSafeLimit) {
+		this.showSafeLimit = showSafeLimit;
+	}
+
+	private boolean showAlarms;
+	public boolean isShowAlarms() {
+		return showAlarms;
+	}
+	public void setShowAlarms(boolean showAlarms) {
+		this.showAlarms = showAlarms;
 	}
 
 	private List<Long> assetCategory;

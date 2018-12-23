@@ -69,7 +69,8 @@ public class ReadingAlarmContext extends AlarmContext {
 	public void setRuleId(long ruleId) {
 		this.ruleId = ruleId;
 	}
-	String reportMeta;
+	
+	private String reportMeta;
 	public String getReportMeta() {
 		return reportMeta;
 	}

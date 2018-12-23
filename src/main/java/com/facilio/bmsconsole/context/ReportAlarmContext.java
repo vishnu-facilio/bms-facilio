@@ -5,9 +5,9 @@ import java.util.List;
 
 public class ReportAlarmContext {
 
-	long startTime;
-	long endTime;
-	int order = 0;
+	private long startTime;
+	private long endTime;
+	private int order = 0;
 	List<ReadingAlarmContext> alarmContexts;
 	
 	public int addOrder() {

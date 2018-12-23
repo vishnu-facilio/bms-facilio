@@ -37,9 +37,7 @@ public class CalculateAggregationCommand implements Command {
 		if (reportData != null && !reportData.isEmpty()) {
 			List<Map<String, Object>> csvData = (List<Map<String, Object>>) reportData.get(FacilioConstants.ContextNames.DATA_KEY);
 			Map<String, Object> reportAggrData = (Map<String, Object>) reportData.get(FacilioConstants.ContextNames.AGGR_KEY);
-			
 			Map<String, Object> aggrData = new HashMap<>();
-			
 			
 			for (ReportDataPointContext dp : report.getDataPoints()) {
 				if (!dp.isAggrCalculated()) {

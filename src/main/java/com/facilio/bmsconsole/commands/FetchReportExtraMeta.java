@@ -27,7 +27,6 @@ import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.context.ReportDataPointContext;
@@ -108,30 +107,16 @@ public class FetchReportExtraMeta implements Command {
 							}
 							
 							Map<String, List<ReadingAlarmContext>> alarmProps = new HashMap<>();
-							Long fieldId = dataPoint.getyAxis().getFieldId();
+							long fieldId = dataPoint.getyAxis().getFieldId();
 							
 							for (Long parentId : parentIds) {
-								List<ReadingAlarmContext> alarms = AlarmAPI.getReadingAlarms(parentId,fieldId,report.getDateRange().getStartTime(),report.getDateRange().getEndTime(),false);
+								List<ReadingAlarmContext> alarms = AlarmAPI.getReadingAlarms(Collections.singletonList(parentId),fieldId,report.getDateRange().getStartTime(),report.getDateRange().getEndTime(),false);
 								alarms = filterAlarmAndGetList(alarms,alarmId);
 								for(ReadingAlarmContext alarm :alarms) {
 									alarm.setReportMeta(dataPoint.getName()+"_"+FacilioConstants.Reports.ACTUAL_DATA);
 								}
 								alarmProps.put(FacilioConstants.Reports.ACTUAL_DATA, alarms);
 								allAlarms.addAll(alarms);
-								if (report.getBaseLines() != null && !report.getBaseLines().isEmpty()) {
-									for (ReportBaseLineContext reportBaseLine : report.getBaseLines()) {
-			
-										if(reportBaseLine.getBaseLineRange() != null) {
-											alarms = AlarmAPI.getReadingAlarms(parentId,fieldId,reportBaseLine.getBaseLineRange().getStartTime(),reportBaseLine.getBaseLineRange().getEndTime(),false);
-											alarms = filterAlarmAndGetList(alarms,alarmId);
-											for(ReadingAlarmContext alarm :alarms) {
-												alarm.setReportMeta(dataPoint.getName()+"_"+reportBaseLine.getBaseLine().getName());
-											}
-											alarmProps.put(reportBaseLine.getBaseLine().getName(), alarms);
-											allAlarms.addAll(alarms);
-										}
-									}
-								}
 //								if (AccountUtil.getCurrentOrg().getId() == 88) {
 									LOGGER.debug("Fetching extra meta - alarmProps : "+alarmProps);
 //								}

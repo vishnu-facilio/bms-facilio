@@ -89,15 +89,15 @@ public class AlarmAPI {
 		return event;
 	}
 	
-	public static ReadingAlarmContext getReadingAlarmContext(Long alarmId) throws Exception {
+	public static ReadingAlarmContext getReadingAlarmContext(long alarmId) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.READING_ALARM);
 		SelectRecordsBuilder<ReadingAlarmContext> selectBuilder = new SelectRecordsBuilder<ReadingAlarmContext>()
-				.select(modBean.getAllFields(FacilioConstants.ContextNames.READING_ALARM))
-				.module(modBean.getModule(FacilioConstants.ContextNames.READING_ALARM))
-				.beanClass(ReadingAlarmContext.class)
-				.andCondition(CriteriaAPI.getCondition("Alarms.ID", "id", ""+alarmId, NumberOperators.EQUALS));
+																.select(modBean.getAllFields(FacilioConstants.ContextNames.READING_ALARM))
+																.module(module)
+																.beanClass(ReadingAlarmContext.class)
+																.andCondition(CriteriaAPI.getIdCondition(alarmId, module));
 		
 		List<ReadingAlarmContext> props = selectBuilder.get();
 		
@@ -372,21 +372,17 @@ public class AlarmAPI {
 		return null;
 	}
 	
-	public static List<ReadingAlarmContext> getReadingAlarms(Long resourceId,Long fieldId,Long startTime,Long endTime,boolean isWithAnomaly) throws Exception {
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
+	private static SelectRecordsBuilder<ReadingAlarmContext> getReadingAlarmsSelectBuilder (long startTime, long endTime, boolean isWithAnomaly, List<FacilioField> fields, Map<String, FacilioField> fieldMap) {
 		SelectRecordsBuilder<ReadingAlarmContext> selectBuilder = new SelectRecordsBuilder<ReadingAlarmContext>()
-				.select(modBean.getAllFields(FacilioConstants.ContextNames.READING_ALARM))
-				.module(modBean.getModule(FacilioConstants.ContextNames.READING_ALARM))
-				.beanClass(ReadingAlarmContext.class);
+																.select(fields)
+																.moduleName(FacilioConstants.ContextNames.READING_ALARM)
+																.beanClass(ReadingAlarmContext.class)
+																.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), String.valueOf(endTime), NumberOperators.LESS_THAN_EQUAL))
+																.orderBy("CREATED_TIME")
+																;
 		
-		selectBuilder.andCondition(CriteriaAPI.getCondition(modBean.getField("resource", FacilioConstants.ContextNames.READING_ALARM), ""+resourceId, NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition(modBean.getField("readingFieldId", FacilioConstants.ContextNames.READING_ALARM), ""+fieldId, NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition(modBean.getField("createdTime", FacilioConstants.ContextNames.READING_ALARM), ""+endTime, NumberOperators.LESS_THAN_EQUAL));
-		
-		Condition condition1 = CriteriaAPI.getCondition(modBean.getField("clearedTime", FacilioConstants.ContextNames.READING_ALARM), ""+startTime, NumberOperators.GREATER_THAN_EQUAL);
-		Condition condition2 = CriteriaAPI.getCondition(modBean.getField("clearedTime", FacilioConstants.ContextNames.READING_ALARM), "", CommonOperators.IS_EMPTY);
+		Condition condition1 = CriteriaAPI.getCondition(fieldMap.get("clearedTime"), String.valueOf(startTime), NumberOperators.GREATER_THAN_EQUAL);
+		Condition condition2 = CriteriaAPI.getCondition(fieldMap.get("clearedTime"), CommonOperators.IS_EMPTY);
 		
 		Criteria criteria = new Criteria();
 		
@@ -395,11 +391,32 @@ public class AlarmAPI {
 		
 		selectBuilder.andCriteria(criteria);
 		if(!isWithAnomaly) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition(modBean.getField("sourceType", FacilioConstants.ContextNames.READING_ALARM), ""+SourceType.ANOMALY_ALARM.getIntVal(), NumberOperators.NOT_EQUALS));
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("sourceType"), String.valueOf(SourceType.ANOMALY_ALARM.getIntVal()), NumberOperators.NOT_EQUALS));
 		}
-		List<ReadingAlarmContext> props = selectBuilder.get();
+		return selectBuilder;
+	}
+	
+	public static List<ReadingAlarmContext> getReadingAlarms(List<Long> resourceId, long fieldId, long startTime, long endTime, boolean isWithAnomaly) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.READING_ALARM);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		SelectRecordsBuilder<ReadingAlarmContext> selectBuilder = getReadingAlarmsSelectBuilder(startTime, endTime, isWithAnomaly, fields, fieldMap)
+																	.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), resourceId, NumberOperators.EQUALS))
+																	.andCondition(CriteriaAPI.getCondition(fieldMap.get("readingFieldId"), String.valueOf(fieldId), NumberOperators.EQUALS))
+																	;
 		
-		return props;
+		return selectBuilder.get();
+	}
+	
+	public static List<ReadingAlarmContext> getReadingAlarms (long entityId, long startTime, long endTime, boolean isWithAnomaly) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.READING_ALARM);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		SelectRecordsBuilder<ReadingAlarmContext> selectBuilder = getReadingAlarmsSelectBuilder(startTime, endTime, isWithAnomaly, fields, fieldMap)
+																	.andCondition(CriteriaAPI.getCondition(fieldMap.get("entityId"), String.valueOf(entityId), NumberOperators.EQUALS))
+																	;
+		
+		return selectBuilder.get();
 	}
 	
 	public static AlarmType getAlarmTypeFromAssetCategory(long categoryId) throws Exception {
