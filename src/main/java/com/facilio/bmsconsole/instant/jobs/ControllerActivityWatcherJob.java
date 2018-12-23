@@ -61,7 +61,7 @@ public class ControllerActivityWatcherJob extends InstantJob {
 		catch (Exception e) {
 			LOGGER.error("Error occurred in Controller Watcher Job", e);
 			
-			if ( !(e instanceof NullPointerException && ExceptionUtils.getStackTrace(e).contains("com.mysql.jdbc.ResultSetImpl")) ) { //Not sending email for transaction timeout
+			if ( !(e instanceof NullPointerException && ExceptionUtils.getStackTrace(e).contains("com.mysql.jdbc")) ) { //Not sending email for transaction timeout
 				CommonCommandUtil.emailException("ControllerActivityWatcherJob", "Error occurred in Controller Watcher Job", e);
 			}
 		}
