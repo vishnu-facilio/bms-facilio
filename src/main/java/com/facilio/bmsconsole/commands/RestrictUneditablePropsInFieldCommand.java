@@ -33,10 +33,10 @@ public class RestrictUneditablePropsInFieldCommand implements Command {
 			((BooleanField) oldField).setFalseVal(booleanField.getFalseVal());
 			((BooleanField) oldField).setTrueVal(booleanField.getTrueVal());
 		}
-//		else if(oldField instanceof EnumField) {
-//			EnumField enumField =(EnumField) field;
-//			((EnumField) oldField).setValues(enumField.getValues());
-//		}
+		else if(oldField instanceof EnumField) {
+			EnumField enumField =(EnumField) field;
+			((EnumField) oldField).setValues(enumField.getValues());
+		}
 		
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD, oldField);
 		return false;
