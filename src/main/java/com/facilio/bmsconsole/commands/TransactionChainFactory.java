@@ -442,7 +442,7 @@ public class TransactionChainFactory {
 		public static Chain onlyAddOrUpdateReadingsChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new GetReadingDataMetaCommand());
-			c.addCommand(new ReadingUnitConversionCommand());
+			c.addCommand(new ReadingUnitAndInputConversionCommand());
 			c.addCommand(new DeltaCalculationCommand());
 			c.addCommand(new CalculateDeltaCommand());
 			c.addCommand(new CalculatePreFormulaCommand());
@@ -541,6 +541,13 @@ public class TransactionChainFactory {
 		public static Chain getMigrateReadingDataChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new MigrateReadingDataCommand());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
+		public static Chain getSetReadingInputValuesChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new SetReadingInputValuesCommand());
 			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}

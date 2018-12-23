@@ -305,4 +305,42 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 			.update(prop)
 			;
 	}
+	public static List<ReadingRuleContext> getReadingRules(long ruleGroupId) throws Exception {
+		if (ruleGroupId <= 0) {
+			return null;
+		}
+		
+		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
+		FacilioModule readingRuleModule = ModuleFactory.getReadingRuleModule();
+		FacilioModule workflowRuleModule = ModuleFactory.getWorkflowRuleModule();
+		fields.addAll(FieldFactory.getReadingRuleFields());
+		
+		FacilioField ruleGroupIdField = null; 
+		
+		for(FacilioField field :fields) {
+			if(field.getName().equals("ruleGroupId")) {
+				ruleGroupIdField = field;
+				break;
+			}
+		}
+		
+		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
+													.table(workflowRuleModule.getTableName())
+													.innerJoin(readingRuleModule.getTableName())
+													.on(workflowRuleModule.getTableName()+".ID = "+readingRuleModule.getTableName()+".ID")
+													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(workflowRuleModule))
+													.andCondition(CriteriaAPI.getCondition(ruleGroupIdField, Collections.singleton(ruleGroupId), NumberOperators.EQUALS));
+		ruleBuilder.select(fields);
+		List<Map<String, Object>> props = ruleBuilder.get();
+		List<ReadingRuleContext> readingRuleContexts = null;
+		if(props != null && !props.isEmpty()) {
+			readingRuleContexts = new ArrayList<>();
+			for(Map<String, Object> prop :props) {
+				ReadingRuleContext readingRuleContext = FieldUtil.getAsBeanFromMap(prop, ReadingRuleContext.class);
+				readingRuleContexts.add(readingRuleContext);
+			}
+		}
+		return readingRuleContexts;
+	}
+	
 }

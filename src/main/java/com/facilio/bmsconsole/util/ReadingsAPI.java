@@ -860,4 +860,54 @@ public class ReadingsAPI {
 		
 		ReadingsAPI.updateReadingDataMeta(parentId, fieldIds, rdm);
 	}
+	
+	public static Map<Long,Map<Integer, String>> getReadingIdxVsValuesMap(List<Long> rdmIds) throws Exception {
+		List<Map<String, Object>> props = getReadingInputValueProps(rdmIds);
+		Map<Long, Map<Integer, String>> rdmValuesMap = null;
+		if(props!=null && !props.isEmpty()) {
+			rdmValuesMap = new HashMap<>();
+			for(Map<String, Object> prop: props) {
+				long rdmId = (long) prop.get("rdmId");
+				Map<Integer, String> valueMap = rdmValuesMap.get(rdmId);
+				if (valueMap == null) {
+					valueMap = new HashMap<>();
+					rdmValuesMap.put(rdmId, valueMap);
+				}
+				valueMap.put((int) prop.get("idx"), (String)prop.get("inputValue"));
+			}
+		}
+		return rdmValuesMap;
+	}
+	
+	public static Map<Long,Map<String, Integer>> getReadingInputValuesMap(List<Long> rdmIds) throws Exception {
+		
+		List<Map<String, Object>> props = getReadingInputValueProps(rdmIds);
+		Map<Long,Map<String, Integer>> rdmValuesMap = null;
+		if(props!=null && !props.isEmpty()) {
+			rdmValuesMap = new HashMap<>();
+			for(Map<String, Object> prop: props) {
+				long rdmId = (long) prop.get("rdmId");
+				Map<String, Integer> valueMap = rdmValuesMap.get(rdmId);
+				if (valueMap == null) {
+					valueMap = new HashMap<>();
+					rdmValuesMap.put(rdmId, valueMap);
+				}
+				valueMap.put((String)prop.get("inputValue"), (int) prop.get("idx"));
+			}
+		}
+		return rdmValuesMap;
+	}
+	
+	private static List<Map<String, Object>> getReadingInputValueProps(List<Long> rdmIds) throws Exception {
+		List<FacilioField> fields = FieldFactory.getReadingInputValuesFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioModule module = ModuleFactory.getReadingInputValuesModule();
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("rdmId"), rdmIds, NumberOperators.EQUALS))
+				;
+		return builder.get();
+	}
 }

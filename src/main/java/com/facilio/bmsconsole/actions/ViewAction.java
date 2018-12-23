@@ -15,7 +15,6 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
 
 public class ViewAction extends FacilioAction {
 	
@@ -55,7 +54,7 @@ public class ViewAction extends FacilioAction {
 
 	public String getViewDetail() throws Exception
 	{
-		BeanFactory.lookup("ModuleBean");
+		String moduleName = getModuleName();
 		if (moduleName == null || moduleName.equals("approval")) {
 			if (moduleName.equals("approval")) {
 				viewName = "approval_" + viewName;
@@ -67,6 +66,7 @@ public class ViewAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
 		context.put(FacilioConstants.ContextNames.PARENT_VIEW, parentView);
+		context.put(FacilioConstants.ContextNames.FETCH_FIELD_DISPLAY_NAMES, true);
 		
 		Chain getViewChain = FacilioChainFactory.getViewDetailsChain();
 		getViewChain.execute(context);
@@ -103,7 +103,7 @@ public class ViewAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-		public String editView() throws Exception {
+	public String v2editView() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
@@ -118,19 +118,22 @@ public class ViewAction extends FacilioAction {
 		
 		Chain editView = TransactionChainFactory.editViewChain();
 		editView.execute(context);
-		this.viewId = view.getId();
 		
+		setViewName(view.getName());
+		getViewDetail();
+		
+		setResult("view", view);
 		return SUCCESS;
 	}
 		
-		public String deleteView() throws Exception {
-			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.VIEWID, id);
-			Chain deleteView = TransactionChainFactory.deleteViewChain();
-			deleteView.execute(context);
-			return SUCCESS;
-			
-		}
+	public String deleteView() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.VIEWID, id);
+		Chain deleteView = TransactionChainFactory.deleteViewChain();
+		deleteView.execute(context);
+		return SUCCESS;
+		
+	}
 		
 	public String customizeView() throws Exception {
 		
@@ -201,21 +204,10 @@ public class ViewAction extends FacilioAction {
 		this.views = views;
 	}
 	
-	
-	
 	private LinkedHashMap groupViews;
-	
-		
-	
-	
-
 	public LinkedHashMap getGroupViews() {
 		return groupViews;
 	}
-
-	
-
-
 	public void setGroupViews(LinkedHashMap groupViews) {
 		this.groupViews = groupViews;
 	}

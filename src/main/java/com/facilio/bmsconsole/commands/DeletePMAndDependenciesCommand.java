@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.modules.DeleteRecordBuilder;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
@@ -96,6 +97,7 @@ public class DeletePMAndDependenciesCommand implements Command{
 					}
 				}
 				ActionAPI.deleteActions(actionIds);
+				deletePMReminders(pmIds);
 			}
 		}
 		
@@ -108,6 +110,23 @@ public class DeletePMAndDependenciesCommand implements Command{
 		TemplateAPI.deleteTemplates(templateIds);
 		
 		return false;
+	}
+	
+	private void deletePMReminders(List<Long> pmIds) throws Exception {
+		if (pmIds.isEmpty()) {
+			return;
+		}
+		FacilioModule reminderModule = ModuleFactory.getPMReminderModule();
+		FacilioField pmIdField = new FacilioField();
+		pmIdField.setName("pmId");
+		pmIdField.setDataType(FieldType.NUMBER);
+		pmIdField.setColumnName("PM_ID");
+		pmIdField.setModule(reminderModule);
+		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+				.table(reminderModule.getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(reminderModule))
+				.andCondition(CriteriaAPI.getCondition(pmIdField, pmIds, NumberOperators.EQUALS));
+		deleteBuilder.delete();
 	}
 	
 	private void deleteTriggers(List<Long> triggerPMIds) throws Exception {

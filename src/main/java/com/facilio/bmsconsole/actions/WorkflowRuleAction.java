@@ -344,9 +344,19 @@ public class WorkflowRuleAction extends FacilioAction {
 		
 		Chain fetchWorkflowChain = ReadOnlyChainFactory.fetchWorkflowRuleWithActionsChain();
 		fetchWorkflowChain.execute(context);
-		
 		rule = (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
+		
+		if(false) {
+			context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.ID, ruleId);
+			Chain fetchAlarmChain = ReadOnlyChainFactory.fetchAlarmRuleWithActionsChain();
+			fetchAlarmChain.execute(context);
+			alarmRule =  (AlarmRuleContext) context.get(FacilioConstants.ContextNames.ALARM_RULE);
+			setResult("alarmRule", alarmRule);
+		}
+		
 		setResult("rule", rule);
+		
 		return SUCCESS;
 	}
 	
@@ -366,7 +376,7 @@ public class WorkflowRuleAction extends FacilioAction {
 		return -1;
 	}
 	public void setRuleType(int ruleType) {
-		this.ruleType = RuleType.valueOf(ruleType);;
+		this.ruleType = RuleType.valueOf(ruleType);
 	}
 	
 	public String addWorkflowRule() throws Exception {

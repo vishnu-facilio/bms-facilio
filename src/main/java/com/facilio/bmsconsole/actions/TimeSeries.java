@@ -132,6 +132,7 @@ public class TimeSeries extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.CONFIGURE, configured);
 		context.put(FacilioConstants.ContextNames.FETCH_MAPPED, fetchMapped);
 		context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
+		context.put(FacilioConstants.ContextNames.FETCH_READING_INPUT_VALUES, true);
 		
 		Chain chain = ReadOnlyChainFactory.getUnmodelledInstancesForController();
 		chain.execute(context);

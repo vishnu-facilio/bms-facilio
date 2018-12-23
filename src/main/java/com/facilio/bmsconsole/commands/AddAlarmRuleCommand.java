@@ -23,9 +23,10 @@ public class AddAlarmRuleCommand implements Command {
 		preRequsiteRule.setStatus(true);
 		preRequsiteRule.setRuleType(WorkflowRuleContext.RuleType.READING_RULE);
 		preRequsiteRule.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-		long ruleId = WorkflowRuleAPI.addWorkflowRule(preRequsiteRule);
-		preRequsiteRule.setRuleGroupId(ruleId);
 		
+		long ruleId = WorkflowRuleAPI.addWorkflowRule(preRequsiteRule);
+		
+		preRequsiteRule.setRuleGroupId(ruleId);
 		WorkflowRuleAPI.updateWorkflowRule(preRequsiteRule);
 		
 		List<ReadingRuleContext> alarmTriggerRules = alarmRule.getAlarmTriggerRules();

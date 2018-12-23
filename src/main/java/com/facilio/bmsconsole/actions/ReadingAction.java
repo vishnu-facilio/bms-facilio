@@ -920,6 +920,7 @@ public class ReadingAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
 		context.put(FacilioConstants.ContextNames.EXCLUDE_EMPTY_FIELDS, excludeEmptyFields != null ? excludeEmptyFields : true);
+		context.put(FacilioConstants.ContextNames.FETCH_READING_INPUT_VALUES, fetchInputValues);
 		
 		Chain latestAssetData = ReadOnlyChainFactory.fetchLatestReadingDataChain();
 		latestAssetData.execute(context);
@@ -927,6 +928,14 @@ public class ReadingAction extends FacilioAction {
 		setResult("readingValues", context.get(FacilioConstants.ContextNames.READING_DATA_META_LIST));
 		
 		return SUCCESS;
+	}
+	
+	private Boolean fetchInputValues;
+	public Boolean getFetchInputValues() {
+		return fetchInputValues;
+	}
+	public void setFetchInputValues(Boolean fetchInputValues) {
+		this.fetchInputValues = fetchInputValues;
 	}
 	
 	public String setReading () throws Exception {
@@ -939,6 +948,24 @@ public class ReadingAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String setReadingInputValues() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.READING_DATA_META_ID, readingId);
+		context.put(FacilioConstants.ContextNames.RECORD_LIST, inputValues);
+		
+		Chain chain = TransactionChainFactory.getSetReadingInputValuesChain();
+		chain.execute(context);
+		return SUCCESS;
+	}
+	
+	List<Map<String, Object>> inputValues;
+	public List<Map<String, Object>> getInputValues() {
+		return inputValues;
+	}
+	public void setInputValues(List<Map<String, Object>> inputValues) {
+		this.inputValues = inputValues;
+	}
+
 	long assetId;
 	public long getAssetId() {
 		return assetId;

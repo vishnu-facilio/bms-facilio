@@ -535,13 +535,15 @@
 			</result>
 		</action>
 		<action name="closeAllTask" class="com.facilio.bmsconsole.actions.TaskAction" method="closeAllTask">
-			<param name="permission">TASK_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
 		<action name="updateAllTask" class="com.facilio.bmsconsole.actions.TaskAction" method="updateAllTask">
-			<param name="permission">TASK_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated,^error.*</param>
 			</result>
@@ -1037,13 +1039,6 @@
 	<package name="viewApi" namespace="/api/view" extends="homeApi">
 		<action name="add" class="com.facilio.bmsconsole.actions.ViewAction"
 			method="addView">
-			<!-- <param name="permission">WORKORDER_CREATE</param> -->
-			<result name="success" type="json">
-				<param name="root">view</param>
-			</result>
-		</action>
-		<action name="edit" class="com.facilio.bmsconsole.actions.ViewAction"
-			method="editView">
 			<!-- <param name="permission">WORKORDER_CREATE</param> -->
 			<result name="success" type="json">
 				<param name="root">view</param>

@@ -74,100 +74,103 @@ import com.facilio.fw.auth.SAMLAttribute;
 import com.facilio.fw.auth.SAMLUtil;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.screen.util.ScreenUtil;
+import com.facilio.unitconversion.Metric;
 import com.facilio.wms.util.WmsApi;
 import com.opensymphony.xwork2.ActionContext;
 
-public class LoginAction extends FacilioAction{
+public class LoginAction extends FacilioAction {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-
-
-	static
-	{
+	static {
 		System.out.println("Login action loaded");
 	}
 	private static String HOSTNAME = null;
 	private static Logger log = LogManager.getLogger(LoginAction.class.getName());
 	private static final SimpleDateFormat SAML_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-	
+
 	private String response = null;
-	public String getResponse()
-	{
+
+	public String getResponse() {
 		return response;
 	}
-	
+
 	// getter setter for identity token
 	private String idToken;
+
 	public String getIdToken() {
 		return idToken;
 	}
+
 	public void setIdToken(String idToken) {
 		this.idToken = idToken;
 	}
-		
+
 	// getter setter for access token
 	private String accessToken;
+
 	public String getAccessToken() {
 		return accessToken;
 	}
+
 	public void setAccessToken(String accessToken) {
 		this.accessToken = accessToken;
 	}
-	
-	private HashMap<String,String> signupinfo = new HashMap<String,String>();
+
+	private HashMap<String, String> signupinfo = new HashMap<String, String>();
+
 	public boolean isSignup() {
 		return isSignup;
 	}
+
 	public void setSignup(boolean isSignup) {
 		this.isSignup = isSignup;
 	}
+
 	private boolean isSignup = false;
-	public void setSignupInfo(String key,String value)
-	{
-		signupinfo.put(key,value);
+
+	public void setSignupInfo(String key, String value) {
+		signupinfo.put(key, value);
 	}
-	
-	public HashMap<String,String> getSignupInfo()
-	{
+
+	public HashMap<String, String> getSignupInfo() {
 		return signupinfo;
 	}
-	public String getSignupInfo(String signupkey)
-	{
+
+	public String getSignupInfo(String signupkey) {
 		return signupinfo.get(signupkey);
 	}
 
-	
 	public String apiLogin() throws Exception {
-		
+
 		account = new HashMap<>();
 		account.put("org", AccountUtil.getCurrentOrg());
 		account.put("user", AccountUtil.getCurrentUser());
-		
+
 		return SUCCESS;
 	}
-	
+
 	public String apiLogout() throws Exception {
-		
+
 		HttpServletRequest request = ServletActionContext.getRequest();
 		HttpServletResponse response = ServletActionContext.getResponse();
-		
+
 		// end user session
 		try {
 			String facilioToken = FacilioCookie.getUserCookie(request, "fc.idToken.facilio");
 			if (facilioToken != null) {
 				User currentUser = AccountUtil.getCurrentUser();
-				if(currentUser != null) {
-					AccountUtil.getUserBean().endUserSession(currentUser.getUid(), currentUser.getEmail(), facilioToken);
+				if (currentUser != null) {
+					AccountUtil.getUserBean().endUserSession(currentUser.getUid(), currentUser.getEmail(),
+							facilioToken);
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			log.info("Exception occurred ", e);
 		}
-		
+
 		HttpSession session = request.getSession();
 		session.invalidate();
 		String parentdomain = request.getServerName().replaceAll("app.", "");
@@ -179,38 +182,35 @@ public class LoginAction extends FacilioAction{
 	}
 
 	private JSONObject signupData;
-	
+
 	public void setSignupData(JSONObject signupData) {
 		this.signupData = signupData;
 	}
-	
+
 	public JSONObject getSignupData() {
 		return this.signupData;
 	}
-	
 
 	public JSONObject acceptUserInvite(String inviteToken) throws Exception {
 		String[] inviteIds = EncryptionUtil.decode(inviteToken).split("#");
 		long ouid = Long.parseLong(inviteIds[0]);
 		Long.parseLong(inviteIds[1]);
 
-		long inviteLinkExpireTime = (7 * 24 * 60 * 60 * 1000); //7 days in seconds
+		long inviteLinkExpireTime = (7 * 24 * 60 * 60 * 1000); // 7 days in seconds
 
 		JSONObject invitation = new JSONObject();
 
 		User user = AccountUtil.getUserBean().getUser(ouid);
 		if ((System.currentTimeMillis() - user.getInvitedTime()) > inviteLinkExpireTime) {
 			invitation.put("error", "link_expired");
-		}
-		else {
-			boolean acceptStatus = true;//AccountUtil.getUserBean().acceptInvite(ouid, null);
+		} else {
+			boolean acceptStatus = true;// AccountUtil.getUserBean().acceptInvite(ouid, null);
 			invitation.put("userid", ouid);
 			if (acceptStatus) {
 				user.setUserVerified(true);
 				AccountUtil.getUserBean().updateUser(user);
 				invitation.put("accepted", true);
-			}
-			else {
+			} else {
 				invitation.put("accepted", false);
 			}
 		}
@@ -218,48 +218,51 @@ public class LoginAction extends FacilioAction{
 	}
 
 	public String acceptInvite() throws Exception {
-		
+
 		JSONObject invitation = acceptUserInvite(getInviteToken());
 		ActionContext.getContext().getValueStack().set("invitation", invitation);
-		
+
 		return SUCCESS;
 	}
 
 	private String emailaddress;
-	
+
 	private String password;
-	
+
 	public String getPassword() {
 		return password;
 	}
+
 	public void setPassword(String password) {
 		this.password = password;
 	}
 
 	private String inviteToken;
-	
+
 	public String getInviteToken() {
 		return this.inviteToken;
 	}
-	
+
 	public void setInviteToken(String inviteToken) {
 		this.inviteToken = inviteToken;
 	}
-	
+
 	private HashMap<String, Object> account;
-	
+
 	public HashMap<String, Object> getAccount() {
 		return account;
 	}
+
 	public void setAccount(HashMap<String, Object> account) {
 		this.account = account;
 	}
-	
+
 	private HashMap<String, Object> createAccountResp;
-	
+
 	public HashMap<String, Object> getCreateAccountResp() {
 		return createAccountResp;
 	}
+
 	public void setCreateAccountResp(HashMap<String, Object> createAccountResp) {
 		this.createAccountResp = createAccountResp;
 	}
@@ -288,6 +291,10 @@ public class LoginAction extends FacilioAction{
 		HashMap<String, Object> appProps = new HashMap<>();
 		appProps.put("permissions", AccountConstants.ModulePermission.toMap());
 		appProps.put("permissions_groups", AccountConstants.PermissionGroup.toMap());
+		appProps.put("operators", CommonCommandUtil.getOperators());
+		appProps.put(FacilioConstants.ContextNames.ALL_METRICS, CommonCommandUtil.getAllMetrics());
+		appProps.put(FacilioConstants.ContextNames.ORGUNITS_LIST, CommonCommandUtil.orgUnitsList());
+		appProps.put(FacilioConstants.ContextNames.METRICS_WITH_UNITS, CommonCommandUtil.metricWithUnits());
 		
 		account = new HashMap<>();
 		account.put("org", AccountUtil.getCurrentOrg());
@@ -325,6 +332,9 @@ public class LoginAction extends FacilioAction{
 		data.put(FacilioConstants.ContextNames.SPACE_CATEGORY, CommonCommandUtil.getPickList(FacilioConstants.ContextNames.SPACE_CATEGORY));
 		data.put(FacilioConstants.ContextNames.ASSET_CATEGORY, CommonCommandUtil.getPickList(FacilioConstants.ContextNames.ASSET_CATEGORY));
 		data.put(FacilioConstants.ContextNames.SHIFTS, ShiftAPI.getAllShifts());
+		
+		
+		
 		if (AccountUtil.getCurrentAccount().isFromMobile()) {
 			Map<String, Set<FacilioForm>> forms = FormsAPI.getAllForms(FormType.MOBILE);
 			data.put("forms", forms);
@@ -353,13 +363,13 @@ public class LoginAction extends FacilioAction{
 		
 		return SUCCESS;
 	}
-	
+
 	public String tvAccount() throws Exception {
-		
+
 		HashMap<String, Object> appProps = new HashMap<>();
 		appProps.put("permissions", AccountConstants.ModulePermission.toMap());
 		appProps.put("permissions_groups", AccountConstants.PermissionGroup.toMap());
-		
+
 		account = new HashMap<>();
 		account.put("org", AccountUtil.getCurrentOrg());
 		account.put("user", AccountUtil.getCurrentUser());
@@ -367,89 +377,95 @@ public class LoginAction extends FacilioAction{
 		List<Group> groups = AccountUtil.getGroupBean().getOrgGroups(AccountUtil.getCurrentOrg().getId(), true);
 		List<Role> roles = AccountUtil.getRoleBean().getRoles(AccountUtil.getCurrentOrg().getOrgId());
 		List<Organization> orgs = AccountUtil.getUserBean().getOrgs(AccountUtil.getCurrentUser().getUid());
-		
+
 		Map<String, Object> data = new HashMap<>();
 		data.put("users", users);
 		data.put("groups", groups);
 		data.put("roles", roles);
 		data.put("orgs", orgs);
-		
+
 		data.put("orgInfo", CommonCommandUtil.getOrgInfo());
-		
+
 		data.put("ticketCategory", TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId()));
 		data.put("ticketPriority", TicketAPI.getPriorties(AccountUtil.getCurrentOrg().getOrgId()));
 		data.put("ticketType", TicketAPI.getTypes(AccountUtil.getCurrentOrg().getOrgId()));
-		
+
 		data.put("alarmSeverity", AlarmAPI.getAlarmSeverityList());
 		data.put("assetCategory", AssetsAPI.getCategoryList());
 		data.put("assetType", AssetsAPI.getTypeList());
 		data.put("assetDepartment", AssetsAPI.getDepartmentList());
-		
+
 		data.put("serviceList", ReportsUtil.getPurposeMapping());
 		data.put("buildingList", ReportsUtil.getBuildingMap());
 		data.put("ticketStatus", getTicketStatus());
 		data.put("energyMeters", DeviceAPI.getAllMainEnergyMeters());
-		data.put(FacilioConstants.ContextNames.TICKET_TYPE, CommonCommandUtil.getPickList(FacilioConstants.ContextNames.TICKET_TYPE));
-		data.put(FacilioConstants.ContextNames.SPACE_CATEGORY, CommonCommandUtil.getPickList(FacilioConstants.ContextNames.SPACE_CATEGORY));
-		data.put(FacilioConstants.ContextNames.ASSET_CATEGORY, CommonCommandUtil.getPickList(FacilioConstants.ContextNames.ASSET_CATEGORY));
-		
+		data.put(FacilioConstants.ContextNames.TICKET_TYPE,
+				CommonCommandUtil.getPickList(FacilioConstants.ContextNames.TICKET_TYPE));
+		data.put(FacilioConstants.ContextNames.SPACE_CATEGORY,
+				CommonCommandUtil.getPickList(FacilioConstants.ContextNames.SPACE_CATEGORY));
+		data.put(FacilioConstants.ContextNames.ASSET_CATEGORY,
+				CommonCommandUtil.getPickList(FacilioConstants.ContextNames.ASSET_CATEGORY));
+
 		RemoteScreenContext remoteScreen = AccountUtil.getCurrentAccount().getRemoteScreen();
 		if (remoteScreen.getScreenId() != null && remoteScreen.getScreenId() > 0) {
 			remoteScreen.setScreenContext(ScreenUtil.getScreen(remoteScreen.getScreenId()));
 		}
 		data.put("connectedScreen", remoteScreen);
-		
+
 		Map<String, Object> config = new HashMap<>();
 		config.put("ws_endpoint", WmsApi.getRemoteWebsocketEndpoint(remoteScreen.getId()));
-		
+
 		account.put("data", data);
 		account.put("config", config);
 		account.put("appProps", appProps);
-		
+
 		int license = AccountUtil.getFeatureLicense();
 		account.put("License", license);
-		
+
 		return SUCCESS;
 	}
-	
+
 	private String switchOrgDomain;
-	
+
 	public String getSwitchOrgDomain() {
 		return switchOrgDomain;
 	}
+
 	public void setSwitchOrgDomain(String switchOrgDomain) {
 		this.switchOrgDomain = switchOrgDomain;
 	}
-	
+
 	public String switchCurrentAccount() throws Exception {
 		HttpServletResponse response = ServletActionContext.getResponse();
 		HttpServletRequest request = ServletActionContext.getRequest();
-		
+
 		Cookie cookie = new Cookie("fc.currentOrg", getSwitchOrgDomain());
 		cookie.setMaxAge(60 * 60 * 24 * 365 * 10); // Make the cookie 10 year
 		cookie.setPath("/");
 		cookie.setSecure(true);
 		cookie.setHttpOnly(true);
 		response.addCookie(cookie);
-		
-		
+
 		FacilioCookie.eraseUserCookie(request, response, "fc.currentSite", null);
 		return SUCCESS;
 	}
-	
+
 	public static Map<String, Object> getPaymentEndpoint() {
 		String BaseUrl = AwsUtil.getConfig("payment.url");
-		String Standard = BaseUrl + "facil-blossom?addons[id][0]=staff-basic&addons[quantity][0]=10&addons[id][1]=buildings&addons[quantity][1]=5";
-		String Professional = BaseUrl + "professional?addons[id][0]=staff-professional&addons[quantity][0]=10&addons[id][1]=building-professional&addons[quantity][1]=5";
-		String Enterprise = BaseUrl + "professional?addons[id][0]=staff-professional&addons[quantity][0]=10&addons[id][1]=building-professional&addons[quantity][1]=5";
+		String Standard = BaseUrl
+				+ "facil-blossom?addons[id][0]=staff-basic&addons[quantity][0]=10&addons[id][1]=buildings&addons[quantity][1]=5";
+		String Professional = BaseUrl
+				+ "professional?addons[id][0]=staff-professional&addons[quantity][0]=10&addons[id][1]=building-professional&addons[quantity][1]=5";
+		String Enterprise = BaseUrl
+				+ "professional?addons[id][0]=staff-professional&addons[quantity][0]=10&addons[id][1]=building-professional&addons[quantity][1]=5";
 		Map<String, Object> url = new HashMap<>();
 		url.put("standard", Standard);
 		url.put("professional", Professional);
 		url.put("enterprise", Enterprise);
 		return url;
 	}
-	private String generateSignedSAMLResponse(SAMLAttribute samlAttr) throws Exception 
-	{
+
+	private String generateSignedSAMLResponse(SAMLAttribute samlAttr) throws Exception {
 		ClassLoader classLoader = LoginAction.class.getClassLoader();
 		File samlXML = new File(classLoader.getResource("conf/saml/saml-response.xml").getFile());
 		String samlTemplate = SAMLUtil.getFileAsString(samlXML);
@@ -459,51 +475,53 @@ public class LoginAction extends FacilioAction{
 		String randomUUID_1 = UUID.randomUUID().toString();
 		String randomUUID_2 = UUID.randomUUID().toString();
 		String samlResponse = samlTemplate.replaceAll("--IssueInstant--|--AuthnInstant--", samlDT);
-		samlResponse = samlResponse.replaceAll("--Issuer--",samlAttr.getIssuer());
-		samlResponse = samlResponse.replaceAll("--ResponseID--", "_"+randomUUID_1);
-		samlResponse = samlResponse.replaceAll("--AssertionID--", "SAML_"+randomUUID_2);
-		samlResponse = samlResponse.replaceAll("--SessionIndex--", "SAML_"+randomUUID_2);
+		samlResponse = samlResponse.replaceAll("--Issuer--", samlAttr.getIssuer());
+		samlResponse = samlResponse.replaceAll("--ResponseID--", "_" + randomUUID_1);
+		samlResponse = samlResponse.replaceAll("--AssertionID--", "SAML_" + randomUUID_2);
+		samlResponse = samlResponse.replaceAll("--SessionIndex--", "SAML_" + randomUUID_2);
 		samlResponse = samlResponse.replaceAll("--EmailID--", samlAttr.getEmail());
 		samlResponse = samlResponse.replaceAll("--InResponseTo--", samlAttr.getInResponseTo());
 		samlResponse = samlResponse.replaceAll("--Recipient--|--Destination--", samlAttr.getRecipient());
 		samlResponse = samlResponse.replaceAll("--AudienceRestriction--", samlAttr.getIntendedAudience());
 		samlResponse = samlResponse.replaceAll("--ConditionsNotBefore--", getNotBeforeDateAndTime());
-		samlResponse = samlResponse.replaceAll("--ConditionsNotOnOrAfter--|--SubjectNotOnOrAfter--", getNotOnOrAfterDateAndTime());
+		samlResponse = samlResponse.replaceAll("--ConditionsNotOnOrAfter--|--SubjectNotOnOrAfter--",
+				getNotOnOrAfterDateAndTime());
 
 		Document document = SAMLUtil.convertStringToDocument(samlResponse);
 
 		if (samlAttr.getCustomAttr() != null) {
-			
+
 			NodeList assertions = document.getElementsByTagName("Assertion");
 			if (assertions != null && assertions.getLength() > 0) {
-				
+
 				Element assertion = (Element) assertions.item(0);
 				JSONObject customAttr = samlAttr.getCustomAttr();
-				
+
 				Iterator<String> keys = customAttr.keySet().iterator();
 				Element attributeStatement = document.createElement("AttributeStatement");
 				while (keys.hasNext()) {
 					String attr = keys.next();
 					String value = customAttr.get(attr).toString();
-					Element cuatomAttrElement = newAttrTag(document, attr,value);
+					Element cuatomAttrElement = newAttrTag(document, attr, value);
 					attributeStatement.appendChild(cuatomAttrElement);
 				}
 				assertion.appendChild(attributeStatement);
 			}
 		}
-		
+
 		String Temp = SAMLUtil.convertDomToString(document);
 		document = SAMLUtil.convertStringToDocument(Temp);
-		
-		document = signSAMLDocument(document, samlAttr.getPrivateKey() , samlAttr.getX509Certificate());
-		
+
+		document = signSAMLDocument(document, samlAttr.getPrivateKey(), samlAttr.getX509Certificate());
+
 		samlResponse = SAMLUtil.convertDomToString(document);
-		
+
 		byte[] enc = org.apache.commons.codec.binary.Base64.encodeBase64(samlResponse.getBytes("UTF-8"));
 		return new String(enc, "UTF-8");
 	}
 
-	public static Document signSAMLDocument(Document root, PrivateKey privKey, X509Certificate x509Cert) throws KeyException, CertificateException {
+	public static Document signSAMLDocument(Document root, PrivateKey privKey, X509Certificate x509Cert)
+			throws KeyException, CertificateException {
 
 		XMLSignatureFactory xmlSigFactory = XMLSignatureFactory.getInstance("DOM");
 
@@ -511,19 +529,24 @@ public class LoginAction extends FacilioAction{
 		domSignCtx.setDefaultNamespacePrefix("ds");
 
 		domSignCtx.setNextSibling(root.getElementsByTagName("Subject").item(0));
-		Element assertion=(Element)root.getElementsByTagName("Assertion").item(0);
+		Element assertion = (Element) root.getElementsByTagName("Assertion").item(0);
 		assertion.setIdAttributeNode(assertion.getAttributeNode("ID"), true);
-		String reference_URI= assertion.getAttribute("ID");
+		String reference_URI = assertion.getAttribute("ID");
 		Reference ref = null;
 		SignedInfo signedInfo = null;
 		try {
-			Transform transform1 = xmlSigFactory.newTransform(Transform.ENVELOPED, (TransformParameterSpec)null);
-			Transform transform2 = xmlSigFactory.newTransform("http://www.w3.org/2001/10/xml-exc-c14n#", (TransformParameterSpec)null);
+			Transform transform1 = xmlSigFactory.newTransform(Transform.ENVELOPED, (TransformParameterSpec) null);
+			Transform transform2 = xmlSigFactory.newTransform("http://www.w3.org/2001/10/xml-exc-c14n#",
+					(TransformParameterSpec) null);
 			ArrayList<Transform> listt = new ArrayList<Transform>();
 			listt.add(transform1);
 			listt.add(transform2);
-			ref = xmlSigFactory.newReference("#"+reference_URI, xmlSigFactory.newDigestMethod(DigestMethod.SHA1, null),listt,null, null);	
-			signedInfo = xmlSigFactory.newSignedInfo(xmlSigFactory.newCanonicalizationMethod(CanonicalizationMethod.EXCLUSIVE,(C14NMethodParameterSpec) null),xmlSigFactory.newSignatureMethod(SignatureMethod.RSA_SHA1, null),Collections.singletonList(ref));
+			ref = xmlSigFactory.newReference("#" + reference_URI,
+					xmlSigFactory.newDigestMethod(DigestMethod.SHA1, null), listt, null, null);
+			signedInfo = xmlSigFactory.newSignedInfo(
+					xmlSigFactory.newCanonicalizationMethod(CanonicalizationMethod.EXCLUSIVE,
+							(C14NMethodParameterSpec) null),
+					xmlSigFactory.newSignatureMethod(SignatureMethod.RSA_SHA1, null), Collections.singletonList(ref));
 
 		} catch (NoSuchAlgorithmException ex) {
 			ex.printStackTrace();
@@ -540,16 +563,15 @@ public class LoginAction extends FacilioAction{
 
 		XMLSignature xmlSignature = xmlSigFactory.newXMLSignature(signedInfo, keyInfo);
 		try {
-			//Sign the document
+			// Sign the document
 			xmlSignature.sign(domSignCtx);
-		}catch(Exception e){
+		} catch (Exception e) {
 			log.info("Exception occurred ", e);
 		}
 		return root;
 	}
-	
-	private Element newAttrTag(Document doc,String attribute,String value)
-	{
+
+	private Element newAttrTag(Document doc, String attribute, String value) {
 		Element attributeTag = doc.createElement("Attribute");
 		attributeTag.setAttribute("Name", attribute);
 		Element attributeValue = doc.createElement("AttributeValue");
@@ -585,39 +607,36 @@ public class LoginAction extends FacilioAction{
 			return null;
 		}
 	}
-	
-	@SuppressWarnings({"unchecked" })
-	private JSONObject getTicketStatus()
-	{
-		try
-		{
+
+	@SuppressWarnings({ "unchecked" })
+	private JSONObject getTicketStatus() {
+		try {
 			JSONObject result = new JSONObject();
-			List<TicketStatusContext> ticketStatusList =TicketAPI.getAllStatus();
-			for(TicketStatusContext tsc:ticketStatusList) {
-				result.put(tsc.getId(),tsc.getStatus());
+			List<TicketStatusContext> ticketStatusList = TicketAPI.getAllStatus();
+			for (TicketStatusContext tsc : ticketStatusList) {
+				result.put(tsc.getId(), tsc.getStatus());
 			}
 			return result;
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			log.info("Exception occurred ", e);
 		}
 		return null;
 	}
+
 	public String getEmailaddress() {
 		return emailaddress;
 	}
+
 	public void setEmailaddress(String emailaddress) {
 		this.emailaddress = emailaddress;
 	}
-	
-	
 
-/******************      V2 Api    ******************/
-	
+	/****************** V2 Api ******************/
+
 	public String v2currentAccount() throws Exception {
 		currentAccount();
 		setResult("account", account);
 		return SUCCESS;
 	}
-	
+
 }

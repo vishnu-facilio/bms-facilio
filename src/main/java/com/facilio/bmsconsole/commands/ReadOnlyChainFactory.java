@@ -145,6 +145,14 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain fetchAlarmRuleWithActionsChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new FetchAlarmRuleCommand());
+		c.addCommand(new GetActionListForAlarmRuleCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain fetchApprovalRuleWithActionsChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new FetchWorkflowRuleCommand());

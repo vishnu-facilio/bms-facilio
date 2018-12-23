@@ -315,8 +315,8 @@ public class FacilioConstants {
 		public static final String FIELD_NAME_LIST = "fieldList";
 		public static final String DEFAULT_FIELD = "defaultField";
 		public static final String MODULE_FIELD_IDS = "moduleFieldIds";
-		public static final String OLD_FIELD_ID = "oldFieldId";
 		public static final String FIELD_ID = "fieldId";
+		public static final String FETCH_FIELD_DISPLAY_NAMES = "fetchFieldDisplayNames";
 		
 		public static final String SITE = "site";
 		public static final String SITE_LIST = "sites";
@@ -567,6 +567,7 @@ public class FacilioConstants {
 		public static final String SKIP_LAST_READING_CHECK = "skipLastReadingCheck";
 		public static final String PREVIOUS_READING_DATA_META = "previousReadingDataMeta";
 		public static final String CURRRENT_READING_DATA_META = "currentReadingDataMeta";
+		public static final String READING_DATA_META_ID = "readingDataMetaId";
 		public static final String READING_DATA_META_LIST = "readingDataMetaList";
 		public static final String READING_DATA_META_MAP = "readingDataMetaMap";
 		public static final String READING_DATA_META_TYPE = "readingDataMetaType";
@@ -579,6 +580,7 @@ public class FacilioConstants {
 		public static final String ANALYTICS_ANAMOLY = "analyticsAnamoly";
 		public static final String DERIVATION = "derivation";
 		public static final String FETCH_MAPPED="fetchMapped";
+		public static final String FETCH_READING_INPUT_VALUES="fetchReadingInputValues";
 		
 		public static final String PORTALINFO = "portalInfo";
 		public static final String PUBLICKEYFILE = "publicKeyFile";
@@ -627,6 +629,9 @@ public class FacilioConstants {
 		public static final String PUBLISH_DATA = "publishData";
 		public static final String PUBLISH_SUCCESS = "publishSucsess";
 		public static final String PUBLISH_FAILURE = "publishFailure";
+		public static final String ORGUNITS_LIST = "orgUnitsList";
+		public static final String ALL_METRICS = "allMetrics";
+		public static final String METRICS_WITH_UNITS = "MetricsWithUnits";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {

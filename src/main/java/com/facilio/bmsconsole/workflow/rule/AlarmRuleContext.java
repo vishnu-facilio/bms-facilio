@@ -3,17 +3,38 @@ package com.facilio.bmsconsole.workflow.rule;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
+
 public class AlarmRuleContext {
 	
 	private ReadingRuleContext preRequsite;
 	List<ReadingRuleContext> alarmTriggerRules;
 	ReadingRuleContext alarmClearRule;
 	
+	public AlarmRuleContext(List<ReadingRuleContext> rules) {
+		for(ReadingRuleContext rule :rules) {
+			
+			if(rule.getRuleTypeEnum().equals(RuleType.READING_RULE)) {
+				preRequsite = rule;
+			}
+			else if(rule.getRuleTypeEnum().equals(RuleType.ALARM_CLEAR_RULE)) {
+				alarmClearRule = rule;
+			}
+			else if(rule.getRuleTypeEnum().equals(RuleType.ALARM_TRIGGER_RULE)) {
+				addAlarmTriggerRule(rule);
+			}
+		}
+	}
+	
 	public List<ReadingRuleContext> getAlarmTriggerRules() {
 		return alarmTriggerRules;
 	}
 	public void setAlarmTriggerRules(List<ReadingRuleContext> alarmTriggerRules) {
 		this.alarmTriggerRules = alarmTriggerRules;
+	}
+	public void addAlarmTriggerRule(ReadingRuleContext alarmTriggerRule) {
+		this.alarmTriggerRules = this.alarmTriggerRules == null ? new ArrayList<>() : this.alarmTriggerRules;
+		this.alarmTriggerRules.add(alarmTriggerRule);
 	}
 	public ReadingRuleContext getAlarmClearRule() {
 		return alarmClearRule;

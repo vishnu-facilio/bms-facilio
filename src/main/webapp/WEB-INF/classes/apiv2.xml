@@ -102,9 +102,10 @@
 	
 	
 		<package name="viewApiV2" namespace="/api/v2/views" extends="v2Api">
-		<action name="viewList" class="com.facilio.bmsconsole.actions.ViewAction"
-			method="v2viewlist">
-		</action>
+			<action name="viewList" class="com.facilio.bmsconsole.actions.ViewAction" method="v2viewlist">
+			</action>
+			<action name="edit" class="com.facilio.bmsconsole.actions.ViewAction" method="v2editView">
+			</action>
 		</package>
 	
 
@@ -160,7 +161,7 @@
 		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="v2workOrderList">
 			<param name="moduleName">workorder</param>
-			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<param name="permission">VIEW_APPROVAL</param>
 			<param name="viewName">{1}</param>
 			<param name="approval">true</param>
 			<result name="success" type="json">
@@ -273,11 +274,13 @@
 		</action>
 		
 		<action name="closeAllTask" class="com.facilio.bmsconsole.actions.TaskAction" method="v2closeAllTask">
-			<param name="permission">TASK_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
 		</action>
 		
 		<action name="updateAllTask" class="com.facilio.bmsconsole.actions.TaskAction" method="v2updateAllTask">
-			<param name="permission">TASK_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
 		</action>
 		
 		<action name="update" class="com.facilio.bmsconsole.actions.TaskAction" method="v2updateTask">
@@ -297,7 +300,7 @@
 	
 		<action name="*" class="com.facilio.bmsconsole.actions.TaskAction" method="v2viewTask">
 			<param name="moduleName">workorder</param>
-			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<param name="taskId">{1}</param>
 		</action>
 	
@@ -309,7 +312,8 @@
 			<param name="recordId">{1}</param>
 		</action>
 		<action name="closeAllTask" class="com.facilio.bmsconsole.actions.TaskAction" method="v2closeAllTask">
-			<param name="permission">TASK_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
 		</action>
 	</package>
 	
@@ -404,8 +408,11 @@
 		</action>
 		<action name="occupantdata" class="com.facilio.bmsconsole.actions.ReadingAction" method="getResourcesOccupantLatestReadingData">
 		</action>
+		<action name="setinputvalue" class="com.facilio.bmsconsole.actions.ReadingAction" method="setReadingInputValues">
+		</action>
 	</package>
 	<package name="reportApiv2" namespace="/api/v2/report" extends="v2Api">
+	
 		<action name="readingReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReadingsData">
 		</action>
 		<action name="fetchReadingsFromCard" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReadingsFromCard">

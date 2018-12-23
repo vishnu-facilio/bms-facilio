@@ -31,7 +31,7 @@ public class CreateWorkorderTemplateCommand implements Command {
 		
 		TicketAPI.validateSiteSpecificData(workorder);
 		
-		Map<String, List<TaskContext>> tasks = (Map<String, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
+		Map<String, List<TaskContext>> tasks = (Map<String, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP);	// will be null during pm Operations
 		WorkorderTemplate workorderTemplate = new WorkorderTemplate();
 		workorderTemplate.setWorkorder(workorder);
 		workorderTemplate.setTasks(tasks);

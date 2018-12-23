@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.context;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.unitconversion.Unit;
@@ -31,6 +32,14 @@ public class ReadingDataMeta implements Serializable {
 		this.orgId = orgId;
 	}
 	
+	private long id;
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
+
 	private long resourceId = -1;
 	public long getResourceId() {
 		return resourceId;
@@ -119,6 +128,14 @@ public class ReadingDataMeta implements Serializable {
 	}
 	public void setReadingType(int readingType) {
 		this.readingType = ReadingType.valueOf(readingType);
+	}
+	
+	Map<Integer, String> inputValues;
+	public Map<Integer, String> getInputValues() {
+		return inputValues;
+	}
+	public void setInputValues(Map<Integer, String> inputValues) {
+		this.inputValues = inputValues;
 	}
 
 	public static enum ReadingInputType {

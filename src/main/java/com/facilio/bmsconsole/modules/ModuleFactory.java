@@ -1483,4 +1483,12 @@ public class ModuleFactory {
 		syncModule.setTableName("Instance_To_Asset_Mapping");
 		return syncModule;
 	}
+	
+	public static FacilioModule getReadingInputValuesModule() {
+		FacilioModule enumFieldValues = new FacilioModule();
+		enumFieldValues.setName("readingInputValues");
+		enumFieldValues.setDisplayName("Reading Input Values");
+		enumFieldValues.setTableName("Reading_Input_Values");
+		return enumFieldValues;
+	}
 }

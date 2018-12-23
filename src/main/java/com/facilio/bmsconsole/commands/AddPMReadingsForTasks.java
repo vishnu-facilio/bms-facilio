@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -25,6 +26,9 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.NumberField;
+import com.facilio.bmsconsole.templates.TaskSectionTemplate;
+import com.facilio.bmsconsole.templates.TaskTemplate;
+import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.constants.FacilioConstants;
@@ -39,7 +43,26 @@ public class AddPMReadingsForTasks implements Command {
 	
 	@Override
 	public boolean execute(Context context) throws Exception {
-		List<TaskContext> tasks = (List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST);
+		
+		List<TaskContext> tasks = null;
+		Map<TaskContext,TaskTemplate> taskvsTemplateMap= null;
+		
+		if(context.get(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES) != null) {
+			List<TaskSectionTemplate> sectionTemplates =  (List<TaskSectionTemplate>) context.get(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES);
+			tasks = new ArrayList<>();
+			taskvsTemplateMap = new HashMap<>();
+			for(TaskSectionTemplate sectionTemplate :sectionTemplates) {
+				for(TaskTemplate taskTemplate:sectionTemplate.getTaskTemplates()) {
+					TaskContext task = taskTemplate.getTask();
+					tasks.add(task);
+					taskvsTemplateMap.put(task, taskTemplate);
+				}
+			}
+		}
+		else {
+			tasks = (List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST);
+		}
+		
 		PreventiveMaintenance pm = (PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 		if (tasks != null && !tasks.isEmpty()) {
 			Map<FieldType, List<FacilioField>> fieldMap = createAndSplitFields(tasks);
@@ -48,10 +71,12 @@ public class AddPMReadingsForTasks implements Command {
 			context.put(FacilioConstants.ContextNames.READING_RULES_LIST, getReadingRules(tasks));
 			context.put(FacilioConstants.ContextNames.ACTIONS_LIST, getActionsList(tasks));
 			updateTaskFieldId(tasks);
+			PreventiveMaintenanceAPI.updateTaskTemplateFromTaskContext(taskvsTemplateMap);
 		}
 		return false;
 	}
-	
+
+
 	private List<List<List<ActionContext>>> getActionsList(List<TaskContext> tasks) {
 		List<List<List<ActionContext>>> actionsList = tasks.stream().map(TaskContext::getActionsList).collect(Collectors.toList());
 		tasks.stream().forEach(t -> t.setActionsList(null));

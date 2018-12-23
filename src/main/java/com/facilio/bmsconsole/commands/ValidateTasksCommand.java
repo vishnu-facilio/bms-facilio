@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,14 +20,17 @@ import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.BooleanField;
 import com.facilio.bmsconsole.modules.EnumField;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.TaskTemplate;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
@@ -40,24 +44,39 @@ public class ValidateTasksCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		List<TaskContext> tasks = null;
 		int maxUniqueId = 0;
-		Map<String, List<TaskContext>> taskMap = (Map<String, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
-		PreventiveMaintenance pm = (PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
-		if(taskMap == null) {
-			tasks = (List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST);
-			if(tasks == null) {
-				TaskContext task = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
-				if(task != null) {
-					tasks = Collections.singletonList(task);
-					maxUniqueId = getMaxUniqueIdFromExistingTasks(task.getParentTicketId());
+		List<TaskContext> tasks = null;
+		Map<TaskContext,TaskTemplate> taskvsTemplateMap= null;
+		
+		if(context.get(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES) != null) {
+			List<TaskSectionTemplate> sectionTemplates =  (List<TaskSectionTemplate>) context.get(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES);
+			tasks = new ArrayList<>();
+			taskvsTemplateMap = new HashMap<>();
+			for(TaskSectionTemplate sectionTemplate :sectionTemplates) {
+				for(TaskTemplate taskTemplate:sectionTemplate.getTaskTemplates()) {
+					TaskContext task = taskTemplate.getTask();
+					tasks.add(task);
+					taskvsTemplateMap.put(task, taskTemplate);
 				}
 			}
 		}
 		else {
-			tasks = new ArrayList<>();
-			for(Map.Entry<String, List<TaskContext>> entry : taskMap.entrySet()) {
-				tasks.addAll(entry.getValue());
+			Map<String, List<TaskContext>> taskMap = (Map<String, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
+			if(taskMap == null) {
+				tasks = (List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST);
+				if(tasks == null) {
+					TaskContext task = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
+					if(task != null) {
+						tasks = Collections.singletonList(task);
+						maxUniqueId = getMaxUniqueIdFromExistingTasks(task.getParentTicketId());
+					}
+				}
+			}
+			else {
+				tasks = new ArrayList<>();
+				for(Map.Entry<String, List<TaskContext>> entry : taskMap.entrySet()) {
+					tasks.addAll(entry.getValue());
+				}
 			}
 		}
 		
@@ -130,8 +149,17 @@ public class ValidateTasksCommand implements Command {
 							}
 							break;
 						case BOOLEAN:
-							if (task.getOptions() == null || task.getOptions().size() != 2) {
-								throw new IllegalArgumentException("Both true and false valuse has to be set for BOOLEAN task");
+							if (task.getReadingFieldId() != -1) {
+								BooleanField field = (BooleanField) modBean.getField(task.getReadingFieldId());
+								task.setReadingField(field);
+								if(field != null &&( field.getTrueVal() == null || field.getFalseVal() == null)) {
+									throw new IllegalArgumentException("Both true and false valuse has to be set for BOOLEAN task");
+								}
+							}
+							else {
+								if (task.getOptions() == null || task.getOptions().size() != 2) {
+									throw new IllegalArgumentException("Both true and false valuse has to be set for BOOLEAN task");
+								}
 							}
 						default:
 							break;
@@ -143,6 +171,7 @@ public class ValidateTasksCommand implements Command {
 				context.put(FacilioConstants.ContextNames.READING_DATA_META_TYPE, ReadingDataMeta.ReadingInputType.TASK);
 			}
 			context.put(FacilioConstants.ContextNames.TASK_LIST, tasks);
+			PreventiveMaintenanceAPI.updateTaskTemplateFromTaskContext(taskvsTemplateMap);
 		}
 		return false;
 	}

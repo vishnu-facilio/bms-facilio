@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -12,6 +13,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.util.ReadingsAPI;
@@ -19,9 +21,9 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.unitconversion.UnitsUtil;
 
-public class ReadingUnitConversionCommand implements Command {
+public class ReadingUnitAndInputConversionCommand implements Command {
 
-	private static final Logger LOGGER = LogManager.getLogger(ReadingUnitConversionCommand.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(ReadingUnitAndInputConversionCommand.class.getName());
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -31,6 +33,9 @@ public class ReadingUnitConversionCommand implements Command {
 		
 		if (readingMap != null && !readingMap.isEmpty()) {
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			
+			Map<Long,Map<String, Integer>> valuesMap = getInputValuesMap(metaMap);
+			
 			for (Map.Entry<String, List<ReadingContext>> entry : readingMap.entrySet()) {
 				String moduleName = entry.getKey();
 				List<ReadingContext> readings = entry.getValue();
@@ -49,6 +54,7 @@ public class ReadingUnitConversionCommand implements Command {
 											Object value = UnitsUtil.convertToSiUnit(readingData.get(fieldName), readingDataMeta.getUnitEnum());
 											readingData.put(fieldName, value);
 										}
+										convertInputValue(readingDataMeta, valuesMap, readingData, fieldName);
 									}
 								}
 							}
@@ -59,6 +65,21 @@ public class ReadingUnitConversionCommand implements Command {
 			LOGGER.info("Time taken for Unit conversion for modules : "+readingMap.keySet()+" is "+(System.currentTimeMillis() - startTime));
 		}
 		return false;
+	}
+	
+	private void convertInputValue(ReadingDataMeta readingDataMeta, Map<Long,Map<String, Integer>> rdmValueMap, Map<String, Object> readingData, String fieldName) {
+		if (rdmValueMap != null && rdmValueMap.get(readingDataMeta.getId()) != null && readingDataMeta.getInputTypeEnum() == ReadingInputType.CONTROLLER_MAPPED) {
+			Map<String, Integer> valueMap = rdmValueMap.get(readingDataMeta.getId());
+			Object value = readingData.get(fieldName);
+			if (valueMap != null && valueMap.get(value) != null) {
+				readingData.put(fieldName, valueMap.get(value));
+			}
+		}
+	}
+	
+	private Map<Long,Map<String, Integer>> getInputValuesMap(Map<String, ReadingDataMeta> metaMap) throws Exception {
+		List<Long> rdmIds = metaMap.values().stream().map(ReadingDataMeta::getId).collect(Collectors.toList());
+		return ReadingsAPI.getReadingInputValuesMap(rdmIds);
 	}
 
 }
