@@ -9,6 +9,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -59,7 +60,10 @@ public class ControllerActivityWatcherJob extends InstantJob {
 		}
 		catch (Exception e) {
 			LOGGER.error("Error occurred in Controller Watcher Job", e);
-			CommonCommandUtil.emailException("ControllerActivityWatcherJob", "Error occurred in Controller Watcher Job", e);
+			
+			if ( !(e instanceof NullPointerException && ExceptionUtils.getStackTrace(e).contains("com.mysql.jdbc.ResultSetImpl")) ) { //Not sending email for transaction timeout
+				CommonCommandUtil.emailException("ControllerActivityWatcherJob", "Error occurred in Controller Watcher Job", e);
+			}
 		}
 	}
 	
