@@ -761,7 +761,15 @@
 				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
 			</result>
 		</action>
-
+		<action name="assetCount" class="com.facilio.bmsconsole.actions.AssetAction"
+			method="assetCount">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">assetCount</param>
+			</result>
+		</action>
+	
 		<action name="add" class="com.facilio.bmsconsole.actions.AssetAction"
 			method="addAsset">
 			<param name="moduleName">asset</param>

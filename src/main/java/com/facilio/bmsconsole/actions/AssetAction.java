@@ -142,6 +142,7 @@ public class AssetAction extends FacilioAction {
  		Chain assetList = FacilioChainFactory.getAssetListChain();
  		assetList.execute(context);
  		assets = (List<AssetContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+ 		setAssetCount(assets.size());
  		setResult("assets", assets);
 		return SUCCESS;
 	}
@@ -174,6 +175,9 @@ public class AssetAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String assetCount () throws Exception {
+		return assetList();
+	}
 	private Boolean showRelationsCount;
 	public Boolean getShowRelationsCount() {
 		if (showRelationsCount == null) {
@@ -239,7 +243,15 @@ public class AssetAction extends FacilioAction {
 	public void setAssets(List<AssetContext> assets) {
 		this.assets = assets;
 	}
-	
+	private long assetCount;
+	public long getAssetCount() {
+		return assetCount;
+	}
+
+	public void setAssetCount(long assetCount) {
+		this.assetCount = assetCount;
+	}
+
 	private List<Long> assetsId;
 
 	public List<Long> getAssetsId() {
