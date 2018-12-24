@@ -1,6 +1,5 @@
 package com.facilio.report.context;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -165,6 +164,7 @@ public class ReportFieldContext {
 		this.unit = unit;
 	}
 	
+	@JsonIgnore
 	public Map<String, Object> getUnitObj() throws Exception {
 		return FieldUtil.getAsProperties(unit);
 	}
@@ -186,6 +186,7 @@ public class ReportFieldContext {
 		this.metric = metric;
 	}
 	
+	@JsonIgnore
 	public Map<String, Object> getMetricObj() throws Exception {
 		return FieldUtil.getAsProperties(metric);
 	}
