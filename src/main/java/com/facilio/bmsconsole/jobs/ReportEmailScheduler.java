@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -25,7 +26,7 @@ import com.facilio.tasker.job.JobContext;
 
 public class ReportEmailScheduler extends FacilioJob {
 	
-	private Logger log = LogManager.getLogger(ReportEmailScheduler.class.getName());
+	private Logger LOGGER = LogManager.getLogger(ReportEmailScheduler.class.getName());
 
 	@Override
 	public void execute(JobContext jc) {
@@ -57,8 +58,8 @@ public class ReportEmailScheduler extends FacilioJob {
 			}
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			log.info("Exception occurred ", e);
+			LOGGER.error("Error occurred during execution of ReportEmailScheduler", e);
+			CommonCommandUtil.emailException(ReportEmailScheduler.class.getName(), "Report Email Scheduler Job failed", e);
 		}
 	}
 
