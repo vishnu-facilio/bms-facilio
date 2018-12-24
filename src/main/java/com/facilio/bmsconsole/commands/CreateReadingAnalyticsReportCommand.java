@@ -79,7 +79,7 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 						break;
 				}
 				
-				String name = getName(dataPoint.getyAxis().getField(), mode, filterMode, resourceMap, metric, (FacilioContext) context);
+				String name = getName(dataPoint.getyAxis(), mode, filterMode, resourceMap, metric, (FacilioContext) context);
 				dataPoint.setName(name);
 				dataPoint.setType(metric.getTypeEnum());
 				dataPoint.setAliases(metric.getAliases());
@@ -210,7 +210,7 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 		dataPoint.setDateField(fieldMap.get("ttime"));
 	}
 	
-	private String getName(FacilioField yField, ReportMode mode, ReportFilterMode filterMode, Map<Long, ResourceContext> resourceMap, ReadingAnalysisContext metric, FacilioContext context) throws Exception {
+	private String getName(ReportYAxisContext yField, ReportMode mode, ReportFilterMode filterMode, Map<Long, ResourceContext> resourceMap, ReadingAnalysisContext metric, FacilioContext context) throws Exception {
 		
 		if (filterMode == null || filterMode == ReportFilterMode.NONE) {
 			if(metric.getName() != null && !metric.getName().isEmpty()) {
@@ -218,7 +218,7 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 			}
 			else {
 				if (mode == ReportMode.CONSOLIDATED) {
-					return yField.getDisplayName();
+					return yField.getLabel();
 				}
 				else {
 					StringJoiner joiner = new StringJoiner(", ");
@@ -226,7 +226,7 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 						ResourceContext resource = resourceMap.get(parentId);
 						joiner.add(resource.getName());
 					}
-					return joiner.toString()+" ("+yField.getDisplayName()+")";
+					return joiner.toString()+" ("+ yField.getLabel()+")";
 				}
 			}
 		}
@@ -237,7 +237,7 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 			case ALL_ASSET_CATEGORY: //Assuming there'll be only one datapoint
 			case SPECIFIC_ASSETS_OF_CATEGORY:
 			case SPACE:
-				return yField.getDisplayName();
+				return  yField.getLabel();
 		}
 		return null;
 	}
