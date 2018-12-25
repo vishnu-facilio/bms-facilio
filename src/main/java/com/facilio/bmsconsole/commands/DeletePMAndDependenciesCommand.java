@@ -53,6 +53,8 @@ public class DeletePMAndDependenciesCommand implements Command{
 		boolean deleteOnStatusUpdate = isStatusUpdate && newPm != null && newPm.isActive();
 		
 		List<PreventiveMaintenance> oldPms = ((List<PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST));
+		List<Long> actionIds = new ArrayList<>();
+		
 		if (oldPms != null) {
 			for(PreventiveMaintenance oldPm: oldPms) {
 				pmIds.add(oldPm.getId());
@@ -74,6 +76,16 @@ public class DeletePMAndDependenciesCommand implements Command{
 					
 					triggerPMIds.add(oldPm.getId());
 					
+					List<PMReminder> reminders = oldPm.getReminders();
+					if (reminders != null) {
+						for(PMReminder reminder :reminders) {
+							for( PMReminderAction reminderAction : reminder.getReminderActions()) {
+								actionIds.add(reminderAction.getActionId());
+							}
+							reminder.setReminderActions(null);			// temp fix, should handle differently for custom template case
+						}
+					}
+					
 				}
 			}
 		}
@@ -85,21 +97,24 @@ public class DeletePMAndDependenciesCommand implements Command{
 		deletePmResourcePlanner(pmIds);
 		deletePmIncludeExclude(pmIds);
 		deleteTriggers(triggerPMIds);
+		ActionAPI.deleteActions(actionIds);
+		deletePMReminders(pmIds);
 		
-		if(isPMDelete || deleteOnStatusUpdate || (newPm != null && newPm.getId() != -1 && newPm.getReminders() != null)) {
-			
-			List<PMReminder> reminders = PreventiveMaintenanceAPI.getPMReminders(pmIds);
-			if (reminders != null) {
-				List<Long> actionIds = new ArrayList<>();
-				for(PMReminder reminder :reminders) {
-					for( PMReminderAction reminderAction : reminder.getReminderActions()) {
-						actionIds.add(reminderAction.getActionId());
-					}
-				}
-				ActionAPI.deleteActions(actionIds);
-				deletePMReminders(pmIds);
-			}
-		}
+//		if(isPMDelete || deleteOnStatusUpdate || (newPm != null && newPm.getId() != -1 && newPm.getReminders() != null)) {
+//			
+//			List<PMReminder> reminders = PreventiveMaintenanceAPI.getPMReminders(pmIds);
+//			if (reminders != null) {
+//				List<Long> actionIds = new ArrayList<>();
+//				for(PMReminder reminder :reminders) {
+//					for( PMReminderAction reminderAction : reminder.getReminderActions()) {
+//						actionIds.add(reminderAction.getActionId());
+//					}
+//					reminder.setReminderActions(null);			// temp fix, should handle differently for custom template case
+//				}
+//				ActionAPI.deleteActions(actionIds);
+//				deletePMReminders(pmIds);
+//			}
+//		}
 		
 		if(isPMDelete) {
 			List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);

@@ -508,8 +508,10 @@ public class TransactionChainFactory {
 			c.addCommand(new ChangePreventiveMaintenanceStatusCommand());
 			c.addCommand(new DeletePMAndDependenciesCommand(false, true));
 			c.addCommand(new AddPMTriggerCommand(true));
+			//c.addCommand(new AddPMRelFieldsCommand(true));
 			c.addCommand(new SchedulePMCommand(true));
 			c.addCommand(new AddPMReminderCommand(true));
+			c.addCommand(new scheduleBeforePMRemindersCommand(true));
 			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}
