@@ -153,6 +153,27 @@ public class ControllerAPI {
 		return null;
 	}
 	
+	public static Map<Long, ControllerContext> getControllersMap(Collection<Long> ids) throws Exception {
+		FacilioModule module = ModuleFactory.getControllerModule();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.table(module.getTableName())
+				.select(FieldFactory.getControllerFields())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getIdCondition(ids, module))
+				;
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if(props != null && !props.isEmpty()) {
+			Map<Long, ControllerContext> controllers = new HashMap<>();
+			for(Map<String, Object> prop : props) {
+				ControllerContext controller = FieldUtil.getAsBeanFromMap(prop, ControllerContext.class); 
+				controllers.put(controller.getId(), controller);
+			}
+			return controllers;
+		}
+		return null;
+	}
+	
 	private static Map<Long, List<Long>> getControllerBuildingIds(List<Long> ids) throws Exception {
 		FacilioModule module = ModuleFactory.getControllerBuildingRelModule();
 		List<FacilioField> fields = FieldFactory.getControllerBuildingRelFields();
@@ -415,4 +436,5 @@ public class ControllerAPI {
 
 		return updateBuilder.update(prop);
 	}
+	
 }

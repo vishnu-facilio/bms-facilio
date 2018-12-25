@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -55,6 +56,7 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.time.SecondsChronoUnit;
+import com.facilio.timeseries.TimeSeriesAPI;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.facilio.unitconversion.Metric;
 import com.facilio.unitconversion.Unit;
@@ -730,12 +732,16 @@ public class ReadingsAPI {
 		}
 		builder.save();
 	}
-	public static int getDataInterval(long resourceId, FacilioModule module) throws Exception { //Return in minutes	
+	public static int getDataInterval(long resourceId, FacilioField field, FacilioModule... module) throws Exception { //Return in minutes	
 		ReadingContext readingContext = new ReadingContext();
 		readingContext.setParentId(resourceId);
-		readingContext.setModuleId(module.getModuleId());
+		FacilioModule facilioModule = (module != null && module.length > 0) ? module[0] : field.getModule();
+		readingContext.setModuleId(facilioModule.getModuleId());
+		if (field != null) {
+			readingContext.addReading(field.getName(), null);
+		}
 		Map<Long,FacilioModule> moduleMap = new HashMap<>();
-		moduleMap.put(module.getModuleId(), module);
+		moduleMap.put(facilioModule.getModuleId(), facilioModule);
 		setReadingInterval(Collections.singletonList(readingContext), moduleMap);
 		return (int) readingContext.getDatum("interval");
 	}
@@ -758,6 +764,9 @@ public class ReadingsAPI {
 					reading.setModuleId(field.getModuleId());
 					reading.setParentId(field.getResourceId());
 					readings.add(reading);
+					if (field.getField() != null && field.getField().getName() != null) {
+						reading.addReading(field.getField().getName(), null);
+					}
 				}
 			}
 			if (!readings.isEmpty()) {
@@ -776,7 +785,11 @@ public class ReadingsAPI {
 			String moduleName = entry.getKey();
 			List<ReadingContext> readings = entry.getValue();
 			FacilioModule module = bean.getModule(moduleName);
-			moduleMap = readings.stream().collect(Collectors.toMap(r -> r.getId(), r -> module));
+			if (moduleMap == null) {
+				moduleMap = new HashMap<>();
+			}
+			moduleMap.put(module.getModuleId(), module);
+			readings.forEach(reading -> reading.setModuleId(module.getModuleId()));
 			readingsList.addAll(readings);
 		}
 		setReadingInterval(readingsList, moduleMap);
@@ -785,35 +798,69 @@ public class ReadingsAPI {
 	public static void setReadingInterval(List<ReadingContext> readings, Map<Long, FacilioModule> moduleMap) throws Exception {
 //		Map<Long, Integer> intervalMap = new HashMap<>();
 		int defaultInterval = DEFAULT_DATA_INTERVAL;
-		Map<String, String> orgInfo = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.DEFAULT_DATA_INTERVAL, FacilioConstants.OrgInfoKeys.USE_CONTROLLER_DATA_INTERVAL);
+		Map<String, String> orgInfo = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.DEFAULT_DATA_INTERVAL);
 		String defaultIntervalProp = orgInfo.get(FacilioConstants.OrgInfoKeys.DEFAULT_DATA_INTERVAL);
 		if (defaultIntervalProp != null && !defaultIntervalProp.isEmpty()) {
 			defaultInterval = Integer.parseInt(defaultIntervalProp);
 		}
 		
-		boolean useControllerDataInterval = Boolean.valueOf(orgInfo.get(FacilioConstants.OrgInfoKeys.USE_CONTROLLER_DATA_INTERVAL));
-		Map<Long, ControllerContext> controllers = null;
-		Map<Long, ResourceContext> resources = null;
-		if (useControllerDataInterval) {
-			controllers = DeviceAPI.getAllControllersAsMap();
-			Set<Long> resourceIds = readings.stream().map(reading -> reading.getParentId()).collect(Collectors.toSet());
-			resources = ResourceAPI.getResourceAsMapFromIds(resourceIds);
+		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		Set<Pair<Long, Long>> pairs = new HashSet<>();
+		Map<String, Map<String, FacilioField>> allFieldsMap = new HashMap<>();
+		for(ReadingContext reading: readings) {
+			Map<String, Object> readingMap = reading.getReadings();
+			if (readingMap != null) {
+				FacilioModule module = moduleMap != null ? moduleMap.get(reading.getModuleId()) : bean.getModule(reading.getModuleId());
+				Map<String, FacilioField> fieldMap = null;
+				if (!allFieldsMap.containsKey(module.getName())) {
+					List<FacilioField> fields = bean.getAllFields(module.getName());
+					if (fields != null) {
+						fieldMap = new HashMap<>(FieldFactory.getAsMap(fields));
+					}
+					allFieldsMap.put(module.getName(), fieldMap);						
+				}
+				else {
+					fieldMap = allFieldsMap.get(module.getName());
+				}
+				for(Map.Entry<String, Object> entry :readingMap.entrySet()) {
+					String name = entry.getKey();
+					if (fieldMap != null && fieldMap.get(name) != null) {
+						pairs.add(Pair.of(reading.getParentId(), fieldMap.get(name).getFieldId()));
+					}
+				}
+			}
 		}
 		
-		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<Map<String, Object>> instances = TimeSeriesAPI.getMappedInstances(pairs);
+		Map<Long, Long> assetVsControllerIdMap = new HashMap<>();
+		Set<Long> controllerIds = new HashSet<>();
+		if (instances != null && !instances.isEmpty()) {
+			instances.forEach(inst -> {
+				Long controllerId = (Long) inst.get(FacilioConstants.ContextNames.CONTROLLER_ID);
+				if (controllerId != null && controllerId != -1) {
+					assetVsControllerIdMap.put((long) inst.get(FacilioConstants.ContextNames.ASSET_ID), controllerId);
+					controllerIds.add(controllerId);
+				}
+			});
+		}
+		
+		Map<Long, ControllerContext> controllers = null;
+		if (controllerIds != null && !controllerIds.isEmpty()) {
+			controllers = ControllerAPI.getControllersMap(controllerIds);
+		}
+		
 		for (ReadingContext reading : readings) {
 			FacilioModule module = moduleMap != null ? moduleMap.get(reading.getModuleId()) : bean.getModule(reading.getModuleId());
 			int minuteInterval = defaultInterval;
 			if (module.getDataInterval() != -1) {
 				minuteInterval = module.getDataInterval();
 			}
-			else if (useControllerDataInterval) {
-				ResourceContext parent = resources.get(reading.getParentId());
-				if (parent.getControllerId() != -1) {
-					ControllerContext controller = controllers.get(parent.getControllerId());
-					if (controller.getDataInterval() != -1) {
-						minuteInterval = controller.getDataInterval();
-					}
+			else if (controllers != null && assetVsControllerIdMap.get(reading.getParentId()) != null) {
+				long controllerId = assetVsControllerIdMap.get(reading.getParentId());
+				ControllerContext controller = controllers.get(controllerId);
+				if (controller.getDataInterval() != -1) {
+					minuteInterval = controller.getDataInterval();
 				}
 			}
 			reading.setDatum("interval", minuteInterval);

@@ -596,7 +596,7 @@ public class DeviceAPI
 			FacilioField energyField=modBean.getField(TOTAL_ENERGY_CONSUMPTION_DELTA, module.getName());
 			long resourceId=meter.getId();
 			long previousTime=getPreviousDataTime(resourceId,energyField);
-			if(!isHistorical && getDataGapCount(resourceId,module,firstReadingTime,previousTime)>1) {
+			if(!isHistorical && getDataGapCount(resourceId,energyField, module,firstReadingTime,previousTime)>1) {
 				
 				firstReading.setMarked(true);
 				List<MarkedReadingContext> markedList=new ArrayList<MarkedReadingContext> ();
@@ -659,10 +659,10 @@ public class DeviceAPI
 	}
 	
 	
-	public static float getDataGapCount (long resourceId,FacilioModule module, long currentTime, long previousTime)  {
+	public static float getDataGapCount (long resourceId,FacilioField field, FacilioModule module, long currentTime, long previousTime)  {
 		
 		try {
-			long dataIntervalSeconds=ReadingsAPI.getDataInterval(resourceId, module)*60;
+			long dataIntervalSeconds=ReadingsAPI.getDataInterval(resourceId, field, module)*60;
 			//here doing the floor roundoff..
 			SecondsChronoUnit defaultAdjustUnit = new SecondsChronoUnit(dataIntervalSeconds);
 			ZonedDateTime zdt=	DateTimeUtil.getDateTime(currentTime).truncatedTo(defaultAdjustUnit);

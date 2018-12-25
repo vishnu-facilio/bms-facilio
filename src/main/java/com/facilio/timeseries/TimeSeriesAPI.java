@@ -360,6 +360,26 @@ public class TimeSeriesAPI {
 		return null;
 	}
 	
+	public static List<Map<String, Object>> getMappedInstances(Collection<Pair<Long, Long>> assetFieldPairs) throws Exception {
+		FacilioModule module = ModuleFactory.getInstanceMappingModule();
+		List<FacilioField> fields = FieldFactory.getInstanceMappingFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				;
+		Criteria criteriaList = new Criteria();
+		for(Pair<Long, Long> pair: assetFieldPairs) {
+			Criteria criteria = new Criteria();
+			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("assetId"), String.valueOf(pair.getLeft()), NumberOperators.EQUALS));
+			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("fieldId"), String.valueOf(pair.getRight()), NumberOperators.EQUALS));
+			criteriaList.orCriteria(criteria);
+		}
+		builder.andCriteria(criteriaList);
+		return builder.get();
+	}
+	
 	public static List<Map<String, Object>> getMappedInstances(long controllerId) throws Exception {
 		FacilioModule module = ModuleFactory.getInstanceMappingModule();
 		List<FacilioField> fields = FieldFactory.getInstanceMappingFields();

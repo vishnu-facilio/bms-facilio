@@ -173,7 +173,7 @@ public class DeltaCalculationCommand implements Command {
 			}
 			else if(currentReading<lastReading && !skipLastReadingCheck) {
 							
-					long ttime=getQueryTime(resourceId, module, INTERVAL_COUNT);
+					long ttime=getQueryTime(resourceId, readingField, module, INTERVAL_COUNT);
 					List<Double> actualValues=MarkingUtil.getActualValues(resourceId, energyFieldId, ttime, type);
 					int size=actualValues.size();
 					
@@ -204,7 +204,7 @@ public class DeltaCalculationCommand implements Command {
 			
 			long currentTime=(reading.getTtime()!=-1)? reading.getTtime():System.currentTimeMillis() ;
 			long lastDataTime=consumptionMeta.getTtime();
-			float dataGapCount= DeviceAPI.getDataGapCount(resourceId, module,currentTime, lastDataTime);
+			float dataGapCount= DeviceAPI.getDataGapCount(resourceId, readingField, module,currentTime, lastDataTime);
 			
 			if(delta>DELATA_HIGH_VAL_BAND && delta>lastDelta) {
 				//Not sure how to handle, if there is an erratic meter reading.. 
@@ -256,13 +256,13 @@ public class DeltaCalculationCommand implements Command {
 		
 	}
 	
-	private long getQueryTime(long resourceId, FacilioModule module, int intervals) {
+	private long getQueryTime(long resourceId, FacilioField field, FacilioModule module, int intervals) {
 		
 		long millis=60*1000;
 		long dataIntervalMillis=15*millis;
 		
 		try {
-			dataIntervalMillis = ReadingsAPI.getDataInterval(resourceId, module)*millis;
+			dataIntervalMillis = ReadingsAPI.getDataInterval(resourceId, field, module)*millis;
 		} catch (Exception e) {
 			LOGGER.error("Exception while getting data interval", e);
 		}

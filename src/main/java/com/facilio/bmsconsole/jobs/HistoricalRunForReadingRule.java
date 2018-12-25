@@ -91,7 +91,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 				}
 				
 				long processStartTime = System.currentTimeMillis();
-				long currentStartTime = startTime - (ReadingsAPI.getDataInterval(resourceId, readingRule.getReadingField().getModule()) * 60 * 1000);
+				long currentStartTime = startTime - (ReadingsAPI.getDataInterval(resourceId, readingRule.getReadingField()) * 60 * 1000);
 				List<ReadingContext> readings = fetchReadings(readingRule, resourceId, currentStartTime, endTime);
 				executeWorkflows(readingRule, readings, currentFields, fields);
 				LOGGER.info("Time taken for Historical Run for Reading Rule : "+jc.getJobId()+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is "+(System.currentTimeMillis() - processStartTime));
@@ -184,7 +184,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 		for (ReadingRuleAlarmMeta meta : alarmMetaMap.values()) {
 			if (!meta.isClear()) {
 				AlarmContext alarm = AlarmAPI.getAlarm(meta.getAlarmId());
-				int interval = ReadingsAPI.getDataInterval(alarm.getResource().getId(), rule.getReadingField().getModule());
+				int interval = ReadingsAPI.getDataInterval(alarm.getResource().getId(), rule.getReadingField());
 				JSONObject json = AlarmAPI.constructClearEvent(alarm, "System auto cleared Historical Alarm because associated rule executed false for the associated resource", alarm.getModifiedTime()+(interval * 60 * 1000));
 				
 				FacilioContext addEventContext = new FacilioContext();
