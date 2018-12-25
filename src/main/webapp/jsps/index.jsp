@@ -91,7 +91,7 @@
         window.isFacilioAuth = (document.cookie.indexOf('fc.authtype=facilio') !== -1)
         var webpackPublicPath = "<%=staticUrl%>";
         var servicePortalDomain = "<%=servicePortalDomain%>";
-        var rebrandInfo = "<%=rebrandInfo%>";
+        var rebrandInfo = <%=rebrandInfo%>;
   </script>
   <link href="<%=staticUrl%>/app.css" rel="stylesheet">
  </head>
