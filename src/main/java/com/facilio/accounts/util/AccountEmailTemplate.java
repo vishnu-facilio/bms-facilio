@@ -74,15 +74,13 @@ public enum AccountEmailTemplate {
 		return typeMap;
 	}
 	
-	private static String SUPPORTEMAIL="support@email.com";//"support@facilio.com"
+	private static String SUPPORTEMAIL=com.facilio.aws.util.AwsUtil.getConfig("rebrand.supportemail");//"support@facilio.com"
 	
-	private static String ALERTEMAIL="alerts@email.com";//alerts@facilio.com
-	private static String BRAND= getBrand();//Facilio
+	private static String ALERTEMAIL=com.facilio.aws.util.AwsUtil.getConfig("rebrand.alertemail");//alerts@facilio.com
+	
+	private static String BRAND=com.facilio.aws.util.AwsUtil.getConfig("rebrand.brand");//Facilio
 	
 	
-	private  static String getBrand( ) {
-		return AwsUtil.getConfig("rebrand.brand");
-	}
 	
 	
 	@SuppressWarnings("unchecked")
