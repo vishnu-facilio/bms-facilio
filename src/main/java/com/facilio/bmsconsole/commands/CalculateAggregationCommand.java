@@ -70,18 +70,18 @@ public class CalculateAggregationCommand implements Command {
 		return false;
 	}
 	
-	private void doEnumAggr (ReportContext report, ReportDataPointContext dp, List<Map<String, Object>> csvData, Map<String, Object> aggrData, String sortAlias) {
+	private void doEnumAggr (ReportContext report, ReportDataPointContext dp, List<Map<String, Object>> csvData, Map<String, Object> aggrData, String timeAlias) {
 		Map<String, SimpleEntry<Long, Integer>> previousRecords = new HashMap<>();
 		for (int i = 0; i < csvData.size(); i++) {
 			Map<String, Object> data = csvData.get(i);
 			long startTime = -1, endTime = -1;
 			
 			if (i != 0) {
-				startTime = (long) data.get(sortAlias);
+				startTime = (long) data.get(timeAlias);
 			}
 			
 			if (i != csvData.size() - 1) {
-				endTime = (long) csvData.get(i + 1).get(sortAlias);
+				endTime = (long) csvData.get(i + 1).get(timeAlias);
 			}
 			
 			for (String alias : dp.getAliases().values()) {
