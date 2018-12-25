@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<%@ page import="org.json.simple.JSONObject" %>
 <%
 	String clientVersion = com.facilio.aws.util.AwsUtil.getClientVersion();
 	if (clientVersion != null && !clientVersion.startsWith("/")) {
@@ -9,6 +10,20 @@
 	
 	String staticUrl = com.facilio.aws.util.AwsUtil.getConfig("static.url") + clientVersion;
 	String servicePortalDomain = com.facilio.aws.util.AwsUtil.getConfig("portal.domain");
+	
+	String brandName = com.facilio.aws.util.AwsUtil.getConfig("rebrand.brand");
+	String domainName =com.facilio.aws.util.AwsUtil.getConfig("rebrand.domain"); 
+	String copyrightName =com.facilio.aws.util.AwsUtil.getConfig("rebrand.copyright.name"); 
+	String copyrightYear =com.facilio.aws.util.AwsUtil.getConfig("rebrand.copyright.year"); 
+	
+	JSONObject copyrightInfo = new JSONObject();
+	copyrightInfo.put("name", copyrightName);
+	copyrightInfo.put("year", copyrightYear);
+	
+	JSONObject rebrandInfo = new JSONObject();
+	rebrandInfo.put("name", brandName);
+	rebrandInfo.put("domain", domainName);
+	rebrandInfo.put("copyright", copyrightInfo);
 %>
 <html>
 
@@ -76,6 +91,7 @@
         window.isFacilioAuth = (document.cookie.indexOf('fc.authtype=facilio') !== -1)
         var webpackPublicPath = "<%=staticUrl%>";
         var servicePortalDomain = "<%=servicePortalDomain%>";
+        var rebrandInfo = "<%=rebrandInfo%>";
   </script>
   <link href="<%=staticUrl%>/app.css" rel="stylesheet">
  </head>

@@ -74,43 +74,54 @@ public enum AccountEmailTemplate {
 		return typeMap;
 	}
 	
+	private static String SUPPORTEMAIL="support@email.com";//"support@facilio.com"
+	
+	private static String ALERTEMAIL="alerts@email.com";//alerts@facilio.com
+	private static String BRAND= getBrand();//Facilio
+	
+	
+	private  static String getBrand( ) {
+		return AwsUtil.getConfig("rebrand.brand");
+	}
+	
+	
 	@SuppressWarnings("unchecked")
 	private static JSONObject getTemplateJson(int templateVal) {
 		JSONObject json = new JSONObject();
 		switch(templateVal) {
 			case 1:
-				json.put("sender", "support@facilio.com");
+				json.put("sender", SUPPORTEMAIL);
 				json.put("to", "${user.email}");
-				json.put("subject", "Welcome to Facilio!");
-				json.put("message", "Hi ${user.name}, Thanks for signing up for Facilio.");
+				json.put("subject", "Welcome to "+ BRAND+"!");
+				json.put("message", "Hi ${user.name}, Thanks for signing up for "+BRAND+".");
 				break;
 			case 2:
-				json.put("sender", "support@facilio.com");
+				json.put("sender", SUPPORTEMAIL);
 				json.put("to", "${user.email}");
-				json.put("subject", "[Facilio] ${inviter.name} has invited you to join the ${org.name} organization");
+				json.put("subject", "[" + BRAND +"] ${inviter.name} has invited you to join the ${org.name} organization");
 				json.put("message", "Hi ${user.name}, ${inviter.name} has invited you to join the ${org.name} organization. Please click the below link to join the organization. ${invitelink}");
 				break;
 			case 3:
-				json.put("sender", "support@facilio.com");
+				json.put("sender", SUPPORTEMAIL);
 				json.put("to", "${user.email}");
 				json.put("subject", "Welcome! And confirm your email");
 				json.put("message", "Hi ${user.name}, Please click the below link to verify your email address. ${invitelink}");
 				break;
 			case 4:
-				json.put("sender", "support@facilio.com");
+				json.put("sender", SUPPORTEMAIL);
 				json.put("to", "${user.email}");
-				json.put("subject", "Reset your Facilio password");
+				json.put("subject", "Reset your "+BRAND+" password");
 				json.put("message", "Hi ${user.name}, Please click the below link to reset your password. ${invitelink}");
 				break;
 			case 5:
-				json.put("sender", "support@facilio.com");
-				json.put("to", "alerts@facilio.com");
-				json.put("subject","${user.name} with a mailId  ${user.email} has signedUp in [Facilio]" );
+				json.put("sender", SUPPORTEMAIL);
+				json.put("to", ALERTEMAIL);
+				json.put("subject","${user.name} with a mailId  ${user.email} has signedUp in ["+BRAND+ "]");
 				json.put("message", "Hi ${user.name}, Please click the below link to verify your email address. ${invitelink}\n" 
 						+ "Name:" + "${user.name}\n" + "Email:" + "${user.email}" + "Timezone:" + "${user.timezone}" );
 				break;
 			case 6:
-				json.put("sender", "support@facilio.com");
+				json.put("sender", SUPPORTEMAIL);
 				json.put("to", "${user.email}");
 				json.put("subject","[${org.name}] Welcome and confirm your email" );
 				json.put("message", "Hi ${user.name}, Please click the below link to verify your email address. ${invitelink}" );
