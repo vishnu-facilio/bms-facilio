@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -822,7 +823,35 @@ public class PreventiveMaintenanceAPI {
 					for (PreventiveMaintenance pm : pms) {
 						long pmId = pm.getId();
 						if (reminders.containsKey(pmId)) {
-							pm.setReminders(reminders.get(pmId));
+							List<PMReminder> rms = reminders.get(pmId);
+							if (rms != null) {
+								pm.setReminders(rms);
+								pm.setReminderMap(new HashMap<>());
+								for (int l = 0; l < rms.size(); l++) {
+									pm.getReminderMap().put(rms.get(l).getName(), rms.get(l));
+								}
+							}
+						}
+					}
+				}
+				
+				Map<Long, List<PMResourcePlannerContext>> resourcePlanners = getPMResourcesPlanners(ids);
+				Map<Long, Map<Long, List<PMResourcePlannerReminderContext>>> rpReminders = getPmResourcePlannerReminderContexts(ids);
+				if (resourcePlanners != null && !resourcePlanners.isEmpty()) {
+					for (PreventiveMaintenance pm : pms) {
+						long pmId = pm.getId();
+						if (resourcePlanners.containsKey(pmId)) {
+							List<PMResourcePlannerContext> rps = resourcePlanners.get(pmId);
+							if (rps != null) {
+								pm.setResourcePlanners(rps);
+								for (int k = 0; k < rps.size(); k++) {
+									PMResourcePlannerContext rp = rps.get(k);
+									if (rpReminders.get(pmId) != null && rpReminders.get(pmId).get(rp.getId()) != null) {
+										rp.setPmResourcePlannerReminderContexts(rpReminders.get(pmId).get(rp.getId()));
+									}
+								}
+							}
+							
 						}
 					}
 				}
@@ -877,6 +906,37 @@ public class PreventiveMaintenanceAPI {
 		}
 		
 		return pmTriggers;
+	}
+	
+	public static Map<Long, List<PMResourcePlannerContext>> getPMResourcesPlanners(Collection<Long> pmIds) throws Exception {
+		if (pmIds == null || pmIds.isEmpty()) {
+			return Collections.emptyMap();
+		}
+		FacilioModule module = ModuleFactory.getPMResourcePlannerModule();
+		FacilioField pmIdField = FieldFactory.getField("pmId", "PM_ID", module, FieldType.LOOKUP);
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getPMResourcePlannerFields())
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCondition(pmIdField, pmIds, NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		Map<Long, List<PMResourcePlannerContext>> result = new HashMap<>();
+		
+		if (props != null && !props.isEmpty()) {
+			for (Map<String, Object> prop: props) {
+				PMResourcePlannerContext pmResourcePlannerContext = FieldUtil.getAsBeanFromMap(prop, PMResourcePlannerContext.class);
+				if(pmResourcePlannerContext.getResourceId() != null && pmResourcePlannerContext.getResourceId() > 0) {
+					pmResourcePlannerContext.setResource(ResourceAPI.getResource(pmResourcePlannerContext.getResourceId()));
+				}
+				long pmId = (long) prop.get("pmId");
+				if (!result.containsKey(pmId)) {
+					result.put(pmId, new ArrayList<>());
+				}
+				result.get(pmId).add(pmResourcePlannerContext);
+			}
+		}
+		return result;
 	}
 	
 	
@@ -1190,6 +1250,43 @@ public class PreventiveMaintenanceAPI {
 		}
 		
 		return null;
+	}
+	
+	public static Map<Long, Map<Long, List<PMResourcePlannerReminderContext>>> getPmResourcePlannerReminderContexts(Collection<Long> pmIds) throws Exception {
+		if (pmIds == null || pmIds.isEmpty()) {
+			return Collections.emptyMap();
+		}
+		
+		FacilioModule module = ModuleFactory.getPMResourcePlannerReminderModule();
+		List<FacilioField> fields = FieldFactory.getPMResourcePlannerReminderFields();
+		
+		FacilioField pmIdField = FieldFactory.getField("pmId", "PM_ID", module, FieldType.LOOKUP);
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCondition(pmIdField, pmIds, NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = builder.get();
+		
+		Map<Long, Map<Long, List<PMResourcePlannerReminderContext>>> result = new HashMap<>();
+		
+		if(props != null && !props.isEmpty()) {
+			for(Map<String, Object> prop :props) {
+				PMResourcePlannerReminderContext pmTriggerResourceRemContext = FieldUtil.getAsBeanFromMap(prop, PMResourcePlannerReminderContext.class);
+				if (!result.containsKey(pmTriggerResourceRemContext.getPmId())) {
+					result.put(pmTriggerResourceRemContext.getPmId(), new HashMap<>());
+				}
+				
+				if (!result.get(pmTriggerResourceRemContext.getPmId()).containsKey(pmTriggerResourceRemContext.getResourcePlannerId())) {
+					result.get(pmTriggerResourceRemContext.getPmId()).put(pmTriggerResourceRemContext.getResourcePlannerId(), new ArrayList<>());
+				}
+				
+				result.get(pmTriggerResourceRemContext.getPmId()).get(pmTriggerResourceRemContext.getResourcePlannerId()).add(pmTriggerResourceRemContext);
+			}
+		}
+		
+		return result;
 	}
 	
 	public static List<PMResourcePlannerReminderContext> getPmResourcePlannerReminderContext(long pmTriggerResourceId) throws Exception {

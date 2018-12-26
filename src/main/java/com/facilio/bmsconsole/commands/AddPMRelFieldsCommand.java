@@ -42,6 +42,10 @@ public class AddPMRelFieldsCommand implements Command {
 			pms = Collections.singletonList((PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE));
 		}
 		
+		if (pms == null) {
+			return false;
+		}
+		
 		for(PreventiveMaintenance pm:pms) {
 			if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE) {
 				TemplateAPI.addIncludeExcludePropsForPM(pm);
