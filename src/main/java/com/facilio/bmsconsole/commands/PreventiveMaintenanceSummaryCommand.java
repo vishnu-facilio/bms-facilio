@@ -198,9 +198,11 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 		}
 		for (int i = 0; i < sectionTemplate.size(); i++) {
 			TaskSectionTemplate section = sectionTemplate.get(i);
-			for (int j = 0; j < sectionTemplate.size(); j++) {
-				TaskTemplate task = section.getTaskTemplates().get(j);
-				task.setReadingRules(fieldVsRules.get(task.getReadingFieldId()));
+			if (section.getTaskTemplates() != null) {
+				for (int j = 0; j < section.getTaskTemplates().size(); j++) {
+					TaskTemplate task = section.getTaskTemplates().get(j);
+					task.setReadingRules(fieldVsRules.get(task.getReadingFieldId()));
+				}
 			}
 		}
 		context.put(FacilioConstants.ContextNames.TASK_SECTIONS, sectionTemplate);
