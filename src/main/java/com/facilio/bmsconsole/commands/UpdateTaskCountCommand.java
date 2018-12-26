@@ -3,35 +3,27 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.MutablePair;
-import org.apache.commons.lang3.tuple.MutableTriple;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class UpdateTaskCountCommand implements Command {
 
@@ -59,6 +51,7 @@ public class UpdateTaskCountCommand implements Command {
 					.table(module.getTableName())
 					.select(fields)
 					.groupBy(parentIdField.getCompleteColumnName())
+					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 					.andCondition(condition);
 			
 			List<Map<String, Object>> totalCountList = select.get();
@@ -79,6 +72,7 @@ public class UpdateTaskCountCommand implements Command {
 					.select(fields)
 					.groupBy(parentIdField.getCompleteColumnName())
 					.andCondition(condition)
+					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 					.andCondition(completedStatusCondition);
 			
 			List<Map<String, Object>> completedCountList = select.get();
@@ -92,10 +86,18 @@ public class UpdateTaskCountCommand implements Command {
 				pair.setRight(((Number) map.get("count")).intValue());
 			}
 
-			String ticketModule = "workorder";
-			FacilioField noOfTasksField = modBean.getField("noOfTasks", ticketModule);
-			FacilioField noOfClosedTasksField = modBean.getField("noOfClosedTasks", ticketModule);
-			FacilioModule tModule = modBean.getModule(ticketModule);
+			String ticketModuleName = "ticket";
+			FacilioModule ticketModule = modBean.getModule(ticketModuleName);
+			
+			FacilioField noOfTasksField = new FacilioField();
+			noOfTasksField.setName("noOfTasks");
+			noOfTasksField.setColumnName("NO_OF_TASKS");
+			noOfTasksField.setDataType(FieldType.NUMBER);
+			
+			FacilioField noOfClosedTasksField = new FacilioField();
+			noOfClosedTasksField.setName("noOfClosedTasks");
+			noOfClosedTasksField.setColumnName("NO_OF_CLOSED_TASKS");
+			noOfClosedTasksField.setDataType(FieldType.NUMBER);
 			
 			for (Long id: updatedValues.keySet()) {
 				Map<String, Object> updateMap = new HashMap<>();
@@ -104,12 +106,16 @@ public class UpdateTaskCountCommand implements Command {
 				updateMap.put("noOfTasks", pair.getLeft() == null ? 0 : pair.getLeft());
 				updateMap.put("noOfClosedTasks", pair.getRight() == null ? 0 : pair.getRight());
 				
-				UpdateRecordBuilder<WorkOrderContext> updateRecordBuilder = new UpdateRecordBuilder<WorkOrderContext>()
-						.module(tModule)
-						.fields(Arrays.asList(noOfTasksField, noOfClosedTasksField))
-						.andCondition(CriteriaAPI.getIdCondition(id, tModule));
+				FacilioField idField = FieldFactory.getIdField(ticketModule);
+				Condition idFieldCondition = CriteriaAPI.getCondition(idField, NumberOperators.EQUALS);
+				idFieldCondition.setValue(String.valueOf(id));
 				
-				updateRecordBuilder.update(updateMap);
+				GenericUpdateRecordBuilder recordBuilder = new GenericUpdateRecordBuilder()
+						.table(ticketModule.getTableName())
+						.fields(Arrays.asList(noOfTasksField, noOfClosedTasksField))
+						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ticketModule))
+						.andCondition(idFieldCondition);
+				recordBuilder.update(updateMap);
 			}
 		}
 		return false;

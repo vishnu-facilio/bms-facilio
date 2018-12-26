@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
@@ -29,15 +30,20 @@ public class DeleteAttachmentCommand implements Command {
 		
 		if (attachmentIdList != null && !attachmentIdList.isEmpty()) {
 			
+			SelectRecordsBuilder<AttachmentContext> attachmentBuilder = new SelectRecordsBuilder<AttachmentContext>()
+					.select(modBean.getAllFields(moduleName))
+					.module(module)
+					.beanClass(AttachmentContext.class)
+					.andCondition(CriteriaAPI.getIdCondition(attachmentIdList, module))
+					;
+			List<AttachmentContext> attachments = attachmentBuilder.get();
+			if (attachments != null && !attachments.isEmpty()) {
+				Set<Long> parentIds = attachments.stream().map(AttachmentContext::getParentId).collect(Collectors.toSet());
+				context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, parentIds);
+			}
+			
 			// TODO mark file as deleted if no reference for that file is available for all modules
 			if (moduleName.equals(FacilioConstants.ContextNames.ASSET_ATTACHMENTS)) {
-				SelectRecordsBuilder<AttachmentContext> attachmentBuilder = new SelectRecordsBuilder<AttachmentContext>()
-						.select(modBean.getAllFields(moduleName))
-						.module(module)
-						.beanClass(AttachmentContext.class)
-						.andCondition(CriteriaAPI.getIdCondition(attachmentIdList, module))
-						;
-				List<AttachmentContext> attachments = attachmentBuilder.get();
 				if (attachments != null && !attachments.isEmpty()) {
 					List<Long> fileIds = attachments.stream().map(AttachmentContext::getFileId).collect(Collectors.toList());
 					FileStoreFactory.getInstance().getFileStore().deleteFiles(fileIds);

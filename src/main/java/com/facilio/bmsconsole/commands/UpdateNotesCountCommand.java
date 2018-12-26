@@ -53,6 +53,7 @@ public class UpdateNotesCountCommand implements Command {
 					.table(module.getTableName())
 					.select(fields)
 					.groupBy(parentIdField.getCompleteColumnName())
+					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 					.andCondition(CriteriaAPI.getCondition(parentIdField, parentIds, NumberOperators.EQUALS));
 			
 			List<Map<String, Object>> list = select.get();

@@ -41,9 +41,15 @@ public class TransactionChainFactory {
 			return c1;
 		}
 		
-		public static Chain getTaskCountUpdateChain() {
+		public static Chain getUpdateTaskCountChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new UpdateTaskCountCommand());
+			return c;
+		}
+		
+		public static Chain getUpdateAttachmentCountChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateAttachmentCountUpdateCommand());
 			return c;
 		}
 	
@@ -86,7 +92,7 @@ public class TransactionChainFactory {
 		}
 		
 		public static Chain getAddTasksChain() {
-			Chain c = getDefaultChain();
+			FacilioChain c = (FacilioChain) getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForTask());
 			c.addCommand(new ValidateTasksCommand());
 			c.addCommand(new LoadAllFieldsCommand());
@@ -96,6 +102,7 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateReadingDataMetaCommand());
 			// c.addCommand(new AddTaskTicketActivityCommand());
 			CommonCommandUtil.addCleanUpCommand(c);
+			c.setPostTransactionChain(TransactionChainFactory.getUpdateTaskCountChain());
 			return c;
 		}
 		

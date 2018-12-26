@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -35,6 +36,7 @@ public class AddAttachmentRelationshipCommand implements Command {
 		if(recordId == -1) {
 			throw new IllegalArgumentException("Invalid record id during addition of attachments");
 		}
+		context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, Collections.singletonList(recordId));
 		List<AttachmentContext> attachments = (List<AttachmentContext>) context.get(FacilioConstants.ContextNames.ATTACHMENT_CONTEXT_LIST);
 		if(attachments != null && !attachments.isEmpty()) {
 			for(AttachmentContext attachment : attachments) {
