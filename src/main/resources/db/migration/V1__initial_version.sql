@@ -4727,11 +4727,11 @@ END; $$
 --UPDATE Tickets SET NO_OF_ATTACHMENTS = COALESCE(NO_OF_ATTACHMENTS,0)+1 WHERE ID = NEW.PARENT_TICKET;		
 --END; $$
 
-CREATE TRIGGER ticketAttachmentCascadeDelete BEFORE DELETE
-ON File FOR EACH ROW
-BEGIN
-DELETE FROM Ticket_Attachments WHERE FILE_ID = OLD.FILE_ID;		
-END; $$
+--CREATE TRIGGER ticketAttachmentCascadeDelete BEFORE DELETE
+--ON File FOR EACH ROW
+--BEGIN
+--DELETE FROM Ticket_Attachments WHERE FILE_ID = OLD.FILE_ID;		
+--END; $$
 
 --CREATE TRIGGER decrementTicketAttachmentCount AFTER DELETE
 --ON Ticket_Attachments FOR EACH ROW 
