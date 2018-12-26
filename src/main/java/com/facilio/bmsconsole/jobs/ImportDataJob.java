@@ -24,7 +24,7 @@ public class ImportDataJob extends FacilioJob {
 	private org.apache.log4j.Logger log = LogManager.getLogger(ImportDataJob.class.getName());
 
 	@Override
-	public void execute(JobContext jc) throws Exception {
+	public void execute(JobContext jc) {
 		ImportProcessContext importProcessContext = null;
 		try {
 			long jobId = jc.getJobId();

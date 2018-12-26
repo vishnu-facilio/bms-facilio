@@ -179,97 +179,97 @@ public class DataParseForReadingsCommand implements Command {
 				}
 				LOGGER.severe("row -- "+row_no+" colVal --- "+colVal);
 				
+				JSONObject meta = importTemplateContext.getModuleJSON();
+				Long parentId =null;
+				if(!meta.isEmpty()) {
+					parentId = (Long) meta.get(ImportAPI.ImportProcessConstants.PARENT_ID_FIELD);
+				}
+				if(!importTemplateContext.getUniqueMappingJSON().isEmpty()) {
+					parentId = getAssetByUniqueness(colVal, importTemplateContext.getModuleMapping().get("subModule"), uniqueMapping);
+				}
+				if(parentId == null) {
+					nullResources.put(row_no, colVal);
+					continue;
+				}
+				
 				for(String module : moduleNames) {
 					
 					List<String> fields  = new ArrayList(groupedFields.get(module));
 					
 					HashMap<String,Object> props = new HashMap<>();
-					JSONObject meta = importTemplateContext.getModuleJSON();
-					if(!meta.isEmpty()) {
-						Long parentId =(Long) meta.get(ImportAPI.ImportProcessConstants.PARENT_ID_FIELD);
-						if(!importTemplateContext.getUniqueMappingJSON().isEmpty()) {
-							parentId = getAssetByUniqueness(colVal, importTemplateContext.getModuleMapping().get("subModule"), uniqueMapping);
-							// check for null in resources
-							if(parentId == null) {
-								nullResources.put(row_no, colVal);
-								continue;
-							}
-							props.put(ImportAPI.ImportProcessConstants.PARENT_ID_FIELD, parentId);
-						}
-						else {
-							props.put(ImportAPI.ImportProcessConstants.PARENT_ID_FIELD,parentId);
-						}
-					}
 					
+					props.put(ImportAPI.ImportProcessConstants.PARENT_ID_FIELD, parentId);
 	
 					for(int fieldIndex = 0; fieldIndex < ModulesPlusFields.size(); fieldIndex++){
-					Boolean isfilled = false;
-					String key = ModulesPlusFields.get(fieldIndex);
-					Object cellValue = colVal.get(fieldMapping.get(key));
-					String moduleAndField [] = key.split("__");
-					
-					String field = moduleAndField[(moduleAndField.length)-1];
-					if(fields.contains(field)) {
-					if(cellValue != null && !cellValue.equals("")) {
-						FacilioField facilioField = null;
-						try {
-							ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-							facilioField = bean.getField(field, module);
-						}catch (Exception e) {
-							LOGGER.severe("FACILIO FIELD EXCEPTION" + e);
-						}
-						if(facilioField != null) {
-							try {
-								if(facilioField.getDataTypeEnum().equals(FieldType.DATE_TIME) || facilioField.getDataTypeEnum().equals(FieldType.DATE)) {
-									if(!(cellValue instanceof Long)) {
-										long millis;
-										if(dateFormats.get(fieldMapping.get(key)).equals(ImportAPI.ImportProcessConstants.TIME_STAMP_STRING)) {
-											millis = Long.parseLong(cellValue.toString());
-										}
-										else {
-											Instant dateInstant = DateTimeUtil.getTimeInstant(dateFormats.get(fieldMapping.get(key)).toString(),cellValue.toString());
-											millis = dateInstant.toEpochMilli();
-										}
-										if(!props.containsKey(field)) {
-											props.put(field, millis);
-										}
-										isfilled = true;
-									} 
+						Boolean isfilled = false;
+						String key = ModulesPlusFields.get(fieldIndex);
+						Object cellValue = colVal.get(fieldMapping.get(key));
+						String moduleAndField [] = key.split("__");
+						
+						String field = moduleAndField[(moduleAndField.length)-1];
+						if(fields.contains(field)) {
+							if(cellValue != null && !cellValue.equals("")) {
+								FacilioField facilioField = null;
+								try {
+									ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+									facilioField = bean.getField(field, module);
+								}catch (Exception e) {
+									LOGGER.severe("FACILIO FIELD EXCEPTION" + e);
 								}
-								else if(facilioField.getDataTypeEnum().equals(FieldType.NUMBER) || facilioField.getDataTypeEnum().equals(FieldType.DECIMAL)) {
-									String cellValueString = cellValue.toString();
-									if(cellValueString.contains(",")) {
-										cellValueString = cellValueString.replaceAll(",", "");
-									}
-									Double cellDoubleValue = Double.parseDouble(cellValueString);
-									if(!props.containsKey(field)) {
-										props.put(field, cellDoubleValue);
-										isfilled = true;
+								if(facilioField != null) {
+									try {
+										if(facilioField.getDataTypeEnum().equals(FieldType.DATE_TIME) || facilioField.getDataTypeEnum().equals(FieldType.DATE)) {
+											if(!(cellValue instanceof Long)) {
+												long millis;
+												if(dateFormats.get(fieldMapping.get(key)).equals(ImportAPI.ImportProcessConstants.TIME_STAMP_STRING)) {
+													millis = Long.parseLong(cellValue.toString());
+												}
+												else {
+													Instant dateInstant = DateTimeUtil.getTimeInstant(dateFormats.get(fieldMapping.get(key)).toString(),cellValue.toString());
+													millis = dateInstant.toEpochMilli();
+												}
+												if(!props.containsKey(field)) {
+													props.put(field, millis);
+												}
+												isfilled = true;
+											} 
+										}
+										else if(facilioField.getDataTypeEnum().equals(FieldType.NUMBER) || facilioField.getDataTypeEnum().equals(FieldType.DECIMAL)) {
+											String cellValueString = cellValue.toString();
+											if(cellValueString.contains(",")) {
+												cellValueString = cellValueString.replaceAll(",", "");
+											}
+											Double cellDoubleValue = Double.parseDouble(cellValueString);
+											if(!props.containsKey(field)) {
+												props.put(field, cellDoubleValue);
+												isfilled = true;
+											}
+										}
+		
+									} catch (Exception e) {
+										LOGGER.severe("exception ---" + e);
+										throw new ImportParseException(row_no, fieldMapping.get(key).toString(), e);
 									}
 								}
-
-							} catch (Exception e) {
-								LOGGER.severe("exception ---" + e);
-								throw new ImportParseException(row_no, fieldMapping.get(key).toString(), e);
+							}
+							if(!isfilled) {
+								if(!props.containsKey(field)) {
+									props.put(field, cellValue);
+								}
+							}
+							else {
+								continue;
 							}
 						}
 					}
-					if(!isfilled) {
-						if(!props.containsKey(field)) {
-							props.put(field, cellValue);
-						}
-					}else {
-						continue;
-					}
-					}
-					}
 					LOGGER.severe("props ---" + props);
+					
 					ReadingContext NonDuplicateReadingContext = FieldUtil.getAsBeanFromMap(props, ReadingContext.class);
 					readingContexts.add(NonDuplicateReadingContext );
 					groupedContext.put(module, NonDuplicateReadingContext );
 					System.out.println(groupedContext);
-		}
-		}
+				}
+			}
 		}
 		context.put(ImportAPI.ImportProcessConstants.READINGS_LIST, readingContexts);
 		context.put(ImportAPI.ImportProcessConstants.IMPORT_TEMPLATE_CONTEXT, importTemplateContext);
@@ -281,7 +281,7 @@ public class DataParseForReadingsCommand implements Command {
 	}
 		
 	
-	public static Long getAssetByUniqueness(HashMap<String,Object> colVal, String module, HashMap<String,String> uniqueMapping) throws Exception{
+	public static Long getAssetByUniqueness(HashMap<String,Object> colVal, String module, HashMap<String,String> uniqueMapping) throws Exception {
 		LOGGER.severe("colVal" + colVal.toString());
 		LOGGER.severe("module" + module);
 		LOGGER.severe("uniqueMapping" + uniqueMapping.toString());
