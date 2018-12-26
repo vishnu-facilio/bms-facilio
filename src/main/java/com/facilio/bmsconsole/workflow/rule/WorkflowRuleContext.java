@@ -257,7 +257,7 @@ public class WorkflowRuleContext implements Serializable {
 		if (actions == null) {
 			actions = ActionAPI.getActiveActionsFromWorkflowRule(ruleId);
 		}
-		if (this.getId() == 3335) {
+		if (this.getId() == 3539) {
 			LOGGER.info("List of actions : "+actions);
 		}
 		if(actions != null) {
