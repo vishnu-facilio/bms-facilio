@@ -10,6 +10,7 @@ import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -257,8 +258,8 @@ public class WorkflowRuleContext implements Serializable {
 		if (actions == null) {
 			actions = ActionAPI.getActiveActionsFromWorkflowRule(ruleId);
 		}
-		if (this.getId() == 3539) {
-			LOGGER.info("List of actions : "+actions);
+		if (AccountUtil.getCurrentOrg().getId() == 151) {
+			LOGGER.info("List of actions for "+this.getId()+" : "+actions);
 		}
 		if(actions != null) {
 			for(ActionContext action : actions) {
