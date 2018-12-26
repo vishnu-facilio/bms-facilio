@@ -245,10 +245,10 @@ public class FacilioCorsFilter implements Filter {
         String requestType = INVALID;
         String originHeader = request.getHeader(ORIGIN);
 
-        if(originHeader == null || request.getRequestURI().contains("tracklead")) {
+        if(originHeader == null) {
             requestType = NO_CORS;
         } else {
-            if(isAllowedOrigin(originHeader)) {
+            if(isAllowedOrigin(originHeader) || request.getRequestURI().contains("tracklead")) {
                 String requestMethod = request.getMethod();
                 if ("OPTIONS".equalsIgnoreCase(requestMethod)) {
                     String accessMethod = request.getHeader("Access-Control-Request-Method");
