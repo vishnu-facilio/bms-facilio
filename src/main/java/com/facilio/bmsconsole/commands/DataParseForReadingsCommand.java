@@ -76,6 +76,8 @@ public class DataParseForReadingsCommand implements Command {
 		HashMap<Integer, String> headerIndex = new HashMap<Integer, String>();
 		Workbook workbook = WorkbookFactory.create(is);
 		
+		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
 		for(int i=0;i<workbook.getNumberOfSheets();i++) {
 			Sheet datatypeSheet = workbook.getSheetAt(i);
 
@@ -192,6 +194,7 @@ public class DataParseForReadingsCommand implements Command {
 					continue;
 				}
 				
+				
 				for(String module : moduleNames) {
 					
 					List<String> fields  = new ArrayList(groupedFields.get(module));
@@ -200,69 +203,61 @@ public class DataParseForReadingsCommand implements Command {
 					
 					props.put(ImportAPI.ImportProcessConstants.PARENT_ID_FIELD, parentId);
 	
-					for(int fieldIndex = 0; fieldIndex < ModulesPlusFields.size(); fieldIndex++){
-						Boolean isfilled = false;
-						String key = ModulesPlusFields.get(fieldIndex);
-						Object cellValue = colVal.get(fieldMapping.get(key));
-						String moduleAndField [] = key.split("__");
+					for(String field :fields){
 						
-						String field = moduleAndField[(moduleAndField.length)-1];
-						if(fields.contains(field)) {
-							if(cellValue != null && !cellValue.equals("")) {
-								FacilioField facilioField = null;
+						String key = null;
+						if(field.equals("ttime")) {
+							key = "sys"+"__"+field;
+						}
+						else {
+							key = module+"__"+field;
+						}
+						
+						Boolean isfilled = false;
+						Object cellValue = colVal.get(fieldMapping.get(key));
+						if(cellValue != null && !cellValue.equals("")) {
+							FacilioField facilioField = null;
+							try {
+								facilioField = bean.getField(field, module);
+							}catch (Exception e) {
+								LOGGER.severe("FACILIO FIELD EXCEPTION" + e);
+							}
+							if(facilioField != null) {
 								try {
-									ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-									facilioField = bean.getField(field, module);
-								}catch (Exception e) {
-									LOGGER.severe("FACILIO FIELD EXCEPTION" + e);
-								}
-								if(facilioField != null) {
-									try {
-										if(facilioField.getDataTypeEnum().equals(FieldType.DATE_TIME) || facilioField.getDataTypeEnum().equals(FieldType.DATE)) {
-											if(!(cellValue instanceof Long)) {
-												long millis;
-												if(dateFormats.get(fieldMapping.get(key)).equals(ImportAPI.ImportProcessConstants.TIME_STAMP_STRING)) {
-													millis = Long.parseLong(cellValue.toString());
-												}
-												else {
-													Instant dateInstant = DateTimeUtil.getTimeInstant(dateFormats.get(fieldMapping.get(key)).toString(),cellValue.toString());
-													millis = dateInstant.toEpochMilli();
-												}
-												if(!props.containsKey(field)) {
-													props.put(field, millis);
-												}
-												isfilled = true;
-											} 
-										}
-										else if(facilioField.getDataTypeEnum().equals(FieldType.NUMBER) || facilioField.getDataTypeEnum().equals(FieldType.DECIMAL)) {
-											String cellValueString = cellValue.toString();
-											if(cellValueString.contains(",")) {
-												cellValueString = cellValueString.replaceAll(",", "");
+									if(facilioField.getDataTypeEnum().equals(FieldType.DATE_TIME) || facilioField.getDataTypeEnum().equals(FieldType.DATE)) {
+										if(!(cellValue instanceof Long)) {
+											long millis;
+											if(dateFormats.get(fieldMapping.get(key)).equals(ImportAPI.ImportProcessConstants.TIME_STAMP_STRING)) {
+												millis = Long.parseLong(cellValue.toString());
 											}
-											Double cellDoubleValue = Double.parseDouble(cellValueString);
-											if(!props.containsKey(field)) {
-												props.put(field, cellDoubleValue);
-												isfilled = true;
+											else {
+												Instant dateInstant = DateTimeUtil.getTimeInstant(dateFormats.get(fieldMapping.get(key)).toString(),cellValue.toString());
+												millis = dateInstant.toEpochMilli();
 											}
-										}
-		
-									} catch (Exception e) {
-										LOGGER.severe("exception ---" + e);
-										throw new ImportParseException(row_no, fieldMapping.get(key).toString(), e);
+											props.put(field, millis);
+											isfilled = true;
+										} 
 									}
+									else if(facilioField.getDataTypeEnum().equals(FieldType.NUMBER) || facilioField.getDataTypeEnum().equals(FieldType.DECIMAL)) {
+										String cellValueString = cellValue.toString();
+										if(cellValueString.contains(",")) {
+											cellValueString = cellValueString.replaceAll(",", "");
+										}
+										Double cellDoubleValue = Double.parseDouble(cellValueString);
+										props.put(field, cellDoubleValue);
+										isfilled = true;
+									}
+								} catch (Exception e) {
+									LOGGER.severe("exception ---" + e);
+									throw new ImportParseException(row_no, fieldMapping.get(key).toString(), e);
 								}
-							}
-							if(!isfilled) {
-								if(!props.containsKey(field)) {
-									props.put(field, cellValue);
-								}
-							}
-							else {
-								continue;
 							}
 						}
+						if(!isfilled) {
+							props.put(field, cellValue);
+						}
 					}
-					LOGGER.severe("props ---" + props);
+					//LOGGER.severe("props ---" + props);
 					
 					ReadingContext NonDuplicateReadingContext = FieldUtil.getAsBeanFromMap(props, ReadingContext.class);
 					readingContexts.add(NonDuplicateReadingContext );
@@ -350,7 +345,6 @@ public class DataParseForReadingsCommand implements Command {
 					groupedFields.put(module, sys.get(i));
 				}
 			}
-			
 		}
 		LOGGER.severe("groupedFields -- " + groupedFields);
 	}
