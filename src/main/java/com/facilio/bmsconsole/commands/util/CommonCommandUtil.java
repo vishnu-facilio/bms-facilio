@@ -584,7 +584,8 @@ public class CommonCommandUtil {
 			if(readings == null) {
 				ReadingContext reading = (ReadingContext) context.get(FacilioConstants.ContextNames.READING);
 				if(reading != null) {
-					readings = Collections.singletonList(reading);
+					readings = new ArrayList<>(1);
+					readings.add(reading);
 				}
 			}
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);

@@ -7,7 +7,6 @@ import java.util.Map.Entry;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.amazonaws.services.kms.model.UnsupportedOperationException;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.ReadingContext;
