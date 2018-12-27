@@ -194,7 +194,6 @@ public class DataParseForReadingsCommand implements Command {
 					continue;
 				}
 				
-				
 				for(String module : moduleNames) {
 					
 					List<String> fields  = new ArrayList(groupedFields.get(module));
@@ -257,7 +256,7 @@ public class DataParseForReadingsCommand implements Command {
 							props.put(field, cellValue);
 						}
 					}
-					//LOGGER.severe("props ---" + props);
+					LOGGER.severe("props ---" + props);
 					
 					ReadingContext NonDuplicateReadingContext = FieldUtil.getAsBeanFromMap(props, ReadingContext.class);
 					readingContexts.add(NonDuplicateReadingContext );
