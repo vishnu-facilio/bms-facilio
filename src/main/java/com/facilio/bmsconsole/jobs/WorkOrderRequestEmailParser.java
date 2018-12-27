@@ -145,16 +145,10 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 				}
 				LOGGER.info("Parsed Attachments : "+attachedFiles);
 			}
-			
 			if (supportEmail.getAutoAssignGroupId() != -1) {
 				ticketContext.setAssignmentGroup((Group) LookupSpecialTypeUtil.getEmptyLookedupObject(FacilioConstants.ContextNames.GROUPS, supportEmail.getAutoAssignGroupId()));
 			}
-			
-			if (supportEmail.getSiteId() != -1) {
-				SiteContext site = new SiteContext();
-				site.setId(supportEmail.getSiteId());
-				ticketContext.setResource(site);
-			}
+			ticketContext.setSiteId(supportEmail.getSiteId());
 			
 			ticketContext.setSourceType(TicketContext.SourceType.EMAIL_REQUEST);
 			
