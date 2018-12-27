@@ -85,6 +85,16 @@ public enum AccountEmailTemplate {
 	
 	@SuppressWarnings("unchecked")
 	private static JSONObject getTemplateJson(int templateVal) {
+		if (SUPPORTEMAIL == null) {
+			SUPPORTEMAIL = com.facilio.aws.util.AwsUtil.getConfig("rebrand.supportemail");//"support@facilio.com"
+		}
+		if (ALERTEMAIL == null) {
+			ALERTEMAIL = com.facilio.aws.util.AwsUtil.getConfig("rebrand.alertemail");//"alerts@facilio.com"
+		}
+		if (BRAND == null) {
+			BRAND = com.facilio.aws.util.AwsUtil.getConfig("rebrand.brand");//Facilio
+		}
+		
 		JSONObject json = new JSONObject();
 		switch(templateVal) {
 			case 1:
