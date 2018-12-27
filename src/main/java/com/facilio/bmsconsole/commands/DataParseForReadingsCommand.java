@@ -63,7 +63,6 @@ public class DataParseForReadingsCommand implements Command {
 		InputStream is = fs.readFile(importProcessContext.getFileId());
 		HashMap<String,String> fieldMapping = importTemplateContext.getFieldMapping();
 		HashMap<String,String> uniqueMapping = importTemplateContext.getUniqueMapping();
-		List<ReadingContext> readingContexts = new ArrayList<>();
 		HashMap<Integer, HashMap<String,Object>> nullUniqueFields = new HashMap<>();
 		HashMap<Integer, HashMap<String, Object>> nullResources = new HashMap<>();
 		HashMap<Integer, HashMap<String, Object>> duplicateEntries = new HashMap<>();
@@ -259,13 +258,10 @@ public class DataParseForReadingsCommand implements Command {
 					LOGGER.severe("props ---" + props);
 					
 					ReadingContext NonDuplicateReadingContext = FieldUtil.getAsBeanFromMap(props, ReadingContext.class);
-					readingContexts.add(NonDuplicateReadingContext );
-					groupedContext.put(module, NonDuplicateReadingContext );
-					System.out.println(groupedContext);
+					groupedContext.put(module, NonDuplicateReadingContext);
 				}
 			}
 		}
-		context.put(ImportAPI.ImportProcessConstants.READINGS_LIST, readingContexts);
 		context.put(ImportAPI.ImportProcessConstants.IMPORT_TEMPLATE_CONTEXT, importTemplateContext);
 		context.put(ImportAPI.ImportProcessConstants.GROUPED_READING_CONTEXT, groupedContext);
 		context.put(ImportAPI.ImportProcessConstants.GROUPED_FIELDS, groupedFields);

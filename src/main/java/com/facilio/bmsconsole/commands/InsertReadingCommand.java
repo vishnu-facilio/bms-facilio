@@ -26,7 +26,6 @@ public class InsertReadingCommand implements Command {
 	private static final Logger LOGGER = Logger.getLogger(InsertReadingCommand.class.getName());
 	@Override
 	public boolean execute(Context context) throws Exception {
-		context.get(ImportAPI.ImportProcessConstants.READINGS_LIST);
 		ImportProcessContext importProcessContext =(ImportProcessContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
 		ImportTemplateContext importTemplateContext = (ImportTemplateContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_TEMPLATE_CONTEXT);
 		JSONObject modulesJSON = importTemplateContext.getModuleJSON();
@@ -74,7 +73,7 @@ public class InsertReadingCommand implements Command {
 		context.put(ImportAPI.ImportProcessConstants.EMAIL_MESSAGE, emailMessage);
 		return false;
 	}
-
+	
 	public static void insertReadings(String moduleName,List<ReadingContext> readingsContext) throws Exception {
 		
 		if(readingsContext == null || readingsContext.isEmpty()) {
