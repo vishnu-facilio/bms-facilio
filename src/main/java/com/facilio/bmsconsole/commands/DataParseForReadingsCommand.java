@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.apache.commons.chain.Command;
@@ -51,7 +52,7 @@ public class DataParseForReadingsCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception,ImportParseException {
 		
-		ArrayListMultimap<String, ReadingContext> groupedContext = ArrayListMultimap.create();
+		Map<String, List<ReadingContext>> groupedContext = new HashMap<>();
 		ImportProcessContext importProcessContext = (ImportProcessContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
 		Long templateID = importProcessContext.getTemplateId();
 		LOGGER.severe("templateID -- "+templateID);
@@ -258,7 +259,16 @@ public class DataParseForReadingsCommand implements Command {
 					LOGGER.severe("props ---" + props);
 					
 					ReadingContext NonDuplicateReadingContext = FieldUtil.getAsBeanFromMap(props, ReadingContext.class);
-					groupedContext.put(module, NonDuplicateReadingContext);
+					List<ReadingContext> readingContexts=null;
+					if(groupedContext.containsKey(module)) {
+						readingContexts = groupedContext.get(module);
+						readingContexts.add(NonDuplicateReadingContext);
+					}
+					else {
+						readingContexts = new ArrayList<>();
+						readingContexts.add(NonDuplicateReadingContext);
+						groupedContext.put(module, readingContexts);
+					}
 				}
 			}
 		}

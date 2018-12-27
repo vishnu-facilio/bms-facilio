@@ -29,7 +29,7 @@ public class InsertReadingCommand implements Command {
 		ImportProcessContext importProcessContext =(ImportProcessContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
 		ImportTemplateContext importTemplateContext = (ImportTemplateContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_TEMPLATE_CONTEXT);
 		JSONObject modulesJSON = importTemplateContext.getModuleJSON();
-		ArrayListMultimap<String, ReadingContext> groupedContext = (ArrayListMultimap<String, ReadingContext>) context.get(ImportAPI.ImportProcessConstants.GROUPED_READING_CONTEXT);
+		Map<String, List<ReadingContext>> groupedContext = (Map<String, List<ReadingContext>>) context.get(ImportAPI.ImportProcessConstants.GROUPED_READING_CONTEXT);
 		ArrayListMultimap<String , String> groupedFields = (ArrayListMultimap<String, String>) context.get(ImportAPI.ImportProcessConstants.GROUPED_FIELDS);
 		List<String> keys = new ArrayList(groupedFields.keySet());
 		HashMap<Integer, HashMap<String, Object>> nullUniqueFields = (HashMap<Integer,HashMap<String,Object>>) context.get(ImportAPI.ImportProcessConstants.NULL_UNIQUE_FIELDS);
