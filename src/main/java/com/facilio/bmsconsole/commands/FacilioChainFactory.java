@@ -2323,6 +2323,11 @@ public class FacilioChainFactory {
 		}
 
 		public boolean execute(Context context) throws Exception {
+			FacilioChain facilioChain = rootChain.get();
+			if (facilioChain == null) {
+				rootChain.set(this);
+			}
+			
 			boolean istransaction = false;
 			try {
 				if (enableTransaction) {
@@ -2344,9 +2349,20 @@ public class FacilioChainFactory {
 				}
 				
 				if (postTransactionChain != null) {
-					postTransactionChain.execute(context);
+					FacilioChain root = rootChain.get();
+					if (this.equals(root)) {
+						// clear rootChain to set transaction chain as root
+						rootChain.remove();
+						postTransactionChain.execute(context);
+					} else {
+						if (root.getPostTransactionChain() != null) {
+							root.getPostTransactionChain().addCommand(this.postTransactionChain);
+						} else {
+							root.setPostTransactionChain(this.postTransactionChain);
+						}
+					}
 				}
-					
+
 				return status;
 			} catch (Throwable e) {
 				// TODO Auto-generated catch block
@@ -2358,7 +2374,14 @@ public class FacilioChainFactory {
 					} 
 				}
 				throw e;
+			} finally {
+				FacilioChain root = rootChain.get();
+				if (this.equals(root)) {
+					rootChain.remove();
+				}
 			}
 		}
 	}
+	
+	private static final ThreadLocal<FacilioChain> rootChain = new ThreadLocal<>();
 }
