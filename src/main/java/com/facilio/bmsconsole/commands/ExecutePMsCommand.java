@@ -50,7 +50,9 @@ public class ExecutePMsCommand implements Command {
 						
 					}
 				}
-				
+				if(wos != null && !wos.isEmpty()) {
+					context.put(FacilioConstants.ContextNames.WORK_ORDER, wos.get(0));	// temp fix for client, need to handle it both in server and client for multiple pms
+				}
 			}
 			context.put(FacilioConstants.ContextNames.WORK_ORDER_LIST, woIds);
 			context.put(FacilioConstants.ContextNames.PM_TO_ASSET_TO_WO, pmResourceToWoMap);
