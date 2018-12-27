@@ -120,6 +120,7 @@ public class AssetAction extends FacilioAction {
 	 		JSONParser parser = new JSONParser();
 	 		JSONObject json = (JSONObject) parser.parse(getFilters());
 	 		context.put(FacilioConstants.ContextNames.FILTERS, json);
+	 		context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
  		}
  		if (getSearch() != null) {
  			JSONObject searchObj = new JSONObject();
@@ -136,6 +137,7 @@ public class AssetAction extends FacilioAction {
  		}
  		context.put(FacilioConstants.ContextNames.READING_ID, readingId);
  		context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+ 		
  		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, categoryId);
  		context.put(FacilioConstants.ContextNames.INPUT_TYPE, getInputType());
  		context.put(FacilioConstants.ContextNames.WITH_READINGS, this.getWithReadings());
@@ -262,6 +264,16 @@ public class AssetAction extends FacilioAction {
 		this.assetsId = assetsId;
 	}
 
+	private boolean includeParentFilter;
+
+	public boolean getIncludeParentFilter() {
+		return includeParentFilter;
+	}
+
+	public void setIncludeParentFilter(boolean includeParentFilter) {
+		this.includeParentFilter = includeParentFilter;
+	}
+	
 	private AssetContext asset;
 	public AssetContext getAsset() {
 		return asset;
