@@ -709,8 +709,6 @@ public class FacilioConstants {
 	public static class Criteria {
 		public static final String LOGGED_IN_USER = "${LOGGED_USER}";
 		public static final String LOGGED_IN_USER_GROUP = "${LOGGED_USER_GROUP}";
-		public static final long LOGGED_IN_USER_ID = -99;
-		public static final long LOGGED_IN_USER_GROUP_ID = -100;
 	}
 	
 	public static class ApprovalRule {

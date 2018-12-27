@@ -92,6 +92,9 @@ public enum PickListOperators implements Operator<String> {
 	} 
 	;
 	
+	private static final long LOGGED_IN_USER_ID = -99;
+	private static final long LOGGED_IN_USER_GROUP_ID = -100;
+	
 	private static Predicate computeUserPredicate(String value) {
 		if(value.contains(",")) {
 			List<Predicate> userPredicates = new ArrayList<>();
@@ -108,10 +111,10 @@ public enum PickListOperators implements Operator<String> {
 	
 	private static Predicate getUserPredicate(String value) {
 		if(value.equals(FacilioConstants.Criteria.LOGGED_IN_USER)) {
-			return new PickListPredicate(FacilioConstants.Criteria.LOGGED_IN_USER_ID);
+			return new PickListPredicate(LOGGED_IN_USER_ID);
 		}
 		else if(value.equals(FacilioConstants.Criteria.LOGGED_IN_USER_GROUP)) {
-			return new PickListPredicate(FacilioConstants.Criteria.LOGGED_IN_USER_GROUP_ID);
+			return new PickListPredicate(LOGGED_IN_USER_GROUP_ID);
 		}
 		else {
 			return new PickListPredicate(Long.parseLong(value));
@@ -242,10 +245,10 @@ public enum PickListOperators implements Operator<String> {
 					else {
 						return false;
 					}
-					if(id == FacilioConstants.Criteria.LOGGED_IN_USER_ID) {
+					if(id == LOGGED_IN_USER_ID) {
 						return currentId == AccountUtil.getCurrentUser().getId();
 					}
-					else if(id == FacilioConstants.Criteria.LOGGED_IN_USER_GROUP_ID) {
+					else if(id == LOGGED_IN_USER_GROUP_ID) {
 						return getLoggedInUserGroupIds().contains(currentId);
 					}
 					else {
