@@ -118,13 +118,31 @@ public class ReportContext {
 	}
 	
 	private JSONObject reportState;
-	public JSONObject getReportState() {
-		return reportState;
+//	public JSONObject getReportState() {
+//		return reportState;
+//	}
+//	public void setReportState(JSONObject reportState) {
+//		this.reportState = reportState;
+//	}
+	
+	//Only JSON friendly values can be added
+	public void addToReportState (String key, JSONObject value) {
+		defaultAddToReportState(key, value);
 	}
-	public void setReportState(JSONObject reportState) {
-		this.reportState = reportState;
+	public void addToReportState (String key, JSONArray value) {
+		defaultAddToReportState(key, value);
 	}
-	public void addToReportState (String key, Object value) {
+	public void addToReportState (String key, String value) {
+		defaultAddToReportState(key, value);
+	}
+	public void addToReportState (String key, Number value) {
+		defaultAddToReportState(key, value);
+	}
+	public void addToReportState (String key, boolean value) {
+		defaultAddToReportState(key, value);
+	}
+	
+	private void defaultAddToReportState (String key, Object value) {
 		if (reportState == null) {
 			reportState = new JSONObject();
 		}

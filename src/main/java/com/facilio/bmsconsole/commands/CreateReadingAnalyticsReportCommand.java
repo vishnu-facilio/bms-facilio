@@ -11,6 +11,7 @@ import java.util.StringJoiner;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
@@ -104,7 +105,9 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 			report.setDataPoints(dataPoints);
 			
 			if (!resourceAlias.isEmpty()) {
-				report.addToReportState(FacilioConstants.ContextNames.REPORT_RESOURCE_ALIASES, resourceAlias);
+				JSONArray resourceAliases = new JSONArray();
+				resourceAliases.addAll(resourceAlias);
+				report.addToReportState(FacilioConstants.ContextNames.REPORT_RESOURCE_ALIASES, resourceAliases);
 			}
 
 			context.put(FacilioConstants.ContextNames.REPORT, report);
