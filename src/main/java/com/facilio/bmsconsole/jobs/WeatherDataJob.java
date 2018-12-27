@@ -123,7 +123,17 @@ public class WeatherDataJob extends FacilioJob {
 		reading.addReading("precipitationIntensity", currentWeather.get("precipIntensity"));
 		reading.addReading("precipitationIntensityError", currentWeather.get("precipIntensityError"));
 		reading.addReading("precipitationProbability", currentWeather.get("precipProbability"));
-		reading.addReading("precipitationType", currentWeather.get("precipType"));		
+		reading.addReading("precipitationType", currentWeather.get("precipType"));	
+		
+		reading.addReading("windSpeed", currentWeather.get("windSpeed"));
+		reading.addReading("windGust", currentWeather.get("windGust"));
+		reading.addReading("windBearing", currentWeather.get("windBearing"));
+		reading.addReading("cloudCover", currentWeather.get("cloudCover"));
+		reading.addReading("uvIndex", currentWeather.get("uvIndex"));
+		reading.addReading("visibility", currentWeather.get("visibility"));
+		reading.addReading("ozone", currentWeather.get("ozone"));
+		reading.addReading("nearestStormDistance", currentWeather.get("nearestStormDistance"));
+		reading.addReading("nearestStormBearing", currentWeather.get("nearestStormBearing"));
 		return reading;
 	}
 
