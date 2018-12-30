@@ -1157,6 +1157,13 @@ public class DashboardAction extends FacilioAction {
 	public void setStaticKey(String staticKey) {
 		this.staticKey = staticKey;
 	}
+	private WorkflowContext workflow;
+	public WorkflowContext getWorkflow() {
+		return workflow;
+	}
+	public void setWorkflow(WorkflowContext workflow) {
+		this.workflow = workflow;
+	}
 	String staticKey;
 	
 	JSONObject paramsJson;
@@ -1176,6 +1183,10 @@ public class DashboardAction extends FacilioAction {
 				result = new HashMap<>();
 				
 				CardType card = CardType.getCardType(widgetStaticContext.getStaticKey());
+				
+				if(card.getWorkflow() == null && dashboardWidgetContext.getWidgetVsWorkflowContexts() != null && !dashboardWidgetContext.getWidgetVsWorkflowContexts().isEmpty()) {
+					card.setWorkflow(dashboardWidgetContext.getWidgetVsWorkflowContexts().get(0).getWorkflowString());
+				}
 				
 				if(widgetStaticContext.getStaticKey().equals(CardType.FAHU_STATUS_CARD_NEW.getName())) {
 					CardUtil.fillParamJsonForFahuCard(AccountUtil.getCurrentOrg().getId(),widgetStaticContext.getParamsJson());
@@ -1370,6 +1381,10 @@ public class DashboardAction extends FacilioAction {
 				result = new HashMap<>();
 				
 				CardType card = CardType.getCardType(staticKey);
+				
+				if(card.getWorkflow() == null) {
+					card.setWorkflow(WorkflowUtil.getXmlStringFromWorkflow(workflow));
+				}
 				
 				if(staticKey.equals(CardType.FAHU_STATUS_CARD_NEW.getName())) {
 					CardUtil.fillParamJsonForFahuCard(AccountUtil.getCurrentOrg().getId(),paramsJson);

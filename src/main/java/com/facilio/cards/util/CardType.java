@@ -322,6 +322,7 @@ public enum CardType {
 			"		<field name=\"${autoStatusField}\" aggregate = \"lastValue\"/> 	\n" + 
 			"	</expression> \n" + 
 			"</workflow>",false),
+	READING_COMBO_CARD(10,"readingComboCard",null,false),
 	;
 	
 	private Integer value;
