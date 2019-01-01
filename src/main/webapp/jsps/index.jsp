@@ -12,7 +12,7 @@
 	String servicePortalDomain = com.facilio.aws.util.AwsUtil.getConfig("portal.domain");
 	
 	String brandName = com.facilio.aws.util.AwsUtil.getConfig("rebrand.brand");
-	String domainName =com.facilio.aws.util.AwsUtil.getConfig("rebrand.domain"); 
+	String domain =com.facilio.aws.util.AwsUtil.getConfig("rebrand.domain"); 
 	String copyrightName =com.facilio.aws.util.AwsUtil.getConfig("rebrand.copyright.name"); 
 	String copyrightYear =com.facilio.aws.util.AwsUtil.getConfig("rebrand.copyright.year"); 
 	
@@ -21,8 +21,9 @@
 	copyrightInfo.put("year", copyrightYear);
 	
 	JSONObject rebrandInfo = new JSONObject();
+	rebrandInfo.put("brandName", brandName);
 	rebrandInfo.put("name", brandName);
-	rebrandInfo.put("domain", domainName);
+	rebrandInfo.put("domain", domain);
 	rebrandInfo.put("copyright", copyrightInfo);
 %>
 <html>
@@ -34,10 +35,8 @@
     <meta name="viewport" content="user-scalable=no,initial-scale=1,maximum-scale=1,minimum-scale=1,width=device-width">
     <title>Facilio</title>
 <% 
-domainName=com.facilio.aws.util.AwsUtil.getConfig("rebrand.domain"); 
-if(domainName != null && (domainName.indexOf("machinestalk") != -1 || domainName.indexOf("buildingstalk") != -1)) {%>
+if(brandName != null && (brandName.indexOf("BuildingsTalk") != -1 )) {%>
 	<link rel="icon" href="<%=staticUrl%>/statics/machinestalk.ico" type="image/x-icon">
-	
 	
 <% } else {%>
 	<link rel="icon" href="<%=staticUrl%>/statics/favicon.png" type="image/x-icon">
@@ -103,6 +102,7 @@ if(domainName != null && (domainName.indexOf("machinestalk") != -1 || domainName
         var webpackPublicPath = "<%=staticUrl%>";
         var servicePortalDomain = "<%=servicePortalDomain%>";
         var rebrandInfo = <%=rebrandInfo%>;
+        window.rebrandInfo = rebrandInfo;
   </script>
   <link href="<%=staticUrl%>/app.css" rel="stylesheet">
  </head>
