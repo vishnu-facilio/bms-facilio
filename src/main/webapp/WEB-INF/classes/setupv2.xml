@@ -66,6 +66,11 @@
             <param name="permission">ALARM_SETTINGS</param>
 		</action>
 		
+		<action name="addNew" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="addNewReadingRule">
+			<param name="moduleName">setup</param>
+            <param name="permission">ALARM_SETTINGS</param>
+		</action>
+		
 		<action name="addcustom" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="addWorkflowRule">
 			<param name="moduleName">setup</param>
             <param name="permission">ALARM_SETTINGS</param>
