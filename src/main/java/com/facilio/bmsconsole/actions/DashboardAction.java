@@ -1382,7 +1382,7 @@ public class DashboardAction extends FacilioAction {
 				
 				CardType card = CardType.getCardType(staticKey);
 				
-				if(card.getWorkflow() == null) {
+				if(DashboardUtil.isDynamicWFGeneratingCard(staticKey)) {
 					card.setWorkflow(WorkflowUtil.getXmlStringFromWorkflow(workflow));
 				}
 				

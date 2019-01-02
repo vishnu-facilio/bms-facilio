@@ -89,6 +89,7 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.cards.util.CardType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
@@ -3590,5 +3591,12 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		else {
 			return addSpaceFilteredDashboardSettings(spaceFilteredDashboardSettings);
 		}
+	}
+
+	public static boolean isDynamicWFGeneratingCard(String staticKey) {
+		if(staticKey.equals(CardType.READING_COMBO_CARD.getName())) {
+			return true;
+		}
+		return false;
 	}
 }

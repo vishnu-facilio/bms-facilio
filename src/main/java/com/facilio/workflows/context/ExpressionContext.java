@@ -329,16 +329,16 @@ public class ExpressionContext implements WorkflowExpression {
 									break;
 								}
 							}
-							ReadingDataMeta meta = null;
+							ReadingDataMeta readingDataMeta = null;
 							if(workflowContext.getCachedRDM() != null && !workflowContext.getCachedRDM().isEmpty()) {
 								String key = ReadingsAPI.getRDMKey(Long.parseLong(parentIdString), modBean.getField(fieldName, moduleName));
-								meta = workflowContext.getCachedRDM().get(key);
+								readingDataMeta = workflowContext.getCachedRDM().get(key);
 							}
-							if(meta == null) {
-								meta = ReadingsAPI.getReadingDataMeta(Long.parseLong(parentIdString), select);
+							if(readingDataMeta == null) {
+								readingDataMeta = ReadingsAPI.getReadingDataMeta(Long.parseLong(parentIdString), select);
 							}
 							
-							exprResult = meta.getValue();
+							exprResult = readingDataMeta.getValue();
 							return exprResult;
 						}
 					}
