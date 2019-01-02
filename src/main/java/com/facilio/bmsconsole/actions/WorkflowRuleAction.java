@@ -168,6 +168,18 @@ public class WorkflowRuleAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String updateNewReadingRule() throws Exception {
+		FacilioContext facilioContext = new FacilioContext();
+
+		facilioContext.put(FacilioConstants.ContextNames.ALARM_RULE, alarmRule);
+		Chain addRule = TransactionChainFactory.addAlarmRuleChain();
+		addRule.execute(facilioContext);
+		
+		alarmRule = (AlarmRuleContext) facilioContext.get(FacilioConstants.ContextNames.ALARM_RULE);
+		setResult("rule", alarmRule);
+		return SUCCESS;
+	}
+	
 	public String addAssignmentRule() throws Exception
 	{
 		FacilioContext facilioContext = new FacilioContext();

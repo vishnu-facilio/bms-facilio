@@ -204,14 +204,6 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
-		public static Chain addAlarmRuleChain() {
-			Chain c = getDefaultChain();
-			c.addCommand(new AddAlarmRuleCommand());
-			c.addCommand(new AddActionForAlarmRuleCommand());
-			CommonCommandUtil.addCleanUpCommand(c);
-			return c;
-		}
-		
 		public static Chain addApprovalRuleChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new ConstructApprovalRuleCommand());
@@ -249,6 +241,23 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateWorkflowRuleCommand());
 			c.addCommand(new DeleterOldRuleActionsCommand());
 			c.addCommand(new AddActionsForWorkflowRule());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
+		public static Chain addAlarmRuleChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddAlarmRuleCommand());
+			c.addCommand(new AddActionForAlarmRuleCommand());
+			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
+		public static Chain updateAlarmRuleChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateAlarmRuleCommand());
+			c.addCommand(new DeleterOldRuleActionsCommand());
+			c.addCommand(new AddActionForAlarmRuleCommand());
 			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}
