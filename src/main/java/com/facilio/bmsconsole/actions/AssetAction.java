@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -154,6 +155,10 @@ public class AssetAction extends FacilioAction {
 		}
  		else {
  			assets = (List<AssetContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+ 			// Temp...needs to handle in client
+ 			if (assets == null) {
+ 				assets = new ArrayList<>();
+ 			}
  			setResult("assets", assets);
  		}
 		return SUCCESS;
